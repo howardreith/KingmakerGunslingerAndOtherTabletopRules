@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact95c4 snake final review39/73 FAIL:32RTWP duration fixture mismatches,1missing passive trait icon,1isolation precondition. Exact snapshot restored04:26:53UTC/zero save writes. Targeted repairs278focused/2080unfiltered81.7s/complete177.2s/clean14-referenceRelease/strict320 PASS;exact-head runtime NEXT.32roots hidden;Salamander/fullSprint17/Phase2B open;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exactd43b39aa smoke11/review79of81 FAIL; native rig has no Hit action, contrary to fixture expectation. All32routes/UI and death/fade/cleanup PASS. Carrier-aware fixture280focused/2082full82.8s/complete180.2s/clean14/strict320 PASS; exact runtime NEXT.32roots hidden;Salamander/fullSprint17/Phase2B open;Phase2C deferred.",
     "sprint17SnakeLoadBoundaryTrace": {
       "status": "FIXTURE ASSERTION PRECEDES NATIVE LOAD-COMPLETE; DIAGNOSTIC COMPLETE; GAMEPLAY NOT QUALIFIED",
       "sourceParent": "15070179e84d799d476ce90a7b205d0e950ec52d",
@@ -257,8 +257,8 @@
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exacta429da50 smoke11/11,prepare14/14,cleanup13/13,absence6/6 PASS. Native reset after actual load-complete,venom persistence/continuation/cure,owned cleanup/fresh absence qualified. Bounded enabled-module snake persistence only; fullSprint17 NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exact95c4d532 smoke11/11 PASS; final review39/73 with69metadata rows FAIL.32RTWP-duration fixture failures,1missing Constrictor trait icon,1private-pair isolation precondition. All32route cleanups/93units/465resources,UI restoration and outer cleanup PASS;hit/death/fade not reached. Exact installation restored;zero save writes. FullSprint17 NOT QUALIFIED.",
-    "lastGuardedRestoration": "Actual snapshot20261007T0419381436351Z restored2026-10-07T04:26:53.6730555Z;136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3 VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/worktree staging. Zero save writes;prior a429 native cleanup/fresh absence0 remains. Protected baseline/unrelated September14 extraction untouched.",
+    "lastGuardedRuntimeResult": "Exactd43b39aa smoke11/11 PASS; final review79/81 with78metadata rows FAIL. Only2native-Hit-clip expectations fail; all32private routes/100units/500resources/UI restoration/intact/death/fade/despawn and outer cleanup PASS. Native Worm has no Hit action. Keep failure; correct the fixture using fresh native-control carrier evidence, not invented playback. FullSprint17 NOT QUALIFIED.",
+    "lastGuardedRestoration": "Actual snapshot20261007T0454516688018Z restored2026-10-07T05:03:13.3593602Z;136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3 VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/worktree staging. Zero save writes;prior a429 native cleanup/fresh absence0 remains. Protected baseline/unrelated September14 extraction untouched.",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -639,17 +639,17 @@
       "cleanupNativeResetFrame": 4252
     },
     "sprint17SnakeFinalReview": {
-      "status": "ATTEMPT1 FAIL; TARGETED REPAIR SOURCE PASS; EXACT RUNTIME NEXT",
-      "sourceParent": "7a5a710c2c46d5c7d3198acaa5b025b292d285df",
+      "status": "ATTEMPT2 FAIL; CARRIER-AWARE FIXTURE SOURCE PASS; EXACT RUNTIME NEXT",
+      "sourceParent": "d43b39aa1e3c6a08f669fc2a3b7e3a750e9d8b55",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-REVIEW.md",
       "scenario": "disposable-expanded-summoning-snake-final-review",
-      "focused": 278,
-      "domain": 2080,
-      "domainSeconds": 81.7,
-      "sourceGateSeconds": 177.2,
+      "focused": 280,
+      "domain": 2082,
+      "domainSeconds": 82.8,
+      "sourceGateSeconds": 180.2,
       "cleanExactReferences": 14,
       "strictPackageMembers": 320,
-      "expectedAssertions": 81,
+      "expectedAssertions": 82,
       "runtimeExecuted": true,
       "runtimeQualified": false,
       "publicPlayerPathQualified": false,
@@ -661,19 +661,23 @@
         "rejected": 13
       },
       "autoExit": "Required for exact new request in both script preflight and in-game validator; other scenarios unchanged",
-      "sourceCandidate": "95c4d532827d06b689c60b7c5b23de4dd1e77a25",
-      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT1-EVIDENCE.json",
-      "runtimeAssertions": 73,
-      "runtimePassed": 39,
-      "metadataRows": 69,
-      "requiredMetadataRows": 78,
+      "sourceCandidate": "d43b39aa1e3c6a08f669fc2a3b7e3a750e9d8b55",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT2-EVIDENCE.json",
+      "runtimeAssertions": 81,
+      "runtimePassed": 79,
+      "metadataRows": 78,
+      "requiredMetadataRows": 79,
       "productionPresentationChanged": "One exact Constrictor passive trait uses its existing original portrait; no pixels changed",
       "repair": {
-        "duration": "Native RTWP120-second CL20 duration; TB-only grace checker unchanged",
-        "isolation": "Distinct request-owned private native enemy pair; no unrelated relations before or during hit",
-        "sourceGate": "PASS278focused/2080unfiltered81.7s/complete177.2s/clean14-referenceRelease/strict320",
+        "nativeCarrier": "Archived native Worm7actions/noHit. Fresh native control and exact reference preservation required. If carrier exists, actual playback remains mandatory; absent flinch explicitly disclosed, never fabricated.",
+        "facing": "Native ForceLookAt on owned actor while unpaused; settle native torso-facing eligibility and record actual frontal wound, then at least0.5native seconds intact finite original geometry.",
+        "sourceGate": "PASS280focused/2082unfiltered82.8s/complete180.2s/clean14-referenceRelease/strict320",
         "runtime": "NOT RUN"
-      }
+      },
+      "previousAttempts": [
+        "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT1-EVIDENCE.json"
+      ],
+      "nativeHitReactionDisposition": "Native rig has no Hit action; no flinch claimed, no gameplay change or new owner-accepted limitation."
     }
   },
   "charter": {
@@ -951,7 +955,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Commit and policy-push NOT QUALIFIED checkpoint; exact-head prelaunch/build/archive/guarded smoke11+review81/78metadata and exact restoration. Then separate Salamander/fullSprint17 and Phase2B closure; owner review, no Phase2C start.",
+  "nextConcreteAction": "Commit/policy-push coherent NOT QUALIFIED correction; exact-head prelaunch/build/archive then fresh-Steam smoke11+review82/79metadata and actual snapshot restoration. Then separate Salamander, fullSprint17 and Phase2B closure; owner review, no Phase2C start.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

@@ -21,6 +21,38 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private IEnumerable<int> ReviewSprint17SnakeViewLifecycle(ExpandedSummoningCorrectionFixture fixture)
         {
+            // Fresh exact native control: capture its actual initialized action
+            // set, then retire the owned actor before any combat cell. Borrowed
+            // native assets stay alive and must remain identical throughout.
+            var native = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
+                value.AssetGuid == "bf2216f48b3f4d24c9c502007649340d");
+            if (native.Prefab.AssetId != "130f0866af3249a4e817ec7e6e9ecd89")
+                throw new InvalidOperationException("Native snake lifecycle control identity changed.");
+            var control = Game.Instance.EntityCreator.SpawnUnit(native, fixture.Caster.Position,
+                Quaternion.identity, fixture.Scene);
+            if (control == null) throw new InvalidOperationException("Native snake lifecycle control missing.");
+            fixture.Created.Add(control);
+            Kingmaker.Visual.Animation.AnimationSet nativeSet;
+            UnitAnimationAction nativeHit;
+            Kingmaker.Visual.Animation.Actions.AnimationActionBase[] nativeActions;
+            try
+            {
+                SetExpandedSummoningBrainActive(control, false);
+                nativeSet = control.View.AnimationManager.AnimationSet;
+                nativeHit = control.View.AnimationManager.GetAction(UnitAnimationType.Hit);
+                nativeActions = nativeSet.Actions.ToArray();
+                bool absent = nativeHit == null && nativeActions.OfType<UnitAnimationAction>().All(value =>
+                    value.Type != UnitAnimationType.Hit);
+                CheckSprint17Final("native-worm-hit-carrier", absent &&
+                    control.View.GetComponent<SerpentineVisualAttachment>() == null &&
+                    ExpandedSummoningSerpentineViewPatch.DescribeView(control.View) == "not-attempted",
+                    new JObject { ["nativeBlueprint"] = native.AssetGuid, ["prefab"] = native.Prefab.AssetId,
+                        ["set"] = nativeSet.name, ["nativeHitActionPresent"] = nativeHit != null,
+                        ["types"] = new JArray(nativeActions.OfType<UnitAnimationAction>().Select(value => value.Type.ToString())) },
+                    "exact native Worm control has no Hit action; no project hook or fabricated hit-reaction clip");
+                if (!absent) throw new InvalidOperationException("Recorded native Hit absence changed; review the carrier.");
+            }
+            finally { control.Destroy(); Game.Instance.EntityDestroyer.Tick(); }
             foreach (string key in new[] { "viper", "constrictor-snake" })
             {
                 UnitEntityData owner = CastSprint17FinalSnake(fixture, key);
@@ -37,6 +69,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool subscribed = false, hitPlayed = false, deathPlayed = false, deadObserved = false, finite = true;
                 float largestDissolve = 0f;
                 var attacks = new List<UnitAttack>();
+                var hitEvents = new JArray();
                 JObject expiry = null;
                 try
                 {
@@ -71,6 +104,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     JObject isolation = Sprint17LifecycleIsolation(fixture, owner, attacker);
                     if ((bool)isolation["passed"] != true)
                         throw new InvalidOperationException("Hit drill isolation: " + isolation);
+                    // The native visual hit path rejects rear/side hits. Set
+                    // only the owned actor's native facing while unpaused;
+                    // allow the native view to settle, without touching bones,
+                    // an animation handle, its clock, or its weight.
+                    Game.Instance.IsPaused = false;
+                    owner.ForceLookAt(attacker.Position);
+                    JObject facing = null;
+                    for (int frame = 0; frame < 180; frame++)
+                    {
+                        yield return 0;
+                        facing = Sprint17NativeHitFacing(owner, attacker, true);
+                        if ((bool)facing["eligible"]) break;
+                    }
+                    if (facing == null || !(bool)facing["eligible"])
+                        throw new InvalidOperationException("Owned frontal hit setup did not settle: " + facing);
+                    observer.ObserveWeaponContact = evt =>
+                    {
+                        if (!ReferenceEquals(evt.Target, owner)) return;
+                        JObject contact = Sprint17NativeHitFacing(owner, attacker, evt.AttackRoll.IsHit);
+                        contact["result"] = evt.AttackRoll.Result.ToString();
+                        contact["damage"] = evt.MeleeDamage == null ? 0 : evt.MeleeDamage.Damage;
+                        hitEvents.Add(contact);
+                    };
                     EventBus.Subscribe(observer); subscribed = true;
                     DateTime deadline = DateTime.UtcNow.AddSeconds(25);
                     for (int frame = 0; frame < 1200 && DateTime.UtcNow < deadline; frame++)
@@ -88,17 +144,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                             throw new InvalidOperationException("Hit drill isolation changed: " + currentIsolation);
                         ObserveSprint17LifecyclePose(owner, animationSet, "hit", samples,
                             ref hitPlayed, ref deathPlayed, ref deadObserved, ref finite, ref largestDissolve, resources);
-                        if (hitPlayed && observer.Damage.Any(value => value.Damage > 0)) break;
+                        if (observer.Damage.Any(value => value.Damage > 0) && (hitPlayed || nativeHit == null)) break;
                     }
                     InterruptExpandedSummoningFixtureCommands(attacker);
-                    CheckSprint17Final(key + "-native-hit", hitPlayed && finite && !owner.Descriptor.State.IsDead &&
-                        attacks.Any(value => value.IsStarted) && observer.Damage.Any(value => value.Damage > 0),
+                    // Observe the real post-wound view for native elapsed time,
+                    // including rigs without a flinch, not only the event frame.
+                    float postHitStart = Time.time;
+                    for (int frame = 0; frame < 180 && Time.time - postHitStart < .5f; frame++)
+                    {
+                        yield return 0;
+                        if (!(bool)Sprint17LifecycleIsolation(fixture, owner, attacker)["passed"])
+                            throw new InvalidOperationException("Owned hit pair lost isolation after its wound.");
+                        ObserveSprint17LifecyclePose(owner, animationSet, "hit", samples,
+                            ref hitPlayed, ref deathPlayed, ref deadObserved, ref finite, ref largestDissolve, resources);
+                    }
+                    JObject postWoundPose = Sprint17OriginalBodySample(owner, attachment.Body);
+                    finite &= (bool)postWoundPose["finite"] && (bool)postWoundPose["poseFinite"];
+                    bool exactNative = ReferenceEquals(animationSet, nativeSet) && nativeSet != null &&
+                        nativeActions.SequenceEqual(nativeSet.Actions) &&
+                        ReferenceEquals(owner.View.AnimationManager.GetAction(UnitAnimationType.Hit), nativeHit);
+                    bool frontalWound = attacks.Any(value => value.IsStarted) &&
+                        observer.Damage.Any(value => value.Damage > 0) &&
+                        hitEvents.Any(value => (bool)value["eligible"] && (int)value["damage"] > 0);
+                    CheckSprint17Final(key + "-native-hit", SerpentineFinalReviewPolicy.FaithfulHitLifecycle(
+                        exactNative, nativeHit != null, owner.View.AnimationManager.GetAction(UnitAnimationType.Hit) != null,
+                        frontalWound, finite && Time.time - postHitStart >= .5f &&
+                            Sprint17BodyIntact(owner.View, SerpentineVisualPolicy.BodyRenderer(key)),
+                        !owner.Descriptor.State.IsDead, hitPlayed),
                         new JObject { ["playedHitClip"] = hitPlayed, ["finiteOriginalPose"] = finite,
+                            ["exactNativeActionSet"] = exactNative, ["nativeControlHasHit"] = nativeHit != null,
+                            ["hitReactionDisposition"] = nativeHit == null ? "native rig has no Hit action; no flinch claimed" : "native carrier requires playback",
+                            ["postWoundNativeSeconds"] = Time.time - postHitStart,
+                            ["postWoundPose"] = postWoundPose,
                             ["commands"] = attacks.Count, ["started"] = attacks.Count(value => value.IsStarted),
                             ["isolation"] = isolation,
+                            ["nativeFacingSetup"] = facing, ["actualHitEvents"] = hitEvents,
                             ["weaponRules"] = observer.Attacks.Count, ["damageBundles"] = observer.Damage.Count,
                             ["damage"] = owner.Damage, ["samples"] = samples.DeepClone() },
-                        "actual wounding owned native attack produces a weighted native Hit clip on finite original snake geometry");
+                        "actual frontal wound preserves intact finite original geometry and the exact native carrier's hit behavior; absence is explicit, not claimed playback");
 
                     GameHelper.KillUnit(owner, attacker);
                     Game.Instance.IsPaused = false;
@@ -173,6 +256,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["eitherPartyGroup"] = party, ["ownerEnemy"] = a, ["attackerEnemy"] = b,
                 ["foreignEnemyRelations"] = foreign,
                 ["passed"] = SerpentineFinalReviewPolicy.IsolatedLifecyclePair(owned, player, party, a, b, foreign) };
+        }
+
+        private static JObject Sprint17NativeHitFacing(UnitEntityData owner, UnitEntityData attacker, bool hit)
+        {
+            Vector3 direction = (attacker.View.CenterTorso.position - owner.View.CenterTorso.position).normalized;
+            float dot = Vector3.Dot(direction, owner.View.transform.forward);
+            return new JObject { ["frame"] = Time.frameCount, ["attackHit"] = hit,
+                ["torsoFacingDot"] = dot, ["nativeThreshold"] = .3d,
+                ["eligible"] = SerpentineFinalReviewPolicy.NativeFrontalHit(hit, dot),
+                ["nativeHitActionPresent"] = owner.View.AnimationManager.GetAction(UnitAnimationType.Hit) != null };
         }
 
         private static void ObserveSprint17LifecyclePose(UnitEntityData unit,

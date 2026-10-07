@@ -525,6 +525,33 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(true, true, "native", 1f, .2, 2f), "No impossible weight.");
         }
 
+        internal static void FinalReviewRequiresNativeFrontalHitEligibility()
+        {
+            foreach (float frontal in new[] { .3f, .5f, 1f })
+                Assertions.True(SerpentineFinalReviewPolicy.NativeFrontalHit(true, frontal),
+                    "Native float dot is promoted before the double 0.3 comparison.");
+            foreach (float other in new[] { -1f, 0f, .25f, .29999998f, 2f, float.NaN, float.PositiveInfinity })
+                Assertions.False(SerpentineFinalReviewPolicy.NativeFrontalHit(true, other),
+                    "Rear, side, below-threshold or invalid geometry cannot qualify a frontal hit drill.");
+            Assertions.False(SerpentineFinalReviewPolicy.NativeFrontalHit(false, 1f), "A miss cannot request Hit.");
+            Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(true, false, "Hit", 1f, .1, 1f),
+                "Eligible facing does not waive actual native playback.");
+        }
+
+        internal static void FinalReviewPreservesNativeHitCarrierContract()
+        {
+            for (int mask = 0; mask < 128; mask++)
+            {
+                bool exact = (mask & 1) != 0, native = (mask & 2) != 0, candidate = (mask & 4) != 0,
+                    wound = (mask & 8) != 0, finite = (mask & 16) != 0, alive = (mask & 32) != 0,
+                    played = (mask & 64) != 0;
+                bool expected = exact && native == candidate && wound && finite && alive && native == played;
+                Assertions.Equal(expected, SerpentineFinalReviewPolicy.FaithfulHitLifecycle(
+                    exact, native, candidate, wound, finite, alive, played),
+                    "No missing carrier invented; present native carrier still needs real playback, real wound and stability.");
+            }
+        }
+
         internal static void CommandRetryNeverDrivesAiOrReplaysHeldAttack()
         {
             for (int attempt = 0; attempt < 4; attempt++)

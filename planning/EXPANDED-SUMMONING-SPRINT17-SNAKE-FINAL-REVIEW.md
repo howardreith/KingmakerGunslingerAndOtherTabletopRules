@@ -1,10 +1,53 @@
 # Sprint 17 closed snake routes/UI/lifecycle review
 
-Status: exact95c4d532 attempt1 FAIL; targeted repair SOURCE PASS; exact runtime NEXT.
+Status: exactd43b39aa attempt2 FAIL79/81; native-carrier fixture SOURCE PASS; exact runtime NEXT.
 Sprint17 NOT QUALIFIED. Laptop PR26 only; DATA salvage-only/ZERO PORTS.
 All32 snake roots remain hidden; no gameplay change or publication.
 
-## Attempt1: classified, preserved and exactly restored
+## Current attempt2: native Hit carrier expectation corrected
+
+[Exact artifact, requests, checks and restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT2-EVIDENCE.json).
+
+Exactd43: all prelaunch PASS,278focused/2080full81.0s/complete176.3s,
+clean14-reference Release/strict320,515preflight168orchestration17provenance,
+persistence11/6/3/56,crowd8/11,launcher14/13. Fresh Steam smoke11/11;
+review79/81,78rows FAIL. All32routes/100units/500resources, both native status
+rows/sheet close, intact/death/fade/despawn and outer restoration PASS.
+Only2Hit-clip checks fail; both actual attacks wound (1/2damage), with isolated
+owned pairs and finite original geometry. DyingStart really plays; original
+dissolve reaches0.9972816 and all5resources per body are reclaimed.
+
+Archived exacta904 native Worm census has7actions and NO Hit. Pinned GetAction
+IL returns FirstOrDefault, with no alternate carrier. The fixture invented a
+mandatory clip. The mission requires stable actual hit/damage events, not a
+new animation when the native donor has none. This is a fixture expectation
+correction, not an owner-accepted limitation, gameplay adaptation or retroactive
+PASS. No flinch is claimed and no substitute clip is installed.
+
+A fresh native control must confirm absence and unchanged action references.
+The snakes must preserve that exact native set. If any native Hit carrier
+exists, actual clip/time/weight playback is still required. Real frontal wound,
+intact finite geometry for at least0.5native seconds and exact cleanup remain
+mandatory. Native dispatch also checks a torso-facing dot greater than double0.3;
+the fixture now records this at the actual weapon event, using only owned
+ForceLookAt while unpaused for setup. No bones/handles/clip clocks or visibility
+are written. Attempt2 did not capture event-facing; its exact effect on those
+hits is not retrospectively inferred.
+
+The added control makes82assertions/79metadata rows. Pure tests cover all128
+native-carrier/wound/geometry/playback combinations and float-to-double frontal
+boundaries.280focused/2082full82.8s,complete180.2s/clean14/strict320 PASS.
+The earlier facing-only exploratory2081/181.3s source gate was never deployed;
+native-carrier evidence changed that incomplete strategy before launch.
+
+Actual0454516688018Z snapshot restored05:03:13.3593602UTC:136files/.117/exact tree.
+Lease Completed/recovery=false/released; no game/lock/staging; zero save writes.
+Prior a429 cleanup-save/fresh absence0 remains. FullSprint17 NOT QUALIFIED.
+Next: freeze/policy-push, complete exact-head prelaunch, immutable smoke11/
+review82 batch and exact snapshot restoration. Separate Salamander and full
+Sprint17/Phase2B still open. Phase2C authorized but deferred.
+
+## Historical attempt1: classified, preserved and exactly restored
 
 [Exact artifact, requests, failed assertions and restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT1-EVIDENCE.json).
 
@@ -76,28 +119,28 @@ creature/prefab/fixture/save-write parameters, save-file access or baseline.
 Only registered private Viper/Constrictor and request-owned inert actors.
 No Salamander, production mechanics, global AI/movement/animation changes.
 
-Expected81assertions/78metadata rows: closed census,32 private execution/
+Expected82assertions/79metadata rows: native Hit-carrier control, closed census,32 private execution/
 quantity/template/alignment/exact RTWP duration/native icon widgets,
 32private resource cleanups,2real native status rows,exact UI restoration,
 5lifecycle checks per snake,and3outer restoration/version checks.
 Private execution advances the existing synchronous cast animation helper;
 it is NOT public spellbook/menu/slot or real-command summon qualification.
 
-Actual UnitAttack must wound and select a started weighted native Hit clip on
-finite original geometry. Native KillUnit must actually play native death/prone,
+Actual frontal UnitAttack must wound and preserve intact finite original geometry
+with the native Hit-carrier disposition above. Native KillUnit must actually play native death/prone,
 not IsActed fallback. Only an owned marker's native expiry deadline can be due;
 no clock advance, fader/material/visibility or pose forcing. Native fade/despawn
 and exact per-instance resource reclamation remain required before finally cleanup.
 Original awake/party/unit/area, selection/group, mode/pause/time restore exactly.
 
-278 focused/2080 full unfiltered81.7s PASS; complete177.2s repository/static/
+Prior attempt1 repair:278 focused/2080 full unfiltered81.7s PASS; complete177.2s repository/static/
 manifest/icon, clean14-reference Release/deterministic strict320 PASS.
 New cases cover RTWP versus TB/bonus/
 invalid duration, all64 isolation-input combinations and exact icon-consumer
 mapping; existing playback checks unchanged. No dirty-source artifact deployed.
 Commit/policy-push coherent NOT QUALIFIED checkpoint, repeat every exact-head
 prelaunch gate, archive one immutable320-member artifact, then fresh Steam
-smoke11/final81 batch under lease BEFORE actual snapshot. Restore that snapshot.
+smoke11/final82 batch under lease BEFORE actual snapshot. Restore that snapshot.
 
 Earlier a429 persistence11/14/13/6,983command/rules and ec972crowd PASS remain
 artifact-bounded, not combined qualification of a new artifact.
