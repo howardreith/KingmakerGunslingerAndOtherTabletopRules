@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — d989 CoTW fallback identified/restored; correction source PASS; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — cd709 native render crash/restored; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -83,24 +83,28 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exactd989915120c7380a20ba33e83177c0cd20392dea diagnostic COMPLETE:
-smoke11/11; hybrid4/6(expected15) remains FAIL. Exact human root,24actions,
-one transition and raw Claw/Bite/Gore/Slam; NO raw Tail. Effective Tail lookup
-returns the exact native Slam through CallOfTheWild.UnitAnimationManager_GetAction.
-Both unpatched getters are correctly skipped; core/provenance reads unchanged.
-[Exact diagnostic, failure and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-FALLBACK-EVIDENCE.json).
-Actual136/Info0.0.117/tree216A9DC2...AF3 restored08:41:31.7143709UTC;
-zero save writes, game/runtime lease/staging. Failed artifacts remain preserved.
-The narrow correction distinguishes a raw Tail from null or the exact observed
-native-Slam fallback. Existing Tail/foreign results still reject; no Slam adoption
-or CoTW patch mutation. Append preserves all24 native actions and must still
-resolve the effective lookup to the owned Tail afterward. All15 assertions retained.
-Fallback-boundary source PASS:292focused/2094full83.7s/complete178.0s/clean14/
-strict321. Body/playback/contact remain NOT QUALIFIED until the new exact run.
+Exact cd70979f37af00e26fcc4247ce2f30579bb1f592 passed every prelaunch gate:
+292focused/2094full84.0s/complete180.6s/clean14/strict321 plus all harness checks.
+Smoke11/11 PASS; human-tail review ended in a native Unity access violation
+before a final result. No body/playback/contact/cleanup qualification is claimed.
+[Exact crash and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-CRASH-EVIDENCE.json).
+The log reports a zero-sized D3D buffer immediately before the crash.
+Assigning an empty mesh to the native cape is a bounded suspect, not a proven
+causal stack or memory-exhaustion diagnosis. A supporting rest image is not
+mechanical proof. Smoke audited ZERO save writes; the crashed review's final
+write audit is absent/UNKNOWN. No save-file inspection or manual surgery.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored09:08:27.5428737UTC;
+no game/runtime lease/staging. Raw logs/dump remain private, hash-preserved.
+The d989 raw/effective Tail finding remains valid: exact native human root,
+NO raw Tail, CoTW exact native-Slam fallback. cd709 keeps all24 native actions,
+rejects raw Tail/foreign lookup, and still requires its owned Tail afterward.
+No CoTW mutation, borrowed Slam adoption, production Salamander change or waiver.
 
-Next: qualify/push the narrow fallback-boundary correction and rebuild its exact
-head; guarded smoke plus full human/owned-tail binding/command/contact review.
-Then printed Salamander mechanics and ONE same-artifact Sprint17 hidden/publication
+Next: remove the request-local zero-vertex auxiliary mesh path, preserving exact
+native bones/flags/restoration, and add durable non-qualifying stage checkpoints.
+Run focused/full source gates, push a coherent correction, rebuild its exact head,
+then guarded smoke and all15 human binding/command/contact/destruction assertions.
+Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
 gate, fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 ### Qualified versus NOT QUALIFIED
