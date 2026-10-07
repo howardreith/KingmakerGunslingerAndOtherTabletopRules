@@ -27,6 +27,11 @@ function Assert-ElementalTraitSaveLease($Lease,[string]$Phase) {
         (Get-Content -LiteralPath $Lease.LockPath -Raw).Trim() -cne $Lease.Transaction) {throw 'Stale/foreign/closed save lease.'}
     return $s
 }
+function Test-ElementalTraitOwnedPath([string]$Left,[string]$Right) {
+    if([string]::IsNullOrWhiteSpace($Left) -or [string]::IsNullOrWhiteSpace($Right) -or
+        -not [IO.Path]::IsPathRooted($Left) -or -not [IO.Path]::IsPathRooted($Right)){return $false}
+    return [string]::Equals([IO.Path]::GetFullPath($Left),[IO.Path]::GetFullPath($Right),[StringComparison]::OrdinalIgnoreCase)
+}
 function Assert-ElementalTraitSavePlan([string]$Path,[string]$Phase,[string]$SaveName,[string]$Version) {
     [void](Assert-KmgPathWithin -Path $Path -Root 'C:/Dev/KingmakerGunslingerLab/runtime-evidence')
     if(-not(Test-Path -LiteralPath $Path -PathType Leaf)){throw 'Existing guarded plan required.'}
@@ -49,7 +54,7 @@ function Assert-ElementalTraitSavePlan([string]$Path,[string]$Phase,[string]$Sav
     if($s.status -cne 'Active' -or $s.transactionId -cne $plan.transactionId -or $s.descriptor -cne $name -or
         $s.phase -cne $Phase -or $s.ownerStartedUtc -cne $owner.StartTime.ToUniversalTime().ToString('o') -or
         [DateTime]::Parse($s.expiresUtc).ToUniversalTime() -le [DateTime]::UtcNow -or
-        ($Phase -cne 'prepare' -and $s.ownedPath -cne $plan.input.path)){throw 'Exact active save lease required.'}
+        ($Phase -cne 'prepare' -and -not (Test-ElementalTraitOwnedPath $s.ownedPath $plan.input.path))){throw 'Exact active save lease required.'}
     return $plan
 }
 function Register-ElementalTraitOwnedSave($Catalog,$Lease,[string]$RunDirectory,[string]$Phase) {

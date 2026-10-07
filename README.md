@@ -787,4 +787,17 @@ candidate (see `TELEPORTATION-COMPLETION-HANDOFF.md` for exact evidence):
 
 ## 0.0.142 candidate
 
-The 0.0.142-elemental-race-traits-and-content candidate selectively integrates DATA content onto the released 0.0.141 checkpoint. See [release notes](docs/RELEASE-NOTES-0.0.142.md) for its adaptations and pending automated/manual acceptance. This candidate has not been merged, tagged or released.
+The 0.0.142-elemental-race-traits-and-content candidate adds four character race
+traits through optional Favored Class integration: Fiery Glare, Stoic Dignity,
+Aerial Observer and Whiteout. Aerial Observer requires Wings of Air; Whiteout
+requires outdoor rain or snow and uses an independent 10% miss chance.
+It also improves firearm descriptions and distributes firearm stock across
+Oleg, the capital smith and Bokken. Existing serialized merchant inventories
+are not rewritten.
+
+The released 0.0.141 checkpoint is retained unchanged. No later Expanded
+Summoning development, Lunge or Earthsense is included. See the
+[release notes](docs/RELEASE-NOTES-0.0.142.md) and
+[final qualification handoff](CODEX-DATA-CONTENT-0.0.142-INTEGRATION-HANDOFF-2026-10-06.md)
+for exact automated evidence and pending owner visual, tooltip and merchant
+review. This candidate has not been merged, tagged or released.
