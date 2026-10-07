@@ -37,6 +37,16 @@ namespace KingmakerGunslinger.Summoning
             return effectiveTailPresent ? "existing-effective-tail-action" : null;
         }
 
+        // The installed Harmony12 bridge cannot convert a null Harmony2
+        // patch record. Its registry establishes absence; never query an
+        // unregistered method. A registered-method failure still propagates.
+        internal static T ReadRegisteredPatchMetadata<T>(bool registered, Func<T> read) where T : class
+        {
+            if (!registered) return null;
+            if (read == null) throw new ArgumentNullException("read");
+            return read();
+        }
+
         internal static string Parent(string name)
         {
             switch (name)

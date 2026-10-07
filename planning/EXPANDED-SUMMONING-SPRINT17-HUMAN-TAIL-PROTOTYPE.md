@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACT bc7 REQUEST-LOCAL BINDING RUNTIME FAIL/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACT759 GUARD DIAGNOSTIC FIXTURE FAIL/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
 identity, placements, profile and prefab remain unchanged. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -223,6 +223,34 @@ repository/static/icon/manifest, clean14-reference Release, deterministic
 strict321 package183.0s. Logs artifacts/sprint17-human-action-guard-source-
 focused.log and artifacts/sprint17-human-action-guard-source-gate.log.
 This does not diagnose the runtime operand until the exact new artifact runs.
+
+## Guard diagnostic attempt — fixture FAIL, exactly restored
+
+Exact7590ce68319d747eea90f4a9224e4a628861b06a passed291focused/2093full81.5s,
+complete175.9s/clean14/strict321 and all existing prelaunch harness checks.
+Smoke11/11 PASS; hybrid4/5 FAIL(expected15), before attachment.
+Harmony12.Converters.ToHarmony12 threw NullReferenceException from GetPatchInfo.
+Because provenance was queried before publishing the boundary object, the
+already-read core facts were lost. Neither the target getter nor the original
+binding-guard operand is established. This is a fixture defect, not a new
+body failure, gameplay qualification or owner-level blocker.
+[Exact evidence and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-GUARD-DIAGNOSTIC-FAIL-EVIDENCE.json).
+ZERO save writes; actual136/0.0.117/tree216A...AF3 restored08:16:10.2330898UTC.
+No game/runtime lease/staging remains.
+
+Existing qualified teleportation observers already use Harmony's patched-method
+registry before GetPatchInfo to avoid this compatibility converter's null-record
+failure. The bounded repair retains membership for only our three exact getters,
+never querying an absent target. Registered-method exceptions still fail the
+scenario; none is relabeled absent or PASS. Core observations are published
+before provenance, so a later metadata failure cannot discard them.
+The behavior test verifies zero queries for absence, exactly one registered
+query with unchanged result, and propagation of registered failures.
+The native human binding guard and all15 runtime assertions remain unchanged.
+Registry-bounded source gate PASS:292focused/2094unfiltered82.5s,
+complete repository/static/icon/manifest, clean14-reference Release and
+deterministic strict321 package177.5s. Logs:
+artifacts/sprint17-human-guard-registry-source-{focused,gate}.log.
 
 ## Next exact work
 

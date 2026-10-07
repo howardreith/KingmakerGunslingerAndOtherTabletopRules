@@ -95,6 +95,25 @@ namespace KingmakerGunslinger.DomainTests
                     SalamanderHumanBindingPolicy.NativeSetRejection(false, tail), "Wrong set still fails before considering Tail.");
         }
 
+        internal static void PatchMetadataUsesRegistryWithoutMaskingRegisteredFailures()
+        {
+            int calls = 0;
+            object expected = new object();
+            Func<object> read = () => { calls++; return expected; };
+            Assertions.True(SalamanderHumanBindingPolicy.ReadRegisteredPatchMetadata(false, read) == null,
+                "Absent registry entry has no patch metadata.");
+            Assertions.Equal(0, calls, "Never call the Harmony bridge for an unregistered target.");
+            Assertions.True(ReferenceEquals(expected,
+                SalamanderHumanBindingPolicy.ReadRegisteredPatchMetadata(true, read)),
+                "Registered metadata returned unchanged.");
+            Assertions.Equal(1, calls, "One query for one registered target.");
+            bool propagated = false;
+            try { SalamanderHumanBindingPolicy.ReadRegisteredPatchMetadata<object>(true,
+                () => { throw new NullReferenceException("bridge failure"); }); }
+            catch (NullReferenceException) { propagated = true; }
+            Assertions.True(propagated, "Do not relabel a registered-method observation failure as absence or PASS.");
+        }
+
         internal static void OneTailAppendDoesNotReplaceOrMutateHumanActions()
         {
             object[] native = Enumerable.Range(0, 24).Select(_ => new object()).ToArray();
