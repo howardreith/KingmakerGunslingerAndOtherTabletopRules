@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: REQUEST-LOCAL BINDING SOURCE PASS; Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACT bc7 REQUEST-LOCAL BINDING RUNTIME FAIL/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
 identity, placements, profile and prefab remain unchanged. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -186,11 +186,50 @@ and exact destruction/borrowed-asset survival. Contact reads the distal half,
 not merely the waist. IsActed alone cannot pass. All older Lizardfolk evidence
 remains failed and preserved; no snake qualification is rerun or aggregated.
 
+## First human binding runtime — FAIL, exactly restored
+
+Exact bc7a7c9adfa893b6a916dc017c6a7139b2bb3ef6 passed every prelaunch gate:
+290focused/2092unfiltered81.7s/complete176.3s/clean14/strict321,
+515preflight/168orchestration/17provenance, persistence11/6/3/56,
+crowd8/11 and launcher14accepted/13rejected. Its immutable ZIP/DLL/source,
+fresh Steam640820 process/request identities and restoration hashes are in
+[the curated failed evidence](EXPANDED-SUMMONING-SPRINT17-HUMAN-BINDING-FAIL-EVIDENCE.json).
+
+Working-save smoke11/11 PASS. Hybrid review4/6 FAIL (expected15): native
+settlement/control and all26 anatomical duplicate/parent/bind checks passed.
+Before allocating or swapping any owned resource, the combined guard rejected
+either a non-root human set or a non-null effective Tail action. The original
+message cannot distinguish the operands. Zero rollback resources means the
+post-swap rollback drill was NOT reached, not that rollback was qualified.
+The exception assertion is a consequence of that same rejection.
+Body binding, tail playback, movement/contact and destruction remain unqualified.
+Environment/fixture cleanup passed. ZERO save writes. The actual snapshot
+136files/Info0.0.117/tree216A9DC2...AF3 was exactly restored at
+2026-10-07T07:36:19.0667770Z; no game, runtime lease or staging remains.
+
+This is an unresolved production/integration contract, not an owner blocker
+or accepted engine limitation. Native IL metadata confirms GetAction(Tail)
+has an exact declared-type lookup without a native fallback. The previously
+captured detached action names do not prove their AttackType values or the
+live actor's effective lookup. No donor census is repeated.
+
+The next narrow diagnostic records both guard operands and raw/effective
+Tail identities, plus the patch registries of exactly three relevant getters,
+before attachment. It invokes no patch/action and mutates no native set.
+A four-case behavior test preserves the original guard truth table and
+short-circuit. No guard relaxation, extra wait, new action or production hook.
+Complete diagnostic source gate PASS:291focused/2093unfiltered84.6s;
+repository/static/icon/manifest, clean14-reference Release, deterministic
+strict321 package183.0s. Logs artifacts/sprint17-human-action-guard-source-
+focused.log and artifacts/sprint17-human-action-guard-source-gate.log.
+This does not diagnose the runtime operand until the exact new artifact runs.
+
 ## Next exact work
 
-Freeze/rebuild one exact committed candidate and run guarded working-save-smoke
-plus the bounded human/owned-tail review, preserving native two-handed spear
-handling and all native references. Prove the original tail with real commands, then
+Qualify/commit/push this diagnostic, rebuild one exact candidate and run guarded
+working-save-smoke plus the unchanged bounded human review. Resolve the observed
+operand before changing binding. Preserve native two-handed spear handling
+and all native references. Prove the original tail with real commands, then
 finish Salamander's printed mechanics. Only a complete same-artifact Sprint17
 hidden/publication gate can publish the32 withheld snake roots.
 Sprints14–16 remain complete;976published+29wrappers=1005visible.

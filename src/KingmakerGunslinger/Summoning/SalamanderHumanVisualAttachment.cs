@@ -102,9 +102,12 @@ namespace KingmakerGunslinger.Summoning
             if (donor == null || !donor.HasProperty("_MainTex")) throw new InvalidDataException("No human paint material.");
             var manager = _view.AnimationManager;
             _nativeSet = manager == null ? null : manager.AnimationSet;
-            if (!ReferenceEquals(_nativeSet, BlueprintRoot.Instance.HumanAnimationSet) ||
-                manager.GetAction(UnitAnimationSpecialAttackType.Tail) != null)
-                throw new InvalidDataException("Only the native human action set with no existing Tail may bind.");
+            bool exactHuman = ReferenceEquals(_nativeSet, BlueprintRoot.Instance.HumanAnimationSet);
+            // Preserve the original guard and its short-circuit behavior.
+            // Distinguish its two operands instead of guessing which failed.
+            string rejection = SalamanderHumanBindingPolicy.NativeSetRejection(exactHuman,
+                exactHuman && manager.GetAction(UnitAnimationSpecialAttackType.Tail) != null);
+            if (rejection != null) throw new InvalidDataException("Native human action guard: " + rejection);
             _nativeActions = _nativeSet.Actions.ToArray();
 
             string directory = Path.Combine(context.ModEntry.Path, "assets", "sprint17-serpents");

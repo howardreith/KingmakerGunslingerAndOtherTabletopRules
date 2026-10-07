@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAIL: REQUEST-LOCAL HUMAN/TAIL BINDING GUARD; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "bc7a7c9adfa893b6a916dc017c6a7139b2bb3ef6",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "8817d90c543468db548ea806c03583c67a50f5ab1fafa0580ce8bd2f0d535015",
+    "dllSha256": "689a0de0ffa336eb0ff069d19e66df7342fd5bc4a5c4acd4a86387c4c2b59da5",
+    "dllMvid": "3389a2bd-4fb9-4fca-b4a5-4e2f63503854",
+    "zipSha256": "30d0807ecd6b6a3117b7ee7c84ee12da89eeebc653526a2c851be17acf0a86c4",
+    "packageMembers": 321,
+    "archive": "artifacts/sprint17-human-binding-exact-bc7a7c9a"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 290,
+    "domain": 2092,
+    "domainSeconds": 81.7,
+    "gateSeconds": 176.3,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 14,
+      "rejected": 13
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0729467849278Z",
+    "journalSha256": "b0f89e70ac9d7703c32393d72acec87bd5d76e634302152d447c39f51d189443",
+    "driver": "artifacts/Invoke-LaptopSprint17-HumanTail-Attempt1.ps1",
+    "driverSha256": "2546d82aae728028a89887dd06a18f0859412fa071841d7450d8009094e3ec34",
+    "startedAtUtc": "2026-10-07T07:29:46.8318241Z",
+    "completedAtUtc": "2026-10-07T07:36:19.0667770Z",
+    "status": "NOT-QUALIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T072947Z-176c52bc26f44244bcce95b34da04c42\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0729476332964Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-07T07:30:12.1916861Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0730130948883Z-working-save-smoke",
+        "requestId": "20261007T0730131121236Z-2f6d772b78334725a5e8801c98852e43",
+        "requestSha256": "ffa1f11a299f9247323f988ef2dae1dd6e07a9fc88462bf117da692db29ba355",
+        "expectedAssertions": 11,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "eaa6bb424ba84e55162c36bb4dfefc8ddcd8323d33c721fefdab3f6aada7493f",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "275dbddbd6729ec3674e27bd8df54368f40d2b722a5c76d7a6fdabf223673314",
+        "processId": 36516,
+        "processStartedUtc": "2026-10-07T07:30:14.0635741Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-07T07:33:02.7517842Z"
+      },
+      {
+        "label": "human-tail",
+        "scenario": "disposable-expanded-summoning-serpentine-bodies",
+        "startedAtUtc": "2026-10-07T07:33:08.2465053Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0733090257814Z-disposable-expanded-summoning-serpentine-bodies",
+        "requestId": "20261007T0733090413579Z-0e0279c7ba7b4a9197e38f0dce88d36f",
+        "requestSha256": "c91e0e8f9b1b10e725428a9e84514a08f9241188bf3518858af955defbf64a99",
+        "expectedAssertions": 15,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "metadataSha256": "aceb7ded856034a90e6ed098e7f1271f84df678a950def23a85f502c295665dd",
+        "metadataRows": 1,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "e75349f129a5629bb817e3cd12672f9e4934f72a1d303e2e4aa87e455cfaea27",
+        "assertions": 6,
+        "passed": 4,
+        "failed": [
+          {
+            "name": "sprint17-human-salamander-rollback",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-body-exception",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "8ccfea94fcaa30da7adb952f11d427da6525a666f15e3c251f93b67a0acbeb0c",
+        "processId": 15032,
+        "processStartedUtc": "2026-10-07T07:33:10.3317737Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-07T07:36:16.5133969Z"
+      }
+    ]
+  },
+  "failures": [
+    {
+      "assertion": "sprint17-human-salamander-rollback",
+      "category": "PRODUCTION/INTEGRATION CONTRACT UNRESOLVED",
+      "observation": "All selected native anatomy/material checks passed. Guard rejected either non-root human set identity or a non-null effective Tail. The combined message does not distinguish these operands. Attachment had not created or swapped any body/action resource.",
+      "outcome": "human-tail:failed:InvalidDataException:Only the native human action set with no existing Tail may bind.",
+      "resourcesCreated": 0,
+      "resourcesRemaining": 0,
+      "nativeReferencesRestored": true,
+      "rollbackDrillReached": false
+    },
+    {
+      "assertion": "sprint17-body-exception",
+      "category": "CONSEQUENCE OF SAME GUARD REJECTION",
+      "observation": "Fixture correctly stops when post-swap rollback seam is not reached; remaining body/command/contact assertions were not executed."
+    }
+  ],
+  "observed": {
+    "nativeSettlementFrames": 60,
+    "nativeControl": true,
+    "environmentRestored": true,
+    "fixtureCleanup": true,
+    "loadedVersion": "0.0.141",
+    "nativeSaveWrites": 0,
+    "bodySwapped": false,
+    "tailActionInstalled": false,
+    "productionSalamanderChanged": false,
+    "publicationChanged": false
+  },
+  "audit": {
+    "scope": "Read-only exact assembly IL metadata; no native invocation, no native IL/geometry redistribution",
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "script": "artifacts/Inspect-Sprint17-HumanActionSet.ps1",
+    "scriptSha256": "a8ebd566e63b93f4a6fc9ffc534dab80caca45a940655aa543215ea1568c5d55",
+    "metadata": "artifacts/sprint17-human-action-set-api.txt",
+    "metadataSha256": "e1e9a66fdc878fd11fd397bcfcf37a4982bb4581f0349da9bca8801f93be25bc",
+    "findings": [
+      "Native GetAction(SpecialAttackType) selects first special action whose declared AttackType equals request, without fallback.",
+      "AnimationSet getter returns HumanAnimationSet when its stored field is null.",
+      "Archived detached human action names do not prove their actual AttackType values or the live actor's effective lookup."
+    ]
+  },
+  "next": "Expose both unchanged native guard operands, raw special-action AttackType/clip metadata and provenance of only three relevant getter patch registries on the exact actor before attachment. Source-qualify and rebuild a new immutable candidate; do not blindly rerun bc7 or relax guard without evidence.",
+  "qualification": {
+    "sprint17": false,
+    "bodyBinding": false,
+    "tailPlayback": false,
+    "rollback": false,
+    "mechanics": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  }
+}

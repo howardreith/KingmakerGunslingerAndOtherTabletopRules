@@ -1,14 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Parts;
+using Kingmaker.Visual.Animation;
+using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -60,6 +66,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CheckHumanSalamander("native-settlement", ready, row["nativeControl"], "intact native human frame and one exact manual summon-part rule");
                 if (!ready) throw new InvalidOperationException("Native human appearance/control did not settle.");
                 var originalSet = owner.View.AnimationManager.AnimationSet;
+                // Read before any attachment/rollback. The first live attempt
+                // rejected one combined guard, so expose exact native vs
+                // effective lookup identities and patch provenance separately.
+                row["nativeActionSetBoundary"] = HumanSalamanderActionSetBoundary(owner);
                 var nativeActions = originalSet.Actions.ToArray();
                 var skins = owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(s =>
                     new { Skin = s, Mesh = s.sharedMesh, Bones = s.bones, Quality = s.quality }).ToArray();
@@ -246,6 +256,61 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (probe != null) UnityEngine.Object.Destroy(probe);
                 target.Destroy(); Game.Instance.EntityDestroyer.Tick(); Game.Instance.Player.UpdateIsInCombat();
             }
+        }
+
+        private JObject HumanSalamanderActionSetBoundary(UnitEntityData owner)
+        {
+            var manager = owner.View.AnimationManager;
+            var set = manager.AnimationSet;
+            var root = BlueprintRoot.Instance.HumanAnimationSet;
+            var actions = set == null ? new Kingmaker.Visual.Animation.Actions.AnimationActionBase[0] : set.Actions.ToArray();
+            if (actions.Length > 64) throw new InvalidOperationException("Unbounded human action-set metadata.");
+            var effective = manager.GetAction(UnitAnimationSpecialAttackType.Tail);
+            var specials = actions.OfType<UnitAnimationActionSpecialAttack>().ToArray();
+            var patches = new JArray();
+            var methods = new MethodBase[] {
+                typeof(UnitAnimationManager).GetMethod("GetAction", new[] { typeof(UnitAnimationSpecialAttackType) }),
+                typeof(AnimationManager).GetProperty("AnimationSet").GetGetMethod(),
+                typeof(UnitAnimationActionSpecialAttack).GetProperty("AttackType").GetGetMethod()
+            };
+            foreach (MethodBase method in methods)
+            {
+                if (method == null) throw new InvalidOperationException("Exact action-boundary method missing.");
+                Patches info = _context.Harmony.GetPatchInfo(method);
+                Func<IEnumerable<Patch>, JArray> describe = list => {
+                    Patch[] entries = list.ToArray();
+                    if (entries.Length > 64) throw new InvalidOperationException("Unbounded action-boundary patches.");
+                    return new JArray(entries.Select(p => new JObject {
+                        ["method"] = p.patch == null ? null : p.patch.ToString(),
+                        ["type"] = p.patch == null || p.patch.DeclaringType == null ? null : p.patch.DeclaringType.FullName,
+                        ["assembly"] = p.patch == null || p.patch.DeclaringType == null ? null :
+                            p.patch.DeclaringType.Assembly.GetName().Name }));
+                };
+                patches.Add(new JObject { ["target"] = method.DeclaringType.FullName + "." + method.Name,
+                    ["prefixes"] = info == null ? new JArray() : describe(info.Prefixes),
+                    ["postfixes"] = info == null ? new JArray() : describe(info.Postfixes),
+                    ["transpilers"] = info == null ? new JArray() : describe(info.Transpilers) });
+            }
+            return new JObject {
+                ["scope"] = "read-only exact live actor and three getter patch registries; no invocation of a patch or action",
+                ["manager"] = manager.name, ["set"] = set == null ? null : set.name,
+                ["setId"] = set == null ? (int?)null : set.GetInstanceID(),
+                ["rootSet"] = root == null ? null : root.name, ["rootSetId"] = root == null ? (int?)null : root.GetInstanceID(),
+                ["referenceEqualToRoot"] = ReferenceEquals(set, root), ["unityEqualToRoot"] = set == root,
+                ["actionCount"] = actions.Length, ["transitionCount"] = set == null ? (int?)null : set.Transitions.Count(),
+                ["effectiveTail"] = effective == null ? null : effective.name,
+                ["effectiveTailClass"] = effective == null ? null : effective.GetType().FullName,
+                ["effectiveTailDeclaredType"] = effective is UnitAnimationActionSpecialAttack
+                    ? ((UnitAnimationActionSpecialAttack)effective).AttackType.ToString() : null,
+                ["effectiveTailIsRawMember"] = effective != null && actions.Any(a => ReferenceEquals(a, effective)),
+                ["rawSpecials"] = new JArray(specials.Select(a => new JObject {
+                    ["name"] = a.name, ["type"] = a.AttackType.ToString(),
+                    ["clips"] = new JArray((a.Clips ?? new AnimationClip[0]).Select(Sprint17ClipMetadata)) })),
+                ["getterPatches"] = patches,
+                ["unchangedAfterRead"] = ReferenceEquals(manager.AnimationSet, set) &&
+                    ReferenceEquals(BlueprintRoot.Instance.HumanAnimationSet, root) &&
+                    (set == null || set.Actions.SequenceEqual(actions))
+            };
         }
 
         private static JObject HumanSalamanderContact(UnitEntityData owner, UnitEntityData target,
