@@ -1,6 +1,10 @@
 # Sprint 17 closed snake persistence fixture
 
-Status: SOURCE PASS; NOT RUN. Full Sprint 17 NOT QUALIFIED.
+Status: exact4c95 prepare10/13 FAIL, cleanup3/6 FAIL, absence NOT RUN.
+The [attempt1 review](EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-REVIEW.md)
+governs over the historical source-only record below. Venom was not armed;
+the cause requires attack/save diagnostics. Both stages made zero writes.
+Actual snapshot restored2026-10-07T00:42:42.5922110Z. Sprint17 NOT QUALIFIED.
 Source parent: 685aea21fc6b93954294fe9f2dd8ab8a6e813430 (pushed crowd fixture).
 Last runtime-qualified bounded artifact remains 983828bf; its qualification
 does not transfer to this DLL. Laptop PR26 only; DATA salvage-only, ZERO PORTS.
