@@ -1,48 +1,47 @@
 # Expanded Summoning Phase 2 implementation report
 
-## Current October 7 UTC laptop checkpoint — load-boundary trace SOURCE PASS; runtime next; saved cleanup outstanding
+## Current October 7 UTC laptop checkpoint — native readiness repair SOURCE PASS; corrected runtime next
 
-[Request-scoped native load-boundary trace](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-TRACE.md)
-is SOURCE PASS; runtime NOT RUN. Source parent
-15070179e84d799d476ce90a7b205d0e950ec52d. The observer records real
-scenes-loaded/load-complete/reset entry and exit, exact unit/input membership,
-per-unit hold/control state and relevant native errors. It neither invokes
-reset nor changes the existing predicate, time, parts, buffs, saves or units.
-Only the three accepted snake persistence requests arm its temporary hooks.
+[Native-load readiness repair](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-REPAIR.md)
+is SOURCE PASS; corrected runtime NOT RUN. Source parent
+16f61e19d42c8fab918ba1a263ec72f9952990f2. Before any fixture unit work,
+the exact state/area must receive the native load-complete callback RETURN.
+No reset invocation, production cleanup change, clock advance, reconstructed
+link, fixed-delay guess or relaxed assertion. A new mandatory boundary check
+makes next-candidate persistence totals 14/13/6; the strict reset check stays.
 
-271 focused / 2073 full (81.2s), repository/static/icon/manifest,
-clean 14-reference Release and strict 320-member package (176.5s) PASS.
-The earlier compile-list omission was corrected; failed source log retained.
-Dirty-source artifacts are not runtime candidates. All exact-head prelaunch
-gates and the complete affected native persistence protocol are NEXT.
+272 focused / 2074 complete (81.4s), repository/static/icon/manifest,
+clean 14-reference Release and strict 320-member package (179.6s) PASS.
+Dirty-source output was not deployed. All exact-head prelaunch gates and the
+complete affected native persistence protocol are NEXT.
 
-[Latest exact a587 failure](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC-EVIDENCE.json)
-remains smoke 11/11 / prepare 13/13 PASS, cleanup 10/12 FAIL, absence NOT RUN.
-Constrictor retained its native initiator/Hold/CantAct/CantMove; prey was free,
-Grab present, project links zero, appearance locks absent. The next trace
-distinguishes actual callback timing/inputs/errors; no presumed root cause.
-[Failure review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC-RESULT.md).
+[Exact 16f61e19 diagnostic](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-EVIDENCE.json):
+smoke 11/11 and prepare 13/13 PASS; cleanup 10/12 FAIL; absence NOT RUN.
+Cleanup asserted at frame 4229, the same frame as scenes-loaded, then destroyed
+the fixtures and completed at 4234 BEFORE load-complete/reset was observed.
+Prepare saw the actual callback at 4238, after it had already replaced the old
+units. Native-pool membership and subscription were present; no safeguard
+error recorded. This is a demonstrated fixture-ordering defect, not evidence
+that production reset failed at its defined completion boundary. Production
+reset still requires live qualification after the readiness repair.
 
-FOUR marked fixtures remain in KMG_AUTOMATION_WORKING after its one native
-prepare write and refused cleanup write. Existing native prepare proved safe
-receipt-owned stale retirement. No save-file access, manual reset, protected-
-baseline load/write or absence claim.
-
-Actual snapshot 20261007T0204316627378Z restored at
-2026-10-07T02:14:37.9430184Z: 136 files / Info 0.0.117 /
+FOUR new marked fixtures remain saved after one native prepare write and
+refused cleanup write. Existing native receipt-owned retirement only; no
+save-file access/surgery, protected-baseline load/write or absence claim.
+Snapshot 20261007T0256135125979Z restored at 2026-10-07T03:06:24.8492046Z:
+136 files / Info 0.0.117 /
 tree 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 Lease Completed/recovery=false/released; no game/shared runtime lock/worktree
 staging. Installation restored exactly; working-save cleanup outstanding.
 
-Earlier ec9721f7 direct 14 / crowd 18 and 983828bf rules 62 / commands 51 remain
-exact-artifact bounded. Sprints 14–16 COMPLETE/PUBLISHED; Sprint 17 NOT QUALIFIED.
-32 snake roots stay hidden. Laptop PR #26 only; DATA salvage-only / ZERO PORTS.
+Sprints 14–16 COMPLETE/PUBLISHED; Sprint 17 NOT QUALIFIED; 32 roots hidden.
+Prior exact ec9721f7 crowd and 983828bf command/rules qualifications remain
+artifact-bounded. Laptop PR #26 only; DATA salvage-only / ZERO PORTS.
 
-Next: commit/policy-push, freeze a clean exact-head artifact, repeat all
-prelaunch gates and run smoke/prepare/cleanup/absence. Read the actual reset
-boundary before the bounded repair; no wait-only retry or fixture cleanup to
-manufacture a pass. Then lifecycle/UI/private 32 routes, separate Salamander,
-full Sprint 17 hidden/publication and Phase 2B closure. STOP for owner review.
+Next: commit/policy-push, freeze the clean exact-head artifact, repeat all
+prelaunch gates and complete smoke/prepare/cleanup/absence. Then remaining
+lifecycle/UI/private 32 routes, separate Salamander, full Sprint 17
+hidden/publication and Phase 2B closure. STOP for owner review.
 Phase 2C authorized but deferred. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` remains the sole

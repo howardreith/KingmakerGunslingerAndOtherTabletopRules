@@ -12,6 +12,36 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void PersistenceRequiresTheExactNativeLoadCompletion()
+        {
+            var gate = new SerpentineLoadBoundaryReadiness();
+            object state = new object(), otherState = new object(), area = new object(), otherArea = new object();
+            Assertions.False(gate.Ready(state, area), "No elapsed time or clean symptoms imply a native callback.");
+            gate.Completed(state, area, 10);
+            Assertions.False(gate.Ready(state, area), "Completion without its scenes-loaded identity is stale.");
+            gate.ScenesLoaded(state, area, 10);
+            Assertions.False(gate.Ready(state, area), "The exact runtime failure: scenes loaded is insufficient.");
+            foreach (object[] wrong in new[] { new[] { otherState, area }, new[] { state, otherArea },
+                new[] { null, area }, new[] { state, null } })
+            {
+                gate.Completed(wrong[0], wrong[1], 12);
+                Assertions.False(gate.Ready(state, area), "Foreign/null callback cannot unlock this fixture.");
+            }
+            gate.Completed(state, area, 9);
+            Assertions.False(gate.Ready(state, area), "A preceding callback frame is not this load.");
+            gate.Completed(state, area, 12);
+            Assertions.True(gate.Ready(state, area), "Actual correlated callback return unlocks observation.");
+            Assertions.Equal(12, gate.CompletedFrame, "Record native evidence, not a timeout guess.");
+            Assertions.False(gate.Ready(otherState, area) || gate.Ready(state, otherArea), "Readiness cannot transfer.");
+            gate.ScenesLoaded(state, area, 13);
+            Assertions.False(gate.Ready(state, area), "Even same-state reload invalidates previous completion.");
+            gate.Completed(state, area, 13);
+            Assertions.True(gate.Ready(state, area), "No invented minimum frame delay after the actual event.");
+            gate.ScenesLoaded(null, area, 14);
+            gate.Completed(null, area, 15);
+            Assertions.False(gate.Ready(null, area), "Null state cannot self-correlate.");
+        }
+
         internal static void LoadResetTraceIsRestrictedToTheClosedProtocol()
         {
             string[] allowed = { RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare,
