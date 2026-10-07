@@ -180,6 +180,7 @@ $expected = @(
     'disposable-expanded-summoning-snake-profiles',
     'disposable-expanded-summoning-snake-signatures',
     'disposable-expanded-summoning-snake-commands',
+    'disposable-expanded-summoning-snake-final-review',
     'disposable-expanded-summoning-rules',
     'disposable-expanded-summoning-visual-lifecycle',
     'disposable-expanded-summoning-projected-menu',
@@ -456,6 +457,24 @@ foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
     @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
     @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
     Assert-Throws { New-KmgRuntimeRequest @snakeCommandArguments -Parameters $invalid } 'snake-command-rejects-extra-scope-or-save-authority'
+}
+$snakeFinalArguments = $snakeCommandArguments.Clone()
+$snakeFinalArguments.Scenario = 'disposable-expanded-summoning-snake-final-review'
+$snakeFinalArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'snake-final-preflight-test'
+$snakeFinalMetadata = Get-KmgRuntimeScenarioMetadata $snakeFinalArguments.Scenario
+$snakeFinalRequest = New-KmgRuntimeRequest @snakeFinalArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+$snakeFinalNoExitArguments = $snakeFinalArguments.Clone()
+$snakeFinalNoExitArguments.ExitAfterCompletion = $false
+Assert-Throws { New-KmgRuntimeRequest @snakeFinalNoExitArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'} } 'snake-final-review-requires-automatic-exit'
+Assert-True ($snakeFinalMetadata.RequiresSaveName -and $snakeFinalMetadata.UsesWorkingStageTimeouts -and
+    $snakeFinalMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $snakeFinalMetadata.RequiresManualInteraction -and
+    $snakeFinalRequest.scenario -ceq $snakeFinalArguments.Scenario -and $snakeFinalRequest.exitAfterCompletion) 'snake-final-review-is-closed-working-save-only'
+foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; creature='salamander'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
+    Assert-Throws { New-KmgRuntimeRequest @snakeFinalArguments -Parameters $invalid } 'snake-final-rejects-extra-scope-and-save-authority'
 }
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `

@@ -161,6 +161,7 @@
     <Compile Include="RuntimeTesting\SerpentinePersistenceReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\SerpentineCrowdReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\SerpentineCommandReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\SerpentineFinalReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs" />
     <Compile Include="Summoning\CrocodilianAttackVisualPose.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
@@ -1182,6 +1183,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeProfiles.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeSignatures.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeCommands.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeFinal.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeLifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Contacts.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Crowd.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Persistence.cs" />

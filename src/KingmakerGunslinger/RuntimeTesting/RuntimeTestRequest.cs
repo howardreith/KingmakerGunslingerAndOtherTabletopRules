@@ -239,6 +239,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if ((request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain) && !request.ExitAfterCompletion)
                 return "magic-circle-profile-exit-required";
+            if (!SerpentineFinalReviewPolicy.ValidExit(request.Scenario, request.ExitAfterCompletion))
+                return "snake-final-review-exit-required";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
