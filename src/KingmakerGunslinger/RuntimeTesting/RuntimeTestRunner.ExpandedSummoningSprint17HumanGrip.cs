@@ -90,11 +90,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 metadata["finiteWeightSums"] = finiteSums; metadata["zeroWeightSums"] = zeroSums;
                 metadata["minimumWeightSum"] = finiteSums == 0 ? (float?)null : minimumSum;
                 metadata["maximumWeightSum"] = finiteSums == 0 ? (float?)null : maximumSum;
-                metadata["positiveWeightDriverVertices"] = JObject.FromObject(driverVertices);
+                metadata["positiveWeightDriverVertices"] = Sprint17GripEvidence.Counters(driverVertices);
                 metadata["selection"] = new JArray(Enumerable.Range(0, 2).Select(side => new JObject {
                     ["side"] = side == 0 ? "L" : "R", ["selected"] = _hands[side].Length,
                     ["positiveInfluenceVertices"] = positive[side], ["maximumInfluence"] = maximum[side],
-                    ["dispositions"] = JObject.FromObject(reasons[side]) }));
+                    ["dispositions"] = Sprint17GripEvidence.Counters(reasons[side]) }));
                 if (_hands.Any(hand => hand.Length < 8 || hand.Length > 8192))
                     throw new InvalidOperationException("Exact hand surface unavailable: L=" + _hands[0].Length + ";R=" + _hands[1].Length);
                 try
