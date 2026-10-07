@@ -1,0 +1,932 @@
+{
+  "schemaVersion": 1,
+  "classification": "FIXTURE ASSERTION PRECEDES NATIVE LOAD-COMPLETE; DIAGNOSTIC COMPLETE; GAMEPLAY NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "16f61e19d42c8fab918ba1a263ec72f9952990f2",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "3d23b596ab4730c503df31927e103e327fe04e75c09ca644066087b59a379ace",
+    "dllSha256": "24a183f91b3e42a29b8577dcbda4205e922c7aed8129317fdc00e5f832e56e96",
+    "dllMvid": "3d07fe36-9546-4db5-aa78-76e8b692c6ec",
+    "zipSha256": "2877a276bf7598dd93b6fd837a0b20fe0a0309bf70204422f2bd76212c0f90c4",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-load-boundary-source-pass-16f61e19"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 271,
+    "domain": 2073,
+    "domainSeconds": 81.8,
+    "gateSeconds": 178.7,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 508,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 13,
+      "rejected": 10
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0256127798172Z",
+    "journalSha256": "d354f25e28114bdd624f9c9b46e095674c9c4b5bd7ddf2ef21a529ff3283f35c",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeLoadBoundary-Attempt1.ps1",
+    "driverSha256": "566315b4f9f93935b697251fc0ce13b63c4c4ef1f8db83f4c80b3c0055e7c126",
+    "startedAtUtc": "2026-10-07T02:56:12.8145097Z",
+    "completedAtUtc": "2026-10-07T03:06:24.8492046Z",
+    "status": "NOT-QUALIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T025613Z-9af7112f4b2c459f856cb2053c3235bc\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0256135125979Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "leaseReleased": true,
+    "recoveryRequired": false,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "parameters": {},
+        "outcome": "PASS",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0256396358568Z-working-save-smoke",
+        "requestId": "20261007T0256397205462Z-9b3699e14ac94a1c8f0a693e3dd5e796",
+        "processId": 35768,
+        "processStartedUtc": "2026-10-07T02:56:40.6947097Z",
+        "hashes": [
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0256396358568Z-working-save-smoke\\runtime-request.json",
+            "Hash": "B7A19FB3E902469576220B6F2470A574E5CB4C22E649C62D18DE507C6B5BA760"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0256396358568Z-working-save-smoke\\runtime-result.json",
+            "Hash": "4B87E58C0DD1DBC0AB5FDA3F3AAC2F7528D3BB227C0EDB783DB4EBD0AF387016"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0256396358568Z-working-save-smoke\\orchestration.json",
+            "Hash": "0B3DCCEA94987B4A4A4AC8C5F4984F0D2D5B177BD16B9342CBE7D3F5887A4CF1"
+          }
+        ]
+      },
+      {
+        "label": "snake-prepare",
+        "scenario": "working-save-expanded-summoning-prepare",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "outcome": "PASS",
+        "assertions": 13,
+        "passed": 13,
+        "failed": [],
+        "nativeWrites": 1,
+        "nativeStashedAreas": 2,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0259406422673Z-working-save-expanded-summoning-prepare",
+        "requestId": "20261007T0259406422673Z-44fe936ad82e44419b01dc804b0152de",
+        "processId": 29148,
+        "processStartedUtc": "2026-10-07T02:59:41.8970569Z",
+        "hashes": [
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0259406422673Z-working-save-expanded-summoning-prepare\\runtime-request.json",
+            "Hash": "D0A24F44FBE69FFBA4C264A27BFB9BEAE0AB8807117CC71539824C78F30BC430"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0259406422673Z-working-save-expanded-summoning-prepare\\runtime-result.json",
+            "Hash": "1ABB386BBEB934421D8D22ED8EDD901A791C602E830A12174BC091A679FFAD0D"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0259406422673Z-working-save-expanded-summoning-prepare\\orchestration.json",
+            "Hash": "B74CB85C4CB9492BC586B0E9D07C335EF24F58C83B5C84B54F1773BB1065B92E"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0259406422673Z-working-save-expanded-summoning-prepare\\sprint17-snake-load-reset-trace.json",
+            "Hash": "3CE1E170D23F095FB55BC4C8510587FE758EDAFDE10F209334A1C276756A7A80"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0259406422673Z-working-save-expanded-summoning-prepare\\sprint17-snake-persistence.json",
+            "Hash": "A779C5743AFFF43B60874F15EF7E9EB3EA02BDE9295E62464FCE98A5E107EB88"
+          }
+        ]
+      },
+      {
+        "label": "snake-cleanup",
+        "scenario": "working-save-expanded-summoning-verify-cleanup",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "outcome": "FAIL",
+        "assertions": 12,
+        "passed": 10,
+        "failed": [
+          {
+            "name": "sprint17-persistence-session-hold-reset",
+            "status": "FAIL"
+          },
+          {
+            "name": "exact-working-save-write",
+            "status": "FAIL"
+          }
+        ],
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0303189021803Z-working-save-expanded-summoning-verify-cleanup",
+        "requestId": "20261007T0303189021803Z-325faa88965e4928ac05c10f9d6ff36a",
+        "processId": 31976,
+        "processStartedUtc": "2026-10-07T03:03:19.8918382Z",
+        "hashes": [
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0303189021803Z-working-save-expanded-summoning-verify-cleanup\\runtime-request.json",
+            "Hash": "09C15786C5AA406600030A30F2B33FA0140322372CB6B77A9F325C10A0744736"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0303189021803Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+            "Hash": "F4559C76C092456EEAB5D0AC8854D7ABE05CEA5207A6DFA110FBB96BC83FA3CB"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0303189021803Z-working-save-expanded-summoning-verify-cleanup\\orchestration.json",
+            "Hash": "946DECE655D9B218501CB48D68959E2057A51724B73E48BB0C821A8EBC092206"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0303189021803Z-working-save-expanded-summoning-verify-cleanup\\sprint17-snake-load-reset-trace.json",
+            "Hash": "B9CA0C899B936F9E750AC1020DD3DBD435EAAA430B85CDD0473879F9687A47F7"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0303189021803Z-working-save-expanded-summoning-verify-cleanup\\sprint17-snake-persistence.json",
+            "Hash": "4D0869F19D4670171B174169E271643C3A0C926F53CF3B2BEB73022066489EAF"
+          }
+        ]
+      },
+      {
+        "scenario": "working-save-expanded-summoning-verify-absent",
+        "outcome": "NOT-RUN"
+      }
+    ]
+  },
+  "observations": {
+    "prepareTrace": [
+      {
+        "phase": "observer-armed",
+        "frame": 0,
+        "gameSeconds": 0,
+        "subscribed": true,
+        "poolCount": 0,
+        "areaCount": 0,
+        "supplied": [],
+        "units": []
+      },
+      {
+        "phase": "scenes-loaded",
+        "frame": 4221,
+        "gameSeconds": 46864.545,
+        "subscribed": true,
+        "poolCount": 962,
+        "areaCount": 7,
+        "supplied": [],
+        "units": [
+          {
+            "id": "c666daa8-d1c8-46be-a15c-94a88443869f",
+            "blueprint": "KMG_Summoning_Unit_Viper",
+            "role": "viper",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          },
+          {
+            "id": "34163738-3e5b-4d62-9f5e-8adc5f795e29",
+            "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+            "role": "constrictor-snake",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": true,
+            "targetPart": false,
+            "initiatorTarget": "cc007436-bd8d-41d0-8eab-9935628ef60a",
+            "targetOwner": null,
+            "grabPresent": true,
+            "storedLinks": 0,
+            "holdBuff": true,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "venom-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          },
+          {
+            "id": "cc007436-bd8d-41d0-8eab-9935628ef60a",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "hold-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          }
+        ]
+      },
+      {
+        "phase": "load-complete-before",
+        "frame": 4238,
+        "gameSeconds": 46864.545,
+        "subscribed": true,
+        "poolCount": 965,
+        "areaCount": 7,
+        "supplied": [],
+        "units": [
+          {
+            "id": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "hold-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "venom-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+            "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+            "role": "constrictor-snake",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": true,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+            "blueprint": "KMG_Summoning_Unit_Viper",
+            "role": "viper",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          }
+        ]
+      },
+      {
+        "phase": "reset-before",
+        "frame": 4238,
+        "gameSeconds": 46864.545,
+        "subscribed": true,
+        "poolCount": 965,
+        "areaCount": 7,
+        "supplied": [
+          "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+          "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+          "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+          "40e1f272-2d3c-4f15-9a94-e8adb359035a"
+        ],
+        "units": [
+          {
+            "id": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "hold-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "venom-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+            "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+            "role": "constrictor-snake",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": true,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+            "blueprint": "KMG_Summoning_Unit_Viper",
+            "role": "viper",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          }
+        ]
+      },
+      {
+        "phase": "reset-after",
+        "frame": 4238,
+        "gameSeconds": 46864.545,
+        "subscribed": true,
+        "poolCount": 965,
+        "areaCount": 7,
+        "supplied": [
+          "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+          "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+          "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+          "40e1f272-2d3c-4f15-9a94-e8adb359035a"
+        ],
+        "units": [
+          {
+            "id": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "hold-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "venom-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+            "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+            "role": "constrictor-snake",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": true,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+            "blueprint": "KMG_Summoning_Unit_Viper",
+            "role": "viper",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          }
+        ]
+      },
+      {
+        "phase": "load-complete-after",
+        "frame": 4238,
+        "gameSeconds": 46864.545,
+        "subscribed": true,
+        "poolCount": 965,
+        "areaCount": 7,
+        "supplied": [],
+        "units": [
+          {
+            "id": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "hold-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "venom-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+            "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+            "role": "constrictor-snake",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": true,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+            "blueprint": "KMG_Summoning_Unit_Viper",
+            "role": "viper",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          }
+        ]
+      },
+      {
+        "phase": "scenario-complete",
+        "frame": 4565,
+        "gameSeconds": 46874.365,
+        "subscribed": true,
+        "poolCount": 965,
+        "areaCount": 7,
+        "supplied": [],
+        "units": [
+          {
+            "id": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "hold-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          },
+          {
+            "id": "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "venom-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          },
+          {
+            "id": "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+            "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+            "role": "constrictor-snake",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": true,
+            "targetPart": false,
+            "initiatorTarget": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "targetOwner": null,
+            "grabPresent": true,
+            "storedLinks": 0,
+            "holdBuff": true,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+            "blueprint": "KMG_Summoning_Unit_Viper",
+            "role": "viper",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          }
+        ]
+      }
+    ],
+    "cleanupTrace": [
+      {
+        "phase": "observer-armed",
+        "frame": 0,
+        "gameSeconds": 0,
+        "subscribed": true,
+        "poolCount": 0,
+        "areaCount": 0,
+        "supplied": [],
+        "units": []
+      },
+      {
+        "phase": "scenes-loaded",
+        "frame": 4229,
+        "gameSeconds": 46874.365,
+        "subscribed": true,
+        "poolCount": 965,
+        "areaCount": 7,
+        "supplied": [],
+        "units": [
+          {
+            "id": "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+            "blueprint": "KMG_Summoning_Unit_Viper",
+            "role": "viper",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          },
+          {
+            "id": "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+            "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+            "role": "constrictor-snake",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": true,
+            "targetPart": false,
+            "initiatorTarget": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "targetOwner": null,
+            "grabPresent": true,
+            "storedLinks": 0,
+            "holdBuff": true,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "venom-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          },
+          {
+            "id": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "hold-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": false,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          }
+        ]
+      },
+      {
+        "phase": "reset-assertion",
+        "frame": 4229,
+        "gameSeconds": 46874.365,
+        "subscribed": true,
+        "poolCount": 968,
+        "areaCount": 7,
+        "supplied": [
+          "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+          "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+          "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+          "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b"
+        ],
+        "units": [
+          {
+            "id": "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+            "blueprint": "KMG_Summoning_Unit_Viper",
+            "role": "viper",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          },
+          {
+            "id": "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+            "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+            "role": "constrictor-snake",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": true,
+            "targetPart": false,
+            "initiatorTarget": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "targetOwner": null,
+            "grabPresent": true,
+            "storedLinks": 0,
+            "holdBuff": true,
+            "grappledBuff": false,
+            "cantAct": true,
+            "cantMove": true
+          },
+          {
+            "id": "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "venom-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          },
+          {
+            "id": "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b",
+            "blueprint": "KMG_Summoning_Unit_Wolf",
+            "role": "hold-target",
+            "inPool": true,
+            "inPartyArea": true,
+            "inResetInput": true,
+            "initiatorPart": false,
+            "targetPart": false,
+            "initiatorTarget": null,
+            "targetOwner": null,
+            "grabPresent": false,
+            "storedLinks": 0,
+            "holdBuff": false,
+            "grappledBuff": false,
+            "cantAct": false,
+            "cantMove": false
+          }
+        ]
+      },
+      {
+        "phase": "scenario-complete",
+        "frame": 4234,
+        "gameSeconds": 46874.365,
+        "subscribed": true,
+        "poolCount": 964,
+        "areaCount": 3,
+        "supplied": [],
+        "units": []
+      }
+    ]
+  },
+  "failureClassification": {
+    "mandatoryResetAssertion": "FIXTURE: evaluated at scenes-loaded4229, before load-complete callback; fixture completed4234 and never observed reset callback. Units were in the native pool and safeguard subscribed. Production reset at its defined boundary is NOT YET QUALIFIED.",
+    "cleanupWrite": "DEPENDENT: failed assertion correctly blocked native cleanup save.",
+    "absence": "NOT RUN: successful cleanup save is mandatory.",
+    "environment": "No launch/environment failure observed.",
+    "restoration": "Exact installation restoration VERIFIED; saved-fixture cleanup outstanding."
+  },
+  "savedFixture": {
+    "nativePrepareWrites": 1,
+    "nativeCleanupWrites": 0,
+    "remainingMarkedUnits": 4,
+    "unitIds": [
+      "40e1f272-2d3c-4f15-9a94-e8adb359035a",
+      "5afa284f-32b1-4200-a4b8-6ebe5b2bf2ad",
+      "2cfa95a4-8f2f-438b-bcb4-f2b94ee89bf8",
+      "0c9ddc6d-ddd1-4b51-be1e-6fc83b03868b"
+    ],
+    "manualSaveAccess": false,
+    "protectedBaselineLoadedOrWritten": false
+  },
+  "nextAction": "Fixture-only native readiness boundary: actual load-complete callback RETURN for exact state/area before snapshots or unit work. No fixed-delay guess, symptom-based wait or direct reset. Preserve original reset predicate and add explicit native-boundary assertion. Full exact affected persistence protocol and restoration required.",
+  "fullSprintQualified": false,
+  "publicationAuthorized": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

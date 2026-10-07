@@ -63,6 +63,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<KeyValuePair<MethodInfo, MethodInfo>> _patches =
                 new List<KeyValuePair<MethodInfo, MethodInfo>>();
             internal readonly JArray Rows = new JArray();
+            private readonly SerpentineLoadBoundaryReadiness _boundary = new SerpentineLoadBoundaryReadiness();
+            internal bool NativeLoadReady
+            {
+                get { return Errors == 0 && Game.Instance?.State != null &&
+                    _boundary.Ready(Game.Instance.State, Game.Instance.CurrentlyLoadedArea); }
+            }
+            internal int NativeLoadCompletedFrame { get { return _boundary.CompletedFrame; } }
             internal int Errors;
             private bool _disposed;
 
@@ -123,6 +130,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     var state = Game.Instance?.State;
+                    var areaBlueprint = state == null ? null : Game.Instance.CurrentlyLoadedArea;
+                    if (phase == "scenes-loaded") _boundary.ScenesLoaded(state, areaBlueprint, Time.frameCount);
+                    if (phase == "load-complete-after") _boundary.Completed(state, areaBlueprint, Time.frameCount);
                     var player = state?.PlayerState;
                     var pool = state?.Units?.All?.ToArray() ?? new UnitEntityData[0];
                     var party = player?.Party?.ToArray() ?? new UnitEntityData[0];
@@ -135,6 +145,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Add(new JObject { ["phase"] = phase, ["frame"] = Time.frameCount,
                         ["gameSeconds"] = player == null ? (double?)null : player.GameTime.TotalSeconds,
                         ["subscribed"] = EventBus.IsGloballySubscribed(instance),
+                        ["nativeLoadReady"] = _boundary.Ready(state, areaBlueprint),
                         ["poolCount"] = pool.Length, ["areaCount"] = area.Length,
                         ["supplied"] = new JArray(input.Where(SummonGrappleAreaSafeguard.IsKmgSummon)
                             .Select(value => value.UniqueId)),

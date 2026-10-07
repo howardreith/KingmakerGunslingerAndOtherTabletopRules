@@ -3,6 +3,35 @@ using System.Collections.Generic;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
+    // A scene-visible state is not yet a completed native load. Correlate the
+    // actual callback return to the exact state/area; never infer readiness
+    // from elapsed frames or from an already-clean relationship.
+    internal sealed class SerpentineLoadBoundaryReadiness
+    {
+        private object _state, _area;
+        private int _scenesFrame = -1;
+        internal int CompletedFrame { get; private set; } = -1;
+
+        internal void ScenesLoaded(object state, object area, int frame)
+        {
+            _state = state; _area = area; _scenesFrame = frame;
+            CompletedFrame = -1;
+        }
+
+        internal void Completed(object state, object area, int frame)
+        {
+            CompletedFrame = state != null && area != null && _scenesFrame >= 0 &&
+                frame >= _scenesFrame && ReferenceEquals(state, _state) &&
+                ReferenceEquals(area, _area) ? frame : -1;
+        }
+
+        internal bool Ready(object state, object area)
+        {
+            return CompletedFrame >= 0 && state != null && area != null &&
+                ReferenceEquals(state, _state) && ReferenceEquals(area, _area);
+        }
+    }
+
     // Closed test-fixture policy, not a gameplay serialization subsystem.
     internal static class SerpentinePersistenceReviewPolicy
     {

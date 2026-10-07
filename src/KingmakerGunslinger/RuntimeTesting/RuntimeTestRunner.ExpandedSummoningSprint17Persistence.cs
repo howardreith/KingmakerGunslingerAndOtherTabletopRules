@@ -101,6 +101,26 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool prepare = _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare;
             bool verify = _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup;
+            // Exact 16f61e19 trace: the old fixture asserted on scenes-loaded
+            // and finished before the native load-complete reset callback.
+            // Wait for that callback to RETURN for this exact state/area,
+            // before snapshotting, retiring, creating or inspecting units.
+            // No reset invocation or symptom-based wait can satisfy this.
+            int boundaryFrames = 0;
+            for (; boundaryFrames < 600 && _snakeLoadResetTrace != null &&
+                !_snakeLoadResetTrace.NativeLoadReady; boundaryFrames++) yield return 0;
+            bool loadReady = _snakeLoadResetTrace != null && _snakeLoadResetTrace.NativeLoadReady;
+            _snakeLoadResetTrace?.Capture("fixture-native-load-ready", null);
+            SnakePersistenceCheck("native-load-boundary", loadReady,
+                new JObject { ["ready"] = loadReady, ["observedFrames"] = boundaryFrames,
+                    ["frame"] = Time.frameCount,
+                    ["completedFrame"] = _snakeLoadResetTrace?.NativeLoadCompletedFrame },
+                "native safeguard load-complete returned for this exact state and area before any fixture work");
+            if (!loadReady)
+            {
+                CompleteSprint17Persistence(RuntimeTestStatuses.Fail, "Native load completion was not observed; no fixture mutation or save armed.");
+                yield break;
+            }
             var party = Game.Instance.Player.Party.Where(value => value != null && value.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
                 throw new InvalidOperationException("Working party fingerprint changed.");
