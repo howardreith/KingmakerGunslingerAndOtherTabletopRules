@@ -114,10 +114,10 @@ if ($scenarioMetadata.RequiresSaveName) {
             'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')) {
         if ($Parameters.Count -ne 1 -or $Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cne 'crocodilians' -or -not $ExitAfterCompletion) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes') -or -not $ExitAfterCompletion) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians or snakes and automatic exit.'
         }
-        $Parameters = @{ saveName = $SaveName; persistenceScope = 'crocodilians' }
+        $Parameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
     } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
         $crowd = $Parameters.ContainsKey('quantity')
         if ($Parameters.Count -ne $(if ($crowd) { 2 } else { 1 }) -or
@@ -128,8 +128,8 @@ if ($scenarioMetadata.RequiresSaveName) {
         if ($crowd -and ([string]$Parameters.quantity -cne 'OneD4PlusOne' -or
             @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
                 Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros',
-                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile') }).Count -ne 0)) {
-            throw 'The crowd review permits only quantity=OneD4PlusOne for Sprint 11 ungulates, Sprint 12 quadrupeds or Sprint 16 crocodilians.'
+                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile','viper','constrictor-snake') }).Count -ne 0)) {
+            throw 'The crowd review permits only quantity=OneD4PlusOne for the closed Sprint 11/12/16 roster or the two Sprint 17 snakes.'
         }
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
         if ($crowd) { $Parameters.quantity = 'OneD4PlusOne' }

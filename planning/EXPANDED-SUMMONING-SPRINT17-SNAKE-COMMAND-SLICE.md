@@ -45,6 +45,13 @@ Four receipt-owned summons only: Viper, Constrictor and two Wolf targets.
 Venom must retain its source/counters; the hold must reset cleanly.
 No new runtime transaction or save write. Gameplay/publication unchanged.
 
+[Outer launcher routing correction](EXPANDED-SUMMONING-SPRINT17-SNAKE-LAUNCHER-REVIEW.md)
+is SOURCE PASS: actual-launcher WhatIf13 accepted/10 rejected; preflight508;
+264 focused,2066 full84.0s,complete180.4s,clean14-reference/strict320.
+Exact d70070a5 built but its old outer guards rejected snakes before any lease
+or deployment. That package and failing test are preserved. The corrected
+wrapper changes no gameplay; freeze/rebuild the replacement exact head.
+
 Next: freeze an exact candidate for the closed snake crowd/persistence batch,
 then finish native hit/death/fade/lifecycle and UI/private routes. This bounded
 save-fixture gate does not qualify the whole sprint. Separate Salamander

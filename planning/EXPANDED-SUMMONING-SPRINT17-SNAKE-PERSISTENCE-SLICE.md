@@ -5,6 +5,12 @@ Source parent: 685aea21fc6b93954294fe9f2dd8ab8a6e813430 (pushed crowd fixture).
 Last runtime-qualified bounded artifact remains 983828bf; its qualification
 does not transfer to this DLL. Laptop PR26 only; DATA salvage-only, ZERO PORTS.
 
+The d700 exact package passed its source gate but was rejected by the outer
+launcher's old crocodilian-only guard, before any runtime lease/deployment.
+That integration defect and the fixed13/10 actual-launcher WhatIf regression
+are recorded in [the routing review](EXPANDED-SUMMONING-SPRINT17-SNAKE-LAUNCHER-REVIEW.md).
+The source-tested replacement must be committed and rebuilt before launch.
+
 ## Authorization and ownership
 
 The existing working-save prepare, verify-cleanup and verify-absent scenarios
