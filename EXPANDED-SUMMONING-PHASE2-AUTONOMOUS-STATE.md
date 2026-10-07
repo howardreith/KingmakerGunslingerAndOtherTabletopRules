@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — spear/contact source PASS; exact runtime pending; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — 807 human12/15 FAIL/restored; level-input repair source PASS; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -83,42 +83,42 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Salamander spear/contact corrections are SOURCE PASS, RUNTIME PENDING.
-Source parent1ef236cb0bfeadf08fd291f01be8edd50fb9c15a; same laptop branch/PR26.
-294focused/2096unfiltered83.4s; complete repository/static/icon/manifest,
-clean14-referenceRelease and deterministic strict321 package180.7s.
-[Correction scope and exact offline/source evidence](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-CLOSE-CONTACT-SOURCE-EVIDENCE.json).
+Exact80779026b3718083aff76819bbbb90237f759335: smoke11/11, human12/15 FAIL.
+[Exact runtime, restoration and level-override correction](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-LEVEL-OVERRIDE-EVIDENCE.json).
+All exact prelaunch PASS294/2096/177.4s/clean14/strict321 and harness gates.
+The manufactured spear now produces native iteratives, but the fixture spawned
+BAB20 from ruleLevel20 instead of printed8: FOUR spear events plus ONE owned-tail event.
+All four spear clips are native. The three failed predicates still require2+1;
+none is waived. The native command ended Interrupt after the five events,
+not claimed Success or whole-Sprint qualification.
 
-Pinned native attack-count code confirms manufactured weapons retain BAB
-iteratives. Only Salamander's spear is now non-natural; no fake extra attack,
-native clip change or Pixie bow change. The guarded fixture must prove live
-BAB8, manufactured spear, TWO spear events and ONE owned-tail event.
+All rule-frame spear target gaps~0.03135m; weighted grips0.00557–0.01778m
+left/0.006416–0.006417m right; tail337points gap0 at rule and paired frame.
+Original tail moves3.5892m with one owned act event. One native follow-through
+paired left grip is0.08171118m; do not claim sustained8cm grip. Predicate timing
+remains the actual rule event, not a cherry-picked peak or widened threshold.
+Rollback and native destruction reclaim30owned objects;158borrowed survive.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored11:03:17.7293829UTC;
+ZERO save writes, no game/runtime lease/deployment staging;17correlated stages.
 
-Grip now measures actual weighted hand/finger surface, keeping the original
-wrist gaps in evidence. Exact7 drivers per side; no forearm/opposite hand.
-The8cm grip and25cm striking thresholds are unchanged. The original tail has
-a fixed close-melee S sweep; no target input, reach or damage mutation.
-Only originalTailSlap changed in the packaged mesh; geometry/paint/binds unchanged.
-New exportb5524a69...1c0f19 repeats identically three times.10 authoring tests,
-29evaluated mesh poses above ground/native bones unchanged,32offline panels.
-The first revised quaternion wind-up penetrated the ground; retained/rejected.
-Yaw/elevation authoring fixes that observed defect, not a runtime floor clamp.
-The first package gate rejected its stale old-export pin; archived, corrected,
-then the complete source gate passed. No failed gate is relabeled PASS.
-
-Latest runtime remains exact487: smoke11/11, human review12/15 FAIL, restored
-09:58:17.2992027UTC; ZERO save writes, no game/runtime lease/staging.
-[Preserved failed result](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NULL-GEOMETRY-EVIDENCE.json).
-No qualification transfers to the new artifact. Sprints14–16 complete/published;
+Pinned native AddClassLevels.GetLevels proves positive RuleSummonUnit.Level
+overrides blueprint levels. The fixture's20 was NOT caster level. Correction:
+pass0 so the blueprint supplies8; record authored/actual levels and require
+those plus base/modifiedBAB8 before accepting2spear+1tail. No stat overwrite,
+production/asset/threshold change or native animation modification.
+This request-local correction is SOURCE PASS294focused/2096full81.8s,
+complete177.1s/clean14/strict321; corrected exact-head runtime is still PENDING.
+All earlier failed artifacts/diagnostics preserved. Sprints14–16 COMPLETE;
 Sprint17 NOT QUALIFIED;32roots hidden;976published+29wrappers=1005visible.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Next: freeze/push this corrected source; rebuild its exact clean head with all
-prelaunch/harness gates, then fresh Steam640820 smoke11 plus ALL15 human
-binding/rollback/movement/full-attack/contact/destruction checks. Snapshot only
-after acquiring the runtime lease; restore that exact installation afterward.
-Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
-gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Next: push this level-corrected source, rebuild its exact clean head with every
+prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15 human checks.
+Require native blueprint/character/BAB8 and TWO spear events plus ONE tail;
+keep the same contact thresholds and record actual command disposition.
+Acquire runtime lease before snapshot; restore that exact installation.
+Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication,
+fullPhase2B closure and STOP. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 ### Qualified versus NOT QUALIFIED
 
