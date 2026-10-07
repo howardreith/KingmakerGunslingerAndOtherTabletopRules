@@ -64,6 +64,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
                 var contacts = new JArray();
                 var riders = new JArray();
+                var linkEpochs = new Dictionary<Kingmaker.UnitLogic.Buffs.Buff, int>();
+                Kingmaker.UnitLogic.Buffs.Buff observedLink = null;
                 var poses = new JArray();
                 var issued = new List<UnitAttack>();
                 var nativeCommands = new HashSet<UnitAttack>();
@@ -75,7 +77,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool subscribed = false, targetLinkCleared = false;
                 var row = new JObject { ["cell"] = id, ["key"] = key, ["mode"] = mode, ["driver"] = driver,
                     ["scope"] = "production hidden-snake native command/contact slice",
-                    ["inputs"] = "owned owner additionalAttackBonus100/additionalCMB100/HP100000; owned inert target HP100000/Con60/Fort-100/Medium; native BAB/dice/AI actions retained; no forced positive results",
+                    ["inputs"] = "owned owner additionalAttackBonus100/additionalCMB100/additionalCMD100/HP100000; owned inert target HP100000/Con60/Fort-100/Medium; native BAB/dice/AI actions retained; no forced positive results",
                     ["floorSurvey"] = floorDetail, ["contacts"] = contacts, ["riders"] = riders, ["poses"] = poses,
                     ["checks"] = new JObject(), ["passed"] = false };
                 _serpentineBodyRows.Add(row);
@@ -104,6 +106,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue = 100;
                     owner.Descriptor.Stats.AdditionalCMB.BaseValue = 100;
+                    // Accuracy/CMB alone did not isolate a held-round probe:
+                    // native inert-prey escape checks still oppose owner CMD.
+                    // Raise only this disposable holder's defense. Natural
+                    // failures and escape checks remain native and recorded.
+                    owner.Descriptor.Stats.AdditionalCMD.BaseValue = 100;
                     owner.Descriptor.Stats.HitPoints.BaseValue = 100000;
                     // The qualified intact-frame anchor belongs to the body
                     // under review. Move only the inert target five metres
@@ -211,8 +218,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.ObserveRiderContact = damage =>
                     {
                         var grab = SummonGrabComponent.Find(owner);
-                        int round = SummonHoldComponent.RoundsHeld(SummonHoldComponent.HeldState(owner, target, grab));
+                        var state = SummonHoldComponent.HeldState(owner, target, grab);
+                        int round = SummonHoldComponent.RoundsHeld(state), epoch = 0;
+                        if (state != null && !linkEpochs.TryGetValue(state, out epoch))
+                        { epoch = linkEpochs.Count + 1; linkEpochs.Add(state, epoch); }
                         riders.Add(new JObject { ["frame"] = Time.frameCount, ["heldRound"] = round,
+                            ["linkEpoch"] = epoch,
                             ["damage"] = damage.Damage, ["weaponAttacks"] = observer.WeaponAttacks,
                             ["gameTime"] = Game.Instance.Player.GameTime.TotalSeconds,
                             ["line"] = new JArray(damage.DamageBundle.Select(Sprint16DamageLine)) });
@@ -252,16 +263,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // Global and initiator handler ordering is not part of
                         // the contract. Also capture after the completed native
                         // frame, without invoking or replaying the bite.
-                        if (held && attacksAtEstablishment < 0) attacksAtEstablishment = observer.WeaponAttacks;
+                        var heldState = SummonHoldComponent.HeldState(owner, target, SummonGrabComponent.Find(owner));
+                        if (held && !ReferenceEquals(observedLink, heldState))
+                        { observedLink = heldState; attacksAtEstablishment = observer.WeaponAttacks; }
+                        int currentEpoch = 0;
+                        if (heldState != null) linkEpochs.TryGetValue(heldState, out currentEpoch);
+                        var currentRiders = riders.OfType<JObject>().Where(value =>
+                            SerpentineCommandReviewPolicy.SameLinkEpoch(currentEpoch, (int)value["linkEpoch"])).ToArray();
                         var venom = target.Descriptor.Buffs.GetBuff(venomBlueprint);
                         bool poison = venom != null && venom.MaybeContext != null &&
                             ReferenceEquals(venom.MaybeContext.MaybeCaster, owner);
                         signature = key == "viper" ? poison && contacts.OfType<JObject>().Any(value =>
                                 (bool?)value["wounding"] == true) :
-                            held && riders.OfType<JObject>().Where(value => (int)value["heldRound"] > 0)
+                            signature || held && currentRiders.Where(value => (int)value["heldRound"] > 0)
                                 .GroupBy(value => (int)value["heldRound"]).Any(group =>
                                     SerpentineCommandReviewPolicy.LaterMaintain(
-                                        riders.OfType<JObject>().Count(value => (int)value["heldRound"] == 0),
+                                        currentRiders.Count(value => (int)value["heldRound"] == 0),
                                         group.Key, group.Count(), attacksAtEstablishment, observer.WeaponAttacks));
                         if (signature && firstSignature < 0) firstSignature = frames;
                         bool pending = owner.Commands.Raw.Any(value => value != null && !value.IsFinished);
@@ -284,6 +301,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row["manualCommands"] = issued.Count; row["nativeCommands"] = nativeCommands.Count;
                     row["weaponAttacks"] = observer.WeaponAttacks; row["attacksAtEstablishment"] = attacksAtEstablishment;
                     row["grappleChecks"] = observer.Checks.Count(value => ReferenceEquals(value.Initiator, owner));
+                    row["nativeManeuvers"] = new JArray(observer.Checks.Select(value => new JObject {
+                        ["initiator"] = value.Initiator.UniqueId, ["target"] = value.Target.UniqueId,
+                        ["holderInitiated"] = ReferenceEquals(value.Initiator, owner),
+                        ["success"] = SummonManeuverChecks.Succeeded(value) }));
                     row["signatureObserved"] = signature;
                     row["lastState"] = new JObject { ["inCombat"] = owner.IsInCombat,
                         ["turnBased"] = CombatController.IsInTurnBasedCombat(),

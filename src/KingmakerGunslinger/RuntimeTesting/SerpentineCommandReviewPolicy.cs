@@ -55,5 +55,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return initialRiders == 1 && heldRound > 0 && laterRiders == 2 &&
                 attacksAtEstablishment > 0 && attacksAtEstablishment == currentAttacks;
         }
+
+        internal static bool SameLinkEpoch(int current, int recorded)
+        { return current > 0 && current == recorded; }
     }
 }

@@ -19,6 +19,7 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.Blueprints;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -36,9 +37,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
             SetExpandedSummoningBrainActive(unit, false);
             if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
+            var powerAttack = unit.Descriptor.ActivatableAbilities.Enumerable.Single(a =>
+                a.Blueprint.AssetGuid == EasternWeaponNamedBlueprints.PowerAttackToggleGuid);
+            bool powerAttackBefore = powerAttack.IsOn;
             try
             {
                 for (int frame = 0; frame < 60; frame++) yield return 0;
+                // The printed attack line is without optional Power Attack.
+                // Stop only this owned unit's native toggle, then prove its
+                // live enabled line separately; never remove the native feat.
+                powerAttack.IsOn = false; powerAttack.Stop(true);
                 var stats = unit.Descriptor.Stats;
                 int[] scores = new[] { StatType.Strength, StatType.Dexterity, StatType.Constitution,
                     StatType.Intelligence, StatType.Wisdom, StatType.Charisma }.Select(s => stats.GetStat(s).ModifiedValue).ToArray();
@@ -87,12 +95,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var tail = unit.Body.AdditionalLimbs.Single().MaybeWeapon;
                 var grab = SummonGrabComponent.Find(unit);
                 var attack = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, spear, 0));
-                var iterative = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, spear, -5));
+                var iterative = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, spear, 5));
                 var secondary = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, tail, 0));
                 var weapons = new JObject { ["spear"] = spear.Blueprint.AssetGuid, ["tail"] = tail.Blueprint.AssetGuid,
                     ["spearAttack"] = attack.Result, ["iterativeAttack"] = iterative.Result, ["tailAttack"] = secondary.Result,
                     ["spearRangeFeet"] = spear.AttackRange.Value, ["tailRangeFeet"] = tail.AttackRange.Value,
                     ["bodyReachFeet"] = stats.Reach.ModifiedValue, ["tailSecondary"] = tail.IsSecondary,
+                    ["nativeMinimumFeet"] = GameConsts.MinWeaponRange.Value,
+                    ["spearTypeRangeFeet"] = spear.Blueprint.Type.AttackRange.Value,
+                    ["tailTypeRangeFeet"] = tail.Blueprint.Type.AttackRange.Value,
+                    ["powerAttackDefaultOn"] = powerAttackBefore, ["powerAttackBaselineOn"] = powerAttack.IsOn,
                     ["spearNatural"] = spear.Blueprint.IsNatural, ["tailNatural"] = tail.Blueprint.IsNatural,
                     ["tailSize"] = tail.Blueprint.Size.ToString(), ["tailOverridesDice"] = tail.Blueprint.IsDamageDiceOverridden };
                 CheckSprint17SalamanderProfile("attacks-and-tail-only-grab", attack.Result == 11 && iterative.Result == 6 && secondary.Result == 6 &&
@@ -100,12 +112,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tail.Blueprint.AssetGuid == SalamanderRulesPolicy.TailGuid && grab != null &&
                     ReferenceEquals(grab.SalamanderProfileOwner, unit.Blueprint) && grab.ConstrictProfileOwner == null &&
                     grab.IsGrabLimb(unit, tail) && !grab.IsGrabLimb(unit, spear), weapons, "manufactured +11/+6 spear; secondary +6 tail; tail alone grabs");
-                CheckSprint17SalamanderProfile("native-per-weapon-reach", stats.Reach.ModifiedValue == 5 &&
-                    spear.AttackRange.Value == Math.Max(Kingmaker.Utility.GameConsts.MinWeaponRange.Value, 5 - 4) &&
-                    tail.AttackRange.Value == Math.Max(Kingmaker.Utility.GameConsts.MinWeaponRange.Value, 10 - 4) &&
-                    tail.AttackRange.Value - spear.AttackRange.Value == 5 && tail.Blueprint.Size == Size.Medium &&
+                CheckSprint17SalamanderProfile("native-per-weapon-reach", Sprint17ObservationPolicy.NativeReach(
+                    stats.Reach.ModifiedValue, spear.Blueprint.Type.AttackRange.Value, tail.Blueprint.Type.AttackRange.Value,
+                    GameConsts.MinWeaponRange.Value, spear.AttackRange.Value, tail.AttackRange.Value) &&
+                    tail.Blueprint.Size == Size.Medium &&
                     !tail.Blueprint.IsDamageDiceOverridden, weapons,
-                    "native 5/10-foot type ranges retain a five-foot difference after the engine's common four-foot allowance/floor; body stays five");
+                    "raw types retain 5/10 feet; native four-foot allowance and minimum floor produce actual 2/6-foot weapon approach ranges; no five-foot difference is claimed");
                 ProbeSprint17SalamanderWeapons(unit, spear, tail, "base", 16);
                 foreach (int delta in new[] { 4, -9 })
                 {
@@ -120,9 +132,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try { ProbeSprint17SalamanderWeapons(unit, spear, tail, "native-size", 18); }
                 finally { if (enlarged != null) enlarged.Remove(); }
                 ProbeSprint17SalamanderWeapons(unit, spear, tail, "size-restored", 16);
+                powerAttack.IsOn = true;
+                var powerSpear = Rulebook.Trigger(new RuleCalculateWeaponStats(unit, spear, null));
+                var powerTail = Rulebook.Trigger(new RuleCalculateWeaponStats(unit, tail, null));
+                CheckSprint17SalamanderProfile("native-power-attack", powerAttack.IsOn &&
+                    Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, spear, 0)).Result == 8 &&
+                    Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, spear, 5)).Result == 3 &&
+                    Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, tail, 0)).Result == 3 &&
+                    powerSpear.DamageDescription.Select(d => d.CreateDamage()).OfType<PhysicalDamage>().Single().Bonus == 13 &&
+                    powerTail.DamageDescription.Select(d => d.CreateDamage()).OfType<PhysicalDamage>().Single().Bonus == 4,
+                    new JObject { ["toggle"] = powerAttack.Blueprint.AssetGuid, ["enabled"] = powerAttack.IsOn,
+                        ["spear"] = new JArray(powerSpear.DamageDescription.Select(d => Sprint16DamageLine(d.CreateDamage()))),
+                        ["tail"] = new JArray(powerTail.DamageDescription.Select(d => Sprint16DamageLine(d.CreateDamage()))) },
+                    "native BAB8 Power Attack: -3 attacks, +9 two-handed spear and +3 secondary tail; feat and optional native toggle remain meaningful");
             }
             finally
             {
+                powerAttack.IsOn = powerAttackBefore;
+                if (!powerAttackBefore) powerAttack.Stop(true);
                 if (!unit.Destroyed)
                 {
                     InterruptExpandedSummoningFixtureCommands(unit);

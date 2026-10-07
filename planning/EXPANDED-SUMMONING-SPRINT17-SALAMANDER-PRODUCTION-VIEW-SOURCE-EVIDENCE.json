@@ -1,28 +1,30 @@
 {
   "schemaVersion": 1,
-  "status": "COMPLETE HIDDEN DEVELOPMENT CANDIDATE; FULL EXACT-HEAD SOURCE GATE PENDING; SPRINT17 NOT RUNTIME QUALIFIED",
+  "status": "SINGLE OBSERVATION-ONLY CORRECTION CANDIDATE; INITIAL EXACT BATCH FAILED/RESTORED; SPRINT17 NOT QUALIFIED",
   "authority": "HOWARD-LAPTOP / codex/expanded-summoning-phase2b-sprints14-17 / draft PR26 only. DATA PR27 salvage-only; ZERO PORTS.",
-  "sourceBase": "621f0c3b996f9adf6541dfc2c602a3d67d56c0c0",
-  "sourceBoundary": "One complete hidden integrated checkpoint to be committed on the named base, after focused tests/incremental compilation only. The committed clean HEAD is the candidate; full source/build/package and prelaunch gates run once afterward. No prior artifact qualification transfers.",
+  "sourceBase": "ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a",
+  "sourceBoundary": "This complete observation-only correction will be committed/pushed on ea46fb76. The clean committed HEAD is its immutable candidate; full source/build/package gate runs once afterward. Initial integrated exact-head evidence is retained without qualification transfer.",
   "source": null,
   "gates": {
     "focused": {
-      "passed": 315,
-      "registered": 2117,
+      "passed": 321,
+      "registered": 2123,
       "failed": 0,
-      "log": "artifacts/sprint17-integrated-candidate-focused.log"
+      "meaning": "Focused source loop, not qualification."
     },
     "incrementalCompilation": {
       "status": "PASS",
       "referenceCount": 14,
-      "archive": "artifacts/sprint17-incremental-20261007T1851259081813Z",
-      "meaning": "Inner-loop compilation only; not the runtime artifact."
+      "archive": "artifacts/sprint17-observer-correction-incremental-20261007T2008554641804Z",
+      "meaning": "Inner-loop compilation only; not runtime artifact."
     },
-    "unfilteredDomain": "PENDING EXACT COMMITTED HEAD",
-    "repositoryWrapper": "PENDING EXACT COMMITTED HEAD",
-    "cleanExactReferenceRelease": "PENDING EXACT COMMITTED HEAD",
-    "strictStandalonePackage": "PENDING EXACT COMMITTED HEAD",
-    "runtime": "NOT RUN"
+    "crowdRequest": "PASS;10 round-trips/11 rejections",
+    "actualLauncherRouting": "PASS;18 valid/13 rejected WhatIf routes; no deployment/launch/machine mutation",
+    "unfilteredDomain": "PENDING EXACT CORRECTED COMMITTED HEAD",
+    "repositoryWrapper": "PENDING EXACT CORRECTED COMMITTED HEAD",
+    "cleanExactReferenceRelease": "PENDING EXACT CORRECTED COMMITTED HEAD",
+    "strictStandalonePackage": "PENDING EXACT CORRECTED COMMITTED HEAD",
+    "runtime": "INITIAL FAIL/RESTORED; CORRECTED BATCH NOT RUN"
   },
   "changes": [
     "Borrow only the exact previously qualified native human prefab for the existing Salamander blueprint. No NPC facts, faction, race, inventory, loot, weapons or progression imported.",
@@ -43,14 +45,15 @@
     "visibleChoices": 1005
   },
   "lastRuntime": {
-    "restoredAtUtc": "2026-10-07T15:14:52.5459355Z",
+    "restoredAtUtc": "2026-10-07T19:41:02.2672502Z",
     "files": 136,
+    "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
     "version": "0.0.117",
-    "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
     "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
-    "newLaunches": 0,
+    "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "newLaunches": 6,
     "newSaveWrites": 0,
-    "note": "Historical verified restoration, not a fresh unlocked installation observation. Next guarded transaction must acquire lease and snapshot actual installation."
+    "note": "Exact guarded snapshot restoration verified. No game, compatibility lock, runtime lease lock or active deployment staging. No cleanup save/absence stage was run or claimed."
   },
   "archive": "artifacts/sprint17-salamander-production-view-source-pass",
   "hashes": [
@@ -68,7 +71,7 @@
     },
     {
       "path": "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
-      "sha256": "27432ae9c236eba44673f28df88628326502efde6cf457b5ef097cb84f8631ec"
+      "sha256": "169bdb148972e0696c95c8ff021d3686c8c38e4bb3e94fa4bdf4f3eaa180f19d"
     },
     {
       "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningCreatureReview.cs",
@@ -100,15 +103,15 @@
     },
     {
       "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderLifecycle.cs",
-      "sha256": "45353b9fe564638ea0f61365a7a78b7c1e9e7b0f541f2caab202b561f17e90c3"
+      "sha256": "0d2a01bf060b793bb657c05fe6bbf3a9dd9d1c332dcb51f8a41d0f9958285ba2"
     },
     {
       "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderMechanics.cs",
-      "sha256": "fc64136a390890ab292fb79592a05dc4e0b502768a9d749c4f61d7c996765944"
+      "sha256": "4d032ad3b81d1c30a5924b824dc168b6a183bb10afba9b6b9d1d60857aee06aa"
     },
     {
       "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderProfiles.cs",
-      "sha256": "e37b58ef7bc61b6f38807849fc81fc19c8d4ef963c348d954187e9fb13c51450"
+      "sha256": "a5880b4e0a03537fdaa8a285bc0fea8105ea2ae3204e978894980651b4172003"
     },
     {
       "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderViews.cs",
@@ -156,11 +159,11 @@
     },
     {
       "path": "tests/KingmakerGunslinger.DomainTests/KingmakerGunslinger.DomainTests.csproj",
-      "sha256": "350734e042588328cae6796da649761a1bac0a694a08dfa9e19467994c350b5f"
+      "sha256": "c103ae74a38e25ab5582ee4274c73ad8db7048bccab43694fa8caefa67f5b846"
     },
     {
       "path": "tests/KingmakerGunslinger.DomainTests/Program.cs",
-      "sha256": "6c782d2e445bb2de6ce2958dfc1adf2f8c4a31ed7df888852f3b2e3564255cb4"
+      "sha256": "e0c67f17d3d2b9dfb87fda01b5d2f693ed6a711f1920e62345cdc196feff2b2f"
     },
     {
       "path": "tests/KingmakerGunslinger.DomainTests/SalamanderProductionViewTests.cs",
@@ -177,6 +180,30 @@
     {
       "path": "validation/static-validation.json",
       "sha256": "f3c7d38761eaf1b9fac27d1109dcad5933dbff4ffbf47c8cf6ef016f151d993a"
+    },
+    {
+      "path": "scripts/Invoke-KingmakerRuntimeTest.ps1",
+      "sha256": "2deabe3e07d3f3da509c5edf4d0312b748380a12999340d23c21e881e7f3bf1e"
+    },
+    {
+      "path": "scripts/Test-ExpandedSummoningLauncherRouting.ps1",
+      "sha256": "151cad58793e587a3963c686853bab2eee330f889e81c79782108d0bf100f7e8"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/Sprint17ObservationPolicy.cs",
+      "sha256": "844d56b348910d35b0347e0d5aa626f3dc818b5b0d296e9d657aa1492ab67ee2"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/SerpentineCommandReviewPolicy.cs",
+      "sha256": "16f457b6f232d0519eb6912037bb70ed4a72a59781d574cc22bd9c3938bf3936"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.PteranodonReview.cs",
+      "sha256": "7ecaf8595941d383e014bf47fc4548a98050ffb5f5c3f0b85336cb7fed3bfc84"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/Sprint17ObservationTests.cs",
+      "sha256": "7cfd25295e1d5bceae6a243a37eee2a7d9b6ccf4939616fd0b9408d97b1b38ef"
     }
   ],
   "openGates": [
@@ -297,11 +324,11 @@
     "candidate": "One committed and pushed hidden candidate, then full source/build/package gate once on that exact head and one same-artifact guarded batch for all three creatures.",
     "remainingRetries": {
       "productCorrectionCandidates": 1,
-      "observationOnlyFixtureCorrections": 1
+      "observationOnlyFixtureCorrections": 0
     },
     "usedRetries": {
       "productCorrectionCandidates": 0,
-      "observationOnlyFixtureCorrections": 0
+      "observationOnlyFixtureCorrections": 1
     },
     "scenarios": "Extend existing Sprint17 scenarios only where mandatory evidence is otherwise unavailable; no new scenario family.",
     "nativeAnimation": "Missing donor animation is not a product failure. Preserve native set, actual combat events/damage, finite visible geometry and native cleanup.",
@@ -317,7 +344,7 @@
     "sessionId": "2af10b72-de34-49d5-8d34-f3fe784a0bb7",
     "priorReceipt": "artifacts/laptop-source-owner-20261005-released-20261007T163701Z.json",
     "priorReleaseReason": "Owner process ended",
-    "fetchedRemote": "621f0c3b996f9adf6541dfc2c602a3d67d56c0c0",
+    "fetchedRemote": "ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a",
     "runtimeClearAtResume": true
   },
   "integratedChanges": [
@@ -346,7 +373,371 @@
       "working-save-expanded-summoning-verify-cleanup (snakes, six roles)",
       "working-save-expanded-summoning-verify-absent (snakes, six roles)"
     ],
-    "artifactPolicy": "One immutable exact clean committed-head package,321 members; all mandatory assertions PASS. Fresh Steam640820 processes, runtime lease before actual baseline snapshot, exact restore. Only two expected native working-save writes (prepare/cleanup). Protected baseline never loaded/written.",
-    "status": "NOT STARTED"
+    "artifactPolicy": "One new immutable exact clean committed-head package,321 members; every mandatory assertion PASS, including native Power Attack on/off and matched expiry control. Fresh Steam640820, runtime lease before actual snapshot, exact restore. Two authorized native working-save writes only at prepare/cleanup; absence prohibited before successful cleanup.",
+    "status": "SINGLE OBSERVATION CORRECTION BATCH PENDING"
+  },
+  "initialIntegratedSourceGate": {
+    "commit": "ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a",
+    "sourceFingerprint": "814bb2e19423d536b39d2265f94c5e4d47e66015250a305981e4f7c238e156d2",
+    "domain": {
+      "passed": 2117,
+      "registered": 2117,
+      "elapsedSeconds": 93.4
+    },
+    "repositoryWrapper": "PASS",
+    "orchestration": "PASS",
+    "cleanExactReferenceRelease": "PASS;14 pinned references",
+    "strictStandalonePackage": "PASS;321 members",
+    "dllSha256": "65b10f21fcfc36d53b7c7279aa2f339bcb10674656012e625cc62ca64df863eb",
+    "dllMvid": "9d0dd626-1c29-480a-898c-867012779bdb",
+    "zipSha256": "79e90f1cb65bd0ec76439d2df72dd14fcc7f4ff529950ee589b5a1da095a2b3d",
+    "archive": "artifacts/sprint17-initial-integrated-ea46fb76",
+    "log": "artifacts/sprint17-integrated-ea46fb76-exact-source-gate.log",
+    "captureNote": "The nested PowerShell stderr capture returned a NativeCommandError on successful Python unittest progress. The complete pipeline and validated manifest report PASS; no full-gate replay."
+  },
+  "initialIntegratedBatch": {
+    "journal": "artifacts/laptop-runtime-20261007T1912105261152Z/batch.json",
+    "startedAtUtc": "2026-10-07T19:12:10.5724233Z",
+    "completedAtUtc": "2026-10-07T19:41:02.2672502Z",
+    "status": "NOT QUALIFIED; launcher guard aborted crowd before deployment",
+    "source": {
+      "schemaVersion": 1,
+      "generatedAtUtc": "2026-10-07T19:06:00.8923661Z",
+      "generator": "scripts/Build-Local.ps1",
+      "repositoryRoot": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005",
+      "commit": "ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a",
+      "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+      "sourceStateSha256": "814bb2e19423d536b39d2265f94c5e4d47e66015250a305981e4f7c238e156d2",
+      "version": "0.0.141",
+      "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\local-runtime\\0.0.141\\KingmakerGunslinger-0.0.141-local-runtime.zip",
+      "packageSha256": "79e90f1cb65bd0ec76439d2df72dd14fcc7f4ff529950ee589b5a1da095a2b3d",
+      "dllSha256": "65b10f21fcfc36d53b7c7279aa2f339bcb10674656012e625cc62ca64df863eb",
+      "dllMvid": "9d0dd626-1c29-480a-898c-867012779bdb",
+      "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+      "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "validated": true
+    },
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "outcome": "PASS",
+        "scenarioStatus": "PASS",
+        "passed": 11,
+        "failed": [],
+        "assertions": 11,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1912370497547Z-working-save-smoke",
+        "requestId": "20261007T1912370825121Z-5003bfb81dc54b41ac2539746814929c",
+        "requestSha256": "0d71876f7440b14a3679c14ae22016307031bf5eafd5f4b2bd4c5a5bfffd5f6c",
+        "resultSha256": "5b84eedfc73cffee40e6e65c5ebc97abbc66bdff3cc197928f714f8ee3a29dfc",
+        "metadataSha256": null,
+        "orchestrationSha256": "50d51b0bd1241b0538e14997c2e850a3f23c37e7fd92a45db91235ec38db41ff"
+      },
+      {
+        "label": "all-three-profiles-views-contacts",
+        "scenario": "disposable-expanded-summoning-snake-profiles",
+        "outcome": "FAIL",
+        "scenarioStatus": "FAIL",
+        "passed": 58,
+        "failed": [
+          {
+            "name": "sprint17-salamander-profile-attacks-and-tail-only-grab",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-native-per-weapon-reach",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-base-spear",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-base-tail",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-strength-20-spear",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-strength-20-tail",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-strength-7-spear",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-strength-7-tail",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-restored-spear",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-restored-tail",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-native-size-spear",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-native-size-tail",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-size-restored-spear",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-profile-size-restored-tail",
+            "status": "FAIL"
+          }
+        ],
+        "assertions": 72,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1915541752971Z-disposable-expanded-summoning-snake-profiles",
+        "requestId": "20261007T1915541752971Z-e7d2ac4af8b24a078ed8cfac76d5a2de",
+        "requestSha256": "4725b1a7def5bb8c23ab7e8baffc70e4c8173564bb0ebf60fb7e9beccab96f4b",
+        "resultSha256": "a2d06f1df8671df7fdb1fc7022c96c45e02ac2e33c6a4b5fab31df1c87e95276",
+        "metadataSha256": "6f74d589e29101c7dda3beea2ada8348b248dc3a93e6eea124a3a70ce6c20e42",
+        "orchestrationSha256": "ace1df64cf83fbba6074378901f0885e4dbb168a1c2350241e1d660b7ca70bf1"
+      },
+      {
+        "label": "all-three-mechanics",
+        "scenario": "disposable-expanded-summoning-snake-signatures",
+        "outcome": "FAIL",
+        "scenarioStatus": "FAIL",
+        "passed": 64,
+        "failed": [
+          {
+            "name": "sprint17-salamander-defense-Fire",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-salamander-defense-dr-magic-1",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-body-exception",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-body-fixture-cleanup",
+            "status": "FAIL"
+          }
+        ],
+        "assertions": 68,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1919487864825Z-disposable-expanded-summoning-snake-signatures",
+        "requestId": "20261007T1919488020676Z-5e96cc0cb8cd479284d71d882aa72ab0",
+        "requestSha256": "d5e5b80b6587ad328887b46e637fe89c9353d25b1ee7fe421e9cbafaa616117a",
+        "resultSha256": "8f05a23b4092c7138fffb43372c73bd227cef8b19207f44b25b52a046eedac57",
+        "metadataSha256": "6eab9c2496beea86b33faa80dd49c5bb88910693177ba6f61f38a16a41de17c2",
+        "orchestrationSha256": "eef78063b12e60d208a5ace336412c40855bf3fc7aecb848ef8db296f9f83409"
+      },
+      {
+        "label": "all-three-commands-ai",
+        "scenario": "disposable-expanded-summoning-snake-commands",
+        "outcome": "FAIL",
+        "scenarioStatus": "FAIL",
+        "passed": 70,
+        "failed": [
+          {
+            "name": "sprint17-snake-command-constrictor-snake-turn-based-ai-signature",
+            "status": "FAIL"
+          }
+        ],
+        "assertions": 71,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1923287969855Z-disposable-expanded-summoning-snake-commands",
+        "requestId": "20261007T1923287969855Z-b16234b1c83a4a80bef096dbde6b152a",
+        "requestSha256": "6399ffdf63ba72c757726634d55d64a83c6feb0e7c03592ad54de23a424d4c23",
+        "resultSha256": "fc762a2143768073048248806d093f907500cbfe123e1e44716225a55dc502c9",
+        "metadataSha256": "680dfb62b80c1858539b8fc6ebece34c2c72f15dfdd7cfcab94d49ecd9057bd2",
+        "orchestrationSha256": "6823f7baf44f3be5ee9f60db9dcc0995283bb641a29b1ca8b3bf13a98efd14ac"
+      },
+      {
+        "label": "all-three-routes-ui-lifecycle",
+        "scenario": "disposable-expanded-summoning-snake-final-review",
+        "outcome": "FAIL",
+        "scenarioStatus": "FAIL",
+        "passed": 98,
+        "failed": [
+          {
+            "name": "sprint17-salamander-native-fade-despawn",
+            "status": "FAIL"
+          }
+        ],
+        "assertions": 99,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1930489023437Z-disposable-expanded-summoning-snake-final-review",
+        "requestId": "20261007T1930489023437Z-e4e9359c508f4519a419b219fa2ce525",
+        "requestSha256": "c4f20ed63e6624f8fab9085d86e88139a8fef4b5b0c6c4846a3f1ce46be582a7",
+        "resultSha256": "5a075c369e0ccd0168ee6628d4bcd8cb1d9e75999938ae709b103f0776d31ec0",
+        "metadataSha256": "4d199172494b016064ddd165e186fd28d6d588fb17827688353f621e414b4313",
+        "orchestrationSha256": "e255445d70b7b044d48eab487f64daddefa681ffdfe7da35964b6b5c159f9cf5"
+      },
+      {
+        "label": "all-three-direct-review",
+        "scenario": "working-save-expanded-summoning-creature-review",
+        "outcome": "FAIL",
+        "scenarioStatus": "FAIL",
+        "passed": 18,
+        "failed": [
+          {
+            "name": "expanded-summoning-ground-travel-salamander",
+            "status": "FAIL"
+          }
+        ],
+        "assertions": 19,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1935539089302Z-working-save-expanded-summoning-creature-review",
+        "requestId": "20261007T1935539089302Z-9f15459e62564e7aacacf11df91e9aea",
+        "requestSha256": "e9533f30f10952ad5a25a5bcbf474f18a70422f9ab9728c9ce7dc1f09c3d9e3d",
+        "resultSha256": "0aa5ad1a029d7093fdf4642e6a76b8220a7ce8a815ba7a7dfaf0bb69a967c9a6",
+        "metadataSha256": null,
+        "orchestrationSha256": "2eb26c3c83b24af9d8a9be81259e5c03e676a3a42df535fa3d62baf73a095ec8"
+      },
+      {
+        "label": "all-three-crowd-review",
+        "scenario": "working-save-expanded-summoning-creature-review",
+        "outcome": "ERROR",
+        "scenarioStatus": "NO-EVIDENCE",
+        "passed": null,
+        "failed": null,
+        "assertions": null,
+        "evidenceDirectory": null,
+        "requestId": null,
+        "requestSha256": null,
+        "resultSha256": null,
+        "metadataSha256": null,
+        "orchestrationSha256": null
+      }
+    ],
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T1912118908003Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T191210Z-c3e48c53029241af9ea3d0f128751a6f\\runtime-lease.json",
+    "restoration": "VERIFIED",
+    "liveBefore": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "liveAfterRestore": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseReleased": true,
+    "gameProcessesRemaining": [],
+    "nativeSaveWrites": 0,
+    "persistence": "NOT RUN; cleanup/absence not claimed"
+  },
+  "failureClassification": [
+    {
+      "checks": "14 Salamander profile attack/damage/reach failures",
+      "category": "OBSERVATION/FIXTURE",
+      "evidence": "Exact +9/+3 damage and -3 attack offsets match native BAB8 Power Attack; iterative probe passed -5 to a penalty that the pinned engine subtracts; actual reach2/6 matches raw5/10 with native four-foot allowance/minimum2.",
+      "correction": "Stop only the owned native Power Attack toggle for printed baseline; separately prove enabled native line. Pass positive5 iterative penalty; preserve and assert native range floor.",
+      "qualified": false
+    },
+    {
+      "checks": "Fire defense",
+      "category": "OBSERVATION",
+      "evidence": "Packet.Immune=true and actual RuleDealDamage.Damage=0, while intermediate FinalValue retained6.",
+      "correction": "Require immune flag and zero delivered damage; retain intermediate roll.",
+      "qualified": false
+    },
+    {
+      "checks": "Magic DR defense",
+      "category": "FIXTURE; native bypass still requires live proof",
+      "evidence": "A raw enhancement-only packet with no DamageBundle.Weapon remained reduced10.",
+      "correction": "Calculate a real owned native weapon, add/remove native +1 enchantment, attribute bundle, require exact enhancement and native reduction0.",
+      "qualified": false
+    },
+    {
+      "checks": "Spear miss exception and cleanup cascade",
+      "category": "FIXTURE",
+      "evidence": "Native miss retains planned MeleeDamage but no ResultDamage; unconditional Select threw. Salamander setup overwrote the preceding snake fixture's hostile cleanup receipt.",
+      "correction": "Require no resolved/delivered miss damage; null-safe metadata. Reuse and retain exact owned hostile receipt for outer native cleanup.",
+      "qualified": false
+    },
+    {
+      "checks": "Constrictor turn-based AI signature",
+      "category": "OBSERVATION/FIXTURE; unresolved until corrected native cell",
+      "evidence": "Three initial riders across lost/re-established links, no qualifying later pair. Global initial-rider accounting mixed different links; inert prey still receives native escape checks against unraised holder CMD.",
+      "correction": "Owned additionalCMD100, native maneuvers recorded, exact held-buff link epochs; successful later witness cannot be erased by subsequent native release. No production snake changes or positive roll override.",
+      "qualified": false
+    },
+    {
+      "checks": "Salamander corpse expiry fade",
+      "category": "UNRESOLVED NATIVE-CARRIER/VIEW OBSERVATION",
+      "evidence": "Native hit/death, finite original geometry, native despawn and all project resources passed; no expiry dissolve was observed.",
+      "correction": "Matched unmodified native-body control on the same blueprint/facts/prefab/effect and marker boundary. Available native effect still must fade both; missing effect requires explicit native absence/control/despawn/cleanup, not invented animation or waived unexplained failure.",
+      "qualified": false
+    },
+    {
+      "checks": "Direct Salamander ground travel",
+      "category": "FIXTURE",
+      "evidence": "Actual movement1.464m/velocity2.032 but exact Salamander was absent from guided motion roster, leaving required observer delta-time/awake fields unset.",
+      "correction": "Include exact production identity in the existing surveyed native movement/settlement scope; skip historical synthetic MainHand presentation because actual command matrix proves attacks.",
+      "qualified": false
+    },
+    {
+      "checks": "Crowd outer launcher rejection",
+      "category": "ORCHESTRATION/FIXTURE",
+      "evidence": "Common request guard and runtime crowd roster included Salamander, but actual outer launcher omitted it. No crowd launch; persistence not reached.",
+      "correction": "Complete the existing closed allow-list and extend actual launcher WhatIf regression (18 valid/13 rejected); no scenario family or save-policy expansion.",
+      "qualified": false
+    }
+  ],
+  "observationCorrection": {
+    "scope": "RuntimeTesting observer/request-local fixtures, pure behavior tests and existing launcher guard only. NO production mechanics/view/asset/visibility/version changes.",
+    "sourceFiles": [
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderLifecycle.cs",
+        "sha256": "0d2a01bf060b793bb657c05fe6bbf3a9dd9d1c332dcb51f8a41d0f9958285ba2"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderMechanics.cs",
+        "sha256": "4d032ad3b81d1c30a5924b824dc168b6a183bb10afba9b6b9d1d60857aee06aa"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderProfiles.cs",
+        "sha256": "a5880b4e0a03537fdaa8a285bc0fea8105ea2ae3204e978894980651b4172003"
+      },
+      {
+        "path": "scripts/Invoke-KingmakerRuntimeTest.ps1",
+        "sha256": "2deabe3e07d3f3da509c5edf4d0312b748380a12999340d23c21e881e7f3bf1e"
+      },
+      {
+        "path": "scripts/Test-ExpandedSummoningLauncherRouting.ps1",
+        "sha256": "151cad58793e587a3963c686853bab2eee330f889e81c79782108d0bf100f7e8"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/Sprint17ObservationPolicy.cs",
+        "sha256": "844d56b348910d35b0347e0d5aa626f3dc818b5b0d296e9d657aa1492ab67ee2"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/SerpentineCommandReviewPolicy.cs",
+        "sha256": "16f457b6f232d0519eb6912037bb70ed4a72a59781d574cc22bd9c3938bf3936"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.PteranodonReview.cs",
+        "sha256": "7ecaf8595941d383e014bf47fc4548a98050ffb5f5c3f0b85336cb7fed3bfc84"
+      },
+      {
+        "path": "tests/KingmakerGunslinger.DomainTests/Sprint17ObservationTests.cs",
+        "sha256": "7cfd25295e1d5bceae6a243a37eee2a7d9b6ccf4939616fd0b9408d97b1b38ef"
+      }
+    ],
+    "nativeReferenceSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "nativeReferenceReadOnlyFindings": [
+      "RuleCalculateAttackBonusWithoutTarget third argument is AttackBonusPenalty; OnTrigger subtracts it.",
+      "ItemEntityWeapon attack-range native floor remains authoritative.",
+      "SummonedUnitBuff.OnRemoved chooses native DismemberUnitFX through BloodPuddleFx; no native effect or geometry is exported."
+    ],
+    "newBehaviorTests": 6,
+    "next": "Commit/push complete correction; full exact-head gate once, sequential prelaunch, same10-request all-three batch. One product correction remains only for an evidence-demonstrated production defect. After bounded allowances report PASS/PARTIAL PASS/blocker."
   }
 }
