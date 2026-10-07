@@ -1,6 +1,9 @@
 # Sprint 17 snake load-boundary trace
 
-Status: SOURCE PASS; runtime NOT RUN; full Sprint 17 NOT QUALIFIED.
+Status: exact 16f61e19 diagnostic COMPLETE; fixture ordering defect confirmed;
+gameplay NOT QUALIFIED. [Evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-EVIDENCE.json)
+and [corrected readiness candidate](EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-REPAIR.md)
+govern current work; the source review below is historical.
 Source parent: 15070179e84d799d476ce90a7b205d0e950ec52d.
 Laptop PR #26 only; DATA salvage-only / ZERO PORTS.
 
