@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -62,6 +63,15 @@ namespace KingmakerGunslinger.Blueprints
                     throw new InvalidOperationException("Registered snake unit type is missing.");
                 ((BlueprintUnitType)value).Image = ExpandedSummoningProjectIcons.Require(key);
             }
+            // Constrictor's passive species trait intentionally shares its
+            // existing coiled-snake painting. No new command or pixels.
+            BlueprintScriptableObject traits;
+            if (!bySymbol.TryGetValue(SummonIconCatalog.ConstrictorTraitsSymbol, out traits) ||
+                !(traits is BlueprintBuff) || traits.AssetGuid != "f83dfefcac58495c9a0f5c89a4483ddf")
+                throw new InvalidOperationException("Exact Constrictor passive trait icon consumer is missing.");
+            BlueprintUnitFactAccess.Resolve().SetIcon((BlueprintBuff)traits,
+                ExpandedSummoningProjectIcons.Require(
+                    SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.ConstrictorTraitsSymbol)));
             // The Cyclops's own summon icon marks its Flash of Insight on the
             // action bar; the ability has no separate art of its own.
             Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",

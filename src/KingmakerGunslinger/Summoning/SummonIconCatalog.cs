@@ -23,6 +23,14 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class SummonIconCatalog
     {
+        internal const string ConstrictorTraitsSymbol = "KMG.Summoning.Special.ConstrictorSnake.CombatTraits";
+
+        internal static string PassiveTraitIconFor(string symbol)
+        {
+            // Exact passive species identity, not another selectable attack.
+            return symbol == ConstrictorTraitsSymbol ? "constrictor-snake" : null;
+        }
+
         private static readonly SummonProjectIconSpec[] Values = Build();
         internal static IReadOnlyList<SummonProjectIconSpec> All
         { get { return Array.AsReadOnly(Values); } }
