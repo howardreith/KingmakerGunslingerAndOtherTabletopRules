@@ -97,11 +97,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var attack = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, spear, 0));
                 var iterative = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, spear, 5));
                 var secondary = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, tail, 0));
+                // Read-only, fail-closed raw-field observation. The public
+                // type getter below is already the computed approach range;
+                // do not subtract its allowance a second time.
+                Feet rawSpearRange = (Feet)ReadExpandedSummoningOptionalMember(spear.Blueprint.Type, "m_AttackRange");
+                Feet rawTailRange = (Feet)ReadExpandedSummoningOptionalMember(tail.Blueprint.Type, "m_AttackRange");
                 var weapons = new JObject { ["spear"] = spear.Blueprint.AssetGuid, ["tail"] = tail.Blueprint.AssetGuid,
                     ["spearAttack"] = attack.Result, ["iterativeAttack"] = iterative.Result, ["tailAttack"] = secondary.Result,
                     ["spearRangeFeet"] = spear.AttackRange.Value, ["tailRangeFeet"] = tail.AttackRange.Value,
                     ["bodyReachFeet"] = stats.Reach.ModifiedValue, ["tailSecondary"] = tail.IsSecondary,
                     ["nativeMinimumFeet"] = GameConsts.MinWeaponRange.Value,
+                    ["spearRawTypeRangeFeet"] = rawSpearRange.Value,
+                    ["tailRawTypeRangeFeet"] = rawTailRange.Value,
                     ["spearTypeRangeFeet"] = spear.Blueprint.Type.AttackRange.Value,
                     ["tailTypeRangeFeet"] = tail.Blueprint.Type.AttackRange.Value,
                     ["powerAttackDefaultOn"] = powerAttackBefore, ["powerAttackBaselineOn"] = powerAttack.IsOn,
@@ -113,8 +120,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(grab.SalamanderProfileOwner, unit.Blueprint) && grab.ConstrictProfileOwner == null &&
                     grab.IsGrabLimb(unit, tail) && !grab.IsGrabLimb(unit, spear), weapons, "manufactured +11/+6 spear; secondary +6 tail; tail alone grabs");
                 CheckSprint17SalamanderProfile("native-per-weapon-reach", Sprint17ObservationPolicy.NativeReach(
-                    stats.Reach.ModifiedValue, spear.Blueprint.Type.AttackRange.Value, tail.Blueprint.Type.AttackRange.Value,
-                    GameConsts.MinWeaponRange.Value, spear.AttackRange.Value, tail.AttackRange.Value) &&
+                    stats.Reach.ModifiedValue, rawSpearRange.Value, rawTailRange.Value,
+                    GameConsts.MinWeaponRange.Value, spear.Blueprint.Type.AttackRange.Value, tail.Blueprint.Type.AttackRange.Value,
+                    spear.AttackRange.Value, tail.AttackRange.Value) &&
                     tail.Blueprint.Size == Size.Medium &&
                     !tail.Blueprint.IsDamageDiceOverridden, weapons,
                     "raw types retain 5/10 feet; native four-foot allowance and minimum floor produce actual 2/6-foot weapon approach ranges; no five-foot difference is claimed");
