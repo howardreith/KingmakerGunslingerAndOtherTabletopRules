@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — exact801 human14/15 FAIL/restored; native grip timing audit next; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — exactd5bc diagnostic readability FAIL/restored; full801 grip still open; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -83,46 +83,36 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exact801ed1f3638e608df082db6a8e70b28bacef927b: smoke11/11, human14/15 FAIL.
-[Exact printed-level runtime and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-PRINTED-LEVEL-RUNTIME-EVIDENCE.json).
-All exact prelaunch PASS294/2096full82.5s/complete178.8s/clean14/strict321,
+Exactd5bc656519300da5753248a62e602da7f1aed525: smoke11/11 PASS; human
+diagnostic FAIL after5 assertions (4PASS), not the required15-check review.
+[Exact native-readability failure and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-GRIP-READABILITY-EVIDENCE.json).
+All exact prelaunch PASS296/2098full82.8s/complete179.0s/clean14/strict321,
 515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
-The zero summon-level override now preserves authored/character/baseBAB/modifiedBAB8.
-The native command succeeds with exactly TWO spear events plus ONE original tail.
 
-Only attack-contact fails: second left weighted hand-surface gap0.0851590857m
-exceeds the unchanged0.08m limit; first is0.07913925m. Both native spear clips
-are Human_2H_spear_attack_02, already TransitioningOut at weight0.9393939.
-Same-frame rendered gaps grow to0.1625474/0.196584031m. This suggests a timing
-or original-geometry issue, not a proved cause. No peak cherry-picking, limit
-change, forced native pose, favorable-clip rerun or accepted limitation.
-Right grips~0.006417m, spear target gaps~0.03135m, original337point tail gap0;
-one owned tail event/movement3.5892m. Other14 checks PASS, not aggregate qualification.
+The native combined body reports2268vertices/1776palette slots, but its CPU
+vertex getter rejects access because isReadable=false (preserved game log).
+The new read-only control incorrectly assumed direct vertices were available;
+it fails before original attachment, rollback or attacks. Classification:
+FIXTURE_OBSERVATION, not a proved gameplay regression. No grip-control result.
+The last full review remains exact801 human14/15, with the0.085159m left
+grip failure against the unchanged0.08m limit. That failure is NOT resolved.
 
-Rollback/native destruction reclaim30owned objects;158borrowed survive.
-Actual136/Info0.0.117/tree216A9DC2...AF3 restored11:38:07.0136916UTC;
-ZERO save writes; no game, completed/released lease, no deployment staging.
-Seventeen correlated stages and all earlier failures/artifacts are preserved.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored12:19:30.7905394UTC;
+ZERO native save writes; fixture/environment cleanup PASS; no game,
+completed/released lease/recoveryfalse, no deployment staging.
+Four atomic stages, the native log and all earlier artifacts are preserved.
 Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Read-only same-pose diagnostic now SOURCE PASS296focused/2098full82.7s,
-complete180.0s/clean14/strict321. It retains the borrowed native hand's
-weighted surface privately and compares it with the original hand against the
-same native spear on the same actor/frame. LateUpdate/end-of-frame samples
-are capped512; exact native cached event times/delegate identities are read,
-never invoked. No native geometry export, pose/weapon write or global hook.
-Two weight-selection behavior tests and an independent original-distance
-agreement check are added; all15 runtime checks and8cm/25cm limits remain.
-Two prelaunch test-count metadata rejections are preserved and synchronized
-to2098. No runtime for this diagnostic yet; exact clean-head gate next.
-
-Next: commit/push the source-qualified diagnostic, rebuild the exact clean head
-with every prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15
-human checks. Use the same-pose native/original timeline to classify the grip
-failure; do not waive8cm/25cm limits or retry for a favorable random clip.
-Acquire runtime lease before snapshot and restore that exact installation.
-Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication,
+Next: correct only the diagnostic's CPU-readability assumption. Investigate
+an owned non-rendering BakeMesh control of the exact borrowed mesh/live bones;
+verify weight metadata, same-frame transform convention and exact cleanup.
+Never alter native import settings, renderer, weapon or pose; no geometry export.
+[Unity2018.4 BakeMesh](https://docs.unity3d.com/2018.4/Documentation/ScriptReference/SkinnedMeshRenderer.BakeMesh.html)
+documents CPU/offscreen snapshots, not qualification of this proposed control.
+Then focused/full source gates, commit/push, exact clean-head prelaunch and
+fresh smoke11 plus ALL15 human checks. No8cm/25cm waiver or favorable-clip retry.
+After that: printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
 fullPhase2B closure and STOP. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 ### Qualified versus NOT QUALIFIED
