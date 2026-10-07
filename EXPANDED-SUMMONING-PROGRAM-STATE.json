@@ -29,10 +29,29 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact759 diagnostic smoke11/11, hybrid4/5(expected15) FAIL in Harmony12 metadata converter before attachment/core record; exact restoration08:16:10UTC and zero save writes. Originalbc7 guard operands still unknown. Registry/core-first repair source PASS292focused/2094full82.5s/complete177.5s/clean14/strict321; exact new-head smoke/review next. Guard/all15 assertions unchanged.32roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exactd989 diagnostic complete: exact human root/no raw Tail; CoTW returns native Slam fallback. Smoke11/11, hybrid4/6(expected15) FAIL before resources; restored08:41:31UTC/zero save writes. Narrow raw/effective correction source PASS292focused/2094full83.7s/178.0s/clean14/strict321; exact new-head review next. All24 native actions and15 assertions preserved.32roots hidden;Phase2C deferred.",
+    "sprint17HumanNativeSlamFallbackCorrection": {
+      "sourceParent": "d989915120c7380a20ba33e83177c0cd20392dea",
+      "status": "SOURCE PASS; NOT RUNTIME QUALIFIED",
+      "focused": 292,
+      "domain": 2094,
+      "domainSeconds": 83.7,
+      "gateSeconds": 178.0,
+      "cleanExactReferences": 14,
+      "strictPackageMembers": 321,
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-FALLBACK-EVIDENCE.json",
+      "guardSemanticCorrection": true,
+      "rawTailStillRejected": true,
+      "foreignEffectiveResultStillRejected": true,
+      "acceptsOnlyNullOrExactNativeSlamFallback": true,
+      "borrowedSlamAdopted": false,
+      "coTWOrGlobalPatchChanged": false,
+      "postInstallOwnedTailLookupStillRequired": true,
+      "runtimeExecuted": false
+    },
     "sprint17HumanGuardRegistryRepair": {
       "sourceParent": "7590ce68319d747eea90f4a9224e4a628861b06a",
-      "status": "SOURCE PASS; NOT RUNTIME QUALIFIED",
+      "status": "EXACTd989 DIAGNOSTIC COMPLETE; BINDING GUARD FAIL/RESTORED; GAMEPLAY NOT QUALIFIED",
       "focused": 292,
       "domain": 2094,
       "domainSeconds": 82.5,
@@ -44,7 +63,10 @@
       "registeredErrorsSuppressed": false,
       "coreObservedBeforeProvenance": true,
       "getterTargets": 3,
-      "runtimeExecuted": false,
+      "runtimeExecuted": true,
+      "runtimeCandidate": "d989915120c7380a20ba33e83177c0cd20392dea",
+      "runtimeEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-FALLBACK-EVIDENCE.json",
+      "restoration": "VERIFIED 2026-10-07T08:41:31.7143709Z",
       "failureEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-GUARD-DIAGNOSTIC-FAIL-EVIDENCE.json"
     },
     "sprint17HumanActionGuardDiagnostic": {

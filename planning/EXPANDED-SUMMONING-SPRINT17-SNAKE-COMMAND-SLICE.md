@@ -50,26 +50,25 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exact7590ce68319d747eea90f4a9224e4a628861b06a guard diagnostic FAIL:
-fresh Steam640820 smoke11/11; hybrid4/5(expected15). Native settlement passed.
-Harmony12's patch-info converter threw before the diagnostic published its core
-observations and before attachment. The original bc7 guard operands remain UNKNOWN;
-this fixture error is not a new body/gameplay failure or an accepted limitation.
-[Exact failed diagnostic/artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-GUARD-DIAGNOSTIC-FAIL-EVIDENCE.json).
-Actual136files/Info0.0.117/tree216A9DC2...AF3 restored08:16:10.2330898UTC;
-no save writes, game, runtime lease or staging. Every failed artifact is retained.
-Repair reuses the repository's qualified Harmony registry-before-metadata pattern
-for only three getters and records core observations first. Registered-method
-errors still fail; the native binding guard and all15 assertions are unchanged.
-Registry-bounded source PASS:292focused/2094full82.5s/complete177.5s/clean14/
-strict321. Runtime pending; no production/publication change.
+Exactd989915120c7380a20ba33e83177c0cd20392dea diagnostic COMPLETE:
+smoke11/11; hybrid4/6(expected15) remains FAIL. Exact human root,24actions,
+one transition and raw Claw/Bite/Gore/Slam; NO raw Tail. Effective Tail lookup
+returns the exact native Slam through CallOfTheWild.UnitAnimationManager_GetAction.
+Both unpatched getters are correctly skipped; core/provenance reads unchanged.
+[Exact diagnostic, failure and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-FALLBACK-EVIDENCE.json).
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored08:41:31.7143709UTC;
+zero save writes, game/runtime lease/staging. Failed artifacts remain preserved.
+The narrow correction distinguishes a raw Tail from null or the exact observed
+native-Slam fallback. Existing Tail/foreign results still reject; no Slam adoption
+or CoTW patch mutation. Append preserves all24 native actions and must still
+resolve the effective lookup to the owned Tail afterward. All15 assertions retained.
+Fallback-boundary source PASS:292focused/2094full83.7s/complete178.0s/clean14/
+strict321. Body/playback/contact remain NOT QUALIFIED until the new exact run.
 
-Next: qualify/push the narrow diagnostic checkpoint and rebuild its exact head;
-guarded smoke plus unchanged human guard review. Resolve the observed operand
-before binding/native-command/contact work, then printed Salamander mechanics.
-No repeated donor census or global animation rewrite. Then ONE same-artifact
-Sprint17 hidden/publication gate and fullPhase2B closure. STOP owner review;
-Phase2C authorized but deferred.
+Next: qualify/push the narrow fallback-boundary correction and rebuild its exact
+head; guarded smoke plus full human/owned-tail binding/command/contact review.
+Then printed Salamander mechanics and ONE same-artifact Sprint17 hidden/publication
+gate, fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 ## Paired diagnostic disposition
 

@@ -84,15 +84,26 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SalamanderHumanBindingPolicy.TrySlots(null, null, null, null, out result), "No missing palette.");
         }
 
-        internal static void NativeSetGuardReportsBothOperandsWithoutRelaxation()
+        internal static void NativeSetGuardDistinguishesRawTailFromExactSlamFallback()
         {
-            Assertions.True(SalamanderHumanBindingPolicy.NativeSetRejection(true, false) == null,
-                "Only exact native human set and absent effective Tail can proceed.");
-            Assertions.Equal("existing-effective-tail-action",
-                SalamanderHumanBindingPolicy.NativeSetRejection(true, true), "Identify the rejected effective lookup.");
-            foreach (bool tail in new[] { false, true })
-                Assertions.Equal("not-exact-native-human-set",
-                    SalamanderHumanBindingPolicy.NativeSetRejection(false, tail), "Wrong set still fails before considering Tail.");
+            object slam = new object(), foreign = new object();
+            Assertions.True(SalamanderHumanBindingPolicy.IsReviewedEffectiveTail<object>(null, slam),
+                "Unpatched missing Tail is reviewed.");
+            Assertions.True(SalamanderHumanBindingPolicy.IsReviewedEffectiveTail(slam, slam),
+                "Exact borrowed native Slam fallback is reviewed, not adopted.");
+            Assertions.False(SalamanderHumanBindingPolicy.IsReviewedEffectiveTail(foreign, slam),
+                "A same-name or foreign action cannot replace exact reference identity.");
+            Assertions.False(SalamanderHumanBindingPolicy.IsReviewedEffectiveTail(slam, (object)null),
+                "No known native Slam means a non-null result remains unreviewed.");
+            foreach (bool exact in new[] { false, true })
+            foreach (bool rawTail in new[] { false, true })
+            foreach (bool reviewed in new[] { false, true })
+            {
+                string expected = !exact ? "not-exact-native-human-set" : rawTail ?
+                    "existing-native-tail-action" : !reviewed ? "unreviewed-effective-tail-lookup" : null;
+                Assertions.Equal(expected, SalamanderHumanBindingPolicy.NativeSetRejection(exact, rawTail, reviewed),
+                    "Only exact human, absent raw Tail and reviewed effective lookup may bind.");
+            }
         }
 
         internal static void PatchMetadataUsesRegistryWithoutMaskingRegisteredFailures()

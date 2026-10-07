@@ -31,10 +31,18 @@ namespace KingmakerGunslinger.Summoning
             return 26 + tail;
         }
 
-        internal static string NativeSetRejection(bool exactHumanSet, bool effectiveTailPresent)
+        internal static string NativeSetRejection(bool exactHumanSet, bool rawTailPresent, bool reviewedEffectiveLookup)
         {
             if (!exactHumanSet) return "not-exact-native-human-set";
-            return effectiveTailPresent ? "existing-effective-tail-action" : null;
+            if (rawTailPresent) return "existing-native-tail-action";
+            return reviewedEffectiveLookup ? null : "unreviewed-effective-tail-lookup";
+        }
+
+        internal static bool IsReviewedEffectiveTail<T>(T effective, T exactNativeSlam) where T : class
+        {
+            // Empty native lookup or the observed CoTW fallback to the exact
+            // borrowed Slam. This does not adopt/relabel/play that Slam.
+            return effective == null || (exactNativeSlam != null && ReferenceEquals(effective, exactNativeSlam));
         }
 
         // The installed Harmony12 bridge cannot convert a null Harmony2
