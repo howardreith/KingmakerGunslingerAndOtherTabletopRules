@@ -8,6 +8,14 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal const string Scope = "snakes";
         internal const string ReceiptScope = "KMG_Sprint17_SnakePersistence_v1";
+        internal static bool ObserveLoad(string scenario, string scope)
+        {
+            return scope == Scope &&
+                (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
+                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
+                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);
+        }
+
         internal static string[] Roles
         { get { return new[] { "viper", "constrictor-snake", "venom-target", "hold-target" }; } }
 

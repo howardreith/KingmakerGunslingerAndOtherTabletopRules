@@ -573,6 +573,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ElementalCharacterCreationRoutingObserver.Arm(decision.Request);
             IconConsumerCensus.Arm(decision.Request);
             var runner = new RuntimeTestRunner(decision.Request, context);
+            runner.StartSprint17LoadResetTrace();
             context.ModEntry.OnUpdate += runner.OnUpdate;
             context.Logger.Info(
                 "runtime-test",
@@ -35903,6 +35904,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            StopSprint17LoadResetTrace(result);
             StopSprint17Bodies(result);
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {

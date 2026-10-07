@@ -12,6 +12,19 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void LoadResetTraceIsRestrictedToTheClosedProtocol()
+        {
+            string[] allowed = { RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare,
+                RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup,
+                RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent };
+            foreach (string scenario in allowed.Concat(new[] { null, "", "working-save-smoke",
+                "working-save-expanded-summoning-creature-review", "arbitrary" }))
+            foreach (string scope in new[] { null, "", "snakes", "Snakes", "crocodilians", "all" })
+                Assertions.Equal(allowed.Contains(scenario) && scope == "snakes",
+                    SerpentinePersistenceReviewPolicy.ObserveLoad(scenario, scope),
+                    "Read-only hooks arm only for the three accepted snake persistence requests.");
+        }
+
         internal static void PersistenceResetDiagnosticsPreserveEveryOperand()
         {
             for (int mask = 0; mask < 128; mask++)

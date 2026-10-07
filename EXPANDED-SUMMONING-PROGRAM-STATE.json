@@ -29,7 +29,27 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact a5875a45 diagnostic: smoke11/prepare13 PASS, cleanup10/12 FAIL, absence NOT RUN. Constrictor retains native initiator/Hold/CantAct/CantMove while prey is free; Grab present, links0, appearance locks absent. Trace load-safeguard collection and callback delivery/order before a bounded correction. Installation restored02:14:37UTC;4new marked fixtures saved;32 roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Native load-boundary trace SOURCE PASS:271 focused/2073 full81.2s/complete176.5s/clean14-reference Release/strict320. Read-only, request-scoped callback/input/state census; no reset/wait/predicate/gameplay change. Runtime NOT RUN, complete exact-head persistence protocol NEXT. Last a587 owner-side hold reset FAIL;4marked fixtures saved; installation restored02:14:37UTC;32roots hidden;Phase2C deferred.",
+    "sprint17SnakeLoadBoundaryTrace": {
+      "status": "SOURCE PASS; RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "sourceParent": "15070179e84d799d476ce90a7b205d0e950ec52d",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-TRACE.md",
+      "focused": 271,
+      "domain": 2073,
+      "domainSeconds": 81.2,
+      "sourceGateSeconds": 176.5,
+      "cleanExactReferences": 14,
+      "strictPackageMembers": 320,
+      "predicateChanged": false,
+      "productionGameplayChanged": false,
+      "extraWaits": false,
+      "manualResetCalls": false,
+      "runtimeExecuted": false,
+      "runtimeQualified": false,
+      "remainingSavedOwnedFixtures": 4,
+      "scope": "Three accepted persistence scenarios; exact snakes scope; request-local hooks removed at every scenario completion",
+      "auditAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb"
+    },
     "sprint17SnakeCommandSlice": {
       "pairedContactObserver": "RUNTIME DIAGNOSTIC COMPLETE; same-frame Viper gap does not improve; Constrictor commands ended and correlation rejected. Existing51 assertions unchanged; no waiver.",
       "status": "BOUNDED NATIVE COMMAND/CONTACT SLICE PASS51/51; FULL SPRINT17 NOT QUALIFIED",
@@ -811,7 +831,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Preserve/push exact NOT QUALIFIED checkpoint. Trace the production load safeguard's unit collection and callback order/subscription against the measured orphan; use a bounded callback/census observation if needed. Fix only the demonstrated miss, retain strict reset assertion, and include targeted shared-boundary regressions if production changes. Safely retire only four receipt-owned saved units through native prepare, never save surgery; full persistence protocol and exact restoration remain mandatory. Then lifecycle/UI/private32 routes, separate Salamander, fullSprint17/Phase2B; stop for owner review.",
+  "nextConcreteAction": "Policy-push the source-qualified load-boundary trace; run all exact-head prelaunch gates, then complete affected smoke/prepare/cleanup/absence on one immutable package. Observe actual callback order, selected units and reset before/after; no assumed root cause, extra wait or manual reset. Native prepare must retire only four receipt-owned saved fixtures. Then bounded demonstrated repair, exact affected qualification, lifecycle/UI/private32 routes, separate Salamander, fullSprint17/Phase2B; stop for owner review.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
