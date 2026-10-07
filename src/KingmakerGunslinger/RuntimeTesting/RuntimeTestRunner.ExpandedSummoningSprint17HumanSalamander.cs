@@ -6,6 +6,7 @@ using System.Reflection;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
@@ -240,6 +241,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var attack = new UnitAttack(target) { ForceFullAttack = true };
             var spearWeapon = owner.Body.PrimaryHand.MaybeWeapon;
             row["nativeAttackProfile"] = new JObject {
+                ["blueprintClassLevels"] = new JArray(owner.Blueprint.ComponentsArray
+                    .OfType<AddClassLevels>().Select(levels => levels.Levels)),
+                ["characterLevel"] = owner.Descriptor.Progression.CharacterLevel,
                 ["baseAttackBonusBase"] = owner.Descriptor.Stats.BaseAttackBonus.BaseValue,
                 ["baseAttackBonusModified"] = owner.Descriptor.Stats.BaseAttackBonus.ModifiedValue,
                 ["spear"] = spearWeapon == null ? null : spearWeapon.Blueprint.AssetGuid,
@@ -307,6 +311,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject[] spear = rows.Where(c => (string)c["weapon"] == SalamanderTailAnimationPolicy.Spear).ToArray();
                 JObject[] tail = rows.Where(c => (bool?)c["tail"] == true).ToArray();
                 CheckHumanSalamander("native-full-attack", attack.IsStarted && attack.IsFinished && spear.Length == 2 &&
+                    ((JArray)row["nativeAttackProfile"]["blueprintClassLevels"]).Values<int>()
+                        .SequenceEqual(new[] { ExpandedSummoningSpecialProfiles.SalamanderHitDice }) &&
+                    (int)row["nativeAttackProfile"]["characterLevel"] == ExpandedSummoningSpecialProfiles.SalamanderHitDice &&
+                    (int)row["nativeAttackProfile"]["baseAttackBonusBase"] == ExpandedSummoningSpecialProfiles.SalamanderHitDice &&
                     (int)row["nativeAttackProfile"]["baseAttackBonusModified"] == 8 &&
                     (bool?)row["nativeAttackProfile"]["spearIsNatural"] == false &&
                     tail.Length == 1 && rows.All(c => (bool?)c["executing"] == true && (bool?)c["finite"] == true &&
