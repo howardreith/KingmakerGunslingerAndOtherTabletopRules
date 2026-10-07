@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact983828bf bounded smoke11/rules62/commands51 PASS; actual snapshot2258281699283Z restored23:11:14UTC. Closed snake crowd/persistence fixtures SOURCE PASS, NOT RUN. Latest264 focused/2066 full85.7s/complete180.1s/strict320; persistence6 JSON round trips/3 historical defaults/56 rejections. Next exact bounded crowd/persistence batch, then lifecycle/UI/private routes and separate Salamander.32 roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact983828bf bounded smoke11/rules62/commands51 PASS; actual snapshot2258281699283Z restored23:11:14UTC. Crowd/persistence SOURCE PASS, NOT RUN. d700 outer-launcher prelaunch rejection preserved; corrected actual-launcher13/10,preflight508,264 focused/2066 full84.0s/complete180.4s/strict320 PASS. Next replacement exact-head gates and bounded crowd/persistence batch, then lifecycle/UI/private routes and separate Salamander.32 roots hidden;Phase2C deferred.",
     "sprint17SnakeCommandSlice": {
       "pairedContactObserver": "RUNTIME DIAGNOSTIC COMPLETE; same-frame Viper gap does not improve; Constrictor commands ended and correlation rejected. Existing51 assertions unchanged; no waiver.",
       "status": "BOUNDED NATIVE COMMAND/CONTACT SLICE PASS51/51; FULL SPRINT17 NOT QUALIFIED",
@@ -406,6 +406,24 @@
       "workingSaveWriteAuthority": "Existing exact native prepare/cleanup sentinel only; absent never writes",
       "acceptedGrappleReset": true,
       "grappleReestablishment": false
+    },
+    "sprint17SnakeLauncherRouting": {
+      "status": "SOURCE PASS; RUNTIME NOT RUN",
+      "sourceParent": "d70070a5632bd391d0e5fdf7b267e33b2d8fd1e2",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LAUNCHER-REVIEW.md",
+      "classification": "Outer launcher integration; prelaunch rejection, not gameplay failure",
+      "rejectedCandidatePreserved": "artifacts/sprint17-snake-prelaunch-rejected-d70070a5",
+      "actualLauncherWhatIfAccepted": 13,
+      "actualLauncherWhatIfRejected": 10,
+      "standalonePreflight": 508,
+      "focused": 264,
+      "domain": 2066,
+      "domainSeconds": 84.0,
+      "sourceGateSeconds": 180.4,
+      "strictPackageMembers": 320,
+      "runtimeQualified": false,
+      "deploymentPerformed": false,
+      "saveWritePerformed": false
     }
   },
   "charter": {
