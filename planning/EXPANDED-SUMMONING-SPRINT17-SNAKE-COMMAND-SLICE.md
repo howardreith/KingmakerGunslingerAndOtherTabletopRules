@@ -5,6 +5,18 @@ Laptop PR26 only; DATA salvage-only/ZERO PORTS.32 roots withheld.
 
 ## Latest evidence and next bounded work
 
+[Closed snake routes/UI/lifecycle fixture](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-REVIEW.md)
+is SOURCE PASS; runtime NOT RUN. Source parent7a5a710c.
+275 focused/2077 unfiltered84.1s; complete repository/static/icon/manifest,
+clean14-reference Release/strict320 PASS182.2s. New exact working-save-only
+request has no arbitrary parameters/save write. Expected81 checks cover
+32private execution/quantity/template/alignment/duration/native-icon rows,
+their32 resource cleanups, native trait/venom sheet/close, original-body
+appearance/real hit/death playback/fade/despawn, and exact fixture restoration.
+Production mechanics/assets/publication unchanged. Private execution is NOT
+public spellbook/slot qualification. Commit/policy-push and repeat all
+exact-head gates before bounded smoke11/review81 on one immutable package.
+
 [Exact snake persistence PASS](EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-PASS-EVIDENCE.json)
 on clean pushed candidate `a429da506ebfbbf5c243faa0da163394d32012a2`:
 fresh Steam640820 smoke **11/11**, prepare **14/14**, cleanup **13/13**,
@@ -46,8 +58,9 @@ Earlier ec9721f7 crowd and983828bf commands/rules retain exact-artifact scope;
 their qualification does not transfer to an untested artifact.
 Laptop PR26 only; DATA salvage-only / ZERO PORTS.
 
-Next: remaining snake lifecycle/UI/private32 routes, separate Salamander,
-complete Sprint17 hidden/publication and Phase2B closure. STOP for owner
+Next: exact-head prelaunch and bounded snake final-review qualification;
+then separate Salamander, full Sprint17 hidden/publication and Phase2B
+closure. STOP for owner
 review. Phase2C authorized but deferred. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 ## Paired diagnostic disposition

@@ -2778,7 +2778,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningSerpentineBodies ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeSignatures ||
-                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands)
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeFinalReview)
                 {
                     PollSprint17Bodies();
                 }

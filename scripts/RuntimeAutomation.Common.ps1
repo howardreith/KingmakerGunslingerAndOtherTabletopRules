@@ -1066,6 +1066,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'disposable-expanded-summoning-snake-final-review' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'disposable-expanded-summoning-rules' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1915,6 +1921,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     )
     if ($Scenario -cin @('disposable-magic-circle-profile', 'disposable-magic-circle-terrain') -and -not $ExitAfterCompletion) {
         throw 'The native Magic Circle profile fixture requires automatic exit.'
+    }
+    if ($Scenario -ceq 'disposable-expanded-summoning-snake-final-review' -and -not $ExitAfterCompletion) {
+        throw 'The closed snake final review requires automatic exit.'
     }
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
     $qualifiedElementalRaces114 =
