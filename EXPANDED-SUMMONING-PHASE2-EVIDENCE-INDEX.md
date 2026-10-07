@@ -1,8 +1,30 @@
 # Expanded Summoning Phase 2 evidence index
 
-Latest: Salamander profile/heat/tail-grab source-qualified; runtime NOT QUALIFIED.
-Earlier exact6ae91 bounded human15/15 PASS remains prototype-only; prior failed
-artifacts remain failed, not open ownership/design blockers. Sprint17 open.
+## Current October 7 outcome — independent snake publication PASS; full Sprint17 PARTIAL
+
+Viper18 and Constrictor14 roots are independently QUALIFIED AND PUBLISHED:
+hidden47e8c121 mandatory snake gates PASS,then exact996c5fe7 publication
+smoke11/11 + existing final-review63/63 PASS (37 public roots/111 summons,
+including five preserved Salamander roots). Full exact source gate2123/2123,
+clean14-reference Release and strict321-member package PASS.
+Current source:1008 generated published +29 wrappers =1037 visible;zero withheld.
+
+Salamander remains NOT QUALIFIED:one mandatory reach-observation failure
+on47e8c121 is retained,not waived;computed2/6 was supplied where raw5/10
+was expected. All other integrated cells PASS. No production range defect
+demonstrated. Native donor lacks expiry effect;no animation invented.
+One observation correction used;no further retry under this amendment.
+Phase2B NOT CLOSED;exhaustive closure matrices NOT RUN;Phase2C not started.
+Actual136-file/0.0.117 snapshot restored exactly22:00:34.9412483UTC;
+lease Completed/released;no game/staging. Publication made ZERO save writes.
+Prior native cleanup-save/fresh absence PASS remains exact47 evidence.
+
+[Controlling state](EXPANDED-SUMMONING-PHASE2-AUTONOMOUS-STATE.md) and
+[one exact evidence record](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
+govern. PR26 is laptop canonical,draft/unmerged;DATA PR27 archived/ZERO PORTS.
+HumanReview NOT_PERFORMED_NONBLOCKING. Earlier checkpoints below are historical.
+
+## Historical evidence — artifact-bounded; superseded current status above
 
 [Exact closed snake review PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-PASS-EVIDENCE.json)
 on `fb9ffa507ef5884a321921355f7088f485c8d155`: fresh Steam640820
