@@ -67,10 +67,23 @@ NO raw Tail, CoTW exact native-Slam fallback. cd709 keeps all24 native actions,
 rejects raw Tail/foreign lookup, and still requires its owned Tail afterward.
 No CoTW mutation, borrowed Slam adoption, production Salamander change or waiver.
 
-Next: remove the request-local zero-vertex auxiliary mesh path, preserving exact
-native bones/flags/restoration, and add durable non-qualifying stage checkpoints.
-Run focused/full source gates, push a coherent correction, rebuild its exact head,
-then guarded smoke and all15 human binding/command/contact/destruction assertions.
+The bounded null-geometry correction is SOURCE PASS, NOT RUNTIME QUALIFIED:
+293focused/2095unfiltered82.8s/complete177.5s/clean14/strict321.
+Only the exact zero-bone Cape_Red_M(Clone)/CP_Cape2Sided_M_Any may be suppressed;
+sharedMesh=null, native bones/root/renderer flags unchanged, exact mesh restored.
+The unused empty mesh is no longer allocated;29 distinct base owned objects
+plus controller clones must all be destroyed. All15 runtime assertions remain.
+Atomic request-correlated stage records retain observations but explicitly do
+not qualify or replace the final save-write audit. One actual native frame must
+advance after binding before the supporting camera/pose observation.
+The prior supporting image is visibly malformed; finite arithmetic alone is
+not visual acceptance. Cause remains unproved; no geometry/shader/cloth rewrite.
+Production Salamander and every accepted decision remain unchanged.
+
+Next: push this source-qualified null-geometry/frame-boundary correction,
+freeze/rebuild its exact clean head, then all prelaunch/harness gates and guarded
+smoke plus the full15 human review. Inspect durable native renderer/pose evidence
+and supporting art; no unchanged-candidate retry or source-only qualification.
 Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
 gate, fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
