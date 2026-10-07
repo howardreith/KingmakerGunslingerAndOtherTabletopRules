@@ -280,7 +280,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 plan.RequireLease();
                 WriteTeleportationForensicJson(Path.Combine(_request.EvidenceDirectory,"elemental-trait-owned-save.json"),
                     new {schemaVersion=1,runId=_request.RunId,transactionId=plan.Transaction,phase=plan.Phase,
-                        name=save.Name,file=save.FileName,path=save.FolderName,gameId=save.GameId,
+                        name=save.Name,file=Path.GetFileName(overwrite?plan.InputPath:save.FolderName),
+                        path=overwrite?plan.InputPath:Path.GetFullPath(save.FolderName),gameId=save.GameId,
+                        nativePreparedPath=Path.GetFullPath(save.FolderName),nativePreparedInitiallyAbsent=true,
                         existedBeforePreparation=overwrite,lifecycle="native-prepared-before-write"});
             };
             var lease=overwrite?GuardedDisposableSaveLease.ForOwnedOverwrite(requested,plan.OutputName,game.SaveManager.SavePath,
@@ -295,6 +297,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             { if(watch.Elapsed.TotalSeconds>120) throw new InvalidOperationException("Owned native manual save did not complete.");yield return 0; }
             TraitSaveAssert(overwrite?"owned-removal-save":"owned-prepare-save",lease.RoutineCount==1&&!_workingSaveSmoke.WriteObserved,
                 new {lease.RoutineCount,lease.StashedAreaCount,name=lease.Saved.Name,file=lease.Saved.FileName});
+            TraitSaveAssert("native-owned-commit-path",string.Equals(Path.GetFullPath(lease.Saved.FolderName),lease.CommitPath,
+                StringComparison.OrdinalIgnoreCase) && (!overwrite || (!File.Exists(lease.PreparedPath)&&!Directory.Exists(lease.PreparedPath))),
+                new {finalPath=lease.Saved.FolderName,nativePreparedPath=lease.PreparedPath,temporaryAbsent=overwrite});
             if(!overwrite)
             {
                 var features=TraitFeatures(game.Player.MainCharacter.Value,true);
