@@ -1,52 +1,56 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — independent snake publication candidate; Sprint17 PARTIAL PASS
+## CURRENT STATE, 2026-10-07 — PARTIAL PASS; two snakes qualified/published
 
-HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26 only.
-Exact corrected hidden candidate:47e8c1214f93e4c725a35261083cbd7b44f3f041.
-Fetched active remote and PR head match;clean worktree before evidence recording.
-Full exact-head gate ONCE PASS:2123/2123;clean14-reference Release;deterministic
-strict321-member ZIP0f7eaa7f/DLL2fcb5d1b/MVIDfb033857.
-[One machine-readable evidence record](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
-contains full hashes,requests,process identities,prior failure and restoration.
+HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26.
+Publication artifact:996c5fe7eaf8c3be1966746f0227aa9f85074d73.
+Hidden artifact:47e8c1214f93e4c725a35261083cbd7b44f3f041.
+[Machine-readable exact evidence](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
+pins both source fingerprints,DLL/MVID/ZIP hashes,requests,processes and restores.
+Viper18/18 and Constrictor14/14 public roots PASS;QUALIFIED AND PUBLISHED.
+Current source:1008 registered/1008 published/0 withheld;29 wrappers/1037 visible.
+Salamander's existing identity and five public roots preserved;5/5 route PASS.
 
-Corrected same-artifact ten-request batch20:25–21:14UTC:422/423 PASS.
-Smoke11/11;profiles/views72/73;mechanics84/84;commands/AI71/71;
-routes/UI/native lifecycle100/100;direct19/19;crowd25/25;
-prepare17/17;cleanup17/17;fresh absence6/6.
-Viper and Constrictor hidden mandatory cells PASS. Salamander remains PARTIAL:
-its range observer supplies already-computed2/6-foot type ranges to a predicate
-expecting raw5/10. Actual combat ranges2/6 and body reach5 are as expected.
-The failed mandatory assertion is retained,NOT waived or a new engine limitation.
-Matched native donor has no expiry DismemberUnitFX;no dissolve/animation invented.
-Native action set,wound/death,finite original geometry and exact cleanup PASS.
+Hidden all-three batch422/423:smoke11;profiles/views72/73;mechanics84;
+commands/AI71;private routes/UI/lifecycle100;direct19;crowd25;
+prepare17;cleanup17;fresh absence6. All snake mandatory cells PASS.
+Salamander remains PARTIAL/NOT QUALIFIED:mandatory
+`sprint17-salamander-profile-native-per-weapon-reach` FAIL retained.
+Observer supplies computed2/6 to a predicate expecting raw5/10;actual ranges2/6,
+body reach5. No demonstrated production defect;failure NOT waived.
+Matched native donor lacks expiry DismemberUnitFX;no animation/effect invented.
+Exact native action set,combat damage,finite geometry and normal cleanup PASS.
 
-Closed native persistence protocol made two authorized working-save writes.
-Successful cleanup save precedes fresh-load ZERO owned fixture units/state.
+Publication full exact-head gate ONCE:2123/2123 (83.0s);clean14-reference
+Release;deterministic strict321-member ZIP326aa8d2/DLL51576d09/
+MVID99f51797. Two-request same-artifact publication batch74/74:
+smoke11/11 + existing final-review63/63;37 public roots/111 actual summons,
+native prepared slots/commands/quantity/template/source/120s duration/cleanup.
+No new scenario family,hidden retry,product repair,version bump or save write.
+
+Latest actual leased snapshot20261007T2152425844224Z restored
+2026-10-07T22:00:34.9412483UTC:136files/Info0.0.117/
+tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released;no game/shared lock/staging.
+Earlier47 cleanup saved natively,then fresh load proved ZERO owned fixtures.
 No protected baseline or manual save filesystem access.
-Actual leased snapshot20261007T2025524314105Z restored21:14:01.4006856UTC:
-136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Lease Completed/recoveryRequired=false;no game/runtime lock/compatibility lock/staging.
 
-One observation correction USED;zero product corrections USED. ONE product
-candidate remains only for a demonstrated production defect;none demonstrated.
-No second observation correction or repeat of the failing Salamander candidate.
-NEXT: commit/push one normal independent Viper/Constrictor publication candidate;
-full exact-head gate ONCE,then smoke + existing final-review public-path gate.
-Exactly32 new roots and5 preserved Salamander roots;no hidden profile retry.
-Publication PENDING. Salamander's failed reach assertion remains untouched.
-Phase2B closure NOT RUN;Sprint17 NOT CLOSED.
+STOP at owner efficiency amendment's retry limit:observation1/1 used;
+product0/1 used,remaining product candidate requires a demonstrated defect.
+No additional observation repair or assertion waiver authorized here.
+Next owner action if continuing:authorize bounded raw-range observation
+correction and exact-artifact qualification;then exhaustive Phase2B closure
+ONCE only after Salamander's mandatory gate passes.
+Full Sprint17 NOT CLOSED;Phase2B NOT CLOSED;closure matrices NOT RUN.
+Sprints14–16 COMPLETE/PUBLISHED. HumanReview NOT_PERFORMED_NONBLOCKING;
+accepted engine limitations/adaptation unchanged. Phase2C authorized but
+deferred,NOT STARTED. DATA PR27 salvage-only/ZERO PORTS;no other source agent.
 
-Exclusive source receipt:owner29828/start16:37:01.6154316UTC;
-keeper37216/start18:13:59.9631236UTC;session2af10b72-de34-49d5-8d34-f3fe784a0bb7.
-Sprints14–16 complete/published. Candidate source:1008 registered/
-1008 published/0 withheld;29wrappers/1037 visible. This visibility change is
-NOT runtime-qualified until its normal publication gate passes.
-Last qualified publication remains976+29=1005. Salamander's5existing routes/identities preserved.
-HumanReview NOT_PERFORMED_NONBLOCKING;accepted limitations/adaptation unchanged.
-Exhaustive matrices ONCE at Phase2B closure,then STOP owner review.
-Phase2C authorized but deferred,NOT STARTED. DATA PR27 salvage-only/ZERO PORTS.
-No merge/release/tag/version bump/permanent deployment or Sprints18–22.
+Source receipt session2af10b72-de34-49d5-8d34-f3fe784a0bb7:
+owner29828/start16:37:01.6154316UTC;keeper37216/start18:13:59.9631236UTC.
+Release explicitly after this reporting checkpoint is pushed at session end.
+Actual receipt/lock must be checked before another owner reacquires.
+No merge/release/tag/permanent deployment or Sprints18–22.
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
 

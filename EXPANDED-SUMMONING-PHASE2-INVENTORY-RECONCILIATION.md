@@ -1,6 +1,17 @@
 # Expanded Summoning publication-inventory reconciliation
 
-## Current Sprint 16 publication candidate, 2026-10-05
+## Current Sprint17 independent publication, 2026-10-07
+
+Exact996c5fe7 publishes only Viper18 and Constrictor14 after their complete
+hidden47e8c121 mandatory gates PASS. Public spellbook/slot/command/quantity/
+template/source/duration/cleanup routes37/37 PASS,including five unchanged
+Salamander roots;smoke11/11 + existing final-review63/63 PASS.
+Source-derived equation:1008 registered=1008 published+0 withheld;
+1008 generated+29 retained wrappers=1037 visible choices.
+Salamander's mandatory reach-observation FAIL remains;fullSprint17 and
+Phase2B NOT CLOSED. Earlier artifact equations below are historical only.
+
+## Historical Sprint 16 publication candidate, 2026-10-05
 
 Complete hidden qualification is recorded at exact e3aeae63 and pushed in
 1393b669. Only Dire Crocodile suppression is removed in this candidate.
