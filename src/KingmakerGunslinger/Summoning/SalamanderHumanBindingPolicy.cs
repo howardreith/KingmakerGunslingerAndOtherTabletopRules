@@ -31,6 +31,12 @@ namespace KingmakerGunslinger.Summoning
             return 26 + tail;
         }
 
+        internal static string NativeSetRejection(bool exactHumanSet, bool effectiveTailPresent)
+        {
+            if (!exactHumanSet) return "not-exact-native-human-set";
+            return effectiveTailPresent ? "existing-effective-tail-action" : null;
+        }
+
         internal static string Parent(string name)
         {
             switch (name)

@@ -84,6 +84,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SalamanderHumanBindingPolicy.TrySlots(null, null, null, null, out result), "No missing palette.");
         }
 
+        internal static void NativeSetGuardReportsBothOperandsWithoutRelaxation()
+        {
+            Assertions.True(SalamanderHumanBindingPolicy.NativeSetRejection(true, false) == null,
+                "Only exact native human set and absent effective Tail can proceed.");
+            Assertions.Equal("existing-effective-tail-action",
+                SalamanderHumanBindingPolicy.NativeSetRejection(true, true), "Identify the rejected effective lookup.");
+            foreach (bool tail in new[] { false, true })
+                Assertions.Equal("not-exact-native-human-set",
+                    SalamanderHumanBindingPolicy.NativeSetRejection(false, tail), "Wrong set still fails before considering Tail.");
+        }
+
         internal static void OneTailAppendDoesNotReplaceOrMutateHumanActions()
         {
             object[] native = Enumerable.Range(0, 24).Select(_ => new object()).ToArray();

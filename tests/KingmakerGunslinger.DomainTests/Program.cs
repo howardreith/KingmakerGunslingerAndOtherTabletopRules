@@ -665,6 +665,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-salamander-human-ambiguity", SalamanderHumanBindingTests.DisagreeingOrAmbiguousSelectedDuplicatesFailClosed),
             Case("expanded-summoning.sprint17-salamander-human-malformed", SalamanderHumanBindingTests.MalformedPaletteNeverCreatesPartialBindings),
             Case("expanded-summoning.sprint17-salamander-human-actions", SalamanderHumanBindingTests.OneTailAppendDoesNotReplaceOrMutateHumanActions),
+            Case("expanded-summoning.sprint17-salamander-human-set-guard", SalamanderHumanBindingTests.NativeSetGuardReportsBothOperandsWithoutRelaxation),
             Case("expanded-summoning.sprint17-snake-production-body-identity", SerpentineRulesTests.ProductionBodyHookRequiresExactHiddenSnakeIdentity),
             Case("expanded-summoning.sprint17-snake-closed-profile-request", SerpentineRulesTests.ProfileRequestIsClosedWorkingSaveSlice),
             Case("expanded-summoning.sprint17-snake-closed-signature-request", SerpentineRulesTests.SignatureRequestIsClosedWorkingSaveSlice),
