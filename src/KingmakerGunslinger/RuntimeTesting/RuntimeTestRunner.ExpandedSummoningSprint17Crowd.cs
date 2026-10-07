@@ -11,6 +11,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private UnityEngine.Object[] _snakeCrowdOwned;
         private string[] _snakeCrowdMeshNames;
+        private string[] _salamanderCrowdPrefixes;
 
         private bool RestoreSprint17SnakeCrowdAwake(string key, out string evidence)
         {
@@ -33,6 +34,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Do not bind a mesh, force visibility, drive a pose or repair a view.
         private void RecordSprint17SnakeCrowdOriginals(string key)
         {
+            if (key == "salamander")
+            {
+                var humans = _creatureReviewUnits.Select(u => u.View == null ? null : u.View.GetComponent<SalamanderHumanVisualAttachment>()).ToArray();
+                _snakeCrowdOwned = _creatureReviewUnits.SelectMany(Sprint17ViewResources).Distinct().ToArray();
+                _snakeCrowdMeshNames = humans.Where(h => h != null && h.Live).Select(h => h.Body.sharedMesh.name).ToArray();
+                _salamanderCrowdPrefixes = _creatureReviewUnits.Where(u => u.View != null).Select(u => "KMG_SalamanderHuman_" + u.View.GetInstanceID()).ToArray();
+                bool valid = humans.Length > 0 && humans.All(h => h != null && h.Live && h.AuxiliaryGeometrySuppressed && h.NativeActionsUnchanged) &&
+                    _snakeCrowdMeshNames.Length == humans.Length && _snakeCrowdMeshNames.Distinct(StringComparer.Ordinal).Count() == humans.Length;
+                _creatureReviewAssertions.Add(Assertion("expanded-summoning-original-view-salamander",
+                    "each actual Salamander has one unique original body/ten owned tail bones with native human/spear actions preserved",
+                    "count=" + humans.Length + ";originals=" + _snakeCrowdMeshNames.Length + ";owned=" + _snakeCrowdOwned.Length,
+                    valid && _snakeCrowdOwned.Length >= humans.Length * 29, "read-only automatic production attachment and exact instance-owned resource census"));
+                return;
+            }
             var attachments = _creatureReviewUnits.Select(unit => unit.View == null ? null :
                 unit.View.GetComponent<SerpentineVisualAttachment>()).ToArray();
             _snakeCrowdOwned = attachments.Where(value => value != null)
@@ -65,8 +80,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(Resources.FindObjectsOfTypeAll<Material>())
                 .Concat(Resources.FindObjectsOfTypeAll<Texture2D>()).ToArray();
             int lateClones = _snakeCrowdMeshNames == null ? -1 : resources.Count(value => value != null &&
-                _snakeCrowdMeshNames.Any(name =>
-                    SerpentineVisualPolicy.IsSnakeInstanceResource(key, name, value.name)));
+                (key == "salamander" ? _salamanderCrowdPrefixes != null && _salamanderCrowdPrefixes.Any(prefix =>
+                    value.name.StartsWith(prefix + "_", StringComparison.Ordinal)) : _snakeCrowdMeshNames.Any(name =>
+                    SerpentineVisualPolicy.IsSnakeInstanceResource(key, name, value.name))));
             _creatureReviewAssertions.Add(Assertion("expanded-summoning-" + key + "-owned-view-resources",
                 "all exact captured components/meshes/materials/textures and later instance-owned clones are destroyed",
                 "captured=" + captured + ";retained=" + retained + ";instanceResources=" + lateClones,
@@ -74,6 +90,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "native destruction only; no release/dispose callback invoked to repair cleanup; foreign instances excluded"));
             _snakeCrowdOwned = null;
             _snakeCrowdMeshNames = null;
+            _salamanderCrowdPrefixes = null;
         }
     }
 }

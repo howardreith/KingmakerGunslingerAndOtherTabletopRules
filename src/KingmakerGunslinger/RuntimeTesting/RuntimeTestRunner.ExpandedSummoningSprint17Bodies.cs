@@ -70,24 +70,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeFinalReview)
                 {
                     foreach (int step in ReviewSprint17SnakeFinalCases(fixture)) yield return step;
-                    yield break; // Exact hidden32 routes, native UI and snake view lifecycle; no Salamander.
+                    yield break; // Exact32 hidden snake and5 preserved Salamander routes, native UI and three view lifecycles.
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands)
                 {
                     foreach (int step in ReviewSprint17SnakeCommands(fixture)) yield return step;
-                    yield break; // Separate closed native-command slice; qualified rules requests unchanged.
+                    foreach (int step in ReviewSprint17SalamanderCommands(fixture)) yield return step;
+                    yield break; // Three closed Sprint17 native-command identities.
                 }
                 foreach (int step in ReviewSprint17ProductionSnakeViews(fixture)) yield return step;
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeSignatures)
                 {
                     foreach (int step in ReviewSprint17SnakeProfiles(fixture)) yield return step;
                     foreach (int step in ReviewSprint17SnakeSignatures(fixture)) yield return step;
-                    yield break; // Fixed two-snake rules slice; no Salamander or arbitrary assets.
+                    foreach (int step in ReviewSprint17SalamanderMechanics(fixture)) yield return step;
+                    yield break; // Three closed Sprint17 rules identities; no arbitrary assets.
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles)
                 {
                     foreach (int step in ReviewSprint17SnakeProfiles(fixture)) yield return step;
                     foreach (int step in ReviewSprint17SalamanderProfile(fixture)) yield return step;
+                    foreach (int step in ReviewSprint17ProductionSalamanderViews(fixture)) yield return step;
                     yield break; // Three exact Sprint17 profiles; no donor research, arbitrary keys or save writes.
                 }
                 foreach (string key in SerpentineVisualPolicy.Keys)

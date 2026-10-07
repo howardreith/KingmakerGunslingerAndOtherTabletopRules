@@ -23,7 +23,8 @@ $base = @{
 }
 $rosters = @('aurochs,bison,rhinoceros,woolly-rhinoceros',
     'dire-rat,dog,hyena,goblin-dog', 'crocodile,dire-crocodile',
-    'crocodile', 'dire-crocodile', 'viper,constrictor-snake', 'viper', 'constrictor-snake')
+    'crocodile', 'dire-crocodile', 'viper,constrictor-snake', 'viper', 'constrictor-snake',
+    'salamander', 'viper,constrictor-snake,salamander')
 foreach ($roster in $rosters) {
     $allowed = @{ saveName = 'KMG_AUTOMATION_WORKING'
         creatures = $roster; quantity = 'OneD4PlusOne' }
@@ -59,7 +60,7 @@ Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
     creatures = 'dire-crocodile'; quantity = 'OneD3' } 'an unauthorized crocodilian quantity'
 
 Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
-    creatures = 'viper,salamander'; quantity = 'OneD4PlusOne' } 'an unqualified hybrid crowd'
+    creatures = 'salamander,foreign'; quantity = 'OneD4PlusOne' } 'a foreign actor appended to the closed hybrid crowd'
 Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
     creatures = 'Viper'; quantity = 'OneD4PlusOne' } 'a differently cased snake'
 Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
@@ -67,4 +68,4 @@ Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
 Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
     creatures = 'viper,foreign'; quantity = 'OneD4PlusOne' } 'an arbitrary added key'
 
-Write-Host 'PASS ground crowd request: eight exact round trips and eleven fail-closed cases.'
+Write-Host 'PASS ground crowd request: ten exact round trips and eleven fail-closed cases.'

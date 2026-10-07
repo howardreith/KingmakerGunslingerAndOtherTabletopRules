@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             fixture.Hostile.Destroy();
             Game.Instance.EntityDestroyer.Tick();
             foreach (int step in ReviewSprint17SnakeViewLifecycle(fixture)) yield return step;
+            foreach (int step in ReviewSprint17SalamanderLifecycle(fixture)) yield return step;
         }
 
         private void CheckSprint17Final(string name, bool pass, JObject row, string contract)
@@ -67,10 +68,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (units.All(unit => unit.View != null && unit.Descriptor.State.CanAct &&
                     unit.Descriptor.State.CanMove && EntityFadedIn(unit) &&
                     unit.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null &&
-                    unit.View.GetComponent<SerpentineVisualAttachment>() != null &&
-                    unit.View.GetComponent<SerpentineVisualAttachment>().OriginalBodyLive &&
-                    Sprint17BodyIntact(unit.View, SerpentineVisualPolicy.BodyRenderer(
-                        unit.Blueprint.name == "KMG_Summoning_Unit_Viper" ? "viper" : "constrictor-snake"))))
+                    Sprint17OriginalBody(unit) != null &&
+                    Sprint17BodyIntact(unit.View, Sprint17BodyName(Sprint17ReviewKey(unit)))))
                     yield break;
             }
             throw new InvalidOperationException("Owned original snake appearance did not settle natively.");
@@ -79,15 +78,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint17PrivateRoutes(ExpandedSummoningCorrectionFixture fixture)
         {
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var variants = SerpentineFinalReviewPolicy.Routes();
-            bool closed = variants.Length == 32 &&
+            var variants = SerpentineFinalReviewPolicy.Routes().Concat(
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Where(v => v.Creature.Key == "salamander")).ToArray();
+            bool closed = variants.Length == 37 &&
                 variants.Count(value => value.Creature.Key == "viper") == 18 &&
                 variants.Count(value => value.Creature.Key == "constrictor-snake") == 14 &&
-                variants.All(value => !SummonVisibilityCatalog.IsPublished(value));
+                variants.Count(value => value.Creature.Key == "salamander") == 5 &&
+                variants.All(value => value.Creature.Key == "salamander" ? SummonVisibilityCatalog.IsPublished(value) :
+                    !SummonVisibilityCatalog.IsPublished(value));
             CheckSprint17Final("private-route-census", closed, new JObject {
                 ["routes"] = new JArray(variants.Select(value => value.StableKey)),
                 ["published"] = variants.Count(SummonVisibilityCatalog.IsPublished) },
-                "exact 18 Viper and14 Constrictor hidden roots; no publication mutation");
+                "exact18 Viper/14 Constrictor hidden roots plus5 preserved published Salamander roots");
             if (!closed) throw new InvalidOperationException("Private-only snake route census changed.");
             var group = GroupController.Instance;
             var subGroup = Resources.FindObjectsOfTypeAll<ActionBarSpellsGroup>().First();
@@ -101,12 +103,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     Game.Instance.IsPaused = true;
+                    TimeSpan castTime = Game.Instance.Player.GameTime;
                     units = CastExpandedSummoningVariant(fixture.Blueprints, fixture.Caster,
                         variant, null, fixture.Evidence);
                     fixture.Created.AddRange(units);
                     foreach (var unit in units) SetExpandedSummoningBrainActive(unit, false);
-                    resources = units.SelectMany(value =>
-                        value.View.GetComponent<SerpentineVisualAttachment>().CaptureOwnedResources()).ToArray();
+                    if (variant.Creature.Key == "salamander")
+                    {
+                        foreach (int step in WaitSprint17FinalAppearance(units)) yield return step;
+                        Game.Instance.IsPaused = true;
+                    }
+                    resources = units.SelectMany(Sprint17ViewResources).ToArray();
                     var root = ExpandedSummoningRoot(fixture.Blueprints, variant);
                     widget = Kingmaker.UI.WidgetFactory.GetWidget(prefab);
                     widget.transform.SetParent(group.transform, false);
@@ -126,7 +133,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (var unit in units)
                     {
                         string duration;
-                        bool exact = Sprint17PrivateRtwpDurationExact(unit, fixture.Caster, out duration);
+                        double elapsed = variant.Creature.Key == "salamander" ?
+                            (Game.Instance.Player.GameTime - castTime).TotalSeconds : 0;
+                        bool exact = Sprint17PrivateRtwpDurationExact(unit, fixture.Caster, out duration, elapsed);
                         durationExact &= exact;
                         durations.Add(new JObject { ["unit"] = unit.UniqueId, ["exact"] = exact, ["nativeRuleAndBuff"] = duration });
                         if (templateExpected)
@@ -139,7 +148,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     bool unitsExact = units.All(unit => ReferenceEquals(unit.Blueprint, ExpandedSummoningUnit(fixture.Blueprints, variant)) &&
                         ExpandedSummoningPlayerPathUnitExact(unit, fixture.Caster) &&
-                        ExpandedSummoningSerpentineViewPatch.DescribeView(unit.View).StartsWith("visual:attached;", StringComparison.Ordinal));
+                        Sprint17OriginalBody(unit) != null);
                     CheckSprint17Final("private-root-" + variant.StableKey,
                         SerpentineFinalReviewPolicy.Quantity(variant.Multiplicity, units.Length) && unitsExact &&
                             templatesExact && alignmentExact && durationExact && icon,
@@ -151,7 +160,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["templateBuffs"] = new JArray(templates.Select(buffs => new JArray(buffs.Select(buff => buff.Blueprint.name)))),
                             ["nativeDurations"] = new JArray(units.Select(unit => unit.Descriptor.Buffs.Enumerable.Single(buff =>
                                 ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)).TimeLeft.TotalSeconds)),
-                            ["ids"] = new JArray(units.Select(unit => unit.UniqueId)), ["published"] = false },
+                            ["ids"] = new JArray(units.Select(unit => unit.UniqueId)), ["published"] = SummonVisibilityCatalog.IsPublished(variant) },
                         "actual private execution, exact quantity/identity/source/duration/template/original view and native icon widget; NOT public spellbook navigation");
                 }
                 finally
@@ -170,7 +179,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static bool Sprint17PrivateRtwpDurationExact(UnitEntityData unit,
-            UnitEntityData caster, out string observation)
+            UnitEntityData caster, out string observation, double nativeElapsedSeconds = 0)
         {
             // Retain the existing detailed native capture, but do not use its
             // turn-based-only six-second expectation for this RTWP request.
@@ -188,7 +197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 buff == null || buff.MaybeContext == null ? -1 : buff.MaybeContext.Params.CasterLevel,
                 buff != null && buff.IsPermanent, capture == null ? double.NaN : capture.BaseDuration.TotalSeconds,
                 capture == null ? double.NaN : capture.BonusDuration.TotalSeconds,
-                buff == null ? double.NaN : buff.TimeLeft.TotalSeconds);
+                buff == null ? double.NaN : buff.TimeLeft.TotalSeconds, nativeElapsedSeconds);
         }
 
         private IEnumerable<int> ReviewSprint17SnakeNativeUi(ExpandedSummoningCorrectionFixture fixture)
@@ -221,19 +230,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var viper = CastSprint17FinalSnake(fixture, "viper"); owners.Add(viper);
                 var constrictor = CastSprint17FinalSnake(fixture, "constrictor-snake"); owners.Add(constrictor);
+                var salamander = CastSprint17FinalSnake(fixture, "salamander"); owners.Add(salamander);
                 foreach (int step in WaitSprint17FinalAppearance(owners.ToArray())) yield return step;
                 game.IsPaused = true;
                 target.Descriptor.Stats.SaveFortitude.BaseValue = -100;
                 RuleAttackWithWeapon attack;
                 Buff applied = DeliverSprint17Venom(viper, target, venom, out attack);
                 Buff trait = constrictor.Buffs.Enumerable.Single(value => value.Blueprint.name == "KMG_Summoning_Special_ConstrictorSnake_CombatTraits");
+                Buff salamanderTrait = salamander.Buffs.Enumerable.Single(value => value.Blueprint.name == "KMG_Summoning_Special_Salamander_CombatTraits");
+                CheckSprint17Salamander("inspectable-type-icon", salamander.Blueprint.Type != null &&
+                    ReferenceEquals(salamander.Blueprint.Type.Image,
+                        KingmakerGunslinger.Blueprints.ExpandedSummoningProjectIcons.Require("salamander")),
+                    new JObject { ["type"] = salamander.Blueprint.Type == null ? null : salamander.Blueprint.Type.name,
+                        ["carrier"] = "final live Unit.Blueprint.Type.Image; the native trait widget is observed separately below" },
+                    "exact existing Salamander painting on its live inspectable unit type, not donor identity");
                 if (applied == null || attack.MeleeDamage == null || attack.MeleeDamage.Damage <= 0 ||
                     !ReferenceEquals(applied.Context.MaybeCaster, viper))
                     throw new InvalidOperationException("Actual Viper bite did not establish the source-owned UI state.");
                 opened = true; ui.ServiceWindow.HandleOpenCharScreen();
                 for (int frame = 0; frame < 10; frame++) yield return 0;
                 int buffSection = sheet.BuffsAndConditions.SectionGroupIndex.First();
-                foreach (Buff buff in new[] { trait, applied })
+                foreach (Buff buff in new[] { trait, applied, salamanderTrait })
                 {
                     sheet.SetCharacter(buff.Owner);
                     sheet.ShowSection(buffSection);
@@ -242,9 +259,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var rows = sheet.BuffsAndConditions.GetComponentsInChildren<CharSComponentBuffSlot>(true)
                         .Where(value => value.gameObject.activeInHierarchy && ReferenceEquals(value.Buff, buff)).ToArray();
                     var row = rows.SingleOrDefault();
-                    bool exactAssignment = !ReferenceEquals(buff, trait) ||
-                        ReferenceEquals(buff.Blueprint.Icon,
-                            KingmakerGunslinger.Blueprints.ExpandedSummoningProjectIcons.Require("constrictor-snake"));
+                    bool exactAssignment = ReferenceEquals(buff, trait) ? ReferenceEquals(buff.Blueprint.Icon,
+                        KingmakerGunslinger.Blueprints.ExpandedSummoningProjectIcons.Require("constrictor-snake")) :
+                        !ReferenceEquals(buff, salamanderTrait) || ReferenceEquals(buff.Blueprint.Icon,
+                            KingmakerGunslinger.Blueprints.ExpandedSummoningProjectIcons.Require("salamander"));
                     bool exact = row != null && sheet.IsShow && sheet.BuffsAndConditions.IsShowed &&
                         exactAssignment && buff.Blueprint.Icon != null && row.Icon.isActiveAndEnabled &&
                         ReferenceEquals(row.Icon.sprite, buff.Blueprint.Icon) &&

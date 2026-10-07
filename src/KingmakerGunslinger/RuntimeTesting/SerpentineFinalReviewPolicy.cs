@@ -47,13 +47,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool PrivateRtwpDuration(int captures, int facts, bool turnBased,
             bool ownedContext, int casterLevel, bool permanent,
             double baseSeconds, double bonusSeconds, double remainingSeconds)
+        { return PrivateRtwpDuration(captures, facts, turnBased, ownedContext, casterLevel, permanent,
+            baseSeconds, bonusSeconds, remainingSeconds, 0); }
+
+        internal static bool PrivateRtwpDuration(int captures, int facts, bool turnBased,
+            bool ownedContext, int casterLevel, bool permanent,
+            double baseSeconds, double bonusSeconds, double remainingSeconds, double nativeElapsedSeconds)
         {
             return captures == 1 && facts == 1 && !turnBased && ownedContext &&
                 casterLevel == 20 && !permanent &&
-                new[] { baseSeconds, bonusSeconds, remainingSeconds }.All(value =>
+                new[] { baseSeconds, bonusSeconds, remainingSeconds, nativeElapsedSeconds }.All(value =>
                     !double.IsNaN(value) && !double.IsInfinity(value)) &&
                 Math.Abs(baseSeconds - 120d) <= .001d && bonusSeconds >= 0 &&
-                Math.Abs(remainingSeconds - (baseSeconds + bonusSeconds)) <= .001d;
+                nativeElapsedSeconds >= 0 && nativeElapsedSeconds < baseSeconds + bonusSeconds &&
+                Math.Abs(remainingSeconds + nativeElapsedSeconds - (baseSeconds + bonusSeconds)) <= .001d;
         }
 
         internal static bool IsolatedLifecyclePair(bool distinctOwnedActors,

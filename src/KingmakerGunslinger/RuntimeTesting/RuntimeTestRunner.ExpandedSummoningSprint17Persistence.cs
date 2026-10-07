@@ -161,7 +161,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (string role in SerpentinePersistenceReviewPolicy.Roles)
                 {
                     string key = SerpentinePersistenceReviewPolicy.CreatureKey(role);
-                    var variant = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)
+                    var variant = ExpandedSummoningCatalog.GenerateVariants(key == "salamander" ? SummonFamily.Monster : SummonFamily.NaturesAlly)
                         .Where(value => value.Creature.Key == key && value.Multiplicity == SummonMultiplicity.One)
                         .OrderBy(value => value.ParentTier).First();
                     var unit = SpawnExpandedSummoningVariants(blueprints, caster, new[] { variant },
@@ -195,13 +195,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["canAct"] = value.Descriptor.State.CanAct, ["canMove"] = value.Descriptor.State.CanMove,
                         ["appearanceLock"] = value.Descriptor.Buffs.GetBuff(
                             BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null })) },
-                    "all four summons naturally finish appearance and native action/movement locks before arming");
+                    "all six summons naturally finish appearance and native action/movement locks before arming");
                 if (!ready)
                 {
                     CompleteSprint17Persistence(RuntimeTestStatuses.Fail, "Native appearance/control did not settle; no attack or save armed.");
                     yield break;
                 }
                 ArmSprint17Persistence(units, blueprints);
+                ArmSprint17SalamanderPersistence(units);
             }
             InspectSprint17Persistence(units, caster, blueprints, prepare);
             if (verify)
@@ -226,9 +227,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> DestroySprint17PersistenceUnits(UnitEntityData[] units, string stage)
         {
-            var owned = units.Where(value => value.View != null)
-                .Select(value => value.View.GetComponent<SerpentineVisualAttachment>()).Where(value => value != null)
-                .SelectMany(value => value.CaptureOwnedResources().Concat(new UnityEngine.Object[] { value })).Distinct().ToArray();
+            var owned = units.SelectMany(Sprint17ViewResources).Distinct().ToArray();
             foreach (var unit in units) CleanupExpandedSummoningUnit(unit);
             for (int frame = 0; frame < 5; frame++) { Game.Instance.EntityDestroyer.Tick(); yield return 0; }
             bool gone = units.All(value => value.Destroyed && value.View == null && value.HoldingState == null) &&
@@ -314,10 +313,77 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private void ArmSprint17SalamanderPersistence(UnitEntityData[] units)
+        {
+            var owner = SnakePersistenceRole(units, "salamander");
+            var target = SnakePersistenceRole(units, "salamander-hold-target");
+            var tail = owner.Body.AdditionalLimbs.Single().MaybeWeapon;
+            var grab = SummonGrabComponent.Find(owner);
+            var random = UnityEngine.Random.state;
+            int cmb = owner.Stats.AdditionalCMB.BaseValue;
+            try
+            {
+                owner.Stats.AdditionalCMB.BaseValue = 100;
+                target.Stats.HitPoints.BaseValue = 100000;
+                target.Descriptor.Damage = 0;
+                PlaceExpandedSummoningUnit(target, owner.Position + Vector3.forward);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool linked = grab != null && grab.TryGrab(target, tail, true);
+                SnakePersistenceCheck("arm-salamander-tail-hold", linked &&
+                    ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) &&
+                    ReferenceEquals(SummonGrappleLinks.EstablishingWeapon(owner, target), tail),
+                    new JObject { ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
+                        ["weapon"] = tail.Blueprint.AssetGuid, ["linked"] = linked },
+                    "one exact tail-owned native hold is saved; reload must clear it under the accepted session policy");
+            }
+            finally { owner.Stats.AdditionalCMB.BaseValue = cmb; UnityEngine.Random.state = random; }
+        }
+
+        private void InspectSprint17SalamanderPersistence(UnitEntityData[] units, bool prepare)
+        {
+            var owner = SnakePersistenceRole(units, "salamander");
+            var target = SnakePersistenceRole(units, "salamander-hold-target");
+            bool enabled = _context.FeatureModules.Active.ExpandedSummoning;
+            var body = Sprint17OriginalBody(owner);
+            string outcome = Sprint17ViewOutcome(owner);
+            bool visual = enabled ? body != null : body == null && outcome == "not-attempted" &&
+                owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).All(s => s.sharedMesh == null ||
+                    !s.sharedMesh.name.StartsWith("KMG_", StringComparison.Ordinal));
+            var stats = owner.Stats;
+            var row = new JObject { ["phase"] = prepare ? "prepared" : "reloaded", ["visual"] = outcome,
+                ["perception"] = stats.SkillPerception.ModifiedValue, ["ranks"] = stats.SkillPerception.BaseValue,
+                ["mobilityRanks"] = stats.SkillMobility.BaseValue, ["hpBase"] = stats.HitPoints.BaseValue,
+                ["fortBase"] = stats.SaveFortitude.BaseValue, ["refBase"] = stats.SaveReflex.BaseValue, ["willBase"] = stats.SaveWill.BaseValue };
+            SnakePersistenceCheck("salamander-profile-view", visual && stats.SkillPerception.ModifiedValue == 16 &&
+                stats.SkillPerception.BaseValue == 8 && stats.SkillMobility.BaseValue == 0 && stats.SkillPersuasion.BaseValue == 0 &&
+                stats.HitPoints.BaseValue == 44 && stats.SaveFortitude.BaseValue == 6 && stats.SaveReflex.BaseValue == 6 && stats.SaveWill.BaseValue == 2,
+                row, "printed racial contributions and module-appropriate automatic original view survive native save/load without double normalization");
+            var grab = SummonGrabComponent.Find(owner);
+            bool relation = prepare ? grab != null && ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) :
+                grab != null && new[] { owner, target }.All(u => u.Get<UnitPartGrappleInitiator>() == null &&
+                    u.Get<UnitPartGrappleTarget>() == null && !u.Descriptor.HasFact(grab.HoldBuff) &&
+                    !u.Descriptor.HasFact(grab.GrappledBuff) && (u.Get<UnitPartSummonGrappleLinks>() == null || u.Get<UnitPartSummonGrappleLinks>().Count == 0));
+            SnakePersistenceCheck("salamander-session-link", relation,
+                new JObject { ["phase"] = prepare ? "prepared" : "reloaded", ["expectedRelation"] = prepare, ["relationCorrect"] = relation },
+                "saved exact tail hold is session-scoped and clears safely after native load; no relationship reconstruction");
+            if (!prepare && enabled)
+            {
+                foreach (var weapon in new[] { owner.Body.PrimaryHand.MaybeWeapon, owner.Body.AdditionalLimbs.Single().MaybeWeapon })
+                {
+                    var calculation = Kingmaker.RuleSystem.Rulebook.Trigger(new RuleCalculateWeaponStats(owner, weapon, null));
+                    var damage = calculation.DamageDescription.Select(d => d.CreateDamage()).ToArray();
+                    SnakePersistenceCheck("salamander-loaded-heat-" + weapon.Blueprint.AssetGuid,
+                        damage.Length == 2 && damage.Count(Sprint17SalamanderFirePacket) == 1,
+                        new JObject { ["weapon"] = weapon.Blueprint.AssetGuid, ["damage"] = new JArray(damage.Select(Sprint16DamageLine)) },
+                        "fresh loaded session applies exactly one owned heat packet without another attack or saved graph duplication");
+                }
+            }
+        }
+
         private void InspectSprint17Persistence(UnitEntityData[] units, UnitEntityData caster,
             BlueprintScriptableObject[] blueprints, bool prepare)
         {
-            bool identities = units.Length == 4 && units.All(value => SnakePersistenceOwns(value, caster, blueprints)) &&
+            bool identities = units.Length == 6 && units.All(value => SnakePersistenceOwns(value, caster, blueprints)) &&
                 units.Select(value => value.Get<UnitPartSprint17PersistenceReceipt>().Role).OrderBy(value => value)
                     .SequenceEqual(SerpentinePersistenceReviewPolicy.Roles.OrderBy(value => value));
             bool duration = units.All(value => value.Descriptor.Buffs.Enumerable.Count(buff =>
@@ -327,8 +393,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Commands != null && value.View != null && ReferenceEquals(value.View.Data, value) && !value.Descriptor.State.IsDead),
                 new JObject { ["identities"] = identities, ["duration"] = duration, ["count"] = units.Length,
                     ["ids"] = new JArray(units.Select(value => value.UniqueId)) },
-                "four exact marked identities, native summoner context, live controls and finite native duration");
+                "six exact marked identities, native summoner context, live controls and finite native duration");
             if (!identities) throw new InvalidOperationException("Incomplete or ambiguous snake persistence fixture.");
+            InspectSprint17SalamanderPersistence(units, prepare);
             foreach (string key in new[] { "viper", "constrictor-snake" })
             {
                 var unit = SnakePersistenceRole(units, key);

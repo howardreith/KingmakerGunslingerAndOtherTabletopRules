@@ -27,6 +27,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         private int _humanSalamanderCheckpointSequence;
+        private bool _reviewingProductionSalamander;
 
         // Flushed request-local observations survive a native process crash.
         // They are never a final result, save-write audit or qualification.
@@ -56,9 +57,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void CheckHumanSalamander(string id, bool pass, JToken evidence, string expected)
         {
-            _serpentineBodyAssertions.Add(Assertion("sprint17-human-salamander-" + id, expected,
+            _serpentineBodyAssertions.Add(Assertion((_reviewingProductionSalamander ? "sprint17-salamander-production-" : "sprint17-human-salamander-") + id, expected,
                 evidence == null ? "no observation" : evidence.ToString(Formatting.None), pass,
-                "Request-local original hybrid research; not production, printed-profile or whole-Sprint qualification."));
+                _reviewingProductionSalamander ? "Actual registered Salamander; same-artifact production view/contact proof. Complete Sprint qualification requires all other mandatory requests." :
+                    "Request-local original hybrid research; not production, printed-profile or whole-Sprint qualification."));
         }
 
         private IEnumerable<int> ReviewSprint17HumanSalamander(ExpandedSummoningCorrectionFixture fixture)
