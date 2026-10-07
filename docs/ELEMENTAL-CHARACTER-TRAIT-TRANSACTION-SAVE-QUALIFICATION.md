@@ -40,7 +40,8 @@ The native contract is SaveManager from Assembly-CSharp MVID
 `PrepareSave(SaveInfo): void`, and
 `SaveStashedArea(SaveInfo, AreaPersistentState): void`.
 For a new descriptor, PrepareSave chooses the unused manual number, path and
-ZipSaver. For an already saved descriptor it retains its exact native path.
+ZipSaver. For overwrite, SaveRoutine first prepares a fresh native temporary descriptor;
+SerializeAndSaveThread then commits it to the exact original owned path.
 The new overwrite admission additionally requires the exact loaded descriptor,
 leased filename, native ZipSaver and preceding SHA-256. Existing new-save
 callers retain their original admission rules. Unarmed or foreign write APIs
@@ -70,9 +71,11 @@ Run, unelevated and on a clean exact artifact:
 .\scripts\Invoke-ElementalCharacterTraitPersistenceQualification.ps1 -ExpectedVersion 0.0.142 -PackagePath <exact-build-local-zip> -Confirm:$false
 ```
 
-Native qualification is pending until the final integration handoff records
-fresh-process PASS evidence. Respec UI is not automated; this gate qualifies
-saved visible-feature removal through the exact native deactivation lifecycle.
+Native qualification PASS on clean source 388b2d6e450c66b476c588ac41052a8752c32b71:
+three fresh processes, 67 assertions, two owned native saves, exact original
+94-file inventory and live restoration. See the final integration handoff and
+curated final qualification report. RespecUiAutomated: false.
+SavedFeatureRemovalLifecycleQualified: true.
 
 Native overwrite preserves the logical descriptor and final owned path. Exact
 SaveRoutine creates one fresh temporary SaveInfo, and SerializeAndSaveThread

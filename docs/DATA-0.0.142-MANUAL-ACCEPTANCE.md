@@ -4,9 +4,10 @@ OwnerAestheticApproval: NOT_RECORDED
 HumanTooltipAcceptance: PENDING
 HumanMerchantAcceptance: PENDING
 
-PR #28 remains draft. Automated no-save native checks passed, but saved-character
-persistence/respec remains BLOCKED-PERSISTENCE-FIXTURE. Human review does not
-substitute for that engineering gate.
+PR #28 is technically qualified and Ready for review after the final gate.
+The transaction-owned save sequence and native saved-feature removal lifecycle
+passed. No visible respec UI was automated. These optional human checks remain
+pending and are not inferred from mechanical runtime evidence.
 
 All four selected originals passed Codex objective inspection. Whiteout attempt
 3 replaced the rejected source; the other three source bytes are unchanged.

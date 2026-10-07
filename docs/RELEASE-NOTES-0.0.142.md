@@ -36,22 +36,27 @@ and Lunge are not included. The two released catalog authority hashes were
 corrected as metadata only; their referenced released production bytes did
 not change.
 
-Automated no-save publication and mechanics qualification passes on clean source
-64870d327b513077f0032a0ee1d544301378a5d4. Save/load and saved-character respec
-qualification are BLOCKED-PERSISTENCE-FIXTURE: no existing independent guarded
-working-save backup/restoration transaction supplies the required contract.
-PR #28 remains draft and is not merge-ready. This file is not a shipping claim.
+Publication, mechanics, save/load and native saved-feature removal are qualified
+on clean source 388b2d6e450c66b476c588ac41052a8752c32b71. PR #28 is technically
+merge-ready and Ready for review after finalization. The working save was a
+read-only seed; only one new transaction-owned logical manual save was written,
+verified in fresh processes and deleted. All 94 preexisting save files remain
+exact. No visible respec UI was automated.
+
 Owner icon/contact-sheet, tooltip and merchant-screen acceptance remain pending.
-No merge, tag or GitHub release is authorized by this candidate.
+No merge, tag or GitHub release was performed. This is a candidate release,
+not a claim that 0.0.142 has been shipped.
 
 Candidate archive: `KingmakerGunslinger-0.0.142-elemental-race-traits-and-content.zip`. The inherited firearm SoundBank remains byte-identical, SHA-256 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 
 Existing `CraftMagicItems.dll` compatibility remains inherited from the released checkpoint; this candidate introduces no new crafting integration.
 
-Current candidate validation passes 2,252 domain tests, 294 focused DATA checks,
-500 preflight checks and eight exact-artifact fresh-process runs (291 assertions),
-including two consecutive Whiteout passes. Every live snapshot was restored,
-all leases completed and no save was written. Persistence remains blocked.
+Current qualification passes 2,294 domain tests, 336 focused DATA checks,
+506 preflight checks and eleven exact-artifact fresh-process runs (358 assertions),
+including two consecutive Whiteout passes and the 67-assertion persistence gate.
+Nine guarded live transactions restored their acquired snapshots exactly.
+Two native writes were confined to the owned logical save; no preexisting save,
+autosave or quicksave changed. All leases completed.
 
 Historical inherited gates still preserve the earlier 1,288-test content checkpoint; that historical count does not describe this candidate.
 Historical fatigue-authority evidence remains at its recorded 1,325 tests; no prior runtime artifact is requalified by this count.

@@ -1,3 +1,213 @@
+# Authoritative final release gate: persistence qualified
+
+This section supersedes the earlier draft/blocker records retained below. The
+final candidate passed on clean gameplay/build source 388b2d6e450c66b476c588ac41052a8752c32b71.
+The following documentation-only closeout records that artifact; it changes no
+compiled source, packaged file, accepted icon or mechanics. Its exact pushed
+local/remote head is recorded in the post-push closure receipt and PR #28 body.
+The older 64870d3 artifact and results remain historical evidence.
+
+Repository: howardreith/KingmakerGunslingerAndOtherTabletopRules.
+Mission intake: d29adbc582d22751b021adfb25d2f155f02c4f08.
+Branch: codex/data-content-traits-0.0.142-integration-2026-10-06.
+Worktree: C:/Dev/KingmakerGunslingerLab/worktrees/data-content-traits-0.0.142-integration-2026-10-06.
+Master remains 2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a.
+Annotated v0.0.141 tag object 95b7d80d5a474a573e9478d2c951614f86b00a71 peels to 97f0a966b3219ce0122626a492529b509e1db880.
+Readiness source remains 38691cff652d1ed38314984c9ad74549639f3802.
+No merge, rebase, reset, force push, protected-ref modification or branch
+integration occurred. The final wrapper push and post-push verification establish
+a clean worktree and equal local/remote tip.
+
+- MergeReadyTechnical: true
+- PRDraft: false
+- MasterMerged: false
+- TagCreated: false
+- ReleasePublished: false
+- OwnerAestheticApproval: NOT_RECORDED
+- HumanTooltipAcceptance: PENDING
+- HumanMerchantAcceptance: PENDING
+- RespecUiAutomated: false
+- SavedFeatureRemovalLifecycleQualified: true
+
+## Exact final artifact
+
+- Qualified source: 388b2d6e450c66b476c588ac41052a8752c32b71.
+- Package: artifacts/packages/KingmakerGunslinger-0.0.142-elemental-race-traits-and-content.zip; 286 members.
+- ZIP SHA-256: af5b55059ba126528031c382bcc25fc10e7f8c492167029f26eedb456d609e07.
+- DLL SHA-256: c8410ddc99088ca93adea4dbfee50c63098e3b9f88696a8835c8ba604d013c29.
+- MVID: eb1a938c-7ff6-4a16-9334-b621532c2d8c.
+- Source fingerprint: a32a1618af531637937e496dd751d2f8ff86455161f5e3d21818384e3e776270.
+- Clean exact-reference Release build, deterministic reproduction and strict
+  standalone validation: PASS. The post-persistence rebuild produced the same
+  ZIP, DLL, MVID and source fingerprint.
+
+## Persistence ledger
+
+KMG_AUTOMATION_WORKING was the load-only seed. It was never written or backed
+up/replaced. No baseline game load occurred. No raw save parsing/copying/editing
+or visible respec UI was used.
+
+Transaction: 20261007T0112375577279Z_3c21a3e957644cc9a5a6f5c68bfe87ab.
+Owned descriptor: KMG_TRAITS_0142_20261007T0112375577279Z_3c21a3e957644cc9a5a6f5c68bfe87ab.
+Save ownership lease: runtime-evidence/elemental-trait-save-20261007T0112375577279Z_3c21a3e957644cc9a5a6f5c68bfe87ab/save-lease.json; Completed.
+Runtime lease: runtime-20261007T011238Z-aa372ac149054573a267bb6f4564b19d; Completed.
+Exact acquired live backup: runtime-backups/live-mod/20261007T0112391228984Z.
+
+P0 created a new native manual save with all four canonical visible facts once,
+exact owned providers/holder context and Fiery ON. P1 in a new process resolved
+all 11 stable identities, reconstructed each grant once and retained Fiery ON.
+Actual module OFF removed owned providers, and ON rebuilt them once; a rebuilt
+Fiery toggle begins OFF. The original module setting was restored before saving.
+
+In that same P1 process, native Owner.RemoveFact was applied to each visible
+canonical feature. Its production lifecycle removed the activatable/buff,
+Stoic provider/attached area/recipients, Aerial provider/modifier and Whiteout
+provider/listener state. Stable blueprints remained registered. P1 then saved
+only the same owned logical save. P3 loaded it in another fresh process and
+proved features and owned state absent, stable resolution/selection valid and
+foreign party facts, inventory, money and game-time witness preserved.
+
+The native overwrite API prepares a temporary SaveInfo/ZipSaver, then commits to
+the original owned path. Both initially absent paths were bound to the exact
+lease before any native write. Native success proved the temporary path absent
+and the final path unchanged. No external save copy/rename/replacement occurred.
+
+Two native SaveRoutine writes completed, with four authorized SaveStashedArea
+calls confined to those owned descriptors. Unexpected write API observations:
+zero. P3 made no write. The external lease deleted the owned save and proved
+both owned paths absent. All 94 preexisting .zks files,
+including autosaves/quicksaves, stayed byte-identical after every process.
+
+- Working seed original/final SHA-256: b29c1ccb5dd0235cd8dddeee5e9d3c23a2d4357b426691a93f4d71ca574755b2.
+- Initial/final inventory digest: 60707f8142689e73044ebff685ae53920d8b3e793a4fe6124066b4fb11409690.
+- Digest contract: SHA-256 of UTF-8 canonical JSON of name/length/sha256 records sorted by filename; keys sorted, compact separators.
+- Final save inventory exactly equals the pre-mission inventory: PASS.
+- Persistence live snapshot/after digest: 6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d.
+- Snapshot files/directories: 254 / 7.
+- Acquired live installation restoration: byte-for-byte PASS.
+- Save/runtime leases completed; owned processes automatically exited.
+- Final process/lock/staging audit is recorded in the post-push closure receipt.
+
+Aerial persistence proves its canonical provider and exact Wings of Air
+relationship. The separate Aerial gameplay run proves activation/deactivation;
+this ledger does not claim an active Wings buff was part of the saved witness.
+
+## Full final qualification
+
+Release baseline: 1958 registered tests.
+Mission intake: 2252.
+Current full unfiltered suite: 2294 / 2294 PASS.
+Focused DATA checks: 336 PASS, including 42 save-domain checks.
+Save orchestration: 56 PASS; existing generic helpers: 6 and 11 PASS.
+Icon corruption/intake: 26 and 12 PASS. Preflight/request checks: 506 PASS.
+Changed PowerShell/Python syntax: 9 / 18 files PASS.
+Repository, active icon catalog, protected assignments and live blueprint manifest:
+PASS. Registered identities and the accepted icon sources/exports are unchanged
+by this final mission.
+
+| Scenario / phase | Process | Assertions | Native save writes |
+| --- | ---: | ---: | ---: |
+| observe-published-elemental-character-traits | 34564 | 38 | 0 |
+| observe-firearm-descriptions | 39344 | 8 | 0 |
+| observe-model-d-vendors | 37152 | 26 | 0 |
+| observe-unpublished-race-trait-foundations | 38452 | 49 | 0 |
+| observe-unpublished-aerial-observer-foundation | 29980 | 29 | 0 |
+| observe-unpublished-whiteout-foundation | 35392 | 65 | 0 |
+| observe-unpublished-whiteout-foundation | 25308 | 65 | 0 |
+| working-save-smoke | 39032 | 11 | 0 |
+| persistence: prepare | 35060 | 23 | 1 |
+| persistence: verify-remove | 39760 | 34 | 1 |
+| persistence: verify-absent | 19940 | 10 | 0 |
+
+Total: 358 PASS assertions in 11 independent fresh Steam
+640820 processes. Two Whiteout passes used exactly the artifact above.
+Eight no-write runtime transactions and one three-process persistence transaction
+restored their exact acquired live snapshots: nine restorations. All processes
+automatically exited; no save/helper/runtime lease or compatibility lock remains
+after final closure.
+
+Actual working-tree bytes of all 351 protected released files match v0.0.141.
+Forbidden Summoning-tree diff is empty. No post-v0.0.141 Summoning source,
+asset, specialized test/scenario, save fixture, deployment or branch was imported
+or altered. Shared current count updates are limited to this mission's tests;
+inherited entries and historical records remain intact. The full suite includes
+inherited checks without treating them as new Summoning qualification.
+
+Diff/staged/tracked/untracked, generated/private/proprietary/binary,
+credential/secret, machine-path and no-merge ancestry audits: PASS.
+No other backlog work began; accepted icons were not altered or regenerated.
+
+## Failures and repairs retained
+
+- 37e8821170fb7557aa2816b8655c3c7d200b9a1d: Top-level typed SaveName was not forwarded into the closed trait plan. Repair: Add the closed bridge without accepting arbitrary request parameters. Preexisting saves and live files were exact after cleanup.
+- 6947998d79bc01ed9bd04e3062fca95305940350: Newtonsoft auto-parsed lease timestamps lost their ISO representation when compared as strings. Repair: Compare typed UTC DateTime ticks exactly. Preexisting saves and live files were exact after cleanup.
+- 0c62b76736483da9b5dd37cf62fcf17403212017: Native owner-attached Stoic area was valid but was not in the global AreaEffects collection. Repair: Observe the exact attached instance plus deduplicated global instances; use native Destroyed/IsEnded flags. Preexisting saves and live files were exact after cleanup.
+- 1db840ded072748739a3aa85ee1adcd640874c64: Native serialization OFF/ON removed and recreated the owned activatable, switching Fiery off. Repair: Follow native AddFacts: retain the serialized exact owned grant on temporary OnTurnOff, but remove it on real deactivation/module OFF. Preexisting saves and live files were exact after cleanup.
+- c1358920183ad625fda692e19c71b7d89115630b: Native path used equivalent mixed slash formatting. The prepare process itself passed. Repair: Compare normalized absolute owned paths, retaining strict lease/hash/root/filename checks. Preexisting saves and live files were exact after cleanup.
+- 50a5f5b18bbfd34a03d4819c08fee46f1fef56a6: Fresh reload, module transitions and feature removal passed; the guard rejected the exact native fresh-descriptor overwrite protocol before commit. Repair: Inspect the exact native MVID and SaveRoutine/SerializeAndSaveThread contract, bind its initially absent native temporary path to the same lease, and require final original path plus temporary absence. Preexisting saves and live files were exact after cleanup.
+
+The failed 1db840 attempt had one completed owned write; its older aggregate
+outer receipt counted only passing stages and reported zero. The corrected
+orchestrator aggregates native SaveRoutine observations from failed attempts
+as well. The 50a5f5 attempt observed two SaveRoutine calls but only its P0 write
+committed; P1 was rejected before commit. Every attempt restored original saves
+and live files and closed its leases. No blind retry or weakened assertion was
+used.
+
+## Commands and self-review
+
+- powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Build-Local.ps1 (clean source, then reproduced after persistence)
+- python tools/inspect_elemental_character_trait_icons.py --expect ready
+- python tools/test_elemental_character_trait_icon_intake.py
+- python tools/test_icon_catalog.py
+- PowerShell Parser.ParseFile on all nine changed PowerShell files; Python ast.parse on all eighteen changed Python files
+- artifacts/tests/Release/KingmakerGunslinger.DomainTests/KingmakerGunslinger.DomainTests.exe --test-prefix trait-save,elemental-character-trait,whiteout-,fiery-foundation,stoic-foundation,aerial-foundation,model-d,firearm-descriptions
+- powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test-ElementalCharacterTraitPersistence.ps1
+- powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test-TeleportationSaveProtection.ps1
+- powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test-TeleportationPersistenceTransaction.ps1
+- python tools/create_deterministic_package.py --source artifacts/staging/install/KingmakerGunslinger --output artifacts/mission/final-persistence/final-repeat-388b2d6.zip --expected-file-count 286
+- powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test-RuntimeScenarioPreflight.ps1 (unelevated, alone, no game)
+- powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-ElementalCharacterTraitPersistenceQualification.ps1 -ExpectedVersion 0.0.142 -PackagePath artifacts/local-runtime/0.0.142/KingmakerGunslinger-0.0.142-local-runtime.zip -Confirm:$false (unelevated guarded helper)
+- scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario <each closed scenario below> -ExpectedVersion 0.0.142 -ExitAfterCompletion:$true -ReuseInstalledArtifact -RuntimeLease <exact owned lease> (Steam 640820)
+- Actual-byte git hash-object comparison for 351 released files; git diff --name-only 97f0a966b3219ce0122626a492529b509e1db880..HEAD; no-merge ancestry and private/secret/generated/binary/path audits
+- git diff --check; git diff --cached --check; tracked/untracked audit
+
+The full release-base diff was reviewed for canonical resolve-or-create,
+registration/localization ownership, selector rollback and resolution retention
+on rollback failure, exact owned grant serialization/cleanup, module callbacks,
+Fiery persistence, Stoic caster/area context, exact Wings carrier, Whiteout
+backlink/patch, vendor normalization, firearm copy, icon provenance/assignments,
+and release/version scope. The save OFF/ON defect described above was repaired;
+final self-review found no additional defect.
+
+Curated exact evidence:
+reports/elemental-character-traits/DATA-0.0.142-FINAL-QUALIFICATION-2026-10-06.json.
+Raw save inventories, private witnesses, native inspection and machine-local
+runtime records remain ignored.
+
+## PR and remaining owner actions
+
+PR #28: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/28.
+Base: master. Title: Release 0.0.142: Elemental race traits and content polish.
+The qualified evidence is pushed before changing the PR to Ready for review.
+The final GitHub verification records open / non-draft / master / mergeable state
+and its exact final head. No merge, tag or GitHub release was performed.
+
+Optional owner reviews remain in docs/DATA-0.0.142-MANUAL-ACCEPTANCE.md:
+icons/contact sheet, tooltip presentation and merchant screens.
+Contact sheet: artifacts/mission/icon-review-qualified/contact-sheet.png.
+Whiteout previews: whiteout-128.png, whiteout-32.png and whiteout-32-gray.png
+in that packet. No human observation or approval was inferred.
+Owner merge, v0.0.142 tag and release remain owner actions.
+
+
+<!-- FINAL-PERSISTENCE-CLOSEOUT-END -->
+
+# Historical integration and blocker records
+
+The following records are preserved as history. Their draft/persistence-blocker
+statements describe their recorded checkpoints and are superseded above.
+
 # DATA 0.0.142 continuation closure — 2026-10-06
 
 Disposition: BLOCKED-PERSISTENCE-FIXTURE
