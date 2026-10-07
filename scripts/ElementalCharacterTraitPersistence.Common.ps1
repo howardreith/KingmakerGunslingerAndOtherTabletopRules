@@ -4,6 +4,19 @@ Set-StrictMode -Version Latest
 function Write-ElementalTraitSaveJson([string]$Path,$Value) {
     Write-KmgUtf8NoBom -Path $Path -Content (ConvertTo-Json -InputObject $Value -Depth 50)
 }
+function New-ElementalTraitSaveParameters([string]$SaveName,[hashtable]$Parameters) {
+    if($null -eq $Parameters -or $Parameters.Count -ne 2 -or
+        -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath') -or
+        $Parameters.phase -isnot [string] -or $Parameters.planPath -isnot [string] -or
+        $Parameters.phase -cnotin @('prepare','verify-remove','verify-absent')) {
+        throw 'Trait persistence requires typed -SaveName plus only the closed phase and planPath.'
+    }
+    if(($Parameters.phase -ceq 'prepare' -and $SaveName -cne 'KMG_AUTOMATION_WORKING') -or
+        ($Parameters.phase -cne 'prepare' -and $SaveName -cnotmatch '^KMG_TRAITS_0142_[0-9]{8}T[0-9]{13}Z_[a-f0-9]{32}$')) {
+        throw 'Trait persistence accepts only its load-only seed or unique owned descriptor.'
+    }
+    return @{saveName=$SaveName;phase=$Parameters.phase;planPath=$Parameters.planPath}
+}
 function Assert-ElementalTraitSaveLease($Lease,[string]$Phase) {
     $s=Get-Content -LiteralPath $Lease.Path -Raw|ConvertFrom-Json
     if($null -eq $Lease.Stream -or -not $Lease.Stream.CanRead -or $s.status -cne 'Active' -or

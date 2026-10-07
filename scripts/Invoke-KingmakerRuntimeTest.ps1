@@ -74,6 +74,8 @@ if ($scenarioMetadata.RequiresSaveName) {
         }
         $Parameters = $Parameters.Clone()
         $Parameters.saveName = $SaveName
+    } elseif ($Scenario -ceq 'elemental-character-traits-owned-save') {
+        $Parameters = New-ElementalTraitSaveParameters -SaveName $SaveName -Parameters $Parameters
     } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
         if ($Parameters.Count -ne 2 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath')) {
             throw 'Persistence requires typed -SaveName plus exactly phase and planPath.'
