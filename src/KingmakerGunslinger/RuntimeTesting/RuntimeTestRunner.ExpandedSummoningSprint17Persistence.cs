@@ -357,12 +357,47 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!prepare)
             {
                 var grab = SummonGrabComponent.Find(SnakePersistenceRole(units, "constrictor-snake"));
-                bool free = grab != null && units.All(value => value.Get<UnitPartGrappleInitiator>() == null &&
-                    value.Get<UnitPartGrappleTarget>() == null &&
-                    (value.Get<UnitPartSummonGrappleLinks>() == null || value.Get<UnitPartSummonGrappleLinks>().Count == 0) &&
-                    !value.Descriptor.HasFact(grab.HoldBuff) && !value.Descriptor.HasFact(grab.GrappledBuff) &&
-                    !value.Descriptor.State.HasCondition(UnitCondition.CantAct) && !value.Descriptor.State.HasCondition(UnitCondition.CantMove));
-                SnakePersistenceCheck("session-hold-reset", free, new JObject { ["free"] = free },
+                bool free = grab != null;
+                var resetRows = new JArray();
+                foreach (var unit in units)
+                {
+                    var initiator = unit.Get<UnitPartGrappleInitiator>();
+                    var held = unit.Get<UnitPartGrappleTarget>();
+                    var links = unit.Get<UnitPartSummonGrappleLinks>();
+                    bool holdBuff = grab != null && unit.Descriptor.HasFact(grab.HoldBuff);
+                    bool grappledBuff = grab != null && unit.Descriptor.HasFact(grab.GrappledBuff);
+                    bool cantAct = unit.Descriptor.State.HasCondition(UnitCondition.CantAct);
+                    bool cantMove = unit.Descriptor.State.HasCondition(UnitCondition.CantMove);
+                    int storedLinks = links == null ? 0 : links.Count;
+                    string[] failures = SerpentinePersistenceReviewPolicy.SessionResetFailures(
+                        grab != null, initiator != null, held != null, storedLinks,
+                        holdBuff, grappledBuff, cantAct, cantMove);
+                    free = free && failures.Length == 0;
+                    var initiatorTarget = initiator == null ? null : initiator.Target.Value;
+                    var targetOwner = held == null ? null : held.Initiator.Value;
+                    resetRows.Add(new JObject {
+                        ["id"] = unit.UniqueId, ["role"] = unit.Get<UnitPartSprint17PersistenceReceipt>().Role,
+                        ["free"] = failures.Length == 0, ["failures"] = new JArray(failures),
+                        ["initiatorPart"] = initiator != null, ["targetPart"] = held != null,
+                        ["initiatorTarget"] = initiatorTarget == null ? null : initiatorTarget.UniqueId,
+                        ["targetOwner"] = targetOwner == null ? null : targetOwner.UniqueId,
+                        ["linksPart"] = links != null, ["storedLinks"] = storedLinks,
+                        ["holdBuff"] = holdBuff, ["grappledBuff"] = grappledBuff,
+                        ["cantAct"] = cantAct, ["cantMove"] = cantMove,
+                        ["canAct"] = unit.Descriptor.State.CanAct, ["canMove"] = unit.Descriptor.State.CanMove,
+                        ["appearanceLock"] = unit.Descriptor.Buffs.GetBuff(
+                            BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null,
+                        ["buffs"] = new JArray(unit.Descriptor.Buffs.Enumerable.Select(value => new JObject {
+                            ["name"] = value.Blueprint.name, ["guid"] = value.Blueprint.AssetGuid,
+                            ["source"] = value.Context == null || value.Context.MaybeCaster == null ? null :
+                                value.Context.MaybeCaster.UniqueId, ["permanent"] = value.IsPermanent,
+                            ["secondsLeft"] = value.TimeLeft.TotalSeconds })) });
+                }
+                SnakePersistenceCheck("session-hold-reset", free, new JObject { ["free"] = free,
+                    ["grabPresent"] = grab != null,
+                    ["holdBlueprint"] = grab == null || grab.HoldBuff == null ? null : grab.HoldBuff.AssetGuid,
+                    ["grappledBlueprint"] = grab == null || grab.GrappledBuff == null ? null : grab.GrappledBuff.AssetGuid,
+                    ["units"] = resetRows },
                     "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD: no restored link, stale buff or movement/action lock");
             }
         }

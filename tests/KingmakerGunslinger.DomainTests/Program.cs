@@ -676,6 +676,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-crowd-malformed-awake-rejection", SerpentineRulesTests.CrowdAwakeRejectsMalformedOrDeadScope),
             Case("expanded-summoning.sprint17-persistence-arming-observation", SerpentineRulesTests.PersistenceArmingDiagnosticsDistinguishNativeOutcomes),
             Case("expanded-summoning.sprint17-persistence-native-appearance-ready", SerpentineRulesTests.PersistenceAppearanceRequiresNativeLocksToEnd),
+            Case("expanded-summoning.sprint17-persistence-reset-diagnostic-operands", SerpentineRulesTests.PersistenceResetDiagnosticsPreserveEveryOperand),
             Case("expanded-summoning.sprint17-command-maintain-policy", SerpentineRulesTests.CommandMaintainRequiresLaterRoundWithoutSecondAttack),
             Case("expanded-summoning.sprint17-poison-exhaustion-no-replay", SerpentineRulesTests.NativePoisonExhaustionRequiresRemovalWithoutReplay),
             Case("expanded-summoning.sprint17-snake-exact-land-ranks", SerpentineRulesTests.ExactRanksPreserveNativeContributions),

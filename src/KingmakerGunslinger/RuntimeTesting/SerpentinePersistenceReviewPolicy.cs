@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -42,6 +43,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return fadedIn && dissolve >= 0f && dissolve <= .02f &&
                 canAct && canMove && !appearanceLock;
+        }
+
+        // Read-only decomposition of the existing strict reload predicate.
+        // A label is evidence, never authority to remove a part/buff/condition.
+        internal static string[] SessionResetFailures(bool grabPresent,
+            bool initiatorPart, bool targetPart, int storedLinks, bool holdBuff,
+            bool grappledBuff, bool cantAct, bool cantMove)
+        {
+            var failures = new List<string>();
+            if (!grabPresent) failures.Add("grab-missing");
+            if (initiatorPart) failures.Add("initiator-part");
+            if (targetPart) failures.Add("target-part");
+            if (storedLinks != 0) failures.Add(storedLinks < 0 ? "invalid-link-count" : "stored-links");
+            if (holdBuff) failures.Add("hold-buff");
+            if (grappledBuff) failures.Add("grappled-buff");
+            if (cantAct) failures.Add("cant-act");
+            if (cantMove) failures.Add("cant-move");
+            return failures.ToArray();
         }
 
         // Diagnostic labels only: never force a hit/save or authorize a write.

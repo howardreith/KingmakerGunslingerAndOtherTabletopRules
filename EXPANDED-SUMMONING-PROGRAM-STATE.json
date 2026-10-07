@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exactec9721f7 smoke11/direct14/crowd18/prepare13 PASS; cleanup10/12 FAIL(aggregate hold-reset free=false, native write refused); absence NOT RUN. Venom state/source persisted and continuation/cure PASS. One prepare write leaves4marked fixtures in working save. Actual snapshot20261007T0116357820797Z restored01:39:29UTC exactly; no game/lease/staging. Next per-unit reset diagnostics and closed native persistence retry;32 roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Per-unit hold-reset diagnostic SOURCE PASS:270 focused/2072 full82.9s/complete178.8s/clean14-reference Release/strict320. Same strict predicate, no reset/extra wait/gameplay change. Runtime NOT RUN; new exact-head four-stage persistence protocol NEXT. Last exactec crowd18/prepare13 PASS, cleanup10/12 FAIL;4marked units still saved. Installation restored exactly;32 roots hidden;Phase2C deferred.",
     "sprint17SnakeCommandSlice": {
       "pairedContactObserver": "RUNTIME DIAGNOSTIC COMPLETE; same-frame Viper gap does not improve; Constrictor commands ended and correlation rejected. Existing51 assertions unchanged; no waiver.",
       "status": "BOUNDED NATIVE COMMAND/CONTACT SLICE PASS51/51; FULL SPRINT17 NOT QUALIFIED",
@@ -352,6 +352,30 @@
       "evidence": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-EVIDENCE.json",
       "restoration": "VERIFIED actual 136-file / Info 0.0.117 snapshot; lease Completed; no game, compatibility lock or staging",
       "salvageImported": false
+    },
+    "sprint17SnakeResetDiagnostic": {
+      "status": "SOURCE PASS; RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "sourceParent": "c89525085901c9b63ccb7f3d57a8ced3ea45354c",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC.md",
+      "focused": 270,
+      "domain": 2072,
+      "domainSeconds": 82.9,
+      "sourceGateSeconds": 178.8,
+      "cleanExactReferences": 14,
+      "strictPackageMembers": 320,
+      "predicateChanged": false,
+      "productionGameplayChanged": false,
+      "extraWaits": false,
+      "manualResetCalls": false,
+      "runtimeExecuted": false,
+      "runtimeQualified": false,
+      "remainingSavedOwnedFixtures": 4,
+      "nextProtocol": [
+        "working-save-smoke",
+        "working-save-expanded-summoning-prepare",
+        "working-save-expanded-summoning-verify-cleanup",
+        "working-save-expanded-summoning-verify-absent"
+      ]
     },
     "sprint17SnakeCrowdPersistenceRepair": {
       "status": "OWNED AWAKE/ARMING REPAIR PASSED; CLEANUP HOLD-RESET FAIL; FULL SPRINT17 NOT QUALIFIED",
@@ -756,7 +780,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Per-unit reset diagnostics for Grab presence, native parts/links, exact owned buffs and CantAct/CantMove, preserving the same strict assertion. Source checks, NOT QUALIFIED commit/policy-push, new exact artifact and complete affected native persistence protocol. Safely retire only4receipt-owned saved fixtures through existing prepare path; no save surgery or baseline access. Then lifecycle/UI/private routes, separate Salamander, fullSprint17/Phase2B. Stop for Phase2B owner review;Phase2C authorized but deferred.",
+  "nextConcreteAction": "Policy-push the source-qualified read-only reset diagnostic; run every exact-head prelaunch gate, then the complete affected smoke/prepare/cleanup/absence protocol on one immutable package. Existing native prepare must retire only4receipt-owned stale fixtures. No save surgery, protected-baseline access, manual reset, extra-wait assumption or relaxed predicate. Read detailed failure operands before changing gameplay. Continue lifecycle/UI/private routes, separate Salamander, fullSprint17/Phase2B; stop for owner review.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
