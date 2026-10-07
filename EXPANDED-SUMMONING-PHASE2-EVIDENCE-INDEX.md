@@ -1,58 +1,49 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Exact snake command/contact PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-PASS-EVIDENCE.json):
-candidate983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f passes fresh-Steam
-smoke11/11,profile/body/rules62/62 (46 metadata rows),commands51/51 (8 rows).
-All8 manual/AI RTWP/turn-based cells pass native setup, approach, real bite,
-signature, at-rule jaw contact and cleanup. AI cells receive no manual command.
+[Snake crowd/persistence attempt1](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-EVIDENCE.json):
+exact candidate4c95cf139847b765519eccd0b39117c8bf2e56cf is NOT QUALIFIED.
+Fresh Steam640820 results: smoke11/11 PASS; direct14/14 PASS; crowd17/18 FAIL;
+prepare10/13 FAIL; cleanup3/6 FAIL; absence NOT RUN. No native save write.
+[Failure review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-REVIEW.md).
 
-Every at-rule gap is0m with actual BiteAttack01_Long_8m playback,weight1.
-Projected native clip distance8.321414-8.514899 corresponds to world
-1.6642828-1.70297992m at the unchanged0.2 view scale. Bite remains2ft,
-corpulence0.6/0.5m and native approach sum1.7096m. No actor/reach/mesh/range/
-clip mutation or0.25m threshold waiver. Constrictor's command-ended end-frame
-samples remain uncorrelated; at-rule contact is the acceptance measurement.
-This proves the observed long-variant01 cells, not every possible size/variant.
+The only crowd failure is Viper awake-list restoration. All five Vipers and
+four Constrictors pass movement thresholds, original identity/geometry,
+native timer expiry and exact owned-resource reclamation. Direct movement
+is12.353m/12.314m at max2.032m/s; six captured private resources per subject
+are destroyed, with zero later instance-owned clones. These are bounded
+observations, not a full-sprint pass or human approval.
 
-Exact prelaunch PASS:260 focused,2062 full85.9s,complete184.7s,
-508 preflight,168 orchestration,17 provenance,persistence11/3/19,crowd5/7,
-repository/static/icon/manifest,clean14-reference Release,strict320.
-[Native distance review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-BITE-DISTANCE-REVIEW.md).
-All four failed command candidates and earlier research remain preserved.
+Prepare did not establish venom; the row lacks exact attack/save observations,
+so its cause is unresolved. Hold, four owned identities, native appearance,
+skills and unrelated-unit preservation pass. No save was armed. Fresh cleanup
+found zero prepared units and correctly refused a write. Absence is blocked
+until a successful native cleanup save; no absence qualification is claimed.
+No manual save surgery, protected-baseline load/write or production fix.
 
-Actual snapshot2258281699283Z restored2026-10-06T23:11:14.0412304Z:
-136 files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Lease Completed/recovery=false/released;no game/shared runtime lock/this-
-worktree staging/save write. This is bounded slice qualification only.
+Exact prelaunch PASS:264 focused,2066 full82.5s,complete177.7s,
+508 preflight,168 orchestration,17 provenance,persistence11/6/3/56,
+crowd8/11,actual-launcher13/10; repository/static/icon/manifest,
+clean14-reference Release,strict320-member version0.0.141 package.
+All old artifacts, including d700's no-deployment launcher rejection, remain.
 
-[Closed snake crowd extension](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-SLICE.md)
-is SOURCE PASS,NOT RUN:261 focused,2063 full87.6s,complete183.9s,
-clean14-reference Release/strict320;8 request round trips/11 rejections.
-It adds only the two private snake keys, original-instance ownership and
-native cleanup checks. Their fourth frame is post-move; no legacy synthetic
-MainHand attack probe. Direct14/crowd18 are unexecuted source expectations.
+Actual leased snapshot20261007T0020146810604Z restored
+2026-10-07T00:42:42.5922110Z:136 files/Info0.0.117/
+tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared runtime lock/this-
+worktree staging. Zero save writes; unrelated September14 extraction untouched.
 
-[Closed snake persistence fixture](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PERSISTENCE-SLICE.md)
-is SOURCE PASS, NOT RUN: 264 focused; 2066 full tests (85.7s);
-complete repository/build/strict320 gate (180.1s). Six exact JSON request
-round trips, three historical defaults and 56 rejection cases PASS.
-Four receipt-owned summons only: Viper, Constrictor and two Wolf targets.
-Venom must retain its source/counters; the hold must reset cleanly.
-No new runtime transaction or save write. Gameplay/publication unchanged.
+[Prior exact command/contact PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-PASS-EVIDENCE.json)
+remains983828bf:smoke11/profile-body-rules62/commands51; all8 at-rule jaw
+gaps0m on genuine native long Bite variant01. That qualification does not
+transfer to another DLL, and no threshold/attack/reach change is accepted.
 
-[Outer launcher routing correction](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LAUNCHER-REVIEW.md)
-is SOURCE PASS: actual-launcher WhatIf13 accepted/10 rejected; preflight508;
-264 focused,2066 full84.0s,complete180.4s,clean14-reference/strict320.
-Exact d70070a5 built but its old outer guards rejected snakes before any lease
-or deployment. That package and failing test are preserved. The corrected
-wrapper changes no gameplay; freeze/rebuild the replacement exact head.
-
-Next: freeze an exact candidate for the closed snake crowd/persistence batch,
-then finish native hit/death/fade/lifecycle and UI/private routes. This bounded
-save-fixture gate does not qualify the whole sprint. Separate Salamander
-implementation, Sprint17 hidden/publication gates and fullPhase2B closure
-remain mandatory. STOP for owner review afterward; Phase2C deferred.
-32 roots hidden; Sprint17/full Phase2B NOT QUALIFIED.
+Next: bounded owned-awake restoration with before/after identity evidence,
+and native venom-arming attack/save instrumentation. Preserve exact assertions;
+focused/source gates, coherent NOT QUALIFIED commit/policy push, a new exact
+artifact and the complete affected batch. Then native hit/death/fade/lifecycle,
+UI/private32 routes and separate Salamander. Sprint17 hidden/publication and
+fullPhase2B closure remain mandatory. STOP for owner review afterward;
+Phase2C authorized but deferred.32 roots remain hidden.
 
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
 bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature

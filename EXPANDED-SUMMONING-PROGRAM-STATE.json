@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact983828bf bounded smoke11/rules62/commands51 PASS; actual snapshot2258281699283Z restored23:11:14UTC. Crowd/persistence SOURCE PASS, NOT RUN. d700 outer-launcher prelaunch rejection preserved; corrected actual-launcher13/10,preflight508,264 focused/2066 full84.0s/complete180.4s/strict320 PASS. Next replacement exact-head gates and bounded crowd/persistence batch, then lifecycle/UI/private routes and separate Salamander.32 roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact4c95cf13 smoke11/direct14 PASS; crowd17/18 FAIL(owned awake restoration); prepare10/13 FAIL(no venom,0writes); cleanup3/6 FAIL(no prepared units,0writes); absence NOT RUN. Actual snapshot20261007T0020146810604Z restored00:42:42UTC exactly. Next owned-only awake repair and exact venom attack/save instrumentation, then new exact affected batch.32 roots hidden;Phase2C deferred.",
     "sprint17SnakeCommandSlice": {
       "pairedContactObserver": "RUNTIME DIAGNOSTIC COMPLETE; same-frame Viper gap does not improve; Constrictor commands ended and correlation rejected. Existing51 assertions unchanged; no waiver.",
       "status": "BOUNDED NATIVE COMMAND/CONTACT SLICE PASS51/51; FULL SPRINT17 NOT QUALIFIED",
@@ -215,8 +215,8 @@
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exact983828bf smoke11/11,profile/body/rules62/62(46rows),native commands/contact51/51(8rows). Bounded slices only; fullSprint17 NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "PASS:all8 real command contacts gap0 at-rule using native long Bite clip, distance projection8.321414..8.514899 versus world1.6642828..1.70297992. All setup/approach/attack/signature/AI/cleanup pass; no assertion or combat reach change.",
-    "lastGuardedRestoration": "Actual snapshot20261006T2258281699283Z restored2026-10-06T23:11:14.0412304Z;136files/Info0.0.117/exacttree VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/this-worktree staging/save write. Unrelated September14 root extraction untouched.",
+    "lastGuardedRuntimeResult": "Sprint17 NOT QUALIFIED. Exact4c95cf13 smoke11/direct14 PASS; crowd17/18 FAIL(owned awake restoration); prepare10/13 FAIL(no venom,0writes); cleanup3/6 FAIL(no prepared units,0writes); absence NOT RUN. Actual snapshot20261007T0020146810604Z restored00:42:42UTC exactly. Next owned-only awake repair and exact venom attack/save instrumentation, then new exact affected batch.32 roots hidden;Phase2C deferred.",
+    "lastGuardedRestoration": "Actual snapshot20261007T0020146810604Z restored2026-10-07T00:42:42.5922110Z;136files/Info0.0.117/exacttree VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/this-worktree staging. Zero native working-save writes; protected baseline untouched. Unrelated September14 root extraction untouched.",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -354,7 +354,7 @@
       "salvageImported": false
     },
     "sprint17SnakeCrowdSlice": {
-      "status": "SOURCE PASS; NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "status": "DIRECT14/14 PASS; CROWD17/18 FAIL; FULL SPRINT17 NOT QUALIFIED",
       "sourceBase": "544c5950bd8f8f793fc124904469faf51aa7801f",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-SLICE.md",
       "scenario": "working-save-expanded-summoning-creature-review",
@@ -381,16 +381,30 @@
       "runtimeQualified": false,
       "publicationAuthorized": false,
       "saveWrite": false,
-      "legacyMainHandProbe": false
+      "legacyMainHandProbe": false,
+      "sourceCandidate": "4c95cf139847b765519eccd0b39117c8bf2e56cf",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-EVIDENCE.json",
+      "runtimeExecuted": true,
+      "directPassed": 14,
+      "crowdPassed": 17
     },
     "sprint17SnakePersistenceSlice": {
-      "status": "SOURCE PASS; NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "status": "PREPARE10/13 FAIL; CLEANUP3/6 FAIL; ABSENCE NOT RUN; ZERO WRITES",
       "sourceBase": "685aea21fc6b93954294fe9f2dd8ab8a6e813430",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PERSISTENCE-SLICE.md",
       "scope": "snakes",
-      "roles": ["viper", "constrictor-snake", "venom-target", "hold-target"],
+      "roles": [
+        "viper",
+        "constrictor-snake",
+        "venom-target",
+        "hold-target"
+      ],
       "ownership": "Exact serialized test receipt plus native registered blueprint, unit, caster, area and lifecycle context; unmarked units fail closed untouched",
-      "sourceExpectedAssertions": { "prepare": 13, "cleanup": 12, "absent": 5 },
+      "sourceExpectedAssertions": {
+        "prepare": 13,
+        "cleanup": 12,
+        "absent": 5
+      },
       "focused": 264,
       "domain": 2066,
       "domainSeconds": 85.7,
@@ -405,10 +419,14 @@
       "saveWritePerformed": false,
       "workingSaveWriteAuthority": "Existing exact native prepare/cleanup sentinel only; absent never writes",
       "acceptedGrappleReset": true,
-      "grappleReestablishment": false
+      "grappleReestablishment": false,
+      "sourceCandidate": "4c95cf139847b765519eccd0b39117c8bf2e56cf",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-EVIDENCE.json",
+      "runtimeExecuted": true,
+      "absenceQualified": false
     },
     "sprint17SnakeLauncherRouting": {
-      "status": "SOURCE PASS; RUNTIME NOT RUN",
+      "status": "EXACT LAUNCHER ROUTING EXECUTED; GAMEPLAY BATCH FAILED; ABSENCE SAFELY BLOCKED",
       "sourceParent": "d70070a5632bd391d0e5fdf7b267e33b2d8fd1e2",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LAUNCHER-REVIEW.md",
       "classification": "Outer launcher integration; prelaunch rejection, not gameplay failure",
@@ -418,12 +436,13 @@
       "standalonePreflight": 508,
       "focused": 264,
       "domain": 2066,
-      "domainSeconds": 84.0,
+      "domainSeconds": 84,
       "sourceGateSeconds": 180.4,
       "strictPackageMembers": 320,
       "runtimeQualified": false,
-      "deploymentPerformed": false,
-      "saveWritePerformed": false
+      "deploymentPerformed": true,
+      "saveWritePerformed": false,
+      "sourceCandidate": "4c95cf139847b765519eccd0b39117c8bf2e56cf"
     }
   },
   "charter": {
@@ -701,7 +720,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Freeze a clean exact candidate for bounded snake crowd14/18 and persistence13/12/5 qualification, with complete prelaunch and exact restoration. Then finish native hit/death/fade/lifecycle,UI/private32 routes and separate Salamander. Finish Sprint17 hidden/publication/fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.",
+  "nextConcreteAction": "Bounded owned-awake repair and native venom-arming instrumentation; focused/source gates, commit/policy-push NOT QUALIFIED, new exact artifact and complete affected batch. Then lifecycle/UI/private routes, separate Salamander and full Sprint17/Phase2B gates. Stop after Phase2B owner-review handoff; Phase2C authorized but deferred.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
