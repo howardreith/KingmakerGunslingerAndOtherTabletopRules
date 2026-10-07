@@ -29,7 +29,51 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Salamander printed profile/feats/skills/defenses, native Medium2d6/10ft tail, owner heat and project tail-grab/constrict source-qualified:311focused/2113full/clean14/strict321. No new runtime deployment or save write. Exact6ae91 bounded human15/15 PASS remains prototype-only. Production visual adoption and complete exact-head gates next.32roots hidden; Phase2C authorized but deferred.",
+    "currentSubItem": "STOP with PARTIAL PASS at owner efficiency amendment retry limit. Viper18/Constrictor14 independently qualified/published on996c5fe7 after hidden47e8c121 PASS. Salamander mandatory native-per-weapon-reach observer FAIL retained;computed2/6 was supplied where raw5/10 was expected;no demonstrated production defect. Further bounded observation-only correction and exact-artifact qualification require new owner authority. Full Phase2B closure matrices NOT RUN;Phase2C authorized but deferred/not started.",
+    "sprint17IntegratedQualification": {
+      "status": "PARTIAL_PASS",
+      "hiddenCandidate": "47e8c1214f93e4c725a35261083cbd7b44f3f041",
+      "publicationCandidate": "996c5fe7eaf8c3be1966746f0227aa9f85074d73",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json",
+      "viper": "QUALIFIED/PUBLISHED18roots",
+      "constrictorSnake": "QUALIFIED/PUBLISHED14roots",
+      "salamander": "PARTIAL/NOT QUALIFIED;one reach-observation failure retained;5 prior public roots preserved and PASS",
+      "hiddenAssertions": {
+        "passed": 422,
+        "total": 423
+      },
+      "publicationAssertions": {
+        "passed": 74,
+        "total": 74
+      },
+      "sourceGate": {
+        "passed": 2123,
+        "failed": 0,
+        "referenceCount": 14,
+        "memberCount": 321
+      },
+      "surface": {
+        "registered": 1008,
+        "published": 1008,
+        "withheld": 0,
+        "nativeWrappers": 29,
+        "visibleChoices": 1037
+      },
+      "failedAssertion": "sprint17-salamander-profile-native-per-weapon-reach",
+      "failureKind": "FIXTURE_OBSERVATION_CONTRACT;no demonstrated production range defect",
+      "retryBudget": {
+        "productUsed": 0,
+        "productMaximum": 1,
+        "observationUsed": 1,
+        "observationMaximum": 1
+      },
+      "phase2BClosed": false,
+      "closureMatricesRun": false,
+      "phase2CStarted": false,
+      "restoration": "VERIFIED136files/Info0.0.117/tree216A9DC2...;lease Completed/released;no game/active staging;publication0savewrites;prior47native cleanup/fresh absence PASS",
+      "stop": "Owner efficiency retry limit;no additional observer correction or waiver. Further bounded raw-range observation correction requires new owner authority.",
+      "historicalRecordsMeaning": "Earlier named checkpoints retain their own exact source/artifact counts and qualification scope;they do not override this current integrated result."
+    },
     "sprint17SalamanderProfileSource": {
       "sourceBase": "65bc05362920a7bdae5f8cfc8b0f1275c3d562d0",
       "status": "SOURCE QUALIFIED; RUNTIME NOT QUALIFIED",
@@ -755,11 +799,11 @@
     "sprint22Authorized": false,
     "sprint14Published": true,
     "sprint14Status": "COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION (PASSIVE_CREATURE_SENSES_UNMODELED)",
-    "publishedGeneratedPlacements": 976,
+    "publishedGeneratedPlacements": 1008,
     "registeredGeneratedPlacements": 1008,
-    "withheldGeneratedPlacements": 32,
+    "withheldGeneratedPlacements": 0,
     "retainedNativeWrappers": 29,
-    "totalVisibleChoices": 1005,
+    "totalVisibleChoices": 1037,
     "sprint15Published": true,
     "sprint15Status": "COMPLETE AND PUBLISHED",
     "phase2CAuthorized": true,
@@ -1380,7 +1424,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Next: adopt the qualified human/original-tail seam ONLY for the exact production Salamander, with native settlement/fallback/resource cleanup and preserved GUIDs/ five roots. Complete guarded mechanics/command/AI/UI/routes/persistence observers, freeze a clean committed candidate, rerun all exact prelaunch gates and one full same-artifact Sprint17 hidden batch. Publish32snake roots only after all gates, exercise affected Salamander routes, then fullPhase2B closure and STOP owner review. Phase2C remains authorized but deferred; no18–22 in this mission.",
+  "nextConcreteAction": "STOP with PARTIAL PASS at owner efficiency amendment retry limit. Viper18/Constrictor14 independently qualified/published on996c5fe7 after hidden47e8c121 PASS. Salamander mandatory native-per-weapon-reach observer FAIL retained;computed2/6 was supplied where raw5/10 was expected;no demonstrated production defect. Further bounded observation-only correction and exact-artifact qualification require new owner authority. Full Phase2B closure matrices NOT RUN;Phase2C authorized but deferred/not started.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
