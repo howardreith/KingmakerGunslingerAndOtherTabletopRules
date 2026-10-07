@@ -354,14 +354,51 @@ Optional post-native-frame art shows the original body, not the earlier shredded
 frame; neither that image nor finite arithmetic qualifies full visual/contact work.
 Salamander's production prefab/profile/identity remain unchanged at this boundary.
 
+## Bounded spear/contact correction — source PASS, exact runtime pending
+
+Source parent1ef236cb0bfeadf08fd291f01be8edd50fb9c15a.
+[Exact source/offline hashes and failure dispositions](EXPANDED-SUMMONING-SPRINT17-HUMAN-CLOSE-CONTACT-SOURCE-EVIDENCE.json).
+294focused/2096unfiltered83.4s; complete180.7s, clean14-referenceRelease,
+deterministic strict321. No runtime launch or transfer of prior12/15 evidence.
+
+Native read-only attack-count inspection proves the manufactured-weapon branch
+retains BAB iteratives. Only the Salamander spear is changed from natural to
+manufactured. No added attack, native animation change, or Pixie-bow change.
+The real full-attack assertion now also requires live BAB8 and non-natural
+spear type, alongside two native spear events and one owned tail event.
+
+The original wrist-origin measurement is retained. Grip additionally uses only
+the exact hand/three-finger skin vertices (seven drivers per side, influence
+at least0.5, minimum8 vertices). No forearm, opposite hand or unknown driver.
+The8cm grip and25cm striking limits remain unchanged. Target bounds, owner
+heading and closest striking/target points are recorded at the actual event.
+
+The target-free1.4second/.6act original tail sweep now keeps its proximal coil
+and brings the distal half through close-melee space. No target/reach/damage
+input or native bone changes. Three exports matchb5524a69...1c0f19; only
+originalTailSlap differs from the prior JSON, not geometry/UV/paint/binds.
+The first revised quaternion wind-up dipped6.13cm below the authoring plane;
+privatev3 is preserved and rejected. Fixed yaw/elevation authoring instead
+passes10 tests and29 actual evaluated-mesh poses, minimumY0.03672358m.
+The new permanent authoring test covers ground clearance and native isolation
+through wind-up/recovery.32rest/strike/recovery panels are retained; the
+offline coil is continuous and finite, with angular bends at extreme poses.
+These panels do not establish live interpolation/contact or owner art approval.
+
+The first complete source gate correctly rejected the stale packaged-export
+checksum. Both failed ZIPs/log remain archived. The pin now names this reviewed
+export, and the full gate passed again; no check disabled or failed result waived.
+
 ## Next exact work
 
-Next: correct the demonstrated Salamander-only manufactured-spear classification;
-record live BAB/type/full attack. Audit native wrist versus weighted hand contact
-and the original distal-tail path before changing those measurements or geometry.
-Focused/full source gates, push, exact-head artifact and all15 guarded human checks
-must pass. Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/
-publication gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Next: freeze/push this corrected source; rebuild its exact clean head with all
+prelaunch/harness gates, then fresh Steam640820 smoke11 plus ALL15 human
+binding/rollback/movement/full-attack/contact/destruction checks. Snapshot only
+after acquiring the runtime lease; restore that exact installation afterward.
+Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
+gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Preserve all native two-handed weapon handling and native references.
+HumanReview: NOT_PERFORMED_NONBLOCKING.
 Preserve native two-handed spear handling
 and all native references. Prove the original tail with real commands, then
 finish Salamander's printed mechanics. Only a complete same-artifact Sprint17

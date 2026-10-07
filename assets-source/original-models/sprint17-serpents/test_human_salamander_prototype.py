@@ -150,11 +150,62 @@ class HumanSalamanderTests(unittest.TestCase):
                                 for point, rest in zip(model.tail_pose(time), model.REST)))
         for time in (.55, model.ACT_TIME, .70, .80):
             points = model.tail_pose(time)
-            self.assertTrue(all(abs(point.x) < 1e-5 for point in points))
-            self.assertGreater(points[-1].z, 4)
+            distal = points[5:]
+            self.assertTrue(all(abs(point.x) < .80 and .9 < point.z < 3.05 and
+                                .35 < point.y < .85 for point in distal))
+            self.assertLess(distal[0].z, 1.1, "striking half includes close-melee space")
+            self.assertGreater(distal[-1].z, 2.5)
+            # A fixed authoring envelope, not a runtime target or collision
+            # clamp. The original distal surface must pass the front of the
+            # body instead of extending straight beyond the spear opponent.
+            for forward in (1.0, 1.5, 2.0, 2.5, 3.0):
+                point = model.Vector((0, forward))
+                gaps = []
+                for first, second in zip(distal, distal[1:]):
+                    a, b = model.Vector((first.x, first.z)), model.Vector((second.x, second.z))
+                    axis = b - a
+                    projected = a + axis * max(0, min(1, (point - a).dot(axis) / axis.length_squared))
+                    gaps.append((point - projected).length)
+                self.assertLess(min(gaps), .30, "authored distal sweep misses its forward envelope")
         for time in (-.001, 1.401, float("nan"), float("inf")):
             with self.assertRaises(ValueError):
                 model.tail_pose(time)
+
+    def test_evaluated_skin_stays_above_ground_through_windup_and_recovery(self):
+        bpy = model.common.bpy
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        rig_data, rig = model.decode_rig(self.capture())
+        armature = model.common.shared.build_armature(rig_data)
+        native = {name: armature.pose.bones[name].matrix.copy() for name in model.NATIVE}
+        mesh = bpy.data.meshes.new("OriginalGroundTest")
+        body = bpy.data.objects.new("OriginalGroundTest", mesh)
+        bpy.context.collection.objects.link(body)
+        bm, weights, uvs = bmesh.new(), {}, {}
+        model.build_body(bm, weights, uvs, rig, "salamander")
+        bm.to_mesh(mesh)
+        indexed = {vertex.index: row for vertex, row in weights.items()}
+        bm.free()
+        groups = {name: body.vertex_groups.new(name=name) for name in model.BONES}
+        for index, row in indexed.items():
+            for name, weight in row:
+                groups[name].add([index], weight, "REPLACE")
+        body.modifiers.new(name="AuthoredPoseTest", type="ARMATURE").object = armature
+        body.parent = armature
+        for index in range(29):
+            time = index * model.DURATION / 28
+            model.pose_original_tail(armature, time)
+            bpy.context.view_layer.update()
+            self.assertTrue(all(armature.pose.bones[name].matrix == matrix
+                                for name, matrix in native.items()), time)
+            evaluated = body.evaluated_get(bpy.context.evaluated_depsgraph_get())
+            posed = evaluated.to_mesh()
+            try:
+                points = [body.matrix_world @ vertex.co for vertex in posed.vertices]
+                self.assertEqual(2198, len(points))
+                self.assertTrue(all(math.isfinite(value) for point in points for value in point), time)
+                self.assertGreaterEqual(min(point.y for point in points), .005, time)
+            finally:
+                evaluated.to_mesh_clear()
 
     def test_offline_pose_changes_only_original_drivers(self):
         model.common.bpy.ops.wm.read_factory_settings(use_empty=True)

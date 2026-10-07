@@ -357,6 +357,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int ShadowDemonColdDamageDice = 1;
 
         internal const int SalamanderHitDice = 8;
+        internal const bool SalamanderSpearIsNatural = false;
         internal const int SalamanderStrength = 16;
         internal const int SalamanderDexterity = 13;
         internal const int SalamanderConstitution = 18;
