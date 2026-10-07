@@ -37,7 +37,8 @@ foreach ($scenario in @('working-save-expanded-summoning-prepare',
         $valid++
     }
 }
-foreach ($roster in @('crocodile,dire-crocodile', 'viper,constrictor-snake')) {
+foreach ($roster in @('crocodile,dire-crocodile', 'viper,constrictor-snake',
+        'salamander', 'viper,constrictor-snake,salamander')) {
     Invoke-SourceOnlyLauncher 'working-save-expanded-summoning-creature-review' @{ creatures = $roster }
     $valid++
     Invoke-SourceOnlyLauncher 'working-save-expanded-summoning-creature-review' @{
@@ -60,7 +61,7 @@ $badCases = @(
     @{ Scenario=$prepare; Parameters=@{persistenceScope='snakes';extra='untrusted'} },
     @{ Scenario=$prepare; Parameters=@{persistenceScope='snakes'}; ExitAutomatically=$false },
     @{ Scenario=$crowd; Parameters=@{creatures='viper';quantity='OneD3'} },
-    @{ Scenario=$crowd; Parameters=@{creatures='viper,salamander';quantity='OneD4PlusOne'} },
+    @{ Scenario=$crowd; Parameters=@{creatures='viper,salamander,foreign';quantity='OneD4PlusOne'} },
     @{ Scenario=$crowd; Parameters=@{creatures='Viper';quantity='OneD4PlusOne'} },
     @{ Scenario='working-save-smoke'; Parameters=@{persistenceScope='snakes'} }
 )

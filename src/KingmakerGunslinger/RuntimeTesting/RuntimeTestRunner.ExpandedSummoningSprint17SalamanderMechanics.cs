@@ -48,7 +48,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ReviewSprint17SalamanderMechanics(ExpandedSummoningCorrectionFixture fixture)
         {
-            CreateExpandedSummoningCorrectionHostile(fixture);
+            // The preceding snake signatures already own a hostile target.
+            // Reuse it rather than overwrite its only cleanup receipt.
+            if (fixture.Hostile == null || fixture.Hostile.Destroyed)
+                CreateExpandedSummoningCorrectionHostile(fixture);
             var target = fixture.Hostile;
             var owner = CastSprint17FinalSnake(fixture, "salamander");
             foreach (int step in WaitSprint17FinalAppearance(new[] { owner })) yield return step;
@@ -60,13 +63,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
             var random = UnityEngine.Random.state;
             int bonus = owner.Stats.AdditionalAttackBonus.BaseValue, cmb = owner.Stats.AdditionalCMB.BaseValue;
+            var powerAttack = owner.Descriptor.ActivatableAbilities.Enumerable.Single(a =>
+                a.Blueprint.AssetGuid == EasternWeaponNamedBlueprints.PowerAttackToggleGuid);
+            bool powerAttackBefore = powerAttack.IsOn;
             EventBus.Subscribe(observer);
             try
             {
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100;
                 owner.Stats.AdditionalCMB.BaseValue = 100;
                 target.Stats.HitPoints.BaseValue = 100000; target.Descriptor.Damage = 0;
-                ProbeSprint17SalamanderDefenses(owner, target);
+                powerAttack.IsOn = false; powerAttack.Stop(true);
+                var incomingOwner = CastExpandedSummoningQuietUnit(fixture, "wolf", target);
+                try { ProbeSprint17SalamanderDefenses(fixture, owner, incomingOwner); }
+                finally { DisposeExpandedSummoningUnits(fixture.Created, new[] { incomingOwner }); }
                 PlaceExpandedSummoningUnit(target, owner.Position + Vector3.forward);
                 foreach (string kind in new[] { "spear-hit", "spear-miss", "spear-critical", "spear-fire-resistance", "foreign-weapon" })
                 {
@@ -83,11 +92,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnityEngine.Random.InitState(FindNativeD20Seed(miss ? 1 : 10));
                         var attack = Rulebook.Trigger(new RuleAttackWithWeapon(owner, target, weapon, 0));
                         var damage = attack.MeleeDamage;
+                        bool resolved = damage != null && damage.ResultDamage != null;
                         var fire = damage == null ? new BaseDamage[0] : damage.DamageBundle.Where(d => d is EnergyDamage).ToArray();
-                        bool heat = miss ? !attack.AttackRoll.IsHit && damage == null :
-                            attack.AttackRoll.IsHit && damage != null && (kind == "foreign-weapon" ? fire.Length == 0 :
-                                fire.Length == 1 && Sprint17SalamanderFirePacket(fire[0]));
-                        bool reduction = !resistance || damage != null && damage.ResultDamage.Any(d =>
+                        bool heat = Sprint17ObservationPolicy.ResolvedStrike(miss, attack.AttackRoll.IsHit,
+                            resolved, observer.Damage.Count) && (miss || (kind == "foreign-weapon" ? fire.Length == 0 :
+                                fire.Length == 1 && Sprint17SalamanderFirePacket(fire[0])));
+                        bool reduction = !resistance || resolved && damage.ResultDamage.Any(d =>
                             ReferenceEquals(d.Source, fire.Single()) && d.FinalValue == 0 && d.Reduction >= d.RolledValue);
                         bool crit = !critical || attack.AttackRoll.IsCriticalConfirmed && damage != null &&
                             damage.DamageBundle.OfType<PhysicalDamage>().Single().CriticalModifier == 3;
@@ -96,7 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             new JObject { ["hit"] = attack.AttackRoll.IsHit, ["critical"] = attack.AttackRoll.IsCriticalConfirmed,
                                 ["fixture"] = "owned +100 accuracy/CMB; native d20 seed; explicit native auto threat/confirmation in critical case only",
                                 ["damage"] = damage == null ? null : Sprint16DamageEvent(damage),
-                                ["values"] = damage == null ? new JArray() : new JArray(damage.ResultDamage.Select(d => new JObject {
+                                ["resolved"] = resolved, ["damageEvents"] = observer.Damage.Count,
+                                ["values"] = !resolved ? new JArray() : new JArray(damage.ResultDamage.Select(d => new JObject {
                                     ["source"] = Sprint16DamageLine(d.Source), ["rolled"] = d.RolledValue, ["reduction"] = d.Reduction, ["final"] = d.FinalValue })),
                                 ["grappleChecks"] = observer.Checks.Count },
                             "owned spear heat follows hit/miss/critical/native fire resistance; foreign weapon receives no heat; spear never grabs");
@@ -184,13 +195,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EventBus.Unsubscribe(observer); observer.BeforeAttackRollForFixture = null;
                 Sprint16Release(fixture, owner, grab); owner.Stats.AdditionalAttackBonus.BaseValue = bonus;
                 owner.Stats.AdditionalCMB.BaseValue = cmb; UnityEngine.Random.state = random;
+                powerAttack.IsOn = powerAttackBefore;
+                if (!powerAttackBefore) powerAttack.Stop(true);
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, target });
-                fixture.Hostile = null;
+                // Keep the exact destroyed hostile receipt until the outer
+                // finalizer disposes its owned blueprint and verifies census.
             }
             yield return 0; yield return 0;
         }
 
-        private void ProbeSprint17SalamanderDefenses(UnitEntityData owner, UnitEntityData source)
+        private void ProbeSprint17SalamanderDefenses(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData source)
         {
             int injury = owner.Descriptor.Damage;
             try
@@ -200,18 +215,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var packet = new EnergyDamage(new DiceFormula(1, DiceType.D6), type) { PreRolledValue = 6 };
                     var rule = Rulebook.Trigger(new RuleDealDamage(source, owner, new DamageBundle(packet)));
                     var result = rule.ResultDamage.Single(v => ReferenceEquals(v.Source, packet));
-                    CheckSprint17Salamander("defense-" + type, result.FinalValue == (type == DamageEnergyType.Fire ? 0 : 9),
+                    CheckSprint17Salamander("defense-" + type, type == DamageEnergyType.Fire ?
+                        Sprint17ObservationPolicy.FireImmunity(packet.Immune, rule.Damage) :
+                        !packet.Immune && result.FinalValue == 9 && rule.Damage > 0,
                         new JObject { ["energy"] = type.ToString(), ["fixturePreRoll"] = 6, ["finalBeforeDifficulty"] = result.FinalValue,
                             ["nativeDamage"] = rule.Damage, ["immune"] = packet.Immune }, "native fire immunity and cold vulnerability process actual incoming damage");
                 }
                 foreach (int magic in new[] { 0, 1 })
                 {
-                    var packet = new PhysicalDamage(new DiceFormula(1, DiceType.D6), PhysicalDamageForm.Piercing) { PreRolledValue = 15, Enchantment = magic };
-                    var rule = Rulebook.Trigger(new RuleDealDamage(source, owner, new DamageBundle(packet)));
-                    var result = rule.ResultDamage.Single(v => ReferenceEquals(v.Source, packet));
-                    CheckSprint17Salamander("defense-dr-magic-" + magic, result.FinalValue == (magic == 0 ? 5 : 15),
-                        new JObject { ["fixturePreRoll"] = 15, ["enhancement"] = magic, ["nativeReduction"] = result.Reduction,
-                            ["finalBeforeDifficulty"] = result.FinalValue }, "native DR10/magic reduces mundane physical damage and admits magical physical damage");
+                    var weapon = SummonLimbs.PrimaryWeapon(source);
+                    if (weapon == null) throw new InvalidOperationException("Owned native incoming weapon is absent.");
+                    var enhancement = magic == 0 ? null : weapon.AddEnchantment(fixture.Blueprints.OfType<BlueprintWeaponEnchantment>()
+                        .Single(b => b.AssetGuid == EasternWeaponBlueprints.NativeEnhancementOneGuid), null, null);
+                    try
+                    {
+                        var stats = Rulebook.Trigger(new RuleCalculateWeaponStats(source, weapon, null));
+                        var packet = stats.DamageDescription.Select(d => d.CreateDamage()).OfType<PhysicalDamage>().Single();
+                        packet.PreRolledValue = 15;
+                        var bundle = new DamageBundle(packet) { Weapon = weapon };
+                        var rule = Rulebook.Trigger(new RuleDealDamage(source, owner, bundle));
+                        var result = rule.ResultDamage.Single(v => ReferenceEquals(v.Source, packet));
+                        CheckSprint17Salamander("defense-dr-magic-" + magic, Sprint17ObservationPolicy.MagicReduction(
+                            magic, ReferenceEquals(rule.DamageBundle.Weapon, weapon), packet.Enchantment,
+                            result.RolledValue, result.Reduction, result.FinalValue),
+                            new JObject { ["fixturePreRoll"] = 15, ["enhancement"] = packet.Enchantment,
+                                ["weapon"] = weapon.Blueprint.AssetGuid, ["weaponAttributed"] = ReferenceEquals(rule.DamageBundle.Weapon, weapon),
+                                ["rolled"] = result.RolledValue, ["nativeReduction"] = result.Reduction, ["finalBeforeDifficulty"] = result.FinalValue },
+                            "actual native mundane/+1 owned weapon attribution controls DR10/magic; no raw enhancement-only packet proxy");
+                    }
+                    finally { if (enhancement != null) weapon.RemoveEnchantment(enhancement); }
                 }
             }
             finally { owner.Descriptor.Damage = injury; }
