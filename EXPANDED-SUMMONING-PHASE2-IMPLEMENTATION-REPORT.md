@@ -70,10 +70,21 @@ Seventeen correlated stages and all earlier failures/artifacts are preserved.
 Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Next: bounded native action/event/frame audit and same-pose native-versus-original
-hand-surface observation. Fix only a demonstrated defect; preserve8cm grip/25cm
-strike limits and all15 checks. Any correction needs focused/full source gates,
-commit/push, exact clean-head prelaunch and a complete fresh Steam640820 review.
+Read-only same-pose diagnostic now SOURCE PASS296focused/2098full82.7s,
+complete180.0s/clean14/strict321. It retains the borrowed native hand's
+weighted surface privately and compares it with the original hand against the
+same native spear on the same actor/frame. LateUpdate/end-of-frame samples
+are capped512; exact native cached event times/delegate identities are read,
+never invoked. No native geometry export, pose/weapon write or global hook.
+Two weight-selection behavior tests and an independent original-distance
+agreement check are added; all15 runtime checks and8cm/25cm limits remain.
+Two prelaunch test-count metadata rejections are preserved and synchronized
+to2098. No runtime for this diagnostic yet; exact clean-head gate next.
+
+Next: commit/push the source-qualified diagnostic, rebuild the exact clean head
+with every prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15
+human checks. Use the same-pose native/original timeline to classify the grip
+failure; do not waive8cm/25cm limits or retry for a favorable random clip.
 Acquire runtime lease before snapshot and restore that exact installation.
 Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication,
 fullPhase2B closure and STOP. Phase2C authorized but deferred.
