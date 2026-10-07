@@ -202,6 +202,8 @@
     <Compile Include="ExpandedSummoningSprint16Tests.cs" />
     <Compile Include="ExpandedSummoningSprint17Tests.cs" />
     <Compile Include="SerpentineRulesTests.cs" />
+    <Compile Include="SalamanderRulesTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderRulesPolicy.cs"><Link>Summoning\SalamanderRulesPolicy.cs</Link></Compile>
     <Compile Include="SalamanderTailAnimationTests.cs" />
     <Compile Include="SalamanderHumanBindingTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderHumanBindingPolicy.cs"><Link>Summoning\SalamanderHumanBindingPolicy.cs</Link></Compile>

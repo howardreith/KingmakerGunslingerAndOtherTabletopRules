@@ -38,7 +38,8 @@ namespace KingmakerGunslinger.Summoning
         // identities, a Dire swallowed buff, and one shared native engagement
         // consideration. No native donor identity is repurposed.
         // Sprint 17 adds seven creature-owned snake facts/types/states.
-        internal const int SpecialIdentityCount = 200;
+        // Salamander additionally owns its tail type and species inspection.
+        internal const int SpecialIdentityCount = 202;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -299,6 +300,8 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.Poison", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.Venom", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ConstrictorSnake.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Salamander.TailType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Salamander.UnitType", "BlueprintUnitType"));
             Validate(result);
             return result.AsReadOnly();
         }

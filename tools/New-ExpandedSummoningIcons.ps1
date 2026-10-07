@@ -49,6 +49,10 @@ function Get-Consumers([string]$Key, [object[]]$Entries) {
     if ($Key -ceq 'constrictor-snake') {
         $matches += 'KMG.Summoning.Special.ConstrictorSnake.CombatTraits'
     }
+    if ($Key -ceq 'salamander') {
+        $matches += 'KMG.Summoning.Special.Salamander.CombatTraits'
+        $matches += 'KMG.Summoning.Special.Salamander.UnitType'
+    }
     return @($matches | Sort-Object -Unique)
 }
 
