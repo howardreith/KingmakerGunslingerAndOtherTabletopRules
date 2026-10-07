@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Globalization;
+using Newtonsoft.Json.Linq;
 using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.ElementalRaces;
 
@@ -17,6 +19,34 @@ namespace KingmakerGunslinger.DomainTests
         { var a=Before();a.Add("Manual_301_"+Owned+".zks","owned-v1");return a; }
         private static string OwnedFile { get { return "Manual_301_"+Owned+".zks"; } }
         private static void Reject(bool value,string reason) { Assertions.True(!value,reason); }
+        internal static void JsonLeaseTimestamp()
+        {
+            var start=DateTime.Parse("2026-10-07T00:09:04.3164398Z",CultureInfo.InvariantCulture,DateTimeStyles.RoundtripKind);
+            var lease=JObject.Parse("{\"start\":\""+start.ToString("o")+"\",\"expiry\":\"2026-10-07T02:09:30.5467382Z\"}");
+            Assertions.True(lease["start"].Type==JTokenType.Date &&
+                ElementalCharacterTraitSaveContract.MatchesProcessStart(start,(DateTime)lease["start"]),
+                "Native JSON date retains exact process creation ticks.");
+        }
+        internal static void ProcessStartExactTicks()
+        {
+            var start=new DateTime(638954789043164398,DateTimeKind.Utc);
+            Assertions.True(!ElementalCharacterTraitSaveContract.MatchesProcessStart(start,start.AddTicks(1)),
+                "A different exact start tick is rejected; no time tolerance.");
+        }
+        internal static void ParsedLeaseExpiry()
+        {
+            var lease=JObject.Parse("{\"expiry\":\"2026-10-07T02:09:30.5467382Z\"}");
+            var expires=(DateTime)lease["expiry"];
+            Assertions.True(ElementalCharacterTraitSaveContract.LeaseUnexpired(expires.AddTicks(-1),expires),
+                "Typed JSON expiry is compared as UTC time.");
+        }
+        internal static void ExactExpiryBoundary()
+        {
+            var expires=new DateTime(638954789043164398,DateTimeKind.Utc);
+            Assertions.True(!ElementalCharacterTraitSaveContract.LeaseUnexpired(expires,expires)&&
+                !ElementalCharacterTraitSaveContract.LeaseUnexpired(expires.AddTicks(1),expires),
+                "Expired or exactly expired lease is rejected.");
+        }
         internal static void WorkingLoadOnly()
         { Assertions.True(ElementalCharacterTraitSaveContract.InputName(Tx,"prepare")==ElementalCharacterTraitSaveContract.Seed,"Exact seed load.");
           Reject(ElementalCharacterTraitSaveContract.MayWrite(Tx,"prepare",ElementalCharacterTraitSaveContract.Seed,true,true),"Never write seed."); }
