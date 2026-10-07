@@ -1,40 +1,45 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — complete hidden Sprint17 development candidate; runtime NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — single observation correction; Sprint17 NOT QUALIFIED
 
-HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
-remains the sole development line. Fetched/local head621f0c3b996f9adf6541dfc2c602a3d67d56c0c0.
-Interrupted production-view source and completed315focused/2117full/clean14/
-strict321 evidence preserved; no repeat source gate at resume. Sprint17 NOT QUALIFIED.
-Previous owner31796/keeper37540 ended; receipt released16:37:01UTC and archived.
-New exclusive receipt: owner29828/start16:37:01.6154316UTC;
+HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26 only.
+Initial pushed hidden candidate ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a:
+one full source gate PASS (2117/2117; clean14; strict321), NOT runtime qualified.
+Its exact ZIP79e90f1c/DLL65b10f21/MVID9d0dd626 and failed batch are preserved in
+[the one evidence record](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json).
+Initial batch19:12–19:41UTC: smoke11/11; profiles58/72; mechanics64/68;
+commands70/71 (all20 Salamander cells PASS); routes/UI/lifecycle98/99;
+direct18/19; crowd launcher rejected before launch; persistence NOT RUN.
+Six fresh Steam640820 processes, zero save writes. Exact snapshot restored:
+136files/version0.0.117/tree216A9DC2...AAF3; no game/lease/compatibility lock/staging.
+
+The complete observation-only correction changes no production mechanics,
+original assets/poses, visibility or version. Native Power Attack off/on,
+positive iterative penalty, actual range floor, immunity delivered boundary,
+actual weapon-attributed DR, unresolved miss metadata, exact hostile cleanup
+receipt, native link epochs/CMD-isolated command probe, matched native expiry
+control, guided hybrid motion and closed crowd launcher are integrated.
+Focused321/321 and incremental14-reference compilation PASS; launcher18 valid/
+13 rejected and crowd10/11 source checks PASS. Current correction candidate is
+the next clean committed HEAD on ea46fb76, not the old qualified artifact.
+NEXT: commit/push once, run the full exact-head source/build/package gate once,
+sequential prelaunch, then the existing same10-request guarded all-three batch.
+One observation correction USED; zero product corrections used, ONE remains
+only for an evidence-demonstrated product defect. No further fixture loop.
+After bounded allowances return PASS, PARTIAL PASS or evidence-backed blocker.
+
+Exclusive receipt unchanged: owner29828/start16:37:01.6154316UTC;
 keeper37216/start18:13:59.9631236UTC; session2af10b72-de34-49d5-8d34-f3fe784a0bb7.
-No game, compatibility lock, staging or Git operation at reacquisition.
-
-The single integrated development pass is complete: production view/rollback/
-contacts, profile/mechanics, commands/AI, UI/37routes, crowd, six-role persistence
-and native cleanup. Focused315/315 and incremental14-reference compilation PASS;
-full exact-head source gate and runtime remain NOT RUN on this integrated tree.
-Snakes' production behavior and original assets/poses unchanged; existing scenario
-families extended only. Maintain this short section and
-[one integrated evidence record](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
-until runtime results. NEXT: commit/push this complete hidden candidate, then full
-source/build/package and prelaunch gate ONCE on that exact clean committed HEAD;
-run artifacts/Invoke-LaptopSprint17-IntegratedHiddenBatch.ps1 with that SHA/package
-hash, all three creatures and prepare/cleanup/fresh-absence. No new runtime yet.
-Afterward permit at most one product-correction candidate and one observation-only
-fixture correction; return PASS, PARTIAL PASS or evidence-backed blocker.
-Missing native animations do not fail faithful donor behavior; require intact
-native actions, correct events/damage, finite visible geometry and normal cleanup.
-Independent publication allowed with safely isolated withholding. Exhaustive
-player-path/persistence/compatibility matrices once at Phase2B closure; then STOP
-owner review. Phase2C authorized=true but deferred; no Phase2C or Sprint22 here.
+Fetched active remote remains ea46fb76; no competing owner/Git operation.
 Sprints14–16 complete/published;32snake roots hidden;976published+29wrappers=1005visible.
-DATA PR27 remains salvage-only/ZERO PORTS. No merge/release/version bump/permanent deployment.
+HumanReview NOT_PERFORMED_NONBLOCKING. Accepted limitations/adaptation unchanged.
+Independent publication only after exact gates; exhaustive matrices once at
+Phase2B closure, then STOP owner review. Phase2C authorized but deferred.
+DATA PR27 salvage-only/ZERO PORTS; no merge/release/permanent deployment/Sprint22.
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
 
-This section governs over historical mission/ownership statements below.
+Historical checkpoint only. The CURRENT STATE section above governs.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
 is the sole owner-designated development line. DATA branch/PR27 is frozen
 salvage-only; audit5da53f84 classified29 files; ZERO PORTS.
