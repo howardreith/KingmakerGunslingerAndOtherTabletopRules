@@ -5,6 +5,16 @@ Laptop PR26 only; DATA salvage-only/ZERO PORTS.32 roots withheld.
 
 ## Latest evidence and next bounded work
 
+[Per-unit hold-reset diagnostic](EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC.md)
+is SOURCE PASS, runtime NOT RUN; source parent
+c89525085901c9b63ccb7f3d57a8ced3ea45354c. It records each native
+part/link, Grab presence, exact relationship buff, condition and source fact
+behind the existing reset predicate. No reset call, extra wait or gameplay
+change. Exhaustive behavior tests retain every original predicate operand.
+270 focused /2072 full82.9s, complete repository/clean14-reference Release/
+strict320 package178.8s PASS. Dirty-source output was never deployed;
+all exact-head prelaunch gates and the closed persistence protocol are NEXT.
+
 [Exact ec9721f7 crowd/persistence attempt2](EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT2-EVIDENCE.json)
 is NOT QUALIFIED overall. Candidate ec9721f71b06ed184b92bcfbd9418e6eb292ece7:
 smoke 11/11, direct 14/14, crowd 18/18 and prepare 13/13 PASS;
@@ -55,10 +65,11 @@ is outstanding. Unrelated September14 extraction remains untouched.
 remains983828bf:rules62/commands51,all8 at-rule jaw gaps0m on native long Bite.
 It does not transfer to another DLL. Sprints14–16 COMPLETE/PUBLISHED.
 
-Next: per-unit native-part/link, Grab, state-buff and condition diagnostics;
-source checks, coherent NOT QUALIFIED commit/policy-push, new exact artifact
-and complete affected persistence protocol. No reset calls or relaxed
-assertions to fabricate a pass. Then lifecycle/UI/private32 routes, separate
+Next: commit/policy-push the source-qualified diagnostic, repeat every
+exact-head prelaunch gate and run smoke/prepare/cleanup/absence with the same
+immutable artifact. Retire only the four exact marked stale fixtures through
+the existing native prepare path; never edit the save. Read the per-unit reset
+evidence before any gameplay change. Then lifecycle/UI/private32 routes, separate
 Salamander, fullSprint17 hidden/publication and fullPhase2B closure.
 STOP for owner review afterward; Phase2C authorized but deferred.
 32 roots remain hidden. HumanReview: NOT_PERFORMED_NONBLOCKING.

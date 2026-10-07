@@ -12,6 +12,35 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void PersistenceResetDiagnosticsPreserveEveryOperand()
+        {
+            for (int mask = 0; mask < 128; mask++)
+            foreach (int links in new[] { 0, 1, 4 })
+            {
+                bool grab = (mask & 1) == 0, initiator = (mask & 2) != 0, target = (mask & 4) != 0;
+                bool hold = (mask & 8) != 0, grappled = (mask & 16) != 0;
+                bool cantAct = (mask & 32) != 0, cantMove = (mask & 64) != 0;
+                string[] failures = SerpentinePersistenceReviewPolicy.SessionResetFailures(
+                    grab, initiator, target, links, hold, grappled, cantAct, cantMove);
+                bool previous = grab && !initiator && !target && links == 0 &&
+                    !hold && !grappled && !cantAct && !cantMove;
+                Assertions.Equal(previous, failures.Length == 0,
+                    "Diagnostics retain every original strict reset operand; no waiver.");
+                Assertions.Equal(!grab, failures.Contains("grab-missing"), "Missing source component remains distinct.");
+                Assertions.Equal(initiator, failures.Contains("initiator-part"), "Native owner part identified.");
+                Assertions.Equal(target, failures.Contains("target-part"), "Native prey part identified.");
+                Assertions.Equal(links != 0, failures.Contains("stored-links"), "Stored links identified.");
+                Assertions.Equal(hold, failures.Contains("hold-buff"), "Owned hold fact identified.");
+                Assertions.Equal(grappled, failures.Contains("grappled-buff"), "Owned held fact identified.");
+                Assertions.Equal(cantAct, failures.Contains("cant-act"), "Action lock identified.");
+                Assertions.Equal(cantMove, failures.Contains("cant-move"), "Movement lock identified.");
+                Assertions.Equal(failures.Length, failures.Distinct().Count(), "Each cause is recorded once.");
+            }
+            Assertions.True(SerpentinePersistenceReviewPolicy.SessionResetFailures(
+                true, false, false, -1, false, false, false, false).SequenceEqual(new[] { "invalid-link-count" }),
+                "Malformed negative count cannot become a clean reset or invent a real link.");
+        }
+
         internal static void CrowdAwakeRestoresOnlyOwnedReferences()
         {
             object foreignA = new object(), foreignB = new object();
