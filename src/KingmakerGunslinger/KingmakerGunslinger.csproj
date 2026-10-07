@@ -155,6 +155,7 @@
     <Compile Include="Summoning\SalamanderHumanBindingPolicy.cs" />
     <Compile Include="Summoning\SalamanderHumanVisualAttachment.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17HumanSalamander.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17HumanGrip.cs" />
     <Compile Include="Summoning\SerpentineRulesPolicy.cs" />
     <Compile Include="Summoning\SerpentineCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
