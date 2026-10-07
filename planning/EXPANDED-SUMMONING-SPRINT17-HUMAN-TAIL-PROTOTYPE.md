@@ -354,7 +354,7 @@ Optional post-native-frame art shows the original body, not the earlier shredded
 frame; neither that image nor finite arithmetic qualifies full visual/contact work.
 Salamander's production prefab/profile/identity remain unchanged at this boundary.
 
-## Bounded spear/contact correction — source PASS, exact runtime pending
+## Historical spear/contact correction — source PASS before exact807
 
 Source parent1ef236cb0bfeadf08fd291f01be8edd50fb9c15a.
 [Exact source/offline hashes and failure dispositions](EXPANDED-SUMMONING-SPRINT17-HUMAN-CLOSE-CONTACT-SOURCE-EVIDENCE.json).
@@ -389,14 +389,46 @@ The first complete source gate correctly rejected the stale packaged-export
 checksum. Both failed ZIPs/log remain archived. The pin now names this reviewed
 export, and the full gate passed again; no check disabled or failed result waived.
 
+## Exact807 level-override failure — restored, narrow fixture correction source PASS
+
+Exact80779026b3718083aff76819bbbb90237f759335: smoke11/11, human12/15 FAIL.
+[Exact runtime, restoration and level-override correction](EXPANDED-SUMMONING-SPRINT17-HUMAN-LEVEL-OVERRIDE-EVIDENCE.json).
+All exact prelaunch PASS294/2096/177.4s/clean14/strict321 and harness gates.
+The manufactured spear now produces native iteratives, but the fixture spawned
+BAB20 from ruleLevel20 instead of printed8: FOUR spear events plus ONE owned-tail event.
+All four spear clips are native. The three failed predicates still require2+1;
+none is waived. The native command ended Interrupt after the five events,
+not claimed Success or whole-Sprint qualification.
+
+All rule-frame spear target gaps~0.03135m; weighted grips0.00557–0.01778m
+left/0.006416–0.006417m right; tail337points gap0 at rule and paired frame.
+Original tail moves3.5892m with one owned act event. One native follow-through
+paired left grip is0.08171118m; do not claim sustained8cm grip. Predicate timing
+remains the actual rule event, not a cherry-picked peak or widened threshold.
+Rollback and native destruction reclaim30owned objects;158borrowed survive.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored11:03:17.7293829UTC;
+ZERO save writes, no game/runtime lease/deployment staging;17correlated stages.
+
+Pinned native AddClassLevels.GetLevels proves positive RuleSummonUnit.Level
+overrides blueprint levels. The fixture's20 was NOT caster level. Correction:
+pass0 so the blueprint supplies8; record authored/actual levels and require
+those plus base/modifiedBAB8 before accepting2spear+1tail. No stat overwrite,
+production/asset/threshold change or native animation modification.
+This request-local correction is SOURCE PASS294focused/2096full81.8s,
+complete177.1s/clean14/strict321; corrected exact-head runtime is still PENDING.
+All earlier failed artifacts/diagnostics preserved. Sprints14–16 COMPLETE;
+Sprint17 NOT QUALIFIED;32roots hidden;976published+29wrappers=1005visible.
+HumanReview: NOT_PERFORMED_NONBLOCKING.
+
 ## Next exact work
 
-Next: freeze/push this corrected source; rebuild its exact clean head with all
-prelaunch/harness gates, then fresh Steam640820 smoke11 plus ALL15 human
-binding/rollback/movement/full-attack/contact/destruction checks. Snapshot only
-after acquiring the runtime lease; restore that exact installation afterward.
-Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
-gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Next: push this level-corrected source, rebuild its exact clean head with every
+prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15 human checks.
+Require native blueprint/character/BAB8 and TWO spear events plus ONE tail;
+keep the same contact thresholds and record actual command disposition.
+Acquire runtime lease before snapshot; restore that exact installation.
+Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication,
+fullPhase2B closure and STOP. Phase2C authorized but deferred.
 Preserve all native two-handed weapon handling and native references.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 Preserve native two-handed spear handling
