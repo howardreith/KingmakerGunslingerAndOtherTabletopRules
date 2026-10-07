@@ -65,5 +65,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             return distinctOwnedActors && !eitherPlayerFaction && !eitherPartyGroup &&
                 ownerEnemy && attackerEnemy && foreignEnemyRelations == 0;
         }
+
+        internal static bool NativeFrontalHit(bool attackHit, float torsoFacingDot)
+        {
+            // UnitHitFxManager.HandleMeleeAttackHit promotes the native float
+            // dot product to double before comparing with the literal 0.3.
+            // This is fixture eligibility, never evidence of actual playback.
+            return attackHit && !float.IsNaN(torsoFacingDot) && !float.IsInfinity(torsoFacingDot) &&
+                torsoFacingDot > .3d && torsoFacingDot <= 1.001f;
+        }
+
+        internal static bool FaithfulHitLifecycle(bool exactNativeSet, bool nativeControlHasHit,
+            bool candidateHasHit, bool actualFrontalWound, bool finitePose, bool alive, bool playedHit)
+        {
+            // The visual lifecycle contract requires stability under actual
+            // damage, not inventing a flinch absent from the native rig.
+            // A present native carrier still requires actual clip playback.
+            return exactNativeSet && nativeControlHasHit == candidateHasHit && actualFrontalWound &&
+                finitePose && alive && (nativeControlHasHit ? playedHit : !playedHit);
+        }
     }
 }
