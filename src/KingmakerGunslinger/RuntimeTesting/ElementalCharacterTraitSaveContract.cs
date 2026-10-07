@@ -37,6 +37,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         { return actual.ToUniversalTime().Ticks==expected.ToUniversalTime().Ticks; }
         internal static bool LeaseUnexpired(DateTime now,DateTime expiry)
         { return expiry.ToUniversalTime()>now.ToUniversalTime(); }
+        internal static bool MayPrepareNativeClone(int routines,bool firstPreparation,bool freshDescriptor,
+            bool exactManualIdentity,bool noSaver,bool originalOwnedFileExact)
+        { return routines==1 && firstPreparation && freshDescriptor && exactManualIdentity &&
+            noSaver && originalOwnedFileExact; }
         internal static bool Next(string prior, string next, int priorPid, int currentPid)
         { return priorPid > 0 && currentPid > 0 && priorPid != currentPid &&
             ((prior == "prepare" && next == "verify-remove") || (prior == "verify-remove" && next == "verify-absent")); }
