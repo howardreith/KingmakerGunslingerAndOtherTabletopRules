@@ -21,6 +21,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.Creature.Key == "constrictor-snake").ToArray();
         }
 
+        internal static SummonVariantSpec[] PublishedRoutes()
+        {
+            return Routes().Concat(ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster)
+                .Where(value => value.Creature.Key == "salamander"))
+                .Where(SummonVisibilityCatalog.IsPublished).ToArray();
+        }
+
         internal static bool Quantity(SummonMultiplicity kind, int count)
         {
             switch (kind)

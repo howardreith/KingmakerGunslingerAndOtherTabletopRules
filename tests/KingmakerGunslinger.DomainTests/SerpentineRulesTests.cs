@@ -300,8 +300,8 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.False(SerpentineVisualPolicy.IsSnakeInstanceResource(key,
                         "KMG_" + key + "_Original_" + invalid, "KMG_" + key + "_Original_" + invalid),
                         "Noncanonical instance names reject, including missing IDs.");
-                // Both review quantities are real private catalog routes. The
-                // review extension does not publish these or invent new roots.
+                // Review uses the same allocated roots after independent
+                // publication; it never invents identities or moves tiers.
                 var creature = ExpandedSummoningCatalog.All.Single(value => value.Key == key);
                 foreach (var quantity in new[] { SummonMultiplicity.One, SummonMultiplicity.OneD4PlusOne })
                 {
@@ -309,8 +309,8 @@ namespace KingmakerGunslinger.DomainTests
                     var route = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)
                         .Single(value => value.Creature.Key == key && value.ParentTier == tier &&
                             value.Multiplicity == quantity);
-                    Assertions.False(SummonVisibilityCatalog.IsPublished(route),
-                        "Original/crowd review never changes suppression.");
+                    Assertions.True(SummonVisibilityCatalog.IsPublished(route),
+                        "Qualified original/crowd routes retain their published catalog identities.");
                 }
             }
             foreach (string key in new[] { null, "Viper", "salamander", "purple-worm", "foreign" })
@@ -455,7 +455,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(18, routes.Count(value => value.Creature.Key == "viper"), "Viper roots.");
             Assertions.Equal(14, routes.Count(value => value.Creature.Key == "constrictor-snake"), "Constrictor roots.");
             Assertions.Equal(32, routes.Select(value => value.StableKey).Distinct().Count(), "No duplicated route.");
-            Assertions.True(routes.All(value => !SummonVisibilityCatalog.IsPublished(value)), "Private gate never publishes.");
+            Assertions.True(routes.All(SummonVisibilityCatalog.IsPublished), "Exact independent publication keys.");
+            var published = SerpentineFinalReviewPolicy.PublishedRoutes();
+            Assertions.Equal(37, published.Length, "32 new roots plus five unchanged Salamander roots only.");
+            Assertions.Equal(5, published.Count(v => v.Creature.Key == "salamander"), "Preserved Salamander identity and placements.");
+            Assertions.Equal(37, published.Select(v => v.StableKey).Distinct().Count(), "No publication root duplicates.");
+            Assertions.True(published.All(v => v.Creature.Key == "salamander" || SerpentineRulesPolicy.IsSnake(v.Creature.Key)),
+                "No unrelated player-path census in the publication gate.");
             foreach (SummonMultiplicity kind in Enum.GetValues(typeof(SummonMultiplicity)))
                 for (int count = -1; count <= 6; count++)
                     Assertions.Equal(kind == SummonMultiplicity.One ? count == 1 :
@@ -840,7 +846,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(8, SerpentineRulesPolicy.LiveWeaponSize(8, 2, 8), "Native upper bound.");
         }
 
-        internal static void NewIdentitiesAreHiddenWithoutMovingPublishedChoices()
+        internal static void QualifiedSnakesPublishWithoutMovingExistingChoices()
         {
             var all = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)).ToArray();
@@ -848,15 +854,15 @@ namespace KingmakerGunslinger.DomainTests
             {
                 var rows = all.Where(v => v.Creature.Key == key).ToArray();
                 Assertions.Equal(key == "viper" ? 18 : 14, rows.Length, "Exact registered placement count.");
-                Assertions.True(rows.All(v => !SummonVisibilityCatalog.IsPublished(v)), "Every new root stays hidden.");
+                Assertions.True(rows.All(SummonVisibilityCatalog.IsPublished), "Only exact independently qualified roots publish.");
                 Assertions.True(rows.Select(v => v.Multiplicity).Distinct().Count() == 3,
-                    "Direct, 1d3 and 1d4+1 private routes are registered.");
+                    "Direct, 1d3 and 1d4+1 routes retain their allocated identities.");
             }
-            Assertions.Equal(976, all.Count(SummonVisibilityCatalog.IsPublished), "No historical root suppressed.");
-            Assertions.Equal(1005, all.Count(SummonVisibilityCatalog.IsPublished) +
-                SummonNativeExpansionCatalog.All.Count, "Visible surface unchanged.");
+            Assertions.Equal(1008, all.Count(SummonVisibilityCatalog.IsPublished), "Exactly 32 newly published roots.");
+            Assertions.Equal(1037, all.Count(SummonVisibilityCatalog.IsPublished) +
+                SummonNativeExpansionCatalog.All.Count, "Published surface is source-derived.");
             Assertions.True(all.Where(v => !SerpentineRulesPolicy.IsSnake(v.Creature.Key))
-                .All(SummonVisibilityCatalog.IsPublished), "Only the two new snakes are withheld.");
+                .All(SummonVisibilityCatalog.IsPublished), "No old publication or Salamander root moved.");
         }
 
         internal static void SnakeArtworkHasExactConsumersAndProvenance()

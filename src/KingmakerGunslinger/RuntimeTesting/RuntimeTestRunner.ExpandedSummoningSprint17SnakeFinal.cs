@@ -2,18 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Harmony12;
 using Kingmaker;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UI.Group;
 using Kingmaker.UI.ServiceWindow.CharacterScreen;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics.Actions;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -25,7 +32,14 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private IEnumerable<int> ReviewSprint17SnakeFinalCases(ExpandedSummoningCorrectionFixture fixture)
         {
-            foreach (int step in ReviewSprint17PrivateRoutes(fixture)) yield return step;
+            // Publication is a distinct gate of this existing scenario, not
+            // another hidden-observer retry or a new save/scenario family.
+            if (SerpentineFinalReviewPolicy.Routes().Any(SummonVisibilityCatalog.IsPublished))
+            {
+                ReviewSprint17PublishedRoutes(fixture);
+                yield return 0;
+            }
+            else foreach (int step in ReviewSprint17PrivateRoutes(fixture)) yield return step;
             CreateExpandedSummoningCorrectionHostile(fixture);
             foreach (int step in ReviewSprint17SnakeNativeUi(fixture)) yield return step;
             // The rule/UI hostile has a native hostile faction. It must not
@@ -43,7 +57,79 @@ namespace KingmakerGunslinger.RuntimeTesting
             _serpentineBodyRows.Add(row);
             _serpentineBodyAssertions.Add(Assertion("sprint17-final-" + name, contract,
                 row.ToString(Formatting.None), pass,
-                "Closed disposable snake routes/UI/lifecycle only; not publication or complete Sprint17."));
+                "Closed Sprint17 route/UI/lifecycle gate only. Public-route proof does not qualify Salamander mechanics or complete Sprint17/Phase2B."));
+        }
+
+        private void ReviewSprint17PublishedRoutes(ExpandedSummoningCorrectionFixture fixture)
+        {
+            object levelController = null;
+            MethodInfo castRule = typeof(RuleCastSpell).GetMethod("OnTrigger");
+            MethodInfo spawnAction = typeof(ContextActionSpawnMonster).GetMethod("RunAction");
+            const BindingFlags statics = BindingFlags.NonPublic | BindingFlags.Static;
+            try
+            {
+                var routes = SerpentineFinalReviewPolicy.PublishedRoutes();
+                bool closed = routes.Length == 37 && routes.Select(v => v.StableKey).Distinct().Count() == 37 &&
+                    routes.Count(v => v.Creature.Key == "viper") == 18 &&
+                    routes.Count(v => v.Creature.Key == "constrictor-snake") == 14 &&
+                    routes.Count(v => v.Creature.Key == "salamander") == 5;
+                CheckSprint17Final("published-route-census", closed, new JObject {
+                    ["newSnakeRoots"] = 32, ["preservedSalamanderRoots"] = 5,
+                    ["roots"] = new JArray(routes.Select(v => v.StableKey)) },
+                    "all32 new snake roots and exactly5 preserved Salamander roots;no unrelated-root replay");
+                if (!closed) throw new InvalidOperationException("Closed Sprint17 publication scope changed.");
+                fixture.Caster.Descriptor.Stats.Intelligence.BaseValue = 30;
+                var wizard = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                    "ba34257984f4c41408ce1dc2004e342e", "native Wizard targeted player path");
+                AdvanceDisposableSpellcaster(fixture.Caster.Descriptor, wizard, 20, ref levelController);
+                Spellbook book = fixture.Caster.Descriptor.GetSpellbook(wizard);
+                while (book.CasterLevel < 20) book.AddCasterLevel();
+                book.UpdateAllSlotsSize(false); book.Rest();
+                var parents = ExpandedSummoningInventoryObserver.CanonicalParentGuids.Select(guid =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, guid,
+                        "canonical summon parent")).ToArray();
+                _context.Harmony.Patch(castRule, null, new HarmonyMethod(typeof(RuntimeTestRunner)
+                    .GetMethod("ExpandedSummoningPlayerPathRuleCastPostfix", statics)), null);
+                _context.Harmony.Patch(spawnAction, new HarmonyMethod(typeof(RuntimeTestRunner)
+                    .GetMethod("ExpandedSummoningPlayerPathSpawnPrefix", statics)), null, null);
+                _expandedSummoningPlayerPathCaptureActive = true;
+                foreach (var variant in routes)
+                {
+                    var before = SnapshotReferences(fixture.AllUnits);
+                    var cases = new List<ExpandedSummoningPlayerPathCase>();
+                    AddExpandedSummoningPlayerPathRootCase(cases, fixture.Blueprints, fixture.Caster, book, parents,
+                        variant, ExpandedSummoningPlayerPathAlignmentFor(variant),
+                        variant.Family == SummonFamily.NaturesAlly ? (SummonAlignmentMode?)SummonAlignmentMode.Caster :
+                            variant.Creature.MonsterTemplated ? (SummonAlignmentMode?)SummonAlignmentMode.Celestial : null,
+                        fixture.SceneEntities, fixture.AllUnits, variant.StableKey);
+                    var item = cases.Single();
+                    // The existing summon witness resets this list at each
+                    // cast. Preserve its native duration evidence after cleanup.
+                    var durations = ExpandedSummoningRuleDurationCapture.ToArray();
+                    bool duration = durations.Length == item.LiveCount && durations.All(value =>
+                        Math.Abs(value.BaseDuration.TotalSeconds - 120d) <= .001d &&
+                        value.BonusDuration.TotalSeconds >= 0 && value.Unit != null && value.Unit.Destroyed);
+                    bool cleanup = before.SequenceEqual(SnapshotReferences(fixture.AllUnits));
+                    bool exact = item.LiveContract && item.SlotContract && item.CommandStarted &&
+                        item.CommandResult == "Success" && item.RuleCastCount == 1 && item.SpawnActionCount == 1 &&
+                        item.QuantityContract && duration && cleanup;
+                    CheckSprint17Final("published-root-" + variant.StableKey, exact,
+                        new JObject { ["detail"] = item.Describe(), ["nativeDurationExact"] = duration,
+                            ["nativeCleanupExact"] = cleanup,
+                            ["nativeDurations"] = new JArray(durations.Select(value => new JObject {
+                                ["baseSeconds"] = value.BaseDuration.TotalSeconds,
+                                ["bonusSeconds"] = value.BonusDuration.TotalSeconds })) },
+                        "native parent/variant spellbook path;one slot/RuleCast/spawn action;exact quantity/template/source/CL20 duration/renderable view and cleanup");
+                }
+            }
+            finally
+            {
+                _expandedSummoningPlayerPathCaptureActive = false;
+                foreach (var method in new[] { castRule, spawnAction })
+                    _context.Harmony.Unpatch(method, HarmonyPatchType.All, _context.ModId);
+                ExpandedSummoningPlayerPathEvents.Clear();
+                if (levelController != null) levelController.GetType().GetMethod("Cancel").Invoke(levelController, null);
+            }
         }
 
         private UnitEntityData CastSprint17FinalSnake(ExpandedSummoningCorrectionFixture fixture, string key)

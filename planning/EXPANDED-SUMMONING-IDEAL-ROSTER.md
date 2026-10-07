@@ -66,22 +66,22 @@ project-owned catalog and so hid eleven of them.
 
 | Unit identity | Creatures | Meaning |
 |---|---|---|
-| Project-owned | 95 | A summon-safe unit in ExpandedSummoningCatalog |
+| Project-owned | 97 | A summon-safe unit in ExpandedSummoningCatalog |
 | Retained native wrapper | 11 | A native unit exposed through a preserved wrapper |
-| None yet | 39 | In the ideal roster; no unit identity exists |
+| None yet | 37 | In the ideal roster; no unit identity exists |
 
 | Family placement | Summon Monster | Nature's Ally |
 |---|---|---|
-| Published | 93 | 89 |
+| Published | 95 | 91 |
 | Registered | 0 | 0 |
-| Planned | 27 | 21 |
+| Planned | 25 | 19 |
 | NotOffered | 25 | 35 |
 
-Represented today: **106** creatures (106 published somewhere, 0 registered but hidden).
+Represented today: **108** creatures (108 published somewhere, 0 registered but hidden).
 
 Frost Giant has one retained native unit identity and published Summon Monster and Nature's Ally wrappers in both families.
 
-Identity reuse: 106 existing creature identities are reused in place (charter decision D-01, one creature one identity); 39 new identities remain to be allocated.
+Identity reuse: 108 existing creature identities are reused in place (charter decision D-01, one creature one identity); 37 new identities remain to be allocated.
 
 ## Creatures
 
@@ -106,7 +106,7 @@ Identity reuse: 106 existing creature identities are reused in place (charter de
 | Bulette | - | 6 | S26 | Strong | High | None | NotOffered | Planned | Burrowers & huge monsters |
 | Cheetah | 3 | 3 | S8 | Strong | Medium | ProjectOwned | Published | Published | Big-cat family |
 | Cloud Giant | - | 8 | S29 | Strong | Medium | None | NotOffered | Planned | Giant humanoids |
-| Constrictor Snake | 3 | 3 | S17 | Strong | High | None | Planned | Planned | Snake rig family |
+| Constrictor Snake | 3 | 3 | S17 | Strong | High | ProjectOwned | Published | Published | Snake rig family |
 | Crocodile | 3 | 3 | S16 | Strong | High | ProjectOwned | Published | Published | Crocodilian rig family |
 | Cyclops | - | 5 | S3 | Essential | Low | ProjectOwned | NotOffered | Published | Giant humanoids |
 | Deinonychus | 4 | 4 | S24 | Strong | High | None | Planned | Planned | Theropod dinosaurs |
@@ -225,7 +225,7 @@ Identity reuse: 106 existing creature identities are reused in place (charter de
 | Triceratops | 6 | 6 | S23 | Essential | High | None | Planned | Planned | Armored dinosaurs |
 | Trumpet Archon | 9 | - | S31 | Strong | High | None | Planned | NotOffered | Outsiders |
 | Tyrannosaurus | 7 | 7 | S24 | Essential | High | None | Planned | Planned | Theropod dinosaurs |
-| Viper | 1 | 1 | S17 | Variety | High | None | Planned | Planned | Snake rig family |
+| Viper | 1 | 1 | S17 | Variety | High | ProjectOwned | Published | Published | Snake rig family |
 | Vrock | 7 | - | S37 | Essential | VeryHigh | None | Planned | NotOffered | Outsiders |
 | Water Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
 | Wolf | 2 | 2 | complete | Strong | - | ProjectOwned | Published | Published | Canines & small quadrupeds |

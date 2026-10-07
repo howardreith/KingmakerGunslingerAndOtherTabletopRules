@@ -43,13 +43,14 @@ def validate(root: Path) -> None:
     # static guard keeps metadata and publication suppression synchronized.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 1008",
-        "SuppressedLogicalPlacementCount = 32",
+        "SuppressedLogicalPlacementCount = 0",
         "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount")
     visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs").read_text(encoding="utf-8")
     for key in ('"dire-rat"', '"dog"', '"hyena"', '"goblin-dog"',
                 '"shadow-mastiff"', '"wolverine"', '"poisonous-frog"',
                 '"fire-beetle"', '"giant-ant-worker"', '"giant-ant-soldier"',
-                '"giant-ant-drone"', '"giant-stag-beetle"', '"dire-crocodile"'):
+                '"giant-ant-drone"', '"giant-stag-beetle"', '"dire-crocodile"',
+                '"viper"', '"constrictor-snake"'):
         if key in visibility:
             raise AssertionError(f"A qualified creature is still suppressed: {key}")
     require_tokens(root / "EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md",
@@ -103,10 +104,10 @@ def validate(root: Path) -> None:
         "candidateOnly": True,
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
         "registeredGeneratedPlacements": 1008,
-        "suppressedGeneratedPlacements": 32,
-        "publishedGeneratedPlacements": 976,
+        "suppressedGeneratedPlacements": 0,
+        "publishedGeneratedPlacements": 1008,
         "retainedNativeWrappers": 29,
-        "visibleChoiceTotal": 1005,
+        "visibleChoiceTotal": 1037,
         "mergeAuthorized": False,
         "newReleaseAuthorized": False,
         "sprint22Authorized": False,
