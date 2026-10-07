@@ -90,6 +90,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !buff.IsPermanent) == 1;
         }
 
+        private static bool SnakePersistenceReady(UnitEntityData unit)
+        {
+            return SerpentinePersistenceReviewPolicy.NativeAppearanceReady(EntityFadedIn(unit),
+                DissolveAmount(unit), unit.Descriptor.State.CanAct, unit.Descriptor.State.CanMove,
+                unit.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null);
+        }
+
         private IEnumerable<int> RunSprint17Persistence()
         {
             bool prepare = _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare;
@@ -149,19 +156,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 units = created.ToArray();
                 // Native appearance settles before arming short-lived state.
                 // No buff removal, renderer override, or world-time jump.
+                TimeSpan appearanceStart = Game.Instance.Player.GameTime;
+                int appearanceFrames = 0;
                 Game.Instance.IsPaused = false;
-                for (int frame = 0; frame < 600; frame++)
+                for (; appearanceFrames < 600; appearanceFrames++)
                 {
                     yield return 0;
-                    if (frame >= 30 && units.All(value => EntityFadedIn(value) && DissolveAmount(value) <= MotionReviewIntactDissolve))
+                    if (appearanceFrames >= 30 && units.All(SnakePersistenceReady))
                         break;
                 }
                 Game.Instance.IsPaused = true;
-                SnakePersistenceCheck("native-appearance", units.All(value => EntityFadedIn(value) &&
-                    DissolveAmount(value) <= MotionReviewIntactDissolve),
-                    new JObject { ["units"] = new JArray(units.Select(value => new JObject {
-                        ["id"] = value.UniqueId, ["fadedIn"] = EntityFadedIn(value), ["dissolve"] = DissolveAmount(value) })) },
-                    "all four disposable summons complete native appearance before the save boundary");
+                bool ready = units.All(SnakePersistenceReady);
+                SnakePersistenceCheck("native-appearance", ready,
+                    new JObject { ["frames"] = appearanceFrames,
+                        ["nativeElapsedSeconds"] = (Game.Instance.Player.GameTime - appearanceStart).TotalSeconds,
+                        ["units"] = new JArray(units.Select(value => new JObject {
+                        ["id"] = value.UniqueId, ["fadedIn"] = EntityFadedIn(value), ["dissolve"] = DissolveAmount(value),
+                        ["canAct"] = value.Descriptor.State.CanAct, ["canMove"] = value.Descriptor.State.CanMove,
+                        ["appearanceLock"] = value.Descriptor.Buffs.GetBuff(
+                            BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null })) },
+                    "all four summons naturally finish appearance and native action/movement locks before arming");
+                if (!ready)
+                {
+                    CompleteSprint17Persistence(RuntimeTestStatuses.Fail, "Native appearance/control did not settle; no attack or save armed.");
+                    yield break;
+                }
                 ArmSprint17Persistence(units, blueprints);
             }
             InspectSprint17Persistence(units, caster, blueprints, prepare);
@@ -215,14 +234,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             int fort = venomTarget.Descriptor.Stats.SaveFortitude.BaseValue;
             int viperBab = viper.Descriptor.Stats.BaseAttackBonus.BaseValue;
             int constrictorBab = constrictor.Descriptor.Stats.BaseAttackBonus.BaseValue;
+            var exposure = new Sprint17PoisonExposureObserver { Owner = viper, Target = venomTarget, Venom = venom };
+            EventBus.Subscribe(exposure);
             try
             {
                 venomTarget.Descriptor.Stats.SaveFortitude.BaseValue = -100;
                 viper.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
                 PlaceExpandedSummoningUnit(venomTarget, viper.Position + Vector3.forward);
                 RuleAttackWithWeapon attack;
-                var applied = DeliverSprint17Venom(viper, venomTarget, venom, out attack);
+                int damageBefore = venomTarget.Damage;
+                var applied = DeliverSprint17Venom(viper, venomTarget, venom, out attack, exposure);
                 var state = DescribeSprint17Venom(applied);
+                var roll = attack.AttackRoll;
+                int? wound = attack.MeleeDamage == null ? (int?)null : attack.MeleeDamage.Damage;
+                state["attack"] = new JObject { ["hit"] = roll != null && roll.IsHit,
+                    ["roll"] = roll == null ? null : roll.Roll.ToString(),
+                    ["bonus"] = roll == null ? 0 : roll.AttackBonus, ["targetAC"] = roll == null ? 0 : roll.TargetAC,
+                    ["autoHit"] = roll != null && roll.AutoHit, ["autoMiss"] = roll != null && roll.AutoMiss,
+                    ["critical"] = roll != null && roll.IsCriticalConfirmed,
+                    ["finalDamage"] = wound.HasValue ? (JToken)wound.Value : JValue.CreateNull(),
+                    ["targetDamageBefore"] = damageBefore, ["targetDamageAfter"] = venomTarget.Damage,
+                    ["targetDead"] = venomTarget.Descriptor.State.IsDead,
+                    ["weapon"] = attack.Weapon == null ? null : attack.Weapon.Blueprint.AssetGuid,
+                    ["ownerEnemy"] = viper.IsEnemy(venomTarget), ["targetEnemy"] = venomTarget.IsEnemy(viper),
+                    ["liveConstitution"] = viper.Descriptor.Stats.Constitution.ModifiedValue,
+                    ["liveConstitutionModifier"] = viper.Descriptor.Stats.Constitution.Bonus,
+                    ["targetFortitude"] = venomTarget.Descriptor.Stats.SaveFortitude.ModifiedValue };
+                state["nativeInjurySaves"] = exposure.InjurySaves.DeepClone();
+                state["nativeBuffSaves"] = exposure.BuffSaves.DeepClone();
+                state["nativeConstitutionDamage"] = exposure.Damage.DeepClone();
+                state["armingObservation"] = SerpentinePersistenceReviewPolicy.ArmingObservation(
+                    roll != null && roll.IsHit, wound, exposure.InjurySaves.Count,
+                    exposure.InjurySaves.Count == 1 && (bool)exposure.InjurySaves[0]["passed"], applied != null);
                 var receipt = venomTarget.Get<UnitPartSprint17PersistenceReceipt>();
                 receipt.VenomDc = (int)state["dc"]; receipt.VenomTicks = (int)state["ticks"];
                 receipt.VenomSaves = (int)state["saves"];
@@ -243,6 +286,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                EventBus.Unsubscribe(exposure);
                 venomTarget.Descriptor.Stats.SaveFortitude.BaseValue = fort;
                 viper.Descriptor.Stats.BaseAttackBonus.BaseValue = viperBab;
                 constrictor.Descriptor.Stats.BaseAttackBonus.BaseValue = constrictorBab;
