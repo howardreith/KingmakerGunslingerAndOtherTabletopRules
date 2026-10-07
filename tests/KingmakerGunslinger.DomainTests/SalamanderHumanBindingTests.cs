@@ -187,6 +187,29 @@ namespace KingmakerGunslinger.DomainTests
                     "Missing or foreign anatomical palettes cannot satisfy a hand surface.");
         }
 
+        internal static void GripRejectionCensusDoesNotNormalizeOrRelaxSelection()
+        {
+            string[] names = { "L_Hand", "L_Toe_1_01", "R_Hand", "L_ForeArm" };
+            float[][] weights = { null, new float[0], new[] { float.NaN, 0f, 0f, 0f },
+                new[] { 1.1f, -.1f, 0f, 0f }, new[] { .996f, 0f, 0f, 0f }, new float[4],
+                new[] { .3f, .19f, .11f, .4f }, new[] { .3f, .2f, .1f, .4f } };
+            string[] expected = { "array-shape", "array-shape", "non-finite", "weight-range",
+                "weight-sum", "weight-sum", "below-hand-influence", "selected" };
+            for (int i = 0; i < weights.Length; i++)
+            {
+                float[] before = weights[i] == null ? null : (float[])weights[i].Clone();
+                Assertions.Equal(expected[i], SalamanderHumanBindingPolicy.GripSurfaceDisposition("L", names, weights[i]),
+                    "Distinguish native metadata rejection without normalization or weaker anatomical selection.");
+                Assertions.Equal(expected[i] == "selected", SalamanderHumanBindingPolicy.IsGripSurfaceVertex("L", names, weights[i]),
+                    "Diagnostic disposition and unchanged selection agree.");
+                if (before != null) Assertions.True(before.SequenceEqual(weights[i]), "Borrowed weights remain unchanged.");
+            }
+            Assertions.Equal("array-shape", SalamanderHumanBindingPolicy.GripSurfaceDisposition("L", null, new[] { 1f, 0f, 0f, 0f }),
+                "Missing names remain invalid.");
+            Assertions.Equal("below-hand-influence", SalamanderHumanBindingPolicy.GripSurfaceDisposition("R", names, new[] { 1f, 0f, 0f, 0f }),
+                "Wrong-side anatomy cannot be accepted by the diagnostic.");
+        }
+
         internal static void BakedControlRequiresTheExactFiniteLiveFrame()
         {
             float[] live = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 12, 3, -8, 1 };
