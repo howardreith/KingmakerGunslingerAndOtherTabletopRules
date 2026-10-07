@@ -1,44 +1,47 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — single observation correction; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — integrated Sprint17 PARTIAL PASS; NOT QUALIFIED
 
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26 only.
-Initial pushed hidden candidate ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a:
-one full source gate PASS (2117/2117; clean14; strict321), NOT runtime qualified.
-Its exact ZIP79e90f1c/DLL65b10f21/MVID9d0dd626 and failed batch are preserved in
-[the one evidence record](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json).
-Initial batch19:12–19:41UTC: smoke11/11; profiles58/72; mechanics64/68;
-commands70/71 (all20 Salamander cells PASS); routes/UI/lifecycle98/99;
-direct18/19; crowd launcher rejected before launch; persistence NOT RUN.
-Six fresh Steam640820 processes, zero save writes. Exact snapshot restored:
-136files/version0.0.117/tree216A9DC2...AAF3; no game/lease/compatibility lock/staging.
+Exact corrected hidden candidate:47e8c1214f93e4c725a35261083cbd7b44f3f041.
+Fetched active remote and PR head match;clean worktree before evidence recording.
+Full exact-head gate ONCE PASS:2123/2123;clean14-reference Release;deterministic
+strict321-member ZIP0f7eaa7f/DLL2fcb5d1b/MVIDfb033857.
+[One machine-readable evidence record](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
+contains full hashes,requests,process identities,prior failure and restoration.
 
-The complete observation-only correction changes no production mechanics,
-original assets/poses, visibility or version. Native Power Attack off/on,
-positive iterative penalty, actual range floor, immunity delivered boundary,
-actual weapon-attributed DR, unresolved miss metadata, exact hostile cleanup
-receipt, native link epochs/CMD-isolated command probe, matched native expiry
-control, guided hybrid motion and closed crowd launcher are integrated.
-Focused321/321 and incremental14-reference compilation PASS; launcher18 valid/
-13 rejected and crowd10/11 source checks PASS. Correction0dd43555 was pushed;
-its source gate stopped at the stale2117 test-count guard before suite/build/
-package or launch. Actual2123 count is now pinned and focused validator PASS.
-Same one fixture correction, no product/runtime retry used. Runtime candidate
-is the next clean committed descendant of0dd43555, not either old artifact.
-NEXT: commit/push once, run the full exact-head source/build/package gate once,
-sequential prelaunch, then the existing same10-request guarded all-three batch.
-One observation correction USED; zero product corrections used, ONE remains
-only for an evidence-demonstrated product defect. No further fixture loop.
-After bounded allowances return PASS, PARTIAL PASS or evidence-backed blocker.
+Corrected same-artifact ten-request batch20:25–21:14UTC:422/423 PASS.
+Smoke11/11;profiles/views72/73;mechanics84/84;commands/AI71/71;
+routes/UI/native lifecycle100/100;direct19/19;crowd25/25;
+prepare17/17;cleanup17/17;fresh absence6/6.
+Viper and Constrictor hidden mandatory cells PASS. Salamander remains PARTIAL:
+its range observer supplies already-computed2/6-foot type ranges to a predicate
+expecting raw5/10. Actual combat ranges2/6 and body reach5 are as expected.
+The failed mandatory assertion is retained,NOT waived or a new engine limitation.
+Matched native donor has no expiry DismemberUnitFX;no dissolve/animation invented.
+Native action set,wound/death,finite original geometry and exact cleanup PASS.
 
-Exclusive receipt unchanged: owner29828/start16:37:01.6154316UTC;
-keeper37216/start18:13:59.9631236UTC; session2af10b72-de34-49d5-8d34-f3fe784a0bb7.
-Fetched active remote remains ea46fb76; no competing owner/Git operation.
-Sprints14–16 complete/published;32snake roots hidden;976published+29wrappers=1005visible.
-HumanReview NOT_PERFORMED_NONBLOCKING. Accepted limitations/adaptation unchanged.
-Independent publication only after exact gates; exhaustive matrices once at
-Phase2B closure, then STOP owner review. Phase2C authorized but deferred.
-DATA PR27 salvage-only/ZERO PORTS; no merge/release/permanent deployment/Sprint22.
+Closed native persistence protocol made two authorized working-save writes.
+Successful cleanup save precedes fresh-load ZERO owned fixture units/state.
+No protected baseline or manual save filesystem access.
+Actual leased snapshot20261007T2025524314105Z restored21:14:01.4006856UTC:
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false;no game/runtime lock/compatibility lock/staging.
+
+One observation correction USED;zero product corrections USED. ONE product
+candidate remains only for a demonstrated production defect;none demonstrated.
+No second observation correction or repeat of the failing Salamander candidate.
+NEXT: assess safe independent snake publication/public-route gate;otherwise
+return this evidenced PARTIAL PASS. Phase2B closure NOT RUN;Sprint17 NOT CLOSED.
+
+Exclusive source receipt:owner29828/start16:37:01.6154316UTC;
+keeper37216/start18:13:59.9631236UTC;session2af10b72-de34-49d5-8d34-f3fe784a0bb7.
+Sprints14–16 complete/published;1008 registered/976 published/32 withheld;
+29wrappers/1005visible. Salamander's5existing routes/identities preserved.
+HumanReview NOT_PERFORMED_NONBLOCKING;accepted limitations/adaptation unchanged.
+Exhaustive matrices ONCE at Phase2B closure,then STOP owner review.
+Phase2C authorized but deferred,NOT STARTED. DATA PR27 salvage-only/ZERO PORTS.
+No merge/release/tag/version bump/permanent deployment or Sprints18–22.
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
 
