@@ -668,6 +668,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-final-native-playback", SerpentineRulesTests.FinalReviewRequiresActualNativePlayback),
             Case("expanded-summoning.sprint17-final-rtwp-duration", SerpentineRulesTests.FinalReviewDurationMatchesNativeRtwp),
             Case("expanded-summoning.sprint17-final-owned-combat", SerpentineRulesTests.FinalReviewLifecycleRejectsForeignCombat),
+            Case("expanded-summoning.sprint17-final-frontal-hit", SerpentineRulesTests.FinalReviewRequiresNativeFrontalHitEligibility),
+            Case("expanded-summoning.sprint17-final-hit-carrier", SerpentineRulesTests.FinalReviewPreservesNativeHitCarrierContract),
             Case("expanded-summoning.sprint17-passive-trait-icon", SerpentineRulesTests.ConstrictorPassiveIconHasOneExactConsumer),
             Case("expanded-summoning.sprint17-command-native-setup", SerpentineRulesTests.CommandSetupRequiresIntactOriginalAndNativeControl),
             Case("expanded-summoning.sprint17-command-ai-action-preservation", SerpentineRulesTests.AppearanceSuspensionPreservesNativeAiActions),
