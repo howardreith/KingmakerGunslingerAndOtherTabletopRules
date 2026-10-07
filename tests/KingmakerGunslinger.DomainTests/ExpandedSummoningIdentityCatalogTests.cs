@@ -795,6 +795,8 @@ namespace KingmakerGunslinger.DomainTests
                 .ShadowDemonSpellResistance, "Shadow Demon SR changed.");
             Assertions.Equal(8, ExpandedSummoningSpecialProfiles
                 .SalamanderHitDice, "Salamander HD changed.");
+            Assertions.False(ExpandedSummoningSpecialProfiles.SalamanderSpearIsNatural,
+                "Manufactured spear retains normal BAB iteratives; natural-weapon semantics would suppress them.");
             Assertions.Equal(8, ExpandedSummoningSpecialProfiles
                 .SuccubusHitDice, "Succubus HD changed.");
             Assertions.Equal(27, ExpandedSummoningSpecialProfiles

@@ -13,7 +13,7 @@ import math
 from pathlib import Path
 import sys
 
-from mathutils import Matrix, Quaternion, Vector
+from mathutils import Matrix, Vector
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -33,6 +33,14 @@ REST = ((0, .29, 0), (-.45, .27, -.40), (-.78, .25, -.95),
         (.22, .14, -1.05), (.52, .13, -1.12))
 TIMES = (0, .15, .30, .45, .55, .60, .70, .80, 1.0, 1.2, 1.4)
 DURATION, ACT_TIME = 1.4, .60
+# Original close-melee S sweep: retain the proximal coil and place the distal
+# half through the forward fighting space. The earlier all-forward pose put
+# that half beyond three metres while the spear opponent stood at1.5m.
+# These fixed authored directions take no live target, reach or damage input.
+STRIKE_DIRECTIONS = ((-.85, .10, -.30), (-.30, 0, .95), (.90, .10, .40),
+                     (.90, .12, -.40), (.50, .10, .85), (-.95, 0, .40),
+                     (-.30, 0, .95), (.10, -.10, .99), (.10, -.10, .99),
+                     (-.15, -.10, .98))
 
 
 def tail_pose(time):
@@ -53,11 +61,19 @@ def tail_pose(time):
         phase = (DURATION - time) / .60
     blend = phase * phase * (3 - 2 * phase)
     points = [Vector(REST[0])]
-    for a, b in zip(REST, REST[1:]):
+    for a, b, authored in zip(REST, REST[1:], STRIKE_DIRECTIONS):
         delta = Vector(b) - Vector(a)
-        goal = Vector((0, .09, 1)).normalized()
-        rotation = delta.normalized().rotation_difference(goal)
-        direction = Quaternion().slerp(rotation, blend) @ delta
+        goal = Vector(authored).normalized()
+        # Interpolate the original yaw and elevation separately. A shortest
+        # quaternion arc between nearly opposite directions can dip beneath
+        # the ground during wind-up even when both endpoints are above it.
+        yaw = math.atan2(delta.x, delta.z)
+        turn = (math.atan2(goal.x, goal.z) - yaw + math.pi) % (2 * math.pi) - math.pi
+        pitch = math.atan2(delta.y, math.hypot(delta.x, delta.z))
+        pitch += (math.atan2(goal.y, math.hypot(goal.x, goal.z)) - pitch) * blend
+        yaw += turn * blend
+        direction = Vector((math.sin(yaw) * math.cos(pitch), math.sin(pitch),
+                            math.cos(yaw) * math.cos(pitch))) * delta.length
         points.append(points[-1] + direction)
     return points
 

@@ -29,7 +29,35 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact487 complete without crash: smoke11/11; human review12/15 FAIL; exact restoration09:58:17UTC/ZERO save writes. Rollback/binding/rest/movement/original-tail playback/destruction pass;30 owned resources reclaimed,158 borrowed survive. One spear instead of two; spear is source-classified natural. Hand-origin and tail contacts remain failed, not waived. Correct only demonstrated spear semantics; audit contact independently.32roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Salamander-only manufactured spear, weighted grip observation and original close-melee tail sweep SOURCE PASS294/2096/clean14/strict321; exact-head runtime pending. Ten authoring tests,29 grounded evaluated poses,32 panels,three matching exports. Previous487 human12/15 FAIL/restored preserved; no threshold waiver.32roots hidden;Phase2C deferred.",
+    "sprint17HumanCloseContactCorrection": {
+      "sourceParent": "1ef236cb0bfeadf08fd291f01be8edd50fb9c15a",
+      "status": "SOURCE PASS; EXACT RUNTIME PENDING; NOT QUALIFIED",
+      "focused": 294,
+      "domain": 2096,
+      "domainSeconds": 83.4,
+      "gateSeconds": 180.7,
+      "cleanExactReferences": 14,
+      "strictPackageMembers": 321,
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-CLOSE-CONTACT-SOURCE-EVIDENCE.json",
+      "exportSha256": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19",
+      "authoringTests": 10,
+      "finiteGroundedMeshPoses": 29,
+      "privatePanels": 32,
+      "matchingExports": 3,
+      "spearIsNatural": false,
+      "pixieBowUnchanged": true,
+      "gripSurfaceExactDriversPerSide": 7,
+      "gripThresholdMeters": 0.08,
+      "strikeThresholdMeters": 0.25,
+      "wristMeasurementsRetained": true,
+      "targetDrivenAnimation": false,
+      "productionVisualHookInstalled": false,
+      "runtimeExecuted": false,
+      "expectedRuntimeAssertions": 15,
+      "acceptedPriorFailuresWaived": false,
+      "sourceArtifactArchive": "artifacts/sprint17-human-close-contact-source-pass"
+    },
     "sprint17HumanNullAuxiliaryCorrection": {
       "sourceParent": "3dfb24171ef93c71eac04a520c5de46e0045bb8c",
       "status": "EXACT487 COMPLETE WITHOUT CRASH; HUMAN REVIEW12/15 FAIL/RESTORED; NOT QUALIFIED",
@@ -1116,7 +1144,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Correct the Salamander-only manufactured spear classification and record live BAB/type/full attack. Independently audit native wrist versus weighted hand contact and original distal-tail geometry; no threshold waiver. Focused/full source gates, push, exact-head artifact and all15 guarded human review checks; then printed mechanics, same-artifact Sprint17 hidden/publication and Phase2B closure. Stop owner review;Phase2C authorized but deferred.",
+  "nextConcreteAction": "Next: freeze/push this corrected source; rebuild its exact clean head with all prelaunch/harness gates, then fresh Steam640820 smoke11 plus ALL15 human binding/rollback/movement/full-attack/contact/destruction checks. Snapshot only after acquiring the runtime lease; restore that exact installation afterward. Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
