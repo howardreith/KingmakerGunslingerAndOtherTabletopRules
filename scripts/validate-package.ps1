@@ -48,6 +48,28 @@ try {
         # material, no editor dependency.
         'assets\pteranodon\pteranodon-mesh.json',
         'assets\pteranodon\pteranodon-albedo.png',
+        'assets\flying-animals\dire-bat-mesh.json',
+        'assets\flying-animals\dire-bat-albedo.png',
+        'assets\flying-animals\eagle-mesh.json',
+        'assets\flying-animals\eagle-albedo.png',
+        'assets\flying-animals\giant-wasp-mesh.json',
+        'assets\flying-animals\giant-wasp-albedo.png',
+        'assets\flying-animals\stirge-mesh.json',
+        'assets\flying-animals\stirge-albedo.png',
+        'assets\ungulates\aurochs-mesh.json',
+        'assets\ungulates\aurochs-albedo.png',
+        'assets\ungulates\bison-mesh.json',
+        'assets\ungulates\bison-albedo.png',
+        'assets\ungulates\rhinoceros-mesh.json',
+        'assets\ungulates\rhinoceros-albedo.png',
+        'assets\ungulates\woolly-rhinoceros-mesh.json',
+        'assets\ungulates\woolly-rhinoceros-albedo.png',
+        'assets\sprint12-quadrupeds\dire-rat-mesh.json',
+        'assets\sprint12-quadrupeds\dire-rat-albedo.png',
+        'assets\sprint12-quadrupeds\hyena-mesh.json',
+        'assets\sprint12-quadrupeds\hyena-albedo.png',
+        'assets\sprint12-quadrupeds\goblin-dog-mesh.json',
+        'assets\sprint12-quadrupeds\goblin-dog-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -75,7 +97,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 91 -or @($summonManifest.icons).Count -ne 91) {
+    if ($summonManifest.count -ne 100 -or @($summonManifest.icons).Count -ne 100) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'

@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [switch]$VerifyOnly
+    [switch]$VerifyOnly,
+    [string[]]$OnlyKeys = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -29,9 +30,13 @@ function Convert-KeyToToken([string]$Key) {
 }
 
 function Get-Consumers([string]$Key, [object[]]$Entries) {
+    if ($Key -ceq 'remove-stirge') {
+        return @('KMG.Summoning.Special.Stirge.Remove')
+    }
     $token = Convert-KeyToToken $Key
     $matches = @($Entries | Where-Object {
         $_.status -eq 'active' -and ($_.symbol -like "KMG.Summoning.Unit.$token" -or
+            $_.symbol -like "KMG.Summoning.Natural.$token.UnitType" -or
             $_.symbol -like "KMG.Summoning.Ability.*.$token.*" -or
             $_.symbol -like "KMG.Summoning.NativeOption.*.$token.*")
     } | ForEach-Object { $_.symbol })
@@ -72,9 +77,13 @@ function Assert-MeaningfulImage([string]$Path, [int]$ExpectedWidth, [int]$Expect
 
 $prompts = Get-Content -LiteralPath $promptPath -Raw | ConvertFrom-Json
 $icons = @($prompts.icons)
-if ($prompts.schemaVersion -ne 1 -or $icons.Count -ne 91 -or
-    @($icons.key | Sort-Object -Unique).Count -ne 91) {
-    throw 'Expanded Summoning prompt catalog must contain exactly 91 unique keys.'
+if ($prompts.schemaVersion -ne 1 -or $icons.Count -lt 92 -or
+    @($icons.key | Sort-Object -Unique).Count -ne $icons.Count) {
+    throw 'Expanded Summoning prompt catalog lacks its protected unique baseline.'
+}
+if (@($OnlyKeys | Sort-Object -Unique).Count -ne $OnlyKeys.Count -or
+    @($OnlyKeys | Where-Object { @($icons.key) -cnotcontains $_ }).Count -ne 0) {
+    throw 'OnlyKeys must name distinct manifest concepts.'
 }
 $blueprints = (Get-Content -LiteralPath $blueprintPath -Raw | ConvertFrom-Json).entries
 $catalogKeys = @('redcap','axiomite','soul-eater','bogeyman','movanic-deva','frost-giant','thanadaemon')
@@ -94,7 +103,7 @@ foreach ($icon in $icons) {
     $output = Join-Path $root ($outputRelative.Replace('/', '\'))
     if (-not (Test-Path -LiteralPath $source)) { throw "Missing source icon: $key." }
     Assert-MeaningfulImage $source 1254 1254
-    if (-not $VerifyOnly) {
+    if (-not $VerifyOnly -and ($OnlyKeys.Count -eq 0 -or $OnlyKeys -ccontains $key)) {
         $inputImage = [System.Drawing.Image]::FromFile($source)
         try {
             $bitmap = New-Object System.Drawing.Bitmap 128, 128, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
@@ -142,11 +151,11 @@ if (@(Compare-Object $expectedOutputs $actualOutputs).Count -ne 0) {
 }
 
 $provenance = [ordered]@{
-    schemaVersion = 1; provenance = 'Project-owned original artwork: 77 AI-assisted roster-mission concepts and Phase 1 additions rendered procedurally in Blender; no source images or third-party pixels.'
-    generator = 'tools/New-ExpandedSummoningIcons.ps1'; count = 91; icons = $provenanceRows
+    schemaVersion = 1; provenance = 'Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.'
+    generator = 'tools/New-ExpandedSummoningIcons.ps1'; count = $icons.Count; icons = $provenanceRows
 }
 $runtime = [ordered]@{
-    schemaVersion = 1; count = 91; icons = $runtimeRows
+    schemaVersion = 1; count = $icons.Count; icons = $runtimeRows
 }
 if (-not $VerifyOnly) {
     $provenance | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $provenancePath -Encoding UTF8
@@ -154,10 +163,14 @@ if (-not $VerifyOnly) {
 } else {
     if (-not (Test-Path $provenancePath) -or -not (Test-Path $runtimePath)) { throw 'Icon manifests are missing.' }
     $checkedRuntime = Get-Content -LiteralPath $runtimePath -Raw | ConvertFrom-Json
+    if ($checkedRuntime.count -ne $icons.Count -or
+        @($checkedRuntime.icons).Count -ne $icons.Count) {
+        throw 'Runtime manifest concept count is stale.'
+    }
     foreach ($row in $checkedRuntime.icons) {
         $match = @($runtimeRows | Where-Object key -eq $row.key)
         if ($match.Count -ne 1 -or $match[0].sha256 -ne $row.sha256) { throw "Runtime manifest is stale for $($row.key)." }
     }
 }
 
-Write-Host "Expanded Summoning icons PASS: 91 distinct sources and 91 distinct 128x128 RGBA outputs."
+Write-Host "Expanded Summoning icons PASS: $($icons.Count) distinct sources and $($icons.Count) distinct 128x128 RGBA outputs."

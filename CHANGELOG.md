@@ -1,5 +1,55 @@
 # Changelog
 
+## 0.0.142-elemental-race-traits-and-content (candidate)
+
+- Adds the Ifrit Fiery Glare, Oread Stoic Dignity, Sylph Aerial Observer and
+  Undine Whiteout character race traits to supported Favored Class racial
+  traits when traits and Elemental Races are enabled.
+- Fiery Glare is an optional free Intimidate toggle: use 10 when that succeeds,
+  otherwise roll normally, including in combat. Stoic Dignity grants a
+  conscious holder +1 Trait and other nearby allies +1 Morale against new
+  mind-affecting effects; the same existing effect receives no bonus.
+- Aerial Observer grants +2 Trait Perception only during Wings of Air.
+  Whiteout grants an additional independent 10% miss chance outdoors in
+  Light-or-stronger rain or snow. Concealment-ignoring attacks bypass it;
+  magical fog, waterfall spray and nonattack damage do not qualify.
+- Normalizes firearm prose and Model D stock at Oleg, the capital smith and
+  Bokken. Existing campaign merchant inventories are not rewritten.
+- Preserves the released 0.0.141 Sprints 9-11 checkpoint without later
+  Expanded Summoning development. Nodachi is not new; Earthsense and Lunge
+  are omitted. Catalog authority-hash reconciliation changes metadata only.
+- Exact build, native mechanics and transaction-owned save qualification
+  are recorded in the DATA integration handoff. Owner icon, tooltip and
+  merchant review remain pending. No merge, tag or release has occurred.
+
+## 0.0.141-expanded-summoning-phase2a
+
+- Sprint 9 Eagle and Dire Bat visual, sense, motion and guarded runtime
+  qualification is complete internally; owner visual review remains pending.
+- Giant Wasp's twelve Summon Monster IV and Nature's Ally IV placements are
+  published with an original choice icon. Its flying model, 1d8 sting,
+  DC 18 Dexterity poison, two-mode target contact, movement, cleanup,
+  quantity casts, 825-root player path and live menu passed guarded checks.
+- Stirge's nine Nature's Ally choices are published with an original icon.
+  Its touch attack uses a Stirge-owned session attachment while the prey keeps
+  normal movement and actions. Four-point blood drain, better-of-CMB-or-Mobility
+  removal, detach/cleanup, two-mode visual contact, 834-root player path and
+  live menu passed guarded checks. The primary rules source's once-per-victim
+  disease exposure is retained, using Filth Fever as the disclosed Kingmaker
+  disease adaptation.
+- Aurochs, Bison, Rhinoceros and Woolly Rhinoceros are published at their 48
+  Summon Monster/Nature's Ally placements with original icons and views.
+  Trample uses an automatic legal-AoO-first or Reflex response, Aurochs/Bison
+  Stampede requires three adjacent allies actively executing their own
+  Tramples, and the rhinoceroses retain printed Powerful Charge. Corrected
+  hooves/legs, direct and quantity combat, both turn modes, player paths,
+  save/load cleanup and the 882-root live inventory passed internal review.
+  Owner visual review remains pending and is nonblocking for this checkpoint.
+- This release stops at the fully qualified Sprint 11 boundary. All 68 Sprint
+  12 Dire Rat, Dog, Hyena and Goblin Dog placements remain hidden. Their
+  checked-in rules and original visual groundwork are retained for the next
+  development cycle and are not presented as published creatures.
+
 ## 0.0.140-favored-class-integration
 
 - Optional Favored Class integration under the Gunslinger Favored Class

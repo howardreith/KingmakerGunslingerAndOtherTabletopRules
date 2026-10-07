@@ -342,6 +342,7 @@ PHASE1 = {
     "packageFileCountWithSoundBank": 251,
 }
 SPRINT3 = PHASE1  # the pins below read the current figures
+PHASE2_ADDITIONS = {"KMG.Summoning.Natural.DireBat.Blindsense"}
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
@@ -371,20 +372,27 @@ def validate(root: Path) -> None:
     # ledger order is sprint order, not the plan's category order).
     plan = expanded_summoning_manifest.planned()
     prefix = {e["symbol"] for e in entries[:PRESERVED_ENTRIES]}
+    phase2_additions = PHASE2_ADDITIONS | {
+        symbol for symbol, _ in plan if ".GiantWasp" in symbol or
+        ".Stirge" in symbol or ".Aurochs" in symbol or
+        ".Bison" in symbol or ".Rhinoceros" in symbol or
+        ".WoollyRhinoceros" in symbol or ".DireRat" in symbol or
+        symbol == "KMG.Summoning.Natural.GoblinDog.Traits" or
+        symbol == "KMG.Summoning.Natural.GoblinDog.AllergicReaction" or
+        symbol == "KMG.Summoning.Natural.StirgeTouch" or
+        symbol == "KMG.Summoning.Natural.WaspSting1d8"}
     expected = sorted((symbol, planned_type) for symbol, planned_type in plan
-                      if symbol not in prefix)
+                      if symbol not in prefix and symbol not in phase2_additions)
     if expected != sorted((symbol, planned_type) for symbol, _, planned_type in APPENDED):
         raise AssertionError("Phase 1 append is not the manifest plan minus the preserved prefix")
-    if len(plan) != SPRINT3["foundationIdentities"]:
+    if len(plan) != SPRINT3["foundationIdentities"] + len(phase2_additions):
         raise AssertionError("Expanded Summoning foundation identity count changed")
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != %d" % SPRINT3["uniqueCreatures"],
-        "ValidateFamily(SummonFamily.Monster, %d, %d)" % (
-            SPRINT3["summonMonsterEntries"], SPRINT3["summonMonsterPlacements"]),
-        "ValidateFamily(SummonFamily.NaturesAlly, %d, %d)" % (
-            SPRINT3["summonNaturesAllyEntries"], SPRINT3["summonNaturesAllyPlacements"]),
+        "Creatures.Length != 88",
+        "ValidateFamily(SummonFamily.Monster, 80, 453)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 78, 447)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -395,12 +403,12 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = %d;" % SPRINT3["registeredLogicalPlacements"],
-        "SuppressedLogicalPlacementCount = 14;")
+        "RegisteredLogicalPlacementCount = 900;",
+        "SuppressedLogicalPlacementCount = 68;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = %d;" % SPRINT3["uniqueCreatures"],
-        "LogicalAbilityCount = %d;" % SPRINT3["registeredLogicalPlacements"],
-        "TemplatedPlacementCount = %d;" % SPRINT3["templatedPlacements"],
+        "UnitCount = 88;",
+        "LogicalAbilityCount = 900;",
+        "TemplatedPlacementCount = 238;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
         "Values.Length != %d" % SPRINT3["nativeExpansionWrappers"],
@@ -408,10 +416,10 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != %d" % SPRINT3["naturalProfiles"],
+        "Values.Length != 41",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % SPRINT3["projectIcons"])
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 9))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -487,24 +495,39 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    if runtime_icons["count"] != SPRINT3["projectIcons"] or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] or \
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 9 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 9 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
-                 "salt-mephit", "steam-mephit", "tiger"} <= {row["key"] for row in runtime_icons["icons"]}:
+                 "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
+                 "aurochs", "bison", "rhinoceros", "woolly-rhinoceros",
+                 "remove-stirge", "dire-rat"} <= {row["key"] for row in runtime_icons["icons"]}:
         raise AssertionError("Runtime icon manifest does not carry the Phase 1 icons")
     for key in ("pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                 "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
-                "salt-mephit", "steam-mephit", "tiger"):
+                "salt-mephit", "steam-mephit", "tiger", "dire-rat"):
         if not (root / "assets/game/icons/expanded-summoning" / (key + ".png")).is_file() or \
                 not (root / "assets-source/original-icons/expanded-summoning/sources" / (key + ".png")).is_file():
             raise AssertionError("Phase 1 icon file missing: " + key)
-    require_tokens(root / "scripts/Build-Local.ps1",
-        "{ %d } else { %d }" % (SPRINT3["packageFileCountWithSoundBank"],
-                                SPRINT3["packageFileCountWithSoundBank"] - 2))
-    require_tokens(root / "scripts/package.ps1",
-        "{ %d } else { %d }" % (SPRINT3["packageFileCountWithSoundBank"],
-                                SPRINT3["packageFileCountWithSoundBank"] - 2))
+    # Phase 2 adds Bat/Eagle/Wasp/Stirge meshes and albedos, the Sprint 12
+    # quadruped meshes and albedos, the Bat and prepared Dire Rat icons, and
+    # the distinct Remove Stirge action icon.
+    # Keep the accepted Phase 1 metadata at 251, but validate the current
+    # package count with the Phase 2 bird, vermin and icon additions.
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 31
+    # Only the current whole-package count grows by the four DATA trait PNGs.
+    # No summoning count or historical record changes.
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.142":
+        package_count += 4
+    for script in ("Build-Local.ps1", "package.ps1"):
+        require_tokens(root / "scripts" / script,
+            "{ %d } else { %d }" % (package_count, package_count - 2),
+            "dire-bat-mesh.json", "dire-bat-albedo.png",
+            "eagle-mesh.json", "eagle-albedo.png",
+            "giant-wasp-mesh.json", "giant-wasp-albedo.png",
+            "stirge-mesh.json", "stirge-albedo.png",
+            "assets\\sprint12-quadrupeds",
+            "@('dire-rat','hyena','goblin-dog')")
 
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]

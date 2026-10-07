@@ -5,6 +5,16 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal static class RuntimeTestScenarioCatalog
     {
+        internal const string ElementalCharacterTraitsOwnedSave = "elemental-character-traits-owned-save";
+        internal const string ObservePublishedElementalCharacterTraits = "observe-published-elemental-character-traits";
+        internal const string ObserveUnpublishedRaceTraitFoundations = "observe-unpublished-race-trait-foundations";
+        internal const string ObserveUnpublishedWhiteoutFoundation = "observe-unpublished-whiteout-foundation";
+        internal const string ObserveWhiteoutDisposableWeatherFixture = "observe-whiteout-disposable-weather-fixture";
+        internal const string ObserveUnpublishedAerialObserverFoundation = "observe-unpublished-aerial-observer-foundation";
+        internal const string ObserveWhiteoutWeatherCatalog = "observe-whiteout-weather-catalog";
+        internal const string ObserveWhiteoutWeather = "observe-whiteout-weather";
+        internal const string ObserveModelDVendors = "observe-model-d-vendors";
+        internal const string ObserveFirearmDescriptions = "observe-firearm-descriptions";
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string DisposableMagicCircleProfile = "disposable-magic-circle-profile";
         internal const string DisposableMagicCircleUi = "disposable-magic-circle-ui";
@@ -50,6 +60,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-kmg-compatibility-asset-attribution";
         internal const string ObserveFeatureModuleSettings =
             "observe-feature-module-settings";
+        internal const string ObserveExpandedSummoningModuleBoundary =
+            "observe-expanded-summoning-module-boundary";
         internal const string ObserveUrbanBarbarianRageInventory =
             "observe-urban-barbarian-rage-inventory";
         internal const string DisposableUrbanBarbarianFocused =
@@ -621,12 +633,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
             {
+                ElementalCharacterTraitsOwnedSave,
+                ObservePublishedElementalCharacterTraits,
+                ObserveUnpublishedRaceTraitFoundations,
+                ObserveUnpublishedWhiteoutFoundation,
+                ObserveWhiteoutDisposableWeatherFixture,
+                ObserveUnpublishedAerialObserverFoundation,
+                ObserveWhiteoutWeatherCatalog,
+                ObserveWhiteoutWeather,
+                ObserveModelDVendors,
+            ObserveFirearmDescriptions,
                 ModLoadSmoke,
                 ObserveWordOfRecallFavoredClass,
                 DisposableWordOfRecallFavoredClassPersistence,
                 DisposableFirearmBreakInterruption,
                 ObserveKmgCompatibilityAssetAttribution,
                 ObserveFeatureModuleSettings,
+                ObserveExpandedSummoningModuleBoundary,
                 ObserveUrbanBarbarianRageInventory,
                 DisposableUrbanBarbarianFocused,
                 ObserveBodyguardNativeContracts,

@@ -1,8 +1,57 @@
 Set-StrictMode -Version Latest
+. (Join-Path $PSScriptRoot 'ElementalCharacterTraitPersistence.Common.ps1')
 . (Join-Path $PSScriptRoot 'MagicCirclePreparation.Common.ps1')
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
 $script:KmgRuntimeScenarioMetadata = [ordered]@{
+    'observe-unpublished-whiteout-foundation' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-whiteout-disposable-weather-fixture' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-unpublished-aerial-observer-foundation' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-published-elemental-character-traits' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-unpublished-race-trait-foundations' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-whiteout-weather-catalog' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-model-d-vendors' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-firearm-descriptions' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'mod-load-smoke' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -593,6 +642,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-expanded-summoning-module-boundary' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-urban-barbarian-rage-inventory' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -706,6 +761,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-character-traits-owned-save' = [pscustomobject]@{
+        RequiresSaveName=$true;PermittedSaveName='transaction-owned trait input'
+        RequiresManualInteraction=$false;ReadinessBehavior='autonomous-working-save'
+        TimeoutCategory='working-save';UsesCatalogTimeout=$true
+        UsesSelectionTimeouts=$true;UsesWorkingStageTimeouts=$true
     }
     'disposable-teleportation-persistence' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'transaction-owned persistence input'
@@ -828,6 +889,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-magic-circle-ui' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-whiteout-weather' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -1874,6 +1941,21 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -cin @('disposable-magic-circle-profile', 'disposable-magic-circle-terrain') -and -not $ExitAfterCompletion) {
         throw 'The native Magic Circle profile fixture requires automatic exit.'
     }
+    if ($Scenario -ceq 'observe-whiteout-disposable-weather-fixture' -and -not $ExitAfterCompletion) {
+        throw 'Disposable Whiteout weather fixture requires automatic exit.'
+    }
+    if ($Scenario -ceq 'observe-unpublished-whiteout-foundation' -and -not $ExitAfterCompletion) {
+        throw 'Unpublished Whiteout foundation requires automatic exit.'
+    }
+    if ($Scenario -ceq 'observe-whiteout-weather' -and -not $ExitAfterCompletion) {
+        throw 'Whiteout read-only observation requires automatic exit.'
+    }
+    if ($Scenario -cin @('observe-unpublished-race-trait-foundations','observe-published-elemental-character-traits') -and -not $ExitAfterCompletion) {
+        throw 'Unpublished race trait foundations require automatic exit.'
+    }
+    if ($Scenario -ceq 'observe-unpublished-aerial-observer-foundation' -and -not $ExitAfterCompletion) {
+        throw 'Unpublished Aerial Observer foundation requires automatic exit.'
+    }
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
     $qualifiedElementalRaces114 =
         $PermitQualifiedElementalRaces114 -and
@@ -1890,9 +1972,10 @@ function Assert-KmgRuntimeScenarioPreflight {
         $Parameters.Count -ne 1 -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) {
         throw 'Public 0.0.117 authority permits only its exact disposable persistence producer, without another producer authority.'
     }
-    if ($ExpectedVersion -cne '0.0.140' -and
+    $activeVersion = (Get-KmgModInfo -RepositoryRoot (Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot)).Version
+    if ($ExpectedVersion -cne $activeVersion -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.140.'
+        throw "ExpectedVersion must be exactly the active version $activeVersion."
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -1911,6 +1994,12 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($metadata.RequiresSaveName) {
         $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')
         $visualLifecycle = $Scenario -ceq 'working-save-creator-visual-lifecycle'
+        $traitSave = $Scenario -ceq 'elemental-character-traits-owned-save'
+        if ($traitSave) {
+            if (-not $ExitAfterCompletion -or $Parameters.Count -ne 3 -or
+                $Parameters.phase -isnot [string] -or $Parameters.planPath -isnot [string]) { throw 'Closed automatic trait save plan required.' }
+            [void](Assert-ElementalTraitSavePlan $Parameters.planPath $Parameters.phase $Parameters.saveName $ExpectedVersion)
+        }
         $persistence = $Scenario -ceq 'disposable-teleportation-persistence'
         $circleBound = $Scenario -cin @('working-save-magic-circle-verify','working-save-magic-circle-scene','working-save-magic-circle-cleanup')
         if ($circleBound) {
@@ -1975,17 +2064,31 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
         $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
             $Parameters.ContainsKey('nativeActionCase')
-        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $flightActivation = $Scenario -cin @('summon-same-turn-activation', 'summon-same-turn-rtwp-control') -and
+            $Parameters.ContainsKey('flightCreature')
+        $crowdReview = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
+            $Parameters.ContainsKey('quantity')
+        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
-            (-not $persistence -and -not $fcbPersistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
+            (-not $persistence -and -not $fcbPersistence -and -not $traitSave -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
         }
         if ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
             (-not $Parameters.ContainsKey('creatures') -or $Parameters.creatures -isnot [string] -or
              [string]::IsNullOrWhiteSpace([string]$Parameters.creatures))) {
             throw 'The creature review requires creatures: comma-separated creature keys.'
+        }
+        if ($crowdReview -and ($Parameters.quantity -isnot [string] -or
+            $Parameters.quantity -cne 'OneD4PlusOne' -or
+            @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
+                Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros') }).Count -ne 0)) {
+            throw 'The crowd review permits only 1d4+1 Sprint 11 ungulates.'
+        }
+        if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or
+            [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge'))) {
+            throw 'The flight activation fixture permits only Eagle, Dire Bat, Giant Wasp, or hidden Stirge.'
         }
         if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
             [string]$Parameters['class'] -cne 'Fighter' -or
@@ -2094,6 +2197,13 @@ function Assert-KmgRuntimeScenarioPreflight {
             -not $Parameters.ContainsKey('magicCircleSpells') -or
             $Parameters.magicCircleSpells -isnot [bool]) {
             throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, and magicCircleSpells parameters."
+        }
+    }
+    elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
+        if ($Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('expandedSummoning') -or
+            $Parameters.expandedSummoning -isnot [bool]) {
+            throw "$Scenario requires exactly one Boolean expandedSummoning parameter."
         }
     }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -2234,12 +2344,26 @@ function New-KmgRuntimeRequest {
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
             [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
         } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
-            [ordered]@{ saveName = [string]$Parameters.saveName; creatures = [string]$Parameters.creatures }
+            $creatureReviewParameters = [ordered]@{
+                saveName = [string]$Parameters.saveName
+                creatures = [string]$Parameters.creatures
+            }
+            if ($Parameters.ContainsKey('quantity')) {
+                $creatureReviewParameters.quantity = [string]$Parameters.quantity
+            }
+            $creatureReviewParameters
+        } elseif ($Scenario -cin @('summon-same-turn-activation',
+                'summon-same-turn-rtwp-control') -and
+                $Parameters.ContainsKey('flightCreature')) {
+            [ordered]@{ saveName = [string]$Parameters.saveName;
+                flightCreature = [string]$Parameters.flightCreature }
         } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
             $scopeArgs = [ordered]@{ saveName = [string]$Parameters.saveName; qualificationTrait = 'NereidFascination' }
             if (Test-KmgTreacherousEffectScope $Scenario $Parameters) { $scopeArgs.qualificationEffect = 'TreacherousEarth' }
             if (Test-KmgCompletionSceneScope $Scenario $Parameters) { $scopeArgs.qualificationOperation = 'scene-roundtrip' }
             $scopeArgs
+        } elseif ($Scenario -ceq 'elemental-character-traits-owned-save') {
+            [ordered]@{saveName=[string]$Parameters.saveName;phase=[string]$Parameters.phase;planPath=[string]$Parameters.planPath}
         } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
             [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
         } elseif ($Scenario -ceq 'disposable-word-of-recall-favored-class-persistence') {
@@ -2275,6 +2399,8 @@ function New-KmgRuntimeRequest {
                 teleportationSpells = [bool]$Parameters.teleportationSpells
                 magicCircleSpells = [bool]$Parameters.magicCircleSpells
             }
+        } elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
+            [ordered]@{ expandedSummoning = [bool]$Parameters.expandedSummoning }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {
             [ordered]@{

@@ -47,6 +47,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<string> _pteranodonVisualSteps = new List<string>();
         private readonly List<string> _pteranodonFaultDrill = new List<string>();
         private readonly List<string> _donorIsolationDetail = new List<string>();
+        private readonly List<string> _direBatVisualDetail = new List<string>();
+        private int _direBatVisualChecked;
+        private int _direBatVisualAttached;
+        private readonly List<string> _eagleVisualDetail = new List<string>();
+        private int _eagleVisualChecked;
+        private int _eagleVisualAttached;
+        private int _giantWaspVisualChecked;
+        private int _giantWaspVisualAttached;
+        private readonly List<string> _giantWaspVisualDetail = new List<string>();
+        private int _stirgeVisualChecked;
+        private int _stirgeVisualAttached;
+        private readonly List<string> _stirgeVisualDetail = new List<string>();
         private IDisposable _pteranodonWithdrawal;
         private int _pteranodonCastsSeen;
         private int _pteranodonCrowdMax;
@@ -59,7 +71,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// must never touch them.
         /// </summary>
         private static readonly string[] PteranodonDonorSharers =
-        { "eagle", "dire-bat", "roc" };
+        { "roc" };
 
         /// <summary>
         /// The one skinned renderer on a GiantEagle-donor view, as the swap
@@ -102,6 +114,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                     " (Instance);bones=46;", StringComparison.Ordinal);
         }
 
+        private static bool IsDireBatAttached(string renderers)
+        {
+            string name = ExpandedSummoningPteranodonViewPatch.DireBatVisualName;
+            return renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    ";bones=46;", StringComparison.Ordinal) ||
+                renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    " (Instance);bones=46;", StringComparison.Ordinal);
+        }
+
+        private static bool IsEagleAttached(string renderers)
+        {
+            string name = ExpandedSummoningPteranodonViewPatch.EagleVisualName;
+            return renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    ";bones=46;", StringComparison.Ordinal) ||
+                renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    " (Instance);bones=46;", StringComparison.Ordinal);
+        }
+
+        private static bool IsGiantWaspAttached(string renderers)
+        {
+            string name = ExpandedSummoningPteranodonViewPatch.GiantWaspVisualName;
+            return renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    ";bones=16;", StringComparison.Ordinal) ||
+                renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    " (Instance);bones=16;", StringComparison.Ordinal);
+        }
+
+        private static bool IsStirgeAttached(string renderers)
+        {
+            string name = ExpandedSummoningPteranodonViewPatch.StirgeVisualName;
+            return renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    ";bones=15;", StringComparison.Ordinal) ||
+                renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    " (Instance);bones=15;", StringComparison.Ordinal);
+        }
+
         /// <summary>
         /// The donor exactly as the prefab gives it: its own mesh and material
         /// on the 72-bone rig, and one renderer.
@@ -111,11 +159,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             return renderers.IndexOf("mesh=" +
                     ExpandedSummoningPteranodonViewPatch.CustomVisualName,
                     StringComparison.Ordinal) < 0 &&
+                renderers.IndexOf("mesh=" +
+                    ExpandedSummoningPteranodonViewPatch.DireBatVisualName,
+                    StringComparison.Ordinal) < 0 &&
+                renderers.IndexOf("mesh=" +
+                    ExpandedSummoningPteranodonViewPatch.EagleVisualName,
+                    StringComparison.Ordinal) < 0 &&
                 renderers.IndexOf("material=" +
                     ExpandedSummoningPteranodonViewPatch.CustomVisualName,
                     StringComparison.Ordinal) < 0 &&
                 renderers.IndexOf(";bones=72;", StringComparison.Ordinal) >= 0 &&
                 renderers.EndsWith(";renderers=1", StringComparison.Ordinal);
+        }
+
+        private static bool IsUsableDisabledSummonDonor(string renderers)
+        {
+            return IsDonorUntouched(renderers) &&
+                !renderers.StartsWith("mesh=<none>;", StringComparison.Ordinal) &&
+                renderers.IndexOf(";material=<none>;", StringComparison.Ordinal) < 0 &&
+                renderers.IndexOf(";enabled=true;", StringComparison.Ordinal) >= 0;
         }
 
         /// <summary>

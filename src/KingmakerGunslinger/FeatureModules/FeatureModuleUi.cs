@@ -82,6 +82,7 @@ namespace KingmakerGunslinger.FeatureModules
             ImmediateModeGui.Label("Aid Another detail: " + aidAnother.Detail);
             ImmediateModeGui.Label("Craft Magic Items compatibility: " +
                 CraftMagicItemsCompatibilityStatusRegistry.Current.Display);
+            ImmediateModeGui.Label("Elemental character traits reconcile immediately; other module changes require restart.");
             ImmediateModeGui.Label("Active this process: " + _state.Active);
             ImmediateModeGui.Label("Saved for next restart: " + _state.Pending);
             if (_state.RestartRequired)
