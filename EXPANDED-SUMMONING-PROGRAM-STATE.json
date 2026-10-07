@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact16f trace confirms fixture asserted at scenes-loaded4229 and ended4234 before load-complete. Native state/pool/subscription present. Fixture-only actual-completion readiness repair SOURCE PASS:272 focused/2074 full81.4s/complete179.6s/clean14-reference Release/strict320. Corrected runtime NOT RUN; next counts14/13/6; strict reset unchanged. Installation restored03:06:24UTC,4new marked fixtures saved;32 roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exacta429da50 native snake persistence PASS: smoke11/prepare14/cleanup13/absence6. Existing production hold reset witnessed at native completion4252; fixture-only readiness repair qualified. Two authorized native writes,zero saved owned units after fresh absence. Exact restoration03:37:14UTC;32roots hidden. Next snake lifecycle/UI/private32 routes, separate Salamander, fullSprint17/Phase2B;Phase2C deferred.",
     "sprint17SnakeLoadBoundaryTrace": {
       "status": "FIXTURE ASSERTION PRECEDES NATIVE LOAD-COMPLETE; DIAGNOSTIC COMPLETE; GAMEPLAY NOT QUALIFIED",
       "sourceParent": "15070179e84d799d476ce90a7b205d0e950ec52d",
@@ -256,9 +256,9 @@
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact983828bf smoke11/11,profile/body/rules62/62(46rows),native commands/contact51/51(8rows). Bounded slices only; fullSprint17 NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exact16f61e19d42c8fab918ba1a263ec72f9952990f2: smoke11/11,prepare13/13 PASS;cleanup10/12 FAIL;absence NOT RUN. Trace proves fixture-order defect: reset assertion/scenes-loaded4229,fixture complete4234 without native load-complete. Prepare callback4238 selected already-replaced units. No membership/subscription miss or observed safeguard exception. No production qualification transfer. One prepare write/four new marked saved fixtures.",
-    "lastGuardedRestoration": "Actual snapshot20261007T0256135125979Z restored2026-10-07T03:06:24.8492046Z;136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3 VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/worktree staging. Working save NOT normalized: one prepare write,zero cleanup writes,4new marked fixture units remain. Protected baseline/unrelated September14 extraction untouched.",
+    "lastGuardedRuntimePass": "Exacta429da50 smoke11/11,prepare14/14,cleanup13/13,absence6/6 PASS. Native reset after actual load-complete,venom persistence/continuation/cure,owned cleanup/fresh absence qualified. Bounded enabled-module snake persistence only; fullSprint17 NOT QUALIFIED.",
+    "lastGuardedRuntimeResult": "Exacta429da50 smoke11/11,prepare14/14,cleanup13/13,absence6/6 PASS. Native reset after actual load-complete,venom persistence/continuation/cure,owned cleanup/fresh absence qualified. Bounded enabled-module snake persistence only; fullSprint17 NOT QUALIFIED.",
+    "lastGuardedRestoration": "Actual snapshot20261007T0323408975413Z restored2026-10-07T03:37:14.0902498Z;136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3 VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/worktree staging. Working save normalized through one native prepare and one successful cleanup save;fresh absence0. Protected baseline/unrelated September14 extraction untouched.",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -514,7 +514,7 @@
       "fullSprintQualified": false
     },
     "sprint17SnakePersistenceSlice": {
-      "status": "FIXTURE-ORDER FAILURE BEFORE NATIVE LOAD-COMPLETE; PREPARE13/13 PASS,CLEANUP10/12 FAIL,ABSENCE NOT RUN; FOUR NEW SAVED FIXTURES REMAIN",
+      "status": "EXACT ENABLED-MODULE SNAKE PERSISTENCE PASS; FULL SPRINT17/MODULE-DISABLED MATRIX NOT QUALIFIED",
       "sourceBase": "685aea21fc6b93954294fe9f2dd8ab8a6e813430",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PERSISTENCE-SLICE.md",
       "scope": "snakes",
@@ -526,37 +526,38 @@
       ],
       "ownership": "Exact serialized test receipt plus native registered blueprint, unit, caster, area and lifecycle context; unmarked units fail closed untouched",
       "sourceExpectedAssertions": {
-        "prepare": 13,
-        "cleanup": 12,
-        "absent": 5
+        "prepare": 14,
+        "cleanup": 13,
+        "absent": 6
       },
-      "focused": 271,
-      "domain": 2073,
+      "focused": 272,
+      "domain": 2074,
       "domainSeconds": 81.8,
-      "sourceGateSeconds": 178.7,
+      "sourceGateSeconds": 178.3,
       "cleanExactReferences": 14,
       "strictPackageMembers": 320,
       "requestRoundTrips": 6,
       "requestHistoricalDefaults": 3,
       "requestRejections": 56,
-      "runtimeQualified": false,
+      "runtimeQualified": true,
       "publicationAuthorized": false,
       "saveWritePerformed": true,
       "workingSaveWriteAuthority": "Existing exact native prepare/cleanup sentinel only; absent never writes",
       "acceptedGrappleReset": true,
       "grappleReestablishment": false,
-      "sourceCandidate": "16f61e19d42c8fab918ba1a263ec72f9952990f2",
-      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-EVIDENCE.json",
+      "sourceCandidate": "a429da506ebfbbf5c243faa0da163394d32012a2",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-PASS-EVIDENCE.json",
       "runtimeExecuted": true,
-      "absenceQualified": false,
-      "preparePassed": 13,
-      "cleanupPassed": 10,
-      "cleanupAssertions": 12,
+      "absenceQualified": true,
+      "preparePassed": 14,
+      "cleanupPassed": 13,
+      "cleanupAssertions": 13,
       "nativePrepareWrites": 1,
-      "nativeCleanupWrites": 0,
-      "remainingSavedOwnedFixtures": 4,
+      "nativeCleanupWrites": 1,
+      "remainingSavedOwnedFixtures": 0,
       "venomReloadAndNativeCurePassed": true,
-      "sessionHoldResetPassed": false
+      "sessionHoldResetPassed": true,
+      "absencePassed": 6
     },
     "sprint17SnakeLauncherRouting": {
       "status": "EXACT ROUTING EXECUTED; SMOKE/DIRECT/CROWD/PREPARE PASS; HOLD-RESET FAIL; ABSENCE SAFELY BLOCKED",
@@ -578,7 +579,7 @@
       "sourceCandidate": "ec9721f71b06ed184b92bcfbd9418e6eb292ece7"
     },
     "sprint17SnakeNativeBoundaryRepair": {
-      "status": "SOURCE PASS; CORRECTED RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "status": "EXACT RUNTIME PASS FOR BOUNDED NATIVE SNAKE PERSISTENCE; FULL SPRINT17 NOT QUALIFIED",
       "sourceParent": "16f61e19d42c8fab918ba1a263ec72f9952990f2",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-REPAIR.md",
       "focused": 272,
@@ -597,9 +598,45 @@
       "manualResetCalls": false,
       "grappleReestablishment": false,
       "eventReadiness": "Actual safeguard native load-complete return for exact state/area, after correlated scenes-loaded; before any fixture unit work; 600-frame observation budget fails closed",
-      "runtimeExecuted": false,
-      "runtimeQualified": false,
-      "remainingSavedOwnedFixtures": 4
+      "runtimeExecuted": true,
+      "runtimeQualified": true,
+      "remainingSavedOwnedFixtures": 0,
+      "sourceCandidate": "a429da506ebfbbf5c243faa0da163394d32012a2",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-PASS-EVIDENCE.json",
+      "exactPrelaunch": {
+        "status": "PASS",
+        "focused": 272,
+        "domain": 2074,
+        "domainSeconds": 81.8,
+        "gateSeconds": 178.3,
+        "cleanExactReferences": 14,
+        "strictPackage": true,
+        "preflight": 508,
+        "orchestration": 168,
+        "provenance": 17,
+        "persistence": {
+          "existing": 11,
+          "roundTrips": 6,
+          "defaults": 3,
+          "rejections": 56
+        },
+        "crowd": {
+          "roundTrips": 8,
+          "rejections": 11
+        },
+        "launcher": {
+          "accepted": 13,
+          "rejected": 10
+        }
+      },
+      "observedAssertions": {
+        "smoke": 11,
+        "prepare": 14,
+        "cleanup": 13,
+        "absent": 6
+      },
+      "cleanupScenesFrame": 4235,
+      "cleanupNativeResetFrame": 4252
     }
   },
   "charter": {
@@ -877,7 +914,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Policy-push the fixture-only native load-completion readiness repair, run every exact-head prelaunch gate, freeze one immutable artifact and run smoke/prepare14/cleanup13/absence6. Native prepare must safely retire only four receipt-owned saved fixtures. Qualify actual reset after its real callback; no manual reset, relaxed assertion, production change, fixed-delay guess or save surgery. Then lifecycle/UI/private32 routes, separate Salamander, fullSprint17/Phase2B; stop for owner review.",
+  "nextConcreteAction": "Remaining snake lifecycle/UI/private32 routes; separate Salamander seam; one complete exact Sprint17 hidden candidate and publication, then full Phase2B closure. Stop for owner review. Keep32 snake roots hidden. Earlier commands/rules/crowd qualification is artifact-bounded; complete final Sprint17 candidate must rerun all required gates on one artifact.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
