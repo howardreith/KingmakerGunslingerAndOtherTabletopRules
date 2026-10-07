@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACT2dace DIAGNOSTIC HAND-SELECTION FAIL/RESTORED; full801 grip14/15 still open. Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACTa5a1 HUMAN13/15 CONTACT/DIAGNOSTIC FAIL/RESTORED. Sprint17 NOT QUALIFIED. Production Salamander
 identity/placements/prefab unchanged; spear is now manufactured. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -522,18 +522,50 @@ No normalization, native pose/import writes, art/gameplay or8cm/25cm changes.
 Every actually allocated control/probe is tracked; cleanup is not confused
 with whether an unavailable control was ever created. One new behavior test
 preserves selection while distinguishing rejection causes; count pins2100.
-Exact committed-head runtime remains PENDING; last complete grip result801 FAIL.
+Exacta5a1 runtime below now retains15 checks but remains FAIL.
+
+## Exacta5a1 full attack retained; contact and serializer remain open
+
+Exacta5a1e962e688c80a5acd21f64ab394eae1165314: smoke11/11 PASS;
+full human review13/15 FAIL, with complete native2spear+1tail command Success.
+[Exact full review, failures and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-WEIGHT-CENSUS-RUNTIME-EVIDENCE.json).
+All exact prelaunch PASS298/2100full85.5s/complete182.6s/clean14/strict321,
+515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
+
+Native01 left grip0.005556m passes; native02 left0.08940738m exceeds0.08m
+(end frame0.200967208m). No asset/pose change, threshold waiver or qualification.
+The second failure is diagnostic serialization: the active runtime serializer
+turns counter dictionaries into arrays, so JObject.FromObject rejects them.
+Both controls stop before BakeMesh. Native2268 weight sums are finite/normalized;
+selector counts remain unknown. Failure isolation now retains all15 checks,
+144bounded timing rows and both cached native act events rather than aborting.
+Native02 starts transitioning out before its0.734528542s act event; actual
+command resolves next frame. Timing is proved, native-hand fidelity is NOT.
+
+Rollback reclaims30objects; native destruction32actual objects/158borrowed alive.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored13:33:09.9424841UTC;
+ZERO native save writes; no game/runtime/compatibility lock or staging;
+lease Completed/recoveryfalse. All17stages/failed artifacts retained.
+Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
+976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Counter JSON repair is now SOURCE PASS299focused/2101full83.0s,
+complete179.0s/clean14/strict321. Explicit ordered scalar JProperty construction
+replaces only dictionary FromObject calls. The new behavior test reproduces
+the old array-converter failure, preserves exact/zero/empty counters without
+calling the converter, and restores process defaults afterward. Production
+does not change global settings. No model, pose, selector or threshold change.
+Exact committed-head runtime for this repair is still PENDING.
 
 ## Next exact work
 
-Next: push this source-qualified diagnostic change, rebuild the exact clean
-head with every prelaunch/harness gate, then fresh Steam640820 smoke11 and
-ALL15 human checks. Review bounded native-weight rejection census, actual native
-cached event timing and original contact even if the comparison is unavailable.
-Unavailable control remains FAIL. No thresholds, anatomy or pose may be guessed.
-Restore the exact pre-transaction snapshot. Then printed Salamander mechanics,
-same-artifact Sprint17 hidden/publication, fullPhase2B closure and STOP.
-Phase2C authorized but deferred.
+Next: push the source-qualified counter-JSON repair, rebuild the exact clean
+head with all prelaunch/harness gates, then fresh Steam640820 smoke11 and
+ALL15 human checks. Inspect real hand-selection counts, both bake controls,
+independent original-distance agreement, actual native event timing and cleanup.
+No favorable-frame/variant retry or8cm/25cm waiver. Restore the exact snapshot.
+Then printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
+fullPhase2B closure and STOP. Phase2C authorized but deferred.
 Preserve all native two-handed weapon handling and native references.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 Preserve native two-handed spear handling

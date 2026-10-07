@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -208,6 +211,41 @@ namespace KingmakerGunslinger.DomainTests
                 "Missing names remain invalid.");
             Assertions.Equal("below-hand-influence", SalamanderHumanBindingPolicy.GripSurfaceDisposition("R", names, new[] { 1f, 0f, 0f, 0f }),
                 "Wrong-side anatomy cannot be accepted by the diagnostic.");
+        }
+
+        private sealed class CounterArrayConverter : JsonConverter
+        {
+            internal int Writes;
+            public override bool CanConvert(Type type) { return type == typeof(Dictionary<string, int>); }
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            { Writes++; writer.WriteStartArray(); writer.WriteValue("runtime dictionary converter"); writer.WriteEndArray(); }
+            public override object ReadJson(JsonReader reader, Type type, object existing, JsonSerializer serializer)
+            { throw new NotSupportedException(); }
+        }
+
+        internal static void GripCountersIgnoreProcessGlobalDictionaryConverters()
+        {
+            Func<JsonSerializerSettings> prior = JsonConvert.DefaultSettings;
+            var converter = new CounterArrayConverter();
+            var counts = new Dictionary<string, int> { { "weight-sum", 3 }, { "selected", 17 }, { "below-hand-influence", 0 } };
+            try
+            {
+                JsonConvert.DefaultSettings = () => new JsonSerializerSettings { Converters = { converter } };
+                bool oldRejected = false;
+                try { JObject.FromObject(counts); } catch (ArgumentException) { oldRejected = true; }
+                Assertions.True(oldRejected, "Reproduce the observed object-versus-array failure under runtime dictionary conversion.");
+                Assertions.Equal(1, converter.Writes, "The old path invoked the hostile process-global converter.");
+                JObject result = RuntimeTesting.Sprint17GripEvidence.Counters(counts);
+                Assertions.True(result.Properties().Select(p => p.Name).SequenceEqual(new[] { "below-hand-influence", "selected", "weight-sum" }),
+                    "All counter keys remain an explicit deterministic object.");
+                JObject roundTrip = JObject.Parse(result.ToString(Formatting.None));
+                foreach (var pair in counts) Assertions.Equal(pair.Value, (int)roundTrip[pair.Key], "Preserve exact counts, including zero.");
+                Assertions.Equal(0, RuntimeTesting.Sprint17GripEvidence.Counters(new Dictionary<string, int>()).Count,
+                    "An empty map is still an object, never an inferred array.");
+                Assertions.Equal(1, converter.Writes, "The repaired path must not invoke process-global conversion.");
+            }
+            finally { JsonConvert.DefaultSettings = prior; }
+            Assertions.True(ReferenceEquals(prior, JsonConvert.DefaultSettings), "Restore process defaults for unrelated domain tests.");
         }
 
         internal static void BakedControlRequiresTheExactFiniteLiveFrame()
