@@ -213,6 +213,43 @@ namespace KingmakerGunslinger.DomainTests
                 "Wrong-side anatomy cannot be accepted by the diagnostic.");
         }
 
+        internal static void NativeGripDeformersRequireExactAnatomicalParents()
+        {
+            string[] hands = SalamanderHumanBindingPolicy.NativeNames.Where(name =>
+                SalamanderHumanBindingPolicy.IsGripDriver(name, "L") || SalamanderHumanBindingPolicy.IsGripDriver(name, "R")).ToArray();
+            Assertions.Equal(14, hands.Length, "Exactly seven native hand/finger deformers per side.");
+            foreach (string driver in hands)
+            {
+                Assertions.Equal(driver, SalamanderHumanBindingPolicy.NativeGripDeformerDriver(driver + "_ADJ", driver),
+                    "Only the captured exact ADJ child projects to its own animation driver.");
+                Assertions.Equal(null, SalamanderHumanBindingPolicy.NativeGripDeformerDriver(driver, driver),
+                    "Native animation-driver slots are not substituted for deforming slots.");
+                foreach (string parent in new[] { null, "", "Weapons", driver + "_ADJ", driver.ToLowerInvariant() })
+                    Assertions.Equal(null, SalamanderHumanBindingPolicy.NativeGripDeformerDriver(driver + "_ADJ", parent),
+                        "Missing, storage, nested or wrong-case parents fail closed.");
+            }
+            foreach (string name in new[] { null, "", "L_Hand_adj", "L_Hand_ADJ_ADJ", "L_ForeArm_ADJ", "L_toe_ADJ", "Weapons_ADJ" })
+                Assertions.Equal(null, SalamanderHumanBindingPolicy.NativeGripDeformerDriver(name,
+                    name == null || name.Length < 4 ? null : name.Substring(0, name.Length - 4)),
+                    "No suffix-only broad anatomy match.");
+        }
+
+        internal static void NativeDeformerProjectionPreservesSideAndInfluence()
+        {
+            string[] names = new[] { "L_Hand", "L_Toe_1_01", "R_Hand", "L_ForeArm" }
+                .Select(name => SalamanderHumanBindingPolicy.NativeGripDeformerDriver(name + "_ADJ", name)).ToArray();
+            Assertions.True(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("L", names, new[] { .3f, .2f, .1f, .4f }),
+                "Reviewed left deformers combine at the unchanged half-weight requirement.");
+            Assertions.False(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("L", names, new[] { .3f, .19f, .11f, .4f }),
+                "Neither forearm nor opposite-hand weight can complete the requirement.");
+            Assertions.False(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("R", names, new[] { .3f, .2f, .1f, .4f }),
+                "The projection cannot mix left and right.");
+            Assertions.True(SalamanderHumanBindingPolicy.IsGripDriver("L_Hand", "L"),
+                "The original mesh's animation-driver selection is unchanged.");
+            Assertions.False(SalamanderHumanBindingPolicy.IsGripDriver("L_Hand_ADJ", "L"),
+                "Native deformers are never added to the original mesh's driver contract.");
+        }
+
         private sealed class CounterArrayConverter : JsonConverter
         {
             internal int Writes;
