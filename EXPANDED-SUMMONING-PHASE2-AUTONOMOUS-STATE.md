@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — fixture load-order defect confirmed; native readiness repair SOURCE PASS; exact runtime next
+## CURRENT STATE, 2026-10-07 — exact native snake persistence PASS; full Sprint17 still open
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -18,17 +18,15 @@ deployment, force push or prohibited substitute subsystems.
   session01a10bcd-8582-7551-826f-0f128807eb99; ownerPID31796/start
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
-- Last exact runtime candidate `983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f`,
-  clean/pushed for smoke11/profile-body-rules62/commands51 PASS.
-  All8 at-rule contacts gap0 with genuine native long Bite playback.
-  Latest exact candidate16f61e19d42c8fab918ba1a263ec72f9952990f2 passes
-  smoke11/prepare13; cleanup10/12 ran its reset assertion at scenes-loaded,
-  before the actual native load-complete callback. Fixture ordering defect
-  measured; production reset at its defined boundary remains unqualified.
-  Cleanup refuses its write; absence NOT RUN. One prepare write leaves four
-  new marked saved fixtures after safe retirement of the previous four.
+- Exact runtime/source candidate `a429da506ebfbbf5c243faa0da163394d32012a2`
+  clean/pushed: smoke11/prepare14/cleanup13/absence6 PASS. This evidence-only
+  descendant records those exact hashes; no runtime transfer to a new artifact.
+  Native hold reset now observed at its actual load-complete boundary.
+  Authorized native cleanup save and fresh absence leave ZERO owned fixtures.
+  Earlier983828bf rules/commands and ec9721f7 crowd retain their bounded scope.
+  The16f61e19 fixture-order failure and d700 prelaunch rejection are preserved.
   Actual installation restoration verified; no game/runtime lease/staging.
-  d700's prelaunch rejection is preserved. Gameplay/assets/publication unchanged.
+  Gameplay/assets/publication unchanged by the readiness repair.
   Prior474 timing-only hypothesis was rejected; its43/51 failure is retained.
   Earlier exact130bf7a2 bounded rules PASS remains unchanged; no qualification
   transfers to an untested artifact.
@@ -38,47 +36,50 @@ deployment, force push or prohibited substitute subsystems.
 
 ### Latest transaction and exact next gate
 
-[Native-load readiness repair](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-REPAIR.md)
-is SOURCE PASS; corrected runtime NOT RUN. Source parent
-16f61e19d42c8fab918ba1a263ec72f9952990f2. Before any fixture unit work,
-the exact state/area must receive the native load-complete callback RETURN.
-No reset invocation, production cleanup change, clock advance, reconstructed
-link, fixed-delay guess or relaxed assertion. A new mandatory boundary check
-makes next-candidate persistence totals 14/13/6; the strict reset check stays.
+[Exact snake persistence PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-PASS-EVIDENCE.json)
+on clean pushed candidate `a429da506ebfbbf5c243faa0da163394d32012a2`:
+fresh Steam640820 smoke **11/11**, prepare **14/14**, cleanup **13/13**,
+absence **6/6**. Complete affected native protocol PASS on one immutable
+0.0.141 / 320-member artifact. No publication or full Sprint17 qualification.
 
-272 focused / 2074 complete (81.4s), repository/static/icon/manifest,
-clean 14-reference Release and strict 320-member package (179.6s) PASS.
-Dirty-source output was not deployed. All exact-head prelaunch gates and the
-complete affected native persistence protocol are NEXT.
+The [fixture readiness repair](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-REPAIR.md)
+is runtime-qualified for these exact persistence cells. Cleanup scenes-loaded
+frame4235 still sees the saved Constrictor's initiator/Hold/control locks;
+the existing native load-complete reset removes all at frame4252. The strict
+assertion runs only after that callback RETURN, with grab retained and all
+four units free. No manual reset, gameplay change, fixed-delay guess, condition
+waiver or grapple re-establishment. Earlier premature assertions remain
+preserved as fixture failures, not retroactively qualified gameplay.
 
-[Exact 16f61e19 diagnostic](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-EVIDENCE.json):
-smoke 11/11 and prepare 13/13 PASS; cleanup 10/12 FAIL; absence NOT RUN.
-Cleanup asserted at frame 4229, the same frame as scenes-loaded, then destroyed
-the fixtures and completed at 4234 BEFORE load-complete/reset was observed.
-Prepare saw the actual callback at 4238, after it had already replaced the old
-units. Native-pool membership and subscription were present; no safeguard
-error recorded. This is a demonstrated fixture-ordering defect, not evidence
-that production reset failed at its defined completion boundary. Production
-reset still requires live qualification after the readiness repair.
+Native prepare retired four stale receipt-owned units and 12 captured private
+resources before creating its new four. Venom DC13/source/counters/2 Constitution
+damage survive load; one later native exposure adds2, a native save cures.
+Cleanup reclaims all four units and12 resources, preserves three unrelated
+units/party, and makes exactly one authorized native working-save write.
+Fresh absence then proves ZERO owned summons. Two authorized native writes
+total (prepare/cleanup); no save-file access or protected-baseline load/write.
 
-FOUR new marked fixtures remain saved after one native prepare write and
-refused cleanup write. Existing native receipt-owned retirement only; no
-save-file access/surgery, protected-baseline load/write or absence claim.
-Snapshot 20261007T0256135125979Z restored at 2026-10-07T03:06:24.8492046Z:
-136 files / Info 0.0.117 /
-tree 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Exact prelaunch PASS:272 focused/2074 unfiltered81.8s, repository/static/icon/
+manifest, clean14-reference Release/strict320 (complete178.3s),508 preflight,
+168 orchestration,17 provenance,persistence11/6roundtrips/3defaults/56rejects,
+crowd8/11,actual launcher13/10. SourceFP f6111ac8…; DLL cb901bed…;
+MVID 02e352a4-df1c-4f6c-b983-77e02ef991ab; ZIP ab6d9f26…;
+full hashes/request IDs/trace/restoration in linked evidence.
+
+Actual snapshot20261007T0323408975413Z restored2026-10-07T03:37:14.0902498Z:
+136 files / Info0.0.117 /
+tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 Lease Completed/recovery=false/released; no game/shared runtime lock/worktree
-staging. Installation restored exactly; working-save cleanup outstanding.
+staging. Installation exactly restored; working save normalized natively.
 
-Sprints 14–16 COMPLETE/PUBLISHED; Sprint 17 NOT QUALIFIED; 32 roots hidden.
-Prior exact ec9721f7 crowd and 983828bf command/rules qualifications remain
-artifact-bounded. Laptop PR #26 only; DATA salvage-only / ZERO PORTS.
+Sprints14–16 COMPLETE/PUBLISHED; Sprint17 NOT QUALIFIED;32 roots hidden.
+Earlier ec9721f7 crowd and983828bf commands/rules retain exact-artifact scope;
+their qualification does not transfer to an untested artifact.
+Laptop PR26 only; DATA salvage-only / ZERO PORTS.
 
-Next: commit/policy-push, freeze the clean exact-head artifact, repeat all
-prelaunch gates and complete smoke/prepare/cleanup/absence. Then remaining
-lifecycle/UI/private 32 routes, separate Salamander, full Sprint 17
-hidden/publication and Phase 2B closure. STOP for owner review.
-Phase 2C authorized but deferred. HumanReview: NOT_PERFORMED_NONBLOCKING.
+Next: remaining snake lifecycle/UI/private32 routes, separate Salamander,
+complete Sprint17 hidden/publication and Phase2B closure. STOP for owner
+review. Phase2C authorized but deferred. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 ### Qualified versus NOT QUALIFIED
 

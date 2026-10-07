@@ -1,14 +1,18 @@
 # Sprint 17 closed snake persistence fixture
 
-Status: exactec9721f7 prepare13/13 PASS, cleanup10/12 FAIL, absence NOT RUN.
-The [attempt2 review](EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT2-REVIEW.md)
-governs over the historical source-only record below. Venom arming, persistence
-and native continuation/cure pass. Aggregate hold-reset fails; cause unresolved.
-One prepare write, zero cleanup writes: four saved marked fixtures remain.
-Actual installation restored2026-10-07T01:39:29.1597928Z. Sprint17 NOT QUALIFIED.
+Status: exacta429da50 smoke11/prepare14/cleanup13/absence6 PASS.
+The [native-readiness repair and result](EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-REPAIR.md)
+govern over the historical source-only and failed-attempt records below.
+The earlier reset assertions ran before the native load-complete callback.
+After the measured readiness repair, existing production reset clears all
+parts/buffs/control locks at the actual callback; unchanged strict predicate
+passes. Venom source/state/native continuation/cure, visuals/skills and owned
+resource cleanup pass. One native prepare and one native cleanup write;
+fresh absence proves ZERO saved marked units. No save-file access.
+Actual installation restored2026-10-07T03:37:14.0902498Z. Sprint17 NOT QUALIFIED.
 Source parent: 685aea21fc6b93954294fe9f2dd8ab8a6e813430 (pushed crowd fixture).
-Last runtime-qualified bounded artifact remains 983828bf; its qualification
-does not transfer to this DLL. Laptop PR26 only; DATA salvage-only, ZERO PORTS.
+Earlier983828bf rules/commands and ec9721f7 crowd retain their exact-artifact
+scope; no qualification transfer. Laptop PR26 only; DATA salvage-only, ZERO PORTS.
 
 The d700 exact package passed its source gate but was rejected by the outer
 launcher's old crocodilian-only guard, before any runtime lease/deployment.
@@ -74,7 +78,9 @@ Module-disabled behavior remains a runtime requirement, not a source PASS.
 Cleanup must natively destroy all exact owned units, views and captured mesh/
 material/texture/component references before arming the one authorized native
 cleanup save. A fresh absent process must see zero fixture units and no write.
-Source-derived expected assertions: prepare13, cleanup12, absence5. NOT RUN.
+Current source-derived assertions: prepare14, cleanup13, absence6; exacta429
+PASS. Each includes the mandatory actual native load-completion readiness check
+before any unit work; historical source counts below predate that correction.
 
 ## Source checks and next exact gate
 
