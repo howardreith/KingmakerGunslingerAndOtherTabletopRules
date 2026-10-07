@@ -29,23 +29,38 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exacted738 smoke11/11;human13/15 FAIL: native hand carrier has no animation-driver weights; native02 left-grip0.206531/0.084934m. JSON repair and original BakeMesh measurement verified. Real2spear+1tail Success,140 rows; restored14:02:54UTC/ZERO writes. Investigate exact14 ADJ children from preserved rig metadata; original asset/pose/thresholds unchanged.32roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact23a0 smoke11/11;human14/15 FAIL. Native ADJ hand control VERIFIED:145/150vertices, all14 parent/bind guards, both BakeMesh controls valid. Native02 rule-frame lead hand releases too; original tracks it within2cm across140rows. Observation correction SOURCE PASS305/2107,full184s/clean14/strict321; exact runtime pending. No geometry/animation/event/numeric-tolerance changes. Restored14:40:45UTC/ZERO writes.32roots hidden;Phase2C deferred.",
+    "sprint17HumanNativeGripFollow": {
+      "sourceParent": "23a0a19eac8c16121e429b748a8f6bdc1c9f212d",
+      "status": "SOURCE PASS305/2107; FULL184s CLEAN14 STRICT321; RUNTIME PENDING; SPRINT17 NOT QUALIFIED",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-CONTROL-EVIDENCE.json",
+      "scope": "Correct fixture observation contradicted by same-pose native control. All consecutive paired frames retain weapon grip <=8cm, retain lead grip whenever native does and follow native lead separation within same8cm. Pin actual rule/render frames and read-only cached IsActed; only audited native02 transition-out may release at rule frame. Preserve old both-hands result separately. No geometry, animation, event, variant, production or numeric-tolerance change.",
+      "focused": 305,
+      "unfilteredRegistered": 2107,
+      "domainSeconds": 87.3,
+      "completeSeconds": 184,
+      "cleanExactReferences": 14,
+      "strictMembers": 321,
+      "preserved140FrameOfflineReplay": "PASS; diagnostic only, not new runtime qualification",
+      "runtimeExecuted": false,
+      "expectedRuntimeAssertions": 15
+    },
     "sprint17HumanNativeDeformerControl": {
       "sourceParent": "ed738a22a4e0a382e6b25c70842c35ac3a9424a6",
-      "status": "SOURCE PASS; EXACT RUNTIME PENDING; SPRINT17 NOT QUALIFIED",
+      "status": "EXACT23a0 NATIVE CONTROL VERIFIED; HUMAN14/15 CONTACT-OBSERVATION FAIL; SPRINT17 NOT QUALIFIED",
       "focused": 301,
       "unfilteredDomain": 2103,
       "domainSeconds": 81.9,
       "completeSeconds": 179.4,
       "cleanExactReferences": 14,
       "strictPackageMembers": 321,
-      "scope": "Native comparison selects only the14 exact captured ADJ children, each with identical duplicate Transform, exact parent identity, finite/invertible agreeing binds and exact native2268/1776/177 mesh/palette. Original26+10 binding/mesh/pose remains untouched. Raw positive-bone counts retained too. Native weights/bake usability still require live proof.",
+      "scope": "Native comparison selects only the14 exact captured ADJ children, each with identical duplicate Transform, exact parent identity, finite/invertible agreeing binds and exact native2268/1776/177 mesh/palette. Exact23a0 verifies all guards,145left/150right native vertices and both BakeMesh controls. Original26+10 binding/mesh/pose untouched. Full140rows show native/original lead-hand gap differs by at most0.019906819m; both release during native02 transition-out. Old both-hands rule-frame assertion remains FAIL.",
       "tests": "Two behavior tests reject unknown/storage/forearm/foot/wrong-parent/case/nested-ADJ names, preserve exact left/right and0.5weight selection, and prove original driver contract unchanged.",
       "nativeGeometryOrPoseWritten": false,
       "thresholdsChanged": false,
       "expectedRuntimeAssertions": 15,
-      "runtimeExecuted": false,
-      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-DEFORMER-EVIDENCE.json"
+      "runtimeExecuted": true,
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-CONTROL-EVIDENCE.json"
     },
     "sprint17HumanCounterJson": {
       "sourceParent": "a5a1e962e688c80a5acd21f64ab394eae1165314",
@@ -1319,7 +1334,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Next: push this level-corrected source, rebuild its exact clean head with every prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15 human checks. Require native blueprint/character/BAB8 and TWO spear events plus ONE tail; keep the same contact thresholds and record actual command disposition. Acquire runtime lease before snapshot; restore that exact installation. Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.",
+  "nextConcreteAction": "Finish full source gates, commit/push the native-control-backed contact observation correction, rebuild the exact clean head with every prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15 human checks. Preserve old both-hands result; require every paired frame, retained weapon grip, native-following lead grip/release, cached native act timing and exact cleanup. Restore actual snapshot. Then printed Salamander mechanics, one same-artifact Sprint17 hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
