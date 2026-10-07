@@ -31,6 +31,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             name == Name(id) && exactLease && exactArtifact; }
         internal static bool MayDelete(string id, string name, bool absentInitially, bool exactLease)
         { return ValidTransaction(id) && name == Name(id) && absentInitially && exactLease; }
+        internal static T[] OwnedAreas<T>(IEnumerable<T> global,IEnumerable<T> attached) where T:class
+        { return global.Concat(attached).Where(a=>a!=null).Distinct().ToArray(); }
         internal static bool MatchesProcessStart(DateTime actual,DateTime expected)
         { return actual.ToUniversalTime().Ticks==expected.ToUniversalTime().Ticks; }
         internal static bool LeaseUnexpired(DateTime now,DateTime expiry)
