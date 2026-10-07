@@ -1,6 +1,9 @@
 # Sprint 17 snake outer-launcher routing correction
 
-Status: SOURCE PASS; RUNTIME NOT RUN. Full Sprint 17 NOT QUALIFIED.
+Historical source review. Routing executed on4c95 andec9721f7; ec smoke/direct/
+crowd/prepare pass, cleanup fails hold-reset, absence safely blocked.
+Current authority: [attempt2 review](EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT2-REVIEW.md).
+Full Sprint17 NOT QUALIFIED.
 Classification: orchestration integration defect, caught before deployment.
 No gameplay defect or owner-authority blocker is inferred.
 

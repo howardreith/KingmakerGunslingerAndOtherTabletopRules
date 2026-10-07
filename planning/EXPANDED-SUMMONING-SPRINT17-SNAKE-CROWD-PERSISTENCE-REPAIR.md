@@ -1,6 +1,8 @@
 # Sprint 17 snake crowd/persistence fixture repair
 
-Status: SOURCE PASS; runtime NOT RUN; full Sprint 17 NOT QUALIFIED.
+Historical prelaunch review: SOURCE PASS. Exactec9721f7 later passed crowd18
+and prepare13 but failed cleanup10/12; full Sprint17 NOT QUALIFIED.
+Current authority: [attempt2 review](EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT2-REVIEW.md).
 Source parent: 9de166145d71dbf5efafe33b88550d4539f76f2f.
 Laptop PR26 only; DATA salvage-only / ZERO PORTS. No publication/version change.
 
@@ -10,7 +12,7 @@ The [exact 4c95 failure](EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATT
 is preserved: smoke 11/11, direct 14/14; crowd 17/18, prepare 10/13,
 dependent cleanup 3/6; absence NOT RUN. Zero native writes; actual snapshot
 20261007T0020146810604Z restored exactly at 2026-10-07T00:42:42.5922110Z.
-No runtime has occurred since that restoration.
+At this prelaunch checkpoint, no runtime had occurred since that restoration.
 
 The Viper crowd assertion reports only awakeRestored=false. Its actual
 changed identities were not recorded. The old fixture removed entries it
