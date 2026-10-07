@@ -29,9 +29,9 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Native load-boundary trace SOURCE PASS:271 focused/2073 full81.2s/complete176.5s/clean14-reference Release/strict320. Read-only, request-scoped callback/input/state census; no reset/wait/predicate/gameplay change. Runtime NOT RUN, complete exact-head persistence protocol NEXT. Last a587 owner-side hold reset FAIL;4marked fixtures saved; installation restored02:14:37UTC;32roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact16f trace confirms fixture asserted at scenes-loaded4229 and ended4234 before load-complete. Native state/pool/subscription present. Fixture-only actual-completion readiness repair SOURCE PASS:272 focused/2074 full81.4s/complete179.6s/clean14-reference Release/strict320. Corrected runtime NOT RUN; next counts14/13/6; strict reset unchanged. Installation restored03:06:24UTC,4new marked fixtures saved;32 roots hidden;Phase2C deferred.",
     "sprint17SnakeLoadBoundaryTrace": {
-      "status": "SOURCE PASS; RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "status": "FIXTURE ASSERTION PRECEDES NATIVE LOAD-COMPLETE; DIAGNOSTIC COMPLETE; GAMEPLAY NOT QUALIFIED",
       "sourceParent": "15070179e84d799d476ce90a7b205d0e950ec52d",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-TRACE.md",
       "focused": 271,
@@ -44,11 +44,33 @@
       "productionGameplayChanged": false,
       "extraWaits": false,
       "manualResetCalls": false,
-      "runtimeExecuted": false,
+      "runtimeExecuted": true,
       "runtimeQualified": false,
       "remainingSavedOwnedFixtures": 4,
       "scope": "Three accepted persistence scenarios; exact snakes scope; request-local hooks removed at every scenario completion",
-      "auditAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb"
+      "auditAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "diagnosticComplete": true,
+      "sourceCandidate": "16f61e19d42c8fab918ba1a263ec72f9952990f2",
+      "artifact": {
+        "commit": "16f61e19d42c8fab918ba1a263ec72f9952990f2",
+        "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+        "version": "0.0.141",
+        "sourceStateSha256": "3d23b596ab4730c503df31927e103e327fe04e75c09ca644066087b59a379ace",
+        "dllSha256": "24a183f91b3e42a29b8577dcbda4205e922c7aed8129317fdc00e5f832e56e96",
+        "dllMvid": "3d07fe36-9546-4db5-aa78-76e8b692c6ec",
+        "zipSha256": "2877a276bf7598dd93b6fd837a0b20fe0a0309bf70204422f2bd76212c0f90c4",
+        "packageMembers": 320,
+        "archive": "artifacts/sprint17-snake-load-boundary-source-pass-16f61e19"
+      },
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-EVIDENCE.json",
+      "cleanupFrames": {
+        "scenesLoaded": 4229,
+        "resetAssertion": 4229,
+        "fixtureComplete": 4234,
+        "loadCompleteObserved": false
+      },
+      "productionRootCauseProven": false,
+      "fixtureOrderingDefectProven": true
     },
     "sprint17SnakeCommandSlice": {
       "pairedContactObserver": "RUNTIME DIAGNOSTIC COMPLETE; same-frame Viper gap does not improve; Constrictor commands ended and correlation rejected. Existing51 assertions unchanged; no waiver.",
@@ -235,8 +257,8 @@
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exact983828bf smoke11/11,profile/body/rules62/62(46rows),native commands/contact51/51(8rows). Bounded slices only; fullSprint17 NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exact a5875a45305f14c8036b637d44e835532ac0f084: smoke11/11,prepare13/13 PASS;cleanup10/12 FAIL(owner-side loaded hold reset, dependent cleanup write refusal);absence NOT RUN. Previous4owned saved fixtures retired natively;one prepare write leaves4new marked fixtures. Venom reload/source/continuation/cure PASS. Diagnostic complete, gameplay NOT QUALIFIED; no predicate/wait/reset/production change.",
-    "lastGuardedRestoration": "Actual snapshot20261007T0204316627378Z restored2026-10-07T02:14:37.9430184Z;136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3 VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/worktree staging. Working save NOT normalized: one prepare write,zero cleanup writes,4new marked fixture units remain. Protected baseline and unrelated September14 extraction untouched.",
+    "lastGuardedRuntimeResult": "Exact16f61e19d42c8fab918ba1a263ec72f9952990f2: smoke11/11,prepare13/13 PASS;cleanup10/12 FAIL;absence NOT RUN. Trace proves fixture-order defect: reset assertion/scenes-loaded4229,fixture complete4234 without native load-complete. Prepare callback4238 selected already-replaced units. No membership/subscription miss or observed safeguard exception. No production qualification transfer. One prepare write/four new marked saved fixtures.",
+    "lastGuardedRestoration": "Actual snapshot20261007T0256135125979Z restored2026-10-07T03:06:24.8492046Z;136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3 VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/worktree staging. Working save NOT normalized: one prepare write,zero cleanup writes,4new marked fixture units remain. Protected baseline/unrelated September14 extraction untouched.",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -492,7 +514,7 @@
       "fullSprintQualified": false
     },
     "sprint17SnakePersistenceSlice": {
-      "status": "PREPARE13/13 PASS; CLEANUP10/12 FAIL: OWNER-SIDE HOLD ORPHAN; ABSENCE NOT RUN; FOUR NEW SAVED FIXTURES REMAIN",
+      "status": "FIXTURE-ORDER FAILURE BEFORE NATIVE LOAD-COMPLETE; PREPARE13/13 PASS,CLEANUP10/12 FAIL,ABSENCE NOT RUN; FOUR NEW SAVED FIXTURES REMAIN",
       "sourceBase": "685aea21fc6b93954294fe9f2dd8ab8a6e813430",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PERSISTENCE-SLICE.md",
       "scope": "snakes",
@@ -508,10 +530,10 @@
         "cleanup": 12,
         "absent": 5
       },
-      "focused": 270,
-      "domain": 2072,
-      "domainSeconds": 83,
-      "sourceGateSeconds": 178.3,
+      "focused": 271,
+      "domain": 2073,
+      "domainSeconds": 81.8,
+      "sourceGateSeconds": 178.7,
       "cleanExactReferences": 14,
       "strictPackageMembers": 320,
       "requestRoundTrips": 6,
@@ -523,8 +545,8 @@
       "workingSaveWriteAuthority": "Existing exact native prepare/cleanup sentinel only; absent never writes",
       "acceptedGrappleReset": true,
       "grappleReestablishment": false,
-      "sourceCandidate": "a5875a45305f14c8036b637d44e835532ac0f084",
-      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC-EVIDENCE.json",
+      "sourceCandidate": "16f61e19d42c8fab918ba1a263ec72f9952990f2",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-EVIDENCE.json",
       "runtimeExecuted": true,
       "absenceQualified": false,
       "preparePassed": 13,
@@ -554,6 +576,30 @@
       "deploymentPerformed": true,
       "saveWritePerformed": true,
       "sourceCandidate": "ec9721f71b06ed184b92bcfbd9418e6eb292ece7"
+    },
+    "sprint17SnakeNativeBoundaryRepair": {
+      "status": "SOURCE PASS; CORRECTED RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "sourceParent": "16f61e19d42c8fab918ba1a263ec72f9952990f2",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-REPAIR.md",
+      "focused": 272,
+      "domain": 2074,
+      "domainSeconds": 81.4,
+      "sourceGateSeconds": 179.6,
+      "cleanExactReferences": 14,
+      "strictPackageMembers": 320,
+      "nextExpectedAssertions": {
+        "prepare": 14,
+        "cleanup": 13,
+        "absent": 6
+      },
+      "predicateChanged": false,
+      "productionGameplayChanged": false,
+      "manualResetCalls": false,
+      "grappleReestablishment": false,
+      "eventReadiness": "Actual safeguard native load-complete return for exact state/area, after correlated scenes-loaded; before any fixture unit work; 600-frame observation budget fails closed",
+      "runtimeExecuted": false,
+      "runtimeQualified": false,
+      "remainingSavedOwnedFixtures": 4
     }
   },
   "charter": {
@@ -831,7 +877,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Policy-push the source-qualified load-boundary trace; run all exact-head prelaunch gates, then complete affected smoke/prepare/cleanup/absence on one immutable package. Observe actual callback order, selected units and reset before/after; no assumed root cause, extra wait or manual reset. Native prepare must retire only four receipt-owned saved fixtures. Then bounded demonstrated repair, exact affected qualification, lifecycle/UI/private32 routes, separate Salamander, fullSprint17/Phase2B; stop for owner review.",
+  "nextConcreteAction": "Policy-push the fixture-only native load-completion readiness repair, run every exact-head prelaunch gate, freeze one immutable artifact and run smoke/prepare14/cleanup13/absence6. Native prepare must safely retire only four receipt-owned saved fixtures. Qualify actual reset after its real callback; no manual reset, relaxed assertion, production change, fixed-delay guess or save surgery. Then lifecycle/UI/private32 routes, separate Salamander, fullSprint17/Phase2B; stop for owner review.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
