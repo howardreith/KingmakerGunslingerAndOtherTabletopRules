@@ -28,6 +28,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (int step in ReviewSprint17PrivateRoutes(fixture)) yield return step;
             CreateExpandedSummoningCorrectionHostile(fixture);
             foreach (int step in ReviewSprint17SnakeNativeUi(fixture)) yield return step;
+            // The rule/UI hostile has a native hostile faction. It must not
+            // participate in the independently isolated lifecycle drill.
+            fixture.Hostile.Destroy();
+            Game.Instance.EntityDestroyer.Tick();
             foreach (int step in ReviewSprint17SnakeViewLifecycle(fixture)) yield return step;
         }
 
@@ -122,7 +126,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (var unit in units)
                     {
                         string duration;
-                        bool exact = ExpandedSummoningDurationExact(unit, fixture.Caster, out duration);
+                        bool exact = Sprint17PrivateRtwpDurationExact(unit, fixture.Caster, out duration);
                         durationExact &= exact;
                         durations.Add(new JObject { ["unit"] = unit.UniqueId, ["exact"] = exact, ["nativeRuleAndBuff"] = duration });
                         if (templateExpected)
@@ -163,6 +167,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["remaining"] = resources.Count(value => value != null) },
                     "native destruction reclaims every captured private object before the next root");
             }
+        }
+
+        private static bool Sprint17PrivateRtwpDurationExact(UnitEntityData unit,
+            UnitEntityData caster, out string observation)
+        {
+            // Retain the existing detailed native capture, but do not use its
+            // turn-based-only six-second expectation for this RTWP request.
+            ExpandedSummoningDurationExact(unit, caster, out observation);
+            var captures = ExpandedSummoningRuleDurationCapture.Where(value =>
+                ReferenceEquals(value.Unit, unit)).ToArray();
+            var buffs = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
+                ReferenceEquals(value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)).ToArray();
+            var capture = captures.SingleOrDefault();
+            var buff = buffs.SingleOrDefault();
+            bool turnBased = Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            observation += ",mode=" + (turnBased ? "turn-based" : "real-time") + ",expectedGrace=0";
+            return SerpentineFinalReviewPolicy.PrivateRtwpDuration(captures.Length, buffs.Length, turnBased,
+                buff != null && buff.MaybeContext != null && ReferenceEquals(buff.MaybeContext.MaybeCaster, caster),
+                buff == null || buff.MaybeContext == null ? -1 : buff.MaybeContext.Params.CasterLevel,
+                buff != null && buff.IsPermanent, capture == null ? double.NaN : capture.BaseDuration.TotalSeconds,
+                capture == null ? double.NaN : capture.BonusDuration.TotalSeconds,
+                buff == null ? double.NaN : buff.TimeLeft.TotalSeconds);
         }
 
         private IEnumerable<int> ReviewSprint17SnakeNativeUi(ExpandedSummoningCorrectionFixture fixture)
@@ -216,13 +242,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var rows = sheet.BuffsAndConditions.GetComponentsInChildren<CharSComponentBuffSlot>(true)
                         .Where(value => value.gameObject.activeInHierarchy && ReferenceEquals(value.Buff, buff)).ToArray();
                     var row = rows.SingleOrDefault();
+                    bool exactAssignment = !ReferenceEquals(buff, trait) ||
+                        ReferenceEquals(buff.Blueprint.Icon,
+                            KingmakerGunslinger.Blueprints.ExpandedSummoningProjectIcons.Require("constrictor-snake"));
                     bool exact = row != null && sheet.IsShow && sheet.BuffsAndConditions.IsShowed &&
-                        buff.Blueprint.Icon != null && row.Icon.isActiveAndEnabled &&
+                        exactAssignment && buff.Blueprint.Icon != null && row.Icon.isActiveAndEnabled &&
                         ReferenceEquals(row.Icon.sprite, buff.Blueprint.Icon) &&
                         row.Name.text == buff.Name && !row.Name.isTextTruncated;
                     CheckSprint17Final(buff.Blueprint.name + "-native-buff-row", exact,
                         new JObject { ["owner"] = buff.Owner.Unit.UniqueId, ["buff"] = buff.Blueprint.AssetGuid,
                             ["rows"] = rows.Length, ["sprite"] = row == null || row.Icon.sprite == null ? null : row.Icon.sprite.name,
+                            ["exactAssignment"] = exactAssignment,
                             ["label"] = row == null ? null : row.Name.text, ["expectedLabel"] = buff.Name },
                         "one real native trait/venom status row with exact project icon and full label");
                 }

@@ -40,5 +40,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !double.IsNaN(time) && !double.IsInfinity(time) && time > 0 &&
                 !float.IsNaN(weight) && !float.IsInfinity(weight) && weight > 0 && weight <= 1.001f;
         }
+
+        // Native RuleSummonUnit adds six seconds only in turn-based mode
+        // for a full-round non-trap caster. This closed paused RTWP route
+        // measures Duration+BonusDuration directly; never borrow the TB gate.
+        internal static bool PrivateRtwpDuration(int captures, int facts, bool turnBased,
+            bool ownedContext, int casterLevel, bool permanent,
+            double baseSeconds, double bonusSeconds, double remainingSeconds)
+        {
+            return captures == 1 && facts == 1 && !turnBased && ownedContext &&
+                casterLevel == 20 && !permanent &&
+                new[] { baseSeconds, bonusSeconds, remainingSeconds }.All(value =>
+                    !double.IsNaN(value) && !double.IsInfinity(value)) &&
+                Math.Abs(baseSeconds - 120d) <= .001d && bonusSeconds >= 0 &&
+                Math.Abs(remainingSeconds - (baseSeconds + bonusSeconds)) <= .001d;
+        }
+
+        internal static bool IsolatedLifecyclePair(bool distinctOwnedActors,
+            bool eitherPlayerFaction, bool eitherPartyGroup, bool ownerEnemy,
+            bool attackerEnemy, int foreignEnemyRelations)
+        {
+            // Receiving a hit does not require player command authority.
+            // Both actors must nevertheless remain isolated native enemies.
+            return distinctOwnedActors && !eitherPlayerFaction && !eitherPartyGroup &&
+                ownerEnemy && attackerEnemy && foreignEnemyRelations == 0;
+        }
     }
 }
