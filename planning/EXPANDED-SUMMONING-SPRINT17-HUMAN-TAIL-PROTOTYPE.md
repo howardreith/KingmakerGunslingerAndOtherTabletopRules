@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACTcd709 NATIVE RENDER CRASH/NO FINAL RESULT/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACT487 HUMAN REVIEW12/15 FAIL/NO CRASH/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
 identity, placements, profile and prefab remain unchanged. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -330,14 +330,38 @@ artifacts/sprint17-human-null-geometry-frame-source-{focused,gate}.log.
 The earlier pre-frame-observation source pass293/2095/177.7s is separately
 archived; it was never launched. New exact-head runtime qualification is required.
 
+## Exact487 runtime — bounded progress, three mandatory failures
+
+Exact487309ff2e750b5b44f120929e802c977c01a0b6 completed without a native crash.
+All prelaunch PASS:293focused/2095full82.4s/complete175.7s/clean14/strict321,
+plus515preflight/168orchestration/17provenance and persistence/crowd/launcher gates.
+Smoke11/11; full human review12/15 FAIL, NOT QUALIFIED.
+[Exact result and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-NULL-GEOMETRY-EVIDENCE.json).
+Rollback/body binding/post-native-frame rest/movement/original-tail playback/
+native-reference isolation/destruction/environment/fixture cleanup pass.
+Both rollback and destruction reclaim30 owned objects;158 borrowed objects
+survive.17 atomic stages are request-correlated, explicitly non-qualifying.
+The audited cape has null geometry, unchanged native bones/root/renderer flags.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored09:58:17.2992027UTC;
+ZERO audited save writes, no game/runtime lease/staging. Earlier crash retained.
+The real full attack produced ONE native spear hit plus ONE original tail hit,
+not two spear iteratives. ConfigureSummonWeaponType marks the spear natural;
+correct only Salamander's manufactured-weapon classification, not native clips.
+Spear target gap0.03135m passes; wrist-origin gaps0.10288/0.10368m and distal-tail
+gap0.46630m fail. Audit grip surfaces and the actual tail path separately; no
+threshold waiver. The tail follows unit heading; do not reparent it on that theory.
+Optional post-native-frame art shows the original body, not the earlier shredded
+frame; neither that image nor finite arithmetic qualifies full visual/contact work.
+Salamander's production prefab/profile/identity remain unchanged at this boundary.
+
 ## Next exact work
 
-Next: push this source-qualified null-geometry/frame-boundary correction,
-freeze/rebuild its exact clean head, then all prelaunch/harness gates and guarded
-smoke plus the full15 human review. Inspect durable native renderer/pose evidence
-and supporting art; no unchanged-candidate retry or source-only qualification.
-Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
-gate, fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.
+Next: correct the demonstrated Salamander-only manufactured-spear classification;
+record live BAB/type/full attack. Audit native wrist versus weighted hand contact
+and the original distal-tail path before changing those measurements or geometry.
+Focused/full source gates, push, exact-head artifact and all15 guarded human checks
+must pass. Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/
+publication gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.
 Preserve native two-handed spear handling
 and all native references. Prove the original tail with real commands, then
 finish Salamander's printed mechanics. Only a complete same-artifact Sprint17

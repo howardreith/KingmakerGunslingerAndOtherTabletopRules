@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — cd709 crash restored; bounded render correction source PASS; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — 487 human review12/15/restored; spear/contact open; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -83,42 +83,34 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exact cd70979f37af00e26fcc4247ce2f30579bb1f592 passed every prelaunch gate:
-292focused/2094full84.0s/complete180.6s/clean14/strict321 plus all harness checks.
-Smoke11/11 PASS; human-tail review ended in a native Unity access violation
-before a final result. No body/playback/contact/cleanup qualification is claimed.
-[Exact crash and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-CRASH-EVIDENCE.json).
-The log reports a zero-sized D3D buffer immediately before the crash.
-Assigning an empty mesh to the native cape is a bounded suspect, not a proven
-causal stack or memory-exhaustion diagnosis. A supporting rest image is not
-mechanical proof. Smoke audited ZERO save writes; the crashed review's final
-write audit is absent/UNKNOWN. No save-file inspection or manual surgery.
-Actual136/Info0.0.117/tree216A9DC2...AF3 restored09:08:27.5428737UTC;
-no game/runtime lease/staging. Raw logs/dump remain private, hash-preserved.
-The d989 raw/effective Tail finding remains valid: exact native human root,
-NO raw Tail, CoTW exact native-Slam fallback. cd709 keeps all24 native actions,
-rejects raw Tail/foreign lookup, and still requires its owned Tail afterward.
-No CoTW mutation, borrowed Slam adoption, production Salamander change or waiver.
+Exact487309ff2e750b5b44f120929e802c977c01a0b6 completed without a native crash.
+All prelaunch PASS:293focused/2095full82.4s/complete175.7s/clean14/strict321,
+plus515preflight/168orchestration/17provenance and persistence/crowd/launcher gates.
+Smoke11/11; full human review12/15 FAIL, NOT QUALIFIED.
+[Exact result and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NULL-GEOMETRY-EVIDENCE.json).
+Rollback/body binding/post-native-frame rest/movement/original-tail playback/
+native-reference isolation/destruction/environment/fixture cleanup pass.
+Both rollback and destruction reclaim30 owned objects;158 borrowed objects
+survive.17 atomic stages are request-correlated, explicitly non-qualifying.
+The audited cape has null geometry, unchanged native bones/root/renderer flags.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored09:58:17.2992027UTC;
+ZERO audited save writes, no game/runtime lease/staging. Earlier crash retained.
+The real full attack produced ONE native spear hit plus ONE original tail hit,
+not two spear iteratives. ConfigureSummonWeaponType marks the spear natural;
+correct only Salamander's manufactured-weapon classification, not native clips.
+Spear target gap0.03135m passes; wrist-origin gaps0.10288/0.10368m and distal-tail
+gap0.46630m fail. Audit grip surfaces and the actual tail path separately; no
+threshold waiver. The tail follows unit heading; do not reparent it on that theory.
+Optional post-native-frame art shows the original body, not the earlier shredded
+frame; neither that image nor finite arithmetic qualifies full visual/contact work.
+Salamander's production prefab/profile/identity remain unchanged at this boundary.
 
-The bounded null-geometry correction is SOURCE PASS, NOT RUNTIME QUALIFIED:
-293focused/2095unfiltered82.8s/complete177.5s/clean14/strict321.
-Only the exact zero-bone Cape_Red_M(Clone)/CP_Cape2Sided_M_Any may be suppressed;
-sharedMesh=null, native bones/root/renderer flags unchanged, exact mesh restored.
-The unused empty mesh is no longer allocated;29 distinct base owned objects
-plus controller clones must all be destroyed. All15 runtime assertions remain.
-Atomic request-correlated stage records retain observations but explicitly do
-not qualify or replace the final save-write audit. One actual native frame must
-advance after binding before the supporting camera/pose observation.
-The prior supporting image is visibly malformed; finite arithmetic alone is
-not visual acceptance. Cause remains unproved; no geometry/shader/cloth rewrite.
-Production Salamander and every accepted decision remain unchanged.
-
-Next: push this source-qualified null-geometry/frame-boundary correction,
-freeze/rebuild its exact clean head, then all prelaunch/harness gates and guarded
-smoke plus the full15 human review. Inspect durable native renderer/pose evidence
-and supporting art; no unchanged-candidate retry or source-only qualification.
-Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
-gate, fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.
+Next: correct the demonstrated Salamander-only manufactured-spear classification;
+record live BAB/type/full attack. Audit native wrist versus weighted hand contact
+and the original distal-tail path before changing those measurements or geometry.
+Focused/full source gates, push, exact-head artifact and all15 guarded human checks
+must pass. Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/
+publication gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 ### Qualified versus NOT QUALIFIED
 
