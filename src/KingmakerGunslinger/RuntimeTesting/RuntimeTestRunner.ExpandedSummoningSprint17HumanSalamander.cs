@@ -117,7 +117,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["nativeRendererState"] = HumanSalamanderRendererObservation(owner);
                 var nativeBody = skins.Single(s => s.Skin.name == SalamanderHumanBindingPolicy.BodyName);
                 var nativeGripMetadata = new JObject(); row["nativeGripControl"] = nativeGripMetadata;
-                try { nativeGrip = new Sprint17HumanGripSurface(nativeBody.Skin, resources, nativeGripMetadata); }
+                try { nativeGrip = new Sprint17HumanGripSurface(nativeBody.Skin, resources, nativeGripMetadata, nativeDeformers: true); }
                 catch (Exception error)
                 {
                     // Observation failure remains a failed qualification check,

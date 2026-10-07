@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACTa5a1 HUMAN13/15 CONTACT/DIAGNOSTIC FAIL/RESTORED. Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACTed738 HUMAN13/15 CONTACT/NATIVE-CARRIER FAIL/RESTORED. Sprint17 NOT QUALIFIED. Production Salamander
 identity/placements/prefab unchanged; spear is now manufactured. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -555,15 +555,50 @@ replaces only dictionary FromObject calls. The new behavior test reproduces
 the old array-converter failure, preserves exact/zero/empty counters without
 calling the converter, and restores process defaults afterward. Production
 does not change global settings. No model, pose, selector or threshold change.
-Exact committed-head runtime for this repair is still PENDING.
+Exacted738 below verifies the JSON repair, not the missing native hand control.
+
+## Exacted738 native carrier exposed; original BakeMesh agrees
+
+Exacted738a22a4e0a382e6b25c70842c35ac3a9424a6: smoke11/11 PASS;
+full human13/15 FAIL. Counter serialization is LIVE VERIFIED fixed.
+[Exact native-hand carrier evidence and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-DEFORMER-EVIDENCE.json).
+All exact prelaunch PASS299/2101full84.6s/complete181.5s/clean14/strict321,
+515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
+
+The native body has ZERO positive weight to all14 selected hand/finger
+animation drivers despite valid2268 normalized weights. The original222vertices
+per hand bake successfully and agree with independent weighted-world distances
+within0.000001m. Native comparison remains unavailable and correctly FAILS.
+Both native02 spear events fail left grip:0.206531078/0.08493391m against0.08m.
+Original lead hand separates during native transition-out; faithful native
+surface comparison is still needed. No asset, pose or threshold change.
+
+Preserved rig metadata names14 corresponding ADJ children, all exact parents,
+finite/invertible and duplicate binds agreeing. Their use as native deformers
+is the next bounded hypothesis, NOT runtime-qualified. No new donor census.
+Real2spear+1tail command Success;140 timing rows,17atomic stages.
+Rollback30objects; destruction36actual objects/158borrowed alive.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored14:02:54.6098627UTC;
+ZERO save writes; no game/runtime/compatibility lock/staging; lease Completed.
+Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
+976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Native hand-deformer comparison change is SOURCE PASS301focused/2103full81.9s,
+complete179.4s/clean14/strict321. Only the native control projects14 exact ADJ
+children to their corresponding hand/finger drivers, after exact mesh/palette,
+parent identity and finite/invertible duplicate-bind checks. Raw used-bone
+counters are retained. Two behavior tests reject foreign/incorrect parents,
+forearm/foot/storage/case variants and side mixing at the unchanged0.5 weight.
+Original26+10 bindings, model/pose and8cm/25cm limits are untouched.
+This native carrier has NOT yet run live; fullSprint17 remains NOT QUALIFIED.
 
 ## Next exact work
 
-Next: push the source-qualified counter-JSON repair, rebuild the exact clean
-head with all prelaunch/harness gates, then fresh Steam640820 smoke11 and
-ALL15 human checks. Inspect real hand-selection counts, both bake controls,
-independent original-distance agreement, actual native event timing and cleanup.
-No favorable-frame/variant retry or8cm/25cm waiver. Restore the exact snapshot.
+Next: push the source-qualified native-deformer diagnostic, rebuild the exact
+clean head with all prelaunch/harness gates, then fresh Steam640820 smoke11 and
+ALL15 human checks. Require parent/bind guards, actual native hand weights,
+both baked surfaces, independent original agreement, real contact and exact
+resource cleanup. Do not guess or widen thresholds. Restore the exact snapshot.
 Then printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
 fullPhase2B closure and STOP. Phase2C authorized but deferred.
 Preserve all native two-handed weapon handling and native references.
