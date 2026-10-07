@@ -457,8 +457,10 @@ def planned():
         ("KMG.Summoning.Natural.Viper.Poison", "BlueprintFeature"),
         ("KMG.Summoning.Natural.Viper.Venom", "BlueprintBuff"),
         ("KMG.Summoning.Special.ConstrictorSnake.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Salamander.TailType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Special.Salamander.UnitType", "BlueprintUnitType"),
     ))
-    if len(rows) != 1921 or len({symbol for symbol, _ in rows}) != 1921:
+    if len(rows) != 1923 or len({symbol for symbol, _ in rows}) != 1923:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

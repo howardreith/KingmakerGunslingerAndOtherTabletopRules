@@ -2601,6 +2601,8 @@
                                                "KMG.Summoning.Ability.SM.Tier7.Salamander.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SM.Tier8.Salamander.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SM.Tier9.Salamander.OneD4PlusOne",
+                                               "KMG.Summoning.Special.Salamander.CombatTraits",
+                                               "KMG.Summoning.Special.Salamander.UnitType",
                                                "KMG.Summoning.Unit.Salamander"
                                            ]
                   },

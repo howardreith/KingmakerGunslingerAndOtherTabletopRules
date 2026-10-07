@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 implementation report
 
-## Current October 7 UTC laptop checkpoint — exact6ae91 bounded human15/15 PASS/restored; printed mechanics next
+## Current October 7 UTC laptop checkpoint — Salamander mechanics source-qualified; runtime and production view open
 
 [Exact closed snake review PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-PASS-EVIDENCE.json)
 on `fb9ffa507ef5884a321921355f7088f485c8d155`: fresh Steam640820
@@ -47,48 +47,44 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exact6ae91f266b203a98a0f297b24f3a70c785458502: fresh smoke11/11 and
-ALL15 bounded human/original-tail checks PASS on one immutable artifact.
-[Exact bounded PASS and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-PASS-EVIDENCE.json).
-This qualifies the guarded prototype seam, NOT production Salamander adoption,
-printed profile/mechanics, public player paths/UI, persistence or fullSprint17.
-Sprints14–16 remain COMPLETE/PUBLISHED; Sprint17 NOT QUALIFIED;32roots hidden.
+Salamander profile/heat/tail-grab source checkpoint based on65bc0536:
+311focused/2113unfiltered PASS, repository/icon/manifest PASS, clean14-reference
+Release and strict321-member package PASS (181.4s). This development artifact
+is NOT a clean exact-head runtime candidate and was NOT deployed.
+[Source evidence](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PROFILE-SOURCE-EVIDENCE.json)
+records source fingerprint, DLL/MVID/ZIP, private engine-audit hashes and exact scope.
 
-All exact prelaunch PASS305/2107full83.0s/complete180.5s/clean14/strict321,
-515preflight/168orchestration/17provenance and persistence/crowd/launcher gates.
-Source303e5905...;DLLbb947ca1...;MVID99265afc-55d2-4874-bc9d-531e249ac615;
-ZIPbec0be08...; complete hashes/request/process identities in linked evidence.
+Existing Salamander unit/weapons/traits GUIDs and five published roots remain.
+Only TailType and UnitType append:2911stable IDs/2909active/2reserved.
+The source now supplies printed racial HP/save/rank contributions, native feats,
+Medium2d6 ten-foot tail type, owner-scoped1d6fire weapon heat, and tail-only
+project grab/live physical-plus-fire constrict. Per-rule heat and per-round
+maintain guards reject duplicates. Native modifiers and borrowed facts remain live.
+All these new mechanics, defenses/skills breakdowns, real commands/AI, new UI
+consumers and persistence are NOT RUNTIME QUALIFIED. Original human/tail
+production adoption is still open; no prefab, geometry, pose or clip change here.
 
-The real native8HD/BAB8 command resolves TWO manufactured spear iteratives
-and ONE original secondary tail. Both native spear01 and spear02 play, with
-their unchanged cached act events; the fixed original tail moves/acts once.
-Both spear tips are0.03135m from the target envelope; tail gap0.
-144 consecutive paired native/original hand rows PASS with native145/150 and
-original222/222 selected vertices. Weapon hand stays within0.006419m.
-Lead-hand motion follows native within0.021774m; original never loses a grip
-the native retains. Native02 releases its lead hand during transition-out.
-The old both-hands-at-rule predicate remains explicitly FALSE, not relabeled
-as contact. New policy is native-correlated full-motion evidence;8cm/25cm
-numbers, assets, native actions, event timing and random variant choice unchanged.
-Earlier23a0 and all previous failures remain FAIL and preserved.
+Earlier exact6ae91f266b203a98a0f297b24f3a70c785458502 remains bounded prototype
+PASS: fresh smoke11/11 +human15/15, both native spear variants,144paired grip
+rows, original tail, movement/rollback/destruction; legacy both-hands-at-rule
+predicate remains FALSE. [Exact bounded evidence](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-PASS-EVIDENCE.json).
+It does not qualify this changed production source. Earlier failures remain FAIL,
+not open ownership/design blockers. No new runtime transaction or save write.
+Last actual restoration15:14:52UTC:136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 
-Original body binding/intact rest, native movement2.496482m, finite attack
-skin, native reference isolation, rollback and native destruction all PASS.
-Rollback cleans30objects; final destruction cleans all40actual owned objects,
-both controls available,158borrowed objects alive. All17 atomic stages retained.
-Actual snapshot20261007T1507549321442Z restored15:14:52.5459355UTC:
-136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-ZERO save writes; lease Completed/recovery=false/released; no game/shared lock/staging.
+Source-lock heartbeat expired15:53:01UTC. Edits paused; no competitor, game,
+runtime lock/staging or remote motion found. Old receipt preserved; same owner
+PID31796 reacquired exclusivity with keeper37540/start15:54:48.8399249UTC.
+Sprints14–16 COMPLETE/PUBLISHED. Sprint17 NOT QUALIFIED;32snake roots hidden.
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Next: implement Salamander's printed profile/feats/skills/defenses and exact
-spear/tail dice/roles/reaches; replace the old native grab graph with the qualified
-summon lifecycle and correct physical-plus-fire constrict/heat. Adopt the bounded
-human/original-tail view only for Salamander, preserving identity/placements.
-Verify mechanics, production view lifecycle/UI/routes and persistence together
-on one exact hidden Sprint17 artifact, then one publication gate for the32 new
-snake roots plus affected Salamander routes. FullPhase2B closure follows;
-STOP for owner review. Phase2C stays authorized but deferred; no18–22 here.
+Next: adopt the qualified human/original-tail seam ONLY for the exact production
+Salamander, with native settlement/fallback/resource cleanup and preserved GUIDs/
+five roots. Complete guarded mechanics/command/AI/UI/routes/persistence observers,
+freeze a clean committed candidate, rerun all exact prelaunch gates and one full
+same-artifact Sprint17 hidden batch. Publish32snake roots only after all gates,
+exercise affected Salamander routes, then fullPhase2B closure and STOP owner review.
+Phase2C remains authorized but deferred; no18–22 in this mission.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` remains the sole
 owner-designated development line. PR #27 is frozen salvage-only; no DATA

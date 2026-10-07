@@ -158,6 +158,9 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17HumanGrip.cs" />
     <Compile Include="RuntimeTesting\Sprint17GripEvidence.cs" />
     <Compile Include="Summoning\SerpentineRulesPolicy.cs" />
+    <Compile Include="Summoning\SalamanderRulesPolicy.cs" />
+    <Compile Include="Summoning\SalamanderCombatComponents.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderProfiles.cs" />
     <Compile Include="Summoning\SerpentineCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="Summoning\ExpandedSummoningSerpentineViewPatch.cs" />

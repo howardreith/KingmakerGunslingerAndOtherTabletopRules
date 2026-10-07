@@ -87,7 +87,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles)
                 {
                     foreach (int step in ReviewSprint17SnakeProfiles(fixture)) yield return step;
-                    yield break; // No Salamander/donor research or arbitrary keys in this request.
+                    foreach (int step in ReviewSprint17SalamanderProfile(fixture)) yield return step;
+                    yield break; // Three exact Sprint17 profiles; no donor research, arbitrary keys or save writes.
                 }
                 foreach (string key in SerpentineVisualPolicy.Keys)
                 {

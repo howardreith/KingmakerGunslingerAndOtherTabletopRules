@@ -639,6 +639,9 @@ namespace KingmakerGunslinger.Summoning
         // Only the new Constrictor Snake opts into live printed constrict.
         // A reference, not a name match, confines it to its registered owner.
         public BlueprintUnit ConstrictProfileOwner;
+        // Separate opt-in: Salamander constricts with its additional tail and
+        // fire, never the snake's primary bite/physical-only damage path.
+        public BlueprintUnit SalamanderProfileOwner;
         /// <summary>
         /// Set for a crocodilian. A death roll is a maintain-time rider like
         /// constrict, but it is not a second attack. These fields retain the
@@ -749,8 +752,9 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             if (owner == null || target == null || target.Descriptor == null)
                 return false;
-            if (ConstrictProfileOwner != null &&
-                (!ReferenceEquals(owner.Blueprint, ConstrictProfileOwner) ||
+            BlueprintUnit liveConstrictOwner = ConstrictProfileOwner ?? SalamanderProfileOwner;
+            if (liveConstrictOwner != null &&
+                (!ReferenceEquals(owner.Blueprint, liveConstrictOwner) ||
                  !CrocodilianRulesPolicy.CanMaintainLiveTarget(owner.Destroyed,
                     owner.Descriptor.State.IsConscious, target.Destroyed,
                     target.Descriptor.State.IsDead))) return false;
@@ -816,6 +820,19 @@ namespace KingmakerGunslinger.Summoning
             MechanicsContext context)
         {
             if (ConstrictDiceCount <= 0 || owner == null || target == null) return;
+            if (SalamanderProfileOwner != null)
+            {
+                if (!ReferenceEquals(owner.Blueprint, SalamanderProfileOwner) ||
+                    !SalamanderRulesPolicy.IsOwner(owner.Blueprint.AssetGuid, owner.Blueprint.name) ||
+                    !CrocodilianRulesPolicy.CanMaintainLiveTarget(owner.Destroyed,
+                        owner.Descriptor.State.IsConscious, target.Destroyed, target.Descriptor.State.IsDead)) return;
+                ItemEntityWeapon tail = SummonGrappleLinks.EstablishingWeapon(owner, target);
+                if (!IsGrabLimb(owner, tail)) return;
+                SalamanderConstrictDamage.Deal(owner, target, tail, context);
+                if (target.Destroyed || target.Descriptor.State.IsDead)
+                    SummonHoldComponent.ReleaseLink(owner, target, this, true);
+                return;
+            }
             DiceFormula dice = new DiceFormula(ConstrictDiceCount, ConstrictDiceType);
             int bonus = ConstrictBonus;
             if (ConstrictProfileOwner != null)
@@ -1398,7 +1415,11 @@ namespace KingmakerGunslinger.Summoning
             bool crocodilian = grab != null && grab.HasDeathRoll;
             bool snake = grab != null && grab.ConstrictProfileOwner != null &&
                 ReferenceEquals(owner.Blueprint, grab.ConstrictProfileOwner);
-            bool guardedRider = crocodilian || snake;
+            bool salamander = grab != null && grab.SalamanderProfileOwner != null &&
+                ReferenceEquals(owner.Blueprint, grab.SalamanderProfileOwner);
+            bool liveConstrict = snake || salamander;
+            string constrictKind = salamander ? "salamander" : "snake";
+            bool guardedRider = crocodilian || liveConstrict;
             bool targetOwned = !guardedRider ||
                 ReferenceEquals(HeldTarget(owner), target);
             if (!targetOwned) return "refused:no-exact-held-target";
@@ -1407,12 +1428,12 @@ namespace KingmakerGunslinger.Summoning
                     target.Destroyed, target.Descriptor.State.IsDead))
             {
                 ReleaseLink(owner, target, grab, true);
-                return snake ? "released:invalid-snake-owner-or-target" :
+                return liveConstrict ? "released:invalid-" + constrictKind + "-owner-or-target" :
                     "released:invalid-crocodilian-owner-or-target";
             }
             int roundsHeld = RoundsHeld(heldState);
-            if (snake && roundsHeld <= 0)
-                return "snake-maintain:waiting-for-later-round";
+            if (liveConstrict && roundsHeld <= 0)
+                return constrictKind + "-maintain:waiting-for-later-round";
             // Capture the choice entirely from pre-roll state. Claim the
             // round before the maneuver, so re-entry or replay cannot roll
             // another check (and release a hold on that second result).
@@ -1427,7 +1448,7 @@ namespace KingmakerGunslinger.Summoning
             if (guardedRider && roundsHeld > 0 &&
                     !CrocodilianRulesPolicy.TryClaimMaintainRound(roundsHeld,
                         ref lastRiderRound))
-                return (snake ? "snake-maintain:" : "crocodilian-maintain:") +
+                return (liveConstrict ? constrictKind + "-maintain:" : "crocodilian-maintain:") +
                     "already-resolved-this-round;round=" +
                     roundsHeld;
             var maneuver = new RuleCombatManeuver(owner, target, CombatManeuver.Grapple);
@@ -1458,7 +1479,7 @@ namespace KingmakerGunslinger.Summoning
                 weapon = grab == null ? SummonLimbs.PrimaryWeapon(owner) :
                     grab.FirstGrabWeapon(owner);
             int damage = SummonGrappleDamage.DealWeaponDamage(owner, target, weapon, context);
-            if (snake && (target.Destroyed || target.Descriptor.State.IsDead))
+            if (liveConstrict && (target.Destroyed || target.Descriptor.State.IsDead))
             {
                 ReleaseLink(owner, target, grab, true);
                 return "maintained:" + damage + ";targetDied=True;heldKept=False";

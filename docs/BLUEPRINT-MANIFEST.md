@@ -518,8 +518,9 @@ three of these borrow the Giant Spider.
 The ledger now contains 2772 stable identifiers: 2770 active and 2 reserved.
 
 Sprints 15-16 extended it to 2836 entries and are now qualified and published.
-Sprint 17 preserves that exact prefix and appends 73 snake identities:
-2909 stable identifiers: 2907 active and 2 reserved. Viper and Constrictor
+Sprint 17 preserves that exact prefix and appends 73 snake identities plus
+Salamander's own tail weapon type and species inspection type:
+2911 stable identifiers: 2909 active and 2 reserved. Viper and Constrictor
 Snake add two units, 32 logical placements, 32 SM template children and seven
 owned profile/type/poison/grab carriers. All 32 placements remain hidden:
 1008 registered, 976 published, 29 retained wrappers and 1005 visible choices.

@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class SerpentineRulesTests
     {
-        internal const int AppendedLedgerIdentities = 73;
+        internal const int AppendedLedgerIdentities = 75;
         internal static void PersistenceRequiresTheExactNativeLoadCompletion()
         {
             var gate = new SerpentineLoadBoundaryReadiness();
@@ -724,7 +724,7 @@ namespace KingmakerGunslinger.DomainTests
             JArray entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
             Assertions.Equal(2836 + AppendedLedgerIdentities, entries.Count,
-                "Exactly 73 Sprint 17 identities append to the frozen prefix.");
+                "73 snake identities and two Salamander support identities append to the frozen prefix.");
             string digest;
             using (var sha = SHA256.Create())
                 digest = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(
