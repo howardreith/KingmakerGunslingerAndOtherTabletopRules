@@ -68,14 +68,25 @@ Four atomic stages and every failed artifact are preserved.
 Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Next: persist bounded hand-selection/rejection aggregates and isolate native
-control observation failures from the real command/timing review. Missing
-control remains a failed qualification check, never PASS or silently omitted.
-No weight normalization, native pose/import/weapon changes, geometry export,
-threshold waiver or favorable-variant retry. Then source/full gates, commit/push,
-exact-head prelaunch and fresh smoke11+ALL15 human checks with exact restoration.
-After bounded hybrid proof: printed Salamander mechanics, same-artifact Sprint17
-hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Bounded weight-census/failure-isolation change is now SOURCE PASS:
+298focused/2100full83.5s/complete180.4s/clean14/strict321.
+It records both hand selectors' rejection reasons, weight sums and positive
+driver aggregates before failure. Original/native control failures stay sticky
+and fail qualification, but no longer erase native attack/event-timing evidence.
+No normalization, native pose/import writes, art/gameplay or8cm/25cm changes.
+Every actually allocated control/probe is tracked; cleanup is not confused
+with whether an unavailable control was ever created. One new behavior test
+preserves selection while distinguishing rejection causes; count pins2100.
+Exact committed-head runtime remains PENDING; last complete grip result801 FAIL.
+
+Next: push this source-qualified diagnostic change, rebuild the exact clean
+head with every prelaunch/harness gate, then fresh Steam640820 smoke11 and
+ALL15 human checks. Review bounded native-weight rejection census, actual native
+cached event timing and original contact even if the comparison is unavailable.
+Unavailable control remains FAIL. No thresholds, anatomy or pose may be guessed.
+Restore the exact pre-transaction snapshot. Then printed Salamander mechanics,
+same-artifact Sprint17 hidden/publication, fullPhase2B closure and STOP.
+Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
 bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
