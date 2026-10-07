@@ -16,6 +16,25 @@ $foreign=Join-Path $saveDir 'Manual_1_foreign.zks'
 $script:checks=0
 function Check([bool]$Value,[string]$Name){if(-not $Value){throw ('Invariant: '+$Name)};$script:checks++}
 function Reject([scriptblock]$Action,[string]$Name){$rejected=$false;try{& $Action|Out-Null}catch{$rejected=$true};Check $rejected $Name}
+$typed=@{phase='prepare';planPath='closed-plan'}
+$bound=New-ElementalTraitSaveParameters 'KMG_AUTOMATION_WORKING' $typed
+Check ($bound.Count -eq 3 -and $bound.saveName -ceq 'KMG_AUTOMATION_WORKING') 'typed-save-name-reaches-closed-scenario'
+Check ($typed.Count -eq 2 -and -not $typed.ContainsKey('saveName')) 'caller-parameters-preserved'
+Reject {New-ElementalTraitSaveParameters 'KMG_AUTOMATION_WORKING' @{phase='prepare';planPath='p';saveName='injected'}} 'injected-save-name-rejected'
+Reject {New-ElementalTraitSaveParameters 'KMG_AUTOMATION_WORKING' @{phase='prepare'}} 'missing-plan-rejected'
+Reject {New-ElementalTraitSaveParameters 'KMG_AUTOMATION_WORKING' @{phase='prepare';planPath='p';extra='x'}} 'extra-param-rejected'
+Reject {New-ElementalTraitSaveParameters 'KMG_AUTOMATION_BASELINE' $typed} 'baseline-input-rejected'
+Reject {New-ElementalTraitSaveParameters 'KMG_AUTOMATION_WORKING' @{phase='verify-remove';planPath='p'}} 'seed-cannot-be-removal-write-target'
+Reject {New-ElementalTraitSaveParameters $name $typed} 'prepare-load-is-seed-only'
+foreach($phase in @('verify-remove','verify-absent')) {
+    Check ((New-ElementalTraitSaveParameters $name @{phase=$phase;planPath='p'}).saveName -ceq $name) ('owned-input-'+$phase)
+}
+Reject {New-ElementalTraitSaveParameters $name @{phase='unknown';planPath='p'}} 'unknown-phase-rejected'
+$entryRejected=$false
+try {
+    & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario 'elemental-character-traits-owned-save' -ExpectedVersion '0.0.142' -SaveName 'KMG_AUTOMATION_WORKING' -Parameters @{phase='unknown';planPath='p'} -WhatIf
+} catch { $entryRejected=$_.Exception.Message -like 'Trait persistence requires typed*' }
+Check $entryRejected 'actual-command-entry-uses-typed-trait-contract'
 $catalog=$null;$stream=$null
 try{
     $catalog=Open-KmgProtectedSaveCatalog -EvidenceDirectory $evidence -SaveDirectory $saveDir
