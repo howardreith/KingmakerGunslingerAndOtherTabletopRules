@@ -33,10 +33,17 @@ namespace KingmakerGunslinger.Summoning
 
         internal static bool IsGripSurfaceVertex(string side, string[] names, float[] weights)
         {
-            if (names == null || weights == null || names.Length != 4 || weights.Length != 4 ||
-                weights.Any(weight => !SalamanderTailAnimationPolicy.Finite(weight) || weight < 0 || weight > 1) ||
-                Math.Abs(weights.Sum() - 1) > .0001f) return false;
-            return Enumerable.Range(0, 4).Where(i => IsGripDriver(names[i], side)).Sum(i => weights[i]) >= .5f;
+            return GripSurfaceDisposition(side, names, weights) == "selected";
+        }
+
+        internal static string GripSurfaceDisposition(string side, string[] names, float[] weights)
+        {
+            if (names == null || weights == null || names.Length != 4 || weights.Length != 4) return "array-shape";
+            if (weights.Any(weight => !SalamanderTailAnimationPolicy.Finite(weight))) return "non-finite";
+            if (weights.Any(weight => weight < 0 || weight > 1)) return "weight-range";
+            if (Math.Abs(weights.Sum() - 1) > .0001f) return "weight-sum";
+            return Enumerable.Range(0, 4).Where(i => IsGripDriver(names[i], side)).Sum(i => weights[i]) >= .5f
+                ? "selected" : "below-hand-influence";
         }
 
         internal static bool BakeFrameMatches(float[] control, float[] live)

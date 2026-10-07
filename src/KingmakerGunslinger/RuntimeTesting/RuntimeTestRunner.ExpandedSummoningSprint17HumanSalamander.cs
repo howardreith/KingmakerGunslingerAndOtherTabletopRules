@@ -116,7 +116,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["nativeHandActions"] = Sprint17NativeHandAttackCensus(owner);
                 row["nativeRendererState"] = HumanSalamanderRendererObservation(owner);
                 var nativeBody = skins.Single(s => s.Skin.name == SalamanderHumanBindingPolicy.BodyName);
-                nativeGrip = new Sprint17HumanGripSurface(nativeBody.Skin, resources);
+                var nativeGripMetadata = new JObject(); row["nativeGripControl"] = nativeGripMetadata;
+                try { nativeGrip = new Sprint17HumanGripSurface(nativeBody.Skin, resources, nativeGripMetadata); }
+                catch (Exception error)
+                {
+                    // Observation failure remains a failed qualification check,
+                    // but must not erase unrelated real attack/timing evidence.
+                    nativeGripMetadata["failure"] = error.ToString();
+                    nativeGripMetadata["available"] = false;
+                }
                 WriteHumanSalamanderCheckpoint("native-census-before-rollback", row);
                 UnityEngine.Object[] rollback = new UnityEngine.Object[0];
                 bool rejected; string outcome;
@@ -227,11 +235,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteHumanSalamanderCheckpoint("owner-destruction-returned", row);
             }
             yield return 0; yield return 0;
-            CheckHumanSalamander("native-destruction", resources.Distinct().Count() >= 39 && resources.All(v => v == null) &&
+            // Always require body/tail + both probes. Each completed control
+            // additionally requires its four objects; partially allocated
+            // objects are also in resources and must all be destroyed.
+            var gripEvidence = row["samePoseGripReview"] as JObject;
+            int originalControlObjects = gripEvidence == null ? 0 : (int?)gripEvidence["original"]["ownedResources"] ?? 0;
+            int requiredObjects = 31 + (nativeGrip == null ? 0 : 4) + originalControlObjects;
+            CheckHumanSalamander("native-destruction", resources.Distinct().Count() >= requiredObjects && resources.All(v => v == null) &&
                 borrowed.Length >= 25 && borrowed.All(v => v != null),
                 new JObject { ["captured"] = resources.Distinct().Count(), ["remaining"] = resources.Count(v => v != null),
+                    ["required"] = requiredObjects, ["bothControlsAvailable"] = nativeGrip != null && originalControlObjects == 4,
                     ["borrowedAlive"] = borrowed.Count(v => v != null) },
-                "native unit destruction releases body/tail assets, eight owned bake-control resources and both frame probes; borrowed native assets survive");
+                "native destruction releases body/tail, both probes and every actually allocated control; missing control still fails the separate observation gate");
             WriteHumanSalamanderCheckpoint("native-destruction-settled", row);
         }
 
@@ -309,7 +324,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Mesh spearMesh = spearWeapon.Blueprint.VisualParameters.Model.GetComponentsInChildren<MeshFilter>(true).Single().sharedMesh;
                 var spearFilter = owner.View.GetComponentsInChildren<MeshFilter>(true)
                     .Single(filter => ReferenceEquals(filter.sharedMesh, spearMesh));
-                gripReview = new Sprint17HumanGripObservation(nativeGrip, attachment.Body, spearFilter, attack, resources);
+                gripReview = new Sprint17HumanGripObservation(nativeGrip, attachment.Body, spearFilter, attack, resources,
+                    (JObject)row["nativeGripControl"]);
                 row["samePoseGripReview"] = gripReview.Evidence;
                 gripProbe = owner.View.gameObject.AddComponent<Sprint17HumanGripFrameProbe>();
                 resources.Add(gripProbe);
