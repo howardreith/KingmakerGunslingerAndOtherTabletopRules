@@ -68,15 +68,26 @@ Four atomic stages, the native log and all earlier artifacts are preserved.
 Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Next: correct only the diagnostic's CPU-readability assumption. Investigate
-an owned non-rendering BakeMesh control of the exact borrowed mesh/live bones;
-verify weight metadata, same-frame transform convention and exact cleanup.
-Never alter native import settings, renderer, weapon or pose; no geometry export.
-[Unity2018.4 BakeMesh](https://docs.unity3d.com/2018.4/Documentation/ScriptReference/SkinnedMeshRenderer.BakeMesh.html)
-documents CPU/offscreen snapshots, not qualification of this proposed control.
-Then focused/full source gates, commit/push, exact clean-head prelaunch and
-fresh smoke11 plus ALL15 human checks. No8cm/25cm waiver or favorable-clip retry.
-After that: printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
+Owned BakeMesh control repair is now SOURCE PASS297focused/2099full82.6s,
+complete176.9s/clean14/strict321. It replaces the invalid direct native vertex
+read with two disabled project-owned renderers outside the live view.
+Each retains the exact borrowed mesh/bones and fills only an owned snapshot;
+original/native import flags, renderers, clips, bones and weapon are untouched.
+The owned control must match every finite world-matrix entry within1e-5;
+original baked grip must agree with the independent weighted-world measurement.
+All eight bake resources plus both frame probes are captured for exact cleanup;
+native asset references must survive. No geometry export or8cm/25cm waiver.
+A new finite-frame rejection test and both count pins are synchronized to2099.
+This repair has NOT run live. The last complete grip result remains801 FAIL.
+
+Next: push the source-qualified bake-control repair, rebuild the exact clean
+head with all prelaunch/harness gates, then fresh Steam640820 smoke11 and
+ALL15 human checks. Prove usable native/owned baked hand samples, independent
+original-distance agreement, cached-event timing and all40 expected resources
+(39required base plus any material clones) reclaimed with borrowed assets intact.
+Do not waive8cm/25cm limits or accept a favorable variant as a fix for native02.
+Acquire the runtime lease before snapshot and restore that exact installation.
+Then printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
 fullPhase2B closure and STOP. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` remains the sole

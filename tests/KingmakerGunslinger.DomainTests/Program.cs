@@ -671,6 +671,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-salamander-human-grip-surface", SalamanderHumanBindingTests.GripSurfaceUsesOnlyTheSelectedHandAndItsThreeFingers),
             Case("expanded-summoning.sprint17-salamander-human-grip-influence", SalamanderHumanBindingTests.GripSurfaceInfluenceCombinesOnlyOneExactHand),
             Case("expanded-summoning.sprint17-salamander-human-grip-malformed", SalamanderHumanBindingTests.MalformedGripSurfaceWeightsFailClosed),
+            Case("expanded-summoning.sprint17-salamander-human-bake-frame", SalamanderHumanBindingTests.BakedControlRequiresTheExactFiniteLiveFrame),
             Case("expanded-summoning.sprint17-snake-production-body-identity", SerpentineRulesTests.ProductionBodyHookRequiresExactHiddenSnakeIdentity),
             Case("expanded-summoning.sprint17-snake-closed-profile-request", SerpentineRulesTests.ProfileRequestIsClosedWorkingSaveSlice),
             Case("expanded-summoning.sprint17-snake-closed-signature-request", SerpentineRulesTests.SignatureRequestIsClosedWorkingSaveSlice),
