@@ -1,28 +1,30 @@
 # Expanded Summoning fidelity matrix
 
-## Current October 7 outcome — independent snake publication PASS; full Sprint17 PARTIAL
+## Current October 7 outcome — Sprint17 technically complete; release143 integration pending
 
-Viper18 and Constrictor14 roots are independently QUALIFIED AND PUBLISHED:
-hidden47e8c121 mandatory snake gates PASS,then exact996c5fe7 publication
-smoke11/11 + existing final-review63/63 PASS (37 public roots/111 summons,
-including five preserved Salamander roots). Full exact source gate2123/2123,
-clean14-reference Release and strict321-member package PASS.
-Current source:1008 generated published +29 wrappers =1037 visible;zero withheld.
+Salamander is INCLUDED in the checkpoint-release integration. Exact observation-only
+candidate db1da016 passes canonical smoke11/11 and existing profile/view73/73:
+raw spear5/tail10, computed2/6 and body5 separately measured. No production
+profile, mechanics, AI, animation, geometry, icon or balance change. Full exact
+source gate2123/2123,14-reference clean Release and strict321-member package PASS.
+Other mandatory unchanged mechanics/commands/crowd/persistence retain47e8c121;
+all37 public roots (Viper18,Constrictor14,Salamander5) retain996c5fe7 publication.
+The old mandatory observer failure is preserved historically,not waived or relabeled.
 
-Salamander remains NOT QUALIFIED:one mandatory reach-observation failure
-on47e8c121 is retained,not waived;computed2/6 was supplied where raw5/10
-was expected. All other integrated cells PASS. No production range defect
-demonstrated. Native donor lacks expiry effect;no animation invented.
-One observation correction used;no further retry under this amendment.
-Phase2B NOT CLOSED;exhaustive closure matrices NOT RUN;Phase2C not started.
-Actual136-file/0.0.117 snapshot restored exactly22:00:34.9412483UTC;
-lease Completed/released;no game/staging. Publication made ZERO save writes.
-Prior native cleanup-save/fresh absence PASS remains exact47 evidence.
+Sprints14–17 technically COMPLETE/PUBLISHED; current1008 generated +29 wrappers
+=1037 visible,zero withheld. Full Phase2B/release closure NOT RUN;v0.0.143 NOT
+QUALIFIED/released. Next:new integration branch from accepted master4ba8d4a,
+preserve all v0.0.142 features,then complete closure/regression/release gates.
+PR25/26 remain draft/unmerged;DATA PR27 archive/ZERO PORTS.
+The latest owner mission authorizes ONLY a gate-passing v0.0.143 integration
+merge/tag/real Latest release,then STOP. No Sprint18 or Phase2C under this mission.
 
-[Controlling state](../EXPANDED-SUMMONING-PHASE2-AUTONOMOUS-STATE.md) and
-[one exact evidence record](EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
-govern. PR26 is laptop canonical,draft/unmerged;DATA PR27 archived/ZERO PORTS.
-HumanReview NOT_PERFORMED_NONBLOCKING. Earlier checkpoints below are historical.
+Actual snapshot20261007T2258344605477Z restored23:06:08.4004559UTC:
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/released;no game/staging;zero save writes;protected baseline untouched.
+HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted limitations/adaptation unchanged.
+The controlling state and checkpointRelease143 section in the single Sprint17
+evidence record govern. Earlier failed/PASS checkpoints below remain artifact-bounded.
 
 ## Historical source checkpoint — superseded for current status
 
@@ -702,8 +704,8 @@ contamination. No save was accessed.
 | Offense | Preserved primary spear `99394d453c6f425f84d4b92f7a8deea0` and secondary tail `93e097b8d3db42d3a37656502899e1a9`:baseline11/6 spear1d8+4/x3 and tail6,2d6+1;live scoped1d6fire per owned weapon;tail-only project grab/constrict2d6+4+1d6fire,live Strength/size,duplicate/dead-prey guards. Native Power Attack starts on;printed-line fixture turns it off only for baseline and proves native on/off. |
 | Removed donor mechanics | Lizardfolk stats, HD, inventory, drops, class progression, donor brain, and campaign surfaces; no planar travel, summoning, or unrelated poison/web/spell behavior |
 | Defenses/land skills | Native fire immunity,cold vulnerability and DR10/magic delivered;exact76HP/AC18/touch11/flat17,F10/R7/W6,Perception16 and no unprinted Mobility/Persuasion ranks;native printed feats preserved. |
-| Conservative deviations | Darkvision under PASSIVE_CREATURE_SENSES_UNMODELED;active hold resets cleanly on load under ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD. Donor has no native expiry effect;no dissolve/animation invented. Source raw weapon ranges5/10,live computed spear2/tail6,body reach5;mandatory range observation remains FAIL,not an accepted limitation. |
-| Qualification | Sprint17 PARTIAL/NOT QUALIFIED on47e8c121:all mandatory integrated cells except native-per-weapon-reach PASS. One observation correction used;stop at owner retry limit. Exact996c5fe7 publication63/63 covers all32 independently qualified snake roots and5 existing Salamander public roots/UI/lifecycle,not a waiver or fullSalamander/Phase2B qualification. Historical1009 pass is not transferred to this changed production view/profile. HumanReview NOT_PERFORMED_NONBLOCKING. |
+| Conservative deviations | Darkvision under PASSIVE_CREATURE_SENSES_UNMODELED;active hold resets cleanly on load under ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD. Donor has no native expiry effect;no dissolve/animation invented. Raw weapon ranges5/10,computed approach ranges2/6 and body reach5 separately confirmed on db1da016. Native four-foot approach allowance and minimum2 are recorded honestly;no five-foot computed difference is claimed. |
+| Qualification | TECHNICALLY QUALIFIED/INCLUDED:one owner-authorized observation-only db1da016 correction passes smoke11/11 and profile/view73/73,with no product change. Other mandatory47e8c121 integrated cells unchanged/PASS;996c5fe7 publication63/63 covers32snake roots and5 existing Salamander routes/UI/lifecycle. Prior reach FAIL retained historically;not retroactively passed. FullPhase2B/release143 closure still pending. HumanReview NOT_PERFORMED_NONBLOCKING. |
 
 ## Succubus
 
