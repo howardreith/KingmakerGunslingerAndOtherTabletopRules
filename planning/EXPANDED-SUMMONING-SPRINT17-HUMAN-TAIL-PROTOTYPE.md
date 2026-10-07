@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: PRIVATE AUTHORING ONLY; Sprint17 NOT QUALIFIED. Production Salamander
+Status: PRIVATE AUTHORING / INACTIVE ACTION BRIDGE; Sprint17 NOT QUALIFIED. Production Salamander
 identity, placements, profile, prefab and packaged assets remain unchanged.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
 
@@ -63,7 +63,7 @@ upper-body/weapon/ground behavior remain integration review items, not waived.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 Neither an offline image nor a bind-compatible skeleton qualifies gameplay.
 
-Full source gate PASS:280focused/2082unfiltered81.5s; complete repository/static/
+Earlier private authoring gate PASS:280focused/2082unfiltered81.5s; complete repository/static/
 icon/manifest, clean14-reference Release and deterministic strict320 package178.2s.
 Source gate log `artifacts/sprint17-human-tail-source-gate.log`. No Kingmaker launch, installation
 transaction, save write or production runtime binding occurred for this work.
@@ -80,9 +80,9 @@ duration to set the handle SpeedScale. The handle advances on the native
 manager delta; interruption/release callbacks remain available.
 
 The unmodified special action falls back after0.1s if ActiveAnimation is null.
-That fallback must not be mistaken for original tail playback. A future
-Salamander-only action must bypass that fallback with real owned-clip
-evaluation and demonstrate command-act/contact correspondence, interruption,
+That fallback must not be mistaken for original tail playback. The inactive
+Salamander-only bridge below bypasses it in source, but must demonstrate actual
+owned-clip evaluation, command-act/contact correspondence, interruption,
 pause/speed behavior and cleanup. No human clip may be transplanted to the
 Lizardfolk rig or relabeled as Tail. Native spear actions must remain native.
 
@@ -91,8 +91,8 @@ Unity2018.4 permits runtime curve creation only on legacy clips
 Its [Animation.Sample](https://docs.unity3d.com/2018.4/Documentation/ScriptReference/Animation.Sample.html)
 evaluates the current animation state. A creature-owned legacy component can
 therefore be investigated on only these original tail drivers, using native
-handle time; this is an inference requiring runtime proof, not an implemented
-or qualified carrier. No legacy-flag workaround, editor activation, global
+handle time; this still requires runtime proof and is not an adopted or
+qualified carrier. No legacy-flag workaround, editor activation, global
 animation rewrite or general arbitrary-limb subsystem is authorized.
 
 Private audit script hash:
@@ -104,9 +104,41 @@ Pinned native assembly hash:
 No native methods were invoked, no action instantiated/adopted, and no native
 IL, matrices, clips or proprietary assemblies are redistributed.
 
+## Inactive action bridge — source PASS, no runtime adoption
+
+The source-only slice implements `SalamanderTailAction` and its six
+behavior-tested playback/identity cases. It accepts only the named request-local
+Salamander clone, exact human prefab/project spear, one owned legacy clip and
+ten exact original child drivers. No production hook or fixture calls it yet.
+Its inherited native variant entry retains clip-duration selection. Only native
+handle time advances the owned legacy sample; a prepared time cannot fire an
+event until the exact owned clip/state is acknowledged. Duplicate, invalid,
+rewound, interrupted and foreign-handle paths fail closed. Native UnitAttack
+still owns all targeting, attack rolls, reach, damage and on-hit riders.
+
+The action restores/stops only its own component on finish/interruption. Failure
+interrupts only an exact native UnitAttack referencing this handle, through the
+public native command API, then releases that handle. No queue/brain/global
+animation mutation and no fabricated null-clip IsActed fallback.
+
+Initial compile attempts exposed two access details: GetVariantsCount is a
+final interface implementation despite its reflection IsVirtual flag, and
+MarkInterrupted is assembly-internal. The bridge now inherits variant counting
+and uses the public exact-command interruption seam. Both failed compile logs
+are retained; the third pinned-reference Release compile passes. The six new
+domain tests pass. The initial complete gate286focused/2088full81.4s/175.2s
+passed and is archived. A follow-up exception-path review added native exact-
+command interruption/handle release in finally blocks even if resetting the
+owned clip throws. Start/update exceptions fail closed and stop only owned
+playback. The corrected complete gate PASS:286focused/2088unfiltered83.7s;
+repository/static/icon/manifest, clean14-reference Release and strict320177.9s.
+Logs `artifacts/sprint17-salamander-tail-bridge-final-{focused,gate}.log`.
+Live clock, playback, contact and cleanup remain NOT QUALIFIED. Merely
+assigning IsActed is not a runtime playback/contact assertion.
+
 ## Next exact work
 
-Implement the bounded request-local original body/owned-tail binding on the
+Wire the source-qualified bridge into the bounded request-local original body/owned-tail binding on the
 exact human prefab, preserving native two-handed spear handling and all
 native references. Prove the original tail with real native commands, then
 finish Salamander's printed mechanics. Only a complete same-artifact Sprint17
