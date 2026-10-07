@@ -38,7 +38,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             _traitSaveEvents.Add(new {name,observed});
             _traitSaveChecks.Add(Assertion("trait-save-"+name,"exact canonical leased persistence contract",
-                Newtonsoft.Json.JsonConvert.SerializeObject(observed),pass,TraitSaveEvidence));
+                Newtonsoft.Json.JsonConvert.SerializeObject(observed,new Newtonsoft.Json.JsonSerializerSettings {
+                    ContractResolver=new Newtonsoft.Json.Serialization.DefaultContractResolver(),
+                    PreserveReferencesHandling=Newtonsoft.Json.PreserveReferencesHandling.None,
+                    TypeNameHandling=Newtonsoft.Json.TypeNameHandling.None }),pass,TraitSaveEvidence));
             if(!pass) throw new InvalidOperationException("Trait persistence invariant failed: "+name);
         }
         private void PollElementalTraitSave()
@@ -96,8 +99,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private AreaEffectEntityData[] TraitOwnedAreas()
         {
+            var graph=ElementalCharacterTraitPublicationCoordinator.Graph;
             var guid=ElementalCharacterTraitCatalog.All()[1].Node(CharacterTraitNodeKind.Area).Guid;
-            return Game.Instance.State.AreaEffects.All.Where(a=>a.Blueprint.AssetGuid==guid).ToArray();
+            var provider=graph.Resolve(ElementalCharacterTraitCatalog.All()[1].GrantedNode.Symbol);
+            var field=typeof(AddAreaEffect).GetField("m_AreaEffectInstance",BindingFlags.NonPublic|BindingFlags.Instance);
+            if(field==null || field.FieldType!=typeof(AreaEffectEntityData)) throw new InvalidOperationException("Exact native attached-area carrier absent.");
+            var attached=Game.Instance.State.Units.All.SelectMany(u=>u.Buffs.Enumerable)
+                .Where(b=>ReferenceEquals(b.Blueprint,provider))
+                .SelectMany(b=>b.SelectComponents<AddAreaEffect>())
+                .Select(c=>field.GetValue(c) as AreaEffectEntityData).Where(a=>a!=null && a.Blueprint.AssetGuid==guid);
+            // Attached effects belong to their owner and need not occur in the global area list.
+            return ElementalCharacterTraitSaveContract.OwnedAreas(
+                Game.Instance.State.AreaEffects.All.Where(a=>a.Blueprint.AssetGuid==guid),attached);
         }
         private void TraitCanonicalGraph()
         {
@@ -146,7 +159,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var stoic=(Buff)facts[1];var add=stoic.SelectComponents<AddAreaEffect>().Single();
             var area=(AreaEffectEntityData)typeof(AddAreaEffect).GetField("m_AreaEffectInstance",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(add);
             TraitSaveAssert("stoic-holder-context-area",ReferenceEquals(stoic.Context?.MaybeCaster,owner) &&
-                area!=null && ReferenceEquals(area.Context?.MaybeCaster,owner) && TraitOwnedAreas().Length==1,
+                area!=null && !area.Destroyed && !area.IsEnded && ReferenceEquals(area.Context?.MaybeCaster,owner) &&
+                ReferenceEquals(area.Blueprint,graph.Resolve(defs[1].Node(CharacterTraitNodeKind.Area).Symbol)) && TraitOwnedAreas().Length==1,
                 new {caster=stoic.Context?.MaybeCaster?.UniqueId,areaCaster=area?.Context?.MaybeCaster?.UniqueId,areas=TraitOwnedAreas().Length});
             var aerial=facts[2].SelectComponents<AerialObserverPerceptionBonus>().Single();
             TraitSaveAssert("aerial-canonical-wings",ReferenceEquals(aerial.FlightCarrier,

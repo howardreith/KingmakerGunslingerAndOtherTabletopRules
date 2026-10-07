@@ -25,6 +25,9 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("trait-save.AttachedAreaWithoutGlobalEntry", ElementalCharacterTraitSaveTests.AttachedAreaWithoutGlobalEntry),
+            Case("trait-save.MirroredAreaDeduplicated", ElementalCharacterTraitSaveTests.MirroredAreaDeduplicated),
+            Case("trait-save.DuplicateAttachedAreasDetected", ElementalCharacterTraitSaveTests.DuplicateAttachedAreasDetected),
             Case("trait-save.JsonLeaseTimestamp", ElementalCharacterTraitSaveTests.JsonLeaseTimestamp),
             Case("trait-save.ProcessStartExactTicks", ElementalCharacterTraitSaveTests.ProcessStartExactTicks),
             Case("trait-save.ParsedLeaseExpiry", ElementalCharacterTraitSaveTests.ParsedLeaseExpiry),

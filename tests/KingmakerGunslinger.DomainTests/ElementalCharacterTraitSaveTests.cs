@@ -19,6 +19,15 @@ namespace KingmakerGunslinger.DomainTests
         { var a=Before();a.Add("Manual_301_"+Owned+".zks","owned-v1");return a; }
         private static string OwnedFile { get { return "Manual_301_"+Owned+".zks"; } }
         private static void Reject(bool value,string reason) { Assertions.True(!value,reason); }
+        internal static void AttachedAreaWithoutGlobalEntry()
+        { var a=new object();Assertions.True(ElementalCharacterTraitSaveContract.OwnedAreas(Array.Empty<object>(),new[]{a}).Single()==a,
+            "A real owner-attached area is counted without a global list entry."); }
+        internal static void MirroredAreaDeduplicated()
+        { var a=new object();Assertions.True(ElementalCharacterTraitSaveContract.OwnedAreas(new[]{a},new[]{a}).Length==1,
+            "The same native area is counted once across both carriers."); }
+        internal static void DuplicateAttachedAreasDetected()
+        { Assertions.True(ElementalCharacterTraitSaveContract.OwnedAreas(Array.Empty<object>(),new[]{new object(),new object()}).Length==2,
+            "Different attached area instances remain visible to the exactly-one check."); }
         internal static void JsonLeaseTimestamp()
         {
             var start=DateTime.Parse("2026-10-07T00:09:04.3164398Z",CultureInfo.InvariantCulture,DateTimeStyles.RoundtripKind);
