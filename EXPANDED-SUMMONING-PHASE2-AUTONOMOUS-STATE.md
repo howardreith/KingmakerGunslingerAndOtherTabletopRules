@@ -20,8 +20,11 @@ actual weapon-attributed DR, unresolved miss metadata, exact hostile cleanup
 receipt, native link epochs/CMD-isolated command probe, matched native expiry
 control, guided hybrid motion and closed crowd launcher are integrated.
 Focused321/321 and incremental14-reference compilation PASS; launcher18 valid/
-13 rejected and crowd10/11 source checks PASS. Current correction candidate is
-the next clean committed HEAD on ea46fb76, not the old qualified artifact.
+13 rejected and crowd10/11 source checks PASS. Correction0dd43555 was pushed;
+its source gate stopped at the stale2117 test-count guard before suite/build/
+package or launch. Actual2123 count is now pinned and focused validator PASS.
+Same one fixture correction, no product/runtime retry used. Runtime candidate
+is the next clean committed descendant of0dd43555, not either old artifact.
 NEXT: commit/push once, run the full exact-head source/build/package gate once,
 sequential prelaunch, then the existing same10-request guarded all-three batch.
 One observation correction USED; zero product corrections used, ONE remains
