@@ -1,6 +1,9 @@
 # Sprint17 snake loaded hold-reset diagnostic
 
-Status: SOURCE PASS; runtime NOT RUN; full Sprint17 NOT QUALIFIED.
+Historical source review. Exacta587 runtime diagnostic completed and confirms
+retained Constrictor initiator/Hold/control locks after reload; fullSprint17
+NOT QUALIFIED. [Current result](EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC-RESULT.md)
+governs; four new fixtures remain saved, installation exactly restored.
 Source parent c89525085901c9b63ccb7f3d57a8ced3ea45354c.
 Laptop PR26 only; DATA archive-only / ZERO PORTS.
 
