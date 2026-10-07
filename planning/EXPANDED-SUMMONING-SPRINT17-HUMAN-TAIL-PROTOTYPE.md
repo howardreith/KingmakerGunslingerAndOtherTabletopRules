@@ -1,7 +1,8 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: PRIVATE AUTHORING / INACTIVE ACTION BRIDGE; Sprint17 NOT QUALIFIED. Production Salamander
-identity, placements, profile, prefab and packaged assets remain unchanged.
+Status: REQUEST-LOCAL BINDING SOURCE PASS; Sprint17 NOT QUALIFIED. Production Salamander
+identity, placements, profile and prefab remain unchanged. A separate original
+human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
 
 ## New bounded implementation
@@ -37,7 +38,8 @@ The paint remains
 Private native metadata remains
 `eb0d5eaaf4bec8bf68506d42f299ded5d3d86cb676ff72e53f15d0cfbce9bfd2`;
 its coordinates/matrices never enter the export. Only original tail points
-and original mesh/UV/weights/curve data are exported. No prototype is packaged.
+and original mesh/UV/weights/curve data are exported. The current binding packages
+this exact mesh separately; the original private exports remain preserved.
 
 ## Offline checks and honest limits
 
@@ -104,7 +106,7 @@ Pinned native assembly hash:
 No native methods were invoked, no action instantiated/adopted, and no native
 IL, matrices, clips or proprietary assemblies are redistributed.
 
-## Inactive action bridge — source PASS, no runtime adoption
+## Earlier inactive action bridge — source PASS, no runtime adoption
 
 The source-only slice implements `SalamanderTailAction` and its six
 behavior-tested playback/identity cases. It accepts only the named request-local
@@ -136,11 +138,59 @@ Logs `artifacts/sprint17-salamander-tail-bridge-final-{focused,gate}.log`.
 Live clock, playback, contact and cleanup remain NOT QUALIFIED. Merely
 assigning IsActed is not a runtime playback/contact assertion.
 
+## Request-local body/action binding — corrected source PASS
+
+Source parent19949d30. The new closed attachment accepts only the named
+request-local clone on the exact human prefab and project spear. It checks
+all selected duplicate live Transform identities/parents/binds, rejecting
+ambiguous anatomy. The native human set is cloned only as an instance-owned
+container: all24 native actions and transition/startup references remain
+unchanged; exactly one owned Tail is appended. Native equipment remains native,
+with no weapon mesh transplant, palm remount or native-bone mutation.
+
+The original ten drivers are direct children of an owned legacy Animation
+root. Only project-authored absolute positions/delta quaternions enter its
+fixed11-frame clip. Interpolation is explicitly linear, so the earlier141
+continuous recipe samples are not a proof of every runtime interpolated pose.
+Native handle time alone samples the clip. All own resources are captured for
+post-swap rollback and native destruction; no native assets may be destroyed.
+
+The first source gate passed290focused/2092full82.3s/complete179.1s/strict320,
+but a final payload audit caught sorted export order versus authoring order.
+That undeployed artifact is retained in
+artifacts/sprint17-human-binding-before-palette-audit. Binding and independent
+contact measurements now map exact names; all36 skin indices are behavior-tested.
+The binding-corrected gate passed290focused/2092unfiltered83.0s/178.1s,
+but independent ZIP inspection found only320 members: the explicit build/package
+lists had omitted the new mesh despite the project wildcard. That artifact is
+preserved in artifacts/sprint17-human-binding-corrected-source-pass and was
+never deployed. Build/package/strict inventories now explicitly require the
+separate mesh and validate its exact hash. The old missing-member ZIP is
+rejected by the corrected validator. One inherited current-package count
+guard required its corresponding69-to70 addition; immutable historical
+Phase1/published metadata are unchanged. The rejected source gate is retained.
+
+Final corrected complete source gate PASS:290focused/2092unfiltered81.9s;
+repository/static/icon/manifest, clean14-reference Release, deterministic
+strict321 package179.0s. Independent ZIP inspection confirms the270010-byte
+human mesh member. Nine Blender authoring tests pass. Earlier binding logs:
+artifacts/sprint17-human-binding-corrected-{focused,gate}.log.
+Final package-complete logs:
+artifacts/sprint17-human-binding-package-corrected-{focused,gate}.log.
+
+The existing closed disposable-expanded-summoning-serpentine-bodies request
+now isolates this new hybrid research. It records native appearance/control,
+every native renderer, rollback, finite rest/movement, a real full UnitAttack,
+native spear clips/two-hand geometry, owned-tail playback/weighted contact,
+and exact destruction/borrowed-asset survival. Contact reads the distal half,
+not merely the waist. IsActed alone cannot pass. All older Lizardfolk evidence
+remains failed and preserved; no snake qualification is rerun or aggregated.
+
 ## Next exact work
 
-Wire the source-qualified bridge into the bounded request-local original body/owned-tail binding on the
-exact human prefab, preserving native two-handed spear handling and all
-native references. Prove the original tail with real native commands, then
+Freeze/rebuild one exact committed candidate and run guarded working-save-smoke
+plus the bounded human/owned-tail review, preserving native two-handed spear
+handling and all native references. Prove the original tail with real commands, then
 finish Salamander's printed mechanics. Only a complete same-artifact Sprint17
 hidden/publication gate can publish the32 withheld snake roots.
 Sprints14–16 remain complete;976published+29wrappers=1005visible.

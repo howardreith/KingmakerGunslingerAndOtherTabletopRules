@@ -95,10 +95,15 @@ try {
         'assets\sprint17-serpents\constrictor-snake-mesh.json',
         'assets\sprint17-serpents\constrictor-snake-albedo.png',
         'assets\sprint17-serpents\salamander-mesh.json',
+        'assets\sprint17-serpents\salamander-human-mesh.json',
         'assets\sprint17-serpents\salamander-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
+    $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
+    if ((Get-KmgSha256 -Path $humanMesh) -cne '2c4b76f0bbf0691ae0f9d9fc2340e77f958b999e27dda2628c82b26642c16670') {
+        throw 'The separately packaged Salamander human/tail mesh differs from its reviewed original export.'
+    }
     $iconNames = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
         'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
         'weapon-focus-firearm','deadeye','gunslingers-dodge','quick-clear','reload-firearm',

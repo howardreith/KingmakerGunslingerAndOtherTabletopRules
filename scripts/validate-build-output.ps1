@@ -73,6 +73,7 @@ $requiredFiles = @(
     'assets\sprint17-serpents\constrictor-snake-mesh.json',
     'assets\sprint17-serpents\constrictor-snake-albedo.png',
     'assets\sprint17-serpents\salamander-mesh.json',
+    'assets\sprint17-serpents\salamander-human-mesh.json',
     'assets\sprint17-serpents\salamander-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
@@ -171,6 +172,7 @@ $allowedRelativePaths = @{
     'assets\sprint17-serpents\constrictor-snake-mesh.json' = $true
     'assets\sprint17-serpents\constrictor-snake-albedo.png' = $true
     'assets\sprint17-serpents\salamander-mesh.json' = $true
+    'assets\sprint17-serpents\salamander-human-mesh.json' = $true
     'assets\sprint17-serpents\salamander-albedo.png' = $true
 }
 

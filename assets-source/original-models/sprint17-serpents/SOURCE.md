@@ -6,7 +6,8 @@ The exact-human anatomical subset/original ten-driver tail prototype is now
 authored in `generate_human_salamander.py`, with nine passing behavior tests.
 It excludes all17 disagreeing native storage bind groups. Original rest/strike/
 recovery exports reproduce exactly; native geometry/curves are not inputs.
-It is PRIVATE, NOT PACKAGED and NOT RUNTIME QUALIFIED. Existing Salamander
+The exact mesh is now packaged separately as salamander-human-mesh.json for the
+closed request-local human/tail binding. It is NOT RUNTIME QUALIFIED. Existing Salamander
 identity/placements/production prefab and all older evidence are unchanged.
 [Current scope, exact hashes and pending native command proof](../../../planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md).
 The historical Lizardfolk attempt below remains failed, not replaced by a claim.
