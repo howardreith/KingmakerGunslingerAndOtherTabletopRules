@@ -70,7 +70,7 @@ namespace KingmakerGunslinger.DomainTests
             var salamander = variants.Where(v => v.Creature.Key == "salamander").ToArray();
             Assertions.Equal(5, salamander.Length, "Existing five routes retained.");
             Assertions.True(salamander.All(SummonVisibilityCatalog.IsPublished), "No accidental Salamander suppression.");
-            Assertions.Equal(32, variants.Count(v => !SummonVisibilityCatalog.IsPublished(v)), "Only the two new snakes remain hidden.");
+            Assertions.Equal(0, variants.Count(v => !SummonVisibilityCatalog.IsPublished(v)), "Independent snake publication does not move or suppress existing Salamander roots.");
             Assertions.Equal("salamander", SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.SalamanderTraitsSymbol), "Existing original species painting, no new art or action icon.");
         }
     }
