@@ -1,64 +1,49 @@
 # Expanded Summoning Phase 2 implementation report
 
-## Current October 7 UTC laptop checkpoint — exact native snake persistence PASS; remaining Sprint17 work open
+## Current October 7 UTC laptop checkpoint — final-review failures classified; targeted repairs unqualified
 
-[Closed snake routes/UI/lifecycle fixture](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-REVIEW.md)
-is SOURCE PASS; runtime NOT RUN. Source parent7a5a710c.
-275 focused/2077 unfiltered84.1s; complete repository/static/icon/manifest,
-clean14-reference Release/strict320 PASS182.2s. New exact working-save-only
-request has no arbitrary parameters/save write. Expected81 checks cover
-32private execution/quantity/template/alignment/duration/native-icon rows,
-their32 resource cleanups, native trait/venom sheet/close, original-body
-appearance/real hit/death playback/fade/despawn, and exact fixture restoration.
-Production mechanics/assets/publication unchanged. Private execution is NOT
-public spellbook/slot qualification. Commit/policy-push and repeat all
-exact-head gates before bounded smoke11/review81 on one immutable package.
+[Closed snake final-review attempt1](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT1-EVIDENCE.json)
+on exact95c4d532 FAIL: smoke11/11; review39/73,69 metadata rows, not the required81/78.
+All32 routes return correct quantity/identity/template/alignment/native icon,
+and all32 cleanup rows reclaim93 units/465 private resources. Their duration
+checks fail because this RTWP fixture incorrectly requires TB-only six-second
+grace. Native120-second CL20/context is exact; offline pinned IL confirms the
+mode branch. Existing historical TB predicate and production durations stay unchanged.
+One Constrictor native trait row lacks an icon (production presentation).
+Lifecycle stops before its first hit at an invalid fixture isolation precondition;
+hit/death/fade/despawn remain NOT REACHED. No environment/restoration failure.
 
-[Exact snake persistence PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-PASS-EVIDENCE.json)
-on clean pushed candidate `a429da506ebfbbf5c243faa0da163394d32012a2`:
-fresh Steam640820 smoke **11/11**, prepare **14/14**, cleanup **13/13**,
-absence **6/6**. Complete affected native protocol PASS on one immutable
-0.0.141 / 320-member artifact. No publication or full Sprint17 qualification.
+Targeted repairs: exact paused-RTWP duration policy; existing original Constrictor
+portrait intentionally shared by its exact passive trait via established cache;
+request-local private enemy pair with zero foreign relations checked throughout
+the hit drill. No new pixels, gameplay/rules, native actor/faction mutation or
+assertion waiver.278 focused/2080 unfiltered PASS; full source/build/strict320 gate PASS177.2s.
+Both failed fixture and presentation evidence are preserved, not retroactively PASS.
+[Review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-REVIEW.md).
 
-The [fixture readiness repair](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-REPAIR.md)
-is runtime-qualified for these exact persistence cells. Cleanup scenes-loaded
-frame4235 still sees the saved Constrictor's initiator/Hold/control locks;
-the existing native load-complete reset removes all at frame4252. The strict
-assertion runs only after that callback RETURN, with grab retained and all
-four units free. No manual reset, gameplay change, fixed-delay guess, condition
-waiver or grapple re-establishment. Earlier premature assertions remain
-preserved as fixture failures, not retroactively qualified gameplay.
-
-Native prepare retired four stale receipt-owned units and 12 captured private
-resources before creating its new four. Venom DC13/source/counters/2 Constitution
-damage survive load; one later native exposure adds2, a native save cures.
-Cleanup reclaims all four units and12 resources, preserves three unrelated
-units/party, and makes exactly one authorized native working-save write.
-Fresh absence then proves ZERO owned summons. Two authorized native writes
-total (prepare/cleanup); no save-file access or protected-baseline load/write.
-
-Exact prelaunch PASS:272 focused/2074 unfiltered81.8s, repository/static/icon/
-manifest, clean14-reference Release/strict320 (complete178.3s),508 preflight,
-168 orchestration,17 provenance,persistence11/6roundtrips/3defaults/56rejects,
-crowd8/11,actual launcher13/10. SourceFP f6111ac8…; DLL cb901bed…;
-MVID 02e352a4-df1c-4f6c-b983-77e02ef991ab; ZIP ab6d9f26…;
-full hashes/request IDs/trace/restoration in linked evidence.
-
-Actual snapshot20261007T0323408975413Z restored2026-10-07T03:37:14.0902498Z:
-136 files / Info0.0.117 /
+Exact95c4 prelaunch was275 focused/2077 unfiltered84.6s; complete183.4s,
+clean14-reference Release/strict320;515preflight/168orchestration/17provenance,
+persistence11/6/3/56,crowd8/11,actual launcher14/13 PASS.
+DLL d00f5700…; MVID ec94261a-cdc1-4dd8-9c1f-2085c3a2630f;
+ZIP78acbbe9…; exact hashes/requests/restoration in linked evidence.
+ZERO save writes. Actual snapshot20261007T0419381436351Z restored
+2026-10-07T04:26:53.6730555Z:136files/Info0.0.117/
 tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Lease Completed/recovery=false/released; no game/shared runtime lock/worktree
-staging. Installation exactly restored; working save normalized natively.
+Lease Completed/recovery=false/released; no game/shared runtime lock/worktree staging.
 
-Sprints14–16 COMPLETE/PUBLISHED; Sprint17 NOT QUALIFIED;32 roots hidden.
-Earlier ec9721f7 crowd and983828bf commands/rules retain exact-artifact scope;
-their qualification does not transfer to an untested artifact.
-Laptop PR26 only; DATA salvage-only / ZERO PORTS.
+Earlier exacta429da50 native persistence PASS11/14/13/6 and cleanup-save/fresh
+absence remain qualified for that artifact:ZERO saved owned fixtures.
+[Persistence evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-PASS-EVIDENCE.json).
+Earlier983828bf commands/rules andec9721f7 crowd remain artifact-bounded.
+Sprints14–16 COMPLETE/PUBLISHED; Sprint17 NOT QUALIFIED;32roots hidden.
+97units;1008registered/976published;29wrappers;1005visible.
+Laptop PR26 only; DATA salvage-only/ZERO PORTS.
 
-Next: exact-head prelaunch and bounded snake final-review qualification;
-then separate Salamander, full Sprint17 hidden/publication and Phase2B
-closure. STOP for owner
-review. Phase2C authorized but deferred. HumanReview: NOT_PERFORMED_NONBLOCKING.
+Next: commit/policy-push coherent source-PASS, runtime-NOT-QUALIFIED repair,
+repeat exact-head prelaunch, immutable smoke11/final-review81+78metadata batch,
+exact actual-snapshot restoration. Then separate Salamander, fullSprint17
+hidden/publication and Phase2B closure. STOP for owner review; Phase2C authorized
+but deferred. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` remains the sole
 owner-designated development line. PR #27 is frozen salvage-only; no DATA

@@ -459,6 +459,55 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SerpentineFinalReviewPolicy.Quantity((SummonMultiplicity)99, 1), "Unknown quantity fails closed.");
         }
 
+        internal static void FinalReviewDurationMatchesNativeRtwp()
+        {
+            Func<int, int, bool, bool, int, bool, double, double, double, bool> valid =
+                SerpentineFinalReviewPolicy.PrivateRtwpDuration;
+            Assertions.True(valid(1, 1, false, true, 20, false, 120, 0, 120), "Paused RTWP native duration.");
+            Assertions.True(valid(1, 1, false, true, 20, false, 120, 12, 132), "Native bonus remains counted.");
+            Assertions.False(valid(1, 1, false, true, 20, false, 120, 0, 126), "No invented TB-only grace.");
+            Assertions.False(valid(1, 1, true, true, 20, false, 120, 0, 120), "Not a TB fixture.");
+            Assertions.False(valid(1, 1, false, false, 20, false, 120, 0, 120), "Exact source context.");
+            Assertions.False(valid(1, 1, false, true, 19, false, 120, 0, 120), "Exact caster level.");
+            Assertions.False(valid(1, 1, false, true, 20, true, 120, 0, 120), "No permanent state.");
+            foreach (int count in new[] { 0, 2 })
+            {
+                Assertions.False(valid(count, 1, false, true, 20, false, 120, 0, 120), "One native rule.");
+                Assertions.False(valid(1, count, false, true, 20, false, 120, 0, 120), "One lifecycle fact.");
+            }
+            foreach (double bad in new[] { -1d, double.NaN, double.PositiveInfinity })
+            {
+                Assertions.False(valid(1, 1, false, true, 20, false, bad, 0, 120), "Finite exact base.");
+                Assertions.False(valid(1, 1, false, true, 20, false, 120, bad, 120), "Finite nonnegative bonus.");
+                Assertions.False(valid(1, 1, false, true, 20, false, 120, 0, bad), "Finite exact remaining.");
+            }
+            Assertions.False(valid(1, 1, false, true, 20, false, 119, 0, 119), "No shortened base.");
+            Assertions.False(valid(1, 1, false, true, 20, false, 120, 0, 119), "No elapsed/mutated duration.");
+        }
+
+        internal static void FinalReviewLifecycleRejectsForeignCombat()
+        {
+            for (int mask = 0; mask < 64; mask++)
+            {
+                bool owned = (mask & 1) != 0, player = (mask & 2) != 0, party = (mask & 4) != 0,
+                    a = (mask & 8) != 0, b = (mask & 16) != 0;
+                int foreign = (mask & 32) != 0 ? 1 : 0;
+                Assertions.Equal(owned && !player && !party && a && b && foreign == 0,
+                    SerpentineFinalReviewPolicy.IsolatedLifecyclePair(owned, player, party, a, b, foreign),
+                    "Only distinct isolated native enemies enter the hit drill.");
+            }
+        }
+
+        internal static void ConstrictorPassiveIconHasOneExactConsumer()
+        {
+            Assertions.Equal("constrictor-snake",
+                SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.ConstrictorTraitsSymbol),
+                "Existing original species painting intentionally marks its passive trait.");
+            foreach (string other in new[] { null, "", SummonIconCatalog.ConstrictorTraitsSymbol.ToUpperInvariant(),
+                "KMG.Summoning.Special.MonitorLizard.CombatTraits", "KMG.Summoning.Natural.Viper.Venom" })
+                Assertions.True(SummonIconCatalog.PassiveTraitIconFor(other) == null, "No native or unrelated remapping.");
+        }
+
         internal static void FinalReviewRequiresActualNativePlayback()
         {
             Assertions.True(SerpentineFinalReviewPolicy.PlayedNativeClip(true, true, "native", 1f, .2, .5f),
@@ -789,8 +838,11 @@ namespace KingmakerGunslinger.DomainTests
                 string[] consumers = ((JArray)row["blueprintSymbols"]).Values<string>().ToArray();
                 Assertions.True(consumers.Contains("KMG.Summoning.Unit." + token), "Owned unit painting.");
                 Assertions.True(consumers.Contains("KMG.Summoning.Natural." + token + ".UnitType"), "Owned inspection painting.");
-                Assertions.Equal(key == "viper" ? 38 : 30, consumers.Length,
+                Assertions.Equal(key == "viper" ? 38 : 31, consumers.Length,
                     "Unit/type plus exact logical and SM template consumers.");
+                if (key == "constrictor-snake")
+                    Assertions.True(consumers.Contains(SummonIconCatalog.ConstrictorTraitsSymbol),
+                        "Inspectable passive trait has a cataloged original icon.");
                 Assertions.Equal(128, (int)row["width"], "Native-sized export.");
                 Assertions.Equal(128, (int)row["height"], "Native-sized export.");
                 Assertions.True(icons.All(other => ReferenceEquals(other, row) ||

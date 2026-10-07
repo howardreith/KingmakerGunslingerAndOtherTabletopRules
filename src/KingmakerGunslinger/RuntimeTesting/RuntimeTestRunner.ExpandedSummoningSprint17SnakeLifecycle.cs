@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.Designers;
@@ -23,7 +24,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (string key in new[] { "viper", "constrictor-snake" })
             {
                 UnitEntityData owner = CastSprint17FinalSnake(fixture, key);
-                UnitEntityData attacker = fixture.Hostile;
+                string point;
+                UnitEntityData attacker = CreateSprint17ContactTarget(fixture,
+                    ExpandedSummoningOpenPoint(owner.Position, 1.5f, new List<int>(), out point));
+                var originalFaction = owner.Faction;
+                var originalAttackFactions = owner.AttackFactions.ToArray();
+                string originalGroup = owner.GroupId;
                 int bonus = attacker.Descriptor.Stats.AdditionalAttackBonus.BaseValue;
                 var resources = new List<UnityEngine.Object>();
                 var samples = new JArray();
@@ -46,17 +52,25 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                     // One request-owned inert attacker and one request-owned snake.
                     // Real native UnitAttack dispatch, not an animation invocation.
-                    string point;
-                    PlaceExpandedSummoningUnit(attacker, ExpandedSummoningOpenPoint(owner.Position, 1.5f,
-                        new List<int>(), out point));
+                    var faction = UnityEngine.Object.Instantiate(originalFaction);
+                    _serpentineContactPrototypes.Add(faction);
+                    faction.name = "KMG_Runtime_Sprint17_LifecycleSnake";
+                    faction.Peaceful = faction.AlwaysEnemy = faction.Neutral = false;
+                    faction.Dummy = null;
+                    faction.AttackFactions = new[] { attacker.Faction };
+                    owner.Descriptor.SwitchFactions(faction, false);
+                    owner.GroupId = "KMG_Runtime_Sprint17_Lifecycle_" + owner.UniqueId;
+                    owner.AttackFactions.Match(new[] { attacker.Faction });
+                    attacker.AttackFactions.Match(new[] { faction });
                     if (!Game.Instance.State.AwakeUnits.Contains(attacker)) Game.Instance.State.AwakeUnits.Add(attacker);
                     attacker.Descriptor.Stats.AdditionalAttackBonus.BaseValue = 100;
                     attacker.Memory.Add(owner); owner.Memory.Add(attacker);
                     attacker.JoinCombat(); owner.JoinCombat();
                     new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                     Game.Instance.Player.UpdateIsInCombat();
-                    if (!Sprint17ContactPairIsolated(fixture, owner, attacker))
-                        throw new InvalidOperationException("Hit drill does not have an isolated owned enemy pair.");
+                    JObject isolation = Sprint17LifecycleIsolation(fixture, owner, attacker);
+                    if ((bool)isolation["passed"] != true)
+                        throw new InvalidOperationException("Hit drill isolation: " + isolation);
                     EventBus.Subscribe(observer); subscribed = true;
                     DateTime deadline = DateTime.UtcNow.AddSeconds(25);
                     for (int frame = 0; frame < 1200 && DateTime.UtcNow < deadline; frame++)
@@ -69,6 +83,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             command.Init(attacker); attacker.Commands.Run(command); attacks.Add(command);
                         }
                         yield return 0;
+                        var currentIsolation = Sprint17LifecycleIsolation(fixture, owner, attacker);
+                        if ((bool)currentIsolation["passed"] != true)
+                            throw new InvalidOperationException("Hit drill isolation changed: " + currentIsolation);
                         ObserveSprint17LifecyclePose(owner, animationSet, "hit", samples,
                             ref hitPlayed, ref deathPlayed, ref deadObserved, ref finite, ref largestDissolve, resources);
                         if (hitPlayed && observer.Damage.Any(value => value.Damage > 0)) break;
@@ -78,6 +95,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attacks.Any(value => value.IsStarted) && observer.Damage.Any(value => value.Damage > 0),
                         new JObject { ["playedHitClip"] = hitPlayed, ["finiteOriginalPose"] = finite,
                             ["commands"] = attacks.Count, ["started"] = attacks.Count(value => value.IsStarted),
+                            ["isolation"] = isolation,
                             ["weaponRules"] = observer.Attacks.Count, ["damageBundles"] = observer.Damage.Count,
                             ["damage"] = owner.Damage, ["samples"] = samples.DeepClone() },
                         "actual wounding owned native attack produces a weighted native Hit clip on finite original snake geometry");
@@ -130,13 +148,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (subscribed) EventBus.Unsubscribe(observer);
                     InterruptExpandedSummoningFixtureCommands(attacker);
                     attacker.Descriptor.Stats.AdditionalAttackBonus.BaseValue = bonus;
+                    owner.Descriptor.SwitchFactions(originalFaction, false);
+                    owner.AttackFactions.Match(originalAttackFactions);
+                    owner.GroupId = originalGroup;
                     // Emergency/final fixture teardown cannot satisfy earlier
                     // lifecycle assertions; record them before this cleanup.
-                    DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
-                    ResetExpandedSummoningHostile(fixture);
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, attacker });
                 }
                 for (int frame = 0; frame < 5; frame++) yield return 0;
             }
+        }
+
+        private static JObject Sprint17LifecycleIsolation(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData attacker)
+        {
+            bool owned = !ReferenceEquals(owner, attacker) && fixture.Created.Contains(owner) &&
+                fixture.Created.Contains(attacker);
+            bool player = owner.IsPlayerFaction || attacker.IsPlayerFaction;
+            bool party = owner.Group.IsPlayerParty || attacker.Group.IsPlayerParty;
+            int foreign = fixture.UnitsBefore.OfType<UnitEntityData>().Count(value =>
+                value.IsEnemy(owner) || owner.IsEnemy(value) || value.IsEnemy(attacker) || attacker.IsEnemy(value));
+            bool a = owner.IsEnemy(attacker), b = attacker.IsEnemy(owner);
+            return new JObject { ["ownedDistinct"] = owned, ["eitherPlayerFaction"] = player,
+                ["eitherPartyGroup"] = party, ["ownerEnemy"] = a, ["attackerEnemy"] = b,
+                ["foreignEnemyRelations"] = foreign,
+                ["passed"] = SerpentineFinalReviewPolicy.IsolatedLifecyclePair(owned, player, party, a, b, foreign) };
         }
 
         private static void ObserveSprint17LifecyclePose(UnitEntityData unit,
