@@ -310,12 +310,32 @@ physical memory free; this is not evidence of OOM. The original zero-vertex
 suppression mesh is the focused next investigation. No unrelated global
 renderer/cloth/action changes or repeated unchanged-candidate launch.
 
+## Bounded render correction — source PASS, runtime pending
+
+The bounded null-geometry correction is SOURCE PASS, NOT RUNTIME QUALIFIED:
+293focused/2095unfiltered82.8s/complete177.5s/clean14/strict321.
+Only the exact zero-bone Cape_Red_M(Clone)/CP_Cape2Sided_M_Any may be suppressed;
+sharedMesh=null, native bones/root/renderer flags unchanged, exact mesh restored.
+The unused empty mesh is no longer allocated;29 distinct base owned objects
+plus controller clones must all be destroyed. All15 runtime assertions remain.
+Atomic request-correlated stage records retain observations but explicitly do
+not qualify or replace the final save-write audit. One actual native frame must
+advance after binding before the supporting camera/pose observation.
+The prior supporting image is visibly malformed; finite arithmetic alone is
+not visual acceptance. Cause remains unproved; no geometry/shader/cloth rewrite.
+Production Salamander and every accepted decision remain unchanged.
+
+Source parent3dfb24171ef93c71eac04a520c5de46e0045bb8c. Logs:
+artifacts/sprint17-human-null-geometry-frame-source-{focused,gate}.log.
+The earlier pre-frame-observation source pass293/2095/177.7s is separately
+archived; it was never launched. New exact-head runtime qualification is required.
+
 ## Next exact work
 
-Next: remove the request-local zero-vertex auxiliary mesh path, preserving exact
-native bones/flags/restoration, and add durable non-qualifying stage checkpoints.
-Run focused/full source gates, push a coherent correction, rebuild its exact head,
-then guarded smoke and all15 human binding/command/contact/destruction assertions.
+Next: push this source-qualified null-geometry/frame-boundary correction,
+freeze/rebuild its exact clean head, then all prelaunch/harness gates and guarded
+smoke plus the full15 human review. Inspect durable native renderer/pose evidence
+and supporting art; no unchanged-candidate retry or source-only qualification.
 Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
 gate, fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.
 Preserve native two-handed spear handling

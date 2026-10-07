@@ -33,7 +33,7 @@ namespace KingmakerGunslinger.Summoning
         }
         private UnitEntityView _view;
         private Skin[] _skins;
-        private Mesh _mesh, _empty;
+        private Mesh _mesh;
         private Texture2D _paint;
         private Material _material;
         private GameObject _tailRoot;
@@ -49,6 +49,9 @@ namespace KingmakerGunslinger.Summoning
         internal static Action PostSwapFaultForTest { get; set; }
         internal bool Live { get { return !_released && _swapped && Body != null &&
             ReferenceEquals(Body.sharedMesh, _mesh) && NativeActionsUnchanged; } }
+        internal bool AuxiliaryGeometrySuppressed { get { return _swapped && _skins != null &&
+            _skins.Where(skin => skin.Renderer != Body).All(skin => skin.Renderer != null &&
+                skin.Renderer.sharedMesh == null && skin.Renderer.bones.SequenceEqual(skin.Bones)); } }
         internal bool NativeActionsUnchanged { get { return _nativeSet != null && _ownedSet != null &&
             _view != null && _view.AnimationManager != null &&
             ReferenceEquals(_view.AnimationManager.AnimationSet, _ownedSet) &&
@@ -89,6 +92,10 @@ namespace KingmakerGunslinger.Summoning
                 skins.Any(skin => !skin.transform.IsChildOf(_view.transform) ||
                     skin.bones.Any(bone => bone == null || !bone.IsChildOf(_view.transform))))
                 throw new InvalidDataException("Exact settled human anatomy palette unavailable.");
+            var auxiliary = skins.Where(skin => skin != Body).ToArray();
+            if (auxiliary.Length != 1 || auxiliary.Any(skin => !SalamanderHumanBindingPolicy.IsReviewedAuxiliary(
+                skin.name, skin.sharedMesh.name, skin.bones.Length)))
+                throw new InvalidDataException("Unreviewed human auxiliary renderer; no geometry suppression permitted.");
             Transform[] palette = Body.bones;
             Matrix4x4[] binds = Body.sharedMesh.bindposes;
             int[] slots;
@@ -136,7 +143,6 @@ namespace KingmakerGunslinger.Summoning
             _paint.name = _name + "_Paint";
             _material = new Material(donor) { name = _name + "_Material" };
             ExpandedSummoningPteranodonViewPatch.DressMaterial(_material, _paint);
-            _empty = new Mesh { name = _name + "_SuppressedNativeGeometry" };
 
             Vector3[] rest = Points(payload["originalTailRest"]);
             JObject animation = (JObject)payload["originalTailSlap"];
@@ -176,8 +182,11 @@ namespace KingmakerGunslinger.Summoning
             Body.sharedMesh = _mesh;
             Body.bones = names.Select(name => logicalBones[SalamanderHumanBindingPolicy.BindingIndex(name)]).ToArray();
             Body.quality = SkinQuality.Bone4; Body.sharedMaterials = new[] { _material };
-            foreach (var skin in skins.Where(skin => skin != Body))
-            { skin.sharedMesh = _empty; skin.bones = new Transform[0]; }
+            // An allocated zero-vertex skinned mesh can request a zero-sized
+            // native graphics buffer. Null geometry is the no-mesh state;
+            // retain native bones, root and renderer flags, and restore the
+            // exact borrowed mesh on rollback/teardown. No visibility forcing.
+            foreach (var skin in auxiliary) skin.sharedMesh = null;
             // Human equipment meshes, snaps, native Animator and all native
             // bone transforms remain wholly native. No spear mesh transplant.
             manager.AnimationSet = _ownedSet;
@@ -260,7 +269,7 @@ namespace KingmakerGunslinger.Summoning
         internal UnityEngine.Object[] CaptureOwnedResources()
         {
             var result = new HashSet<UnityEngine.Object>(new UnityEngine.Object[] {
-                _mesh, _empty, _paint, _material, _tailRoot, _player, _clip, TailAction, _ownedSet }.Where(value => value != null));
+                _mesh, _paint, _material, _tailRoot, _player, _clip, TailAction, _ownedSet }.Where(value => value != null));
             if (_tailRoot != null) foreach (Transform t in _tailRoot.GetComponentsInChildren<Transform>(true))
             { result.Add(t); result.Add(t.gameObject); }
             if (_view != null)
@@ -299,7 +308,7 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException("Live manager still references owned action set; cleanup remains retryable.", failure);
             // Never destroy native body/equipment/set/action/clip references.
             foreach (var material in resources.OfType<Material>()) if (material != null) UnityEngine.Object.DestroyImmediate(material);
-            foreach (var value in new UnityEngine.Object[] { _ownedSet, TailAction, _clip, _tailRoot, _mesh, _empty, _paint })
+            foreach (var value in new UnityEngine.Object[] { _ownedSet, TailAction, _clip, _tailRoot, _mesh, _paint })
                 if (value != null) UnityEngine.Object.DestroyImmediate(value);
             _released = true;
             if (failure != null) throw new InvalidOperationException("Human/tail cleanup encountered a native error.", failure);
