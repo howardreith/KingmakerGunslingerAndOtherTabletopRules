@@ -1,56 +1,55 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — PARTIAL PASS; two snakes qualified/published
+## CURRENT STATE, 2026-10-07 — v0.0.143 checkpoint release mission
 
-HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26.
-Publication artifact:996c5fe7eaf8c3be1966746f0227aa9f85074d73.
-Hidden artifact:47e8c1214f93e4c725a35261083cbd7b44f3f041.
-[Machine-readable exact evidence](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
-pins both source fingerprints,DLL/MVID/ZIP hashes,requests,processes and restores.
-Viper18/18 and Constrictor14/14 public roots PASS;QUALIFIED AND PUBLISHED.
+Latest owner mission supersedes prior no-release/retry-stop instructions.
+Phase2B intake e518f41fae1ba4c2d46d0bbc68ca042e966c8e88 is preserved;
+origin/master and v0.0.142 both4ba8d4aca087391144abf401f526189f59b26535.
+Phase2A5482db42;PR25/26 remain draft/unmerged;DATA PR27 archive/ZERO PORTS.
+Laptop source owner session7b92656a-92cc-41f5-af6a-4e22ed65f558;
+owner29828/start16:37:01.6154316UTC;keeper29980/start22:43:47.9859757UTC.
+Prior keeper37216 exited and its Released receipt was archived,not deleted.
+Root icon-art agent is unrelated;no second Phase2B owner/game/runtime lock/staging.
+Intake was clean;permanent release143 safety refs preserve master/Phase2A/Phase2B.
+
+Sprints14–16 COMPLETE/PUBLISHED. Viper18 and Constrictor14 roots independently
+QUALIFIED/PUBLISHED on hidden47e8c121 and publication996c5fe7.
 Current source:1008 registered/1008 published/0 withheld;29 wrappers/1037 visible.
-Salamander's existing identity and five public roots preserved;5/5 route PASS.
+Salamander identity and five existing public roots remain intact;NOT QUALIFIED
+until the single new observation-only correction passes its exact-artifact gate.
+One prior mandatory FAIL is retained:computed2/6 were treated as raw5/10.
+The correction reads raw m_AttackRange separately,checks computed type/weapon2/6
+and body5. NO production profile,mechanics,AI,animation,geometry,icon or balance
+change. Focused test rejects swapped raw/computed inputs and inflated body reach.
 
-Hidden all-three batch422/423:smoke11;profiles/views72/73;mechanics84;
-commands/AI71;private routes/UI/lifecycle100;direct19;crowd25;
-prepare17;cleanup17;fresh absence6. All snake mandatory cells PASS.
-Salamander remains PARTIAL/NOT QUALIFIED:mandatory
-`sprint17-salamander-profile-native-per-weapon-reach` FAIL retained.
-Observer supplies computed2/6 to a predicate expecting raw5/10;actual ranges2/6,
-body reach5. No demonstrated production defect;failure NOT waived.
-Matched native donor lacks expiry DismemberUnitFX;no animation/effect invented.
-Exact native action set,combat damage,finite geometry and normal cleanup PASS.
+Next gate:commit/push this one bounded observer candidate;full source/build/package
+ONCE on that exact head;canonical working-save smoke plus existing Sprint17
+snake-profiles/view scenario ONLY;exact restoration. No new scenario family.
+PASS includes Salamander and closes Sprint17 technically. Any repeat failure,
+real product defect or required production change excludes all unqualified
+Salamander changes from the release slice and restores released behavior/five routes.
+No further Salamander retries under this mission.
 
-Publication full exact-head gate ONCE:2123/2123 (83.0s);clean14-reference
-Release;deterministic strict321-member ZIP326aa8d2/DLL51576d09/
-MVID99f51797. Two-request same-artifact publication batch74/74:
-smoke11/11 + existing final-review63/63;37 public roots/111 actual summons,
-native prepared slots/commands/quantity/template/source/120s duration/cleanup.
-No new scenario family,hidden retry,product repair,version bump or save write.
+Then create codex/release-0.0.143-expanded-summoning-phase2b-checkpoint from latest
+accepted master;normal reviewed integration preserving v0.0.142 and qualified
+Phase2A/2B;draft PR to master and exact conflict/identity ledger. Full closure
+and focused v0.0.142 regression gates must PASS before ready/merge/tag/real Latest
+v0.0.143 release. Do not merge PR25/26 directly;close them as superseded only
+after the successful checkpoint release. No blind current-tree release.
 
-Latest actual leased snapshot20261007T2152425844224Z restored
-2026-10-07T22:00:34.9412483UTC:136files/Info0.0.117/
-tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Lease Completed/recoveryRequired=false/released;no game/shared lock/staging.
-Earlier47 cleanup saved natively,then fresh load proved ZERO owned fixtures.
-No protected baseline or manual save filesystem access.
+Last verified restored snapshot:20261007T2152425844224Z at22:00:34.9412483UTC,
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Reobserve/snapshot ACTUAL state under a runtime lease before each new transaction.
+Prior cleanup saved natively and fresh absence proved ZERO owned fixture units;
+only KMG_AUTOMATION_WORKING,protected baseline untouched,no manual save access.
+[Exact Sprint17 evidence](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
+retains old failed/PASS artifacts and now carries the bounded release decision.
 
-STOP at owner efficiency amendment's retry limit:observation1/1 used;
-product0/1 used,remaining product candidate requires a demonstrated defect.
-No additional observation repair or assertion waiver authorized here.
-Next owner action if continuing:authorize bounded raw-range observation
-correction and exact-artifact qualification;then exhaustive Phase2B closure
-ONCE only after Salamander's mandatory gate passes.
-Full Sprint17 NOT CLOSED;Phase2B NOT CLOSED;closure matrices NOT RUN.
-Sprints14–16 COMPLETE/PUBLISHED. HumanReview NOT_PERFORMED_NONBLOCKING;
-accepted engine limitations/adaptation unchanged. Phase2C authorized but
-deferred,NOT STARTED. DATA PR27 salvage-only/ZERO PORTS;no other source agent.
-
-Source receipt session2af10b72-de34-49d5-8d34-f3fe784a0bb7:
-owner29828/start16:37:01.6154316UTC;keeper37216/start18:13:59.9631236UTC.
-Release explicitly after this reporting checkpoint is pushed at session end.
-Actual receipt/lock must be checked before another owner reacquires.
-No merge/release/tag/permanent deployment or Sprints18–22.
+Accepted limitations/adaptation unchanged;HumanReview NOT_PERFORMED_NONBLOCKING.
+Phase2B exhaustive closure NOT RUN;no release qualification claimed yet.
+After v0.0.143 STOP. Permanent workflow:one charter sprint per branch/PR/release
+from latest released master;no stacking or autonomous next sprint. Sprint18,
+Phase2C and Sprint22 NOT STARTED/NOT AUTHORIZED HERE. No permanent deployment.
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
 

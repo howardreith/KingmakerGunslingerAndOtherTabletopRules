@@ -1,5 +1,35 @@
 {
   "schemaVersion": 1,
+  "checkpointRelease143": {
+    "authority": "Latest owner checkpoint release mission: one additional observation-only Salamander correction, qualified integration with master, v0.0.143 release only after every required gate passes, then stop.",
+    "status": "BOUNDED_OBSERVER_CORRECTION_NOT_RUNTIME_QUALIFIED",
+    "intake": {
+      "phase2B": "e518f41fae1ba4c2d46d0bbc68ca042e966c8e88",
+      "phase2A": "5482db429bd3c4009a031aa733a3091edfa5fe5e",
+      "masterAndV142": "4ba8d4aca087391144abf401f526189f59b26535",
+      "latestPublicRelease": "v0.0.142",
+      "worktreeClean": true,
+      "priorKeeperDead": true,
+      "priorReceiptReleasedAndArchived": true,
+      "noGameOrRuntimeLockOrStaging": true,
+      "safetyRefPrefix": "codex/local-safety/release143-intake-",
+      "ownerSession": "7b92656a-92cc-41f5-af6a-4e22ed65f558",
+      "keeperPid": 29980
+    },
+    "boundedCorrection": {
+      "assertion": "sprint17-salamander-profile-native-per-weapon-reach",
+      "additionalObservationBudget": 1,
+      "productionChanges": false,
+      "rawInputs": "Read-only native m_AttackRange fields: spear5/tail10 feet.",
+      "computedInputs": "Public type getters and actual weapon approach ranges: spear2/tail6 feet with native minimum2.",
+      "bodyReach": 5,
+      "focusedTest": "Reject computed inputs relabeled raw, raw inputs relabeled computed, weapon/getter disagreement, inflated body reach and invalid native minimum.",
+      "requiredBatch": ["working-save-smoke", "disposable-expanded-summoning-snake-profiles"],
+      "fallback": "Any repeat failure, real product defect or required production change: no retry; qualified release slice restores previously released Salamander behavior and five routes, excludes all unqualified Sprint17 Salamander changes."
+    },
+    "releaseIntegration": "Create codex/release-0.0.143-expanded-summoning-phase2b-checkpoint from accepted master; preserve v0.0.142 features and qualified Phase2A/2B; one full closure and affected master regression gate before merge/tag/real Latest release.",
+    "workflowAfterRelease": "STOP. One sprint per branch/PR/release from latest released master. No Sprint18 or Phase2C under this mission."
+  },
   "independentPublication": {
     "status": "QUALIFIED_AND_PUBLISHED",
     "purpose": "Normal independent publication of Viper/Constrictor after all of their exact47e8c121 hidden gates PASS;NOT another observer correction or Salamander qualification.",
