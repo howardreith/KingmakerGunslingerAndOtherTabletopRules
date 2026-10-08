@@ -125,7 +125,7 @@ e-03/e-003 for the SAME9.9999998 float mantissa/operand, not a looser value or
 weather behavior. Local master and Phase2B native disassemblies both use e-03;
 both inspections are preserved privately. No runtime/product code changed.
 
-## Qualification / next boundary
+## Preserved initial qualification / next boundary
 
 Focused merged summoning tests324/324 PASS; clean exact integration gate has not
 yet run. Before runtime, freeze/push one coherent committed integration head,
@@ -158,7 +158,7 @@ Both fixture corrections already passed privately against candidate1f4a25c8;
 they now become canonical so the release gate is reproducible. New exact candidate
 must pass full2465 source/build/package and affected closure before release.
 
-## Corrected release candidate f65eedb3: source PASS, runtime BLOCKED
+## Preserved corrected release candidate f65eedb3: source PASS, runtime BLOCKED
 
 Exact full2465/2465 source gate, clean14-reference Release and deterministic
 strict325-member package PASS. DLL28ba43082b41c42a0564fe22485bbef2bb0767a8698a9127b057ed535226c9a0;
@@ -191,3 +191,51 @@ then only demonstrated affected corrections and still-unrun qualification gates.
 No product change, assertion waiver, merge, tag or release performed; PR29 draft.
 Salamander remains included and independently technically qualified. Sprint18 not
 started. Latest public release remains v0.0.142; no alpha/draft substitute published.
+
+## Final owner-authorized attribution cycle: completed, class D STOP
+
+Exact observer candidate `b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf`:
+focused14/14 and full unfiltered2469/2469 PASS; clean14-reference Release and
+deterministic strict325-member package PASS, once on that committed head.
+ZIP `097f6be62d33ab3f9bb2d5a93307133d421709a7c22cd1b752da683397330ed8`;
+DLL `ac09efca4736bb9742e1d5b88edd84b32d0ef202181a615a89bb22078f973a1f`;
+MVID `efeb0bb5-5215-4c89-9c97-3b71fe1cec24`.
+Only existing request-owned lifecycle observation, its focused tests and
+qualification metadata changed. Crocodilian production behavior and the original
+no-post-expiry-damage assertion are unchanged. Exact package comparison against
+f65 proves all325 member names and all non-DLL bytes identical. The reviewed source
+delta is request-local observation only, not ordinary-game damage instrumentation.
+Inventory50/menu3/all1008 generated roots/29 wrappers PASS evidence is reused
+with its original executable/hash provenance, not claimed as rerun on b8.
+
+One same-artifact guarded batch ran ONLY working-save smoke11/11 and
+crocodilians212/212, both PASS. The exact named expiry window did NOT reproduce
+the historical change: frame9859 to9909; game13:01:33.777 to13:01:35.777;
+damage0 to0, HP100000 unchanged, temporaryHP0/Constitution10/nonlethal0 unchanged.
+No damage/heal rule, native health mutation or unknown frame delta occurred.
+All buffs/statuses were captured: owned grapple and native Entangled before;
+none after. Owner destroyed, relationship released. Read-only observer removed
+in finally with zero errors. Immutable witness SHA256
+`0c8ca64f896ff805f865f0e03a49441e7b729e7677cf7d991fabfd0516a55150`.
+
+Historical f65 damage0 to2 remains UNATTRIBUTED: no source exists in that old
+aggregate-only record, and this cycle captured no changing event to attribute.
+Non-reproduction proves neither fixture interference, a legitimate event nor a
+product defect. Classification D under final owner order2D requires STOP.
+No historical FAIL was rewritten or waived; no production/fixture correction
+made, no additional observation cycle requested. Snake-command regression,
+whole-roster enabled/module-disabled persistence, five-profile live compatibility,
+v142 coexistence and native-owned trait-save gates remain NOT RUN at this stop.
+
+Batch `release143-runtime-20261008T0342433390867Z` record SHA256
+`c79242d89a683776495979221df014e151bab241e40fea60be361c4b25931d65`.
+Exact actual snapshot `20261008T0342442421210Z` restored:136files, Info0.0.117,
+tree `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+FavoredClass/settings byte-exact, zero save writes, native process exits,
+no Kingmaker/runtime lease/staging. Protected baseline never loaded/written.
+Only reporting metadata changed after this immutable tested executable; no build
+or runtime rerun for that reporting checkpoint. Final release remains BLOCKED,
+PR29 draft/unmerged, PR25/26 open evidence, public release still v0.0.142.
+Owner review/release-scope disposition is needed for the unresolved historical
+Sprint16 event; no further cycle or permission to waive the failure is inferred.
+Source ownership is released at handoff. Sprint18/Phase2C were not started.

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "FINAL_BOUNDED_ATTRIBUTION_OBSERVER_IN_DEVELOPMENT_NOT_QUALIFIED",
+  "status": "BLOCKED_D_STILL_UNATTRIBUTED_FINAL_CYCLE_COMPLETE",
   "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
   "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
   "qualifiedSummoningImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
@@ -120,7 +120,7 @@
   "integrationSaveWrites": 0,
   "integrationDeployment": true,
   "lastVerifiedRestoration": {
-    "snapshot": "20261008T0246143536148Z",
+    "snapshot": "20261008T0342442421210Z",
     "files": 136,
     "version": "0.0.117",
     "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
@@ -131,10 +131,10 @@
     "stagingPresent": false,
     "favoredClassSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
     "settingsRestoredExactly": true,
-    "batchRecordSha256": "6d0a475ee31ec6374684933df3deb268b0249078bc1592ddef0f6d367aa8125e"
+    "batchRecordSha256": "c79242d89a683776495979221df014e151bab241e40fea60be361c4b25931d65"
   },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "Owner-authorized final attribution cycle: commit/push observer head, complete2469 source/build/package gate ONCE, then smoke+crocodilians only. Classify exact damage event; only evidence-supported fixture or one product correction. Audit unchanged exercised surfaces before reuse of prior inventory/menu/root PASS. Complete still-unrun closure/profile5/v142 gates only after crocodilians pass. Unattributed=>STOP; do not request another cycle. No merge/release/Sprint18 before all gates.",
+  "next": "STOP under final order2D. Owner review of exact non-reproduction witness and release-scope disposition for unresolved historical Sprint16 damage. Do not infer a source, waive the historical failure, request/run another observation cycle, change product without attribution, merge or release. Remaining gates NOT RUN;noSprint18.",
   "integrationPr": 29,
   "observationCorrection": {
     "used": 1,
@@ -149,7 +149,7 @@
     "productionChanged": false,
     "qualification": "SOURCE_PASS_RUNTIME_PARTIAL_FAIL_NOT_RELEASE_QUALIFIED"
   },
-  "exactReleaseSourceGate": {
+  "historicalObserverReleaseSourceGate": {
     "candidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
     "status": "PASS",
     "passed": 2465,
@@ -178,7 +178,7 @@
     "profileResolutions": 5,
     "status": "PASS"
   },
-  "closureGate": {
+  "historicalCorrectedClosureGate": {
     "candidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
     "status": "FAIL_DAMAGE_SOURCE_UNRESOLVED",
     "smoke": {"passed": 11, "failed": 0, "evidenceId": "20261008T0201517849083Z-working-save-smoke", "resultSha256": "496da1490b1751aae8f8d21b9266e45c4066c40d52b6322855c9e820ce9e2dc9"},
@@ -212,13 +212,75 @@
   "finalAttributionCycle": {
     "authority": "v0.0.143 Final Blocker Resolution and Release Completion Order",
     "maximumObservationCycles": 1,
-    "runtimeCyclesUsed": 0,
-    "status": "SOURCE_DEVELOPMENT_NOT_RUNTIME_QUALIFIED",
+    "runtimeCyclesUsed": 1,
+    "status": "COMPLETE_CLASS_D_HISTORICAL_EVENT_NOT_REPRODUCED_STILL_UNATTRIBUTED",
     "focusedTestsPassed": 14,
     "focusedTestsFailed": 0,
     "developmentPrivateReferenceCompile": "PASS",
     "expectedFullTests": 2469,
-    "scope": "Read-only existing request-owned crocodile cooldown expiry window; RuleDealDamage/RuleHealDamage plus inspected UnitDescriptor.Damage and native HP/Constitution setters, frame-gap witness, complete statuses/source/rule-parent/component attribution. No production behavior or no-damage assertion change."
+    "scope": "Read-only existing request-owned crocodile cooldown expiry window; RuleDealDamage/RuleHealDamage plus inspected UnitDescriptor.Damage and native HP/Constitution setters, frame-gap witness, complete statuses/source/rule-parent/component attribution. No production behavior or no-damage assertion change.",
+    "candidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "evidenceId": "20261008T0346101259375Z-disposable-expanded-summoning-crocodilians",
+    "witnessSha256": "0c8ca64f896ff805f865f0e03a49441e7b729e7677cf7d991fabfd0516a55150",
+    "beforeFrame": 9859,
+    "afterFrame": 9909,
+    "beforeGameTime": "13:01:33.7770000",
+    "afterGameTime": "13:01:35.7770000",
+    "damageBefore": 0,
+    "damageAfter": 0,
+    "hitPointsBefore": 100000,
+    "hitPointsAfter": 100000,
+    "temporaryHpBeforeAndAfter": 0,
+    "constitutionBeforeAndAfter": 10,
+    "nonlethalBeforeAndAfter": 0,
+    "events": 0,
+    "nativeMutationOrFrameGapChanges": 0,
+    "observerErrors": [],
+    "observerRemoved": true,
+    "beforeBuffs": ["KMG_Summoning_Special_Grapple_Grappled", "EntangledBuff"],
+    "beforeConditions": ["Entangled", "CantMove"],
+    "afterBuffs": [],
+    "afterConditions": [],
+    "ownerDestroyedAndRelationshipReleased": true,
+    "historicalTwoPointEventAttributed": false,
+    "whyUnattributed": "The sole bounded cycle observed no damage/HP change or event in the exact named window. The preserved historical aggregate-only record cannot retroactively yield initiating source/context/component attribution. Non-reproduction proves neither fixture interference nor legitimate damage nor a product defect.",
+    "fixtureCorrectionsMade": 0,
+    "productCorrectionsMade": 0,
+    "additionalCycleRequested": false,
+    "historicalFailureRewrittenOrWaived": false,
+    "ownerDecision": "Owner review of exact witness and release-scope disposition for unresolved Sprint16 damage;no additional observation cycle requested."
+  },
+  "exactReleaseSourceGate": {
+    "candidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "status": "PASS",
+    "passed": 2469,
+    "failed": 0,
+    "registered": 2469,
+    "gateRunsOnExactHead": 1,
+    "logSha256": "e8be2e23e5b2ad1ec31ebc0b184941555bba3d9fc8ac1f5f9321069b13f54895",
+    "sourceFingerprint": "5a202b1ce7e3b35a98dcc5d09b4fef48e222d8486d1027a3d3c9c4d63f1cee4c",
+    "zipSha256": "097f6be62d33ab3f9bb2d5a93307133d421709a7c22cd1b752da683397330ed8",
+    "dllSha256": "ac09efca4736bb9742e1d5b88edd84b32d0ef202181a615a89bb22078f973a1f",
+    "dllMvid": "efeb0bb5-5215-4c89-9c97-3b71fe1cec24",
+    "members": 325,
+    "processExitCode": 0
+  },
+  "closureGate": {
+    "candidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "releaseStatus": "BLOCKED_D_STILL_UNATTRIBUTED",
+    "batchStatus": "PASS",
+    "batchId": "release143-runtime-20261008T0342433390867Z",
+    "batchRecordSha256": "c79242d89a683776495979221df014e151bab241e40fea60be361c4b25931d65",
+    "smoke": {"passed": 11, "failed": 0, "evidenceId": "20261008T0343103936734Z-working-save-smoke", "resultSha256": "a91bc552e5554f6fb01e048a1d279981867e923c1e3a97b924b3cfc604757bc8", "requestId": "20261008T0343104093118Z-5025c78508fa4047ad0adb87702e49c6"},
+    "crocodilians": {"passed": 212, "failed": 0, "evidenceId": "20261008T0346101259375Z-disposable-expanded-summoning-crocodilians", "resultSha256": "af8c4c15ae2204367b10ad50461a63e67db1cc34d91fc5dd0f72cc7406fb44cb", "requestId": "20261008T0346101415785Z-9ed87e23a1584e77acbb6471d269a76e"},
+    "reusedPriorPass": {"inventory": 50, "menu": 3, "generatedRoots": 1008, "nativeWrappers": 29, "source": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4", "surfaceAudit": "PASS: all325 package entries identical except DLL; reviewed source delta only request-local observer/tests/qualification metadata"},
+    "laterGates": "NOT RUN under explicit classD stop: snake commands, whole-roster enabled/module-disabled persistence, five-profile live compatibility, v142 live coexistence/native-owned trait-save",
+    "saveWrites": 0,
+    "restoration": "VERIFIED",
+    "forcedTermination": false,
+    "noKingmakerProcess": true,
+    "runtimeLeaseReleased": true,
+    "stagingAbsent": true
   },
   "nativeExitRecovery": {
     "processPid": 22044,
