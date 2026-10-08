@@ -2104,7 +2104,7 @@
     "releaseInformationalVersion": "0.0.143-expanded-summoning-phase2b-checkpoint",
     "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
     "qualifiedPhase2BImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
-    "deterministicTestCount": 2465,
+    "deterministicTestCount": 2469,
     "packageMemberCount": 325,
     "registeredManifestEntryCount": 2922,
     "publishedGeneratedPlacements": 1008,

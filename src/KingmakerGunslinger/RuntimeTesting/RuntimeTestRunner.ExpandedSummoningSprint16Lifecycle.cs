@@ -91,6 +91,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var damaged = fixture.HostileDamage;
                     var sizeBefore = fixture.HostileSize;
                     var awakeAdded = new List<UnitEntityData>();
+                    Sprint16LifecycleDamageWitness damageWitness = null;
                     try
                     {
                         bool ownedPair = fixture.Created.Contains(owner) &&
@@ -143,6 +144,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _sprint16LifecycleOwnerTicks = _sprint16LifecycleTargetTicks = 0;
                         _sprint16LifecycleTargetTicksAfterSourceDeath = 0;
                         TimeSpan clockBefore = Game.Instance.Player.GameTime;
+                        if (CrocodilianDamageAttributionPolicy.IsExactWindow(ownedPair, key, active, boundary))
+                            damageWitness = new Sprint16LifecycleDamageWitness(_context.Harmony, owner, target, grab,
+                                fixture.Created.Concat(new[] { fixture.Caster, fixture.Hostile }));
                         if (boundary == "source-death") GameHelper.KillUnit(owner, fixture.Hostile);
                         else if (boundary == "target-death") GameHelper.KillUnit(target, owner);
                         else if (boundary == "dismissal") CleanupExpandedSummoningUnit(owner);
@@ -159,6 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         int frames = 0, pausedFrames = 0, resumedDeathPauses = 0, targetAwakeFrames = 0;
                         for (; frames < 1200; frames++)
                         {
+                            if (damageWitness != null) damageWitness.Poll();
                             if (Game.Instance.IsPaused)
                             {
                                 pausedFrames++;
@@ -190,6 +195,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             boundary == "target-death" ? target.Descriptor.State.IsDead :
                             boundary == "dismissal" || boundary == "expiry" ? owner.Destroyed : true;
                         bool noDamage = boundary == "target-death" || target.Damage == damageBefore;
+                        if (damageWitness != null) damageWitness.Poll();
                         Sprint16Check(_crocodilianAssertions, _sprint16FinalRows,
                             key + "-" + (active ? "active" : "cooldown") + "-" + boundary,
                             armed && speedState && free && boundaryReached && noDamage && nativeDeathWitness,
@@ -238,6 +244,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally
                     {
+                        if (damageWitness != null)
+                        {
+                            damageWitness.Dispose();
+                            JObject damageReport = damageWitness.Report();
+                            Sprint16Check(_crocodilianAssertions, _sprint16FinalRows,
+                                "cooldown-expiry-readonly-damage-witness",
+                                (bool)damageReport["observerRemoved"] && ((JArray)damageReport["errors"]).Count == 0,
+                                new JObject { ["observerRemoved"] = damageReport["observerRemoved"],
+                                    ["errors"] = damageReport["errors"], ["events"] = ((JArray)damageReport["events"]).Count },
+                                "request-local read-only damage/healing/native-health witness closed and removed without errors");
+                            System.IO.File.WriteAllText(System.IO.Path.Combine(_request.EvidenceDirectory,
+                                "sprint16-cooldown-expiry-damage-attribution.json"),
+                                damageReport.ToString(Newtonsoft.Json.Formatting.Indented));
+                        }
                         _sprint16LifecycleOwner = _sprint16LifecycleTarget = null;
                         Game.Instance.IsPaused = pause;
                         if (!owner.Destroyed) DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
