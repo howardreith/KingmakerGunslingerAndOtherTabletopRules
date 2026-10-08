@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "BLOCKED_REQUIRED_PUSH_POLICY_ALLOWLIST",
+  "status": "EXACT_INTEGRATION_CANDIDATE_NOT_QUALIFIED",
   "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
   "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
   "qualifiedSummoningImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
@@ -14,7 +14,10 @@
     "bypassed": false,
     "policyModified": false,
     "smallestOwnerAction": "Add the exact release integration branch to AllowedBranches,then resume this preserved descendant through the mandatory wrapper.",
-    "checkpointUnpushed": true
+    "checkpointUnpushed": false,
+    "resolvedByOwner": true,
+    "resolvedAtUtc": "2026-10-08T01:12:20Z",
+    "policyWrapperPush": "PASS"
   },
   "salamander": {
     "disposition": "INCLUDED_TECHNICALLY_QUALIFIED",
@@ -40,6 +43,8 @@
   "compatibilityGate": "NOT RUN",
   "masterRegressionGate": "NOT RUN",
   "releaseAuthorizedAfterAllGates": true,
+  "intendedPublicRelease": { "tag": "v0.0.143", "draft": false, "prerelease": false, "latest": true },
+  "sourceOwner": { "session": "55743a42-4481-4922-8fe8-a9bd24af8916", "keeperPid": 38820, "keeperStartedUtc": "2026-10-08T01:12:17.8225167Z" },
   "releasePublished": false,
   "sprint18Started": false,
   "permanentDeployment": false,
@@ -54,5 +59,5 @@
     "baselineForced": false
   },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "Owner allowlists the exact release branch;verify/reacquire source ownership,push the preserved descendant through the policy wrapper,open draft integration PR,then one exact full source/build/package gate and same-artifact guarded closure. Do not redo focused source checks solely due to this interruption."
+  "next": "One exact full source/build/package gate on this resumed committed candidate,then same-artifact guarded closure,five-profile compatibility and v142 coexistence/native-owned trait persistence. Ready/merge/tag/publish normal Latest v0.0.143 only after every required gate PASS. Do not redo focused source checks solely due to this interruption."
 }
