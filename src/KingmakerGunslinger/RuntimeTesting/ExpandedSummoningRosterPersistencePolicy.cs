@@ -2,9 +2,100 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
+    // JSON for this request-local fixture only. Never invoke the game's
+    // configured serializer for dictionaries or engine-owned objects.
+    internal sealed class RosterReadinessReport
+    {
+        private readonly JArray _rows = new JArray(), _errors = new JArray();
+        internal readonly JObject Result;
+        internal bool HasErrors { get { return _errors.Count != 0; } }
+        internal int ErrorCount { get { return _errors.Count; } }
+
+        internal RosterReadinessReport(string request, string scenario, int expectedUnits)
+        {
+            Result = new JObject { ["schemaVersion"] = 2, ["requestId"] = request,
+                ["scenario"] = scenario, ["unitCount"] = expectedUnits, ["observerReadOnly"] = true,
+                ["contractUnchanged"] = "Original snake native-appearance predicate retained for diagnosis; no simultaneous visibility waiver",
+                ["units"] = _rows, ["observerErrors"] = _errors,
+                ["summaryByFailedPredicate"] = new JObject(), ["failingUnits"] = new JArray(),
+                ["spawnFrameSource"] = "Native cast/entity creation returned and receipt assigned;loaded units have no invented spawn frame",
+                ["observerClearedInFinally"] = false };
+        }
+
+        internal static JObject NullableFrameMap(IEnumerable<KeyValuePair<string, int?>> values)
+        {
+            var result = new JObject();
+            foreach (var pair in values.OrderBy(value => value.Key, StringComparer.Ordinal))
+                result[pair.Key] = pair.Value.HasValue ? new JValue(pair.Value.Value) : JValue.CreateNull();
+            return result;
+        }
+
+        internal void AddError(string key, string unitId, string stage, Exception error)
+        {
+            _errors.Add(new JObject { ["key"] = key, ["unitId"] = unitId,
+                ["exceptionType"] = error.GetType().FullName, ["message"] = error.Message,
+                ["observerStage"] = stage });
+        }
+
+        internal void AddUnit(string key, string unitId, Func<JObject> buildRow)
+        {
+            try
+            {
+                var row = buildRow();
+                if (row == null || (string)row["key"] != key || (string)row["unitId"] != unitId ||
+                    !(row["failedPredicateNames"] is JArray) || !(row["failedObservedPredicateNames"] is JArray))
+                    throw new InvalidOperationException("Complete matching per-unit readiness row required.");
+                _rows.Add(row);
+            }
+            catch (Exception error) { AddError(key, unitId, "per-unit-final-state-row", error); }
+        }
+
+        internal void Finish(Action clearTracking)
+        {
+            try
+            {
+                var grouped = new SortedDictionary<string, List<string>>(StringComparer.Ordinal);
+                var failing = new JArray();
+                foreach (var row in _rows.Cast<JObject>())
+                {
+                    var failed = (JArray)row["failedObservedPredicateNames"];
+                    if (failed.Count == 0) continue;
+                    foreach (var predicate in failed.Values<string>())
+                    {
+                        List<string> keys;
+                        if (!grouped.TryGetValue(predicate, out keys)) grouped.Add(predicate, keys = new List<string>());
+                        keys.Add((string)row["key"]);
+                    }
+                    failing.Add(new JObject { ["key"] = (string)row["key"], ["unitId"] = (string)row["unitId"],
+                        ["failedPredicateNames"] = row["failedPredicateNames"].DeepClone(),
+                        ["failedObservedPredicateNames"] = failed.DeepClone(),
+                        ["firstFrameAllSnakePredicates"] = row["firstFrameAllSnakePredicates"]?.DeepClone() });
+                }
+                var summary = new JObject();
+                foreach (var pair in grouped)
+                {
+                    var keys = new JArray();
+                    foreach (string key in pair.Value.OrderBy(value => value, StringComparer.Ordinal)) keys.Add(new JValue(key));
+                    summary[pair.Key] = new JObject { ["count"] = pair.Value.Count, ["keys"] = keys };
+                }
+                Result["summaryByFailedPredicate"] = summary;
+                Result["failingUnits"] = failing;
+            }
+            catch (Exception error) { AddError(null, null, "readiness-summary", error); }
+            finally
+            {
+                try { clearTracking(); Result["observerClearedInFinally"] = true; }
+                catch (Exception error) { AddError(null, null, "clear-request-local-timelines", error); }
+            }
+            Result["successfulUnitRows"] = _rows.Count;
+            Result["observerErrorCount"] = _errors.Count;
+        }
+    }
+
     // Bounded request-local observation, never a source of unit state.
     internal sealed class RosterReadinessTimeline
     {

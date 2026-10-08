@@ -1,46 +1,43 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 - BLOCKED: sole diagnosis failed in observer serialization
+## CURRENT STATE, 2026-10-08 - repaired observer candidate pending qualification
 
-Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint; PR29 DRAFT.
-Intake444979bb; exact diagnostic executable e2e8682ad9f2f18cb6aa28e4b5de14a5ec3a6492.
+Latest v0.0.143 Readiness Observer Repair and Final Release Order resets the
+diagnosis allowance: e2e8682a failed evidence serialization,so no readiness
+diagnosis occurred. That failed run and exact restoration remain preserved.
+Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint;PR29 DRAFT.
+Intake/local/remote95ff2ee1d3703ed0f863525bd943e573e49fd869 verified clean.
 Surface:1008 published generated roots+29 native wrappers=1037 visible choices.
-Source2474/2474,clean14-reference Release,strict325-member package PASS.
-ZIP33fb15ae85b81e50c01b56c6f9de6362362dc6f29128753bf7bbb8c5501c2b6e;
-DLLbf714b9564ae5469de0e8170005aaf618304fc859232060dcfa966bcf013c7e6;
-MVID299514df-bb74-4252-91a0-1ed7c0e52b8d. No production/asset/catalog change.
 
-Sole authorized diagnosis consumed: batch20261008T1759280994725Z.
-Smoke11/11 PASS;prepare6/8 FAIL at whole-roster-persistence-exception:
-JObject.FromObject(FirstTrueIncludingNever) returned Array,not JObject.
-FlushAndClearRosterReadiness failed before writing the per-unit report. No
-failing creature/key/readiness predicate can be identified from this run.
-Classification: diagnostic-fixture serialization defect;underlying readiness
-STILL UNIDENTIFIED. No production defect inferred, readiness assertion waived,
-visibility/buff/fader/camera mutation, or correction candidate attempted.
-Source finally clears tracking; runtime clearance receipt absent with report.
-ZERO native save writes;cleanup/absence/module-off/profiles/v142 NOT RUN.
-STOP under latest order: no additional readiness diagnosis launch authorized.
-No merge/tag/release. New explicit authority would be required to repair the
-observer serialization and obtain per-unit readiness evidence before correction.
+Repair: explicit ordinal JObject frame map with primitive integers/JSON null;
+no configured serializer. Per-unit row errors retain key/id/type/message/stage,
+other rows survive,summary separates observer errors,finally clears timelines,
+evidence writes before a mandatory observer-error assertion can fail the save.
+Original snake readiness predicate unchanged. Focused7/7 PASS;2478 registered.
+No production/asset/catalog/visibility/buff/fader/camera change.
+Next: commit/push immutable repair candidate;full source/build/package;guarded
+smoke plus prepare ONLY;exact restoration. One repaired diagnosis and one
+evidence-driven correction candidate authorized;both still unused. Classify
+actual per-unit evidence before correction. No completed creature/menu/root
+reruns. Then affected ON/OFF persistence,profile5,v142 coexistence/native-trait
+save once;release ONLY after all gates PASS. No further Crocodile observer.
 
-Actual snapshot20261008T1759293873173Z restored exactly:136files/Info0.0.117;
-tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Settings/FavoredClass byte-exact;runtime lease Completed/released;no game or
-active staging. Native process exits;no force termination. Protected baseline
-never loaded/written;no save surgery. Preserve all artifacts, safety refs and
-historical failures, including fb25 aggregate-readiness116/118 FAIL and0cca
-source2474/1FAIL (missing current-header equation corrected by metadata only).
-Source session5814f9cc-4998-4fbd-93a4-ec68514f7c7b;keeper15128 released at handoff.
+Fresh source session333716b3-bbcd-4984-bab1-9f5aa05e0603;owner27624;
+keeper37628/start2026-10-08T20:07:07.9754831Z;exclusive source receipt/lock.
+Prior15128 exited/released and receipts archived. No active game/runtime lock/
+deployment transaction at intake. Snapshot actual live installation UNDER lease.
+Last verified restored snapshot20261008T1759293873173Z:136files/Info0.0.117/tree
+216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Authorized native Working save only;no protected baseline load/write/save surgery.
 
-Retain b8 crocodilians212/snake71, Salamander, inventory50/menu3/all1008roots+
-29wrappers with original provenance;only request-local fixture/test/reporting delta.
+Retain b8 crocodilians212/snake71,Salamander,inventory50/menu3/all1008roots+
+29wrappers with original provenance. Every historical failure stays preserved.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-remains active143 only;historical f65FAIL never rewritten/explained/fixed. No new
-expiry event reported;this failed diagnosis is not another damage-observer cycle.
-No further Crocodile observer. PR25/26 remain open/unmerged;Latest stillv0.0.142.
+remains active143 only;historical f65FAIL never rewritten/explained/fixed.
+If expiry damage recurs,revoke and STOP. PR25/26 open/unmerged until release.
 Evidence: planning/RELEASE-0.0.143-EVIDENCE.json. Release NOT QUALIFIED.
-No Sprint18/Phase2C/permanent deployment or alpha substitute.
+After all gates:ready/merge29,real Latestv143,verify assets/close25/26,restore,
+STOP. No Sprint18/Phase2C/permanent deployment or alpha substitute.
 
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
