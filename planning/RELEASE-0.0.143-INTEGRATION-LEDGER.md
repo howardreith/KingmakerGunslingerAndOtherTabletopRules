@@ -1,6 +1,35 @@
 # v0.0.143 release integration ledger
 
-Status: reviewable source integration in development; closure/runtime/release NOT QUALIFIED.
+Status: BLOCKED_READINESS_DIAGNOSIS_OBSERVER_SERIALIZATION; closure/release NOT QUALIFIED.
+
+## Current qualification boundary, 2026-10-08
+
+Exact diagnostic executable `e2e8682ad9f2f18cb6aa28e4b5de14a5ec3a6492`:
+full domain2474/2474,clean14-reference Release,strict325-member package PASS.
+One owner-authorized read-only per-unit diagnosis only;original readiness predicate
+unchanged. Smoke11/11 PASS;prepare6/8 FAIL because the game's serializer converts
+FirstTrueIncludingNever to an Array and `JObject.FromObject` rejects it. No per-unit
+report exists; failing creature/key/native-readiness predicate remains unidentified.
+This is an observation-fixture failure,not evidence of a production defect. No
+visibility forcing, native appearance-buff deletion, assertion waiver or product
+change. The sole diagnosis is consumed; no correction candidate or second diagnosis
+launched. STOP under the owner's still-unidentified/no-additional-cycle rule.
+
+ZIP `33fb15ae85b81e50c01b56c6f9de6362362dc6f29128753bf7bbb8c5501c2b6e`;
+DLL `bf714b9564ae5469de0e8170005aaf618304fc859232060dcfa966bcf013c7e6`;
+MVID `299514df-bb74-4252-91a0-1ed7c0e52b8d`. Package/source delta audit preserves
+all325 members except the request-local diagnostic DLL; production/assets/menu/
+identity sources unchanged. Original crocodilians212/snake71/Salamander/inventory50/
+menu3/all1008roots+29wrappers provenance and historical failures remain authoritative.
+
+Batch `release143-runtime-20261008T1759280994725Z` fully restored actual snapshot
+`20261008T1759293873173Z`:136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;
+settings/FavoredClass byte-exact;ZERO writes,no protected baseline load/write or
+save surgery;native exits,no game/runtime lease/staging. Source session5814f9cc
+keeper15128 releases at handoff. PR29 draft/unmerged;PR25/26 unchanged;no release.
+Historical Crocodile risk acceptance remains active;no new expiry event reported,
+no additional damage observer. No Sprint18/Phase2C. New authority would be required
+to repair the observer and obtain the missing per-unit readiness evidence.
 
 ## Exact ancestry and authority
 
@@ -18,7 +47,7 @@ Permanent intake safety refs `codex/local-safety/release143-intake-*` preserve a
 four intake tips; all earlier safety refs/worktrees/evidence are retained.
 DATA/PR27 is archived salvage-only; ZERO PORTS.
 
-Sole integration source owner: laptop session `0d8bff47-ef1f-42f1-9473-609f9b6d9cdf`,
+Historical integration intake source owner: laptop session `0d8bff47-ef1f-42f1-9473-609f9b6d9cdf`,
 owner29828/start2026-10-07T16:37:01.6154316Z, keeper34308/start23:12:27.5262954Z,
 exclusive release143 source lock. Phase2B keeper29980 released after pushing8592.
 Machine-local receipts stay private; no ownership claim survives a dead session.
