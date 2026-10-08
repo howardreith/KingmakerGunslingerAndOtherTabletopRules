@@ -2119,7 +2119,7 @@
     "candidateOnly": true,
     "sprint18Started": false,
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
-    "closureStatus": "ONE_ROSTER_FIXTURE_CORRECTION_PENDING: original b8 source2469/smoke11/crocodilians212 and snake71 PASS;per-cast alignment correction adds two focused tests, now2471;no production change or further observer;historical failures preserved",
+    "closureStatus": "BLOCKED: fixture-corrected fb25ad15 source2471/build/package325 PASS;whole-roster prepare116/118 FAIL aggregate native-appearance,108 units,zero writes,exact restore. Single correction exhausted;no production change or additional observer;prior croc212/smoke11/snake71/inventory/menu/player paths retained with original provenance",
     "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md"
   },
   "expandedSummoningPhase2Development": {
