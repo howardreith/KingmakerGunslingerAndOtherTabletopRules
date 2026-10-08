@@ -6,13 +6,33 @@ namespace KingmakerGunslinger.Summoning
 {
     internal sealed class NaturalSummonProfile
     {
+        /// <summary>
+        /// What the builder has always given every reconstructed creature.
+        ///
+        /// <para>It is right for the animals this was written for and wrong for
+        /// a vermin whose stat block prints no skill ranks at all: a Giant Ant
+        /// reads Perception 7 against a printed +5 because four points are its
+        /// racial bonus, one is its Wisdom, and two are ranks nothing printed.
+        /// A profile that names its own skills overrides this; everything else
+        /// keeps it, so no qualified creature moves.</para>
+        /// </summary>
+        internal static readonly string[] DefaultSkills =
+            { "Perception", "Mobility", "Stealth" };
+
+        /// <summary>
+        /// The Giant Ant's printed racial Perception bonus. Both castes print
+        /// Perception +5 on a Wisdom of 13, so four of those points are racial,
+        /// one is the attribute and none is a rank.
+        /// </summary>
+        internal const int GiantAntRacialPerceptionBonus = 4;
+
         internal NaturalSummonProfile(string key, string displayName,
             string hitDieClass, int hitDice, string size, int strength,
             int dexterity, int constitution, int intelligence, int wisdom,
             int charisma, int speedFeet, int naturalArmor,
             string primaryWeapon, string[] additionalWeapons,
             string[] additionalSecondaryWeapons,
-            string[] facts, string[] deviations)
+            string[] facts, string[] deviations, string[] skills = null)
         {
             Key = key; DisplayName = displayName; HitDieClass = hitDieClass;
             HitDice = hitDice; Size = size; Strength = strength;
@@ -25,6 +45,7 @@ namespace KingmakerGunslinger.Summoning
                 Array.Empty<string>();
             Facts = facts ?? Array.Empty<string>();
             Deviations = deviations ?? Array.Empty<string>();
+            Skills = skills ?? DefaultSkills;
         }
 
         internal string Key { get; private set; }
@@ -46,10 +67,47 @@ namespace KingmakerGunslinger.Summoning
         { get; private set; }
         internal IReadOnlyList<string> Facts { get; private set; }
         internal IReadOnlyList<string> Deviations { get; private set; }
+
+        /// <summary>
+        /// The skills this creature has class ranks in. Empty means none, which
+        /// is what a printed stat block showing no skill ranks requires.
+        /// </summary>
+        internal IReadOnlyList<string> Skills { get; private set; }
     }
 
     internal static class ExpandedSummoningNaturalProfiles
     {
+        // Shared by construction and domain validation, so a profile cannot
+        // register an armor value the live builder cannot resolve. The +15
+        // native identity is pinned by the October 2 loaded-blueprint census.
+        private static readonly IDictionary<int, string> NaturalArmorGuids =
+            new Dictionary<int, string> {
+                { 1, "10c7c5e3c5806bc4ca676e22d6fbf17e" },
+                { 2, "45a52ce762f637f4c80cc741c91f58b7" },
+                { 3, "f6e106931f95fec4eb995f0d0629fb84" },
+                { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
+                { 5, "7661741dbb9604842a642457456fd0e4" },
+                { 6, "987ba44303e88054c9504cb3083ba0c9" },
+                { 7, "e73864391ccf0894997928443a29d755" },
+                { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
+                { 9, "da6417809bdedfa468dd2fd0cc74be92" },
+                { 10, "4179c5c08d606a6439a62bf178b738e1" },
+                { 12, "0b2d92c6aac8093489dfdadf1e448280" },
+                { 14, "209a2920891b580418b4e5e80466e134" },
+                { 15, "72c294dca841e3944869fb087bacf272" },
+                { 22, "eee672c8f6555b445a89dbbb91361d64" }
+            };
+
+        internal static string NaturalArmorGuid(int bonus)
+        {
+            if (bonus == 0) return null;
+            string guid;
+            if (!NaturalArmorGuids.TryGetValue(bonus, out guid))
+                throw new InvalidOperationException(
+                    "Unsupported natural armor value " + bonus + ".");
+            return guid;
+        }
+
         /// <summary>
         /// Racial hit-die classes the natural builder can bind. Sprint 3 added
         /// the magical beast (Owlbear) and humanoid (Cyclops) classes to the
@@ -69,12 +127,13 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 41 || Values.Select(value => value.Key)
+            if (Values.Length != 49 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
             foreach (NaturalSummonProfile value in Values)
             {
+                NaturalArmorGuid(value.NaturalArmor);
                 if (!ExpandedSummoningCatalog.All.Any(creature =>
                         creature.Key == value.Key) ||
                     !SupportedHitDieClasses.Contains(value.HitDieClass) ||
@@ -86,9 +145,20 @@ namespace KingmakerGunslinger.Summoning
             }
             NaturalSummonProfile frog = For("poisonous-frog");
             if (frog.Size != "Tiny" || frog.Strength != 2 ||
+                frog.PrimaryWeapon != "Bite1" ||
                 !frog.Facts.Contains("PoisonFrog"))
                 throw new InvalidOperationException(
                     "Poisonous Frog tabletop profile changed.");
+            NaturalSummonProfile wolverine = For("wolverine");
+            if (wolverine.AdditionalSecondaryWeapons.Count != 0 ||
+                wolverine.AdditionalWeapons.Count != 2 ||
+                !wolverine.AdditionalWeapons.Contains("Claw1d6") ||
+                !wolverine.AdditionalWeapons.Contains("Bite1d4") ||
+                !wolverine.Facts.Contains("TripDefenseFourLegs") ||
+                !wolverine.Facts.Contains("WolverineRage"))
+                throw new InvalidOperationException(
+                    "Wolverine printed attack routine changed.");
+            SummonRagePolicy.Validate();
             NaturalSummonProfile spider = For("giant-spider");
             if (spider.HitDice != 3 || spider.NaturalArmor != 1 ||
                 !spider.Facts.Contains("GiantSpiderPoison"))
@@ -99,13 +169,27 @@ namespace KingmakerGunslinger.Summoning
         private static NaturalSummonProfile[] Build()
         {
             return new[] {
-                P("dire-rat", "Dire Rat", "Animal", 1, "Small",
-                    10, 17, 13, 2, 13, 4, 40, 1, "Bite1d4",
+                PK("viper", "Viper", "Animal", 2, "Medium",
+                    8, 13, 14, 1, 13, 2, 20, 3, "Bite1d4",
                     Array.Empty<string>(),
-                    A("TripDefenseFourLegs", "WeaponFinesse",
+                    A("TripImmune", "ImprovedInitiative", "WeaponFinesse"),
+                    A("Perception", "Stealth"),
+                    "Sprint 17 frozen contract: Medium Viper, not a Tiny or Small substitute. Hidden pending complete runtime qualification. Creature-owned injury poison: Fortitude DC 13 at baseline, 1d2 Constitution damage for six exposures, one save cures; the DC follows live Constitution.",
+                    "Exact land ranks and racial bonuses retain native attribute, feat and class-skill contributions. Swim/climb movement and water-only consumers are omitted under land-use scope. Scent and low-light vision remain PASSIVE_CREATURE_SENSES_UNMODELED without substitute senses."),
+                PK("constrictor-snake", "Constrictor Snake", "Animal", 3,
+                    "Medium", 17, 17, 12, 1, 12, 2, 20, 2, "Bite1d4",
+                    Array.Empty<string>(),
+                    A("TripImmune", "SkillFocusPerception", "Toughness"),
+                    A("Mobility", "Perception", "Stealth"),
+                    "Hidden pending Sprint 17 runtime qualification. Bite-only grab against a foe of its own size or smaller; constrict 1d4+4 at baseline uses live Strength and size on the shared session-scoped hold lifecycle.",
+                    "Exact land ranks and racial bonuses retain native attribute, feat and class-skill contributions. Swim/climb movement and aquatic skills are omitted rather than substituted. Scent and low-light vision remain PASSIVE_CREATURE_SENSES_UNMODELED. Active holds reset cleanly on reload under ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD."),
+                P("dire-rat", "Dire Rat", "Animal", 1, "Small",
+                    10, 17, 13, 2, 13, 4, 40, 0, "Bite1d4",
+                    Array.Empty<string>(),
+                    A("TripDefenseFourLegs",
                         "SkillFocusPerception", "DireRatDisease"),
                     "A bite that hits and deals positive damage makes the printed DC 11 Fortitude save before applying the native Filth Fever payload and cure lifecycle.",
-                    "The native Dog rig is a bounded locomotion donor only; an original compact rat silhouette is required before publication."),
+                    "The native Dog rig is a bounded locomotion donor only, supplying skeleton and animation; the shipped silhouette is the project's own KMG_dire-rat_Original mesh."),
                 P("dog", "Dog", "Animal", 1, "Small",
                     13, 13, 15, 2, 12, 6, 40, 1, "Bite1d4",
                     Array.Empty<string>(),
@@ -116,15 +200,64 @@ namespace KingmakerGunslinger.Summoning
                     A("WeaponFinesse", "Airborne"),
                     "Kingmaker exposes one movement speed; 80-foot fly speed is used with airborne navigation and the 10-foot ground speed is omitted."),
                 P("poisonous-frog", "Poisonous Frog", "Animal", 1, "Tiny",
-                    2, 12, 11, 1, 9, 10, 10, 0, "Bite1d3",
+                    2, 12, 11, 1, 9, 10, 10, 0, "Bite1",
                     Array.Empty<string>(),
                     A("WeaponFinesse", "TripDefenseFourLegs", "PoisonFrog"),
                     "The native Constitution-scaled poison graph supplies the exact six-tick 1d2 Constitution effect; ordinary-map ground speed is used and swim movement is omitted."),
+                PK("fire-beetle", "Fire Beetle", "Vermin", 1, "Small",
+                    10, 11, 11, 1, 10, 7, 30, 1, "Bite1d4",
+                    Array.Empty<string>(),
+                    A("Airborne", "TripDefenseEightLegs",
+                        "FireBeetleLuminescence"),
+                    Array.Empty<string>(),
+                    "Kingmaker exposes one movement speed; the 30-foot fly speed is used with airborne navigation and the equal 30-foot ground speed is omitted. Poor maneuverability has no native representation and is omitted. An absent Intelligence score is represented as 1.",
+                    "The printed CMD 17 against trip is carried by the project's multi-legged trip defence. The first guarded audit measured this creature at CMD 9 and trip 9: the airborne adaptation had not made it untrippable, as was thought possible, and the bonus was simply absent.",
+                    "Luminescence is a view-local light matching the painted glands and a tooltip that says the beetle glows. Kingmaker has no mechanics-layer illumination model, so it grants and denies nothing, and the source's 1d6 days of after-death glow has no consumer because a summoned body vanishes with the summon.",
+                    "The printed low-light vision is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03. The stat block's explicit absence of darkvision is exact and was proved on the live unit, which reads no darkvision carrier of any kind."),
                 P("giant-centipede", "Giant Centipede", "Vermin", 1,
                     "Medium", 9, 15, 12, 1, 10, 2, 40, 2, "Bite1d6",
                     Array.Empty<string>(),
                     A("WeaponFinesse", "TripImmune", "CentipedePoison"),
                     "Kingmaker cannot represent an absent Intelligence score on BlueprintUnit, so Intelligence 1 is used. Climb movement is omitted; native poison is conservative because its graph does not expose the tabletop +2 racial DC bonus."),
+                PK("giant-ant-worker", "Giant Ant (Worker)", "Vermin", 2,
+                    "Medium", 14, 10, 17, 1, 13, 11, 50, 5, "Bite1d6",
+                    Array.Empty<string>(),
+                    A("Toughness", "TripDefenseEightLegs", "GiantAntRacialSkills"),
+                    Array.Empty<string>(),
+                    "Kingmaker exposes one movement speed; the 50-foot ground speed is used and the 20-foot climb is omitted. An absent Intelligence score is represented as 1.",
+                    "The printed racial +4 Survival is omitted because Kingmaker has no Survival skill and this project has consistently omitted that half rather than substituting another skill; Lore (Nature) is a knowledge stat for identifying creatures and is not a defensible analogue for tracking and foraging. The printed racial +4 Perception is implemented exactly.",
+                    "The printed darkvision 60 feet and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03. Kingmaker models none of Scent, Darkvision or Low-light Vision: the whole loaded blueprint library carries no component that could express scent, and no enum reachable from BlueprintUnit, UnitEntityData or UnitDescriptor holds a darkvision value. Nothing is substituted for them - not AddBlindsight, which is a different rule this project implements exactly for the Dire Bat, and not OverrideVisionRange, which is a general detection radius in all conditions - and no record claims the omitted traits work.",
+                    "The Worker template removes the soldier's poison sting and its grab, which leaves a bite alone, so this caste carries neither carrier. Its smaller head, lighter mandibles, absent sting and lighter chitin are what tell a player which caste is in front of them."),
+                PK("giant-ant-soldier", "Giant Ant (Soldier)", "Vermin", 2,
+                    "Medium", 14, 10, 17, 1, 13, 11, 50, 5, "Bite1d6",
+                    A("AntSting1d4"),
+                    A("Toughness", "TripDefenseEightLegs", "GiantAntRacialSkills",
+                        "GiantAntPoison"),
+                    Array.Empty<string>(),
+                    "Kingmaker exposes one movement speed; the 50-foot ground speed is used and the 20-foot climb is omitted. An absent Intelligence score is represented as 1.",
+                    "The printed racial +4 Survival is omitted for the reason recorded on the Worker; the Perception half is exact. Both castes carry the project's multi-legged trip defence, which the Giant Centipede already uses, so the printed CMD 13 and 21 against trip hold on both.",
+                    "The printed darkvision 60 feet and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03, on the same evidence and with the same prohibitions recorded on the Worker.",
+                    "The bite's grab rides the shared summon grapple lifecycle (Sprint 6) on the primary limb only, and the sting's poison is gated on the sting's own weapon type (Sprint 10), so neither reaches the other attack. The printed Fortitude DC 14 is what the Constitution-scaled formula produces unaided and is not hard-coded."),
+                PK("giant-ant-drone", "Giant Ant (Drone)", "Vermin", 2,
+                    "Medium", 18, 14, 21, 1, 17, 15, 30, 7, "Bite1d6",
+                    A("AntSting1d4"),
+                    A("Airborne", "Toughness", "TripDefenseEightLegs",
+                        "GiantAntRacialSkills", "GiantAntPoison"),
+                    Array.Empty<string>(),
+                    "Kingmaker exposes one movement speed; the 30-foot average fly speed is used with airborne navigation, and the soldier's 50-foot ground speed and 20-foot climb are omitted. That leaves this caste slower on the ground than the soldier it is built from, which is the conservative direction and is preferred to overstating a flier's ground movement. An absent Intelligence score is represented as 1.",
+                    "Every ability score is the soldier's with the advanced simple template applied, written out here rather than computed at load because the frozen contract requires it: Strength 14 to 18, Dexterity 10 to 14, Constitution 17 to 21, Wisdom 13 to 17, Charisma 11 to 15, Intelligence unchanged because the template excludes it, and natural armour 5 to 7. Hit dice stay at 2 because the template adds none.",
+                    "The frozen contract describes that template as also granting +2 to all skills. A simple template offers two mutually exclusive routes: a quick set of flat bonuses applied to the printed numbers, or a rebuild from adjusted ability scores. The flat +2 to skills belongs to the quick route, and this profile takes the rebuild the contract itself demands - every score written out from the soldier - so skills derive from the advanced Wisdom instead. Perception is therefore +7, the +3 from Wisdom 17 plus the exact racial +4, and not +9; adding the flat bonus on top of the rebuilt score would count the same increase twice and make this creature stronger than its printed form. The discrepancy is raised on the contract page as an erratum rather than resolved silently here.",
+                    "The poison needs no second graph. Its difficulty class is computed live from the caster's own Constitution, so the shared Giant Ant poison feature gives the soldier DC 14 on Constitution 17 and this caste DC 16 on the advanced 21, with the same 1d2 Strength over four rounds cured by one save.",
+                    "The printed darkvision 60 feet and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03. They no longer hold this caste out of publication; it waits on its own Sprint 15 gates and on nothing else."),
+                PK("giant-stag-beetle", "Giant Stag Beetle", "Vermin", 7,
+                    "Large", 19, 10, 15, 1, 10, 9, 20, 8, "Bite2d8",
+                    Array.Empty<string>(),
+                    A("ReducedReach", "TripDefenseEightLegs"),
+                    Array.Empty<string>(),
+                    "Kingmaker exposes one movement mode; the 20-foot ground speed is used and the equal 20-foot poor fly speed is omitted, so no movement rate is lost - only the mode. Ground is the right mode for a heavy Large beetle and is the only one its trample can use. The Fire Beetle resolves the same equal-speed choice the other way because its flight is characterful and it does not trample; the asymmetry is deliberate rather than an oversight. Poor maneuverability has no native representation. An absent Intelligence score is represented as 1.",
+                    "The printed Space 10 feet with Reach 5 feet is a reduced reach for a Large creature and uses the project's reduced-reach carrier, the same one the Large ungulates use.",
+                    "Trample reuses the project's qualified trample carrier rather than a new graph, and the derivation lands on the printed line exactly: damage is one and a half times Strength on 1d6, which is 1d6+6 at Strength 19, and the save is 10 plus half the hit dice plus the Strength modifier, which is DC 17 at 7 hit dice. It uses the disclosed Kingmaker automatic-attack-of-opportunity-or-Reflex adaptation and carries no Stampede, which belongs to the herd ungulates alone.",
+                    "The printed darkvision 60 feet is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03. This creature prints no scent, so that half of the label does not apply to it."),
                 P("giant-spider", "Giant Spider", "Vermin", 3, "Medium",
                     11, 17, 12, 1, 10, 2, 30, 1, "Bite1d6",
                     Array.Empty<string>(),
@@ -135,8 +268,8 @@ namespace KingmakerGunslinger.Summoning
                 P("goblin-dog", "Goblin Dog", "Animal", 1, "Medium",
                     15, 14, 15, 2, 12, 8, 50, 1, "Bite1d6",
                     Array.Empty<string>(), A("Toughness", "GoblinDogTraits"),
-                    "Disease immunity uses the native disease-descriptor gate. A damaging bite against a living non-goblin makes the printed DC 12 Fortitude save; failure applies one nonstacking day of -2 Dexterity and -2 Charisma, removed by positive magical healing or remove disease. Because Kingmaker has no broader Goblinoid subtype, only the exact native Goblin unit type is exempt.",
-                    "The Worg donor contributes only its rig and bite animation; an original Goblin Dog silhouette remains required before publication."),
+                    "Disease immunity uses the native disease-descriptor gate. The printed allergic reaction exposes a non-goblinoid creature damaged by the bite, a creature that deals damage to the Goblin Dog with a natural weapon or unarmed attack, and a creature that attempts to grapple it; each makes the printed DC 12 Fortitude save and a failure applies one nonstacking day of -2 Dexterity and -2 Charisma, removed by positive magical healing or remove disease. Riding contact is omitted because the charter excludes mounted combat. The goblinoid exemption is the exact enumerated set of native goblinoid unit types the installed library carries.",
+                    "The Worg donor contributes only its rig and bite animation; the shipped silhouette is the project's own KMG_goblin-dog_Original mesh."),
                 P("hyena", "Hyena", "Animal", 2, "Medium",
                     14, 15, 15, 2, 13, 6, 50, 2, "Bite1d6",
                     Array.Empty<string>(),
@@ -167,25 +300,39 @@ namespace KingmakerGunslinger.Summoning
                         "WeaponFinesse", "ImprovedInitiative"),
                     "Sprint is a bounded once-per-summoning swift burst on the special builder (Sprint 8): +30 feet for one round under the game's own speed cap, never repeatable within one summoning.",
                     "Cheetah visual: a procedural spotted coat on the leopard rig at a lean view scale (Sprint 8)."),
-                PS("crocodile", "Crocodile", "Animal", 3, "Large",
+                PSK("dire-crocodile", "Dire Crocodile", "Animal", 12,
+                    "Gargantuan", 37, 10, 25, 1, 14, 2, 20, 15, "Bite3d6",
+                    Array.Empty<string>(), A("Tail4d8"),
+                    A("TripDefenseFourLegs", "SkillFocusPerception",
+                        "SkillFocusStealth", "ImprovedInitiative", "IronWill",
+                        "ImprovedCriticalBite"), A("Perception", "Stealth"),
+                    "Kingmaker exposes one movement speed; the 20-foot ground speed is used and the 30-foot swim is omitted. No underwater movement system is introduced, which the sprint's order forbids, and omitting the mode rather than the rate keeps the creature at its printed land speed.",
+                    "The printed tail slap is a secondary natural attack - five lower than the bite and at half the Strength bonus - so it is declared in the secondary limb slot rather than among the additional primaries. A Gargantuan creature's printed Space 20 feet with Reach 15 feet is the standard footprint for its size, so unlike the Crocodile it must not carry the reduced-reach carrier.",
+                    "The printed Run feat is omitted. Kingmaker has no running action distinct from ordinary movement and no jumping, so nothing in the rules layer could consult it; nothing is substituted for it and no record claims it works. Hold breath is omitted for the same kind of reason - the game models neither swimming nor drowning - and neither omission is covered by the passive-sense label, which is only for Scent, Darkvision and Low-light Vision.",
+                    "The printed low-light vision is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03, on the evidence recorded there.",
+                    "Land-use skills allocate six Perception and six Stealth ranks, yielding +14 and +0 through native ability, class-skill, size and Skill Focus modifiers. No Mobility ranks, Swim or water-only Stealth bonus is added.",
+                    "REGISTERED AND WITHHELD. Grab, live-bite Death Roll, creature-owned swallow and Sprint are implemented but NOT QUALIFIED. Sprint is a one-round +20-foot untyped land-speed modifier on a ten-round native buff cooldown, a bounded CRPG adaptation rather than a temporary base-speed rewrite. Original visuals and all live gates remain open."),
+                PSK("crocodile", "Crocodile", "Animal", 3, "Large",
                     19, 12, 17, 1, 12, 2, 20, 4, "Bite1d8",
                     Array.Empty<string>(), A("Tail1d12"),
                     A("ReducedReach", "TripDefenseFourLegs",
                         "SkillFocusPerception", "SkillFocusStealth"),
+                    A("Perception", "Stealth"),
                     "Kingmaker exposes one movement speed; the 20-foot ground speed is used and swim movement is omitted.",
-                    "Grab, death roll, sprint, and hold breath are omitted because no duration-bound summon-safe native graph was proven."),
+                    "Land-use skills allocate one Perception and two Stealth ranks, yielding +8 and +5 through native ability, class-skill, size and Skill Focus modifiers. No Mobility ranks, Swim or water-only Stealth bonus is added.",
+                    "Grab, live-bite Death Roll and Sprint are implemented but NOT QUALIFIED. Sprint is a one-round +20-foot untyped land-speed modifier on a ten-round native buff cooldown, a bounded CRPG adaptation rather than a temporary base-speed rewrite. Hold Breath is omitted because there is no swimming/drowning consumer; low-light vision is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED."),
                 P("dire-bat", "Dire Bat", "Animal", 4, "Large",
                     17, 15, 13, 2, 14, 6, 40, 3, "Bite1d8",
                     Array.Empty<string>(),
                     A("ReducedReach", "Airborne", "Stealthy", "DireBatBlindsense"),
                     "Kingmaker exposes one movement speed; 40-foot fly speed is used with airborne navigation and the 20-foot ground speed is omitted.",
                     "A dedicated imprecise 40-foot blindsense fact uses the native component without granting the native Blindsight feature's blindness immunity; Alertness remains omitted."),
-                PS("wolverine", "Wolverine", "Animal", 3, "Medium",
+                P("wolverine", "Wolverine", "Animal", 3, "Medium",
                     15, 15, 15, 2, 12, 10, 30, 2, "Claw1d6",
-                    A("Claw1d6"), A("Bite1d4"),
-                    A("SkillFocusPerception", "Toughness"),
-                    "Burrow and climb movement are omitted because Kingmaker exposes one movement speed.",
-                    "The after-damage rage is omitted pending a summon-local implementation proven to end with the summon and survive save/load."),
+                    A("Claw1d6", "Bite1d4"),
+                    A("TripDefenseFourLegs", "SkillFocusPerception",
+                        "Toughness", "WolverineRage"),
+                    "Burrow and climb movement are omitted because Kingmaker exposes one movement speed."),
                 P("dire-boar", "Dire Boar", "Animal", 5, "Large",
                     23, 10, 17, 2, 13, 8, 40, 6, "Gore2d6",
                     Array.Empty<string>(), A("ReducedReach", "Ferocity",
@@ -365,6 +512,36 @@ namespace KingmakerGunslinger.Summoning
                 size, strength, dexterity, constitution, intelligence, wisdom,
                 charisma, speed, naturalArmor, primary, additional,
                 Array.Empty<string>(), facts, deviations);
+        }
+
+        /// <summary>
+        /// A profile that names its own skill ranks. Used by the Sprint 14
+        /// vermin, whose stat blocks print none.
+        /// </summary>
+        private static NaturalSummonProfile PK(string key, string name,
+            string hitDieClass, int hitDice, string size, int strength,
+            int dexterity, int constitution, int intelligence, int wisdom,
+            int charisma, int speed, int naturalArmor, string primary,
+            string[] additional, string[] facts, string[] skills,
+            params string[] deviations)
+        {
+            return new NaturalSummonProfile(key, name, hitDieClass, hitDice,
+                size, strength, dexterity, constitution, intelligence, wisdom,
+                charisma, speed, naturalArmor, primary, additional,
+                Array.Empty<string>(), facts, deviations, skills);
+        }
+
+        private static NaturalSummonProfile PSK(string key, string name,
+            string hitDieClass, int hitDice, string size, int strength,
+            int dexterity, int constitution, int intelligence, int wisdom,
+            int charisma, int speed, int naturalArmor, string primary,
+            string[] additional, string[] secondary, string[] facts,
+            string[] skills, params string[] deviations)
+        {
+            return new NaturalSummonProfile(key, name, hitDieClass, hitDice,
+                size, strength, dexterity, constitution, intelligence, wisdom,
+                charisma, speed, naturalArmor, primary, additional, secondary,
+                facts, deviations, skills);
         }
 
         private static NaturalSummonProfile PS(string key, string name,

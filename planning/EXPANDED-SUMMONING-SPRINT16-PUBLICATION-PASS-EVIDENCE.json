@@ -1,0 +1,451 @@
+{
+  "schemaVersion": 1,
+  "status": "SPRINT 16 INTERNALLY COMPLETE AND PUBLISHED; owner visual review not performed",
+  "candidate": "155ada89869c6937b4a801e1fc384dbe38d36f3b",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "sourceFingerprint": "662bc768c67858453cc426e6b085190de6c54448cae572c59d23145054dae06e",
+  "version": "0.0.141",
+  "dllSha256": "8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9",
+  "dllMvid": "ed8fe210-31e2-4016-870e-8623d3a55fa2",
+  "zipSha256": "eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2",
+  "packageMembers": 312,
+  "prelaunch": {
+    "focused": "218/218",
+    "fullUnfiltered": "2020/2020",
+    "repositoryStaticIconManifest": "PASS",
+    "preflight": 480,
+    "orchestration": 68,
+    "persistence": "11 wiring; 3 round trips/19 rejections",
+    "crowd": "5 round trips/7 rejections",
+    "cleanExactRelease": "PASS",
+    "deterministicPackage": "PASS",
+    "strictStandalone": "PASS",
+    "logs": [
+      {
+        "file": "laptop-crowd-155ada89.log",
+        "sha256": "7739B9A760E04B83AD320F8859A165D2E79A09DB17C27F8007CB549795177DEC"
+      },
+      {
+        "file": "laptop-focused-155ada89.log",
+        "sha256": "45552F5B74A670305B06415783FF3518AD74B14A275F24B3D2C4241BBE544941"
+      },
+      {
+        "file": "laptop-orchestration-155ada89.log",
+        "sha256": "02F1F2C75CD7CA4B07A19647CBBE24028CA2B44B137E2ABC9A5D21D81FEFF85B"
+      },
+      {
+        "file": "laptop-persistence-155ada89.log",
+        "sha256": "9133614CCD77488EF3466A018C2A466C58EC23AED2DA4E35098C890C0C9690C2"
+      },
+      {
+        "file": "laptop-sprint-gate-155ada89.log",
+        "sha256": "1F80556E274D590D51E2A84CBB5C146A8805A3DE8B7E390058CD0F1AB5E21988"
+      }
+    ],
+    "driverSha256": "C96EBE41590EC81F3700CFF48A8CB53C23BD4DA1761FC2A1BD68759094A922BA",
+    "sidecarSha256": "B8969F809159D3364B7EDD7936CCD89AD33E357E52317470B82AA2CD6556AAF6"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-06T00:43:34.4374405Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261006T0043353947756Z-working-save-smoke",
+      "requestId": "20261006T0043354168762Z-30809feab23f421fbbe5b7e0a77fa35a",
+      "requestSha256": "7288a8886427f4a91788b62df34cd560727c6a82c81def2438c33648b28b2e1c",
+      "resultSha256": "1cc8e56b83792235d5832b03bb66897cf4d49919bc10bc267af6f0f75f2d3f5d",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "0f68edd7bef5acc990a2f52396dac0bc580304c0116d9af9e03a9450d5f5b45b",
+      "processId": 34496,
+      "processStartedUtc": "2026-10-06T00:43:36.5403197Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T00:46:27.5294434Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-crocodilians",
+      "startedAtUtc": "2026-10-06T00:46:33.0029323Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261006T0046338051934Z-disposable-expanded-summoning-crocodilians",
+      "requestId": "20261006T0046338051934Z-f704c35632654a61be2f3ae9f81cd6b5",
+      "requestSha256": "51c0e8a4acc3582c29afb930fc224d000ff0176968df017497aee3138382e326",
+      "publicationRoutes": {
+        "published": 20,
+        "private": 0,
+        "allPublicPathsPassed": true
+      },
+      "finalReviewSha256": "21584ce67050205e7f503f7920c46bb78cbe953c9432f8cd2ea574676b9dff52",
+      "resultSha256": "d8c140cdfed6cc8121e07690b327fbd2c1b94be6d64ba08253ed23a0d548e087",
+      "assertions": 211,
+      "passed": 211,
+      "failed": [],
+      "orchestrationSha256": "423462306456812aaea2e6d72ff0327ca6a171000153b9f718db4eeeb383328b",
+      "processId": 33424,
+      "processStartedUtc": "2026-10-06T00:46:35.3332491Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T00:59:23.1837639Z"
+    }
+  ],
+  "matrix": {
+    "mechanics": 37,
+    "speed": 19,
+    "icons": 9,
+    "combat": 57,
+    "final": 81,
+    "scenario": 8,
+    "total": 211,
+    "failed": []
+  },
+  "supplemental": [
+    {
+      "file": "sprint16-combat.json",
+      "sha256": "DF503A7719FFCA3A89699D3B256CE3E7AEAF29D6CC3C8DA0F339703819634ACD"
+    },
+    {
+      "file": "sprint16-damage-maintain.json",
+      "sha256": "215A6779644841CAFF7E2C4B5180C81F770AE56433AC1E694F2E7BCB21C3E41A"
+    },
+    {
+      "file": "sprint16-final-review.json",
+      "sha256": "21584CE67050205E7F503F7920C46BB78CBE953C9432F8CD2EA574676B9DFF52"
+    },
+    {
+      "file": "sprint16-icon-bindings.json",
+      "sha256": "08D789E122B8DDE1C1766843EF925130F90FD782C1E5A4C027A03B608FED04DD"
+    },
+    {
+      "file": "sprint16-monitor-lizard-bind-rig.json",
+      "sha256": "8B0C0309A03782753A825B825EA8598C5F3D84BE1A81B618E458C92BDC43A83F"
+    },
+    {
+      "file": "sprint16-native-census.json",
+      "sha256": "B29E71E6D3C687274C88274D16A80E22209FACDF27D9F652004E36AC031A641D"
+    },
+    {
+      "file": "sprint16-speed.json",
+      "sha256": "46E8C6F3BD98D993F5B1C4AE5AC9DCB419265550A288B00849CB5A3EF03068A8"
+    }
+  ],
+  "routeCensus": [
+    {
+      "published": 20,
+      "private": 0,
+      "total": 20,
+      "case": "targeted-root-census",
+      "passed": true
+    }
+  ],
+  "negativeInputCases": [
+    {
+      "negativeMissInjected": true,
+      "issuedNonOpportunityAttack": true,
+      "maneuversAfterMiss": 0,
+      "attempts": 2,
+      "retries": [
+        {
+          "attempt": 2,
+          "frame": 291,
+          "maneuversBeforeRetry": 0,
+          "turnBased": false
+        }
+      ],
+      "nativeRider": true,
+      "relationship": true,
+      "case": "crocodile-rtwp-manual-hold-miss-retry",
+      "passed": true
+    },
+    {
+      "negativeMissInjected": true,
+      "issuedNonOpportunityAttack": true,
+      "maneuversAfterMiss": 0,
+      "attempts": 3,
+      "retries": [
+        {
+          "attempt": 2,
+          "frame": 191,
+          "maneuversBeforeRetry": 0,
+          "turnBased": true
+        },
+        {
+          "attempt": 3,
+          "frame": 369,
+          "maneuversBeforeRetry": 0,
+          "turnBased": true
+        }
+      ],
+      "nativeRider": true,
+      "relationship": true,
+      "case": "crocodile-turn-based-manual-hold-miss-retry",
+      "passed": true
+    }
+  ],
+  "retryCells": [
+    {
+      "case": "crocodile-rtwp-manual-hold",
+      "passed": true,
+      "attacks": [
+        {
+          "weapon": "BiteDragonLarge1d8",
+          "weaponGuid": "c988aa874d11ff84d873508ddc9b928f",
+          "hit": false,
+          "bonus": 0,
+          "roll": 0,
+          "targetAC": 0,
+          "result": "Miss",
+          "autoMiss": true,
+          "autoHit": false,
+          "logged": true,
+          "critical": false
+        },
+        {
+          "weapon": "KMG_Summoning_Natural_Tail1d12",
+          "weaponGuid": "d7ec01bae32a4d9086214f156ce52ecd",
+          "hit": false,
+          "bonus": 98,
+          "roll": 1,
+          "targetAC": 9,
+          "result": "Miss",
+          "autoMiss": false,
+          "autoHit": false,
+          "logged": true,
+          "critical": false
+        },
+        {
+          "weapon": "BiteDragonLarge1d8",
+          "weaponGuid": "c988aa874d11ff84d873508ddc9b928f",
+          "hit": true,
+          "bonus": 103,
+          "roll": 13,
+          "targetAC": 9,
+          "result": "Hit",
+          "autoMiss": false,
+          "autoHit": false,
+          "logged": true,
+          "critical": false
+        }
+      ],
+      "attackOrigins": [
+        {
+          "frame": 195,
+          "weapon": "BiteDragonLarge1d8",
+          "opportunity": false,
+          "issuedCommandExecuting": true,
+          "rejectionFinished": true,
+          "targetImmuneDuringSetup": false
+        },
+        {
+          "frame": 270,
+          "weapon": "KMG_Summoning_Natural_Tail1d12",
+          "opportunity": false,
+          "issuedCommandExecuting": true,
+          "rejectionFinished": true,
+          "targetImmuneDuringSetup": false
+        },
+        {
+          "frame": 345,
+          "weapon": "BiteDragonLarge1d8",
+          "opportunity": false,
+          "issuedCommandExecuting": true,
+          "rejectionFinished": true,
+          "targetImmuneDuringSetup": false
+        }
+      ],
+      "manualNativeAttackAttempts": 2,
+      "retries": [
+        {
+          "attempt": 2,
+          "frame": 291,
+          "maneuversBeforeRetry": 0,
+          "turnBased": false
+        }
+      ]
+    },
+    {
+      "case": "crocodile-turn-based-manual-hold",
+      "passed": true,
+      "attacks": [
+        {
+          "weapon": "BiteDragonLarge1d8",
+          "weaponGuid": "c988aa874d11ff84d873508ddc9b928f",
+          "hit": false,
+          "bonus": 0,
+          "roll": 0,
+          "targetAC": 0,
+          "result": "Miss",
+          "autoMiss": true,
+          "autoHit": false,
+          "logged": true,
+          "critical": false
+        },
+        {
+          "weapon": "KMG_Summoning_Natural_Tail1d12",
+          "weaponGuid": "d7ec01bae32a4d9086214f156ce52ecd",
+          "hit": false,
+          "bonus": 98,
+          "roll": 1,
+          "targetAC": 9,
+          "result": "Miss",
+          "autoMiss": false,
+          "autoHit": false,
+          "logged": true,
+          "critical": false
+        },
+        {
+          "weapon": "BiteDragonLarge1d8",
+          "weaponGuid": "c988aa874d11ff84d873508ddc9b928f",
+          "hit": false,
+          "bonus": 103,
+          "roll": 1,
+          "targetAC": 9,
+          "result": "Miss",
+          "autoMiss": false,
+          "autoHit": false,
+          "logged": true,
+          "critical": false
+        },
+        {
+          "weapon": "KMG_Summoning_Natural_Tail1d12",
+          "weaponGuid": "d7ec01bae32a4d9086214f156ce52ecd",
+          "hit": true,
+          "bonus": 98,
+          "roll": 5,
+          "targetAC": 9,
+          "result": "Hit",
+          "autoMiss": false,
+          "autoHit": false,
+          "logged": true,
+          "critical": false
+        },
+        {
+          "weapon": "BiteDragonLarge1d8",
+          "weaponGuid": "c988aa874d11ff84d873508ddc9b928f",
+          "hit": true,
+          "bonus": 103,
+          "roll": 5,
+          "targetAC": 9,
+          "result": "Hit",
+          "autoMiss": false,
+          "autoHit": false,
+          "logged": true,
+          "critical": false
+        }
+      ],
+      "attackOrigins": [
+        {
+          "frame": 46,
+          "weapon": "BiteDragonLarge1d8",
+          "opportunity": false,
+          "issuedCommandExecuting": true,
+          "rejectionFinished": true,
+          "targetImmuneDuringSetup": false
+        },
+        {
+          "frame": 72,
+          "weapon": "KMG_Summoning_Natural_Tail1d12",
+          "opportunity": false,
+          "issuedCommandExecuting": true,
+          "rejectionFinished": true,
+          "targetImmuneDuringSetup": false
+        },
+        {
+          "frame": 215,
+          "weapon": "BiteDragonLarge1d8",
+          "opportunity": false,
+          "issuedCommandExecuting": true,
+          "rejectionFinished": true,
+          "targetImmuneDuringSetup": false
+        },
+        {
+          "frame": 241,
+          "weapon": "KMG_Summoning_Natural_Tail1d12",
+          "opportunity": false,
+          "issuedCommandExecuting": true,
+          "rejectionFinished": true,
+          "targetImmuneDuringSetup": false
+        },
+        {
+          "frame": 393,
+          "weapon": "BiteDragonLarge1d8",
+          "opportunity": false,
+          "issuedCommandExecuting": true,
+          "rejectionFinished": true,
+          "targetImmuneDuringSetup": false
+        }
+      ],
+      "manualNativeAttackAttempts": 3,
+      "retries": [
+        {
+          "attempt": 2,
+          "frame": 191,
+          "maneuversBeforeRetry": 0,
+          "turnBased": true
+        },
+        {
+          "attempt": 3,
+          "frame": 369,
+          "maneuversBeforeRetry": 0,
+          "turnBased": true
+        }
+      ]
+    }
+  ],
+  "negativeInputDisclosure": "Only the exact owned first Crocodile manual-hold bite is AutoMiss. Its zero-valued die/bonus/AC fields are the native short-circuit, not a rolled zero. Later successful bites are issued non-opportunity commands with neither AutoMiss nor AutoHit. Positive grapple/maintain/rider outcomes remain native.",
+  "surface": {
+    "registeredGenerated": 976,
+    "publishedGenerated": 976,
+    "withheldGenerated": 0,
+    "nativeWrappers": 29,
+    "visibleChoices": 1005,
+    "crocodileRoots": 14,
+    "direCrocodileRoots": 6
+  },
+  "hiddenQualification": {
+    "candidate": "e3aeae630d51d27c45694fb9e92e9093048b1af9",
+    "evidence": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-EVIDENCE.json",
+    "stages": "11/11 smoke; 209/209 main; 20/20 crowd; 9/9 prepare; 9/9 cleanup; 5/5 fresh absence",
+    "delta": "Only Dire suppression plus guarded fixture code changed in production source since hidden e3; no mechanics, visuals, assets or serialized state changed. Complete publication main rerun on exact 155ada89."
+  },
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "20261006T0043094214625Z",
+    "completedAtUtc": "2026-10-06T00:59:25.6235093Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "lease": "runtime-20261006T004308Z-483528ab1b054156a37aa1ca40383f5d",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "noGame": true,
+    "noSharedLock": true,
+    "noStaging": true,
+    "journal": "artifacts/laptop-runtime-20261006T0043086031353Z/batch.json",
+    "journalSha256": "6928D7494A6953A7965127846D04797589E0E349F929BF8B225B92F8E5E190EF",
+    "deploymentManifestSha256": "f620df696c7f9a32c6c6d28ff7ab0fdaa6669e846bba0b8ba21e0386bfbe7db5",
+    "savePolicy": "Only guarded native KMG_AUTOMATION_WORKING smoke/main loads. No persistence write; prior closed hidden batch saved clean. No filesystem save access."
+  },
+  "acceptedEngineLimitations": [
+    "PASSIVE_CREATURE_SENSES_UNMODELED",
+    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED"
+  ],
+  "acceptedAdaptation": "SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "salvageImported": false,
+  "next": "Sprint 17, then complete Phase 2B closure and stop for owner review; Phase 2C authorized but deferred"
+}

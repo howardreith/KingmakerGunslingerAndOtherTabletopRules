@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "releaseVersion": "0.0.143",
+  "status": "INTEGRATION_CANDIDATE_NOT_QUALIFIED",
+  "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
+  "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
+  "qualifiedSummoningImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
+  "salamander": {
+    "disposition": "INCLUDED_TECHNICALLY_QUALIFIED",
+    "observationCandidate": "db1da016c8ded77550c619d9f672691bbb64e08d",
+    "productionChangedByObservation": false,
+    "smokeAssertions": 11,
+    "profileViewAssertions": 73,
+    "result": "PASS",
+    "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json#checkpointRelease143"
+  },
+  "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md",
+  "surface": { "generated": 1008, "wrappers": 29, "visible": 1037, "withheld": 0 },
+  "identities": { "entries": 2922, "active": 2920, "reserved": 2, "masterPrefix": 2660, "append": 262 },
+  "developmentChecks": {
+    "focusedSummoning": { "passed": 324, "failed": 0 },
+    "focusedMasterFeatures": { "passed": 412, "failed": 0 },
+    "persistenceRequests": { "roundTrips": 9, "historicalDefaults": 3, "rejected": 84 },
+    "actualLauncherWhatIf": { "valid": 21, "rejected": 17, "runtimeMutation": false },
+    "identityCorruptionFixtures": 4
+  },
+  "exactIntegrationSourceGate": "NOT RUN",
+  "closureGate": "NOT RUN",
+  "compatibilityGate": "NOT RUN",
+  "masterRegressionGate": "NOT RUN",
+  "releaseAuthorizedAfterAllGates": true,
+  "releasePublished": false,
+  "sprint18Started": false,
+  "permanentDeployment": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "next": "Run one full source/build/package gate on this exact integration commit,then same-artifact guarded closure,five profiles,master coexistence and native-owned trait-save protocol."
+}

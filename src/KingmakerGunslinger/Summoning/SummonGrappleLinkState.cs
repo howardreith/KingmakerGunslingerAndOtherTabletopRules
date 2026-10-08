@@ -83,10 +83,10 @@ namespace KingmakerGunslinger.Summoning
     ///
     /// The store is session-scoped, which the owner accepted on 2026-09-26
     /// (OwnerAcceptedEngineLimitation:
-    /// ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD). Kingmaker carries no
-    /// active grapple across a save and writes a unit part on these summons by
-    /// type without its contents, so a reload has neither a hold nor a record,
-    /// and must simply come back clean.
+    /// ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD). Native grapple/swallow
+    /// parts and their buffs can deserialize even though this session's exact
+    /// limb records do not. The area-load safeguard explicitly releases those
+    /// owned relationships; no active grapple is reconstructed across a load.
     ///
     /// Reading filters the records against the game's own state without
     /// writing: a link whose target is gone, freed, spat out or no longer held
@@ -96,8 +96,8 @@ namespace KingmakerGunslinger.Summoning
     /// leave the store through the release paths, which know the link has
     /// ended, or when their limb takes a new victim, so a read taken while the
     /// game is still wiring up a fresh hold cannot empty the store. A reload
-    /// is not such a moment: the game re-links nothing there, and the store
-    /// comes back empty with the holds it described.
+    /// is not such a moment: records come back empty and the load safeguard
+    /// reconciles any native parts/buffs that did deserialize.
     /// </summary>
     public sealed class UnitPartSummonGrappleLinks : UnitPart
     {
@@ -154,8 +154,8 @@ namespace KingmakerGunslinger.Summoning
     /// The link store: which limb of a summon established the hold on each
     /// target, and which mouths are occupied, for as long as the game holds
     /// them. Every read reconciles the records against the game's own state
-    /// first, so a stale link never answers a question, and a reload - which
-    /// keeps neither hold nor record - answers nothing at all.
+    /// first, so a stale link never answers a question. Records do not survive
+    /// a reload; the load safeguard releases the native owned state separately.
     /// </summary>
     internal static class SummonGrappleLinks
     {
@@ -207,9 +207,8 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// The weapon entity of the limb that established the hold on this
         /// target, read from the holder's body as it stands, or null when this
-        /// summon holds no such link - which is also what a reloaded game
-        /// answers, because neither the hold nor the record is carried across
-        /// a save.
+        /// summon holds no such link. A reloaded game has no session record;
+        /// its native owned relationship is reconciled by the load safeguard.
         /// </summary>
         internal static ItemEntityWeapon EstablishingWeapon(UnitEntityData holder,
             UnitEntityData target)
@@ -221,8 +220,8 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// The limb a stored record names for this target, whatever the game's
         /// own state says now. The persistence leg reads it to show that a
-        /// reloaded game holds no record at all, beside a hold it also does
-        /// not hold.
+        /// reloaded game holds no record; native parts/buffs are checked and
+        /// released independently rather than assumed absent.
         /// </summary>
         internal static ItemEntityWeapon StoredLimbOf(UnitEntityData holder,
             UnitEntityData target)

@@ -145,11 +145,16 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "b9e97f47cb86f2d45a0784a096ff8037", "6ab4526f94d2e3e439af0599a29b6675",
                 "085547b82eded104ba7e1870dd0563bf", "b0e472a49ff2a294f93faa3ab757a4a5",
-                "6efea466862f014469cec6c3f2b85cb7", "7661741dbb9604842a642457456fd0e4",
-                "e73864391ccf0894997928443a29d755", "d809b6c4ff2aaff4fa70d712a70f7d7b",
+                "6efea466862f014469cec6c3f2b85cb7", "d809b6c4ff2aaff4fa70d712a70f7d7b",
                 "case \"MagicalBeast\"", "case \"Humanoid\"" })
                 Assertions.True(builder.Contains(token),
                     "Sprint 3 natural builder contract is missing: " + token);
+            Assertions.Equal("7661741dbb9604842a642457456fd0e4",
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(5),
+                "Sprint 3 native +5 natural-armor binding changed.");
+            Assertions.Equal("e73864391ccf0894997928443a29d755",
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(7),
+                "Sprint 3 native +7 natural-armor binding changed.");
         }
 
         internal static void FrostGiantNaturesAllyWrappersReuseTheUnit()

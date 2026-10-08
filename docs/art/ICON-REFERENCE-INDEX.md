@@ -43,6 +43,15 @@ Read [the guide](../ICON-ART-GUIDE.md) and [catalog](../../assets-source/origina
 
 ## Approved pilot anchors
 
+Sprint 16 physical emblems extend the approved Rapid Reload/native-10 family,
+not the painted creature family. Original 512px sources and exact 64px exports
+for `crocodilian-sprint`, `crocodilian-death-roll` and
+`dire-crocodile-swallowed` are indexed by the canonical production manifest.
+The [Sprint 16 review](../../planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md)
+records all hashes, exact consumers and the inspected thumbnail sheet. They are
+technical candidates, not new approved anchors; `HumanReview:
+NOT_PERFORMED_NONBLOCKING`. Existing Crocodile/Dire portraits are preserved.
+
 [Historical contact sheet](../../reports/icon-overhaul/pilot-contact-sheet.png), [review page](../../reports/icon-overhaul/PILOT-REVIEW.html), [source/export hashes](../../assets-source/original-icons/icon-overhaul-v2/pilot/pilot-manifest.json). Nine individual painted subjects plus one original flat emblem. The owner approved all ten exact images and family direction in [PILOT-APPROVAL.md](../../reports/icon-overhaul/PILOT-APPROVAL.md). Its hash table is the approved anchor list; the review packet's pending caption predates that decision. General Ifrit demonstrates ancestry; Fire Affinity channeling; Fire Resistance defense; Elemental Strike an imbued attack; Hydraulic Maneuver/Trip distinct action silhouettes; the three strategic spells distinct travel/return identities; Rapid Reload the mundane emblem family. These are approved style anchors, with native UI acceptance still separate. All later production images now have their own recorded approval. Fire Affinity and Greater Teleport were revised before review; superseded originals remain in the revisions directory and are not approved anchors.
 
 ## Native references: local only

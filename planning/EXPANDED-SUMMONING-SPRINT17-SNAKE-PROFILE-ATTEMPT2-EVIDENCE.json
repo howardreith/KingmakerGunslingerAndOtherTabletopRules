@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "status": "GAME 38/38 PASS; OUTER BATCH ERROR; Sprint17 NOT QUALIFIED",
+  "candidate": "e1ba198ebd5afede8efbcacda2a46a91c0916cf6",
+  "sourceFingerprint": "fb1e68a5fd22eb48ca5e3bfcc8e1a7d64187794874b3748fc4e72cfe50980713",
+  "dllSha256": "e581cf78d3291b888f0a9dd255c846ec45f4e729be8762688347959f622831b2",
+  "dllMvid": "0023b838-c2ba-4f14-8bcf-fee8d9f324d2",
+  "packageSha256": "797e3d754540f1615dfa914fae9e0d04290cd338fd1e4fbd33a09e3ac6879305",
+  "packageMembers": 320,
+  "version": "0.0.141",
+  "prelaunch": {
+    "focused": 248,
+    "full": 2050,
+    "fullSeconds": 87.7,
+    "completeGateSeconds": 189.8,
+    "runtimePreflight": 496,
+    "orchestration": 81,
+    "provenance": 17,
+    "persistenceWiring": 11,
+    "persistenceScopes": 3,
+    "persistenceRejections": 19,
+    "crowdRoundTrips": 5,
+    "crowdRejections": 7,
+    "exactBuildAndStrictPackage": "PASS"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-06T17:10:00.7005624Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1710016226066Z-working-save-smoke",
+      "requestId": "20261006T1710016383003Z-01ac5a7d82404ffa9bd483ce08a4e50f",
+      "requestSha256": "2b2053c8caadf7c44481b4425175334695f8c8d05c57dab9b85e9f316f16c1a0",
+      "resultSha256": "f1102ce1ffb9ac6bea4228d535d1ceba8f4c7093762d0cf4a527303b8ea4198e",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "ea375d932aaebe05e0cb5451969589d748948fc3829d5097fba865dadd5384fd",
+      "processId": 35368,
+      "processStartedUtc": "2026-10-06T17:10:02.6906599Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T17:13:09.4607423Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-snake-profiles",
+      "requestId": "20261006T1713156581219Z-d7fa2b04560c4112a1804caae21f71a0",
+      "scenarioStatus": "PASS",
+      "assertions": 38,
+      "passed": 38,
+      "steamAppId": 640820,
+      "processId": 22020,
+      "processStartedUtc": "2026-10-06T17:13:16.4964422Z",
+      "completedAtUtc": "2026-10-06T17:16:26.3652740Z",
+      "orchestrationStatus": "PASS",
+      "saveWritingApiObserved": false,
+      "inOuterRunsArray": false
+    }
+  ],
+  "failureClassification": [
+    {
+      "scope": "Outer batch collector only",
+      "classification": "FIXTURE / ORCHESTRATION",
+      "error": "Missing profile observations or body scope leaked beyond the two hidden snakes.",
+      "cause": "Windows PowerShell5 @(... | ConvertFrom-Json) wrapped the22-row root array as one System.Object[] item; checks and bindings filters returned zero.",
+      "preservation": "Original ERROR batch journal and both request/results retained unchanged. Separate native PASS is not promoted to whole-batch PASS.",
+      "repair": "Pure source-controlled closed-slice parser uses direct assignment, exact38 assertion names/status, exact4 binding identities/fault flags and18 profile names/Boolean verdicts.113 orchestration tests PASS; read-only replay returns22 real rows. New exact candidate and affected batch next."
+    }
+  ],
+  "profiles": [
+    {
+      "key": "viper",
+      "scope": "actual untemplated private snake profile",
+      "scores": [
+        8,
+        13,
+        14,
+        1,
+        13,
+        2
+      ],
+      "size": "Medium",
+      "hitDice": 2,
+      "type": "KMG_Summoning_Natural_Viper_UnitType",
+      "hp": 13,
+      "hpBase": 9,
+      "ac": 14,
+      "touch": 11,
+      "flatFooted": 13,
+      "fortitude": 5,
+      "reflex": 4,
+      "will": 1,
+      "speed": 20,
+      "initiative": 5,
+      "blueprintSkillSeeds": {
+        "Acrobatics": 0,
+        "Physique": 0,
+        "Diplomacy": 0,
+        "Thievery": 0,
+        "LoreNature": 0,
+        "Perception": 0,
+        "Stealth": 0,
+        "UseMagicDevice": 0,
+        "LoreReligion": 0,
+        "KnowledgeWorld": 0,
+        "KnowledgeArcana": 0
+      },
+      "creationComponents": [
+        "AddClassLevels",
+        "SummonSerpentineSkillRanks"
+      ],
+      "perception": "total:9,ranks:1,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[4/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+      "stealth": "total:9,ranks:1,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[0/Size/|4/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+      "mobility": "total:9,ranks:0,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[8/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+      "check": "viper-scores",
+      "passed": true
+    },
+    {
+      "key": "viper",
+      "attackBonus": 2,
+      "attackRule": "RuleCalculateAttackBonusWithoutTarget",
+      "attackStat": "Dexterity",
+      "attackStatModifier": 1,
+      "limbCount": 1,
+      "weapon": "0e3e5a52e7824ae5ba52f9f5cef30752",
+      "secondary": false,
+      "grabPresent": false,
+      "check": "viper-one-bite",
+      "passed": true
+    },
+    {
+      "key": "constrictor-snake",
+      "scope": "actual untemplated private snake profile",
+      "scores": [
+        17,
+        17,
+        12,
+        1,
+        12,
+        2
+      ],
+      "size": "Medium",
+      "hitDice": 3,
+      "type": "KMG_Summoning_Natural_ConstrictorSnake_UnitType",
+      "hp": 19,
+      "hpBase": 13,
+      "ac": 15,
+      "touch": 13,
+      "flatFooted": 12,
+      "fortitude": 4,
+      "reflex": 6,
+      "will": 2,
+      "speed": 20,
+      "initiative": 3,
+      "blueprintSkillSeeds": {
+        "Acrobatics": 0,
+        "Physique": 0,
+        "Diplomacy": 0,
+        "Thievery": 0,
+        "LoreNature": 0,
+        "Perception": 0,
+        "Stealth": 0,
+        "UseMagicDevice": 0,
+        "LoreReligion": 0,
+        "KnowledgeWorld": 0,
+        "KnowledgeArcana": 0
+      },
+      "creationComponents": [
+        "AddClassLevels",
+        "SummonSerpentineSkillRanks"
+      ],
+      "perception": "total:12,ranks:1,classSkill:True,abilityScore:12,abilityModifier:1,modifiers:[3/None/Feature (SkillFocusPerception)|4/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+      "stealth": "total:11,ranks:1,classSkill:True,abilityScore:17,abilityModifier:3,modifiers:[0/Size/|4/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+      "mobility": "total:15,ranks:1,classSkill:True,abilityScore:17,abilityModifier:3,modifiers:[8/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+      "check": "constrictor-snake-scores",
+      "passed": true
+    },
+    {
+      "key": "constrictor-snake",
+      "attackBonus": 5,
+      "attackRule": "RuleCalculateAttackBonusWithoutTarget",
+      "attackStat": "Strength",
+      "attackStatModifier": 3,
+      "limbCount": 1,
+      "weapon": "0e3e5a52e7824ae5ba52f9f5cef30752",
+      "secondary": false,
+      "grabPresent": true,
+      "check": "constrictor-snake-one-bite",
+      "passed": true
+    }
+  ],
+  "liveBiteChecks": [
+    {
+      "strengthScore": 8,
+      "strengthModifier": -1,
+      "size": "Medium",
+      "weaponEntitySize": "Medium",
+      "calculatedWeaponSize": "Medium",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d4",
+          "bonus": -1,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "viper-base",
+      "passed": true
+    },
+    {
+      "strengthScore": 12,
+      "strengthModifier": 1,
+      "size": "Medium",
+      "weaponEntitySize": "Medium",
+      "calculatedWeaponSize": "Medium",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d4",
+          "bonus": 1,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "viper-strength-plus4",
+      "passed": true
+    },
+    {
+      "strengthScore": 7,
+      "strengthModifier": -2,
+      "size": "Medium",
+      "weaponEntitySize": "Medium",
+      "calculatedWeaponSize": "Medium",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d4",
+          "bonus": -2,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "viper-strength-seven",
+      "passed": true
+    },
+    {
+      "strengthScore": 16,
+      "strengthModifier": 3,
+      "size": "Large",
+      "weaponEntitySize": "Large",
+      "calculatedWeaponSize": "Large",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d6",
+          "bonus": 4,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "viper-native-animal-growth",
+      "passed": true
+    },
+    {
+      "strengthScore": 8,
+      "strengthModifier": -1,
+      "size": "Medium",
+      "weaponEntitySize": "Medium",
+      "calculatedWeaponSize": "Medium",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d4",
+          "bonus": -1,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "viper-modifiers-restored",
+      "passed": true
+    },
+    {
+      "strengthScore": 17,
+      "strengthModifier": 3,
+      "size": "Medium",
+      "weaponEntitySize": "Medium",
+      "calculatedWeaponSize": "Medium",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d4",
+          "bonus": 4,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "constrictor-snake-base",
+      "passed": true
+    },
+    {
+      "strengthScore": 21,
+      "strengthModifier": 5,
+      "size": "Medium",
+      "weaponEntitySize": "Medium",
+      "calculatedWeaponSize": "Medium",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d4",
+          "bonus": 7,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "constrictor-snake-strength-plus4",
+      "passed": true
+    },
+    {
+      "strengthScore": 7,
+      "strengthModifier": -2,
+      "size": "Medium",
+      "weaponEntitySize": "Medium",
+      "calculatedWeaponSize": "Medium",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d4",
+          "bonus": -2,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "constrictor-snake-strength-seven",
+      "passed": true
+    },
+    {
+      "strengthScore": 25,
+      "strengthModifier": 7,
+      "size": "Large",
+      "weaponEntitySize": "Large",
+      "calculatedWeaponSize": "Large",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d6",
+          "bonus": 10,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "constrictor-snake-native-animal-growth",
+      "passed": true
+    },
+    {
+      "strengthScore": 17,
+      "strengthModifier": 3,
+      "size": "Medium",
+      "weaponEntitySize": "Medium",
+      "calculatedWeaponSize": "Medium",
+      "damage": [
+        {
+          "type": "Physical",
+          "dice": "1d4",
+          "bonus": 4,
+          "form": "Bludgeoning, Piercing, Slashing",
+          "material": "0",
+          "enhancement": 0,
+          "enhancementTotal": 0,
+          "energy": null
+        }
+      ],
+      "check": "constrictor-snake-modifiers-restored",
+      "passed": true
+    }
+  ],
+  "bindings": [
+    {
+      "key": "viper",
+      "faultInjected": true,
+      "frames": 64,
+      "intact": true,
+      "originalAttached": false,
+      "donorRestored": true,
+      "nativeDonorPerceptionSeed": 5
+    },
+    {
+      "key": "viper",
+      "faultInjected": false,
+      "frames": 65,
+      "intact": true,
+      "originalAttached": true,
+      "donorRestored": false,
+      "nativeDonorPerceptionSeed": 5
+    },
+    {
+      "key": "constrictor-snake",
+      "faultInjected": true,
+      "frames": 63,
+      "intact": true,
+      "originalAttached": false,
+      "donorRestored": true,
+      "nativeDonorPerceptionSeed": 5
+    },
+    {
+      "key": "constrictor-snake",
+      "faultInjected": false,
+      "frames": 63,
+      "intact": true,
+      "originalAttached": true,
+      "donorRestored": false,
+      "nativeDonorPerceptionSeed": 5
+    }
+  ],
+  "restoration": {
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1709359050479Z",
+    "completedAtUtc": "2026-10-06T17:16:40.6949558Z",
+    "status": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T170935Z-c09a93e79a784d1a847e51866dc1fcc9\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcessesRemaining": [],
+    "staging": "absent; extraction archived",
+    "nativeSaveWrites": false,
+    "protectedSaveAccess": false
+  },
+  "hashes": [
+    {
+      "path": "artifacts/laptop-runtime-20261006T1709344496993Z/batch.json",
+      "sha256": "120b3bac56210a678d4f3f2d1925e3b9beb312ce0e370f6c120872931c5e4e9d"
+    },
+    {
+      "path": "artifacts/laptop-runtime-20261006T1709344496993Z/guarded-driver.ps1",
+      "sha256": "55a44316531976423b5b5d814e7ba8ba6a50bce27c97d1eedbec2ab61b8c5fb2"
+    },
+    {
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261006T1713156556745Z-disposable-expanded-summoning-snake-profiles/runtime-request.json",
+      "sha256": "3d15816084a54ae2712ec15a0c12a9137e9a7f994c7cfcb3f029d3b7ddd16bcd"
+    },
+    {
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261006T1713156556745Z-disposable-expanded-summoning-snake-profiles/runtime-result.json",
+      "sha256": "9d0c5f89d08fc4124a5769905b4b92b0f5cf2f61e8ae9fba4a3af2a9de6ced4e"
+    },
+    {
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261006T1713156556745Z-disposable-expanded-summoning-snake-profiles/orchestration.json",
+      "sha256": "243b97e132dba47a37fa6bb4cdab7207b6a035d2dfef9a65644652f0fdcc1e46"
+    },
+    {
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261006T1713156556745Z-disposable-expanded-summoning-snake-profiles/sprint17-original-body-review.json",
+      "sha256": "97340bcf648094d4068d8af26aacca1f4878e87558ec982e9c79ce6d2bb53d86"
+    },
+    {
+      "path": "artifacts/sprint17-snake-profile-source-pass-e1ba198e/KingmakerGunslinger-0.0.141-local-runtime.zip.build-local.json",
+      "sha256": "c3d9ff12d60af50554651b458ecf560778cf83118ea623e415956b87aea03f27"
+    },
+    {
+      "path": "artifacts/sprint17-snake-profile-repair-exact-e1ba198e-gate.log",
+      "sha256": "d6ad60c745324b03cca34dfa89146a507ec3487a987ec11e38e3b4c4686ee84e"
+    },
+    {
+      "path": "artifacts/sprint17-snake-profile-repair-exact-e1ba198e-preflight.log",
+      "sha256": "0a3c6e204b17ad9a243312b1d7333560dad8d9006e8f9d359b9e44caf77e7d36"
+    }
+  ],
+  "qualificationScope": "Profile/body slice only. Real commands, poison/constrict, AI, contacts, crowd, persistence, UI/routes, Salamander and full Sprint17 hidden/publication gates remain open.",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

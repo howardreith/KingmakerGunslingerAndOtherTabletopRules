@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.142-elemental-race-traits-and-content",
+  "milestone": "0.0.143-expanded-summoning-phase2b-checkpoint",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1214,7 +1214,7 @@
     "sprint30EntryApproved": true,
     "standaloneBinaryCount": 1,
     "standalonePackageEntries": 8,
-    "testCount": 877,
+    "testCount": 878,
     "testFailures": 0,
     "testRuns": 3
   },
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.142",
+  "version": "0.0.143",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2098,5 +2098,53 @@
     "stableTraitIdentityCount": 11,
     "visibleTraitCount": 4,
     "compatibilityRuntimeQualificationPending": true
+  },
+  "expandedSummoningCheckpoint143": {
+    "releaseVersion": "0.0.143",
+    "releaseInformationalVersion": "0.0.143-expanded-summoning-phase2b-checkpoint",
+    "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
+    "qualifiedPhase2BImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
+    "deterministicTestCount": 2462,
+    "packageMemberCount": 325,
+    "registeredManifestEntryCount": 2922,
+    "publishedGeneratedPlacements": 1008,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1037,
+    "salamanderIncluded": true,
+    "salamanderObservationCandidate": "db1da016c8ded77550c619d9f672691bbb64e08d",
+    "runtimeQualified": false,
+    "runtimeEvidence": [],
+    "compatibilityRuntimeQualificationPending": true,
+    "publicReleaseAuthorized": true,
+    "candidateOnly": true,
+    "sprint18Started": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "closureStatus": "NOT RUN; integration candidate in development",
+    "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md"
+  },
+  "expandedSummoningPhase2Development": {
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "effectiveMission": "October 5 owner directive: laptop sole Phase 2B source owner; PR 26 active; PR 27 salvage-only; stop after Phase 2B closure",
+    "authorizedSprintRange": "9-21",
+    "phase2CAuthorized": true,
+    "phase2CStartDeferredUntilPhase2BOwnerAcceptance": true,
+    "currentMissionLastSprint": 17,
+    "activeSprint": 17,
+    "deterministicTestCount": 2123,
+    "tranche2AClosed": true,
+    "publicReleaseAuthorized": false,
+    "candidateOnly": true,
+    "immutablePublishedArtifact": "KingmakerGunslinger-0.0.141-expanded-summoning-phase2a.zip sha256 c7aa3cecd3e9d773d260e3850566ccccf663e63a8d73ede05c17a9e5294dd2ce",
+    "registeredGeneratedPlacements": 1008,
+    "suppressedGeneratedPlacements": 0,
+    "publishedGeneratedPlacements": 1008,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1037,
+    "sprint12Published": true,
+    "sprint13Published": true,
+    "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
+    "mergeAuthorized": false,
+    "newReleaseAuthorized": false,
+    "sprint22Authorized": false
   }
 }

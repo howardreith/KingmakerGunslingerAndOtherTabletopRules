@@ -16,6 +16,10 @@ $runnerPath = Join-Path $root `
 . $commonPath
 $activeVersion = (Get-KmgModInfo -RepositoryRoot $root).Version
 
+# Positive fixtures use the installed candidate contract; pinned legacy and
+# deliberately invalid versions below remain historical/negative cases.
+$activeVersion = (Get-KmgModInfo -RepositoryRoot $root).Version
+
 $sourceStateFirst = Get-KmgSourceStateFingerprint -RepositoryRoot $root
 $sourceStateSecond = Get-KmgSourceStateFingerprint -RepositoryRoot $root
 
@@ -174,6 +178,18 @@ $expected = @(
     'summon-same-turn-compatibility-quickened',
     'summon-same-turn-compatibility-acadamae',
     'disposable-expanded-summoning-visual-contracts',
+    'disposable-expanded-summoning-crocodilians',
+    'disposable-expanded-summoning-serpentine-survey',
+    'disposable-expanded-summoning-serpentine-bodies',
+    'disposable-expanded-summoning-snake-profiles',
+    'disposable-expanded-summoning-snake-signatures',
+    'disposable-expanded-summoning-snake-commands',
+    'disposable-expanded-summoning-snake-final-review',
+    'disposable-expanded-summoning-rules',
+    'disposable-expanded-summoning-visual-lifecycle',
+    'disposable-expanded-summoning-projected-menu',
+    'disposable-expanded-summoning-pteranodon-fault-drill',
+    'observe-expanded-summoning-module-boundary',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
     'disposable-cord-of-stubborn-resolve',
@@ -340,7 +356,130 @@ Assert-True (($csharpNames -join "`n") -ceq ($powershellNames -join "`n")) `
     'csharp-powershell-catalog-sync'
 Assert-True (($expected | Sort-Object) -join "`n" -ceq
     ($powershellNames -join "`n")) 'documented-scenarios-retained'
+$crocodilianMetadata = Get-KmgRuntimeScenarioMetadata 'disposable-expanded-summoning-crocodilians'
+Assert-True ($crocodilianMetadata.RequiresSaveName -and
+    $crocodilianMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $crocodilianMetadata.RequiresManualInteraction -and
+    $crocodilianMetadata.UsesWorkingStageTimeouts) 'crocodilian-candidate-remains-guarded-working-save-only'
+$crocodilianRequestArguments = @{
+    Scenario = 'disposable-expanded-summoning-crocodilians'; ExpectedVersion = $activeVersion
+    TimeoutSeconds = 900; StartupTimeoutSeconds = 180; CatalogTimeoutSeconds = 180
+    SelectionTimeoutSeconds = 300; CompletionTimeoutSeconds = 900; MainMenuTimeoutSeconds = 180
+    ActionResolutionTimeoutSeconds = 180; ActionInvocationTimeoutSeconds = 30
+    DescriptorResolutionTimeoutSeconds = 30; LoadEntryTimeoutSeconds = 30
+    FingerprintTimeoutSeconds = 180; ExitAfterCompletion = $true
+    EvidenceDirectory = (Join-Path $script:KmgRuntimeEvidenceRoot 'crocodilian-preflight-test')
+}
+$crocodilianRequest = New-KmgRuntimeRequest @crocodilianRequestArguments `
+    -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
+Assert-True ($crocodilianRequest.expectedModVersion -ceq $activeVersion -and
+    $crocodilianRequest.exitAfterCompletion -and
+    $crocodilianRequest.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING') 'crocodilian-current-candidate-request-round-trips'
+foreach ($invalidCrocodilianParameters in @(@{}, @{ saveName='KMG_AUTOMATION_BASELINE' },
+    @{ saveName='KMG_AUTOMATION_WORKING'; extra='untrusted' })) {
+    Assert-Throws {
+        New-KmgRuntimeRequest @crocodilianRequestArguments -Parameters $invalidCrocodilianParameters
+    } 'crocodilian-invalid-save-or-unscoped-parameter-rejected'
+}
 $midgameDisposable = Get-KmgRuntimeScenarioMetadata 'disposable-midgame-firearms'
+$serpentineMetadata = Get-KmgRuntimeScenarioMetadata 'disposable-expanded-summoning-serpentine-survey'
+Assert-True ($serpentineMetadata.RequiresSaveName -and
+    $serpentineMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $serpentineMetadata.RequiresManualInteraction -and
+    $serpentineMetadata.UsesWorkingStageTimeouts) 'serpentine-research-is-guarded-working-save-only'
+$serpentineArguments = $crocodilianRequestArguments.Clone()
+$serpentineArguments.Scenario = 'disposable-expanded-summoning-serpentine-survey'
+$serpentineArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'serpentine-preflight-test'
+$serpentineRequest = New-KmgRuntimeRequest @serpentineArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($serpentineRequest.scenario -ceq $serpentineArguments.Scenario -and
+    $serpentineRequest.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $serpentineRequest.exitAfterCompletion) 'serpentine-research-request-round-trips'
+foreach ($invalidSerpentineParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='viper'})) {
+    Assert-Throws { New-KmgRuntimeRequest @serpentineArguments -Parameters $invalidSerpentineParameters } `
+        'serpentine-research-rejects-other-saves-or-unscoped-assets'
+}
+$serpentineBodyArguments = $serpentineArguments.Clone()
+$serpentineBodyArguments.Scenario = 'disposable-expanded-summoning-serpentine-bodies'
+$serpentineBodyArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'serpentine-body-preflight-test'
+$serpentineBodyMetadata = Get-KmgRuntimeScenarioMetadata $serpentineBodyArguments.Scenario
+$serpentineBodyRequest = New-KmgRuntimeRequest @serpentineBodyArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($serpentineBodyMetadata.RequiresSaveName -and $serpentineBodyMetadata.UsesWorkingStageTimeouts -and
+    $serpentineBodyMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $serpentineBodyRequest.scenario -ceq $serpentineBodyArguments.Scenario -and
+    $serpentineBodyRequest.exitAfterCompletion) 'serpentine-body-review-uses-exact-working-save-guard'
+foreach ($invalidBodyParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='viper'})) {
+    Assert-Throws { New-KmgRuntimeRequest @serpentineBodyArguments -Parameters $invalidBodyParameters } `
+        'serpentine-body-review-rejects-unscoped-input'
+}
+$snakeProfileArguments = $serpentineArguments.Clone()
+$snakeProfileArguments.Scenario = 'disposable-expanded-summoning-snake-profiles'
+$snakeProfileArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'snake-profile-preflight-test'
+$snakeProfileMetadata = Get-KmgRuntimeScenarioMetadata $snakeProfileArguments.Scenario
+$snakeProfileRequest = New-KmgRuntimeRequest @snakeProfileArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($snakeProfileMetadata.RequiresSaveName -and $snakeProfileMetadata.UsesWorkingStageTimeouts -and
+    $snakeProfileMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $snakeProfileRequest.scenario -ceq $snakeProfileArguments.Scenario -and
+    $snakeProfileRequest.exitAfterCompletion) 'snake-profile-review-uses-exact-working-save-guard'
+foreach ($invalidSnakeProfileParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='salamander'})) {
+    Assert-Throws { New-KmgRuntimeRequest @snakeProfileArguments -Parameters $invalidSnakeProfileParameters } `
+        'snake-profile-review-rejects-unscoped-input'
+}
+$snakeSignatureArguments = $snakeProfileArguments.Clone()
+$snakeSignatureArguments.Scenario = 'disposable-expanded-summoning-snake-signatures'
+$snakeSignatureArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'snake-signature-preflight-test'
+$snakeSignatureMetadata = Get-KmgRuntimeScenarioMetadata $snakeSignatureArguments.Scenario
+$snakeSignatureRequest = New-KmgRuntimeRequest @snakeSignatureArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($snakeSignatureMetadata.RequiresSaveName -and $snakeSignatureMetadata.UsesWorkingStageTimeouts -and
+    $snakeSignatureMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $snakeSignatureMetadata.RequiresManualInteraction -and
+    $snakeSignatureRequest.scenario -ceq $snakeSignatureArguments.Scenario -and
+    $snakeSignatureRequest.exitAfterCompletion) 'snake-signature-review-remains-native-working-save-only'
+foreach ($invalidSignatureParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; creature='salamander'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
+    Assert-Throws { New-KmgRuntimeRequest @snakeSignatureArguments -Parameters $invalidSignatureParameters } `
+        'snake-signature-review-rejects-extra-scope-and-save-write'
+}
+$snakeCommandArguments = $snakeSignatureArguments.Clone()
+$snakeCommandArguments.Scenario = 'disposable-expanded-summoning-snake-commands'
+$snakeCommandArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'snake-command-preflight-test'
+$snakeCommandMetadata = Get-KmgRuntimeScenarioMetadata $snakeCommandArguments.Scenario
+$snakeCommandRequest = New-KmgRuntimeRequest @snakeCommandArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($snakeCommandMetadata.RequiresSaveName -and $snakeCommandMetadata.UsesWorkingStageTimeouts -and
+    $snakeCommandMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $snakeCommandMetadata.RequiresManualInteraction -and
+    $snakeCommandRequest.scenario -ceq $snakeCommandArguments.Scenario -and $snakeCommandRequest.exitAfterCompletion) 'snake-command-review-uses-closed-working-save-guard'
+foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; creature='salamander'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
+    Assert-Throws { New-KmgRuntimeRequest @snakeCommandArguments -Parameters $invalid } 'snake-command-rejects-extra-scope-or-save-authority'
+}
+$snakeFinalArguments = $snakeCommandArguments.Clone()
+$snakeFinalArguments.Scenario = 'disposable-expanded-summoning-snake-final-review'
+$snakeFinalArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'snake-final-preflight-test'
+$snakeFinalMetadata = Get-KmgRuntimeScenarioMetadata $snakeFinalArguments.Scenario
+$snakeFinalRequest = New-KmgRuntimeRequest @snakeFinalArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+$snakeFinalNoExitArguments = $snakeFinalArguments.Clone()
+$snakeFinalNoExitArguments.ExitAfterCompletion = $false
+Assert-Throws { New-KmgRuntimeRequest @snakeFinalNoExitArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'} } 'snake-final-review-requires-automatic-exit'
+Assert-True ($snakeFinalMetadata.RequiresSaveName -and $snakeFinalMetadata.UsesWorkingStageTimeouts -and
+    $snakeFinalMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $snakeFinalMetadata.RequiresManualInteraction -and
+    $snakeFinalRequest.scenario -ceq $snakeFinalArguments.Scenario -and $snakeFinalRequest.exitAfterCompletion) 'snake-final-review-is-closed-working-save-only'
+foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; creature='salamander'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
+    Assert-Throws { New-KmgRuntimeRequest @snakeFinalArguments -Parameters $invalid } 'snake-final-rejects-extra-scope-and-save-authority'
+}
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `
     'midgame-firearms-is-autonomous-save-free'

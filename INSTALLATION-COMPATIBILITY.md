@@ -1,9 +1,13 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.141-expanded-summoning-phase2a` (UMM version `0.0.141`),
-archive `KingmakerGunslinger-0.0.141-expanded-summoning-phase2a.zip`. It
-publishes Expanded Summoning Sprints 9-11. All 68 Sprint 12 placements remain
-hidden. See [its release notes](docs/RELEASE-NOTES-0.0.141.md).
+Checkpoint candidate: `0.0.143-expanded-summoning-phase2b-checkpoint` (UMM
+version `0.0.143`), archive
+`KingmakerGunslinger-0.0.143-expanded-summoning-phase2b-checkpoint.zip`.
+It retains v0.0.142 traits/content and publishes qualified summoning Sprints
+12–17, including Salamander. Candidate qualification is pending; the current
+public release is v0.0.142. Install only the final standalone UMM ZIP after
+publication, not source archives or private reference bundles.
+See [checkpoint scope and limitations](docs/RELEASE-NOTES-0.0.143.md).
 
 Previous full release: `0.0.140-favored-class-integration` (UMM version
 `0.0.140`), archive

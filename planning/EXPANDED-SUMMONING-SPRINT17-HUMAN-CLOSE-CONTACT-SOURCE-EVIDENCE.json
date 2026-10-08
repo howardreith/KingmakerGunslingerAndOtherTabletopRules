@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE PASS; NOT RUNTIME QUALIFIED",
+  "recordedUtc": "2026-10-07T10:47:59Z",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "pullRequest": 26,
+  "sourceParent": "1ef236cb0bfeadf08fd291f01be8edd50fb9c15a",
+  "latestRuntime": {
+    "candidate": "487309ff2e750b5b44f120929e802c977c01a0b6",
+    "smoke": 11,
+    "humanPassed": 12,
+    "humanExecuted": 15,
+    "status": "FAIL, not waived",
+    "restoration": "VERIFIED 2026-10-07T09:58:17.2992027Z",
+    "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NULL-GEOMETRY-EVIDENCE.json"
+  },
+  "corrections": [
+    {
+      "classification": "PRODUCTION",
+      "scope": "Salamander manufactured spear only",
+      "finding": "Pinned native RuleCalculateAttacksCount suppresses BAB penalized iteratives for natural weapons; native full attack generated one spear plus one tail.",
+      "change": "Pass false for the spear type's m_IsNatural; keep Pixie sleep-bow default unchanged.",
+      "proofStillRequired": "Actual BAB8, manufactured spear, two native spear clips/events and one owned tail event."
+    },
+    {
+      "classification": "FIXTURE OBSERVATION",
+      "scope": "Both original hand/finger surfaces",
+      "finding": "The previous8cm grip test measured wrist origins, not the skin surface.",
+      "change": "Closed exact7 anatomical drivers per side; >=.5 combined influence and at least8 vertices; measure closest weighted skin point to the native spear shaft. Preserve wrist-origin distances separately.",
+      "thresholdsUnchanged": {
+        "gripMeters": 0.08,
+        "strikeMeters": 0.25
+      },
+      "prohibitedShortcutAbsent": "No forearm/opposite-hand selection, bone relocation, native-weapon movement, target-dependent deformation or widened threshold."
+    },
+    {
+      "classification": "ORIGINAL ASSET",
+      "scope": "originalTailSlap only",
+      "finding": "The original all-forward distal half extended beyond the spear opponent's close-melee position.",
+      "change": "Fixed authored close-melee S sweep; yaw/elevation interpolation preserves constant lengths and avoids the observed wind-up ground penetration.",
+      "unchanged": [
+        "2198 vertices",
+        "2216 polygons",
+        "26 native anatomical plus10 original tail drivers",
+        "geometry",
+        "UV",
+        "paint",
+        "native bind subset",
+        "1.4second duration/.6second act",
+        "weapon reach",
+        "native damage/roll ownership"
+      ],
+      "targetInput": false,
+      "nativeBonesChanged": false,
+      "productionVisualHookInstalled": false
+    },
+    {
+      "classification": "PACKAGE EXPECTATION",
+      "scope": "Reviewed human mesh pin",
+      "finding": "First complete gate failed on the prior export hash in validate-package.ps1.",
+      "change": "Update exact expected hash to independently repeated b5524a69 export; rerun the complete source gate. No validation disabled."
+    }
+  ],
+  "offline": {
+    "exportSha256": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19",
+    "matchingIndependentExports": 3,
+    "authoringTests": 10,
+    "evaluatedPoses": 29,
+    "minimumY": 0.036723580211400986,
+    "panels": 32,
+    "HumanReview": "NOT_PERFORMED_NONBLOCKING",
+    "runtimeInterpolationQualified": false,
+    "rejectedV3": {
+      "meshSha256": "3555805c7d91b93d6418783b5032f9e026e62763f164f411f05219d0de3097ec",
+      "time": 0.3,
+      "minimumY": -0.06132548302412033,
+      "disposition": "REJECTED; preserved private v3 exports/panels/log. Not packaged."
+    },
+    "hashes": {
+      "inputs": [
+        {
+          "path": "assets/sprint17-serpents/salamander-human-mesh.json",
+          "sha256": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19"
+        },
+        {
+          "path": "assets/sprint17-serpents/salamander-albedo.png",
+          "sha256": "127e9fe76ad853be6dd7653a27ef9f526d7ffedbcbe9c942c244d2e15cb10aa0"
+        },
+        {
+          "path": "assets-source/original-models/sprint17-serpents/generate_human_salamander.py",
+          "sha256": "d383b9efd342b735e2a1b050672b01ed290d51d98f85210243a9ebcea197586e"
+        },
+        {
+          "path": "assets-source/original-models/sprint17-serpents/test_human_salamander_prototype.py",
+          "sha256": "d8e67fbd52b6372bab72c1009400bf89570e5fc5459717f29cd5b62a5f6d9ecd"
+        },
+        {
+          "path": "artifacts/Inspect-Sprint17-ManufacturedAttack.ps1",
+          "sha256": "c0d60af1957ee51676879cb5558f6f1540ca94d893252f14670c0ea5294cc39c"
+        },
+        {
+          "path": "artifacts/sprint17-human-manufactured-attack-api-audit-2.txt",
+          "sha256": "76c24f3205d5fcb9349245c8a4d969fd4caf966449af0c7d433007033d2f35e1"
+        },
+        {
+          "path": "artifacts/sprint17-human-v3-pose-audit.log",
+          "sha256": "989bd0bf62187bca79da644fea0d1f06efe5dc1c06916ab70f734febb5b46c8b"
+        },
+        {
+          "path": "artifacts/sprint17-human-v4-pose-audit.log",
+          "sha256": "cc0ddaa2fa31048cbbf93ea28f0247f8bdd1588c2c7fbf32e3659057f452af17"
+        },
+        {
+          "path": "artifacts/sprint17-human-v4-final-authoring-tests.log",
+          "sha256": "b1a667005c2205263798f0351d54d88c4625c773097fb3f06e2d35020396f9f4"
+        },
+        {
+          "path": "artifacts/Audit-Sprint17-Human-V3-Poses.py",
+          "sha256": "b7135152b72f6f558fa20cd62ca49b44214b16512803b7361858727151bbfda3"
+        }
+      ],
+      "panels": [
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/recover/panels/salamander-clay-rest-party-camera.png",
+          "sha256": "1bb979034be270a21c92189c58ba83c2fa676662d9e9c2d55ec71090fad5ea83"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/recover/panels/salamander-clay-rest-side.png",
+          "sha256": "809194631cdf212b49f1a9f7b804ceab73c7e5d1aa7a3d1d30bee3582ef870c5"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/recover/panels/salamander-clay-rest-three-quarter.png",
+          "sha256": "280e120e3df6109cb57d056fb571d09876dab3d1d71c0154052474d300dab089"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/recover/panels/salamander-clay-rest-top.png",
+          "sha256": "cda6c3ef2c7a04885f181aaadbaadb240dd248bb85019a2b598e783c749e7abf"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/recover/panels/salamander-textured-rest-party-camera.png",
+          "sha256": "d58e3c475837690c6f90c150508739920b53fd6f15d7dbd515bfbc00c69f784e"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/recover/panels/salamander-textured-rest-side.png",
+          "sha256": "2a6b7b443e8302da89166e109e7c5dc6e64907e0062c9a149c6a34ff645719b1"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/recover/panels/salamander-textured-rest-three-quarter.png",
+          "sha256": "4b86a95a0dab01f4e0e3c10c0441da8c12dfaaf0b0ec3fe7a244fb2bbca74d3e"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/recover/panels/salamander-textured-rest-top.png",
+          "sha256": "e0eca313746389f25cb52ea08fedc903a4c31ff66053d5b1851fa8f772072252"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-clay-rest-party-camera.png",
+          "sha256": "8571013e72030333fab9c00ed4cf38e5c4fbb105b357ef936655bdafae70249b"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-clay-rest-side.png",
+          "sha256": "8bd1e060709215d7ea7b862bb6b6c7f849dbd54bd40a5a1d6eb6338423fce02b"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-clay-rest-three-quarter.png",
+          "sha256": "e7ce3bd6fcae9bdf97f978db2e81ffb623b50758829933ad441e9be86df5d54b"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-clay-rest-top.png",
+          "sha256": "cda96d5b649d0c76e6fe93733e4df0c06f5ad2b8c2983340de222eee842d0283"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-silhouette-rest-party-camera.png",
+          "sha256": "bd3197088daf632dfbd6f8a2c5cf9ac5f13776dc57c36a9be7460ee6f8fa2303"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-silhouette-rest-side.png",
+          "sha256": "b817709c7603eaed6a535835e3ed6e82bfadc82fa0323740a36f26f5dbb3d6eb"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-silhouette-rest-three-quarter.png",
+          "sha256": "edd69d31b43a3a61042dc8a6f07b7bdda18734726359c7cd2938179e2fa00d31"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-silhouette-rest-top.png",
+          "sha256": "1bad77726cf8340fbf1b172ce719dcb96b4acf8442d679c97746159048b569ce"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-textured-rest-party-camera.png",
+          "sha256": "13d6d064ca49528cb42719acfbb53f356ad1ab62646ecbb975bdc3ade78bd000"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-textured-rest-side.png",
+          "sha256": "c312579fb39524f1a9a7933cc886c070ec1f1c4c7afb0f950528c5aca978fcc7"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-textured-rest-three-quarter.png",
+          "sha256": "0ef20ec30d6e39467d6d030afec5f12e4f0a10189f4d4e2c7630bccc27f75db1"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-textured-rest-top.png",
+          "sha256": "9a4bc606e64ca22f0146e18a04545be936de3f03989c1c6a33f7e8bbe85ceb5d"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-unlit-rest-party-camera.png",
+          "sha256": "c61fbefc750699a5f4d30b2557f95a1fc152612785ab254b637dd7a964e5896e"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-unlit-rest-side.png",
+          "sha256": "ca7ecdc25635c50ec02fe5870bb48b598ca9f3bc666eda6318adbcbc478035a4"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-unlit-rest-three-quarter.png",
+          "sha256": "d0d8a1687687653eeab0ce0d74be93bf020c8eae30ab1abe063f161e92e01a83"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/rest/panels/salamander-unlit-rest-top.png",
+          "sha256": "41becaeaf1aad052ddde33ae6d116a30eb0a294d09267445426d4c49fb474b8a"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/strike/panels/salamander-clay-rest-party-camera.png",
+          "sha256": "0fe761618ad61c0882382088b3ed413a6987c0b6f6682e9b1410f8f514db97b3"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/strike/panels/salamander-clay-rest-side.png",
+          "sha256": "34c36413fe2bd36eb2adfe5ddc5916e154e697e8b4262496c3072ef281b23363"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/strike/panels/salamander-clay-rest-three-quarter.png",
+          "sha256": "3df9d84cff5aa33f180e00d89c04b889183d89ac43200a1319d88689ed78bd2c"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/strike/panels/salamander-clay-rest-top.png",
+          "sha256": "b3d5b8657e59faacdfcd63c8b7799e20703d1bc0d11156e55f3ad9c8e0111e59"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/strike/panels/salamander-textured-rest-party-camera.png",
+          "sha256": "c31f185ce7fccd1df225c130bbde2908079b4f7aee58ce209b256e431e98f3e2"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/strike/panels/salamander-textured-rest-side.png",
+          "sha256": "26d0ddb1d13e30a33c6ed25a0f368ebc2992a0e60b4779e1fb913f593b7086ed"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/strike/panels/salamander-textured-rest-three-quarter.png",
+          "sha256": "2f1c346387c03d49333688b2ff94057897235aff6f8e98f8d50c1405e43b2b7a"
+        },
+        {
+          "path": "artifacts/private-sprint17/human-salamander-v4/strike/panels/salamander-textured-rest-top.png",
+          "sha256": "8de07ca6704d59c9338b9feaacf77b1617b3bc9d408919bfd531bc714c789491"
+        }
+      ]
+    }
+  },
+  "sourceGates": {
+    "focused": 294,
+    "unfilteredDomain": 2096,
+    "domainSeconds": 83.4,
+    "completeSeconds": 180.7,
+    "cleanExactReferences": 14,
+    "strictPackageMembers": 321,
+    "passed": true,
+    "logs": [
+      {
+        "path": "artifacts/sprint17-human-close-contact-final-source-focused.log",
+        "sha256": "e19829baa29ce947dbff17aa52ebb74bf555d08132869aacb45ae01f14e40154"
+      },
+      {
+        "path": "artifacts/sprint17-human-close-contact-final-source-gate.log",
+        "sha256": "1d4a348da0146a9f4ddda7516d7b802b16ef0551e9647f1db39e2cdaeabeec92"
+      }
+    ]
+  },
+  "sourceArtifact": {
+    "schemaVersion": 1,
+    "generatedAtUtc": "2026-10-07T10:44:32.7570273Z",
+    "generator": "scripts/Build-Local.ps1",
+    "repositoryRoot": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005",
+    "commit": "1ef236cb0bfeadf08fd291f01be8edd50fb9c15a",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "sourceStateSha256": "c5eb7e4adde9b773190c243404dd72f57e9e738e771feab65cb9045e6b93a2ef",
+    "version": "0.0.141",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\local-runtime\\0.0.141\\KingmakerGunslinger-0.0.141-local-runtime.zip",
+    "packageSha256": "10b22147b8b74b01b6dc1e3332f0f5d0c04cc87edc1950f1bab414e2529c4b4f",
+    "dllSha256": "3768bb5e6689f64863441a6fd70507f0b8f45e1f991d47e66e943ff9360d03e9",
+    "dllMvid": "dadd9609-91ce-412d-9209-52a39a77a2ae",
+    "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+    "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "validated": true,
+    "archive": "artifacts/sprint17-human-close-contact-source-pass",
+    "dirtySourceAtParent": true,
+    "notAnExactCommittedRuntimeCandidate": true
+  },
+  "rejectedPackageGate": {
+    "archive": "artifacts/sprint17-human-close-contact-stale-package-pin-failure",
+    "compileZipSha256": "ff77783d959631383c34c5e68f234f24db5c4ed6ae8d49a10ef55e9808ec60a1",
+    "packageSha256": "10b22147b8b74b01b6dc1e3332f0f5d0c04cc87edc1950f1bab414e2529c4b4f",
+    "logSha256": "2757ee1e7af444e7c8e3e4147e63fa4fb9c05c87b1f9b40f2b423e8c61bd7a99",
+    "classification": "Stale strict checksum expectation",
+    "runtimeExecuted": false
+  },
+  "nativeReadOnlyAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "nativeMethodsInvoked": false,
+    "rawIlCommitted": false
+  },
+  "next": "Commit/push; rebuild exact clean head and all prelaunch/harness gates; fresh Steam640820 smoke11 and all15 human checks; acquire lease before snapshot, restore actual installation exactly. Then printed Salamander mechanics, one same-artifact Sprint17 hidden/publication, fullPhase2B closure, stop owner review.",
+  "machine": {
+    "runtimeStarted": false,
+    "noGameAtSourceBoundary": true,
+    "noRuntimeLeaseOrStaging": true,
+    "lastExactRestoration": "136 files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3; snapshot restored, not forced historical baseline"
+  },
+  "qualificationLimits": [
+    "No transfer of earlier snake or human runtime evidence",
+    "All32 new snake roots remain hidden",
+    "FullSprint17 NOT QUALIFIED",
+    "Sprints14-16 COMPLETE/PUBLISHED",
+    "DATA branch salvage-only/ZERO PORTS",
+    "Phase2C authorized but start deferred; no Sprints18-22 in mission"
+  ]
+}

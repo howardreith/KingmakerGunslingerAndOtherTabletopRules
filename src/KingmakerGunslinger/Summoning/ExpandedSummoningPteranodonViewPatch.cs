@@ -66,6 +66,22 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_Hyena";
         internal const string GoblinDogBlueprintName =
             "KMG_Summoning_Unit_GoblinDog";
+        internal const string WolverineBlueprintName =
+            "KMG_Summoning_Unit_Wolverine";
+        internal const string ShadowMastiffBlueprintName =
+            "KMG_Summoning_Unit_ShadowMastiff";
+        internal const string PoisonousFrogBlueprintName =
+            "KMG_Summoning_Unit_PoisonousFrog";
+        internal const string FireBeetleBlueprintName =
+            "KMG_Summoning_Unit_FireBeetle";
+        internal const string GiantAntWorkerBlueprintName =
+            "KMG_Summoning_Unit_GiantAntWorker";
+        internal const string GiantAntSoldierBlueprintName =
+            "KMG_Summoning_Unit_GiantAntSoldier";
+        internal const string GiantAntDroneBlueprintName =
+            "KMG_Summoning_Unit_GiantAntDrone";
+        internal const string GiantStagBeetleBlueprintName =
+            "KMG_Summoning_Unit_GiantStagBeetle";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -89,7 +105,17 @@ namespace KingmakerGunslinger.Summoning
                 { WoollyRhinocerosBlueprintName, "woolly-rhinoceros" },
                 { DireRatBlueprintName, "dire-rat" },
                 { HyenaBlueprintName, "hyena" },
-                { GoblinDogBlueprintName, "goblin-dog" }
+                { GoblinDogBlueprintName, "goblin-dog" },
+                { WolverineBlueprintName, "wolverine" },
+                { ShadowMastiffBlueprintName, "shadow-mastiff" },
+                { PoisonousFrogBlueprintName, "poisonous-frog" },
+                { FireBeetleBlueprintName, "fire-beetle" },
+                { GiantAntWorkerBlueprintName, "giant-ant-worker" },
+                { GiantAntSoldierBlueprintName, "giant-ant-soldier" },
+                { GiantAntDroneBlueprintName, "giant-ant-drone" },
+                { GiantStagBeetleBlueprintName, "giant-stag-beetle" },
+                { "KMG_Summoning_Unit_Crocodile", "crocodile" },
+                { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -97,7 +123,19 @@ namespace KingmakerGunslinger.Summoning
         private static readonly HashSet<string> Sprint12QuadrupedKeys =
             new HashSet<string>(StringComparer.Ordinal)
             { "dire-rat", "hyena", "goblin-dog" };
+        private static readonly HashSet<string> Sprint13CreatureKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "wolverine", "shadow-mastiff", "poisonous-frog" };
+        // The whole insect family on the Giant Spider rig, Sprints 14 and 15
+        // together: they share a donor, a bone policy and an asset pipeline, so
+        // every seam that asks "is this one of the insects" wants all five.
+        private static readonly HashSet<string> Sprint14InsectKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "fire-beetle", "giant-ant-worker", "giant-ant-soldier",
+              "giant-ant-drone", "giant-stag-beetle" };
         private const string MainTexture = "_MainTex";
+        private static bool IsCrocodilian(string key)
+        { return CrocodilianVisualPolicy.Keys.Contains(key, StringComparer.Ordinal); }
 
         internal static bool HandlesBlueprintName(string blueprintName)
         {
@@ -146,7 +184,9 @@ namespace KingmakerGunslinger.Summoning
             internal Mesh Mesh;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
+            internal CrocodilianAttackVisualPose CrocodilianPose;
             internal StirgeVisualTouch StirgeTouch;
+            internal FireBeetleVisualGlow BeetleGlow;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -278,6 +318,29 @@ namespace KingmakerGunslinger.Summoning
                     out albedo, out status))
                     return Fallback(status);
             }
+            else if (Sprint13CreatureKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetSprint13CreatureVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
+            else if (Sprint14InsectKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetSprint14InsectVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
+            else if (IsCrocodilian(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetCrocodilianVisual(
+                    attachment.VisualKey, out source, out boneNames, out albedo, out status))
+                    return Fallback(status);
+            }
             else
             {
                 if (!PteranodonAssetRuntime.TryGetMembrane(out source,
@@ -335,7 +398,12 @@ namespace KingmakerGunslinger.Summoning
                                 ? StirgeVisualName : (UngulateKeys.Contains(
                                     attachment.VisualKey) ||
                                     Sprint12QuadrupedKeys.Contains(
-                                        attachment.VisualKey))
+                                        attachment.VisualKey) ||
+                                    Sprint13CreatureKeys.Contains(
+                                        attachment.VisualKey) ||
+                                    Sprint14InsectKeys.Contains(
+                                        attachment.VisualKey) ||
+                                    IsCrocodilian(attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
                 mesh.name = visualName;
@@ -382,11 +450,27 @@ namespace KingmakerGunslinger.Summoning
                         .AddComponent<GiantWaspVisualSting>();
                     attachment.WaspSting.Configure(view, donor);
                 }
+                if (IsCrocodilian(attachment.VisualKey))
+                {
+                    attachment.CrocodilianPose = view.gameObject
+                        .AddComponent<CrocodilianAttackVisualPose>();
+                    attachment.CrocodilianPose.Configure(attachment.VisualKey, view, donor);
+                }
                 if (attachment.VisualKey == "stirge")
                 {
                     attachment.StirgeTouch = view.gameObject
                         .AddComponent<StirgeVisualTouch>();
                     attachment.StirgeTouch.Configure(view, donor);
+                }
+                if (attachment.VisualKey == "fire-beetle")
+                {
+                    // A light this view owns, matching the creature's painted
+                    // glands. It carries no rule: Kingmaker has no
+                    // mechanics-layer illumination model and this does not add
+                    // one.
+                    attachment.BeetleGlow = view.gameObject
+                        .AddComponent<FireBeetleVisualGlow>();
+                    attachment.BeetleGlow.Configure(view, donor);
                 }
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
@@ -406,13 +490,46 @@ namespace KingmakerGunslinger.Summoning
                     UnityEngine.Object.Destroy(attachment.WaspSting);
                     attachment.WaspSting = null;
                 }
+                if (attachment.CrocodilianPose != null)
+                {
+                    attachment.CrocodilianPose.enabled = false;
+                    UnityEngine.Object.Destroy(attachment.CrocodilianPose);
+                    attachment.CrocodilianPose = null;
+                }
                 if (attachment.StirgeTouch != null)
                 {
                     UnityEngine.Object.Destroy(attachment.StirgeTouch);
                     attachment.StirgeTouch = null;
                 }
+                if (attachment.BeetleGlow != null)
+                {
+                    // A rollback after the glow attached must not leave its
+                    // carrier behind while the swap is reverted.
+                    attachment.BeetleGlow.Release(true);
+                    UnityEngine.Object.Destroy(attachment.BeetleGlow);
+                    attachment.BeetleGlow = null;
+                }
+                // ReinitMaterials instantiates a controller-driven clone. On a
+                // post-swap fault, capture that exact owned family before
+                // Revert drops its references. Donor/cache materials survive.
+                var rollbackMaterials = new HashSet<Material>();
+                if (material != null) rollbackMaterials.Add(material);
+                if (swapped && IsCrocodilian(attachment.VisualKey))
+                {
+                    string ownedName = "KMG_" + attachment.VisualKey + "_Original";
+                    foreach (Material candidate in donor.sharedMaterials)
+                        if (candidate != null && candidate.name.StartsWith(ownedName,
+                                StringComparison.Ordinal)) rollbackMaterials.Add(candidate);
+                    IList<Material> driven = ControllerMaterials(
+                        donor.GetComponentInParent<StandardMaterialController>());
+                    if (driven != null)
+                        foreach (Material candidate in driven)
+                            if (candidate != null && candidate.name.StartsWith(ownedName,
+                                    StringComparison.Ordinal)) rollbackMaterials.Add(candidate);
+                }
                 if (swapped) Revert(attachment);
-                if (material != null) UnityEngine.Object.Destroy(material);
+                foreach (Material candidate in rollbackMaterials)
+                    if (candidate != null) UnityEngine.Object.Destroy(candidate);
                 if (mesh != null) UnityEngine.Object.Destroy(mesh);
                 attachment.Material = null;
                 attachment.Mesh = null;
@@ -427,11 +544,44 @@ namespace KingmakerGunslinger.Summoning
         /// the tint the donor material carried, which is reset to white so the
         /// albedo renders as painted.
         /// </summary>
-        private static string DressMaterial(Material material, Texture2D albedo)
+        /// <summary>
+        /// Kingmaker's dynamic shader has two fog-of-war treatments. With
+        /// <c>FOG_OF_WAR_DISSOLVE_ON</c> a fogged creature dissolves and keeps
+        /// its painting; without it the same creature is drawn as a flat
+        /// untextured silhouette. Which one a donor material carries is the
+        /// donor's own business, and the Worg carries the flat one while the
+        /// Dog and Wolf carry the dissolve. A cloned material inherits that,
+        /// so an original mesh borrowing the Worg rig rendered as a solid blue
+        /// shape the moment it stepped outside the party's vision, while the
+        /// same code on the other two donors looked right. Evidence: guarded
+        /// creature review `20261001T1812593825736Z`, where the Goblin Dog was
+        /// flat blue in all four live party-camera frames and was the only one
+        /// of the three whose material lacked the keyword.
+        ///
+        /// The clone is project-owned and instance-local, so it is given the
+        /// dissolve treatment regardless of donor. The donor material is never
+        /// touched, and <c>_Dissolve</c> already starts at 0, so this changes
+        /// how the project's own mesh is shaded in fog and nothing else.
+        /// </summary>
+        private const string FogOfWarAffectedKeyword = "FOG_OF_WAR_AFFECTED";
+        private const string FogOfWarDissolveKeyword = "FOG_OF_WAR_DISSOLVE_ON";
+
+        internal static string DressMaterial(Material material, Texture2D albedo)
         {
             material.SetTexture(MainTexture, albedo);
             material.SetTextureScale(MainTexture, Vector2.one);
             material.SetTextureOffset(MainTexture, Vector2.zero);
+
+            string donorKeywords = material.shaderKeywords == null ||
+                material.shaderKeywords.Length == 0 ? "<none>" :
+                string.Join("|", material.shaderKeywords);
+            string fogTreatment = "donor";
+            if (material.IsKeywordEnabled(FogOfWarAffectedKeyword) &&
+                !material.IsKeywordEnabled(FogOfWarDissolveKeyword))
+            {
+                material.EnableKeyword(FogOfWarDissolveKeyword);
+                fogTreatment = "dissolve-enabled";
+            }
 
             var declared = new List<string>();
             var cleared = new List<string>();
@@ -464,7 +614,9 @@ namespace KingmakerGunslinger.Summoning
                 "<none>" : string.Join(",", declared.ToArray())) +
                 ";cleared=" + (cleared.Count == 0 ?
                 "<none>" : string.Join(",", cleared.ToArray())) +
-                ";donorTint=" + tint + ";donorEmission=" + emission;
+                ";donorTint=" + tint + ";donorEmission=" + emission +
+                ";donorKeywords=" + donorKeywords + ";fogTreatment=" +
+                fogTreatment;
         }
 
         private static string Describe(Color value)
@@ -492,6 +644,13 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.CrocodilianPose != null)
+            {
+                attachment.CrocodilianPose.enabled = false;
+                attachment.CrocodilianPose.RestoreNative();
+                UnityEngine.Object.DestroyImmediate(attachment.CrocodilianPose);
+                attachment.CrocodilianPose = null;
+            }
             SkinnedMeshRenderer donor = attachment.Donor;
             if (donor == null) return;
             donor.sharedMesh = attachment.OriginalMesh;
@@ -512,8 +671,11 @@ namespace KingmakerGunslinger.Summoning
                 (attachment.VisualKey != "giant-wasp" &&
                  attachment.VisualKey != "stirge" &&
                  !UngulateKeys.Contains(attachment.VisualKey) &&
-                 !Sprint12QuadrupedKeys.Contains(
-                    attachment.VisualKey))) return;
+                 !Sprint12QuadrupedKeys.Contains(attachment.VisualKey) &&
+                 !Sprint13CreatureKeys.Contains(attachment.VisualKey) &&
+                 !Sprint14InsectKeys.Contains(
+                    attachment.VisualKey) &&
+                 !IsCrocodilian(attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
                     ? GiantWaspVisualName
@@ -525,6 +687,17 @@ namespace KingmakerGunslinger.Summoning
                 attachment.StirgeTouch.enabled = false;
                 UnityEngine.Object.DestroyImmediate(attachment.StirgeTouch);
                 attachment.StirgeTouch = null;
+            }
+            if (attachment.BeetleGlow != null)
+            {
+                // The component's own release destroys the carrier and the
+                // light in this frame; destroying the component alone would
+                // have queued the carrier for the end of it, which is the
+                // artefact a crowd of expiring beetles would show.
+                attachment.BeetleGlow.Release(true);
+                attachment.BeetleGlow.enabled = false;
+                UnityEngine.Object.DestroyImmediate(attachment.BeetleGlow);
+                attachment.BeetleGlow = null;
             }
             var materials = new HashSet<Material>();
             if (attachment.Material != null)
@@ -561,7 +734,7 @@ namespace KingmakerGunslinger.Summoning
         /// to intact and the view's material controller re-reading its
         /// renderers, so the game's own fades and tints include it.
         /// </summary>
-        private static string AdoptByMaterialController(UnitEntityView view,
+        internal static string AdoptByMaterialController(UnitEntityView view,
             SkinnedMeshRenderer donor, Material material)
         {
             string dissolve = "<none>";

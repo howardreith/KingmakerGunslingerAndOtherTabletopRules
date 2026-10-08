@@ -20,6 +20,7 @@ using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.EntitySystem.Entities;
@@ -364,6 +365,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint12DonorRigsDetail;
             internal bool Sprint12OriginalVisuals;
             internal string Sprint12OriginalVisualsDetail;
+            internal bool Sprint12ContactAllergy;
+            internal string Sprint12ContactAllergyDetail;
+            internal bool Sprint12PrintedDefences;
+            internal string Sprint12PrintedDefencesDetail;
+            internal bool Sprint12DiseaseOutlivesSource;
+            internal string Sprint12DiseaseOutlivesSourceDetail;
+            internal bool Sprint13PrintedRoutines;
+            internal string Sprint13PrintedRoutinesDetail;
+            internal bool Sprint13WolverineRage;
+            internal string Sprint13WolverineRageDetail;
+            internal bool Sprint13RageLifetime;
+            internal string Sprint13RageLifetimeDetail;
+            internal bool Sprint14DonorRigs;
+            internal string Sprint14DonorRigsDetail;
+            internal bool Sprint14Profiles;
+            internal string Sprint14ProfilesDetail;
+            internal bool Sprint14TripDefence;
+            internal string Sprint14TripDefenceDetail;
+            internal bool Sprint14PoisonDiscrimination;
+            internal string Sprint14PoisonDiscriminationDetail;
+            internal bool Sprint14Senses;
+            internal string Sprint14SensesDetail;
+            internal bool Sprint14WaspRequalification;
+            internal string Sprint14WaspRequalificationDetail;
+            internal bool Sprint15Profiles;
+            internal string Sprint15ProfilesDetail;
+            internal bool Sprint15Defences;
+            internal string Sprint15DefencesDetail;
+            internal bool Sprint15DronePoison;
+            internal string Sprint15DronePoisonDetail;
+            internal bool Sprint13ShadowMastiffBay;
+            internal string Sprint13ShadowMastiffBayDetail;
+            internal bool Sprint13ShadowBlend;
+            internal string Sprint13ShadowBlendDetail;
+            internal bool Sprint13DonorRigs;
+            internal string Sprint13DonorRigsDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -536,6 +573,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ElementalCharacterCreationRoutingObserver.Arm(decision.Request);
             IconConsumerCensus.Arm(decision.Request);
             var runner = new RuntimeTestRunner(decision.Request, context);
+            runner.StartSprint17LoadResetTrace();
             context.ModEntry.OnUpdate += runner.OnUpdate;
             context.Logger.Info(
                 "runtime-test",
@@ -642,6 +680,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     WriteLifecycleStage("onupdate-entered");
                     WriteLifecycleStage("runner-onupdate-entered");
                 }
+                // A failed bootstrap is not a timeout. The runner waits for
+                // ModContext.IsReady, which only becomes true once patches are
+                // installed; if blueprint initialization threw, that never
+                // happens and every scenario used to expire after its whole
+                // startup budget reporting the stage it last recorded and an
+                // empty exception summary - which says nothing about the real
+                // cause. The context already knows it failed, so say so at
+                // once and name it.
+                if (_manualElapsed == null && _context != null &&
+                    _context.IsFailed)
+                {
+                    _trace.Record("bootstrap-failed",
+                        "stage=" + _workingStartupStage +
+                        "; the mod's own initialization failed, so no scenario can run");
+                    RuntimeTestResult bootstrapFailure = CreateResult("FAIL",
+                        null, null);
+                    bootstrapFailure.Diagnostics.Add("bootstrapFailedAtStage=" +
+                        _workingStartupStage);
+                    bootstrapFailure.Diagnostics.Add(
+                        "cause=mod-initialization-failed; see the Unity Mod Manager log for the registration exception");
+                    Complete(bootstrapFailure);
+                    return;
+                }
                 if (_manualElapsed == null &&
                     _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
                 {
@@ -668,7 +729,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !RuntimeTestScenarioCatalog.IsSummonSameTurnScenario(
                         _request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
-                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules &&
+                    !RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(_request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
@@ -2029,7 +2090,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
-                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                    RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
@@ -2154,7 +2215,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
-                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                    RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
@@ -2756,6 +2817,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningVisualContracts)
                 {
                     Complete(RunDisposableExpandedSummoningVisualContracts());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSerpentineBodies ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeSignatures ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeFinalReview)
+                {
+                    PollSprint17Bodies();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSerpentineSurvey)
+                {
+                    PollSprint17RigSurvey();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningCrocodilians)
+                {
+                    PollExpandedSummoningCrocodilianSurvey();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningRules)
@@ -3826,6 +3906,21 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void StartExpandedSummoningPersistence()
         {
+            if (RosterPersistenceScope)
+            {
+                StartRosterPersistence();
+                return;
+            }
+            if (Sprint17PersistenceScope)
+            {
+                StartSprint17Persistence();
+                return;
+            }
+            if (Sprint16PersistenceScope)
+            {
+                StartSprint16Persistence();
+                return;
+            }
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
@@ -3864,6 +3959,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // of Insight before the save, so the reload proves the one
                     // use survives exactly once and never doubles.
                     ArmExpandedSummoningPersistenceFlash(
+                        _expandedSummoningPersistencePreparedUnits);
+                    // Same order and same reason: the Wolverine is raging
+                    // before the save, so the reload has something to lose.
+                    ArmExpandedSummoningPersistenceRage(
                         _expandedSummoningPersistencePreparedUnits);
                     // The holds live as long as the arming does: taken here,
                     // with each victim beside its holder and each holder's
@@ -3906,6 +4005,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceFlashDetail =
                     DescribeExpandedSummoningPersistenceFlash(units, prepare, verifyCleanup,
                         caster, out _expandedSummoningPersistenceFlashValid);
+                _expandedSummoningPersistenceRageDetail =
+                    DescribeExpandedSummoningPersistenceRage(units, prepare,
+                        verifyCleanup, caster,
+                        out _expandedSummoningPersistenceRageValid);
+                // Not in prepare: there the reading is taken at the save
+                // boundary, where the venom is armed, so that what the
+                // assertion reports is the state the save actually carried
+                // rather than a measurement from an earlier frame.
+                if (!prepare)
+                    _expandedSummoningPersistenceAntVenomDetail =
+                        DescribeExpandedSummoningPersistenceAntVenom(units,
+                            prepare, verifyCleanup,
+                            out _expandedSummoningPersistenceAntVenomValid);
                 if (verifyCleanup)
                     _expandedSummoningPersistenceLinkDetail =
                         DescribeExpandedSummoningReloadedLinks(units,
@@ -4070,6 +4182,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceLinkDetail += ";atSave=" +
                     DescribeExpandedSummoningPersistenceHolds(
                         _expandedSummoningPersistencePreparedUnits);
+            if (prepare)
+            {
+                // Armed here rather than at spawn, for exactly the reason the
+                // holds are re-described here: rounds pass during the settle
+                // and the motion review. One successful Fortitude save cures
+                // Giant Ant venom, and the victim is a Horse with a decent
+                // save, so a poison applied at spawn time is reliably gone
+                // before the save boundary - which is what the first attempt
+                // recorded, an intact venom at evaluation and nothing at all
+                // after the reload. The reading is taken here too, so what the
+                // assertion reports is the state the save actually carried.
+                ArmExpandedSummoningPersistenceAntVenom(
+                    _expandedSummoningPersistencePreparedUnits);
+                _expandedSummoningPersistenceAntVenomDetail =
+                    DescribeExpandedSummoningPersistenceAntVenom(
+                        _expandedSummoningPersistencePreparedUnits, true,
+                        false,
+                        out _expandedSummoningPersistenceAntVenomValid);
+            }
+            BeginExpandedSummoningPersistenceSave();
+        }
+
+        private void BeginExpandedSummoningPersistenceSave()
+        {
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
             MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic).Single(value =>
@@ -4134,11 +4270,414 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Sprint 7: a cat with the rake gate and the lion's tint
             new[] { "NaturesAlly", "lion", "4" },
             // Sprint 8: the tiger with its procedural coat and view scale
-            new[] { "NaturesAlly", "tiger", "4" }
+            new[] { "NaturesAlly", "tiger", "4" },
+            // Sprint 13: the Wolverine saves while raging. Its rage has no
+            // duration and cannot be ended voluntarily, so a reload that lost
+            // it, doubled it or restored it without its numbers would be a
+            // silent failure in play.
+            new[] { "NaturesAlly", "wolverine", "3" },
+            // Sprint 14: the soldier saves holding a grab and with its venom
+            // already in a victim, and the beetle saves carrying a
+            // project-owned light that a reload has to rebuild rather than
+            // leave burning. The worker is not here: it introduces no state
+            // that crosses a save, and 7E is targeted rather than a roster
+            // sweep.
+            new[] { "NaturesAlly", "giant-ant-soldier", "3" },
+            new[] { "NaturesAlly", "fire-beetle", "1" }
+            // Sprint 15 adds no row, on the same principle that keeps
+            // the worker out. The Drone carries a grab and a venom,
+            // but both are the Soldier's carriers with different
+            // numbers, and a different number is not a new kind of
+            // state: the leg below already proves that a delivered
+            // venom survives a reload with whatever difficulty class
+            // it was applied with, and that an active grab resolves to
+            // a clean release. The Giant Stag Beetle has no long-lived
+            // state at all - no grab, no light, no rage - and its
+            // trample is spent within the round it is used. 7E is
+            // targeted rather than a roster sweep.
         };
 
         private static int ExpandedSummoningPersistenceFixtureCount
         { get { return ExpandedSummoningPersistenceFixture.Length; } }
+
+        private string _expandedSummoningPersistenceAntVenomDetail =
+            "not-run";
+        private bool _expandedSummoningPersistenceAntVenomValid;
+        private string _expandedSummoningPersistenceRageDetail = "not-run";
+        private bool _expandedSummoningPersistenceRageValid;
+
+        private static UnitEntityData ExpandedSummoningPersistentWolverine(
+            UnitEntityData[] units)
+        {
+            return units == null ? null : units.FirstOrDefault(value =>
+                value != null && value.Blueprint != null &&
+                value.Blueprint.name == "KMG_Summoning_Unit_Wolverine");
+        }
+
+        /// <summary>
+        /// Brings the fixture's Wolverine to a genuine rage before the save:
+        /// a real damage rule through the Rulebook, which is the printed
+        /// trigger, then one round of game time so the printed "on its next
+        /// turn" delay elapses and the rage actually begins. The damage is put
+        /// back, because the reload is about the rage and not about wounds.
+        /// </summary>
+
+        /// <summary>
+        /// Deliver the Giant Ant (Soldier)'s venom into a fixture victim with a
+        /// real sting, so the save carries a poison that still has exposures
+        /// left to run.
+        ///
+        /// <para>The victim's Fortitude is floored for the one attack and put
+        /// back, because a poison that was saved against is not a poison the
+        /// reload can be asked about. Nothing else about the victim moves.</para>
+        /// </summary>
+        private static void ArmExpandedSummoningPersistenceAntVenom(
+            UnitEntityData[] units)
+        {
+            // The first version reported applications=0 and nothing else, so
+            // a missing soldier, a missing sting and an attack that simply
+            // missed all looked identical. Every step is recorded now.
+            var steps = new List<string>();
+            UnitEntityData soldier = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_GiantAntSoldier");
+            UnitEntityData victim = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Horse");
+            steps.Add("soldier=" + (soldier == null ? "<none>" : "found") +
+                ";victim=" + (victim == null ? "<none>" : "found"));
+            if (soldier == null || victim == null || soldier.Body == null)
+            {
+                _expandedSummoningPersistenceAntVenomArming =
+                    string.Join(";", steps.ToArray()) + ";armed=false";
+                return;
+            }
+            // The blueprint names the sting; the live weapon is then matched
+            // against it, which is the lookup the Sprint 14 poison exercise
+            // already proves works. Indexing the live body's limb list is not
+            // the same thing and was what the first version did.
+            BlueprintItemWeapon planned =
+                soldier.Blueprint.Body.AdditionalLimbs == null ||
+                soldier.Blueprint.Body.AdditionalLimbs.Length != 1 ? null :
+                soldier.Blueprint.Body.AdditionalLimbs[0];
+            ItemEntityWeapon sting = planned == null ? null :
+                LiveLimbWeapons(soldier).FirstOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, planned));
+            BlueprintScriptableObject[] loaded = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintFeature poisonFeature = loaded
+                .OfType<BlueprintFeature>().FirstOrDefault(value =>
+                    value != null && value.name ==
+                    "KMG_Summoning_Natural_GiantAnt_Poison");
+            BlueprintBuff venomBuff = loaded.OfType<BlueprintBuff>()
+                .FirstOrDefault(value => value != null && value.name ==
+                    "KMG_Summoning_Natural_GiantAnt_Venom");
+            steps.Add("plannedSting=" + (planned == null ? "<none>" :
+                planned.name) + ";liveSting=" + (sting == null ? "<none>" :
+                "found") + ";liveLimbs=" + LiveLimbWeapons(soldier)
+                    .Count(value => value != null) +
+                // If the attack lands and nothing arrives, the next question is
+                // whether the creature even carries the feature that delivers
+                // it, so that is answered here rather than in another run.
+                ";carriesPoisonFeature=" + (poisonFeature != null &&
+                    soldier.Descriptor.HasFact(poisonFeature)) +
+                ";holdingSomething=" + (soldier.HoldingState != null));
+            if (sting == null)
+            {
+                _expandedSummoningPersistenceAntVenomArming =
+                    string.Join(";", steps.ToArray()) + ";armed=false";
+                return;
+            }
+            int fortitude = victim.Descriptor.Stats.SaveFortitude.BaseValue;
+            int damage = victim.Descriptor.Damage;
+            int dexterityDamage = victim.Descriptor.Stats.Dexterity.Damage;
+            try
+            {
+                victim.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                soldier.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                PlaceExpandedSummoningUnit(victim, soldier.Position +
+                    UnityEngine.Vector3.right * 1.2f);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                var attack = new RuleAttackWithWeapon(soldier, victim, sting,
+                    0);
+                Rulebook.Trigger(attack);
+                // Counted here, in the frame that attacked, so a venom that
+                // arrived and was then lost over the frames before the save
+                // cannot be confused with one that never arrived at all.
+                steps.Add("hit=" + (attack.AttackRoll != null &&
+                        attack.AttackRoll.IsHit) + ";autoMiss=" +
+                    (attack.AttackRoll != null &&
+                        attack.AttackRoll.AutoMiss) + ";damage=" +
+                    (attack.MeleeDamage == null ? 0 :
+                        Math.Max(0, attack.MeleeDamage.Damage)) +
+                    ";appliedImmediately=" + (venomBuff == null ? -1 :
+                        victim.Descriptor.Buffs.Enumerable.Count(value =>
+                            value != null && ReferenceEquals(value.Blueprint,
+                                venomBuff))));
+            }
+            catch (Exception exception)
+            {
+                steps.Add("threw=" + exception.GetType().Name);
+            }
+            finally
+            {
+                victim.Descriptor.Stats.SaveFortitude.BaseValue = fortitude;
+                victim.Descriptor.Damage = damage;
+                victim.Descriptor.Stats.Dexterity.Damage = dexterityDamage;
+            }
+            // The sting lands and draws no blood, every time: the only
+            // persistent victims in this fixture are the caster's own summons,
+            // and the engine does not let one wound an ally - the arming
+            // recorded hit=True, autoMiss=False and damage=0. The wound gate
+            // then correctly refuses to deliver an injury poison, which is the
+            // product being right and the fixture being wrong.
+            //
+            // Delivery by sting is proved three other ways on this same
+            // candidate: the poison discrimination exercise across wounding,
+            // missing and zero-damage cases, the Giant Wasp requalification,
+            // and 7D's soldier cells, where a real full-attack command put the
+            // venom in from the sting alone. What this leg is for is whether an
+            // applied venom survives a save, a reload and a module-disabled
+            // load with its numbers, so where the sting cannot wound an ally
+            // the venom is applied directly instead, with the soldier as its
+            // caster and its DC derived by the creature's own policy from the
+            // soldier's live Constitution, exactly as the delivery action does
+            // it. No hostile is added to a working save to arrange otherwise.
+            if (venomBuff != null &&
+                victim.Descriptor.Buffs.GetBuff(venomBuff) == null)
+            {
+                Buff direct = victim.Descriptor.AddBuff(venomBuff, soldier,
+                    null);
+                if (direct != null && direct.Context != null &&
+                    direct.Context.Params != null)
+                    direct.Context.Params.DC =
+                        GiantAntPoisonPolicy.DifficultyClass(
+                            soldier.Descriptor.Stats.Constitution.Bonus);
+                steps.Add("stingCouldNotWoundAnAlly=true;appliedDirectly=" +
+                    (direct != null) + ";dc=" + (direct == null ||
+                        direct.Context == null || direct.Context.Params == null
+                        ? -1 : direct.Context.Params.DC));
+            }
+            _expandedSummoningPersistenceAntVenomArming =
+                string.Join(";", steps.ToArray()) + ";armed=true";
+        }
+
+        private static string _expandedSummoningPersistenceAntVenomArming =
+            "not-armed";
+
+        /// <summary>
+        /// Prepare: the venom is in the victim with its printed numbers.
+        /// Verify-cleanup (after the reload): still there, exactly once, with
+        /// the same DC and the same stat and dice, and still able to tick an
+        /// exposure without throwing. After cleanup: gone.
+        ///
+        /// <para>A hold and a poison want opposite answers from the same save,
+        /// which is why they are separate legs. Kingmaker carries no active
+        /// grapple, so the grab's correct outcome is a clean release; it does
+        /// carry buffs, so the venom's correct outcome is survival. Treating
+        /// them as one assertion would let either answer excuse the other.</para>
+        /// </summary>
+        private static string DescribeExpandedSummoningPersistenceAntVenom(
+            UnitEntityData[] units, bool prepare, bool verifyCleanup,
+            out bool valid)
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintBuff venom = blueprints.OfType<BlueprintBuff>()
+                .FirstOrDefault(value => value != null && value.name ==
+                    "KMG_Summoning_Natural_GiantAnt_Venom");
+            UnitEntityData victim = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Horse");
+            if (venom == null)
+            {
+                valid = false;
+                return "the Giant Ant venom buff was not loaded";
+            }
+            if (!prepare && !verifyCleanup)
+            {
+                // After cleanup the victim is gone with everything else, and a
+                // venom still standing anywhere would be a leak.
+                bool anywhere = Game.Instance != null &&
+                    Game.Instance.State != null &&
+                    Game.Instance.State.Units != null &&
+                    Game.Instance.State.Units.Any(unit => unit != null &&
+                        unit.Descriptor != null &&
+                        unit.Descriptor.HasFact(venom));
+                valid = !anywhere;
+                return "afterCleanup[venomAnywhere=" + anywhere + "]";
+            }
+            if (victim == null)
+            {
+                valid = false;
+                return "the venom's victim is not in the reloaded fixture";
+            }
+            int applications = victim.Descriptor.Buffs.Enumerable
+                .Count(value => value != null &&
+                    ReferenceEquals(value.Blueprint, venom));
+            Buff applied = victim.Descriptor.Buffs.GetBuff(venom);
+            int dc = applied == null || applied.Context == null ? -1 :
+                applied.Context.Params.DC;
+            BuffPoisonStatDamage component = applied == null ? null :
+                (venom.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<BuffPoisonStatDamage>().FirstOrDefault();
+            TimeSpan before = applied == null ? TimeSpan.Zero :
+                applied.TimeLeft;
+            // Only the reloaded leg ticks. The prepare leg's own tick was
+            // curing the poison before the save it was meant to survive: it
+            // advanced the clock a round, the victim made its Fortitude save,
+            // and one successful save cures Giant Ant venom, so the save
+            // boundary carried nothing and the reload correctly found nothing.
+            // Curing it after the reload is harmless, because by then the
+            // numbers have been read.
+            bool tickSafe = true;
+            string tickDetail = prepare ? "not-ticked-before-the-save" :
+                "not-ticked";
+            TimeSpan after = before;
+            if (applied != null && !prepare)
+            {
+                TimeSpan clock = Game.Instance.Player.GameTime;
+                int dexterityDamage = victim.Descriptor.Stats.Dexterity.Damage;
+                try
+                {
+                    Game.Instance.Player.GameTime = clock +
+                        TimeSpan.FromSeconds(GameConsts.RoundDuration + 1f);
+                    victim.Descriptor.Buffs.Tick();
+                    after = victim.Descriptor.Buffs.GetBuff(venom) == null ?
+                        TimeSpan.Zero :
+                        victim.Descriptor.Buffs.GetBuff(venom).TimeLeft;
+                    tickDetail = "ticked";
+                }
+                catch (Exception exception)
+                {
+                    tickSafe = false;
+                    tickDetail = "threw:" + exception.GetType().Name;
+                }
+                finally
+                {
+                    Game.Instance.Player.GameTime = clock;
+                    victim.Descriptor.Stats.Dexterity.Damage = dexterityDamage;
+                }
+            }
+            // Strength, not Dexterity. The Giant Ant's printed poison is
+            // 1d2 Strength over four rounds cured by one save; Dexterity is
+            // the Giant Wasp's, and this verifier was written with the wasp's
+            // numbers in it. The creature was right and the assertion was
+            // wrong, which is worth a comment because the live reading said so
+            // in plain text - stat=Strength - and could have been "corrected"
+            // in the builder by someone trusting the test over the stat block.
+            bool numbersIntact = component != null &&
+                component.Stat == StatType.Strength &&
+                component.Value.Dice == DiceType.D2 &&
+                component.Value.Rolls == 1 &&
+                component.Ticks == GiantAntPoisonPolicy.Exposures &&
+                component.SuccesfullSaves ==
+                    GiantAntPoisonPolicy.SavesToCure;
+            bool ok = applications == 1 && applied != null && tickSafe &&
+                numbersIntact &&
+                dc == GiantAntPoisonPolicy.DifficultyClass(
+                    ExpandedSummoningPersistenceAntConstitutionBonus(units));
+            valid = ok;
+            return (prepare ? "prepare" : "reloaded") + "{arming:" +
+                _expandedSummoningPersistenceAntVenomArming + "}[applications=" +
+                applications + ";dcOnAppliedBuff=" + dc + ";stat=" +
+                (component == null ? "<none>" : component.Stat.ToString()) +
+                ";dice=" + (component == null ? "<none>" :
+                    component.Value.Rolls + "d" + component.Value.Dice) +
+                ";exposures=" + (component == null ? -1 : component.Ticks) +
+                ";savesToCure=" + (component == null ? -1 :
+                    component.SuccesfullSaves) + ";tick=" + tickDetail +
+                ";timeLeftBefore=" + before.TotalSeconds.ToString("0.##",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ";timeLeftAfter=" + after.TotalSeconds.ToString("0.##",
+                    System.Globalization.CultureInfo.InvariantCulture) + "]";
+        }
+
+        /// <summary>The live soldier's Constitution bonus, for its own DC.</summary>
+        private static int ExpandedSummoningPersistenceAntConstitutionBonus(
+            UnitEntityData[] units)
+        {
+            UnitEntityData soldier = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_GiantAntSoldier");
+            return soldier == null ? 0 :
+                soldier.Descriptor.Stats.Constitution.Bonus;
+        }
+
+        private static void ArmExpandedSummoningPersistenceRage(
+            UnitEntityData[] units)
+        {
+            UnitEntityData wolverine = ExpandedSummoningPersistentWolverine(units);
+            if (wolverine == null) return;
+            int damageBefore = wolverine.Descriptor.Damage;
+            var blow = new PhysicalDamage(new DiceFormula(0, DiceType.Zero),
+                PhysicalDamageForm.Slashing);
+            blow.AddBonus(3);
+            Rulebook.Trigger(new RuleDealDamage(wolverine, wolverine, blow));
+            wolverine.Descriptor.Damage = damageBefore;
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            try
+            {
+                Game.Instance.Player.GameTime = clock +
+                    TimeSpan.FromSeconds(GameConsts.RoundDuration + 1f);
+                wolverine.Descriptor.Buffs.Tick();
+            }
+            finally { Game.Instance.Player.GameTime = clock; }
+        }
+
+        /// <summary>
+        /// Prepare: raging, with the printed numbers on it. Verify-cleanup
+        /// (after the reload): still raging, exactly once, with the same
+        /// numbers, and still unable to be ended voluntarily. After cleanup:
+        /// gone with the creature.
+        /// </summary>
+        private static string DescribeExpandedSummoningPersistenceRage(
+            UnitEntityData[] units, bool prepare, bool verifyCleanup,
+            UnitEntityData caster, out bool valid)
+        {
+            valid = !prepare && !verifyCleanup;
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintBuff onset = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Natural_Wolverine_RageOnset");
+            BlueprintBuff rage = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Natural_Wolverine_RageState");
+            UnitEntityData wolverine = ExpandedSummoningPersistentWolverine(units);
+            if (wolverine == null)
+            {
+                // After cleanup there must be no Wolverine and no rage left on
+                // anything, which is what this branch is for.
+                bool none = Game.Instance == null || Game.Instance.State == null ||
+                    Game.Instance.State.Units == null ||
+                    !Game.Instance.State.Units.Any(unit => unit != null &&
+                        unit.Descriptor != null && !unit.Destroyed &&
+                        (unit.Descriptor.Buffs.GetBuff(rage) != null ||
+                         unit.Descriptor.Buffs.GetBuff(onset) != null));
+                valid = !prepare && !verifyCleanup && none;
+                return "wolverine=absent;rageAnywhere=" + !none;
+            }
+            int raging = wolverine.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Count(value => ReferenceEquals(value.Blueprint, rage));
+            int strength = wolverine.Descriptor.Stats.Strength.ModifiedValue;
+            int constitution =
+                wolverine.Descriptor.Stats.Constitution.ModifiedValue;
+            int armour = wolverine.Descriptor.Stats.AC.ModifiedValue;
+            Buff live = wolverine.Descriptor.Buffs.GetBuff(rage);
+            bool permanent = live != null && live.IsPermanent;
+            bool casterClean = caster == null || caster.Descriptor == null ||
+                (caster.Descriptor.Buffs.GetBuff(rage) == null &&
+                 caster.Descriptor.Buffs.GetBuff(onset) == null);
+            // The printed rage lasts until the creature is gone, so a reload
+            // must bring back exactly one, still permanent, and must not have
+            // handed a copy to the summoner.
+            if (prepare || verifyCleanup)
+                valid = raging == 1 && permanent && casterClean &&
+                    !SummonRagePolicy.MayEndVoluntarily();
+            return "raging=" + raging + ";permanent=" + permanent +
+                ";strength=" + strength + ";constitution=" + constitution +
+                ";armourClass=" + armour + ";marker=" +
+                (wolverine.Descriptor.Buffs.GetBuff(onset) != null) +
+                ";casterClean=" + casterClean + ";voluntaryEnd=" +
+                SummonRagePolicy.MayEndVoluntarily();
+        }
 
         private static SummonVariantSpec[] ExpandedSummoningPersistenceFixtureVariants()
         {
@@ -4285,10 +4824,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] party)
         {
             foreach (UnitEntityData stale in ExpandedSummoningPersistentUnits(gameState, party))
-            {
                 CleanupExpandedSummoningUnit(stale);
-                if (!stale.Destroyed) stale.Dispose();
-            }
+            // Native destruction owns view fade/destruction and scene removal.
+            // Disposing first clears View before that controller can release it.
             for (int pass = 0; pass < 4; pass++) Game.Instance.EntityDestroyer.Tick();
             return ExpandedSummoningPersistentUnits(gameState, party).Count(value =>
                 !value.Destroyed || value.View != null || value.HoldingState != null);
@@ -4454,6 +4992,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void CompleteExpandedSummoningPersistence(string status,
             string warning)
         {
+            if (RosterPersistenceScope)
+            {
+                CompleteRosterPersistence(status, warning);
+                return;
+            }
+            if (Sprint17PersistenceScope)
+            {
+                CompleteSprint17Persistence(status, warning);
+                return;
+            }
+            if (Sprint16PersistenceScope)
+            {
+                CompleteSprint16Persistence(status, warning);
+                return;
+            }
             WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
             bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
                 .WorkingSaveExpandedSummoningPrepare;
@@ -4546,6 +5099,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistenceFlashDetail,
                     writes ? _expandedSummoningPersistenceFlashValid : true,
                     "the native resource and the project state on the persistent Cyclops across the save and the reload"),
+                Assertion("expanded-summoning-wolverine-rage-persistence",
+                    prepare ? "the Wolverine already raging at the save boundary, with the printed numbers on it and nothing of it on the summoner" :
+                        verifyCleanup ? "after the reload the creature is raging again exactly once, still with no duration of its own and still with no voluntary end, and the summoner still carries nothing of it" :
+                        "after cleanup no unit anywhere carries the rage or its marker",
+                    _expandedSummoningPersistenceRageDetail,
+                    _expandedSummoningPersistenceRageValid,
+                    "a real damage rule through the Rulebook before the save, then the fresh-load buff set on the deserialized creature"),
+                Assertion("expanded-summoning-sprint14-ant-venom-persistence",
+                    prepare ? "the Giant Ant (Soldier)'s venom in a fixture victim before the save, once, carrying the DC its own Constitution derives. The sting is tried first and cannot wound here - every persistent victim in this fixture is one of the caster's own summons, and the engine lets the attack land for no damage, after which the wound gate correctly declines to deliver an injury poison - so the venom is applied directly with the soldier as its caster and the DC its own policy derives, and the arming record says which path was used. Delivery by sting is proved on this same candidate three other ways: the poison discrimination cases, the Giant Wasp requalification, and 7D's soldier cells, where a real full-attack command delivered it from the sting alone. What this leg proves is survival, not delivery" :
+                        verifyCleanup ? "after the reload the victim still carries that venom exactly once, with the same applied DC, the same Dexterity stat and 1d2 dice, the same four exposures cured by one save, and an exposure that ticks without throwing. A hold and a poison want opposite answers from this same save - Kingmaker carries no active grapple, so the grab must come back released, while it does carry buffs, so the venom must come back intact - which is why the two are separate assertions and neither can excuse the other" :
+                        "after cleanup no unit anywhere carries the venom",
+                    _expandedSummoningPersistenceAntVenomDetail,
+                    _expandedSummoningPersistenceAntVenomValid,
+                    "a real seeded sting through the Rulebook before the save, then the deserialized victim's own buff collection, its applied MechanicsContext DC and a later BuffCollection tick"),
                 Assertion(verifyCleanup || !writes ?
                         "expanded-summoning-cleaned" :
                         "expanded-summoning-prepared",
@@ -5977,7 +6544,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .IsSummonSameTurnWorkingSaveScenario(
                     _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
-                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(_request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
@@ -15642,6 +16209,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon naturalBite1d3 = all.OfType<BlueprintItemWeapon>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Natural_Bite1d3");
+            // Sprint 13's flat point, which the Poison Frog's printed bite is.
+            BlueprintItemWeapon naturalBite1 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Bite1");
             BlueprintItemWeapon naturalTail1d12 = all.OfType<BlueprintItemWeapon>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Natural_Tail1d12");
@@ -15695,7 +16266,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 poisonFrog.Strength == 2 && poisonFrog.Dexterity == 12 &&
                 poisonFrog.Constitution == 11 && poisonFrog.Intelligence == 1 &&
                 poisonFrog.Wisdom == 9 && poisonFrog.Charisma == 10 &&
-                ReferenceEquals(poisonFrog.Body.PrimaryHand, naturalBite1d3) &&
+                // Sprint 13 corrected this to the printed flat point: the
+                // Poison Frog's bite deals 1 damage, not 1d3.
+                ReferenceEquals(poisonFrog.Body.PrimaryHand, naturalBite1) &&
                 poisonFrog.AddFacts.Count(value => value != null &&
                     value.AssetGuid == "1a3f2f384bbef804d8f52db1f9aa62d3") == 1 &&
                 centipede.ComponentsArray.OfType<AddClassLevels>().Single()
@@ -17063,6 +17636,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             int ungulateVisualAttached = 0;
             int sprint12VisualChecked = 0;
             int sprint12VisualAttached = 0;
+            int sprint13VisualChecked = 0;
+            int sprint13VisualAttached = 0;
+            // The coverage loop casts every registered variant, not only the
+            // published ones, so the three withheld Sprint 14 insects attach
+            // views here too and their outcomes have to be accounted for.
+            int sprint14VisualChecked = 0;
+            int sprint14VisualAttached = 0;
+            int crocodilianVisualChecked = 0;
+            int crocodilianVisualAttached = 0;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
@@ -17123,9 +17705,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             SummonVariantSpec[] ungulateExtra = ungulateCrowd
                 .Where(value => !oneD3.Contains(value) &&
                     !oneD4PlusOne.Contains(value)).ToArray();
+            // Sprint 15's pair, for the same reason the three crowds above
+            // exist: the alphabetical sample reaches neither reliably. Both
+            // quantities in whichever families carry them, while every one of
+            // their menu placements is still suppressed.
+            string[] sprint15Keys = { "giant-ant-drone", "giant-stag-beetle" };
+            SummonVariantSpec[] sprint15Crowd = monster.Concat(ally)
+                .Where(value => sprint15Keys.Contains(value.Creature.Key) &&
+                    value.Multiplicity != SummonMultiplicity.One)
+                .GroupBy(value => new { value.Creature.Key, value.Family,
+                    value.Multiplicity })
+                .Select(group => group.OrderBy(value => value.ParentTier)
+                    .First())
+                .Where(value => !oneD3.Contains(value) &&
+                    !oneD4PlusOne.Contains(value))
+                .ToArray();
             SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
                 .Concat(oneD4PlusOne).Concat(pteranodonCrowd)
-                .Concat(waspCrowd).Concat(ungulateExtra).ToArray();
+                .Concat(waspCrowd).Concat(ungulateExtra)
+                .Concat(sprint15Crowd).ToArray();
             // One own-tier single per roster entry in each family, plus the
             // alphabetical 1d3 / 1d4+1 coverage samples; both move with the roster.
             int rosterEntries = ExpandedSummoningCatalog.All.Count(value =>
@@ -17148,9 +17746,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 durationExact = 0, legalPlacement = 0,
                 illegalPlacementRejected = 0, pteranodonCrowdLegal = 0,
                 waspCrowdLegal = 0, ungulateCrowdLegal = 0,
-                ungulateExtraLegal = 0,
+                ungulateExtraLegal = 0, sprint15CrowdLegal = 0,
                 direBatSenseChecked = 0, direBatSensePassed = 0,
                 birdSenseChecked = 0, birdSenseClean = 0;
+            // Which (creature, quantity) pairs the run actually produced
+            // for Sprint 15's two creatures, counting the alphabetical sample
+            // as well as the crowd.
+            var sprint15Quantities =
+                new HashSet<string>(StringComparer.Ordinal);
             var observedCounts = new List<string>();
             var durationObservations = new List<string>();
             var durationProfiles = new HashSet<string>(StringComparer.Ordinal);
@@ -17535,6 +18138,67 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 sprint12VisualAttached++;
                         }
                     }
+                    else if (variant.Creature.Key == "wolverine" ||
+                        variant.Creature.Key == "shadow-mastiff" ||
+                        variant.Creature.Key == "poisonous-frog")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            sprint13VisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal))
+                                sprint13VisualAttached++;
+                        }
+                    }
+                    else if (variant.Creature.Key == "fire-beetle" ||
+                        variant.Creature.Key == "giant-ant-worker" ||
+                        variant.Creature.Key == "giant-ant-soldier" ||
+                        variant.Creature.Key == "giant-ant-drone" ||
+                        variant.Creature.Key == "giant-stag-beetle")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            sprint14VisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal))
+                                sprint14VisualAttached++;
+                        }
+                    }
+                    else if (CrocodilianVisualPolicy.Keys.Contains(variant.Creature.Key))
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            crocodilianVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;", StringComparison.Ordinal))
+                                crocodilianVisualAttached++;
+                        }
+                    }
+                    else if (InsectDonorSelves.Contains(variant.Creature.Key))
+                    {
+                        // The insect family's donor, cast as itself: the patch
+                        // must not have attempted anything on it.
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _insectDonorChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome == "not-attempted")
+                                _insectDonorClean++;
+                            else _insectDonorDetail.Add(
+                                variant.Creature.Key + ":" + outcome + ":" +
+                                DescribePteranodonRenderers(unit.View));
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -17557,9 +18221,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     completed++;
                     spawnedTotal += count;
                     if (ungulateCrowd.Contains(variant)) ungulateCrowdLegal++;
+                    if (sprint15Keys.Contains(variant.Creature.Key) &&
+                        variant.Multiplicity != SummonMultiplicity.One)
+                        sprint15Quantities.Add(variant.Creature.Key + "/" +
+                            variant.Multiplicity);
                     if (pteranodonCrowd.Contains(variant)) pteranodonCrowdLegal++;
                     else if (waspCrowd.Contains(variant)) waspCrowdLegal++;
                     else if (ungulateExtra.Contains(variant)) ungulateExtraLegal++;
+                    else if (sprint15Crowd.Contains(variant))
+                        sprint15CrowdLegal++;
                     else if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
                     else if (variant.Multiplicity == SummonMultiplicity.OneD3)
                         oneD3Legal++;
@@ -17687,12 +18357,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "spawned BlueprintUnit reference equality for every command"),
                 Assertion("expanded-summoning-command-total",
                     (coverageCasts + 2 + waspCrowd.Length +
-                        ungulateExtra.Length) + ": " + coverageCasts +
-                        " coverage casts plus two Pteranodon, four Wasp and " +
-                        ungulateExtra.Length + " additional ungulate crowd casts",
+                        ungulateExtra.Length + sprint15Crowd.Length) + ": " +
+                        coverageCasts +
+                        " coverage casts plus two Pteranodon, four Wasp, " +
+                        ungulateExtra.Length + " additional ungulate and " +
+                        sprint15Crowd.Length + " Sprint 15 crowd casts",
                     completed.ToString(), casts.Length == coverageCasts +
                         pteranodonCrowd.Length + waspCrowd.Length +
-                        ungulateExtra.Length &&
+                        ungulateExtra.Length + sprint15Crowd.Length &&
                         pteranodonCrowd.Length == 2 && completed == casts.Length,
                     "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
                 Assertion("expanded-summoning-caster-level-duration",
@@ -17796,6 +18468,114 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint12GoblinDogAllergyDetail,
                     mechanics != null && mechanics.Sprint12GoblinDogAllergy,
                     "live Goblin Dog natural attacks, exact native Goblin type, paired RuleApplyBuff immunity, RuleHealDamage sources, and native Remove Disease cast"),
+                Assertion("expanded-summoning-sprint12-contact-allergy",
+                    "the printed allergic reaction also exposes a natural or unarmed attacker that damages the Goblin Dog and a creature that attempts to grapple it, while a manufactured weapon, another maneuver and a goblinoid are never exposed",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12ContactAllergyDetail,
+                    mechanics != null && mechanics.Sprint12ContactAllergy,
+                    "live natural-weapon attacks against the Goblin Dog and native RuleCombatManeuver grapple and trip attempts"),
+                Assertion("expanded-summoning-sprint12-printed-defences",
+                    "the live Dire Rat carries the printed defences: no natural armor and no Weapon Finesse, so its bite stays Strength-based",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12PrintedDefencesDetail,
+                    mechanics != null && mechanics.Sprint12PrintedDefences,
+                    "live spawned unit facts and its actual AC modifier descriptors"),
+                Assertion("expanded-summoning-sprint13-printed-routines",
+                    "the live Wolverine bite reads at its claw's own attack bonus so all three limbs are primary, it carries the printed quadruped trip defence, the Poison Frog's bite is a flat point rather than 1d3, and the Shadow Mastiff's tail slap reads exactly five lower than its bite at the printed 1d6",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13PrintedRoutinesDetail,
+                    mechanics != null && mechanics.Sprint13PrintedRoutines,
+                    "live limb probes on freshly summoned creatures at a fixed natural roll, with no base-attack mutation"),
+                Assertion("expanded-summoning-sprint13-wolverine-rage",
+                    "a real hostile blow arms the printed rage without applying it or moving any of its three numbers, one round of game time later the engine's own buff tick starts it with Strength and Constitution exactly four higher and Armor Class exactly two lower, a second blow does not restack it, neither buff reaches the caster or the attacker, and destroying the creature takes both with it",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13WolverineRageDetail,
+                    mechanics != null && mechanics.Sprint13WolverineRage,
+                    "a live hostile natural attack, measured creature stats, and the native BuffCollection tick on an advanced and restored clock"),
+                Assertion("expanded-summoning-sprint14-profiles",
+                    "the live Fire Beetle is Small with one 1d4 bite and an inert luminescence fact, the live Worker is Medium with one 1d6 bite and no sting, grab or poison, the live Soldier adds a distinct 1d4 sting at the same attack bonus as its bite with the grab on the primary limb alone, and none of the three is still classified as the Giant Spider it borrows",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14ProfilesDetail,
+                    mechanics != null && mechanics.Sprint14Profiles,
+                    "freshly summoned units, their live bodies and limb attack probes, and the blueprint unit type the spawned creature actually carries"),
+                Assertion("expanded-summoning-sprint14-trip-defence",
+                    "all three insects read their printed combat-manoeuvre defences through the engine's own calculation: both ant castes at 13 and 21 against trip, and the Fire Beetle at 9 and 17, which the first guarded audit found it did not have",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14TripDefenceDetail,
+                    mechanics != null && mechanics.Sprint14TripDefence,
+                    "live RuleCalculateCMD against a real attacker, with no manoeuvre attempted"),
+                Assertion("expanded-summoning-sprint14-injury-poison",
+                    "the Soldier's sting delivers its venom only on a hit that actually wounds: a miss delivers nothing, a hit whose damage is reduced to zero by real damage reduction delivers nothing, and a wounding bite delivers nothing because the poison is gated on the sting's own weapon type",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14PoisonDiscriminationDetail,
+                    mechanics != null && mechanics.Sprint14PoisonDiscrimination,
+                    "four real seeded attacks against a live target, with the venom cleared between them and the zero-damage case produced by an actual damage reduction"),
+                Assertion("expanded-summoning-sprint14-senses",
+                    "the printed skill totals of all three insects rather than their racial components, with each total broken down by modifier descriptor so a size bonus cannot pass for an unprinted rank, no class ranks anywhere, vermin mind-affecting immunity proved by a native mind-affecting buff that the insect refuses and the caster accepts, no darkvision or low-light component on any of them, and a library-wide census of every component that could express scent, darkvision or low-light vision at all",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14SensesDetail,
+                    mechanics != null && mechanics.Sprint14Senses,
+                    "Fire Beetle Perception exactly +0 and both ant castes exactly +5, zero class ranks in Perception, Mobility and Stealth, the mind-affecting probe refused on the vermin and accepted on the caster, and no vision component on any of the three"),
+                Assertion("expanded-summoning-sprint14-wasp-requalification",
+                    "the Giant Wasp's poison, requalified against the wound gate its delivery now goes through rather than the OnlyHit test Sprint 10 passed: a wounding sting delivers the venom, a miss does not, a hit reduced to zero damage does not, the live buff still carries Fortitude DC 18 with 1d2 Dexterity over six exposures cured by one save, one attack produces exactly one application carrying that DC, and destroying the wasp leaves the delivered venom in its victim with its DC intact, no retargeted owner and a tick that does not throw",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14WaspRequalificationDetail,
+                    mechanics != null && mechanics.Sprint14WaspRequalification,
+                    "ContextActionOnlyIfWeaponWounded around the native poison graph, the live BuffPoisonStatDamage on the applied buff, the buff's own MechanicsContext DC, and native unit destruction with a later buff tick on the surviving victim"),
+                Assertion("expanded-summoning-sprint15-profiles",
+                    "the live Drone is the Soldier's shape - Medium, a 1d6 bite and a distinct 1d4 sting at the same attack bonus, the grab on the primary limb alone - with every ability score but Intelligence exactly four higher than the Soldier it is built from, measured against a Soldier spawned in the same run; and the live Stag Beetle is a single heavy limb: Large, one 2d8 bite, nothing else on its body, no grab, none of the Fire Beetle's luminescence, and its own unit type rather than the Fire Beetle's or the Giant Spider's",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint15ProfilesDetail,
+                    mechanics != null && mechanics.Sprint15Profiles,
+                    "two freshly summoned creatures and a third for comparison, their live bodies, limb attack probes, live ability scores and the blueprint unit type each spawned creature actually carries"),
+                Assertion("expanded-summoning-sprint15-defences",
+                    "both creatures read their combat-manoeuvre defences through the engine's own component arithmetic rather than one total - base attack bonus, Strength, Dexterity and the net size modifier, each required to be the quantity the rules name for that creature, with the engine's own split of a size modifier across its size and miscellaneous components recorded but not required, because no source text constrains it - reaching the Stag Beetle's printed 20 and 28 against trip and the Drone's 17 and 25 that its contract requires be derived from the Soldier, with the Dexterity a freshly summoned creature is denied for being flat-footed added back rather than demanded of a creature that cannot show it before it has acted, and the eight-point multi-legged difference between the two defences holding either way; and both carry their printed skills as totals with a modifier breakdown: the Drone's Perception exactly 7 from a racial +4 and the advanced Wisdom with no ranks and no unprinted flat bonus, the Stag Beetle's exactly 0, and vermin mind-affecting immunity proved on each by a native buff the caster demonstrably accepts",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint15DefencesDetail,
+                    mechanics != null && mechanics.Sprint15Defences,
+                    "live RuleCalculateCMD against a real attacker with no manoeuvre attempted, live skill modifiers by descriptor, and a mind-affecting probe applied to both the vermin and the caster"),
+                Assertion("expanded-summoning-sprint15-drone-poison",
+                    "the Drone's venom is the Soldier's graph on a stronger body: still 1d2 Strength over four exposures cured by one Fortitude save, with its difficulty class computed live from the advanced Constitution of 21 to exactly 16 rather than hard-coded or overridden, delivered only by a sting that actually wounded - a miss and a hit reduced to zero damage deliver nothing, and a wounding bite delivers nothing because the gate is on the sting's own weapon type - and one attack produces exactly one application carrying this creature's own difficulty class",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint15DronePoisonDetail,
+                    mechanics != null && mechanics.Sprint15DronePoison,
+                    "the shared BuffPoisonStatDamage on the live buff, the Constitution-scaled policy with no creature-specific constant, four real seeded attacks with the venom cleared between them, and the applied buff's own MechanicsContext DC"),
+                Assertion("expanded-summoning-sprint14-donor-rigs",
+                    "every donor the insect family needs returns a complete measured bind frame from a single skinned renderer, so an original mesh can be authored against it",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14DonorRigsDetail,
+                    mechanics != null && mechanics.Sprint14DonorRigs,
+                    "the live donor view's own bones and bind poses; no donor geometry, material or animation leaves the game"),
+                Assertion("expanded-summoning-sprint13-rage-lifetime",
+                    "a raging Wolverine that reaches its own summon duration has its native marker removed by that timer and stays the one raging right up to the moment it goes; one dismissed while raging goes the same way; and the live area-transition handlers leave the creature's own rage alone while every party member carries nothing of it. The rage goes with the creature in every case and no unit is left raging afterwards",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13RageLifetimeDetail,
+                    mechanics != null && mechanics.Sprint13RageLifetime,
+                    "the native SummonedUnitBuff timer, the fixture's own dismissal, and the subscribed IPartyLeaveAreaHandler and IAreaLoadingStagesHandler raised on the game's own event bus"),
+                Assertion("expanded-summoning-sprint13-shadow-mastiff-bay",
+                    "bay derives its printed Charisma-based DC from the live creature, panics on a failed save, spares evil outsiders including the mastiffs themselves, grants a per-mastiff 24-hour immunity on a success that blocks a repeat from the same mastiff, and leaves a second mastiff's bay working",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13ShadowMastiffBayDetail,
+                    mechanics != null && mechanics.Sprint13ShadowMastiffBay,
+                    "two live Shadow Mastiffs, the native ability executor, and fixed native saving-throw rolls"),
+                Assertion("expanded-summoning-sprint13-donor-rigs",
+                    "the live Poison Frog exposes its donor's renderer-local bind frame for original-mesh authoring, with no donor geometry, material or animation data leaving the game",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13DonorRigsDetail,
+                    mechanics != null && mechanics.Sprint13DonorRigs,
+                    "bone names and a measured bind pose only; the Worg frame the Wolverine and Shadow Mastiff need was captured in Sprint 12"),
+                Assertion("expanded-summoning-sprint13-shadow-blend",
+                    "shadow blend is active without player input, the engine's own concealment calculation reports the printed 50% miss chance, native Daylight negates it, and it returns when the Daylight ends",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13ShadowBlendDetail,
+                    mechanics != null && mechanics.Sprint13ShadowBlend,
+                    "live UnitPartConcealment calculation and an actually applied native Daylight buff"),
+                Assertion("expanded-summoning-sprint12-disease-outlives-source",
+                    "an inflicted disease and allergic reaction keep ticking, curing and saving correctly after their summoned source is destroyed, and the destroyed source can expose nothing further",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12DiseaseOutlivesSourceDetail,
+                    mechanics != null && mechanics.Sprint12DiseaseOutlivesSource,
+                    "native unit destruction, live buff tick and removal on a surviving victim"),
                 Assertion("expanded-summoning-sprint12-disease-quantity",
                     "separate Dire Rats and Goblin Dogs from quantity casts deliver only their own disease state to distinct victims",
                     mechanics == null ? "not-run" :
@@ -17913,6 +18693,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ungulateCrowd.Select(value => value.Multiplicity)
                             .Distinct().Count() == 2,
                     "exact-kind native quantity counts, duration and per-cast cleanup through the common cast loop"),
+                Assertion("expanded-summoning-sprint15-donor-negative-control",
+                    "the Giant Spider, cast as itself while five project creatures ride its prefab, comes up with no swap attempted on it at all - the negative control the insect family needs, because unlike the Pteranodon's donor this one is published and can share a fight with its own tenants",
+                    "checked=" + _insectDonorChecked + ";clean=" +
+                        _insectDonorClean +
+                        (_insectDonorDetail.Count == 0 ? string.Empty :
+                            ";detail=" + string.Join("|",
+                                _insectDonorDetail.ToArray())),
+                    _insectDonorChecked > 0 &&
+                        _insectDonorClean == _insectDonorChecked,
+                    "the live donor view's own patch outcome after a real cast of the donor creature through the player's own ability"),
+                Assertion("expanded-summoning-sprint15-quantity",
+                    "both Sprint 15 creatures are summoned in quantity as well as singly - a 1d3 and a 1d4+1 command for each, in whichever families carry them - while every one of their menu placements is still suppressed, with exact-kind counts, duration and per-cast cleanup checked by the same cast loop every other creature goes through, and the project visual required on every body of a multi-body cast",
+                    "crowd=" + sprint15CrowdLegal + "/" +
+                        sprint15Crowd.Length + ";pairs=" +
+                        string.Join(",", sprint15Quantities
+                            .OrderBy(value => value, StringComparer.Ordinal)
+                            .ToArray()) + ";views=" + sprint14VisualChecked +
+                        ";attached=" + sprint14VisualAttached,
+                    sprint15CrowdLegal == sprint15Crowd.Length &&
+                        sprint15Quantities.Count == 4 &&
+                        sprint15Keys.All(key => sprint15Quantities.Any(value =>
+                            value.StartsWith(key + "/",
+                                StringComparison.Ordinal))) &&
+                        sprint14VisualAttached == sprint14VisualChecked,
+                    "native quantity commands through the common cast loop, with the insect family's visual census counting one attached project view per spawned body"),
                 Assertion("expanded-summoning-sprint11-ungulate-quantity-visuals",
                     "every cast ungulate view receives the private original visual",
                     "checked=" + ungulateVisualChecked + ";attached=" +
@@ -17924,15 +18729,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "several Pteranodon casts in one lifecycle, each view attached exactly once, each cast cleaned to the exact snapshot",
                     "casts=" + _pteranodonCastsSeen + ";views=" +
                         _pteranodonVisualOutcomes.Count + ";patchOutcomes=" +
-                        (patchOutcomesAfterCoverage - patchOutcomesBefore),
+                        (patchOutcomesAfterCoverage - patchOutcomesBefore) +
+                        ";sprint14Views=" + sprint14VisualChecked +
+                        ";sprint14Attached=" + sprint14VisualAttached +
+                        ";crocodilianViews=" + crocodilianVisualChecked +
+                        ";crocodilianAttached=" + crocodilianVisualAttached,
                     _pteranodonCastsSeen >= 4 &&
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
                         patchOutcomesAfterCoverage - patchOutcomesBefore ==
                             _pteranodonVisualOutcomes.Count +
                                 _direBatVisualChecked + _eagleVisualChecked +
                                 _giantWaspVisualChecked + _stirgeVisualChecked +
-                                ungulateVisualChecked + sprint12VisualChecked &&
+                                ungulateVisualChecked + sprint12VisualChecked +
+                                sprint13VisualChecked +
+                                sprint14VisualChecked + crocodilianVisualChecked &&
                         sprint12VisualAttached == sprint12VisualChecked &&
+                        sprint13VisualAttached == sprint13VisualChecked &&
+                        sprint14VisualAttached == sprint14VisualChecked &&
+                        crocodilianVisualAttached == crocodilianVisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("expanded-summoning-stirge-visual-attached",
@@ -18416,6 +19230,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 ExerciseExpandedSummoningSprint12DiseasePack(blueprints,
                     caster, hostile, scene, created, result,
+                    _request.EvidenceDirectory);
+
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                ExerciseExpandedSummoningSprint13RulesPack(blueprints,
+                    caster, hostile, created, result,
+                    _request.EvidenceDirectory);
+
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                ExerciseExpandedSummoningSprint14RulesPack(blueprints,
+                    caster, hostile, created, result,
+                    _request.EvidenceDirectory);
+
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                ExerciseExpandedSummoningSprint15RulesPack(blueprints,
+                    caster, hostile, created, result,
                     _request.EvidenceDirectory);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
@@ -22349,6 +23178,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "GiantSpiderPoison", "094714bb08f4e1943a8e9d2384ebe573" },
                     { "SpiderWebImmunity", "3051e7002c803fc47a11bcfa381b9fbd" }
                 };
+            // A project-owned fact has no native GUID to write down here - its
+            // identity is allocated in the append-only ledger - so it is
+            // resolved by its own blueprint name out of the same live set the
+            // census is already reading. Sprint 13's Wolverine rage is the
+            // first profile fact of that kind.
+            foreach (var owned in new[] {
+                new[] { "WolverineRage", "KMG_Summoning_Natural_Wolverine_Rage" } })
+            {
+                BlueprintUnitFact granted = all.OfType<BlueprintUnitFact>()
+                    .SingleOrDefault(value => value.name == owned[1]);
+                if (granted != null) factGuids[owned[0]] = granted.AssetGuid;
+            }
             // A profile fact the map does not know is a mismatch to report,
             // never an exception that ends the whole inventory.
             string[] unknownFacts = profile.Facts.Where(value =>
@@ -23219,6 +24060,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (blueprint.name == "KMG_Summoning_Subtype_Extraplanar" ||
                 blueprint.name ==
                     "KMG_Summoning_Natural_DireBat_Blindsense" ||
+                // Sprint 13: the Wolverine's rage carrier and the Shadow
+                // Mastiff's trait carrier, both project-owned and both granted
+                // directly by their own unit.
+                blueprint.name ==
+                    "KMG_Summoning_Natural_Wolverine_Rage" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_ShadowMastiff_Traits" ||
                 blueprint.name ==
                     "KMG_Summoning_Natural_GiantWasp_Poison" ||
                 blueprint.name ==
@@ -23280,6 +24128,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (blueprint.name == "KMG_Summoning_Special_Cyclops_HideArmor" ||
                 blueprint.name == "KMG_Summoning_Special_Pony_CombatTraits" ||
                 blueprint.name == "KMG_Summoning_Special_Horse_CombatTraits")
+                return false;
+            // Sprint 12: the Dire Rat's injury-disease rider and the Goblin
+            // Dog's disease-immunity and allergic-reaction carrier. Both are
+            // project-owned signature facts on their own creature, registered
+            // here the way every earlier sprint's carriers are; the general
+            // sanitizer stays strict for everything else.
+            if (blueprint.name == "KMG_Summoning_Natural_DireRat_Disease" ||
+                blueprint.name == "KMG_Summoning_Natural_GoblinDog_Traits")
                 return false;
             // Sprint 8: the tiger's carrier and the cheetah's sprint pack.
             if (blueprint.name == "KMG_Summoning_Special_Tiger_CombatTraits" ||
@@ -35132,6 +35988,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            StopSprint17LoadResetTrace(result);
+            StopSprint17Bodies(result);
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }
