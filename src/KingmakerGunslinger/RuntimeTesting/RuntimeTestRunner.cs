@@ -15605,7 +15605,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .IsAssignableFrom(field.FieldType.GetElementType())) continue;
                         foreach (BlueprintScriptableObject value in values
                             .Cast<object>().OfType<BlueprintScriptableObject>()
-                            .Where(ExpandedSummoningIsForbiddenReference))
+                            .Where(value => ExpandedSummoningIsForbiddenReference(value) &&
+                                !ExpandedSummoningInventoryObservationPolicy.QualifiedProjectReference(
+                                    unit.AssetGuid, unit.name, value.AssetGuid, value.name,
+                                    component.GetType().Name + "." + field.Name)))
                         {
                             prohibitedReferences++;
                             prohibitedReferenceDetails.Add(unit.name + "/" +
@@ -15620,7 +15623,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value => value == null ||
                             !ExpandedSummoningIsApprovedUngulateDirectFact(
                                 unit, value) &&
-                            ExpandedSummoningIsForbiddenReference(value)))
+                            ExpandedSummoningIsForbiddenReference(value) &&
+                            !ExpandedSummoningInventoryObservationPolicy.QualifiedProjectReference(
+                                unit.AssetGuid, unit.name, value.AssetGuid, value.name, "AddFacts")))
                     {
                         prohibitedReferences++;
                         prohibitedReferenceDetails.Add(unit.name + "/AddFacts=" +
@@ -16027,6 +16032,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             ContextActionDealDamage[] salamanderDamage =
                 ExpandedSummoningObjects<ContextActionDealDamage>(
                     salamanderTraits.ComponentsArray).ToArray();
+            var salamanderRacial = salamander.ComponentsArray
+                .OfType<SummonSalamanderRacialProfile>().ToArray();
+            var salamanderHeat = salamanderTraits.ComponentsArray
+                .OfType<SummonSalamanderHeat>().ToArray();
+            var salamanderGrab = salamanderTraits.ComponentsArray
+                .OfType<SummonGrabComponent>().ToArray();
             bool salamanderExact = salamander.ComponentsArray
                     .OfType<AddClassLevels>().Single().Levels == 8 &&
                 salamander.Size == Size.Medium &&
@@ -16036,21 +16047,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 salamander.Wisdom == 15 && salamander.Charisma == 13 &&
                 ReferenceEquals(salamander.Body.PrimaryHand,
                     salamanderSpear) && salamanderSpear.IsNonRemovable &&
-                salamanderSpear.Type.IsNatural &&
                 salamander.Body.AdditionalSecondaryLimbs.Length == 1 &&
                 ReferenceEquals(salamander.Body.AdditionalSecondaryLimbs[0],
                     salamanderTail) &&
                 salamanderTail.Damage.Rolls == 2 &&
                 salamanderTail.Damage.Dice == DiceType.D6 &&
-                salamanderTraits.ComponentsArray.OfType<
-                    AddInitiatorAttackWithWeaponTrigger>().Count() == 2 &&
-                salamanderDamage.Count(value => value.DamageType.Type ==
-                    DamageType.Energy && value.DamageType.Energy ==
-                    DamageEnergyType.Fire && value.Value.DiceCountValue.Value == 1) == 1 &&
-                salamanderDamage.Count(value => value.DamageType.Type ==
-                    DamageType.Physical && value.Value.DiceType == DiceType.D6 &&
-                    value.Value.DiceCountValue.Value == 2 &&
-                    value.Value.BonusValue.Value == 4) == 1;
+                ExpandedSummoningInventoryObservationPolicy.SalamanderCarriers(
+                    salamanderSpear.Type.IsNatural,
+                    salamander.Body.AdditionalSecondaryLimbs.Length,
+                    salamanderTail.Type.IsNatural, salamanderTail.Damage.Rolls,
+                    salamanderTail.Damage.Dice == DiceType.D6 ? 6 : 0,
+                    salamanderRacial.Length == 1 &&
+                        ReferenceEquals(salamanderRacial[0].OwningBlueprint, salamander),
+                    salamanderHeat.Length,
+                    salamanderHeat.Length == 1 &&
+                        ReferenceEquals(salamanderHeat[0].OwningBlueprint, salamander) &&
+                        ReferenceEquals(salamanderHeat[0].Spear, salamanderSpear) &&
+                        ReferenceEquals(salamanderHeat[0].Tail, salamanderTail),
+                    salamanderGrab.Length,
+                    salamanderGrab.Length == 1 &&
+                        ReferenceEquals(salamanderGrab[0].SalamanderProfileOwner, salamander) &&
+                        salamanderGrab[0].ConstrictProfileOwner == null &&
+                        !salamanderGrab[0].GrabWithPrimaryHand &&
+                        salamanderGrab[0].GrabAdditionalLimbCount == 1 &&
+                        salamanderGrab[0].RakeLimbCount == 0 &&
+                        salamanderGrab[0].ConstrictDiceCount == 2 &&
+                        salamanderGrab[0].ConstrictDiceType == DiceType.D6 &&
+                        salamanderGrab[0].ConstrictBonus == 4 &&
+                        salamanderGrab[0].MaxHeldTargets == 1 &&
+                        salamanderGrab[0].MaxTargetSizeDelta == 0,
+                    salamanderTraits.ComponentsArray.OfType<
+                        AddInitiatorAttackWithWeaponTrigger>().Count(), salamanderDamage.Length);
             BlueprintUnit succubus = all.OfType<BlueprintUnit>().Single(value =>
                 value.name == "KMG_Summoning_Unit_Succubus");
             BlueprintAbility succubusDominate = all.OfType<BlueprintAbility>()
@@ -16420,7 +16447,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "7-HD incorporeal demon with claw/bite routine, bounded defenses, and cold rider"),
                 Assertion("expanded-summoning-salamander", "exact",
                     salamanderExact ? "exact" : "mismatch", salamanderExact,
-                    "8-HD fire outsider with spear, 2d6 tail, heat, and bounded grab/constrict"),
+                    "8-HD fire outsider with manufactured locked spear, natural 2d6 tail, exact owned live heat/tail-grab carriers and no legacy on-hit replay"),
                 Assertion("expanded-summoning-succubus", "exact",
                     succubusExact ? "exact" : "mismatch", succubusExact,
                     "8-HD demon with bounded domination, first-hit temporary drain, and demonic defenses"),
