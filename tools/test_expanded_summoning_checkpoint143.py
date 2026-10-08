@@ -47,6 +47,22 @@ class Checkpoint143Tests(unittest.TestCase):
                 with self.assertRaisesRegex(AssertionError, "Accepted production changed"):
                     gate.preserved_files(root, "accepted", ("asset",))
 
+    def test_original_flight_correction_pins_both_exact_versions(self):
+        self.assertEqual(2, len(gate.RESOURCE_CORRECTION))
+        for path in gate.RESOURCE_CORRECTION:
+            accepted = gate.blob(ROOT, gate.SUMMONING, path).replace(b"\r\n", b"\n")
+            current = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+            self.assertTrue(gate.exact_resource_correction(gate.SUMMONING, path, accepted, current))
+            self.assertFalse(gate.exact_resource_correction(gate.SUMMONING, path, accepted, current + b" drift"))
+            self.assertFalse(gate.exact_resource_correction(gate.SUMMONING, path, accepted + b" drift", current))
+
+    def test_resource_pin_cannot_relax_other_files_or_master(self):
+        for path in gate.RESOURCE_CORRECTION:
+            accepted = gate.blob(ROOT, gate.SUMMONING, path).replace(b"\r\n", b"\n")
+            current = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+            self.assertFalse(gate.exact_resource_correction(gate.MASTER, path, accepted, current))
+            self.assertFalse(gate.exact_resource_correction(gate.SUMMONING, "other.cs", accepted, current))
+
 
 if __name__ == "__main__":
     unittest.main()
