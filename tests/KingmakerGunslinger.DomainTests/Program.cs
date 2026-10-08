@@ -35,6 +35,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.release143-whole-roster-coverage", ExpandedSummoningRosterPersistenceTests.EveryCreatureAndNativeUnitIsCoveredOnce),
             Case("expanded-summoning.release143-receipt-authority", ExpandedSummoningRosterPersistenceTests.OwnershipRequiresEveryExactReceiptField),
             Case("expanded-summoning.release143-scope-boundary", ExpandedSummoningRosterPersistenceTests.ScopeCannotOpenAnotherSaveOrScenario),
+            Case("expanded-summoning.release143-roster-alignment-boundary", ExpandedSummoningRosterPersistenceTests.NativeEvilRowCannotContaminateNextCelestialCast),
+            Case("expanded-summoning.release143-roster-alignment-contract", ExpandedSummoningRosterPersistenceTests.FixtureAlignmentRespectsEveryVariantAndNativeBranch),
             Case("trait-save.AttachedAreaWithoutGlobalEntry", ElementalCharacterTraitSaveTests.AttachedAreaWithoutGlobalEntry),
             Case("trait-save.MirroredAreaDeduplicated", ElementalCharacterTraitSaveTests.MirroredAreaDeduplicated),
             Case("trait-save.DuplicateAttachedAreasDetected", ElementalCharacterTraitSaveTests.DuplicateAttachedAreasDetected),

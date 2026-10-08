@@ -176,6 +176,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var variant = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
                                 .First(v => v.Creature.Key == key && v.Multiplicity == SummonMultiplicity.One && SummonVisibilityCatalog.IsPublished(v));
+                            caster.Descriptor.Alignment.Set((Kingmaker.Enums.Alignment)
+                                ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(variant));
                             unit = SpawnExpandedSummoningVariants(blueprints, caster, new[] { variant }, "marked whole-roster persistence").Single();
                         }
                         else
@@ -184,7 +186,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var ability = blueprints.OfType<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>()
                                 .Single(b => b.name == ExpandedSummoningInternalName(native.Symbol));
                             var before = caster.HoldingState.AllEntityData.OfType<UnitEntityData>().ToArray();
-                            caster.Descriptor.Alignment.Set(native.Branch == SummonNativeSpawnBranch.Evil ? Kingmaker.Enums.Alignment.NeutralEvil : Kingmaker.Enums.Alignment.TrueNeutral);
+                            caster.Descriptor.Alignment.Set((Kingmaker.Enums.Alignment)
+                                ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(native));
                             caster.Descriptor.AddFact(ability);
                             try { ExecuteExpandedSummoningRuntimeAbility(caster, ability, native.Tier); Game.Instance.EntityCreator.Tick(); }
                             finally { caster.Descriptor.RemoveFact(ability); }
@@ -197,7 +200,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
                     }
                 }
-                finally { caster.Descriptor.Alignment.Set(originalAlignment); }
+                finally
+                {
+                    caster.Descriptor.Alignment.Set(originalAlignment);
+                    RosterPersistenceCheck("caster-alignment-restored", caster.Descriptor.Alignment.Value == originalAlignment,
+                        new JObject { ["original"] = originalAlignment.ToString(), ["restored"] = caster.Descriptor.Alignment.Value.ToString() },
+                        "per-cast legal fixture alignment is restored before any native save");
+                }
                 units = created.ToArray();
             }
             Game.Instance.IsPaused = false;
