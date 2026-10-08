@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "OBSERVER_ONLY_RELEASE_CANDIDATE_IN_DEVELOPMENT_NOT_QUALIFIED",
+  "status": "BLOCKED_RUNTIME_CROCODILE_COOLDOWN_EXPIRY_DAMAGE_UNATTRIBUTED",
   "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
   "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
   "qualifiedSummoningImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
@@ -76,7 +76,7 @@
     "dllMvid": "30bc049a-e114-4f65-b8bf-14952daa3f99",
     "members": 325
   },
-  "closureGate": {
+  "historicalIntegrationClosureGate": {
     "status": "FAIL_OBSERVER_CONTRACT",
     "candidate": "1f4a25c8445bfb48a3c14ed01e255cf51a8b76c9",
     "smoke": {
@@ -110,7 +110,8 @@
   "sourceOwner": {
     "session": "55743a42-4481-4922-8fe8-a9bd24af8916",
     "keeperPid": 38820,
-    "keeperStartedUtc": "2026-10-08T01:12:17.8225167Z"
+    "keeperStartedUtc": "2026-10-08T01:12:17.8225167Z",
+    "releaseOnHandoff": true
   },
   "releasePublished": false,
   "sprint18Started": false,
@@ -119,7 +120,7 @@
   "integrationSaveWrites": 0,
   "integrationDeployment": true,
   "lastVerifiedRestoration": {
-    "snapshot": "20261008T0129158990545Z",
+    "snapshot": "20261008T0246143536148Z",
     "files": 136,
     "version": "0.0.117",
     "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
@@ -127,10 +128,13 @@
     "baselineForced": false,
     "noKingmakerProcess": true,
     "runtimeLeaseReleased": true,
-    "stagingPresent": false
+    "stagingPresent": false,
+    "favoredClassSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+    "settingsRestoredExactly": true,
+    "batchRecordSha256": "6d0a475ee31ec6374684933df3deb268b0249078bc1592ddef0f6d367aa8125e"
   },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "Commit/push observer-only release candidate; one exact full source/build/package gate, then complete affected closure/five profiles/master coexistence/native-owned trait save on the same immutable artifact. No merge/release until all required gates PASS. STOP after v0.0.143; no Sprint18.",
+  "next": "Owner extension for one narrowly scoped request-local damage-attribution observation/fixture cycle. Do not waive the failed expiry assertion or invent a product correction. Preserve exact f65eedb3 artifact and all prior PASS results; run only demonstrated affected corrections and still-unrun closure/profile5/v142/native-trait-save cells. No merge/release until every required gate passes; no Sprint18.",
   "integrationPr": 29,
   "observationCorrection": {
     "used": 1,
@@ -143,6 +147,81 @@
     },
     "scope": "Inventory observation only; strict GUID/name/carrier authority and qualified current Salamander live carriers. Canonical preflight duplicate-list/crowd active-version fixtures repaired without weaker assertions.",
     "productionChanged": false,
-    "qualification": "NOT RUN ON CORRECTED COMMITTED HEAD"
+    "qualification": "SOURCE_PASS_RUNTIME_PARTIAL_FAIL_NOT_RELEASE_QUALIFIED"
+  },
+  "exactReleaseSourceGate": {
+    "candidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
+    "status": "PASS",
+    "passed": 2465,
+    "failed": 0,
+    "registered": 2465,
+    "logSha256": "188bf532028dd2b1deed766a18f1efef4c755fcc2ab5513d05aba61d31f89875",
+    "sourceFingerprint": "71e810e9f1c0fa2b637086180919d32ccb518289cb71b1db356d5e7c92062217",
+    "zipSha256": "5e23d5657c4899b4c9e8ea8cb067e463e571985d48ea5890bb61e500cba33c68",
+    "dllSha256": "28ba43082b41c42a0564fe22485bbef2bb0767a8698a9127b057ed535226c9a0",
+    "dllMvid": "5802a996-1b5f-4cbf-8e99-924aa964f643",
+    "members": 325,
+    "outerShellExitCode": 1,
+    "outerShellCaveat": "Native Python unittest stderr was formatted as a PowerShell NativeCommandError by the outer Tee pipeline. Inner gate checked Build-Local exit, timing failed=false and manifest validated=true; all validators, tests, build and package passed. Canonical subsequent prelaunch process exited0. No source gate was rerun to erase this evidence."
+  },
+  "exactReleasePrelaunch": {
+    "scenarioAssertions": 546,
+    "orchestrationAssertions": 168,
+    "persistenceSource": 11,
+    "persistenceRoundTrips": 9,
+    "historicalDefaults": 3,
+    "persistenceRejections": 84,
+    "crowdRoundTrips": 10,
+    "crowdRejections": 11,
+    "traitSaveHelpers": 56,
+    "launcherRequestContracts": 18,
+    "profileResolutions": 5,
+    "status": "PASS"
+  },
+  "closureGate": {
+    "candidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
+    "status": "FAIL_DAMAGE_SOURCE_UNRESOLVED",
+    "smoke": {"passed": 11, "failed": 0, "evidenceId": "20261008T0201517849083Z-working-save-smoke", "resultSha256": "496da1490b1751aae8f8d21b9266e45c4066c40d52b6322855c9e820ce9e2dc9"},
+    "inventory": {"passed": 50, "failed": 0, "evidenceId": "20261008T0204597562162Z-observe-expanded-summoning-inventory", "resultSha256": "7f35c1ca44501492b02d910fd3fb8395317f03fb4441a12ba7dc9a8a3ec4dd4b"},
+    "projectedMenu": {"passed": 3, "failed": 0, "evidenceId": "20261008T0215227622039Z-disposable-expanded-summoning-projected-menu", "resultSha256": "0f32d5afea364a091478624400a2ebbab521d063e9ef0f62946abeb6216cddcd"},
+    "exhaustivePlayerPath": {"passed": 10, "failed": 0, "generatedRoots": 1008, "nativeWrappers": 29, "evidenceId": "20261008T0219049452195Z-disposable-expanded-summoning-player-path", "resultSha256": "79a9c1c668249c85161cecd234362a55476ebf42a1ce7738f05af101047f95f2", "nativeSaveWrites": 0},
+    "crocodilians": {
+      "passed": 210,
+      "failed": 1,
+      "evidenceId": "20261008T0246419368407Z-disposable-expanded-summoning-crocodilians",
+      "resultSha256": "b1eab6a0a1bc25e9ca07b17a1aac02aa25ffa07a5388841501f917ccf4ff2a39",
+      "failureName": "sprint16-crocodile-cooldown-expiry",
+      "armed": true,
+      "initialSpeedState": true,
+      "ownerDestroyed": true,
+      "relationshipReleased": true,
+      "heldOrSwallowedStateRemains": false,
+      "victimDamageBefore": 0,
+      "victimDamageAfter": 2,
+      "nativeSeconds": 1.8,
+      "damageSourceRecorded": false,
+      "classification": "UNRESOLVED_PRODUCT_OR_FIXTURE; aggregate damage witness cannot attribute the two damage points. No assertion waived and no product defect claimed.",
+      "nativeSaveWrites": 0
+    },
+    "laterGates": "NOT RUN: snake-command regression, whole-roster ON/OFF native persistence/cleanup/absence, five-profile live compatibility, v142 live coexistence and native-owned trait-save protocol",
+    "saveWrites": 0,
+    "restoration": "VERIFIED",
+    "forcedTermination": false,
+    "smallestOwnerDecision": "Extend the bounded candidate cycle for one request-local damage-source observation/fixture correction; no production behavior change without demonstrated evidence."
+  },
+  "nativeExitRecovery": {
+    "processPid": 22044,
+    "processStartedUtc": "2026-10-08T02:19:05.8859434Z",
+    "originalTransactionId": "release143-runtime-20261008T0214517324941Z",
+    "originalStatus": "RESTORATION-ERROR_NATIVE_QUIT_EXCEEDED_WAIT",
+    "nativeExitObservedBeforeOwnerTerminationApproval": true,
+    "forcedTermination": false,
+    "ownerTerminationApprovalUsed": false,
+    "snapshot": "20261008T0214525781465Z",
+    "recoveryReceiptSha256": "c8869166c54dc8fd66131bb43babb9c09c555bc1a5924c8548e2404d570703a6",
+    "status": "RESTORED_VERIFIED",
+    "runtimeLeaseReleased": true,
+    "stagingAbsent": true,
+    "historicalFailureRewritten": false
   }
 }

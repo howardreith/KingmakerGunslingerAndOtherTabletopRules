@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 — public v0.0.143 candidate; NOT QUALIFIED
+## CURRENT STATE, 2026-10-08 — v0.0.143 BLOCKED; exact expiry damage unattributed
 
 Latest owner checkpoint-release mission governs: merge/tag/real Latest v0.0.143
 ONLY after all integration, closure, compatibility and v142 regression gates PASS.
@@ -12,15 +12,25 @@ imports qualified Phase2B8592b1e680a8b3c92b43d353b47bf7ff5f52c664.
 Common ancestor97f0a966; normal two-parent integration candidate, NOT QUALIFIED.
 Exact integration merge06aac4b7fae3abab18c900df5cfd351d6c819a37, parents
 4ba8d4aca and8592b1e6. PR29 is the sole release integration PR against master.
-Candidate1f4a25c8445bfb48a3c14ed01e255cf51a8b76c9 full source2462/build/package325
-PASS; exact runtime smoke11 PASS, inventory48/50 FAIL: two stale observer
-contracts, not demonstrated product defects. Source-qualified is NOT runtime-qualified.
-One observer-only correction now freezes exact GUID/name/carrier exceptions for17
-qualified references and current Salamander manufactured-spear/owned heat/tail-grab
-carriers, with spoof-rejection tests. No production behavior changed. Preflight
-duplicate-list and crowd request active-version/helper defects corrected without
-loosening their strict contracts. Next exact release candidate has2465 tests.
-Historical failures and policy rejection preserved; no policy override/bypass.
+Exact corrected executable candidate f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4:
+full unfiltered source2465/2465, clean14-reference Release, strict deterministic
+325-member package PASS. DLL28ba43082b41c42a0564fe22485bbef2bb0767a8698a9127b057ed535226c9a0;
+MVID5802a996-1b5f-4cbf-8e99-924aa964f643;
+ZIP5e23d5657c4899b4c9e8ea8cb067e463e571985d48ea5890bb61e500cba33c68.
+Canonical preflight546, orchestration168, all18 actual launcher/request contracts
+and five-profile resolution PASS. No product/range/AI/asset behavior changed.
+Runtime smoke11/11, inventory50/50, projected-menu3/3 and exhaustive player-path
+10/10 PASS: all1008 generated roots and29 wrappers through real slot/quantity paths.
+Crocodilian regression210/211 FAIL at sprint16-crocodile-cooldown-expiry:
+owner destroyed; reciprocal state, held/swallowed buffs and conditions released;
+prey damage0→2 over1.8 native seconds, source not recorded. This is unresolved,
+not a demonstrated product defect, proven fixture error, or accepted omission.
+No assertion waived. Batch stopped; remaining closure/profile5/v142 live cells
+NOT RUN. Source PASS is NOT release qualification.
+One observer correction already used; product correction0 used. A further
+request-local damage-attribution/fixture correction requires an owner extension
+of the bounded candidate cycle. No blind rerun or production change to get green.
+Initial candidate1f4a25c8 and its inventory48/50 failure remain preserved.
 Intended release is normal public Latest v0.0.143,
 not an alpha, draft release or prerelease.
 Every conflict: planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md.
@@ -43,20 +53,25 @@ Prior released receipt is archived; all permanent safety refs and verified recov
 bundle remain available. No other owner/game/runtime lock was present at intake.
 DATA PR27 archived/ZERO PORTS; all safety refs/worktrees/failed evidence preserved.
 
-Last exact restored live snapshot20261008T0129158990545Z:
+Last exact restored live snapshot20261008T0246143536148Z:
 136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;
-ZERO writes,no game/staging; runtime lease Completed/released. Actual pre-run
+ZERO save writes,no game/lease/staging; FavoredClass/settings exact restored.
+Earlier census process22044 exited NATIVELY; delayed-exit transaction0214517324941Z
+was recovered under its exact lease and snapshot0214525781465Z. Recovery receipt
+c8869166c54dc8fd66131bb43babb9c09c555bc1a5924c8548e2404d570703a6
+records no force termination. Owner's later approval for only22044 was not used.
+Failed shutdown record remains failed, with separate verified recovery evidence.
+Actual pre-run
 baseline must be freshly snapshotted UNDER lease, not forced to this historic state.
 Only native guarded Working-save workflow; protected baseline never loaded/written.
 
 Owner allowlist action verified and exact policy push PASS at01:12UTC.
-Next: commit/push one coherent observer-only candidate, full source/build/package
-gate ONCE on that exact committed head,
-then same-artifact closure ON/OFF persistence/profile5/v142 coexistence and the
-existing native-owned trait-save protocol. No product change by the driver guards.
-Integration/runtime/release NOT QUALIFIED; exhaustive closure stopped at inventory;
-remaining player-path/persistence/profile5/master coexistence gates NOT RUN.
-No integration runtime launch/deployment/save write yet. Latest public release
+Next: owner decision on one narrowly scoped damage-attribution observation cycle;
+then only demonstrated corrections, exact affected gates and remaining closure.
+Do not rerun completed source/census gates merely because of interruption.
+Integration/runtime/release NOT QUALIFIED. Current reporting descendants change
+only curated evidence/state, not the exact f65eedb3 executable candidate.
+Latest public release
 remains v0.0.142; merge/tag/real release only after all required gates PASS.
 Do not merge PR25/26 directly. Close as superseded only AFTER real v0.0.143 release.
 Permanent future rule: one charter sprint per branch/PR/release from released
