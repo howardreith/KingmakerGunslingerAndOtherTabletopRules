@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Result = new JObject { ["schemaVersion"] = 2, ["requestId"] = request,
                 ["scenario"] = scenario, ["unitCount"] = expectedUnits, ["observerReadOnly"] = true,
-                ["contractUnchanged"] = "Original snake native-appearance predicate retained for diagnosis; no simultaneous visibility waiver",
+                ["readinessContract"] = "Whole-roster native appearance/control settlement, not simultaneous camera/fog/invisibility presentation; original visual predicate evidence retained",
                 ["units"] = _rows, ["observerErrors"] = _errors,
                 ["summaryByFailedPredicate"] = new JObject(), ["failingUnits"] = new JArray(),
                 ["spawnFrameSource"] = "Native cast/entity creation returned and receipt assigned;loaded units have no invented spawn frame",
@@ -102,10 +102,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static readonly string[] SnakePredicates = {
             "EntityFadedIn", "DissolveSettled", "CanAct", "CanMove", "AppearanceBuffAbsent"
         };
+        // The native two-second appearance lock is a control/save boundary.
+        // EntityFader also dissolves for fog-of-war; natural invisibility and
+        // dormant offscreen views need not become visually intact to be saved.
+        // Retain those visual measurements above, but do not reuse that visual
+        // scenario's simultaneous-visibility contract for 108 saved units.
+        internal static readonly string[] PersistencePredicates = {
+            "ViewExists", "ViewDataMatches", "ViewIsInGame", "DissolveFinite",
+            "CanAct", "CanMove", "AppearanceBuffAbsent"
+        };
         private readonly Dictionary<string, int> _firstTrue = new Dictionary<string, int>(StringComparer.Ordinal);
         private Dictionary<string, bool> _last = new Dictionary<string, bool>(StringComparer.Ordinal);
         internal readonly int? SpawnedFrame;
-        internal int? FirstAllSnakeFrame, FirstAllObservedFrame;
+        internal int? FirstAllSnakeFrame, FirstAllObservedFrame, FirstPersistenceReadyFrame;
         internal int SampleCount;
         internal RosterReadinessTimeline(int? spawnedFrame) { SpawnedFrame = spawnedFrame; }
         internal IDictionary<string, int> FirstTrue { get { return new Dictionary<string, int>(_firstTrue); } }
@@ -119,14 +128,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (var p in predicates) if (p.Value && !_firstTrue.ContainsKey(p.Key)) _firstTrue.Add(p.Key, frame);
             if (!FirstAllSnakeFrame.HasValue && SnakePredicates.All(p => predicates[p])) FirstAllSnakeFrame = frame;
             if (!FirstAllObservedFrame.HasValue && predicates.All(p => p.Value)) FirstAllObservedFrame = frame;
+            if (!FirstPersistenceReadyFrame.HasValue && PersistenceReady(predicates)) FirstPersistenceReadyFrame = frame;
             _last = new Dictionary<string, bool>(predicates, StringComparer.Ordinal); SampleCount++;
         }
+        internal static bool PersistenceReady(IDictionary<string, bool> predicates)
+        { return predicates != null && PersistencePredicates.All(p => predicates.ContainsKey(p) && predicates[p]); }
+        internal bool ReadyForSave { get { return FirstPersistenceReadyFrame.HasValue && PersistenceReady(_last); } }
         internal string[] FailedSnakePredicates()
         { return SnakePredicates.Where(p => !_last.ContainsKey(p) || !_last[p]).ToArray(); }
         internal string[] FailedObservedPredicates()
         { return _last.Where(p => !p.Value).Select(p => p.Key).OrderBy(p => p, StringComparer.Ordinal).ToArray(); }
         internal void Clear()
-        { _firstTrue.Clear(); _last.Clear(); FirstAllSnakeFrame = null; FirstAllObservedFrame = null; SampleCount = 0; }
+        { _firstTrue.Clear(); _last.Clear(); FirstAllSnakeFrame = null; FirstAllObservedFrame = null; FirstPersistenceReadyFrame = null; SampleCount = 0; }
     }
 
     // Closed extension of the existing prepare/cleanup/absence trio. It is

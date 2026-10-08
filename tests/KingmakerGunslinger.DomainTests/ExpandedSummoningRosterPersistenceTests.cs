@@ -9,6 +9,39 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningRosterPersistenceTests
     {
+        internal static void PersistenceReadinessSeparatesNativeControlFromCurrentVisibility()
+        {
+            var sample = ReadySample(); sample["EntityFadedIn"] = false; sample["DissolveSettled"] = false;
+            var trace = new RosterReadinessTimeline(10); trace.Observe(10, sample);
+            Assertions.True(trace.ReadyForSave, "Dormant/occluded/invisible native view is save-ready after natural appearance/control settlement.");
+            Assertions.Equal(10, trace.FirstPersistenceReadyFrame.Value, "Per-unit first native settlement recorded.");
+            Assertions.True(trace.FailedSnakePredicates().SequenceEqual(new[] { "EntityFadedIn", "DissolveSettled" }),
+                "Original creature visual contract still fails; it is never relabeled PASS.");
+            foreach (string required in RosterReadinessTimeline.PersistencePredicates)
+            {
+                var broken = ReadySample(); broken[required] = false;
+                Assertions.False(RosterReadinessTimeline.PersistenceReady(broken), "Still requires " + required);
+                broken.Remove(required);
+                Assertions.False(RosterReadinessTimeline.PersistenceReady(broken), "Unknown state fails closed: " + required);
+            }
+            Assertions.False(RosterReadinessTimeline.PersistenceReady(null), "Missing sample cannot qualify.");
+        }
+
+        internal static void PersistenceReadinessRequiresCurrentControlAndClearsHistory()
+        {
+            var trace = new RosterReadinessTimeline(1); var sample = ReadySample();
+            sample["AppearanceBuffAbsent"] = false; sample["CanAct"] = false; sample["CanMove"] = false;
+            trace.Observe(1, sample);
+            Assertions.False(trace.ReadyForSave || trace.FirstPersistenceReadyFrame.HasValue, "No save while native appearance owns control.");
+            trace.Observe(50, ReadySample());
+            Assertions.True(trace.ReadyForSave && trace.FirstPersistenceReadyFrame == 50, "Natural lock release is recorded once.");
+            trace.Observe(51, sample);
+            Assertions.False(trace.ReadyForSave, "Earlier settlement never hides a renewed lock/control loss.");
+            Assertions.Equal(50, trace.FirstPersistenceReadyFrame.Value, "Historical first settlement preserved.");
+            trace.Clear();
+            Assertions.False(trace.ReadyForSave || trace.FirstPersistenceReadyFrame.HasValue, "Finally clears all request-local readiness history.");
+        }
+
         internal static void ReadinessFrameMapIsObjectWithNullFirstFramesAndStableKeys()
         {
             var trace = new RosterReadinessTimeline(7); var sample = ReadySample();
