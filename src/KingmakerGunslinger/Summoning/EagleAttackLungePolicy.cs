@@ -1,7 +1,31 @@
 using System;
+using System.Collections.Generic;
 
 namespace KingmakerGunslinger.Summoning
 {
+    // Only the three original flight attachments demonstrated by the release143
+    // ownership receipt. No global resource scan or name-based destruction.
+    internal static class OriginalFlightCleanupPolicy
+    {
+        internal static bool Handles(string key)
+        { return key == "eagle" || key == "dire-bat" || key == "pteranodon"; }
+
+        internal static T[] PrivateMaterials<T>(T created, IEnumerable<T> installed,
+            IEnumerable<T> borrowed) where T : class
+        {
+            var originals = new List<T>(borrowed ?? new T[0]);
+            var result = new List<T>();
+            Action<T> add = value => {
+                if (value == null || originals.Exists(o => ReferenceEquals(o, value)) ||
+                    result.Exists(o => ReferenceEquals(o, value))) return;
+                result.Add(value);
+            };
+            add(created);
+            foreach (T value in installed ?? new T[0]) add(value);
+            return result.ToArray();
+        }
+    }
+
     /// <summary>Visual-only timing for one Eagle natural-attack swing.</summary>
     internal static class EagleAttackLungePolicy
     {
