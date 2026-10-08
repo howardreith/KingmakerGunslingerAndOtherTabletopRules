@@ -42,6 +42,7 @@ namespace KingmakerGunslinger.Acquisition
     internal static class ProjectMagicItemDiscoverabilityPolicy
     {
         internal const int ExpectedItemCount = 30;
+        internal const int ExpectedExactAreaCount = 28;
         internal const string CordItemKey =
             "KMG.Items.CordOfStubbornResolve";
         internal const string CordTargetGuid =
@@ -122,7 +123,7 @@ namespace KingmakerGunslinger.Acquisition
                 issues.Add("distinct-targets=" + targets);
             IDictionary<string, int> exact = Density(complete, value =>
                 value.AreaName);
-            if (exact.Count < 29)
+            if (exact.Count != ExpectedExactAreaCount)
                 issues.Add("distinct-exact-areas=" + exact.Count);
             foreach (KeyValuePair<string, int> entry in exact)
                 if (entry.Value > 2)
@@ -133,7 +134,8 @@ namespace KingmakerGunslinger.Acquisition
             foreach (KeyValuePair<string, int> entry in campaign)
             {
                 int maximum = string.Equals(entry.Key, "FinalDungeon",
-                    StringComparison.Ordinal) ? 3 : 2;
+                    StringComparison.Ordinal) || string.Equals(entry.Key,
+                        "HouseAtTheEdgeOfTime", StringComparison.Ordinal) ? 3 : 2;
                 if (entry.Value > maximum)
                     issues.Add("campaign-area-density=" + entry.Key + ":" +
                         entry.Value);

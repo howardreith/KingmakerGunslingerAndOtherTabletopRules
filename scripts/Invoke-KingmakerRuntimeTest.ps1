@@ -74,6 +74,12 @@ if ($scenarioMetadata.RequiresSaveName) {
         }
         $Parameters = $Parameters.Clone()
         $Parameters.saveName = $SaveName
+    } elseif ($Scenario -ceq 'working-save-weapon-route') {
+        if ($Parameters.Count -ne 1 -or -not $Parameters.ContainsKey('weaponKey') -or $Parameters.weaponKey -isnot [string]) { throw 'Exactly one typed campaign weapon key required.' }
+        $Parameters = @{saveName=$SaveName;weaponKey=$Parameters.weaponKey}
+    } elseif ($Scenario -ceq 'weapon-findability-owned-save') {
+        . (Join-Path $PSScriptRoot 'WeaponFindabilityPersistence.Common.ps1')
+        $Parameters = New-WeaponFindabilitySaveParameters -SaveName $SaveName -Parameters $Parameters
     } elseif ($Scenario -ceq 'elemental-character-traits-owned-save') {
         $Parameters = New-ElementalTraitSaveParameters -SaveName $SaveName -Parameters $Parameters
     } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {

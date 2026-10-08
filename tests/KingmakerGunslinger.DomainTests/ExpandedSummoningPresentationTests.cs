@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 286 } else { 284 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 293 } else { 291 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
@@ -197,7 +197,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             string source = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
-                "RuntimeTesting", "RuntimeTestRunner.cs"));
+                "RuntimeTesting", "RuntimeTestRunner.cs")).Replace("\r\n", "\n");
             Assertions.True(source.Contains("SummonFamily.Monster ? 0 : 9") &&
                 source.Contains("nativeExpansionCases.Count ==\n                    SummonNativeExpansionCatalog.All.Count") &&
                 source.Contains("\" visible creature-named native/preservation wrappers live"),

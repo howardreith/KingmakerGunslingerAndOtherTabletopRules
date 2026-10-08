@@ -1,5 +1,49 @@
 # Eastern Weapons placement manifest
 
+## Current 0.0.143 publication
+
+All 18 named Eastern weapons use 18 distinct world-loot targets, with one intended
+weapon per container. Current families are **Wakizashi, Katana, Nodachi**. The
+[authoritative player table and exact identities](../planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md)
+supersede the historical merchant/clustering directions below.
+
+Six destinations change: Winter Reed to the eastern Empty Skull Rock bone pile;
+Drawn Horizon to Lake Silverstep Village's southeastern-shore pack; Thunder at
+the Gate to Armag's outside supply crate; Moonlit Crossing to Littletown's
+exterior piers barrel; Unfixed Form to Whiterose Abbey's ordinary northeastern
+chest; and Paper Lantern to the actual `Forest_BarrikadedChest1#2` Glaive +1
+chest. Paper Lantern's old definition has no installed scene reference. All six
+retired definitions enter mod-row cleanup. The other 12 Eastern targets remain
+unchanged. Heaven's Measure retains the second-floor House Headband of Mental
+Perfection +6 cabinet: native flag 2, `HouseAtTheEdgeOfTime_2ndFloor02_Mechanics`,
+`Loot_SideB`, behind Nyrissa's encounter room. The native first-floor G03
+fog change, throne-room corridor and L2G stairs, second-floor F01/F04 fog
+changes and three-key gate passed, followed by cabinet pickup, revisit and disk
+reload. The corridor requires the Horned Hunter key; the inner gate requires
+Wriggling Man, Knurly Witch and Third Nyrissa keys. Keys were supplied only as
+disposable story prerequisites; organic key/puzzle/Nyrissa progression remains
+unverified. Gate flags and check outcomes were not overridden.
+
+Generic merchant stock is unchanged: Oleg has six mundane/masterwork family
+rows; the capital has zero mod-owned generic Eastern rows under Model D; Dire
+Narlmarches village and Pitax each have the 12 generic rows. Each installed
+Honest Guy BTSL table has 12; Xelliren tables have zero. None receives a named
+Eastern weapon. Native replenishment and prior serialized stock remain native;
+there is no guaranteed refresh.
+
+Publication remains additive, module-gated, idempotent and rollback-owned.
+Canonical identities and valid saved weapons/upgrades remain intact with the
+module OFF. Existing generated loot is not promised to refill. Explicit
+[relocated-weapon recovery](WEAPON-FINDABILITY-RECOVERY.md) has ownership,
+progress and ledger gates; it never runs on load.
+
+Historical observer runs proved array/source publication, not scene visibility,
+ordinary routes or physical pickup. Current results are separately recorded in
+[the findability qualification](WEAPON-FINDABILITY-QUALIFICATION.md).
+
+## Historical publication records (superseded directions)
+
+
 ## Live qualification
 
 Historical pre-Issue-7 guarded read-only vendor/loot run
