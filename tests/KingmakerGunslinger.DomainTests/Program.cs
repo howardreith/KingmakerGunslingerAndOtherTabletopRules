@@ -34,6 +34,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.release143-inventory-salamander-carriers", ExpandedSummoningInventoryObservationTests.SalamanderCarriersDoNotExpectLegacyOnHitRiders),
             Case("expanded-summoning.release143-whole-roster-coverage", ExpandedSummoningRosterPersistenceTests.EveryCreatureAndNativeUnitIsCoveredOnce),
             Case("expanded-summoning.release143-resource-authority", ExpandedSummoningRosterPersistenceTests.ResourceClassificationRequiresExactAuthorityNotNameOrSharing),
+            Case("expanded-summoning.release143-resource-flight-repeated-owner", ExpandedSummoningRosterPersistenceTests.OriginalFlightCleanupIsNarrowReferenceOwnedAndRepeatable),
+            Case("expanded-summoning.release143-resource-strict-private-cache", ExpandedSummoningRosterPersistenceTests.ResourceCleanupNeverWaivesPrivateOrUnknownAndPinsCacheCounts),
             Case("expanded-summoning.release143-resource-identities", ExpandedSummoningRosterPersistenceTests.ResourceReportKeepsSameNameInstancesAndSharingSeparate),
             Case("expanded-summoning.release143-resource-row-errors", ExpandedSummoningRosterPersistenceTests.ResourceReportPreservesOtherRowsAndClearOnObserverError),
             Case("expanded-summoning.release143-resource-clear-write-boundary", ExpandedSummoningRosterPersistenceTests.ResourceReportDoesNotHideClearFailureOrDiagnosticWriteBoundary),

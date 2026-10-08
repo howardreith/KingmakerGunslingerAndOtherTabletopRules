@@ -9,7 +9,21 @@ namespace KingmakerGunslinger.RuntimeTesting
     // Request-local cleanup evidence only; no Unity mutation or ownership by name.
     internal sealed class RosterResourceReport
     {
-        internal const bool DiagnosisOnly = true;
+        internal const bool DiagnosisOnly = false;
+
+        internal static bool CleanupSatisfied(JObject row)
+        {
+            string kind = (string)row["ownershipClass"];
+            if (kind == "PRIVATE_VIEW_OWNED") return !(bool)row["aliveAfter"] &&
+                !((JArray)row["references"]).Any(r => (bool?)r["retainedAsOwnedAfterDestruction"] == true);
+            if (kind != "IMMUTABLE_PROCESS_CACHE" && kind != "BORROWED_NATIVE") return false;
+            if (!(bool)row["aliveAfter"] || (int)row["afterCleanupGlobalCountSameTypeName"] !=
+                (int)row["beforeCleanupGlobalCountSameTypeName"]) return false;
+            // Cache is initialized before the working load. Native borrowed
+            // assets may be loaded with the area; require stable cleanup count.
+            return kind != "IMMUTABLE_PROCESS_CACHE" ||
+                (int?)row["preLoadGlobalCountSameTypeName"] == (int)row["afterCleanupGlobalCountSameTypeName"];
+        }
         internal readonly JObject Result;
         internal readonly JArray Rows = new JArray(), Errors = new JArray();
         internal RosterResourceReport(string request, string stage)

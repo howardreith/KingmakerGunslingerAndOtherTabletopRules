@@ -227,7 +227,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             // Dog is excluded on purpose: it keeps the native Dog
             // presentation, so it has no project-owned view to inspect.
-            return key == "giant-wasp" || key == "stirge" ||
+            return OriginalFlightCleanupPolicy.Handles(key) || key == "giant-wasp" || key == "stirge" ||
                 key == "dire-rat" || key == "hyena" || key == "goblin-dog" ||
                 IsSprint11UngulateReviewKey(key) ||
                 IsSprint14InsectReviewKey(key) ||
@@ -240,6 +240,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         // new branch for them - its existing fallback is already correct.
         private static string OriginalReviewVisualName(string key)
         {
+            if (key == "eagle") return ExpandedSummoningPteranodonViewPatch.EagleVisualName;
+            if (key == "dire-bat") return ExpandedSummoningPteranodonViewPatch.DireBatVisualName;
+            if (key == "pteranodon") return ExpandedSummoningPteranodonViewPatch.CustomVisualName;
             return key == "stirge"
                 ? ExpandedSummoningPteranodonViewPatch.StirgeVisualName
                 : key == "giant-wasp"
@@ -972,6 +975,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 default:
                     if (_creatureReviewSettle++ < CreatureReviewCleanupSettleUpdates) return;
+                    if (OriginalFlightCleanupPolicy.Handles(key))
+                    {
+                        if (_originalFlightLifecycleSteps == null)
+                            _originalFlightLifecycleSteps = RepeatOriginalFlightLifecycle(variant).GetEnumerator();
+                        if (_originalFlightLifecycleSteps.MoveNext()) return;
+                        _originalFlightLifecycleSteps.Dispose(); _originalFlightLifecycleSteps = null;
+                    }
                     int live = _creatureReviewUnits.Count(value => !value.Destroyed ||
                         value.View != null || value.HoldingState != null);
                     _creatureReviewAssertions.Add(Assertion(
