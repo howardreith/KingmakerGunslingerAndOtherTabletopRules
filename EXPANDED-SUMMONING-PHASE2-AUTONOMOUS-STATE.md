@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 — final bounded damage-attribution cycle authorized; NOT QUALIFIED
+## CURRENT STATE, 2026-10-08 — BLOCKED D: final cycle completed; prior damage still unattributed
 
 Latest final-blocker-resolution owner order governs: exactly one additional
 request-local read-only damage-attribution cycle in the existing Sprint16
@@ -15,27 +15,37 @@ imports qualified Phase2B8592b1e680a8b3c92b43d353b47bf7ff5f52c664.
 Common ancestor97f0a966; normal two-parent integration candidate, NOT QUALIFIED.
 Exact integration merge06aac4b7fae3abab18c900df5cfd351d6c819a37, parents
 4ba8d4aca and8592b1e6. PR29 is the sole release integration PR against master.
-Exact corrected executable candidate f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4:
-full unfiltered source2465/2465, clean14-reference Release, strict deterministic
-325-member package PASS. DLL28ba43082b41c42a0564fe22485bbef2bb0767a8698a9127b057ed535226c9a0;
-MVID5802a996-1b5f-4cbf-8e99-924aa964f643;
-ZIP5e23d5657c4899b4c9e8ea8cb067e463e571985d48ea5890bb61e500cba33c68.
-Canonical preflight546, orchestration168, all18 actual launcher/request contracts
-and five-profile resolution PASS. No product/range/AI/asset behavior changed.
+Final exact observer executable b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf:
+full unfiltered source2469/2469, clean14-reference Release, strict deterministic
+325-member package PASS. DLLac09efca4736bb9742e1d5b88edd84b32d0ef202181a615a89bb22078f973a1f;
+MVIDefeb0bb5-5215-4c89-9c97-3b71fe1cec24;
+ZIP097f6be62d33ab3f9bb2d5a93307133d421709a7c22cd1b752da683397330ed8.
+Guarded smoke11/11 and crocodilians212/212 PASS; no product/range/AI/asset or
+no-damage assertion changed. The named expiry window did NOT reproduce damage:
+frame9859→9909, native game time13:01:33.777→13:01:35.777; damage0→0,
+HP100000 unchanged, temporaryHP0/Constitution10/nonlethal0 unchanged.
+No damage/heal rule, observed health-setter mutation or unknown frame delta;
+observer removed with zero errors. Before: exact owned grapple and native
+Entangled buffs/conditions. After: destroyed owner, released relationship,
+empty prey buffs/conditions. Record0c8ca64f896ff805f865f0e03a49441e7b729e7677cf7d991fabfd0516a55150.
+Thus the HISTORICAL f65 two-point event remains UNATTRIBUTED (classD), not a
+proved fixture error, legitimate event or product defect. No prior FAIL rewritten.
+The cycle's runtime PASS is not release qualification; order2D requires STOP.
+Strict reuse audit: every325 packaged member byte-identical to f65 except DLL;
+reviewed source delta only request-local observation/tests/qualification metadata.
+Prior canonical preflight546/orchestration168 and two affected actual request
+contracts PASS. No further cycle requested or run; no fixture/product correction.
 Runtime smoke11/11, inventory50/50, projected-menu3/3 and exhaustive player-path
 10/10 PASS: all1008 generated roots and29 wrappers through real slot/quantity paths.
-Crocodilian regression210/211 FAIL at sprint16-crocodile-cooldown-expiry:
+Historical f65 crocodilian regression210/211 FAIL at sprint16-crocodile-cooldown-expiry:
 owner destroyed; reciprocal state, held/swallowed buffs and conditions released;
 prey damage0→2 over1.8 native seconds, source not recorded. This is unresolved,
 not a demonstrated product defect, proven fixture error, or accepted omission.
 No assertion waived. Batch stopped; remaining closure/profile5/v142 live cells
 NOT RUN. Source PASS is NOT release qualification.
-Prior observer correction1 used; product correction0 used. Owner now explicitly
-authorizes one final attribution cycle, followed only by its evidence-supported
-fixture correction or one bounded product correction. Still-unattributed => STOP.
-No blind rerun or production change to get green. Focused14/14 attribution/lifecycle
-tests and development private-reference compile PASS; next exact head has2469
-tests. Domain/source/build/package will run ONCE after candidate commit.
+Prior observer correction1 used; final attribution cycle1/1 used; product0 used.
+Focused14/14 tests and development private-reference compile PASS; complete
+committed-head gate ran ONCE. No blind rerun or assertion waiver.
 Initial candidate1f4a25c8 and its inventory48/50 failure remain preserved.
 Intended release is normal public Latest v0.0.143,
 not an alpha, draft release or prerelease.
@@ -59,7 +69,7 @@ Prior released receipt is archived; all permanent safety refs and verified recov
 bundle remain available. No other owner/game/runtime lock was present at intake.
 DATA PR27 archived/ZERO PORTS; all safety refs/worktrees/failed evidence preserved.
 
-Last exact restored live snapshot20261008T0246143536148Z:
+Last exact restored live snapshot20261008T0342442421210Z:
 136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;
 ZERO save writes,no game/lease/staging; FavoredClass/settings exact restored.
 Earlier census process22044 exited NATIVELY; delayed-exit transaction0214517324941Z
@@ -72,17 +82,16 @@ baseline must be freshly snapshotted UNDER lease, not forced to this historic st
 Only native guarded Working-save workflow; protected baseline never loaded/written.
 
 Owner allowlist action verified and exact policy push PASS at01:12UTC.
-Next: freeze/push the observer head, complete source/build/package once, then
-smoke+crocodilians ONLY. Capture every prey damage/healing/native-setter event,
-HP/Constitution mutation and unknown frame delta; complete before/after buff/status
-lists, source/context/fact/ability/weapon/components/parents/native stack.
-Classify before changing anything. Prior inventory/menu/1008+29 root PASS may be
-reused ONLY after exact unchanged exercised source/packaged-surface delta audit.
-Then evidence-supported correction and still-unrun closure/profile5/v142 gates.
+Next: owner review of the exact non-reproduction witness and release-scope
+disposition for unresolved Sprint16 damage. No further observation cycle requested
+under this order; no permission to waive, invent attribution or publish inferred.
+Remaining snake-command/whole-roster ON/OFF persistence/profile5/v142 coexistence/
+native-owned trait-save gates NOT RUN under the explicit classD stop condition.
 Do not rerun completed source/census gates merely because of interruption.
-Integration/runtime/release NOT QUALIFIED. Reporting1d38d4bb changed only evidence;
-the additional observer now changes request-local test code only. Executable,
-package and qualification identities must be frozen again at the new commit.
+Release NOT QUALIFIED. Exact observer executable/package b8d67c3b are frozen and
+the bounded runtime batch has completed. This reporting checkpoint changes only
+qualification metadata; no executable or packaged content changed after b8d67c3b.
+Do not rebuild or rerun its completed gates for this reporting-only checkpoint.
 Latest public release
 remains v0.0.142; merge/tag/real release only after all required gates PASS.
 Do not merge PR25/26 directly. Close as superseded only AFTER real v0.0.143 release.

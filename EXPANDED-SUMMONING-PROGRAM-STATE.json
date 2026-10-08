@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
   "phase2Mission": {
-    "authority": "Latest owner checkpoint-release mission: qualified integration with current master, release v0.0.143 only after every gate passes, then STOP; one sprint per future release, new owner mission required.",
+    "authority": "v0.0.143 Final Blocker Resolution and Release Completion Order: one final request-local attribution cycle; STOP if still unattributed under2D. Release only after every gate passes, then STOP;one sprint per future release,new owner mission required.",
     "authorizedSprints": [
       9,
       10,
@@ -30,22 +30,23 @@
       17
     ],
     "currentSprint": null,
-    "currentSubItem": "Owner-authorized final bounded request-local damage attribution observer in development;2469 source/build/package once on committed head, then smoke+crocodilians. Prior f65 expiry0to2 failure preserved;inventory/menu/1008+29 paths reuse only with exact delta audit. Salamander INCLUDED;no merge/release/Sprint18 before all gates;unattributed=>STOP,no additional cycle request.",
+    "currentSubItem": "BLOCKED_D_STILL_UNATTRIBUTED: final b8d67c3b source2469/package325 PASS, smoke11/crocodilians212 PASS; exact expiry window damage0to0/zero events, so historical f65 damage0to2 cannot be attributed. One final cycle1of1 used;no further cycle requested, no product/fixture correction or waiver. Installation restored exactly, zero writes;remaining release gates NOT RUN by order2D. Salamander INCLUDED;no merge/release/Sprint18.",
     "currentBranch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
     "releaseCheckpoint": {
       "version": "0.0.143",
       "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
       "qualifiedPhase2BImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
       "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md",
-      "status": "FINAL_ATTRIBUTION_CYCLE_AUTHORIZED;NOT QUALIFIED",
+      "status": "BLOCKED_D_STILL_UNATTRIBUTED;NOT RELEASE_QUALIFIED",
       "sourceOwnerSession": "d42bf512-25e5-4c0a-a2bc-9fff6ace3fb2",
-      "executableCandidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
+      "executableCandidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
       "evidence": "planning/RELEASE-0.0.143-EVIDENCE.json",
       "salamanderIncluded": true,
       "closureRun": true,
       "closurePassed": false,
-      "nextOwnerDecision": null,
+      "nextOwnerDecision": "Owner review of exact non-reproduction evidence and release-scope disposition for the unresolved Sprint16 event;no new cycle requested or waiver inferred.",
       "finalAttributionCycleAuthorized": true,
+      "finalAttributionCycleComplete": true,
       "furtherObservationCycleAuthorized": false,
       "nextSprintAuthorized": false,
       "futureWorkflow": "One charter sprint per branch/PR/release from released master;new owner mission required;no stacked multi-sprint PR."
