@@ -45,8 +45,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
     'source-state-attestation-is-stable-and-sha256'
 
 $expected = @(
-    # Exact released v0.0.141 metadata; no scenario is launched by this list.
-    'disposable-expanded-summoning-projected-menu', 'disposable-expanded-summoning-pteranodon-fault-drill', 'disposable-expanded-summoning-rules', 'disposable-expanded-summoning-visual-lifecycle', 'observe-expanded-summoning-module-boundary',
+    # Exact integrated scenario union; each scenario occurs once and none is launched.
     'elemental-character-traits-owned-save', 'observe-firearm-descriptions', 'observe-model-d-vendors', 'observe-whiteout-weather', 'observe-whiteout-weather-catalog', 'observe-published-elemental-character-traits', 'observe-unpublished-race-trait-foundations', 'observe-unpublished-aerial-observer-foundation', 'observe-whiteout-disposable-weather-fixture', 'observe-unpublished-whiteout-foundation',
     'mod-load-smoke',
     'observe-magic-circle-native-contracts', 'disposable-magic-circle-evil', 'disposable-magic-circle-ui', 'disposable-magic-circle-terrain',

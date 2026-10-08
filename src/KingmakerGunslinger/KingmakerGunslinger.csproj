@@ -1641,6 +1641,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="RuntimeTesting\ExpandedSummoningRosterPersistencePolicy.cs" />
+    <Compile Include="RuntimeTesting\ExpandedSummoningInventoryObservationPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs" />
   </ItemGroup>
   <ItemGroup>
