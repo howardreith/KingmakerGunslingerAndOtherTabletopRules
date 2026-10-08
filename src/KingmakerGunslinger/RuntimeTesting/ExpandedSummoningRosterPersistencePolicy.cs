@@ -11,6 +11,32 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal const string Scope = "whole-roster";
         internal const string ReceiptScope = "KMG_Release143_WholeRoster_v1";
+        // Request-local fixture choices mirror the qualified player-path
+        // harness. Select for EACH cast: a native Evil row must not leave the
+        // following Celestial execution unavailable. Integers are the native
+        // Alignment flags, keeping this policy independently testable.
+        internal static int CasterAlignmentFor(SummonVariantSpec variant)
+        {
+            if (variant.Family == SummonFamily.NaturesAlly) return 17; // ChaoticNeutral
+            if (variant.Creature.MonsterTemplated) return 3; // NeutralGood
+            switch (variant.Creature.Key)
+            {
+                case "lantern-archon":
+                case "bralani-azata":
+                case "ghaele-azata": return 3;
+                case "hell-hound":
+                case "erinyes-devil":
+                case "shadow-demon":
+                case "succubus":
+                case "salamander":
+                case "bebelith": return 12; // LawfulEvil
+                default: return 1; // TrueNeutral
+            }
+        }
+        internal static int CasterAlignmentFor(SummonNativeExpansionSpec native)
+        {
+            return native.Branch == SummonNativeSpawnBranch.Evil ? 5 : 1;
+        }
         internal static string[] Keys
         {
             get { return ExpandedSummoningCatalog.All.Select(c => c.Key)
