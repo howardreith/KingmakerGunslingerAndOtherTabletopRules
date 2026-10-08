@@ -1,37 +1,46 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 - resource-ownership diagnosis authorized; readiness CLOSED
+## CURRENT STATE, 2026-10-08 - resource diagnosis complete; one correction pending qualification
 
 Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint;PR29 DRAFT.
-Clean intake/local/remote38ed9cd43887af92d34189fa04ab04c71fdeebb6.
-Prior exactf5f812d7:full2480/package325,smoke11/prepare119 PASS.
-Readiness108/108 naturally settled both before/after load. Do not reopen.
-Prior cleanup116/118 FAIL:all108units gone,6/95 resources alive;no identities.
-Working retains108 prepared receipts;zero cleanup writes. No manual save surgery.
+Diagnostic candidate a21f9aa1b1db4071adafc1fdd76cef474cd62524 PUSHED.
+Full2484/2484,14-reference Release,strict325-member package PASS.
+ZIP9d0e59ee91a3f2dc6eb973be34deea28e65266bac0f9591d0bc4a9146431d98a.
+Smoke11/11 PASS;cleanup diagnosis118/119 FAIL;zero native writes.
+Report7535875153585d012891e1fdfcae8111190d5e4be45ace2731f9d32fac1c4fca:
+357 unique objects,137 private,198 borrowed,22 immutable caches,zero observer
+errors,tracking cleared. All108 units gone at frame4416;128private objects
+gone one frame after cleanup. NINE private survivors remain after60frames:
+Eagle,DireBat,Pteranodon each own a mesh,created material,controller instance.
+The six historical scan survivors are three meshes+three controller instances;
+the new authoritative record finds three additional created private materials.
+Each is exclusive to its named attachment,not cache/borrowed. Teardown's
+Phase2 key gate excluded allthree. Readiness remains CLOSED108/108.
 
-Latest owner authorizes ONE read-only resource diagnosis plus ONE evidence-driven
-fixture or production correction. No inferred leak/cache exemption by KMG_ name.
-Observer records exact ownership,reference sharing,cache identity,global counts,
-first Unity-null frame and60-frame natural settlement;errors retain other rows.
-Diagnosis runs smoke+existing verify-cleanup ONLY,zero native save writes.
-No production change before diagnosis. No new readiness/Crocodile observer.
-Next:focused resource tests/incremental compile;commit/push diagnostic head;
-one full exact source/build/package gate;one guarded diagnosis;exact restoration.
+ONE correction now implemented,NOT runtime-qualified: narrow original-flight
+owner teardown restores donor references,destroys exact private references,
+removes ownership,idempotent. Existing Phase2 cleanup/gameplay unchanged.
+All private receipts must become null;known caches/borrowed stay count-stable.
+Focused6 PASS;incremental compile PASS. Next:freeze/push correction,one complete
+exact gate;smoke+existing108 cleanup(native save)+freshabsence;affected flight
+review/repeated lifecycle;native seed needed only for subsequent OFF108 row
+after clean absence empties receipt set;OFFcleanup+absence. Then remaining
+five-profile/v142/native-trait-save gates once. No further diagnosis/correction.
 
-Source session1a065852-cdf2-46c2-a472-7b1229e813b6;keeper38584/start
-2026-10-08T22:51:23.2603654Z;previouskeeper37628 Released/dead.
-Exclusive source lock held. No game/current runtime lock/active staging at intake.
-Old dead lease journals remain historical evidence;latest transaction restored.
-Snapshot actual live state under lease before every transaction,restore exactly.
+Working still retains108 prepared receipts;both diagnostic runs wrote zero.
+Actual snapshot20261008T2304563605018Z restored:136files/Info0.0.117/tree
+216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Settings/FavoredClass byte-exact;native exits;leaseCompleted/no game/staging.
+Source session1a065852-cdf2-46c2-a472-7b1229e813b6,keeper38584 still owns branch.
+Receipt/lock must be released after final reporting push,not stolen mid-session.
 
 Surface:1008 published generated roots+29 native wrappers=1037 visible choices.
-Preserve all unaffected qualification provenance and every historical failure.
+Reuse unaffected crocodilians212,snake71,Salamander,inventory50/menu3/roots/wrappers.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-remains active. If expiry damage recurs,STOP. No new attribution cycle.
+preserved;historical failure never relabeled. Stop if expiry damage recurs.
 Evidence:planning/RELEASE-0.0.143-EVIDENCE.json;resourceOwnershipMission controls.
-If persistence/remaining compatibility/coexistence/restoration all pass,owner
-authorizes PR29 merge and real Latestv0.0.143;close25/26 superseded,thenSTOP.
-No Sprint18/Phase2C or permanent deployment. Release NOT QUALIFIED yet.
+Release NOT QUALIFIED. Merge PR29/stable Latestv143 authorized ONLY all gates pass.
+No direct25/26 merge,no permanent deployment,no Sprint18/Phase2C.
 
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED

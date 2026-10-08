@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "RESOURCE_OWNERSHIP_DIAGNOSIS_PENDING",
+  "status": "RESOURCE_OWNER_CORRECTION_PENDING_EXACT_QUALIFICATION",
   "readinessObserverRepairMission": {
     "authority": "v0.0.143 Readiness Observer Repair and Final Release Order",
     "intakeReportingHead": "95ff2ee1d3703ed0f863525bd943e573e49fd869",
@@ -1064,10 +1064,10 @@
   "integrationSaveWrites": 0,
   "integrationDeployment": true,
   "lastVerifiedRestoration": {
-    "snapshot": "20261008T1759293873173Z",
+    "snapshot": "20261008T2304563605018Z",
     "files": 136,
+    "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
     "version": "0.0.117",
-    "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
     "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
     "baselineForced": false,
     "noKingmakerProcess": true,
@@ -1075,10 +1075,11 @@
     "stagingPresent": false,
     "favoredClassSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
     "settingsRestoredExactly": true,
-    "batchRecordSha256": "042f030948fe4cf1694d81ae32706e2a232ba1659f4fd1197fc01af1f6eaecfd"
+    "batchRecordSha256": "fbe84635bc9d008bef1ab9a19364a586c74bd51977f84cf498ae7cf24b6b4eab",
+    "workingSave": "Prepared108 fixture unchanged;diagnostic smoke+cleanup both zero writes"
   },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "Focused4 PASS;incremental compile;freeze diagnostic head/full exact gate;smoke and ONE existing whole-roster cleanup diagnosis;exact restore. One evidence-driven correction afterward.",
+  "next": "Freeze/push sole correction candidate;one full exact source/build/package gate;one guarded corrected persistence+affected flight lifecycle batch,then remaining compatibility/coexistence if all pass. No further diagnosis or correction cycle.",
   "integrationPr": 29,
   "observationCorrection": {
     "used": 1,
@@ -1294,11 +1295,11 @@
     "intakeHead": "38ed9cd43887af92d34189fa04ab04c71fdeebb6",
     "priorExactCandidate": "f5f812d72ac4214cd4ddefbd5bd34e8791720ba9",
     "diagnosisRunsAuthorized": 1,
-    "diagnosisRunsUsed": 0,
+    "diagnosisRunsUsed": 1,
     "correctionCandidatesAuthorized": 1,
-    "correctionCandidatesUsed": 0,
+    "correctionCandidatesUsed": 1,
     "readinessClosed": true,
-    "productionChanged": false,
+    "productionChanged": true,
     "workingSaveState": "108 prepared receipt-owned units remain in authorized Working;no cleanup write at prior failure",
     "scope": "Existing whole-roster verify-cleanup only: read-only explicit owner/cache/borrowed/reference receipts, natural destruction settlement up to60 frames after native unit retirement;diagnosis preserves prepared save (zero writes)",
     "forbidden": [
@@ -1309,6 +1310,331 @@
       "manual save manipulation",
       "Sprint18/Phase2C"
     ],
-    "next": "Focused4 PASS;incremental compile;freeze diagnostic head/full exact gate;smoke and ONE existing whole-roster cleanup diagnosis;exact restore. One evidence-driven correction afterward."
+    "next": "Freeze/push sole correction candidate;one full exact source/build/package gate;one guarded corrected persistence+affected flight lifecycle batch,then remaining compatibility/coexistence if all pass. No further diagnosis or correction cycle.",
+    "diagnosticCandidate": "a21f9aa1b1db4071adafc1fdd76cef474cd62524",
+    "diagnosticSourceGate": {
+      "status": "PASS",
+      "passed": 2484,
+      "failed": 0,
+      "cleanReferences": 14,
+      "strictPackageMembers": 325,
+      "sourceFingerprint": "0945c8766231c2f089eda5552e0f194afb36cce0379678e3e3334f0b48f3a391",
+      "zipSha256": "9d0e59ee91a3f2dc6eb973be34deea28e65266bac0f9591d0bc4a9146431d98a",
+      "dllSha256": "c2ae282f8b7dee01494720d06f001fc3f2dc4b50774c045b9501e8680bebecbf",
+      "mvid": "cafdaacc-236d-4f1e-ae94-5fde00bd5c72",
+      "seconds": 216.4,
+      "logSha256": "6aabd952e260f6e67229bde12562cbfdd1dc2f1e575d943ed87295306fd33eee",
+      "deltaSha256": "da626b562e5c1e11bb9adc213fc6d107444dc1c22aa495f6176a52ebdd206aa2"
+    },
+    "diagnosis": {
+      "reportSha256": "7535875153585d012891e1fdfcae8111190d5e4be45ace2731f9d32fac1c4fca",
+      "reportBytes": 1044652,
+      "units": 108,
+      "allUnitsDestroyed": true,
+      "observedFrames": 61,
+      "startFrame": 4415,
+      "unitsGoneFrame": 4416,
+      "baselineFrame": 0,
+      "totalCapturedReferences": 538,
+      "uniqueObjects": 357,
+      "sharedObjects": 8,
+      "expectedPrivateObjects": 137,
+      "borrowedObjects": 198,
+      "immutableCaches": 22,
+      "privateGone": 128,
+      "privateMaximumNullFrame": 1,
+      "legacyObjects": 95,
+      "legacySurvivors": 6,
+      "observerErrors": 0,
+      "observerCleared": true,
+      "classification": "C: demonstrated per-view owner defect",
+      "survivors": [
+        {
+          "instanceId": -731244,
+          "name": "KMG_PteranodonMembrane",
+          "type": "UnityEngine.Mesh",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "pteranodon"
+          ],
+          "unitIds": [
+            "a1709327-4072-4755-8102-373e14f84eb5"
+          ],
+          "guids": [
+            "c9a94142c9164ab793f7a06ae3fdcf56"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Mesh",
+            "skinned mesh",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -639068,
+          "name": "KMG_EagleFeathers",
+          "type": "UnityEngine.Mesh",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "eagle"
+          ],
+          "unitIds": [
+            "84e2289f-7be7-4650-8f89-d6d4929e32a4"
+          ],
+          "guids": [
+            "7383db28c1d74dce98533ddc257a2e3c"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Mesh",
+            "skinned mesh",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -629274,
+          "name": "KMG_DireBatMembrane",
+          "type": "UnityEngine.Mesh",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "dire-bat"
+          ],
+          "unitIds": [
+            "73bd1a9a-13ef-4c8b-bba4-c927f392f9ca"
+          ],
+          "guids": [
+            "d867cb795b5640219a8362661f447697"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Mesh",
+            "skinned mesh",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -731248,
+          "name": "KMG_PteranodonMembrane (Instance)",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "pteranodon"
+          ],
+          "unitIds": [
+            "a1709327-4072-4755-8102-373e14f84eb5"
+          ],
+          "guids": [
+            "c9a94142c9164ab793f7a06ae3fdcf56"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "swapped donor renderer material (native controller instance)",
+            "renderer material",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": false,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -731246,
+          "name": "KMG_PteranodonMembrane",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": false,
+          "keys": [
+            "pteranodon"
+          ],
+          "unitIds": [
+            "a1709327-4072-4755-8102-373e14f84eb5"
+          ],
+          "guids": [
+            "c9a94142c9164ab793f7a06ae3fdcf56"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Material"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -639072,
+          "name": "KMG_EagleFeathers (Instance)",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "eagle"
+          ],
+          "unitIds": [
+            "84e2289f-7be7-4650-8f89-d6d4929e32a4"
+          ],
+          "guids": [
+            "7383db28c1d74dce98533ddc257a2e3c"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "swapped donor renderer material (native controller instance)",
+            "renderer material",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": false,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -639070,
+          "name": "KMG_EagleFeathers",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": false,
+          "keys": [
+            "eagle"
+          ],
+          "unitIds": [
+            "84e2289f-7be7-4650-8f89-d6d4929e32a4"
+          ],
+          "guids": [
+            "7383db28c1d74dce98533ddc257a2e3c"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Material"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -629278,
+          "name": "KMG_DireBatMembrane (Instance)",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "dire-bat"
+          ],
+          "unitIds": [
+            "73bd1a9a-13ef-4c8b-bba4-c927f392f9ca"
+          ],
+          "guids": [
+            "d867cb795b5640219a8362661f447697"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "swapped donor renderer material (native controller instance)",
+            "renderer material",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": false,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -629276,
+          "name": "KMG_DireBatMembrane",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": false,
+          "keys": [
+            "dire-bat"
+          ],
+          "unitIds": [
+            "73bd1a9a-13ef-4c8b-bba4-c927f392f9ca"
+          ],
+          "guids": [
+            "d867cb795b5640219a8362661f447697"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Material"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        }
+      ],
+      "batchId": "release143-runtime-20261008T2304555739206Z",
+      "batchSha256": "fbe84635bc9d008bef1ab9a19364a586c74bd51977f84cf498ae7cf24b6b4eab",
+      "evidenceId": "20261008T2308454108621Z-working-save-expanded-summoning-verify-cleanup",
+      "resultSha256": "0fa37ce8a9a103dd8851cae51fbc0517fb5b2167003b7b270dadb2743b3bcf5d",
+      "passed": 118,
+      "failed": 1,
+      "nativeWrites": 0,
+      "smoke": {
+        "passed": 11,
+        "failed": 0,
+        "resultSha256": "1f1f46feb4f746a9d84904b0da428dd07249f5fdaa049c0f766d793e91556d2f",
+        "nativeWrites": 0
+      },
+      "historicalFailurePreserved": true,
+      "rootCause": "ExpandedSummoningWaspVisualTeardownPatch invokes ReleasePhase2View, whose explicit owner-key gate excludes Eagle/DireBat/Pteranodon. Each retained exact Attachment.Mesh and Attachment.Material plus one controller-instanced material. Six historical scan survivors plus three additional authoritative private originals. All nine persist beyond60 frames after native unit destruction;not cache assets.",
+      "borrowedAndCacheDisposition": "198 explicitly borrowed native objects remain alive with pre/post cleanup counts equal;22 reference-identified immutable original albedos remain alive with pre-load/pre-cleanup/post-cleanup counts1/1/1. No ownership inferred by prefix."
+    },
+    "correction": {
+      "status": "SOURCE_EDITED;NOT_RUNTIME_QUALIFIED",
+      "scope": "One narrow ReleaseOriginalFlightView path for only Eagle/DireBat/Pteranodon, before unchanged Phase2 teardown. Restore exact donor references;destroy reference-selected created and installed private materials plus private mesh;clear attachment record;idempotent. No global resource scan/cache sweep;no other production path or asset change.",
+      "productionFiles": [
+        "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs",
+        "src/KingmakerGunslinger/Summoning/EagleAttackLungePolicy.cs"
+      ],
+      "focusedPassed": 6,
+      "focusedFailed": 0,
+      "incrementalCompilation": "PASS;not qualification",
+      "fixture": "All authoritative private resources must be Unity-null;known borrowed/cache exact identities must survive count-stably. No unknown/conflicting classification waived. Restore normal one native cleanup-save requirement.",
+      "affectedRegression": "Existing creature review for eagle,dire-bat,pteranodon: unchanged movement/attack/view checks plus exact original body and two further native spawn/destroy/idempotence cycles per key. No new scenario family.",
+      "protocol": "smoke;cleanup existing saved108;fresh absence;affected3 flight review;native prepare ONLY to seed OFF108 after clean absence makes receipt set empty;OFF boundary/cleanup/absence;restoredON boundary. Three native Working writes,never manual save copy/parse/replacement."
+    }
   }
 }
