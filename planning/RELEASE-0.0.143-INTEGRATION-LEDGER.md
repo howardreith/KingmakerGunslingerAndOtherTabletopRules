@@ -287,3 +287,47 @@ data, asset, identity, attack, profile or animation change. Focused5/5 PASS.
 New immutable candidate needs the complete source/build/package gate once and
 affected persistence gates. Reuse snake71 and previous qualified evidence only
 after verifying the narrow source delta and every non-DLL package member.
+
+## Current release stop after the single correction, 2026-10-08
+
+118b8eb7's prelaunch repository wrapper rejected the stale active test count;
+no complete domain suite, build/package or runtime ran at that head. Normal
+descendant fb25ad153124552f06b7d8a9a3b63fd2e4141eb8 corrects only the count to2471.
+Its complete unfiltered2471/2471, clean14-reference Release and strict325-member
+package gate PASS,218.6 seconds. Exact ZIP
+2b6497954e890bc27a8a91cda9c9a5fb818065f2ec0345def85c342861ba780d;
+DLLc9abc3380d07dee1278648f829f149b68307f83ced7c2416fc94f8f2bcb25e69;
+MVID73675dde-165a-4a5c-87c9-d4eed307d4bd. All non-DLL packaged bytes unchanged
+from owner-accepted b8; reviewed source changes confined to request-local fixture/
+tests/reporting. Original snake71, crocodilians212, smoke11, inventory50/menu3/
+all1008 roots+29 wrappers and Salamander evidence retain exact original provenance.
+
+Corrected batch release143-runtime-20261008T1234137648103Z prepare116/118 FAIL.
+Alignment restored to original NeutralGood; all108 unit identities, contexts,
+durations and profile/view rows PASS; three unrelated units preserved. Aggregate
+native-appearance reports units108,ready=false after600 frames. The reused native
+predicate checks faded-in, dissolve, CanAct/CanMove and appearance-buff absence,
+but this aggregate record does not identify the failing unit or predicate.
+Classification remains UNRESOLVED_PRODUCT_OR_FIXTURE_READINESS. Do not infer a
+production defect or waive native settlement; no visibility forcing or invented
+donor animation. Consequent native-save assertion FAIL: zero writes/stashed;
+mandatory fixture failure prevented save arming. No cleanup/absence or subsequent
+module-disabled/profile5/v142/native-trait-save gate launched.
+
+Runtime result5b4c85ac3182443c038715e08821e5bc7cd9c17cc33b940fe8c535d888568eda;
+witness e3908d1f02bb4e8b717654e4508c69d8f9e5a2b82cdaf18452ef7d326ac4f053;
+batch f5d1dc9d390c4787f18247fcba46fb16d30786d6298577262a594bd023261b0c.
+Actual snapshot20261008T1234145690114Z restored exactly:136files/Info0.0.117/
+tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;
+settings and FavoredClass byte-exact, zero save writes, native exit, no game,
+lease/lock/staging. All private artifacts/packages/safety refs remain preserved.
+No historical expiry-damage reproduction was reported; owner risk disposition
+remains active143 only and is not a readiness waiver. No further damage observer.
+
+The one permitted remaining-gate correction is exhausted. STOP, no further blind
+retry. Smallest new owner authority: bounded per-unit whole-roster readiness
+diagnosis/correction and affected requalification, not a Crocodile observer cycle.
+Release NOT QUALIFIED; PR29 remains draft/unmerged; PR25/26 open/unmerged;
+v0.0.142 remains Latest. No tag/release/permanent deployment/Sprint18/Phase2C.
+This closing checkpoint changes reporting only; do not rebuild the exact artifact
+to stamp its later reporting commit. Source ownership is released at handoff.

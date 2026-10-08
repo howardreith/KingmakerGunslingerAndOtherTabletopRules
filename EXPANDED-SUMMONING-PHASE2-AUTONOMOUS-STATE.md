@@ -1,117 +1,52 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 — one persistence fixture correction; NOT QUALIFIED
+## CURRENT STATE, 2026-10-08 - release BLOCKED; corrected persistence prepare failed
 
 Latest Owner Release-Scope Disposition and v0.0.143 Completion Order governs.
+Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint; PR29 DRAFT.
+Exact fixture-corrected candidate fb25ad153124552f06b7d8a9a3b63fd2e4141eb8:
+source2471/2471, clean14-reference Release and strict325-member package PASS.
+ZIP2b6497954e890bc27a8a91cda9c9a5fb818065f2ec0345def85c342861ba780d;
+DLLc9abc3380d07dee1278648f829f149b68307f83ced7c2416fc94f8f2bcb25e69;
+MVID73675dde-165a-4a5c-87c9-d4eed307d4bd.
+
+One permitted correction fixed request-local alignment contamination: all108
+units now cast legally, original caster alignment restored, all identity/context/
+duration and108 profile/view checks PASS. No production or asset change.
+Corrected prepare116/118 FAIL at whole-roster-persistence-native-appearance:
+units108,ready=false after600 frames. No per-unit failed readiness field recorded;
+faded-in/dissolve/can-act/can-move/appearance-buff cause remains UNRESOLVED.
+The second failure is the consequently unarmed native save: ZERO writes/stashed.
+No cleanup/fresh-absence, module-disabled, five-profile or v142 coexistence/native
+trait-save gate launched after this failure. No blind retry/waiver/new observer.
+The one bounded remaining-gate correction is used. STOP for owner direction:
+a separate bounded whole-roster per-unit readiness diagnosis/correction and
+affected requalification would need new authority. Not a Crocodile observer cycle.
+
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-The historical f65FAIL remains genuine and unattributed; never rewritten as PASS,
-claimed harmless, explained or fixed. Current b8 expiry gate is PASS; owner accepts
-residual uncertainty for143 only. This is release risk, NOT an engine limitation
-or waiver of no-post-expiry damage. No further attribution cycle. Revoke acceptance
-and STOP if a later gate actually reproduces post-expiry damage.
-Snake commands71/71 PASS on b8. First whole-roster prepare5/7 FAIL: fixture
-left caster Evil after native Thanadaemon, then requested Celestial Poisonous
-Frog; native availability correctly rejected it. Zero save writes, exact restore.
-One permitted correction now selects legal alignment per fixture cast, restores
-the original in finally and witnesses it. No production/asset/profile/AI change.
-Focused5/5 PASS. Freeze a new exact fixture-only candidate; run full source/build/
-package once, audit delta and rerun affected whole-roster ON/OFF and later gates.
-Original b8 and earlier passed-gate provenance remain preserved; no attribution
-cycle or unrelated historical rerun. All details in RELEASE-0.0.143-EVIDENCE.json.
-Merge/tag/real Latest v0.0.143
-ONLY after all pass and exact restoration. Then STOP. No Sprint18/Phase2C/deployment.
+remains ACTIVE143 only. Historical f65 expiry0to2 remains FAIL/unattributed, never
+claimed harmless/explained/fixed. Original b8 expiry0to0/crocodilians212 PASS,
+smoke11 and snake commands71 PASS retained with original artifact provenance.
+No post-expiry damage reproduction reported in the failed persistence gate.
+No further attribution cycle. Revoke acceptance and STOP if damage reproduces.
+Prior inventory50/menu3/all1008 roots+29 native wrappers and Salamander PASS
+retained after exact source/package delta audit: only request-local fixture/tests/
+reporting changed; every325 packaged member unchanged from b8 except the DLL.
+HumanReview NOT_PERFORMED_NONBLOCKING. Surface1008+29=1037,none withheld.
+Sprints14-17 technically complete/published; release closure is NOT QUALIFIED.
 
-Active branch: codex/release-0.0.143-expanded-summoning-phase2b-checkpoint.
-Normal integration from master4ba8d4aca087391144abf401f526189f59b26535
-imports qualified Phase2B8592b1e680a8b3c92b43d353b47bf7ff5f52c664.
-Common ancestor97f0a966; normal two-parent integration candidate, NOT QUALIFIED.
-Exact integration merge06aac4b7fae3abab18c900df5cfd351d6c819a37, parents
-4ba8d4aca and8592b1e6. PR29 is the sole release integration PR against master.
-Final exact observer executable b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf:
-full unfiltered source2469/2469, clean14-reference Release, strict deterministic
-325-member package PASS. DLLac09efca4736bb9742e1d5b88edd84b32d0ef202181a615a89bb22078f973a1f;
-MVIDefeb0bb5-5215-4c89-9c97-3b71fe1cec24;
-ZIP097f6be62d33ab3f9bb2d5a93307133d421709a7c22cd1b752da683397330ed8.
-Guarded smoke11/11 and crocodilians212/212 PASS; no product/range/AI/asset or
-no-damage assertion changed. The named expiry window did NOT reproduce damage:
-frame9859→9909, native game time13:01:33.777→13:01:35.777; damage0→0,
-HP100000 unchanged, temporaryHP0/Constitution10/nonlethal0 unchanged.
-No damage/heal rule, observed health-setter mutation or unknown frame delta;
-observer removed with zero errors. Before: exact owned grapple and native
-Entangled buffs/conditions. After: destroyed owner, released relationship,
-empty prey buffs/conditions. Record0c8ca64f896ff805f865f0e03a49441e7b729e7677cf7d991fabfd0516a55150.
-Thus the HISTORICAL f65 two-point event remains UNATTRIBUTED (classD), not a
-proved fixture error, legitimate event or product defect. No prior FAIL rewritten.
-The earlier classD stop is preserved historically; the latest owner disposition
-now accepts residual risk and considers the CURRENT b8 expiry gate PASS.
-That does not qualify the still-unrun release gates.
-Strict reuse audit: every325 packaged member byte-identical to f65 except DLL;
-reviewed source delta only request-local observation/tests/qualification metadata.
-Prior canonical preflight546/orchestration168 and two affected actual request
-contracts PASS. No further cycle requested or run; no fixture/product correction.
-Runtime smoke11/11, inventory50/50, projected-menu3/3 and exhaustive player-path
-10/10 PASS: all1008 generated roots and29 wrappers through real slot/quantity paths.
-Historical f65 crocodilian regression210/211 FAIL at sprint16-crocodile-cooldown-expiry:
-owner destroyed; reciprocal state, held/swallowed buffs and conditions released;
-prey damage0→2 over1.8 native seconds, source not recorded. This is unresolved,
-not a demonstrated product defect, proven fixture error, or accepted omission.
-No assertion waived. Remaining closure/profile5/v142 live cells are pending and
-authorized once by the latest order. Source PASS is NOT release qualification.
-Prior observer correction1 used; final attribution cycle1/1 used; product0 used.
-Focused14/14 tests and development private-reference compile PASS; complete
-committed-head gate ran ONCE. No blind rerun or assertion waiver.
-Initial candidate1f4a25c8 and its inventory48/50 failure remain preserved.
-Intended release is normal public Latest v0.0.143,
-not an alpha, draft release or prerelease.
-Every conflict: planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md.
-Master2660-entry prefix exact;262 missing imported entries append=>2922/2920 active.
-All v142 Elemental traits/FCB/content retained;325 package members expected.
-Current source1008 registered,1008 published,0 withheld;29 wrappers/1037 visible.
+Failed batch release143-runtime-20261008T1234137648103Z is preserved unchanged.
+Actual snapshot20261008T1234145690114Z restored:136files,Info0.0.117,tree
+216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Settings/FavoredClass byte-exact; ZERO save writes; native game exit; no runtime
+lease/lock/staging. Protected baseline never loaded/written; no save surgery.
+Source owner sessiona33f7890-b391-4b6a-8aaa-7a2499b69127 (owner29828,
+keeper37936) releases at this handoff. All safety refs/worktrees/evidence preserved.
+Evidence and identities: planning/RELEASE-0.0.143-EVIDENCE.json and integration ledger.
 
-Sprints14–16 COMPLETE/PUBLISHED; Sprint17 technically COMPLETE/PUBLISHED.
-Salamander INCLUDED after observation-only db1da016 smoke11/profile-view73 PASS:
-raw5/10, computed2/6, body5; no product change. Other mandatory cells retain47e8c121
-proof and five routes996c5fe7. Viper18/Constrictor14 remain independently qualified.
-Accepted passive senses, clean grapple reset, swallow-interior limitations and
-deterministic rider adaptation unchanged. HumanReview NOT_PERFORMED_NONBLOCKING.
-
-Sole release source owner sessiona33f7890-b391-4b6a-8aaa-7a2499b69127:
-owner29828/start2026-10-07T16:37:01.6154316Z;
-keeper37936/start2026-10-08T11:50:31.6951961Z.
-Fresh exclusive release143 receipt/lock; prior keeper16728 and its receipt released.
-Prior released receipt is archived; all permanent safety refs and verified recovery
-bundle remain available. No other owner/game/runtime lock was present at intake.
-DATA PR27 archived/ZERO PORTS; all safety refs/worktrees/failed evidence preserved.
-
-Last exact restored live snapshot20261008T0342442421210Z:
-136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;
-ZERO save writes,no game/lease/staging; FavoredClass/settings exact restored.
-Earlier census process22044 exited NATIVELY; delayed-exit transaction0214517324941Z
-was recovered under its exact lease and snapshot0214525781465Z. Recovery receipt
-c8869166c54dc8fd66131bb43babb9c09c555bc1a5924c8548e2404d570703a6
-records no force termination. Owner's later approval for only22044 was not used.
-Failed shutdown record remains failed, with separate verified recovery evidence.
-Actual pre-run
-baseline must be freshly snapshotted UNDER lease, not forced to this historic state.
-Only native guarded Working-save workflow; protected baseline never loaded/written.
-
-Owner allowlist action verified and exact policy push PASS at01:12UTC.
-Next: remaining snake-command/whole-roster ON/OFF persistence/profile5/v142
-coexistence/native-owned trait-save gates, once on exact b8 artifact. An isolated
-clean b8 qualification checkout retains launcher source-fingerprint checks while
-the canonical reporting branch advances evidence only; no rebuild/restamping.
-No further observer; preserve historical failures. One bounded demonstrated-defect
-correction maximum. Stop and revoke risk disposition if expiry damage reproduces.
-Do not rerun completed source/census gates merely because of interruption.
-Release NOT QUALIFIED. Exact observer executable/package b8d67c3b are frozen and
-the bounded runtime batch has completed. This reporting checkpoint changes only
-qualification metadata; no executable or packaged content changed after b8d67c3b.
-Do not rebuild or rerun its completed gates for this reporting-only checkpoint.
-Latest public release
-remains v0.0.142; merge/tag/real release only after all required gates PASS.
-Do not merge PR25/26 directly. Close as superseded only AFTER real v0.0.143 release.
-Permanent future rule: one charter sprint per branch/PR/release from released
-master; new owner mission before next sprint. Sprint18 not started.
+No merge/tag/release occurred. PR25/26 remain OPEN/unmerged evidence. Public
+release remains v0.0.142. No Sprint18/Phase2C/permanent deployment. Future work
+requires a new owner mission; one charter sprint per branch/PR/release.
 
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
