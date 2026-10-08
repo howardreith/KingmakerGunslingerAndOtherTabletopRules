@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAILED BOUNDED SNAKE FINAL REVIEW; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "d43b39aa1e3c6a08f669fc2a3b7e3a750e9d8b55",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "6d2f58806061c5b1a2d14a5e3b3c9a7656b92a004617b910e3ed1db1296383e7",
+    "dllSha256": "69ab220692563726dd9ae8376dbd0b0ded1621fbc0989bc98fac307d11156f54",
+    "dllMvid": "eaf35409-fb47-4d1b-b495-381562340fa0",
+    "zipSha256": "9bef64220d9870f2aff5fcc95407b4f79b4202cfc07c98d046c3ab5d29179ce1",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-final-repair-source-pass-d43b39aa"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 278,
+    "domain": 2080,
+    "domainSeconds": 81,
+    "gateSeconds": 176.3,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 14,
+      "rejected": 13
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0454509349889Z",
+    "journalSha256": "8b9265db79abc716b8d18ce4ad44f5982b0a8e057eea9c68cdb482042704307c",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeFinal-Attempt2.ps1",
+    "driverSha256": "4268fecfd99d47ac2c258022c2d268bda814536fb71f4379f7058f2f24e8be13",
+    "startedAtUtc": "2026-10-07T04:54:50.9818730Z",
+    "completedAtUtc": "2026-10-07T05:03:13.3593602Z",
+    "status": "NOT-QUALIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T045451Z-5f585142d3824973afb54bd9c6649612\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0454516688018Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "parameters": {},
+        "outcome": "PASS",
+        "assertions": 11,
+        "passed": 11,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0455172213470Z-working-save-smoke",
+        "requestId": "20261007T0455172460756Z-95707472b4764d1aa3559c9059a2a362",
+        "processId": 36520,
+        "processStartedUtc": "2026-10-07T04:55:18.5040018Z",
+        "requestSha256": "9de94dfe53d3a541f84f57341c576066315bad89bb7257f98937a371066ad0eb",
+        "resultSha256": "4f8000454c9a50ccece734573f0c6ac1cef5c3ca89242fab7485b7e0f6f21748",
+        "orchestrationSha256": "9d18fcba2201e3e133358f4ed9f2a563c06f293f14578111267856d31bd1dcee"
+      },
+      {
+        "label": "snake-final",
+        "scenario": "disposable-expanded-summoning-snake-final-review",
+        "parameters": {},
+        "outcome": "FAIL",
+        "assertions": 81,
+        "passed": 79,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0458163723010Z-disposable-expanded-summoning-snake-final-review",
+        "requestId": "20261007T0458163723010Z-de7a0d6c2ea7499ea7de484f9c9f3a14",
+        "processId": 35744,
+        "processStartedUtc": "2026-10-07T04:58:17.0732223Z",
+        "requestSha256": "a64f2c27cf2c66bb5b5aafe940c880fdff9763c8b3c17b17b5b725b0c4f793f6",
+        "resultSha256": "fe8d4a3d4f63c2e2aa65bc98b27e19b47c3fa313cba32ad6bf6560b9c95f5938",
+        "orchestrationSha256": "db0e83277e5b30969cafb1bd73cd93d0b78a3bf5d817e876730703f908de6a92",
+        "metadataRows": 78,
+        "metadataSha256": "f9b4950506438a024e0f743cbcaf43f1c6ca6f1331457d8e5467242095e1f1ed"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "classification": "FIXTURE EXPECTATION CONTRADICTED BY NATIVE CARRIER EVIDENCE",
+      "assertions": 2,
+      "names": [
+        "sprint17-final-viper-native-hit",
+        "sprint17-final-constrictor-snake-native-hit"
+      ],
+      "finding": "Both owned attacks start and wound (Viper1,Constrictor2) with isolated enemy pairs and finite original geometry, but the fixture requires a Hit clip that the audited native Worm action set does not contain. Event-time facing was also unobserved. The failed result remains FAIL, never retroactively qualified.",
+      "nativeContract": "Pinned UnitHitFxManager.HandleMeleeAttackHit requires a hit and normalized attacker-minus-victim CenterTorso dotted with victim view.forward > double0.3; only then Execute(Hit). Hit is additive but AnimationManager.Execute includes it in ActiveActions, so the existing observer collection is valid. The prior exact a904 native control census contains7actions and noHit; GetAction returns FirstOrDefault on ActionSet without a fallback.",
+      "repair": "Capture a fresh exact native Worm control's actual Hit absence and native action references; require the candidate to retain that same action set and absence. Observe a real frontal wound, intact finite original geometry across at least0.5 native seconds and no manufactured hit clip. If a native Hit carrier exists, actual playback remains required. Explicitly disclose no flinch; no new accepted engine limitation or gameplay change. Mission visual contract requires stable hit/damage events, not a nonexistent clip.",
+      "environmentFailure": false,
+      "restorationFailure": false
+    }
+  ],
+  "partialObservations": {
+    "privateRoutesPassed": 32,
+    "privateCleanupRows": 32,
+    "spawnedPrivateUnits": 100,
+    "capturedResources": 500,
+    "remainingResources": 0,
+    "nativeStatusRows": "BothPASS; exact Constrictor cached sprite and Viper native effect row",
+    "nativeUiRestoration": "PASS",
+    "lifecycle": [
+      {
+        "key": "viper",
+        "intact": true,
+        "hit": false,
+        "damage": 1,
+        "death": true,
+        "deathClip": "DyingStart",
+        "maxOriginalDissolve": 0.9972816,
+        "despawn": true,
+        "capturedResources": 5,
+        "remainingResources": 0
+      },
+      {
+        "key": "constrictor-snake",
+        "intact": true,
+        "hit": false,
+        "damage": 2,
+        "death": true,
+        "deathClip": "DyingStart",
+        "maxOriginalDissolve": 0.9972816,
+        "despawn": true,
+        "capturedResources": 5,
+        "remainingResources": 0
+      }
+    ],
+    "outerChecks": "All3 environment/fixture/version PASS"
+  },
+  "nativeHitAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "script": "artifacts/Inspect-Sprint17-HitReaction.ps1",
+    "scriptSha256": "9f061444dc5091c3518d8713de125ae3e94db66058eeec67723e63accc8546da",
+    "initialCapture": "artifacts/sprint17-hit-reaction-audit.txt",
+    "initialSha256": "d20d28bfdb0de611507c2fd54310cb8489f8a704e5e32409f7706c7c9882e8b2",
+    "completeCapture": "artifacts/sprint17-hit-reaction-audit3.txt",
+    "completeSha256": "91dabc6c872c765d690792c02b4706084f390ab94e053cf1cef5e909eb497dc2",
+    "finding": "Native IL0050 literal0.3/0059ble.un skips Hit;006e..007b requests nativeHit. Additive handles enter ActiveActions at008d..009a. ForceLookAt while unpaused sets native Orientation and leaves view propagation to native update. Read-only metadata; no native invocation or proprietary IL distribution. GetAction(UnitAnimationType) uses FirstOrDefault on native ActionSet, no fallback. Native reference census contradicts the old mandatory-Hit-clip fixture; the next live control must confirm absence.",
+    "previousCompleteCapture": "artifacts/sprint17-hit-reaction-audit2.txt",
+    "previousCompleteSha256": "f7c7328d1ed6cb462ea0ee5964713b740d6cab7b85fcf163db9960877275a255",
+    "nativeCensus": {
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey/sprint17-purple-worm-rig-survey.json",
+      "sha256": "821c3f0003906d6d37fa6db1d0c6599576a84d4dff594de27aa00745b78029be",
+      "candidate": "a90494e1",
+      "types": [
+        "LocoMotion",
+        "Prone",
+        "StandUp",
+        "SpecialAttack",
+        "CastSpell",
+        "VariantIdle",
+        "Stunned"
+      ],
+      "nativeHitPresent": false
+    }
+  },
+  "savePolicy": {
+    "writes": 0,
+    "fileAccess": false,
+    "protectedBaselineAccess": false,
+    "priorNativeCleanupAndFreshAbsencePreserved": true
+  },
+  "scope": "79/81 and78metadata is FAIL, not qualified. All32roots remain withheld. Earlier a429 persistence,983commands/rules andec972crowd retain exact-artifact scope; no aggregation into Sprint17 acceptance."
+}

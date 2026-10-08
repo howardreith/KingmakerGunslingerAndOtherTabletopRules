@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(88, reused,
+            Assertions.Equal(97, reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,10 +133,10 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(46, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(37, ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
-                "The remaining ideal roster needs 46 new creature identities.");
+                "The remaining ideal roster needs 37 new creature identities.");
         }
 
         /// <summary>
@@ -173,21 +173,28 @@ namespace KingmakerGunslinger.DomainTests
                 }
             }
 
-            Assertions.Equal(46, ExpandedSummoningIdealRosterCatalog.All.Count(
+            // The Shadow Mastiff moved from this set into the represented
+            // one when Sprint 13 registered it.
+            Assertions.Equal(37, ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "46 ideal-roster creatures have no unit identity yet.");
-            Assertions.Equal(99,
+                "37 ideal-roster creatures remain unregistered after the two hidden Sprint 17 snakes.");
+            Assertions.Equal(108,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "99 creatures already own a unit identity.");
+                "108 creatures own or retain a unit identity; registration is not publication.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
             // after Phase 1 Sprint 8, 842 after Dire Bat, 854 after Wasp,
             // 863 after Stirge and 911 after the Sprint 11 ungulates. Sprint 12
-            // registers Dire Rat and withholds all four unqualified families,
-            // leaving 861 choices visible during development.
-            Assertions.Equal(861,
+            // registers Dire Rat and publishes its four families, and Sprint 13
+            // adds the Shadow Mastiff's four Summon Monster placements, leaving
+            // 933 choices visible after the Sprint 13 publication, 951 once
+            // Sprint 14 published the Fire Beetle, 981 when the two ant castes
+            // followed it under the accepted passive-sense limitation, and 999
+            // with Sprint 15's Drone and Giant Stag Beetle; 1005 when Sprint 16
+            // publishes Dire Crocodile's six preserved placements.
+            Assertions.Equal(1037,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");

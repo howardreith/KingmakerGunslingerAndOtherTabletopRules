@@ -1,5 +1,5 @@
 [CmdletBinding(SupportsShouldProcess=$true,ConfirmImpact='High')]
-param([string]$ExpectedVersion='0.0.142',[Parameter(Mandatory=$true)][string]$PackagePath)
+param([string]$ExpectedVersion='0.0.143',[Parameter(Mandatory=$true)][string]$PackagePath)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
@@ -9,7 +9,7 @@ Assert-KmgUnelevated
 Assert-KmgNotRunning
 $root=Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $manifest=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
-if($ExpectedVersion -cne '0.0.142' -or $manifest.commit -cne (& git -C $root rev-parse HEAD).Trim() -or @(& git -C $root status --porcelain).Count -ne 0){throw 'Exact clean committed artifact required.'}
+if($ExpectedVersion -cne '0.0.143' -or $manifest.commit -cne (& git -C $root rev-parse HEAD).Trim() -or @(& git -C $root status --porcelain).Count -ne 0){throw 'Exact clean committed artifact required.'}
 if(-not $PSCmdlet.ShouldProcess('new transaction-owned manual save','qualify canonical traits without writing preexisting saves')){return}
 $tx=[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ')+'_'+[Guid]::NewGuid().ToString('N')
 $descriptor='KMG_TRAITS_0142_'+$tx

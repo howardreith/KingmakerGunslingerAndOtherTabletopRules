@@ -26,33 +26,54 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Summoning", "ExpandedSummoningNaturalProfiles.cs"));
 
+            // The creature's own registration line, and nothing about the
+            // whole-roster totals: those move whenever any later sprint
+            // registers anything, and they are asserted in the catalog's own
+            // Validate() and in the catalog tests rather than here.
             Assertions.True(catalog.Contains(
-                    "C(\"dire-rat\",\"Dire Rat\",1,true,1,\"Dog\")") &&
-                catalog.Contains("ValidateFamily(SummonFamily.Monster, 80, 453)") &&
-                catalog.Contains("ValidateFamily(SummonFamily.NaturesAlly, 78, 447)"),
+                    "C(\"dire-rat\",\"Dire Rat\",1,true,1,\"Dog\")"),
                 "Sprint 12 must register Dire Rat at tier 1 in both families.");
+            // Sprint 12 is qualified and published, so the suppression set is
+            // empty and none of its four creature keys may appear in it.
             foreach (string key in new[] {
                 "\"dire-rat\"", "\"dog\"", "\"hyena\"", "\"goblin-dog\""
             })
-                Assertions.True(visibility.Contains(key),
-                    "Unqualified Sprint 12 creature must be suppressed: " + key);
-            Assertions.True(visibility.Contains(
-                    "RegisteredLogicalPlacementCount = 900") &&
-                visibility.Contains("SuppressedLogicalPlacementCount = 68"),
-                "Sprint 12 publication boundary must freeze 900/68/832.");
+                Assertions.True(!visibility.Contains(key),
+                    "A published Sprint 12 creature must not be suppressed: " + key);
+            // Behavioural, and about Sprint 12 rather than about the roster.
+            // This used to read two constants out of the visibility catalog's
+            // source text and pin their values, so every later sprint's
+            // registration broke a test about the Dire Rat - and it carried a
+            // message about 922 published placements beside an assertion for a
+            // different number, which is what a hand-maintained total does
+            // over time. The whole-surface counts live in the inventory tests;
+            // what belongs here is that the three agree with one another.
+            Assertions.True(
+                SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
+                    SummonVisibilityCatalog.SuppressedLogicalPlacementCount ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount,
+                "The published surface is the registered one less the withheld.");
             Assertions.True(donors.Contains(
                     "dire-rat|77f3f2ddf1ec2da45ab956c433e3b557|1") &&
                 donors.Contains("dog|77f3f2ddf1ec2da45ab956c433e3b557|1"),
                 "Dire Rat and Dog must use the audited native Dog summon rig.");
             foreach (string token in new[] {
                 "P(\"dire-rat\", \"Dire Rat\", \"Animal\", 1, \"Small\"",
-                "10, 17, 13, 2, 13, 4, 40, 1, \"Bite1d4\"",
-                "\"TripDefenseFourLegs\", \"WeaponFinesse\"",
+                // Printed AC 14 (+3 Dex, +1 size) carries no natural armor.
+                "10, 17, 13, 2, 13, 4, 40, 0, \"Bite1d4\"",
+                "\"TripDefenseFourLegs\",",
                 "\"SkillFocusPerception\"", "printed DC 11 Fortitude save",
                 "native Filth Fever payload"
             })
                 Assertions.True(profiles.Contains(token),
                     "Dire Rat hidden foundation is missing " + token + ".");
+            Assertions.True(!profiles.Contains(
+                    "\"TripDefenseFourLegs\", \"WeaponFinesse\",\r\n" +
+                    "                        \"SkillFocusPerception\", \"DireRatDisease\"") &&
+                !profiles.Contains(
+                    "\"TripDefenseFourLegs\", \"WeaponFinesse\",\n" +
+                    "                        \"SkillFocusPerception\", \"DireRatDisease\""),
+                "The Dire Rat must not carry Weapon Finesse; its printed feat list is Skill Focus (Perception) alone.");
 
             OriginalQuadrupedVisualsAreDeterministicAndPrivate();
         }
@@ -65,7 +86,7 @@ namespace KingmakerGunslinger.DomainTests
             string[] kinds = { "dire-rat", "hyena", "goblin-dog" };
             string[] meshHashes = {
                 "2ee73bcf0ab4cdf0d275fb64764dea96107669cef07ee3b0c62a6f5228f1633a",
-                "1c68a8361149309ca374897761406dc98b81f13873a726e9b7d18d7dc1399d0f",
+                "0217f8d599480e5aaed6f1b6df9736b64609298664f3732271bb39c08596ac48",
                 "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a"
             };
             string[][] allowedBones = {
@@ -186,8 +207,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\sprint12-quadrupeds") &&
                 package.Contains("assets\\sprint12-quadrupeds") &&
-                build.Contains("{ 286 } else { 284 }") &&
-                package.Contains("{ 286 } else { 284 }"),
+                build.Contains("{ 325 } else { 323 }") &&
+                package.Contains("{ 325 } else { 323 }"),
                 "All six quadruped asset files enter the strict standalone package.");
         }
 
@@ -213,7 +234,13 @@ namespace KingmakerGunslinger.DomainTests
                 "\"GoblinDogAllergicReaction\"", "\"DireRatDisease\"",
                 "\"9545a5550d89feb47a84edaeb4e63d0b\"",
                 "\"SubtypeGoblinoid\"",
+                "\"Hobgoblin\"", "\"Bugbear\"",
                 "units.Add(DescribeNativeUnit(unit))",
+                // The complete unit-type census is what proves the enumerated
+                // goblinoid exemption is complete rather than convenient.
+                "all.OfType<BlueprintUnitType>()",
+                "document[\"unitTypes\"]",
+                "[\"unitsWithoutType\"]",
                 "native-donor-audit.json"
             })
                 Assertions.True(source.Contains(token),
@@ -229,8 +256,16 @@ namespace KingmakerGunslinger.DomainTests
                 "77f3f2ddf1ec2da45ab956c433e3b557",
                 "9545a5550d89feb47a84edaeb4e63d0b",
                 "d524df24b2f38cf4590525b2e7c4f34e",
-                "No broader native Goblinoid",
-                "subtype fact exists",
+                // The goblinoid exemption is now backed by a complete
+                // unit-type census rather than the absence of a name match.
+                "Kingmaker has no Goblinoid subtype fact",
+                "106 types",
+                "declared by 69 units",
+                "are all absent",
+                "20261001T1658000459746Z-observe-expanded-summoning-native-donors",
+                "natural weapon",
+                "attempts to grapple it",
+                "charter excludes mounted combat",
                 "No individual Dire Rat exists",
                 "all 1,954 domain tests",
                 "20260930T0823186905486Z"
@@ -289,6 +324,61 @@ namespace KingmakerGunslinger.DomainTests
                 "Negative actual damage is invalid evidence.");
         }
 
+        /// <summary>
+        /// The printed Goblin Dog allergic reaction exposes three kinds of
+        /// contact, and the two beyond the bite were missing. A creature that
+        /// damages the Goblin Dog with a natural weapon or unarmed attack is
+        /// exposed by its own blow, and a creature that attempts to grapple it
+        /// is exposed by the attempt - success is not required, because the
+        /// printed text names the attempt. A manufactured weapon, a miss, a
+        /// zero-damage blow, a dead attacker and a goblinoid are all excluded.
+        /// </summary>
+        internal static void ContactAllergyTriggersMatchThePrintedRule()
+        {
+            Assertions.True(
+                SummonInjuryDiseasePolicy.ShouldResolveNaturalCounterContact(
+                    true, 1, true, true, false),
+                "A natural or unarmed attack that deals damage to the Goblin Dog exposes its attacker.");
+            foreach (bool result in new[] {
+                // A miss never touches the dander.
+                SummonInjuryDiseasePolicy.ShouldResolveNaturalCounterContact(
+                    false, 1, true, true, false),
+                // The printed trigger is dealing damage, not merely hitting.
+                SummonInjuryDiseasePolicy.ShouldResolveNaturalCounterContact(
+                    true, 0, true, true, false),
+                // A manufactured weapon keeps its wielder away from the hide.
+                SummonInjuryDiseasePolicy.ShouldResolveNaturalCounterContact(
+                    true, 1, false, true, false),
+                // A destroyed or dead attacker cannot be made to save.
+                SummonInjuryDiseasePolicy.ShouldResolveNaturalCounterContact(
+                    true, 1, true, false, false),
+                // Goblinoids are immune to goblin rash.
+                SummonInjuryDiseasePolicy.ShouldResolveNaturalCounterContact(
+                    true, 1, true, true, true) })
+                Assertions.False(result,
+                    "Misses, zero damage, manufactured weapons, unavailable attackers and goblinoids cannot be exposed by the counter-contact trigger.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                SummonInjuryDiseasePolicy.ShouldResolveNaturalCounterContact(
+                    true, -1, true, true, false),
+                "Negative actual damage is invalid evidence.");
+
+            Assertions.True(
+                SummonInjuryDiseasePolicy.ShouldResolveManeuverContact(
+                    true, true, false),
+                "A grapple attempt against the Goblin Dog exposes its initiator.");
+            foreach (bool result in new[] {
+                // Only grapple is named by the printed rule; trip, overrun,
+                // disarm and the dirty tricks are not contact triggers.
+                SummonInjuryDiseasePolicy.ShouldResolveManeuverContact(
+                    false, true, false),
+                SummonInjuryDiseasePolicy.ShouldResolveManeuverContact(
+                    true, false, false),
+                SummonInjuryDiseasePolicy.ShouldResolveManeuverContact(
+                    true, true, true) })
+                Assertions.False(result,
+                    "Other maneuvers, unavailable initiators and goblinoids cannot be exposed by the grapple-contact trigger.");
+        }
+
         internal static void AllergicReactionRemovalRequiresPositiveMagic()
         {
             Assertions.True(
@@ -344,20 +434,63 @@ namespace KingmakerGunslinger.DomainTests
                 "RuleSavingThrow", "RuleApplyBuff",
                 "RuleTargetLogicComponent<RuleHealDamage>",
                 "AbilityType.Spell", "AbilityType.SpellLike",
-                "AbilityType.Supernatural" })
+                "AbilityType.Supernatural",
+                // The printed allergic reaction has three triggers, not one.
+                "class SummonContactAllergyCounterComponent",
+                "RuleTargetLogicComponent<RuleAttackWithWeapon>",
+                "blueprint.IsNatural || blueprint.IsUnarmed",
+                "class SummonContactAllergyManeuverComponent",
+                "RuleTargetLogicComponent<RuleCombatManeuver>",
+                "evt.Type == CombatManeuver.Grapple",
+                "ConditionalWeakTable<RuleCombatManeuver",
+                "ShouldResolveNaturalCounterContact",
+                "ShouldResolveManeuverContact",
+                "BlueprintUnitType[] ExcludedUnitTypes" })
                 Assertions.True(runtime.Contains(token),
                     "Sprint 12 disease runtime is missing " + token + ".");
+            // All three deliveries must be wired onto the same creature-scoped
+            // feature with the same enumerated goblinoid exemption.
+            foreach (string token in new[] {
+                "NativeGoblinoidUnitTypeGuids",
+                "SummonContactAllergyCounterComponent>()",
+                "SummonContactAllergyManeuverComponent>()",
+                "counter.ExcludedUnitTypes = goblinoidTypes",
+                "maneuver.ExcludedUnitTypes = goblinoidTypes",
+                "immunity, delivery, counter, maneuver }" })
+                Assertions.True(builder.Contains(token),
+                    "Goblin Dog contact-allergy wiring is missing " + token + ".");
             Assertions.True(abilities.Contains(
-                    "no broader Goblinoid subtype") &&
-                abilities.Contains("exact native Goblin unit type") &&
+                    "no Goblinoid subtype fact") &&
+                abilities.Contains(
+                    "exact enumerated set of native goblinoid unit types") &&
+                abilities.Contains(
+                    "natural weapon or unarmed attack deals damage to it") &&
+                abilities.Contains("attempts to grapple it") &&
+                abilities.Contains("Riding contact is omitted") &&
                 abilities.Contains("positive magical healing or remove disease"),
-                "Goblin Dog summon tooltips must disclose the bounded native-unit-type adaptation and removal routes.");
+                "Goblin Dog summon tooltips must disclose every printed trigger, the bounded unit-type exemption and the removal routes.");
             foreach (string token in new[] {
                 "9545a5550d89feb47a84edaeb4e63d0b",
                 "d524df24b2f38cf4590525b2e7c4f34e",
                 "FindNativeD20Seed(1)", "FindNativeD20Seed(20)",
                 "RuleHealDamage", "CureLightWounds", "RemoveDisease",
                 "SummonMultiplicity.OneD4PlusOne",
+                // The guarded scenario must exercise the two added printed
+                // triggers, the printed Dire Rat defences and the lifetime
+                // contract, each through the real rule path.
+                "ExerciseSprint12ContactAllergy",
+                "CombatManeuver.Grapple) { AutoFailure = true }",
+                "CombatManeuver.Trip) { AutoFailure = true }",
+                "no-manufactured-weapon-blueprint",
+                "new ItemEntityWeapon(manufactured)",
+                "ExerciseSprint12PrintedDefences",
+                "10c7c5e3c5806bc4ca676e22d6fbf17e",
+                "90e54424d682d104ab36436bd527af09",
+                "strengthPrediction != finessePrediction",
+                "ExerciseSprint12DiseaseOutlivesSource",
+                "rat.Destroy();", "dog.Destroy();",
+                "victim.Descriptor.Buffs.Tick();",
+                "danglingSourceSafe", "diseaseUnaffectedByHealing",
                 "goblinVictimBlueprint.Type = goblinType",
                 "The exact native Goblin-type fixture did not spawn.",
                 "if (!secondVictim.Destroyed) secondVictim.Destroy()",
@@ -368,7 +501,13 @@ namespace KingmakerGunslinger.DomainTests
                 "CaptureSprint12DonorRig(hyena, \"wolf\"",
                 "CaptureSprint12DonorRig(goblinDog, \"worg\"",
                 "renderer-local bind frame",
-                "sprint12-\" + donorKey + \"-bind-rig.json" })
+                // The capture is shared with later sprints now, so Sprint 12's
+                // own provenance label and the label-derived filename are what
+                // keep its captures named sprint12-<donor>-bind-rig.json, which
+                // is what its offline mesh generator reads.
+                "CaptureDonorRig(summon, donorKey, evidenceDirectory,",
+                "\"Sprint 12\");",
+                "sprintLabel.Replace(\" \", \"\")" })
                 Assertions.True(live.Contains(token),
                     "Sprint 12 guarded runtime matrix is missing " + token + ".");
         }

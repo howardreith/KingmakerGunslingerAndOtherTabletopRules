@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "classification": "NATIVE PROCESS CRASH / NO FINAL HYBRID RESULT; EXACTLY RESTORED; SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "cd70979f37af00e26fcc4247ce2f30579bb1f592",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "f8705c0578c5e38a6a90b11a3172a536d12cb2c5265bed65e87f58b3d3a19877",
+    "dllSha256": "7dc5b86dd517ebba67dff8bce0fdea95a8b63fe7046f0cca57057f2d57c9da7b",
+    "dllMvid": "ea9c6b6c-c08a-400d-bf11-a5cba3e46201",
+    "zipSha256": "38361ee9c0413a5b0057828c39442cb65f08be3dc459bd8e224540e0071fe5e5",
+    "packageMembers": 321,
+    "archive": "artifacts/sprint17-human-native-slam-exact-cd70979f"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 292,
+    "domain": 2094,
+    "domainSeconds": 84,
+    "gateSeconds": 180.6,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 14,
+      "rejected": 13
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0901470940350Z",
+    "journalSha256": "8c299c24fb7e9b891091467ee614034a0eec37d77c76cc18e862eb7c90b65bbb",
+    "driver": "artifacts/Invoke-LaptopSprint17-HumanTail-Attempt4-NativeSlam.ps1",
+    "driverSha256": "e8e90dbaf1f2760ca43080a52af680553539708e776b515faf2cf8067e74098e",
+    "startedAtUtc": "2026-10-07T09:01:47.1363125Z",
+    "completedAtUtc": "2026-10-07T09:08:27.5428737Z",
+    "status": "ERROR",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T090147Z-6817e7106ea440ff8c1403d22c2ea7cd\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0901480262295Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "deploymentManifest": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\deployments\\20261007T0902122948241Z\\deployment.json",
+    "deploymentManifestSha256": "0533e63b176139a1ab7919cde9f6412cdbf4bca34b5f85a8127c629b07670f11",
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-07T09:02:12.7962296Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0902137455033Z-working-save-smoke",
+        "requestId": "20261007T0902137761397Z-f9758ec6e46b4b44a2311ad101cc9b62",
+        "requestSha256": "75b0ff7a24b515a67dfd83a6e5ceec99dbca9e13533eda62e19e3bf32827b6b5",
+        "expectedAssertions": 11,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "200527447b9b81b26a68ebb20673277d088ec3a4db5b1d41b5281bf03325733f",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "557e67533a903dbbe8223ceca0f9c2f6dc8553f0f5b9d880e9e07a824c267735",
+        "processId": 29684,
+        "processStartedUtc": "2026-10-07T09:02:14.9596838Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-07T09:05:04.9821874Z"
+      },
+      {
+        "label": "human-tail",
+        "scenario": "disposable-expanded-summoning-serpentine-bodies",
+        "startedAtUtc": "2026-10-07T09:05:10.5020516Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "error": "Kingmaker exited before committing a result after final rescan and bounded flush grace. stage=waiting-for-final-result; PID=31096; exitCode=",
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0905113642918Z-disposable-expanded-summoning-serpentine-bodies",
+        "requestId": "20261007T0905113642918Z-0db9e9baf75446dd8324ffbdb05652ed",
+        "requestSha256": "250488981e3a611ddb618cb3c386251f7b83d04eaab881196866ec2bc9fe84e5",
+        "orchestrationSha256": "eb9c8a3c1ffdf53b4dcfd9f5dfc2df38911c32240672eecd382c5fad1a117b58",
+        "processId": 31096,
+        "processStartedUtc": "2026-10-07T09:05:12.7020578Z",
+        "scenarioStatus": "NO-EVIDENCE",
+        "outcome": "ERROR",
+        "completedAtUtc": "2026-10-07T09:08:24.9806605Z"
+      }
+    ]
+  },
+  "crash": {
+    "processId": 31096,
+    "processStartedUtc": "2026-10-07T09:05:12.7020578Z",
+    "nativeError": "UnityPlayer.dll access violation 0xc0000005",
+    "faultOffset": "0x0000000000c10d4d",
+    "windowsEventUtc": "2026-10-07T09:08:17.753Z",
+    "windowsReportId": "b4ee142c-42fd-4b79-84ae-2ee596746866",
+    "lastGraphicsDiagnostics": [
+      "d3d11: failed to create buffer (target 0x1 mode 1 size 0) [0x80070057]",
+      "Illegal offset/size in BeginBufferWrite()"
+    ],
+    "physicalMemoryFreeMiB": 13968,
+    "physicalMemoryTotalMiB": 40701,
+    "processWorkingSetMiB": 4176,
+    "systemCommittedMiB": 28363,
+    "systemCommitLimitMiB": 59133,
+    "outOfMemoryProven": false,
+    "exactCausalStackAvailable": false,
+    "rawArchive": "artifacts/sprint17-human-native-slam-crash-cd70979f",
+    "rawFiles": [
+      {
+        "file": "output_log.txt",
+        "bytes": 977378,
+        "sha256": "9a7e39fa9021df07eeb40fdba8f2925e91d5d1c7d846027e6a827ad40986f4c5"
+      },
+      {
+        "file": "error.log",
+        "bytes": 66504,
+        "sha256": "ac959ad8a2da8d6d2256302562021496dd3902112286a7aa5bd109306e716095"
+      },
+      {
+        "file": "crash.dmp",
+        "bytes": 2510837,
+        "sha256": "c3c6f9d994d1997c6ffbbf59a398216c71622470bce63a561abcea6843f338ee"
+      }
+    ],
+    "rawFilesCommitted": false
+  },
+  "observation": {
+    "finalRuntimeResultPresent": false,
+    "finalBodyReviewPresent": false,
+    "expectedAssertions": 15,
+    "completedHybridAssertions": null,
+    "hybridNativeSaveWrites": null,
+    "hybridNativeSaveWritesDisposition": "Requested ZERO writes; final native-write audit absent after crash. Do not infer zero from orchestration error defaults. No save-file inspection or surgery.",
+    "smokeNativeSaveWrites": 0,
+    "supportingRestImage": {
+      "file": "sprint17-human-salamander-rest-owned-body.png",
+      "bytes": 3841158,
+      "sha256": "213c49d9667bb9883eddf8fb7d0f5dbe78cf4dd98ba4d24b2ab7a8d6d81661a5",
+      "writtenAtUtc": "2026-10-07T09:08:05.857Z",
+      "mechanicalQualification": false
+    },
+    "inference": "The rest-image call follows rollback/reattachment in source, but the final assertions and metadata were in memory and lost. No body, rollback, movement, contact or teardown PASS is claimed."
+  },
+  "diagnosis": {
+    "classification": "Bounded renderer-suppression defect suspected; exact native crash cause not established",
+    "suspect": "The request-local human attachment assigns a zero-vertex Mesh and empty bones to the native Cape_Red_M(Clone) SkinnedMeshRenderer. This is consistent with, but does not prove the source of, the zero-sized D3D buffer.",
+    "next": "Replace only audited auxiliary geometry suppression with a null sharedMesh while retaining native bones and renderer flags, restore exact mesh on teardown, and persist non-qualifying stage diagnostics before risky native boundaries. Focused behavior/source gates, clean exact-head artifact and full bounded guarded review required.",
+    "noUnchangedCandidateRetry": true,
+    "noAssertionsWaived": true,
+    "productionSalamanderChanged": false
+  },
+  "retainedDecisions": [
+    "PASSIVE_CREATURE_SENSES_UNMODELED",
+    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+    "SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL"
+  ],
+  "status": {
+    "sprints14Through16": "COMPLETE/PUBLISHED",
+    "sprint17": "NOT QUALIFIED",
+    "registeredGeneratedPlacements": 1008,
+    "publishedGeneratedPlacements": 976,
+    "withheldGeneratedPlacements": 32,
+    "nativeWrappers": 29,
+    "visibleChoices": 1005,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  }
+}

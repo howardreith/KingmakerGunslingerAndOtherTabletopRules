@@ -111,31 +111,42 @@ if ($scenarioMetadata.RequiresSaveName) {
             throw 'The deferred-marker probe requires typed -SaveName and only fixtureCase.'
         }
         $Parameters = @{saveName=$SaveName;fixtureCase=$Parameters.fixtureCase}
+    } elseif ($Scenario -cin @('working-save-expanded-summoning-prepare',
+            'working-save-expanded-summoning-verify-cleanup',
+            'working-save-expanded-summoning-verify-absent') -and
+            $Parameters.ContainsKey('persistenceScope')) {
+        if ($Parameters.Count -ne 1 -or $Parameters.persistenceScope -isnot [string] -or
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster') -or -not $ExitAfterCompletion) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes or whole-roster and automatic exit.'
+        }
+        $Parameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
     } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
         $crowd = $Parameters.ContainsKey('quantity')
         if ($Parameters.Count -ne $(if ($crowd) { 2 } else { 1 }) -or
             -not $Parameters.ContainsKey('creatures') -or
             [string]::IsNullOrWhiteSpace([string]$Parameters.creatures)) {
-            throw 'The creature review requires typed -SaveName plus creatures and optionally the bounded ungulate quantity.'
+            throw 'The creature review requires typed -SaveName plus creatures and optionally the bounded ground-creature quantity.'
         }
         if ($crowd -and ([string]$Parameters.quantity -cne 'OneD4PlusOne' -or
             @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
-                Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros') }).Count -ne 0)) {
-            throw 'The crowd review permits only quantity=OneD4PlusOne for Sprint 11 ungulates.'
+                Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros',
+                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile','viper','constrictor-snake','salamander') }).Count -ne 0)) {
+            throw 'The crowd review permits only quantity=OneD4PlusOne for the closed Sprint 11/12/16/17 roster.'
         }
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
         if ($crowd) { $Parameters.quantity = 'OneD4PlusOne' }
     } elseif ($Scenario -cin @('summon-same-turn-activation',
-            'summon-same-turn-rtwp-control')) {
+            'summon-same-turn-rtwp-control',
+            'summon-same-turn-native-control')) {
         if ($Parameters.Count -eq 0) {
             $Parameters = @{ saveName = $SaveName }
         } elseif ($Parameters.Count -eq 1 -and
             $Parameters.ContainsKey('flightCreature') -and
-            [string]$Parameters.flightCreature -cin @('eagle', 'dire-bat', 'giant-wasp', 'stirge')) {
+            [string]$Parameters.flightCreature -cin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff')) {
             $Parameters = @{ saveName = $SaveName;
                 flightCreature = [string]$Parameters.flightCreature }
         } else {
-            throw 'Summon activation permits typed -SaveName and only the bounded Eagle/Dire Bat/Wasp/hidden Stirge flightCreature.'
+            throw 'Summon activation permits typed -SaveName and only the bounded Eagle/Dire Bat/Wasp/Stirge/Dire Rat/Wolverine/Shadow Mastiff flightCreature.'
         }
     } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
         if (Test-KmgTreacherousEffectScope $Scenario $Parameters) {

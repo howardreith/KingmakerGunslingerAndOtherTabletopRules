@@ -161,8 +161,8 @@ namespace KingmakerGunslinger.DomainTests
                 .All(value => !appended.Contains(value)),
                 "The Sprint 5 append stays exactly before the Sprint 6 append.");
             SummonIconCatalog.Validate();
-            Assertions.Equal(100, SummonIconCatalog.All.Count,
-                "The current catalog includes the prepared Sprint 12 Dire Rat icon without changing Sprint 6 identities.");
+            Assertions.Equal(109, SummonIconCatalog.All.Count,
+                "The current catalog includes the Sprint 12 Dire Rat and Sprint 13 Shadow Mastiff icons without changing Sprint 6 identities.");
         }
     }
 }

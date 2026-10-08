@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <KmgVersion>0.0.142</KmgVersion>
-    <KmgInformationalVersion>0.0.142-elemental-race-traits-and-content</KmgInformationalVersion>
+    <KmgVersion>0.0.143</KmgVersion>
+    <KmgInformationalVersion>0.0.143-expanded-summoning-phase2b-checkpoint</KmgInformationalVersion>
     <LangVersion>7.3</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>

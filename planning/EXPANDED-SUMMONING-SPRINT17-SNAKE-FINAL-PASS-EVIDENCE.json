@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 1,
+  "classification": "PASS: CLOSED SNAKE ROUTES/UI/HIT-DEATH-FADE LIFECYCLE ONLY; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "fb9ffa507ef5884a321921355f7088f485c8d155",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "8d42303c5fe717bda0297f9e8233d6caca03a765edf65ed9ee44d09ba2bdd819",
+    "dllSha256": "d327a2e97cc02f7798697c87cb759078d2deea62a6fa97f5ad612251d5a33ad3",
+    "dllMvid": "a8231c02-e1af-4278-9559-bd45b7d8b08b",
+    "zipSha256": "c3465c9acefab616931e432c99937e8a709a915919f4a75c9cf218a5374f6080",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-final-carrier-source-pass-fb9ffa50"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 280,
+    "domain": 2082,
+    "domainSeconds": 82.9,
+    "gateSeconds": 179.7,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 14,
+      "rejected": 13
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0531075560783Z",
+    "journalSha256": "e983ed0b33ed2e720a642df07b86f136c0e2f1925d4874c9ed9f37211925cf39",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeFinal-Attempt3.ps1",
+    "driverSha256": "471f7abeb54efa14625173f6d6e0c73dada65c59476eef4c07367a4599200867",
+    "startedAtUtc": "2026-10-07T05:31:07.5873265Z",
+    "completedAtUtc": "2026-10-07T05:38:51.1595325Z",
+    "status": "PASS",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T053107Z-00e738577fbe459ea0122b832fad3034\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0531083005592Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "parameters": {},
+        "outcome": "PASS",
+        "assertions": 11,
+        "passed": 11,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0531340443190Z-working-save-smoke",
+        "requestId": "20261007T0531340599392Z-d7ef9d1c0d8641f5957b6e7db4172689",
+        "processId": 29740,
+        "processStartedUtc": "2026-10-07T05:31:35.2376083Z",
+        "requestSha256": "2c3b2e309fc7ad165087a7a294947890508e250d277deb7635420e9b8a2e435e",
+        "resultSha256": "e15b516d665423c282cace2a9863ed80d42de8f046040c7a9c42cc79be2e1b0f",
+        "orchestrationSha256": "a0f37d0d2417ba00b5a11137e36805a42ae2ec74ef085ec0a2b2924ce3bb7664"
+      },
+      {
+        "label": "snake-final",
+        "scenario": "disposable-expanded-summoning-snake-final-review",
+        "parameters": {},
+        "outcome": "PASS",
+        "assertions": 82,
+        "passed": 82,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0534340332176Z-disposable-expanded-summoning-snake-final-review",
+        "requestId": "20261007T0534340488638Z-016303dc116b4c3a8729290d0eb68f99",
+        "processId": 12028,
+        "processStartedUtc": "2026-10-07T05:34:35.6039841Z",
+        "requestSha256": "2edad7773c857dae2636f93d7a4c09aafecd9c3e74c991d95f10d0201dbdbde4",
+        "resultSha256": "6f92a93cd41783f1c59d9acbbc89daf780e45221da4dfdafe3e9c82ff9a43a09",
+        "orchestrationSha256": "5e37aaa203b444af048c4dd430622b0c718f7a53e6fddfb0a9a38bdf1cb0e304",
+        "metadataRows": 79,
+        "metadataSha256": "6283334db06b4f9837dba0394d85e435dcafb5c0cf60a1fd5419f2dbea8bd0e1"
+      }
+    ]
+  },
+  "observations": {
+    "allRows": 79,
+    "passed": 79,
+    "privateRoutes": 32,
+    "cleanupRows": 32,
+    "units": 105,
+    "resources": 525,
+    "remaining": 0,
+    "nativeControl": {
+      "nativeBlueprint": "bf2216f48b3f4d24c9c502007649340d",
+      "prefab": "130f0866af3249a4e817ec7e6e9ecd89",
+      "set": "Purple_Worm_AnimationSet 1",
+      "nativeHitActionPresent": false,
+      "types": [
+        "Prone",
+        "VariantIdle",
+        "Stunned",
+        "SpecialAttack",
+        "SpecialAttack",
+        "StandUp",
+        "LocoMotion",
+        "SpecialAttack",
+        "CastSpell"
+      ],
+      "check": "native-worm-hit-carrier",
+      "passed": true
+    },
+    "hits": [
+      {
+        "check": "viper-native-hit",
+        "passed": true,
+        "playedHitClip": false,
+        "finiteOriginalPose": true,
+        "exactNativeActionSet": true,
+        "nativeControlHasHit": false,
+        "hitReactionDisposition": "native rig has no Hit action; no flinch claimed",
+        "postWoundNativeSeconds": 0.519405365,
+        "commands": 1,
+        "started": 1,
+        "isolation": {
+          "ownedDistinct": true,
+          "eitherPlayerFaction": false,
+          "eitherPartyGroup": false,
+          "ownerEnemy": true,
+          "attackerEnemy": true,
+          "foreignEnemyRelations": 0,
+          "passed": true
+        },
+        "actualHitEvents": [
+          {
+            "frame": 4696,
+            "attackHit": true,
+            "torsoFacingDot": 0.9985269,
+            "nativeThreshold": 0.3,
+            "eligible": true,
+            "nativeHitActionPresent": false,
+            "result": "Hit",
+            "damage": 1
+          }
+        ],
+        "weaponRules": 1,
+        "damageBundles": 1,
+        "damage": 1
+      },
+      {
+        "check": "constrictor-snake-native-hit",
+        "passed": true,
+        "playedHitClip": false,
+        "finiteOriginalPose": true,
+        "exactNativeActionSet": true,
+        "nativeControlHasHit": false,
+        "hitReactionDisposition": "native rig has no Hit action; no flinch claimed",
+        "postWoundNativeSeconds": 0.520000458,
+        "commands": 1,
+        "started": 1,
+        "isolation": {
+          "ownedDistinct": true,
+          "eitherPlayerFaction": false,
+          "eitherPartyGroup": false,
+          "ownerEnemy": true,
+          "attackerEnemy": true,
+          "foreignEnemyRelations": 0,
+          "passed": true
+        },
+        "actualHitEvents": [
+          {
+            "frame": 4940,
+            "attackHit": true,
+            "torsoFacingDot": 0.997246,
+            "nativeThreshold": 0.3,
+            "eligible": true,
+            "nativeHitActionPresent": false,
+            "result": "Hit",
+            "damage": 2
+          }
+        ],
+        "weaponRules": 1,
+        "damageBundles": 1,
+        "damage": 2
+      }
+    ],
+    "lifecycle": [
+      {
+        "check": "viper-native-death",
+        "passed": true,
+        "playedDeathClip": true,
+        "finiteOriginalPose": true,
+        "maxOriginalDissolve": null,
+        "destroyed": null,
+        "viewGone": null,
+        "captured": null,
+        "remaining": null
+      },
+      {
+        "check": "viper-native-fade-despawn",
+        "passed": true,
+        "playedDeathClip": null,
+        "finiteOriginalPose": null,
+        "maxOriginalDissolve": 0.9972814,
+        "destroyed": true,
+        "viewGone": true,
+        "captured": null,
+        "remaining": null
+      },
+      {
+        "check": "viper-lifecycle-resources",
+        "passed": true,
+        "playedDeathClip": null,
+        "finiteOriginalPose": null,
+        "maxOriginalDissolve": null,
+        "destroyed": null,
+        "viewGone": null,
+        "captured": 5,
+        "remaining": 0
+      },
+      {
+        "check": "constrictor-snake-native-death",
+        "passed": true,
+        "playedDeathClip": true,
+        "finiteOriginalPose": true,
+        "maxOriginalDissolve": null,
+        "destroyed": null,
+        "viewGone": null,
+        "captured": null,
+        "remaining": null
+      },
+      {
+        "check": "constrictor-snake-native-fade-despawn",
+        "passed": true,
+        "playedDeathClip": null,
+        "finiteOriginalPose": null,
+        "maxOriginalDissolve": 0.999703,
+        "destroyed": true,
+        "viewGone": true,
+        "captured": null,
+        "remaining": null
+      },
+      {
+        "check": "constrictor-snake-lifecycle-resources",
+        "passed": true,
+        "playedDeathClip": null,
+        "finiteOriginalPose": null,
+        "maxOriginalDissolve": null,
+        "destroyed": null,
+        "viewGone": null,
+        "captured": 5,
+        "remaining": 0
+      }
+    ],
+    "ui": [
+      {
+        "check": "KMG_Summoning_Special_ConstrictorSnake_CombatTraits-native-buff-row",
+        "passed": true,
+        "rows": 1
+      },
+      {
+        "check": "KMG_Summoning_Natural_Viper_Venom-native-buff-row",
+        "passed": true,
+        "rows": 1
+      },
+      {
+        "check": "native-ui-restoration",
+        "passed": true,
+        "rows": null
+      }
+    ]
+  },
+  "carrierDisposition": {
+    "nativeHitReaction": "No Hit action exists on the actual native Worm control; candidates preserve the exact native set. No flinch or substitute clip claimed.",
+    "nativeActionCount": 9,
+    "archivedCensusExplanation": "The earlier7rows enumerate one action per UnitAnimationType. The fresh full native action list has9entries, including3SpecialAttack actions; neither list containsHit.",
+    "deathPlayback": "Actual native DyingStart clip, not IsActed fallback.",
+    "failureHistory": "95c4 remains39/73 FAIL;d43 remains79/81 FAIL. The carrier-aware correction is a new exact artifact, not a retrospective waiver.",
+    "ownerAcceptedLimitationAdded": false
+  },
+  "savePolicy": {
+    "writes": 0,
+    "fileAccess": false,
+    "protectedBaselineAccess": false,
+    "priorNativeCleanupAndFreshAbsencePreserved": true
+  },
+  "qualification": {
+    "bounded": "PASS82/82 plus79/79metadata aftersmoke11/11",
+    "privateRootExecution": true,
+    "publicSpellbookAndSlots": false,
+    "fullSprint17": false,
+    "publication": false,
+    "previousRulesCommandsCrowdPersistence": "Earlier983/a429/ec972 passes remain artifact-bounded; a complete same-artifact Sprint17 batch remains mandatory."
+  },
+  "previousAttempts": [
+    "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT1-EVIDENCE.json",
+    "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT2-EVIDENCE.json"
+  ],
+  "scope": "All32snake roots remain hidden; Salamander is separate and open. No production gameplay/art asset/publication change. Sprints14–16 remaincomplete. Phase2C authorized but deferred."
+}

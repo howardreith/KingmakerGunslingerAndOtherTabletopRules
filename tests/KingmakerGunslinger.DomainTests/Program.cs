@@ -25,6 +25,9 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("expanded-summoning.release143-whole-roster-coverage", ExpandedSummoningRosterPersistenceTests.EveryCreatureAndNativeUnitIsCoveredOnce),
+            Case("expanded-summoning.release143-receipt-authority", ExpandedSummoningRosterPersistenceTests.OwnershipRequiresEveryExactReceiptField),
+            Case("expanded-summoning.release143-scope-boundary", ExpandedSummoningRosterPersistenceTests.ScopeCannotOpenAnotherSaveOrScenario),
             Case("trait-save.AttachedAreaWithoutGlobalEntry", ElementalCharacterTraitSaveTests.AttachedAreaWithoutGlobalEntry),
             Case("trait-save.MirroredAreaDeduplicated", ElementalCharacterTraitSaveTests.MirroredAreaDeduplicated),
             Case("trait-save.DuplicateAttachedAreasDetected", ElementalCharacterTraitSaveTests.DuplicateAttachedAreasDetected),
@@ -887,6 +890,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.catalog-guards", ExpandedSummoningCatalogTests.CatalogGuardsInvalidSpecs),
             Case("expanded-summoning.baseline-frozen-surface", ExpandedSummoningBaselineInventoryTests.ShippedSurfaceMatchesFrozenBaseline),
             Case("expanded-summoning.baseline-visible-decomposition", ExpandedSummoningBaselineInventoryTests.VisibleChoicesDecomposeExactly),
+            Case("expanded-summoning.published-records-match-derivation", ExpandedSummoningBaselineInventoryTests.PublishedInventoryRecordsMatchTheDerivedEquation),
             Case("expanded-summoning.baseline-parent-census", ExpandedSummoningBaselineInventoryTests.PerParentCensusReconciles),
             Case("expanded-summoning.baseline-hidden-and-proxies", ExpandedSummoningBaselineInventoryTests.HiddenAndProxyCreaturesAreRecorded),
             Case("expanded-summoning.baseline-observer-inert", ExpandedSummoningBaselineInventoryTests.ObserverIsInertAndDeterministic),
@@ -950,7 +954,171 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint12-stirge-source-cadence", ExpandedSummoningSprint12Tests.StirgeRosterTextRecordsPrimaryCadenceException),
             Case("expanded-summoning.sprint12-injury-disease-policy", ExpandedSummoningSprint12Tests.InjuryDiseasePolicyRequiresExactPositiveDamage),
             Case("expanded-summoning.sprint12-allergy-healing-policy", ExpandedSummoningSprint12Tests.AllergicReactionRemovalRequiresPositiveMagic),
+            Case("expanded-summoning.sprint12-contact-allergy-triggers", ExpandedSummoningSprint12Tests.ContactAllergyTriggersMatchThePrintedRule),
             Case("expanded-summoning.sprint12-disease-blueprints", ExpandedSummoningSprint12Tests.DiseaseBlueprintsStayHiddenAndDisclosed),
+            Case("expanded-summoning.sprint13-rage-trigger", ExpandedSummoningSprint13Tests.RageSchedulesOnlyOnRealDamageToTheWolverine),
+            Case("expanded-summoning.sprint13-rage-next-turn", ExpandedSummoningSprint13Tests.RageNeverBeginsOnTheTurnTheDamageLanded),
+            Case("expanded-summoning.sprint13-rage-penalty", ExpandedSummoningSprint13Tests.RageCarriesThePrintedArmourPenaltyAndNoVoluntaryEnd),
+            Case("expanded-summoning.sprint13-rage-round-boundary", ExpandedSummoningSprint13Tests.RageReachesItsStateOnlyThroughARoundBoundary),
+            Case("expanded-summoning.sprint13-rage-summon-local", ExpandedSummoningSprint13Tests.RageStaysOnTheOneWolverine),
+            Case("expanded-summoning.sprint13-frog-flat-bite", ExpandedSummoningSprint13Tests.PoisonFrogBiteIsThePrintedFlatPoint),
+            Case("expanded-summoning.sprint13-identities", ExpandedSummoningSprint13Tests.Sprint13IdentitiesAreDeclaredAndAppendOnly),
+            Case("expanded-summoning.sprint13-bay-dc", ExpandedSummoningSprint13Tests.BayDcDerivesToThePrintedSixteen),
+            Case("expanded-summoning.sprint14-ant-poison-dc", ExpandedSummoningSprint14Tests.AntPoisonDcDerivesToThePrintedFourteen),
+            Case("expanded-summoning.sprint14-printed-skill-totals", ExpandedSummoningSprint14Tests.InsectSkillTotalsMatchThePrintedStatBlocks),
+            Case("expanded-summoning.sprint15-registered-and-withheld", ExpandedSummoningSprint15Tests.BothCreaturesAreRegisteredAndPublished),
+            Case("expanded-summoning.sprint16-natural-armor-binding", ExpandedSummoningSprint16Tests.EveryProfileResolvesItsNativeNaturalArmor),
+            Case("expanded-summoning.sprint16-bone-policy", ExpandedSummoningSprint16Tests.CrocodilianBonesFailClosed),
+            Case("expanded-summoning.sprint16-manual-command-completion", ExpandedSummoningSprint16Tests.ManualReviewRequiresItsOwnCompletedCommands),
+            Case("expanded-summoning.sprint16-owned-death-pause", ExpandedSummoningSprint16Tests.DeathReviewResumesOnlyItsRequestedOwnedDeath),
+            Case("expanded-summoning.sprint16-original-assets", ExpandedSummoningSprint16Tests.CrocodilianOriginalAssetsAreComplete),
+            Case("expanded-summoning.sprint16-icon-consumers", ExpandedSummoningSprint16Tests.CrocodilianIconConsumerGraphIsComplete),
+            Case("expanded-summoning.sprint16-view-scale", ExpandedSummoningSprint16Tests.CrocodilianScaleChangesOnlyTheDireIdentity),
+            Case("expanded-summoning.sprint16-dire-crocodile-published", ExpandedSummoningSprint16Tests.TheDireCrocodilePublishesItsSixPreservedPlacements),
+            Case("expanded-summoning.sprint16-dire-crocodile-stat-block", ExpandedSummoningSprint16Tests.TheDireCrocodileMatchesItsPrintedStatBlock),
+            Case("expanded-summoning.sprint16-crocodile-preserved", ExpandedSummoningSprint16Tests.TheCrocodilesIdentityAndPlacementsArePreserved),
+            Case("expanded-summoning.sprint16-ledger-identities", ExpandedSummoningSprint16Tests.TheLedgerCarriesTheNewIdentities),
+            Case("expanded-summoning.sprint17-native-rig-survey-scope", ExpandedSummoningSprint17Tests.RigSurveyUsesOnlyExactNativeSources),
+            Case("expanded-summoning.sprint17-closed-body-research-guard", ExpandedSummoningSprint17Tests.BodyResearchIsClosedAndUsesWorkingSaveGuard),
+            Case("expanded-summoning.sprint17-measured-ground-evidence", ExpandedSummoningSprint17Tests.GroundResearchRequiresMeasuredSurfaceAndRetainsPenetration),
+            Case("expanded-summoning.sprint17-original-body-drivers", ExpandedSummoningSprint17Tests.OriginalBodyBindingRejectsUnreviewedDrivers),
+            Case("expanded-summoning.sprint17-original-body-payloads", ExpandedSummoningSprint17Tests.OriginalBodyPayloadsAreCompleteAndRedistributionSafe),
+            Case("expanded-summoning.sprint17-original-outward-geometry", ExpandedSummoningSprint17Tests.OriginalBodyWindingHasOutwardGeometryAndFailsClosedOnOldAssets),
+            Case("expanded-summoning.sprint17-exact-two-skin-binding", ExpandedSummoningSprint17Tests.MultiRendererBodySwapRequiresExactDonorSet),
+            Case("expanded-summoning.sprint17-hybrid-support-native-slot-mapping", ExpandedSummoningSprint17Tests.HybridSupportMappingPreservesEveryNativeSlotAndRejectsUnknowns),
+            Case("expanded-summoning.sprint17-original-triangle-order-diagnostic", ExpandedSummoningSprint17Tests.OriginalTriangleDiagnosticIsExactReversibleAndInputPreserving),
+            Case("expanded-summoning.sprint17-native-spear-research-identity", ExpandedSummoningSprint17Tests.NativeSpearResearchRejectsEveryChangedIdentity),
+            Case("expanded-summoning.sprint17-issued-contact-research", ExpandedSummoningSprint17Tests.ContactResearchRequiresIssuedOwnedMeasuredEvents),
+            Case("expanded-summoning.sprint17-acted-fallback-is-not-playback", ExpandedSummoningSprint17Tests.NativeActedFallbackCannotProveClipPlayback),
+            Case("expanded-summoning.sprint17-exact-native-piercing-carrier", ExpandedSummoningSprint17Tests.NativePiercingActionRequiresExactCarrierAndRig),
+            Case("expanded-summoning.sprint17-closed-manufactured-action-census", ExpandedSummoningSprint17Tests.ManufacturedActionCensusIsClosedAndDefensive),
+            Case("expanded-summoning.sprint17-bind-matrix-observation", ExpandedSummoningSprint17Tests.BindMatrixObservationKeepsDisagreementAndMissingData),
+            Case("expanded-summoning.sprint17-snake-printed-profiles", SerpentineRulesTests.PrintedProfilesAreMediumAndCreatureOwned),
+            Case("expanded-summoning.sprint17-salamander-printed-racial-contributions", SalamanderRulesTests.RacialContributionsProducePrintedTotals),
+            Case("expanded-summoning.sprint17-salamander-exact-rules-owner", SalamanderRulesTests.ExactOwnerRejectsPrototypeAndDonors),
+            Case("expanded-summoning.sprint17-salamander-no-donor-ranks", SalamanderRulesTests.LandRanksRejectDonorAndRepeatedAllocation),
+            Case("expanded-summoning.sprint17-salamander-live-constrict-strength", SalamanderRulesTests.ConstrictUsesLivePositiveAndNegativeStrength),
+            Case("expanded-summoning.sprint17-salamander-one-heat-packet", SalamanderRulesTests.HeatClaimsArePerExactWeaponRuleWithoutReplay),
+            Case("expanded-summoning.sprint17-salamander-preserved-routes", SalamanderRulesTests.RegistrationPreservesFivePublishedRoutesAndHiddenSnakes),
+            Case("expanded-summoning.sprint17-observer-native-reach-floor", Sprint17ObservationTests.NativeReachRetainsTheEngineFloor),
+            Case("expanded-summoning.sprint17-observer-miss-delivery", Sprint17ObservationTests.MissDoesNotResolveAPlannedDamageRule),
+            Case("expanded-summoning.sprint17-observer-fire-delivery", Sprint17ObservationTests.FireImmunityUsesTheDeliveredBoundary),
+            Case("expanded-summoning.sprint17-observer-magic-attribution", Sprint17ObservationTests.MagicReductionRequiresActualWeaponAttribution),
+            Case("expanded-summoning.sprint17-observer-link-epochs", Sprint17ObservationTests.RegrabEvidenceCannotMixNativeLinkEpochs),
+            Case("expanded-summoning.sprint17-observer-native-expiry", Sprint17ObservationTests.ExpiryCannotWaiveAnAvailableNativeEffect),
+            Case("expanded-summoning.sprint17-salamander-production-view-scope", SalamanderProductionViewTests.ProductionBindingIsExactAndSeparateFromPrototype),
+            Case("expanded-summoning.sprint17-salamander-native-view-settlement", SalamanderProductionViewTests.BindingRequiresConsecutiveSameNativeMesh),
+            Case("expanded-summoning.sprint17-salamander-native-readiness-reset", SalamanderProductionViewTests.UnreadyChangingAndSkippedFramesCannotBind),
+            Case("expanded-summoning.sprint17-salamander-no-view-retry-loop", SalamanderProductionViewTests.SettlementIsBoundedAndInvalidClockFailsClosed),
+            Case("expanded-summoning.sprint17-salamander-tail-identity", SalamanderTailAnimationTests.OnlyTheClosedOwnedPrototypeMayUseTheAction),
+            Case("expanded-summoning.sprint17-salamander-tail-drivers", SalamanderTailAnimationTests.ExactlyTenOriginalTailDriversAreAllowed),
+            Case("expanded-summoning.sprint17-salamander-tail-clock", SalamanderTailAnimationTests.NativeClockAndAcknowledgedClipProduceOneAct),
+            Case("expanded-summoning.sprint17-salamander-tail-evaluation", SalamanderTailAnimationTests.FailedClipEvaluationCannotBecomeAnAct),
+            Case("expanded-summoning.sprint17-salamander-tail-rewind", SalamanderTailAnimationTests.InvalidOrRewoundNativeTimeFailsClosed),
+            Case("expanded-summoning.sprint17-salamander-tail-interruption", SalamanderTailAnimationTests.InterruptionAndForeignHandlesDoNotLeakEvents),
+            Case("expanded-summoning.sprint17-salamander-human-palette", SalamanderHumanBindingTests.CompleteSelectedPaletteKeepsAllNativeReferences),
+            Case("expanded-summoning.sprint17-salamander-human-ambiguity", SalamanderHumanBindingTests.DisagreeingOrAmbiguousSelectedDuplicatesFailClosed),
+            Case("expanded-summoning.sprint17-salamander-human-malformed", SalamanderHumanBindingTests.MalformedPaletteNeverCreatesPartialBindings),
+            Case("expanded-summoning.sprint17-salamander-human-actions", SalamanderHumanBindingTests.OneTailAppendDoesNotReplaceOrMutateHumanActions),
+            Case("expanded-summoning.sprint17-salamander-human-set-guard", SalamanderHumanBindingTests.NativeSetGuardDistinguishesRawTailFromExactSlamFallback),
+            Case("expanded-summoning.sprint17-salamander-human-patch-registry", SalamanderHumanBindingTests.PatchMetadataUsesRegistryWithoutMaskingRegisteredFailures),
+            Case("expanded-summoning.sprint17-salamander-human-auxiliary", SalamanderHumanBindingTests.AuxiliarySuppressionAcceptsOnlyTheAuditedNativeCape),
+            Case("expanded-summoning.sprint17-salamander-human-grip-surface", SalamanderHumanBindingTests.GripSurfaceUsesOnlyTheSelectedHandAndItsThreeFingers),
+            Case("expanded-summoning.sprint17-salamander-human-grip-influence", SalamanderHumanBindingTests.GripSurfaceInfluenceCombinesOnlyOneExactHand),
+            Case("expanded-summoning.sprint17-salamander-human-grip-malformed", SalamanderHumanBindingTests.MalformedGripSurfaceWeightsFailClosed),
+            Case("expanded-summoning.sprint17-salamander-human-grip-rejection-census", SalamanderHumanBindingTests.GripRejectionCensusDoesNotNormalizeOrRelaxSelection),
+            Case("expanded-summoning.sprint17-salamander-human-grip-json-isolation", SalamanderHumanBindingTests.GripCountersIgnoreProcessGlobalDictionaryConverters),
+            Case("expanded-summoning.sprint17-salamander-human-native-hand-deformers", SalamanderHumanBindingTests.NativeGripDeformersRequireExactAnatomicalParents),
+            Case("expanded-summoning.sprint17-salamander-human-native-hand-influence", SalamanderHumanBindingTests.NativeDeformerProjectionPreservesSideAndInfluence),
+            Case("expanded-summoning.sprint17-salamander-native-grip-follow", SalamanderHumanBindingTests.NativeGripFollowDistinguishesContactFromAuditedLeadRelease),
+            Case("expanded-summoning.sprint17-salamander-native-grip-loss", SalamanderHumanBindingTests.NativeGripFollowRejectsLostGripAndAnyDivergentFrame),
+            Case("expanded-summoning.sprint17-salamander-native-grip-evidence", SalamanderHumanBindingTests.NativeGripFollowRejectsMissingReorderedOrFabricatedEvidence),
+            Case("expanded-summoning.sprint17-salamander-native-grip-native-act", SalamanderHumanBindingTests.NativeGripFollowPinsReadOnlyNativeActIdentity),
+            Case("expanded-summoning.sprint17-salamander-human-bake-frame", SalamanderHumanBindingTests.BakedControlRequiresTheExactFiniteLiveFrame),
+            Case("expanded-summoning.sprint17-snake-production-body-identity", SerpentineRulesTests.ProductionBodyHookRequiresExactHiddenSnakeIdentity),
+            Case("expanded-summoning.sprint17-snake-closed-profile-request", SerpentineRulesTests.ProfileRequestIsClosedWorkingSaveSlice),
+            Case("expanded-summoning.sprint17-snake-closed-signature-request", SerpentineRulesTests.SignatureRequestIsClosedWorkingSaveSlice),
+            Case("expanded-summoning.sprint17-persistence-exact-ownership", SerpentineRulesTests.PersistenceReceiptRequiresExactOwnedIdentity),
+            Case("expanded-summoning.sprint17-persistence-closed-roles", SerpentineRulesTests.PersistenceFixtureHasOnlySixClosedRoles),
+            Case("expanded-summoning.sprint17-persistence-venom-counters", SerpentineRulesTests.PersistenceVenomCannotResetOrDuplicateCounters),
+            Case("expanded-summoning.sprint17-poison-native-save-phases", SerpentineRulesTests.NativePoisonSavePhasesRemainDistinct),
+            Case("expanded-summoning.sprint17-command-closed-matrix", SerpentineRulesTests.CommandRequestAndMatrixAreClosed),
+            Case("expanded-summoning.sprint17-final-closed-request", SerpentineRulesTests.FinalReviewRequestIsClosed),
+            Case("expanded-summoning.sprint17-final-closed-routes", SerpentineRulesTests.FinalReviewRoutesAndQuantitiesAreExact),
+            Case("expanded-summoning.sprint17-final-native-playback", SerpentineRulesTests.FinalReviewRequiresActualNativePlayback),
+            Case("expanded-summoning.sprint17-final-rtwp-duration", SerpentineRulesTests.FinalReviewDurationMatchesNativeRtwp),
+            Case("expanded-summoning.sprint17-final-owned-combat", SerpentineRulesTests.FinalReviewLifecycleRejectsForeignCombat),
+            Case("expanded-summoning.sprint17-final-frontal-hit", SerpentineRulesTests.FinalReviewRequiresNativeFrontalHitEligibility),
+            Case("expanded-summoning.sprint17-final-hit-carrier", SerpentineRulesTests.FinalReviewPreservesNativeHitCarrierContract),
+            Case("expanded-summoning.sprint17-passive-trait-icon", SerpentineRulesTests.ConstrictorPassiveIconHasOneExactConsumer),
+            Case("expanded-summoning.sprint17-command-native-setup", SerpentineRulesTests.CommandSetupRequiresIntactOriginalAndNativeControl),
+            Case("expanded-summoning.sprint17-command-ai-action-preservation", SerpentineRulesTests.AppearanceSuspensionPreservesNativeAiActions),
+            Case("expanded-summoning.sprint17-snake-native-footprint", SerpentineRulesTests.SnakeFootprintUsesBodyScaleWithoutChangingNativeFloor),
+            Case("expanded-summoning.sprint17-command-retry-policy", SerpentineRulesTests.CommandRetryNeverDrivesAiOrReplaysHeldAttack),
+            Case("expanded-summoning.sprint17-command-contact-policy", SerpentineRulesTests.CommandContactRequiresPlayedClipAndActualGap),
+            Case("expanded-summoning.sprint17-command-rendered-contact-correlation", SerpentineRulesTests.RenderedContactRequiresExactEventFrameAndIdentities),
+            Case("expanded-summoning.sprint17-bite-animation-distance-scope", SerpentineRulesTests.BiteAnimationDistanceIsOwnedVisualOnly),
+            Case("expanded-summoning.sprint17-crowd-instance-resources", SerpentineRulesTests.CrowdResourcesAreExactInstanceOwned),
+            Case("expanded-summoning.sprint17-crowd-owned-awake-restoration", SerpentineRulesTests.CrowdAwakeRestoresOnlyOwnedReferences),
+            Case("expanded-summoning.sprint17-crowd-foreign-awake-rejection", SerpentineRulesTests.CrowdAwakeRejectsForeignChangesWithoutMutation),
+            Case("expanded-summoning.sprint17-crowd-malformed-awake-rejection", SerpentineRulesTests.CrowdAwakeRejectsMalformedOrDeadScope),
+            Case("expanded-summoning.sprint17-persistence-arming-observation", SerpentineRulesTests.PersistenceArmingDiagnosticsDistinguishNativeOutcomes),
+            Case("expanded-summoning.sprint17-persistence-native-appearance-ready", SerpentineRulesTests.PersistenceAppearanceRequiresNativeLocksToEnd),
+            Case("expanded-summoning.sprint17-persistence-reset-diagnostic-operands", SerpentineRulesTests.PersistenceResetDiagnosticsPreserveEveryOperand),
+            Case("expanded-summoning.sprint17-persistence-load-reset-trace-scope", SerpentineRulesTests.LoadResetTraceIsRestrictedToTheClosedProtocol),
+            Case("expanded-summoning.sprint17-persistence-native-load-boundary", SerpentineRulesTests.PersistenceRequiresTheExactNativeLoadCompletion),
+            Case("expanded-summoning.sprint17-command-maintain-policy", SerpentineRulesTests.CommandMaintainRequiresLaterRoundWithoutSecondAttack),
+            Case("expanded-summoning.sprint17-poison-exhaustion-no-replay", SerpentineRulesTests.NativePoisonExhaustionRequiresRemovalWithoutReplay),
+            Case("expanded-summoning.sprint17-snake-exact-land-ranks", SerpentineRulesTests.ExactRanksPreserveNativeContributions),
+            Case("expanded-summoning.sprint17-snake-ranks-fail-closed", SerpentineRulesTests.RankAllocationRejectsDonorOrRepeatRanks),
+            Case("expanded-summoning.sprint17-snake-live-modifiers", SerpentineRulesTests.PoisonAndDamageUseLiveModifiers),
+            Case("expanded-summoning.sprint17-snake-native-size-shift", SerpentineRulesTests.WeaponSizeDropsDonorSizeButKeepsLiveShift),
+            Case("expanded-summoning.sprint17-snake-publication-identities", SerpentineRulesTests.QualifiedSnakesPublishWithoutMovingExistingChoices),
+            Case("expanded-summoning.sprint17-snake-append-only-ledger", SerpentineRulesTests.LedgerAppendPreservesEveryHistoricalEntry),
+            Case("expanded-summoning.sprint17-snake-icon-consumers", SerpentineRulesTests.SnakeArtworkHasExactConsumersAndProvenance),
+            Case("expanded-summoning.sprint17-spear-census-exact-archived-equipment", ExpandedSummoningSprint17Tests.SpearCensusPinsArchivedEquipmentWithoutAdoption),
+            Case("expanded-summoning.sprint17-action-metadata-structural-preservation", ExpandedSummoningSprint17Tests.ActionMetadataPreservesMissingEmptyAndNullSlots),
+            Case("expanded-summoning.sprint17-one-native-action-copy", ExpandedSummoningSprint17Tests.NativeSpearActionCopyPreservesAllOtherReferences),
+            Case("expanded-summoning.sprint17-native-spear-bounds-uncertainty", ExpandedSummoningSprint17Tests.NativeSpearBoundsRetainConservativeUncertainty),
+            Case("expanded-summoning.sprint17-two-palm-spear-mount", ExpandedSummoningSprint17Tests.TwoPalmSpearMountFitsExistingShaftWithoutRescaling),
+            Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),
+            Case("expanded-summoning.crocodilian-death-roll-live-strength", ExpandedSummoningCrocodilianRulesTests.DeathRollFollowsLiveStrength),
+            Case("expanded-summoning.crocodilian-death-roll-base-bite", ExpandedSummoningCrocodilianRulesTests.DeathRollAdjustsOnlyTheCapturedBaseBite),
+            Case("expanded-summoning.crocodilian-land-skills", ExpandedSummoningCrocodilianRulesTests.LandSkillsUseExactRanksWithoutMobility),
+            Case("expanded-summoning.crocodilian-death-roll-refusals", ExpandedSummoningCrocodilianRulesTests.DeathRollIsRefusedWhereTheRulesRefuseIt),
+            Case("expanded-summoning.crocodilian-death-roll-maneuver", ExpandedSummoningCrocodilianRulesTests.DeathRollObeysTheManeuverRollRules),
+            Case("expanded-summoning.crocodilian-one-rider", ExpandedSummoningCrocodilianRulesTests.OneMaintainResolvesExactlyOneRider),
+            Case("expanded-summoning.crocodilian-swallow-numbers", ExpandedSummoningCrocodilianRulesTests.SwallowNumbersComeFromTheCreature),
+            Case("expanded-summoning.crocodilian-sprint-limit", ExpandedSummoningCrocodilianRulesTests.SprintIsOncePerMinuteAndNotOncePerSummoning),
+            Case("expanded-summoning.crocodilian-sprint-ai-fallback", ExpandedSummoningCrocodilianRulesTests.SprintBrainKeepsNaturalActionsAndOneEngagementGate),
+            Case("expanded-summoning.sprint15-drone-advanced-template", ExpandedSummoningSprint15Tests.TheDroneIsTheSoldierWithTheAdvancedTemplate),
+            Case("expanded-summoning.sprint15-stag-beetle-trample", ExpandedSummoningSprint15Tests.TheStagBeetleTrampleDerivesToItsPrintedLine),
+            Case("expanded-summoning.sprint15-stag-beetle-stat-block", ExpandedSummoningSprint15Tests.TheStagBeetleMatchesItsPrintedStatBlock),
+            Case("expanded-summoning.sprint14-ant-poison-frequency", ExpandedSummoningSprint14Tests.AntPoisonCarriesThePrintedFrequency),
+            Case("expanded-summoning.sprint14-worker-template", ExpandedSummoningSprint14Tests.TheWorkerIsTheSoldierWithoutItsSting),
+            Case("expanded-summoning.sprint14-sting-is-its-own-weapon", ExpandedSummoningSprint14Tests.TheStingIsItsOwnWeaponSoThePoisonCannotReachTheBite),
+            Case("expanded-summoning.sprint14-luminescence-claims-nothing", ExpandedSummoningSprint14Tests.LuminescenceClaimsNoMechanicalEffect),
+            Case("expanded-summoning.sprint14-registered-and-withheld", ExpandedSummoningSprint14Tests.TheThreeInsectsAreRegisteredAndWithheld),
+            Case("expanded-summoning.sprint14-tier-coverage", ExpandedSummoningSprint14Tests.EachInsectOccupiesItsTierUpward),
+            Case("expanded-summoning.sprint14-identities", ExpandedSummoningSprint14Tests.Sprint14IdentitiesAreDeclaredAndAppendOnly),
+            Case("expanded-summoning.sprint14-no-fourth-foot", ExpandedSummoningSprint14Tests.NoSprint14MeshMayBindTheDonorsFourthFoot),
+            Case("expanded-summoning.sprint14-six-visible-legs", ExpandedSummoningSprint14Tests.EachShippedInsectMeshDeclaresSixVisibleLegs),
+            Case("expanded-summoning.sprint14-per-kind-bone-allowlist", ExpandedSummoningSprint14Tests.EachInsectGetsOnlyTheBonesItsOwnKindMayDrive),
+            Case("expanded-summoning.sprint14-loaded-insects-are-shipped", ExpandedSummoningSprint14Tests.EveryLoadedInsectIsAlsoShipped),
+            Case("expanded-summoning.sprint14-painting-hashes", ExpandedSummoningSprint14Tests.EachInsectPaintingMatchesItsDeclaredHash),
+            Case("expanded-summoning.sprint14-corrupt-mesh-refused", ExpandedSummoningSprint14Tests.ACorruptedSprint14MeshIsRefusedByItsOwnAllowlist),
+            Case("expanded-summoning.sprint14-ant-trip-and-skills", ExpandedSummoningSprint14Tests.BothAntCastesCarryTheirPrintedTripDefenceAndSkills),
+            Case("expanded-summoning.sprint14-unit-type", ExpandedSummoningSprint14Tests.NoSprint14InsectKeepsTheDonorsUnitType),
+            Case("expanded-summoning.sprint14-injury-poison-needs-a-wound", ExpandedSummoningSprint14Tests.AnInjuryPoisonNeedsAnActualWound),
+            Case("expanded-summoning.sprint14-glow-lifecycle", ExpandedSummoningSprint14Tests.TheBeetleGlowFollowsItsBodyAndReleasesInFrame),
+            Case("expanded-summoning.sprint14-catalog-matches-ledger", ExpandedSummoningSprint14Tests.TheIdentityCatalogMatchesTheLedgerExactly),
+            Case("expanded-summoning.sprint13-bay-exemptions", ExpandedSummoningSprint13Tests.BaySparesEvilOutsidersAndHonoursItsOwnImmunity),
+            Case("expanded-summoning.sprint13-shadow-blend", ExpandedSummoningSprint13Tests.ShadowBlendHasExactlyThePrintedTwoNegations),
+            Case("expanded-summoning.sprint13-mastiff-attacks", ExpandedSummoningSprint13Tests.ShadowMastiffAttacksFollowItsPrintedNumbers),
+            Case("expanded-summoning.sprint13-bay-bounded-ai", ExpandedSummoningSprint13Tests.BayIsPlayerActivatedAndNeverAnAiChoice),
+            Case("expanded-summoning.sprint13-original-visuals", ExpandedSummoningSprint13Tests.Sprint13OriginalVisualsAreDeterministicAndDelivered),
+            Case("expanded-summoning.sprint13-frog-view-scale", ExpandedSummoningSprint13Tests.PoisonFrogIsViewScaledWithoutTouchingItsMechanics),
+            Case("harness.focused-selection-filter", FocusedSelectionFilterSelectsWhatItSays),
             Case("expanded-summoning.sprint10-stirge-attach-policy", ExpandedSummoningSprint10Tests.StirgeAttachRulesBoundDrainAndDetachment),
             Case("expanded-summoning.sprint10-stirge-published-registration", ExpandedSummoningSprint10Tests.StirgePublishesAtAllNineNatureTiers),
             Case("expanded-summoning.sprint10-wasp-registration", ExpandedSummoningSprint10Tests.GiantWaspRegisteredUnderSuppressionAtExactTiers),
@@ -2323,17 +2491,62 @@ namespace KingmakerGunslinger.DomainTests
             Case("reload-profile.ammunition-identity", ReloadProfileAmmunitionIdentity)
         };
 
+        /// <summary>
+        /// The focused-selection filter, read from <c>KMG_TEST_FILTER</c>.
+        ///
+        /// <para>An environment variable rather than an argument, because any
+        /// argument already means "run one of the utilities" and overloading
+        /// that would make a mistyped filter silently run something else.
+        /// Empty or unset selects everything, which keeps the default
+        /// invocation - and therefore the sprint and tranche gates - running
+        /// the complete suite exactly as before.</para>
+        ///
+        /// <para>Terms are separated by semicolons or commas and matched as
+        /// case-insensitive substrings of the case name; a case is selected if
+        /// any term matches. A filter that selects nothing is a failure rather
+        /// than a silent pass, because the usual cause is a typo and the worst
+        /// outcome would be an empty run reported as green.</para>
+        /// </summary>
+        internal static TestCase[] Select(TestCase[] cases, string filter)
+        {
+            if (cases == null) throw new ArgumentNullException("cases");
+            string[] terms = (filter ?? string.Empty)
+                .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(value => value.Trim())
+                .Where(value => value.Length != 0).ToArray();
+            if (terms.Length == 0) return cases;
+            return cases.Where(value => terms.Any(term =>
+                value.Name.IndexOf(term,
+                    StringComparison.OrdinalIgnoreCase) >= 0)).ToArray();
+        }
+
         private static int Main(string[] args)
         {
             bool focused=args!=null && args.Length==2 && args[0]=="--test-prefix";
             if (args != null && args.Length != 0 && !focused)
                 return RunUtility(args);
-            var selected=focused ? Cases.Where(c=>args[1].Split(',').Any(p=>c.Name.StartsWith(p,StringComparison.Ordinal))).ToArray() : Cases;
-            if(selected.Length==0) { Console.Error.WriteLine("No matching domain tests."); return 2; }
+            var prefixSelection=focused ? Cases.Where(c=>args[1].Split(',').Any(p=>c.Name.StartsWith(p,StringComparison.Ordinal))).ToArray() : Cases;
+            if(prefixSelection.Length==0) { Console.Error.WriteLine("No matching domain tests."); return 2; }
+
+            string filter = Environment.GetEnvironmentVariable("KMG_TEST_FILTER");
+            TestCase[] selected = Select(prefixSelection, filter);
+            bool filtered = focused || !ReferenceEquals(selected, Cases);
+            if (filtered && selected.Length == 0)
+            {
+                Console.Error.WriteLine(
+                    "KMG_TEST_FILTER matched no test of the " + Cases.Length +
+                    " registered: " + filter);
+                return 1;
+            }
 
             int failures = 0;
             Console.WriteLine("Kingmaker Gunslinger domain, firearm-state, and combat-rule tests");
+            if (filtered)
+                Console.WriteLine("KMG_TEST_FILTER=" + filter +
+                    "; selected " + selected.Length + " of " + Cases.Length +
+                    " registered tests. This is a focused run and is not a gate.");
 
+            var clock = System.Diagnostics.Stopwatch.StartNew();
             foreach (TestCase testCase in selected)
             {
                 try
@@ -2347,13 +2560,16 @@ namespace KingmakerGunslinger.DomainTests
                     Console.Error.WriteLine("FAIL " + testCase.Name + ": " + exception);
                 }
             }
+            clock.Stop();
 
             Console.WriteLine(
                 string.Format(
                     System.Globalization.CultureInfo.InvariantCulture,
-                    "Completed {0} tests; failures={1}.",
+                    "Completed {0} tests; failures={1}. Registered {2}; elapsed {3:0.0}s.",
                     selected.Length,
-                    failures));
+                    failures,
+                    Cases.Length,
+                    clock.Elapsed.TotalSeconds));
             return failures == 0 ? 0 : 1;
         }
 
@@ -3090,6 +3306,45 @@ namespace KingmakerGunslinger.DomainTests
         private static TestCase Case(string name, Action body)
         {
             return new TestCase(name, body);
+        }
+
+        private static TestCase Fixture(string name)
+        {
+            return new TestCase(name, () => { });
+        }
+
+        /// <summary>
+        /// The focused-selection filter itself. A filter that quietly selected
+        /// nothing, or that let a sprint gate run a subset while reporting
+        /// green, would be worse than having no filter at all.
+        /// </summary>
+        private static void FocusedSelectionFilterSelectsWhatItSays()
+        {
+            // Named through a helper rather than written out, because the
+            // repository validators count the registration call literally to
+            // know how many tests exist, and these three are fixtures rather
+            // than registered tests.
+            TestCase[] cases = {
+                Fixture("expanded-summoning.sprint14-fire-beetle"),
+                Fixture("expanded-summoning.sprint14-ant-worker"),
+                Fixture("firearm.reload-profile")
+            };
+            Assertions.True(ReferenceEquals(Select(cases, null), cases) &&
+                ReferenceEquals(Select(cases, string.Empty), cases) &&
+                ReferenceEquals(Select(cases, "  ;, "), cases),
+                "An absent or empty filter must select every test, so the " +
+                "default invocation stays the complete suite.");
+            Assertions.Equal(2, Select(cases, "sprint14").Length,
+                "A substring must select every case that carries it.");
+            Assertions.Equal(1, Select(cases, "SPRINT14-ANT").Length,
+                "Matching must ignore case.");
+            Assertions.Equal(3, Select(cases, "sprint14;firearm").Length,
+                "Terms must combine, separated by a semicolon.");
+            Assertions.Equal(3, Select(cases, "sprint14, firearm").Length,
+                "Terms must combine, separated by a comma.");
+            Assertions.Equal(0, Select(cases, "sprint99").Length,
+                "A filter that matches nothing must select nothing, which " +
+                "the runner reports as a failure rather than an empty pass.");
         }
 
         private static ReloadProfile StandardReload(int rounds)
@@ -10726,7 +10981,9 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        private sealed class TestCase
+        // Internal rather than private so the selection filter above can
+        // return an array of them to a test that exercises it.
+        internal sealed class TestCase
         {
             internal TestCase(string name, Action body)
             {
