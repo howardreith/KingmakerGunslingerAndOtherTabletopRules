@@ -6,6 +6,57 @@ using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
+    // Request-local cleanup evidence only; no Unity mutation or ownership by name.
+    internal sealed class RosterResourceReport
+    {
+        internal const bool DiagnosisOnly = true;
+        internal readonly JObject Result;
+        internal readonly JArray Rows = new JArray(), Errors = new JArray();
+        internal RosterResourceReport(string request, string stage)
+        {
+            Result = new JObject { ["schemaVersion"] = 1, ["requestId"] = request,
+                ["stage"] = stage, ["readOnlyObserver"] = true, ["diagnosisOnly"] = DiagnosisOnly,
+                ["resources"] = Rows, ["observerErrors"] = Errors, ["clearedInFinally"] = false };
+        }
+        internal static string Classify(bool owned, bool cache, bool borrowed)
+        {
+            if (owned && (cache || borrowed)) return "CONFLICT";
+            return owned ? "PRIVATE_VIEW_OWNED" : cache ? "IMMUTABLE_PROCESS_CACHE" :
+                borrowed ? "BORROWED_NATIVE" : "UNRESOLVED";
+        }
+        internal void Error(string key, string unitId, string stage, Exception error)
+        { Errors.Add(new JObject { ["key"] = key, ["unitId"] = unitId, ["stage"] = stage,
+            ["exceptionType"] = error.GetType().FullName, ["message"] = error.Message }); }
+        internal void Add(string key, string unitId, Func<JObject> build)
+        {
+            try { Rows.Add(build() ?? throw new InvalidOperationException("Null resource receipt.")); }
+            catch (Exception error) { Error(key, unitId, "resource-row", error); }
+        }
+        internal void Finish(Action clear)
+        {
+            try
+            {
+                Result["uniqueObjects"] = Rows.Count;
+                Result["sharedObjects"] = Rows.Count(r => (int)r["fixtureUnitReferences"] > 1);
+                Result["expectedPrivateObjects"] = Rows.Count(r => (string)r["ownershipClass"] == "PRIVATE_VIEW_OWNED");
+                Result["expectedCacheOrBorrowedObjects"] = Rows.Count(r => (string)r["ownershipClass"] == "IMMUTABLE_PROCESS_CACHE" || (string)r["ownershipClass"] == "BORROWED_NATIVE");
+                Result["survivors"] = new JArray(Rows.Where(r => (bool)r["aliveAfter"]).Select(r => r.DeepClone()));
+                Result["survivorGroups"] = new JArray(Rows.Where(r => (bool)r["aliveAfter"])
+                    .GroupBy(r => (string)r["type"] + "|" + (string)r["name"] + "|" + (string)r["ownershipClass"])
+                    .OrderBy(g => g.Key, StringComparer.Ordinal).Select(g => new JObject {
+                        ["typeNameClass"] = g.Key, ["instanceIds"] = new JArray(g.Select(r => (int)r["instanceId"])),
+                        ["ownersAndSources"] = new JArray(g.SelectMany(r => (JArray)r["references"]).Select(r => r.DeepClone())) }));
+            }
+            catch (Exception error) { Error(null, null, "resource-summary", error); }
+            finally
+            {
+                try { clear(); Result["clearedInFinally"] = true; }
+                catch (Exception error) { Error(null, null, "resource-clear", error); }
+            }
+            Result["observerErrorCount"] = Errors.Count;
+        }
+    }
+
     // JSON for this request-local fixture only. Never invoke the game's
     // configured serializer for dictionaries or engine-owned objects.
     internal sealed class RosterReadinessReport
