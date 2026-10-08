@@ -180,6 +180,8 @@
     <Compile Include="RuntimeTesting\Sprint17ObservationPolicy.cs" />
     <Compile Include="RuntimeTesting\SerpentineFinalReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\CrocodilianDamageAttributionPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16DamageAttribution.cs" />
     <Compile Include="Summoning\CrocodilianAttackVisualPose.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
     <Compile Include="Summoning\SummonInjuryPoison.cs" />

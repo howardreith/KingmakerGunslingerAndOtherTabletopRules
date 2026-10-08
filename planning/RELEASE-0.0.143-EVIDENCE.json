@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "BLOCKED_RUNTIME_CROCODILE_COOLDOWN_EXPIRY_DAMAGE_UNATTRIBUTED",
+  "status": "FINAL_BOUNDED_ATTRIBUTION_OBSERVER_IN_DEVELOPMENT_NOT_QUALIFIED",
   "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
   "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
   "qualifiedSummoningImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
@@ -108,9 +108,9 @@
     "latest": true
   },
   "sourceOwner": {
-    "session": "55743a42-4481-4922-8fe8-a9bd24af8916",
-    "keeperPid": 38820,
-    "keeperStartedUtc": "2026-10-08T01:12:17.8225167Z",
+    "session": "d42bf512-25e5-4c0a-a2bc-9fff6ace3fb2",
+    "keeperPid": 16728,
+    "keeperStartedUtc": "2026-10-08T03:21:14.2400240Z",
     "releaseOnHandoff": true
   },
   "releasePublished": false,
@@ -134,7 +134,7 @@
     "batchRecordSha256": "6d0a475ee31ec6374684933df3deb268b0249078bc1592ddef0f6d367aa8125e"
   },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "Owner extension for one narrowly scoped request-local damage-attribution observation/fixture cycle. Do not waive the failed expiry assertion or invent a product correction. Preserve exact f65eedb3 artifact and all prior PASS results; run only demonstrated affected corrections and still-unrun closure/profile5/v142/native-trait-save cells. No merge/release until every required gate passes; no Sprint18.",
+  "next": "Owner-authorized final attribution cycle: commit/push observer head, complete2469 source/build/package gate ONCE, then smoke+crocodilians only. Classify exact damage event; only evidence-supported fixture or one product correction. Audit unchanged exercised surfaces before reuse of prior inventory/menu/root PASS. Complete still-unrun closure/profile5/v142 gates only after crocodilians pass. Unattributed=>STOP; do not request another cycle. No merge/release/Sprint18 before all gates.",
   "integrationPr": 29,
   "observationCorrection": {
     "used": 1,
@@ -208,6 +208,17 @@
     "restoration": "VERIFIED",
     "forcedTermination": false,
     "smallestOwnerDecision": "Extend the bounded candidate cycle for one request-local damage-source observation/fixture correction; no production behavior change without demonstrated evidence."
+  },
+  "finalAttributionCycle": {
+    "authority": "v0.0.143 Final Blocker Resolution and Release Completion Order",
+    "maximumObservationCycles": 1,
+    "runtimeCyclesUsed": 0,
+    "status": "SOURCE_DEVELOPMENT_NOT_RUNTIME_QUALIFIED",
+    "focusedTestsPassed": 14,
+    "focusedTestsFailed": 0,
+    "developmentPrivateReferenceCompile": "PASS",
+    "expectedFullTests": 2469,
+    "scope": "Read-only existing request-owned crocodile cooldown expiry window; RuleDealDamage/RuleHealDamage plus inspected UnitDescriptor.Damage and native HP/Constitution setters, frame-gap witness, complete statuses/source/rule-parent/component attribution. No production behavior or no-damage assertion change."
   },
   "nativeExitRecovery": {
     "processPid": 22044,
