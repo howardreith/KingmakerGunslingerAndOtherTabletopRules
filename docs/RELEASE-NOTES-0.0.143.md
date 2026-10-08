@@ -6,7 +6,7 @@ No firearm audio asset is changed by this release.
 Existing `CraftMagicItems.dll` compatibility is inherited; no new crafting
 integration or full Craft Magic Items profile qualification is claimed.
 Historical content and fatigue-authority records retain their 1,288 and 1,325 test
-counts; neither describes this candidate's2462 registered tests.
+counts; neither describes this candidate's 2465 registered tests.
 
 Status: integration candidate, NOT release-qualified. Merge/tag/real Latest
 release is owner-authorized only after every required gate passes.

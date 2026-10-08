@@ -3,11 +3,12 @@ param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 
 $base = @{
     Scenario = 'working-save-expanded-summoning-creature-review'
-    ExpectedVersion = '0.0.141'
+    ExpectedVersion = (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version
     TimeoutSeconds = 1200
     CatalogTimeoutSeconds = 180
     SelectionTimeoutSeconds = 300

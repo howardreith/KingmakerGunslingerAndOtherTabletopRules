@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "EXACT_INTEGRATION_CANDIDATE_NOT_QUALIFIED",
+  "status": "OBSERVER_ONLY_RELEASE_CANDIDATE_IN_DEVELOPMENT_NOT_QUALIFIED",
   "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
   "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
   "qualifiedSummoningImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
@@ -29,35 +29,120 @@
     "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json#checkpointRelease143"
   },
   "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md",
-  "surface": { "generated": 1008, "wrappers": 29, "visible": 1037, "withheld": 0 },
-  "identities": { "entries": 2922, "active": 2920, "reserved": 2, "masterPrefix": 2660, "append": 262 },
+  "surface": {
+    "generated": 1008,
+    "wrappers": 29,
+    "visible": 1037,
+    "withheld": 0
+  },
+  "identities": {
+    "entries": 2922,
+    "active": 2920,
+    "reserved": 2,
+    "masterPrefix": 2660,
+    "append": 262
+  },
   "developmentChecks": {
-    "focusedSummoning": { "passed": 324, "failed": 0 },
-    "focusedMasterFeatures": { "passed": 412, "failed": 0 },
-    "persistenceRequests": { "roundTrips": 9, "historicalDefaults": 3, "rejected": 84 },
-    "actualLauncherWhatIf": { "valid": 21, "rejected": 17, "runtimeMutation": false },
+    "focusedSummoning": {
+      "passed": 324,
+      "failed": 0
+    },
+    "focusedMasterFeatures": {
+      "passed": 412,
+      "failed": 0
+    },
+    "persistenceRequests": {
+      "roundTrips": 9,
+      "historicalDefaults": 3,
+      "rejected": 84
+    },
+    "actualLauncherWhatIf": {
+      "valid": 21,
+      "rejected": 17,
+      "runtimeMutation": false
+    },
     "identityCorruptionFixtures": 4
   },
-  "exactIntegrationSourceGate": "NOT RUN",
-  "closureGate": "NOT RUN",
+  "exactIntegrationSourceGate": {
+    "candidate": "1f4a25c8445bfb48a3c14ed01e255cf51a8b76c9",
+    "status": "PASS",
+    "passed": 2462,
+    "failed": 0,
+    "registered": 2462,
+    "logSha256": "d3a84b5cead74a85d4b85244774cbaa123c17f1b5415f2638e602ddd53bd4ed1",
+    "sourceFingerprint": "04ec73efcd4ac134e4c643ca04b13c282e18ba189012909a2ac8c320499b89cf",
+    "zipSha256": "ad8614bf7b4b7986f5024c18c6ade65453e7f765606f68f367a70c33a05b29a0",
+    "dllSha256": "41d89486b1b699c35d366c0379b2a3c5a35b940ce032c12860127f1b7fb52384",
+    "dllMvid": "30bc049a-e114-4f65-b8bf-14952daa3f99",
+    "members": 325
+  },
+  "closureGate": {
+    "status": "FAIL_OBSERVER_CONTRACT",
+    "candidate": "1f4a25c8445bfb48a3c14ed01e255cf51a8b76c9",
+    "smoke": {
+      "passed": 11,
+      "failed": 0,
+      "resultSha256": "740192d4846a2ef9ace8896f6a769c6d1076fb12201a485246f3b4f6d05a35cb"
+    },
+    "inventory": {
+      "passed": 48,
+      "failed": 2,
+      "resultSha256": "0b8fe5bace8a6cb6288459a7b550586c7bcc239ef575a76d56b2adf27450eb75",
+      "failureNames": [
+        "expanded-summoning-salamander",
+        "expanded-summoning-prohibited-references"
+      ]
+    },
+    "classification": "FIXTURE: legacy Salamander carrier contract and 17 exact legitimate manifest-owned references; no demonstrated product defect",
+    "laterGates": "NOT RUN",
+    "saveWrites": 0,
+    "restoration": "VERIFIED"
+  },
   "compatibilityGate": "NOT RUN",
   "masterRegressionGate": "NOT RUN",
   "releaseAuthorizedAfterAllGates": true,
-  "intendedPublicRelease": { "tag": "v0.0.143", "draft": false, "prerelease": false, "latest": true },
-  "sourceOwner": { "session": "55743a42-4481-4922-8fe8-a9bd24af8916", "keeperPid": 38820, "keeperStartedUtc": "2026-10-08T01:12:17.8225167Z" },
+  "intendedPublicRelease": {
+    "tag": "v0.0.143",
+    "draft": false,
+    "prerelease": false,
+    "latest": true
+  },
+  "sourceOwner": {
+    "session": "55743a42-4481-4922-8fe8-a9bd24af8916",
+    "keeperPid": 38820,
+    "keeperStartedUtc": "2026-10-08T01:12:17.8225167Z"
+  },
   "releasePublished": false,
   "sprint18Started": false,
   "permanentDeployment": false,
-  "integrationRuntimeStarted": false,
+  "integrationRuntimeStarted": true,
   "integrationSaveWrites": 0,
-  "integrationDeployment": false,
+  "integrationDeployment": true,
   "lastVerifiedRestoration": {
-    "snapshot": "20261007T2258344605477Z",
+    "snapshot": "20261008T0129158990545Z",
     "files": 136,
     "version": "0.0.117",
     "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
-    "baselineForced": false
+    "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+    "baselineForced": false,
+    "noKingmakerProcess": true,
+    "runtimeLeaseReleased": true,
+    "stagingPresent": false
   },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "One exact full source/build/package gate on this resumed committed candidate,then same-artifact guarded closure,five-profile compatibility and v142 coexistence/native-owned trait persistence. Ready/merge/tag/publish normal Latest v0.0.143 only after every required gate PASS. Do not redo focused source checks solely due to this interruption."
+  "next": "Commit/push observer-only release candidate; one exact full source/build/package gate, then complete affected closure/five profiles/master coexistence/native-owned trait save on the same immutable artifact. No merge/release until all required gates PASS. STOP after v0.0.143; no Sprint18.",
+  "integrationPr": 29,
+  "observationCorrection": {
+    "used": 1,
+    "maximum": 1,
+    "productCorrectionsUsed": 0,
+    "expectedRegisteredTests": 2465,
+    "focusedSummoning": {
+      "passed": 327,
+      "failed": 0
+    },
+    "scope": "Inventory observation only; strict GUID/name/carrier authority and qualified current Salamander live carriers. Canonical preflight duplicate-list/crowd active-version fixtures repaired without weaker assertions.",
+    "productionChanged": false,
+    "qualification": "NOT RUN ON CORRECTED COMMITTED HEAD"
+  }
 }

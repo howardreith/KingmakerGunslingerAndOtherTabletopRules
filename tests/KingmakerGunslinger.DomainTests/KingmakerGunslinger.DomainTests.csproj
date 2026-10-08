@@ -1106,6 +1106,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="ExpandedSummoningRosterPersistenceTests.cs" />
+    <Compile Include="ExpandedSummoningInventoryObservationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ExpandedSummoningInventoryObservationPolicy.cs"><Link>RuntimeTesting\ExpandedSummoningInventoryObservationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ExpandedSummoningRosterPersistencePolicy.cs"><Link>RuntimeTesting\ExpandedSummoningRosterPersistencePolicy.cs</Link></Compile>
   </ItemGroup>
   <ItemGroup>
