@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — release143 integration; closure NOT QUALIFIED
+## CURRENT STATE, 2026-10-08 — release143 PUSH POLICY BLOCKER; NOT QUALIFIED
 
 Latest owner checkpoint-release mission governs: merge/tag/real Latest v0.0.143
 ONLY after all integration, closure, compatibility and v142 regression gates PASS.
@@ -10,6 +10,10 @@ Active branch: codex/release-0.0.143-expanded-summoning-phase2b-checkpoint.
 Normal integration from master4ba8d4aca087391144abf401f526189f59b26535
 imports qualified Phase2B8592b1e680a8b3c92b43d353b47bf7ff5f52c664.
 Common ancestor97f0a966; normal two-parent integration candidate, NOT QUALIFIED.
+Exact integration candidate06aac4b7fae3abab18c900df5cfd351d6c819a37, parents
+4ba8d4aca and8592b1e6. Clean source, committed; UNPUSHED because the required
+policy wrapper rejects the owner-named release branch as non-allowlisted.
+No override exists; policy has not been changed or bypassed.
 Every conflict: planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md.
 Master2660-entry prefix exact;262 missing imported entries append=>2922/2920 active.
 All v142 Elemental traits/FCB/content retained;325 package members expected.
@@ -25,6 +29,8 @@ deterministic rider adaptation unchanged. HumanReview NOT_PERFORMED_NONBLOCKING.
 Sole release source owner session0d8bff47-ef1f-42f1-9473-609f9b6d9cdf:
 owner29828/start16:37:01.6154316Z;keeper34308/start23:12:27.5262954Z.
 Fresh exclusive release143 receipt/lock; prior Phase2B keeper29980 released.
+Release143 keeper is explicitly released at this blocked handoff; receipt/history
+and permanent local safety refs/recovery bundle remain available.
 DATA PR27 archived/ZERO PORTS; all safety refs/worktrees/failed evidence preserved.
 
 Last exact restored live snapshot20261007T2258344605477Z:
@@ -33,10 +39,16 @@ ZERO writes,no game/staging; runtime lease Completed/released. Actual pre-run
 baseline must be freshly snapshotted UNDER lease, not forced to this historic state.
 Only native guarded Working-save workflow; protected baseline never loaded/written.
 
-Next: full source/build/package gate ONCE on this clean committed candidate,
+Owner action: add codex/release-0.0.143-expanded-summoning-phase2b-checkpoint
+to AllowedBranches in C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1.
+Then verify no owner/game/runtime lock, reacquire source ownership, push through
+the unchanged policy command, open the draft integration PR against master, and
+run the full source/build/package gate ONCE on this clean committed candidate,
 then same-artifact closure ON/OFF persistence/profile5/v142 coexistence and the
 existing native-owned trait-save protocol. No product change by the driver guards.
 Integration/runtime/release NOT QUALIFIED; exhaustive closure NOT RUN.
+No integration runtime launch/deployment/save write occurred. Latest public release
+remains v0.0.142; no integration PR, merge, tag, release or Sprint18 began.
 Do not merge PR25/26 directly. Close as superseded only AFTER real v0.0.143 release.
 Permanent future rule: one charter sprint per branch/PR/release from released
 master; new owner mission before next sprint. Sprint18 not started.
