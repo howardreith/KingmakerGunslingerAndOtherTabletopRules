@@ -1,40 +1,41 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 - repaired observer candidate pending qualification
+## CURRENT STATE, 2026-10-08 - readiness diagnosed; one fixture correction pending
 
-Latest v0.0.143 Readiness Observer Repair and Final Release Order resets the
-diagnosis allowance: e2e8682a failed evidence serialization,so no readiness
-diagnosis occurred. That failed run and exact restoration remain preserved.
 Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint;PR29 DRAFT.
-Intake/local/remote95ff2ee1d3703ed0f863525bd943e573e49fd869 verified clean.
+Repaired diagnosis205c98535c83515d07541cd0849e5b77efa8ee79 pushed;
+source2478/2478,strict325-member package,smoke11/11 PASS.
+Prepare117/119 FAIL preserved;ZERO save writes;observer108/108 rows,zero
+errors,finally cleared. Report980cd3c346c9c516447c7ce71a540d98afc6ebea8fb52923ca9a7c4b0343b7b9.
+All108 valid live views,finite dissolve,alive/conscious,CanAct/Move;all appearance
+locks naturally expired atframe4312.47 fail only visual presentation:
+24unfaded/44nonzero dissolve(overlap).21never-zero units native-asleep;
+22visible units settled earlier;native invisibility also present.
+Native IL/MVID audit confirms fog dissolve and appearance lock are different.
+No product defect demonstrated;not all108 were ever visibly intact.
+
+Owner reset diagnosis1/1 used;ONE request-local fixture correction prepared.
+Separate persistence predicate requires current valid view/control/finite
+dissolve/no appearance lock plus each unit's first native-control settlement;
+alive/conscious/non-destroyed at save. Creature visual predicates unchanged.
+No buff removal,camera/fader/renderer forcing,production or asset change.
+Focused9/9 PASS;2480 registered. Next: commit/push single correction candidate;
+full exact source/build/package;smoke+whole-roster ON/OFF prepare/native cleanup/
+fresh absence. Then profile5 and v142 coexistence/native-owned trait-save once.
+No further diagnosis/correction retry. Stop if required remaining gate fails.
+
 Surface:1008 published generated roots+29 native wrappers=1037 visible choices.
-
-Repair: explicit ordinal JObject frame map with primitive integers/JSON null;
-no configured serializer. Per-unit row errors retain key/id/type/message/stage,
-other rows survive,summary separates observer errors,finally clears timelines,
-evidence writes before a mandatory observer-error assertion can fail the save.
-Original snake readiness predicate unchanged. Focused7/7 PASS;2478 registered.
-No production/asset/catalog/visibility/buff/fader/camera change.
-Next: commit/push immutable repair candidate;full source/build/package;guarded
-smoke plus prepare ONLY;exact restoration. One repaired diagnosis and one
-evidence-driven correction candidate authorized;both still unused. Classify
-actual per-unit evidence before correction. No completed creature/menu/root
-reruns. Then affected ON/OFF persistence,profile5,v142 coexistence/native-trait
-save once;release ONLY after all gates PASS. No further Crocodile observer.
-
-Fresh source session333716b3-bbcd-4984-bab1-9f5aa05e0603;owner27624;
-keeper37628/start2026-10-08T20:07:07.9754831Z;exclusive source receipt/lock.
-Prior15128 exited/released and receipts archived. No active game/runtime lock/
-deployment transaction at intake. Snapshot actual live installation UNDER lease.
-Last verified restored snapshot20261008T1759293873173Z:136files/Info0.0.117/tree
+Source owner333716b3-bbcd-4984-bab1-9f5aa05e0603;keeper37628 ACTIVE.
+Diagnosis batch release143-runtime-20261008T2024111882861Z restored exact
+snapshot20261008T2024119794133Z:136files/Info0.0.117/tree
 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Authorized native Working save only;no protected baseline load/write/save surgery.
+Settings/FavoredClass byte-exact;no game/runtime lease/staging;ZERO writes.
+Native Working save only;no protected baseline load/write/manual save surgery.
 
 Retain b8 crocodilians212/snake71,Salamander,inventory50/menu3/all1008roots+
-29wrappers with original provenance. Every historical failure stays preserved.
+29wrappers with original provenance. Historical failures never overwritten.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-remains active143 only;historical f65FAIL never rewritten/explained/fixed.
-If expiry damage recurs,revoke and STOP. PR25/26 open/unmerged until release.
+remains active143 only;no further damage observer. If expiry damage recurs,STOP.
 Evidence: planning/RELEASE-0.0.143-EVIDENCE.json. Release NOT QUALIFIED.
 After all gates:ready/merge29,real Latestv143,verify assets/close25/26,restore,
 STOP. No Sprint18/Phase2C/permanent deployment or alpha substitute.

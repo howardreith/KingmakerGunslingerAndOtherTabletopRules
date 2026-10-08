@@ -98,6 +98,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["firstTrueFrames"] = RosterReadinessReport.NullableFrameMap(entry.Timeline.FirstTrueIncludingNever),
                         ["firstFrameAllSnakePredicates"] = entry.Timeline.FirstAllSnakeFrame,
                         ["firstFrameAllObservedPredicates"] = entry.Timeline.FirstAllObservedFrame,
+                        ["firstFramePersistenceReady"] = entry.Timeline.FirstPersistenceReadyFrame,
+                        ["persistenceReady"] = entry.Timeline.ReadyForSave,
                         ["finalFrame"] = Time.frameCount, ["viewExists"] = view != null,
                         ["viewDataMatches"] = view != null && ReferenceEquals(view.Data, unit), ["viewIsInGame"] = view != null && view.IsInGame,
                         ["entityFadedIn"] = EntityFadedIn(unit), ["dissolve"] = dissolve.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
@@ -327,13 +329,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 yield return 0;
                 foreach (var entry in _rosterReadiness) ObserveRosterReadiness(entry);
-                if (frame >= 30 && units.All(SnakePersistenceReady)) break;
+                if (frame >= 30 && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave)) break;
             }
             Game.Instance.IsPaused = true;
+            bool ready = _rosterReadiness.Count == units.Length && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave) &&
+                units.All(unit => !unit.Destroyed && !unit.Descriptor.State.IsDead && unit.Descriptor.State.IsConscious);
             FlushAndClearRosterReadiness();
-            bool ready = units.All(SnakePersistenceReady);
             RosterPersistenceCheck("native-appearance", ready,
-                new JObject { ["units"] = units.Length, ["ready"] = ready }, "all owned live views settle native appearance/control without forcing visibility");
+                new JObject { ["units"] = units.Length, ["ready"] = ready },
+                "every owned live view naturally clears native appearance lock and has valid view/control/finite dissolve; current camera/fog/invisibility is not a save prerequisite");
             var keys = units.Select(u => u.Get<UnitPartRelease143RosterReceipt>()?.Key).OrderBy(k => k, StringComparer.Ordinal).ToArray();
             bool exact = keys.SequenceEqual(ExpandedSummoningRosterPersistencePolicy.Keys) && units.All(u => RosterPersistenceOwns(u,caster,blueprints));
             RosterPersistenceCheck("all-identities-context-duration", exact && units.All(u => u.View != null && ReferenceEquals(u.View.Data,u) && u.Commands != null &&
