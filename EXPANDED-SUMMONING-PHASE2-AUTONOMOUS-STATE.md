@@ -6,6 +6,7 @@ Latest v0.0.143 Whole-Roster Readiness Diagnosis and Release Completion Order
 supersedes the prior readiness stop. One read-only diagnosis and one bounded,
 evidence-based correction/requalification cycle; no new Crocodile observer.
 Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint; PR29 DRAFT.
+Surface:1008 published generated roots+29 native wrappers=1037 visible choices.
 Remote/intake444979bbe2d95f35efbe5f2e5620202cdf6661cf; clean, no other owner.
 Prior fb25ad15 source2471/package325PASS and prepare116/118FAIL remain preserved:
 all108 identities/profiles/control ownership pass, aggregate readiness false,
@@ -15,7 +16,9 @@ Diagnostic code is request-local/read-only: one first-true frame per predicate,
 one final state per unit, failed-predicate groups and compact failing-unit list.
 Original snake readiness assertion unchanged; no visibility/buff/condition/fader/
 camera change. Observer cleared in finally. Focused5/5 PASS;2474 tests registered.
-Next: freeze/push diagnostic head;full source/build/package once;guarded smoke+
+0cca5052 source gate2474 tests/1FAIL: current header omitted the unchanged
+catalog equation; restored above. No build/package/runtime ran on that head.
+Next: push metadata-corrected diagnostic head;full source/build/package;guarded smoke+
 whole-roster prepare ONLY;restore actual snapshot exactly. Classify per-unit
 record before the one correction. No cleanup/module-off until prepare can save.
 Retain b8 crocodilians212/smoke11/snake71, Salamander, inventory50/menu3/all1008
