@@ -192,7 +192,7 @@ No product change, assertion waiver, merge, tag or release performed; PR29 draft
 Salamander remains included and independently technically qualified. Sprint18 not
 started. Latest public release remains v0.0.142; no alpha/draft substitute published.
 
-## Final owner-authorized attribution cycle: completed, class D STOP
+## Preserved final attribution cycle: completed, historical class D STOP
 
 Exact observer candidate `b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf`:
 focused14/14 and full unfiltered2469/2469 PASS; clean14-reference Release and
@@ -239,3 +239,31 @@ PR29 draft/unmerged, PR25/26 open evidence, public release still v0.0.142.
 Owner review/release-scope disposition is needed for the unresolved historical
 Sprint16 event; no further cycle or permission to waive the failure is inferred.
 Source ownership is released at handoff. Sprint18/Phase2C were not started.
+
+## Latest owner release-scope disposition, 2026-10-08
+
+OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
+
+Owner accepts residual uncertainty for143 only and considers the current b8
+expiry gate PASS. The historical f65 aggregate0to2 failure remains FAIL and
+unattributed; no claim that it was harmless, explained or fixed. This is not an
+engine limitation or waiver of current no-post-expiry damage. No further observer
+cycle; keep the request-local observer/regression. Revoke and STOP if actual
+post-expiry damage recurs in any remaining gate.
+
+Reuse exact b8 ZIP/DLL/MVID and prior qualified evidence with original provenance.
+No rebuild for reporting-only descendants. The native launcher requires exact
+source commit/fingerprint, so an isolated clean b8 checkout runs remaining gates
+while this canonical release branch owns reporting. Its build receipt is relocated
+only for package/repository paths; original receipt and every other field remain
+unchanged. ZIP hash and325 members are identical. A nested checkout exceeded
+Windows MAX_PATH before any runtime activity; its partial files are preserved,
+and the same b8 qualification branch uses the short `.worktrees/r143-b8` path.
+This environment preparation did not alter source, artifact or any gate result.
+
+Remaining gates: three-creature both-mode commands, whole-roster ON/OFF native
+prepare/cleanup/fresh absence, five authoritative profiles, focused v142
+Elemental/FCB/merchant/content/shared persistence and native-owned trait-save.
+Snapshot actual installation under lease and restore byte-exact after each
+transaction. No completed gate rerun. Merge/release remains conditional on all
+remaining gates; PR29 draft. No Sprint18/Phase2C or permanent deployment.
