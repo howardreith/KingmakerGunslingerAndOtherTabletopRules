@@ -1,7 +1,26 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "BLOCKED_WHOLE_ROSTER_NATIVE_APPEARANCE_AFTER_SINGLE_CORRECTION",
+  "status": "WHOLE_ROSTER_PER_UNIT_DIAGNOSIS_CANDIDATE_PENDING",
+  "wholeRosterReadinessMission": {
+    "authority": "v0.0.143 Whole-Roster Readiness Diagnosis and Release Completion Order",
+    "priorReportingHead": "444979bbe2d95f35efbe5f2e5620202cdf6661cf",
+    "priorFailedCandidate": "fb25ad153124552f06b7d8a9a3b63fd2e4141eb8",
+    "diagnosisRunsAuthorized": 1,
+    "diagnosisRunsUsed": 0,
+    "correctionCandidatesAuthorized": 1,
+    "correctionCandidatesUsed": 0,
+    "scope": "Request-local read-only per-unit first-predicate transitions and final native view/control/buff/condition/renderer state in existing whole-roster persistence fixture. No per-frame log, visibility forcing, buff/condition removal, camera/fader change or production change.",
+    "originalSnakeReadinessPredicateRetainedForDiagnosis": true,
+    "observerClearedInFinally": "REQUIRED_AT_RUNTIME",
+    "focusedPassed": 5,
+    "focusedFailed": 0,
+    "expectedFullTests": 2474,
+    "nextGate": "Commit/push one diagnostic candidate;complete source/build/package once;smoke plus whole-roster prepare ONLY;exact restore. No cleanup/module-off/compatibility until prepare can save.",
+    "furtherCrocodileAttributionCycleAuthorized": false,
+    "sprint18Authorized": false,
+    "historicalFailuresPreserved": true
+  },
   "remainingReleaseGates": {
     "firstBatch": "release143-runtime-20261008T1202456959003Z",
     "candidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
@@ -199,9 +218,9 @@
     "latest": true
   },
   "sourceOwner": {
-    "session": "a33f7890-b391-4b6a-8aaa-7a2499b69127",
-    "keeperPid": 37936,
-    "keeperStartedUtc": "2026-10-08T11:50:31.6951961Z",
+    "session": "5814f9cc-4998-4fbd-93a4-ec68514f7c7b",
+    "keeperPid": 15128,
+    "keeperStartedUtc": "2026-10-08T17:36:42.5475746Z",
     "releaseOnHandoff": true
   },
   "releasePublished": false,
