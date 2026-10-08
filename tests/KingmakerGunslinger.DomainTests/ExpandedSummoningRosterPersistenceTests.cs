@@ -7,6 +7,41 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningRosterPersistenceTests
     {
+        private static System.Collections.Generic.Dictionary<string, bool> ReadySample()
+        { return RosterReadinessTimeline.SnakePredicates.Concat(new[] { "ViewExists", "ViewDataMatches", "ViewIsInGame", "DissolveFinite" }).ToDictionary(p => p, p => true); }
+        internal static void ReadinessFirstTransitionsRemainCompactAndExact()
+        {
+            var trace = new RosterReadinessTimeline(7); var sample = ReadySample(); sample["EntityFadedIn"] = false;
+            trace.Observe(7, sample); sample["EntityFadedIn"] = true; trace.Observe(12, sample);
+            for (int frame = 13; frame < 608; frame++) trace.Observe(frame, sample);
+            Assertions.Equal(7, trace.FirstTrue["CanMove"], "Initial true condition retains its first frame.");
+            Assertions.Equal(12, trace.FirstTrue["EntityFadedIn"], "False-to-true native fader transition.");
+            Assertions.Equal((int?)12, trace.FirstAllSnakeFrame, "Exact first naturally settled frame.");
+            Assertions.Equal(sample.Count, trace.FirstTrue.Count, "600 samples store one frame per predicate, not a frame log.");
+            trace.Clear(); Assertions.Equal(0, trace.FirstTrue.Count, "Request-local observation cleared.");
+            Assertions.Equal((int?)null, trace.FirstAllSnakeFrame, "No cross-request settlement state.");
+        }
+        internal static void ReadinessVisibilityLossDoesNotEraseEarlierSettlementOrWaiveFailure()
+        {
+            var trace = new RosterReadinessTimeline(10); var sample = ReadySample(); trace.Observe(10, sample);
+            sample["EntityFadedIn"] = false; sample["ViewIsInGame"] = false; trace.Observe(30, sample);
+            Assertions.Equal((int?)10, trace.FirstAllSnakeFrame, "Earlier settlement stays visible to diagnosis.");
+            Assertions.True(trace.FailedSnakePredicates().SequenceEqual(new[] { "EntityFadedIn" }), "Original predicate remains failed, not waived.");
+            Assertions.True(trace.FailedObservedPredicates().Contains("ViewIsInGame"), "Invalid view evidence cannot be lost.");
+        }
+        internal static void ReadinessEveryFalsePredicateAndUnknownSampleRemainVisible()
+        {
+            var trace = new RosterReadinessTimeline(null); var sample = ReadySample();
+            foreach (var p in RosterReadinessTimeline.SnakePredicates) sample[p] = false;
+            trace.Observe(15, sample);
+            Assertions.Equal(5, trace.FailedSnakePredicates().Length, "Every native predicate failure retained independently.");
+            Assertions.Equal((int?)null, trace.FirstAllSnakeFrame, "Never-ready state is not invented.");
+            Assertions.Equal((int?)null, trace.FirstTrueIncludingNever["CanMove"], "Never-true predicates have explicit null frames, not missing evidence.");
+            sample.Remove("CanAct"); bool rejected = false;
+            try { trace.Observe(16, sample); } catch (ArgumentException) { rejected = true; }
+            Assertions.True(rejected, "Incomplete samples fail closed.");
+        }
+
         internal static void NativeEvilRowCannotContaminateNextCelestialCast()
         {
             var keys = ExpandedSummoningRosterPersistencePolicy.Keys;
