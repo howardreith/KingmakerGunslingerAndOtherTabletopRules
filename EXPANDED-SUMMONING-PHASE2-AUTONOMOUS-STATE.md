@@ -1,44 +1,50 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 - readiness diagnosed; one fixture correction pending
+## CURRENT STATE, 2026-10-08 - BLOCKED on cleanup resources; readiness resolved
 
 Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint;PR29 DRAFT.
-Repaired diagnosis205c98535c83515d07541cd0849e5b77efa8ee79 pushed;
-source2478/2478,strict325-member package,smoke11/11 PASS.
-Prepare117/119 FAIL preserved;ZERO save writes;observer108/108 rows,zero
-errors,finally cleared. Report980cd3c346c9c516447c7ce71a540d98afc6ebea8fb52923ca9a7c4b0343b7b9.
-All108 valid live views,finite dissolve,alive/conscious,CanAct/Move;all appearance
-locks naturally expired atframe4312.47 fail only visual presentation:
-24unfaded/44nonzero dissolve(overlap).21never-zero units native-asleep;
-22visible units settled earlier;native invisibility also present.
-Native IL/MVID audit confirms fog dissolve and appearance lock are different.
-No product defect demonstrated;not all108 were ever visibly intact.
+Exact final executable f5f812d72ac4214cd4ddefbd5bd34e8791720ba9 PUSHED.
+Full2480/2480,clean14-reference Release,strict325-member package PASS.
+ZIP55a3d16690b8a74cad14257ba5caf5a418602370f7fd809d3dd2ebc31c129778;
+DLL0d2a30b5c7c90f365edfbfc2d4695695d8bf11b1b5177fc470ea1f9be13c066a;
+MVIDc37e6363-5fb6-450b-9921-1c0595a9d253. Reporting-only descendants do not
+replace this exact tested artifact. No production/asset/menu/identity change.
 
-Owner reset diagnosis1/1 used;ONE request-local fixture correction prepared.
-Separate persistence predicate requires current valid view/control/finite
-dissolve/no appearance lock plus each unit's first native-control settlement;
-alive/conscious/non-destroyed at save. Creature visual predicates unchanged.
-No buff removal,camera/fader/renderer forcing,production or asset change.
-Focused9/9 PASS;2480 registered. Next: commit/push single correction candidate;
-full exact source/build/package;smoke+whole-roster ON/OFF prepare/native cleanup/
-fresh absence. Then profile5 and v142 coexistence/native-owned trait-save once.
-No further diagnosis/correction retry. Stop if required remaining gate fails.
+Owner-reset diagnosis205c9853 produced108/108 rows,zero errors,finally cleared.
+All native appearance/control settled;47 visual-only failures were from reusing
+the snake visible-frame predicate for mass persistence. Native fader/dissolve
+audit preserved. ONE fixture correction separates live view/control/finite
+dissolve/no-lock save readiness from simultaneous presentation;visual checks intact.
+Correction batch release143-runtime-20261008T2047099052204Z:
+smoke11/11 PASS;prepare119/119 PASS,ONE native Working save;
+fresh-load cleanup116/118 FAIL. Readiness108/108 and all profiles PASS in BOTH
+prepare and cleanup. All108 units destroyed;6 of95 captured project resources
+remain. Exact failed predicate:whole-roster-persistence-cleanup-native-destruction.
+Resource names/types/owning keys NOT recorded by the aggregate witness;do not
+guess or call this a demonstrated production defect. Cleanup save correctly
+NOT armed(0writes). No fresh absence,moduleOFF,profiles,v142 gates launched.
+
+IMPORTANT: KMG_AUTOMATION_WORKING retains the prepared108 receipt-owned fixture
+units. They were retired in the failed cleanup process only,NOT in its save.
+No manual save surgery/protected baseline load or write. Do not claim clean save.
+One diagnosis/one correction exhausted. STOP;no further launch or retry.
+Smallest new owner scope:bounded cleanup-resource ownership/disposal diagnosis
+and authorized native working-save cleanup,not another readiness/Crocodile cycle.
+
+Exact installation/settings/FavoredClass restored to actual snapshot
+20261008T2047106234079Z:136files/Info0.0.117/tree
+216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Native exits;leaseCompleted/noRecovery;no game/runtime lock/active staging.
+Source session333716b3-bbcd-4984-bab1-9f5aa05e0603 releases keeper37628 after
+reporting push;verify machine-local receipt before takeover.
 
 Surface:1008 published generated roots+29 native wrappers=1037 visible choices.
-Source owner333716b3-bbcd-4984-bab1-9f5aa05e0603;keeper37628 ACTIVE.
-Diagnosis batch release143-runtime-20261008T2024111882861Z restored exact
-snapshot20261008T2024119794133Z:136files/Info0.0.117/tree
-216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Settings/FavoredClass byte-exact;no game/runtime lease/staging;ZERO writes.
-Native Working save only;no protected baseline load/write/manual save surgery.
-
-Retain b8 crocodilians212/snake71,Salamander,inventory50/menu3/all1008roots+
-29wrappers with original provenance. Historical failures never overwritten.
+Preserve b8 crocodilians212/snake71,Salamander,inventory50/menu3/all1008roots+
+29wrappers with original provenance. Every failed result remains failed.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-remains active143 only;no further damage observer. If expiry damage recurs,STOP.
-Evidence: planning/RELEASE-0.0.143-EVIDENCE.json. Release NOT QUALIFIED.
-After all gates:ready/merge29,real Latestv143,verify assets/close25/26,restore,
-STOP. No Sprint18/Phase2C/permanent deployment or alpha substitute.
+unchanged;no new expiry damage reported/no extra damage observer cycle.
+Evidence:planning/RELEASE-0.0.143-EVIDENCE.json. PR29 draft/unmerged;25/26 open.
+NO merge,tag,release,permanent deployment,Sprint18 or Phase2C. Release NOT QUALIFIED.
 
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED

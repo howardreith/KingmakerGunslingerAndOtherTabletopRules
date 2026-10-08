@@ -1,35 +1,56 @@
 # v0.0.143 release integration ledger
 
-Status: BLOCKED_READINESS_DIAGNOSIS_OBSERVER_SERIALIZATION; closure/release NOT QUALIFIED.
+Status: BLOCKED_WHOLE_ROSTER_CLEANUP_RESOURCE_LIFECYCLE; release NOT QUALIFIED.
 
 ## Current qualification boundary, 2026-10-08
 
-Exact diagnostic executable `e2e8682ad9f2f18cb6aa28e4b5de14a5ec3a6492`:
-full domain2474/2474,clean14-reference Release,strict325-member package PASS.
-One owner-authorized read-only per-unit diagnosis only;original readiness predicate
-unchanged. Smoke11/11 PASS;prepare6/8 FAIL because the game's serializer converts
-FirstTrueIncludingNever to an Array and `JObject.FromObject` rejects it. No per-unit
-report exists; failing creature/key/native-readiness predicate remains unidentified.
-This is an observation-fixture failure,not evidence of a production defect. No
-visibility forcing, native appearance-buff deletion, assertion waiver or product
-change. The sole diagnosis is consumed; no correction candidate or second diagnosis
-launched. STOP under the owner's still-unidentified/no-additional-cycle rule.
+Exact executable `f5f812d72ac4214cd4ddefbd5bd34e8791720ba9`:
+full2480/2480,clean14-reference Release,strict325-member package PASS.
+ZIP `55a3d16690b8a74cad14257ba5caf5a418602370f7fd809d3dd2ebc31c129778`;
+DLL `0d2a30b5c7c90f365edfbfc2d4695695d8bf11b1b5177fc470ea1f9be13c066a`;
+MVID `c37e6363-5fb6-450b-9921-1c0595a9d253`.
+Reporting/evidence-only descendants must not replace/rebuild this exact artifact.
 
-ZIP `33fb15ae85b81e50c01b56c6f9de6362362dc6f29128753bf7bbb8c5501c2b6e`;
-DLL `bf714b9564ae5469de0e8170005aaf618304fc859232060dcfa966bcf013c7e6`;
-MVID `299514df-bb74-4252-91a0-1ed7c0e52b8d`. Package/source delta audit preserves
-all325 members except the request-local diagnostic DLL; production/assets/menu/
-identity sources unchanged. Original crocodilians212/snake71/Salamander/inventory50/
-menu3/all1008roots+29wrappers provenance and historical failures remain authoritative.
+Owner reset the prior failed-serialization allowance. Repaired205c9853 produced
+108 complete per-unit rows with zero errors and cleared tracking. All108 native
+appearance locks/control settled;47 visual-only failures reflected simultaneous
+presentation, including fog-of-war and native invisibility. The exact native
+IL/MVID audit is recorded in the evidence JSON. No product defect was inferred.
+One request-local correction introduced a separate persistence predicate retaining
+valid live view/data/control,finite dissolve,no appearance lock and per-unit first
+settlement;alive/conscious/non-destroyed at save. No rendering/fader/camera/buff
+forcing or production change;original creature-specific visual checks preserved.
+All324 non-DLL package members remain byte-identical to accepted b8.
 
-Batch `release143-runtime-20261008T1759280994725Z` fully restored actual snapshot
-`20261008T1759293873173Z`:136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;
-settings/FavoredClass byte-exact;ZERO writes,no protected baseline load/write or
-save surgery;native exits,no game/runtime lease/staging. Source session5814f9cc
-keeper15128 releases at handoff. PR29 draft/unmerged;PR25/26 unchanged;no release.
-Historical Crocodile risk acceptance remains active;no new expiry event reported,
-no additional damage observer. No Sprint18/Phase2C. New authority would be required
-to repair the observer and obtain the missing per-unit readiness evidence.
+Batch `release143-runtime-20261008T2047099052204Z`:
+smoke11/11 PASS;prepare119/119 PASS with one authorized native Working save;
+fresh-load cleanup116/118 FAIL. Readiness108/108,profiles/identities and observer
+clearance PASS both before and after load. All108 units were destroyed, but
+6 of95 captured project resources survived. Exact failed gate:
+`whole-roster-persistence-cleanup-native-destruction`.
+Its aggregate witness does not name the resources or owning units; ownership
+versus disposal defect remains unresolved. No guessed attribution or waiver.
+Cleanup correctly refused its native save;the second failure is that missing write.
+
+IMPORTANT: Working save retains108 receipt-owned prepared fixture units.
+Cleanup removed them only in its failed disposable process,not in the saved state.
+No fresh absence,moduleOFF,five-profile or v142 coexistence/native-trait-save
+gates were launched. No manual save modification or protected baseline load/write.
+One repaired diagnosis and one correction are exhausted;STOP under the order.
+Smallest new owner scope:bounded cleanup-resource ownership/disposal diagnosis
+and authorized native working-save cleanup. No additional readiness/Crocodile cycle.
+
+Exact snapshot `20261008T2047106234079Z` restored:136files/Info0.0.117/tree
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+settings/FavoredClass byte-exact;native exits;leaseCompleted/noRecovery;no game/
+runtime lock/active staging. Source keeper37628 releases after reporting push.
+PR29 draft/unmerged;25/26 remain open;no merge/tag/release/permanent deployment.
+
+Preserve original crocodilians212/snake71/Salamander/inventory50/menu3/all1008
+roots+29wrappers provenance and every failed attempt,including e2 serialization.
+Historical Crocodile risk acceptance remains active,not explained or fixed;
+no new expiry damage reported and no extra damage observer. No Sprint18/Phase2C.
+The current section supersedes the preserved historical boundaries below.
 
 ## Exact ancestry and authority
 
@@ -317,7 +338,7 @@ New immutable candidate needs the complete source/build/package gate once and
 affected persistence gates. Reuse snake71 and previous qualified evidence only
 after verifying the narrow source delta and every non-DLL package member.
 
-## Current release stop after the single correction, 2026-10-08
+## Preserved earlier release stop after the alignment correction, 2026-10-08
 
 118b8eb7's prelaunch repository wrapper rejected the stale active test count;
 no complete domain suite, build/package or runtime ran at that head. Normal

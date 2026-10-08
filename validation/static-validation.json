@@ -2119,7 +2119,7 @@
     "candidateOnly": true,
     "sprint18Started": false,
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
-    "closureStatus": "NOT QUALIFIED: repaired205c9853 observer produced108 complete rows with zero errors;all native locks/control settled. Original simultaneous visual predicate fails47units. Single request-local persistence-readiness correction prepared;production and creature-specific visual checks unchanged;exact full gate and ON/OFF persistence pending.",
+    "closureStatus": "BLOCKED: exactf5f812d7 source2480/package325 PASS;smoke11/prepare119 PASS;cleanup116/118 FAIL:108 units destroyed but6/95 captured resources survive;resource identities unrecorded. Readiness108/108 PASS before and after load. One prepare save,zero cleanup saves;Working retains108fixture units. Exact install/settings restored;no further cycle under owner order.",
     "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md"
   },
   "expandedSummoningPhase2Development": {
