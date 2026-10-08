@@ -44,6 +44,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.release143-readiness-json-ambient-isolation", ExpandedSummoningRosterPersistenceTests.ReadinessFrameMapIgnoresAmbientGameSerializer),
             Case("expanded-summoning.release143-readiness-json-row-error", ExpandedSummoningRosterPersistenceTests.ReadinessReportPreservesRowsAfterFormattingFailure),
             Case("expanded-summoning.release143-readiness-json-clear-error", ExpandedSummoningRosterPersistenceTests.ReadinessReportNeverClaimsFailedClearSucceeded),
+            Case("expanded-summoning.release143-readiness-persistence-visibility", ExpandedSummoningRosterPersistenceTests.PersistenceReadinessSeparatesNativeControlFromCurrentVisibility),
+            Case("expanded-summoning.release143-readiness-persistence-control", ExpandedSummoningRosterPersistenceTests.PersistenceReadinessRequiresCurrentControlAndClearsHistory),
             Case("trait-save.AttachedAreaWithoutGlobalEntry", ElementalCharacterTraitSaveTests.AttachedAreaWithoutGlobalEntry),
             Case("trait-save.MirroredAreaDeduplicated", ElementalCharacterTraitSaveTests.MirroredAreaDeduplicated),
             Case("trait-save.DuplicateAttachedAreasDetected", ElementalCharacterTraitSaveTests.DuplicateAttachedAreasDetected),
