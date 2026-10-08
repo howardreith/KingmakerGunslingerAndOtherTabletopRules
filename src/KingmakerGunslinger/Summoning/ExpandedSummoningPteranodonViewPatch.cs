@@ -661,6 +661,46 @@ namespace KingmakerGunslinger.Summoning
             if (controller != null) ReinitMaterials(controller);
         }
 
+        internal static UnityEngine.Object[] CaptureOriginalFlightOwnedResources(UnitEntityView view)
+        {
+            Attachment attachment;
+            if (view == null || !Applied.TryGetValue(view, out attachment) ||
+                !OriginalFlightCleanupPolicy.Handles(attachment.VisualKey)) return new UnityEngine.Object[0];
+            // The exact swapped renderer belongs to this attachment. Its native
+            // controller instance is private too; original donor references are
+            // excluded by reference, never by a KMG_ prefix or a global search.
+            var installed = attachment.Donor != null && attachment.Mesh != null &&
+                ReferenceEquals(attachment.Donor.sharedMesh, attachment.Mesh)
+                    ? attachment.Donor.sharedMaterials : new Material[0];
+            return OriginalFlightCleanupPolicy.PrivateMaterials(attachment.Material,
+                installed, attachment.OriginalMaterials).Cast<UnityEngine.Object>()
+                .Concat(new UnityEngine.Object[] { attachment.Mesh }).Where(o => o != null).ToArray();
+        }
+
+        internal static void ReleaseOriginalFlightView(UnitEntityView view)
+        {
+            Attachment attachment;
+            if (view == null || !Applied.TryGetValue(view, out attachment) ||
+                !OriginalFlightCleanupPolicy.Handles(attachment.VisualKey)) return;
+            var owned = CaptureOriginalFlightOwnedResources(view);
+            try
+            {
+                if (attachment.EagleLunge != null)
+                {
+                    attachment.EagleLunge.enabled = false; // native pose restored by OnDisable
+                    UnityEngine.Object.DestroyImmediate(attachment.EagleLunge);
+                    attachment.EagleLunge = null;
+                }
+                Revert(attachment);
+            }
+            finally
+            {
+                foreach (var value in owned) if (value != null) UnityEngine.Object.DestroyImmediate(value);
+                attachment.Material = null; attachment.Mesh = null;
+                Applied.Remove(view);
+            }
+        }
+
         /// <summary>Release Phase 2 creatures' per-view clones on death.
         /// The cached source mesh/painting and the native donor stay owned by
         /// their existing systems; no accepted Phase 1 view is changed here.</summary>
@@ -807,7 +847,11 @@ namespace KingmakerGunslinger.Summoning
     {
         private static void Prefix(UnitEntityView __instance)
         {
-            try { ExpandedSummoningPteranodonViewPatch.ReleasePhase2View(__instance); }
+            try
+            {
+                ExpandedSummoningPteranodonViewPatch.ReleaseOriginalFlightView(__instance);
+                ExpandedSummoningPteranodonViewPatch.ReleasePhase2View(__instance);
+            }
             catch (Exception)
             {
                 // Resource release must never interrupt native view teardown.

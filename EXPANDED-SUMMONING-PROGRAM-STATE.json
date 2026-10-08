@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
   "phase2Mission": {
-    "authority": "v0.0.143 Readiness Observer Repair and Final Release Order: repaired per-unit diagnosis completed;single fixture correction qualified readiness but failed mandatory cleanup resources. Both allowances consumed;STOP,no further runtime/production change without new owner scope. Prior qualification and historical Crocodile risk preserved;noSprint18/Phase2C.",
+    "authority": "v0.0.143 Final Resource-Ownership Cleanup and Release Order: one bounded resource diagnosis completed; one narrow evidence-driven original-flight teardown correction pending exact qualification. Readiness closed; prior qualification and historical Crocodile risk preserved. Release only after all remaining gates; no Sprint18/Phase2C.",
     "authorizedSprints": [
       9,
       10,
@@ -30,23 +30,24 @@
       17
     ],
     "currentSprint": null,
-    "currentSubItem": "BLOCKED_CLEANUP_RESOURCE_LIFECYCLE: exactf5f812d7 source2480/package325 PASS;smoke11/prepare119 PASS with1Working save;cleanup116/118 FAIL:108units destroyed,6/95 captured resources remain. Readiness108/108 and profiles PASS before/after load. Resource names/owners absent from existing aggregate witness;no product defect inferred. ZERO cleanup writes;Working retains108prepared fixture units;no fresh absence/OFF/profiles/v142. Exact installation/settings restored;no game/lease/staging;one diagnosis/one correction exhausted.",
+    "currentSubItem": "RESOURCE_OWNER_CORRECTION_PENDING_EXACT_QUALIFICATION: a21f9aa1 diagnosis source2484/package325 PASS, smoke11 PASS, cleanup118/119 FAIL with zero writes. All108 units destroyed; nine exact private resources survive: mesh, created material and installed material for Eagle, Dire Bat and Pteranodon. Six match historical flat witness; three additional created materials exposed by ownership records. Other private resources gone; 198 borrowed and22 immutable caches count-stable. One narrow original-flight teardown correction plus strict ownership/repeated-lifecycle fixture is source-tested, not runtime-qualified. Working retains exact108 prepared units. Readiness closed; no extra diagnosis; exact restoration verified.",
     "currentBranch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
     "releaseCheckpoint": {
       "version": "0.0.143",
       "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
       "qualifiedPhase2BImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
       "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md",
-      "status": "BLOCKED_WHOLE_ROSTER_CLEANUP_RESOURCE_LIFECYCLE",
-      "sourceOwnerSession": "333716b3-bbcd-4984-bab1-9f5aa05e0603",
+      "status": "RESOURCE_OWNER_CORRECTION_PENDING_EXACT_QUALIFICATION",
+      "sourceOwnerSession": "1a065852-cdf2-46c2-a472-7b1229e813b6",
       "sourceOwnershipHeldAtReportingCommit": true,
       "sourceOwnershipReleaseRequiredBeforeFinalResponse": true,
-      "executableCandidate": "f5f812d72ac4214cd4ddefbd5bd34e8791720ba9",
+      "executableCandidate": "a21f9aa1b1db4071adafc1fdd76cef474cd62524",
       "evidence": "planning/RELEASE-0.0.143-EVIDENCE.json",
       "salamanderIncluded": true,
       "closureRun": true,
       "closurePassed": false,
-      "nextOwnerDecision": "A separate bounded mission for identifying six surviving captured resources and their ownership/disposal,plus safe authorized native Working-save cleanup. Current allowance exhausted;no further readiness/Crocodile diagnosis or release under this order.",
+      "nextOwnerDecision": null,
+      "nextAction": "Freeze and push the single original-flight teardown correction; exact source/build/package gate; smoke, existing prepared108 cleanup, fresh absence, affected three-flight repeated lifecycle, module-off protocol; then remaining compatibility/coexistence gates. No initial prepare rerun and no further resource diagnosis.",
       "ownerReleaseRiskAcceptance": "HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE",
       "finalAttributionCycleAuthorized": true,
       "finalAttributionCycleComplete": true,
@@ -1473,7 +1474,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Sprint17 technically COMPLETE;include Salamander after exact db1da016 smoke11/profile-view73 PASS with no product change. Create release143 integration branch from accepted master4ba8d4a, preserve v142 features, then one exhaustive closure/regression/release gate. Release NOT QUALIFIED;Sprint18 not started.",
+  "nextConcreteAction": "Qualify the single evidence-driven original-flight teardown correction on an exact committed artifact, starting with cleanup of the existing108 prepared Working units; finish ON/OFF persistence, affected flight lifecycle, compatibility and v142 coexistence. Merge PR29 and publish real Latest v0.0.143 only if every mandatory gate passes; otherwise stop with exact evidence. No Sprint18/Phase2C.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

@@ -1,56 +1,44 @@
 # v0.0.143 release integration ledger
 
-Status: BLOCKED_WHOLE_ROSTER_CLEANUP_RESOURCE_LIFECYCLE; release NOT QUALIFIED.
+Status: RESOURCE_OWNER_CORRECTION_PENDING_EXACT_QUALIFICATION;release NOT QUALIFIED.
 
 ## Current qualification boundary, 2026-10-08
 
-Exact executable `f5f812d72ac4214cd4ddefbd5bd34e8791720ba9`:
-full2480/2480,clean14-reference Release,strict325-member package PASS.
-ZIP `55a3d16690b8a74cad14257ba5caf5a418602370f7fd809d3dd2ebc31c129778`;
-DLL `0d2a30b5c7c90f365edfbfc2d4695695d8bf11b1b5177fc470ea1f9be13c066a`;
-MVID `c37e6363-5fb6-450b-9921-1c0595a9d253`.
-Reporting/evidence-only descendants must not replace/rebuild this exact artifact.
+Owner's single resource diagnosis completed on exact a21f9aa1b1db4071adafc1fdd76cef474cd62524:
+full2484/2484,14references,strict325-member ZIP9d0e59ee91a3f2dc6eb973be34deea28e65266bac0f9591d0bc4a9146431d98a;
+smoke11/11 PASS;cleanup118/119 FAIL,zero writes. All108 units destroyed;
+resource report7535875153585d012891e1fdfcae8111190d5e4be45ace2731f9d32fac1c4fca
+has357 unique objects/zero observer errors. Readiness remains CLOSED.
 
-Owner reset the prior failed-serialization allowance. Repaired205c9853 produced
-108 complete per-unit rows with zero errors and cleared tracking. All108 native
-appearance locks/control settled;47 visual-only failures reflected simultaneous
-presentation, including fog-of-war and native invisibility. The exact native
-IL/MVID audit is recorded in the evidence JSON. No product defect was inferred.
-One request-local correction introduced a separate persistence predicate retaining
-valid live view/data/control,finite dissolve,no appearance lock and per-unit first
-settlement;alive/conscious/non-destroyed at save. No rendering/fader/camera/buff
-forcing or production change;original creature-specific visual checks preserved.
-All324 non-DLL package members remain byte-identical to accepted b8.
+Nine exact private resources survive60 Unityframes after native retirement:
+Eagle/DireBat/Pteranodon each retain their created mesh/material and controller
+material instance. Six were in the old flat witness;three original materials
+were missed by that scan. Existing Phase2 teardown excludes these three keys.
+198 known borrowed native objects and22 exact immutable albedos remain stable.
+This is classificationC: demonstrated owner defect,not a cache exemption.
 
-Batch `release143-runtime-20261008T2047099052204Z`:
-smoke11/11 PASS;prepare119/119 PASS with one authorized native Working save;
-fresh-load cleanup116/118 FAIL. Readiness108/108,profiles/identities and observer
-clearance PASS both before and after load. All108 units were destroyed, but
-6 of95 captured project resources survived. Exact failed gate:
-`whole-roster-persistence-cleanup-native-destruction`.
-Its aggregate witness does not name the resources or owning units; ownership
-versus disposal defect remains unresolved. No guessed attribution or waiver.
-Cleanup correctly refused its native save;the second failure is that missing write.
+One bounded correction adds only these three keys' exact-reference teardown,
+restores donor references,disposes private objects and removes owner record
+idempotently. Existing Phase2 cleanup and gameplay remain unchanged. Fixture
+asserts ALL private receipts null,known borrowed/cache identity+count stability;
+existing creature review gains focused repeated native lifecycles for these keys.
+Focused6/incremental compile PASS;full exact correction/runtime NOT YET RUN.
+No additional resource diagnosis,Crocodile attribution or readiness investigation.
 
-IMPORTANT: Working save retains108 receipt-owned prepared fixture units.
-Cleanup removed them only in its failed disposable process,not in the saved state.
-No fresh absence,moduleOFF,five-profile or v142 coexistence/native-trait-save
-gates were launched. No manual save modification or protected baseline load/write.
-One repaired diagnosis and one correction are exhausted;STOP under the order.
-Smallest new owner scope:bounded cleanup-resource ownership/disposal diagnosis
-and authorized native working-save cleanup. No additional readiness/Crocodile cycle.
+Prepared Working save still contains108 receipt-owned units;diagnosis wrote zero.
+Next cleanup uses that exact fixture,then native clean save/fresh absence.
+Only the OFF108 row needs a fresh native seed after ON absence empties receipts;
+no repeated ONprepare gate and no manual save copying/editing/parsing.
+Then complete remaining profiles/coexistence/native-owned trait-save once.
 
-Exact snapshot `20261008T2047106234079Z` restored:136files/Info0.0.117/tree
-`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
-settings/FavoredClass byte-exact;native exits;leaseCompleted/noRecovery;no game/
-runtime lock/active staging. Source keeper37628 releases after reporting push.
-PR29 draft/unmerged;25/26 remain open;no merge/tag/release/permanent deployment.
-
-Preserve original crocodilians212/snake71/Salamander/inventory50/menu3/all1008
-roots+29wrappers provenance and every failed attempt,including e2 serialization.
-Historical Crocodile risk acceptance remains active,not explained or fixed;
-no new expiry damage reported and no extra damage observer. No Sprint18/Phase2C.
-The current section supersedes the preserved historical boundaries below.
+Batch release143-runtime-20261008T2304555739206Z restored actual snapshot
+20261008T2304563605018Z exactly:136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Settings/FavoredClass byte-exact;native process exits;leaseCompleted,no game/staging.
+Source session1a065852-cdf2-46c2-a472-7b1229e813b6/keeper38584 active until handoff.
+PR29 draft;25/26 open. All prior failed artifacts/provenance remain preserved.
+Unaffected crocodilians212/snake71/Salamander/menu/root proofs reused;owner
+historical Crocodile release-risk acceptance unchanged. No Sprint18/Phase2C.
+This section supersedes historical stopping language,not historical outcomes.
 
 ## Exact ancestry and authority
 

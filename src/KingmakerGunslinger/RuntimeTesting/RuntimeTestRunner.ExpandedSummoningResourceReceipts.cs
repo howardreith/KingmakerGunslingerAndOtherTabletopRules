@@ -18,6 +18,57 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private IEnumerator<int> _originalFlightLifecycleSteps;
+        // Affected-owner regression within the EXISTING creature review only.
+        // Normal review already proves movement/attack/intact view; two further
+        // native create/destroy cycles prove early-appearance and repeat cleanup.
+        private IEnumerable<int> RepeatOriginalFlightLifecycle(SummonVariantSpec variant)
+        {
+            string key = variant.Creature.Key;
+            for (int cycle = 1; cycle <= 2; cycle++)
+            {
+                UnitEntityData unit = null;
+                try
+                {
+                    unit = SpawnExpandedSummoningVariants(_creatureReviewBlueprints, _creatureReviewCaster,
+                        new[] { variant }, "exact original-flight repeated lifecycle").Single();
+                    yield return 0; yield return 0;
+                    var view = unit.View;
+                    var owned = ExpandedSummoningPteranodonViewPatch.CaptureOriginalFlightOwnedResources(view);
+                    var attachment = ResourceOwnership(typeof(ExpandedSummoningPteranodonViewPatch), "Applied", view);
+                    var borrowedMesh = ResourceField(attachment, "OriginalMesh") as Mesh;
+                    var borrowedMaterials = (Material[])ResourceField(attachment, "OriginalMaterials");
+                    var caches = RosterImmutableCaches();
+                    var liveCaches = Resources.FindObjectsOfTypeAll<Texture2D>().Cast<UObject>()
+                        .Concat(Resources.FindObjectsOfTypeAll<Mesh>()).Where(o => o != null && caches.ContainsKey(o.GetInstanceID())).ToArray();
+                    bool exact = owned.OfType<Mesh>().Count() == 1 && owned.OfType<Material>().Count() == 2 &&
+                        owned.All(o => !caches.ContainsKey(o.GetInstanceID())) && borrowedMesh != null &&
+                        owned.OfType<Mesh>().Single().vertices.All(v => FiniteResourceVector(v));
+                    // Never call the release helper to make this pass: observe
+                    // the same native OnDestroy hook used in ordinary gameplay.
+                    CleanupExpandedSummoningUnit(unit);
+                    for (int frame = 0; frame < 60; frame++)
+                    {
+                        Game.Instance.EntityDestroyer.Tick(); yield return 0;
+                        if (unit.Destroyed && unit.View == null && unit.HoldingState == null && owned.All(o => o == null)) break;
+                    }
+                    bool released = unit.Destroyed && unit.View == null && unit.HoldingState == null && owned.All(o => o == null);
+                    bool borrowed = borrowedMesh != null && borrowedMaterials.All(m => m != null) && liveCaches.All(o => o != null);
+                    var beforeRepeat = liveCaches.Select(o => o == null ? 0 : o.GetInstanceID()).ToArray();
+                    ExpandedSummoningPteranodonViewPatch.ReleaseOriginalFlightView(view); // exact already-destroyed owner: idempotent no-op
+                    bool idempotent = beforeRepeat.SequenceEqual(liveCaches.Select(o => o == null ? 0 : o.GetInstanceID()));
+                    _creatureReviewAssertions.Add(Assertion("expanded-summoning-" + key + "-repeated-native-resource-lifecycle-" + cycle,
+                        "exact private mesh+two materials become null;donor/cache references survive;repeat teardown is harmless",
+                        "captured=" + owned.Length + ";exact=" + exact + ";released=" + released + ";borrowed=" + borrowed + ";idempotent=" + idempotent,
+                        exact && released && borrowed && idempotent, "two new native lifecycle cycles on this exact production owner;no force disposal or cache sweep"));
+                }
+                finally { if (unit != null && !unit.Destroyed) CleanupExpandedSummoningUnit(unit); }
+            }
+        }
+        private static bool FiniteResourceVector(Vector3 value)
+        { return !float.IsNaN(value.x) && !float.IsNaN(value.y) && !float.IsNaN(value.z) &&
+            !float.IsInfinity(value.x) && !float.IsInfinity(value.y) && !float.IsInfinity(value.z); }
+
         private readonly Dictionary<string, int> _rosterResourceBaseline = new Dictionary<string, int>(StringComparer.Ordinal);
         private int? _rosterResourceBaselineFrame;
         private string _rosterResourceBaselineError;
@@ -273,14 +324,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             RosterPersistenceCheck(stage + "-resource-observer", report.Errors.Count == 0 && (bool)report.Result["clearedInFinally"],
                 new JObject { ["errors"] = report.Errors.Count, ["cleared"] = report.Result["clearedInFinally"].DeepClone() },
                 "complete exact resource receipts, errors isolated, request-local references cleared in finally");
-            // Diagnosis retains the original strict witness, now fully named.
-            // Do not silently bless any survivor before owner-evidence review.
-            bool gone = allGone && report.Rows.Where(r => (bool)r["legacyWitness"]).All(r => !(bool)r["aliveAfter"]);
+            // Evidence-driven correction: ALL authoritative private resources,
+            // not merely the historical95 scanned objects, must be Unity-null.
+            // Exact known caches/borrowed assets must survive with stable counts.
+            bool gone = allGone && report.Errors.Count == 0 && report.Rows.Cast<JObject>().All(RosterResourceReport.CleanupSatisfied);
             RosterPersistenceCheck(stage + "-native-destruction", gone,
                 new JObject { ["units"] = units.Length, ["remainingUnits"] = units.Count(u => !u.Destroyed || u.View != null || u.HoldingState != null),
                     ["capturedProjectResources"] = report.Result["legacyCapturedObjects"]?.DeepClone(),
                     ["remainingResources"] = report.Result["legacySurvivors"]?.DeepClone() },
-                "native receipt-owned retirement;historical strict resource-null assertion retained during diagnosis");
+                "native receipt-owned retirement;zero private resources;exact borrowed/cache references alive and count-stable;unknown/conflicting ownership fails closed");
         }
     }
 }

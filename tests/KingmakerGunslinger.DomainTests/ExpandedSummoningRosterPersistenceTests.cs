@@ -56,7 +56,43 @@ namespace KingmakerGunslinger.DomainTests
             report.Finish(() => { throw new InvalidOperationException("clear failed"); });
             Assertions.False((bool)report.Result["clearedInFinally"], "Failed clear is not success.");
             Assertions.Equal("resource-clear", (string)report.Errors[0]["stage"], "Exact observer stage recorded.");
-            Assertions.True(RosterResourceReport.DiagnosisOnly, "Diagnostic candidate preserves prepared108 native-save fixture.");
+            Assertions.False(RosterResourceReport.DiagnosisOnly, "Corrected candidate may arm native cleanup save only after all mandatory ownership assertions pass.");
+        }
+
+        internal static void OriginalFlightCleanupIsNarrowReferenceOwnedAndRepeatable()
+        {
+            foreach (string key in new[] { "eagle", "dire-bat", "pteranodon" })
+                Assertions.True(OriginalFlightCleanupPolicy.Handles(key), "Exact demonstrated flight owner: " + key);
+            foreach (string key in new[] { null, "roc", "crocodile", "giant-wasp", "Eagle", "native:eagle" })
+                Assertions.False(OriginalFlightCleanupPolicy.Handles(key), "No unrelated teardown change: " + key);
+            var donor = new object(); var cache = new object();
+            for (int cycle = 0; cycle < 3; cycle++)
+            {
+                var created = new object(); var driven = new object();
+                var owned = OriginalFlightCleanupPolicy.PrivateMaterials(created,
+                    new[] { driven, donor, cache, driven, created }, new[] { donor, cache });
+                Assertions.True(owned.SequenceEqual(new[] { created, driven }), "Only distinct exact private references selected on every lifecycle.");
+                Assertions.Equal(0, OriginalFlightCleanupPolicy.PrivateMaterials<object>(null,
+                    new[] { donor, cache }, new[] { donor, cache }).Length, "Released/restored repeat cannot dispose donor or cache.");
+            }
+        }
+
+        internal static void ResourceCleanupNeverWaivesPrivateOrUnknownAndPinsCacheCounts()
+        {
+            var row = ResourceRow(1, true, "PRIVATE_VIEW_OWNED", 1);
+            Assertions.False(RosterResourceReport.CleanupSatisfied(row), "Private survivor always fails even if small or same-named as cache.");
+            row["aliveAfter"] = false;
+            Assertions.True(RosterResourceReport.CleanupSatisfied(row), "Exact private null accepted.");
+            row["ownershipClass"] = "UNRESOLVED";
+            Assertions.False(RosterResourceReport.CleanupSatisfied(row), "No unknown ownership waiver.");
+            row["ownershipClass"] = "IMMUTABLE_PROCESS_CACHE"; row["aliveAfter"] = true;
+            row["preLoadGlobalCountSameTypeName"] = 1; row["beforeCleanupGlobalCountSameTypeName"] = 1;
+            row["afterCleanupGlobalCountSameTypeName"] = 1;
+            Assertions.True(RosterResourceReport.CleanupSatisfied(row), "Known immutable cache remains alive and count-stable.");
+            row["afterCleanupGlobalCountSameTypeName"] = 2;
+            Assertions.False(RosterResourceReport.CleanupSatisfied(row), "Cache count growth cannot hide duplicate allocation.");
+            row["afterCleanupGlobalCountSameTypeName"] = 1; row["aliveAfter"] = false;
+            Assertions.False(RosterResourceReport.CleanupSatisfied(row), "Destroyed cache is also a failure.");
         }
 
         internal static void PersistenceReadinessSeparatesNativeControlFromCurrentVisibility()
