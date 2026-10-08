@@ -592,9 +592,9 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             string packager = File.ReadAllText(Path.Combine(root, "tools",
                 "create_deterministic_package.py"));
-            Assertions.True(localBuild.Contains("{ 286 } else { 284 }") &&
+            Assertions.True(localBuild.Contains("{ 293 } else { 291 }") &&
                 packager.Contains("133, 135, 222, 224, 225, 227, 229, 231, 233, 234, 235,") &&
-                packager.Contains("236, 237, 239, 241, 242, 244, 248, 249, 250, 251, 253, 254, 255, 256, 258, 259, 260, 261, 262, 264, 266, 272, 273, 274, 275, 276, 280, 281, 282, 284, 286))"),
+                packager.Contains("236, 237, 239, 241, 242, 244, 248, 249, 250, 251, 253, 254, 255, 256, 258, 259, 260, 261, 262, 264, 266, 272, 273, 274, 275, 276, 280, 281, 282, 284, 286, 291, 293))"),
                 "deterministic package counts preserve released assets and add four original trait exports");
             Assertions.True(package.Contains("create_deterministic_package.py") &&
                 package.Contains("expectedPackageFileCount") &&

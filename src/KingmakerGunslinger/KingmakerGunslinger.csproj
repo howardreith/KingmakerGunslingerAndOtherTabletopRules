@@ -40,6 +40,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Acquisition\CampaignWeaponRegistry.cs" />
+    <Compile Include="Acquisition\CampaignWeaponNativeReference.cs" />
+    <Compile Include="Acquisition\CampaignWeaponSceneObservation.cs" />
+    <Compile Include="Acquisition\CampaignWeaponQualification.cs" />
+    <Compile Include="Acquisition\CampaignWeaponRecoveryPolicy.cs" />
+    <Compile Include="Acquisition\CampaignWeaponRecovery.cs" />
+    <Compile Include="Acquisition\UnitPartCampaignWeaponRecovery.cs" />
+    <Compile Include="Development\DevelopmentUi.WeaponRecovery.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponFindability.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponRecovery.cs" />
+    <Compile Include="RuntimeTesting\WeaponFindabilitySaveContract.cs" />
+    <Compile Include="RuntimeTesting\WeaponFindabilitySavePlan.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponFindabilitySave.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponRoutes.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponFloorRoutes.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityPolicy.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityStatus.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsRuntimeQualification.cs" />
