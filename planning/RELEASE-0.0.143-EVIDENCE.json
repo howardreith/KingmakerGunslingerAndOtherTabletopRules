@@ -15,6 +15,7 @@
     "focusedTestsPassed": 5,
     "focusedTestsFailed": 0,
     "correctedExactCandidate": "PENDING_COMMIT_AND_FULL_SOURCE_GATE",
+    "prelaunchMetadataRejection": { "candidate": "118b8eb7f4c6291d673b2cd7c8ad2c1b8549788d", "gate": "repository wrapper", "reason": "Active checkpoint deterministicTestCount still2469 after adding two tests;corrected to2471", "fullSuiteBuildPackageOrRuntimeRan": false, "failurePreserved": true },
     "remaining": "Corrected whole-roster ON/OFF closed protocols, five-profile matrix, v142 coexistence/native-owned trait save. Reuse original snake71, crocodilians212, smoke11, inventory50/menu3/all1008 roots/29 wrappers only after narrow source/package delta audit. No further observer cycle."
   },
   "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
