@@ -1,26 +1,534 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "READINESS_OBSERVER_REPAIR_CANDIDATE_PENDING",
+  "status": "READINESS_DIAGNOSED_FIXTURE_CORRECTION_CANDIDATE_PENDING",
   "readinessObserverRepairMission": {
     "authority": "v0.0.143 Readiness Observer Repair and Final Release Order",
     "intakeReportingHead": "95ff2ee1d3703ed0f863525bd943e573e49fd869",
     "priorFailedDiagnosticCandidate": "e2e8682ad9f2f18cb6aa28e4b5de14a5ec3a6492",
     "ownerDisposition": "Prior allowance reset because no readiness diagnosis occurred;run failed request-local observer serialization before a per-unit report. Demonstrated test-observer defect,not a product failure or an unresolved readiness result.",
     "diagnosisRunsAuthorized": 1,
-    "diagnosisRunsUsed": 0,
+    "diagnosisRunsUsed": 1,
     "correctionCandidatesAuthorized": 1,
-    "correctionCandidatesUsed": 0,
+    "correctionCandidatesUsed": 1,
     "repair": "Explicit deterministic JObject predicate-to-nullable-frame mapping without configured serialization;top-level report allocated before rows;per-row errors retain key/id/exception/stage;other rows survive;summary excludes failed rows;finally clears tracking and records outcome;evidence written before mandatory observer-error gate can fail the scenario.",
     "originalSnakeReadinessPredicateRetainedForDiagnosis": true,
     "productionChanged": false,
     "focusedPassed": 7,
     "focusedFailed": 0,
     "expectedFullTests": 2478,
-    "nextGate": "Commit/push repair candidate;complete exact source/build/package;smoke and prepare ONLY;exact restoration. Then classify per-unit evidence before at most one correction/requalification candidate.",
+    "nextGate": "Commit/push single correction candidate;complete exact source/build/package;smoke,ON prepare/native cleanup/fresh absence,OFF deserialization/native cleanup/fresh absence. Then five profiles and v142 coexistence/native-owned trait save. No further diagnosis/correction retries.",
     "furtherCrocodileAttributionCycleAuthorized": false,
     "completedQualificationEvidenceReusedWithOriginalProvenance": true,
-    "sprint18Authorized": false
+    "sprint18Authorized": false,
+    "repairedCandidate": "205c98535c83515d07541cd0849e5b77efa8ee79",
+    "repairedSourceGate": {
+      "status": "PASS",
+      "passed": 2478,
+      "failed": 0,
+      "references": 14,
+      "members": 325,
+      "sourceFingerprint": "f59ce0fe529d3318e441a4588e13246676626f74cb039e5e57267aff75714913",
+      "zipSha256": "394ecd0d750254a0019cac9d592197db9378e4ef5f5d6fa0500d9133fdaf841f",
+      "dllSha256": "006534580cc7ec0123816b153a14397f14e260f387dff3d84fd02741c7af2f84",
+      "mvid": "b6fb4694-babc-4612-9a84-e5a7c48e2825",
+      "strictPackage": "PASS",
+      "seconds": 215.7,
+      "logSha256": "f6364db285ebea091af95b6776a852f33cd70768117fc29945fce51fd2fd8348"
+    },
+    "diagnosis": {
+      "status": "COMPLETED;ORIGINAL_PREPARE_FAIL_PRESERVED",
+      "batchId": "release143-runtime-20261008T2024111882861Z",
+      "batchRecordSha256": "33bba5e74c793a27c1bfe818eae6f57a08bc87cc3ddb5d03553e8876e13b41cd",
+      "evidenceId": "20261008T2027408175747Z-working-save-expanded-summoning-prepare",
+      "reportSha256": "980cd3c346c9c516447c7ce71a540d98afc6ebea8fb52923ca9a7c4b0343b7b9",
+      "witnessSha256": "1c200ef6d857d1c238edc6ddb5b14948fbc5f2cb1dab2b1e233995f17a31ac0f",
+      "smokePassed": 11,
+      "preparePassed": 117,
+      "prepareFailed": 2,
+      "nativeWrites": 0,
+      "requestId": "20261008T2027408175747Z-43df05a5f99b46eb90ea72ebf2648547",
+      "requestSha256": "5f55023fcba23fa7bd02b43f0735c80f52fa5c455a2dfb0630044a1bb32540aa",
+      "resultSha256": "6c57b6c5f565a2fcbd98387f3181a1d6843411af9816f9a8094fc7c430f84e2f",
+      "pid": 38112,
+      "startedUtc": "2026-10-08T20:27:41.6971917Z",
+      "units": 108,
+      "successfulRows": 108,
+      "observerErrors": 0,
+      "observerClearedInFinally": true,
+      "allValidLiveViews": true,
+      "allAliveConscious": true,
+      "allDissolveFinite": true,
+      "allNativeAppearanceLocksGoneAndControlRestoredAtFrame": 4312,
+      "summaryByFailedPredicate": {
+        "DissolveSettled": {
+          "count": 44,
+          "keys": [
+            "air-mephit",
+            "bralani-azata",
+            "constrictor-snake",
+            "dust-mephit",
+            "earth-mephit",
+            "elder-earth-elemental",
+            "elephant",
+            "fire-mephit",
+            "ghaele-azata",
+            "giant-frog",
+            "goblin-dog",
+            "greater-earth-elemental",
+            "greater-fire-elemental",
+            "greater-water-elemental",
+            "hell-hound",
+            "huge-earth-elemental",
+            "ice-mephit",
+            "invisible-stalker",
+            "large-earth-elemental",
+            "leopard",
+            "magma-mephit",
+            "medium-earth-elemental",
+            "medium-fire-elemental",
+            "native:0c433dcdefcaaeb4db78b07c3ebf4c94",
+            "native:1618961b217a446459c6a91481065d2c",
+            "native:32a7776fb5bb9fa408b97757c04d4247",
+            "native:590cd3d5e76fdc649a5f97bc984cd3c4",
+            "native:5adafaa653dc4de40b3ac73fa002a2ec",
+            "native:7b7701ffc8f335a47a9ed97516531b71",
+            "native:af8bcff074b93c84b97938e486184222",
+            "native:afe56099ff6046b40a359b7562c0424e",
+            "native:e287515e761bb1a48a61e1bbcb3527b1",
+            "ooze-mephit",
+            "purple-worm",
+            "roc",
+            "salt-mephit",
+            "shadow-mastiff",
+            "shambling-mound",
+            "small-earth-elemental",
+            "steam-mephit",
+            "tiger",
+            "viper",
+            "water-mephit",
+            "wolf"
+          ]
+        },
+        "EntityFadedIn": {
+          "count": 24,
+          "keys": [
+            "constrictor-snake",
+            "elder-earth-elemental",
+            "elephant",
+            "goblin-dog",
+            "greater-fire-elemental",
+            "greater-water-elemental",
+            "hell-hound",
+            "leopard",
+            "medium-fire-elemental",
+            "native:1618961b217a446459c6a91481065d2c",
+            "native:32a7776fb5bb9fa408b97757c04d4247",
+            "native:4f04734e4ad930e438eec3182dfd95fe",
+            "native:5adafaa653dc4de40b3ac73fa002a2ec",
+            "native:af8bcff074b93c84b97938e486184222",
+            "native:afe56099ff6046b40a359b7562c0424e",
+            "ooze-mephit",
+            "pixie",
+            "purple-worm",
+            "roc",
+            "shadow-demon",
+            "shadow-mastiff",
+            "shambling-mound",
+            "tiger",
+            "viper"
+          ]
+        }
+      },
+      "compactFailingUnits": [
+        {
+          "key": "air-mephit",
+          "unitId": "45744216-879c-42ee-a712-000c1575a5d0",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "bralani-azata",
+          "unitId": "f3165e92-4c14-4c0d-b185-6e95c6922af9",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "constrictor-snake",
+          "unitId": "aa85ca55-efd2-415d-adbe-a1ac1e65dd5d",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "dust-mephit",
+          "unitId": "e1f77b1b-329c-46e6-ac43-0635eb777b7a",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "earth-mephit",
+          "unitId": "04bc1d9e-e058-42a6-8ec7-f2549a70b2b9",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "elder-earth-elemental",
+          "unitId": "13cf7bb9-f0c0-41ad-887d-24cbfa5d900c",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "elephant",
+          "unitId": "f5f9db98-a1d6-495f-b95b-57bb6ecac0eb",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "fire-mephit",
+          "unitId": "15653d60-4377-4128-b2c9-8040afa9d2ef",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "ghaele-azata",
+          "unitId": "6fc031d5-7991-46cb-92ea-792cfdabccbb",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "giant-frog",
+          "unitId": "8f0eddd6-2743-4f47-ac47-b90ca64f7b09",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "goblin-dog",
+          "unitId": "786f8a6f-18b2-41e3-a33d-923b084b2e4e",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "greater-earth-elemental",
+          "unitId": "92bf8c33-c36b-4fb6-b0b1-63badcefdc7c",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "greater-fire-elemental",
+          "unitId": "34355539-b99e-430b-8327-29ff33b08479",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "greater-water-elemental",
+          "unitId": "8c3ed883-b871-491d-b671-7af6caec43d9",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "hell-hound",
+          "unitId": "84b0a9eb-634b-41f9-8f99-24a8e8cf309f",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "huge-earth-elemental",
+          "unitId": "0934b431-0ab8-4657-8216-3280844a61f9",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "ice-mephit",
+          "unitId": "d2400233-ccad-459f-86a7-30953a975445",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "invisible-stalker",
+          "unitId": "64ec5f43-275d-4f5b-82f7-34bb1d689342",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "large-earth-elemental",
+          "unitId": "f650dadd-cb77-4d9a-8b2d-15d4621e7bfe",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "leopard",
+          "unitId": "9f9b90ab-8bc9-40b6-99f1-9b5f8da463bd",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "magma-mephit",
+          "unitId": "2fd6e387-f561-4877-a1bd-b135f1b83b6a",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "medium-earth-elemental",
+          "unitId": "cacbff6d-4e8f-4e4d-a884-4074631bea28",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "medium-fire-elemental",
+          "unitId": "4f9f0d50-8a83-4cf2-bf34-dc995bac7474",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:0c433dcdefcaaeb4db78b07c3ebf4c94",
+          "unitId": "e32b321d-e3ae-45b9-a768-7b4ea312a359",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "native:1618961b217a446459c6a91481065d2c",
+          "unitId": "7610819d-ff22-4e6a-ac57-58bb10705b0e",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:32a7776fb5bb9fa408b97757c04d4247",
+          "unitId": "c4802701-60f9-4197-840b-c4c604ea2387",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:4f04734e4ad930e438eec3182dfd95fe",
+          "unitId": "8a12b8d6-019a-497e-a9f2-8a4ae85bd10a",
+          "failedObservedPredicateNames": [
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:590cd3d5e76fdc649a5f97bc984cd3c4",
+          "unitId": "c5ea3168-cc32-48f1-be84-6850b367a90f",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "native:5adafaa653dc4de40b3ac73fa002a2ec",
+          "unitId": "346c4842-39fb-4465-b2c3-4d0862d88741",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:7b7701ffc8f335a47a9ed97516531b71",
+          "unitId": "dfc3c6de-e303-4f19-be54-b584662c68f1",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "native:af8bcff074b93c84b97938e486184222",
+          "unitId": "aaad3979-36c2-4028-ad67-9b68b49c52b7",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:afe56099ff6046b40a359b7562c0424e",
+          "unitId": "51c17e88-b37c-44ce-998a-9ecb1010f6dd",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:e287515e761bb1a48a61e1bbcb3527b1",
+          "unitId": "242f7364-c390-4769-a972-fd71a72fd834",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "ooze-mephit",
+          "unitId": "eb1204ed-cb55-47c1-9c39-2aa8e1e7a338",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "pixie",
+          "unitId": "e0e9a14d-fc04-4005-908b-1b18621e1479",
+          "failedObservedPredicateNames": [
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "purple-worm",
+          "unitId": "35264340-6898-4bbf-917f-d8b06fbde2fd",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "roc",
+          "unitId": "5ef149ba-da9f-422b-9382-7231fc775e1e",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "salt-mephit",
+          "unitId": "403c433d-5f51-4c39-a0ef-f05b55ef69fd",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "shadow-demon",
+          "unitId": "0b0b238d-ed6f-4f4a-8678-bbf8d512ca17",
+          "failedObservedPredicateNames": [
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "shadow-mastiff",
+          "unitId": "a5f52812-37a4-419d-8e29-0dbaad763800",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "shambling-mound",
+          "unitId": "b0612b47-b36c-4acc-a094-dc3628c6da30",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "small-earth-elemental",
+          "unitId": "7cbcee5b-2d65-4f17-a4fe-9e89fd30880b",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "steam-mephit",
+          "unitId": "2a1f0785-3704-4683-91d3-97dd7172219e",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "tiger",
+          "unitId": "fb979c1c-2169-45ca-9d20-a88083123470",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "viper",
+          "unitId": "65757632-7b3b-4752-a056-84cb687b890d",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "water-mephit",
+          "unitId": "32c93d39-a2cd-482e-9d52-ba235908ce6a",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "wolf",
+          "unitId": "399624e3-76b2-4eee-a540-4f0f8be5aaa5",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        }
+      ],
+      "classification": "FIXTURE: all108 naturally settled native appearance/control.47 fail visual presentation only:24unfaded/44nonzero dissolve(overlap).21never-zero units native-asleep;22visible units settled earlier;Invisible Stalker carries NaturalInvisibilityBuff. Not all108 were ever visibly intact. No production defect demonstrated.",
+      "historicalFailurePreserved": true
+    },
+    "nativeSemanticAudit": {
+      "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "mvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+      "appearance": "RuleSummonUnit.OnTrigger applies SummonedUnitAppearBuff for two seconds;all108 naturally lost lock and regained CanAct/CanMove at4312.",
+      "presentation": "EntityViewBase.SetVisible drives EntityFader.Visible,which uses FogOfWarDissolveSettings and renderer visibility. DissolveAnimationController.Update writes CurrentDissolve to material;first-renderer _Dissolve is not an exclusive summon appearance-completion token.",
+      "privateIl": "artifacts/inspection/bodyguard-native/Assembly-CSharp.il;MVID matched exact reference"
+    },
+    "diagnosisRestoration": {
+      "status": "VERIFIED",
+      "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261008T2024119794133Z",
+      "live": {
+        "files": 136,
+        "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "version": "0.0.117",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+      },
+      "favoredSettingsSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+      "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261008T202411Z-0d55c49b948c472da24873bfbbb318a2\\runtime-lease.json",
+      "leaseReleased": true,
+      "noGame": true,
+      "noActiveStaging": true,
+      "nativeWorkingWrites": 0,
+      "protectedBaselineLoadedOrWritten": false
+    },
+    "correction": {
+      "status": "SINGLE_FIXTURE_CORRECTION_CANDIDATE_PENDING",
+      "policy": "Separate whole-roster predicate: current valid live View/Data/IsInGame,finite dissolve,CanAct/CanMove,no native appearance buff,and per-unit first successful native-control settlement;alive/conscious/non-destroyed at save. Simultaneous camera/fog/invisibility presentation is not a save prerequisite. Original creature visual predicates/evidence unchanged.",
+      "productionChanged": false,
+      "noVisibilityCameraFaderBuffForcing": true,
+      "focusedPassed": 9,
+      "focusedFailed": 0,
+      "expectedFullTests": 2480
+    },
+    "furtherReadinessDiagnosisAuthorized": false
   },
   "wholeRosterReadinessMission": {
     "historicalRecord": true,

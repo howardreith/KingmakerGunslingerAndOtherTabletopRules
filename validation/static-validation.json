@@ -2104,7 +2104,7 @@
     "releaseInformationalVersion": "0.0.143-expanded-summoning-phase2b-checkpoint",
     "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
     "qualifiedPhase2BImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
-    "deterministicTestCount": 2478,
+    "deterministicTestCount": 2480,
     "packageMemberCount": 325,
     "registeredManifestEntryCount": 2922,
     "publishedGeneratedPlacements": 1008,
@@ -2119,7 +2119,7 @@
     "candidateOnly": true,
     "sprint18Started": false,
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
-    "closureStatus": "NOT QUALIFIED: latest owner resets diagnosis allowance after e2e8682a observer serialization failure. Explicit predicate-frame JSON and per-row error isolation under development;one repaired diagnosis then one evidence-driven correction authorized. Prior results preserved;no new Crocodile attribution cycle.",
+    "closureStatus": "NOT QUALIFIED: repaired205c9853 observer produced108 complete rows with zero errors;all native locks/control settled. Original simultaneous visual predicate fails47units. Single request-local persistence-readiness correction prepared;production and creature-specific visual checks unchanged;exact full gate and ON/OFF persistence pending.",
     "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md"
   },
   "expandedSummoningPhase2Development": {
