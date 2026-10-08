@@ -10,11 +10,18 @@ Active branch: codex/release-0.0.143-expanded-summoning-phase2b-checkpoint.
 Normal integration from master4ba8d4aca087391144abf401f526189f59b26535
 imports qualified Phase2B8592b1e680a8b3c92b43d353b47bf7ff5f52c664.
 Common ancestor97f0a966; normal two-parent integration candidate, NOT QUALIFIED.
-Exact integration candidate06aac4b7fae3abab18c900df5cfd351d6c819a37, parents
-4ba8d4aca and8592b1e6. Reporting descendant2dc9aa6a preserved and pushed after
-the owner added this exact branch to the policy allowlist. Historical rejection
-is preserved; no policy override/bypass. Freeze this resumed committed head for
-the exact integration gate. Intended release is normal public Latest v0.0.143,
+Exact integration merge06aac4b7fae3abab18c900df5cfd351d6c819a37, parents
+4ba8d4aca and8592b1e6. PR29 is the sole release integration PR against master.
+Candidate1f4a25c8445bfb48a3c14ed01e255cf51a8b76c9 full source2462/build/package325
+PASS; exact runtime smoke11 PASS, inventory48/50 FAIL: two stale observer
+contracts, not demonstrated product defects. Source-qualified is NOT runtime-qualified.
+One observer-only correction now freezes exact GUID/name/carrier exceptions for17
+qualified references and current Salamander manufactured-spear/owned heat/tail-grab
+carriers, with spoof-rejection tests. No production behavior changed. Preflight
+duplicate-list and crowd request active-version/helper defects corrected without
+loosening their strict contracts. Next exact release candidate has2465 tests.
+Historical failures and policy rejection preserved; no policy override/bypass.
+Intended release is normal public Latest v0.0.143,
 not an alpha, draft release or prerelease.
 Every conflict: planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md.
 Master2660-entry prefix exact;262 missing imported entries append=>2922/2920 active.
@@ -36,18 +43,19 @@ Prior released receipt is archived; all permanent safety refs and verified recov
 bundle remain available. No other owner/game/runtime lock was present at intake.
 DATA PR27 archived/ZERO PORTS; all safety refs/worktrees/failed evidence preserved.
 
-Last exact restored live snapshot20261007T2258344605477Z:
+Last exact restored live snapshot20261008T0129158990545Z:
 136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;
 ZERO writes,no game/staging; runtime lease Completed/released. Actual pre-run
 baseline must be freshly snapshotted UNDER lease, not forced to this historic state.
 Only native guarded Working-save workflow; protected baseline never loaded/written.
 
 Owner allowlist action verified and exact policy push PASS at01:12UTC.
-Next: draft integration PR against master, full source/build/package gate ONCE
-on this clean committed candidate,
+Next: commit/push one coherent observer-only candidate, full source/build/package
+gate ONCE on that exact committed head,
 then same-artifact closure ON/OFF persistence/profile5/v142 coexistence and the
 existing native-owned trait-save protocol. No product change by the driver guards.
-Integration/runtime/release NOT QUALIFIED; exhaustive closure NOT RUN.
+Integration/runtime/release NOT QUALIFIED; exhaustive closure stopped at inventory;
+remaining player-path/persistence/profile5/master coexistence gates NOT RUN.
 No integration runtime launch/deployment/save write yet. Latest public release
 remains v0.0.142; merge/tag/real release only after all required gates PASS.
 Do not merge PR25/26 directly. Close as superseded only AFTER real v0.0.143 release.

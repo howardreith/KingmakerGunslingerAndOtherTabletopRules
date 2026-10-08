@@ -137,3 +137,23 @@ Most recent safe live state136files/Info0.0.117/tree216A9DC2...; do not force th
 if actual pre-run state differs. Final machine evidence governs restoration.
 After release close PR25/26 as superseded, preserve branches/failed evidence,
 STOP. Sprint18/Phase2C/Sprint22 were not started.
+
+## Exact integration candidate1f4a25c8 / observer-only release correction
+
+Complete source2462/2462, clean14-reference Release and deterministic strict325
+member package PASS. ZIP ad8614bf7b4b7986f5024c18c6ade65453e7f765606f68f367a70c33a05b29a0;
+DLL41d89486b1b699c35d366c0379b2a3c5a35b940ce032c12860127f1b7fb52384;
+MVID30bc049a-e114-4f65-b8bf-14952daa3f99. Guarded smoke11 PASS; inventory48/50
+FAIL, so candidate remains NOT QUALIFIED. Exact snapshot0129158990545Z restored,
+136files/Info0.0.117/tree216A9DC2..., zero save writes, no game/lease/staging.
+No product defect demonstrated: inventory still expected legacy natural Salamander
+spear/on-hit trigger graph, and its name heuristic rejected17 manifest-owned Phase2B
+references. Observer correction checks current manufactured locked spear, native
+tail, exact owned live heat/grab carriers and zero legacy replay; references require
+exact owner GUID/name, reference GUID/name and carrier (not prefix permission).
+Three behavior/rejection tests added. No product/profile/range/asset/AI changes.
+Five duplicate preflight expectations removed while retaining exact scenario-set
+comparison; crowd request uses existing helper and current version instead of141.
+Both fixture corrections already passed privately against candidate1f4a25c8;
+they now become canonical so the release gate is reproducible. New exact candidate
+must pass full2465 source/build/package and affected closure before release.
