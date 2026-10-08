@@ -1,8 +1,30 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "BLOCKED_READINESS_DIAGNOSIS_OBSERVER_SERIALIZATION",
+  "status": "READINESS_OBSERVER_REPAIR_CANDIDATE_PENDING",
+  "readinessObserverRepairMission": {
+    "authority": "v0.0.143 Readiness Observer Repair and Final Release Order",
+    "intakeReportingHead": "95ff2ee1d3703ed0f863525bd943e573e49fd869",
+    "priorFailedDiagnosticCandidate": "e2e8682ad9f2f18cb6aa28e4b5de14a5ec3a6492",
+    "ownerDisposition": "Prior allowance reset because no readiness diagnosis occurred;run failed request-local observer serialization before a per-unit report. Demonstrated test-observer defect,not a product failure or an unresolved readiness result.",
+    "diagnosisRunsAuthorized": 1,
+    "diagnosisRunsUsed": 0,
+    "correctionCandidatesAuthorized": 1,
+    "correctionCandidatesUsed": 0,
+    "repair": "Explicit deterministic JObject predicate-to-nullable-frame mapping without configured serialization;top-level report allocated before rows;per-row errors retain key/id/exception/stage;other rows survive;summary excludes failed rows;finally clears tracking and records outcome;evidence written before mandatory observer-error gate can fail the scenario.",
+    "originalSnakeReadinessPredicateRetainedForDiagnosis": true,
+    "productionChanged": false,
+    "focusedPassed": 7,
+    "focusedFailed": 0,
+    "expectedFullTests": 2478,
+    "nextGate": "Commit/push repair candidate;complete exact source/build/package;smoke and prepare ONLY;exact restoration. Then classify per-unit evidence before at most one correction/requalification candidate.",
+    "furtherCrocodileAttributionCycleAuthorized": false,
+    "completedQualificationEvidenceReusedWithOriginalProvenance": true,
+    "sprint18Authorized": false
+  },
   "wholeRosterReadinessMission": {
+    "historicalRecord": true,
+    "supersededBy": "readinessObserverRepairMission;latest owner reset because serialization failure produced no readiness diagnosis",
     "authority": "v0.0.143 Whole-Roster Readiness Diagnosis and Release Completion Order",
     "priorReportingHead": "444979bbe2d95f35efbe5f2e5620202cdf6661cf",
     "priorFailedCandidate": "fb25ad153124552f06b7d8a9a3b63fd2e4141eb8",
@@ -264,11 +286,11 @@
     "latest": true
   },
   "sourceOwner": {
-    "session": "5814f9cc-4998-4fbd-93a4-ec68514f7c7b",
-    "keeperPid": 15128,
-    "keeperStartedUtc": "2026-10-08T17:36:42.5475746Z",
+    "session": "333716b3-bbcd-4984-bab1-9f5aa05e0603",
+    "keeperPid": 37628,
+    "keeperStartedUtc": "2026-10-08T20:07:07.9754831Z",
     "releaseOnHandoff": true,
-    "releasedAtHandoff": true
+    "releasedAtHandoff": false
   },
   "releasePublished": false,
   "sprint18Started": false,
@@ -291,7 +313,7 @@
     "batchRecordSha256": "042f030948fe4cf1694d81ae32706e2a232ba1659f4fd1197fc01af1f6eaecfd"
   },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "STOP: exact e2e8682a diagnosis failed observer dictionary serialization before per-unit report;underlying readiness still unidentified. Sole diagnosis consumed;no correction attempted or additional launch authorized. New explicit authority would be required for observer repair and missing readiness evidence. Prior PASS and FAIL provenance retained;no merge/release/Sprint18/Phase2C.",
+  "next": "Latest owner resets diagnosis after demonstrated observer serialization defect. Qualify one repaired report,smoke+prepare only,restore;classify actual per-unit failures then one correction and affected ON/OFF persistence. Remaining five-profile/v142 gates once,then real release only if all pass. No further Crocodile observer or Sprint18/Phase2C.",
   "integrationPr": 29,
   "observationCorrection": {
     "used": 1,

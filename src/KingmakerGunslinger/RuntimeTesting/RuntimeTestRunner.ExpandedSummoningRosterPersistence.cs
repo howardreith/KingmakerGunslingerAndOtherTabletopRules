@@ -34,7 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class RosterReadinessEntry
         {
             internal UnitEntityData Unit, Caster;
-            internal string Key;
+            internal string Key, UnitId;
             internal RosterReadinessTimeline Timeline;
         }
         private readonly List<RosterReadinessEntry> _rosterReadiness = new List<RosterReadinessEntry>();
@@ -42,7 +42,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void RegisterRosterReadiness(UnitEntityData unit, UnitEntityData caster, int? spawnedFrame)
         {
             _rosterReadiness.Add(new RosterReadinessEntry { Unit = unit, Caster = caster,
-                Key = unit.Get<UnitPartRelease143RosterReceipt>().Key, Timeline = new RosterReadinessTimeline(spawnedFrame) });
+                Key = unit.Get<UnitPartRelease143RosterReceipt>().Key, UnitId = unit.UniqueId,
+                Timeline = new RosterReadinessTimeline(spawnedFrame) });
             ObserveRosterReadiness(_rosterReadiness.Last());
         }
 
@@ -77,23 +78,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void FlushAndClearRosterReadiness()
         {
             if (_rosterReadiness.Count == 0) return;
-            JObject result = null;
+            var report = new RosterReadinessReport(_request.RunId, _request.Scenario, _rosterReadiness.Count);
             try
             {
-                var rows = new JArray();
                 foreach (var entry in _rosterReadiness)
                 {
+                    report.AddUnit(entry.Key, entry.UnitId, () =>
+                    {
                     ObserveRosterReadiness(entry);
                     var unit = entry.Unit; var view = unit.View; var state = unit.Descriptor.State;
                     var renderers = view == null ? new Renderer[0] : view.GetComponentsInChildren<Renderer>(true);
                     var appearance = unit.Descriptor.Buffs.Enumerable.Where(b => ReferenceEquals(b.Blueprint,
                         BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff)).ToArray();
                     float dissolve = DissolveAmount(unit);
-                    rows.Add(new JObject {
+                    return new JObject {
                         ["key"] = entry.Key, ["unitId"] = unit.UniqueId, ["blueprintGuid"] = unit.Blueprint.AssetGuid,
                         ["blueprintName"] = unit.Blueprint.name, ["retainedNativeWrapper"] = entry.Key.StartsWith("native:", StringComparison.Ordinal),
                         ["spawnedFrame"] = entry.Timeline.SpawnedFrame, ["observedSamples"] = entry.Timeline.SampleCount,
-                        ["firstTrueFrames"] = JObject.FromObject(entry.Timeline.FirstTrueIncludingNever),
+                        ["firstTrueFrames"] = RosterReadinessReport.NullableFrameMap(entry.Timeline.FirstTrueIncludingNever),
                         ["firstFrameAllSnakePredicates"] = entry.Timeline.FirstAllSnakeFrame,
                         ["firstFrameAllObservedPredicates"] = entry.Timeline.FirstAllObservedFrame,
                         ["finalFrame"] = Time.frameCount, ["viewExists"] = view != null,
@@ -117,29 +119,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["distanceFromCaster"] = Vector3.Distance(unit.Position, entry.Caster.Position),
                         ["failedPredicateNames"] = new JArray(entry.Timeline.FailedSnakePredicates()),
                         ["failedObservedPredicateNames"] = new JArray(entry.Timeline.FailedObservedPredicates())
+                    };
                     });
                 }
-                var failures = rows.OfType<JObject>().Where(r => ((JArray)r["failedPredicateNames"]).Count > 0).ToArray();
-                var grouped = new JObject();
-                foreach (var group in failures.SelectMany(r => r["failedPredicateNames"].Select(p => new { Predicate = (string)p, Key = (string)r["key"] }))
-                    .GroupBy(p => p.Predicate).OrderBy(g => g.Key, StringComparer.Ordinal))
-                    grouped[group.Key] = new JObject { ["count"] = group.Count(), ["keys"] = new JArray(group.Select(p => p.Key)) };
-                result = new JObject { ["schemaVersion"] = 1, ["requestId"] = _request.RunId,
-                    ["scenario"] = _request.Scenario, ["unitCount"] = rows.Count, ["observerReadOnly"] = true,
-                    ["contractUnchanged"] = "Original snake native-appearance predicate retained for diagnosis; no simultaneous visibility waiver",
-                    ["summaryByFailedPredicate"] = grouped, ["failingUnits"] = new JArray(failures.Select(r => new JObject {
-                        ["key"] = r["key"], ["unitId"] = r["unitId"], ["failedPredicateNames"] = r["failedPredicateNames"],
-                        ["firstFrameAllSnakePredicates"] = r["firstFrameAllSnakePredicates"] })), ["units"] = rows,
-                    ["spawnFrameSource"] = "Native cast/entity creation returned and receipt assigned;loaded units have no invented spawn frame",
-                    ["observerClearedInFinally"] = false };
             }
             finally
             {
-                foreach (var entry in _rosterReadiness) entry.Timeline.Clear();
-                _rosterReadiness.Clear();
+                report.Finish(() => {
+                    try { foreach (var entry in _rosterReadiness) entry.Timeline.Clear(); }
+                    finally { _rosterReadiness.Clear(); }
+                });
+                File.WriteAllText(Path.Combine(_request.EvidenceDirectory, "expanded-summoning-roster-readiness.json"), report.Result.ToString(Formatting.Indented));
             }
-            result["observerClearedInFinally"] = _rosterReadiness.Count == 0;
-            File.WriteAllText(Path.Combine(_request.EvidenceDirectory, "expanded-summoning-roster-readiness.json"), result.ToString(Formatting.Indented));
+            RosterPersistenceCheck("readiness-observer", !report.HasErrors &&
+                (int)report.Result["successfulUnitRows"] == (int)report.Result["unitCount"] &&
+                (bool)report.Result["observerClearedInFinally"],
+                new JObject { ["observerErrors"] = report.ErrorCount,
+                    ["unitRows"] = (int)report.Result["successfulUnitRows"],
+                    ["cleared"] = (bool)report.Result["observerClearedInFinally"] },
+                "complete per-unit report written without observer errors and request-local tracking cleared");
         }
 
         private void RosterPersistenceCheck(string name, bool passed, JObject row, string expected)
