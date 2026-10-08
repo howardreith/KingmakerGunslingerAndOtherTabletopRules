@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "READINESS_DIAGNOSED_FIXTURE_CORRECTION_CANDIDATE_PENDING",
+  "status": "BLOCKED_WHOLE_ROSTER_CLEANUP_RESOURCE_LIFECYCLE",
   "readinessObserverRepairMission": {
     "authority": "v0.0.143 Readiness Observer Repair and Final Release Order",
     "intakeReportingHead": "95ff2ee1d3703ed0f863525bd943e573e49fd869",
@@ -17,7 +17,7 @@
     "focusedPassed": 7,
     "focusedFailed": 0,
     "expectedFullTests": 2478,
-    "nextGate": "Commit/push single correction candidate;complete exact source/build/package;smoke,ON prepare/native cleanup/fresh absence,OFF deserialization/native cleanup/fresh absence. Then five profiles and v142 coexistence/native-owned trait save. No further diagnosis/correction retries.",
+    "nextGate": "STOP: one repaired diagnosis and one correction candidate used. Readiness resolved,prepare119/119 PASS,cleanup116/118 FAIL with6/95 surviving captured resources despite108/108 unit destruction. No cleanup save or fresh absence. Smallest new owner scope: separate bounded resource-ownership/disposal diagnosis and authorized native working-save cleanup;no readiness or Crocodile re-observation.",
     "furtherCrocodileAttributionCycleAuthorized": false,
     "completedQualificationEvidenceReusedWithOriginalProvenance": true,
     "sprint18Authorized": false,
@@ -520,15 +520,162 @@
       "protectedBaselineLoadedOrWritten": false
     },
     "correction": {
-      "status": "SINGLE_FIXTURE_CORRECTION_CANDIDATE_PENDING",
+      "status": "READINESS_PASS;RELEASE_BLOCKED_CLEANUP_RESOURCE_LIFECYCLE",
       "policy": "Separate whole-roster predicate: current valid live View/Data/IsInGame,finite dissolve,CanAct/CanMove,no native appearance buff,and per-unit first successful native-control settlement;alive/conscious/non-destroyed at save. Simultaneous camera/fog/invisibility presentation is not a save prerequisite. Original creature visual predicates/evidence unchanged.",
       "productionChanged": false,
       "noVisibilityCameraFaderBuffForcing": true,
       "focusedPassed": 9,
       "focusedFailed": 0,
-      "expectedFullTests": 2480
+      "expectedFullTests": 2480,
+      "candidate": "f5f812d72ac4214cd4ddefbd5bd34e8791720ba9",
+      "sourceGate": {
+        "status": "PASS",
+        "passed": 2480,
+        "failed": 0,
+        "cleanExactReferences": 14,
+        "strictPackage": "PASS",
+        "members": 325,
+        "sourceFingerprint": "d7ed1a8bb3e7a6176b24bcbcd904e3063de633856566b2bb829061871e645b7b",
+        "zipSha256": "55a3d16690b8a74cad14257ba5caf5a418602370f7fd809d3dd2ebc31c129778",
+        "dllSha256": "0d2a30b5c7c90f365edfbfc2d4695695d8bf11b1b5177fc470ea1f9be13c066a",
+        "mvid": "c37e6363-5fb6-450b-9921-1c0595a9d253",
+        "seconds": 215.6,
+        "logSha256": "8e6c73b216622eb02675cf03baecb1c3db1d3594ffc974df145f8eaa83819fc3"
+      },
+      "deltaAudit": {
+        "status": "PASS",
+        "baseline": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+        "productionChanged": false,
+        "members": 325,
+        "onlyChangedPackagedMember": "KingmakerGunslinger/KingmakerGunslinger.dll",
+        "recordSha256": "34b1ae844e39f49dbc1a2134ad15339de3afa7dba1157e947c294230e6011e2d"
+      },
+      "runtime": {
+        "status": "FAIL_PRESERVED",
+        "batchId": "release143-runtime-20261008T2047099052204Z",
+        "batchRecordSha256": "8a95c256687cf8a0b1aefc512434c4f256398f18a0b4984bda77a09fb1a65cdd",
+        "runs": [
+          {
+            "scenario": "working-save-smoke",
+            "label": "authorized-working-seed",
+            "status": "PASS",
+            "passed": 11,
+            "assertions": 11,
+            "nativeWrites": 0,
+            "nativeStashedAreas": 0,
+            "evidenceId": "20261008T2047377508480Z-working-save-smoke",
+            "requestId": "20261008T2047377664792Z-961b1692ffe64d90b3a04d23b7e258be",
+            "requestSha256": "9385fb1d80a50a30e4f3a5ad6a462774a5faa8319a1eb410cbcf93611b8d4a7f",
+            "resultSha256": "6eee2ebc2710ef939dfab8202ea9550c9575050af9dcf4546396c93a50817c96",
+            "pid": 33796,
+            "startedUtc": "2026-10-08T20:47:38.7897835Z",
+            "extra": {
+              "scenario": "working-save-smoke",
+              "label": "authorized-working-seed"
+            }
+          },
+          {
+            "scenario": "working-save-expanded-summoning-prepare",
+            "label": "whole-roster-on-prepare",
+            "status": "PASS",
+            "passed": 119,
+            "assertions": 119,
+            "nativeWrites": 1,
+            "nativeStashedAreas": 2,
+            "evidenceId": "20261008T2050390465901Z-working-save-expanded-summoning-prepare",
+            "requestId": "20261008T2050390465901Z-59c5cb872fa041c4a9b71427ad2b4c9d",
+            "requestSha256": "b74ae38d56374501c10aef2fb2030ae5ea5d99468b88abf3246952aa24f11947",
+            "resultSha256": "b37a23bf6b8fb8f9099dd25d53b6ecc0852dc2464baba7ff196b0e1bb2f19aa2",
+            "pid": 38416,
+            "startedUtc": "2026-10-08T20:50:40.2979172Z",
+            "extra": {
+              "scenario": "working-save-expanded-summoning-prepare",
+              "label": "whole-roster-on-prepare",
+              "expanded-summoning-roster-readiness.json": "00f58cb49ed9af1d03fcb88bccf8125128a5d970f4b5d60e0b6a93c79cafc873",
+              "expanded-summoning-whole-roster-persistence.json": "9719cf3eb4a9e4e200e185398aa6ade334db7a8d744778b2a2ad5a7244ced03e",
+              "readyUnits": 108,
+              "observerErrors": 0,
+              "cleared": true
+            }
+          },
+          {
+            "scenario": "working-save-expanded-summoning-verify-cleanup",
+            "label": "whole-roster-on-native-cleanup-save",
+            "status": "FAIL",
+            "passed": 116,
+            "assertions": 118,
+            "nativeWrites": 0,
+            "nativeStashedAreas": 0,
+            "evidenceId": "20261008T2054388817096Z-working-save-expanded-summoning-verify-cleanup",
+            "requestId": "20261008T2054388817096Z-6b4ba98c8050492babadd893daa539fb",
+            "requestSha256": "d3fe5c8e8122f9ea5d1d5033f65b862d9fb32620a8998997ef6125deec080a45",
+            "resultSha256": "409fbc7c7fdf67d0d454057b8da9cd597331140a1ef2e655266d2550323b22ae",
+            "pid": 38124,
+            "startedUtc": "2026-10-08T20:54:39.7421541Z",
+            "extra": {
+              "scenario": "working-save-expanded-summoning-verify-cleanup",
+              "label": "whole-roster-on-native-cleanup-save",
+              "expanded-summoning-roster-readiness.json": "323c10fed33498e6653f56e7029b7b8e322a2f4b705e4acc69a3fb44b2c49599",
+              "expanded-summoning-whole-roster-persistence.json": "49d01f158c2ee148c38ba9db1f675a238dc96f879116c432d26dc5553cf15ea6",
+              "readyUnits": 108,
+              "observerErrors": 0,
+              "cleared": true
+            }
+          }
+        ],
+        "readiness": "PASS: all108 persistence-ready before prepare save AND after fresh cleanup load;zero observer errors;tracking cleared in both reports.",
+        "failedGate": "whole-roster-persistence-cleanup-native-destruction",
+        "observed": {
+          "units": 108,
+          "capturedProjectResources": 95,
+          "remainingResources": 6,
+          "remainingUnits": 0
+        },
+        "classification": "UNRESOLVED_RESOURCE_OWNERSHIP_OR_DISPOSAL: real cleanup gate failure;current aggregate witness records no identities/types/owning units for the six surviving resources. Do not infer a production defect or waive the failure.",
+        "consequentialFailure": "exact-working-save-write: cleanup save not armed after mandatory resource failure",
+        "allProfileViewIdentityChecksPassed": true,
+        "unrelatedUnitsAndPartyPreserved": true,
+        "noFurtherRuntimeAuthorized": true
+      },
+      "workingSave": {
+        "name": "KMG_AUTOMATION_WORKING",
+        "nativePrepareWrites": 1,
+        "nativeCleanupWrites": 0,
+        "stateAtStop": "PREPARED_FIXTURE_REMAINS_IN_WORKING_SAVE:108 receipt-owned units from successful prepare. Cleanup retired all108 only in its disposable loaded session but refused to persist because6resources survived. Do not declare absence or load it for ordinary play as a clean seed.",
+        "manualSaveEditingCopyingParsingReplacement": false,
+        "protectedBaselineLoadedOrWritten": false,
+        "freshAbsenceRun": false
+      },
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261008T2047106234079Z",
+        "live": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "favoredOriginalSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+        "favoredRestoredSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+        "settingsByteExact": true,
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261008T204710Z-a47dd9a809ba4a889002fd998d731ad9\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "noGame": true,
+        "stagingArchived": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\release-0.0.143-expanded-summoning-phase2b-checkpoint\\artifacts\\release143-runtime-20261008T2047099052204Z\\deployed-package-extraction",
+        "saveByteRestorationClaimed": false
+      },
+      "unrun": [
+        "whole-roster fresh absence",
+        "module-disabled persistence/deserialization/cleanup",
+        "five-profile live matrix",
+        "v142 coexistence/native-owned trait-save"
+      ]
     },
-    "furtherReadinessDiagnosisAuthorized": false
+    "furtherReadinessDiagnosisAuthorized": false,
+    "readinessResolved": true,
+    "releaseQualified": false
   },
   "wholeRosterReadinessMission": {
     "historicalRecord": true,
@@ -798,7 +945,7 @@
     "keeperPid": 37628,
     "keeperStartedUtc": "2026-10-08T20:07:07.9754831Z",
     "releaseOnHandoff": true,
-    "releasedAtHandoff": false
+    "statusAtReportingCommit": "ACTIVE;explicit release required after reporting push and before final response;verify machine-local receipt before takeover"
   },
   "releasePublished": false,
   "sprint18Started": false,
@@ -821,7 +968,7 @@
     "batchRecordSha256": "042f030948fe4cf1694d81ae32706e2a232ba1659f4fd1197fc01af1f6eaecfd"
   },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "Latest owner resets diagnosis after demonstrated observer serialization defect. Qualify one repaired report,smoke+prepare only,restore;classify actual per-unit failures then one correction and affected ON/OFF persistence. Remaining five-profile/v142 gates once,then real release only if all pass. No further Crocodile observer or Sprint18/Phase2C.",
+  "next": "STOP: one repaired diagnosis and one correction candidate used. Readiness resolved,prepare119/119 PASS,cleanup116/118 FAIL with6/95 surviving captured resources despite108/108 unit destruction. No cleanup save or fresh absence. Smallest new owner scope: separate bounded resource-ownership/disposal diagnosis and authorized native working-save cleanup;no readiness or Crocodile re-observation.",
   "integrationPr": 29,
   "observationCorrection": {
     "used": 1,
