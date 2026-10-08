@@ -16,6 +16,7 @@
     "focusedPassed": 5,
     "focusedFailed": 0,
     "expectedFullTests": 2474,
+    "prelaunchSourceFailure": { "candidate": "0cca50526822f063dcf24f121e4127f39fbbbb3a", "registered": 2474, "failed": 1, "test": "expanded-summoning.published-records-match-derivation", "reason": "Short controlling header omitted the unchanged source-derived published/visible equation", "correction": "Restore1008 published+29 native wrappers=1037 visible in controlling header;no executable/test/predicate change", "buildPackageOrRuntimeRan": false, "failurePreserved": true },
     "nextGate": "Commit/push one diagnostic candidate;complete source/build/package once;smoke plus whole-roster prepare ONLY;exact restore. No cleanup/module-off/compatibility until prepare can save.",
     "furtherCrocodileAttributionCycleAuthorized": false,
     "sprint18Authorized": false,
