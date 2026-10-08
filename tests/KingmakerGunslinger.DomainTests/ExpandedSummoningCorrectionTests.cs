@@ -36,6 +36,11 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
             ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
             ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint13Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint14Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint15Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint16Tests.AppendedLedgerIdentities +
+            SerpentineRulesTests.AppendedLedgerIdentities +
             KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length;
 
         private static readonly string[] AppendedSymbols = {
@@ -391,7 +396,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(harness.Contains("'" + name + "' = [pscustomobject]@{"), "Harness allowlist missing: " + name);
             }
             RequireTokens("Scenario wiring", request,
-                "RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules",
+                "RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(request.Scenario)",
                 "RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle");
             RequireTokens("Runner dispatch", runner,
                 "PollExpandedSummoningRules();", "PollExpandedSummoningVisualLifecycle();",

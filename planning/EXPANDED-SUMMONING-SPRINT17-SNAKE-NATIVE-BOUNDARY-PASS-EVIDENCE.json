@@ -1,0 +1,674 @@
+{
+  "schemaVersion": 1,
+  "classification": "EXACT NATIVE SNAKE PERSISTENCE PASS; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "a429da506ebfbbf5c243faa0da163394d32012a2",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "f6111ac8b7a2b9f61c61cef9a257a16fe30176a4fe034a5ae25ff4266437b5cd",
+    "dllSha256": "cb901bed0b87badea30b5445a67a3f1ec75329ed1a2d1f9209a938d738b48b7b",
+    "dllMvid": "02e352a4-df1c-4f6c-b983-77e02ef991ab",
+    "zipSha256": "ab6d9f26f521397a78e273dbd908324beb628713e6946cc4120a51369e755e16",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-native-boundary-source-pass-a429da50"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 272,
+    "domain": 2074,
+    "domainSeconds": 81.8,
+    "gateSeconds": 178.3,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 508,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 13,
+      "rejected": 10
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0323399801694Z",
+    "journalSha256": "2bb774b6fef461c8cddd2b1cb26cd9a113fc29013f1319e21eb589a03c177908",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeNativeBoundary-Attempt1.ps1",
+    "driverSha256": "1b22291a51a423deb6fd7698064a006379647b4db2c2d2dd94895a9f4ce46dfa",
+    "startedAtUtc": "2026-10-07T03:23:40.0225733Z",
+    "completedAtUtc": "2026-10-07T03:37:14.0902498Z",
+    "status": "PASS",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T032340Z-63ec11e2e7524c41b27726483892c2bc\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0323408975413Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "leaseReleased": true,
+    "recoveryRequired": false,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "parameters": {},
+        "outcome": "PASS",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0324071492716Z-working-save-smoke",
+        "requestId": "20261007T0324071805219Z-38ce70d757c14f189f0a766c482df2d2",
+        "processId": 35200,
+        "processStartedUtc": "2026-10-07T03:24:08.1196615Z",
+        "hashes": [
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0324071492716Z-working-save-smoke\\runtime-request.json",
+            "Hash": "EC81EBC0FAE059DBC2DF7C461CE94482E2D20EFBC1304A7777CA9D8F72C1AF48"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0324071492716Z-working-save-smoke\\runtime-result.json",
+            "Hash": "4B2B9AEA4E1C73606AEDC215675AAA9DAFFC9113D68586A49C01A83143A51E84"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0324071492716Z-working-save-smoke\\orchestration.json",
+            "Hash": "76F207979D113432CBF434E50A64EAFB7AE9D817BEA257CBD05E97DAE30326FE"
+          }
+        ]
+      },
+      {
+        "label": "snake-prepare",
+        "scenario": "working-save-expanded-summoning-prepare",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "outcome": "PASS",
+        "assertions": 14,
+        "passed": 14,
+        "failed": [],
+        "nativeWrites": 1,
+        "nativeStashedAreas": 2,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0327064952189Z-working-save-expanded-summoning-prepare",
+        "requestId": "20261007T0327064952189Z-4b6585f4d597441d91d6040c663953e3",
+        "processId": 33472,
+        "processStartedUtc": "2026-10-07T03:27:08.0071363Z",
+        "hashes": [
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0327064952189Z-working-save-expanded-summoning-prepare\\runtime-request.json",
+            "Hash": "F0964E24F164271AC0083F596F131EE95BFD43707496CC4B7AED2C522D631143"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0327064952189Z-working-save-expanded-summoning-prepare\\runtime-result.json",
+            "Hash": "F94C15E24444863F81097C6B4E86E74B8B5F2ECC5A11EC19DA06DD341826D579"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0327064952189Z-working-save-expanded-summoning-prepare\\orchestration.json",
+            "Hash": "4A90810457695F824EAEAC4D24460FE73881881445B4674F8CA75420243819F7"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0327064952189Z-working-save-expanded-summoning-prepare\\sprint17-snake-load-reset-trace.json",
+            "Hash": "9C6A55C865EFBE58BE3BEBC7140A8D0F70A1AAF1D542CDB54C6913BD5DFB7499"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0327064952189Z-working-save-expanded-summoning-prepare\\sprint17-snake-persistence.json",
+            "Hash": "EA1A60542881B8AE423BDDB6EC15CA3954D7FA37C5F9533DF07D5650E369205E"
+          }
+        ]
+      },
+      {
+        "label": "snake-cleanup",
+        "scenario": "working-save-expanded-summoning-verify-cleanup",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "outcome": "PASS",
+        "assertions": 13,
+        "passed": 13,
+        "failed": [],
+        "nativeWrites": 1,
+        "nativeStashedAreas": 2,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0330444927896Z-working-save-expanded-summoning-verify-cleanup",
+        "requestId": "20261007T0330444927896Z-6b183bcea418414ba6d725c747c68482",
+        "processId": 36412,
+        "processStartedUtc": "2026-10-07T03:30:45.4479810Z",
+        "hashes": [
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0330444927896Z-working-save-expanded-summoning-verify-cleanup\\runtime-request.json",
+            "Hash": "114F0E57DC281490C1E9BD79CE4E704E266E2BC9B657544BE112890487523305"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0330444927896Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+            "Hash": "CC6E76E43C58B353BD3EE63E44BD700437252CFF346BFBE8D63D2BCCCA340A1E"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0330444927896Z-working-save-expanded-summoning-verify-cleanup\\orchestration.json",
+            "Hash": "CEAAEC23F57395D4A7CB1E9C9469DC0BA63FA33669CC7169812CBF9CBAD501BB"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0330444927896Z-working-save-expanded-summoning-verify-cleanup\\sprint17-snake-load-reset-trace.json",
+            "Hash": "2F6478C6D0CE50916EB88D7955DAEABA2293018B05993C44416BBCA4465E1A1D"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0330444927896Z-working-save-expanded-summoning-verify-cleanup\\sprint17-snake-persistence.json",
+            "Hash": "624498ACD9AA207465495BB614B4D4D59A4EF3BE5E6DEA8C4469619C5F19CD01"
+          }
+        ]
+      },
+      {
+        "label": "snake-absent",
+        "scenario": "working-save-expanded-summoning-verify-absent",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "outcome": "PASS",
+        "assertions": 6,
+        "passed": 6,
+        "failed": [],
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0334084603121Z-working-save-expanded-summoning-verify-absent",
+        "requestId": "20261007T0334084603121Z-45094df849bf473c988a05f558fd8eb4",
+        "processId": 34456,
+        "processStartedUtc": "2026-10-07T03:34:09.4136732Z",
+        "hashes": [
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0334084603121Z-working-save-expanded-summoning-verify-absent\\runtime-request.json",
+            "Hash": "21DBE20173AEE81B43C8034F359B73975887AC7389B37A926F6F96F3437F19A9"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0334084603121Z-working-save-expanded-summoning-verify-absent\\runtime-result.json",
+            "Hash": "8A2201989A0E7891DCCFF1B4593146354AEA7B25A5EF7BA5C8183EA49FFF195F"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0334084603121Z-working-save-expanded-summoning-verify-absent\\orchestration.json",
+            "Hash": "E09F2C648601418D41DF7BA4A23106FB6D4B94287E4BFD9733C727615FBAC0ED"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0334084603121Z-working-save-expanded-summoning-verify-absent\\sprint17-snake-load-reset-trace.json",
+            "Hash": "F215EA8A1A2B92839467823A77CFF0F3C56A2E9E4E199284358299C175A416C0"
+          },
+          {
+            "Path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0334084603121Z-working-save-expanded-summoning-verify-absent\\sprint17-snake-persistence.json",
+            "Hash": "B8BF8EC1C0B8B42B6BFCF8942FB87F3F131DE4C5A51A5B03C53B3647CC3BDF72"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": {
+    "prepareBoundary": {
+      "ready": true,
+      "observedFrames": 20,
+      "frame": 4262,
+      "completedFrame": 4262,
+      "check": "native-load-boundary",
+      "passed": true
+    },
+    "staleRetirement": {
+      "units": 4,
+      "capturedResources": 12,
+      "remainingResources": 0,
+      "remainingUnits": 0,
+      "check": "stale-native-destruction",
+      "passed": true
+    },
+    "appearance": {
+      "frames": 247,
+      "nativeElapsedSeconds": 9.795,
+      "units": [
+        {
+          "id": "cd5b3961-9055-4158-9e05-e91223db027e",
+          "fadedIn": true,
+          "dissolve": 0,
+          "canAct": true,
+          "canMove": true,
+          "appearanceLock": false
+        },
+        {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "fadedIn": true,
+          "dissolve": 0,
+          "canAct": true,
+          "canMove": true,
+          "appearanceLock": false
+        },
+        {
+          "id": "6fb74cd1-7282-4047-aece-2eb99fe308a4",
+          "fadedIn": true,
+          "dissolve": 0.00183996779,
+          "canAct": true,
+          "canMove": true,
+          "appearanceLock": false
+        },
+        {
+          "id": "ee710b07-b157-4208-b31d-03122c91cc57",
+          "fadedIn": true,
+          "dissolve": 0.00183996779,
+          "canAct": true,
+          "canMove": true,
+          "appearanceLock": false
+        }
+      ],
+      "check": "native-appearance",
+      "passed": true
+    },
+    "cleanupBoundary": {
+      "ready": true,
+      "observedFrames": 17,
+      "frame": 4252,
+      "completedFrame": 4252,
+      "check": "native-load-boundary",
+      "passed": true
+    },
+    "nativeResetTrace": [
+      {
+        "phase": "observer-armed",
+        "frame": 0,
+        "nativeLoadReady": false,
+        "subscribed": true,
+        "ownedCount": 0,
+        "constrictor": null
+      },
+      {
+        "phase": "scenes-loaded",
+        "frame": 4235,
+        "nativeLoadReady": false,
+        "subscribed": true,
+        "ownedCount": 4,
+        "constrictor": {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+          "role": "constrictor-snake",
+          "inPool": true,
+          "inPartyArea": true,
+          "inResetInput": false,
+          "initiatorPart": true,
+          "targetPart": false,
+          "initiatorTarget": "ee710b07-b157-4208-b31d-03122c91cc57",
+          "targetOwner": null,
+          "grabPresent": true,
+          "storedLinks": 0,
+          "holdBuff": true,
+          "grappledBuff": false,
+          "cantAct": true,
+          "cantMove": true
+        }
+      },
+      {
+        "phase": "load-complete-before",
+        "frame": 4252,
+        "nativeLoadReady": false,
+        "subscribed": true,
+        "ownedCount": 4,
+        "constrictor": {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+          "role": "constrictor-snake",
+          "inPool": true,
+          "inPartyArea": true,
+          "inResetInput": false,
+          "initiatorPart": true,
+          "targetPart": false,
+          "initiatorTarget": "ee710b07-b157-4208-b31d-03122c91cc57",
+          "targetOwner": null,
+          "grabPresent": true,
+          "storedLinks": 0,
+          "holdBuff": true,
+          "grappledBuff": false,
+          "cantAct": true,
+          "cantMove": true
+        }
+      },
+      {
+        "phase": "reset-before",
+        "frame": 4252,
+        "nativeLoadReady": false,
+        "subscribed": true,
+        "ownedCount": 4,
+        "constrictor": {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+          "role": "constrictor-snake",
+          "inPool": true,
+          "inPartyArea": true,
+          "inResetInput": true,
+          "initiatorPart": true,
+          "targetPart": false,
+          "initiatorTarget": "ee710b07-b157-4208-b31d-03122c91cc57",
+          "targetOwner": null,
+          "grabPresent": true,
+          "storedLinks": 0,
+          "holdBuff": true,
+          "grappledBuff": false,
+          "cantAct": true,
+          "cantMove": true
+        }
+      },
+      {
+        "phase": "reset-after",
+        "frame": 4252,
+        "nativeLoadReady": false,
+        "subscribed": true,
+        "ownedCount": 4,
+        "constrictor": {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+          "role": "constrictor-snake",
+          "inPool": true,
+          "inPartyArea": true,
+          "inResetInput": true,
+          "initiatorPart": false,
+          "targetPart": false,
+          "initiatorTarget": null,
+          "targetOwner": null,
+          "grabPresent": true,
+          "storedLinks": 0,
+          "holdBuff": false,
+          "grappledBuff": false,
+          "cantAct": false,
+          "cantMove": false
+        }
+      },
+      {
+        "phase": "load-complete-after",
+        "frame": 4252,
+        "nativeLoadReady": true,
+        "subscribed": true,
+        "ownedCount": 4,
+        "constrictor": {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+          "role": "constrictor-snake",
+          "inPool": true,
+          "inPartyArea": true,
+          "inResetInput": false,
+          "initiatorPart": false,
+          "targetPart": false,
+          "initiatorTarget": null,
+          "targetOwner": null,
+          "grabPresent": true,
+          "storedLinks": 0,
+          "holdBuff": false,
+          "grappledBuff": false,
+          "cantAct": false,
+          "cantMove": false
+        }
+      },
+      {
+        "phase": "fixture-native-load-ready",
+        "frame": 4252,
+        "nativeLoadReady": true,
+        "subscribed": true,
+        "ownedCount": 4,
+        "constrictor": {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+          "role": "constrictor-snake",
+          "inPool": true,
+          "inPartyArea": true,
+          "inResetInput": false,
+          "initiatorPart": false,
+          "targetPart": false,
+          "initiatorTarget": null,
+          "targetOwner": null,
+          "grabPresent": true,
+          "storedLinks": 0,
+          "holdBuff": false,
+          "grappledBuff": false,
+          "cantAct": false,
+          "cantMove": false
+        }
+      },
+      {
+        "phase": "reset-assertion",
+        "frame": 4252,
+        "nativeLoadReady": true,
+        "subscribed": true,
+        "ownedCount": 4,
+        "constrictor": {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "blueprint": "KMG_Summoning_Unit_ConstrictorSnake",
+          "role": "constrictor-snake",
+          "inPool": true,
+          "inPartyArea": true,
+          "inResetInput": true,
+          "initiatorPart": false,
+          "targetPart": false,
+          "initiatorTarget": null,
+          "targetOwner": null,
+          "grabPresent": true,
+          "storedLinks": 0,
+          "holdBuff": false,
+          "grappledBuff": false,
+          "cantAct": false,
+          "cantMove": false
+        }
+      },
+      {
+        "phase": "scenario-complete",
+        "frame": 4334,
+        "nativeLoadReady": true,
+        "subscribed": true,
+        "ownedCount": 0,
+        "constrictor": null
+      }
+    ],
+    "strictReset": {
+      "free": true,
+      "grabPresent": true,
+      "holdBlueprint": "5af4e99c8e5744a6b978412b126d25f0",
+      "grappledBlueprint": "e49fc099e63b4392bb262f1fefa3301b",
+      "units": [
+        {
+          "id": "9d9eadfb-e4bf-49f9-b246-f7bb48f78498",
+          "role": "constrictor-snake",
+          "free": true,
+          "failures": [],
+          "initiatorPart": false,
+          "targetPart": false,
+          "initiatorTarget": null,
+          "targetOwner": null,
+          "linksPart": true,
+          "storedLinks": 0,
+          "holdBuff": false,
+          "grappledBuff": false,
+          "cantAct": false,
+          "cantMove": false,
+          "canAct": true,
+          "canMove": true,
+          "appearanceLock": false
+        },
+        {
+          "id": "cd5b3961-9055-4158-9e05-e91223db027e",
+          "role": "viper",
+          "free": true,
+          "failures": [],
+          "initiatorPart": false,
+          "targetPart": false,
+          "initiatorTarget": null,
+          "targetOwner": null,
+          "linksPart": false,
+          "storedLinks": 0,
+          "holdBuff": false,
+          "grappledBuff": false,
+          "cantAct": false,
+          "cantMove": false,
+          "canAct": true,
+          "canMove": true,
+          "appearanceLock": false
+        },
+        {
+          "id": "6fb74cd1-7282-4047-aece-2eb99fe308a4",
+          "role": "venom-target",
+          "free": true,
+          "failures": [],
+          "initiatorPart": false,
+          "targetPart": false,
+          "initiatorTarget": null,
+          "targetOwner": null,
+          "linksPart": false,
+          "storedLinks": 0,
+          "holdBuff": false,
+          "grappledBuff": false,
+          "cantAct": false,
+          "cantMove": false,
+          "canAct": true,
+          "canMove": true,
+          "appearanceLock": false
+        },
+        {
+          "id": "ee710b07-b157-4208-b31d-03122c91cc57",
+          "role": "hold-target",
+          "free": true,
+          "failures": [],
+          "initiatorPart": false,
+          "targetPart": false,
+          "initiatorTarget": null,
+          "targetOwner": null,
+          "linksPart": false,
+          "storedLinks": 0,
+          "holdBuff": false,
+          "grappledBuff": false,
+          "cantAct": false,
+          "cantMove": false,
+          "canAct": true,
+          "canMove": true,
+          "appearanceLock": false
+        }
+      ],
+      "check": "session-hold-reset",
+      "passed": true
+    },
+    "venomReload": {
+      "present": true,
+      "dc": 13,
+      "ticks": 1,
+      "saves": 0,
+      "round": 0,
+      "applications": 1,
+      "savedTicks": 1,
+      "constitutionDamage": 2,
+      "savedConstitutionDamage": 2,
+      "check": "venom-state",
+      "passed": true
+    },
+    "venomContinuation": {
+      "before": {
+        "present": true,
+        "dc": 13,
+        "ticks": 1,
+        "saves": 0,
+        "round": 0
+      },
+      "afterOneExposure": {
+        "present": true,
+        "dc": 13,
+        "ticks": 2,
+        "saves": 0,
+        "round": 1
+      },
+      "damageDelta": 2,
+      "nativeSaves": [
+        {
+          "dc": 13,
+          "passed": false,
+          "reasonPresent": true,
+          "target": "6fb74cd1-7282-4047-aece-2eb99fe308a4",
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "cd5b3961-9055-4158-9e05-e91223db027e"
+        },
+        {
+          "dc": 13,
+          "passed": true,
+          "reasonPresent": true,
+          "target": "6fb74cd1-7282-4047-aece-2eb99fe308a4",
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "cd5b3961-9055-4158-9e05-e91223db027e"
+        }
+      ],
+      "nativeDamage": [
+        {
+          "damage": 2,
+          "nativeDice": "0",
+          "nativeBonus": 2,
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "cd5b3961-9055-4158-9e05-e91223db027e",
+          "target": "6fb74cd1-7282-4047-aece-2eb99fe308a4"
+        }
+      ],
+      "cured": true,
+      "check": "venom-native-continuation-cure",
+      "passed": true
+    },
+    "nativeDestruction": {
+      "units": 4,
+      "capturedResources": 12,
+      "remainingResources": 0,
+      "remainingUnits": 0,
+      "check": "cleanup-native-destruction",
+      "passed": true
+    },
+    "unrelatedPreserved": {
+      "preexistingUnits": 3,
+      "preserved": true,
+      "check": "unrelated-preserved",
+      "passed": true
+    },
+    "freshAbsence": [
+      {
+        "ready": true,
+        "observedFrames": 17,
+        "frame": 4258,
+        "completedFrame": 4258,
+        "check": "native-load-boundary",
+        "passed": true
+      },
+      {
+        "enabled": true,
+        "published": 976,
+        "check": "publication",
+        "passed": true
+      },
+      {
+        "remainingSummons": 0,
+        "check": "fresh-absence",
+        "passed": true
+      }
+    ]
+  },
+  "savedFixture": {
+    "nativePrepareWrites": 1,
+    "nativeCleanupWrites": 1,
+    "remainingMarkedUnits": 0,
+    "freshAbsenceVerified": true,
+    "manualSaveAccess": false,
+    "protectedBaselineLoadedOrWritten": false
+  },
+  "interpretation": "Corrected fixture observes actual native load-complete return before any unit work. Existing production reset clears loaded Constrictor initiator/Hold/CantAct/CantMove at frame4252; grab remains. No direct reset, cleanup adaptation, reconstructed grapple or relaxed assertion. Prior failed assertions were at scenes-loaded before this callback. Previous evidence is retained.",
+  "scope": "Exact enabled-module Viper/Constrictor receipt-owned working-save persistence, native reset, venom continuation/cure, reconstruction of visuals/skills, native resource reclamation and fresh absence. Not module-disabled/whole-roster persistence, routes/UI/lifecycle, Salamander, new command/crowd qualification, publication or full Sprint17.",
+  "nextAction": "Remaining snake lifecycle/UI/private32 routes; separate Salamander seam; one complete exact Sprint17 hidden candidate and publication, then full Phase2B closure. Stop for owner review.",
+  "fullSprintQualified": false,
+  "publicationAuthorized": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

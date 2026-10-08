@@ -21,9 +21,9 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(100, (int)manifest["count"],
+            Assertions.Equal(109, (int)manifest["count"],
                 "Icon manifest count changed.");
-            Assertions.Equal(100, rows.Count,
+            Assertions.Equal(109, rows.Count,
                 "Icon manifest row count changed.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 286 } else { 284 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 325 } else { 323 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
@@ -159,8 +159,9 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG_Summoning_Unit_Eagle", out eagle) && eagle == 0.30f,
                 "Eagle view-only scale changed.");
             Assertions.True(SummonViewScaleCatalog.All.All(value =>
-                    value.Multiplier >= 0.20f && value.Multiplier <= 1.25f),
-                "Accepted view-only scale bounds changed.");
+                    value.Multiplier >= 0.20f && (value.CreatureKey == "dire-crocodile"
+                        ? value.Multiplier == 2.0f : value.Multiplier <= 1.25f)),
+                "Only the new Gargantuan crocodilian has the explicit 2x view step.");
             string runtime = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));

@@ -142,6 +142,11 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
                     ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint13Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint14Tests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint15Tests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint16Tests.AppendedLedgerIdentities +
+                SerpentineRulesTests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 all.Length,
                 "Manifest total must include 240 production elemental identities.");
@@ -160,6 +165,11 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
                     ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint13Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint14Tests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint15Tests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint16Tests.AppendedLedgerIdentities +
+                SerpentineRulesTests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),

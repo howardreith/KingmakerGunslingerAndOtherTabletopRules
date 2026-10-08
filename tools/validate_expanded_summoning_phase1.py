@@ -19,6 +19,7 @@ live in the Phase 1 state file.
 """
 from __future__ import annotations
 import json
+import re
 import sys
 from pathlib import Path
 sys.dont_write_bytecode = True
@@ -342,7 +343,18 @@ PHASE1 = {
     "packageFileCountWithSoundBank": 251,
 }
 SPRINT3 = PHASE1  # the pins below read the current figures
-PHASE2_ADDITIONS = {"KMG.Summoning.Natural.DireBat.Blindsense"}
+# Phase 2 identities that are not matched by the creature-name filters below.
+# The Wolverine rage symbols must be listed exactly rather than by a
+# ".Wolverine" substring, because the creature itself is a Phase 1 roster
+# member and all of its ability placements belong to the Phase 1 append.
+PHASE2_ADDITIONS = {
+    "KMG.Summoning.Natural.DireBat.Blindsense",
+    "KMG.Summoning.Natural.Bite1",
+    "KMG.Summoning.Natural.Wolverine.Rage",
+    "KMG.Summoning.Natural.Wolverine.RageOnset",
+    "KMG.Summoning.Natural.Wolverine.RageState",
+    "KMG.Summoning.Natural.Tail1d6",
+}
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
@@ -377,9 +389,22 @@ def validate(root: Path) -> None:
         ".Stirge" in symbol or ".Aurochs" in symbol or
         ".Bison" in symbol or ".Rhinoceros" in symbol or
         ".WoollyRhinoceros" in symbol or ".DireRat" in symbol or
+        ".ShadowMastiff" in symbol or
+        # Sprint 14's insects. ".GiantAnt" covers both castes' units and
+        # placements as well as the shared poison and venom, because the two
+        # castes are one stat block and one poison graph.
+        ".FireBeetle" in symbol or ".GiantAnt" in symbol or
+        ".GiantStagBeetle" in symbol or ".DireCrocodile" in symbol or
+        ".Viper" in symbol or ".ConstrictorSnake" in symbol or
+        symbol in {"KMG.Summoning.Special.Salamander.TailType", "KMG.Summoning.Special.Salamander.UnitType"} or
+        ".Special.Crocodile." in symbol or
+        symbol == "KMG.Summoning.Special.Crocodilian.SprintNotEngaged" or
+        symbol == "KMG.Summoning.Natural.Bite3d6" or
+        symbol == "KMG.Summoning.Natural.Tail4d8" or
         symbol == "KMG.Summoning.Natural.GoblinDog.Traits" or
         symbol == "KMG.Summoning.Natural.GoblinDog.AllergicReaction" or
         symbol == "KMG.Summoning.Natural.StirgeTouch" or
+        symbol == "KMG.Summoning.Natural.AntSting1d4" or
         symbol == "KMG.Summoning.Natural.WaspSting1d8"}
     expected = sorted((symbol, planned_type) for symbol, planned_type in plan
                       if symbol not in prefix and symbol not in phase2_additions)
@@ -390,9 +415,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 88",
-        "ValidateFamily(SummonFamily.Monster, 80, 453)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 78, 447)",
+        "Creatures.Length != 97",
+        "ValidateFamily(SummonFamily.Monster, 88, 506)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 86, 502)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -403,12 +428,12 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 900;",
-        "SuppressedLogicalPlacementCount = 68;")
+        "RegisteredLogicalPlacementCount = 1008;",
+        "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 88;",
-        "LogicalAbilityCount = 900;",
-        "TemplatedPlacementCount = 238;",
+        "UnitCount = 97;",
+        "LogicalAbilityCount = 1008;",
+        "TemplatedPlacementCount = 287;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
         "Values.Length != %d" % SPRINT3["nativeExpansionWrappers"],
@@ -416,10 +441,10 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != 41",
+        "Values.Length != 49",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 9))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 18))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -477,7 +502,7 @@ def validate(root: Path) -> None:
         # Correction order: attack identity, target identity, the multi-link hold, the later-turn swallow
         "class SummonLimbs", "class SummonGrappleDamage", "class SummonMultiHoldComponent",
         "class SummonHeldComponent", "class ExpandedSummoningRakeSequencePatch",
-        "IsHeldSinceRoundStart", "ShouldSwallowOnMaintain", "IsGrabSizeAllowed", "UnitHelper.TryBreakFree")
+        "IsHeldSinceRoundStart", "CrocodilianRulesPolicy.SelectMaintainRider", "IsGrabSizeAllowed", "UnitHelper.TryBreakFree")
     require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
         "ConfigureGrabber(library, bySymbol, LeopardUnitSymbol", "ConfigureGrabber(library, bySymbol, DireTigerUnitSymbol",
         "ExpandedSummoningSpecialProfiles.LionVisualTint", "GrappleMultiHoldSymbol", "GrappleMultiHeldSymbol",
@@ -495,14 +520,22 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 9 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 9 or \
+    # Eighteen Phase 2 concepts including the two hidden Sprint 17 snakes.
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 18 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 18 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
                  "aurochs", "bison", "rhinoceros", "woolly-rhinoceros",
                  "remove-stirge", "dire-rat"} <= {row["key"] for row in runtime_icons["icons"]}:
         raise AssertionError("Runtime icon manifest does not carry the Phase 1 icons")
+
+    # Sprint 14's three insects carry their own icons from registration rather
+    # than from publication: a creature that is withheld still has to be able
+    # to show its own face the moment its key leaves the suppression set.
+    if not {"fire-beetle", "giant-ant-worker", "giant-ant-soldier"} <= \
+            {row["key"] for row in runtime_icons["icons"]}:
+        raise AssertionError("Runtime icon manifest is missing a Sprint 14 insect")
     for key in ("pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                 "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                 "salt-mephit", "steam-mephit", "tiger", "dire-rat"):
@@ -510,14 +543,16 @@ def validate(root: Path) -> None:
                 not (root / "assets-source/original-icons/expanded-summoning/sources" / (key + ".png")).is_file():
             raise AssertionError("Phase 1 icon file missing: " + key)
     # Phase 2 adds Bat/Eagle/Wasp/Stirge meshes and albedos, the Sprint 12
-    # quadruped meshes and albedos, the Bat and prepared Dire Rat icons, and
-    # the distinct Remove Stirge action icon.
+    # quadruped meshes and albedos, the three Sprint 13 creature meshes and
+    # albedos, the Bat and prepared Dire Rat icons, and the distinct Remove
+    # Stirge action icon.
     # Keep the accepted Phase 1 metadata at 251, but validate the current
-    # package count with the Phase 2 bird, vermin and icon additions.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 31
-    # Only the current whole-package count grows by the four DATA trait PNGs.
-    # No summoning count or historical record changes.
-    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.142":
+    # package count with the Phase 2 bird, vermin, quadruped and icon
+    # additions, including seven Sprint 17 files: three body/paint pairs
+    # plus the separate original human/tail research mesh (shared paint).
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 70
+    # Four unchanged master v0.0.142 trait exports join the qualified Phase2B tree.
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.143":
         package_count += 4
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
@@ -527,7 +562,17 @@ def validate(root: Path) -> None:
             "giant-wasp-mesh.json", "giant-wasp-albedo.png",
             "stirge-mesh.json", "stirge-albedo.png",
             "assets\\sprint12-quadrupeds",
-            "@('dire-rat','hyena','goblin-dog')")
+            "@('dire-rat','hyena','goblin-dog')",
+            "assets\\sprint13-creatures",
+            "@('wolverine','shadow-mastiff','poisonous-frog')",
+            "assets\\sprint14-insects")
+        insect_assets = {"fire-beetle", "giant-ant-worker", "giant-ant-soldier",
+                         "giant-ant-drone", "giant-stag-beetle"}
+        arrays = re.findall(r"@\(([^)]*)\)",
+                            (root / "scripts" / script).read_text(encoding="utf-8"))
+        if not any(insect_assets <= set(re.findall(r"'([^']+)'", array))
+                   for array in arrays):
+            raise AssertionError(script + " must package all five insect assets")
 
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]

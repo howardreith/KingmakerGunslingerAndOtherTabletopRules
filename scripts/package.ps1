@@ -25,7 +25,7 @@ $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\Kingm
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
-$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-elemental-race-traits-and-content.zip"
+$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-phase2b-checkpoint.zip"
 $checksumPath = "$packagePath.sha256"
 
 if (Test-Path -LiteralPath $stagingDirectory) {
@@ -112,6 +112,44 @@ if (Test-Path -LiteralPath $sprint12QuadrupedSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $sprint12QuadrupedSource "$kind-albedo.png") -Destination $sprint12QuadrupedDestination
     }
 }
+$sprint13CreatureSource = Join-Path $outputDirectory 'assets\sprint13-creatures'
+if (Test-Path -LiteralPath $sprint13CreatureSource -PathType Container) {
+    $sprint13CreatureDestination = Join-Path $modDirectory 'assets\sprint13-creatures'
+    New-Item -ItemType Directory -Path $sprint13CreatureDestination -Force | Out-Null
+    foreach ($kind in @('wolverine','shadow-mastiff','poisonous-frog')) {
+        Copy-Item -LiteralPath (Join-Path $sprint13CreatureSource "$kind-mesh.json") -Destination $sprint13CreatureDestination
+        Copy-Item -LiteralPath (Join-Path $sprint13CreatureSource "$kind-albedo.png") -Destination $sprint13CreatureDestination
+    }
+}
+$sprint14InsectSource = Join-Path $outputDirectory 'assets\sprint14-insects'
+if (Test-Path -LiteralPath $sprint14InsectSource -PathType Container) {
+    $sprint14InsectDestination = Join-Path $modDirectory 'assets\sprint14-insects'
+    New-Item -ItemType Directory -Path $sprint14InsectDestination -Force | Out-Null
+    foreach ($kind in @('fire-beetle','giant-ant-worker','giant-ant-soldier',
+                 'giant-ant-drone','giant-stag-beetle')) {
+        Copy-Item -LiteralPath (Join-Path $sprint14InsectSource "$kind-mesh.json") -Destination $sprint14InsectDestination
+        Copy-Item -LiteralPath (Join-Path $sprint14InsectSource "$kind-albedo.png") -Destination $sprint14InsectDestination
+    }
+}
+$crocodilianSource = Join-Path $outputDirectory 'assets\sprint16-crocodilians'
+if (Test-Path -LiteralPath $crocodilianSource -PathType Container) {
+    $crocodilianDestination = Join-Path $modDirectory 'assets\sprint16-crocodilians'
+    New-Item -ItemType Directory -Path $crocodilianDestination -Force | Out-Null
+    foreach ($kind in @('crocodile','dire-crocodile')) {
+        Copy-Item -LiteralPath (Join-Path $crocodilianSource "$kind-mesh.json") -Destination $crocodilianDestination
+        Copy-Item -LiteralPath (Join-Path $crocodilianSource "$kind-albedo.png") -Destination $crocodilianDestination
+    }
+}
+# Closed seven-file original Sprint 17 body inventory. Fail closed on a
+# missing export; no private authoring outputs or broad folder copy.
+$serpentineSource = Join-Path $outputDirectory 'assets\sprint17-serpents'
+$serpentineDestination = Join-Path $modDirectory 'assets\sprint17-serpents'
+New-Item -ItemType Directory -Path $serpentineDestination -Force | Out-Null
+foreach ($kind in @('viper','constrictor-snake','salamander')) {
+    Copy-Item -LiteralPath (Join-Path $serpentineSource "$kind-mesh.json") -Destination $serpentineDestination
+    Copy-Item -LiteralPath (Join-Path $serpentineSource "$kind-albedo.png") -Destination $serpentineDestination
+}
+Copy-Item -LiteralPath (Join-Path $serpentineSource 'salamander-human-mesh.json') -Destination $serpentineDestination
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -132,8 +170,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-# two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 286 } else { 284 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 325 } else { 323 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

@@ -1,0 +1,188 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    /// <summary>Fixed research targets, not a request-supplied asset loader.</summary>
+    internal static class SerpentineRigSurveyPolicy
+    {
+        internal static string[] Keys { get { return new[] { "medium-water-elemental", "salamander", "purple-worm" }; } }
+
+        // Archived native donor census, October 2. This is a read-only prefab
+        // comparison, never a fourth campaign actor or a summon registration.
+        internal const string HybridWeaponKey = "lizardfolk-greatclub";
+        internal const string HybridWeaponBlueprint = "f080877221934ea40b29e1d9fa71bc1c";
+        internal const string HybridWeaponPrefab = "31cb7e484faf8734fa2c0ef1936b1806";
+        internal const string HybridPrimaryWeapon = "c926ffbdccc4d124c8e8dedfe2e6f499";
+
+        // One representative of each of the eleven distinct Lizardfolk views
+        // in the archived October 2 native census. Read-only metadata only:
+        // no campaign actor, caller-supplied asset, or action adoption.
+        internal static string[][] ManufacturedPrefabSources
+        {
+            get { return new[] {
+                new[] { "9f7a7364b76d65d43b72086aedce68ae", "c664715ff7165984285f66acc764b4b3" },
+                new[] { "e8276e28b2234a745900fed80670bfdb", "9b1744531a4428e44aa9837ca984513a" },
+                new[] { "f080877221934ea40b29e1d9fa71bc1c", "31cb7e484faf8734fa2c0ef1936b1806" },
+                new[] { "f27f96f4bcc432c478615f2e9013ec2e", "cf7994611698da2428a07515d718e252" },
+                new[] { "a8cbd4cdb0feaf64eab1452257c3c971", "d6db6ba3b2c459a48ba0730beef0bac8" },
+                new[] { "bb980b317d907254093595b817a3b7ee", "067f4c19b91b0b2488ed1121f24aac9a" },
+                new[] { "bdc2c0f401cad70449452b372d26b59d", "4f11f063a6293a140b24c5b84596e418" },
+                new[] { "5eb33299047235146936bb18a38a0af4", "d879364ccc52bb74dabbc16851c83fd5" },
+                new[] { "73b06130e76c4554897f97a8ac453cfb", "d706840419a712a4eb07fc74c8f1d2b8" },
+                new[] { "4d98f6f765a999f40b587ef22f79db95", "c7799f73648f812439fc422edd6ffc7a" },
+                new[] { "a01e73eab5d86fe4e88eff103d87684a", "0a44e2f97be8f2d4980d3abc81dbfa92" }
+            }; }
+        }
+
+        internal static bool MatchesManufacturedPrefab(string blueprint, string prefab)
+        { return ManufacturedPrefabSources.Any(row => row[0] == blueprint && row[1] == prefab); }
+
+        // The same archived census contains three distinct actual spear or
+        // longspear prefabs. Equipment is evidence for what to inspect, NOT
+        // evidence of usable animation. No campaign NPC is instantiated.
+        internal static string[][] SpearPrefabSources
+        {
+            get { return new[] {
+                new[] { "8421b6137d7765947958973526b5249b", "520c43197dcb8c848a632675c7aa3f27",
+                    "928723c8d5238cb409b16e4d077a03d0", "Spear" },
+                new[] { "86dc43534645e234eb35431131e3b669", "ced3729f4b4abab4da4ef63d8489f857",
+                    "f28f6031c2908d84d945865a80f67177", "Longspear" },
+                new[] { "063e8f0e64d9b8d41a6a60bf5f13145c", "6e8f58e9489bcb747beb203f72e807a2",
+                    "9f1545b033149e6429cc9c29354fd9f1", "Longspear" }
+            }; }
+        }
+
+        internal static bool MatchesSpearPrefab(string blueprint, string prefab,
+            string weapon, string category, bool hasOffhand)
+        { return !hasOffhand && SpearPrefabSources.Any(row => row[0] == blueprint &&
+            row[1] == prefab && row[2] == weapon && row[3] == category); }
+
+        internal const string HumanSpearBlueprint = "86dc43534645e234eb35431131e3b669";
+        internal const string HumanSpearPrefab = "ced3729f4b4abab4da4ef63d8489f857";
+        internal const string HumanSpearBody = "Renderer_Character_Diffuse_Cutout";
+
+        // Missing/nonfinite matrix data stays unknown. A finite disagreement
+        // is retained numerically, never clamped into compatibility.
+        internal static float? MatrixDifference(float[] first, float[] other)
+        {
+            if (first == null || other == null || first.Length != 16 || other.Length != 16) return null;
+            float maximum = 0;
+            for (int i = 0; i < 16; i++)
+            {
+                if (!Finite(first[i]) || !Finite(other[i])) return null;
+                float difference = Math.Abs(first[i] - other[i]);
+                if (!Finite(difference)) return null;
+                maximum = Math.Max(maximum, difference);
+            }
+            return maximum;
+        }
+
+        // A read-only census preserves absent enumeration, explicit empty
+        // list, null slots and duplicates. None implies usable playback.
+        // Bound before materializing an arbitrary enumeration.
+        internal static T[] SnapshotMetadataSlots<T>(IEnumerable<T> source) where T : class
+        {
+            if (source == null) return null;
+            T[] slots = source.Take(129).ToArray();
+            if (slots.Length > 128) throw new ArgumentException("Native action metadata exceeds128 slots.");
+            return slots;
+        }
+
+        internal static bool MatchesHybridWeaponSource(string blueprint, string prefab,
+            string primaryWeapon, bool hasOffhand)
+        {
+            return blueprint == HybridWeaponBlueprint && prefab == HybridWeaponPrefab &&
+                primaryWeapon == HybridPrimaryWeapon && !hasOffhand;
+        }
+
+        internal static string NativeBlueprint(string key)
+        {
+            if (key == "medium-water-elemental") return "62a3e860e6e72e6499c38bb8b2fe303e";
+            if (key == "salamander") return "e8276e28b2234a745900fed80670bfdb";
+            if (key == "purple-worm") return "bf2216f48b3f4d24c9c502007649340d";
+            throw new ArgumentException("Not a Sprint 17 native rig survey target.", "key");
+        }
+
+        internal static string Prefab(string key)
+        {
+            if (key == "medium-water-elemental") return "dc296683c2a3d2648afa516aeb030fb8";
+            if (key == "salamander") return "9b1744531a4428e44aa9837ca984513a";
+            if (key == "purple-worm") return "130f0866af3249a4e817ec7e6e9ecd89";
+            throw new ArgumentException("Not a Sprint 17 native rig survey target.", "key");
+        }
+
+        internal static bool MatchesNativeSource(string key, string blueprint, string prefab)
+        {
+            return Array.IndexOf(Keys, key) >= 0 &&
+                blueprint == NativeBlueprint(key) && prefab == Prefab(key);
+        }
+
+        // A native action may select animation indirectly and expose no clip
+        // enumeration at all. Preserve that distinction from an empty list;
+        // research metadata must neither throw nor infer absent behavior.
+        internal static int? CountPresentClips(IEnumerable<bool> clipPresence)
+        {
+            return clipPresence == null ? (int?)null : clipPresence.Count(value => value);
+        }
+
+        // A navigation/actor origin is not a measured floor. Keep negative
+        // clearance (penetration) as evidence; never clamp it into a PASS.
+        internal static float? MeasuredGroundClearance(float vertexY, bool hit,
+            float floorY, float normalY, bool ownedCollider)
+        {
+            if (!hit || ownedCollider || !Finite(vertexY) || !Finite(floorY) ||
+                !Finite(normalY) || normalY < .2f || normalY > 1f) return null;
+            float clearance = vertexY - floorY;
+            return Finite(clearance) ? (float?)clearance : null;
+        }
+
+        internal static bool Finite(float value)
+        { return !float.IsNaN(value) && !float.IsInfinity(value); }
+
+        // Research completeness is not contact acceptance. A large measured
+        // gap is usable evidence; an incidental event or missing measurement
+        // is not. Final visual gates separately require actual contact.
+        internal static bool IsMeasuredIssuedContact(bool ownedPair, bool executing,
+            bool opportunity, bool nativeContact, int measuredPoints, float gap)
+        { return ownedPair && executing && !opportunity && nativeContact &&
+            measuredPoints > 0 && Finite(gap) && gap >= 0; }
+
+        // Native hand-attack OnUpdate can mark IsActed after .1 seconds when
+        // ActiveAnimation is null. That fallback is not clip-playback proof.
+        // This proves observed playback metadata, never geometric contact.
+        internal static bool IsObservedAttackClip(bool started, bool acted, bool active,
+            string clip, float duration, float time)
+        { return started && acted && active && !string.IsNullOrWhiteSpace(clip) &&
+            Finite(duration) && duration > 0 && Finite(time) && time >= 0; }
+
+        // An unreadable native spear may expose bounds, not vertices. The
+        // end-centre estimate must include the full transverse uncertainty;
+        // never present a bounding-box corner as a measured surface vertex.
+        internal static float? ConservativeSpearEndGap(float endCentreGap, float transverseRadius)
+        {
+            if (!Finite(endCentreGap) || !Finite(transverseRadius) ||
+                endCentreGap < 0 || transverseRadius < 0) return null;
+            float upper = endCentreGap + transverseRadius;
+            return Finite(upper) ? (float?)upper : null;
+        }
+
+        // A request-local ORIGINAL-mesh art diagnostic, never native geometry
+        // or a renderer visibility/culling override. Preserve input ownership.
+        internal static int[] ReverseOriginalTriangleOrder(int[] triangles, int vertexCount)
+        {
+            if (triangles == null || triangles.Length == 0 || triangles.Length % 3 != 0 ||
+                vertexCount < 3 || triangles.Any(index => index < 0 || index >= vertexCount))
+                throw new ArgumentException("Incomplete original triangle list.");
+            int[] result = (int[])triangles.Clone();
+            for (int i = 0; i < result.Length; i += 3)
+            {
+                if (result[i] == result[i + 1] || result[i] == result[i + 2] || result[i + 1] == result[i + 2])
+                    throw new ArgumentException("Degenerate original triangle indices.");
+                int second = result[i + 1]; result[i + 1] = result[i + 2]; result[i + 2] = second;
+            }
+            return result;
+        }
+    }
+}

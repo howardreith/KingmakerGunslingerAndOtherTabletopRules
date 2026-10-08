@@ -142,6 +142,11 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
+Active v0.0.143 integration: 2922 stable IDs: 2920 active and 2 reserved.
+The released master2660-entry prefix is exact;262 missing qualified summoning
+identities append in import order. Production master traits/content and qualified
+summoning implementations are preserved by exact integration-boundary checks.
+
 ## 1. Decision summary
 
 Kingmaker Gunslinger is a standalone Unity Mod Manager mod for **Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b**. It uses Kingmaker's blueprint lifecycle and legacy Harmony 1.2 integration rather than importing Wrath's BlueprintCore or modification-template stack.
@@ -877,9 +882,60 @@ technical qualification.
 Sprint 12 appends 37 active Dire Rat identities: one unit, eighteen logical
 placements and eighteen celestial/fiendish execution children. It then appends
 the Dire Rat disease feature, Goblin Dog disease-traits feature, and Goblin Dog
-allergic-reaction buff. The resulting append-only ledger contains 2649 stable IDs: 2647 active and 2 reserved. Dire Rat, Dog, Hyena and Goblin Dog remain
-publication-gated while their Sprint 12 mechanics, distinct visuals and
-lifecycle are qualified.
+allergic-reaction buff. Dire Rat, Dog, Hyena and Goblin Dog are published:
+their mechanics, distinct visuals, navigation, both combat modes, quantity and
+crowded-space behaviour, persistence and lifecycle all qualified on 2026-10-01,
+and the suppression set is empty.
+
+Sprint 13 appends four more: the Poison Frog's flat-1 bite, whose printed
+damage is a single point rather than a die, and the Wolverine rage trigger
+feature with its onset marker and rage state. It also registers the Shadow
+Mastiff, a new Summon Monster VI outsider with no native Kingmaker equivalent:
+its unit, its four logical placements, the 1d6 tail slap its printed stat block
+needs, and its bay and shadow-blend identities. The Shadow Mastiff was
+registered ahead of its own qualification and suppressed while it was proved;
+it qualified on 2026-10-02 and published, so Sprint 13 closed with an empty
+suppression set and 904 generated choices, superseding the 900 this paragraph
+recorded while the Mastiff was still withheld.
+
+Sprint 14 registers the three insects of the Giant Spider rig family - the Fire
+Beetle at tier 1, the Giant Ant (Worker) at tier 2 and the Giant Ant (Soldier)
+at tier 3 - with their units, their 48 logical placements across both families,
+the soldier's own 1d4 sting so its poison can gate on that weapon's type and
+never reach its bite, that poison's feature and venom buff, the beetle's
+luminescence feature, and the soldier's grab traits carrier on the shared
+Sprint 6 grapple lifecycle. All three are registered ahead of their own
+qualification, so all 48 placements are suppressed: the registered surface is
+952 and the published surface stays at 904 until their mechanics, original
+visuals, both combat modes and lifecycle qualify. Luminescence is a view-local
+light matching the painted glands and a tooltip that says the beetle glows;
+Kingmaker has no mechanics-layer illumination model, nothing in the rules layer
+consults light level, and no part of this appends one.
+
+A source review before the Sprint 14 candidate added three more. The ants carry
+their printed racial Perception as its own feature rather than the Skill Focus
+that was standing in for it, and the Fire Beetle and the two ant castes each
+take a project unit type: the builder reconstructs class levels, facts, body,
+stats and brain from the profile but leaves BlueprintUnitType alone unless a
+creature asks for its own, so without them all three would have been classified
+as the Giant Spider they borrow.
+The resulting append-only ledger contains 2772 stable IDs: 2770 active and 2 reserved.
+
+Sprints 15-16 extended that ledger to 2836 entries and are now qualified and
+published. Sprint 17 appends 73 snake identities and two Salamander support
+identities without changing that prefix:
+2911 stable IDs: 2909 active and 2 reserved. The snake entries are two units,
+32 logical placements, 32 SM template children and seven owned profile/type/
+poison/grab carriers. The current source registers 97 creatures and 1008
+generated placements, publishes 976, and withholds all 32 Viper/Constrictor
+Snake placements. Snake mechanics and actual UI/visual use are NOT QUALIFIED.
+Salamander retains its existing identity and placements. Its owned tail type
+encodes Medium 2d6 damage and native ten-foot reach; its species type replaces
+donor inspection identity. Printed racial HP/save/rank contributions, native
+feats, wielder-owned heat and tail-only project grab/constrict are a runtime-
+unqualified source candidate. Exact 6ae91f26 qualified only the separate human/
+original-tail prototype; production view adoption and the complete Sprint 17
+gate remain open. No version bump or release is authorized.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

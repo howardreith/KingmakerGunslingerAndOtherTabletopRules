@@ -1,0 +1,273 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAILED BOUNDED SIGNATURE SLICE; SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop sole owner; PR26 active, PR27 salvage-only; zero DATA ports",
+  "candidate": {
+    "commit": "aebf4701f8632ae485d0a769420a3ea3428d8cab",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "4951e9e1dd373594e08260080ddf7f103b23d0bcbc86b6f3c2ee796dafaee780",
+    "dllSha256": "37960ea43690af9edf1530f934948c2f6fc65c86914b10da9be71b1fc0cdda48",
+    "dllMvid": "04007f9b-3326-44fd-b84c-4fdf0a32dbe9",
+    "zipSha256": "0afc61ccbebbef5c6a91df835b262e1eb2e69ad4a4bcfcefc48e8ed241d95e11",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-signatures-source-pass-aebf4701",
+    "manifestSha256": "055cd096119f2184ba16b00ca911a0de8d2088b206bb91af5ba3a6ecf0df981a"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 249,
+    "fullUnfiltered": 2051,
+    "fullDomainSeconds": 84.2,
+    "completeGateSeconds": 181.9,
+    "repositoryStaticIconManifest": true,
+    "cleanExactReferences": 14,
+    "strictDeterministicPackage": true,
+    "standalonePreflight": 502,
+    "orchestration": 142,
+    "provenance": 17,
+    "persistence": [
+      11,
+      3,
+      19
+    ],
+    "crowd": [
+      5,
+      7
+    ],
+    "gateLog": "artifacts/sprint17-signatures-exact-aebf4701-gate.log",
+    "gateLogSha256": "7eee560ca21305b11b5a4e51f6069c7a5c8406671c9e3a6b70d336ba2107c52f",
+    "preflightLogSha256": "5fa471b7e685a0750e0fd513750baeebf126c5aa446eb5a848dab2eaaf030d1b"
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261006T1831543292246Z",
+    "journalSha256": "5ebc1c89b771aa016e5deebf60d790476a1a883bf4a624f1c54ce6e98229c79a",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeSignatures-Attempt1.ps1",
+    "driverSha256": "fd935812c9589aee195b179b0b0bf1fb2b361bfb2f93ea8fa7b8a0c22dd10e71",
+    "status": "NOT-QUALIFIED",
+    "startedAtUtc": "2026-10-06T18:31:54.3604556Z",
+    "completedAtUtc": "2026-10-06T18:38:54.4691641Z",
+    "scenarioOrder": [
+      "working-save-smoke",
+      "disposable-expanded-summoning-snake-signatures"
+    ],
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-06T18:32:20.6435682Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1832215638234Z-working-save-smoke",
+        "requestId": "20261006T1832216008298Z-a829d2cb10bb43ba849c184ae0c99b75",
+        "requestSha256": "12ddea7338331de9be4a3f7f9e748c71bc649b8ba69142695c94e18810f60e73",
+        "resultSha256": "d5aadeff40dc79fb5c909aa1cea9fc719650398dd2c404943dc8dfea2a555526",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "f7f30e11b6e4d855cc5693807e60abff4c10a28da3bf0a454bd9901014e10ca8",
+        "processId": 31396,
+        "processStartedUtc": "2026-10-06T18:32:22.7425960Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T18:35:15.8757007Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-signatures",
+        "startedAtUtc": "2026-10-06T18:35:21.8814059Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1835226930739Z-disposable-expanded-summoning-snake-signatures",
+        "requestId": "20261006T1835227086861Z-1b3b30b6fce14c53a49b987fe2fa55a6",
+        "requestSha256": "a7e1acd8c8821e11c9cf63db650dee8e97c978b8cbc85dbf11058f316b829e2e",
+        "resultSha256": "48a63660d087bfa9b68e3b0be5979cf5ccd0e869da53226deb3c05f84adc7fbe",
+        "assertions": 62,
+        "passed": 60,
+        "failed": [
+          {
+            "name": "sprint17-snake-signature-viper-six-exposures",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-signature-constrict-owner-death",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "1a5425332be46bb7eca8e5214dbbaa3fa0392cc25aeed4445a00a15e4a3a8a2e",
+        "processId": 26812,
+        "processStartedUtc": "2026-10-06T18:35:23.7159013Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-06T18:38:51.8777236Z"
+      }
+    ]
+  },
+  "observations": {
+    "signatureAssertions": 62,
+    "passed": 60,
+    "profileBodyRegressionPassed": 38,
+    "signaturePassed": 22,
+    "signatureRequired": 24,
+    "metadataRows": 46,
+    "metadataSha256": "c548a5644f12255640574f5604cff4439d13eadc818829207dde73fad830d4d3",
+    "failures": [
+      {
+        "name": "sprint17-snake-signature-viper-six-exposures",
+        "status": "FAIL",
+        "expected": "one initial and five later 1d2 Con exposures; no early/duplicate tick; native expiry",
+        "observed": {
+          "exposures": [
+            {
+              "exposure": 1,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 1,
+                "saves": 0,
+                "round": 0
+              }
+            },
+            {
+              "exposure": 2,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 2,
+                "saves": 0,
+                "round": 1
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            },
+            {
+              "exposure": 3,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 3,
+                "saves": 0,
+                "round": 2
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            },
+            {
+              "exposure": 4,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 4,
+                "saves": 0,
+                "round": 3
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            },
+            {
+              "exposure": 5,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 5,
+                "saves": 0,
+                "round": 4
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            },
+            {
+              "exposure": 6,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 6,
+                "saves": 0,
+                "round": 5
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            }
+          ],
+          "signature": "viper-six-exposures",
+          "passed": false
+        }
+      },
+      {
+        "name": "sprint17-snake-signature-constrict-owner-death",
+        "status": "FAIL",
+        "expected": "native death settlement then production hold cleanup; no maintain on dead owner or prey",
+        "observed": {
+          "established": false,
+          "dead": true,
+          "ownerDeathFixtureInjury": true,
+          "free": true,
+          "damage": [],
+          "checks": 0,
+          "signature": "constrict-owner-death",
+          "passed": false
+        }
+      }
+    ],
+    "noRuntimeException": true
+  },
+  "failureClassification": [
+    {
+      "assertion": "sprint17-snake-signature-viper-six-exposures",
+      "kind": "FIXTURE",
+      "evidence": "Six actual 1d2 Constitution exposures and ticks1..6 passed; the buff remained present after exposure6. The fixture incorrectly required removal during that same callback.",
+      "nativeAudit": "BuffPoisonStatDamage.OnNewRound IL0000..000c checks Ticks<=m_TicksPassed at entry; IL0173..017c increments after exposure; IL0182..018d removes on the next due callback without a seventh damage event.",
+      "correction": "Keep native Ticks6 unchanged. Observe six exposures, then the exhausted native due boundary; require unchanged damage/tick count, buff absence and no duplicate damage. Runtime retest required."
+    },
+    {
+      "assertion": "sprint17-snake-signature-constrict-owner-death",
+      "kind": "FIXTURE",
+      "evidence": "Prior lethal-prey case established1 grapple/1 constrict and cleaned the reciprocal link. The immediately following synchronous owner-death case had established=false, zero checks/damage, so it never tested death of an active holder.",
+      "nativeAudit": "ReleaseLink deliberately leaves initiator cleanup to UnitGrappleController; its TickOnUnit IL00be..0121 removes an initiator whose target is absent/no longer grappled. No controller turn occurred between fixture cases.",
+      "correction": "After production hold/death settlement, tick only the owned victim and owner through the audited native controller. Require both parts and both buffs absent. Then establish the next actual grapple before the owner-death assertion. Do not directly remove the initiator part or change production."
+    }
+  ],
+  "nativeAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "log": "artifacts/sprint17-signatures-native-boundaries-audit.log",
+    "logSha256": "c351cce963d7bde9c9fb0478d6da52fee917116c18cd679f462598cb9f4595f2",
+    "rawIlCommitted": false
+  },
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1831551306710Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "completedAtUtc": "2026-10-06T18:38:54.4691641Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T183154Z-3e5afffce5f240d1b2481e7dc7accbdc\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": 0,
+    "sharedLock": false,
+    "staging": false,
+    "nativeSaveWrite": false,
+    "manualSaveFileAccess": false,
+    "protectedBaselineLoadedOrWritten": false
+  },
+  "next": "Source-check and push the fixture-only repair as NOT QUALIFIED, freeze a new exact artifact and rerun the complete affected smoke/signature batch. No publication or full Sprint17 qualification.",
+  "fullSprintQualified": false,
+  "publication": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

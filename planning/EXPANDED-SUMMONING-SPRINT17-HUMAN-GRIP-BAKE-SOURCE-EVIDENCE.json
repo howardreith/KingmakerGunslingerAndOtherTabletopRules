@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-10-07T12:43:00Z",
+  "status": "SOURCE PASS; EXACT RUNTIME PENDING; SPRINT17 NOT QUALIFIED",
+  "sourceParent": "5607001bb5c4bca9b93cb4745cb128371d3a86b8",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "pullRequest": 26,
+  "motivatingEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-GRIP-READABILITY-EVIDENCE.json",
+  "correction": {
+    "scope": "Request-local hand diagnostic only. No gameplay, original art, native renderer/pose/weapon or acceptance-threshold change.",
+    "method": "Two project-owned disabled SkinnedMeshRenderer controls, outside the live view, hold exact borrowed mesh/bone references. BakeMesh writes only project-owned snapshots. Native vertices are never directly read; native import flags remain untouched.",
+    "checks": [
+      "Required bone-weight count and palette checked with detailed mismatch counts",
+      "Non-rendering control matrix matches all16 finite live entries within1e-5; no shear approximation",
+      "Complete finite baked snapshot in renderer-relative coordinates",
+      "Original baked distance agrees within1e-4 with independent weighted-world measurement",
+      "Eight owned bake resources and both probes captured; final native-destruction gate requires every captured resource destroyed and borrowed resources alive"
+    ],
+    "requiredOwnedMinimum": 39,
+    "previousMaterialCloneInclusiveExpected": 40,
+    "thresholds": {
+      "gripMeters": 0.08,
+      "strikeMeters": 0.25
+    },
+    "runtimeAssertions": 15,
+    "nativeGeometryExported": false,
+    "globalHooks": false
+  },
+  "nativeAudit": {
+    "unityCoreSha256": "3a76df7f709d465e3273502e08edbffb536b1c2f78c3a132b8668e59fddd2803",
+    "finding": "Pinned Mesh.vertices uses managed canAccess guard, logs the rejected channel and returns an empty array. Bone-weight/bind accessors and BakeMesh are separate native entry points. This does not prove their live return values.",
+    "primaryApi": "https://docs.unity3d.com/2018.4/Documentation/ScriptReference/SkinnedMeshRenderer.BakeMesh.html",
+    "liveCarrierQualified": false
+  },
+  "gates": {
+    "focused": 297,
+    "unfilteredDomain": 2099,
+    "domainSeconds": 82.6,
+    "completeSeconds": 176.9,
+    "cleanExactReferences": 14,
+    "strictPackageMembers": 321,
+    "status": "PASS",
+    "newTest": "Exact finite16-entry control/live frame; rejects offsets, scale, rotation, shear, non-finite values and missing/partial matrices"
+  },
+  "sourceArtifact": {
+    "dirtyAtParent": true,
+    "archive": "artifacts/sprint17-human-grip-bake-source-pass",
+    "manifest": {
+      "schemaVersion": 1,
+      "generatedAtUtc": "2026-10-07T12:41:15.7079400Z",
+      "generator": "scripts/Build-Local.ps1",
+      "repositoryRoot": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005",
+      "commit": "5607001bb5c4bca9b93cb4745cb128371d3a86b8",
+      "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+      "sourceStateSha256": "a8dd13686bde4e2df6e1085f5ee0a2db5431967efe8716f6277f040fe719e19a",
+      "version": "0.0.141",
+      "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\local-runtime\\0.0.141\\KingmakerGunslinger-0.0.141-local-runtime.zip",
+      "packageSha256": "fd243cec8dfef0d5c6c0be5663f898e9cf2b676758fb89a0eb99f18a22664d0f",
+      "dllSha256": "a67322f95fbdd7af344fe108564ec9329cbb2d312ac24d75a5bd9b2a8edae21a",
+      "dllMvid": "20ee18ae-5f05-41dd-ae7f-5f1c0f99d848",
+      "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+      "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "validated": true
+    }
+  },
+  "logs": [
+    {
+      "path": "artifacts/sprint17-human-grip-bake-source-focused.log",
+      "sha256": "a5a391e7592c6e4b687bb8d5a76c2715bbddb1f3d856f99493e814c4c06f2307"
+    },
+    {
+      "path": "artifacts/sprint17-human-grip-bake-source-gate.log",
+      "sha256": "c8f50c0e0422c83a34df02533099234c0504355ec9b2500f63c8c34da130aba5"
+    },
+    {
+      "path": "artifacts/Inspect-Sprint17-MeshReadability.ps1",
+      "sha256": "7a1d015f17cf2f453fba0563af6ad056a1c4ae3c742edabe46de8e00f23a8042"
+    },
+    {
+      "path": "artifacts/sprint17-human-mesh-readability-audit.txt",
+      "sha256": "dfed3b829963f6eef069badbb2a6154f6464d5db11e6d835c7d78fce9c301ba6"
+    }
+  ],
+  "machine": {
+    "lastRestoration": "2026-10-07T12:19:30.7905394Z",
+    "files": 136,
+    "version": "0.0.117",
+    "tree": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "newRuntimeStarted": false
+  },
+  "next": "Next: push the source-qualified bake-control repair, rebuild the exact clean head with all prelaunch/harness gates, then fresh Steam640820 smoke11 and ALL15 human checks. Prove usable native/owned baked hand samples, independent original-distance agreement, cached-event timing and all40 expected resources (39required base plus any material clones) reclaimed with borrowed assets intact. Do not waive8cm/25cm limits or accept a favorable variant as a fix for native02. Acquire the runtime lease before snapshot and restore that exact installation. Then printed Salamander mechanics, same-artifact Sprint17 hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.",
+  "HumanReview": "NOT_PERFORMED_NONBLOCKING"
+}

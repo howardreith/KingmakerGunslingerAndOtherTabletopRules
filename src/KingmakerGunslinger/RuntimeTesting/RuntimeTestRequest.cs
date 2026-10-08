@@ -250,6 +250,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "whiteout-disposable-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation && !request.ExitAfterCompletion)
                 return "whiteout-foundation-exit-required";
+            if (!SerpentineFinalReviewPolicy.ValidExit(request.Scenario, request.ExitAfterCompletion))
+                return "snake-final-review-exit-required";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
@@ -300,7 +302,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.IsSummonSameTurnWorkingSaveScenario(
                     request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
-                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
@@ -425,23 +427,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
                 bool creatureReview = request.Scenario ==
                     RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
+                bool targetedSummonPersistence = (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
+                    request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
+                    request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent) &&
+                    request.Parameters?["persistenceScope"] != null;
+                if (targetedSummonPersistence && (!request.ExitAfterCompletion ||
+                    request.Parameters["persistenceScope"].Type != JTokenType.String ||
+                    ((string)request.Parameters["persistenceScope"] != "crocodilians" &&
+                     (string)request.Parameters["persistenceScope"] != SerpentinePersistenceReviewPolicy.Scope &&
+                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
+                    return "summoning-persistence-scope-invalid";
+                // The ordinary native-control case joins the two same-turn
+                // cases here: it is the unquickened Full-Round route, and a
+                // creature too far up the ladder to be quickened has nowhere
+                // else to prove its ordinary turn-based behaviour.
                 bool flightActivation = (request.Scenario ==
                     RuntimeTestScenarioCatalog.SummonSameTurnActivation ||
                     request.Scenario == RuntimeTestScenarioCatalog
-                        .SummonSameTurnRtwpControl) &&
+                        .SummonSameTurnRtwpControl ||
+                    request.Scenario == RuntimeTestScenarioCatalog
+                        .SummonSameTurnNativeControl) &&
                     request.Parameters?["flightCreature"]?.Type ==
                         JTokenType.String;
+                // A closed list, and the name is historical: the first
+                // creatures to need their own same-turn activation case flew,
+                // and Sprint 12 and Sprint 13 added ground creatures to it
+                // rather than open the parameter to the whole roster.
                 if (flightActivation &&
-                    !new[] { "eagle", "dire-bat", "giant-wasp", "stirge" }.Contains(
+                    !new[] { "eagle", "dire-bat", "giant-wasp", "stirge",
+                        "dire-rat", "wolverine", "shadow-mastiff" }.Contains(
                         (string)request.Parameters["flightCreature"]))
                     return "flight-activation-creature-invalid";
                 if (creatureReview && (!request.ExitAfterCompletion ||
                     request.Parameters?["creatures"]?.Type != JTokenType.String ||
                     string.IsNullOrWhiteSpace((string)request.Parameters["creatures"])))
                     return "creature-review-creatures-required";
-                bool ungulateCrowdReview = creatureReview &&
+                bool crowdReview = creatureReview &&
                     request.Parameters?["quantity"] != null;
-                if (ungulateCrowdReview &&
+                if (crowdReview &&
                     (request.Parameters["quantity"].Type != JTokenType.String ||
                     (string)request.Parameters["quantity"] != "OneD4PlusOne"))
                     return "creature-review-quantity-invalid";
@@ -449,7 +472,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || ungulateCrowdReview ? 3 : nereidPersistence || deferredMarkers || creatureReview || flightActivation ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-10-07T12:27:00Z",
+  "status": "EXACTd5bc DIAGNOSTIC FAIL/RESTORED; SPRINT17 NOT QUALIFIED",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "pullRequest": 26,
+  "runtimeCandidate": "d5bc656519300da5753248a62e602da7f1aed525",
+  "artifact": {
+    "sourceFingerprint": "79f6a345d6b40f48d84731ee3dd94c03937f90ba3373b9e632a42262c128f528",
+    "version": "0.0.141",
+    "dllSha256": "09e7f6e34ac8be60a84d042a223f78561b4dbe30e1d63054e502b4e7217e158a",
+    "dllMvid": "0cb3fb43-6fee-4b49-8121-f6834203b03e",
+    "zipSha256": "5ebfe846c3160bbd7f01c697969f2e0d6e333203608c7e196887d9c78a9fbb3f",
+    "members": 321,
+    "archive": "artifacts/sprint17-human-grip-observation-exact-d5bc6565"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 296,
+    "unfilteredDomain": 2098,
+    "domainSeconds": 82.8,
+    "completeSeconds": 179,
+    "cleanExactReferences": 14,
+    "strictPackageMembers": 321,
+    "runtimePreflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "request": 11,
+      "roundTrip": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "request": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "valid": 14,
+      "rejected": 13
+    },
+    "logs": [
+      {
+        "path": "artifacts/sprint17-human-grip-observation-exact-d5bc6565-crowd.log",
+        "sha256": "2c2a1cf1f3f011f7b77cb8ec996e7b5fc2257a36abb7281e5dd007b7d3fa03b0"
+      },
+      {
+        "path": "artifacts/sprint17-human-grip-observation-exact-d5bc6565-focused.log",
+        "sha256": "34c2161bd25c8e291151aec4c9f6803badf29861d7d2a1e1f43c2eb565a18381"
+      },
+      {
+        "path": "artifacts/sprint17-human-grip-observation-exact-d5bc6565-gate.log",
+        "sha256": "241a639f8b7f0d8112b21cea903216a2c15d0ae9fc9dd9cede7515c8a5a6bdaa"
+      },
+      {
+        "path": "artifacts/sprint17-human-grip-observation-exact-d5bc6565-launcher.log",
+        "sha256": "5e0841199affcad71b04b473f2918887ea5c4361ea0ab0c07a846ed77806b1ef"
+      },
+      {
+        "path": "artifacts/sprint17-human-grip-observation-exact-d5bc6565-orchestration.log",
+        "sha256": "affee86c92d8c3aef6e11fa288815436a0db26d595756c592679e31be97f2695"
+      },
+      {
+        "path": "artifacts/sprint17-human-grip-observation-exact-d5bc6565-persistence.log",
+        "sha256": "e52ac876c6cec798e83d0dd0def054c785f11aa761b3901195902ca53f817ca4"
+      },
+      {
+        "path": "artifacts/sprint17-human-grip-observation-exact-d5bc6565-preflight.log",
+        "sha256": "1351705d1ad5c89fbee807eb6f9db169c8f948ec3a1e102fa9c03f40cf3a066b"
+      },
+      {
+        "path": "artifacts/sprint17-human-grip-observation-exact-d5bc6565-provenance.log",
+        "sha256": "236e0d77882305e074f509b97f94772c9d21b38bb65c553f797f2d0f4d83f06f"
+      }
+    ]
+  },
+  "driver": {
+    "path": "artifacts/Invoke-LaptopSprint17-HumanTail-Attempt8-GripObservation.ps1",
+    "sha256": "26423c83b34ef24c046450c7543868229274fe0bc441edce5eea486149cef057"
+  },
+  "batch": {
+    "path": "artifacts/laptop-runtime-20261007T1212557231547Z/batch.json",
+    "sha256": "2fd88055d7e5689e8a9b86756b14164523d9473ec6b788405ddc2b7f6ab2e0a5",
+    "startedUtc": "2026-10-07T12:12:55.7700299Z",
+    "completedUtc": "2026-10-07T12:19:30.7905394Z",
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-07T12:13:21.0960603Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1213220077484Z-working-save-smoke",
+        "requestId": "20261007T1213220389521Z-d67ec6f366b74fd4b72f083561101aa5",
+        "requestSha256": "981036ef57b773eb87f764907f3d3002bdaec9075c430d5c27ca2e5671ac3a5f",
+        "expectedAssertions": 11,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "a29481ad7387db73b17e6f9584d0cfe997d403f7878bb188b1125765403a1b2e",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "b6a43e9e3ddbe760835863721f40c0dd232eaf5afaa358ee4552764820cb7bb3",
+        "processId": 30492,
+        "processStartedUtc": "2026-10-07T12:13:22.9613333Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-07T12:16:15.5044513Z"
+      },
+      {
+        "label": "human-tail",
+        "scenario": "disposable-expanded-summoning-serpentine-bodies",
+        "startedAtUtc": "2026-10-07T12:16:21.0415259Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1216218172730Z-disposable-expanded-summoning-serpentine-bodies",
+        "requestId": "20261007T1216218172730Z-cca94d7ecef24e82bade3b703e5f759e",
+        "requestSha256": "de2331d8bd8a369acd9707b2bed79901fab13988a96734f42be827493b431319",
+        "expectedAssertions": 15,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "metadataSha256": "d6e47ef92bc531e70608b63de6761168ee629114addeb92bd9824406d70ea118",
+        "metadataRows": 1,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "72fdab01e8b1f2640ee06d87d03827abb117c53e9c9f369091bd5aa40f86c3b8",
+        "assertions": 5,
+        "passed": 4,
+        "failed": [
+          {
+            "name": "sprint17-body-exception",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "da75de357a4da1b7094a999708a94832e141b2e2ac72a8ed800973d1242e64fb",
+        "processId": 8588,
+        "processStartedUtc": "2026-10-07T12:16:23.1978301Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-07T12:19:28.2321577Z"
+      }
+    ]
+  },
+  "assertions": [
+    {
+      "name": "sprint17-human-salamander-native-settlement",
+      "status": "PASS",
+      "observed": "{\"area\":\"2849fdde28fe50f4d935bf2cf3405051\",\"capital\":false,\"faction\":\"72f240260881111468db610b6c37c099\",\"factionControllable\":true,\"summonPartControllable\":true,\"finallyDead\":false,\"panicked\":false,\"detached\":false,\"preventDirectControl\":false,\"exCompanion\":false,\"master\":null,\"summoner\":\"e372fdde-0db2-4c61-9cae-5a1d7f238cea\",\"controllable\":true}"
+    },
+    {
+      "name": "sprint17-body-exception",
+      "status": "FAIL",
+      "observed": "InvalidOperationException:Hand surface palette mismatch.;at=KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+Sprint17HumanGripSurface..ctor (UnityEngine.Mesh mesh, UnityEngine.Transform[] bones) [0x000f4] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+<ReviewSprint17HumanSalamander>d__4.MoveNext () [0x00531] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+<ReviewSprint17Bodies>d__1382.MoveNext () [0x000f5] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollSprint17Bodies () [0x00099]"
+    },
+    {
+      "name": "sprint17-body-environment-restored",
+      "status": "PASS",
+      "observed": "restored=True"
+    },
+    {
+      "name": "sprint17-body-fixture-cleanup",
+      "status": "PASS",
+      "observed": "cleaned=True"
+    },
+    {
+      "name": "loaded-mod-version",
+      "status": "PASS",
+      "observed": "0.0.141"
+    }
+  ],
+  "nativeRendererCensus": [
+    {
+      "name": "Cape_Red_M(Clone)",
+      "mesh": "CP_Cape2Sided_M_Any",
+      "vertices": 317,
+      "palette": 0,
+      "root": null,
+      "enabled": true,
+      "activeSelf": true,
+      "activeInHierarchy": true,
+      "updateWhenOffscreen": false,
+      "components": [
+        "UnityEngine.Transform",
+        "UnityEngine.MeshFilter",
+        "UnityEngine.SkinnedMeshRenderer",
+        "UnityEngine.Cloth",
+        "HighlightingSystem.HighlighterRenderer"
+      ]
+    },
+    {
+      "name": "Renderer_Character_Diffuse_Cutout",
+      "mesh": "Bandit_FighterLeader_Renderer_Character_Diffuse_Cutout",
+      "vertices": 2268,
+      "palette": 1776,
+      "root": "Pelvis",
+      "enabled": true,
+      "activeSelf": true,
+      "activeInHierarchy": true,
+      "updateWhenOffscreen": false,
+      "components": [
+        "UnityEngine.Transform",
+        "UnityEngine.SkinnedMeshRenderer",
+        "HighlightingSystem.HighlighterRenderer"
+      ]
+    }
+  ],
+  "failure": {
+    "classification": "FIXTURE_OBSERVATION",
+    "cause": "The native combined mesh rejects direct CPU vertex reads: isReadable=false. New diagnostic assumed mesh.vertices could be paired with boneWeights. It throws Hand surface palette mismatch before rollback/attachment or attacks. No evidence of gameplay regression.",
+    "nativeMesh": "Bandit_FighterLeader_Renderer_Character_Diffuse_Cutout",
+    "reportedVertexCount": 2268,
+    "reportedPaletteCount": 1776,
+    "rawVertexArrayLength": null,
+    "rawWeightArrayLength": null,
+    "nativeAttackReviewExecuted": false,
+    "preservedGameLog": {
+      "path": "artifacts/sprint17-human-grip-native-readability-d5bc6565-output_log.txt",
+      "sha256": "5a3300a35bbe6e48f7b776d7ec3ae27e161e82ab5450d3911bbfa7230d882e93",
+      "line": 5000
+    },
+    "expectedAssertions": 15,
+    "executedAssertions": 5,
+    "passedAssertions": 4,
+    "partialResultQualifies": false,
+    "thresholdsWaived": false
+  },
+  "priorFullReview": {
+    "candidate": "801ed1f3638e608df082db6a8e70b28bacef927b",
+    "passed": 14,
+    "executed": 15,
+    "remaining": "Second native02 spear left-grip0.0851590857m exceeds0.08m. This failure is still unresolved; the failed diagnostic added no hand-control evidence."
+  },
+  "diagnostics": {
+    "stages": [
+      {
+        "name": "sprint17-human-stage-01-spawned-before-settlement.json",
+        "sequence": 1,
+        "frame": 4252,
+        "sha256": "5851f8e3a5066f683ca407f614291637b33be3a32473b8d9a48c3e66ccde1604"
+      },
+      {
+        "name": "sprint17-human-stage-02-native-settlement.json",
+        "sequence": 2,
+        "frame": 4312,
+        "sha256": "d22981d02fd8e0e56b58f7df3f703b27f78b52a8ab419bc067f0f76f9313c327"
+      },
+      {
+        "name": "sprint17-human-stage-03-before-owner-destruction.json",
+        "sequence": 3,
+        "frame": 4312,
+        "sha256": "93c49beea57d2017f46c4b43f68a121d700aaa09fe260f7b316e031632bb325e"
+      },
+      {
+        "name": "sprint17-human-stage-04-owner-destruction-returned.json",
+        "sequence": 4,
+        "frame": 4312,
+        "sha256": "089e0c45aef79e2950499ca4be8f63d1e4519fb6e22c86dd5123ad9a6e6c7a79"
+      }
+    ],
+    "qualification": false
+  },
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T1212564795144Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T121256Z-5cdf508094a9435f8cf7519dbc4c5f7e\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "completedUtc": "2026-10-07T12:19:30.7905394Z",
+    "noGame": true,
+    "noDeploymentStaging": true,
+    "saveWrites": 0
+  },
+  "next": {
+    "strategy": "Use a bounded project-owned, non-rendering SkinnedMeshRenderer/BakeMesh control with exact borrowed mesh and live bones, never changing the native renderer, its mesh import settings or poses. Verify required weight metadata, frame convention, finite snapshot and exact resource cleanup. No native geometry export or acceptance-threshold change. This is an untested hypothesis, not a qualified carrier.",
+    "primaryApi": "https://docs.unity3d.com/2018.4/Documentation/ScriptReference/SkinnedMeshRenderer.BakeMesh.html",
+    "apiScope": "Documents renderer-relative snapshot vertices and CPU skinning even offscreen; does not prove this exact inactive control works or this native mesh exposes required weights.",
+    "gates": "Focused/full source gates; commit/push; exact-head prelaunch; fresh smoke11+ALL15 human checks; exact snapshot restoration."
+  },
+  "counts": {
+    "registered": 1008,
+    "published": 976,
+    "withheld": 32,
+    "nativeWrappers": 29,
+    "visible": 1005
+  },
+  "sprints14Through16": "COMPLETE/PUBLISHED",
+  "sprint17": "NOT QUALIFIED",
+  "HumanReview": "NOT_PERFORMED_NONBLOCKING"
+}
