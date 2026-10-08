@@ -1645,6 +1645,7 @@
     <Compile Include="RuntimeTesting\ExpandedSummoningRosterPersistencePolicy.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningInventoryObservationPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Firearms\FirearmEnchantmentItemText.cs" />
