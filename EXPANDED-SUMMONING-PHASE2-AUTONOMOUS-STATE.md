@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 — release143 PUSH POLICY BLOCKER; NOT QUALIFIED
+## CURRENT STATE, 2026-10-08 — public v0.0.143 candidate; NOT QUALIFIED
 
 Latest owner checkpoint-release mission governs: merge/tag/real Latest v0.0.143
 ONLY after all integration, closure, compatibility and v142 regression gates PASS.
@@ -11,9 +11,11 @@ Normal integration from master4ba8d4aca087391144abf401f526189f59b26535
 imports qualified Phase2B8592b1e680a8b3c92b43d353b47bf7ff5f52c664.
 Common ancestor97f0a966; normal two-parent integration candidate, NOT QUALIFIED.
 Exact integration candidate06aac4b7fae3abab18c900df5cfd351d6c819a37, parents
-4ba8d4aca and8592b1e6. Clean source, committed; UNPUSHED because the required
-policy wrapper rejects the owner-named release branch as non-allowlisted.
-No override exists; policy has not been changed or bypassed.
+4ba8d4aca and8592b1e6. Reporting descendant2dc9aa6a preserved and pushed after
+the owner added this exact branch to the policy allowlist. Historical rejection
+is preserved; no policy override/bypass. Freeze this resumed committed head for
+the exact integration gate. Intended release is normal public Latest v0.0.143,
+not an alpha, draft release or prerelease.
 Every conflict: planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md.
 Master2660-entry prefix exact;262 missing imported entries append=>2922/2920 active.
 All v142 Elemental traits/FCB/content retained;325 package members expected.
@@ -26,11 +28,12 @@ proof and five routes996c5fe7. Viper18/Constrictor14 remain independently qualif
 Accepted passive senses, clean grapple reset, swallow-interior limitations and
 deterministic rider adaptation unchanged. HumanReview NOT_PERFORMED_NONBLOCKING.
 
-Sole release source owner session0d8bff47-ef1f-42f1-9473-609f9b6d9cdf:
-owner29828/start16:37:01.6154316Z;keeper34308/start23:12:27.5262954Z.
-Fresh exclusive release143 receipt/lock; prior Phase2B keeper29980 released.
-Release143 keeper is explicitly released at this blocked handoff; receipt/history
-and permanent local safety refs/recovery bundle remain available.
+Sole release source owner session55743a42-4481-4922-8fe8-a9bd24af8916:
+owner29828/start2026-10-07T16:37:01.6154316Z;
+keeper38820/start2026-10-08T01:12:17.8225167Z.
+Fresh exclusive release143 receipt/lock; prior keepers29980/34308 released.
+Prior released receipt is archived; all permanent safety refs and verified recovery
+bundle remain available. No other owner/game/runtime lock was present at intake.
 DATA PR27 archived/ZERO PORTS; all safety refs/worktrees/failed evidence preserved.
 
 Last exact restored live snapshot20261007T2258344605477Z:
@@ -39,16 +42,14 @@ ZERO writes,no game/staging; runtime lease Completed/released. Actual pre-run
 baseline must be freshly snapshotted UNDER lease, not forced to this historic state.
 Only native guarded Working-save workflow; protected baseline never loaded/written.
 
-Owner action: add codex/release-0.0.143-expanded-summoning-phase2b-checkpoint
-to AllowedBranches in C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1.
-Then verify no owner/game/runtime lock, reacquire source ownership, push through
-the unchanged policy command, open the draft integration PR against master, and
-run the full source/build/package gate ONCE on this clean committed candidate,
+Owner allowlist action verified and exact policy push PASS at01:12UTC.
+Next: draft integration PR against master, full source/build/package gate ONCE
+on this clean committed candidate,
 then same-artifact closure ON/OFF persistence/profile5/v142 coexistence and the
 existing native-owned trait-save protocol. No product change by the driver guards.
 Integration/runtime/release NOT QUALIFIED; exhaustive closure NOT RUN.
-No integration runtime launch/deployment/save write occurred. Latest public release
-remains v0.0.142; no integration PR, merge, tag, release or Sprint18 began.
+No integration runtime launch/deployment/save write yet. Latest public release
+remains v0.0.142; merge/tag/real release only after all required gates PASS.
 Do not merge PR25/26 directly. Close as superseded only AFTER real v0.0.143 release.
 Permanent future rule: one charter sprint per branch/PR/release from released
 master; new owner mission before next sprint. Sprint18 not started.
