@@ -71,6 +71,28 @@ Assert-Throws {
 } 'multiple-new-games-rejected'
 
 $startCommand = Get-Command Start-KmgSteamKingmaker
+function Test-ProductionLaunchResult {
+    # Replace external process boundaries only. Execute the real launch routine
+    # and its typed-result validator without Steam, game input or a save.
+    function Assert-KmgUnelevated { }
+    function Assert-KmgNotRunning { }
+    function Assert-KmgProcessOwner { param($ProcessId,$ExpectedOwner,$Label) }
+    function Wait-KmgSteamProcess { param($SteamPath,$TimeoutSeconds)
+        [pscustomobject]@{ Id=10; Path=$SteamPath }
+    }
+    function Start-Process { param($FilePath,$ArgumentList,[switch]$PassThru,[string]$WindowStyle)
+        [pscustomobject]@{ Id=11 }
+    }
+    function Get-Process { param($Name,$ErrorAction)
+        [pscustomobject]@{ Id=30; ProcessName='Kingmaker'; StartTime=[DateTime]::Now }
+    }
+    $actual = @(Start-KmgSteamKingmaker -SteamPath $script:KmgSteamExecutable `
+        -AppId 640820 -RequestPath $requestPath -PreLaunchProcesses @())
+    Assert-True ($actual.Count -eq 1) 'production-launch-single-scalar'
+    Assert-DoesNotThrow { Assert-KmgRuntimeLaunchResult -LaunchResult $actual[0] } `
+        'production-launch-preserves-typed-contract'
+}
+Test-ProductionLaunchResult
 $preLaunchParameter = $startCommand.Parameters['PreLaunchProcesses']
 Assert-True ($null -ne $preLaunchParameter) 'start-contract-exposes-prelaunch-processes'
 Assert-True ($preLaunchParameter.ParameterType.IsArray) 'start-contract-keeps-array-typing'
