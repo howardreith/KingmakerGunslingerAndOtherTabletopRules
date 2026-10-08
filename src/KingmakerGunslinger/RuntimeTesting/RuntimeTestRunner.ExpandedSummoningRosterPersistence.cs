@@ -6,6 +6,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Blueprints;
@@ -30,6 +31,116 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool? _rosterPersistencePause;
         private readonly List<RuntimeTestAssertion> _rosterPersistenceChecks = new List<RuntimeTestAssertion>();
         private readonly JArray _rosterPersistenceRows = new JArray();
+        private sealed class RosterReadinessEntry
+        {
+            internal UnitEntityData Unit, Caster;
+            internal string Key;
+            internal RosterReadinessTimeline Timeline;
+        }
+        private readonly List<RosterReadinessEntry> _rosterReadiness = new List<RosterReadinessEntry>();
+
+        private void RegisterRosterReadiness(UnitEntityData unit, UnitEntityData caster, int? spawnedFrame)
+        {
+            _rosterReadiness.Add(new RosterReadinessEntry { Unit = unit, Caster = caster,
+                Key = unit.Get<UnitPartRelease143RosterReceipt>().Key, Timeline = new RosterReadinessTimeline(spawnedFrame) });
+            ObserveRosterReadiness(_rosterReadiness.Last());
+        }
+
+        private static void ObserveRosterReadiness(RosterReadinessEntry entry)
+        {
+            var unit = entry.Unit; var view = unit.View; float dissolve = DissolveAmount(unit);
+            entry.Timeline.Observe(Time.frameCount, new Dictionary<string, bool> {
+                { "ViewExists", view != null }, { "ViewDataMatches", view != null && ReferenceEquals(view.Data, unit) },
+                { "ViewIsInGame", view != null && view.IsInGame }, { "EntityFadedIn", EntityFadedIn(unit) },
+                { "DissolveFinite", !float.IsNaN(dissolve) && !float.IsInfinity(dissolve) },
+                { "DissolveSettled", dissolve >= 0f && dissolve <= .02f },
+                { "CanAct", unit.Descriptor.State.CanAct }, { "CanMove", unit.Descriptor.State.CanMove },
+                { "AppearanceBuffAbsent", unit.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null }
+            });
+        }
+
+        private static JObject RosterReadinessBuff(Kingmaker.UnitLogic.Buffs.Buff buff)
+        {
+            var context = buff.MaybeContext;
+            return new JObject { ["guid"] = buff.Blueprint.AssetGuid, ["name"] = buff.Blueprint.name,
+                ["timeLeftSeconds"] = buff.TimeLeft.TotalSeconds, ["permanent"] = buff.IsPermanent,
+                ["components"] = new JArray(buff.Blueprint.ComponentsArray.Select(c => c.GetType().FullName)),
+                ["declaredConditions"] = new JArray(buff.Blueprint.ComponentsArray
+                    .OfType<Kingmaker.UnitLogic.FactLogic.AddCondition>().Select(c => c.Condition.ToString())),
+                ["context"] = context == null ? null : new JObject {
+                    ["type"] = context.GetType().FullName, ["casterId"] = context.MaybeCaster?.UniqueId,
+                    ["ownerId"] = context.MaybeOwner?.UniqueId, ["ability"] = context.SourceAbility?.AssetGuid,
+                    ["blueprint"] = context.AssociatedBlueprint?.AssetGuid,
+                    ["parentBlueprint"] = context.ParentContext?.AssociatedBlueprint?.AssetGuid } };
+        }
+
+        private void FlushAndClearRosterReadiness()
+        {
+            if (_rosterReadiness.Count == 0) return;
+            JObject result = null;
+            try
+            {
+                var rows = new JArray();
+                foreach (var entry in _rosterReadiness)
+                {
+                    ObserveRosterReadiness(entry);
+                    var unit = entry.Unit; var view = unit.View; var state = unit.Descriptor.State;
+                    var renderers = view == null ? new Renderer[0] : view.GetComponentsInChildren<Renderer>(true);
+                    var appearance = unit.Descriptor.Buffs.Enumerable.Where(b => ReferenceEquals(b.Blueprint,
+                        BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff)).ToArray();
+                    float dissolve = DissolveAmount(unit);
+                    rows.Add(new JObject {
+                        ["key"] = entry.Key, ["unitId"] = unit.UniqueId, ["blueprintGuid"] = unit.Blueprint.AssetGuid,
+                        ["blueprintName"] = unit.Blueprint.name, ["retainedNativeWrapper"] = entry.Key.StartsWith("native:", StringComparison.Ordinal),
+                        ["spawnedFrame"] = entry.Timeline.SpawnedFrame, ["observedSamples"] = entry.Timeline.SampleCount,
+                        ["firstTrueFrames"] = JObject.FromObject(entry.Timeline.FirstTrueIncludingNever),
+                        ["firstFrameAllSnakePredicates"] = entry.Timeline.FirstAllSnakeFrame,
+                        ["firstFrameAllObservedPredicates"] = entry.Timeline.FirstAllObservedFrame,
+                        ["finalFrame"] = Time.frameCount, ["viewExists"] = view != null,
+                        ["viewDataMatches"] = view != null && ReferenceEquals(view.Data, unit), ["viewIsInGame"] = view != null && view.IsInGame,
+                        ["entityFadedIn"] = EntityFadedIn(unit), ["dissolve"] = dissolve.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
+                        ["dissolveFinite"] = !float.IsNaN(dissolve) && !float.IsInfinity(dissolve),
+                        ["canAct"] = state.CanAct, ["canMove"] = state.CanMove,
+                        ["conditions"] = new JArray(Enum.GetValues(typeof(UnitCondition)).Cast<UnitCondition>().Distinct()
+                            .Where(c => state.HasCondition(c)).Select(c => c.ToString())),
+                        ["buffs"] = new JArray(unit.Descriptor.Buffs.Enumerable.Select(RosterReadinessBuff)),
+                        ["conditionFeatures"] = new JArray(unit.Descriptor.Progression.Features.Enumerable
+                            .Where(f => f.Blueprint.ComponentsArray.OfType<Kingmaker.UnitLogic.FactLogic.AddCondition>().Any())
+                            .Select(f => new JObject { ["guid"] = f.Blueprint.AssetGuid, ["name"] = f.Blueprint.name,
+                                ["conditions"] = new JArray(f.Blueprint.ComponentsArray.OfType<Kingmaker.UnitLogic.FactLogic.AddCondition>().Select(c => c.Condition.ToString())) })),
+                        ["appearanceBuffCount"] = appearance.Length, ["appearanceBuffs"] = new JArray(appearance.Select(RosterReadinessBuff)),
+                        ["rendererCount"] = renderers.Length, ["enabledRenderers"] = renderers.Count(r => r.enabled),
+                        ["activeInHierarchyRenderers"] = renderers.Count(r => r.gameObject.activeInHierarchy),
+                        ["awake"] = Game.Instance.State.AwakeUnits.Contains(unit), ["destroyed"] = unit.Destroyed,
+                        ["dead"] = state.IsDead, ["conscious"] = state.IsConscious,
+                        ["position"] = new JArray(unit.Position.x, unit.Position.y, unit.Position.z),
+                        ["distanceFromCaster"] = Vector3.Distance(unit.Position, entry.Caster.Position),
+                        ["failedPredicateNames"] = new JArray(entry.Timeline.FailedSnakePredicates()),
+                        ["failedObservedPredicateNames"] = new JArray(entry.Timeline.FailedObservedPredicates())
+                    });
+                }
+                var failures = rows.OfType<JObject>().Where(r => ((JArray)r["failedPredicateNames"]).Count > 0).ToArray();
+                var grouped = new JObject();
+                foreach (var group in failures.SelectMany(r => r["failedPredicateNames"].Select(p => new { Predicate = (string)p, Key = (string)r["key"] }))
+                    .GroupBy(p => p.Predicate).OrderBy(g => g.Key, StringComparer.Ordinal))
+                    grouped[group.Key] = new JObject { ["count"] = group.Count(), ["keys"] = new JArray(group.Select(p => p.Key)) };
+                result = new JObject { ["schemaVersion"] = 1, ["requestId"] = _request.RunId,
+                    ["scenario"] = _request.Scenario, ["unitCount"] = rows.Count, ["observerReadOnly"] = true,
+                    ["contractUnchanged"] = "Original snake native-appearance predicate retained for diagnosis; no simultaneous visibility waiver",
+                    ["summaryByFailedPredicate"] = grouped, ["failingUnits"] = new JArray(failures.Select(r => new JObject {
+                        ["key"] = r["key"], ["unitId"] = r["unitId"], ["failedPredicateNames"] = r["failedPredicateNames"],
+                        ["firstFrameAllSnakePredicates"] = r["firstFrameAllSnakePredicates"] })), ["units"] = rows,
+                    ["spawnFrameSource"] = "Native cast/entity creation returned and receipt assigned;loaded units have no invented spawn frame",
+                    ["observerClearedInFinally"] = false };
+            }
+            finally
+            {
+                foreach (var entry in _rosterReadiness) entry.Timeline.Clear();
+                _rosterReadiness.Clear();
+            }
+            result["observerClearedInFinally"] = _rosterReadiness.Count == 0;
+            File.WriteAllText(Path.Combine(_request.EvidenceDirectory, "expanded-summoning-roster-readiness.json"), result.ToString(Formatting.Indented));
+        }
 
         private void RosterPersistenceCheck(string name, bool passed, JObject row, string expected)
         {
@@ -138,6 +249,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var party = Game.Instance.Player.Party.Where(u => u != null && u.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount) throw new InvalidOperationException("Working party fingerprint changed.");
             var caster = party.First(u => u.HoldingState != null);
+            try
+            {
             var blueprints = BlueprintBootstrap.Library.GetAllBlueprints().Where(b => b != null).ToArray();
             _rosterPersistencePause = Game.Instance.IsPaused; Game.Instance.IsPaused = true;
             var sceneBefore = caster.HoldingState.AllEntityData.OfType<UnitEntityData>().ToArray();
@@ -196,6 +309,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var receipt = unit.Ensure<UnitPartRelease143RosterReceipt>();
                         receipt.Scope = ExpandedSummoningRosterPersistencePolicy.ReceiptScope; receipt.Key = key;
                         receipt.UnitId = unit.UniqueId; receipt.CasterId = caster.UniqueId; receipt.BlueprintId = unit.Blueprint.AssetGuid;
+                        RegisterRosterReadiness(unit, caster, Time.frameCount);
                         created.Add(unit); SetExpandedSummoningBrainActive(unit, false);
                         if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
                     }
@@ -209,9 +323,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 units = created.ToArray();
             }
+            else foreach (var unit in units) RegisterRosterReadiness(unit, caster, null);
             Game.Instance.IsPaused = false;
-            for (int frame = 0; frame < 600; frame++) { yield return 0; if (frame >= 30 && units.All(SnakePersistenceReady)) break; }
+            for (int frame = 0; frame < 600; frame++)
+            {
+                yield return 0;
+                foreach (var entry in _rosterReadiness) ObserveRosterReadiness(entry);
+                if (frame >= 30 && units.All(SnakePersistenceReady)) break;
+            }
             Game.Instance.IsPaused = true;
+            FlushAndClearRosterReadiness();
             bool ready = units.All(SnakePersistenceReady);
             RosterPersistenceCheck("native-appearance", ready,
                 new JObject { ["units"] = units.Length, ["ready"] = ready }, "all owned live views settle native appearance/control without forcing visibility");
@@ -242,6 +363,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new JObject { ["preexistingUnits"] = unrelated.Length, ["preserved"] = preserved }, "exact unrelated unit references and party membership preserved");
             if (_rosterPersistenceChecks.Any(a => a.Status != RuntimeTestStatuses.Pass)) { CompleteRosterPersistence(RuntimeTestStatuses.Fail,"No save armed after mandatory failure."); yield break; }
             BeginExpandedSummoningPersistenceSave();
+            }
+            finally { FlushAndClearRosterReadiness(); }
         }
 
         private void CompleteRosterPersistence(string status, string warning)
