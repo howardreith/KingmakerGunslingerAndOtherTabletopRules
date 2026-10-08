@@ -1,52 +1,43 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 - release BLOCKED; corrected persistence prepare failed
+## CURRENT STATE, 2026-10-08 - one per-unit readiness diagnosis authorized
 
-Latest Owner Release-Scope Disposition and v0.0.143 Completion Order governs.
+Latest v0.0.143 Whole-Roster Readiness Diagnosis and Release Completion Order
+supersedes the prior readiness stop. One read-only diagnosis and one bounded,
+evidence-based correction/requalification cycle; no new Crocodile observer.
 Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint; PR29 DRAFT.
-Exact fixture-corrected candidate fb25ad153124552f06b7d8a9a3b63fd2e4141eb8:
-source2471/2471, clean14-reference Release and strict325-member package PASS.
-ZIP2b6497954e890bc27a8a91cda9c9a5fb818065f2ec0345def85c342861ba780d;
-DLLc9abc3380d07dee1278648f829f149b68307f83ced7c2416fc94f8f2bcb25e69;
-MVID73675dde-165a-4a5c-87c9-d4eed307d4bd.
+Remote/intake444979bbe2d95f35efbe5f2e5620202cdf6661cf; clean, no other owner.
+Prior fb25ad15 source2471/package325PASS and prepare116/118FAIL remain preserved:
+all108 identities/profiles/control ownership pass, aggregate readiness false,
+zero native writes and exact restoration. No waiver or inferred production defect.
 
-One permitted correction fixed request-local alignment contamination: all108
-units now cast legally, original caster alignment restored, all identity/context/
-duration and108 profile/view checks PASS. No production or asset change.
-Corrected prepare116/118 FAIL at whole-roster-persistence-native-appearance:
-units108,ready=false after600 frames. No per-unit failed readiness field recorded;
-faded-in/dissolve/can-act/can-move/appearance-buff cause remains UNRESOLVED.
-The second failure is the consequently unarmed native save: ZERO writes/stashed.
-No cleanup/fresh-absence, module-disabled, five-profile or v142 coexistence/native
-trait-save gate launched after this failure. No blind retry/waiver/new observer.
-The one bounded remaining-gate correction is used. STOP for owner direction:
-a separate bounded whole-roster per-unit readiness diagnosis/correction and
-affected requalification would need new authority. Not a Crocodile observer cycle.
-
+Diagnostic code is request-local/read-only: one first-true frame per predicate,
+one final state per unit, failed-predicate groups and compact failing-unit list.
+Original snake readiness assertion unchanged; no visibility/buff/condition/fader/
+camera change. Observer cleared in finally. Focused5/5 PASS;2474 tests registered.
+Next: freeze/push diagnostic head;full source/build/package once;guarded smoke+
+whole-roster prepare ONLY;restore actual snapshot exactly. Classify per-unit
+record before the one correction. No cleanup/module-off until prepare can save.
+Retain b8 crocodilians212/smoke11/snake71, Salamander, inventory50/menu3/all1008
+roots+29 wrappers with original provenance and reviewed narrow package delta.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-remains ACTIVE143 only. Historical f65 expiry0to2 remains FAIL/unattributed, never
-claimed harmless/explained/fixed. Original b8 expiry0to0/crocodilians212 PASS,
-smoke11 and snake commands71 PASS retained with original artifact provenance.
-No post-expiry damage reproduction reported in the failed persistence gate.
-No further attribution cycle. Revoke acceptance and STOP if damage reproduces.
-Prior inventory50/menu3/all1008 roots+29 native wrappers and Salamander PASS
-retained after exact source/package delta audit: only request-local fixture/tests/
-reporting changed; every325 packaged member unchanged from b8 except the DLL.
-HumanReview NOT_PERFORMED_NONBLOCKING. Surface1008+29=1037,none withheld.
-Sprints14-17 technically complete/published; release closure is NOT QUALIFIED.
+remains active143 only; historical f65FAIL never rewritten/explained/fixed.
+No further damage observer; STOP/revoke if post-expiry damage reproduces.
 
-Failed batch release143-runtime-20261008T1234137648103Z is preserved unchanged.
-Actual snapshot20261008T1234145690114Z restored:136files,Info0.0.117,tree
+Source owner5814f9cc-4998-4fbd-93a4-ec68514f7c7b;owner29828,
+keeper15128/start2026-10-08T17:36:42.5475746Z;exclusive source receipt/lock.
+Prior keeper37936 gone and released receipt archived. Prior actual restored
+snapshot20261008T1234145690114Z:136files/Info0.0.117/tree
 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Settings/FavoredClass byte-exact; ZERO save writes; native game exit; no runtime
-lease/lock/staging. Protected baseline never loaded/written; no save surgery.
-Source owner sessiona33f7890-b391-4b6a-8aaa-7a2499b69127 (owner29828,
-keeper37936) releases at this handoff. All safety refs/worktrees/evidence preserved.
-Evidence and identities: planning/RELEASE-0.0.143-EVIDENCE.json and integration ledger.
+Fresh actual snapshot UNDER runtime lease before each transaction;never force old
+baseline. Only authorized native working-save writes;no protected baseline load/
+write or save surgery. Preserve all branches/safety refs/failed evidence.
 
-No merge/tag/release occurred. PR25/26 remain OPEN/unmerged evidence. Public
-release remains v0.0.142. No Sprint18/Phase2C/permanent deployment. Future work
-requires a new owner mission; one charter sprint per branch/PR/release.
+Evidence: planning/RELEASE-0.0.143-EVIDENCE.json. Release NOT QUALIFIED.
+Only after ON/OFF persistence,profile5 and v142 coexistence/native-owned trait
+save gates PASS: ready/merge ONLY29,real Latest v0.0.143 with verified assets;
+close25/26 superseded without merging. Restore exactly and STOP. No Sprint18/
+Phase2C/permanent deployment. No alpha substitute or premature merge/release.
 
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED

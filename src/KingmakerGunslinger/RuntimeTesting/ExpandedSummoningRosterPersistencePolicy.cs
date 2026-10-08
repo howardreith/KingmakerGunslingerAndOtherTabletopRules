@@ -5,6 +5,39 @@ using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
+    // Bounded request-local observation, never a source of unit state.
+    internal sealed class RosterReadinessTimeline
+    {
+        internal static readonly string[] SnakePredicates = {
+            "EntityFadedIn", "DissolveSettled", "CanAct", "CanMove", "AppearanceBuffAbsent"
+        };
+        private readonly Dictionary<string, int> _firstTrue = new Dictionary<string, int>(StringComparer.Ordinal);
+        private Dictionary<string, bool> _last = new Dictionary<string, bool>(StringComparer.Ordinal);
+        internal readonly int? SpawnedFrame;
+        internal int? FirstAllSnakeFrame, FirstAllObservedFrame;
+        internal int SampleCount;
+        internal RosterReadinessTimeline(int? spawnedFrame) { SpawnedFrame = spawnedFrame; }
+        internal IDictionary<string, int> FirstTrue { get { return new Dictionary<string, int>(_firstTrue); } }
+        internal IDictionary<string, int?> FirstTrueIncludingNever
+        { get { return _last.Keys.ToDictionary(p => p, p => _firstTrue.ContainsKey(p) ? (int?)_firstTrue[p] : null, StringComparer.Ordinal); } }
+        internal void Observe(int frame, IDictionary<string, bool> predicates)
+        {
+            if (predicates == null || SnakePredicates.Any(p => !predicates.ContainsKey(p)))
+                throw new ArgumentException("Complete exact native predicate sample required.");
+            if (SpawnedFrame.HasValue && frame < SpawnedFrame.Value) throw new ArgumentOutOfRangeException("frame");
+            foreach (var p in predicates) if (p.Value && !_firstTrue.ContainsKey(p.Key)) _firstTrue.Add(p.Key, frame);
+            if (!FirstAllSnakeFrame.HasValue && SnakePredicates.All(p => predicates[p])) FirstAllSnakeFrame = frame;
+            if (!FirstAllObservedFrame.HasValue && predicates.All(p => p.Value)) FirstAllObservedFrame = frame;
+            _last = new Dictionary<string, bool>(predicates, StringComparer.Ordinal); SampleCount++;
+        }
+        internal string[] FailedSnakePredicates()
+        { return SnakePredicates.Where(p => !_last.ContainsKey(p) || !_last[p]).ToArray(); }
+        internal string[] FailedObservedPredicates()
+        { return _last.Where(p => !p.Value).Select(p => p.Key).OrderBy(p => p, StringComparer.Ordinal).ToArray(); }
+        internal void Clear()
+        { _firstTrue.Clear(); _last.Clear(); FirstAllSnakeFrame = null; FirstAllObservedFrame = null; SampleCount = 0; }
+    }
+
     // Closed extension of the existing prepare/cleanup/absence trio. It is
     // fixture ownership, not production serialization or grapple restoration.
     internal static class ExpandedSummoningRosterPersistencePolicy
