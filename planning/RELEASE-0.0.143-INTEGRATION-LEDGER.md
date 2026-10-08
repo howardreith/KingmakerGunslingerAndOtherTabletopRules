@@ -267,3 +267,23 @@ Elemental/FCB/merchant/content/shared persistence and native-owned trait-save.
 Snapshot actual installation under lease and restore byte-exact after each
 transaction. No completed gate rerun. Merge/release remains conditional on all
 remaining gates; PR29 draft. No Sprint18/Phase2C or permanent deployment.
+
+## Remaining-gate boundary and bounded correction, 2026-10-08
+
+Exact b8 remaining batch release143-runtime-20261008T1202456959003Z:
+snake commands71/71 PASS; whole-roster prepare5/7 FAIL, zero save writes.
+Source attribution: native Thanadaemon leaves caster NeutralEvil; generated
+Poisonous Frog resolves its Celestial execution, whose native alignment gate
+correctly rejects Evil. This is fixture contamination, not a product defect.
+The failed result e6eb7080b847e883a74f72f99382518e6c51c6f8e5e979c00045389e47e43148
+remains FAIL. Actual snapshot20261008T1202465602314Z restored exactly; no runtime
+process, lease or staging. Historical expiry damage did not reproduce.
+
+The single permitted correction changes only the request-local roster policy/
+runner and focused tests/registration: per-cast legal fixture alignment mirrors
+the qualified player-path choices; native availability is retained and original
+alignment restored in finally with a witness. No production, generated runtime
+data, asset, identity, attack, profile or animation change. Focused5/5 PASS.
+New immutable candidate needs the complete source/build/package gate once and
+affected persistence gates. Reuse snake71 and previous qualified evidence only
+after verifying the narrow source delta and every non-DLL package member.

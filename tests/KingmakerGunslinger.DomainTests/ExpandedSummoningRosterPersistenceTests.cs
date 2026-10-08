@@ -7,6 +7,43 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningRosterPersistenceTests
     {
+        internal static void NativeEvilRowCannotContaminateNextCelestialCast()
+        {
+            var keys = ExpandedSummoningRosterPersistencePolicy.Keys;
+            int frogIndex = Array.IndexOf(keys, "poisonous-frog");
+            string precedingNative = keys.Take(frogIndex).Last(k => k.StartsWith("native:", StringComparison.Ordinal));
+            var native = SummonNativeExpansionCatalog.All.First(n =>
+                "native:" + n.UnitGuid == precedingNative && n.Multiplicity == SummonMultiplicity.One);
+            Assertions.Equal("Thanadaemon", native.CreatureKey, "Last native branch before the failed Celestial cast.");
+            int alignment = ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(native);
+            Assertions.Equal(5, alignment, "Native Evil branch legitimately needs NeutralEvil.");
+            var frog = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).First(v =>
+                v.Creature.Key == "poisonous-frog" && v.Multiplicity == SummonMultiplicity.One && SummonVisibilityCatalog.IsPublished(v));
+            Assertions.True(frog.Creature.MonsterTemplated, "Default execution is Celestial, not the neutral chooser.");
+            Assertions.True((alignment & 4) != 0, "Leaked Evil alignment is illegal for the Celestial execution.");
+            alignment = ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(frog);
+            Assertions.Equal(3, alignment, "Each generated cast selects its own NeutralGood alignment.");
+            Assertions.True((alignment & 2) != 0 && (alignment & 4) == 0, "Good, non-Evil alignment satisfies native Celestial availability, never bypassed.");
+        }
+
+        internal static void FixtureAlignmentRespectsEveryVariantAndNativeBranch()
+        {
+            var evil = new[] { "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith" };
+            var good = new[] { "lantern-archon", "bralani-azata", "ghaele-azata" };
+            foreach (var variant in ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)))
+            {
+                int expected = variant.Family == SummonFamily.NaturesAlly ? 17 :
+                    variant.Creature.MonsterTemplated || good.Contains(variant.Creature.Key) ? 3 :
+                    evil.Contains(variant.Creature.Key) ? 12 : 1;
+                Assertions.Equal(expected, ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(variant),
+                    "Independent legal cast alignment for " + variant.StableKey);
+            }
+            foreach (var native in SummonNativeExpansionCatalog.All)
+                Assertions.Equal(native.Branch == SummonNativeSpawnBranch.Evil ? 5 : 1,
+                    ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(native), "Native branch alignment for " + native.Symbol);
+        }
+
         internal static void EveryCreatureAndNativeUnitIsCoveredOnce()
         {
             var keys = ExpandedSummoningRosterPersistencePolicy.Keys;

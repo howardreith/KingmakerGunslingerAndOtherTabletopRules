@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 — owner release risk accepted; remaining gates pending
+## CURRENT STATE, 2026-10-08 — one persistence fixture correction; NOT QUALIFIED
 
 Latest Owner Release-Scope Disposition and v0.0.143 Completion Order governs.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
@@ -9,7 +9,16 @@ claimed harmless, explained or fixed. Current b8 expiry gate is PASS; owner acce
 residual uncertainty for143 only. This is release risk, NOT an engine limitation
 or waiver of no-post-expiry damage. No further attribution cycle. Revoke acceptance
 and STOP if a later gate actually reproduces post-expiry damage.
-Run only remaining gates on the preserved b8 ZIP; merge/tag/real Latest v0.0.143
+Snake commands71/71 PASS on b8. First whole-roster prepare5/7 FAIL: fixture
+left caster Evil after native Thanadaemon, then requested Celestial Poisonous
+Frog; native availability correctly rejected it. Zero save writes, exact restore.
+One permitted correction now selects legal alignment per fixture cast, restores
+the original in finally and witnesses it. No production/asset/profile/AI change.
+Focused5/5 PASS. Freeze a new exact fixture-only candidate; run full source/build/
+package once, audit delta and rerun affected whole-roster ON/OFF and later gates.
+Original b8 and earlier passed-gate provenance remain preserved; no attribution
+cycle or unrelated historical rerun. All details in RELEASE-0.0.143-EVIDENCE.json.
+Merge/tag/real Latest v0.0.143
 ONLY after all pass and exact restoration. Then STOP. No Sprint18/Phase2C/deployment.
 
 Active branch: codex/release-0.0.143-expanded-summoning-phase2b-checkpoint.
