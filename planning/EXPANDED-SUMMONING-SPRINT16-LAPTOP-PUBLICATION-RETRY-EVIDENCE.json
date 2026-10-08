@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "status": "NOT QUALIFIED; publication failed; exact restoration VERIFIED",
+  "candidate": "3d13108ea941af4e736ca30e6d9cc78a67796d63",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "sourceFingerprint": "28dafdbe271b6d9243ee1997ed5e7788940930c9e901f519a26ce1e78b907fc0",
+  "version": "0.0.141",
+  "dllSha256": "c3011eb1af63f77f0c269f11dc630346d5a19f8e22a386dd022b13e6141dc5ef",
+  "dllMvid": "da229a44-7f7f-4b3a-bf44-de2bd636d76f",
+  "zipSha256": "a3bd999ba0645569ca2792bae7f332bfd25fea908f9ef766334b0798f6173e1c",
+  "packageMembers": 312,
+  "prelaunch": {
+    "focused": "218/218",
+    "fullUnfiltered": "2020/2020",
+    "repositoryStaticIconManifest": "PASS",
+    "preflight": 480,
+    "orchestration": 68,
+    "persistence": "11 wiring; 3 round trips/19 rejections",
+    "crowd": "5 round trips/7 rejections",
+    "cleanExactRelease": "PASS",
+    "deterministicPackage": "PASS",
+    "strictStandalone": "PASS",
+    "gateLogSha256": "AF552D2044DADA55FE0E5C02ED48849EF6B1EB8207300417BE11A4ED77F7104F"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-06T00:09:36.8455868Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261006T0009377630290Z-working-save-smoke",
+      "requestId": "20261006T0009377942957Z-d3c38021ee21410fab59018680db1ee5",
+      "requestSha256": "b95060aa19b8210adba85e7452c35d12e024651522c1fba18c2ce47683ec5b22",
+      "resultSha256": "0442ed8380cee494f477b6df3522840d0a7df5e9aa8b35befdc550640ae04908",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "ba3f802068c805c31012a216284a0eb06d1b061c13b5f4314159a793a409dfce",
+      "processId": 32072,
+      "processStartedUtc": "2026-10-06T00:09:38.7474311Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T00:12:29.7070371Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-crocodilians",
+      "startedAtUtc": "2026-10-06T00:12:35.6504588Z",
+      "parameters": {},
+      "launcherOutcome": "Unclean",
+      "exitCode": 1,
+      "evidenceDirectory": "20261006T0012364367750Z-disposable-expanded-summoning-crocodilians",
+      "requestId": "20261006T0012364367750Z-cf5fceb62cef40afba77b6f2336b0be8",
+      "requestSha256": "3a31b593ab470aea526203b901ba2711e8a945a81dd9555d7dc825c178eef086",
+      "resultSha256": "fa68fd2a61092cb2adab1fdd278feffabd3c9c349367655a7ede1a1da25ba39b",
+      "assertions": 209,
+      "passed": 207,
+      "failed": [
+        {
+          "name": "sprint16-crocodile-rtwp-manual-hold",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint16-crocodile-rtwp-manual-hold-contact-death-roll",
+          "status": "FAIL"
+        }
+      ],
+      "orchestrationSha256": "3e69922c1b6be5c83a520c56ba7085b968acc63cf5d06158be0cdc934c285e79",
+      "processId": 32720,
+      "processStartedUtc": "2026-10-06T00:12:37.9061179Z",
+      "scenarioStatus": "FAIL",
+      "outcome": "FAIL",
+      "completedAtUtc": "2026-10-06T00:24:43.3274934Z"
+    }
+  ],
+  "supplemental": [
+    {
+      "file": "sprint16-combat.json",
+      "sha256": "B5C69C0AD35E6A31AF92E643ED67242AAA9590A5E9B57D239BED053A8423D3DF"
+    },
+    {
+      "file": "sprint16-damage-maintain.json",
+      "sha256": "3C98C5F5577457CFAA238696E059D558D7D3E8C1F379042FE11B5471CEDB26A7"
+    },
+    {
+      "file": "sprint16-final-review.json",
+      "sha256": "DA745B9996D1192E3DC405DB0100A51D314D96E28B031C297DD39908AB31F811"
+    },
+    {
+      "file": "sprint16-icon-bindings.json",
+      "sha256": "08D789E122B8DDE1C1766843EF925130F90FD782C1E5A4C027A03B608FED04DD"
+    },
+    {
+      "file": "sprint16-monitor-lizard-bind-rig.json",
+      "sha256": "8B0C0309A03782753A825B825EA8598C5F3D84BE1A81B618E458C92BDC43A83F"
+    },
+    {
+      "file": "sprint16-native-census.json",
+      "sha256": "5A18EB7B66188D7DAE28031B3350B7313EF9C8C462511830336AB6EE1B94AE19"
+    },
+    {
+      "file": "sprint16-speed.json",
+      "sha256": "517DAFBD28AD9E9D23FB1FE5922739637E71E3B3C021F8684A05A2F1035512E0"
+    }
+  ],
+  "routeCensus": [
+    {
+      "published": 20,
+      "private": 0,
+      "total": 20,
+      "case": "targeted-root-census",
+      "passed": true
+    }
+  ],
+  "failures": {
+    "classification": "fixture prerequisite/observation",
+    "cell": "crocodile-rtwp-manual-hold",
+    "issuedBite": {
+      "frame": 195,
+      "hit": false,
+      "attackBonus": 103,
+      "nativeDie": "NOT RECORDED; do not infer a natural 1"
+    },
+    "tail": {
+      "frame": 270,
+      "hit": true,
+      "damage": "1d12+2"
+    },
+    "attempts": 1,
+    "maneuvers": 0,
+    "observedFrames": 671,
+    "deadlineSeconds": 60,
+    "cause": "Retry required a grapple check, which a missed bite cannot emit; the issued native command completed but was never retried.",
+    "correction": "Allow a completed issued attack with zero checks to retry within the unchanged four-command/60-second bounds. Add disclosed first-bite AutoMiss negative input for only the exact owned Crocodile manual-hold pair in both modes. Require zero maneuvers after the miss and a later unforced native hit/maintain/rider. Keep a fresh native turn open for that retry. Record roll/AC/result flags.",
+    "productionChange": false,
+    "qualification": "Correction source-checked only; new exact artifact/runtime required"
+  },
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "20261006T0009119881581Z",
+    "completedAtUtc": "2026-10-06T00:24:45.7342342Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "lease": "runtime-20261006T000911Z-a56b01d61dff4bcc8a1740fcc78e7399",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "noGame": true,
+    "noStaging": true,
+    "journal": "artifacts/laptop-runtime-20261006T0009112031605Z/batch.json",
+    "journalSha256": "7A4109860C9EA7F445C0A5AC1D129BAA16758B92B2FF80E5BAD999791AC8AD5A",
+    "deploymentManifestSha256": "7e99767106d4951850594a4fac1a1214fcfd606357f98816742b49f0a45784c9",
+    "savePolicy": "Only guarded native KMG_AUTOMATION_WORKING smoke/main loads. No persistence write; prior closed hidden batch saved clean. No filesystem save access."
+  },
+  "retainedHiddenQualification": "e3aeae630d51d27c45694fb9e92e9093048b1af9",
+  "salvageImported": false
+}

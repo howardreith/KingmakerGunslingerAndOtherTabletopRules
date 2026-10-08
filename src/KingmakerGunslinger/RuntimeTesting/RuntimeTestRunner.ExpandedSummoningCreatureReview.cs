@@ -32,9 +32,9 @@ namespace KingmakerGunslinger.RuntimeTesting
     ///
     /// The review images are the deliverable; the assertions only say whether
     /// each image is worth looking at (creature in frame, screen lit,
-    /// renderer enabled, dissolve finished). A creature that renders wrongly
-    /// but in frame still passes here, and is caught by the person or the
-    /// agent who looks at the file.
+    /// rendering whenever the game reports it visible, dissolve finished).
+    /// A creature that renders wrongly but in frame still passes here, and is
+    /// caught by the person or the agent who looks at the file.
     /// </summary>
     internal sealed partial class RuntimeTestRunner
     {
@@ -116,9 +116,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (creature == null) throw new InvalidOperationException(
                     "Unknown creature key for review: " + key + ".");
                 if (quantity != SummonMultiplicity.One &&
-                    !IsSprint11UngulateReviewKey(key))
+                    !IsGroundCrowdReviewKey(key))
                     throw new InvalidOperationException(
-                        "Only Sprint 11 ungulates may use crowd review: " +
+                        "This creature is not on the crowd review roster: " +
                         key + ".");
                 SummonFamily family = creature.NaturesAllyTier.HasValue ?
                     SummonFamily.NaturesAlly : SummonFamily.Monster;
@@ -129,7 +129,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == quantity);
-                if (!SummonVisibilityCatalog.IsPublished(variant))
+                // A withheld creature's art has to be inspected under the
+                // party camera before its suppression is lifted, which cannot
+                // be done through a published parent it does not have. Sprints
+                // 11, 12 and 13 each opened this door for exactly their own
+                // hidden creatures and closed it again at publication; the
+                // Sprint 14 allowance is the same closed list and goes the same
+                // way. It is a development-owned route and never a player one:
+                // the parent the review casts through stays unpublished, and
+                // removing these keys from the suppression set is what actually
+                // publishes the creatures.
+                bool suppressedSprint13Candidate =
+                    IsSprint13CreatureReviewKey(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint14Candidate =
+                    IsSprint14InsectReviewKey(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint16Candidate =
+                    CrocodilianVisualPolicy.Keys.Contains(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint17Snake =
+                    SerpentineVisualPolicy.IsSnake(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
+                if (!SummonVisibilityCatalog.IsPublished(variant) &&
+                    !suppressedSprint13Candidate &&
+                    !suppressedSprint14Candidate &&
+                    !suppressedSprint16Candidate &&
+                    !suppressedSprint17Snake)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -138,18 +164,80 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Every creature the crowd review accepts. Both the request guard and
+        /// the spawner ask this one question, so a sprint added to the roster
+        /// below reaches both at once; assembling the same pair of rosters at
+        /// two call sites is what previously let them disagree.
+        /// </summary>
+        private static bool IsGroundCrowdReviewKey(string key)
+        {
+            return IsSprint11UngulateReviewKey(key) ||
+                IsSprint12QuadrupedReviewKey(key) ||
+                CrocodilianVisualPolicy.Keys.Contains(key) ||
+                SerpentineVisualPolicy.IsSnake(key) || key == "salamander";
+        }
+
         private static bool IsSprint11UngulateReviewKey(string key)
         {
             return key == "aurochs" || key == "bison" ||
                 key == "rhinoceros" || key == "woolly-rhinoceros";
         }
 
-        private static bool IsOriginalReviewKey(string key)
+        /// <summary>
+        /// The four Sprint 12 compact quadrupeds. They are published now, so
+        /// this list no longer waives the publication guard; it only names
+        /// them as members of the crowd review roster.
+        /// </summary>
+        private static bool IsSprint12QuadrupedReviewKey(string key)
         {
-            return key == "giant-wasp" || key == "stirge" ||
-                IsSprint11UngulateReviewKey(key);
+            return key == "dire-rat" || key == "dog" || key == "hyena" ||
+                key == "goblin-dog";
         }
 
+        /// <summary>
+        /// Sprint 13's three creatures. The Wolverine and the Shadow Mastiff
+        /// ride the same Worg rig the Goblin Dog does; the Poison Frog rides
+        /// the Giant Poisonous Frog. Only the Shadow Mastiff is suppressed;
+        /// the other two are published roster members whose visuals are new,
+        /// so naming all three here costs nothing and keeps the sprint's
+        /// roster in one place.
+        /// </summary>
+        private static bool IsSprint13CreatureReviewKey(string key)
+        {
+            return key == "wolverine" || key == "shadow-mastiff" ||
+                key == "poisonous-frog";
+        }
+
+        /// <summary>
+        /// The insect family, all on the Giant Spider rig: Sprint 14's
+        /// three and Sprint 15's two. They are reviewable while they are
+        /// still withheld because the review casts through a
+        /// development-owned private route rather than the player's menu,
+        /// which is the only way to look at a creature before it publishes.
+        /// </summary>
+        private static bool IsSprint14InsectReviewKey(string key)
+        {
+            return key == "fire-beetle" || key == "giant-ant-worker" ||
+                key == "giant-ant-soldier" || key == "giant-ant-drone" ||
+                key == "giant-stag-beetle";
+        }
+
+        private static bool IsOriginalReviewKey(string key)
+        {
+            // Dog is excluded on purpose: it keeps the native Dog
+            // presentation, so it has no project-owned view to inspect.
+            return key == "giant-wasp" || key == "stirge" ||
+                key == "dire-rat" || key == "hyena" || key == "goblin-dog" ||
+                IsSprint11UngulateReviewKey(key) ||
+                IsSprint14InsectReviewKey(key) ||
+                IsSprint13CreatureReviewKey(key) ||
+                CrocodilianVisualPolicy.Keys.Contains(key);
+        }
+
+        // The Sprint 12 quadrupeds already carry the "KMG_<key>_Original"
+        // mesh name the ungulates use, so OriginalReviewVisualName needs no
+        // new branch for them - its existing fallback is already correct.
         private static string OriginalReviewVisualName(string key)
         {
             return key == "stirge"
@@ -162,11 +250,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         private UnitEntityData[] SpawnExpandedSummoningCreatureReviewQuantity(
             SummonVariantSpec variant)
         {
-            if (variant == null || !IsSprint11UngulateReviewKey(
-                    variant.Creature.Key) ||
+            // The crowd route is still a closed list rather than any creature,
+            // but it is no longer ungulate-only: Sprint 12's compact quadrupeds
+            // need the same crowded-space review, and the ungulates are
+            // published now, so the old "hidden ungulate" wording was stale on
+            // both counts.
+            if (variant == null ||
+                !IsGroundCrowdReviewKey(variant.Creature.Key) ||
                 variant.Multiplicity != SummonMultiplicity.OneD4PlusOne)
                 throw new InvalidOperationException(
-                    "Crowd review accepts only a hidden ungulate 1d4+1 route.");
+                    "Crowd review accepts only a creature on its roster, on a 1d4+1 route.");
             UnitEntityData caster = _creatureReviewCaster;
             UnitEntityData[] before = ExpandedSummoningKmgUnitsIn(
                 caster.HoldingState);
@@ -201,7 +294,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return appeared;
         }
 
-        private bool StepExpandedSummoningUngulateCrowdPath(string key)
+        private bool StepExpandedSummoningGroundCrowdPath(string key)
         {
             try
             {
@@ -227,7 +320,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(
                             "The quantity group's appearance buff did not clear.");
                     }
-                    BeginExpandedSummoningUngulateCrowdPath();
+                    BeginExpandedSummoningGroundCrowdPath();
                     return false;
                 }
                 float delta = Game.Instance.TimeController.DeltaTime;
@@ -272,17 +365,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 _creatureReviewCrowdDestinations[index].x,
                                 _creatureReviewCrowdDestinations[index].z)))
                         .All(gap => gap <= 1.5f)) return false;
-                FinishExpandedSummoningUngulateCrowdPath(key, null);
+                FinishExpandedSummoningGroundCrowdPath(key, null);
                 return true;
             }
             catch (Exception exception)
             {
-                FinishExpandedSummoningUngulateCrowdPath(key, exception);
+                FinishExpandedSummoningGroundCrowdPath(key, exception);
                 return true;
             }
         }
 
-        private void BeginExpandedSummoningUngulateCrowdPath()
+        private void BeginExpandedSummoningGroundCrowdPath()
         {
             if (AstarPath.active == null || _creatureReviewCaster == null)
                 throw new InvalidOperationException(
@@ -356,7 +449,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private void FinishExpandedSummoningUngulateCrowdPath(string key,
+        private void FinishExpandedSummoningGroundCrowdPath(string key,
             Exception error)
         {
             var observations = new List<string>();
@@ -387,36 +480,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "/" + finalGap.ToString("0.##", CultureInfo.InvariantCulture));
             }
             bool awakeRestored = true;
+            string awakeEvidence = "legacy-owned-removal";
             if (_creatureReviewCrowdAwakeBefore != null)
             {
-                foreach (UnitEntityData unit in _creatureReviewUnits)
-                    if (!_creatureReviewCrowdAwakeBefore.Contains(unit))
-                        Game.Instance.State.AwakeUnits.Remove(unit);
-                awakeRestored = Game.Instance.State.AwakeUnits.SequenceEqual(
+                bool ownedRestored = true;
+                if (SerpentineVisualPolicy.IsSnake(key) || key == "salamander")
+                    ownedRestored = RestoreSprint17SnakeCrowdAwake(key, out awakeEvidence);
+                else
+                    foreach (UnitEntityData unit in _creatureReviewUnits)
+                        if (!_creatureReviewCrowdAwakeBefore.Contains(unit))
+                            Game.Instance.State.AwakeUnits.Remove(unit);
+                awakeRestored = ownedRestored && Game.Instance.State.AwakeUnits.SequenceEqual(
                     _creatureReviewCrowdAwakeBefore);
                 Game.Instance.IsPaused = _creatureReviewCrowdWasPaused;
                 _creatureReviewCrowdAwakeBefore = null;
             }
             _creatureReviewAssertions.Add(Assertion(
-                "expanded-summoning-ungulate-crowd-path-" + key,
+                "expanded-summoning-ground-crowd-path-" + key,
                 "each native quantity member accepts a distinct simultaneous move and reaches its connected-floor destination",
                 "count=" + _creatureReviewUnits.Length + ";frames=" +
                     _creatureReviewCrowdFrames + ";travel/approach/velocity/gap=" +
                     string.Join("|", observations.ToArray()) +
                     ";awakeRestored=" + awakeRestored +
+                    ";awakeEvidence=" + awakeEvidence +
                     (error == null ? "" : ";error=" + error.GetType().Name +
                         ":" + error.Message),
                 traveled && awakeRestored,
                 "real UnitMoveTo commands on a simultaneous 1d4+1 group; native movement-agent samples and request-local state restoration"));
         }
 
-        private bool StepExpandedSummoningUngulateCrowdExpiry(string key)
+        private bool StepExpandedSummoningGroundCrowdExpiry(string key)
         {
             try
             {
                 if (!_creatureReviewExpiryStarted)
                 {
-                    BeginExpandedSummoningUngulateCrowdExpiry();
+                    BeginExpandedSummoningGroundCrowdExpiry();
                     _creatureReviewExpiryStarted = true;
                     return false;
                 }
@@ -430,17 +529,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TimeSpan.FromSeconds(10) &&
                     DateTime.UtcNow - _creatureReviewExpiryStartUtc <
                         TimeSpan.FromSeconds(180)) return false;
-                FinishExpandedSummoningUngulateCrowdExpiry(key, null);
+                FinishExpandedSummoningGroundCrowdExpiry(key, null);
                 return true;
             }
             catch (Exception exception)
             {
-                FinishExpandedSummoningUngulateCrowdExpiry(key, exception);
+                FinishExpandedSummoningGroundCrowdExpiry(key, exception);
                 return true;
             }
         }
 
-        private void BeginExpandedSummoningUngulateCrowdExpiry()
+        private void BeginExpandedSummoningGroundCrowdExpiry()
         {
             TimeSpan clock = Game.Instance.Player.GameTime;
             BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
@@ -471,7 +570,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_creatureReviewExpiryWasPaused) Game.Instance.IsPaused = false;
         }
 
-        private void FinishExpandedSummoningUngulateCrowdExpiry(string key,
+        private void FinishExpandedSummoningGroundCrowdExpiry(string key,
             Exception error)
         {
             try
@@ -492,7 +591,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !unit.Destroyed || unit.View != null ||
                     unit.HoldingState != null);
                 _creatureReviewAssertions.Add(Assertion(
-                    "expanded-summoning-ungulate-crowd-expiry-" + key,
+                    "expanded-summoning-ground-crowd-expiry-" + key,
                     "all timed native summon markers expire and all quantity members leave the loaded area without a save write",
                     _creatureReviewExpiryInitial + ";markersLeft=" +
                         markersLeft + ";live=" + live +
@@ -524,12 +623,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Vector3 FindExpandedSummoningUngulateArtPoint(
             out string survey)
         {
-            if (AstarPath.active == null || _creatureReviewCaster == null ||
-                Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null)
-                throw new InvalidOperationException(
-                    "Ungulate art review has no native floor or sight survey.");
+            return FindExpandedSummoningArtPoint(_creatureReviewCaster, out survey);
+        }
+
+        // The anchor belongs to the caller's fixture. Other guarded scenarios
+        // must not depend on CreatureReview's private initialization state.
+        private static Vector3 FindExpandedSummoningArtPoint(UnitEntityData anchorCaster,
+            out string survey)
+        {
+            if (anchorCaster == null) throw new InvalidOperationException("Art review has no fixture anchor.");
+            if (AstarPath.active == null) throw new InvalidOperationException("Art review has no native path graph.");
+            if (Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null)
+                throw new InvalidOperationException("Art review has no native sight survey.");
             Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(
-                _creatureReviewCaster.Position);
+                anchorCaster.Position);
             if (anchor.node == null || !anchor.node.Walkable)
                 throw new InvalidOperationException(
                     "Ungulate art review has no walkable party anchor.");
@@ -657,6 +764,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ResetExpandedSummoningMotionReview(
                         ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature)
                             .Replace('.', '_').Replace('-', '_'), key + "-review");
+
                     _creatureReviewSettle = 0;
                     _creatureReviewPhase = 1;
                     WriteLifecycleStage("creature-review-" + key + "-summoned");
@@ -666,7 +774,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewPhase = _creatureReviewQuantity ? 4 : 2;
                     return;
                 case 4:
-                    if (!StepExpandedSummoningUngulateCrowdPath(key)) return;
+                    if (!StepExpandedSummoningGroundCrowdPath(key)) return;
                     _creatureReviewPhase = 2;
                     return;
                 case 2:
@@ -703,7 +811,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         : "<not applicable>";
                     _creatureReviewAssertions.Add(Assertion(
                         "expanded-summoning-creature-review-" + key,
-                        "idle, moving-a, moving-b and attack captures in frame, lit, renderer enabled, intact" +
+                        (SerpentineVisualPolicy.IsSnake(key) ? "idle, moving-a, moving-b and post-move" :
+                            "idle, moving-a, moving-b and attack") +
+                            " captures in frame, lit, intact, rendering wherever the game reports the unit visible and rendering at least once" +
                             (variantRegistered ? "; registered visual variant applied at attach and retained on the view at capture" : ""),
                         MotionReviewSummary + ";visualVariant=" + variantOutcome +
                             ";materialsAtCapture=" + string.Join("|", materialsNow.ToArray()) +
@@ -746,6 +856,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "request-local camera pose restored; image is supporting art evidence, not mechanical proof"));
                         }
                     }
+                    if (SerpentineVisualPolicy.IsSnake(key) || key == "salamander")
+                        RecordSprint17SnakeCrowdOriginals(key);
                     if (key == "eagle" || key == "dire-bat" ||
                         key == "giant-wasp" || key == "stirge")
                     {
@@ -762,7 +874,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MotionReviewDoorwayValid,
                             "named native area landmark, same-area endpoints, native UnitMoveTo and cross-frame position samples"));
                     }
-                    if (IsSprint11UngulateReviewKey(key))
+                    if (IsSprint12QuadrupedReviewKey(key) || CrocodilianVisualPolicy.Keys.Contains(key) ||
+                        SerpentineVisualPolicy.IsSnake(key) || key == "salamander")
+                    {
+                        _creatureReviewAssertions.Add(Assertion(
+                            "expanded-summoning-ground-travel-" + key,
+                            "native ground move accepted over surveyed connected floor; at least 0.75 m planar travel and nonzero movement-agent velocity",
+                            MotionReviewSummary,
+                            MotionReviewTravelValid,
+                            "native floor survey in the party's own area and graph, native UnitMoveTo and cross-frame position/velocity samples"));
+                    }
+                    if (IsSprint11UngulateReviewKey(key) || CrocodilianVisualPolicy.Keys.Contains(key))
                     {
                         _creatureReviewAssertions.Add(Assertion(
                             "expanded-summoning-ungulate-travel-" + key,
@@ -836,7 +958,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewPhase = 3;
                     return;
                 case 5:
-                    if (!StepExpandedSummoningUngulateCrowdExpiry(key)) return;
+                    if (!StepExpandedSummoningGroundCrowdExpiry(key)) return;
                     _creatureReviewSettle = 0;
                     _creatureReviewPhase = 3;
                     return;
@@ -856,6 +978,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "expanded-summoning-creature-review-cleanup-" + key, "0",
                         live.ToString(), live == 0,
                         "reviewed summon dismissed and destroyed before the next cast"));
+                    if (SerpentineVisualPolicy.IsSnake(key) || key == "salamander")
+                        RecordSprint17SnakeCrowdDestruction(key);
                     if (IsOriginalReviewKey(key))
                     {
                         string visualName = OriginalReviewVisualName(key);

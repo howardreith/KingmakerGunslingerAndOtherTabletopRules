@@ -34,6 +34,89 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
+    /// <summary>
+    /// Creation-only printed land ranks and racial HP for the two crocodilians.
+    /// Native class/attribute/size/feat modifiers still calculate the totals.
+    /// No additive hidden bonus, donor mutation or reload-time reallocation.
+    /// </summary>
+    [Serializable]
+    public sealed class SummonCrocodilianSkillRanks :
+        OwnedGameLogicComponent<UnitDescriptor>,
+        IHandleEntityComponent<UnitEntityData>
+    {
+        public string CreatureKey;
+        public BlueprintUnit OwningBlueprint;
+        public void OnEntityCreated(UnitEntityData unit)
+        {
+            // IHandleEntityComponent is invoked on the shared blueprint
+            // component, not a per-unit clone. Never keep an applied flag here.
+            // Native Initialize calls this only on creation, not deserialization.
+            if (unit == null || !ReferenceEquals(unit.Blueprint, OwningBlueprint))
+                throw new InvalidOperationException(
+                    "Crocodilian rank allocation requires its exact owning unit.");
+            CrocodilianRulesProfile rules = CrocodilianRulesPolicy.For(CreatureKey);
+            ModifiableValue perception = unit.Descriptor.Stats.GetStat(
+                StatType.SkillPerception);
+            ModifiableValue stealth = unit.Descriptor.Stats.GetStat(
+                StatType.SkillStealth);
+            ModifiableValue mobility = unit.Descriptor.Stats.GetStat(
+                StatType.SkillMobility);
+            int perceptionRanks = perception.BaseValue;
+            int stealthRanks = stealth.BaseValue;
+            CrocodilianRulesPolicy.AllocateLandRanks(CreatureKey,
+                ref perceptionRanks, ref stealthRanks, mobility.BaseValue);
+            perception.BaseValue = perceptionRanks;
+            stealth.BaseValue = stealthRanks;
+            unit.Descriptor.Stats.HitPoints.BaseValue = rules.BaseHitPoints;
+        }
+
+        public void OnEntityRemoved(UnitEntityData unit) { }
+    }
+
+    /// <summary>
+    /// The two printed crocodilian routines use full Strength on the bite,
+    /// half on the secondary tail, and dice relative to their native size.
+    /// Native weapon stats otherwise treat a lone primary-hand bite as 1.5x
+    /// Strength and suppress scaling on NPC weapon dice overrides.
+    /// </summary>
+    [Serializable]
+    public sealed class SummonCrocodilianWeaponStats :
+        RuleInitiatorLogicComponent<RuleCalculateWeaponStats>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon Bite;
+        public BlueprintItemWeapon Tail;
+        public Size BaselineSize;
+
+        public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt)
+        {
+            if (Owner == null || Owner.Unit == null || evt == null ||
+                !ReferenceEquals(evt.Initiator, Owner.Unit) ||
+                !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
+                evt.Weapon == null) return;
+            bool bite = ReferenceEquals(evt.Weapon.Blueprint, Bite);
+            if (!bite && !ReferenceEquals(evt.Weapon.Blueprint, Tail)) return;
+            if (bite) evt.OverrideDamageBonusStatMultiplier(1f);
+            // Respect an existing legitimate dice override. Native type dice
+            // are Medium-relative; explicit printed dice are baseline-relative.
+            // Both then use the live creature size and native weapon-size shift.
+            if (!evt.WeaponDamageDiceOverride.HasValue)
+            {
+                evt.WeaponDamageDiceOverride = WeaponDamageScaleTable.Scale(
+                    evt.Weapon.Blueprint.BaseDamage,
+                    (Size)CrocodilianRulesPolicy.ResolveWeaponSize(
+                        (int)Owner.State.Size, (int)evt.Weapon.Size,
+                        (int)evt.WeaponSize),
+                    (Size)CrocodilianRulesPolicy.ResolveDiceBaseline(
+                        evt.Weapon.Blueprint.IsDamageDiceOverridden,
+                        (int)BaselineSize), evt.Weapon.Blueprint);
+                evt.DoNotScaleDamage = true;
+            }
+        }
+
+        public override void OnEventDidTrigger(RuleCalculateWeaponStats evt) { }
+    }
+
     [Serializable]
     public sealed class BebelithCombatComponent :
         RuleInitiatorLogicComponent<RuleAttackRoll>,
@@ -382,6 +465,29 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     internal static class SummonGrappleDamage
     {
+        /// <summary>
+        /// Native OnTrigger constructs the weapon's base description and
+        /// assigns it to slot zero (audited Assembly-CSharp IL_03ad-03b6).
+        /// Capture that object before after-rule subscribers can reorder the
+        /// list. RulebookSubscriptionManager walks base types, so ordinary
+        /// RuleCalculateWeaponStats subscribers still run on this rule.
+        /// This is local to Death Roll; it installs no global rule patch.
+        /// </summary>
+        private sealed class DeathRollWeaponStats : RuleCalculateWeaponStats
+        {
+            internal DeathRollWeaponStats(UnitEntityData owner,
+                ItemEntityWeapon weapon) : base(owner, weapon, null) { }
+
+            internal DamageDescription BaseBite { get; private set; }
+
+            public override void OnTrigger(RulebookEventContext context)
+            {
+                base.OnTrigger(context);
+                BaseBite = DamageDescription.Count == 0 ? null :
+                    DamageDescription[0];
+            }
+        }
+
         internal static int DealWeaponDamage(UnitEntityData owner, UnitEntityData target,
             ItemEntityWeapon weapon, MechanicsContext context)
         {
@@ -400,6 +506,93 @@ namespace KingmakerGunslinger.Summoning
             if (context != null) context.TriggerRule(rule);
             else Rulebook.Trigger(rule);
             return rule.Damage;
+        }
+
+        /// <summary>
+        /// A death roll: the creature's current bite, with the Strength
+        /// contribution raised from the bite's one times to one and a half.
+        ///
+        /// <para>Everything else about the bite is preserved because the
+        /// damage descriptions are the live ones the weapon-stats rule
+        /// resolved - the current dice after any legitimate size or dice
+        /// change, the damage forms, enhancement, material and weapon
+        /// properties, and every rule modifier and buff in play - and the
+        /// bundle carries the weapon itself, so damage reduction and
+        /// resistance treat this exactly as that bite. What it is not is a
+        /// second attack: no attack roll is made, so nothing that keys on a
+        /// hit can fire again.</para>
+        ///
+        /// <para>The extra half is added only for a positive modifier. One
+        /// and a half times Strength multiplies a bonus; a penalty applies
+        /// once, and is already inside the live bite this is built from, so a
+        /// weakened creature's death roll falls with its bite.</para>
+        ///
+        /// <para>Returns a description of what was dealt, including the live
+        /// Strength the half came from, so the runtime fixture can show the
+        /// derivation rather than a total.</para>
+        /// </summary>
+        internal static string DealDeathRollDamage(UnitEntityData owner,
+            UnitEntityData target, ItemEntityWeapon weapon,
+            MechanicsContext context, out int dealt)
+        {
+            dealt = 0;
+            if (owner == null || target == null || weapon == null)
+                return "no-weapon";
+            var stats = new DeathRollWeaponStats(owner, weapon);
+            if (context != null)
+                context.TriggerRule<RuleCalculateWeaponStats>(stats);
+            else Rulebook.Trigger<RuleCalculateWeaponStats>(stats);
+            int baseIndex = CrocodilianRulesPolicy.BaseBiteIndex(
+                stats.DamageDescription, stats.BaseBite);
+            if (baseIndex < 0 || stats.BaseBite.TypeDescription == null ||
+                    stats.BaseBite.TypeDescription.Type != DamageType.Physical ||
+                    stats.DamageDescription.Any(value => value == null))
+                return "no-unique-physical-base-bite";
+            var damages = stats.DamageDescription.Select(value =>
+                value.CreateDamage()).ToList();
+            // The live Strength modifier, which the primary natural attack
+            // already contributes once. The death roll adds the other half.
+            int strengthModifier = owner.Descriptor == null ||
+                owner.Descriptor.Stats == null ? 0 :
+                owner.Descriptor.Stats.Strength.Bonus;
+            int strengthScore = owner.Descriptor.Stats.Strength.ModifiedValue;
+            int extraHalf = CrocodilianRulesPolicy.DeathRollExtraHalf(
+                strengthModifier);
+            string baseline = DescribeDamage(damages);
+            BaseDamage baseBite = damages[baseIndex];
+            if (extraHalf != 0) baseBite.AddBonus(extraHalf);
+            // The weapon constructor sets WeaponDamage and WeaponSize as
+            // well as Weapon. Merely assigning Weapon leaves the native
+            // base-damage attribution null. Supplemental chunks stay intact.
+            var bundle = new DamageBundle(weapon, stats.WeaponSize, baseBite);
+            for (int index = 0; index < damages.Count; index++)
+                if (index != baseIndex) bundle.Add(damages[index]);
+            var rule = new RuleDealDamage(owner, target, bundle);
+            if (context != null) context.TriggerRule(rule);
+            else Rulebook.Trigger(rule);
+            dealt = rule.Damage;
+            return "weapon=" + (weapon.Blueprint == null ? "none" :
+                    weapon.Blueprint.name) +
+                ";biteDamage=" + baseline +
+                ";deathRollDamage=" + DescribeDamage(damages) +
+                ";baseBiteIndex=" + baseIndex +
+                ";liveStrengthScore=" + strengthScore +
+                ";liveStrengthModifier=" + strengthModifier +
+                ";extraHalf=" + extraHalf + ";dealt=" + dealt;
+        }
+
+        /// <summary>
+        /// A damage list as dice and bonus, so a fixture can show that the
+        /// death roll's line is the bite's line plus the extra half rather
+        /// than a number invented somewhere else.
+        /// </summary>
+        private static string DescribeDamage(List<BaseDamage> damages)
+        {
+            if (damages == null || damages.Count == 0) return "<none>";
+            return string.Join("+", damages.Select(value =>
+                value == null ? "<null>" :
+                value.Dice.Rolls + "d" + (int)value.Dice.Dice + "+" +
+                value.Bonus + "/" + value.Type).ToArray());
         }
     }
 
@@ -443,6 +636,31 @@ namespace KingmakerGunslinger.Summoning
         public int ConstrictDiceCount;
         public DiceType ConstrictDiceType;
         public int ConstrictBonus;
+        // Only the new Constrictor Snake opts into live printed constrict.
+        // A reference, not a name match, confines it to its registered owner.
+        public BlueprintUnit ConstrictProfileOwner;
+        // Separate opt-in: Salamander constricts with its additional tail and
+        // fire, never the snake's primary bite/physical-only damage path.
+        public BlueprintUnit SalamanderProfileOwner;
+        /// <summary>
+        /// Set for a crocodilian. A death roll is a maintain-time rider like
+        /// constrict, but it is not a second attack. These fields retain the
+        /// static unmodified profile contract and identify an eligible owner.
+        /// Runtime damage comes from the actual establishing bite's live
+        /// weapon stats plus half of a positive current Strength modifier.
+        /// </summary>
+        public int DeathRollDiceCount;
+        public DiceType DeathRollDiceType;
+        public int DeathRollBonus;
+        /// <summary>
+        /// 0: a death roll works on a foe of the crocodilian's own size or
+        /// smaller, which is a wider threshold than swallow whole's.
+        /// </summary>
+        public int DeathRollMaxTargetSizeDelta;
+        /// <summary>The prone condition a successful death roll applies.</summary>
+        public bool DeathRollKnocksProne = true;
+
+        internal bool HasDeathRoll { get { return DeathRollDiceCount > 0; } }
 
         internal bool MultiLink { get { return MaxHeldTargets > 1; } }
 
@@ -534,6 +752,12 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             if (owner == null || target == null || target.Descriptor == null)
                 return false;
+            BlueprintUnit liveConstrictOwner = ConstrictProfileOwner ?? SalamanderProfileOwner;
+            if (liveConstrictOwner != null &&
+                (!ReferenceEquals(owner.Blueprint, liveConstrictOwner) ||
+                 !CrocodilianRulesPolicy.CanMaintainLiveTarget(owner.Destroyed,
+                    owner.Descriptor.State.IsConscious, target.Destroyed,
+                    target.Descriptor.State.IsDead))) return false;
             bool sizeAllowed = ExpandedSummoningSpecialProfiles.IsGrabSizeAllowed(
                 (int)target.Descriptor.State.Size, (int)owner.Descriptor.State.Size,
                 MaxTargetSizeDelta);
@@ -596,12 +820,114 @@ namespace KingmakerGunslinger.Summoning
             MechanicsContext context)
         {
             if (ConstrictDiceCount <= 0 || owner == null || target == null) return;
-            var damage = new PhysicalDamage(new DiceFormula(ConstrictDiceCount,
-                ConstrictDiceType), PhysicalDamageForm.Bludgeoning);
-            damage.AddBonus(ConstrictBonus);
+            if (SalamanderProfileOwner != null)
+            {
+                if (!ReferenceEquals(owner.Blueprint, SalamanderProfileOwner) ||
+                    !SalamanderRulesPolicy.IsOwner(owner.Blueprint.AssetGuid, owner.Blueprint.name) ||
+                    !CrocodilianRulesPolicy.CanMaintainLiveTarget(owner.Destroyed,
+                        owner.Descriptor.State.IsConscious, target.Destroyed, target.Descriptor.State.IsDead)) return;
+                ItemEntityWeapon tail = SummonGrappleLinks.EstablishingWeapon(owner, target);
+                if (!IsGrabLimb(owner, tail)) return;
+                SalamanderConstrictDamage.Deal(owner, target, tail, context);
+                if (target.Destroyed || target.Descriptor.State.IsDead)
+                    SummonHoldComponent.ReleaseLink(owner, target, this, true);
+                return;
+            }
+            DiceFormula dice = new DiceFormula(ConstrictDiceCount, ConstrictDiceType);
+            int bonus = ConstrictBonus;
+            if (ConstrictProfileOwner != null)
+            {
+                if (!ReferenceEquals(owner.Blueprint, ConstrictProfileOwner) ||
+                    target.Destroyed || target.Descriptor.State.IsDead) return;
+                ItemEntityWeapon bite = SummonLimbs.PrimaryWeapon(owner);
+                if (bite == null || bite.Blueprint == null) return;
+                dice = WeaponDamageScaleTable.Scale(dice, owner.Descriptor.State.Size,
+                    Size.Medium, bite.Blueprint);
+                bonus = SerpentineRulesPolicy.SingleNaturalDamageBonus(
+                    owner.Descriptor.Stats.Strength.Bonus);
+            }
+            var damage = new PhysicalDamage(dice, PhysicalDamageForm.Bludgeoning);
+            damage.AddBonus(bonus);
             var rule = new RuleDealDamage(owner, target, damage);
             if (context != null) context.TriggerRule(rule);
             else Rulebook.Trigger(rule);
+            if (ConstrictProfileOwner != null &&
+                (target.Destroyed || target.Descriptor.State.IsDead))
+                SummonHoldComponent.ReleaseLink(owner, target, this, true);
+        }
+
+        /// <summary>
+        /// A death roll's own size threshold: the crocodilian's size or
+        /// smaller, which is deliberately not the swallow's one-category-
+        /// smaller rule. A Large crocodile death rolls a Large foe and cannot
+        /// swallow one, which is what keeps both abilities reachable.
+        /// </summary>
+        internal bool IsDeathRollSizeAllowed(UnitEntityData owner,
+            UnitEntityData target)
+        {
+            if (owner == null || target == null) return false;
+            return ExpandedSummoningSpecialProfiles.IsGrabSizeAllowed(
+                (int)target.Descriptor.State.Size,
+                (int)owner.Descriptor.State.Size, DeathRollMaxTargetSizeDelta);
+        }
+
+        /// <summary>
+        /// The death roll itself: its own crushing damage, the native prone
+        /// condition, and the hold kept.
+        ///
+        /// <para>The prone condition is read back after it is added rather
+        /// than assumed to have taken, because a target can be immune or
+        /// already prone and the difference matters to the record. The return
+        /// value names what actually happened for the runtime fixture.</para>
+        /// </summary>
+        internal string DealDeathRoll(UnitEntityData owner,
+            UnitEntityData target, MechanicsContext context)
+        {
+            if (!HasDeathRoll || owner == null || target == null)
+                return "not-applicable";
+            // The bite that established the hold is the one that rolls. The
+            // damage is that bite's live damage with the Strength contribution
+            // raised, not a line rebuilt from the profile: a buffed, enlarged
+            // or weakened creature death rolls for what it actually bites for.
+            ItemEntityWeapon bite =
+                SummonGrappleLinks.EstablishingWeapon(owner, target);
+            if (bite == null || bite.Blueprint == null ||
+                    bite.Blueprint.Category != WeaponCategory.Bite ||
+                    !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) ||
+                    !IsDeathRollSizeAllowed(owner, target))
+                return "refused:no-exact-held-bite";
+            int dealt;
+            string damageDetail = SummonGrappleDamage.DealDeathRollDamage(
+                owner, target, bite, context, out dealt);
+            if (damageDetail == "no-unique-physical-base-bite")
+                return "refused:" + damageDetail;
+            if (target.Descriptor.State.IsDead || target.Destroyed)
+            {
+                SummonHoldComponent.ReleaseLink(owner, target, this, true);
+                return damageDetail + ";targetDied=True;heldKept=False";
+            }
+            bool proneBefore = target.Descriptor.State.HasCondition(
+                UnitCondition.Prone);
+            bool proneAfter = proneBefore;
+            if (DeathRollKnocksProne && !target.Descriptor.State.IsDead &&
+                    !target.Destroyed &&
+                    !target.Descriptor.State.HasConditionImmunity(UnitCondition.Prone))
+            {
+                // The same two-argument call TwinShotKnockdownMechanics
+                // uses: the engine owns how long a creature stays down, and a
+                // duration passed here would be this project inventing one.
+                target.Descriptor.State.AddCondition(UnitCondition.Prone,
+                    null);
+                proneAfter = target.Descriptor.State.HasCondition(
+                    UnitCondition.Prone);
+            }
+            // The profile's line is reported beside the live one as the
+            // baseline an unmodified creature must reproduce, which is what
+            // makes a divergence legible rather than invisible.
+            return damageDetail + ";baselineContract=" + DeathRollDiceCount +
+                "d" + (int)DeathRollDiceType + "+" + DeathRollBonus +
+                ";proneBefore=" + proneBefore + ";proneAfter=" + proneAfter +
+                ";heldKept=" + CrocodilianRulesPolicy.KeepsGrappleAfterDeathRoll;
         }
 
         /// <summary>
@@ -1043,6 +1369,16 @@ namespace KingmakerGunslinger.Summoning
     public sealed class SummonHoldComponent : BuffLogic, ITickEachRound,
         IInitiatorRulebookHandler<RuleCalculateCMB>
     {
+        /// <summary>
+        /// The held-round number this hold last resolved a rider on. A round
+        /// processed twice would otherwise crush and knock prone twice, so the
+        /// rider fires at most once per distinct round of holding. Serialized
+        /// with the buff, because a save during a hold must not hand the
+        /// target a second death roll on load.
+        /// </summary>
+        [JsonProperty]
+        private int m_LastRiderRound = -1;
+
         public void OnNewRound()
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
@@ -1050,7 +1386,8 @@ namespace KingmakerGunslinger.Summoning
             if (target == null) return;
             MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
             SummonGrabComponent grab = SummonGrabComponent.Find(owner);
-            MaintainLink(owner, target, grab, context, Buff, HeldState(owner, target, grab));
+            MaintainLink(owner, target, grab, context, Buff,
+                HeldState(owner, target, grab), ref m_LastRiderRound);
         }
 
         /// <summary>
@@ -1061,6 +1398,59 @@ namespace KingmakerGunslinger.Summoning
         internal static string MaintainLink(UnitEntityData owner, UnitEntityData target,
             SummonGrabComponent grab, MechanicsContext context, Buff holdBuff, Buff heldState)
         {
+            int ignored = -1;
+            return MaintainLink(owner, target, grab, context, holdBuff,
+                heldState, ref ignored);
+        }
+
+        /// <summary>
+        /// One maintain check for one link. <paramref name="lastRiderRound"/>
+        /// is the held-round number last claimed for this crocodilian link,
+        /// before its check resolves; a caller with no rider passes a throwaway.
+        /// </summary>
+        internal static string MaintainLink(UnitEntityData owner, UnitEntityData target,
+            SummonGrabComponent grab, MechanicsContext context, Buff holdBuff,
+            Buff heldState, ref int lastRiderRound)
+        {
+            bool crocodilian = grab != null && grab.HasDeathRoll;
+            bool snake = grab != null && grab.ConstrictProfileOwner != null &&
+                ReferenceEquals(owner.Blueprint, grab.ConstrictProfileOwner);
+            bool salamander = grab != null && grab.SalamanderProfileOwner != null &&
+                ReferenceEquals(owner.Blueprint, grab.SalamanderProfileOwner);
+            bool liveConstrict = snake || salamander;
+            string constrictKind = salamander ? "salamander" : "snake";
+            bool guardedRider = crocodilian || liveConstrict;
+            bool targetOwned = !guardedRider ||
+                ReferenceEquals(HeldTarget(owner), target);
+            if (!targetOwned) return "refused:no-exact-held-target";
+            if (guardedRider && !CrocodilianRulesPolicy.CanMaintainLiveTarget(
+                    owner.Destroyed, owner.Descriptor.State.IsConscious,
+                    target.Destroyed, target.Descriptor.State.IsDead))
+            {
+                ReleaseLink(owner, target, grab, true);
+                return liveConstrict ? "released:invalid-" + constrictKind + "-owner-or-target" :
+                    "released:invalid-crocodilian-owner-or-target";
+            }
+            int roundsHeld = RoundsHeld(heldState);
+            if (liveConstrict && roundsHeld <= 0)
+                return constrictKind + "-maintain:waiting-for-later-round";
+            // Capture the choice entirely from pre-roll state. Claim the
+            // round before the maneuver, so re-entry or replay cannot roll
+            // another check (and release a hold on that second result).
+            CrocodilianMaintainRider rider =
+                CrocodilianRulesPolicy.SelectMaintainRider(true, targetOwned,
+                    roundsHeld,
+                    grab != null && grab.HasDeathRoll,
+                    grab != null && grab.IsDeathRollSizeAllowed(owner, target),
+                    grab != null && grab.SwallowedBuff != null,
+                    grab != null && grab.IsSwallowSizeAllowed(owner, target),
+                    grab != null && grab.SwallowedBuff != null);
+            if (guardedRider && roundsHeld > 0 &&
+                    !CrocodilianRulesPolicy.TryClaimMaintainRound(roundsHeld,
+                        ref lastRiderRound))
+                return (liveConstrict ? constrictKind + "-maintain:" : "crocodilian-maintain:") +
+                    "already-resolved-this-round;round=" +
+                    roundsHeld;
             var maneuver = new RuleCombatManeuver(owner, target, CombatManeuver.Grapple);
             if (context != null) context.TriggerRule(maneuver);
             else Rulebook.Trigger(maneuver);
@@ -1070,17 +1460,30 @@ namespace KingmakerGunslinger.Summoning
                 ReleaseLink(owner, target, grab, true);
                 return "released";
             }
-            int roundsHeld = RoundsHeld(heldState);
-            if (grab != null && ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(
-                    grab.SwallowedBuff != null, success, roundsHeld,
-                    grab.IsSwallowSizeAllowed(owner, target)))
+            // One successful check resolves one rider. The selector returns a
+            // single value rather than two booleans, so a creature with both a
+            // death roll and a swallow cannot do both on the same check; for a
+            // creature with no death roll it answers exactly as the swallow
+            // condition it replaced, which is what leaves the Purple Worm and
+            // the Giant Flytrap untouched.
+            if (rider == CrocodilianMaintainRider.SwallowWhole)
                 return "swallowed:" + grab.SwallowHeld(owner, target, context);
+            if (rider == CrocodilianMaintainRider.DeathRoll)
+            {
+                return "death-roll:" +
+                    grab.DealDeathRoll(owner, target, context);
+            }
             ItemEntityWeapon weapon = SummonGrappleLinks.EstablishingWeapon(owner, target);
             bool substituted = weapon == null;
             if (substituted)
                 weapon = grab == null ? SummonLimbs.PrimaryWeapon(owner) :
                     grab.FirstGrabWeapon(owner);
             int damage = SummonGrappleDamage.DealWeaponDamage(owner, target, weapon, context);
+            if (liveConstrict && (target.Destroyed || target.Descriptor.State.IsDead))
+            {
+                ReleaseLink(owner, target, grab, true);
+                return "maintained:" + damage + ";targetDied=True;heldKept=False";
+            }
             if (grab != null) grab.DealConstrict(owner, target, context);
             string rake = grab == null ? string.Empty :
                 SummonRakeExecution.RakeOnMaintain(owner, target, grab, context);
@@ -1384,8 +1787,29 @@ namespace KingmakerGunslinger.Summoning
     /// creature that is gone.
     /// </summary>
     [Serializable]
-    public sealed class SummonSwallowLifecycleComponent : BuffLogic
+    public sealed class SummonSwallowLifecycleComponent : BuffLogic,
+        IUnitHandler, IGlobalSubscriber
     {
+        public void HandleUnitSpawned(UnitEntityData unit) { }
+        public void HandleUnitDestroyed(UnitEntityData unit) { HandleUnitDeath(unit); }
+        public void HandleUnitDeath(UnitEntityData unit)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            // Existing worm/flytrap graphs keep their qualified native paths.
+            // Native swallow only watches the source's death, so Dire also
+            // releases its exact swallowed victim at that victim's boundary.
+            if (owner == null || owner.Blueprint == null ||
+                owner.Blueprint.name != "KMG_Summoning_Unit_DireCrocodile" ||
+                unit == null) return;
+            SummonGrabComponent grab = SummonGrabComponent.Find(owner);
+            UnitPartSwallowWhole part = owner.Get<UnitPartSwallowWhole>();
+            if (grab == null || part == null || !part.SwallowedUnits.Any(value =>
+                    ReferenceEquals(value.Value, unit))) return;
+            part.Free(unit);
+            SummonGrappleLinks.Release(owner, unit);
+            if (grab.SwallowedBuff != null) unit.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff);
+        }
+
         public override void OnTurnOff()
         {
             base.OnTurnOff();
@@ -1423,7 +1847,51 @@ namespace KingmakerGunslinger.Summoning
 
         public void OnAreaScenesLoaded() { }
 
-        public void OnAreaLoadingComplete() { Sweep(false); }
+        public void OnAreaLoadingComplete()
+        {
+            if (Game.Instance != null && Game.Instance.State != null &&
+                Game.Instance.State.Units != null)
+                ResetLoadedGrapples(Game.Instance.State.Units.All);
+            Sweep(false);
+        }
+
+        // Native parts and their state buffs can survive deserialization even
+        // though the session link is not reconstructible. Reset only KMG-owned
+        // relationships, including nonparty summons/prey, at the load boundary.
+        internal static void ResetLoadedGrapples(IEnumerable<UnitEntityData> units)
+        {
+            UnitEntityData[] all = (units ?? Enumerable.Empty<UnitEntityData>())
+                .Where(value => value != null && value.Descriptor != null).ToArray();
+            foreach (UnitEntityData owner in all.Where(IsKmgSummon))
+            {
+                SummonGrabComponent grab = SummonGrabComponent.Find(owner);
+                UnitPartSwallowWhole swallower = owner.Get<UnitPartSwallowWhole>();
+                if (swallower != null)
+                    foreach (UnitReference reference in swallower.SwallowedUnits.ToArray())
+                    {
+                        UnitEntityData target = reference.Value;
+                        swallower.Free(reference);
+                        if (target != null && grab != null && grab.SwallowedBuff != null)
+                            target.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff);
+                    }
+                foreach (UnitEntityData target in all)
+                {
+                    UnitPartGrappleTarget held = target.Get<UnitPartGrappleTarget>();
+                    bool exactNative = held != null && ReferenceEquals(held.Initiator.Value, owner);
+                    bool exactMulti = grab != null && grab.MultiLink && ReferenceEquals(
+                        SummonHeldComponent.HolderOf(target, grab.GrappledBuff), owner);
+                    if (!exactNative && !exactMulti) continue;
+                    SummonHoldComponent.ReleaseLink(owner, target, grab, true);
+                    if (exactNative && grab != null && grab.GrappledBuff != null)
+                        target.Descriptor.Buffs.RemoveFact(grab.GrappledBuff);
+                }
+                // Native OnRemove releases the conditions installed by Init.
+                owner.Remove<UnitPartGrappleInitiator>();
+                if (grab != null && grab.HoldBuff != null)
+                    owner.Descriptor.Buffs.RemoveFact(grab.HoldBuff);
+                SummonGrappleLinks.ReleaseAll(owner);
+            }
+        }
 
         /// <summary>
         /// Releases party members held or swallowed by a KMG summon (always

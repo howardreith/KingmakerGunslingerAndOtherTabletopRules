@@ -9,8 +9,18 @@ Package: `KingmakerGunslinger-0.0.141-expanded-summoning-phase2a.zip`
 This release publishes Expanded Summoning Sprints 9-11. It adds Eagle, Dire
 Bat, Giant Wasp, Stirge, Aurochs, Bison, Rhinoceros and Woolly Rhinoceros
 across their authorized Summon Monster and Summon Nature's Ally lists. The
-published catalog contains 882 generated choices and 29 retained native
-wrappers, for 911 visible choices in total.
+published catalog contains 832 generated choices and 29 retained native
+wrappers, for 861 visible choices in total.
+
+Errata, 2026-10-01: this file originally stated 882 generated and 911 visible
+choices. Those were the totals at the Sprint 11 publication commit
+`881db758`, before `d7822297` registered Dire Rat and suppressed the four
+Sprint 12 creatures. The figures above are derived from the released source at
+`97f0a966`. Note also that Dog, Hyena and Goblin Dog were visible in 0.0.140
+and are hidden in this release; their 50 placements return when Sprint 12
+qualifies. Their registered identities are unchanged, so 0.0.140 saves holding
+those summons still load. See
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
 
 Eagle and Dire Bat use their qualified original views, senses and natural
 attacks. Giant Wasp has its printed sting and DC 18 Dexterity poison. Stirge

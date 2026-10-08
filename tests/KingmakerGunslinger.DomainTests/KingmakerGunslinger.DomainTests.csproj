@@ -195,6 +195,24 @@
     <Compile Include="ExpandedSummoningSprint10Tests.cs" />
     <Compile Include="ExpandedSummoningSprint11Tests.cs" />
     <Compile Include="ExpandedSummoningSprint12Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint13Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint14Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint15Tests.cs" />
+    <Compile Include="ExpandedSummoningCrocodilianRulesTests.cs" />
+    <Compile Include="ExpandedSummoningSprint16Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint17Tests.cs" />
+    <Compile Include="SerpentineRulesTests.cs" />
+    <Compile Include="Sprint17ObservationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint17ObservationPolicy.cs"><Link>RuntimeTesting\Sprint17ObservationPolicy.cs</Link></Compile>
+    <Compile Include="SalamanderRulesTests.cs" />
+    <Compile Include="SalamanderProductionViewTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderProductionViewPolicy.cs"><Link>Summoning\SalamanderProductionViewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderRulesPolicy.cs"><Link>Summoning\SalamanderRulesPolicy.cs</Link></Compile>
+    <Compile Include="SalamanderTailAnimationTests.cs" />
+    <Compile Include="SalamanderHumanBindingTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderHumanBindingPolicy.cs"><Link>Summoning\SalamanderHumanBindingPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint17GripEvidence.cs"><Link>RuntimeTesting\Sprint17GripEvidence.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailAnimationPolicy.cs"><Link>Summoning\SalamanderTailAnimationPolicy.cs</Link></Compile>
     <Compile Include="ExpandedSummoningCorrectionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
@@ -225,10 +243,28 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningDonorCatalog.cs"><Link>Summoning\ExpandedSummoningDonorCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningSpecialProfiles.cs"><Link>Summoning\ExpandedSummoningSpecialProfiles.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningNaturalProfiles.cs"><Link>Summoning\ExpandedSummoningNaturalProfiles.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\Sprint14BonePolicy.cs"><Link>Summoning\Sprint14BonePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\CrocodilianVisualPolicy.cs"><Link>Summoning\CrocodilianVisualPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SerpentineVisualPolicy.cs"><Link>Summoning\SerpentineVisualPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\CrocodilianCommandReviewPolicy.cs"><Link>RuntimeTesting\CrocodilianCommandReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentineRigSurveyPolicy.cs"><Link>RuntimeTesting\SerpentineRigSurveyPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentinePoisonReviewPolicy.cs"><Link>RuntimeTesting\SerpentinePoisonReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentinePersistenceReviewPolicy.cs"><Link>RuntimeTesting\SerpentinePersistenceReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentineCrowdReviewPolicy.cs"><Link>RuntimeTesting\SerpentineCrowdReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentineCommandReviewPolicy.cs"><Link>RuntimeTesting\SerpentineCommandReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentineFinalReviewPolicy.cs"><Link>RuntimeTesting\SerpentineFinalReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\RuntimeTestScenarioCatalog.cs"><Link>RuntimeTesting\RuntimeTestScenarioCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs"><Link>RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonInjuryPoisonPolicy.cs"><Link>Summoning\SummonInjuryPoisonPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantAntPoisonPolicy.cs"><Link>Summoning\GiantAntPoisonPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantWaspPoisonPolicy.cs"><Link>Summoning\GiantWaspPoisonPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\StirgeAttachPolicy.cs"><Link>Summoning\StirgeAttachPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonInjuryDiseasePolicy.cs"><Link>Summoning\SummonInjuryDiseasePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonRagePolicy.cs"><Link>Summoning\SummonRagePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonShadowMastiffPolicy.cs"><Link>Summoning\SummonShadowMastiffPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\UngulateRulesPolicy.cs"><Link>Summoning\UngulateRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\CrocodilianRulesPolicy.cs"><Link>Summoning\CrocodilianRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SerpentineRulesPolicy.cs"><Link>Summoning\SerpentineRulesPolicy.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RapidReloadPrerequisiteTests.cs" />
     <Compile Include="RapidReloadGateEvidenceTests.cs" />
@@ -1068,6 +1104,10 @@
   </ItemGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="ExpandedSummoningRosterPersistenceTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ExpandedSummoningRosterPersistencePolicy.cs"><Link>RuntimeTesting\ExpandedSummoningRosterPersistencePolicy.cs</Link></Compile>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="FieryGlareFoundationTests.cs" />
     <Compile Include="StoicDignityFoundationTests.cs" />

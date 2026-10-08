@@ -1,9 +1,455 @@
 # Expanded Summoning fidelity matrix
 
+## Current October 7 outcome — Sprint17 technically complete; release143 integration pending
+
+Salamander is INCLUDED in the checkpoint-release integration. Exact observation-only
+candidate db1da016 passes canonical smoke11/11 and existing profile/view73/73:
+raw spear5/tail10, computed2/6 and body5 separately measured. No production
+profile, mechanics, AI, animation, geometry, icon or balance change. Full exact
+source gate2123/2123,14-reference clean Release and strict321-member package PASS.
+Other mandatory unchanged mechanics/commands/crowd/persistence retain47e8c121;
+all37 public roots (Viper18,Constrictor14,Salamander5) retain996c5fe7 publication.
+The old mandatory observer failure is preserved historically,not waived or relabeled.
+
+Sprints14–17 technically COMPLETE/PUBLISHED; current1008 generated +29 wrappers
+=1037 visible,zero withheld. Full Phase2B/release closure NOT RUN;v0.0.143 NOT
+QUALIFIED/released. Next:new integration branch from accepted master4ba8d4a,
+preserve all v0.0.142 features,then complete closure/regression/release gates.
+PR25/26 remain draft/unmerged;DATA PR27 archive/ZERO PORTS.
+The latest owner mission authorizes ONLY a gate-passing v0.0.143 integration
+merge/tag/real Latest release,then STOP. No Sprint18 or Phase2C under this mission.
+
+Actual snapshot20261007T2258344605477Z restored23:06:08.4004559UTC:
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/released;no game/staging;zero save writes;protected baseline untouched.
+HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted limitations/adaptation unchanged.
+The controlling state and checkpointRelease143 section in the single Sprint17
+evidence record govern. Earlier failed/PASS checkpoints below remain artifact-bounded.
+
+## Historical source checkpoint — superseded for current status
+
+[Exact closed snake review PASS](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-PASS-EVIDENCE.json)
+on `fb9ffa507ef5884a321921355f7088f485c8d155`: fresh Steam640820
+smoke11/11 and review82/82,all79metadata rows PASS. Bounded routes/UI/native
+view lifecycle only; fullSprint17 NOT QUALIFIED and all32snake roots withheld.
+
+All32 private execution/quantity/template/alignment/120second CL20 duration/
+native-icon routes pass. Their105units and525private resources are reclaimed.
+Both native status rows and native character-sheet close/restoration pass.
+These helper casts are NOT public spellbook/menu/slot or real summon-command proof.
+
+The fresh native Worm control has9actions (3SpecialAttack entries), noHit;
+the older survey's7rows were one per UnitAnimationType, not the full list.
+Both snakes preserve the exact native set. Frontal wound events record
+dot0.9985269/0.997246,actual1/2damage,one started native command each,zero
+foreign relations. Original geometry stays finite/intact for0.5194/0.5200
+native seconds afterward. No Hit clip or flinch is claimed or manufactured.
+Both native DyingStart death clips actually play; original dissolve reaches
+0.9972814/0.999703,native despawn completes,and all5resources per body die.
+No new owner-accepted limitation or production gameplay/asset change.
+
+All exact prelaunch PASS:280focused/2082unfiltered82.9s;complete179.7s
+repository/static/icon/manifest,clean14-referenceRelease/deterministic strict320;
+515preflight/168orchestration/17provenance,persistence11/6/3/56,
+crowd8/11,actual launcher14/13.
+Source fingerprint8d42303c…;DLLd327a2e9…;MVIDa8231c02-e1af-4278-9559-bd45b7d8b08b;
+ZIPc3465c9a…; exact artifact/request/process hashes in linked evidence.
+
+Actual snapshot20261007T0531083005592Z restored2026-10-07T05:38:51.1595325Z:
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released;no game/shared lock/worktree staging.
+ZERO save writes. Earlier a429 native cleanup-save/fresh absence0 preserved.
+Failed95c4(39/73) andd43(79/81) records remain FAIL and retained.
+[Current review](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-REVIEW.md).
+
+Earlier a429 persistence,983commands/rules andec972crowd remain artifact-bounded,
+not aggregate qualification of fb9 or a later wholeSprint17 candidate.
+Sprints14–16 COMPLETE/PUBLISHED;97units;1008registered/976published;
+32withheld;29wrappers;1005visible. Laptop PR26 only;DATA salvage-only/ZERO PORTS.
+
+Historical initial Salamander authoring has26 checked native anatomical drivers plus10
+original tail drivers,2198original vertices,32offline panels and9authoring tests PASS.
+All17 disagreeing native storage groups excluded; native upper bones unchanged.
+Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
+plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
+See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
+Salamander profile/heat/tail-grab source checkpoint based on65bc0536:
+311focused/2113unfiltered PASS, repository/icon/manifest PASS, clean14-reference
+Release and strict321-member package PASS (181.4s). This development artifact
+is NOT a clean exact-head runtime candidate and was NOT deployed.
+[Source evidence](EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PROFILE-SOURCE-EVIDENCE.json)
+records source fingerprint, DLL/MVID/ZIP, private engine-audit hashes and exact scope.
+
+Existing Salamander unit/weapons/traits GUIDs and five published roots remain.
+Only TailType and UnitType append:2911stable IDs/2909active/2reserved.
+The source now supplies printed racial HP/save/rank contributions, native feats,
+Medium2d6 ten-foot tail type, owner-scoped1d6fire weapon heat, and tail-only
+project grab/live physical-plus-fire constrict. Per-rule heat and per-round
+maintain guards reject duplicates. Native modifiers and borrowed facts remain live.
+All these new mechanics, defenses/skills breakdowns, real commands/AI, new UI
+consumers and persistence are NOT RUNTIME QUALIFIED. Original human/tail
+production adoption is still open; no prefab, geometry, pose or clip change here.
+
+Earlier exact6ae91f266b203a98a0f297b24f3a70c785458502 remains bounded prototype
+PASS: fresh smoke11/11 +human15/15, both native spear variants,144paired grip
+rows, original tail, movement/rollback/destruction; legacy both-hands-at-rule
+predicate remains FALSE. [Exact bounded evidence](EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-PASS-EVIDENCE.json).
+It does not qualify this changed production source. Earlier failures remain FAIL,
+not open ownership/design blockers. No new runtime transaction or save write.
+Last actual restoration15:14:52UTC:136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+
+Source-lock heartbeat expired15:53:01UTC. Edits paused; no competitor, game,
+runtime lock/staging or remote motion found. Old receipt preserved; same owner
+PID31796 reacquired exclusivity with keeper37540/start15:54:48.8399249UTC.
+Sprints14–16 COMPLETE/PUBLISHED. Sprint17 NOT QUALIFIED;32snake roots hidden.
+976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Next: adopt the qualified human/original-tail seam ONLY for the exact production
+Salamander, with native settlement/fallback/resource cleanup and preserved GUIDs/
+five roots. Complete guarded mechanics/command/AI/UI/routes/persistence observers,
+freeze a clean committed candidate, rerun all exact prelaunch gates and one full
+same-artifact Sprint17 hidden batch. Publish32snake roots only after all gates,
+exercise affected Salamander routes, then fullPhase2B closure and STOP owner review.
+Phase2C remains authorized but deferred; no18–22 in this mission.
+HumanReview: NOT_PERFORMED_NONBLOCKING.
+Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
+bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
+**62/62**, strict collector **46/46 metadata rows**, batch PASS.
+[Exact artifact, results and restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-PASS-EVIDENCE.json).
+
+Prelaunch PASS:251 focused,2053 unfiltered83.4s, complete repository/static/icon/
+manifest, clean14-reference Release and deterministic strict320 package179.8s;
+502 standalone preflight,142 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. All38 inherited profile/body and24 signature checks pass.
+
+Runtime proves one exact wounding-bite injury save plus five venom-owned saves,
+six native1d2 Constitution exposures, live counter6, native removal and no
+seventh/duplicate damage. Each raw roll resolved to2; actual damage was1 each
+in this environment. Reduction factors were not recorded, so none is inferred.
+The initial save had a Reason at dispatch, but was not venom-buff-owned:
+this corrects the prior partial offline inference of a reason-less dispatch.
+All13 Constrictor rule checks pass. No production behavior change or waiver;
+all three failed signature attempts and their artifacts remain unchanged.
+
+Actual snapshot1951101231925Z restored19:58:09.8692950UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared lock/staging/save write.
+This qualifies seeded native RULES, not real commands/AI/contact or full Sprint17.
+32 snake roots stay hidden; no publication. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Earlier qualified profile/body boundary:
+
+Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
+bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
+profile/body,22/22 metadata rows; batch PASS**. [Exact candidate/results/
+restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-PASS-EVIDENCE.json).
+This qualifies only the named slice, NOT full Sprint17 or publication.
+
+Prelaunch PASS:248 focused,2050 unfiltered87.2s, complete repository/static/icon/
+manifest, clean14-reference Release/deterministic strict320 package181.8s;
+496 request preflight,113 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. DLL24c7f095fc3f76d36c2aecbd05181b6d354606c69f955cf0421db3f0c819ab86;
+MVID01308b49-0b58-408c-b733-12982b404717;
+ZIP91d9ef831bed4f2840a74f36bfd2d74122233487ed185f74b53790c38af907c9.
+
+Actual snapshot1740460863584Z restored17:47:43.1321555UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
+No native save write or save-file/protected-baseline access. Journal
+20d596aa3745b648a897cf93b14bbb839cb69ebebb129b1e186a10634400df36.
+The prior2dd31/38 FAIL and e1 native38/38/collectorERROR remain unchanged.
+
+Exact HP/skills, live bite/dice, automatic original bodies, rollback/normal
+intact settlement, scale/once/native teardown and donor isolation PASS.
+Seeded poison/constrict rules PASS on exact130bf7a2. Real commands/AI/contacts/
+full lifecycle, persistence/crowds/UI/routes and Salamander remain unqualified.
+32 roots hidden; no new limitation or adaptation.
+
+## Historical Sprint17 snake source, October 6 UTC — NOT QUALIFIED
+
+[Source review](EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md): Medium
+Viper and Constrictor Snake are registered but wholly hidden. Exact land
+skills/HP, native feats, owned Viper poison and scoped Constrictor grab/damage
+are implemented; original icons pass agent small-size/grayscale inspection.
+250 focused checks PASS. Exact79cf2bf1 complete source gate PASS:2048 full tests
+(83.8s), repository/static/icon/manifest, clean exact Release and strict320-member
+package;177.8s total. The later [view hook](EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md)
+adds exact two-identity automatic body binding and17 unexecuted guarded checks;
+247 focused/2049 full86.4s and dirty source build/strict package PASS184.1s;
+committed c1ece8d7 subsequently PASS179.2s with2049 tests85.1s and strict320.
+No new runtime evidence. Original-body production qualification, actual final profiles,
+poison/constrict cadence,commands,UI,lifecycle,persistence and routes remain
+unqualified. Salamander's existing unit,placements and painting are unchanged;
+its separate native spear/tail solution remains unresolved. Surface1008
+registered/976 published/32 withheld +29 wrappers =1005 visible.
+
+## Prior Sprint17 bind research, October 6 UTC — RESEARCH ONLY
+
+Exact a90494e1: 238 focused / 2040 unfiltered tests (83.0s), complete gate
+178s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,
+crowd 5/7, clean exact Release / strict 318-member package PASS. Fresh Steam
+smoke 11/11 and metadata survey 16/16 PASS. RESEARCH ONLY; Sprint 17 remains
+NOT QUALIFIED.
+
+The exact human Guard Captain prefab has1776 bind-palette entries for177
+Transform references. All are finite/invertible, but17 weapon-storage
+transforms have disagreeing duplicate matrices (maximum2.880282, tolerance
+0.00001). Blind first-slot deduplication is rejected. Torso/hand entries agree;
+that is not a qualified body binding or actual native spear/tail playback.
+No human-based Salamander was constructed; no action or NPC facts adopted.
+Native references/actor membership unchanged; raw native frames stay private.
+The prior three-spear and eleven-Lizardfolk metadata files reproduce exactly.
+Cape bones are not a tail. Body570 remains33/35 FAIL; all12 attempts retained.
+
+Actual snapshot1407190713978Z restored14:14:02.7035876UTC:
+136 files / Info0.0.117 / exact tree. Journal
+AE954F51929981B232F2DAF48FB1B717D26739D06E50E11CC368A6694F4B2D03;
+bind metadata EB0D5EAAF4BEC8BF68506D42F299DED5D3D86CB676FF72E53F15D0CFBCE9BFD2.
+Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
+
+Next: independent printed snake profiles and a bounded Salamander-specific
+spear/tail implementation review. Do not repeat the closed donor census or
+assume compatibility, silently relabel an attack, or waive contact/playback.
+Sprints14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
+Phase2C remains authorized but deferred until Phase2B owner acceptance.
+
+[Current action census](EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md).
+Printed profiles/signatures/lifecycle/crowd/persistence/publication remain open.
+HumanReview: NOT_PERFORMED_NONBLOCKING; accepted limitations unchanged.
+
+## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED
+
+Exact laptop publication `155ada89869c6937b4a801e1fc384dbe38d36f3b` passed
+all prelaunch gates (218 focused / 2020 full), smoke 11/11, main **211/211**,
+all six Dire + fourteen Crocodile public parent routes, and exact restoration.
+[Publication review](EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
+Qualified surface: **976 generated + 29 native wrappers = 1005 choices**,
+zero withheld. Existing Crocodile identity and fourteen roots unchanged.
+
+Hidden e3aeae63's complete six-stage PASS remains the crowd/persistence record:
+209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup and 5/5 fresh absence.
+No mechanics, visuals, assets or serialized state changed afterward; publication
+only removes Dire suppression and strengthens the guarded missed-bite fixture.
+Publication mechanics 37/37, speed 19/19, icons 9/9, combat **57/57**, final
+review **81/81** pass. Both modes recover from a disclosed first-bite miss with
+bounded issued commands and unforced native hits/maintains/riders. No assertion
+waived. The failed 3d publication and its restoration remain preserved.
+
+Live-bite damage, physical base-component selection, supplemental damage,
+weapon/DR attribution, no attack-only rider replay, prone/dead/replay handling,
+real one-rider maintain, Dire-specific swallowed graph/cadence/native escape,
+all cleanup and accepted load reset pass. Original models, exact shared-root
+binding, weighted-world jaw/tail contact, native lifecycle/resource destruction,
+rollback/fallback and native Monitor Lizard control are technically qualified.
+Native action/status/trait/sheet consumers pass; widget proof is not a claim
+of ordinary menu navigation. Transition evidence is bounded disposable-unit
+safeguard coverage, not a campaign-party transition.
+
+Crocodile land skills +8 Perception/+5 Stealth; Dire +14/+0; zero Mobility ranks.
+Run is the explicit evidence-backed native-engine omission. Aquatic Swim,
+water-only Stealth and Hold Breath are outside land-use scope.
+Sprint is the documented +20 UntypedStackable adaptation, not a base-speed
+rewrite: 20→40→20, Haste/Slow/native caps and full cooldown remain qualified.
+
+`OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL` remains
+deterministic RTWP/AI policy, not exact tabletop choice.
+`OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`
+is confirmed by live census; no interior target/AC/HP/cut-free carrier is
+claimed. Purple Worm shares the limitation without reopening its mechanics.
+Preserve `PASSIVE_CREATURE_SENSES_UNMODELED` and
+`ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+Historical sections below describe earlier checkpoints, not current counts,
+qualification or branch authority. Sprint 17 and full Phase 2B closure remain.
+
+## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
+
+The Giant Ant (Drone) and the Giant Stag Beetle are published. The visible
+surface is **970 published generated placements plus 29 retained native
+wrappers, for 999 visible choices**, derived from source. **Nothing is withheld
+anywhere** - for the first time since Sprint 9 the registered and published
+surfaces are the same number, so no creature in this phase is registered and
+hidden.
+
+### What the guarded review proved
+
+Six scenarios, 139 assertions, every run restoring the live tree exactly to
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` with
+restoration verified.
+
+| Scenario | Assertions | Candidate |
+| --- | --- | --- |
+| mechanical pack | 61/61 | `c8cb25ce` |
+| rules pack, with twelve combat-mode cells | 62/62 | `52baae65` |
+| visual lifecycle | 8/8 | `52baae65` |
+| working-save prepare / verify-cleanup / verify-absent | PASS / PASS / PASS | `52baae65` |
+
+The Drone is the Soldier with the advanced simple template, and the engine
+produced it: every ability score measured exactly four higher than a Soldier
+spawned in the same run except Intelligence, which the template excludes. Its
+poison needed no second graph - the shared Constitution-scaled policy turned
+the advanced Constitution of 21 into the printed Fortitude DC 16 unaided, with
+1d2 Strength over four exposures cured by one save, delivered only by a sting
+that actually wounded, and one attack producing exactly one application
+carrying that same difficulty class. Its Perception derived to exactly 7 from a
+racial +4 and the advanced Wisdom, with no ranks and no unprinted flat bonus.
+
+The Giant Stag Beetle read its printed CMD 20 and 28 against trip exactly, is
+Large with one 2d8 bite and nothing else on its body, carries its own unit type
+rather than the Fire Beetle's or the Giant Spider's, and carries none of the
+Fire Beetle's luminescence. Its trample ran through the carrier the Sprint 11
+ungulates qualified, at its printed DC 17, dealing damage to the hostile and
+none to the allied caster.
+
+Both creatures attack through the command a player's click produces, in RTWP
+and in turn-based combat: twelve cells, and each two-limbed creature
+demonstrated its own bite-and-sting separation rather than borrowing another
+creature's evidence. Both were summoned in quantity as well as singly - a 1d3
+and a 1d4+1 command for each - with the project visual attached on every body
+of every multi-body cast, and the Giant Spider cast as itself came up with no
+swap attempted on it at all.
+
+### One measurement corrected, twice
+
+The Drone's combat-manoeuvre defence first measured 15 and 23 against a derived
+17 and 25. The engine's own component breakdown settled it: a freshly summoned
+creature has not acted, so Kingmaker treats it as flat-footed and denies it its
+Dexterity bonus, which is exactly the two points. The creature was right; a
+single total could not say so, because the four insects before it all had
+Dexterity 10 and read correctly either way.
+
+The second attempt then asserted the engine's split of a size modifier, and a
+Large creature's printed +1 arrives in Kingmaker as `size=2` with `misc=-1`.
+That is the same number expressed differently and no source text constrains the
+split, so the check now asserts only quantities the rules name - base attack
+bonus, Strength, the net size modifier, Dexterity when it is not denied, the
+printed total, and the eight-point multi-legged difference - and records every
+component as evidence without requiring it.
+
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+## OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED
+
+**Accepted by the owner on 2026-10-03.** Kingmaker models none of **Scent**,
+**Darkvision** or **Low-light Vision**, and this project omits them wherever a
+bounded native audit proves no faithful carrier exists.
+
+### The evidence the acceptance rests on
+
+The audit searched every component on every blueprint the running game had
+loaded - the whole library, not a filtered subset - and reported
+`senseComponentCensus=Blindsensex74/OverrideVisionRangex23`. Scent has no
+carrier of any kind. No enum reachable from `BlueprintUnit`, `UnitEntityData` or
+`UnitDescriptor` holds a darkvision value: `visionEnum=<none>`.
+`OverrideVisionRange` is a sight radius in metres, carried by 23 blueprints, of
+which the sampled six are Vordakai and Horagnamon boss units setting 50 m
+against a live unit's 8.5.
+
+### What the label permits
+
+A creature may publish or qualify without these three passive senses. The
+omission is recorded here once and referenced from the affected creature rows.
+**A creature is never kept hidden for one of these three alone.**
+
+### What it forbids
+
+- No substitution of `AddBlindsight`, `UnitPartBlindsense`, tremorsense or any
+  materially different sense. Blindsight is a real and different rule, and this
+  project implements it exactly for the Dire Bat; that implementation stays.
+- No use of `OverrideVisionRange` as darkvision. It changes general detection
+  range in all conditions and would hand a creature an advantage no stat block
+  grants it.
+- No scent, darkness, stealth-detection or perception subsystem in this phase.
+- No claim anywhere that the omitted traits work.
+- No use of this label to waive any other sense, combat ability, immunity,
+  skill or signature mechanic.
+- The limitation is never re-marked BLOCKED.
+
+This is a conservative engine limitation, not a balance adaptation.
+
+### Creatures currently governed by it
+
+Giant Ant (Worker), Giant Ant (Soldier) and Giant Ant (Drone) for Scent and
+Darkvision; the Fire Beetle and Giant Stag Beetle for Low-light Vision and
+Darkvision respectively; and already-published creatures carrying the same
+engine gap, the wolves among them. It applies to later Phase 2 creatures whose
+stat blocks list these passive senses.
+
+
+## Sprint 14 closeout, 2026-10-03: COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION
+
+All three Sprint 14 insects are published. The published surface is **952
+generated placements plus 29 retained native wrappers, for 981 visible
+choices**, derived from source. The Fire Beetle's 18 placements went out on its
+own qualification; the Giant Ant Worker's 16 and Soldier's 14 followed once the
+owner accepted `PASSIVE_CREATURE_SENSES_UNMODELED`, which was the only thing
+holding them - their mechanics had already qualified 174/174 across six guarded
+scenarios on candidate `cda8d72c`.
+
+Nothing was implemented to earn that publication. The ruling records an engine
+gap rather than closing one: no substitute sense was added, no vision range was
+touched, and no record claims the omitted traits work.
+
+What remains withheld is Sprint 15's pair - the Giant Ant Drone's 12 placements
+and the Giant Stag Beetle's 6 - registered ahead of their own qualification the
+way every sprint before them did. The Drone carries the same unmodelled senses
+and is no longer held for them; it waits on its own gates alone.
+
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+## Sprint 14 publication, 2026-10-03: the Fire Beetle only
+
+The published surface is **922 generated placements plus 29 retained native
+wrappers, for 951 visible choices**, derived from source. Sprint 14 registered
+48 placements across three insects and publishes 18 of them - the Fire Beetle,
+reachable from both parents and splitting nine each way. The 30 placements of
+Giant Ant (Worker) and Giant Ant (Soldier) stay withheld.
+
+The ants are not withheld for want of qualification. Their mechanics passed on
+the closing candidate: printed Perception +5 exactly with zero class ranks, the
+printed trip defence, a sting that is its own weapon type, a grab on the bite
+alone carrying exactly +4 to the grapple and nothing to the trip, an injury
+poison that a wound delivers and a hit reduced to zero damage does not, vermin
+mind-affecting immunity proved by a native mind-affecting buff they refuse and
+the caster accepts, and both combat modes driven through the command a player's
+click produces. What they cannot have is their printed scent.
+
+Kingmaker has no scent mechanic. The bounded native audit searched the whole
+loaded blueprint library, not a filtered subset, and found no component that
+could express it; the engine's only sense plumbing is `AddBlindsight` with
+`UnitPartBlindsense`, which this project already uses for the Dire Bat and which
+is a different rule. Their printed darkvision 60 ft is equally unrepresentable:
+no enum reachable from `BlueprintUnit`, `UnitEntityData` or `UnitDescriptor`
+carries a darkvision value, and `OverrideVisionRange` is a sight radius in
+metres - six Vordakai and Horagnamon boss units set 50 m against a live default
+of 8.5 m - so using it for darkvision would hand the ants more than double
+their detection range in all conditions, an advantage no stat block grants
+them. In an engine with no darkness that is inventing a mechanic rather than
+implementing one.
+
+The Fire Beetle's own senses requirement was the opposite case and is met
+exactly: its stat block prints **no** darkvision, nothing was inherited from the
+Vermin racial class, the project unit type or the Giant Spider donor, and the
+live unit reads `darkvision=False` with no carrier. Its printed low-light vision
+has no representation either, and no mechanical consequence in an engine with no
+light model, so nothing about the creature is softened by its absence.
+
+**This is not recorded as an accepted engine limitation.** No
+`OwnerAcceptedEngineLimitation:` label is created here, because only the owner
+converts a proven barrier into one. The two castes are held pending a single
+ruling, recorded as a blocker with the engine evidence. The same ruling governs
+Sprint 15's Giant Ant Drone, which prints scent too; the Giant Stag Beetle does
+not and is unaffected.
+
 Current Phase 2 Sprint 11 disposition (2026-09-30): Sprints 9-11 are
 internally technically qualified. Aurochs, Bison, Rhinoceros and Woolly
-Rhinoceros are published at all 48 authorized placements, for 882 visible
-generated choices and 911 total choices with the 29 retained native wrappers.
+Rhinoceros are published at all 48 authorized placements. The current
+published surface after the Sprint 13 publication covers Sprints 9-13 with
+904 published generated choices and 933 total choices including the 29
+retained native wrappers; nothing registered is withheld. The immutable
+v0.0.141 build contained 832 and 861; see
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
 The four ungulates have qualified original icons/views, exact natural profiles,
 ordinary Trample or Powerful Charge, direct and quantity behavior, lifecycle,
 player paths and menu publication. Aurochs and Bison use the faithful bounded
@@ -152,7 +598,7 @@ frozen quantity abilities generated for their higher-tier placements.
 | Frost Giant (Phase 1 Sprint 3) | SNA VII, VIII (1d3), IX (1d4+1) | retained native unit `590cd3d5e76fdc649a5f97bc984cd3c4` through creature-named wrappers; no KMG unit | native Frost Giant unchanged | none; the Nature's Ally wrappers spawn the same unit the SM VIII wrapper does | Phase 1 state file records the guarded evidence |
 | Shambling Mound (Phase 1 Sprint 4) | SNA VI | `KMG.Summoning.Unit.ShamblingMound`; body donor `b98ae409beb5e8543a75b82ecda082a7` | Large plant 9; 21/10/17/7/10/9; speed 20; NA +10; two 2d6 slams; fire resistance 10, electricity immunity; Power Attack, Iron Will, Lightning Reflexes, Cleave, Weapon Focus (slam); slam grab and constrict 2d6+7 on the shared summon grapple lifecycle | Electric Fortitude Constitution gain, swim and the native poison aura omitted; the holder cannot act while holding (native lockdown) | Phase 1 state file records the guarded evidence |
 | Giant Flytrap (Phase 1 Sprint 4) | SNA VII | `KMG.Summoning.Unit.GiantFlytrap`; body donor `fb824352b7968fb4d8103ac439644633` | Huge plant 13; 25/18/25/1/12/6; speed 10; NA +10; four 1d8 bites; acid resistance 20; native 60-ft blindsight for tremorsense; trip immunity; Cleave, Great Fortitude, Improved Initiative, Power Attack, Skill Focus (Stealth), Weapon Focus (bite); one grab link per bite (four at most) on the shared lifecycle, and a mouth that holds or has engulfed a foe attacks no one else; an active hold is session-scoped and releases cleanly on a reload (owner-accepted engine limitation, 2026-09-26); engulf of a Medium or smaller foe held since the round began, 1d8+7 bludgeoning plus 2d6 acid each round (corrected 2026-09-25) | Vital Strike omitted; Intelligence 1 for the absent score | Phase 1 state file records the guarded evidence |
-| Purple Worm (Phase 1 Sprint 4) | SNA VIII | `KMG.Summoning.Unit.PurpleWorm`; native summoned worm `bf2216f48b3f4d24c9c502007649340d` | Gargantuan magical beast 16; 35/6/25/1/8/8; speed 20; NA +22; native bite and sting; exact native Constitution-scaled sting poison; trip immunity; Critical Focus, Improved Critical (bite), Power Attack, Weapon Focus (bite); bite grab holds, and a later turn's successful maintain check swallows a foe up to one size smaller whole through the native swallow-whole part (corrected 2026-09-25) | burrow, swim and the native brain omitted; Awesome Blow, Improved Bull Rush, Staggering Critical, Weapon Focus (sting) omitted | Phase 1 state file records the guarded evidence |
+| Purple Worm (Phase 1 Sprint 4) | SNA VIII | `KMG.Summoning.Unit.PurpleWorm`; native summoned worm `bf2216f48b3f4d24c9c502007649340d` | Gargantuan magical beast 16; 35/6/25/1/8/8; speed 20; NA +22; native bite and sting; exact native Constitution-scaled sting poison; trip immunity; Critical Focus, Improved Critical (bite), Power Attack, Weapon Focus (bite); bite grab holds, and a later turn's successful maintain check swallows a foe up to one size smaller whole through the native swallow-whole part (corrected 2026-09-25) | burrow, swim and the native brain omitted; Awesome Blow, Improved Bull Rush, Staggering Critical, Weapon Focus (sting) omitted; OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED (October 5 live census; no interior target/AC/HP/cut-free path) | Phase 1 guarded mechanics remain qualified; interior omission acknowledged without reopening them |
 | Dust Mephit (Phase 1 Sprint 5) | SM IV / SNA IV | `KMG.Summoning.Unit.DustMephit`; native summoned air mephit `50782bc4eb36aac4287023e20ee00808` | Small outsider 3; 13/15/12/6/11/14; speed 40; NA +3; two 1d4 claws; DR 5/magic; fast healing 2; air subtype; 15-ft enemies-only 1d4 slashing breath with a sickening rider; blur once per summoning; project Wind Wall once per summoning (15-ft shelter for 6 rounds for every creature inside that is not the mephit's enemy: arrows and bolts miss, other ranged weapons 30% miss chance; corrected 2026-09-25); warm sand rim glow (the mephit body's visible colour) | spell-like abilities once per summoning rather than per hour or per day; the wall is a cylinder around the mephit rather than a placed wall; allies in the cone take nothing | Phase 1 state file records the guarded evidence |
 | Ice Mephit (Phase 1 Sprint 5) | SM IV / SNA IV | `KMG.Summoning.Unit.IceMephit`; native summoned water mephit `4615328295cd7e84bb2ef09d3dba8403` | as the dust mephit; air subtype, cold immunity, fire vulnerability; 15-ft enemies-only 1d4 cold breath with a sickening rider; magic missile once per summoning; project Chill Metal once per summoning (a metal-bearing foe within close range, Will negates, seven-round cold table in full for metal armor and minimal for a metal weapon; corrected 2026-09-25); icy cyan-white rim glow | metal is judged by armor type and weapon category (padded, leather and hide are not metal; wooden weapons are not) | Phase 1 state file records the guarded evidence |
 | Magma Mephit (Phase 1 Sprint 5) | SM IV / SNA IV | `KMG.Summoning.Unit.MagmaMephit`; native summoned fire mephit `10a820de0a417f345866f794324205ad` | as the dust mephit; earth and fire subtypes (fire immunity, cold vulnerability); 15-ft enemies-only 1d8 fire breath; project Pyrotechnics once per summoning (enemies within 20 ft blinded 1d4+1 rounds, Will negates) and project Magma Form once per summoning (5 rounds: DR 20/magic, speed 10, no attacks; corrected 2026-09-25); ember-red rim glow (no emission slot on the shader) | pyrotechnics is a 20-ft burst from the mephit's own fire rather than a 120-ft fireworks radius; magma form lasts five rounds | Phase 1 state file records the guarded evidence |
@@ -253,12 +699,13 @@ contamination. No save was accessed.
 |---|---|
 | Families/tiers | Summon Monster V; higher-tier same-kind quantity placements generated by the frozen matrix |
 | Unit identity | `f8fb103168d74b4c93182437e5d2b4e4` (`KMG.Summoning.Unit.Salamander`) |
-| Visual donor | Frozen Lizardfolk donor; view/rig only, with all donor equipment, progression, inventory, and campaign behavior removed |
+| Visual donor | Exact production-only qualified native Human rig with original project body/tail and two-frame native settlement/fallback; native humans negative-controlled; no NPC/equipment/progression/campaign facts imported. Exact native24actions intact; one owned tail action. |
 | Chassis | 8 outsider HD; Medium chaotic evil; Str 16, Dex 13, Con 18, Int 14, Wis 15, Cha 13; 20-foot movement; natural armor +7; fire and extraplanar traits; DR 10/magic |
-| Offense | Native standard spear in the primary hand; KMG tail weapon `93e097b8d3db42d3a37656502899e1a9` dealing 2d6; bounded combat fact `a47bc65d6b6b42b6a19610e22b13f171` supplies one hit-confirmed 1d6 fire rider and a cloned grab/constrict graph dealing 2d6+4 |
+| Offense | Preserved primary spear `99394d453c6f425f84d4b92f7a8deea0` and secondary tail `93e097b8d3db42d3a37656502899e1a9`:baseline11/6 spear1d8+4/x3 and tail6,2d6+1;live scoped1d6fire per owned weapon;tail-only project grab/constrict2d6+4+1d6fire,live Strength/size,duplicate/dead-prey guards. Native Power Attack starts on;printed-line fixture turns it off only for baseline and proves native on/off. |
 | Removed donor mechanics | Lizardfolk stats, HD, inventory, drops, class progression, donor brain, and campaign surfaces; no planar travel, summoning, or unrelated poison/web/spell behavior |
-| Conservative deviations | The engine graph models spear and tail through native weapon slots and bounded hit triggers. Cold vulnerability is omitted because no exact safe bounded fact was proven. |
-| Qualification | `1009/1009` domain PASS; final structure, production cast, spear/tail/heat/grab-constrict combat, bounded view, cleanup, persistence, and required profiles PASS. |
+| Defenses/land skills | Native fire immunity,cold vulnerability and DR10/magic delivered;exact76HP/AC18/touch11/flat17,F10/R7/W6,Perception16 and no unprinted Mobility/Persuasion ranks;native printed feats preserved. |
+| Conservative deviations | Darkvision under PASSIVE_CREATURE_SENSES_UNMODELED;active hold resets cleanly on load under ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD. Donor has no native expiry effect;no dissolve/animation invented. Raw weapon ranges5/10,computed approach ranges2/6 and body reach5 separately confirmed on db1da016. Native four-foot approach allowance and minimum2 are recorded honestly;no five-foot computed difference is claimed. |
+| Qualification | TECHNICALLY QUALIFIED/INCLUDED:one owner-authorized observation-only db1da016 correction passes smoke11/11 and profile/view73/73,with no product change. Other mandatory47e8c121 integrated cells unchanged/PASS;996c5fe7 publication63/63 covers32snake roots and5 existing Salamander routes/UI/lifecycle. Prior reach FAIL retained historically;not retroactively passed. FullPhase2B/release143 closure still pending. HumanReview NOT_PERFORMED_NONBLOCKING. |
 
 ## Succubus
 
@@ -657,5 +1104,5 @@ basic live renderer-attachment check only; all 68 placements remain
 suppressed, and Sprint 12 remains unpublished until direct/quantity player
 paths, both combat modes, movement/contact, natural expiry, save/load, module
 disable, compatibility, inventory and the complete internal visual review
-pass. The 0.0.141 release boundary is Sprints 9-11: 882 visible generated
-choices and 911 total choices including 29 retained native wrappers.
+pass. The 0.0.141 release boundary is Sprints 9-11: 832 published generated
+choices and 861 total choices including 29 retained native wrappers.

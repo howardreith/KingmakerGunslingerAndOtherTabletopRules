@@ -9,6 +9,7 @@ $script:KmgPrivateReferencePaths = @(
     'UnityEngine.AudioModule.dll',
     'UnityEngine.AssetBundleModule.dll',
     'UnityEngine.CoreModule.dll',
+    'UnityEngine.PhysicsModule.dll',
     'UnityEngine.UI.dll',
     'UnityEngine.UIModule.dll',
     'UnityEngine.TextRenderingModule.dll',

@@ -51,6 +51,284 @@ function Assert-Equal {
     $script:Passed++
 }
 
+$bodyJson = '[{"key":"viper"},{"key":"constrictor-snake"},{"key":"salamander"}]'
+$bodyRows = @(ConvertFrom-KmgSerpentineBodyReviewJson -Json $bodyJson)
+Assert-Equal 3 $bodyRows.Count 'top-level research JSON emits three rows, never one wrapped array'
+Assert-Equal 'viper,constrictor-snake,salamander' ($bodyRows.key -join ',') 'body research preserves the closed order'
+foreach ($invalidBodyJson in @('null', '[]', '{}', '[',
+    '[{"key":"viper"}]', ('[' + $bodyJson + ']'),
+    '[{"key":"viper"},{"key":"viper"},{"key":"salamander"}]',
+    '[{"key":"Viper"},{"key":"constrictor-snake"},{"key":"salamander"}]',
+    '[{"key":"salamander"},{"key":"constrictor-snake"},{"key":"viper"}]',
+    '[{"key":"viper"},{"key":"constrictor-snake"},{"key":"foreign"}]',
+    '[{"key":"viper"},{"key":"constrictor-snake"},{}]')) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSerpentineBodyReviewJson -Json $invalidBodyJson }
+    catch { $rejected = $true }
+    Assert-True $rejected 'malformed, missing, wrapped, duplicate, foreign or reordered body evidence fails closed'
+}
+
+$snakeRows = @()
+$snakeAssertions = @()
+foreach ($key in @('viper', 'constrictor-snake')) {
+    foreach ($fault in @($true, $false)) {
+        $snakeRows += [pscustomobject]@{ key=$key; scope='production hidden-snake body binding'
+            faultInjected=$fault; gameplayQualified=$false; intact=$true }
+        $case = if ($fault) { 'rollback' } else { 'normal' }
+        foreach ($kind in @('binding', 'scale', 'once', 'destroy')) {
+            $snakeAssertions += [pscustomobject]@{
+                name=('sprint17-production-' + $kind + '-' + $key + '-' + $case); status='PASS' }
+        }
+    }
+}
+foreach ($key in @('viper', 'constrictor-snake')) {
+    foreach ($kind in @('scores', 'defenses', 'land-skills', 'one-bite', 'base',
+        'strength-plus4', 'strength-seven', 'native-animal-growth', 'modifiers-restored')) {
+        $snakeRows += [pscustomobject]@{ key=$key; check=($key + '-' + $kind); passed=$true }
+        $snakeAssertions += [pscustomobject]@{
+            name=('sprint17-snake-profile-' + $key + '-' + $kind); status='PASS' }
+    }
+}
+foreach ($name in @('sprint17-production-native-worm-negative-control',
+    'sprint17-body-environment-restored', 'sprint17-body-fixture-cleanup', 'loaded-mod-version')) {
+    $snakeAssertions += [pscustomobject]@{ name=$name; status='PASS' }
+}
+$snakeJson = ConvertTo-Json -InputObject $snakeRows -Depth 6
+$collectedRows = @(ConvertFrom-KmgSnakeProfileSliceEvidence -Json $snakeJson -Assertions $snakeAssertions)
+Assert-Equal 22 $collectedRows.Count 'Windows PowerShell collects22 real snake rows, not one nested array'
+Assert-Equal 18 @($collectedRows | Where-Object { $_.PSObject.Properties['check'] }).Count 'all18 profile observations survive collection'
+Assert-Equal 'viper,viper,constrictor-snake,constrictor-snake' ($collectedRows[0..3].key -join ',') 'all four normal/rollback rows retain exact scope'
+foreach ($badJson in @('null', '{}', '[]', '[', ('[' + $snakeJson + ']'),
+    (ConvertTo-Json -InputObject $snakeRows[0..20] -Depth 6),
+    (ConvertTo-Json -InputObject ($snakeRows + $snakeRows[0]) -Depth 6))) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Json $badJson -Assertions $snakeAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'malformed, nested, missing or extra snake rows fail closed'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[0].key='salamander' },
+    { param($rows) $rows[1].key='Viper' },
+    { param($rows) $rows[0].scope='donor research' },
+    { param($rows) $rows[0].faultInjected='true' },
+    { param($rows) $rows[0].faultInjected=$false },
+    { param($rows) $rows[0].gameplayQualified=$true },
+    { param($rows) $rows[0].intact=$false },
+    { param($rows) $rows[0].intact='true' },
+    { param($rows) $rows[4].check=$rows[5].check },
+    { param($rows) $rows[4].check='foreign-scores' },
+    { param($rows) $rows[4].key='constrictor-snake' },
+    { param($rows) $rows[4].passed=$false },
+    { param($rows) $rows[4].passed='true' },
+    { param($rows) $rows[4].PSObject.Properties.Remove('passed') },
+    { param($rows) $rows[4]=$null }
+)) {
+    $changedRows = $snakeJson | ConvertFrom-Json
+    & $mutate $changedRows
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Json (ConvertTo-Json -InputObject $changedRows -Depth 6) -Assertions $snakeAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'wrong keys, duplicate checks, invalid bools and failed observations cannot pass'
+}
+$assertionsJson = ConvertTo-Json -InputObject $snakeAssertions
+foreach ($mutate in @(
+    { param($rows) $rows[0].name=$rows[1].name },
+    { param($rows) $rows[0].name='foreign-assertion' },
+    { param($rows) $rows[0].status='FAIL' },
+    { param($rows) $rows[0].PSObject.Properties.Remove('status') }
+)) {
+    $changedAssertions = $assertionsJson | ConvertFrom-Json
+    & $mutate $changedAssertions
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Json $snakeJson -Assertions $changedAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected '38 native assertions must be exact, unique and explicitly passed'
+}
+foreach ($badAssertions in @(@(), $snakeAssertions[0..36], ($snakeAssertions + $snakeAssertions[0]))) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Json $snakeJson -Assertions $badAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'empty, partial or extra native assertion sets fail closed'
+}
+
+# The extended rules request cannot inherit PASS from the closed profile
+# slice alone. Root arrays, all24 ordered rows and all62 verdicts are required.
+$signatureNames = @('viper-contract', 'viper-wounds', 'viper-misses', 'viper-zero-damage',
+    'viper-non-bite', 'viper-live-dc-0', 'viper-live-dc-4', 'viper-live-dc--6',
+    'viper-six-exposures', 'viper-native-cure', 'viper-source-destruction',
+    'constrict-grab-rejections', 'constrict-bite-delivery', 'constrict-no-application-frame-maintain',
+    'constrict-later-maintain-once', 'constrict-strength-0', 'constrict-strength-4',
+    'constrict-strength--10', 'constrict-native-growth', 'constrict-modifiers-restored',
+    'constrict-lethal-prey', 'constrict-dead-prey-rejected', 'constrict-destroyed-prey-rejected',
+    'constrict-owner-death')
+$signatureRows = @($snakeRows)
+$signatureAssertions = @($snakeAssertions)
+foreach ($name in $signatureNames) {
+    $signatureRows += [pscustomobject]@{ signature=$name; passed=$true }
+    $signatureAssertions += [pscustomobject]@{ name=('sprint17-snake-signature-' + $name); status='PASS' }
+}
+$signatureJson = ConvertTo-Json -InputObject $signatureRows -Depth 6
+$signatureAssertionsJson = ConvertTo-Json -InputObject $signatureAssertions
+$observed = @(ConvertFrom-KmgSnakeSignatureSliceEvidence -Json $signatureJson -Assertions $signatureAssertions)
+Assert-Equal 46 $observed.Count 'complete signature request emits46 flat rows'
+Assert-Equal ($signatureNames -join ',') ($observed[22..45].signature -join ',') 'all24 signatures retain exact order'
+foreach ($badJson in @('null', '{}', '[]', '[', ('[' + $signatureJson + ']'), $snakeJson,
+    (ConvertTo-Json -InputObject $signatureRows[0..44] -Depth 6),
+    (ConvertTo-Json -InputObject ($signatureRows + $signatureRows[0]) -Depth 6))) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeSignatureSliceEvidence -Json $badJson -Assertions $signatureAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'incomplete, nested or malformed signatures fail closed'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[22].signature=$rows[23].signature },
+    { param($rows) $rows[22].signature='foreign' },
+    { param($rows) $rows[22].passed=$false },
+    { param($rows) $rows[22].passed='true' },
+    { param($rows) $rows[22].PSObject.Properties.Remove('passed') },
+    { param($rows) $rows[22]=$null },
+    { param($rows) $rows[22]=@($rows[22]) },
+    { param($rows) $rows[0].intact=$false },
+    { param($rows) $rows[4].passed=$false }
+)) {
+    $changedRows = $signatureJson | ConvertFrom-Json
+    & $mutate $changedRows
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeSignatureSliceEvidence -Json (ConvertTo-Json -InputObject $changedRows -Depth 6) -Assertions $signatureAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'signature rows and inherited body/profile rows must independently pass'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[38].name=$rows[39].name },
+    { param($rows) $rows[38].name='sprint17-snake-signature-foreign' },
+    { param($rows) $rows[38].status='FAIL' },
+    { param($rows) $rows[38].PSObject.Properties.Remove('status') },
+    { param($rows) $rows[0].status='FAIL' },
+    { param($rows) $rows[38]=$null }
+)) {
+    $changedAssertions = $signatureAssertionsJson | ConvertFrom-Json
+    & $mutate $changedAssertions
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeSignatureSliceEvidence -Json $signatureJson -Assertions $changedAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected '62 exact native assertions cannot hide missing, duplicate, foreign or failed results'
+}
+foreach ($badAssertions in @(@(), $snakeAssertions, $signatureAssertions[0..60],
+    ($signatureAssertions + $signatureAssertions[0]))) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeSignatureSliceEvidence -Json $signatureJson -Assertions $badAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'profile-only, incomplete or extra assertion sets cannot qualify signatures'
+}
+
+# A distinct eight-cell request, never an alias of profile/rules qualification.
+$commandRows = @()
+$commandAssertions = @()
+foreach ($key in @('viper', 'constrictor-snake')) {
+    foreach ($mode in @('rtwp', 'turn-based')) {
+        foreach ($driver in @('manual', 'ai')) {
+            $id = "$key-$mode-$driver"
+            $checks = [ordered]@{}
+            foreach ($check in @('native-setup', 'approach', 'attack', 'signature', 'contact', 'cleanup')) {
+                $checks[$check] = $true
+                $commandAssertions += [pscustomobject]@{ name="sprint17-snake-command-$id-$check"; status='PASS' }
+            }
+            $commandRows += [pscustomobject]@{ cell=$id; scope='production hidden-snake native command/contact slice'; checks=[pscustomobject]$checks; passed=$true }
+        }
+    }
+}
+foreach ($name in @('sprint17-body-environment-restored', 'sprint17-body-fixture-cleanup', 'loaded-mod-version')) {
+    $commandAssertions += [pscustomobject]@{ name=$name; status='PASS' }
+}
+$commandJson = ConvertTo-Json -InputObject $commandRows -Depth 8
+$commandAssertionJson = ConvertTo-Json -InputObject $commandAssertions
+$commandObserved = @(ConvertFrom-KmgSnakeCommandSliceEvidence -Json $commandJson -Assertions $commandAssertions)
+Assert-Equal 8 $commandObserved.Count 'all eight native command cells collected separately'
+foreach ($bad in @('null', '[]', '{}', '[', ('[' + $commandJson + ']'), $snakeJson,
+    (ConvertTo-Json -InputObject $commandRows[0..6] -Depth 8),
+    (ConvertTo-Json -InputObject ($commandRows + $commandRows[0]) -Depth 8))) {
+    $rejected=$false
+    try { $null=ConvertFrom-KmgSnakeCommandSliceEvidence -Json $bad -Assertions $commandAssertions } catch { $rejected=$true }
+    Assert-True $rejected 'partial, nested, malformed or unrelated metadata is not a command pass'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[0].cell=$rows[1].cell },
+    { param($rows) $rows[0].cell='salamander-rtwp-manual' },
+    { param($rows) $rows[0].scope='donor research' },
+    { param($rows) $rows[0].passed=$false },
+    { param($rows) $rows[0].passed='true' },
+    { param($rows) $rows[0].checks.contact=$false },
+    { param($rows) $rows[0].checks.contact='true' },
+    { param($rows) $rows[0].checks.PSObject.Properties.Remove('cleanup') },
+    { param($rows) $rows[0]=$null }
+)) {
+    $changed=$commandJson | ConvertFrom-Json
+    & $mutate $changed
+    $rejected=$false
+    try { $null=ConvertFrom-KmgSnakeCommandSliceEvidence -Json (ConvertTo-Json -InputObject $changed -Depth 8) -Assertions $commandAssertions } catch { $rejected=$true }
+    Assert-True $rejected 'row-level pass never substitutes for exact six native requirements'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[0].name=$rows[1].name },
+    { param($rows) $rows[0].status='FAIL' },
+    { param($rows) $rows[0].name='foreign' },
+    { param($rows) $rows[0]=$null }
+)) {
+    $changed=$commandAssertionJson | ConvertFrom-Json
+    & $mutate $changed
+    $rejected=$false
+    try { $null=ConvertFrom-KmgSnakeCommandSliceEvidence -Json $commandJson -Assertions $changed } catch { $rejected=$true }
+    Assert-True $rejected 'all51 exact native assertions independently mandatory'
+}
+foreach ($bad in @(@(), $snakeAssertions, $commandAssertions[0..49], ($commandAssertions+$commandAssertions[0]))) {
+    $rejected=$false
+    try { $null=ConvertFrom-KmgSnakeCommandSliceEvidence -Json $commandJson -Assertions $bad } catch { $rejected=$true }
+    Assert-True $rejected 'incomplete or extra command assertion sets fail closed'
+}
+
+Assert-True (Test-KmgBatchCandidateUnavailable -FirstScenario $true -HasEvidence $false -HasDeployment $false -LauncherOutcome 'Unclean') `
+    'a failed pre-launch candidate stops repeated full gates'
+foreach ($case in @(
+    @{ FirstScenario=$false; HasEvidence=$false; HasDeployment=$false; LauncherOutcome='Unclean' },
+    @{ FirstScenario=$true; HasEvidence=$true; HasDeployment=$false; LauncherOutcome='Unclean' },
+    @{ FirstScenario=$true; HasEvidence=$false; HasDeployment=$true; LauncherOutcome='Unclean' },
+    @{ FirstScenario=$true; HasEvidence=$false; HasDeployment=$false; LauncherOutcome='Clean' }
+)) {
+    Assert-True (-not (Test-KmgBatchCandidateUnavailable @case)) `
+        'an existing artifact or real current-run evidence preserves independent scenario execution'
+}
+
+# Parameter routing cannot leak a crowd or save-writing fixture scope into
+# an unrelated scenario. These drive the shipped pure resolver, not tokens.
+$batchNames = @('mechanics', 'crowd', 'persistence')
+$parameterMap = @{ crowd = @{ creatures = 'crocodile,dire-crocodile'; quantity = 'OneD4PlusOne' }
+    persistence = @{ persistenceScope = 'crocodilians' } }
+$resolved = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames -CurrentScenario 'crowd' -ParameterMap $parameterMap
+Assert-Equal 'crocodile,dire-crocodile' $resolved.creatures 'crowd retains its exact creature scope'
+Assert-Equal 2 $resolved.Count 'crowd receives only its own parameters'
+$resolved.quantity = 'changed'
+Assert-Equal 'OneD4PlusOne' $parameterMap.crowd.quantity 'returned parameters are a defensive copy'
+$resolved = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames -CurrentScenario 'mechanics' -ParameterMap $parameterMap
+Assert-Equal 0 $resolved.Count 'parameterless mechanics does not inherit another scenario scope'
+$resolved = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames -CurrentScenario 'persistence' -ParameterMap $parameterMap
+Assert-Equal 'crocodilians' $resolved.persistenceScope 'persistence retains only its own scope'
+Assert-Equal 1 $resolved.Count 'persistence scope has no crowd parameters'
+$resolved = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames -CurrentScenario 'crowd' -DefaultParameters @{ historical = 'retained' }
+Assert-Equal 'retained' $resolved.historical 'historical common-parameter behavior is retained'
+foreach ($bad in @(
+    @{ CurrentScenario = 'foreign'; ParameterMap = @{} },
+    @{ CurrentScenario = 'crowd'; ParameterMap = @{ foreign = @{} } },
+    @{ CurrentScenario = 'crowd'; ParameterMap = @{ Crowd = @{} } },
+    @{ CurrentScenario = 'crowd'; ParameterMap = @{ crowd = 'not-a-hashtable' } },
+    @{ CurrentScenario = 'crowd'; ParameterMap = @{ crowd = $null } },
+    @{ CurrentScenario = 'crowd'; ParameterMap = $parameterMap; DefaultParameters = @{ extra = 'mixed' } }
+)) {
+    $rejected = $false
+    try { $null = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames @bad }
+    catch { $rejected = $true }
+    Assert-True $rejected 'invalid or ambiguous batch parameter routing fails closed before snapshot or launch'
+}
+
 # The outer restoration wrapper must expose the guarded harness's two stage
 # deadlines. A slow first OnUpdate must not be mistaken for a mechanical test
 # failure merely because the aggregate timeout was raised while the startup
