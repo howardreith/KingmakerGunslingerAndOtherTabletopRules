@@ -2119,7 +2119,7 @@
     "candidateOnly": true,
     "sprint18Started": false,
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
-    "closureStatus": "NOT RUN; integration candidate in development",
+    "closureStatus": "BLOCKED_D_STILL_UNATTRIBUTED: final b8d67c3b source2469/smoke11/crocodilians212 PASS but original two-point expiry damage not reproduced or attributed;remaining release gates NOT RUN by owner order2D",
     "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md"
   },
   "expandedSummoningPhase2Development": {
