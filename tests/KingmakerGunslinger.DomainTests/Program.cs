@@ -25,6 +25,10 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("expanded-summoning.release143-damage-window", CrocodilianDamageAttributionTests.WindowAndTargetAreExact),
+            Case("expanded-summoning.release143-damage-transitions", CrocodilianDamageAttributionTests.EveryMutationIsRetainedWithoutNetting),
+            Case("expanded-summoning.release143-damage-unknown", CrocodilianDamageAttributionTests.DirectAndMissedMutationRemainUnknown),
+            Case("expanded-summoning.release143-damage-source-ownership", CrocodilianDamageAttributionTests.CrocodilianOwnershipTakesPrecedence),
             Case("expanded-summoning.release143-inventory-owned-references", ExpandedSummoningInventoryObservationTests.QualifiedReferencesAreExactManifestOwnedRows),
             Case("expanded-summoning.release143-inventory-spoof-rejection", ExpandedSummoningInventoryObservationTests.QualifiedReferencesRejectSpoofingAndOtherCarriers),
             Case("expanded-summoning.release143-inventory-salamander-carriers", ExpandedSummoningInventoryObservationTests.SalamanderCarriersDoNotExpectLegacyOnHitRiders),

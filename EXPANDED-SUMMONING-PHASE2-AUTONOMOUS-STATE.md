@@ -1,8 +1,11 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 — v0.0.143 BLOCKED; exact expiry damage unattributed
+## CURRENT STATE, 2026-10-08 — final bounded damage-attribution cycle authorized; NOT QUALIFIED
 
-Latest owner checkpoint-release mission governs: merge/tag/real Latest v0.0.143
+Latest final-blocker-resolution owner order governs: exactly one additional
+request-local read-only damage-attribution cycle in the existing Sprint16
+lifecycle scenario. No product change before attribution; no further observation
+cycle requested. Merge/tag/real Latest v0.0.143
 ONLY after all integration, closure, compatibility and v142 regression gates PASS.
 Then STOP. No Sprint18, Phase2C, Sprint22 or permanent deployment.
 
@@ -27,9 +30,12 @@ prey damage0→2 over1.8 native seconds, source not recorded. This is unresolved
 not a demonstrated product defect, proven fixture error, or accepted omission.
 No assertion waived. Batch stopped; remaining closure/profile5/v142 live cells
 NOT RUN. Source PASS is NOT release qualification.
-One observer correction already used; product correction0 used. A further
-request-local damage-attribution/fixture correction requires an owner extension
-of the bounded candidate cycle. No blind rerun or production change to get green.
+Prior observer correction1 used; product correction0 used. Owner now explicitly
+authorizes one final attribution cycle, followed only by its evidence-supported
+fixture correction or one bounded product correction. Still-unattributed => STOP.
+No blind rerun or production change to get green. Focused14/14 attribution/lifecycle
+tests and development private-reference compile PASS; next exact head has2469
+tests. Domain/source/build/package will run ONCE after candidate commit.
 Initial candidate1f4a25c8 and its inventory48/50 failure remain preserved.
 Intended release is normal public Latest v0.0.143,
 not an alpha, draft release or prerelease.
@@ -45,10 +51,10 @@ proof and five routes996c5fe7. Viper18/Constrictor14 remain independently qualif
 Accepted passive senses, clean grapple reset, swallow-interior limitations and
 deterministic rider adaptation unchanged. HumanReview NOT_PERFORMED_NONBLOCKING.
 
-Sole release source owner session55743a42-4481-4922-8fe8-a9bd24af8916:
+Sole release source owner sessiond42bf512-25e5-4c0a-a2bc-9fff6ace3fb2:
 owner29828/start2026-10-07T16:37:01.6154316Z;
-keeper38820/start2026-10-08T01:12:17.8225167Z.
-Fresh exclusive release143 receipt/lock; prior keepers29980/34308 released.
+keeper16728/start2026-10-08T03:21:14.2400240Z.
+Fresh exclusive release143 receipt/lock; prior keepers29980/34308/38820 released.
 Prior released receipt is archived; all permanent safety refs and verified recovery
 bundle remain available. No other owner/game/runtime lock was present at intake.
 DATA PR27 archived/ZERO PORTS; all safety refs/worktrees/failed evidence preserved.
@@ -66,11 +72,17 @@ baseline must be freshly snapshotted UNDER lease, not forced to this historic st
 Only native guarded Working-save workflow; protected baseline never loaded/written.
 
 Owner allowlist action verified and exact policy push PASS at01:12UTC.
-Next: owner decision on one narrowly scoped damage-attribution observation cycle;
-then only demonstrated corrections, exact affected gates and remaining closure.
+Next: freeze/push the observer head, complete source/build/package once, then
+smoke+crocodilians ONLY. Capture every prey damage/healing/native-setter event,
+HP/Constitution mutation and unknown frame delta; complete before/after buff/status
+lists, source/context/fact/ability/weapon/components/parents/native stack.
+Classify before changing anything. Prior inventory/menu/1008+29 root PASS may be
+reused ONLY after exact unchanged exercised source/packaged-surface delta audit.
+Then evidence-supported correction and still-unrun closure/profile5/v142 gates.
 Do not rerun completed source/census gates merely because of interruption.
-Integration/runtime/release NOT QUALIFIED. Current reporting descendants change
-only curated evidence/state, not the exact f65eedb3 executable candidate.
+Integration/runtime/release NOT QUALIFIED. Reporting1d38d4bb changed only evidence;
+the additional observer now changes request-local test code only. Executable,
+package and qualification identities must be frozen again at the new commit.
 Latest public release
 remains v0.0.142; merge/tag/real release only after all required gates PASS.
 Do not merge PR25/26 directly. Close as superseded only AFTER real v0.0.143 release.
