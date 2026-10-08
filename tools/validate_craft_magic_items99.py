@@ -139,7 +139,7 @@ def validate(root: Path) -> None:
         "observe-craft-magic-items-ammunition-ui")
     runtime_common = require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-craft-magic-items-ammunition-ui",
-        ("if ($ExpectedVersion -cne $activeVersion" if VERSION == "0.0.142" else f"active version {VERSION}"))
+        ("if ($ExpectedVersion -cne $activeVersion" if VERSION in {"0.0.142", "0.0.143"} else f"active version {VERSION}"))
     if not scenario_catalog or not runtime_common:
         raise AssertionError("Guarded ammunition UI scenario is unavailable")
 

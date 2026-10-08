@@ -1,6 +1,25 @@
 # Player-Facing Presentation and Item Discoverability Qualification
 
-## Mission identity
+## Current evidence correction: 0.0.143
+
+The following 0.0.105 results remain historical blueprint/presentation evidence.
+The discoverability observer did not measure scene visibility, normal entry-to-
+container routes, pickup or save/reload for the 30-item inventory. Claims that
+all targets were ordinary accessible base-campaign loot are withdrawn: seven
+specified locations require corrections, and two additional definitions have no
+installed scene reference. The corrections are documented in
+[the current qualification](WEAPON-FINDABILITY-QUALIFICATION.md).
+
+The active layout is 29 named world-loot weapons plus Cord, 30 distinct target
+containers and 28 exact areas. The normalized House group intentionally has
+three named weapons, two on its first floor. Each evidence row now separates
+blueprint/native-treasure identity, scene presence, accessibility, interaction/
+pickup, revisit and persistence. Unresolved or missing evidence is UNVERIFIED,
+never a physical-location PASS. Current directions are in
+[the authoritative inventory](../planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md).
+
+## Historical 0.0.105 qualification
+### Historical mission identity
 
 - Baseline local `master`: `0fe38002fc022ad5a04d65430eb461046cd9cc3c`.
 - Baseline `origin/master`: `0fe38002fc022ad5a04d65430eb461046cd9cc3c`.
@@ -50,20 +69,14 @@ policy rejects implementation vocabulary, internal symbols, null placeholders,
 and common encoding artifacts. The live observer inventories 55 project weapons,
 56 player-visible project items including the Cord, and 12 project enchantments.
 
-### Discoverable items
+### Historical acquisition graph
 
-The complete inventory now has 30 distinct fixed `BlueprintLoot` targets across
-29 exact areas. It has no recurring-vendor rows, random-table placements,
-temporary area variants, or target names suggesting hidden caches, secrets,
-puzzles, quest coupling, corpses, or trash. The only same-area pair is River
-King's Measure and Irovetti's Ovation in two separate ordinary palace chests.
-The late capstones remain distributed across Castle of Knives, the House at the
-Edge of Time, and three distinct Final Dungeon floors.
-
-Cord of Stubborn Resolve is published once to
-`9572baf3952095f41abda1fb25055cce`, `RichHuman_treasure_chest_04 (1)`, in
-`CapitalTavern_Indoor`. The transaction also removes its retired
-Capital Square Village row and restores both exact snapshots on rollback.
+The observer recorded 30 exact BlueprintLoot sources across 29 exact areas,
+zero recurring-vendor rows and count-one mod entries. It also observed Cord's
+exact `CapitalTavern_Indoor` assignment and retired-square cleanup. It did not
+qualify the scenes, entrances, phase/quest/DLC conditions or ordinary interaction.
+The former ordinary-route/base-campaign conclusions are withdrawn. Array and
+reference evidence is retained as historical provenance below.
 
 ## Deterministic qualification
 

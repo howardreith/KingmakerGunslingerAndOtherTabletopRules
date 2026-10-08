@@ -11,6 +11,8 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.EasternWeapons;
 using KingmakerGunslinger.ElvenBranchedSpear;
+using KingmakerGunslinger.Acquisition;
+using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.Development
 {
@@ -88,10 +90,10 @@ namespace KingmakerGunslinger.Development
                     ":target=" + loot.name + ":" + loot.AssetGuid +
                     ":type=" + loot.GetType().FullName + ":area=" +
                     loot.Area.name + ":" + loot.Area.AssetGuid +
-                    ":originalContentsPreserved=observer-qualified" +
-                    ":knownReferences=0:unique-area-owned" +
+                    ":originalContentsPreserved=UNVERIFIED" +
+                    ":knownReferences=UNVERIFIED" +
                     ":published=" + published + ":currentAreaMatch=" + areaMatch +
-                    ":liveEntity=unresolved-read-only:coordinates=unavailable:distance=unavailable";
+                    ":sceneEvidence=" + DescribeSceneEvidence(loot.AssetGuid);
             }).ToArray());
             return DevelopmentActionResult.Success("RARE FIREARM ACQUISITION AUDIT; currentArea=" +
                 (string.IsNullOrEmpty(currentName) ? "<unresolved>" : currentName) +
@@ -157,7 +159,32 @@ namespace KingmakerGunslinger.Development
                 (target.Area == null ? "<none>" : target.Area.name + ":" +
                     target.Area.AssetGuid) + ":countOneMatches=" +
                 matches.Count(value => value.Count == 1) +
-                ":currentAreaMatch=" + currentAreaMatch;
+                ":currentAreaMatch=" + currentAreaMatch +
+                ":blueprintPublication=" + (matches.Length == 1 && matches[0].Count == 1 ? "PASS" : "FAIL") +
+                ":sceneEvidence=" + DescribeSceneEvidence(target.AssetGuid);
+        }
+
+        private static string DescribeSceneEvidence(string targetGuid)
+        {
+            var objects = CampaignWeaponSceneObservation.Find(targetGuid);
+            return JsonConvert.SerializeObject(new {
+                physicalQualification = "UNVERIFIED; this is a read-only current-scene observation",
+                objectCount = objects.Length,
+                objects = objects.Select(CampaignWeaponSceneObservation.Capture).ToArray(),
+                phase = CampaignWeaponSceneObservation.Phase(),
+                route = "UNVERIFIED", pickup = "UNVERIFIED", persistence = "UNVERIFIED" });
+        }
+
+        internal DevelopmentActionResult InspectCampaignWeaponRecovery(string key)
+        {
+            ResolveRuntime(requireUnit: false);
+            return DevelopmentActionResult.Success(CampaignWeaponRecovery.Inspect(key).Describe());
+        }
+
+        internal DevelopmentActionResult RecoverCampaignWeapon(string key, string gameId, bool acknowledged)
+        {
+            ResolveRuntime(requireUnit: false);
+            return DevelopmentActionResult.Success(CampaignWeaponRecovery.Grant(key, gameId, acknowledged));
         }
 
         private static MagicFirearmBlueprintCatalog RequireRareCatalog()

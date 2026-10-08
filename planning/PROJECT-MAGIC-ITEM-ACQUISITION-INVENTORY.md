@@ -1,8 +1,199 @@
 # Project Magic Item Acquisition Inventory
 
-The current `0.0.105` audit covers every project-owned named or unique magic item deliberately published to base-campaign fixed loot. Mundane firearms, ordinary +1 merchant firearms, ammunition, maintenance kits, and crafting supplies are out of scope. The older Issue 12 inventory is retained below as superseded history.
+## Current 0.0.143 findability contract
 
-## Contract
+This is the active location inventory. It supersedes the 0.0.105 and 0.0.87
+directions below. It contains **29 named world-loot weapons**: five firearms,
+18 Eastern weapons and six Elven Branched Spears. Cord of Stubborn Resolve is
+the separate thirtieth item. Roadwarden and Dead Reckoning are merchant-only.
+
+The seven specified moves and two scene-backed source corrections preserve canonical item GUIDs, weapon families,
+effects, prices, crafting identities and module ownership. Publication normalizes
+only mod-owned rows on exact active/retired definitions, retaining original game
+treasure and foreign rows. There is one intended target per weapon. Complete
+registry counts, including Cord, are **30 distinct containers and 28 exact areas**.
+The normalized House group has three weapons: both +5 firearms on its first
+floor and Heaven's Measure on its second floor. This House exception does not
+relax other area limits or Cord's contract.
+
+**Evidence boundary:** ordered native contents and GUID/name/area match the
+SHA-256-bound 2.1.4 reference. A resolving loot blueprint is not a physical
+availability result. Scene, normal approach, pickup, revisit and save/reload
+results are recorded separately in the
+[current qualification report](../docs/WEAPON-FINDABILITY-QUALIFICATION.md).
+Until those measured results pass, the locations below are intended locations,
+with room/route uncertainty shown explicitly. The 2.1.7b runtime is the authority.
+
+## Player location guide: all 29 named world-loot weapons
+
+Native treasure helps distinguish the intended object from similarly named
+containers. Normal combat, story progression, ordinary locks/traps and documented
+optional-map discovery remain. Map discovery alone does not relocate a spear.
+
+| Weapon | Current family | Player map | Room/object and recognizable native treasure | Access conditions and remaining evidence |
+|---|---|---|---|---|
+| Duelist's Rebuttal | Pistol | Varnhold Stockade | Second-floor Agai encounter chest; Crimson Counselor, Owlbear Omelet recipe, Tuskwater Oysters and Fallen Warrior's Boot | Varnhold Vanishing; ordinary stockade entrance, western first-floor room doors, native bear-button shortcut and upstairs transition. Agai combat and the offered surrender response to let him go were tested. Walking, chest pickup, revisit and disk reload passed; other Agai outcomes were not individually exercised. |
+| The River King's Measure | Musket | Pitax Royal Palace | Western palace chest containing a Wooden Spoon, Grinding Stone and 16 gold; exact room name remains unverified | War of the River Kings. Native walking through the atrium and barracks doors, pickup, revisit and disk reload passed. The former 632-gold definition has no installed scene reference; exact room name remains unverified. |
+| Irovetti's Ovation | Blunderbuss | Pitax Royal Palace | Conservatory chest with Arbiter's Robe and Charoite Wyvern | War of the River Kings; ordinary palace exploration through the native conservatory dialogue and doors. Walking, pickup, revisit and disk reload passed. |
+| The Last Word | Pistol | House at the Edge of Time | First floor, companion phase: ordinary chest northwest of Nyrissa's neglected throne in the Horned Hunter/Linzi room. Jade ×2, Bless scroll, Turquoise ×4, Stinking Cloud scrolls ×2, Medicinal Herb Petals ×3, 1,044 gold | Before leaving the House. Native flag 1, HouseAtTheEdgeOfTime01_Mechanics / Loot_SideA; lantern active. Normal entrance walk, ordinary door, pickup, revisit and disk reload passed. Separate from secret-door treasure. |
+| Watch at the World's End | Musket | House at the Edge of Time | First floor, companion phase: north corner of the central mirror hub, southeast of Valerie's room, beside the throne-room corridor. Resist Fire potions ×3, gems, Special Hops, Simmering Pollen ×2, Inflict Serious Wounds scrolls ×2, 299 gold | Before leaving the House. Native flag 1, HouseAtTheEdgeOfTime01_Mechanics / Loot_SideA; lantern active. Walking, pickup, revisit and reload passed while Mirror Memories and the Third Key objective remained None. |
+| Paper Lantern | Wakizashi | The Stag Lord's Fort | Large Glaive +1 chest behind movable crates at the northwest end of the house east of the bandit campfire | Late Stolen Land. Native Athletics wall approach and movable-crate check passed (actual DCs 20 and 19), followed by pickup, revisit and reload. The ordinary fort entrance and time-spending crate fallback remain reference alternatives. Separate from the locked Cloak of Resistance +1 chest. |
+| Wayfarer's Oath | Katana | Troll Wilderness | Easternmost tower chest beside the rock-throwing troll: Fireball scroll, Dart +1 and 13 gold | Troll Trouble; ordinary front-gate and tower introduction, native chest lock (guide DC 18). Walking, pickup, revisit and disk reload passed. Wall climbing is an alternative. |
+| Border Sentinel | Nodachi | Abandoned Hut | Chest by the north fork after the father/son ghost scene, with Masterwork Dwarven Urgrosh and Masterwork Earth Breaker | Stolen Land; native chest lock (guide DC 21). Walking, pickup, revisit and reload passed. Separate from the hidden herb/note stash. |
+| Quiet Current | Wakizashi | Troll Lair Depths | Old dwarf chest: Frost/Shock Heavy Mace +1, Cure Moderate Wounds potions ×2 and Soot-Blackened Hammer (internal AntiqueDwarvenHammer) | Troll Trouble; ordinary native dungeon doors and Iron Dwarven Key prerequisite (supplied only to the disposable fixture). The native chest restriction is Trickery 32 or Old Dwarven Chest Key (FatLootChestKey), separately from that corridor key. Walking, pickup, revisit and reload passed; organic boss/key progression is separate. |
+| Winter Reed | Katana | Empty Skull Rock | Northeastern end of the eastern cave: static bone pile containing Cloak of Resistance +1 | World-map Perception discovery remains (native 2.1.4 location reference: DC 20); trollhound combat. The native 2.1.7b bone pile is visible and persistent, with no Perception component and no creature-death origin. Ordinary pickup, revisit and disk reload passed; organic map discovery was not tested. |
+| Cloud-Cleaver | Nodachi | Candlemere Tower | Locked Noble Hammer chest past the cave entrance, near the middle of the western side | Optional tower exploration and combat; native lock (guide DC 28). Normal walking, pickup, revisit and reload passed. |
+| Falling Petal | Wakizashi | Womb of Lamashtu | Decapitator chest northwest of the spider-ambush cavern | Season of Bloom; Womb of Lamashtu story cave and native Kesten encounter. Native lock (guide DC 27). Normal walking, pickup, revisit and disk reload passed. |
+| Drawn Horizon | Katana | Lake Silverstep Village | Travel pack beside the corpse on the southeastern shore, after the Tatzlwyrm/Nixie encounter: Talon of the Wise and 121 gold | Walking approach from the west passed, followed by pickup, revisit and reload. Mobility DC 21 cliff descent is optional. Native persistent pack preserves Talon of the Wise and 121 gold. |
+| Storm Over Stone | Nodachi | Varnhold | Southeastern warehouse by the river, among spoiled grain: Frost Scythe +2, Bear's Endurance potion, rice ×3, flour ×3 and onion | Varnhold Vanishing; ordinary exterior/warehouse approach. Native walking, pickup, revisit and reload passed. |
+| Foxfire Whisper | Wakizashi | City of Hollow Eyes | Static human corpse in the northeastern ruins after the cyclopes: Headband of Vast Intelligence +4 and Fallen Warrior's Sheath (internal CyclopsSheath) | Varnhold Vanishing region; optional discovery and cyclops combat. Native persistent body, walking, pickup, revisit and reload passed. |
+| Thunder at the Gate | Katana | Armag's Tomb | Supply crate outside the tomb: Chainmail ×2, Longspears ×3, Shining Scale, Heavy Crossbow and 189 gold | Twice-Born Warlord; outside tomb approach. Normal entrance dialogue, walking, pickup, revisit and reload passed. Separate from locked 589-gold chest and concealed stones. |
+| Mountain-Sunder | Nodachi | Kellid Barbarian Camp | Camp chest: Tian Xia Ink ×2 (internal Investigator's Notebook), Protection from Law potion, Beetle in Amber and 71 gold | Varnhold Vanishing / Along the Cold Trail. The camp introduction and offered native book/dialogue choices passed, followed by walking, pickup, revisit and disk reload. Separate from the hidden camp stash. |
+| Empty Sleeve | Wakizashi | Pitax | Locked chest with Amulet of Natural Armor +3 | War of the River Kings; Pitax square, chest lock (guide DC 45). Normal walking, native interaction, pickup, revisit and reload passed. |
+| Moonlit Crossing | Katana | Littletown | Barrel beside the piers outside the tavern: four pearls (two native rows of two), Masterwork Orc Double Axe, Light Crossbow, Silver Rings ×2 and 85 gold | War of the River Kings unlock. Exterior walking, barrel pickup, revisit and reload passed without tavern entry or NPC outcome preparation. Native pearl rows remain two rows of two. |
+| Unfixed Form | Nodachi | Whiterose Abbey | Northeastern wall of the first main section, after the second enemy group and before the northwest hallway: Blur potion, Masterwork Elven Curve Blade, Heavy Crossbow, Carved Beads, 8 gold and Eternal Sunshine. A Pilgrim's Journal | The Path of the Dreams/War of the River Kings reveal; combat and floor traps remain. Normal walking, ordinary chest pickup, revisit and reload passed; separate from hidden, locked and submerged treasure. Organic quest reveal is reference evidence, not fabricated-fixture proof. |
+| Night Without Moon | Wakizashi | Castle of Knives | Northeastern tower chest containing Chainshirt +5 | Late campaign; native northeastern tower Athletics 30 approach, walking, pickup, revisit and disk reload passed. The linked native trap has reveal and disable DC 46; the container has no Perception component. A successful trap disarm is not asserted. |
+| Heaven's Measure | Katana | House at the Edge of Time | Second floor, room behind Nyrissa's encounter room: cabinet containing Headband of Mental Perfection +6 | Native flag 2, HouseAtTheEdgeOfTime_2ndFloor02_Mechanics / Loot_SideB; behind Nyrissa's encounter room. The normal route requires the Horned Hunter corridor key and Wriggling Man, Knurly Witch and Third Nyrissa keys (supplied only as disposable story prerequisites). Native fog/gate route, cabinet pickup, revisit and reload passed; organic key/puzzle progression remains separate. Guide phase numbers are not native flags. |
+| World-Tree Severer | Nodachi | Ravaged Capital — Entrance | Southwestern ruined house, chest with Greatsword +5 after its Wild Hunt ambush | Final chapter; native rubble/stair approach and ordinary vine interaction, followed by walking, pickup, revisit and disk reload. No placement change. |
+| Boughkeeper | Elven Branched Spear | Old Mesa | Static body at the northern werewolf camp: Reduce Person potion, Silver Inkpot, Garnet Ring (Amethyst) and 10 gold | Optional map discovery (guide Perception 15) and werewolf combat. Native body, walking, pickup, revisit and reload passed. |
+| Thornstep | Elven Branched Spear | Riverine Rise | Static body northwest of the uphill/northeastern Water Elemental encounter: Lesser Restoration potions ×2, Remove Blindness scrolls ×3 and 43 gold | Optional map discovery and elemental combat remain. Native body, walking, pickup, revisit and reload passed. |
+| Moonlit Fork | Elven Branched Spear | Hodag Lair | Persistent ground loot beside the corpse and wagon after the hodag: Greatclub +2 | Optional discovery (guide Perception 40 or Dalton's lead) and hodag combat. Native persistent pile, walking, pickup, revisit and reload passed; Amiri's quest was not prepared. |
+| Viper's Reach | Elven Branched Spear | Saint Galvan's Gullet | Static body with Trident +3, Crumpled Sheet of Paper (internal ExpeditionEstimateList) and 940 gold | Optional discovery (guide Perception 30) and Greater Cyclops combat. Native body, walking, pickup, revisit and reload passed; pillar skill checks concern separate treasure. |
+| Briar-Crowned Spear | Elven Branched Spear | Blakemoor's Hideout | Blakemoor's Hideout (Middle of Nowhere): chest with Charlatan's Locket, Robe of False Death and Bindings of the Prince | War of the River Kings optional map. Exterior native door and real Trickery 35 dialogue check, entrance transfer, interior walking/lock, pickup, revisit and reload passed. Optional Perception 45 discovery/Blutmond lead remains reference evidence. |
+| Spear of the First Branch | Elven Branched Spear | Ravaged Capital — Central Passage | Central-passage container with Amulet of Natural Armor +5 and Fey Bane Cold Iron Tongi +4 | Final chapter; central passage. Scene presence passed; native approach and pickup remain unverified. |
+
+## Exact active identities
+
+The literal `#1` suffixes and punctuation are part of the identity check.
+The complete ordered native rows, including both two-pearl rows in Littletown,
+are in [the native comparison registry](../validation/weapon-findability-native-reference.json).
+These identities are derived from the production catalog and publication tables.
+All 29 passed the current installed blueprint/source audit and scene census.
+Individual route/pickup/persistence gates are listed in the qualification report.
+
+| Weapon | Canonical item GUID | Loot GUID / exact native name | Exact owning area |
+|---|---|---|---|
+| Duelist's Rebuttal | `bae89c3abc3240578a6bff69044d2c1b` | `1f0bef6b8e540d644962171dc8810459` / `Forest_Container_7_good` | `VarnholdStockade` |
+| The River King's Measure | `a27c86b0d87c423d9ba8a05227bbf1e6` | `77ad78d755a49af45abee46d86191b16` / `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)#1` | `IrovettiPalace` |
+| Irovetti's Ovation | `caf23b7555cd4524a7622eaa25266ea1` | `c5adf784c614e4b4c8dc220111f64a54` / `RichHuman_ConservatoryLoot` | `IrovettiPalace` |
+| The Last Word | `0d31f794ba294c1e834af44f918f6721` | `b54aad6aa2844fa4c87f46088cde018b` / `FirstWorld_PoorLoot01#1` | `HouseAtTheEdgeOfTime` |
+| Watch at the World's End | `87c7baaaad504b7f8742f2dfcd79d067` | `e113fb75d9461924ab64df78c019991a` / `FirstWorld_PoorLoot02#1` | `HouseAtTheEdgeOfTime` |
+| Paper Lantern | `fbb319cb67ae5657820548791a7a3733` | `5cce787544ae5964c8ac43ab7cf768ca` / `Forest_BarrikadedChest1#2` | `StagLordFort` |
+| Wayfarer's Oath | `9ac64342cca85f72b0fe81cb6b9c53c0` | `020246502ff864f4aab19e2fc00e63ee` / `Forest_chest_close` | `TrollLair_Exterior` |
+| Border Sentinel | `c1c7a6746916504ebfdcb2b650a7145b` | `e72cdc1e01c1eb144b6c29084dd111fb` / `Forest_ChestWithMasterworkWeapons` | `StagLordOldCamp` |
+| Quiet Current | `be05a24b1b145e1ea008a4bf42b04c32` | `a2d14c56093720947a6ca4978c6a5985` / `Forest_OldDwarfChest` | `TrollLair_SecondLevel` |
+| Winter Reed | `060f933d8912594cbc3da731c4dae7a3` | `4dc53495b10c62f4a90d4ae094d232c3` / `Forest_TrollhoundLairLoot01` | `TrollhoundLair` |
+| Cloud-Cleaver | `bb863dabbf655059af768723cf6226ba` | `2bffac36ed3499f4f9a1e6456e96a0f6` / `Forest_LockedLoot01` | `CandlemereTower` |
+| Falling Petal | `c56dd11c12355a83b1cd9d833b2e5321` | `df9ac89a7d8533a4e999bd267ae52b65` / `Forest_UnhiddenLocked01` | `SilverstepGrotto_Cave` |
+| Drawn Horizon | `d3f2a227bd335087805eb7225721dc83` | `d03682992a98a614c9d149fca2bab853` / `Forest_Backpack` | `SilverstepLake_Outdoor` |
+| Storm Over Stone | `a7559dde16945f90aada81ecf9adb97a` | `2d95232e6fc0b594bb6e13e3d3ea0dc3` / `Forest_Loot01` | `Varnhold` |
+| Foxfire Whisper | `c7fc72c801e9506bb0c87e84eee8d313` | `a9bb1f714425c564aadee3cc712fb96a` / `Forest_CyclopLootRoot` | `DunswardOutdoor` |
+| Thunder at the Gate | `d5c7922d57a95025a977dd1ee59cb098` | `dd50c5c9d07eaaf49869308ce8720aec` / `Barbarians_PoorLootRoot (1)` | `ArmagsTomb` |
+| Mountain-Sunder | `5867c9be30e15d3a8a22e0f442959d03` | `462bf0e4476e8c7498b2462219d46d25` / `Hills_chest_closed` | `BarbarianMainCamp` |
+| Empty Sleeve | `a576839afc71574eb77203bf390fdf30` | `c0f1626bb1a0b3b47ad452ce75c7f0e2` / `RichHuman_GoodLoot_Locked#1` | `PitaxTown` |
+| Moonlit Crossing | `457e6f3694405f27999cf46047fafa52` | `732080f3aa72fd14cb520902e4b4db89` / `PoorHuman_PoorLoot#1` | `Littletown` |
+| Unfixed Form | `f4bed29f193e57f6826dc83a684e65db` | `3172f82c9f21b8a439a6552850b39b4c` / `PoorHuman_PoorLoot` | `WhiteRoseAbbey` |
+| Night Without Moon | `dc660fcebcc855bfb046336fc78a93ae` | `b3344268950f27f4b840f216959f150e` / `FirstWorld_GoodLoot_Trapped_1` | `CastleOfKnives` |
+| Heaven's Measure | `dc086bdf8af25bceb569c8f5c627f560` | `e3703cd9a6de2f24c80c1505e3c9784f` / `FirstWorld_2ndFloorGoodLoot05` | `HouseAtTheEdgeOfTime_2ndFloor` |
+| World-Tree Severer | `e6e5cf56d3a259debd2f16a300bff115` | `7e6448d1d8a7e4f4d9cc340b8f15e732` / `RichHuman_Loot_1` | `FinalDungeon` |
+| Boughkeeper | `4a084b0226e077b58d79e33184018002` | `40db074f21260344b95d0e9919c8e682` / `Forest_PoorLoot01` | `CapitalRegionLair01` |
+| Thornstep | `676faa5f811d851c9f14204bf864e1ec` | `3322c56f38031eb4983b6f87c95081b7` / `Forest_GoodLoot01` | `NorthNarlmarchesRegionLair01` |
+| Moonlit Fork | `403d62f6d3bb415c86939430176e55c0` | `2aa7aa5c2df96b143bd2fc62a8547c9c` / `Forest_TH_GreatclubBarbarianMagic` | `MonsterLairHodag` |
+| Viper's Reach | `1cfe40563a9b816931bb35e69677ac27` | `8a850f7758cb77b498621a307445bb1e` / `Forest_GoodLoot_withWeaponOrArmor` | `LoneCyclopCave` |
+| Briar-Crowned Spear | `ee580f43f50a0f0afefaedb3ce7133f3` | `decb6060ab534294eb6d35510e45d317` / `RichHuman_NotHiddenLockedGood` | `BlakemoorHideout` |
+| Spear of the First Branch | `85c18b96ebee3fdc87eb33da93c8fdf6` | `13e98ebc52714d34eb8e53f1099110fd` / `RichHuman_Loot_5_2lvl` | `FinalDungeon2` |
+
+## House and Blakemoor route evidence
+
+Guide labels such as “World State 0” or “Phase 1” are not native flag values.
+The House phase observer records flag `db94ef898ad95944788d3da6b22a5e31`, its
+unlock/value state, first-entry flag `c553d372960fbad4090ac4f4e55df412`, the
+actual loaded mechanics scenes and each container's persistent entity identity.
+Both first-floor firearm chests passed native Phase 1 / Loot_SideA walking,
+pickup, revisit and reload with Mirror Memories and Third Key objectives None.
+Heaven's Measure retains the second-floor Headband of Mental Perfection +6
+cabinet behind Nyrissa's room, in native Phase 2 / Loot_SideB. Its measured route
+starts at the ordinary first-floor entrance, changes phase through G03, follows
+the throne-room corridor and ordinary L2G stairs, then uses second-floor F01
+(2 to 1), the native three-key trigger, F04 (1 to 2) and the ordinary Nyrissa-room
+door. Lantern switches and native phase/teleport events were recorded. The
+Horned Hunter corridor key and Wriggling Man, Knurly Witch and Third Nyrissa
+keys were supplied only as disposable story prerequisites. Organic key/puzzle
+and Nyrissa progression remain unverified. Cabinet walking, pickup, revisit
+and reload passed.
+
+Briar-Crowned Spear retains Blakemoor's Hideout, the map also called Middle of
+Nowhere. Walkthroughs describe difficult optional discovery (Perception 45), or
+Blutmond's Pitax-inn lead involving checks/payment, followed by a door approach
+(reported Trickery 35/Athletics 40 or a key). Native exterior object
+`6f67ed9a-2c32-4ef9-a531-12da90889e73` in
+`BlakemoorHideoutEntrance_Mechanics` was approached normally. Its own actions
+opened the door dialogue; the offered Trickery 35 answer and native success cue
+loaded `BlakemoorHideout_Enter`. Interior walking, the chest lock, pickup,
+revisit and fresh-process reload passed. Optional map discovery, Blutmond's
+lead and the Athletics/key alternatives remain reference evidence. The chest's `NotHidden` name proves neither map
+discovery nor the door route. Native mechanics and a normal approach must be
+recorded; no relocation is authorized solely by this map's discovery check.
+[Route reference](https://gamefaqs.gamespot.com/ps4/252382-pathfinder-kingmaker-definitive-edition/faqs/79613/miscellaneous-locations).
+
+House chest descriptions:
+[exploration guide](https://www.gamerguides.com/pathfinder-kingmaker/guide/walkthrough/chapter-6-sound-of-a-thousand-screams/sound-of-a-thousand-screams-exploring-the-house-at-the-edge-of-time).
+Whiterose chest route:
+[walkthrough](https://www.gamerguides.com/pathfinder-kingmaker/guide/walkthrough/chapter-5-war-of-the-river-kings/war-of-the-river-kings-whiterose-abbey).
+Empty Skull Rock and Lake Silverstep approaches:
+[eastern cave](https://www.gamerguides.com/pathfinder-kingmaker/guide/exploration/kamelands/empty-skull-rock),
+[southeastern shore](https://www.gamerguides.com/pathfinder-kingmaker/guide/exploration/silverstep/lake-silverstep-village).
+Littletown and Armag native treasure:
+[Littletown](https://pathfinderkingmaker.fandom.com/wiki/Littletown),
+[Armag's Tomb](https://pathfinderkingmaker.fandom.com/wiki/Armag%27s_Tomb).
+
+## Cord and merchant/crafting routes
+
+Cord of Stubborn Resolve remains count one in the capital tavern/inn chest:
+`9572baf3952095f41abda1fb25055cce`, `RichHuman_treasure_chest_04 (1)`,
+`CapitalTavern_Indoor`. It is not a weapon or a recovery selection.
+
+Roadwarden (Pistol +3 Reliable) and Dead Reckoning (Musket +3 Reliable) remain
+merchant-only midgame firearms. See the exact regional stock and purchase
+acceptance in [the firearm manual](../docs/RARE-FIREARMS-MANUAL-ACCEPTANCE.md).
+Model D generic stock remains Oleg's mundane firearms/ammunition, the capital's
++1 firearms/ammunition/Gunsmith's Kit, and Bokken's ammunition. Generic Eastern
+and spear regional/BTSL stock remain their existing contracts. Better Vendors
+progression is an optional integration with its own qualification; its absence
+does not fail base-mod publication. Fixed stock can deplete and is not promised
+to regenerate.
+
+Craft Magic Items retains mundane/masterwork creation bases and supported
+enhancement of an already owned named weapon. Named campaign weapons are not
+new-item crafting bases. This repair adds no new crafting, merchant or balance
+route and does not normalize serialized merchant inventories.
+
+## Existing campaigns and controlled recovery
+
+Changed loot definitions do **not** promise to repair already-generated old
+campaign inventories. Existing valid weapons/upgrades, stash and native loot
+are retained. The explicitly selected recovery path checks known ownership,
+progress and loaded/cached container state before granting one weapon. It is
+restricted to 28 historically relocated named weapons, including earlier
+relocations; it excludes World-Tree Severer, Cord, merchant-only firearms and
+generic stock.
+
+See [the exact invocation and limits](../docs/WEAPON-FINDABILITY-RECOVERY.md).
+No grant runs on load. No whole-container refill or general spawning interface
+is added. Absence from known ownership does not establish that a weapon was
+never acquired, sold or left elsewhere. The per-save ledger prevents repeated
+recovery grants after a normal save/reload; it cannot establish that no older
+copy exists in an unloaded area.
+
+## Historical 0.0.105 and 0.0.87 records
+
+The retained records below document earlier publication decisions. Their active
+directions, family labels and physical-access claims are superseded by the
+current tables. Those audits established blueprint/source identity and counts;
+their assertions about base-campaign reachability, visibility and ordinary
+interaction were not scene qualification and are withdrawn.
+
+### Historical 0.0.105 publication contract
 
 - Scope: 30 stable item identities: five rare firearms, eighteen named Eastern weapons, six named Elven Branched Spears, and Cord of Stubborn Resolve.
 - Result: 30 distinct, deterministic base-campaign `BlueprintLoot` targets across 29 exact areas and zero recurring-vendor rows.
@@ -10,11 +201,9 @@ The current `0.0.105` audit covers every project-owned named or unique magic ite
 - The development action `Print all project magic-item location audits` reports item GUID, target GUID, target and area names, current count, all live loot locations, and all live vendor locations without granting or moving items.
 - Static blueprint publication affects new campaigns and loot objects not yet materialized from the blueprint. It does not delete, move, or refresh items already instantiated in a save, including owned, stashed, dropped, sold, or previously opened-container items.
 
-## 0.0.105 complete discoverability audit
+### Historical 0.0.105 blueprint audit
 
-Every row was checked for exact base-campaign identity, persistent area ownership,
-ordinary loot interaction, campaign stage, power fit, target-name obscurity,
-clustering, and retired-row cleanup. `Retained` means the prior target survived
+Earlier claims of ordinary interaction and campaign accessibility were inferred from blueprint metadata. They were not measured scene/route results. The corrected audit keeps identity/count evidence and withdraws those physical claims. `Retained` means the prior target survived
 the audit; `moved` means the old target is now an explicit cleanup target.
 
 | Stage | Item | Exact fixed target GUID and name | Exact area | Audit result |
@@ -57,7 +246,7 @@ three capstones are split across `FinalDungeon`, `FinalDungeon2`, and
 `FinalDungeon3`. No named item was moved to a vendor or centralized in the
 capital.
 
-## Superseded 0.0.87 exact acquisition inventory
+### Historical 0.0.87 acquisition inventory
 
 All targets below are installed Kingmaker 2.1.7b `Kingmaker.Blueprints.Loot.BlueprintLoot` objects in the base campaign. `Fixed/unique` means an exact area-owned target rather than a random table, artisan reward, dialogue grant, DLC target, broad area hook, or shared generic table. Prices are blueprint gold-piece costs; power is the effective enhancement profile used for chapter placement.
 
@@ -96,7 +285,7 @@ All targets below are installed Kingmaker 2.1.7b `Kingmaker.Blueprints.Loot.Blue
 
 ## Qualification evidence
 
-### Current 0.0.105 qualification
+### Historical 0.0.105 qualification (superseded physical claims)
 
 - Immutable guarded-runtime artifact: source-state SHA-256
   `250ED285247113C33B39855609F6125C68652C7C744F06B967DD0EC7CD0981E7`,

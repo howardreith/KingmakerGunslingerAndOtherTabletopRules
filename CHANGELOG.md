@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.0.143-weapon-findability-fixes (candidate)
+
+- Move The Last Word and Watch at the World's End to ordinary first-floor House
+  chests; move Unfixed Form, Moonlit Crossing, Winter Reed, Drawn Horizon and
+  Thunder at the Gate to the specified base-campaign containers. Preserve all
+  item identities and native treasure, and clean only mod-owned retired rows.
+- Correct two additional scene-reference defects: Paper Lantern uses the actual
+  Glaive +1 barricaded chest; The River King's Measure uses the actual palace
+  chest containing a Wooden Spoon, Grinding Stone and 16 gold. The similarly
+  named retired definitions have no installed scene object.
+- Derive the 29-weapon inventory from complete publication registries. Including
+  Cord, require 30 containers in 28 exact areas and narrowly permit three named
+  weapons in the normalized House group.
+- Separate blueprint, native treasure, scene, route, pickup, revisit and
+  save/reload evidence; unknown physical evidence stays UNVERIFIED.
+- Add explicitly invoked per-weapon recovery for relocated campaign weapons,
+  with known-ownership refusal and a persisted recovery ledger. Historical
+  ownership outside supported inspections remains unknown.
+- Installed 2.1.7b: 29/29 blueprint/native-treasure and
+  29/29 active scene checks; 28/29 native entrance routes, pickups,
+  revisits and disk reloads. Recovery passed 412 preparation and 33 reload
+  assertions, including canonical and actual upgraded-copy refusal. Optional
+  authentic Better Vendors kingdom-stage acceptance remains NOT RUN; see the
+  individual evidence and limitations in the findability qualification report.
+
 ## 0.0.142-elemental-race-traits-and-content (candidate)
 
 - Adds the Ifrit Fiery Glare, Oread Stoic Dignity, Sylph Aerial Observer and

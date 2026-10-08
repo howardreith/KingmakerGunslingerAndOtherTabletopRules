@@ -85,7 +85,7 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
-    release_suffix = ("elemental-race-traits-and-content" if VERSION == "0.0.142" else "expanded-summoning-phase2a" if VERSION == "0.0.141" else "favored-class-integration" if VERSION == "0.0.140" else "expanded-summoning-phase1" if VERSION == "0.0.139"
+    release_suffix = ("weapon-findability-fixes" if VERSION == "0.0.143" else "elemental-race-traits-and-content" if VERSION == "0.0.142" else "expanded-summoning-phase2a" if VERSION == "0.0.141" else "favored-class-integration" if VERSION == "0.0.140" else "expanded-summoning-phase1" if VERSION == "0.0.139"
         else "better-vendors-progression" if VERSION == "0.0.138"
         else "rapid-reload-combat-feat" if VERSION == "0.0.137"
         else "rapid-reload-proficiency-gate" if VERSION == "0.0.136"

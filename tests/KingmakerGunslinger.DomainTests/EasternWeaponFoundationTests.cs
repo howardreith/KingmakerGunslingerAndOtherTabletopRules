@@ -439,7 +439,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(campaign.Contains("NamedKinds = new[]") &&
                 campaign.Contains("ordinary BTSL"),
                 "Named Eastern weapons must not enter ordinary BTSL stock.");
-            Assertions.Equal(39, campaign.Split(new[] {
+            Assertions.Equal(45, campaign.Split(new[] {
                 "new EasternLootSpec(" }, StringSplitOptions.None).Length - 1,
                 "Distinct Eastern placement plus cleanup target count changed.");
             foreach (string token in new[] {
