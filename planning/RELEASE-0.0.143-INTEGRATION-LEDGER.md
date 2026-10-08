@@ -157,3 +157,37 @@ comparison; crowd request uses existing helper and current version instead of141
 Both fixture corrections already passed privately against candidate1f4a25c8;
 they now become canonical so the release gate is reproducible. New exact candidate
 must pass full2465 source/build/package and affected closure before release.
+
+## Corrected release candidate f65eedb3: source PASS, runtime BLOCKED
+
+Exact full2465/2465 source gate, clean14-reference Release and deterministic
+strict325-member package PASS. DLL28ba43082b41c42a0564fe22485bbef2bb0767a8698a9127b057ed535226c9a0;
+MVID5802a996-1b5f-4cbf-8e99-924aa964f643;
+ZIP5e23d5657c4899b4c9e8ea8cb067e463e571985d48ea5890bb61e500cba33c68.
+Canonical preflight546/orchestration168/all18 actual launcher-request contracts
+PASS. No production changes by this correction or subsequent reporting checkpoint.
+Smoke11, inventory50, projected-menu3 and exhaustive player-path10 PASS, including
+all1008 generated roots/29 wrappers. Their immutable result hashes are retained;
+the census was not rerun. One missing outer save-name argument was rejected before
+launch and repaired only in the private invocation, with typed/actual preflight.
+Census process22044 exited natively after the launcher wait. Original failed
+shutdown record is preserved; separate exact-lease recovery restored the snapshot.
+The owner's later permission to terminate only22044 was not used.
+
+Following crocodilian regression210/211 FAIL at sprint16-crocodile-cooldown-expiry:
+summon destroyed and all reciprocal hold/swallow state, buffs and conditions gone,
+but aggregate prey damage0→2 during1.8 native seconds. The existing lifecycle
+witness counts native grapple ticks, not per-source damage events. Thus the cause
+is UNRESOLVED_PRODUCT_OR_FIXTURE, not evidence of a particular product defect and
+not grounds for ignoring the failure. All remaining closure cells were stopped.
+No save writes; exact snapshot0246143536148Z restored136files/Info0.0.117/tree216A9DC2...,
+FavoredClass/settings byte-exact, no game/runtime lease/staging. Batch/result/recovery
+hashes and exact assertion fields are in RELEASE-0.0.143-EVIDENCE.json.
+
+One observation correction already used, zero product corrections used. Further
+observation code would require extending the bounded candidate cycle. Smallest
+owner decision: one narrowly scoped request-local damage-attribution/fixture cycle,
+then only demonstrated affected corrections and still-unrun qualification gates.
+No product change, assertion waiver, merge, tag or release performed; PR29 draft.
+Salamander remains included and independently technically qualified. Sprint18 not
+started. Latest public release remains v0.0.142; no alpha/draft substitute published.
