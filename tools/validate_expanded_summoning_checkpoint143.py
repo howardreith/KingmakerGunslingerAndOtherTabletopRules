@@ -41,6 +41,24 @@ SUMMONING_PROTECTED = (
     "assets/sprint14-insects/", "assets/sprint16-crocodilians/", "assets/sprint17-serpents/",
 )
 
+# Owner-authorized evidence-driven correction, not a new blanket exception.
+# Both the imported and corrected LF-normalized bytes are pinned. Every other
+# production file remains byte-exact; runtime qualification is still required.
+RESOURCE_CORRECTION = {
+    "src/KingmakerGunslinger/Summoning/EagleAttackLungePolicy.cs": (
+        "df537f67582b0d387ec9cb7fdf14ad52c052c2da29a781dc3a4e49a4b9dd05a2",
+        "91b475ef6e5c3cfbbc0a08a4b8d7f2d71bd1b5204df295ded19b691956c4821d"),
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs": (
+        "99c883e13016b639a707a3b6c8c6a9b4d8081e0f03ba28d128466913a4a63acf",
+        "6bd8da19c2d1bf9b85c4c9023b7037497fd3ec7400873beb760d928ed210831b"),
+}
+
+
+def exact_resource_correction(ref, path, accepted, current):
+    pins = RESOURCE_CORRECTION.get(path)
+    return ref == SUMMONING and pins is not None and pins == (
+        hashlib.sha256(accepted).hexdigest(), hashlib.sha256(current).hexdigest())
+
 
 def blob(root, ref, path):
     return subprocess.check_output(["git", "-c", "core.longpaths=true", "show", ref + ":" + path], cwd=root)
@@ -63,7 +81,7 @@ def preserved_files(root, ref, prefixes):
         accepted = blob(root, ref, path)
         if Path(path).suffix in {".cs", ".md", ".json"}:
             current, accepted = current.replace(b"\r\n", b"\n"), accepted.replace(b"\r\n", b"\n")
-        if current != accepted:
+        if current != accepted and not exact_resource_correction(ref, path, accepted, current):
             raise AssertionError("Accepted production changed: " + path)
     return len(selected)
 
