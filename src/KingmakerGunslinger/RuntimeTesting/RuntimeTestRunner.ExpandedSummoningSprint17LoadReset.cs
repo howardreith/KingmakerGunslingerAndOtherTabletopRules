@@ -27,12 +27,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (string)_request.Parameters?["persistenceScope"]) &&
                 !ExpandedSummoningRosterPersistencePolicy.ObserveLoad(_request.Scenario,
                     (string)_request.Parameters?["persistenceScope"])) return;
+            CaptureRosterResourceBaseline();
             try { _snakeLoadResetTrace = new Sprint17LoadResetTrace(_context.Harmony); }
             catch (Exception exception) { _snakeLoadResetTraceInstallError = exception.ToString(); }
         }
 
         private void StopSprint17LoadResetTrace(RuntimeTestResult result)
         {
+            _rosterResourceBaseline.Clear();
             if (_snakeLoadResetTrace == null && _snakeLoadResetTraceInstallError == null) return;
             try
             {

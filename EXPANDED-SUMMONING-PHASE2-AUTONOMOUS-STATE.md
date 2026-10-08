@@ -1,50 +1,37 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-08 - BLOCKED on cleanup resources; readiness resolved
+## CURRENT STATE, 2026-10-08 - resource-ownership diagnosis authorized; readiness CLOSED
 
 Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint;PR29 DRAFT.
-Exact final executable f5f812d72ac4214cd4ddefbd5bd34e8791720ba9 PUSHED.
-Full2480/2480,clean14-reference Release,strict325-member package PASS.
-ZIP55a3d16690b8a74cad14257ba5caf5a418602370f7fd809d3dd2ebc31c129778;
-DLL0d2a30b5c7c90f365edfbfc2d4695695d8bf11b1b5177fc470ea1f9be13c066a;
-MVIDc37e6363-5fb6-450b-9921-1c0595a9d253. Reporting-only descendants do not
-replace this exact tested artifact. No production/asset/menu/identity change.
+Clean intake/local/remote38ed9cd43887af92d34189fa04ab04c71fdeebb6.
+Prior exactf5f812d7:full2480/package325,smoke11/prepare119 PASS.
+Readiness108/108 naturally settled both before/after load. Do not reopen.
+Prior cleanup116/118 FAIL:all108units gone,6/95 resources alive;no identities.
+Working retains108 prepared receipts;zero cleanup writes. No manual save surgery.
 
-Owner-reset diagnosis205c9853 produced108/108 rows,zero errors,finally cleared.
-All native appearance/control settled;47 visual-only failures were from reusing
-the snake visible-frame predicate for mass persistence. Native fader/dissolve
-audit preserved. ONE fixture correction separates live view/control/finite
-dissolve/no-lock save readiness from simultaneous presentation;visual checks intact.
-Correction batch release143-runtime-20261008T2047099052204Z:
-smoke11/11 PASS;prepare119/119 PASS,ONE native Working save;
-fresh-load cleanup116/118 FAIL. Readiness108/108 and all profiles PASS in BOTH
-prepare and cleanup. All108 units destroyed;6 of95 captured project resources
-remain. Exact failed predicate:whole-roster-persistence-cleanup-native-destruction.
-Resource names/types/owning keys NOT recorded by the aggregate witness;do not
-guess or call this a demonstrated production defect. Cleanup save correctly
-NOT armed(0writes). No fresh absence,moduleOFF,profiles,v142 gates launched.
+Latest owner authorizes ONE read-only resource diagnosis plus ONE evidence-driven
+fixture or production correction. No inferred leak/cache exemption by KMG_ name.
+Observer records exact ownership,reference sharing,cache identity,global counts,
+first Unity-null frame and60-frame natural settlement;errors retain other rows.
+Diagnosis runs smoke+existing verify-cleanup ONLY,zero native save writes.
+No production change before diagnosis. No new readiness/Crocodile observer.
+Next:focused resource tests/incremental compile;commit/push diagnostic head;
+one full exact source/build/package gate;one guarded diagnosis;exact restoration.
 
-IMPORTANT: KMG_AUTOMATION_WORKING retains the prepared108 receipt-owned fixture
-units. They were retired in the failed cleanup process only,NOT in its save.
-No manual save surgery/protected baseline load or write. Do not claim clean save.
-One diagnosis/one correction exhausted. STOP;no further launch or retry.
-Smallest new owner scope:bounded cleanup-resource ownership/disposal diagnosis
-and authorized native working-save cleanup,not another readiness/Crocodile cycle.
-
-Exact installation/settings/FavoredClass restored to actual snapshot
-20261008T2047106234079Z:136files/Info0.0.117/tree
-216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Native exits;leaseCompleted/noRecovery;no game/runtime lock/active staging.
-Source session333716b3-bbcd-4984-bab1-9f5aa05e0603 releases keeper37628 after
-reporting push;verify machine-local receipt before takeover.
+Source session1a065852-cdf2-46c2-a472-7b1229e813b6;keeper38584/start
+2026-10-08T22:51:23.2603654Z;previouskeeper37628 Released/dead.
+Exclusive source lock held. No game/current runtime lock/active staging at intake.
+Old dead lease journals remain historical evidence;latest transaction restored.
+Snapshot actual live state under lease before every transaction,restore exactly.
 
 Surface:1008 published generated roots+29 native wrappers=1037 visible choices.
-Preserve b8 crocodilians212/snake71,Salamander,inventory50/menu3/all1008roots+
-29wrappers with original provenance. Every failed result remains failed.
+Preserve all unaffected qualification provenance and every historical failure.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-unchanged;no new expiry damage reported/no extra damage observer cycle.
-Evidence:planning/RELEASE-0.0.143-EVIDENCE.json. PR29 draft/unmerged;25/26 open.
-NO merge,tag,release,permanent deployment,Sprint18 or Phase2C. Release NOT QUALIFIED.
+remains active. If expiry damage recurs,STOP. No new attribution cycle.
+Evidence:planning/RELEASE-0.0.143-EVIDENCE.json;resourceOwnershipMission controls.
+If persistence/remaining compatibility/coexistence/restoration all pass,owner
+authorizes PR29 merge and real Latestv0.0.143;close25/26 superseded,thenSTOP.
+No Sprint18/Phase2C or permanent deployment. Release NOT QUALIFIED yet.
 
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED

@@ -225,15 +225,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> DestroyRosterPersistence(UnitEntityData[] units, string stage)
         {
-            var owned = units.SelectMany(RosterPersistenceResources).Distinct().ToArray();
-            foreach (var unit in units) CleanupExpandedSummoningUnit(unit);
-            for (int frame = 0; frame < 5; frame++) { Game.Instance.EntityDestroyer.Tick(); yield return 0; }
-            bool gone = units.All(u => u.Destroyed && u.View == null && u.HoldingState == null) && owned.All(o => o == null);
-            RosterPersistenceCheck(stage + "-native-destruction", gone,
-                new JObject { ["units"] = units.Length, ["capturedProjectResources"] = owned.Length,
-                    ["remainingResources"] = owned.Count(o => o != null),
-                    ["remainingUnits"] = units.Count(u => !u.Destroyed || u.View != null || u.HoldingState != null) },
-                "only exact receipt-owned units retire through native destruction; all captured private resources gone");
+            foreach (var step in ObserveRosterResourceCleanup(units, stage)) yield return step;
         }
 
         private IEnumerable<int> RunRosterPersistence()
@@ -364,6 +356,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             RosterPersistenceCheck("unrelated-preserved", preserved,
                 new JObject { ["preexistingUnits"] = unrelated.Length, ["preserved"] = preserved }, "exact unrelated unit references and party membership preserved");
             if (_rosterPersistenceChecks.Any(a => a.Status != RuntimeTestStatuses.Pass)) { CompleteRosterPersistence(RuntimeTestStatuses.Fail,"No save armed after mandatory failure."); yield break; }
+            if (verify && RosterResourceReport.DiagnosisOnly)
+            { CompleteRosterPersistence(RuntimeTestStatuses.Pass,"Resource diagnosis only;prepared Working fixture deliberately not overwritten."); yield break; }
             BeginExpandedSummoningPersistenceSave();
             }
             finally { FlushAndClearRosterReadiness(); }
@@ -373,7 +367,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (_rosterPersistencePause.HasValue) { Game.Instance.IsPaused = _rosterPersistencePause.Value; _rosterPersistencePause=null; }
             var evidence = _workingSaveSmoke.Stop();
-            bool writes = _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent;
+            bool writes = _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent &&
+                !(_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup && RosterResourceReport.DiagnosisOnly);
             _rosterPersistenceChecks.Add(Assertion("exact-working-load", "exact working descriptor,distinct baseline",
                 "working="+evidence.WorkingMatchCount+";baseline="+evidence.BaselineMatchCount,
                 evidence.WorkingMatchCount==1 && evidence.BaselineMatchCount==1 && evidence.DescriptorReferenceCorrelated,"native guarded load sentinel"));

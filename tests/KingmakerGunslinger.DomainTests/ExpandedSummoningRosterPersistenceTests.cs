@@ -9,6 +9,56 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningRosterPersistenceTests
     {
+        internal static void ResourceClassificationRequiresExactAuthorityNotNameOrSharing()
+        {
+            Assertions.Equal("UNRESOLVED", RosterResourceReport.Classify(false, false, false), "Neither KMG name nor sharing supplies ownership.");
+            Assertions.Equal("PRIVATE_VIEW_OWNED", RosterResourceReport.Classify(true, false, false), "Explicit owner controls.");
+            Assertions.Equal("IMMUTABLE_PROCESS_CACHE", RosterResourceReport.Classify(false, true, false), "Exact cache reference controls.");
+            Assertions.Equal("BORROWED_NATIVE", RosterResourceReport.Classify(false, false, true), "Exact donor record controls.");
+            Assertions.Equal("CONFLICT", RosterResourceReport.Classify(true, true, false), "Private/cache conflict cannot waive leak.");
+            Assertions.Equal("CONFLICT", RosterResourceReport.Classify(true, false, true), "Private/borrowed conflict fails closed.");
+        }
+        private static JObject ResourceRow(int id, bool alive, string ownership, int units)
+        {
+            return new JObject { ["instanceId"] = id, ["type"] = "UnityEngine.Mesh", ["name"] = "KMG_same_name",
+                ["ownershipClass"] = ownership, ["aliveAfter"] = alive, ["fixtureUnitReferences"] = units,
+                ["firstUnityNullFrame"] = alive ? JValue.CreateNull() : new JValue(61),
+                ["references"] = new JArray(new JObject { ["key"] = "eagle", ["unitId"] = "unit1", ["collectionSource"] = "explicit record" }) };
+        }
+        internal static void ResourceReportKeepsSameNameInstancesAndSharingSeparate()
+        {
+            var report = new RosterResourceReport("request", "cleanup");
+            report.Add("eagle", "unit1", () => ResourceRow(1, false, "PRIVATE_VIEW_OWNED", 1));
+            report.Add("eagle", "unit1", () => ResourceRow(2, true, "IMMUTABLE_PROCESS_CACHE", 3));
+            report.Finish(() => { });
+            Assertions.Equal(2, (int)report.Result["uniqueObjects"], "Same-name cache and clone remain distinct identities.");
+            Assertions.Equal(1, (int)report.Result["expectedPrivateObjects"], "Private clone does not become a cache by name.");
+            Assertions.Equal(1, (int)report.Result["sharedObjects"], "Sharing counted by exact identity and distinct unit references.");
+            Assertions.Equal(2, (int)report.Result["survivors"][0]["instanceId"], "Exact survivor retained.");
+            Assertions.Equal(JTokenType.Null, report.Result["survivors"][0]["firstUnityNullFrame"].Type, "Never destroyed is explicit null.");
+            Assertions.Equal(61, (int)report.Rows[0]["firstUnityNullFrame"], "Late natural destruction is exact, not rounded to five frames.");
+        }
+        internal static void ResourceReportPreservesOtherRowsAndClearOnObserverError()
+        {
+            var report = new RosterResourceReport("request", "cleanup"); bool cleared = false;
+            report.Add("broken-key", "unit7", () => { throw new FormatException("row failed"); });
+            report.Add("eagle", "unit1", () => ResourceRow(3, true, "PRIVATE_VIEW_OWNED", 1));
+            report.Finish(() => { cleared = true; });
+            Assertions.Equal(1, report.Rows.Count, "Independent row survives formatting error.");
+            Assertions.Equal(1, report.Errors.Count, "Error remains a failing observer outcome.");
+            Assertions.Equal("broken-key", (string)report.Errors[0]["key"], "Exact unit key preserved.");
+            Assertions.True(cleared && (bool)report.Result["clearedInFinally"], "Tracking is cleared even after error.");
+            Assertions.True(JObject.Parse(report.Result.ToString())["resources"] is JArray, "Report is writable explicit JSON.");
+        }
+        internal static void ResourceReportDoesNotHideClearFailureOrDiagnosticWriteBoundary()
+        {
+            var report = new RosterResourceReport("request", "cleanup");
+            report.Finish(() => { throw new InvalidOperationException("clear failed"); });
+            Assertions.False((bool)report.Result["clearedInFinally"], "Failed clear is not success.");
+            Assertions.Equal("resource-clear", (string)report.Errors[0]["stage"], "Exact observer stage recorded.");
+            Assertions.True(RosterResourceReport.DiagnosisOnly, "Diagnostic candidate preserves prepared108 native-save fixture.");
+        }
+
         internal static void PersistenceReadinessSeparatesNativeControlFromCurrentVisibility()
         {
             var sample = ReadySample(); sample["EntityFadedIn"] = false; sample["DissolveSettled"] = false;
