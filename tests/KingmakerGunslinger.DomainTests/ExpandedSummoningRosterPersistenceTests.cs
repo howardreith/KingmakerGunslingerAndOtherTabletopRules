@@ -2,11 +2,82 @@ using System;
 using System.Linq;
 using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningRosterPersistenceTests
     {
+        internal static void ReadinessFrameMapIsObjectWithNullFirstFramesAndStableKeys()
+        {
+            var trace = new RosterReadinessTimeline(7); var sample = ReadySample();
+            sample["EntityFadedIn"] = false; trace.Observe(7, sample); trace.Observe(19, sample);
+            var first = RosterReadinessReport.NullableFrameMap(trace.FirstTrueIncludingNever);
+            var reordered = RosterReadinessReport.NullableFrameMap(trace.FirstTrueIncludingNever.Reverse());
+            Assertions.True(first is JObject && first.Type == JTokenType.Object, "Predicate map must be a JSON object, never an array.");
+            Assertions.Equal(JTokenType.Null, first["EntityFadedIn"].Type, "Never-true predicate is explicit JSON null.");
+            Assertions.Equal(7, (int)first["CanMove"], "First true frame survives subsequent samples.");
+            Assertions.True(first.Properties().Select(p => p.Name).SequenceEqual(sample.Keys.OrderBy(k => k, StringComparer.Ordinal)),
+                "Every observed predicate name is retained in ordinal order.");
+            Assertions.Equal(first.ToString(Formatting.None), reordered.ToString(Formatting.None), "Input enumeration order cannot alter evidence.");
+        }
+
+        internal static void ReadinessFrameMapIgnoresAmbientGameSerializer()
+        {
+            var original = JsonConvert.DefaultSettings;
+            JsonConvert.DefaultSettings = () => { throw new InvalidOperationException("Game serializer must not be consulted."); };
+            try
+            {
+                var map = RosterReadinessReport.NullableFrameMap(new[] {
+                    new System.Collections.Generic.KeyValuePair<string, int?>("never", null),
+                    new System.Collections.Generic.KeyValuePair<string, int?>("first", 17) });
+                Assertions.Equal("{\"first\":17,\"never\":null}", map.ToString(Formatting.None), "Explicit JTokens bypass configured converters.");
+            }
+            finally { JsonConvert.DefaultSettings = original; }
+        }
+
+        private static JObject ReadinessRow(string key, string id, params string[] failures)
+        {
+            return new JObject { ["key"] = key, ["unitId"] = id,
+                ["failedPredicateNames"] = new JArray(failures),
+                ["failedObservedPredicateNames"] = new JArray(failures),
+                ["firstFrameAllSnakePredicates"] = JValue.CreateNull() };
+        }
+
+        internal static void ReadinessReportPreservesRowsAfterFormattingFailure()
+        {
+            var report = new RosterReadinessReport("request", "prepare", 3);
+            Assertions.Equal(0, ((JArray)report.Result["units"]).Count, "Top-level report exists before row construction.");
+            report.AddUnit("first", "u1", () => ReadinessRow("first", "u1", "EntityFadedIn"));
+            report.AddUnit("broken", "u2", () => { throw new InvalidOperationException("Injected formatting failure"); });
+            report.AddUnit("last", "u3", () => ReadinessRow("last", "u3"));
+            bool cleared = false; report.Finish(() => { cleared = true; });
+            Assertions.True(cleared && (bool)report.Result["observerClearedInFinally"], "Failure still clears request-local tracking.");
+            Assertions.Equal(2, (int)report.Result["successfulUnitRows"], "Other unit rows are preserved.");
+            Assertions.True(report.HasErrors, "A serialized observer error still fails the scenario.");
+            var error = report.Result["observerErrors"][0];
+            Assertions.Equal("broken", (string)error["key"], "Exact error key.");
+            Assertions.Equal("u2", (string)error["unitId"], "Exact error unit.");
+            Assertions.Equal(typeof(InvalidOperationException).FullName, (string)error["exceptionType"], "Exception type retained.");
+            Assertions.Equal("Injected formatting failure", (string)error["message"], "Exception message retained.");
+            Assertions.Equal("per-unit-final-state-row", (string)error["observerStage"], "Observer stage retained.");
+            Assertions.Equal(1, (int)report.Result["summaryByFailedPredicate"]["EntityFadedIn"]["count"], "Summary uses successful rows only.");
+            Assertions.Equal(1, ((JArray)report.Result["failingUnits"]).Count, "Observer errors remain separate from actual readiness failures.");
+            Assertions.True(JObject.Parse(report.Result.ToString(Formatting.None))["observerErrors"] is JArray, "Report remains writable despite the row error.");
+        }
+
+        internal static void ReadinessReportNeverClaimsFailedClearSucceeded()
+        {
+            var report = new RosterReadinessReport("request", "prepare", 1);
+            report.AddUnit("unit", "id", () => ReadinessRow("unit", "id"));
+            report.Finish(() => { throw new InvalidOperationException("Injected clear failure"); });
+            Assertions.True(report.HasErrors, "Failed clearing cannot qualify.");
+            Assertions.False((bool)report.Result["observerClearedInFinally"], "Never claim unsuccessful clearing passed.");
+            Assertions.Equal("clear-request-local-timelines", (string)report.Result["observerErrors"][0]["observerStage"], "Clear failure is diagnosable.");
+            Assertions.Equal(1, ((JArray)JObject.Parse(report.Result.ToString(Formatting.None))["units"]).Count, "Completed row evidence survives clearing failure.");
+        }
+
         private static System.Collections.Generic.Dictionary<string, bool> ReadySample()
         { return RosterReadinessTimeline.SnakePredicates.Concat(new[] { "ViewExists", "ViewDataMatches", "ViewIsInGame", "DissolveFinite" }).ToDictionary(p => p, p => true); }
         internal static void ReadinessFirstTransitionsRemainCompactAndExact()
