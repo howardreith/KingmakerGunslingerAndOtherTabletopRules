@@ -1632,6 +1632,12 @@
       "focusedPassed": 6,
       "focusedFailed": 0,
       "incrementalCompilation": "PASS;not qualification",
+      "preartifactGateIntegration": {
+        "head": "e64660ce4b32abead732fc9649d1536bd6365cf2",
+        "status": "REJECTED_BEFORE_BUILD_OR_RUNTIME",
+        "reason": "Checkpoint validator still required byte-exact pre-correction Summoning production. Updated only two explicit imported/corrected SHA256 pins with negative drift/master/unrelated-file tests; no additional product change or runtime attempt.",
+        "log": "artifacts/release143-resource-correction-exact-source-gate.log"
+      },
       "fixture": "All authoritative private resources must be Unity-null;known borrowed/cache exact identities must survive count-stably. No unknown/conflicting classification waived. Restore normal one native cleanup-save requirement.",
       "affectedRegression": "Existing creature review for eagle,dire-bat,pteranodon: unchanged movement/attack/view checks plus exact original body and two further native spawn/destroy/idempotence cycles per key. No new scenario family.",
       "protocol": "smoke;cleanup existing saved108;fresh absence;affected3 flight review;native prepare ONLY to seed OFF108 after clean absence makes receipt set empty;OFF boundary/cleanup/absence;restoredON boundary. Three native Working writes,never manual save copy/parse/replacement."
