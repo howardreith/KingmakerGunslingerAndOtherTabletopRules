@@ -1,10 +1,21 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.143",
-  "status": "INTEGRATION_CANDIDATE_NOT_QUALIFIED",
+  "status": "BLOCKED_REQUIRED_PUSH_POLICY_ALLOWLIST",
   "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
   "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
   "qualifiedSummoningImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
+  "integrationCandidate": "06aac4b7fae3abab18c900df5cfd351d6c819a37",
+  "pushBlocker": {
+    "gate": "required repository policy checkpoint publication",
+    "script": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "reason": "Refusing to push non-allowlisted branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
+    "overrideAvailable": false,
+    "bypassed": false,
+    "policyModified": false,
+    "smallestOwnerAction": "Add the exact release integration branch to AllowedBranches,then resume this preserved descendant through the mandatory wrapper.",
+    "checkpointUnpushed": true
+  },
   "salamander": {
     "disposition": "INCLUDED_TECHNICALLY_QUALIFIED",
     "observationCandidate": "db1da016c8ded77550c619d9f672691bbb64e08d",
@@ -32,6 +43,16 @@
   "releasePublished": false,
   "sprint18Started": false,
   "permanentDeployment": false,
+  "integrationRuntimeStarted": false,
+  "integrationSaveWrites": 0,
+  "integrationDeployment": false,
+  "lastVerifiedRestoration": {
+    "snapshot": "20261007T2258344605477Z",
+    "files": 136,
+    "version": "0.0.117",
+    "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "baselineForced": false
+  },
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "next": "Run one full source/build/package gate on this exact integration commit,then same-artifact guarded closure,five profiles,master coexistence and native-owned trait-save protocol."
+  "next": "Owner allowlists the exact release branch;verify/reacquire source ownership,push the preserved descendant through the policy wrapper,open draft integration PR,then one exact full source/build/package gate and same-artifact guarded closure. Do not redo focused source checks solely due to this interruption."
 }
