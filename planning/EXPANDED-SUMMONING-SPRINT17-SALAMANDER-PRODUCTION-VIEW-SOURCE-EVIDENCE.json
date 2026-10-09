@@ -289,11 +289,12 @@
     "newRoots": 32,
     "preservedSalamanderRoots": 5,
     "surface": {
-      "registered": 1008,
-      "published": 1008,
+      "registered": 1034,
+      "published": 1034,
       "withheld": 0,
       "nativeWrappers": 29,
-      "visibleChoices": 1037
+      "visibleChoices": 1063,
+      "note": "Sprint 18 published the two apes on 2026-10-09, which adds its twenty-six roots to this surface. Nothing Sprint 17 published moved: the snakes' and Salamander's roots are untouched."
     },
     "gates": {
       "focused": "PASS321/321 of2123 after six stale publication count/record expectations were updated;artifacts/sprint17-independent-publication-focused.log. Current state/evidence candidate equation is checked without rewriting immutable historical checkpoint counts.",
@@ -308,8 +309,8 @@
         },
         "gateSeconds": 179.3,
         "referenceCount": 14,
-    "memberCount": 321,
-    "iconDisposition": "No bitmap,GUID or consumer assignment changed. Existing original128x128 Viper/Constrictor species icons remain bound to all32 newly visible roots and existing execution/unit/type/trait consumers. Exact47 hidden native root widgets/status/sheet consumers PASS;exact996 public native slot/command paths and final UI/lifecycle PASS. Native venom/feat icons retained. HumanReview NOT_PERFORMED_NONBLOCKING;no owner aesthetic approval claimed.",
+        "memberCount": 321,
+        "iconDisposition": "No bitmap,GUID or consumer assignment changed. Existing original128x128 Viper/Constrictor species icons remain bound to all32 newly visible roots and existing execution/unit/type/trait consumers. Exact47 hidden native root widgets/status/sheet consumers PASS;exact996 public native slot/command paths and final UI/lifecycle PASS. Native venom/feat icons retained. HumanReview NOT_PERFORMED_NONBLOCKING;no owner aesthetic approval claimed.",
         "log": "artifacts/sprint17-independent-publication-996c5fe7-exact-source-gate.log",
         "logSha256": "3ad4d5ecc6c3aeb32ef855fb998e73c2e3c184b2328f361b2204f57e400db02c",
         "prelaunch": {

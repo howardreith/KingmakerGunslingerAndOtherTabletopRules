@@ -207,11 +207,17 @@ def validate_identity_append(root: Path) -> int:
 def validate_suppression(root: Path) -> None:
     visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
                   ).read_text(encoding="utf-8")
+    # Published. Every registered placement is visible, nothing is
+    # withheld, and the suppression set is empty rather than missing: the
+    # two names came out and nothing else in the file moved.
     for token in ("RegisteredLogicalPlacementCount = 1034",
-                  "SuppressedLogicalPlacementCount = 26",
-                  '"ape", "dire-ape"'):
+                  "SuppressedLogicalPlacementCount = 0",
+                  "new HashSet<string>(new string[0], StringComparer.Ordinal)"):
         if token not in visibility:
             raise AssertionError("Sprint 18 publication surface differs: " + token)
+    if '"ape", "dire-ape"' in visibility.split(
+            "SuppressedCreatureKeys")[-1].split(";")[0]:
+        raise AssertionError("Sprint 18 publication did not remove its two keys")
     catalog = (root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
                ).read_text(encoding="utf-8")
     for token in ('C("ape","Ape",3,true,3', 'C("dire-ape","Dire Ape",4,true,4',
@@ -338,27 +344,35 @@ def validate(root: Path) -> None:
         "deterministicTestCount": count,
         "registeredManifestEntryCount": identities,
         "registeredGeneratedPlacements": 1034,
-        "suppressedGeneratedPlacements": 26,
-        "publishedGeneratedPlacements": 1008,
+        "suppressedGeneratedPlacements": 0,
+        "publishedGeneratedPlacements": 1034,
         "retainedNativeWrappers": 29,
-        "visibleChoiceTotal": 1037,
+        "visibleChoiceTotal": 1063,
         "uniqueCreatures": 99,
         "projectIconConcepts": 111,
         "newRoots": 26,
         "apeRoots": 14,
         "direApeRoots": 12,
-        "bothApesSuppressed": True,
+        "bothApesSuppressed": False,
     }
     for key, value in expected.items():
         if record.get(key) != value:
             raise AssertionError("Sprint 18 candidate metadata differs: " + key)
-    # A withheld sprint cannot claim publication, and a runtime claim needs
-    # exact evidence behind it.
-    if record.get("publicReleaseAuthorized") or not record.get("candidateOnly"):
+    # Publication is earned, not asserted: a sprint may only leave candidate
+    # state with a runtime claim, and a runtime claim needs exact evidence
+    # behind it. These two rules are what kept the apes withheld for four
+    # runs, and they still refuse a publication without them.
+    if record.get("publicReleaseAuthorized") and not record.get("runtimeQualified"):
         raise AssertionError(
-            "Sprint 18 is a candidate until its runtime review passes")
+            "Sprint 18 cannot publish without a passing runtime review")
+    if record.get("candidateOnly") and record.get("publicReleaseAuthorized"):
+        raise AssertionError("A candidate cannot also be an authorized release")
     if record.get("runtimeQualified") and not record.get("runtimeEvidence"):
         raise AssertionError("Runtime qualification requires exact closure evidence")
+    if not record.get("candidateOnly") and len(record.get("runtimeEvidence") or []) < 3:
+        raise AssertionError(
+            "A published Sprint 18 names its donor census, its batched review and "
+            "its party-camera art review")
     if record.get("originalBodiesAuthored") and not record.get("primateDonorCensusRun"):
         raise AssertionError(
             "Original ape bodies cannot predate the donor census they are authored on")
@@ -379,17 +393,20 @@ def validate(root: Path) -> None:
     notes = (root / "docs/RELEASE-NOTES-0.0.147.md").read_text(encoding="utf-8")
     for token in (INFORMATIONAL_VERSION, "Ape", "Dire Ape", "rend",
                   "PASSIVE_CREATURE_SENSES_UNMODELED",
-                  "ORDINARY_MAP_LAND_USE_SCOPE", "withheld", "NOT runtime qualified",
-                  # The bodies are authored now; the gait is not, and the notes
-                  # have to keep saying which of the two is which.
+                  "ORDINARY_MAP_LAND_USE_SCOPE",
+                  # Published, and the notes have to say what that cost: the
+                  # creatures were withheld until their review passed, the
+                  # bodies are authored, the gait is not, and the donor rig
+                  # the census chose is named.
+                  "withheld", "runtime qualified and published",
                   "NOT authored", "Troll", "census", "uninstall"):
         if token not in notes:
             raise AssertionError("Release notes lack honest disposition: " + token)
 
     print(f"Sprint18 {VERSION} source validation PASS: tests={count}; "
-          f"identities={identities}; registered=1034; withheld=26; published=1008; "
+          f"identities={identities}; registered=1034; withheld=0; published=1034; "
           f"protected master={protected_master}; protected summons={protected_summons}. "
-          f"Runtime qualification NOT claimed.")
+          f"Runtime qualified on {len(record['runtimeEvidence'])} guarded runs.")
 
 
 def main() -> int:

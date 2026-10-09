@@ -36,8 +36,11 @@ Native-owned trait-save67/67 across3fresh processes;2authorized writes only
 to new owned descriptor,then descriptor removed;118preexisting saves byte-exact.
 All reused results retain original candidate/request/result provenance.
 
-Sprints9-17 technically complete,Salamander INCLUDED;Phase2B closure PASS.
-Surface: 1008 published generated placements + 29 native wrappers = 1037 visible choices.
+Sprints9-18 technically complete,Salamander INCLUDED;Phase2B closure PASS.
+Surface: 1034 published generated placements + 29 native wrappers = 1063 visible choices.
+Sprint18 published the Ape and Dire Ape on 2026-10-09 after a complete hidden
+candidate: 29/29 batched review and 12/12 party-camera art review at 1d4+1 on one
+candidate, with the owner installation restored exactly after every run.
 Prior735751ab enabledcleanup119,absence6,flight26 and137private gone/
 220borrowed-cache stable retained. Croc212,snakes71,Salamander and historical
 1008roots/29wrappers retained. No historical FAIL/ERROR rewritten.
