@@ -1,55 +1,56 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-09 UTC - v0.0.146 final observer correction
+## CURRENT STATE, 2026-10-09 UTC - v0.0.146 QUALIFIED_FOR_RELEASE
 
-Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint; PR29 DRAFT.
-Released master bf8a1e41b308bfb148cb028d75a576555b7e8dd1 / Latest v0.0.145.
-Owner authorizes stable146 only after all gates. Release NOT QUALIFIED.
-No Sprint18/Phase2C. Source owner c6976c9b-99e5-4ffb-a03f-1c05ef8f5745,
-appserver27624/start2026-10-08T19:42:55.3569342Z,keeper21240;
-artifacts/release143-source-owner.json. Historical receipts/refs preserved.
+Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint; PR29.
+All mandatory release gates PASS. Reporting updates are evidence-only.
+Next:push this checkpoint,ready/normal merge PR29,tag/publish real Latest146,
+verify exact assets,close25/26 superseded without separate merge,then STOP.
+No Sprint18/Phase2C. Future work requires a new owner mission and one sprint
+per branch/PR/release. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Exact51ad7ad4bad2e2524e4541d8f862000cb93c730a passed2497/2497 and full
-source/build/strict333-member package gate. ZIP360a5f9f2bbdb95be6e1e444d5a4fe7398c9557392cf5642ab222d1c61ef55c5.
-DLLb6549aced8a58bfc9a3bf8ca8b9817e37235b9499200b61b9a9394bc4c814580;
-MVID0141da3a-3a88-4098-9734-38fb07efd894. Archive:artifacts/candidates/51ad7ad4bad2e2524e4541d8f862000cb93c730a.
-Normal master145 merge62ae6936;197master/261summoning protected files,
-2922 ordered identities. Integration ledger retains35files/56hunks.
+Exact tested candidate6adf0c10180e16068bd0df49ff239e838b3a1bd0:
+source/build/package PASS2498/2498;333members;14exact references.
+ZIP912f3e5b124e9d89a28a5eed66f4e1cded6c8a052faab06c39cfbbc8772e76f2.
+DLLefa9c6a13ff75988d97d073923dd2754c99d4554e23b285e55e531205c511cb4.
+MVID8f333abc-83e8-49e2-8ebb-883a0f0564e2.
+Do NOT rebuild merely for reporting/merge lineage;release manifest records both.
+Normal master145 merge62ae6936 preserved197master/261summoning files and
+2922ordered identities;ledger retains35files/56conflict resolutions.
 
-Module boundary CLOSED on51:smoke11,OFFregistration2,OFFcleanup120,
-freshabsence6,ONninevariants53,inventory50,menu3,representativepaths10 PASS.
-Working108 receipt units were destroyed;exactlyONE authorized native cleanup
-save;fresh absence zero. Do NOT repeat prepare. OFF0variant allocations/owners;
-ON3cycles exact ownership/rims/rollback/native controls and0/0/0 cleanup.
-Five live profiles PASS359/359 across15fresh processes;complete menus each;
-exact restoration allfive. One private driver prelaunch error preserved:
-unnecessary save-backed disposable scenario misclassified as save-free.
-Required standalone3cells reused by hashes;no failed assertion waived.
+Exact51ad7ad4 module/integration batch255/255:
+OFFcleanup120/120,freshabsence6/6,ONninevariants53/53,
+smoke11,OFFregistration2,inventory50,menu3,representativepaths10 PASS.
+All108 saved fixture units destroyed;ONE native Working cleanup save;fresh
+absence zero. Working save CLEANED;do not repeat prepare.
+OFF0variant allocations/owners;ON3cycles exact ownership/rims/rollback/native
+controls and0/0/0 cleanup. Five live profiles359/359 across15fresh processes,
+complete menus and exact restoration each. Other master coexistence78/78 PASS.
 
-Coexistence on51:Elementaltraits38,descriptions8,ModelDvendors26,FCBhost6 PASS.
-weapon-findability-blueprints ERROR before any assertions:
-selection5ae9f898e45846d19d3802caf91e06b6 is BlueprintFeatureSelection,
-but the added read-only observer requested exact BlueprintFeature.
-No production defect demonstrated. This checkpoint corrects only typed observer
-lookup,adds focused selection/choice dispatch regression8/8 PASS and neutral
-package-note provenance wording. Full2498-test/new exact package gate pending.
-Next:commit/push exact corrected candidate;one full source/build/package;
-fresh smoke,affected weapon/icon observer,recovery and native-owned trait-save.
-Reuse all unaffected51 and historical PASS provenance;no roots/profiles replay.
+One new Nodachi read-only observer exact-type ERROR on51 remains preserved.
+The bounded typed-reader correction changed no production/asset/identity/AI/
+mechanics/persistence/icon assignment. Package331/333members byte-identical;
+only DLL(request-local observer) and neutral146notes differ.
+Exact6ad corrected weapon/icon217/217,recovery372/372,smoke11/11 PASS.
+Native-owned trait-save67/67 across3fresh processes;2authorized writes only
+to new owned descriptor,then descriptor removed;118preexisting saves byte-exact.
+All reused results retain original candidate/request/result provenance.
 
-Resource/readiness closed:prior735751ab enabledcleanup119,absence6,flight26;
-137private gone,220borrowed/cache stable. Croc212,snakes71,Salamander and
-historical1008roots/29wrappers preserved. No new resource/readiness/Croc cycle.
+Sprints9-17 technically complete,Salamander INCLUDED;Phase2B closure PASS.
 Surface: 1008 published generated placements + 29 native wrappers = 1037 visible choices.
+Prior735751ab enabledcleanup119,absence6,flight26 and137private gone/
+220borrowed-cache stable retained. Croc212,snakes71,Salamander and historical
+1008roots/29wrappers retained. No historical FAIL/ERROR rewritten.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-retained;STOP on recurrence. HumanReview: NOT_PERFORMED_NONBLOCKING.
+retained;historical0->2 unexplained,final attribution0->0;no recurrence.
 
-Latest transaction release146-runtime-20261009T0338166586639Z restored exactly:
-snapshot20261009T0338175654260Z;136files/Info0.0.117;
+Final snapshot20261009T0417438763441Z restored:136files/Info0.0.117;
 tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Settings/FCB byte-exact;no game/runtime lease/staging/permanent deployment.
+Settings/FCB byte-exact;no game/runtime/compatibility/save lease/staging;
+no permanent deployment or protected-baseline load/write.
+Source owner c6976c9b-99e5-4ffb-a03f-1c05ef8f5745/appserver27624/keeper21240
+held solely for reporting/release;release receipt before final handoff.
 Evidence:planning/RELEASE-0.0.146-EVIDENCE.json;historical143 unchanged.
-Only ALLPASS authorizes ready/merge29,stableLatest146,close25/26 superseded.
 
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
