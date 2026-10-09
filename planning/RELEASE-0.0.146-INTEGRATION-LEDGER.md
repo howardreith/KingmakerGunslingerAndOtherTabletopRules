@@ -1,6 +1,6 @@
 # v0.0.146 normal-merge integration ledger
 
-Status: source integration candidate; NOT runtime-qualified or released.
+Status: QUALIFIED_FOR_RELEASE. All required gates passed; exact tested artifact6adf0c10. Authorized PR29 merge and stable Latest v0.0.146 publication follow the evidence-only reporting checkpoint.
 
 ## Exact parents and preserved refs
 
@@ -58,7 +58,7 @@ The 35 conflicted files contained 56 marker hunks. Non-conflicting master hunks 
 - Active identity is 0.0.146 everywhere; master v144/v145 historical release metadata and notes are unchanged.
 - Final strict package count is **333** (331 without the two optional soundbank files): qualified325 + seven existing master findability documents + new146 release notes. The preliminary conflict choices above retained325 before this explicit union inventory calculation. No executable asset is dropped.
 - Master production is byte-pinned by the146 validator: Elemental Races, Favored Class, Acquisition/recovery, weapon placement/item/crafting contracts, Heirloom Nodachi icon, native trait-save protocol and historical notes/reference data.
-- Qualified summoning production/assets are byte-pinned to c6effc32, which includes the narrow source-qualified module gate. Runtime qualification remains pending. The already-qualified flight teardown fixes survive unchanged.
+- Qualified summoning production/assets are byte-pinned to c6effc32, which includes the narrow module gate. Runtime qualification is now PASS on exact51ad7ad4; the observation-only6adf0c10 delta leaves that production surface byte-exact. The already-qualified flight teardown fixes survive unchanged.
 - Stable blueprint registry is the exact master prefix plus qualified additive entries:2922 entries,2920active,2reserved; no reorder or regenerated identity. Icon registry hash/exports unchanged.
 - Shared request validators combine the targeted summoning persistence/crowd guards with master weapon-save/weapon-route guards. No save permission is broadened.
 - Request-local representative player-path scope uses the EXISTING scenario. Default remains exhaustive. Representative mode explicitly labels its six generated family/quantity routes and native family/quantity/alignment representatives; fixed real-parent/slot/template matrix retained. It never claims exhaustive PASS.
@@ -68,6 +68,17 @@ The 35 conflicted files contained 56 marker hunks. Non-conflicting master hunks 
 
 ## Evidence reuse boundary
 
-Master142..145 does not touch summoning publication, creature implementation or summon player-path production. The merge adds weapon recovery and request-local fixtures/shared request validation. The final summon implementation equals the source-qualified module boundary c6effc32. Therefore prior1008 generated roots/29wrappers, Crocodilians212, snakecommands71, Salamander, enabledcleanup119/absence6 and flight26 remain original-provenance evidence. Final146 still requires inventory/menu, representative real paths, all nine variants ON, the directly affected whole-roster OFF cleanup/absence, five-profile matrix and focused coexistence. No historical failed result is relabeled.
+Master142..145 does not touch summoning publication, creature implementation or summon player-path production. The merge adds weapon recovery and request-local fixtures/shared request validation. The final summon implementation equals the source-qualified module boundary c6effc32. Therefore prior1008 generated roots/29wrappers, Crocodilians212, snakecommands71, Salamander, enabledcleanup119/absence6 and flight26 remain original-provenance evidence. Final146 inventory/menu, representative real paths, all nine variants ON, whole-roster OFF cleanup/absence, five-profile matrix and focused coexistence all passed. No historical failed result is relabeled.
 
-No merge to master/tag/release until every required gate passes. No Sprint18 or Phase2C.
+All required gates passed. Owner-authorized merge/tag/stable Latest release may proceed; no Sprint18 or Phase2C.
+
+## Final exact-artifact closure
+
+- Exact6adf0c10180e16068bd0df49ff239e838b3a1bd0: complete source/build/package gate2498/2498;333members;14exact references; source fingerprint5362b9964683155238efd027dcecac3e5baedb840e51eefe2538169f06f8d1de.
+- ZIP912f3e5b124e9d89a28a5eed66f4e1cded6c8a052faab06c39cfbbc8772e76f2; DLLefa9c6a13ff75988d97d073923dd2754c99d4554e23b285e55e531205c511cb4; MVID8f333abc-83e8-49e2-8ebb-883a0f0564e2. Publish those exact bytes; reporting/merge metadata does not require a rebuild.
+- Exact51ad7ad4: module/integration255/255 (OFFcleanup120,absence6,ONvariants53,inventory50,menu3,representativepaths10,smoke11,registration2); all108 Working fixture units cleaned by one authorized native save.
+- Five profiles359/359 over15fresh processes; complete menus and exact restoration. Four unaffected current-master coexistence cells78/78. A private harness prelaunch error remains preserved; no failed runtime assertion was waived.
+- The added read-only Nodachi observer initially requested exact BlueprintFeature for a BlueprintFeatureSelection. Original ERROR preserved. One bounded typed-reader correction plus focused test,compile inclusions,active test-count metadata and neutral package-note wording is the complete51-to6ad delta; NO production/asset/identity/publication/mechanics/AI/persistence/icon-assignment change. Package331members identical; only DLL(request-local observation) and release146notes changed.
+- Exact6ad: smoke11,weapon/icon217,recovery372 PASS; native-owned trait persistence23+34+10=67 PASS. Two writes only to a new owned native descriptor, subsequently removed;118preexisting saves byte-exact.
+- Final machine restored: snapshot20261009T0417438763441Z;136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;settings/FCB exact;no game/runtime/compatibility/save lock or staging. No permanent deployment.
+- Full request/result/candidate hashes and retained historical failure/risk provenance: planning/RELEASE-0.0.146-EVIDENCE.json. The reporting descendant changes only unpackaged qualification metadata; no new runtime candidate.

@@ -2190,15 +2190,21 @@
     "retainedNativeWrappers": 29,
     "visibleChoiceTotal": 1037,
     "salamanderIncluded": true,
-    "runtimeQualified": false,
-    "runtimeEvidence": [],
-    "compatibilityRuntimeQualificationPending": true,
+    "runtimeQualified": true,
+    "runtimeEvidence": [
+      "planning/RELEASE-0.0.146-EVIDENCE.json",
+      "release146-runtime-20261009T0227405413558Z",
+      "release146-compatibility-20261009T0305425495123Z",
+      "release146-runtime-20261009T0404428043656Z",
+      "elemental-trait-save-20261009T0417407691188Z_34ccfe4767744758b683fe49b4e68634"
+    ],
+    "compatibilityRuntimeQualificationPending": false,
     "publicReleaseAuthorized": true,
-    "candidateOnly": true,
+    "candidateOnly": false,
     "sprint18Started": false,
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
     "integrationLedger": "planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md",
-    "closureStatus": "NOT QUALIFIED: final exact146 source/package, module-OFF108 cleanup/absence, ON9 variants, bounded integration paths, five profiles and focused coexistence pending. Prior PASS provenance preserved in RELEASE-0.0.146-EVIDENCE.json."
+    "closureStatus": "QUALIFIED_FOR_RELEASE: exact6adf0c10 source2498/2498 and333-member package;weapon/icon217,recovery372,smoke11,native trait persistence67 PASS. Unchanged-production evidence retained on51:module/integration255,five profiles359,other coexistence78 PASS. All108 Working fixture units cleaned;exact machine/settings/save restoration. Original historical failures and risk disposition preserved."
   },
   "heirloomNodachiIconRelease145": {
     "releaseVersion": "0.0.145",

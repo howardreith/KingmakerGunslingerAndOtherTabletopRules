@@ -1,7 +1,17 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.146",
-  "status": "OBSERVATION_CORRECTION_CANDIDATE_NOT_QUALIFIED",
+  "status": "QUALIFIED_FOR_RELEASE",
+  "reportingOnlyValidation": {
+    "status": "PASS",
+    "focused": "7/7 baseline/current-state/typed observer",
+    "integrationValidator": "PASS2498 registered;2922 exact identities;197master and261summoning files preserved;all prior release records unchanged",
+    "changedTrackedFiles": 5,
+    "changedPackageMembers": 0,
+    "packageMembers": 333,
+    "zipSha256": "912f3e5b124e9d89a28a5eed66f4e1cded6c8a052faab06c39cfbbc8772e76f2",
+    "historical143EvidenceUnchanged": true
+  },
   "integrationSourceGate62ae6936": {
     "commit": "62ae6936de43f2bad42f74d557fc4c15a5031ace",
     "status": "PASS source/build/package;NOT runtime launched",
@@ -90,7 +100,7 @@
     "preparedOwnedUnits": 108,
     "prepareRun": "20261008T2352470423285Z-working-save-expanded-summoning-prepare",
     "cleaned": true,
-    "next": "Keep clean Working save;no repeat prepare. Native-owned trait-save protocol remains unrun.",
+    "next": "CLEANED and fresh absence PASS;do not repeat prepare. Final native-owned trait-save protocol67/67 PASS;118 preexisting saves byte-exact,temporary owned descriptor removed.",
     "nativeCleanupWrites": 1,
     "cleanupRun": "20261009T0233367107964Z-working-save-expanded-summoning-verify-cleanup",
     "absenceRun": "20261009T0237311487955Z-working-save-expanded-summoning-verify-absent"
@@ -121,12 +131,7 @@
   "ownerReleaseRiskAcceptance": "HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE",
   "historicalFailuresRewritten": false,
   "remaining": [
-    "new exact observer-only source/build/package gate",
-    "fresh smoke and corrected weapon-findability-blueprints including4 Nodachi icon consumers",
-    "working-save-weapon-recovery",
-    "native-owned trait-save prepare/remove/absence",
-    "exact restoration",
-    "conditional PR29 ready/merge/stable Latest146;close25/26 superseded"
+    "Owner-authorized PR29 ready/merge,stable Latest v0.0.146,verify exact published assets,close25/26 as superseded without separate merge,release source ownership and STOP."
   ],
   "sprint18Started": false,
   "phase2CStarted": false,
@@ -605,11 +610,215 @@
     ]
   },
   "nodachiObserverCorrection": {
-    "status": "SOURCE_EDIT_FOCUSED_PASS;new exact gate pending",
+    "status": "PASS on exact6adf0c10;217/217 weapon/icon assertions,372/372 recovery plus smoke11/11",
     "scope": "Only request-local typed consumer reader plus behavior test,compile inclusions,current test-count metadata and neutral package-note provenance wording. No production,asset,blueprint,publication,mechanics,AI,persistence or icon-assignment change.",
     "focused": "8/8;new selection/choice exact-reader behavioral regression",
     "expectedDomainCount": 2498,
     "expectedMembers": 333,
-    "remaining": "Commit/push corrected exact head,full source/build/package once;fresh smoke,affected weapon observer,recovery and native-owned trait save. Reuse unaffected51 PASS evidence with original provenance;no extra whole-roster prepare/root/profile replay."
+    "remaining": "None. Original51 exact-type observer ERROR remains preserved;one bounded correction qualified;no production change."
+  },
+  "finalExactCandidate": {
+    "commit": "6adf0c10180e16068bd0df49ff239e838b3a1bd0",
+    "sourceFingerprint": "5362b9964683155238efd027dcecac3e5baedb840e51eefe2538169f06f8d1de",
+    "zipName": "KingmakerGunslinger-0.0.146-expanded-summoning-phase2b-checkpoint.zip",
+    "zipSha256": "912f3e5b124e9d89a28a5eed66f4e1cded6c8a052faab06c39cfbbc8772e76f2",
+    "dllSha256": "efa9c6a13ff75988d97d073923dd2754c99d4554e23b285e55e531205c511cb4",
+    "mvid": "8f333abc-83e8-49e2-8ebb-883a0f0564e2",
+    "packageMembers": 333,
+    "domain": "2498/2498",
+    "sourceBuildPackage": "PASS:complete wrapper,unfiltered domain,static/roster/manifest/icon registry,orchestration,14 exact private references,clean Release,deterministic package,strict standalone validation",
+    "seconds": 245.8,
+    "gateLog": "artifacts/release146-observer-exact-source-gate.log",
+    "gateRecords": "artifacts/release146-observer-exact-source-gate.jsonl",
+    "archive": "artifacts/candidates/6adf0c10180e16068bd0df49ff239e838b3a1bd0",
+    "reportingLineage": "This evidence-only descendant retains the exact tested6adf0c10 package. Release manifest records reporting and merged master SHA;do not rebuild to stamp reporting commits.",
+    "priorGatePreflight": "artifacts/release146-observer-source-gate.log:default older reference bundle lacks PhysicsModule. Stopped before validation or runtime. Explicit14-reference qualified bundle used for the completed exact gate."
+  },
+  "finalCoexistence": {
+    "candidate": "6adf0c10180e16068bd0df49ff239e838b3a1bd0",
+    "status": "PASS",
+    "batchId": "release146-runtime-20261009T0404428043656Z",
+    "batchSha256": "a944acefc2052f42392e39f1e9c06df58ae3579ac4ead88c49b47714c7f4f871",
+    "assertions": 600,
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "status": "PASS",
+        "runId": "20261009T0405114071040Z-bed397f569164830a6e7ea384ef820a5",
+        "evidenceId": "20261009T0405113914492Z-working-save-smoke",
+        "assertions": 11,
+        "passed": 11,
+        "resultSha256": "687b92ba43fc32f10a4dc416719a96470897199fd857c43308ec67de1fe32194",
+        "requestSha256": "6eeb5d3a47a10f1b4469a04b6e9d924004c0c7bebe866a900bc302926dcf034d",
+        "loadedIdentitySha256": "9fb01d1b9e8496e7ff4b0f3334e38e166620218878853eb2c42fd4cef8cff85c",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "weapon-findability-blueprints",
+        "status": "PASS",
+        "runId": "20261009T0408149040078Z-edfdca12ce63491d8128b1ccf9b3f24f",
+        "evidenceId": "20261009T0408149040078Z-weapon-findability-blueprints",
+        "assertions": 217,
+        "passed": 217,
+        "resultSha256": "27609ff3358582e617a416ff6b43f9e4e2fa719adacc94d51cd86d5b6644c709",
+        "requestSha256": "f02a35f971234493696cf4d457ae88ef2d132dcf312d19c885ca7502f0808e11",
+        "loadedIdentitySha256": "9823550a784f74ee98247f4b9013eefc842b0f36c7fa236a5e328a108a1f7cf3",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "working-save-weapon-recovery",
+        "status": "PASS",
+        "runId": "20261009T0410225228499Z-203f6e7dac6e4ee387f98f1120a7f3ea",
+        "evidenceId": "20261009T0410225228499Z-working-save-weapon-recovery",
+        "assertions": 372,
+        "passed": 372,
+        "resultSha256": "286e3eaa656163cab336e910634f676295dec860c9a9b2036738df9537efbd01",
+        "requestSha256": "d466f798f26b3e33bc9734ebdc15a79d89c39f311defa7dea142546a954575c0",
+        "loadedIdentitySha256": "4749e880eaf7ba721ab4ed2e206c205d4f269bd00d2f1ffc6e65c08af7f6c081",
+        "nativeWrites": 0
+      }
+    ],
+    "nativeSaveWrites": 0,
+    "nodachi": "Selection and3 choices each resolve KMG_Icon_nodachi via their exact native blueprint types. No icon assignment or production behavior changed.",
+    "recovery": "372/372 canonical/CMI/refusal/grant/idempotence assertions;request-local inventory/ledger/visits restored;no save writes.",
+    "retainedMasterCells": "Exact51 Elemental traits38/38,firearm descriptions8/8,ModelD vendors26/26,Favored Class host6/6 remain PASS with original hashes in coexistencePartial.",
+    "restoration": {
+      "status": "VERIFIED",
+      "snapshot": "20261009T0404436016337Z",
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+      "settingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "favoredSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+      "leaseReleased": true,
+      "gameProcesses": 0,
+      "staging": false
+    }
+  },
+  "nativeOwnedTraitSave": {
+    "status": "PASS",
+    "transactionId": "20261009T0417407691188Z_34ccfe4767744758b683fe49b4e68634",
+    "source": "6adf0c10180e16068bd0df49ff239e838b3a1bd0",
+    "dllSha256": "efa9c6a13ff75988d97d073923dd2754c99d4554e23b285e55e531205c511cb4",
+    "mvid": "8f333abc-83e8-49e2-8ebb-883a0f0564e2",
+    "zipSha256": "912f3e5b124e9d89a28a5eed66f4e1cded6c8a052faab06c39cfbbc8772e76f2",
+    "sourceFingerprint": "5362b9964683155238efd027dcecac3e5baedb840e51eefe2538169f06f8d1de",
+    "recordSha256": "666174d3ef527d5a1fd42e57e59cbd2752fc27ee7123e90784c8d530af86232d",
+    "runs": [
+      {
+        "phase": "prepare",
+        "runId": "20261009T0418119783173Z-7be1ebb8aa064ec68d87a700eb7d63fd",
+        "evidenceId": "20261009T0418119212471Z-elemental-character-traits-owned-save",
+        "status": "PASS",
+        "assertions": 23,
+        "passed": 23,
+        "saveWrites": 1,
+        "resultSha256": "1a6a13b167e8d9eebeb212f7e422295c2ae3d727fafe5a3b43debdb864ace24e",
+        "requestSha256": "372c60d07abd9b7b6c012dcc37c696680a17c0ed4963f7077d8723afabd349ac",
+        "loadedIdentitySha256": "ad90c771f63a24d3a403eeb38df8a4421dd7fc36ab3af3fa5b881d22154147eb",
+        "loadedDll": "efa9c6a13ff75988d97d073923dd2754c99d4554e23b285e55e531205c511cb4",
+        "mvid": "8f333abc-83e8-49e2-8ebb-883a0f0564e2"
+      },
+      {
+        "phase": "verify-remove",
+        "runId": "20261009T0421496705143Z-ac982f96610d4458b353664b969de03e",
+        "evidenceId": "20261009T0421496235918Z-elemental-character-traits-owned-save",
+        "status": "PASS",
+        "assertions": 34,
+        "passed": 34,
+        "saveWrites": 1,
+        "resultSha256": "8a38ee873542c8d2229c389f8d4dae8322e7beb2faffd2efa46502043f533e93",
+        "requestSha256": "4244ca99bf958fc2f3dd27a4deec98a320a31e9c306277e11c41945b562db9ea",
+        "loadedIdentitySha256": "69e7cb15dfc6fa078e0475b21ae39000a508711488532e5fe223c70986d0b106",
+        "loadedDll": "efa9c6a13ff75988d97d073923dd2754c99d4554e23b285e55e531205c511cb4",
+        "mvid": "8f333abc-83e8-49e2-8ebb-883a0f0564e2"
+      },
+      {
+        "phase": "verify-absent",
+        "runId": "20261009T0425260772705Z-5804476f48804a9e8f731a6d9faf24fd",
+        "evidenceId": "20261009T0425259960125Z-elemental-character-traits-owned-save",
+        "status": "PASS",
+        "assertions": 10,
+        "passed": 10,
+        "saveWrites": 0,
+        "resultSha256": "ea065f9b65779df54e491beb1ae3f553b6f6f58cc5632e6eed56d2e2d88627f8",
+        "requestSha256": "076a563d84e5b1c64644d18968633c1dd766d7083df90068f8ab8e21f0c04e3f",
+        "loadedIdentitySha256": "fcd3b6cae915fc5d7de37983d1d5c6247b0f20cf96db588d678ba9ab5e4d374f",
+        "loadedDll": "efa9c6a13ff75988d97d073923dd2754c99d4554e23b285e55e531205c511cb4",
+        "mvid": "8f333abc-83e8-49e2-8ebb-883a0f0564e2"
+      }
+    ],
+    "saveWrites": 2,
+    "preexistingSaveCount": 118,
+    "savesRestored": true,
+    "saveLeaseCompleted": true,
+    "runtimeLeaseCompleted": true,
+    "liveRestored": true,
+    "liveFileCount": 136,
+    "liveInfoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+    "liveBackup": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261009T0417438763441Z",
+    "favoredOriginalSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+    "favoredRestoredSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+    "extractionArchived": true,
+    "error": null,
+    "evidenceId": "elemental-trait-save-20261009T0417407691188Z_34ccfe4767744758b683fe49b4e68634",
+    "assertions": 67,
+    "descriptor": "KMG_TRAITS_0142_20261009T0417407691188Z_34ccfe4767744758b683fe49b4e68634",
+    "descriptorRemoved": true,
+    "protectedBaselineLoadOrWrite": false,
+    "workingSaveWrites": 0
+  },
+  "evidenceReuseAudit": {
+    "status": "PASS",
+    "from": "51ad7ad4bad2e2524e4541d8f862000cb93c730a",
+    "to": "6adf0c10180e16068bd0df49ff239e838b3a1bd0",
+    "source": "Only request-local typed icon-observer helper/call,compile inclusions,focused test,active test-count metadata and neutral package-note wording. No production,asset,identity,publication,AI,mechanics,persistence,icon assignment or module-boundary change.",
+    "package": {
+      "status": "PASS",
+      "members": 333,
+      "unchanged": 331,
+      "changed": [
+        "KingmakerGunslinger/docs/RELEASE-NOTES-0.0.146.md",
+        "KingmakerGunslinger/KingmakerGunslinger.dll"
+      ],
+      "added": 0,
+      "removed": 0
+    },
+    "preserved": "ModuleBoundary255/255 and compatibility359/359 plus unaffected master78/78 on51 retained with original request/result/DLL provenance. Historical1008 generated roots+29 wrappers,creature and enabled-persistence/flight PASS evidence retained. No historical FAIL or ERROR rewritten.",
+    "historicalRecord": "planning/RELEASE-0.0.143-EVIDENCE.json",
+    "historicalRecordSha256": "464355debb4b36da8f8ccafbe2e147e41e7a1fe9cd1170dfcf1b0ba8a8c240659"
+  },
+  "ownerRiskProvenance": {
+    "label": "OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE",
+    "historicalCandidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
+    "historicalResult": "FAIL preserved:prey aggregate damage0->2;source not recorded;not explained or declared harmless.",
+    "instrumentedCandidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "instrumentedResult": "212/212 crocodilians PASS;expiry damage0->0,HP unchanged,zero damage/healing/native/frame-gap mutation;owner destroyed,relationship released,buffs/conditions gone,observer removed.",
+    "disposition": "Owner accepts residual uncertainty,not an engine limitation or waiver of the current no-post-expiry requirement. No recurrence observed. No further attribution cycle. Exact historical provenance retained;no claim crocodilians were replayed on6ad.",
+    "observerRetained": true
+  },
+  "finalRestoration": {
+    "status": "VERIFIED",
+    "lastTransaction": "20261009T0417407691188Z_34ccfe4767744758b683fe49b4e68634",
+    "lastTransactionSha256": "666174d3ef527d5a1fd42e57e59cbd2752fc27ee7123e90784c8d530af86232d",
+    "snapshot": "20261009T0417438763441Z",
+    "files": 136,
+    "version": "0.0.117",
+    "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+    "featureModulesSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "favoredClassSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+    "preexistingSavesByteExact": 118,
+    "ownedTraitDescriptorRemoved": true,
+    "workingFixture108Cleaned": true,
+    "protectedBaselineLoadOrWrite": false,
+    "gameProcesses": 0,
+    "runtimeLease": false,
+    "compatibilityLock": false,
+    "traitSaveLock": false,
+    "staging": false,
+    "permanentDeployment": false,
+    "sourceOwnership": "Held solely for reporting/release;release via keeper receipt before final handoff."
   }
 }
