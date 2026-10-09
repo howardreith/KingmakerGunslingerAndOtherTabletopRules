@@ -9,6 +9,27 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class WeaponFindabilityTests
     {
+        private class IconFeature { internal string Guid; }
+        private sealed class IconSelection : IconFeature { }
+
+        internal static void NodachiObserverUsesExactSelectionAndChoiceReaders()
+        {
+            const string selectionGuid = "5ae9f898e45846d19d3802caf91e06b6";
+            string[] choiceGuids = { "af205733f7fe49838edb37cdf1b90cbb",
+                "4caf60ed8b264701a3965288a65eebc2", "e17fafa6f75641f8a2e3fe4b6f71da78" };
+            int selections = 0, features = 0;
+            var selection = new IconSelection { Guid = selectionGuid };
+            var choices = choiceGuids.Select(guid => new IconFeature { Guid = guid }).ToArray();
+            var observed = RuntimeTesting.HeirloomNodachiIconObservation.ReadConsumers<IconFeature, IconSelection>(
+                guid => { Assertions.Equal(selectionGuid, guid, "Only the selection uses the exact selection reader."); selections++; return selection; },
+                guid => { Assertions.False(guid == selectionGuid, "Exact feature lookup must never receive the derived selection."); features++; return choices.Single(value => value.Guid == guid); });
+            Assertions.Equal(1, selections, "Selection is read once with its actual type.");
+            Assertions.Equal(3, features, "All three visible choices use exact feature reads.");
+            Assertions.True(observed.SequenceEqual(new IconFeature[] { selection }.Concat(choices)),
+                "Read-only observation preserves all four actual references and deterministic order.");
+            Assertions.Equal(4, observed.Select(value => value.Guid).Distinct().Count(), "No consumer is duplicated or omitted.");
+        }
+
         internal static void CuratedCountsRequireTheirOwnMeasuredGates()
         {
             var report = JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory,

@@ -1,50 +1,54 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-09 UTC — v0.0.146 module-boundary correction underway
+## CURRENT STATE, 2026-10-09 UTC - v0.0.146 final observer correction
 
 Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint; PR29 DRAFT.
-Verified intake local/remote30be632cdf4e9cb85c70e95e85773b89d92c5311;
-released master bf8a1e41b308bfb148cb028d75a576555b7e8dd1 / Latest v0.0.145.
-Owner authorizes narrow module-OFF correction,normal master merge and stable146
-after exact qualification. Release NOT QUALIFIED. No Sprint18/Phase2C.
-Source owner c6976c9b-99e5-4ffb-a03f-1c05ef8f5745,appserver27624/start
-2026-10-08T19:42:55.3569342Z,keeper21240;artifacts/release143-source-owner.json.
-Previouskeeper38584 ended;receipts/history/safety refs preserved.
+Released master bf8a1e41b308bfb148cb028d75a576555b7e8dd1 / Latest v0.0.145.
+Owner authorizes stable146 only after all gates. Release NOT QUALIFIED.
+No Sprint18/Phase2C. Source owner c6976c9b-99e5-4ffb-a03f-1c05ef8f5745,
+appserver27624/start2026-10-08T19:42:55.3569342Z,keeper21240;
+artifacts/release143-source-owner.json. Historical receipts/refs preserved.
 
-Resource/readiness CLOSED. Exact735751ab ONcleanup119,absence6,flight26 PASS:
-137 private objects gone;220 borrowed/caches stable. OFFcleanup109/119 FAIL
-preserved:nine legacy variants ignored module state;profiles correct;20private
-objects cleaned but no cleanup save armed. Working retains NEW108 receipts
-from20261008T2352470423285Z. Use OFFcleanup/native save then freshabsence;
-no prepare unless invalid,no manual save surgery/protected baseline access.
+Exact51ad7ad4bad2e2524e4541d8f862000cb93c730a passed2497/2497 and full
+source/build/strict333-member package gate. ZIP360a5f9f2bbdb95be6e1e444d5a4fe7398c9557392cf5642ab222d1c61ef55c5.
+DLLb6549aced8a58bfc9a3bf8ca8b9817e37235b9499200b61b9a9394bc4c814580;
+MVID0141da3a-3a88-4098-9734-38fb07efd894. Archive:artifacts/candidates/51ad7ad4bad2e2524e4541d8f862000cb93c730a.
+Normal master145 merge62ae6936;197master/261summoning protected files,
+2922 ordered identities. Integration ledger retains35files/56hunks.
 
-Source fix gates Apply before ownership/allocation/mutation and RimFor/Update
-on immutable FeatureModules.Active.ExpandedSummoning. Restart-bound settings,
-native OnDestroy cleanup preserved;no invented hot toggle;registrations intact.
-Existing lifecycle coversall9,duplicateattach,rimupdates,nativecontrols.
-Focused5/5,full2489/2489,repository/static/icons/14-reference clean Release
-and strict325-member pre-integration package PASS;NOT RUNTIME QUALIFIED.
-This commit is the normal master145 integration candidate:parents c6effc32/bf8a1e41.
-Source audit pins197 master/261 summoning files and all2922 ordered identities.
-146 package inventory333 (325+7master documents+146notes);2497 domain cases.
-Exact62ae6936 post-merge gate PASS:2497/2497,333members,clean14-reference build.
-No runtime launch. Preflight caught missing typed launcher representative-scope
-normalization;closed boundary repaired/tested,production unchanged. This commit
-is the corrected launcher head;next exact gate precedes any deployment.
-Ledger:planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md (35files/56hunks).
-Next one exact committed146 source/build/package,OFF108cleanup/absence,
-ON9variants,inventory/menu/representativequantities,5profiles,142/144/145
-coexistence/native-owned trait-save and exact restoration. No1008 replay
-unless integration changes an exercised surface.
+Module boundary CLOSED on51:smoke11,OFFregistration2,OFFcleanup120,
+freshabsence6,ONninevariants53,inventory50,menu3,representativepaths10 PASS.
+Working108 receipt units were destroyed;exactlyONE authorized native cleanup
+save;fresh absence zero. Do NOT repeat prepare. OFF0variant allocations/owners;
+ON3cycles exact ownership/rims/rollback/native controls and0/0/0 cleanup.
+Five live profiles PASS359/359 across15fresh processes;complete menus each;
+exact restoration allfive. One private driver prelaunch error preserved:
+unnecessary save-backed disposable scenario misclassified as save-free.
+Required standalone3cells reused by hashes;no failed assertion waived.
 
-Preserve original croc212,snakes71,Salamander,inventory50/menu3/1008roots/29wrappers.
+Coexistence on51:Elementaltraits38,descriptions8,ModelDvendors26,FCBhost6 PASS.
+weapon-findability-blueprints ERROR before any assertions:
+selection5ae9f898e45846d19d3802caf91e06b6 is BlueprintFeatureSelection,
+but the added read-only observer requested exact BlueprintFeature.
+No production defect demonstrated. This checkpoint corrects only typed observer
+lookup,adds focused selection/choice dispatch regression8/8 PASS and neutral
+package-note provenance wording. Full2498-test/new exact package gate pending.
+Next:commit/push exact corrected candidate;one full source/build/package;
+fresh smoke,affected weapon/icon observer,recovery and native-owned trait-save.
+Reuse all unaffected51 and historical PASS provenance;no roots/profiles replay.
+
+Resource/readiness closed:prior735751ab enabledcleanup119,absence6,flight26;
+137private gone,220borrowed/cache stable. Croc212,snakes71,Salamander and
+historical1008roots/29wrappers preserved. No new resource/readiness/Croc cycle.
 Surface: 1008 published generated placements + 29 native wrappers = 1037 visible choices.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-retained;STOP on recurrence. No new resource/readiness/Crocodile diagnosis.
-Evidence:planning/RELEASE-0.0.146-EVIDENCE.json; historical143 retained unchanged.
-Intake lease runtime-20261009T013957Z-9f78f3988e5547d3b0587041bb37523c completed.
-Actual136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Settings/FCB unchanged;no game/runtime lease/staging/deployment.
+retained;STOP on recurrence. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Latest transaction release146-runtime-20261009T0338166586639Z restored exactly:
+snapshot20261009T0338175654260Z;136files/Info0.0.117;
+tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Settings/FCB byte-exact;no game/runtime lease/staging/permanent deployment.
+Evidence:planning/RELEASE-0.0.146-EVIDENCE.json;historical143 unchanged.
 Only ALLPASS authorizes ready/merge29,stableLatest146,close25/26 superseded.
 
 

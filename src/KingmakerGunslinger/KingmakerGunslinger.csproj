@@ -49,6 +49,7 @@
     <Compile Include="Acquisition\UnitPartCampaignWeaponRecovery.cs" />
     <Compile Include="Development\DevelopmentUi.WeaponRecovery.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponFindability.cs" />
+    <Compile Include="RuntimeTesting\HeirloomNodachiIconObservation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponRecovery.cs" />
     <Compile Include="RuntimeTesting\WeaponFindabilitySaveContract.cs" />
     <Compile Include="RuntimeTesting\WeaponFindabilitySavePlan.cs" />
