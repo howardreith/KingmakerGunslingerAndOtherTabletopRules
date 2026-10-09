@@ -1398,6 +1398,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("acquisition.weapon-recovery-owned-identities", WeaponFindabilityTests.RecoveryRecognizesCanonicalAndUpgradeOwnership),
             Case("acquisition.weapon-recovery-prerequisites", WeaponFindabilityTests.RecoveryRefusesEveryMissingPrerequisite),
             Case("acquisition.weapon-native-reference-registry", WeaponFindabilityTests.NativeReferenceCoversCompleteRegistryAndPearlRows),
+            Case("acquisition.nodachi-observer-exact-blueprint-types", WeaponFindabilityTests.NodachiObserverUsesExactSelectionAndChoiceReaders),
             Case("acquisition.weapon-active-cleanup-disjoint", WeaponFindabilityTests.EveryActiveTargetIsExcludedFromOwnCleanup),
             Case("acquisition.unsafe-target-rejection", PlayerFacingPresentationAndDiscoverabilityTests.DiscoverabilityPolicyRejectsUnsafeTargets),
             Case("acquisition.source-target-contracts", PlayerFacingPresentationAndDiscoverabilityTests.SourceTablesUseAuditedPersistentTargets),

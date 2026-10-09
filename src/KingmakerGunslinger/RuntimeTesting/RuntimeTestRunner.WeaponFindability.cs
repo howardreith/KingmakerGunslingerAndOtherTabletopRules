@@ -6,6 +6,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.EntitySystem.Persistence;
@@ -36,13 +37,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_context.FeatureModules.Active.EasternWeapons)
             {
                 var nodachi = ProjectAssetIcons.RequireIcon("nodachi");
-                foreach (string guid in new[] { "5ae9f898e45846d19d3802caf91e06b6",
-                    "af205733f7fe49838edb37cdf1b90cbb", "4caf60ed8b264701a3965288a65eebc2",
-                    "e17fafa6f75641f8a2e3fe4b6f71da78" })
+                var consumers = HeirloomNodachiIconObservation.ReadConsumers<
+                    BlueprintFeature, BlueprintFeatureSelection>(
+                    guid => BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                        BlueprintBootstrap.Library, guid, "released Heirloom Nodachi selection icon consumer"),
+                    guid => BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                        BlueprintBootstrap.Library, guid, "released Heirloom Nodachi choice icon consumer"));
+                foreach (var feature in consumers)
                 {
-                    var feature = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
-                        BlueprintBootstrap.Library, guid, "released Heirloom Nodachi icon consumer");
-                    assertions.Add(Assertion("heirloom-nodachi-icon-" + guid,
+                    assertions.Add(Assertion("heirloom-nodachi-icon-" + feature.AssetGuid,
                         "same project Nodachi sprite on the selection and all three visible choices",
                         "consumer=" + feature.name + ";icon=" + (feature.Icon == null ? "<null>" : feature.Icon.name),
                         nodachi != null && ReferenceEquals(feature.Icon, nodachi),
