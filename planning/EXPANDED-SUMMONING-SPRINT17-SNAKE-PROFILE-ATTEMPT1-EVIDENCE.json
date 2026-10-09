@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "status": "FAIL 31/38; Sprint17 NOT QUALIFIED",
+  "candidate": "2dd48884f728c218015e5a6d472b4305121da6c9",
+  "sourceFingerprint": "3984aeec7b8c397d1238650237403474cc9ffb9a066bde17fd8be56a4150cd2d",
+  "dllSha256": "f8f980f0d511537a12648404dbbcbd72750a4e95c5b67470a7fc78ad2665b991",
+  "dllMvid": "799d060a-2581-4061-afa8-deb240744835",
+  "packageSha256": "1cf6d37dbaac299aebe26b4d2275a107627111a0d5ebb13789748376a0de53e7",
+  "packageMembers": 320,
+  "version": "0.0.141",
+  "prelaunch": {
+    "focused": 248,
+    "full": 2050,
+    "fullSeconds": 83.7,
+    "completeGateSeconds": 180.9,
+    "runtimePreflight": 496,
+    "orchestration": 81,
+    "provenance": 17,
+    "persistenceWiring": 11,
+    "persistenceScopes": 3,
+    "persistenceRejections": 19,
+    "crowdRoundTrips": 5,
+    "crowdRejections": 7,
+    "exactBuildAndStrictPackage": "PASS"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-06T16:31:14.4510366Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1631153581948Z-working-save-smoke",
+      "requestId": "20261006T1631153894592Z-96cac6dd983c42d9bf81363e2a064f6d",
+      "requestSha256": "1fab2cf8e72d934e2c9f4f0509c3828d24919bfea2f7f28a0bf9cbab25b7ae21",
+      "resultSha256": "c401a66518ab365e6d57785687070a424c3be61bcb438168242a6abc70a4e59d",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "ee8e03e7da4bdf3388ab886a09ea240c6e94f388410b00bb7397905eaf1c47a7",
+      "processId": 35760,
+      "processStartedUtc": "2026-10-06T16:31:16.3300318Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T16:34:09.5955028Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-snake-profiles",
+      "startedAtUtc": "2026-10-06T16:34:15.6034578Z",
+      "parameters": {},
+      "launcherOutcome": "Unclean",
+      "exitCode": 1,
+      "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1634164242266Z-disposable-expanded-summoning-snake-profiles",
+      "requestId": "20261006T1634164242266Z-8d69273773c3428eb01a0f8758af34fc",
+      "requestSha256": "376f6edec07084cc51eda262153894045983232c8d4b3a92505f2a8b5685b452",
+      "resultSha256": "d2d2948caebbf314d018588170b5d2fdc4f1f64c587a7d0004ee4568395d3811",
+      "assertions": 38,
+      "passed": 31,
+      "failed": [
+        {
+          "name": "sprint17-production-binding-constrictor-snake-rollback",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint17-snake-profile-viper-defenses",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint17-snake-profile-viper-land-skills",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint17-snake-profile-viper-one-bite",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint17-snake-profile-constrictor-snake-defenses",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint17-snake-profile-constrictor-snake-land-skills",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint17-snake-profile-constrictor-snake-one-bite",
+          "status": "FAIL"
+        }
+      ],
+      "orchestrationSha256": "b740f4d5d8e83b2e5372dcd6306b4ebc1a1615f64de75e87b6420528aaffcb77",
+      "processId": 9840,
+      "processStartedUtc": "2026-10-06T16:34:17.7470203Z",
+      "scenarioStatus": "FAIL",
+      "outcome": "FAIL",
+      "completedAtUtc": "2026-10-06T16:38:03.3498738Z"
+    }
+  ],
+  "failureClassification": [
+    {
+      "name": "sprint17-production-binding-constrictor-snake-rollback",
+      "classification": "UNRESOLVED VISIBILITY: donor meshes/resources restored; non-intact after600 frames; fixture versus production requires narrower observation",
+      "observed": {
+        "key": "constrictor-snake",
+        "scope": "production hidden-snake body binding",
+        "faultInjected": true,
+        "gameplayQualified": false,
+        "blueprint": "f1a2eadf588e4c3b9fb670724d706364",
+        "outcome": "donor-visual:attach-failed:InvalidOperationException:Scoped production-snake post-swap rollback drill",
+        "frames": 601,
+        "faultReached": 1,
+        "viewScale": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "nativeScale": [
+          1,
+          1,
+          1
+        ],
+        "mechanicalSize": "Medium",
+        "originalAttached": false,
+        "donorRestored": true,
+        "intact": false
+      }
+    },
+    {
+      "name": "sprint17-snake-profile-viper-defenses",
+      "classification": "PRODUCTION: wrong HP/ranks; inherited blueprint skill seed not cleared",
+      "observed": {
+        "key": "viper",
+        "scope": "actual untemplated private snake profile",
+        "scores": [
+          8,
+          13,
+          14,
+          1,
+          13,
+          2
+        ],
+        "size": "Medium",
+        "hitDice": 2,
+        "type": "KMG_Summoning_Natural_Viper_UnitType",
+        "hp": 15,
+        "hpBase": 11,
+        "ac": 14,
+        "touch": 11,
+        "flatFooted": 13,
+        "fortitude": 5,
+        "reflex": 4,
+        "will": 1,
+        "speed": 20,
+        "initiative": 5,
+        "perception": "total:13,ranks:5,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[4/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+        "stealth": "total:5,ranks:0,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[0/Size/|4/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+        "mobility": "total:9,ranks:0,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[8/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+        "check": "viper-defenses",
+        "passed": false
+      }
+    },
+    {
+      "name": "sprint17-snake-profile-viper-land-skills",
+      "classification": "PRODUCTION: wrong HP/ranks; inherited blueprint skill seed not cleared",
+      "observed": {
+        "key": "viper",
+        "scope": "actual untemplated private snake profile",
+        "scores": [
+          8,
+          13,
+          14,
+          1,
+          13,
+          2
+        ],
+        "size": "Medium",
+        "hitDice": 2,
+        "type": "KMG_Summoning_Natural_Viper_UnitType",
+        "hp": 15,
+        "hpBase": 11,
+        "ac": 14,
+        "touch": 11,
+        "flatFooted": 13,
+        "fortitude": 5,
+        "reflex": 4,
+        "will": 1,
+        "speed": 20,
+        "initiative": 5,
+        "perception": "total:13,ranks:5,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[4/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+        "stealth": "total:5,ranks:0,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[0/Size/|4/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+        "mobility": "total:9,ranks:0,classSkill:True,abilityScore:13,abilityModifier:1,modifiers:[8/Racial/Feature (KMG_Summoning_Natural_Viper_CombatProfile)]",
+        "check": "viper-land-skills",
+        "passed": false
+      }
+    },
+    {
+      "name": "sprint17-snake-profile-viper-one-bite",
+      "classification": "FIXTURE: missing target in target-dependent profile probe",
+      "observed": {
+        "key": "viper",
+        "attackBonus": -2147483648,
+        "limbCount": 1,
+        "weapon": "0e3e5a52e7824ae5ba52f9f5cef30752",
+        "secondary": false,
+        "grabPresent": false,
+        "check": "viper-one-bite",
+        "passed": false
+      }
+    },
+    {
+      "name": "sprint17-snake-profile-constrictor-snake-defenses",
+      "classification": "PRODUCTION: wrong HP/ranks; inherited blueprint skill seed not cleared",
+      "observed": {
+        "key": "constrictor-snake",
+        "scope": "actual untemplated private snake profile",
+        "scores": [
+          17,
+          17,
+          12,
+          1,
+          12,
+          2
+        ],
+        "size": "Medium",
+        "hitDice": 3,
+        "type": "KMG_Summoning_Natural_ConstrictorSnake_UnitType",
+        "hp": 23,
+        "hpBase": 17,
+        "ac": 15,
+        "touch": 13,
+        "flatFooted": 12,
+        "fortitude": 4,
+        "reflex": 6,
+        "will": 2,
+        "speed": 20,
+        "initiative": 3,
+        "perception": "total:16,ranks:5,classSkill:True,abilityScore:12,abilityModifier:1,modifiers:[3/None/Feature (SkillFocusPerception)|4/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+        "stealth": "total:7,ranks:0,classSkill:True,abilityScore:17,abilityModifier:3,modifiers:[0/Size/|4/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+        "mobility": "total:11,ranks:0,classSkill:True,abilityScore:17,abilityModifier:3,modifiers:[8/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+        "check": "constrictor-snake-defenses",
+        "passed": false
+      }
+    },
+    {
+      "name": "sprint17-snake-profile-constrictor-snake-land-skills",
+      "classification": "PRODUCTION: wrong HP/ranks; inherited blueprint skill seed not cleared",
+      "observed": {
+        "key": "constrictor-snake",
+        "scope": "actual untemplated private snake profile",
+        "scores": [
+          17,
+          17,
+          12,
+          1,
+          12,
+          2
+        ],
+        "size": "Medium",
+        "hitDice": 3,
+        "type": "KMG_Summoning_Natural_ConstrictorSnake_UnitType",
+        "hp": 23,
+        "hpBase": 17,
+        "ac": 15,
+        "touch": 13,
+        "flatFooted": 12,
+        "fortitude": 4,
+        "reflex": 6,
+        "will": 2,
+        "speed": 20,
+        "initiative": 3,
+        "perception": "total:16,ranks:5,classSkill:True,abilityScore:12,abilityModifier:1,modifiers:[3/None/Feature (SkillFocusPerception)|4/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+        "stealth": "total:7,ranks:0,classSkill:True,abilityScore:17,abilityModifier:3,modifiers:[0/Size/|4/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+        "mobility": "total:11,ranks:0,classSkill:True,abilityScore:17,abilityModifier:3,modifiers:[8/Racial/Feature (KMG_Summoning_Natural_ConstrictorSnake_CombatProfile)]",
+        "check": "constrictor-snake-land-skills",
+        "passed": false
+      }
+    },
+    {
+      "name": "sprint17-snake-profile-constrictor-snake-one-bite",
+      "classification": "FIXTURE: missing target in target-dependent profile probe",
+      "observed": {
+        "key": "constrictor-snake",
+        "attackBonus": -2147483648,
+        "limbCount": 1,
+        "weapon": "0e3e5a52e7824ae5ba52f9f5cef30752",
+        "secondary": false,
+        "grabPresent": true,
+        "check": "constrictor-snake-one-bite",
+        "passed": false
+      }
+    }
+  ],
+  "passedScope": [
+    "All10 native live bite calculations (base,Strength+4,Strength7,AnimalGrowth,restore).",
+    "Both normal automatic original attachments, scale and idempotence; all4 exact native resource destruction checks.",
+    "Viper fallback binding; native Worm negative control; exact unit/party/area and environment restoration."
+  ],
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1630496086373Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "completedAtUtc": "2026-10-06T16:38:05.9137042Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T163049Z-38c4ba3a66c2408a9d3fbe8530e8f92d\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcessesRemaining": [],
+    "stagingAbsent": true,
+    "saveWritingApiObserved": false,
+    "protectedSaveAccess": false
+  },
+  "journal": {
+    "path": "artifacts/laptop-runtime-20261006T1630486362904Z/batch.json",
+    "sha256": "aa6935124168245f377b7e6caf9008aede43224449d8ceafc8f3ef961fc0d29c",
+    "driverSha256": "854a0a3c2d902a5dfc3c6cdcd0be7c09bb7afc82772c14339dc361ddf632b5ef",
+    "immutableArchive": "artifacts/laptop-runtime-20261006T1630486362904Z",
+    "sourceGateArchive": "artifacts/sprint17-snake-profile-source-pass-2dd48884"
+  },
+  "hashes": [
+    {
+      "path": "artifacts/laptop-runtime-20261006T1630486362904Z/batch.json",
+      "sha256": "aa6935124168245f377b7e6caf9008aede43224449d8ceafc8f3ef961fc0d29c"
+    },
+    {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1634164242266Z-disposable-expanded-summoning-snake-profiles\\sprint17-original-body-review.json",
+      "sha256": "d841ed08574a26313b6a148cef03d7d1d8501b0fdfffb681ea349b7009c52954"
+    },
+    {
+      "path": "artifacts/Invoke-LaptopSprint17-SnakeProfiles.ps1",
+      "sha256": "854a0a3c2d902a5dfc3c6cdcd0be7c09bb7afc82772c14339dc361ddf632b5ef"
+    },
+    {
+      "path": "artifacts/sprint17-snake-profile-exact-2dd48884-gate.log",
+      "sha256": "351429b6e484ef9dcb0efa999b84783ce0957279fae6f28b92e932660054f335"
+    },
+    {
+      "path": "artifacts/sprint17-snake-profile-exact-2dd48884-preflight.log",
+      "sha256": "0a3c6e204b17ad9a243312b1d7333560dad8d9006e8f9d359b9e44caf77e7d36"
+    },
+    {
+      "path": "artifacts/sprint17-snake-profile-source-pass-2dd48884/KingmakerGunslinger-0.0.141-local-runtime.zip.build-local.json",
+      "sha256": "25bedff8e794e8464948a5775b56ba011c9af9d41cb35749cb0a73153802cba6"
+    }
+  ],
+  "qualification": {
+    "fullSprint17": false,
+    "published": false,
+    "sourceFixQualified": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  }
+}

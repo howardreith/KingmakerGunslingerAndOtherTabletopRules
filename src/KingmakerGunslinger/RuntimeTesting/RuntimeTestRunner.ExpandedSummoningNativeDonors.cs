@@ -45,7 +45,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             "mosquito", "fly", "beetle", "mantis", "insect",
             "vargouille", "aurochs", "bison", "rhinoceros", "rhino",
             "woolly", "mastodon", "elephant", "buffalo", "bull",
-            "rat", "dog", "hyena", "worg", "wolf", "goblin"
+            "rat", "dog", "hyena", "worg", "wolf", "goblin",
+            // Phase 2B families. The tranche's donor and rig research runs
+            // once, before Sprint 14, rather than one relaunch per creature,
+            // so every candidate donor for Sprints 14-17 is enumerated here in
+            // the same pass: the fire beetle and giant stag beetle, the three
+            // giant ant castes, the crocodile pair, the viper and constrictor,
+            // and the salamander.
+            "ant", "formian", "crocodil", "croc", "alligator", "snake",
+            "serpent", "viper", "constrictor", "python", "cobra", "naga",
+            "salamander", "lizardfolk", "reptil"
         };
 
         private static readonly string[] NativeDonorFactTerms =
@@ -56,7 +65,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "fasthealing", "ferocity", "rockthrow", "rock", "blood",
             "attach", "drain", "trample", "powerfulcharge", "stampede",
             "disease", "immunity", "immune", "allerg", "filth", "fever",
-            "goblin", "goblinoid"
+            "goblin", "goblinoid",
+            // Phase 2B signature mechanics, so a reusable native carrier is
+            // found before anything is written: the crocodile's death roll and
+            // sprint, the snake's constriction, the salamander's heat and fire
+            // immunity, the ant's poison sting, and the beetle's luminescence.
+            "deathroll", "death_roll", "holdbreath", "luminescen", "glow",
+            "heat", "fireimmunity", "fire", "cold", "vulnerab", "climb",
+            "swim", "scent", "lowlight", "darkvision"
         };
 
         private static readonly string[] NativeDonorAbilityTerms =
@@ -182,6 +198,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             document["projectiles"] = new JObject {
                 ["total"] = projectiles.Length,
                 ["webCandidates"] = webProjectiles };
+            // Sprint 12 correction order: the printed Goblin Dog allergic
+            // reaction exempts the goblinoid subtype, and Kingmaker carries no
+            // such subtype fact. Rather than guess from a name search, record
+            // every BlueprintUnitType the installed library holds with the
+            // number of units that declare it, so the exemption can be wired
+            // to an exact enumerated set of asset ids and the absence of a
+            // Hobgoblin or Bugbear type is proved rather than assumed.
+            BlueprintUnitType[] unitTypes = all.OfType<BlueprintUnitType>()
+                .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
+            BlueprintUnit[] everyUnit = all.OfType<BlueprintUnit>().ToArray();
+            var typeCensus = new JArray();
+            foreach (BlueprintUnitType unitType in unitTypes)
+            {
+                BlueprintUnitType scoped = unitType;
+                typeCensus.Add(new JObject {
+                    ["name"] = scoped.name,
+                    ["guid"] = scoped.AssetGuid,
+                    ["localizedName"] = scoped.Name == null ? null :
+                        scoped.Name.ToString(),
+                    ["units"] = everyUnit.Count(value =>
+                        ReferenceEquals(value.Type, scoped)) });
+            }
+            document["unitTypes"] = new JObject {
+                ["total"] = unitTypes.Length,
+                ["unitsWithoutType"] = everyUnit.Count(value =>
+                    value.Type == null),
+                ["values"] = typeCensus };
+
             document["giantWaspVisualStatus"] = PteranodonAssetRuntime.GiantWaspStatus;
             document["stirgeVisualStatus"] = PteranodonAssetRuntime.StirgeStatus;
 
@@ -201,12 +245,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";buffs=" + ((JArray)document["buffs"]).Count +
                     ";nativeGrab=" + (grab == null ? "missing" : grab.name) +
                     ";projectiles=" + projectiles.Length +
+                    ";unitTypes=" + unitTypes.Length +
                     ";webCandidates=" + string.Join("|", webProjectiles
                         .Select(value => (string)value["name"] + ":" + (string)value["guid"])
                         .ToArray()) +
                     ";file=native-donor-audit.json",
                     units.Count > 0 && classes.Count > 0 && grab != null &&
-                        File.Exists(path),
+                        unitTypes.Length > 0 && File.Exists(path),
                     "installed library metadata only; no asset content"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
@@ -434,7 +479,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "DiseaseImmunity", "ImmunityToDisease", "DiseaseImmunityFeature",
             "AllergicReaction", "GoblinDogAllergicReaction",
             "GoblinDogDisease", "DireRatDisease", "RatDisease",
-            "Goblinoid", "SubtypeGoblinoid", "Goblin"
+            "Goblinoid", "SubtypeGoblinoid", "Goblin", "Hobgoblin", "Bugbear",
+            "UnitTypeGoblin", "UnitTypeHobgoblin", "UnitTypeBugbear"
         };
 
         private static JToken DescribeGraph(object value, int depth, HashSet<object> seen)

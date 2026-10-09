@@ -148,7 +148,8 @@ $before = Get-KmgLiveFingerprint
 $record = [ordered]@{
     schemaVersion = 2
     startedAtUtc  = [DateTime]::UtcNow.ToString('o')
-    expectedVersion = '0.0.136'
+    # Recorded in the report only; the launcher resolves the version itself.
+    expectedVersion = '0.0.141'
     runtimeTimeoutSeconds = $runtimeTimeoutSeconds
     liveBefore = [ordered]@{ files = $before.Files; version = $before.Version
         dll = $before.Dll }

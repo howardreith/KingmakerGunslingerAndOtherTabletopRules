@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 1,
+  "status": "RESEARCH ONLY PASS; Sprint17 NOT QUALIFIED",
+  "candidate": "291059aa1ae56518a74d041e3fe004969f69e5bf",
+  "sourceFingerprint": "c8ec8837252eb62129d028a01f2b587f8dbf651675239b06fecd2a9d8da2a321",
+  "dllSha256": "3aec6d01dc6bbd4fd64ece49c2f08f06077cff72b9b581b8cbe5d7d8df063d6b",
+  "dllMvid": "91d17a0f-a7d4-49e2-99c3-ab6d526bbb0c",
+  "packageSha256": "4471ea5d845188808d219b6132fb94b9fae497543fec40279b3e5fb987125d1c",
+  "packageMembers": 318,
+  "version": "0.0.141",
+  "prelaunch": {
+    "focused": 237,
+    "full": 2039,
+    "fullSeconds": 88.3,
+    "completeGateSeconds": 183.2,
+    "runtimePreflight": 491,
+    "orchestration": 81,
+    "provenance": 17,
+    "persistenceWiring": 11,
+    "persistenceScopes": 3,
+    "persistenceRejections": 19,
+    "crowdRoundTrips": 5,
+    "crowdRejections": 7,
+    "exactBuildAndStrictPackage": "PASS"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-06T13:27:13.6682105Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1327145719478Z-working-save-smoke",
+      "requestId": "20261006T1327145895841Z-9bf13f955a3949bf97069a64a4899eeb",
+      "requestSha256": "6c8833669751d15565cbe660765cd8a0aa4f1a188583c64ec9bb55b6e9a013b8",
+      "resultSha256": "3b40a53fe038cf3647cefbd09ededd34a262ba3848b126d183896f6df519096e",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "c16832799ee0b066a0ce8449082bd7353e4c236ce1c259bc04359f5b4f7f2c93",
+      "processId": 33012,
+      "processStartedUtc": "2026-10-06T13:27:15.6087105Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T13:30:06.7810034Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-serpentine-survey",
+      "startedAtUtc": "2026-10-06T13:30:12.9528553Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1330139092770Z-disposable-expanded-summoning-serpentine-survey",
+      "requestId": "20261006T1330139092770Z-4eb88456ab2e43c7a09a28b27fdf1739",
+      "requestSha256": "ae26fff9831fd7bd2e608de5eeca2e8d02ad4e7691373627fa8e311c06fd0715",
+      "spearActionMetadataSha256": "3af2cbc78820708586547c36952ff76bf9921823edea78ed7ba1243f4dac2687",
+      "nativeActionMetadataSha256": "78cc5048992c070e8d31d394bea587b40e5dd4e5b39986be58dbb8e96cbaedd8",
+      "researchMetadata": [
+        {
+          "key": "medium-water-elemental",
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1330139092770Z-disposable-expanded-summoning-serpentine-survey\\sprint17-medium-water-elemental-rig-survey.json",
+          "sha256": "97ffcd192bfe3ee2646a816498b34ad8adf0d1ebaa9afd1dbc2546e16d98a8bb",
+          "renderers": 7,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        },
+        {
+          "key": "salamander",
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1330139092770Z-disposable-expanded-summoning-serpentine-survey\\sprint17-salamander-rig-survey.json",
+          "sha256": "351755153a082cab8be4d3a6ec5b341d33c90e6d986154fcfc6c41aecfc67cee",
+          "renderers": 2,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        },
+        {
+          "key": "purple-worm",
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1330139092770Z-disposable-expanded-summoning-serpentine-survey\\sprint17-purple-worm-rig-survey.json",
+          "sha256": "273d94ee719df9ea33a17e571d101f2115f55b275d6a96fa2301e8301895fe20",
+          "renderers": 2,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        },
+        {
+          "key": "lizardfolk-greatclub",
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1330139092770Z-disposable-expanded-summoning-serpentine-survey\\sprint17-lizardfolk-greatclub-rig-survey.json",
+          "sha256": "e5aa40a67c81146024e66b5ac8dd82029cf29dc2d711649335d76058f32d7d45",
+          "renderers": 2,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        }
+      ],
+      "resultSha256": "9fa9956dc72c7886fe1e2ee3783125c12d57d84594b0d9dd1d785417d03a6c91",
+      "assertions": 15,
+      "passed": 15,
+      "failed": [],
+      "orchestrationSha256": "179c6a56a23caa9f1d00ad1fcc27a085b8ce8d2b26a8a71babba7a38a0ae6a39",
+      "processId": 21184,
+      "processStartedUtc": "2026-10-06T13:30:14.6245007Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T13:33:24.7111090Z"
+    }
+  ],
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1326496740021Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "completedAtUtc": "2026-10-06T13:33:27.2332485Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T132649Z-0a575060a52840b4a15afeab2dc9be4b\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcessesRemaining": [],
+    "sharedLock": false,
+    "staging": false,
+    "saveWrite": false
+  },
+  "journalSha256": "97A08A2FD8C08DB595ED36637633F9156F5567724068489DAD7C4FF2AF6FF207",
+  "driverSha256": "79FDF3FB5570A3A3A3F3BB0493F085D45A8AD337194472831A92312D99C6075A",
+  "findings": {
+    "observations": [
+      {
+        "name": "GoblinShamanBoss",
+        "blueprint": "8421b6137d7765947958973526b5249b",
+        "prefab": "520c43197dcb8c848a632675c7aa3f27",
+        "weapon": "928723c8d5238cb409b16e4d077a03d0",
+        "category": "Spear",
+        "managerCount": 1,
+        "set": "MyAnimationSet",
+        "humanFallback": true,
+        "actionCount": 24,
+        "nullSlots": [],
+        "nativeReferencesUnchanged": true,
+        "mainStyles": [
+          "SlashingOneHanded",
+          "Dagger",
+          "Fencing",
+          "PiercingOneHanded",
+          "SlashingTwoHanded",
+          "PiercingTwoHanded",
+          "Double",
+          "Bow",
+          "Crossbow",
+          "Sling",
+          "Blowgun",
+          "ThrownStraight",
+          "ThrownArc",
+          "Fist",
+          "TorchOneHanded",
+          "AxeTwoHanded",
+          "MartialArts",
+          "SpecialDevilClaws"
+        ],
+        "piercing": [
+          {
+            "variants": [
+              {
+                "name": "Human_2H_spear_attack_01",
+                "durationSeconds": 1.46666718
+              },
+              {
+                "name": "Human_2H_spear_attack_02",
+                "durationSeconds": 1.40000057
+              }
+            ],
+            "events": [
+              {
+                "function": "PostCommandActEvent",
+                "time": 0.620427966
+              }
+            ]
+          }
+        ],
+        "skinCount": 2,
+        "skinBoneCounts": [
+          0,
+          2252
+        ],
+        "skinNames": [
+          "!Cape_M(Clone)",
+          "Renderer_Character_Diffuse_Cutout"
+        ],
+        "tailOrCapeBoneNames": [
+          "C_Cape_01",
+          "C_Cape_01_ADJ",
+          "C_Cape_02",
+          "C_Cape_02_ADJ",
+          "C_Cape_03",
+          "C_Cape_03_ADJ",
+          "C_Cape_04",
+          "C_Cape_04_ADJ",
+          "C_Cape_belt_00",
+          "C_Cape_belt_01",
+          "C_Cape_belt_01_ADJ",
+          "C_Cape_belt_02",
+          "C_Cape_belt_02_ADJ",
+          "Cape_Belt_Scaler_00",
+          "L_Cape_01",
+          "L_Cape_01_ADJ",
+          "L_Cape_02",
+          "L_Cape_02_ADJ",
+          "L_Cape_03",
+          "L_Cape_03_ADJ",
+          "L_Cape_04",
+          "L_Cape_04_ADJ",
+          "L_Cape_belt_00",
+          "L_Cape_belt_01",
+          "L_Cape_belt_01_ADJ",
+          "L_Cape_belt_02",
+          "L_Cape_belt_02_ADJ",
+          "R_Cape_01",
+          "R_Cape_01_ADJ",
+          "R_Cape_02",
+          "R_Cape_02_ADJ",
+          "R_Cape_03",
+          "R_Cape_03_ADJ",
+          "R_Cape_04",
+          "R_Cape_04_ADJ",
+          "R_Cape_belt_00",
+          "R_Cape_belt_01",
+          "R_Cape_belt_01_ADJ",
+          "R_Cape_belt_02",
+          "R_Cape_belt_02_ADJ"
+        ]
+      },
+      {
+        "name": "OwlbearAttack_CapitalGuardCaptain1",
+        "blueprint": "86dc43534645e234eb35431131e3b669",
+        "prefab": "ced3729f4b4abab4da4ef63d8489f857",
+        "weapon": "f28f6031c2908d84d945865a80f67177",
+        "category": "Longspear",
+        "managerCount": 1,
+        "set": "MyAnimationSet",
+        "humanFallback": true,
+        "actionCount": 24,
+        "nullSlots": [],
+        "nativeReferencesUnchanged": true,
+        "mainStyles": [
+          "SlashingOneHanded",
+          "Dagger",
+          "Fencing",
+          "PiercingOneHanded",
+          "SlashingTwoHanded",
+          "PiercingTwoHanded",
+          "Double",
+          "Bow",
+          "Crossbow",
+          "Sling",
+          "Blowgun",
+          "ThrownStraight",
+          "ThrownArc",
+          "Fist",
+          "TorchOneHanded",
+          "AxeTwoHanded",
+          "MartialArts",
+          "SpecialDevilClaws"
+        ],
+        "piercing": [
+          {
+            "variants": [
+              {
+                "name": "Human_2H_spear_attack_01",
+                "durationSeconds": 1.46666718
+              },
+              {
+                "name": "Human_2H_spear_attack_02",
+                "durationSeconds": 1.40000057
+              }
+            ],
+            "events": [
+              {
+                "function": "PostCommandActEvent",
+                "time": 0.620427966
+              }
+            ]
+          }
+        ],
+        "skinCount": 2,
+        "skinBoneCounts": [
+          0,
+          1776
+        ],
+        "skinNames": [
+          "Cape_Red_M(Clone)",
+          "Renderer_Character_Diffuse_Cutout"
+        ],
+        "tailOrCapeBoneNames": [
+          "C_Cape_01",
+          "C_Cape_01_ADJ",
+          "C_Cape_02",
+          "C_Cape_02_ADJ",
+          "C_Cape_03",
+          "C_Cape_03_ADJ",
+          "C_Cape_04",
+          "C_Cape_04_ADJ",
+          "C_Cape_belt_00",
+          "C_Cape_belt_01",
+          "C_Cape_belt_01_ADJ",
+          "C_Cape_belt_02",
+          "C_Cape_belt_02_ADJ",
+          "Cape_Belt_Scaler_00",
+          "L_Cape_01",
+          "L_Cape_01_ADJ",
+          "L_Cape_02",
+          "L_Cape_02_ADJ",
+          "L_Cape_03",
+          "L_Cape_03_ADJ",
+          "L_Cape_04",
+          "L_Cape_04_ADJ",
+          "L_Cape_belt_00",
+          "L_Cape_belt_01",
+          "L_Cape_belt_01_ADJ",
+          "L_Cape_belt_02",
+          "L_Cape_belt_02_ADJ",
+          "R_Cape_01",
+          "R_Cape_01_ADJ",
+          "R_Cape_02",
+          "R_Cape_02_ADJ",
+          "R_Cape_03",
+          "R_Cape_03_ADJ",
+          "R_Cape_04",
+          "R_Cape_04_ADJ",
+          "R_Cape_belt_00",
+          "R_Cape_belt_01",
+          "R_Cape_belt_01_ADJ",
+          "R_Cape_belt_02",
+          "R_Cape_belt_02_ADJ"
+        ]
+      },
+      {
+        "name": "RiverPirate_Bard",
+        "blueprint": "063e8f0e64d9b8d41a6a60bf5f13145c",
+        "prefab": "6e8f58e9489bcb747beb203f72e807a2",
+        "weapon": "9f1545b033149e6429cc9c29354fd9f1",
+        "category": "Longspear",
+        "managerCount": 1,
+        "set": "MyAnimationSet",
+        "humanFallback": true,
+        "actionCount": 24,
+        "nullSlots": [],
+        "nativeReferencesUnchanged": true,
+        "mainStyles": [
+          "SlashingOneHanded",
+          "Dagger",
+          "Fencing",
+          "PiercingOneHanded",
+          "SlashingTwoHanded",
+          "PiercingTwoHanded",
+          "Double",
+          "Bow",
+          "Crossbow",
+          "Sling",
+          "Blowgun",
+          "ThrownStraight",
+          "ThrownArc",
+          "Fist",
+          "TorchOneHanded",
+          "AxeTwoHanded",
+          "MartialArts",
+          "SpecialDevilClaws"
+        ],
+        "piercing": [
+          {
+            "variants": [
+              {
+                "name": "Human_2H_spear_attack_01",
+                "durationSeconds": 1.46666718
+              },
+              {
+                "name": "Human_2H_spear_attack_02",
+                "durationSeconds": 1.40000057
+              }
+            ],
+            "events": [
+              {
+                "function": "PostCommandActEvent",
+                "time": 0.620427966
+              }
+            ]
+          }
+        ],
+        "skinCount": 2,
+        "skinBoneCounts": [
+          0,
+          2507
+        ],
+        "skinNames": [
+          "Cape_Blue_M(Clone)",
+          "Renderer_Character_Diffuse_Cutout"
+        ],
+        "tailOrCapeBoneNames": [
+          "C_Cape_01",
+          "C_Cape_01_ADJ",
+          "C_Cape_02",
+          "C_Cape_02_ADJ",
+          "C_Cape_03",
+          "C_Cape_03_ADJ",
+          "C_Cape_04",
+          "C_Cape_04_ADJ",
+          "C_Cape_belt_00",
+          "C_Cape_belt_01",
+          "C_Cape_belt_01_ADJ",
+          "C_Cape_belt_02",
+          "C_Cape_belt_02_ADJ",
+          "Cape_Belt_Scaler_00",
+          "L_Cape_01",
+          "L_Cape_01_ADJ",
+          "L_Cape_02",
+          "L_Cape_02_ADJ",
+          "L_Cape_03",
+          "L_Cape_03_ADJ",
+          "L_Cape_04",
+          "L_Cape_04_ADJ",
+          "L_Cape_belt_00",
+          "L_Cape_belt_01",
+          "L_Cape_belt_01_ADJ",
+          "L_Cape_belt_02",
+          "L_Cape_belt_02_ADJ",
+          "R_Cape_01",
+          "R_Cape_01_ADJ",
+          "R_Cape_02",
+          "R_Cape_02_ADJ",
+          "R_Cape_03",
+          "R_Cape_03_ADJ",
+          "R_Cape_04",
+          "R_Cape_04_ADJ",
+          "R_Cape_belt_00",
+          "R_Cape_belt_01",
+          "R_Cape_belt_01_ADJ",
+          "R_Cape_belt_02",
+          "R_Cape_belt_02_ADJ"
+        ]
+      }
+    ],
+    "uniqueBonePathsPerPrefab": 177,
+    "secondSpearClipCommandActTime": 0.734528542,
+    "conclusion": "All3 prefabs reference BlueprintRoot.HumanAnimationSet (MyAnimationSet),24 actions, with native PiercingTwoHanded clips Human_2H_spear_attack_01 and _02. Native references and actor membership unchanged. This is detached metadata, not actual clip playback, contact, or usable Salamander binding.",
+    "constraints": "Current39-bone Lizardfolk hybrid is NOT compatible merely because a human action exists. No action adopted or production source changed. Human combined skins contain duplicate bone palettes (2252/1776/2507 entries,177 unique paths) plus a zero-bone cape renderer. Cape names are not proof of tail articulation. Native human action list names Claw/Bite/Gore/Slam; no explicit tail action observed.",
+    "next": "Bounded exact human-prefab binding and native spear-handling proof on a request-local project-owned Salamander prototype, with native-reference/cleanup guards. Do not instantiate a campaign NPC, copy its facts/loot, transplant human clips onto the incompatible39-bone rig or assume a cape is a qualified tail. Preserve existing Salamander identity; continue independent snake work if a bounded hybrid seam is unavailable.",
+    "featureStatus": "Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED. Latest body570a14cd33/35 FAIL before hybrid attachment; all12 body attempts retained.976 published generated+29 wrappers=1005 visible; ZERO DATA ports; Phase2C authorized but deferred."
+  }
+}

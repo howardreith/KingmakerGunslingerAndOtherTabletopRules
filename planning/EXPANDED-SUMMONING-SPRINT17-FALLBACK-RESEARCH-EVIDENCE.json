@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "scope": "Sprint 17 research only; not gameplay or visual qualification",
+  "attempts": [
+    {
+      "candidate": "b2893abefc89079af49c22d3b028865ed2189f95",
+      "status": "FAIL; research fixture exception; exact restoration PASS",
+      "sourceFingerprint": "c4f89f6b403b09809a4ddf3c783d0be2acec295deeb241303cb6c519cfaaeef7",
+      "dllSha256": "3a09715081efd149a40d7518bc2950e770d0813a63ba011cee53f06b3f41d1a6",
+      "dllMvid": "d5d805ed-57d1-4c3f-b481-555cde4d99aa",
+      "zipSha256": "fb0b2c96f9a477a22f519631135b9470167da25d52b807ae010b358fd0dcd06a",
+      "packageMembers": 312,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 219,
+        "full": 2021,
+        "fullSeconds": 82.7,
+        "preflight": 486,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "crowdRoundTrips": 5,
+        "exactGateSeconds": 178.9,
+        "repositoryStaticIconManifest": "PASS",
+        "exactBuildStrictPackage": "PASS"
+      },
+      "batchId": "20261006T0222518662089Z",
+      "archive": "artifacts/laptop-runtime-20261006T0222518662089Z",
+      "batchSha256": "21af43cdcb9f77c50f452cab35f3a8dbf37af265981efc39b7c44a404f1e29fe",
+      "driverSha256": "58fddd5457e14e51f5ed43f4763aeacb34c95a34b82558bb53f53c0f48781cdd",
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "status": "PASS",
+          "assertions": 11,
+          "passed": 11,
+          "requestId": "20261006T0223186459182Z-63282e7cb8c540c2826ec3b9a328c440",
+          "requestSha256": "f4ebc2311ce931fd68a17f5e906ffacd62d7eef59f935431cff211ed185f555a",
+          "resultSha256": "dcc978bb2b7ef74fcd4a31cadd529bb41100c3c5f7e05a5064ad58295377aaa5",
+          "orchestrationSha256": "eda78967f80722ffd76aa4c0dfa121a8845cdb27faa733f4ee694d8a8d008dc4",
+          "evidenceDirectory": "20261006T0223186146220Z-working-save-smoke",
+          "processId": 9728,
+          "processStartedUtc": "2026-10-06T02:23:19.7186228Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-survey",
+          "status": "FAIL",
+          "assertions": 9,
+          "passed": 8,
+          "requestId": "20261006T0226188110751Z-43f6c9641a18458b85918a1824fb4652",
+          "requestSha256": "64406711be2599e44b380fefc56f9ac33f5adca3f89538e50ba77edf47b02723",
+          "resultSha256": "970e1eaee089d9dfea71fff2ffb20c83cf9faa21ccb28db645db89bc8e911c25",
+          "orchestrationSha256": "94c67eb8e8f1ffe3c33bc56a0010d77fa247623fb006d73aa2e9cc5fb04cacbf",
+          "evidenceDirectory": "20261006T0226188110751Z-disposable-expanded-summoning-serpentine-survey",
+          "processId": 32156,
+          "processStartedUtc": "2026-10-06T02:26:20.2367719Z"
+        }
+      ],
+      "failure": {
+        "classification": "FIXTURE",
+        "assertion": "sprint17-rig-survey-exception",
+        "observed": "ArgumentNullException:Value cannot be null.  / Parameter name: source;at=System.Linq.Enumerable.Count[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) [0x0000d] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.CaptureSprint17RigMetadata (Kingmaker.EntitySystem.Entities.UnitEntityData unit, System.String key) [0x007ef] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollSprint17RigSurvey () [0x002b8]",
+        "donorViewChecks": "6/6 PASS",
+        "metadataFiles": 0,
+        "cleanup": "PASS: 955 original unit references, 3 party references and exact area membership",
+        "correction": "Distinguish missing clip enumeration from an empty enumeration; retain null metadata, not fabricated zero. Add null/empty/mixed regression cases."
+      },
+      "restoration": {
+        "snapshot": "20261006T0222526525316Z",
+        "completedAtUtc": "2026-10-06T02:29:30.3453602Z",
+        "fileCount": 136,
+        "version": "0.0.117",
+        "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+        "leaseId": "runtime-20261006T022252Z-98290c216355408f8c64826d7f6642a1",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcesses": 0,
+        "stagingRemaining": false,
+        "saveWrite": false
+      },
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    {
+      "candidate": "a173da3a396b3c7f1bddef3bee92c476150d8639",
+      "status": "RESEARCH ONLY PASS; exact restoration PASS; Sprint 17 gameplay and visuals NOT QUALIFIED",
+      "sourceFingerprint": "9910eb984aada126b56e21578b20adcc6391ee9a3aaf3ca4b2119d944db38646",
+      "dllSha256": "9f17bf571bb5e27519a45c7d2cdce20ce05af56c9eb4cf1043419c9a6db7a50f",
+      "dllMvid": "1577f2d6-b519-4932-949a-b5af367ae6ef",
+      "zipSha256": "460596297c1a01e68b6aeaddc3fda5a02eae377a612af0656bba15be9e0441e1",
+      "packageMembers": 312,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 219,
+        "full": 2021,
+        "fullSeconds": 84.5,
+        "preflight": 486,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactGateSeconds": 181.2,
+        "repositoryStaticIconManifest": "PASS",
+        "exactBuildStrictPackage": "PASS"
+      },
+      "batchId": "20261006T0239161304096Z",
+      "archive": "artifacts/laptop-runtime-20261006T0239161304096Z",
+      "batchSha256": "4d1413ae11db29a8e6c1c2e43f3553e87060caa47914f6a80cf586b879c62265",
+      "sidecarSha256": "d792f0323d012640129a347a5ad3babf97e262e700061fcaa1446532f4dcde49",
+      "driverSha256": "dff765573f3a7dd68a428d9e053f927ec1cea135087bf77b173802008d16f245",
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "status": "PASS",
+          "assertions": 11,
+          "passed": 11,
+          "requestId": "20261006T0239424324404Z-cd77ef6938ed4dedb70e8992f9d51542",
+          "requestSha256": "b0f5fc0fa5a8dafd71450d1ef5c4f93062e9a9920b5173aa6c13a590cfca16d7",
+          "resultSha256": "0251897d7664e4b627edd7af74708d68abc51a81b771668bc9a6a60347342219",
+          "orchestrationSha256": "4d77b362d23514d6eb033bb956e6ce7736b78087ad45ce2cdb0caf5370a3660f",
+          "evidenceDirectory": "20261006T0239424038322Z-working-save-smoke",
+          "processId": 29408,
+          "processStartedUtc": "2026-10-06T02:39:43.4718700Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-survey",
+          "status": "PASS",
+          "assertions": 11,
+          "passed": 11,
+          "requestId": "20261006T0242403834515Z-22ea537c6a14440ea9edc309b8fbf92a",
+          "requestSha256": "a490470231fe0eca9e8108fd432bd0f9e821f7f154020f58713720947c995dfe",
+          "resultSha256": "acdff6439bc41d40ca565a637e584683c161da07421d9646e1d5648347ed3574",
+          "orchestrationSha256": "339faa6ea37a2a874c40140f8f8ea2950152c3ffe5d25384d0f7a1b2b9b3a5d1",
+          "evidenceDirectory": "20261006T0242403834515Z-disposable-expanded-summoning-serpentine-survey",
+          "processId": 31580,
+          "processStartedUtc": "2026-10-06T02:42:41.4576660Z",
+          "researchMetadata": [
+            {
+              "key": "medium-water-elemental",
+              "sha256": "ec37e70920ac551602a671829ea12a5b6f42fc38779ea7799bf29143668b67e1",
+              "renderers": 7,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "salamander",
+              "sha256": "bf6035021f916ccf650057fac964f47c9797072545138cf2546ec3d59ad0384b",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "purple-worm",
+              "sha256": "f44405a3d8b2fa314832fe14e7f1f778aa1f8d7c98d350fa35b4f7515e80f22c",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            }
+          ]
+        }
+      ],
+      "cleanup": "PASS: 955 original unit references, 3 party references and exact area membership",
+      "restoration": {
+        "snapshot": "20261006T0239169703799Z",
+        "completedAtUtc": "2026-10-06T02:45:49.8363590Z",
+        "fileCount": 136,
+        "version": "0.0.117",
+        "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+        "leaseId": "runtime-20261006T023916Z-d14eeb20c2414a20b927430a5ad1dec2",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcesses": 0,
+        "runtimeLockRemaining": false,
+        "stagingRemaining": false,
+        "saveWrite": false
+      },
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    {
+      "candidate": "c55b4f084cfabeafa83be839c47683330e78eb76",
+      "status": "RESEARCH ONLY PASS; attached pose and detached weapon metadata; Sprint 17 NOT QUALIFIED",
+      "sourceFingerprint": "18c88d2ff4171e78a9451ebf8a08706212dc033fdc1e9f720c4e807d7a92c4f5",
+      "dllSha256": "43d961cc734a30b872493890f18683e1dacd79ba152e0e46a4165f2f651945f5",
+      "dllMvid": "59295fda-a386-49da-8240-08e6581e7a14",
+      "zipSha256": "e97c08ec081295d5f0964d5591e17663b597b8498aaa6cc63dd3ef9dabbf2dd1",
+      "packageMembers": 312,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 219,
+        "full": 2021,
+        "fullSeconds": 87.5,
+        "preflight": 486,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactGateSeconds": 189.2,
+        "repositoryStaticIconManifest": "PASS",
+        "exactBuildStrictPackage": "PASS"
+      },
+      "batchId": "20261006T0334306322698Z",
+      "archive": "artifacts/laptop-runtime-20261006T0334306322698Z",
+      "batchSha256": "cd66e4576a3dbf3845f85290a1092a31412c3bae5cc858a02adf7fddfe440330",
+      "sidecarSha256": "df6b10ab2200f1a623377fd6a1ca6751fe813f80e210f591718ba0c18c3ead28",
+      "driverSha256": "0d9b3841e5b9789a4260b60dacd1d28ca750510d3ad8974eb1a2f3e60bfefebd",
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "status": "PASS",
+          "assertions": 11,
+          "passed": 11,
+          "requestId": "20261006T0334572526675Z-6a04d3053efa4bf29d8cb3d58fae8801",
+          "requestSha256": "8deadf90ab5da434c80ecb4fb157ffb04223770e999ac6ca3e2711213bc292eb",
+          "resultSha256": "e7409907a0f7469a39a7b091c901aaa50c064333cb3e3ad8bfdbd9d3f4cd01ba",
+          "orchestrationSha256": "4f3efd50781d9fe5ede6e07d49147e3b5e05bb984aa932dd4caf6af3dc03720d",
+          "evidenceDirectory": "20261006T0334572158734Z-working-save-smoke",
+          "processId": 30788,
+          "processStartedUtc": "2026-10-06T03:34:58.4389580Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-survey",
+          "status": "PASS",
+          "assertions": 13,
+          "passed": 13,
+          "requestId": "20261006T0337577273450Z-1588d91a90604f1b9cdf52109b849df4",
+          "requestSha256": "0865c809a1599ec1a9078976c29bf7c7810871364aa630cb2d26934851c33504",
+          "resultSha256": "b10e0c9dd0cebe4f82cf4fafcb4d0548f60a368b9020b2994d6890830235586c",
+          "orchestrationSha256": "040b22d0712b9111d10436e6d61efc0f19b6366f9508675f4dbd6e94ae067813",
+          "evidenceDirectory": "20261006T0337577273450Z-disposable-expanded-summoning-serpentine-survey",
+          "processId": 34404,
+          "processStartedUtc": "2026-10-06T03:37:58.9854283Z",
+          "researchMetadata": [
+            {
+              "key": "medium-water-elemental",
+              "sha256": "7d81bc96506f5a6828df5421c2d4f36aae8f9dbe067231a344bf3c8c67a1f05c",
+              "renderers": 7,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "salamander",
+              "sha256": "7cc24afb014faec772e76a423b9584cce7f4e51aa55d133ea948786f02702efb",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "purple-worm",
+              "sha256": "a9a31b1402aec68d99818421ac2f2e615b1533374e5e45dc4add28605a780502",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "lizardfolk-greatclub",
+              "sha256": "e5aa40a67c81146024e66b5ac8dd82029cf29dc2d711649335d76058f32d7d45",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            }
+          ]
+        }
+      ],
+      "cleanup": "PASS: 955 original unit references, 3 party references and exact area membership",
+      "restoration": {
+        "snapshot": "20261006T0334314516624Z",
+        "completedAtUtc": "2026-10-06T03:41:08.6416921Z",
+        "fileCount": 136,
+        "version": "0.0.117",
+        "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+        "leaseId": "runtime-20261006T033431Z-6fb3f7777f914c0db5df6f5a4a3b590f",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcesses": 0,
+        "runtimeLockRemaining": false,
+        "stagingRemaining": false,
+        "saveWrite": false
+      },
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "findings": {
+        "hybridBodyComparison": {
+          "bodyBones": 39,
+          "armorBones": 19,
+          "maxBindPositionDelta": 0,
+          "maxBindRotationDelta": 0,
+          "parentAndIndexExact": true,
+          "scope": "Detached bind compatibility only, not attached two-hand grip or spear contact"
+        },
+        "waterActionNames": [
+          "left_slam",
+          "right_slam"
+        ],
+        "wormLocomotionNames": [
+          "idle"
+        ],
+        "wormSpecialAttackNames": [
+          "SuperSlam"
+        ],
+        "snakeLocomotion": "NOT QUALIFIED; current pose/action names are not motion/contact evidence",
+        "productionChanged": false,
+        "detachedNativeActorSpawned": false,
+        "saveWrite": false
+      }
+    }
+  ]
+}

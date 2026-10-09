@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 1,
+  "classification": "BOUNDED SNAKE PROFILE/BODY/SIGNATURE RULES PASS; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop sole owner; PR26 active, PR27 salvage-only; zero DATA ports",
+  "candidate": {
+    "commit": "130bf7a2de4cbd636df921f36e7f6afefe8523ca",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "7e8806859c6ce28bc8d993279c012675b24239c9e794de24fee36cea310e1918",
+    "dllSha256": "f2302a3da764396c0182052597037894462863a1c05aa6243b266288621ccbf4",
+    "dllMvid": "b9585919-f475-4802-92d5-48e45405aee9",
+    "zipSha256": "7fd70468173fe426212cbd6a0ef1bc33aa3eaf3fb8a8cc9ef25779bd3a43f0ec",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-signatures-source-pass-130bf7a2",
+    "manifestSha256": "5df2d4f39ff51fa31842a268c697acd9ab1c5ffe4f64dfa314ae19fe73d0930a"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 251,
+    "fullUnfiltered": 2053,
+    "fullDomainSeconds": 83.4,
+    "completeGateSeconds": 179.8,
+    "repositoryStaticIconManifest": true,
+    "cleanExactReferences": 14,
+    "strictDeterministicPackage": true,
+    "standalonePreflight": 502,
+    "orchestration": 142,
+    "provenance": 17,
+    "persistence": [
+      11,
+      3,
+      19
+    ],
+    "crowd": [
+      5,
+      7
+    ],
+    "gateLog": "artifacts/sprint17-signatures-exact-130bf7a2-gate.log",
+    "gateLogSha256": "10859451c7685dd2ca6facb1c2b7ed041d2aee9b6e8ba88173225d3f15843857",
+    "preflightLogSha256": "5fa471b7e685a0750e0fd513750baeebf126c5aa446eb5a848dab2eaaf030d1b"
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261006T1951094022226Z",
+    "journalSha256": "9b6932f1769ab13074935327d6eeb2e67024c4040db7edfae94cbb84f8aeb1a2",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeSignatures-Attempt4.ps1",
+    "driverSha256": "092f05773e37259f909fa5c2a5b1f4713856ca586fef8fbee5d8d26b666fe80a",
+    "status": "PASS",
+    "startedAtUtc": "2026-10-06T19:51:09.4380146Z",
+    "completedAtUtc": "2026-10-06T19:58:09.8692950Z",
+    "scenarioOrder": [
+      "working-save-smoke",
+      "disposable-expanded-summoning-snake-signatures"
+    ],
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-06T19:51:35.3139228Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1951362522145Z-working-save-smoke",
+        "requestId": "20261006T1951362678038Z-c02645390b4340ab878610dc37c008f1",
+        "requestSha256": "611db4b41e9adb135fadee503a438e6e6284313d5d845ccf4a9f1a0eec26795e",
+        "resultSha256": "5e9cf9d59c75684d2562cb830c30a157e6b28f74babbf5f66a40fd20fd567bca",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "1a6f880f389e8e4de9f87a7945eb9b147eaeff43c57d34c815166adca36bf174",
+        "processId": 8016,
+        "processStartedUtc": "2026-10-06T19:51:37.3300820Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T19:54:29.8932307Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-signatures",
+        "startedAtUtc": "2026-10-06T19:54:36.0461205Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1954368519515Z-disposable-expanded-summoning-snake-signatures",
+        "requestId": "20261006T1954368519515Z-10eb8a53ab1f47afb4a7d20a92d720dc",
+        "requestSha256": "455eec6c195afa0397ad46d6e93410241789c938c6c156e9616c716ebce6b97f",
+        "metadataRows": 46,
+        "signatureMetadataSha256": "99bf6e4659867b45db44ad7a026ca2d4bdf9632629bc2be5c80af45cadd567e9",
+        "qualificationScope": "62-assertion profile/body/signature rules slice ONLY; command/AI and full Sprint17 remain unqualified",
+        "resultSha256": "f9a2f0c35a0c6ecdca8bc5d6dd5fc365a51c6f2d40d9284265e5251f2800c41b",
+        "assertions": 62,
+        "passed": 62,
+        "failed": [],
+        "orchestrationSha256": "510576946d409e8249281bbaddf95ac4c642b3a49f4b15d047da8ac00421fe8e",
+        "processId": 31368,
+        "processStartedUtc": "2026-10-06T19:54:37.6431640Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T19:58:07.3322902Z"
+      }
+    ]
+  },
+  "observations": {
+    "signatureAssertions": 62,
+    "passed": 62,
+    "profileBodyRegressionPassed": 38,
+    "signaturePassed": 24,
+    "signatureRequired": 24,
+    "metadataRows": 46,
+    "metadataSha256": "99bf6e4659867b45db44ad7a026ca2d4bdf9632629bc2be5c80af45cadd567e9",
+    "signatureVerdicts": [
+      {
+        "signature": "viper-contract",
+        "passed": true
+      },
+      {
+        "signature": "viper-wounds",
+        "passed": true
+      },
+      {
+        "signature": "viper-misses",
+        "passed": true
+      },
+      {
+        "signature": "viper-zero-damage",
+        "passed": true
+      },
+      {
+        "signature": "viper-non-bite",
+        "passed": true
+      },
+      {
+        "signature": "viper-live-dc-0",
+        "passed": true
+      },
+      {
+        "signature": "viper-live-dc-4",
+        "passed": true
+      },
+      {
+        "signature": "viper-live-dc--6",
+        "passed": true
+      },
+      {
+        "signature": "viper-six-exposures",
+        "passed": true
+      },
+      {
+        "signature": "viper-native-cure",
+        "passed": true
+      },
+      {
+        "signature": "viper-source-destruction",
+        "passed": true
+      },
+      {
+        "signature": "constrict-grab-rejections",
+        "passed": true
+      },
+      {
+        "signature": "constrict-bite-delivery",
+        "passed": true
+      },
+      {
+        "signature": "constrict-no-application-frame-maintain",
+        "passed": true
+      },
+      {
+        "signature": "constrict-later-maintain-once",
+        "passed": true
+      },
+      {
+        "signature": "constrict-strength-0",
+        "passed": true
+      },
+      {
+        "signature": "constrict-strength-4",
+        "passed": true
+      },
+      {
+        "signature": "constrict-strength--10",
+        "passed": true
+      },
+      {
+        "signature": "constrict-native-growth",
+        "passed": true
+      },
+      {
+        "signature": "constrict-modifiers-restored",
+        "passed": true
+      },
+      {
+        "signature": "constrict-lethal-prey",
+        "passed": true
+      },
+      {
+        "signature": "constrict-dead-prey-rejected",
+        "passed": true
+      },
+      {
+        "signature": "constrict-destroyed-prey-rejected",
+        "passed": true
+      },
+      {
+        "signature": "constrict-owner-death",
+        "passed": true
+      }
+    ],
+    "cadence": {
+      "exposures": [
+        {
+          "exposure": 1,
+          "damage": 1,
+          "native": {
+            "present": true,
+            "dc": 13,
+            "ticks": 1,
+            "saves": 0,
+            "round": 0
+          }
+        },
+        {
+          "exposure": 2,
+          "damage": 1,
+          "native": {
+            "present": true,
+            "dc": 13,
+            "ticks": 2,
+            "saves": 0,
+            "round": 1
+          },
+          "presentAfter": true,
+          "duplicateTickDamage": 0
+        },
+        {
+          "exposure": 3,
+          "damage": 1,
+          "native": {
+            "present": true,
+            "dc": 13,
+            "ticks": 3,
+            "saves": 0,
+            "round": 2
+          },
+          "presentAfter": true,
+          "duplicateTickDamage": 0
+        },
+        {
+          "exposure": 4,
+          "damage": 1,
+          "native": {
+            "present": true,
+            "dc": 13,
+            "ticks": 4,
+            "saves": 0,
+            "round": 3
+          },
+          "presentAfter": true,
+          "duplicateTickDamage": 0
+        },
+        {
+          "exposure": 5,
+          "damage": 1,
+          "native": {
+            "present": true,
+            "dc": 13,
+            "ticks": 5,
+            "saves": 0,
+            "round": 4
+          },
+          "presentAfter": true,
+          "duplicateTickDamage": 0
+        },
+        {
+          "exposure": 6,
+          "damage": 1,
+          "native": {
+            "present": true,
+            "dc": 13,
+            "ticks": 6,
+            "saves": 0,
+            "round": 5
+          },
+          "presentAfter": true,
+          "duplicateTickDamage": 0
+        }
+      ],
+      "lastLiveState": {
+        "present": true,
+        "dc": 13,
+        "ticks": 6,
+        "saves": 0,
+        "round": 5
+      },
+      "nativeStatDamageEvents": [
+        {
+          "damage": 1,
+          "nativeDice": "0",
+          "nativeBonus": 2,
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7",
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff"
+        },
+        {
+          "damage": 1,
+          "nativeDice": "0",
+          "nativeBonus": 2,
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7",
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff"
+        },
+        {
+          "damage": 1,
+          "nativeDice": "0",
+          "nativeBonus": 2,
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7",
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff"
+        },
+        {
+          "damage": 1,
+          "nativeDice": "0",
+          "nativeBonus": 2,
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7",
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff"
+        },
+        {
+          "damage": 1,
+          "nativeDice": "0",
+          "nativeBonus": 2,
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7",
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff"
+        },
+        {
+          "damage": 1,
+          "nativeDice": "0",
+          "nativeBonus": 2,
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7",
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff"
+        }
+      ],
+      "nativeInjurySaves": [
+        {
+          "dc": 13,
+          "passed": false,
+          "reasonPresent": true,
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7",
+          "weapon": "0e3e5a52e7824ae5ba52f9f5cef30752",
+          "exactInFlightWoundingBite": true
+        }
+      ],
+      "nativeBuffSaves": [
+        {
+          "dc": 13,
+          "passed": false,
+          "reasonPresent": true,
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff",
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7"
+        },
+        {
+          "dc": 13,
+          "passed": false,
+          "reasonPresent": true,
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff",
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7"
+        },
+        {
+          "dc": 13,
+          "passed": false,
+          "reasonPresent": true,
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff",
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7"
+        },
+        {
+          "dc": 13,
+          "passed": false,
+          "reasonPresent": true,
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff",
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7"
+        },
+        {
+          "dc": 13,
+          "passed": false,
+          "reasonPresent": true,
+          "target": "096fb587-7a3e-4b49-8573-245f2f7c3dff",
+          "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+          "sourceUnit": "ae46dedf-d2c0-46c4-9644-7e3a291a9cd7"
+        }
+      ],
+      "presentAfterExhaustion": false,
+      "seventhExposureDamage": 0,
+      "duplicateExpiryDamage": 0,
+      "signature": "viper-six-exposures",
+      "passed": true
+    },
+    "scope": "Seeded native rule delivery only; not ordinary manual/AI commands. Target and source fixture stats are disclosed. No production behavior changed by the observation repairs."
+  },
+  "diagnosticCorrections": [
+    "The live initial injury save has reasonPresent=true. The earlier inference that the dispatched event must have a null Reason was too broad: inspecting constructors and the action body did not establish later dispatch state. The event is not captured as a venom-buff-owned save; exact in-flight bite correlation is the proven seam.",
+    "Exactly one initial injury save and five later buff-owned saves were observed, all failed DC13. Native six 1d2 rolls each yielded bonus2 before RuleDealStatDamage processing and actual Constitution damage1 in this saved environment. Do not claim six observed damage2 results or infer an unrecorded reduction factor.",
+    "All three earlier signature attempts remain FAIL and preserved. This separate exact artifact is the first complete 62-assertion rules PASS."
+  ],
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1951101231925Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "completedAtUtc": "2026-10-06T19:58:09.8692950Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T195109Z-aaf60895ba6e461e8276d31cb8dd8a6a\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": 0,
+    "sharedLock": false,
+    "staging": false,
+    "nativeSaveWrite": false,
+    "manualSaveFileAccess": false,
+    "protectedBaselineLoadedOrWritten": false
+  },
+  "surface": {
+    "units": 97,
+    "registeredGeneratedPlacements": 1008,
+    "publishedGeneratedPlacements": 976,
+    "withheldGeneratedPlacements": 32,
+    "nativeWrappers": 29,
+    "visibleChoices": 1005,
+    "viperWithheld": 18,
+    "constrictorWithheld": 14
+  },
+  "next": "Implement the closed production-snake real-command/AI/contact matrix in RTWP and turn-based using qualified laptop request-local seams; then lifecycle/persistence/crowds/UI/routes and bounded Salamander implementation. Full hidden/publication/Phase2B tranche gates remain.",
+  "fullSprintQualified": false,
+  "publication": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

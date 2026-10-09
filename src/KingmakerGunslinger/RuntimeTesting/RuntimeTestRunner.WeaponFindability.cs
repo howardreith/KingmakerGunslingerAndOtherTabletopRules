@@ -5,6 +5,8 @@ using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Area;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.EntitySystem.Persistence;
@@ -30,6 +32,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             var snapshots = allLoot.ToDictionary(value => value, value => (value.Items ?? new LootEntry[0]).ToArray());
             var assertions = new List<RuntimeTestAssertion>();
             var records = new List<object>();
+            // Read-only coexistence witness for the released v145 assignment.
+            // No replacement/remapping: inspect the actual registered consumers.
+            if (_context.FeatureModules.Active.EasternWeapons)
+            {
+                var nodachi = ProjectAssetIcons.RequireIcon("nodachi");
+                var consumers = HeirloomNodachiIconObservation.ReadConsumers<
+                    BlueprintFeature, BlueprintFeatureSelection>(
+                    guid => BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                        BlueprintBootstrap.Library, guid, "released Heirloom Nodachi selection icon consumer"),
+                    guid => BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                        BlueprintBootstrap.Library, guid, "released Heirloom Nodachi choice icon consumer"));
+                foreach (var feature in consumers)
+                {
+                    assertions.Add(Assertion("heirloom-nodachi-icon-" + feature.AssetGuid,
+                        "same project Nodachi sprite on the selection and all three visible choices",
+                        "consumer=" + feature.name + ";icon=" + (feature.Icon == null ? "<null>" : feature.Icon.name),
+                        nodachi != null && ReferenceEquals(feature.Icon, nodachi),
+                        "read-only actual blueprint consumer and cached original icon; no UI/aesthetic approval claim"));
+                }
+            }
             try
             {
                 if (_context.FeatureModules.Active.Gunslinger)

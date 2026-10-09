@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "status": "RESEARCH PASS ONLY; Sprint 17 NOT QUALIFIED",
+  "candidate": "f507278bbebe5894130dc6ec51978580bc2c43d0",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "sourceFingerprint": "aa06f75cdefa0346efbcbda4265c55dd7b54359dddb0652526b0fb62749228b2",
+  "version": "0.0.141",
+  "dllSha256": "745219192b292c2df018e849bbdd100a237ba0010070ac2431d980f4314ec3a0",
+  "dllMvid": "12192b68-0ef2-46cb-ab7a-45d3b7851d50",
+  "zipSha256": "09be9116320ee8344cdae453cb14a110ea41e0bf4f9ae48ea2ae87445c80a717",
+  "packageMembers": 312,
+  "prelaunch": {
+    "focused": "219/219",
+    "fullUnfiltered": "2021/2021; 90.2s",
+    "repositoryStaticIconManifest": "PASS",
+    "preflight": 486,
+    "orchestration": 68,
+    "persistence": "11 wiring; 3 scopes/19 rejections",
+    "crowd": "5 round trips/7 rejections",
+    "cleanExactRelease": "PASS",
+    "deterministicPackage": "PASS",
+    "strictStandalone": "PASS",
+    "logs": [
+      {
+        "sha256": "D31FE9071484E706FCACB507A8C31FEE8D801FE2001EB4AAB160E10BE1FC6F71",
+        "path": "artifacts/sprint17-f507278b-exact-gate.log"
+      },
+      {
+        "sha256": "F4C46A4B90F10117EBA6869E68184BF704816694CD0081B6B8D3CFE6CF229B82",
+        "path": "artifacts/sprint17-survey-focused.log"
+      },
+      {
+        "sha256": "45077849B7A7A95F9F391A7963815D21E0A5F4724E97CC1B7E9192D0AD097AB2",
+        "path": "artifacts/sprint17-count-repair-validation.log"
+      }
+    ],
+    "driverSha256": "A785B4B438BD1BC36AE3BDCF87A1684A7F6E8885B0A8977B56421692ADD8B1BD",
+    "sidecarSha256": "DF95FBC88A82BDB0C1B4B2375D75BE1DA36FA0701056CD876F4C239EE7204AAA"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-06T01:39:33.5293442Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261006T0139345717891Z-working-save-smoke",
+      "requestId": "20261006T0139345828096Z-8225cb9b27604384887dbd4b1adba4f2",
+      "requestSha256": "1bec3d5c8bf5f71482a23239e0c38b7cc4515548ba275926e6cda655b814850d",
+      "resultSha256": "1c067fe0764e64bbb7117f28f3f52089a0b8e20f5978a6c081659d28982ca0ea",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "e4c5f661e2f595003aad32958d6eddf80f44a38c9335bb8d79ddafb1f2d2db51",
+      "processId": 31100,
+      "processStartedUtc": "2026-10-06T01:39:35.6194734Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T01:42:29.0951086Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-serpentine-survey",
+      "startedAtUtc": "2026-10-06T01:42:35.5997096Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261006T0142363709333Z-disposable-expanded-summoning-serpentine-survey",
+      "requestId": "20261006T0142363865200Z-806f1632b7a04289b4e3b0edc3c4f170",
+      "requestSha256": "2385932ac14a89ed6bb79cf7be80c1220ec3fe64ced0ed3711974e41b5a768ce",
+      "researchMetadata": [
+        {
+          "key": "medium-water-elemental",
+          "path": "sprint17-medium-water-elemental-rig-survey.json",
+          "sha256": "cd7bda3fb879146702193aef2807fc85b678c634a9001a9f93a558acd0e2d061",
+          "renderers": 7,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        },
+        {
+          "key": "salamander",
+          "path": "sprint17-salamander-rig-survey.json",
+          "sha256": "5531470f29211c35ef61373ad936c5baed7c922774d6d948c48347f30b6d58c8",
+          "renderers": 2,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        }
+      ],
+      "resultSha256": "fb416162b409766e8b196f34075bc27d62d29de26199899a85dfe973d6a360fd",
+      "assertions": 8,
+      "passed": 8,
+      "failed": [],
+      "orchestrationSha256": "1dc7ff73333f786954ce4b15c64eae8df108f808967e84e24248832c5f801e67",
+      "processId": 34140,
+      "processStartedUtc": "2026-10-06T01:42:37.3931891Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T01:45:43.4243761Z"
+    }
+  ],
+  "researchFindings": [
+    {
+      "key": "medium-water-elemental",
+      "nativeBlueprint": "62a3e860e6e72e6499c38bb8b2fe303e",
+      "prefab": "dc296683c2a3d2648afa516aeb030fb8",
+      "skinCount": 7,
+      "bodyRenderer": "body",
+      "bodyBones": 43,
+      "bodyRoot": "LowerTorso",
+      "spineNeckHeadJaw": true,
+      "unusedArmAndWaterEffectBones": true,
+      "otherSkins": [
+        "bubblegum_stripe",
+        "grebeshok",
+        "grebeshok_outer",
+        "pool_skirt",
+        "stripes_all",
+        "stripes_outer"
+      ],
+      "meaning": "Native provenance and complete bind data established; multi-renderer fail-closed prototype still required, not approved snake visuals."
+    },
+    {
+      "key": "salamander",
+      "nativeBlueprint": "e8276e28b2234a745900fed80670bfdb",
+      "prefab": "9b1744531a4428e44aa9837ca984513a",
+      "skinCount": 2,
+      "bodyRenderer": "_lizardman001",
+      "bodyBones": 39,
+      "bodyRoot": "Torso_Lower",
+      "otherSkin": "_ammunition04",
+      "otherSkinBones": 19,
+      "donorWeaponMeshes": [
+        "WP_ShieldLightDamaged",
+        "lizardman_club"
+      ],
+      "meaning": "Separate humanoid weapon seam mandatory; old prefab still visibly carries club/shield despite spear blueprint. Original body/equipment replacement and live manufactured-weapon handling not yet implemented or qualified."
+    }
+  ],
+  "cleanup": {
+    "nativeUnitsPreserved": 955,
+    "partyReferencesPreserved": 3,
+    "originalAreaMembershipPreserved": true,
+    "settlementFrames": 60,
+    "appearanceBuffsRemoved": false,
+    "visibilityForced": false,
+    "saveWritingApiObserved": false
+  },
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "20261006T0139078842255Z",
+    "completedAtUtc": "2026-10-06T01:45:45.9953210Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "lease": "runtime-20261006T013907Z-c7cd7841df2344e3999cf79923710591",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcessesRemaining": [],
+    "stagingRemaining": false,
+    "batch": "artifacts/laptop-runtime-20261006T0139071137036Z/batch.json",
+    "batchSha256": "A496BD70391A429A309578EA6616293862DD439A8F54366402E9BF65D91CC663"
+  },
+  "limitations": [
+    "No new creature/gameplay/publication qualification",
+    "No native geometry, texture, animation-curve or raw bind capture committed",
+    "No DATA source imported",
+    "HumanReview: NOT_PERFORMED_NONBLOCKING",
+    "Phase 2C authorized but deferred until Phase 2B owner acceptance"
+  ]
+}

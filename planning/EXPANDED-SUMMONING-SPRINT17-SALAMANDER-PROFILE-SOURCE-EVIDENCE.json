@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE QUALIFIED; SALAMANDER MECHANICS AND COMPLETE SPRINT17 NOT RUNTIME QUALIFIED",
+  "authority": "HOWARD-LAPTOP / codex/expanded-summoning-phase2b-sprints14-17 / PR26 only. DATA PR27 salvage-only; ZERO PORTS.",
+  "sourceBase": "65bc05362920a7bdae5f8cfc8b0f1275c3d562d0",
+  "sourceBoundary": "Development tree on the named base, NOT a clean exact-head runtime candidate. Documentation/state records added after this gate. Clean exact-head rebuild and all prelaunch gates required before any runtime use.",
+  "source": {
+    "schemaVersion": 1,
+    "generatedAtUtc": "2026-10-07T16:08:28.2856449Z",
+    "generator": "scripts/Build-Local.ps1",
+    "repositoryRoot": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005",
+    "commit": "65bc05362920a7bdae5f8cfc8b0f1275c3d562d0",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "sourceStateSha256": "a72664917864afc83bf36623f9f0c3bdcaefb011ef4f6a24a740dcecb81efb73",
+    "version": "0.0.141",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\local-runtime\\0.0.141\\KingmakerGunslinger-0.0.141-local-runtime.zip",
+    "packageSha256": "649e231f7f8e54b43ff59ad9869c91794e394cf8cc21e8c80a86375db6082aae",
+    "dllSha256": "a4b15e83c10e305a90b1449ecd2ed4cdaf01652ed8eb8ce3fdddede9629e798c",
+    "dllMvid": "8bcd0151-b163-4229-9f0d-4ed5ff853fb7",
+    "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+    "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "validated": true
+  },
+  "gates": {
+    "focused": {
+      "passed": 311,
+      "registered": 2113
+    },
+    "unfilteredDomain": {
+      "passed": 2113,
+      "failed": 0,
+      "seconds": 83.9
+    },
+    "repositoryWrapper": "PASS",
+    "cleanExactReferenceRelease": {
+      "status": "PASS",
+      "referenceCount": 14
+    },
+    "strictStandalonePackage": {
+      "status": "PASS",
+      "members": 321
+    },
+    "completeGateSeconds": 181.4,
+    "icons": "PASS109; no bitmap changes; exact original Salamander painting adds only species/passive trait consumers",
+    "runtime": "NOT RUN",
+    "prelaunchHarnessSuites": "Full clean-head prelaunch protocol NOT RUN; the repository wrapper includes its standard orchestration checks."
+  },
+  "changes": [
+    "Existing Salamander unit, spear, tail and traits GUIDs plus all five published routes preserved. Append only TailType c023eeab7aca4f9bbc0709dfb6485f1e and UnitType e2d7b43bd21147188c546ba0767fe104 after2909 frozen entries.",
+    "Medium native tail type owns baseline2d6 and10ft printed range. Native approach range/size logic retained. No global range/damage patch.",
+    "Creation-only exact owner:44racial HP, good Fortitude/Reflex bases6, poor Will base2, eight Perception ranks, cleared donor skills. Native ability/feat/template/temporary modifiers remain live; actual native breakdown still needs runtime proof.",
+    "Native Cleave/IronWill/PowerAttack/SkillFocusPerception and trip immunity replace WeaponFocusSpear proxy. Native DR10magic/fire subtype/extraplanar retained.",
+    "Old native grab/on-hit heat graph removed. Tail-only project grab/hold and live Strength/size constrict plus1d6fire; later-round/dead-target/duplicate maintain guards separately opt in for exact Salamander.",
+    "Owner-scoped RuleCalculateWeaponStats heat adds one1d6fire to exact owned spear/tail; weak per-rule claim rejects replay while preserving other damage. No weapon enchantment or attack/on-hit replay.",
+    "Existing guarded snake-profile request adds exactly the actual Salamander profile/attack/heat/range observer, no arbitrary keys or writes. Historical prototype excludes production-only creation normalization.",
+    "Original human/tail production view is NOT adopted yet; prefab/art/animation unchanged in this checkpoint."
+  ],
+  "engineAudit": {
+    "referenceAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "script": {
+      "path": "artifacts/Inspect-Sprint17-SalamanderWeaponProfile.ps1",
+      "sha256": "ecdc48015e05cdad40dbd309c1d7067cc3f179efba0ba7e339dc2543192e830a"
+    },
+    "output": {
+      "path": "artifacts/sprint17-salamander-weapon-profile-audit.txt",
+      "sha256": "e13a2453e45f221ca8ceb8ce79fc438b9840fc57d9410de0d37c0e79d9425e47"
+    },
+    "disposition": "Private installed-reference audit only, no proprietary code/assets committed",
+    "findings": [
+      "ItemEntityWeapon.AttackRange calls UnitDescriptor.GetWeaponRange; that adds native Stats.ReachRange to the weapon type range.",
+      "BlueprintWeaponType subtracts4 feet for ranges at most10 and applies native MinWeaponRange. Stats.ReachRange is max(Reach-5,0). Keep native allowance and require the spear/tail range difference in runtime.",
+      "Weapon type owns Medium base damage; the item has size/dice override but no attack-range override.",
+      "Native weapon stats retains two-handed1.5 and secondary0.5 Strength multipliers, applying a negative modifier once. New heat is a separate energy description."
+    ]
+  },
+  "ownership": {
+    "ownerPid": 31796,
+    "ownerStartedUtc": "2026-10-05T19:29:25.9127956Z",
+    "sessionId": "01a10bcd-8582-7551-826f-0f128807eb99",
+    "oldHolderPid": 15084,
+    "oldReceiptReleasedUtc": "2026-10-07T15:53:01.3808827Z",
+    "reason": "Owner heartbeat expired during offline engineering; no runtime transaction. Edits paused; process/Git/lock census and active-branch fetch showed no competing Phase2B owner or remote motion.",
+    "preservedReceipt": "artifacts/laptop-source-owner-20261005-released-20261007T155301Z.json",
+    "newHolderPid": 37540,
+    "newHolderStartedUtc": "2026-10-07T15:54:48.8399249Z",
+    "reacquiredUtc": "2026-10-07T15:54:49.1465557Z",
+    "remoteVerified": "65bc05362920a7bdae5f8cfc8b0f1275c3d562d0"
+  },
+  "machine": {
+    "newRuntimeTransaction": false,
+    "newDeployment": false,
+    "newSaveWrite": false,
+    "lastRestorationEvidence": "EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-PASS-EVIDENCE.json",
+    "lastRestoredAtUtc": "2026-10-07T15:14:52.5459355Z",
+    "lastRestoredFiles": 136,
+    "lastRestoredVersion": "0.0.117",
+    "lastRestoredTree": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "liveFingerprintRereadWithoutRuntimeLease": false
+  },
+  "archive": "artifacts/sprint17-salamander-profile-source-pass",
+  "fileHashes": [
+    {
+      "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
+      "sha256": "6ca5d4ca886fbbaf744230ba2acc3035bf1ebf6ca73aa8453263d49dd457ff84"
+    },
+    {
+      "path": "assets-source/original-icons/icon-catalog.json",
+      "sha256": "acc4a258d03601c0c19297415f712f69422bf0fd4fea1b3736ed2dfd912a232c"
+    },
+    {
+      "path": "blueprints/blueprints.json",
+      "sha256": "b96419da8bd04c23a523e0d55f84349de3cf6312ff4ca885e06efc48b301948d"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "c98acb776536468d22fec02492aa5b93514c69b919f0d514dcdb1137224dd430"
+    },
+    {
+      "path": "docs/BLUEPRINT-MANIFEST.md",
+      "sha256": "7259a448aa50956fd6f2dad007f220a35ea5c07e697dd43c9f291a6c832ed7ad"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Blueprints/ExpandedSummoningIconBuilder.cs",
+      "sha256": "57f21fa643ad023fd8dc9efe29b3cbc31c3a27f544e2fbf5510a6b47208fa37d"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+      "sha256": "f62ecaaed5bd4c74cf014b3972b23290dc06e03e1e45fcae517587f728393f0e"
+    },
+    {
+      "path": "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+      "sha256": "998413b26cd56c3460f92efc0f8993eeed43bca0acbd6081abedd0d9e4761318"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Bodies.cs",
+      "sha256": "595d45eb24e6a695a4751ecd6c043b1b851fc46d92687fc97f1cf0772f984705"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Contacts.cs",
+      "sha256": "06025530808a78ef0c4d5eb9e89457447f5a50dccd18bb6bdfebe1f1202faf33"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
+      "sha256": "461c74a7389d5d28826da175ee9ab85ff8ee592d8374a92e90d11955db28e601"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
+      "sha256": "131725c0da6adc0af81c3faaa3cbee4a59658dab563caf1c65564e0a12431a54"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
+      "sha256": "e493be63f506bbcdb3c4b8cb56af928a9f6bd8cb9c2af932e5d330dd2d9e2d5b"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/ExpandedSummoningIdentityCatalogTests.cs",
+      "sha256": "934ca0eb6546e2e33d5006641cfe4020eb8bab06ad3d585c7e2821202c687230"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/KingmakerGunslinger.DomainTests.csproj",
+      "sha256": "641385431275f3473b95b59547a54cdbe47208b2dc9ce598995d96776c93946e"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/Program.cs",
+      "sha256": "4b0f4308b450f0ba12d3ab1deafbce1c46721f0b898137e969c5003792d00b09"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/SerpentineRulesTests.cs",
+      "sha256": "ca3cbf1702746e2a39ce0c838c6d08ef12d407217db440c20e7e9df43cf023a9"
+    },
+    {
+      "path": "tools/New-ExpandedSummoningIcons.ps1",
+      "sha256": "1ae33bead92c4e66c1b22452aefaa9adb188545dda0403d940482525be1e654c"
+    },
+    {
+      "path": "tools/expanded_summoning_manifest.py",
+      "sha256": "fdff2af4da3da049aa23576ceb26e27b3c2d715b93bace661543322e7833cec3"
+    },
+    {
+      "path": "tools/validate_expanded_summoning_phase1.py",
+      "sha256": "4f859cdb824c0be74d04956bc324919a209fce591fa73c8cbc9ca8a973dfc0fd"
+    },
+    {
+      "path": "tools/validate_expanded_summoning_phase2a141.py",
+      "sha256": "6daf03de2da5e69947f041f381c3d8a4452ac4c819c7db948fd1c0bfaf47f831"
+    },
+    {
+      "path": "validation/static-validation.json",
+      "sha256": "1393b6a1fdbff76daee897bab172748a255c8f91e24acb5452820e8453bfc46f"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderProfiles.cs",
+      "sha256": "0c307d167ac8d5eccc1392f8360ed45ed9b1992797094dd755e242566fc12408"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/SalamanderCombatComponents.cs",
+      "sha256": "4652e3302b9105a56e717f985c2bfabd55b9b4cbfaa879baef8c92ac396526c3"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/SalamanderRulesPolicy.cs",
+      "sha256": "9dd010d9887ca07fa49aec5d50a66e520991c3b1e7ebb001a3c4245cee5b00fe"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/SalamanderRulesTests.cs",
+      "sha256": "e17eaf25721370124de57ce3339129bff56db749c25ccb2a01bb1c4a149a6104"
+    },
+    {
+      "path": "artifacts/sprint17-salamander-profile-source-focused.log",
+      "sha256": "0af31f3d287f867b8fa83af3f5904c4c117360649791477093c739c418ac1133"
+    },
+    {
+      "path": "artifacts/sprint17-salamander-profile-source-gate.log",
+      "sha256": "b7ef419b65acbcd8d696e7973eb42791f3f42cfd5bb3243a632eb1944cdf6918"
+    },
+    {
+      "path": "artifacts/Inspect-Sprint17-SalamanderWeaponProfile.ps1",
+      "sha256": "ecdc48015e05cdad40dbd309c1d7067cc3f179efba0ba7e339dc2543192e830a"
+    },
+    {
+      "path": "artifacts/sprint17-salamander-weapon-profile-audit.txt",
+      "sha256": "e13a2453e45f221ca8ceb8ce79fc438b9840fc57d9410de0d37c0e79d9425e47"
+    }
+  ],
+  "openGates": [
+    "Production human/original-tail adoption and native fallback/resource lifecycle",
+    "Native Salamander profile/save/skill/range/size/feats proof",
+    "Heat hit/miss/critical/resistance, tail-only grab, constrict initial/later cadence, death/transition/load cleanup and no snake/croc regressions",
+    "Real RTWP/TB manual/AI, direct/quantity routes, UI/crowd/contacts and persistence",
+    "One complete same-artifact Sprint17 hidden batch then publication32 snake roots and5 changed Salamander roots",
+    "Full Phase2B closure then STOP owner review; Phase2C authorized but deferred"
+  ],
+  "HumanReview": "NOT_PERFORMED_NONBLOCKING"
+}

@@ -1,5 +1,9 @@
 # Blueprint manifest and registration contract
 
+Active v0.0.143 contract: 2922 stable identifiers: 2920 active and 2 reserved.
+Every released master entry remains in place; missing qualified summoning
+entries append without identity reallocation. See the release integration ledger.
+
 The owner-authorized public-master 0.0.115 integration into the 117 expansion
 adds no blueprint identities and changes no elemental manifest entry. Its
 Brown-Fur direct-cast handles are transient transactions, not saved facts.
@@ -482,11 +486,57 @@ placements are now published after technical qualification.
 
 Sprint 12 appends the Dire Rat unit, eighteen logical placements and eighteen
 celestial/fiendish execution children, then the Dire Rat disease feature,
-Goblin Dog disease-traits feature, and Goblin Dog allergic-reaction buff. The
-ledger now contains 2649 stable identifiers: 2647 active and 2 reserved. All 68
-Dire Rat, Dog, Hyena and Goblin Dog placements remain registered but hidden
-until their mechanics, distinct visual identities and lifecycle qualify.
+Goblin Dog disease-traits feature, and Goblin Dog allergic-reaction buff. All
+68 Dire Rat, Dog, Hyena and Goblin Dog placements are published after technical
+qualification.
 
-## DATA 0.0.142 candidate append
+Sprint 13 appends four identities: `KMG.Summoning.Natural.Bite1`, the Poison
+Frog's printed flat-1 bite, and the Wolverine's rage trigger feature, onset
+marker and rage state. It then registers the Shadow Mastiff unit, its four
+Summon Monster placements, `KMG.Summoning.Natural.Tail1d6`, and its bay and
+shadow-blend identities; those four placements were registered and suppressed
+while the creature was proved, and published when it qualified on 2026-10-02.
 
-The current manifest contains 2660 stable identifiers: 2658 active and 2 reserved. The eleven character-trait nodes append after the exact released v0.0.141 entries; every previous identity and status is preserved. Four features and the Fiery Glare toggle are visible; six provider/buff/area nodes are hidden. All-four Favored Class acquisition is conditional and foreign-preserving; registered save identities remain resolvable when acquisition is disabled. Current runtime/persistence qualification is pending.
+Sprint 14 appends 104 identities for the three insects of the Giant Spider rig
+family. Ninety-nine are structural: a unit each for the Fire Beetle, the Giant
+Ant (Worker) and the Giant Ant (Soldier), and their 48 logical placements with
+the celestial and fiendish execution children the Summon Monster side needs.
+The remaining five are mechanical: `KMG.Summoning.Natural.AntSting1d4`, which
+exists so the soldier's poison can gate on the sting's own weapon type and
+never reach the bite that grabs; `KMG.Summoning.Natural.GiantAnt.Poison` and
+`KMG.Summoning.Natural.GiantAnt.Venom`, the printed injury poison and its
+payload; `KMG.Summoning.Natural.FireBeetle.Luminescence`, a display feature
+beside a view-local light, which grants and denies nothing because Kingmaker
+has no mechanics-layer illumination model; and
+`KMG.Summoning.Special.GiantAntSoldier.Traits`, the soldier's grab carrier on
+the shared Sprint 6 grapple lifecycle, on the primary limb alone. All 48
+placements remain registered and suppressed until the three creatures qualify.
+
+A source review before the candidate appends three more:
+`KMG.Summoning.Natural.GiantAnt.RacialSkills`, the printed +4 racial Perception
+both castes carry in place of the Skill Focus that was standing in for it; and
+`KMG.Summoning.Natural.FireBeetle.UnitType` and
+`KMG.Summoning.Natural.GiantAnt.UnitType`, one shared by both castes, because a
+creature that does not ask for its own unit type keeps its donor's and all
+three of these borrow the Giant Spider.
+The ledger now contains 2772 stable identifiers: 2770 active and 2 reserved.
+
+Sprints 15-16 extended the preintegration Phase2B line to2836 entries and are
+qualified/published. Sprint17 appended75 identities (73snake nodes,Salamander
+tail type and species inspection type),giving2911 entries on that line.
+All32snake placements and the five preserved Salamander routes are qualified.
+The bounded observation-only db1da016 correction separately confirms raw5/10,
+computed2/6 and body5;no production change. Current1008 published generated
+placements +29 retained wrappers =1037 visible choices;zero withheld.
+
+## Checkpoint release0.0.143 integration
+
+Accepted master4ba8d4a/v0.0.142 supplies2660 stable entries,including11 exact
+Elemental character-trait identities. Preserve that entire released prefix;
+append262 missing qualified Phase2B entries in their original source order.
+The integration has2922 stable identifiers:2920 active and2reserved.
+Every symbol,GUID,type,status and note from both lines is preserved;none reused
+or removed. The four trait features and Fiery Glare toggle keep their original
+icons/conditional Favored Class acquisition;hidden saved providers remain resolvable.
+This integrated tree still requires full source/closure/master-regression gates
+before release;registration or historical evidence alone is not qualification.

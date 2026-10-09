@@ -61,6 +61,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _motionReviewFilePrefix = "pteranodon-review";
         private int _motionReviewFrame = -1;
         private int _motionReviewWaited;
+        private int _motionReviewCaptureFadeWaited;
+        private int _motionReviewCaptureFadeTotal;
         private bool _motionReviewComplete;
         private bool _motionReviewSubjectResolved;
         private UnitEntityData _motionReviewSubject;
@@ -124,6 +126,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _motionReviewFilePrefix = filePrefix;
             _motionReviewFrame = -1;
             _motionReviewWaited = 0;
+            _motionReviewCaptureFadeWaited = 0;
+            _motionReviewCaptureFadeTotal = 0;
             _motionReviewComplete = false;
             _motionReviewSubjectResolved = false;
             _motionReviewSubject = null;
@@ -236,6 +240,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BeginGuidedMotionReview(unit);
                         destination = PrepareSprint9FlightMovement(unit);
                     }
+
                     _motionReviewMoveOrigin = unit.Position;
                     _motionReviewMoveDestination = destination;
                     var move = new UnitMoveTo(destination, 0.5f);
@@ -314,6 +319,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 int moveFrames = _motionReviewDoorwayRoute ? 100 :
                     MotionReviewMoveFrames;
+                bool crocodilian = _motionReviewSubjectName == "KMG_Summoning_Unit_Crocodile" ||
+                    _motionReviewSubjectName == "KMG_Summoning_Unit_DireCrocodile";
+                bool snake = _motionReviewSubjectName == "KMG_Summoning_Unit_Viper" ||
+                    _motionReviewSubjectName == "KMG_Summoning_Unit_ConstrictorSnake";
+                bool salamander = _motionReviewSubjectName == SalamanderRulesPolicy.UnitName;
+                bool captureFrame = _motionReviewFrame == moveFrames || _motionReviewFrame == moveFrames * 2 ||
+                    _motionReviewFrame >= (_motionReviewDoorwayRoute ? moveFrames * 2 + 6 : MotionReviewAttackFrame);
+                // A surveyed doorway route can cross a native fog fade between
+                // captures. Wait for that native transition, without overriding
+                // visibility/materials or relaxing the intact-frame assertion.
+                if ((crocodilian || snake || salamander) && captureFrame && _motionReviewCaptureFadeWaited < MotionReviewFadeBudget &&
+                    (!EntityFadedIn(unit) || DissolveAmount(unit) > MotionReviewIntactDissolve))
+                {
+                    _motionReviewCaptureFadeWaited++;
+                    _motionReviewCaptureFadeTotal++;
+                    return false;
+                }
                 if (_motionReviewFrame == moveFrames)
                 {
                     Capture(unit, stage, "moving-a");
@@ -322,16 +344,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Capture(unit, stage, "moving-b");
                     unit.Commands.InterruptMove();
-                    UnitAnimationManager manager = unit.View == null ? null :
-                        unit.View.AnimationManager;
-                    _motionReviewAttack = manager == null ? null :
-                        manager.CreateHandle(UnitAnimationType.MainHandAttack, false);
-                    if (_motionReviewAttack != null) manager.Execute(_motionReviewAttack);
+                    // The new snake crowd rows observe movement/settlement.
+                    // Their actual Bite proof belongs to the command matrix;
+                    // do not create this historical MainHand presentation probe.
+                    if (!snake && !salamander)
+                    {
+                        UnitAnimationManager manager = unit.View == null ? null :
+                            unit.View.AnimationManager;
+                        _motionReviewAttack = manager == null ? null :
+                            manager.CreateHandle(UnitAnimationType.MainHandAttack, false);
+                        if (_motionReviewAttack != null) manager.Execute(_motionReviewAttack);
+                    }
                 }
                 else if (_motionReviewFrame >= (_motionReviewDoorwayRoute ?
                     moveFrames * 2 + 6 : MotionReviewAttackFrame))
                 {
-                    Capture(unit, stage, "attack");
+                    Capture(unit, stage, snake || salamander ? "post-move" : "attack");
                     if (_motionReviewAttack != null)
                     {
                         _motionReviewAttack.IsActed = true;
@@ -394,10 +422,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_motionReviewOverlayWasOpen) SetModManagerOverlay(true);
             double frameMs = _motionReviewFrameSeconds.Count == 0 ? 0d :
                 _motionReviewFrameSeconds.Average() * 1000d;
+            // The renderer is required to be on whenever the game itself says
+            // the unit is visible, and not otherwise. Kingmaker's EntityFader
+            // legitimately disables a unit that has left the party's visible
+            // area, which a single deliberately framed creature never does but
+            // a member of a 1d4+1 crowd walking its own route does: a five-body
+            // group spreads far enough that the engine hides some of it. The
+            // defect this gate was built to catch - a unit the game considers
+            // visible that nonetheless does not render - still fails, and at
+            // least one capture must show the creature actually rendering, so
+            // a creature that never appears cannot pass by staying hidden.
+            bool renderedWhenVisible = _motionReviewCaptures.All(value =>
+                value.IndexOf(";faderVisible=true", StringComparison.Ordinal) < 0 ||
+                value.IndexOf(";rendererEnabled=true", StringComparison.Ordinal) >= 0);
+            bool renderedAtLeastOnce = _motionReviewCaptures.Any(value =>
+                value.IndexOf(";faderVisible=true", StringComparison.Ordinal) >= 0 &&
+                value.IndexOf(";rendererEnabled=true", StringComparison.Ordinal) >= 0);
             bool inFrame = _motionReviewCaptures.Count == 4 &&
+                renderedWhenVisible && renderedAtLeastOnce &&
                 _motionReviewCaptures.All(value =>
                     value.IndexOf(";inFrame=true", StringComparison.Ordinal) >= 0 &&
-                    value.IndexOf(";rendererEnabled=true", StringComparison.Ordinal) >= 0 &&
                     value.IndexOf(";screenLit=true", StringComparison.Ordinal) >= 0 &&
                     value.IndexOf(";intact=true", StringComparison.Ordinal) >= 0);
             _motionReviewValid = error == null && inFrame;
@@ -481,7 +525,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             return name == ExpandedSummoningPteranodonViewPatch.AurochsBlueprintName ||
                 name == ExpandedSummoningPteranodonViewPatch.BisonBlueprintName ||
                 name == ExpandedSummoningPteranodonViewPatch.RhinocerosBlueprintName ||
-                name == ExpandedSummoningPteranodonViewPatch.WoollyRhinocerosBlueprintName;
+                name == ExpandedSummoningPteranodonViewPatch.WoollyRhinocerosBlueprintName ||
+                // Sprint 12's compact quadrupeds need the same treatment the
+                // ungulates get: a guided subject is put on the awake list and
+                // the game is unpaused for the measurement, which is what makes
+                // a movement agent tick at all. Without it the first attempt
+                // recorded maxDeltaTime=0, agentWantsMove=False and no travel.
+                // Dog is included even though it keeps the native view, because
+                // the gate is about navigation rather than about the mesh.
+                name == ExpandedSummoningPteranodonViewPatch.DireRatBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.HyenaBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.GoblinDogBlueprintName ||
+                name == "KMG_Summoning_Unit_Dog" ||
+                // Sprint 13's three ride the same ground agents and need the
+                // same guided measurement.
+                name == ExpandedSummoningPteranodonViewPatch.WolverineBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.ShadowMastiffBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.PoisonousFrogBlueprintName ||
+                // The Sprint 16 ground assertions require the same real
+                // awake/unpaused native movement measurement as these rigs.
+                name == "KMG_Summoning_Unit_Crocodile" ||
+                name == "KMG_Summoning_Unit_DireCrocodile" ||
+                // The two exact original snakes use this same native
+                // awake/unpaused movement and appearance-settlement scope.
+                name == "KMG_Summoning_Unit_Viper" ||
+                name == "KMG_Summoning_Unit_ConstrictorSnake" ||
+                // The exact production hybrid uses the same surveyed native
+                // movement probe. Combat actions are observed separately.
+                name == SalamanderRulesPolicy.UnitName;
         }
 
         private Vector3 PrepareSprint9FlightMovement(UnitEntityData unit)
@@ -732,7 +803,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string fileName = _motionReviewFilePrefix + "-" + stage + "-" + moment + ".png";
             _motionReviewCaptures.Add(WriteExpandedSummoningPartyCameraCapture(
-                unit, _request.EvidenceDirectory, fileName) + ";moment=" + moment);
+                unit, _request.EvidenceDirectory, fileName) + ";moment=" + moment +
+                ";nativeFadeWaitFrames=" + _motionReviewCaptureFadeWaited +
+                ";nativeFadeWaitTotal=" + _motionReviewCaptureFadeTotal);
+            _motionReviewCaptureFadeWaited = 0;
         }
 
         /// <summary>

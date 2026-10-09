@@ -23,6 +23,16 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class SummonIconCatalog
     {
+        internal const string ConstrictorTraitsSymbol = "KMG.Summoning.Special.ConstrictorSnake.CombatTraits";
+        internal const string SalamanderTraitsSymbol = "KMG.Summoning.Special.Salamander.CombatTraits";
+
+        internal static string PassiveTraitIconFor(string symbol)
+        {
+            // Exact passive species identity, not another selectable attack.
+            return symbol == ConstrictorTraitsSymbol ? "constrictor-snake" :
+                symbol == SalamanderTraitsSymbol ? "salamander" : null;
+        }
+
         private static readonly SummonProjectIconSpec[] Values = Build();
         internal static IReadOnlyList<SummonProjectIconSpec> All
         { get { return Array.AsReadOnly(Values); } }
@@ -39,17 +49,16 @@ namespace KingmakerGunslinger.Summoning
         internal static void Validate()
         {
             string[] visibleCatalog = ExpandedSummoningCatalog.All
-                .Where(IsPublishedSomewhere)
+                .Where(IsRegisteredSomewhere)
                 .Select(value => value.Key).ToArray();
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
-            string[] prepared = { "dire-rat", "dog", "hyena",
-                "goblin-dog", "remove-stirge" };
+            string[] prepared = { "remove-stirge" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
-            if (Values.Length != 100 || expected.Length != 100 ||
+            if (Values.Length != 109 || expected.Length != 109 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
@@ -65,7 +74,7 @@ namespace KingmakerGunslinger.Summoning
 
         private static SummonProjectIconSpec[] Build()
         {
-            var result = ExpandedSummoningCatalog.All.Where(IsPublishedSomewhere)
+            var result = ExpandedSummoningCatalog.All.Where(IsRegisteredSomewhere)
                 .Select(value => new SummonProjectIconSpec(
                     value.Key, value.DisplayName, SummonProjectIconScope.KmgCatalog))
                 .ToList();
@@ -77,15 +86,38 @@ namespace KingmakerGunslinger.Summoning
             Add(result, SummonProjectIconScope.PreservedNative,
                 "mite", "Mite", "manticore", "Manticore", "nereid",
                 "Nereid", "hamadryad", "Hamadryad");
-            // Qualified creature icons enter through visibleCatalog. Sprint
-            // 12 candidates remain catalogued while their choices are hidden;
-            // the Stirge removal action remains a separate concept.
+            // Qualified creature icons enter through visibleCatalog, which
+            // now includes the published Sprint 12 quadrupeds. The Stirge
+            // removal action remains a separate concept with no creature of
+            // its own, so it stays an explicit entry.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "dire-rat", "Dire Rat", "dog", "Dog", "hyena", "Hyena",
-                "goblin-dog", "Goblin Dog", "remove-stirge", "Remove Stirge");
+                "remove-stirge", "Remove Stirge");
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Every creature the roster registers, published or withheld.
+        ///
+        /// <para>An icon is part of a creature's identity and identities are
+        /// allocated once and never move, so a creature that is registered and
+        /// withheld still carries its own icon: removing its key from the
+        /// suppression set is all that publication should take, and a menu
+        /// entry that appeared without a face would make that a two-step
+        /// change.</para>
+        /// </summary>
+        internal static bool IsRegisteredSomewhere(SummonCreatureSpec creature)
+        {
+            return ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(
+                    SummonFamily.NaturesAlly))
+                .Any(value => value.Creature.Key == creature.Key);
+        }
+
+        /// <summary>
+        /// Only the creatures a player can choose today. The guarded runtime
+        /// review samples this, because what it has to look at is the live
+        /// menu rather than the roster.
+        /// </summary>
         internal static bool IsPublishedSomewhere(SummonCreatureSpec creature)
         {
             return ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)

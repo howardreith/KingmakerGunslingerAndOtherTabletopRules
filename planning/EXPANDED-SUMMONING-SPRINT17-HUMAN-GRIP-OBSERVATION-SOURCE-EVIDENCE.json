@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-10-07T12:04:00Z",
+  "status": "SOURCE PASS; RUNTIME NOT EXECUTED; SPRINT17 NOT QUALIFIED",
+  "sourceParent": "3020ef7b88fad77ee0337a408b6dcbe1684b7439",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "pullRequest": 26,
+  "motivatingRuntime": "801ed1f3638e608df082db6a8e70b28bacef927b",
+  "motivatingEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-PRINTED-LEVEL-RUNTIME-EVIDENCE.json",
+  "observation": {
+    "scope": "One exact owned request-local Human/Salamander actor. CPU-only native versus original weighted hand surfaces against the same native spear, same bones/frame. Borrowed geometry/binds remain private in memory; aggregate distances only.",
+    "timing": "Rule event, same-frame render, LateUpdate and end-of-frame; bounded512timeline entries and8native handles. Existing per-playable cached event time/delegate identity is read; provider and delegate never invoked.",
+    "independentCheck": "Existing original hand-distance calculation must agree within0.0001m; added to finite-attack-skin without removing any assertion.",
+    "thresholds": {
+      "gripMeters": 0.08,
+      "strikeMeters": 0.25
+    },
+    "runtimeAssertions": 15,
+    "geometryChanged": false,
+    "productionBehaviorChanged": false,
+    "globalHook": false,
+    "poseOrWeaponWrite": false
+  },
+  "tests": {
+    "focused": 296,
+    "unfiltered": 2098,
+    "domainSeconds": 82.7,
+    "gateSeconds": 180,
+    "cleanExactReferences": 14,
+    "strictPackageMembers": 321,
+    "newBehaviorTests": [
+      "Exact per-side hand/finger influences combine to at least one-half; foreign/forearm cannot contribute",
+      "Malformed, non-finite, negative, nonnormalized or mismatched surface weights fail closed"
+    ],
+    "prelaunchRejections": [
+      "Validator registered-test pin2096 stale after adding two tests",
+      "Development metadata count2096 stale after validator pin corrected"
+    ],
+    "rejectionDisposition": "Both synchronized to actual2098 registrations; full source gate passed again. No runtime launch or assertion waiver."
+  },
+  "nativeAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "findings": "UnitAnimationActionHandAttack uses selected native clip. PlayableInfo reads cached EventEntry time/action records; clip.events alone does not enumerate this cache. UnitCommand.Tick dispatches OnAction from acted state; UnitAttack.OnAction triggers the weapon rule. Read-only inspection only; raw IL not committed.",
+    "causeProven": false
+  },
+  "sourceArtifact": {
+    "dirtyAtParent": true,
+    "archive": "artifacts/sprint17-human-grip-observation-source-pass",
+    "manifest": {
+      "schemaVersion": 1,
+      "generatedAtUtc": "2026-10-07T12:03:18.4455313Z",
+      "generator": "scripts/Build-Local.ps1",
+      "repositoryRoot": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005",
+      "commit": "3020ef7b88fad77ee0337a408b6dcbe1684b7439",
+      "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+      "sourceStateSha256": "159b5945006f0b5c884e9f44d2d526845f4daccaa164cd237d51096591684adc",
+      "version": "0.0.141",
+      "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\local-runtime\\0.0.141\\KingmakerGunslinger-0.0.141-local-runtime.zip",
+      "packageSha256": "1d77293fd5ba1d6a23978125f8ef4781064afe0cde50331ce9648f4e7f84def0",
+      "dllSha256": "cf6ef60c991002fdaaa1fc2bed6af83e1bdfe70d742734694501a13876ced7c4",
+      "dllMvid": "1b8fa4b0-2b64-4a8e-996f-20e1f9fd9e15",
+      "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+      "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "validated": true
+    }
+  },
+  "logs": [
+    {
+      "path": "artifacts/sprint17-human-grip-observation-source-focused.log",
+      "sha256": "eae2b94fcc68b75b4efabc50f5be8172daf7c0279f9f76754c87755c577c2875"
+    },
+    {
+      "path": "artifacts/sprint17-human-grip-observation-source-gate.log",
+      "sha256": "9da2d9a228981a740ad9fc5caec6459fc4ed1954996d627643a5a2f560b9f265"
+    },
+    {
+      "path": "artifacts/sprint17-human-grip-observation-stale-test-count-failure.log",
+      "sha256": "592e41567adfacf4d91647d67a2abfc154b689d8634a97fa2dbca6c5d993cac6"
+    },
+    {
+      "path": "artifacts/sprint17-human-grip-observation-stale-metadata-count-failure.log",
+      "sha256": "0c89998c1d6fcd9f15ed47105350d15d40b4906cf4b9279e546b9868752977ad"
+    },
+    {
+      "path": "artifacts/Inspect-Sprint17-HumanSpearTiming.ps1",
+      "sha256": "578b47192cd032fb8a1d1438c3d4d6903fc20298c0724a546b7cca857c789b11"
+    },
+    {
+      "path": "artifacts/sprint17-human-spear-timing-audit-2.txt",
+      "sha256": "0baf012dee14b2efb962dd6d958c0e2102e468dad17b38bfaf1e8f0b655e3f7d"
+    }
+  ],
+  "machine": {
+    "lastRestore": "2026-10-07T11:38:07.0136916Z",
+    "files": 136,
+    "version": "0.0.117",
+    "tree": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "noRuntimeStarted": true
+  },
+  "next": "Next: commit/push the source-qualified diagnostic, rebuild the exact clean head with every prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15 human checks. Use the same-pose native/original timeline to classify the grip failure; do not waive8cm/25cm limits or retry for a favorable random clip. Acquire runtime lease before snapshot and restore that exact installation. Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.",
+  "HumanReview": "NOT_PERFORMED_NONBLOCKING"
+}

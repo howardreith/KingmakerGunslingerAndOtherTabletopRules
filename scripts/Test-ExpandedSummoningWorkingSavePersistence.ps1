@@ -73,3 +73,68 @@ if ($failed.Count -ne 0) {
     throw "Expanded Summoning working-save persistence tests failed: $($failed -join ', ')"
 }
 Write-Host "Expanded Summoning working-save persistence tests passed: $($checks.Count)"
+
+# Exercise the request contract, not source spelling: the closed fixture scope
+# must survive serialization, while every unrelated parameter remains denied.
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+. (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
+$requestBase = @{
+    ExpectedVersion = (Get-Content -Raw -LiteralPath (Join-Path $root 'Info.json') | ConvertFrom-Json).Version; TimeoutSeconds = 300
+    CatalogTimeoutSeconds = 180; SelectionTimeoutSeconds = 300
+    CompletionTimeoutSeconds = 180; MainMenuTimeoutSeconds = 180
+    ActionResolutionTimeoutSeconds = 180; ActionInvocationTimeoutSeconds = 30
+    DescriptorResolutionTimeoutSeconds = 30; LoadEntryTimeoutSeconds = 30
+    FingerprintTimeoutSeconds = 180; ExitAfterCompletion = $true
+    EvidenceDirectory = (Join-Path $script:KmgRuntimeEvidenceRoot 'crocodilian-persistence-request-test')
+}
+$roundTrips = 0
+$rejections = 0
+foreach ($scenario in $scenarios) {
+    $historical = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
+        saveName = 'KMG_AUTOMATION_WORKING' }
+    if ($historical.parameters.Count -ne 1) { throw 'The historical fixture was changed.' }
+    foreach ($scope in @('crocodilians', 'snakes', 'whole-roster')) {
+        $targeted = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
+            saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope }
+        $json = $targeted | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+        if ($targeted.parameters.Count -ne 2 -or
+            $json.parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or
+            $json.parameters.persistenceScope -cne $scope) {
+            throw "Targeted persistence scope did not round-trip for $scenario/$scope."
+        }
+        $roundTrips++
+        foreach ($bad in @(
+            @{ saveName = 'KMG_AUTOMATION_BASELINE'; persistenceScope = $scope },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope.ToUpperInvariant() },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'wolf' },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'salamander' },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = @($scope) },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $null },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = '' },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope; extra = 'untrusted' }
+        )) {
+            $rejected = $false
+            try { $null = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters $bad }
+            catch { $rejected = $true }
+            if (-not $rejected) { throw "Targeted persistence accepted an invalid request for $scenario/$scope." }
+            $rejections++
+        }
+        $manualExit = $requestBase.Clone()
+        $manualExit.ExitAfterCompletion = $false
+        $rejected = $false
+        try { $null = New-KmgRuntimeRequest @manualExit -Scenario $scenario -Parameters @{
+            saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope } }
+        catch { $rejected = $true }
+        if (-not $rejected) { throw 'Targeted persistence accepted a non-exiting request.' }
+        $rejections++
+    }
+}
+foreach ($scope in @('crocodilians', 'snakes', 'whole-roster')) {
+    $rejected = $false
+    try { $null = New-KmgRuntimeRequest @requestBase -Scenario 'working-save-smoke' -Parameters @{
+        saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope } }
+    catch { $rejected = $true }
+    if (-not $rejected) { throw 'The targeted fixture scope leaked into another scenario.' }
+    $rejections++
+}
+Write-Host "PASS targeted persistence request: $roundTrips exact JSON round trips, three historical defaults and $rejections fail-closed cases."

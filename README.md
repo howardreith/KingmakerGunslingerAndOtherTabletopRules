@@ -1,5 +1,23 @@
 ﻿# Kingmaker Gunslinger
 
+Version **0.0.146-expanded-summoning-phase2b-checkpoint**
+retains v0.0.145 Nodachi art, v0.0.144 weapon findability/recovery,
+and v0.0.142 Elemental character traits and content polish
+with qualified Expanded Summoning Sprints 12–17. Salamander is included after
+the owner-authorized observation-only reach correction passed; production
+behavior was not changed by that correction. The source exposes 1008 generated
+placements plus 29 retained native wrappers: 1037 choices, none withheld.
+This is a numbered stable-release line, not an alpha or prerelease. Publication
+requires exact integration, closure, compatibility and regression qualification.
+See [the checkpoint notes](docs/RELEASE-NOTES-0.0.146.md) and
+[integration ledger](planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md).
+
+After this checkpoint, Expanded Summoning proceeds one charter sprint per
+branch, PR and release from released master, with a new owner mission required.
+Sprint 18 has not been started and is not authorized by this release mission.
+
+### Earlier release history
+
 The **0.0.145-heirloom-nodachi-icon** release shows the project Nodachi artwork
 on the Heirloom Weapon: Nodachi trait; see its
 [release notes](docs/RELEASE-NOTES-0.0.145.md).
@@ -797,9 +815,9 @@ candidate (see `TELEPORTATION-COMPLETION-HANDOFF.md` for exact evidence):
   select a destination on the world map. Each activation consumes exactly
   one scroll; bought-out stock stays bought out.
 
-## 0.0.142 candidate
+## Retained released 0.0.142 content
 
-The 0.0.142-elemental-race-traits-and-content candidate adds four character race
+The released 0.0.142-elemental-race-traits-and-content adds four character race
 traits through optional Favored Class integration: Fiery Glare, Stoic Dignity,
 Aerial Observer and Whiteout. Aerial Observer requires Wings of Air; Whiteout
 requires outdoor rain or snow and uses an independent 10% miss chance.
@@ -807,9 +825,9 @@ It also improves firearm descriptions and distributes firearm stock across
 Oleg, the capital smith and Bokken. Existing serialized merchant inventories
 are not rewritten.
 
-The released 0.0.141 checkpoint is retained unchanged. No later Expanded
-Summoning development, Lunge or Earthsense is included. See the
+Its release did not include later Expanded Summoning development, Lunge or
+Earthsense. This checkpoint retains its four traits and content changes. See the
 [release notes](docs/RELEASE-NOTES-0.0.142.md) and
 [final qualification handoff](CODEX-DATA-CONTENT-0.0.142-INTEGRATION-HANDOFF-2026-10-06.md)
-for exact automated evidence and pending owner visual, tooltip and merchant
-review. This candidate has not been merged, tagged or released.
+for its historical automated evidence and owner visual, tooltip and merchant
+review limits. No new visual approval is claimed by this integration.

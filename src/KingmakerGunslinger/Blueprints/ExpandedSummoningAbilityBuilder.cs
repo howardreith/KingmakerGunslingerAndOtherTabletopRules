@@ -255,7 +255,7 @@ namespace KingmakerGunslinger.Blueprints
             if (creatureKey == "dire-rat")
                 return " Its damaging bite exposes a target to native Filth Fever after a DC 11 Fortitude save.";
             if (creatureKey == "goblin-dog")
-                return " It is immune to disease. Its damaging bite causes a one-day allergic reaction (-2 Dexterity and -2 Charisma; Fortitude DC 12; nonstacking; positive magical healing or remove disease ends it). Because Kingmaker has no broader Goblinoid subtype, this adaptation exempts only units with the exact native Goblin unit type.";
+                return " It is immune to disease. Its dander causes a one-day allergic reaction (-2 Dexterity and -2 Charisma; Fortitude DC 12; nonstacking; positive magical healing or remove disease ends it) when its bite deals damage, when a natural weapon or unarmed attack deals damage to it, and when a creature attempts to grapple it. Goblinoid creatures are exempt; because Kingmaker has no Goblinoid subtype fact, the exemption is the exact enumerated set of native goblinoid unit types the installed library carries. Riding contact is omitted because mounted combat is out of scope.";
             return string.Empty;
         }
 
