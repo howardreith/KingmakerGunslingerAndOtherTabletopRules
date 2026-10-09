@@ -1,6 +1,6 @@
 # Blueprint manifest and registration contract
 
-Active v0.0.147 Sprint 18 contract: 2980 stable identifiers: 2978 active and 2 reserved.
+Active v0.0.147 Sprint 18 contract: 2982 stable identifiers: 2980 active and 2 reserved.
 Every released v0.0.146 entry remains in place; Sprint 18 appends exactly 58 Ape
 and Dire Ape identities - two units, 26 logical placements, the 26 celestial and
 fiendish execution children of the 13 templated Summon Monster roots, one 1d6

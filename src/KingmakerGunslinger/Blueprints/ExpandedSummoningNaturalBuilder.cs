@@ -69,6 +69,10 @@ namespace KingmakerGunslinger.Blueprints
         // and the printed dice are stated explicitly.
         private const string Slam1d6Symbol =
             "KMG.Summoning.Natural.Slam1d6";
+        private const string DireApeBite1d6Symbol =
+            "KMG.Summoning.Natural.DireApe.Bite1d6";
+        private const string DireApeClaw1d4Symbol =
+            "KMG.Summoning.Natural.DireApe.Claw1d4";
         private const string ApeUnitTypeSymbol =
             "KMG.Summoning.Natural.Ape.UnitType";
         private const string DireApeUnitTypeSymbol =
@@ -354,6 +358,19 @@ namespace KingmakerGunslinger.Blueprints
                     NativeLargeSlam2d6Guid, "native large slam animation weapon");
             ConfigureWeapon(nativeLargeSlam, Require<BlueprintItemWeapon>(
                 bySymbol, Slam1d6Symbol), Slam1d6Symbol, 1, DiceType.D6);
+            // Both Dire Ape limbs carry their printed Large dice explicitly.
+            // ConfigureWeapon sets the override flag, which is what keeps the
+            // engine from scaling a Medium-authored weapon up a step for a
+            // Large wielder; the shared native weapons other creatures use
+            // are copied, never edited.
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                    library, NativeBite1d6Guid, "1d6 bite"),
+                Require<BlueprintItemWeapon>(bySymbol, DireApeBite1d6Symbol),
+                DireApeBite1d6Symbol, 1, DiceType.D6);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                    library, NativeClaw1d4Guid, "1d4 claw"),
+                Require<BlueprintItemWeapon>(bySymbol, DireApeClaw1d4Symbol),
+                DireApeClaw1d4Symbol, 1, DiceType.D4);
             ConfigureApeUnitType(Require<BlueprintUnitType>(bySymbol,
                 ApeUnitTypeSymbol));
             ConfigureDireApeUnitType(Require<BlueprintUnitType>(bySymbol,
@@ -364,8 +381,7 @@ namespace KingmakerGunslinger.Blueprints
                     ExpandedSummoningIdentityCatalog.UnitSymbol(
                         ExpandedSummoningCatalog.All.Single(creature =>
                             creature.Key == PrimateRulesPolicy.DireApeKey))),
-                BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
-                    library, NativeClaw1d4Guid, "1d4 claw"));
+                Require<BlueprintItemWeapon>(bySymbol, DireApeClaw1d4Symbol));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
                 BlueprintBuff>(library, NativeFilthFeverGuid,
                     "native Filth Fever disease payload");
@@ -966,7 +982,16 @@ namespace KingmakerGunslinger.Blueprints
                     SummonPrimateSkillRanks>();
                 ranks.CreatureKey = profile.Key;
                 ranks.OwningBlueprint = unit;
-                unit.ComponentsArray = new BlueprintComponent[] { levels, ranks };
+                // Both apes attack with more than one limb, so every limb
+                // prints the plain Strength modifier. The engine gives a
+                // natural primary-hand weapon one and a half times it when
+                // the secondary hand is empty, which is what the guarded
+                // review measured on both of them.
+                var strength = UnityEngine.ScriptableObject.CreateInstance<
+                    SummonPrimaryLimbFullStrength>();
+                strength.OwningBlueprint = unit;
+                unit.ComponentsArray = new BlueprintComponent[] {
+                    levels, ranks, strength };
             }
 
             BlueprintItemWeapon primary = Weapon(library, bySymbol,
@@ -1179,6 +1204,10 @@ namespace KingmakerGunslinger.Blueprints
                     "mastodon 2d6 slam");
             if (key == "Slam1d6") return Require<BlueprintItemWeapon>(bySymbol,
                 Slam1d6Symbol);
+            if (key == "DireApeBite1d6") return Require<BlueprintItemWeapon>(
+                bySymbol, DireApeBite1d6Symbol);
+            if (key == "DireApeClaw1d4") return Require<BlueprintItemWeapon>(
+                bySymbol, DireApeClaw1d4Symbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }

@@ -44,7 +44,11 @@ namespace KingmakerGunslinger.Summoning
         // neither can clone a native primate and must not read as its donor;
         // and the Dire Ape owns the feature that carries the engine's own rend
         // damage component together with its bounded sequencing gate.
-        internal const int SpecialIdentityCount = 206;
+        // 208 after the Sprint 18 correction: the Dire Ape needs its own
+        // bite and claw so their printed Large dice are not scaled up a
+        // step, which the guarded review measured the shared native
+        // weapons doing.
+        internal const int SpecialIdentityCount = 208;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -309,6 +313,14 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Salamander.UnitType", "BlueprintUnitType"));
             // Sprint 18
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Slam1d6", "BlueprintItemWeapon"));
+            // The guarded review measured the Dire Ape biting for 1d8 and
+            // clawing for 1d6: the shared native 1d6 bite and 1d4 claw do not
+            // override their damage dice, so the engine scales them one step
+            // up for a Large wielder. The printed entry is 1d6 and 1d4 at
+            // Large, so the Dire Ape needs weapons that hold their dice. The
+            // shared ones are left alone; qualified creatures keep them.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireApe.Bite1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireApe.Claw1d4", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Ape.UnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireApe.UnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireApe.Rend", "BlueprintFeature"));

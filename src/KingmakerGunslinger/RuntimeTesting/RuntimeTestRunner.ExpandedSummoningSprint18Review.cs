@@ -43,6 +43,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly JArray _primateRows = new JArray();
         private int _primateLoadingFrames;
         private bool _primateComplete;
+        private UnityEngine.Object[] _primateOwned = new UnityEngine.Object[0];
+        private string _primateOwnedKey;
 
         private void PollSprint18Review()
         {
@@ -114,28 +116,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                         try
                         {
                             if (!profiled)
-                            {
-                                ReviewSprint18Profile(fixture, owner, key,
-                                    _primateAssertions, _primateRows);
                                 ReviewSprint18Body(owner, key,
                                     _primateAssertions, _primateRows);
-                            }
                             foreach (int step in ReviewSprint18Routine(
                                 fixture, owner, key, turnBased)) yield return step;
+                            // Only now is the creature in combat and no
+                            // longer flat-footed, which is the state a
+                            // printed stat block describes. Reading it
+                            // before it had acted denied it its Dexterity in
+                            // armour class, touch and combat manoeuvre
+                            // defence, and the first run measured exactly
+                            // that.
+                            if (!profiled)
+                                ReviewSprint18Profile(fixture, owner, key,
+                                    _primateAssertions, _primateRows);
                             if (key == PrimateRulesPolicy.DireApeKey)
                                 foreach (int step in ReviewSprint18Rend(
                                     fixture, owner, turnBased)) yield return step;
                         }
                         finally
                         {
-                            UnityEngine.Object[] owned = ReviewSprint18OwnedResources(owner);
+                            _primateOwned = ReviewSprint18OwnedResources(owner);
+                            _primateOwnedKey = profiled ? null : key;
                             ResetExpandedSummoningHostile(fixture);
                             DireApeRendGate.ForgetObserved(owner);
                             DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
-                            if (!profiled) ReviewSprint18Release(key, owned,
-                                _primateAssertions, _primateRows);
                         }
-                        yield return 0;
+                        // Native views are destroyed at the end of a frame,
+                        // so the instance's resources are still alive in the
+                        // frame its unit was dismissed in. Let the native
+                        // teardown run before counting what survived.
+                        for (int teardown = 0; teardown < 8; teardown++) yield return 0;
+                        if (_primateOwnedKey != null)
+                            ReviewSprint18Release(_primateOwnedKey, _primateOwned,
+                                _primateAssertions, _primateRows);
+                        _primateOwned = new UnityEngine.Object[0];
+                        _primateOwnedKey = null;
                     }
                     profiled = true;
                 }
@@ -254,8 +270,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 attachment.DriverNames != null &&
                 PrimateVisualPolicy.PermitsBones(key, attachment.DriverNames) &&
                 equipment != null && equipment.sharedMesh != null &&
-                equipment.sharedMesh.vertexCount == 0 && equipment.enabled &&
-                equipment.gameObject.activeInHierarchy;
+                equipment.sharedMesh.vertexCount == 0;
             UnityEngine.Object[] owned = attachment == null ?
                 new UnityEngine.Object[0] : attachment.CaptureOwnedResources();
             bool instanceOwned = owned.Length > 0 && owned.All(value =>
@@ -274,7 +289,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         0 : attachment.DriverNames.Length,
                     ["equipmentBlanked"] = equipment != null &&
                         equipment.sharedMesh != null && equipment.sharedMesh.vertexCount == 0,
-                    ["equipmentStillEnabled"] = equipment != null && equipment.enabled,
+                    // Recorded, not required: the attachment never sets
+                    // either of these, so whatever the donor's own faders and
+                    // appearance locks left them at is the right answer.
+                    ["equipmentRendererEnabled"] = equipment != null && equipment.enabled,
+                    ["equipmentObjectActive"] = equipment != null &&
+                        equipment.gameObject.activeInHierarchy,
                     ["ownedResources"] = new JArray(owned.Select(value => value.name)),
                     ["instanceOwned"] = instanceOwned,
                 }, "the live ape wears its own body, the donor equipment is blank, " +
