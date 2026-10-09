@@ -1,5 +1,9 @@
 ﻿# Kingmaker Gunslinger
 
+The **0.0.145-heirloom-nodachi-icon** release shows the project Nodachi artwork
+on the Heirloom Weapon: Nodachi trait; see its
+[release notes](docs/RELEASE-NOTES-0.0.145.md).
+
 The **0.0.144-weapon-findability-fixes** release implements the seven requested
 weapon moves, corrects two additional scene references and adds
 [controlled old-save recovery](docs/WEAPON-FINDABILITY-RECOVERY.md). See the
