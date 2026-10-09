@@ -67,9 +67,11 @@ sets are retained; nonexistent native animations are not invented.
 ## Qualification and installation
 
 Integration ledger: [exact imported tips and conflicts](../planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md).
-The exact integration source/build/package, exhaustive player path, whole-roster
-ON/OFF persistence, five-profile compatibility and v0.0.142 coexistence gates
-remain pending. No source-only PASS is gameplay qualification.
+Exact integration source/build/package, exhaustive player path, whole-roster
+ON/OFF persistence, five-profile compatibility and v0.0.142/144/145 coexistence
+qualification is recorded with its tested-candidate provenance in the companion
+release manifest and planning/RELEASE-0.0.146-EVIDENCE.json. Package notes are
+frozen before runtime qualification; no source-only PASS is gameplay qualification.
 
 Back up saves before updates. Install only the standalone UMM ZIP. Keep the mod
 installed in campaigns that have used its content; disabling a content module
