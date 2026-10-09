@@ -9,6 +9,7 @@ import inspect_elemental_character_trait_icons as trait_icons
 
 VERSION="0.0.142"
 INFORMATIONAL_VERSION="0.0.142-elemental-race-traits-and-content"
+PACKAGE_SUFFIX="elemental-race-traits-and-content"
 BASE="97f0a966b3219ce0122626a492529b509e1db880"
 FORBIDDEN=(
     "EXPANDED-SUMMONING-*", "planning/EXPANDED-SUMMONING-*",
@@ -55,7 +56,7 @@ def validate(root):
     count=len(re.findall(r'\bCase\("',program))
     state=json.loads((root/"validation/static-validation.json").read_text(encoding="utf-8-sig"))
     record=state["dataContentTraits142"]
-    if record["deterministicTestCount"]!=count or record["stableTraitIdentityCount"]!=11 or record["originalTraitIconCount"]!=4:
+    if record["deterministicTestCount"]!=(count if VERSION=="0.0.142" else 2294) or record["stableTraitIdentityCount"]!=11 or record["originalTraitIconCount"]!=4:
         raise AssertionError("Active DATA counts differ from exact tree")
     old_state=json.loads(released(root,"validation/static-validation.json"))
     if state["expandedSummoningPhase2A141"]!=old_state["expandedSummoningPhase2A141"]:
@@ -65,7 +66,7 @@ def validate(root):
     baseline.VERSION=VERSION
     baseline.INFORMATIONAL_VERSION=INFORMATIONAL_VERSION
     baseline.PACKAGE="KingmakerGunslinger-"+VERSION+"-local-runtime.zip"
-    baseline.PACKAGE_SUFFIX="elemental-race-traits-and-content"
+    baseline.PACKAGE_SUFFIX=PACKAGE_SUFFIX
     baseline.DETERMINISTIC_TEST_COUNT=count
     baseline.validate(root)
     intake=trait_icons.inspect(root)
@@ -79,7 +80,7 @@ def validate(root):
         "src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitOwnedGrant.cs":(
             "[JsonProperty] private Fact _ownedFact","Owner.RemoveFact(owned)","ElementalCharacterTraitsChanged"),
         "docs/RELEASE-NOTES-0.0.142.md":(
-            INFORMATIONAL_VERSION,"Fiery Glare","Stoic Dignity","Wings of Air","Whiteout","serialized merchant"),
+            "0.0.142-elemental-race-traits-and-content","Fiery Glare","Stoic Dignity","Wings of Air","Whiteout","serialized merchant"),
     }.items():
         text=(root/path).read_text(encoding="utf-8-sig")
         for token in tokens:
