@@ -67,7 +67,10 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentException(
                     "The masterwork Nodachi registration donor is invalid.");
             WeaponCategory nodachi = masterworkNodachi.Type.Category;
-            Sprite icon = masterworkNodachi.Icon;
+            // The donor still carries its native sword sprite here; the project
+            // Nodachi art reaches the item later, so take it from the cache.
+            Sprite icon = EasternWeaponCategoryRuntime.PresentationEnabled ?
+                ProjectAssetIcons.RequireIcon("nodachi") : masterworkNodachi.Icon;
 
             BlueprintFeature hidden = registry.Register<BlueprintFeature>(
                 CombatManeuverBonusSymbol, () => CreateHiddenCombatManeuver());
