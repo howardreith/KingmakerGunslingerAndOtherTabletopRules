@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "sprint": 18,
   "title": "Expanded Summoning Sprint 18: Ape and Dire Ape",
-  "status": "SOURCE QUALIFIED; MOD INITIALIZATION PROVED IN GAME; DONOR CENSUS PASSED; ORIGINAL BODIES NOT AUTHORED; SPRINT 18 RUNTIME REVIEW NOT RUN; NOT PUBLISHED; NOT RELEASED",
+  "status": "SOURCE QUALIFIED; MOD INITIALIZATION PROVED IN GAME; DONOR CENSUS PASSED; ORIGINAL BODIES AUTHORED; SPRINT 18 RUNTIME REVIEW NOT RUN; NOT PUBLISHED; NOT RELEASED",
   "branch": "codex/expanded-summoning-sprint18-ape-dire-ape",
   "masterBase": "da782d2297d6cf361ac30a5e0ea07348d3b7f7d7",
   "releasedBaseline": "v0.0.146",
@@ -31,7 +31,7 @@
     "sprint18CorruptionFixtures": "PASS 13/13 (tools/test_expanded_summoning_sprint18147.py)",
     "repositoryValidatorRegressionFixtures": "PASS 3/3",
     "iconCatalogFixtures": "PASS 29/29",
-    "unfilteredDomainSuite": "PASS 2510/2510, including 10 Sprint 18 cases and 2 ledger-bound cases",
+    "unfilteredDomainSuite": "PASS 2517/2517, including 10 Sprint 18 rules cases, 7 Sprint 18 original-body cases and 2 ledger-bound cases",
     "cleanExactReferenceReleaseBuild": "PASS; 14 exact private references compared byte for byte against the installed Steam runtime",
     "buildOutputValidation": "PASS",
     "strictStandalonePackageValidation": "PASS; 336 members",
@@ -40,7 +40,8 @@
     "guardedPrimateDonorCensus": "PASS. 288 primate-adjacent blueprints discovered, 28 view prefabs surveyed at the contract cap, 28 captured, 9/9 assertions PASS. Evidence 20261009T1721285353210Z-observe-expanded-summoning-primate-census.",
     "batchedSprint18RuntimeReview": "NOT RUN",
     "publicationGate": "NOT RUN",
-    "releaseClosureMatrix": "NOT RUN"
+    "releaseClosureMatrix": "NOT RUN",
+    "originalPrimateBodies": "PASS. Two original meshes and two original paintings authored against the census-chosen bind pose; 6/6 offline Blender fixtures pass, including the per-shell signed-volume check the shipped winding depends on. Not runtime proved."
   },
   "sprint18DomainCases": [
     "expanded-summoning.sprint18-twenty-six-roots",
@@ -64,7 +65,9 @@
     "visibleChoicesAfterPublication": 1063,
     "ledgerEntries": 2980,
     "ledgerAppended": 58,
-    "projectIconConcepts": 111
+    "projectIconConcepts": 111,
+    "shippedOriginalBodyFiles": 4,
+    "packageMemberCount": 340
   },
   "protectedBoundary": {
     "releasedMasterFilesCompared": 198,
@@ -110,17 +113,6 @@
     }
   },
   "blockers": [
-    {
-      "id": "PRIMATE_ORIGINAL_BODIES_NOT_AUTHORED",
-      "gate": "Mission section 5 original visuals",
-      "detail": "The census has run and chosen the rig, so the input the mesh generators need now exists. The original Ape and Dire Ape geometry and albedo are not yet authored, and no view patch applies them, so both creatures would still appear as the donor Troll. Both are withheld, so nothing player-visible depends on the borrowed body.",
-      "ownerDecision": "None. Remaining engineering.",
-      "blocks": [
-        "visual lifecycle review",
-        "publication",
-        "release"
-      ]
-    },
     {
       "id": "SPRINT18_RUNTIME_REVIEW_NOT_RUN",
       "gate": "Mission section 9 hidden candidate qualification",
@@ -192,7 +184,6 @@
     }
   ],
   "remainingWork": [
-    "Author the original Ape and Dire Ape bodies against the captured Troll bind pose, review them offline, and wire the project-owned view.",
     "Author and run the batched Sprint 18 hidden-candidate runtime review.",
     "Publish the 26 roots, merge PR #32 and release v0.0.147."
   ],
@@ -201,6 +192,15 @@
       "id": "PRIMATE_DONOR_CENSUS_NOT_RUN",
       "resolvedBy": "The guarded census run above",
       "resolution": "Census PASS; donor rig chosen on recorded evidence and pinned in ExpandedSummoningDonorCatalog with the reasoning."
+    },
+    {
+      "id": "PRIMATE_ORIGINAL_BODIES_NOT_AUTHORED",
+      "resolvedBy": "assets-source/original-models/sprint18-primates",
+      "resolution": "Both bodies authored as original project-owned geometry on the census-chosen rig, reviewed offline in clay, silhouette, textured and unlit across rest, slam, contact, rake, crouch, jaw-open and curled-hand poses, and wired through a creature-scoped view patch that swaps only this one instance and restores it exactly."
     }
+  ],
+  "acceptedDeviations": [
+    "The knuckle-walking gait is not authored. The engine plays the donor rig's own clips, which belong to a large upright biped; the geometry is an ape and the locomotion is the donor's.",
+    "The rend animation variant is not played: the engine selects it from its command-level rend gate, which this sprint does not use. The rend is still a visible damage event."
   ]
 }

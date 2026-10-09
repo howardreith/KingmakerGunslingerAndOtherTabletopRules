@@ -561,9 +561,10 @@ def validate(root: Path) -> None:
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.146":
         package_count += 4 + 7 + 1  # traits, unchanged master145 documents, release146 notes
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.147":
-        # Everything v0.0.146 shipped, plus the Sprint 18 release notes and the
-        # two new project-owned ape icons.
-        package_count += 4 + 7 + 1 + 1 + 2
+        # Everything v0.0.146 shipped, plus the Sprint 18 release notes, the
+        # two new project-owned ape icons, and the four original Sprint 18
+        # body files: one mesh and one painting for each ape.
+        package_count += 4 + 7 + 1 + 1 + 2 + 4
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.143", "0.0.144", "0.0.145"):
         # Seven player instructions and curated qualification files accompany
         # the findability repair. Historical summoning asset counts are fixed.
@@ -580,6 +581,13 @@ def validate(root: Path) -> None:
             "assets\\sprint13-creatures",
             "@('wolverine','shadow-mastiff','poisonous-frog')",
             "assets\\sprint14-insects")
+        if json.loads((root / "Info.json").read_text(
+                encoding="utf-8"))["Version"] == "0.0.147":
+            # The two original ape bodies are staged by name, like every
+            # other original body, so a missing export fails the package
+            # rather than shipping an ape that still looks like a troll.
+            require_tokens(root / "scripts" / script,
+                "assets\\sprint18-primates", "@('ape','dire-ape')")
         insect_assets = {"fire-beetle", "giant-ant-worker", "giant-ant-soldier",
                          "giant-ant-drone", "giant-stag-beetle"}
         arrays = re.findall(r"@\(([^)]*)\)",

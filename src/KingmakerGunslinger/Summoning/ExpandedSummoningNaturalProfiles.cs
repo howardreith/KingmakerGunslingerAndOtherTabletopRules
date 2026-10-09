@@ -201,6 +201,7 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException(
                     "Dire Ape printed attack routine or profile changed.");
             PrimateRulesPolicy.Validate();
+            PrimateVisualPolicy.Validate();
         }
 
         private static NaturalSummonProfile[] Build()

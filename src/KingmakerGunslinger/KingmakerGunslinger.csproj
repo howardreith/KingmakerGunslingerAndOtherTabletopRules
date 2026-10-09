@@ -187,6 +187,9 @@
     <Compile Include="Summoning\SerpentineCombatComponents.cs" />
     <Compile Include="Summoning\PrimateRulesPolicy.cs" />
     <Compile Include="Summoning\PrimateCombatComponents.cs" />
+    <Compile Include="Summoning\PrimateVisualPolicy.cs" />
+    <Compile Include="Summoning\PrimateVisualAttachment.cs" />
+    <Compile Include="Summoning\ExpandedSummoningPrimateViewPatch.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="Summoning\ExpandedSummoningSerpentineViewPatch.cs" />
     <Compile Include="Summoning\SerpentineNativeSpearAnimation.cs" />
@@ -1614,6 +1617,14 @@
     </Content>
     <Content Include="..\..\assets\sprint17-serpents\*-albedo.png">
       <Link>assets\sprint17-serpents\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint18-primates\*-mesh.json">
+      <Link>assets\sprint18-primates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint18-primates\*-albedo.png">
+      <Link>assets\sprint18-primates\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">
