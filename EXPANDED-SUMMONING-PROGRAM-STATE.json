@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
   "phase2Mission": {
-    "authority": "v0.0.143 Final Resource-Ownership Cleanup and Release Order: one bounded resource diagnosis completed; one narrow evidence-driven original-flight teardown correction pending exact qualification. Readiness closed; prior qualification and historical Crocodile risk preserved. Release only after all remaining gates; no Sprint18/Phase2C.",
+    "authority": "v0.0.143 Final Resource-Ownership Cleanup and Release Order: one resource diagnosis and one correction completed. Original-flight resource fix qualified on affected ON/lifecycle gates; module-OFF legacy visual-variant boundary failed. STOP; no further correction/diagnosis or release under this allowance. Prior qualification and Crocodile risk preserved; no Sprint18/Phase2C.",
     "authorizedSprints": [
       9,
       10,
@@ -30,24 +30,24 @@
       17
     ],
     "currentSprint": null,
-    "currentSubItem": "RESOURCE_OWNER_CORRECTION_PENDING_EXACT_QUALIFICATION: a21f9aa1 diagnosis source2484/package325 PASS, smoke11 PASS, cleanup118/119 FAIL with zero writes. All108 units destroyed; nine exact private resources survive: mesh, created material and installed material for Eagle, Dire Bat and Pteranodon. Six match historical flat witness; three additional created materials exposed by ownership records. Other private resources gone; 198 borrowed and22 immutable caches count-stable. One narrow original-flight teardown correction plus strict ownership/repeated-lifecycle fixture is source-tested, not runtime-qualified. Working retains exact108 prepared units. Readiness closed; no extra diagnosis; exact restoration verified.",
+    "currentSubItem": "BLOCKED_MODULE_DISABLED_LEGACY_VISUAL_VARIANTS: exact735751ab source2486/package325 PASS;smoke11,ONcleanup119(native save),freshabsence6,flight26 PASS. All137 private resources gone in1frame;220 borrowed/cache stable. OFFseed120(native save)/publication2 PASS;OFFcleanup109/119 FAIL:9 profile-view rows have exact profiles but legacy tint/coat resources while module disabled,plus no mandatory-pass save. All108 units and20 private resources destroyed;ZERO surviving private objects,zero OFFcleanup writes. Working retains NEW108 OFFseed;OFFabsence/profiles/v142/trait-save NOT RUN. Exact restoration verified;one diagnosis/one correction consumed.",
     "currentBranch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
     "releaseCheckpoint": {
       "version": "0.0.143",
       "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
       "qualifiedPhase2BImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
       "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md",
-      "status": "RESOURCE_OWNER_CORRECTION_PENDING_EXACT_QUALIFICATION",
+      "status": "BLOCKED_MODULE_DISABLED_LEGACY_VISUAL_VARIANTS",
       "sourceOwnerSession": "1a065852-cdf2-46c2-a472-7b1229e813b6",
       "sourceOwnershipHeldAtReportingCommit": true,
       "sourceOwnershipReleaseRequiredBeforeFinalResponse": true,
-      "executableCandidate": "a21f9aa1b1db4071adafc1fdd76cef474cd62524",
+      "executableCandidate": "735751ab7da9087d7ae38d2a321cffc91a4a8037",
       "evidence": "planning/RELEASE-0.0.143-EVIDENCE.json",
       "salamanderIncluded": true,
       "closureRun": true,
       "closurePassed": false,
-      "nextOwnerDecision": null,
-      "nextAction": "Freeze and push the single original-flight teardown correction; exact source/build/package gate; smoke, existing prepared108 cleanup, fresh absence, affected three-flight repeated lifecycle, module-off protocol; then remaining compatibility/coexistence gates. No initial prepare rerun and no further resource diagnosis.",
+      "nextOwnerDecision": "Separate bounded module-disabled legacy tint/coat attachment boundary correction/requalification and authorized native cleanup of exact prepared108 Working fixture. Also choose updated integration/release identity after external Latestv0.0.144/master40f4debbe8391d0c6574f32b6de86e5a8b92370c;no integration attempted. No additional resource/readiness/Crocodile diagnosis is needed or requested.",
+      "nextAction": "STOP;preserve exact735751ab package/results;push reporting checkpoint and release source ownership. Do not retry,merge,tag,release or start Sprint18.",
       "ownerReleaseRiskAcceptance": "HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE",
       "finalAttributionCycleAuthorized": true,
       "finalAttributionCycleComplete": true,
@@ -1474,7 +1474,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Qualify the single evidence-driven original-flight teardown correction on an exact committed artifact, starting with cleanup of the existing108 prepared Working units; finish ON/OFF persistence, affected flight lifecycle, compatibility and v142 coexistence. Merge PR29 and publish real Latest v0.0.143 only if every mandatory gate passes; otherwise stop with exact evidence. No Sprint18/Phase2C.",
+  "nextConcreteAction": "STOP;preserve exact735751ab package/results;push reporting checkpoint and release source ownership. Do not retry,merge,tag,release or start Sprint18.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

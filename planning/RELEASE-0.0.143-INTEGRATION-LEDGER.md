@@ -1,44 +1,60 @@
 # v0.0.143 release integration ledger
 
-Status: RESOURCE_OWNER_CORRECTION_PENDING_EXACT_QUALIFICATION;release NOT QUALIFIED.
+Status: BLOCKED_MODULE_DISABLED_LEGACY_VISUAL_VARIANTS;release NOT QUALIFIED.
 
-## Current qualification boundary, 2026-10-08
+## Current qualification boundary, 2026-10-09 UTC
 
-Owner's single resource diagnosis completed on exact a21f9aa1b1db4071adafc1fdd76cef474cd62524:
-full2484/2484,14references,strict325-member ZIP9d0e59ee91a3f2dc6eb973be34deea28e65266bac0f9591d0bc4a9146431d98a;
-smoke11/11 PASS;cleanup118/119 FAIL,zero writes. All108 units destroyed;
-resource report7535875153585d012891e1fdfcae8111190d5e4be45ace2731f9d32fac1c4fca
-has357 unique objects/zero observer errors. Readiness remains CLOSED.
+Exact735751ab7da9087d7ae38d2a321cffc91a4a8037:source2486/2486,14references,
+strict325-member package PASS. ZIP99272f727d67214da094dc704ee7ec09c8f5e8a7d37b95d582b02a41c979788e.
+The single resource diagnosis a21f9aa1 remains FAIL118/119,zero writes.
+It identified nine private original-flight objects,including six historical
+survivors,owned by Eagle/DireBat/Pteranodon attachment records. One correction
+adds exact private teardown for only these three keys. Two production files
+are pinned by imported/corrected hashes;all other protected master/summon
+files remain exact. Initial e646 source gate rejected stale validator pins
+before build/runtime;735751 changes only validator/tests/evidence,no second
+production correction or runtime attempt. All324 nonDLL members unchanged.
 
-Nine exact private resources survive60 Unityframes after native retirement:
-Eagle/DireBat/Pteranodon each retain their created mesh/material and controller
-material instance. Six were in the old flat witness;three original materials
-were missed by that scan. Existing Phase2 teardown excludes these three keys.
-198 known borrowed native objects and22 exact immutable albedos remain stable.
-This is classificationC: demonstrated owner defect,not a cache exemption.
+Correction batch release143-runtime-20261008T2336534602568Z:
+smoke11 PASS;ONcleanup119 PASS with one native save;freshabsence6 PASS;
+affected three-flight view/repeated lifecycle26 PASS. All137 private resources
+gone in1frame;198 borrowed+22 immutable caches alive/count-stable. This closes
+the demonstrated original-flight resource defect without cache exemptions.
+The OFF row required a fresh native seed after clean absence emptied receipts:
+prepare120 PASS with one save;OFF registration/publication2 PASS.
 
-One bounded correction adds only these three keys' exact-reference teardown,
-restores donor references,disposes private objects and removes owner record
-idempotently. Existing Phase2 cleanup and gameplay remain unchanged. Fixture
-asserts ALL private receipts null,known borrowed/cache identity+count stability;
-existing creature review gains focused repeated native lifecycles for these keys.
-Focused6/incremental compile PASS;full exact correction/runtime NOT YET RUN.
-No additional resource diagnosis,Crocodile attribution or readiness investigation.
+OFFcleanup109/119 FAIL: exact saved profiles match for all nine failed rows,
+but cheetah/lion/tiger/dust/ice/magma/ooze/salt/steam-mephit retain legacy
+tint/coat variants while OFF. The fixture requires projectResourceCount==0.
+ExpandedSummoningVisualVariantPatch.OnDataAttached has no module gate;
+its existing ownership record identifies all20 private variant resources.
+All108 units and all20 private resources were destroyed;9 borrowed stable.
+No surviving-object leak or observer error. The mandatory profile/view
+mismatch prevented arming save (10th failure);zero OFFcleanup writes.
+Working retains NEW108 OFF seed. No OFFabsence,restoredON scenario,
+five-profile,v142 coexistence or native-owned trait-save launched.
 
-Prepared Working save still contains108 receipt-owned units;diagnosis wrote zero.
-Next cleanup uses that exact fixture,then native clean save/fresh absence.
-Only the OFF108 row needs a fresh native seed after ON absence empties receipts;
-no repeated ONprepare gate and no manual save copying/editing/parsing.
-Then complete remaining profiles/coexistence/native-owned trait-save once.
+One resource diagnosis and one correction consumed. STOP for a separate bounded
+module-OFF legacy tint/coat boundary correction/requalification and exact
+native Working cleanup. No additional resource/readiness/Crocodile diagnosis,
+no manual save surgery,no waiver. Preserve all old failed results and PASS
+provenance. Current resource/ON/lifecycle results are not full release PASS.
 
-Batch release143-runtime-20261008T2304555739206Z restored actual snapshot
-20261008T2304563605018Z exactly:136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Settings/FavoredClass byte-exact;native process exits;leaseCompleted,no game/staging.
-Source session1a065852-cdf2-46c2-a472-7b1229e813b6/keeper38584 active until handoff.
-PR29 draft;25/26 open. All prior failed artifacts/provenance remain preserved.
-Unaffected crocodilians212/snake71/Salamander/menu/root proofs reused;owner
-historical Crocodile release-risk acceptance unchanged. No Sprint18/Phase2C.
-This section supersedes historical stopping language,not historical outcomes.
+Actual snapshot20261008T2336544798116Z restored:136files/Info0.0.117/tree
+216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Settings/FavoredClass byte-exact;no game/lease/staging;native process exits.
+Source keeper38584/session1a065852-cdf2-46c2-a472-7b1229e813b6 releases after
+reporting push. PR29 draft,25/26 open;no merge/tag/release/permanent deployment.
+Historical Crocodile risk acceptance unchanged;no recurrence reported.
+No Sprint18/Phase2C. Exact hashes/receipts:planning/RELEASE-0.0.143-EVIDENCE.json.
+This current section supersedes historical authority language,not outcomes.
+
+Final fetch found PR30 merged as master40f4debbe8391d0c6574f32b6de86e5a8b92370c;
+real non-prerelease Latestv0.0.144 published2026-10-09T00:07:22Z. It contains
+weapon-findability work (88 changed files from4ba8d4ac). Our release143 branch
+did not move externally. No reconciliation,merge,version change or release
+attempt made. New master/tag preserved;owner must select successor integration
+and release identity instead of silently publishing143 over Latest144.
 
 ## Exact ancestry and authority
 
