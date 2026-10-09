@@ -543,5 +543,14 @@
     "PASSIVE_CREATURE_SENSES_UNMODELED: low-light vision and scent on both apes.",
     "ORDINARY_MAP_LAND_USE_SCOPE: the 30-foot climb speed and the printed Climb skill on both apes."
   ],
-  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "measurementConventions": [
+    {
+      "id": "NATIVE_DIFFICULTY_MODIFIER_EXCLUDED_FROM_PRINTED_COMPARISON",
+      "what": "Kingmaker puts a Difficulty-descriptor modifier on a non-party creature armour class, from the DifficultOpponent feature the player difficulty setting grants. The third guarded review measured it at -2 on both apes.",
+      "reach": "Armour class, touch and flat-footed carry it directly, and the engine computes combat manoeuvre defence from touch armour class, so the same term reaches all four defensive numbers exactly once.",
+      "why it is excluded": "The printed stat block describes the creature. The modifier is the player difficulty setting applied to every non-party creature in the game, not anything this sprint does, and it moves with a setting the player owns. The review subtracts it once, records the whole modifier list behind armour class and names the term, so the comparison is to the printed block and the native term stays visible.",
+      "not done": "Nothing suppresses, overrides or compensates for the modifier in the game. It applies to both apes exactly as it applies to every other creature at that difficulty."
+    }
+  ]
 }
