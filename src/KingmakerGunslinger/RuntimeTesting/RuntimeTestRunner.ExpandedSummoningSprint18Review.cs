@@ -205,6 +205,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             Sprint14CmdBreakdown cmd = ProbeCombatManeuverDefenceParts(
                 fixture.Hostile, owner, CombatManeuver.BullRush);
+            // The player's difficulty setting puts a Difficulty-descriptor
+            // modifier on this creature's armour class, and the engine
+            // computes combat manoeuvre defence from touch armour class, so
+            // the same term reaches all four defensive numbers exactly once.
+            // The printed stat block does not include it and no creature in
+            // the game escapes it, so it is subtracted and named.
+            int difficulty = stats.AC.Modifiers.Where(modifier =>
+                modifier.ModDescriptor == ModifierDescriptor.Difficulty)
+                .Sum(modifier => modifier.ModValue);
             int deniedDex = cmd.DexterityDenied || cmd.FlatFooted ?
                 stats.Dexterity.Bonus : 0;
             int stealth = stats.GetStat(StatType.SkillStealth).ModifiedValue;
@@ -214,13 +223,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.Descriptor.State.Size == Size.Large &&
                 owner.Descriptor.Progression.CharacterLevel == expected.HitDice &&
                 stats.HitPoints.ModifiedValue == expected.HitPoints &&
-                stats.AC.ModifiedValue == expected.ArmorClass &&
-                stats.AC.Touch == expected.Touch &&
-                stats.AC.FlatFooted == expected.FlatFooted &&
+                stats.AC.ModifiedValue - difficulty == expected.ArmorClass &&
+                stats.AC.Touch - difficulty == expected.Touch &&
+                stats.AC.FlatFooted - difficulty == expected.FlatFooted &&
                 stats.GetStat(StatType.SaveFortitude).ModifiedValue == expected.Fortitude &&
                 stats.GetStat(StatType.SaveReflex).ModifiedValue == expected.Reflex &&
                 stats.GetStat(StatType.SaveWill).ModifiedValue == expected.Will &&
-                cmd.Result + deniedDex == expected.CombatManeuverDefense &&
+                cmd.Result + deniedDex - difficulty == expected.CombatManeuverDefense &&
                 stats.GetStat(StatType.SkillMobility).ModifiedValue == expected.Mobility &&
                 stats.GetStat(StatType.SkillPerception).ModifiedValue == expected.Perception &&
                 (expected.Stealth.HasValue
@@ -241,8 +250,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["armorModifiers"] = DescribeSprint18Modifiers(stats.AC),
                 ["armorDexterityBonus"] = stats.AC.DexterityBonus,
                 ["additionalCmd"] = stats.AdditionalCMD.ModifiedValue,
-                ["difficulty"] = Game.Instance.Player == null ? null :
-                    Game.Instance.Player.Difficulty.ToString(),
+                ["nativeDifficultyTerm"] = difficulty,
+                ["armorNetOfDifficulty"] = stats.AC.ModifiedValue - difficulty,
+                ["touchNetOfDifficulty"] = stats.AC.Touch - difficulty,
+                ["flatFootedNetOfDifficulty"] = stats.AC.FlatFooted - difficulty,
+                ["cmdNetOfDifficulty"] = cmd.Result + deniedDex - difficulty,
                 ["limbs"] = limbRows,
                 ["mobility"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillMobility)),
                 ["perception"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillPerception)),

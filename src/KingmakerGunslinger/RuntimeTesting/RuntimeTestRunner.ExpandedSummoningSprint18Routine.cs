@@ -157,6 +157,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                         }
                         UnitAttack ignored = null;
+                        int before = observer.Attacks.Count +
+                            (secondObserver == null ? 0 : secondObserver.Attacks.Count);
                         if (name == "claws-on-two-targets" && sequence == 0)
                         {
                             if (secondTarget == null)
@@ -175,10 +177,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                         else
                             foreach (int step in Sprint18RunFullAttack(fixture, owner,
                                 result => ignored = result)) yield return step;
+                        // A natural one always misses, whatever the bonus,
+                        // so a sequence whose chosen limbs did not all land is
+                        // a roll of the dice and not a result. Re-attempt it,
+                        // bounded, and record every attempt. Nothing is forced:
+                        // the rolls stay native and only the precondition the
+                        // case needs is waited for.
+                        int attempts = 1;
+                        var rolls = new JArray(Sprint18Rolls(observer, secondObserver, before));
+                        while (attempts < 4 && Sprint18ChosenLimbMissed(
+                            observer, secondObserver, before, accuracy))
+                        {
+                            attempts++;
+                            int retryFrom = observer.Attacks.Count +
+                                (secondObserver == null ? 0 : secondObserver.Attacks.Count);
+                            if (CombatController.IsInTurnBasedCombat())
+                                foreach (int step in Sprint18AdvanceRound(owner))
+                                    yield return step;
+                            accuracy.Rest();
+                            UnitAttack retry = null;
+                            foreach (int step in Sprint18RunFullAttack(fixture, owner,
+                                result => retry = result,
+                                name == "claws-on-two-targets" && sequence == 0
+                                    ? secondTarget : null)) yield return step;
+                            ignored = retry;
+                            rolls = new JArray(Sprint18Rolls(observer, secondObserver, retryFrom));
+                            before = retryFrom;
+                        }
                         emissions.Add(new JObject {
                             ["sequence"] = sequence,
                             ["attacks"] = observer.Attacks.Count,
                             ["hits"] = observer.Attacks.Count(roll => roll.IsHit),
+                            ["attempts"] = attempts,
+                            ["lastAttemptRolls"] = rolls,
                             ["commandFinished"] = ignored != null && ignored.IsFinished });
                     }
                     RuleDealDamage[] rends = observer.Damage.Concat(
@@ -264,6 +295,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return target;
             }
             finally { DisposeExpandedSummoningUnits(fixture.Created, new[] { pixie }); }
+        }
+
+        /// <summary>
+        /// Did a limb the fixture chose to land fail to land? A natural one
+        /// misses whatever the bonus, so this is the precondition a rend case
+        /// needs, not the thing it measures.
+        /// </summary>
+        private static bool Sprint18ChosenLimbMissed(Sprint16RuleObserver observer,
+            Sprint16RuleObserver second, int from, Sprint18Accuracy accuracy)
+        {
+            if (accuracy.Hit.Length == 0) return false;
+            RuleAttackRoll[] rolls = Sprint18AttemptRolls(observer, second, from);
+            if (rolls.Length == 0) return true;
+            return accuracy.Hit.Any(weapon => !rolls.Any(roll =>
+                ReferenceEquals(roll.Weapon, weapon) && roll.IsHit));
+        }
+
+        private static RuleAttackRoll[] Sprint18AttemptRolls(
+            Sprint16RuleObserver observer, Sprint16RuleObserver second, int from)
+        {
+            IEnumerable<RuleAttackRoll> all = observer.Attacks;
+            if (second != null) all = all.Concat(second.Attacks);
+            return all.Skip(from).ToArray();
+        }
+
+        private static JObject[] Sprint18Rolls(Sprint16RuleObserver observer,
+            Sprint16RuleObserver second, int from)
+        {
+            return Sprint18AttemptRolls(observer, second, from).Select(roll =>
+                new JObject {
+                    ["weapon"] = roll.Weapon == null ? null :
+                        roll.Weapon.Blueprint.AssetGuid,
+                    ["d20"] = roll.Roll.Value,
+                    ["bonus"] = roll.AttackBonus,
+                    ["targetArmor"] = roll.TargetAC,
+                    ["hit"] = roll.IsHit }).ToArray();
         }
 
         /// <summary>Which limbs may reach the target in this sequence.</summary>
