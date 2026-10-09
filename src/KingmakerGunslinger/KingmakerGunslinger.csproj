@@ -1212,6 +1212,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeDonors.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Survey.cs" />
     <Compile Include="RuntimeTesting\PrimateRigSurveyPolicy.cs" />
+    <Compile Include="RuntimeTesting\PrimateReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Routine.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Surface.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCorrection.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint12.cs" />

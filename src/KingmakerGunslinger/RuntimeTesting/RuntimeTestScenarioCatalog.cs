@@ -131,6 +131,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string ObserveExpandedSummoningPrimateCensus =
             "observe-expanded-summoning-primate-census";
+        /// <summary>
+        /// The Sprint 18 hidden-candidate review: the two apes as they are in
+        /// a running game. Live profiles, the printed routines, every rend
+        /// case, both combat modes, the original bodies, the registered
+        /// twenty-six roots and the module switch, on the working save.
+        /// </summary>
+        internal const string DisposableExpandedSummoningSprint18Review =
+            "disposable-expanded-summoning-sprint18-review";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
         internal const string ObserveExpandedSummoningVariantMenu =
@@ -208,7 +216,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == DisposableExpandedSummoningSnakeProfiles ||
                 scenario == DisposableExpandedSummoningSnakeSignatures ||
                 scenario == DisposableExpandedSummoningSnakeCommands ||
-                scenario == DisposableExpandedSummoningSnakeFinalReview;
+                scenario == DisposableExpandedSummoningSnakeFinalReview ||
+                scenario == DisposableExpandedSummoningSprint18Review;
         }
         /// <summary>
         /// Correction order (2026-09-25): repeated cast-and-dispose cycles of
@@ -729,6 +738,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveMagicCircleScene,
                 ObserveExpandedSummoningNativeDonors,
                 ObserveExpandedSummoningPrimateCensus,
+                DisposableExpandedSummoningSprint18Review,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,

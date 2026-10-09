@@ -262,6 +262,52 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// What the guarded review will compare a live ape against, checked
+        /// against what the rules policy derives. A number that drifts has to
+        /// break here as well as in the game.
+        /// </summary>
+        internal static void ReviewExpectationsAgreeWithThePrintedRules()
+        {
+            KingmakerGunslinger.RuntimeTesting.PrimateReviewPolicy.Validate();
+            foreach (string key in Keys)
+            {
+                var live = KingmakerGunslinger.RuntimeTesting
+                    .PrimateReviewPolicy.For(key);
+                PrimateRulesProfile printed = PrimateRulesPolicy.For(key);
+                Assertions.Equal(printed.Strength, live.Strength,
+                    key + " Strength must be the printed score.");
+                Assertions.Equal(printed.HitDice, live.HitDice,
+                    key + " hit dice must be the printed count.");
+                Assertions.Equal(key == "dire-ape" ? 3 : 2, live.Limbs.Length,
+                    key + " must expect its printed number of limbs.");
+                foreach (int[] limb in live.Limbs)
+                    Assertions.Equal(printed.StrengthModifier, limb[2],
+                        key + " every limb is primary and carries full Strength.");
+                Assertions.Equal(printed.HasRend, live.HasRend,
+                    key + " rend presence must follow the printed entry.");
+                Assertions.Equal(2, KingmakerGunslinger.RuntimeTesting
+                        .PrimateReviewPolicy.CombatModes.Length,
+                    "Both combat modes must be reviewed.");
+            }
+            // The Dire Ape rend is 1d4 plus one and a half times Strength, and
+            // the review must expect exactly that, not the printed constant.
+            var dire = KingmakerGunslinger.RuntimeTesting
+                .PrimateReviewPolicy.For("dire-ape");
+            Assertions.Equal(1, dire.RendRolls, "Rend rolls one die.");
+            Assertions.Equal(4, dire.RendDieSides, "Rend rolls a d4.");
+            Assertions.Equal(PrimateRulesPolicy.For("dire-ape").RendBonus,
+                dire.RendBonus, "Rend carries one and a half times Strength.");
+            string[] names = KingmakerGunslinger.RuntimeTesting.PrimateReviewPolicy
+                .RendCases.Select(row => row[0]).ToArray();
+            foreach (string required in new[] { "both-claws-one-target",
+                "one-claw-only", "claws-on-two-targets", "bite-and-one-claw",
+                "claws-across-two-commands", "claws-across-two-turns",
+                "second-sequence-after-a-rend" })
+                Assertions.True(names.Contains(required, StringComparer.Ordinal),
+                    "The review must still drive the " + required + " case.");
+        }
+
+        /// <summary>
         /// The instance-delimited resource names the guarded crowd census
         /// counts, so one ape cannot be charged with a neighbour's resources.
         /// </summary>
