@@ -124,6 +124,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string ObserveExpandedSummoningNativeDonors =
             "observe-expanded-summoning-native-donors";
+        /// <summary>
+        /// Sprint 18 primate donor census: detached read-only view prefabs for
+        /// the ranked upright long-armed donor families, at mod load, no save,
+        /// no spawn. Research only.
+        /// </summary>
+        internal const string ObserveExpandedSummoningPrimateCensus =
+            "observe-expanded-summoning-primate-census";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
         internal const string ObserveExpandedSummoningVariantMenu =
@@ -721,6 +728,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveMagicCircleAbsent,
                 WorkingSaveMagicCircleScene,
                 ObserveExpandedSummoningNativeDonors,
+                ObserveExpandedSummoningPrimateCensus,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
