@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using KingmakerGunslinger.Acquisition;
 using KingmakerGunslinger.Presentation;
 
@@ -46,12 +47,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(audit.IsAcceptable,
                 "Audited campaign distribution failed: " +
                 string.Join("|", audit.Issues));
-            Assertions.Equal(29, audit.ExactAreaDensity.Count,
-                "The thirty items must span twenty-nine exact areas.");
-            Assertions.Equal(3, audit.CampaignAreaDensity["FinalDungeon"],
-                "One capstone item belongs on each Final Dungeon floor.");
+            Assertions.Equal(28, audit.ExactAreaDensity.Count,
+                "The complete registry must span twenty-eight exact areas.");
+            Assertions.Equal(2, audit.CampaignAreaDensity["FinalDungeon"],
+                "The Last Word must leave the final sequence for the House.");
+            Assertions.Equal(3, audit.CampaignAreaDensity["HouseAtTheEdgeOfTime"],
+                "The House must contain the two firearms and Heaven's Measure.");
+            Assertions.Equal(2, audit.ExactAreaDensity["HouseAtTheEdgeOfTime"],
+                "Exactly two weapons belong on the House first floor.");
             Assertions.Equal(2, audit.CampaignAreaDensity["IrovettiPalace"],
-                "The only exact-area pairing must remain the thematic palace pair.");
+                "The thematic palace pair must remain unchanged.");
         }
 
         internal static void DiscoverabilityPolicyRejectsUnsafeTargets()
@@ -112,7 +117,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(cord.Contains(token),
                     "Cord relocation contract lacks: " + token);
             foreach (string token in new[] {
-                "across 29 exact areas", ";exactAreas=",
+                "across 28 exact areas", ";exactAreas=",
                 "fixed Stag Lord Old Camp weapon chest" })
                 Assertions.True(runtime.Contains(token),
                     "Runtime acquisition evidence lacks: " + token);
@@ -166,30 +171,25 @@ namespace KingmakerGunslinger.DomainTests
 
         private static ProjectMagicItemLocation[] DistributedLocations()
         {
-            string[] areas =
-            {
-                "StagLordFort", "TrollLair_Exterior", "CandlemereTower",
-                "Varnhold", "ArmagsTomb", "Brineheart", "CastleOfKnives",
-                "FinalDungeon", "VarnholdStockade", "IrovettiPalace",
-                "BlakemoorHideout", "FinalDungeon2", "StagLordOldCamp",
-                "TrollLair_SecondLevel", "TrollhoundLair",
-                "SilverstepGrotto_Cave", "SilverstepLake_Outdoor",
-                "DunswardOutdoor", "BarbarianMainCamp", "PitaxTown",
-                "GlenebonPlains", "IrovettiPalace", "FinalDungeon3",
-                "HouseAtTheEdgeOfTime_2ndFloor",
-                "HouseAtTheEdgeOfTime", "LoneCyclopCave",
-                "CapitalRegionLair01", "NorthNarlmarchesRegionLair01",
-                "MonsterLairHodag"
-            };
+            // Read the complete production registries. Synthetic area arrays
+            // previously passed while the published targets had restrictions.
+            string root = Environment.CurrentDirectory;
             var result = new List<ProjectMagicItemLocation>();
-            for (int index = 0; index < areas.Length; index++)
+            foreach (string[] family in new[] {
+                new[] { "RareFirearmCampaignLootBlueprints.cs", "private static readonly TargetSpec[] Targets", "private static readonly CleanupSpec[] CleanupTargets", @"new TargetSpec\(MagicFirearmBlueprints\.(\w+),\s*""([^""]+)"",\s*""([^""]+)"",\s*""([^""]+)""" },
+                new[] { "EasternWeaponCampaignBlueprints.cs", "private static readonly EasternLootSpec[] Loot", "private static readonly EasternLootSpec[] CleanupLoot", @"new EasternLootSpec\(""([^""]+)"",\s*""([^""]+)"",\s*""([^""]+)"",\s*""[^""]+"",\s*new\[\]\s*\{\s*EasternWeaponNamedKind\.(\w+)" },
+                new[] { "ElvenBranchedSpearCampaignBlueprints.cs", "private static readonly LootSpec[] Loot", "private static readonly CleanupSpec[] CleanupLoot", @"new LootSpec\(NamedSpearKind\.(\w+),\s*""([^""]+)"",\s*""([^""]+)"",\s*""([^""]+)""" } })
             {
-                string targetName = index == 10
-                    ? "RichHuman_NotHiddenLockedGood"
-                    : index == 15 ? "Forest_UnhiddenLocked01" :
-                        "TreasureChest_" + index;
-                result.Add(new ProjectMagicItemLocation("item-" + index,
-                    (index + 1).ToString("x32"), targetName, areas[index]));
+                string source = Slice(Read(root, family[0]), family[1], family[2]);
+                foreach (Match match in Regex.Matches(source, family[3]))
+                {
+                    bool eastern = family[0].StartsWith("Eastern", StringComparison.Ordinal);
+                    result.Add(new ProjectMagicItemLocation(
+                        family[0] + ":" + match.Groups[eastern ? 4 : 1].Value,
+                        match.Groups[eastern ? 1 : 2].Value,
+                        match.Groups[eastern ? 2 : 3].Value,
+                        match.Groups[eastern ? 3 : 4].Value));
+                }
             }
             result.Add(new ProjectMagicItemLocation(
                 ProjectMagicItemDiscoverabilityPolicy.CordItemKey,

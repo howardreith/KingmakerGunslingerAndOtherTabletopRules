@@ -16,22 +16,24 @@ namespace KingmakerGunslinger.Blueprints
                 "1f0bef6b8e540d644962171dc8810459", "Forest_Container_7_good",
                 "VarnholdStockade"),
             new TargetSpec(MagicFirearmBlueprints.RiverKingsMeasureSymbol,
-                "b34367a637010f743815aed5875152bd",
-                "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)",
+                "77ad78d755a49af45abee46d86191b16",
+                "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)#1",
                 "IrovettiPalace"),
             new TargetSpec(MagicFirearmBlueprints.IrovettisOvationSymbol,
                 "c5adf784c614e4b4c8dc220111f64a54",
                 "RichHuman_ConservatoryLoot", "IrovettiPalace"),
             new TargetSpec(MagicFirearmBlueprints.TheLastWordSymbol,
-                "559739642f21aaf40847f4ddcbe3db79",
-                "RichHuman_Loot_2_3lvl", "FinalDungeon3"),
+                "b54aad6aa2844fa4c87f46088cde018b",
+                "FirstWorld_PoorLoot01#1", "HouseAtTheEdgeOfTime"),
             new TargetSpec(MagicFirearmBlueprints.WatchAtWorldsEndSymbol,
-                "2df91222314044b4da37b7ee83841873",
-                "FirstWorld_GoodLoot02", "HouseAtTheEdgeOfTime")
+                "e113fb75d9461924ab64df78c019991a",
+                "FirstWorld_PoorLoot02#1", "HouseAtTheEdgeOfTime")
         };
 
         private static readonly CleanupSpec[] CleanupTargets =
         {
+            new CleanupSpec("b34367a637010f743815aed5875152bd",
+                "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)", "IrovettiPalace"),
             new CleanupSpec("193b1222846a0114197e716cb35d3ce8",
                 "Forest_cache", "VordakaiTombLevel2"),
             new CleanupSpec("485300a2036a763499aa77ebac1f83c6",
@@ -43,11 +45,17 @@ namespace KingmakerGunslinger.Blueprints
             new CleanupSpec("3bc451b100283774a9e23699dd869f1a",
                 "FirstWorld_GoodLoot_Locked_2", "CastleOfKnives"),
             new CleanupSpec("5a9b9e4b884ae064fa7caa5a13eab065",
-                "FirstWorld_VeryGoodHiddenLoot02", "HouseAtTheEdgeOfTime")
+                "FirstWorld_VeryGoodHiddenLoot02", "HouseAtTheEdgeOfTime"),
+            new CleanupSpec("559739642f21aaf40847f4ddcbe3db79",
+                "RichHuman_Loot_2_3lvl", "FinalDungeon3"),
+            new CleanupSpec("2df91222314044b4da37b7ee83841873",
+                "FirstWorld_GoodLoot02", "HouseAtTheEdgeOfTime")
         };
 
         internal static TargetSpec[] TargetSpecs
         { get { return Targets.ToArray(); } }
+        internal static CleanupSpec[] CleanupSpecs
+        { get { return CleanupTargets.ToArray(); } }
 
         internal static RareFirearmCampaignLootPublication Publish(
             LibraryScriptableObject library, MagicFirearmBlueprintCatalog catalog,
@@ -55,6 +63,9 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (library == null || catalog == null || logger == null)
                 throw new ArgumentNullException("Campaign loot publication inputs are incomplete.");
+            if (Targets.Select(value => value.Guid).Intersect(
+                    CleanupTargets.Select(value => value.Guid)).Any())
+                throw new InvalidOperationException("Active rare-firearm target appears in cleanup.");
             BlueprintItem[] owned = Targets.Select(target =>
                 (BlueprintItem)catalog.Require(target.ItemSymbol).Item).ToArray();
             var mutations = new List<RareFirearmLootMutation>();
@@ -166,7 +177,7 @@ namespace KingmakerGunslinger.Blueprints
                 .Distinct().Count() != 5)
                 throw new InvalidOperationException("Rare firearm loot publication count/identity mismatch.");
             foreach (RareFirearmLootMutation mutation in _mutations) mutation.Validate();
-            if (_cleanupMutations.Count != 6)
+            if (_cleanupMutations.Count != RareFirearmCampaignLootBlueprints.CleanupSpecs.Length)
                 throw new InvalidOperationException("Rare firearm retired-loot cleanup count mismatch.");
             foreach (RareFirearmLootCleanupMutation mutation in _cleanupMutations)
                 mutation.Validate();

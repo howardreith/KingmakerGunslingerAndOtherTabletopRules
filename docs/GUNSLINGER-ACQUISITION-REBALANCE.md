@@ -1,6 +1,29 @@
 # Gunslinger Acquisition Rebalance
 
-## Superseding 2026-08-27 discoverability correction
+## Current 0.0.143 supersession
+
+The active inventory has 29 world-loot weapons plus Cord: 30 distinct containers,
+28 exact areas. The House normalized group intentionally has three named
+weapons, two on its first floor. This specific exception preserves unrelated
+area limits and Cord's persistent capital-inn contract.
+
+The seven specified moves, two scene-backed corrections and all retained assignments are in the
+[authoritative inventory](../planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md).
+Earlier name/reference heuristics missed DLC, quest-outcome, cave-entrance and
+concealed-object restrictions. Those heuristics retain useful rejection and
+count checks but cannot certify physical availability. An unresolved entity or
+missing route, interaction or persistence evidence is UNVERIFIED. A visible
+persistent backpack or bone pile is acceptable when measured normally usable.
+
+Old-save definitions do not promise inventory repair. Use only the
+[explicit per-weapon recovery](WEAPON-FINDABILITY-RECOVERY.md) when its known
+ownership, progression and ledger checks permit. Old final/House/Brineheart/DLC
+directions below are historical, not alternate active assignments.
+
+## Historical publication records (superseded directions)
+
+
+## Historical 2026-08-27 discoverability correction (superseded by 0.0.143)
 
 The 0.0.105 audit rechecked all 30 project-added discoverable items against the
 actual target GUID, name, area, area lifetime, apparent interaction type,

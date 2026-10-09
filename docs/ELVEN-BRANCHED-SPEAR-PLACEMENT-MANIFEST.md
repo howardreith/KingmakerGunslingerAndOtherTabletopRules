@@ -1,5 +1,43 @@
 # Elven Branched Spear placement manifest
 
+## Current 0.0.143 contract
+
+The six named spear assignments remain unchanged from 0.0.142. See the complete
+[player location table and exact native targets](../planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md):
+Boughkeeper in Old Mesa (Act II), Thornstep in Riverine Rise (Act II), Moonlit Fork
+in Hodag Lair, Viper's Reach in Saint Galvan's Gullet (Act IV), Briar-Crowned Spear
+in Blakemoor's Hideout (Act V), and Spear of the First Branch in the Ravaged Capital
+central passage (Final chapter). There is one intended container per spear.
+
+Optional map discovery is allowed and documented separately from concealment
+of a container. Blakemoor's Middle of Nowhere route is demanding: references
+describe Perception 45 map discovery or Blutmond's optional inn lead, plus a
+door/key route. The chest has Charlatan's Locket, Robe of False Death and Bindings
+of the Prince. `NotHidden` in its blueprint name is not scene/route proof.
+Its actual 2.1.7b exterior approach, offered Trickery 35 check and native
+success-cue transfer passed, followed by interior walking, chest lock, pickup,
+revisit and fresh-process reload. Optional map discovery and the Blutmond lead
+remain reference evidence. The other spear gates are recorded individually in
+the qualification report; no name or loot-table resolution implies a route PASS.
+
+Generic vendor stock remains four mundane/masterwork/cold-iron variants at Oleg,
+zero mod-owned generic spear rows at the capital under Model D, six generic
+versions each at Dire Narlmarches village/Pitax and each installed Honest Guy
+BTSL table, and none at Xelliren. Native replenishment is not guaranteed; no
+named spear is sold in ordinary recurring stock or created from a crafting base.
+
+Transactions append one mod-owned row after normalization while preserving
+native and foreign entries. With module OFF commerce/loot additions are
+suppressed but existing item identities remain registered. Earlier moves are
+eligible for explicitly selected [old-save recovery](WEAPON-FINDABILITY-RECOVERY.md);
+there is no automatic refill. Blueprint, scene, route, pickup, revisit and
+save/reload results remain separate in [qualification](WEAPON-FINDABILITY-QUALIFICATION.md).
+
+Earlier merchant directions and physical claims below are superseded history.
+
+## Historical publication records (superseded directions)
+
+
 This manifest records the exact base-game blueprint contracts used by the
 default-on `elven-branched-spears` module. Publication appends one count-one
 fixed entry per listed item after removing only stale entries owned by this

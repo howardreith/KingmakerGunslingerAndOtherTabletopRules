@@ -21,7 +21,18 @@ observers remain authoritative for the specific publication contracts they test.
   concealment miss chance; confirm Fey Bane presentation and no obvious family
   regression.
 
-The full campaign need not be played; static loot is mechanically qualified.
+## Current 0.0.143 physical qualification
+
+Static publication is blueprint evidence only. The full route, actual object,
+interaction/pickup and revisit/save-reload gates are separate. The
+[complete current location table](../planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md)
+and [measured qualification report](WEAPON-FINDABILITY-QUALIFICATION.md) are
+authoritative; earlier route claims below are not physical PASS evidence.
+
+Old saves may retain already generated inventories. Use the explicitly selected
+[controlled recovery](WEAPON-FINDABILITY-RECOVERY.md), which refuses canonical
+and supported upgraded copies and records one recovery per save/weapon. It
+neither grants on load nor refills whole containers.
 ## Practical no-full-playthrough acceptance route
 
 Use disposable copies of saves only. Prefer a save made before the first entry
@@ -41,10 +52,7 @@ Open Unity Mod Manager and use **Rare Firearm Acceptance (DEVELOPMENT ONLY)**:
    level, or acquisition state and never runs automatically. There is deliberately
    no remove-by-blueprint cleanup; discard the disposable save instead.
 3. **Print acquisition/current-area location audit** reports exact target identity,
-   type, area, publication, and current-area match. The installed contracts have
-   not yet proven a safe live-container highlight or teleport, so the panel
-   truthfully reports live entity, coordinates, and distance as unavailable and
-   never guesses, moves the party, opens loot, changes Perception, or writes a save.
+   type, area, publication, and current-area match. For exact loaded targets the observer reports persistent scene/entity identity, hierarchy, coordinates, reveal/Perception state, interaction conditions and native inventory. Unloaded or unresolved targets are UNVERIFIED. This observation alone proves neither a walking route nor pickup/persistence.
 
 No authoritative local Bag of Tricks `tp2loc_*` entry point has been proven for
 these five exact targets. Do not guess a similarly named command. Use a disposable
@@ -61,15 +69,32 @@ pre-entry save or a separately human-validated travel/teleport route.
   Elven Branched Spear rows are also removed from this table. Native and
   unrelated stock remain. Use the current matrix below to distinguish newly
   generated stock from inventory already materialized in an existing save.
-- Representative midgame: `Forest_cache` in `VordakaiTombLevel2` contains
-  **Duelist's Rebuttal**.
-- Pitax: `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)` and
-  `Forest_PoorLoot_PuzzleItem3_Instrument`, both in `IrovettiPalace`, contain
-  **The River King's Measure** and **Irovetti's Ovation** respectively.
-- Final act: `FirstWorld_BasementGoodLoot01` in
-  `HouseAtTheEdgeOfTime_Basement` contains **The Last Word**;
-  `FirstWorld_VeryGoodHiddenLoot02` in `HouseAtTheEdgeOfTime` contains
-  **Watch at the World's End**.
+- Duelist's Rebuttal: Varnhold Stockade, Agai's chest with Crimson Counselor,
+  Owlbear Omelet recipe, Tuskwater Oysters and Fallen Warrior's Boot;
+  `1f0bef6b8e540d644962171dc8810459` / `Forest_Container_7_good`.
+- The River King's Measure: actual western Pitax Royal Palace chest with a
+  Wooden Spoon, Grinding Stone and 16 gold;
+  `77ad78d755a49af45abee46d86191b16` /
+  `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)#1`.
+- Irovetti's Ovation: separate palace conservatory chest with Arbiter's Robe and
+  Charoite Wyvern; `c5adf784c614e4b4c8dc220111f64a54` /
+  `RichHuman_ConservatoryLoot`.
+- The Last Word: House first floor, companion phase, ordinary chest northwest
+  of Nyrissa's neglected throne in the Horned Hunter/Linzi room; 1,044 gold,
+  gems, scrolls and petals; `b54aad6aa2844fa4c87f46088cde018b` /
+  `FirstWorld_PoorLoot01#1`.
+- Watch at the World's End: House first floor, companion phase, northern corner
+  of the central mirror-hub room southeast of Valerie's room, beside the throne
+  corridor; 299 gold, Resist Fire potions, gems, hops, pollen and scrolls;
+  `e113fb75d9461924ab64df78c019991a` / `FirstWorld_PoorLoot02#1`.
+
+The House mechanics scene and runtime phase flag are measured rather than
+inferred from guide phase numbering. Both +5 locations passed native Phase 1
+in `HouseAtTheEdgeOfTime01_Mechanics / Loot_SideA`, with the native lantern
+active. Ordinary entrance walking, exactly-one pickup, native treasure,
+revisit and disk reload passed before leaving the House. Mirror Memories and
+the Third Key objective remained None before and after pickup. The former Vordakai, instrument-puzzle, basement, hidden House
+and FinalDungeon3 directions are historical and superseded.
 
 For each location, begin from a pre-entry disposable save, use the panel audit to
 confirm the current area, then verify the ordinary player-facing interaction is
@@ -96,7 +121,7 @@ opened/instantiated, and the panel audit text.
   Rifle/Revolver appears in ordinary capital or BTSL stock and no obvious visual
   or firearm Wwise audio regression is present.
 
-## Human acceptance — 2026-08-08
+## Human acceptance â€” 2026-08-08
 
 The user completed manual testing of the installed build from feature commit
 `71368cb62ee8a001997d53d77ec22ca67c83a620` and reported that all firearms work

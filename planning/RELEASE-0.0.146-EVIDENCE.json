@@ -1,7 +1,19 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.146",
-  "status": "MODULE_BOUNDARY_SOURCE_QUALIFIED_NOT_RUNTIME_QUALIFIED",
+  "status": "POST_MASTER145_INTEGRATION_CANDIDATE_NOT_RUNTIME_QUALIFIED",
+  "integration": {
+    "ledger": "planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md",
+    "parents": ["c6effc3224754e1bdf250a703eb1440c1dbbfb78", "bf8a1e41b308bfb148cb028d75a576555b7e8dd1"],
+    "commonAncestor": "4ba8d4aca087391144abf401f526189f59b26535",
+    "kind": "Normal merge,35 conflicted files/56 hunks;no force/history rewrite",
+    "sourceAudit": "PASS:197 master-protected and261 summoning-protected files byte-exact;2922-entry ordered identity union;master143/144/145 records unchanged",
+    "focused": "362 selected;two stale source-token expectations corrected after representative scope/request union;10 affected focused tests PASS;incremental exact-reference C# compile PASS. No full post-merge gate or runtime run yet.",
+    "expectedDomainCount": 2497,
+    "expectedPackageMembers": 333,
+    "memberDelta": "325 +7 unchanged master acquisition documents +1 release146 notes",
+    "reuse": "No summon publication/player-path production change from master merge. Retain original1008/29 evidence;run inventory/menu,existing fixture representative paths and all9 corrected variants."
+  },
   "preIntegrationSourceGate": {
     "kind": "uncommitted source qualification before integration; NOT an immutable runtime/release candidate",
     "baseHead": "30be632cdf4e9cb85c70e95e85773b89d92c5311",
