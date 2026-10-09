@@ -185,6 +185,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderCommands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderLifecycle.cs" />
     <Compile Include="Summoning\SerpentineCombatComponents.cs" />
+    <Compile Include="Summoning\PrimateRulesPolicy.cs" />
+    <Compile Include="Summoning\PrimateCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="Summoning\ExpandedSummoningSerpentineViewPatch.cs" />
     <Compile Include="Summoning\SerpentineNativeSpearAnimation.cs" />
