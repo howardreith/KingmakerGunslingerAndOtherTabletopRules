@@ -53,7 +53,16 @@ namespace KingmakerGunslinger.Summoning
                 "rhinoceros|028cc6f46e7998f46855a33ffde89567|1",
                 "woolly-rhinoceros|028cc6f46e7998f46855a33ffde89567|1",
                 "viper|bf2216f48b3f4d24c9c502007649340d|1",
-                "constrictor-snake|bf2216f48b3f4d24c9c502007649340d|1"
+                "constrictor-snake|bf2216f48b3f4d24c9c502007649340d|1",
+                // Sprint 18, PROVISIONAL pending the bounded read-only primate
+                // donor census. The installed library carries no primate unit
+                // type at all, so neither ape can ever clone a native primate;
+                // the Owlbear is the Large bipedal rig this project already
+                // validated with a bite and two forelimb contacts, which is the
+                // Dire Ape's exact routine. Both apes are suppressed, so this
+                // assignment reaches no player until the census settles it.
+                "ape|d6e0acbdbdb56114898922063ae2cba0|0",
+                "dire-ape|d6e0acbdbdb56114898922063ae2cba0|0"
             });
         }
 
