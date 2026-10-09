@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "classification": "DIAGNOSTIC COMPLETE: EXACT HUMAN SET, NO RAW TAIL, CoTW NATIVE-SLAM FALLBACK; BINDING GUARD FAIL; SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "d989915120c7380a20ba33e83177c0cd20392dea",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "7c18a60f096beb97dfb62a9f234ab0e029b668e4a7dd0ac12bfa2c284679230c",
+    "dllSha256": "754f6b6f8fb41bc2cb3c5da395c554b80bf3daedeb9bd34cb996228d359c1795",
+    "dllMvid": "3261e9cb-d0d6-48c8-aad9-4faf1f429e04",
+    "zipSha256": "bc18d25c2c7fe8e2c8efe2c4fc1160b56ee6eb24d0a8521910d583b2b145f2a9",
+    "packageMembers": 321,
+    "archive": "artifacts/sprint17-human-registry-exact-d9899151"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 292,
+    "domain": 2094,
+    "domainSeconds": 80.7,
+    "gateSeconds": 176.4,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 14,
+      "rejected": 13
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0834579479599Z",
+    "journalSha256": "996d64147f85fbd346367c36ca1fdc2ca26260d5f726b895d0523d02354da72a",
+    "driver": "artifacts/Invoke-LaptopSprint17-HumanTail-Attempt3-Registry.ps1",
+    "driverSha256": "bb18501c11181e572d80959eaa2c5136cb1e3381b401ebb80c26545089098e2f",
+    "startedAtUtc": "2026-10-07T08:34:57.9857412Z",
+    "completedAtUtc": "2026-10-07T08:41:31.7143709Z",
+    "status": "NOT-QUALIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T083458Z-b83a4b7c9c1948b08bc36c49f738e4f1\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0834587335534Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-07T08:35:23.4565228Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0835243767631Z-working-save-smoke",
+        "requestId": "20261007T0835243954303Z-d2eb54b1d03b4788801db12f2d1b0457",
+        "requestSha256": "32aa566bd54adb33e19d9b20e02888cbc6aa3eae0a174bdf68d5a00161a4436e",
+        "expectedAssertions": 11,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "ed31182c9e43e5e9e58263dc23b398d0ed47001f536cdd3c01da0b469253daf8",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "52f3a80e3ef156d4e1cfc15019d0335c72ce69d97f9624af4c1883bc0a0045dd",
+        "processId": 23568,
+        "processStartedUtc": "2026-10-07T08:35:25.4623181Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-07T08:38:15.7739085Z"
+      },
+      {
+        "label": "human-tail",
+        "scenario": "disposable-expanded-summoning-serpentine-bodies",
+        "startedAtUtc": "2026-10-07T08:38:21.3034813Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0838220625304Z-disposable-expanded-summoning-serpentine-bodies",
+        "requestId": "20261007T0838220625304Z-5a1240692cf747388e129c3a12b98ab2",
+        "requestSha256": "ee51825fc4a50024009140cf5367903d33c251b41a81033c09d815cb023fbb27",
+        "expectedAssertions": 15,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "metadataSha256": "d95a121c1dcb02d934b870ef6f4c55ce9e4e673f9574f25c4e0620855265579b",
+        "metadataRows": 1,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "59fe1c21672aa0c465326c5f3df00b14d4ced92226b79499e990e031893fbcae",
+        "assertions": 6,
+        "passed": 4,
+        "failed": [
+          {
+            "name": "sprint17-human-salamander-rollback",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-body-exception",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "6f78cb7d52b74f56d6d731aefcde5f31a432f38ccc01818a0c92e10d360b2ab0",
+        "processId": 29080,
+        "processStartedUtc": "2026-10-07T08:38:23.3495753Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-07T08:41:29.0774467Z"
+      }
+    ]
+  },
+  "coreFacts": {
+    "set": "MyAnimationSet",
+    "setId": 457560,
+    "rootSetId": 457560,
+    "referenceEqualToRoot": true,
+    "actionCount": 24,
+    "transitionCount": 1,
+    "effectiveTail": "MyAnimationSet_Slam",
+    "effectiveTailDeclaredType": "Slam",
+    "effectiveTailIsRawMember": true,
+    "rawSpecials": [
+      {
+        "name": "MyAnimationSet_Claw_MainHand",
+        "type": "Claw"
+      },
+      {
+        "name": "MyAnimationSet_Bite",
+        "type": "Bite"
+      },
+      {
+        "name": "MyAnimationSet_Gore",
+        "type": "Gore"
+      },
+      {
+        "name": "MyAnimationSet_Slam",
+        "type": "Slam"
+      }
+    ],
+    "getterPatches": [
+      {
+        "target": "Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager.GetAction",
+        "registered": true,
+        "metadataQueried": true,
+        "prefixes": [],
+        "postfixes": [
+          {
+            "method": "Void Postfix(Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager, Kingmaker.Visual.Animation.Kingmaker.UnitAnimationSpecialAttackType, Kingmaker.Visual.Animation.Kingmaker.UnitAnimationAction ByRef)",
+            "type": "CallOfTheWild.UnitAnimationManager_GetAction",
+            "assembly": "CallOfTheWild"
+          }
+        ],
+        "transpilers": []
+      },
+      {
+        "target": "Kingmaker.Visual.Animation.AnimationManager.get_AnimationSet",
+        "registered": false,
+        "metadataQueried": false,
+        "prefixes": [],
+        "postfixes": [],
+        "transpilers": []
+      },
+      {
+        "target": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack.get_AttackType",
+        "registered": false,
+        "metadataQueried": false,
+        "prefixes": [],
+        "postfixes": [],
+        "transpilers": []
+      }
+    ],
+    "provenanceComplete": true,
+    "unchangedAfterRead": true,
+    "rollbackOutcome": "human-tail:failed:InvalidDataException:Native human action guard: existing-effective-tail-action"
+  },
+  "failures": [
+    {
+      "assertion": "sprint17-human-salamander-rollback",
+      "category": "PRODUCTION INTEGRATION GUARD",
+      "observation": "The exact root human set has Claw/Bite/Gore/Slam and no raw Tail. Effective GetAction(Tail) returns the raw native Slam through CallOfTheWild.UnitAnimationManager_GetAction Postfix. The guard incorrectly treats every non-null effective result as an existing Tail carrier. No owned resource was created; rollback was not reached."
+    },
+    {
+      "assertion": "sprint17-body-exception",
+      "category": "CONSEQUENCE OF SAME GUARD",
+      "observation": "Fixture stops before binding/movement/playback/contact when rollback seam cannot be reached."
+    }
+  ],
+  "correction": {
+    "scope": "Closed request-local original Salamander/human attachment only",
+    "policy": "Require exact native human set, no raw Tail and an effective lookup that is either null or the identical raw native MyAnimationSet_Slam action declared Slam. Reject every real native Tail and all foreign/unreviewed effective results.",
+    "preserved": "Append exactly one owned Tail; all24 native actions, native Slam/hand/spear clips, startup and transition references preserved. Existing strict postcondition must prove effective GetAction(Tail) returns the owned action after install. No CoTW patch change, disabling, global replacement or borrowed Slam adoption.",
+    "behavior": "All eight guard truth-table cases and exact fallback reference identity, plus existing native-order/no-alias append tests."
+  },
+  "qualification": {
+    "guardDiagnostic": true,
+    "bodyBinding": false,
+    "tailPlayback": false,
+    "rollback": false,
+    "sprint17": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  },
+  "next": "Source-qualify/push narrow raw-versus-effective guard correction, rebuild exact new head, then fresh guarded smoke and all15 hybrid assertions. Do not reuse d989 qualification for gameplay."
+}

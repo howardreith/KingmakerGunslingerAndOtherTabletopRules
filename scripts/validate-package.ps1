@@ -45,6 +45,7 @@ try {
         'validation\weapon-findability-scene-corrections.json',
         'validation\weapon-findability-runtime-qualification.json',
         'docs\RELEASE-NOTES-0.0.145.md',
+        'docs\RELEASE-NOTES-0.0.146.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -77,9 +78,40 @@ try {
         'assets\sprint12-quadrupeds\hyena-albedo.png',
         'assets\sprint12-quadrupeds\goblin-dog-mesh.json',
         'assets\sprint12-quadrupeds\goblin-dog-albedo.png',
+        'assets\sprint13-creatures\wolverine-mesh.json',
+        'assets\sprint13-creatures\wolverine-albedo.png',
+        'assets\sprint13-creatures\shadow-mastiff-mesh.json',
+        'assets\sprint13-creatures\shadow-mastiff-albedo.png',
+        'assets\sprint13-creatures\poisonous-frog-mesh.json',
+        'assets\sprint13-creatures\poisonous-frog-albedo.png',
+        'assets\sprint14-insects\fire-beetle-mesh.json',
+        'assets\sprint14-insects\fire-beetle-albedo.png',
+        'assets\sprint14-insects\giant-ant-worker-mesh.json',
+        'assets\sprint14-insects\giant-ant-worker-albedo.png',
+        'assets\sprint14-insects\giant-ant-soldier-mesh.json',
+        'assets\sprint14-insects\giant-ant-soldier-albedo.png',
+        'assets\sprint14-insects\giant-ant-drone-mesh.json',
+        'assets\sprint14-insects\giant-ant-drone-albedo.png',
+        'assets\sprint14-insects\giant-stag-beetle-mesh.json',
+        'assets\sprint14-insects\giant-stag-beetle-albedo.png',
+        'assets\sprint16-crocodilians\crocodile-mesh.json',
+        'assets\sprint16-crocodilians\crocodile-albedo.png',
+        'assets\sprint16-crocodilians\dire-crocodile-mesh.json',
+        'assets\sprint16-crocodilians\dire-crocodile-albedo.png',
+        'assets\sprint17-serpents\viper-mesh.json',
+        'assets\sprint17-serpents\viper-albedo.png',
+        'assets\sprint17-serpents\constrictor-snake-mesh.json',
+        'assets\sprint17-serpents\constrictor-snake-albedo.png',
+        'assets\sprint17-serpents\salamander-mesh.json',
+        'assets\sprint17-serpents\salamander-human-mesh.json',
+        'assets\sprint17-serpents\salamander-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
+    $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
+    if ((Get-KmgSha256 -Path $humanMesh) -cne 'b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19') {
+        throw 'The separately packaged Salamander human/tail mesh differs from its reviewed original export.'
+    }
     $iconNames = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
         'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
         'weapon-focus-firearm','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
@@ -104,7 +136,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 100 -or @($summonManifest.icons).Count -ne 100) {
+    if ($summonManifest.count -ne 109 -or @($summonManifest.icons).Count -ne 109) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'

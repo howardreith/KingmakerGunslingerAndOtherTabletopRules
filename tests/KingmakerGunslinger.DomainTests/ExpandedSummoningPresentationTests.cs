@@ -21,9 +21,9 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(100, (int)manifest["count"],
+            Assertions.Equal(109, (int)manifest["count"],
                 "Icon manifest count changed.");
-            Assertions.Equal(100, rows.Count,
+            Assertions.Equal(109, rows.Count,
                 "Icon manifest row count changed.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 293 } else { 291 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 333 } else { 331 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
@@ -159,8 +159,9 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG_Summoning_Unit_Eagle", out eagle) && eagle == 0.30f,
                 "Eagle view-only scale changed.");
             Assertions.True(SummonViewScaleCatalog.All.All(value =>
-                    value.Multiplier >= 0.20f && value.Multiplier <= 1.25f),
-                "Accepted view-only scale bounds changed.");
+                    value.Multiplier >= 0.20f && (value.CreatureKey == "dire-crocodile"
+                        ? value.Multiplier == 2.0f : value.Multiplier <= 1.25f)),
+                "Only the new Gargantuan crocodilian has the explicit 2x view step.");
             string runtime = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
@@ -199,9 +200,11 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs")).Replace("\r\n", "\n");
             Assertions.True(source.Contains("SummonFamily.Monster ? 0 : 9") &&
-                source.Contains("nativeExpansionCases.Count ==\n                    SummonNativeExpansionCatalog.All.Count") &&
+                source.Contains("nativeExpansionCases.Count ==\n                    nativeVariants.Length") &&
                 source.Contains("\" visible creature-named native/preservation wrappers live"),
                 "Player-path coverage must route all 17 SM and twelve SNA wrappers through their actual family parents.");
+            var defaults = KingmakerGunslinger.RuntimeTesting.ExpandedSummoningPlayerPathReviewScope.Native(false);
+            Assertions.Equal(29, defaults.Length, "Default census still selects all retained wrappers.");
             Assertions.False(source.Contains(
                     "spellbook, parents[nativeSpec.Tier - 1], distinct"),
                 "SNA wrappers may not be tested through Summon Monster parents.");

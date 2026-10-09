@@ -23,7 +23,9 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
 using Kingmaker.UnitLogic.Abilities.Components.TargetCheckers;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -55,6 +57,34 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.InvisibleStalker";
         private const string ErinyesUnitSymbol =
             "KMG.Summoning.Unit.ErinyesDevil";
+        private const string ShadowMastiffUnitSymbol =
+            "KMG.Summoning.Unit.ShadowMastiff";
+        private const string ShadowMastiffTailSymbol =
+            "KMG.Summoning.Natural.Tail1d6";
+        private const string ShadowMastiffTraitsSymbol =
+            "KMG.Summoning.Special.ShadowMastiff.Traits";
+        private const string ShadowMastiffBaySymbol =
+            "KMG.Summoning.Special.ShadowMastiff.Bay";
+        private const string ShadowMastiffBayPanicSymbol =
+            "KMG.Summoning.Special.ShadowMastiff.BayPanic";
+        private const string ShadowMastiffBayImmunitySymbol =
+            "KMG.Summoning.Special.ShadowMastiff.BayImmunity";
+        private const string ShadowMastiffShadowBlendSymbol =
+            "KMG.Summoning.Special.ShadowMastiff.ShadowBlend";
+        private const string ShadowMastiffShadowBlendStateSymbol =
+            "KMG.Summoning.Special.ShadowMastiff.ShadowBlendState";
+        /// <summary>
+        /// Exact native identities the Shadow Mastiff needs: the quadruped
+        /// trip rider its printed bite carries, the two feats its stat block
+        /// lists that this builder did not already name, and native Daylight,
+        /// which is the only effect the printed shadow blend says negates it.
+        /// Daylight is taken from this project's own audited native
+        /// light-spell census in ElementalFeatPolicy.
+        /// </summary>
+        private const string TrippingBiteGuid = "f957b4444b6fb404e84ae2a5765797bb";
+        private const string IronWillGuid = "175d1577bb6c9a04baf88eec99c66334";
+        private const string PowerAttackGuid = "9972f33f977fc724c838e59641b2fca5";
+        private const string NativeDaylightGuid = "2b877386976817a429002e8bb10bb3fc";
         private const string ShadowDemonUnitSymbol =
             "KMG.Summoning.Unit.ShadowDemon";
         private const string ShadowDemonCombatTraitsSymbol =
@@ -188,6 +218,50 @@ namespace KingmakerGunslinger.Blueprints
         /// <summary>The native thrown stone: the Web's pinned delivery visual (correction order, 2026-09-26).</summary>
         internal const string WebProjectileGuid = "c8e6e6e315030b443b5ab9bc07843bb2";
         internal const string MediumBite1d8Guid = "c988aa874d11ff84d873508ddc9b928f";
+        private const string GiantAntSoldierUnitSymbol =
+            "KMG.Summoning.Unit.GiantAntSoldier";
+        private const string GiantAntSoldierTraitsSymbol =
+            "KMG.Summoning.Special.GiantAntSoldier.Traits";
+        private const string GiantAntDroneUnitSymbol =
+            "KMG.Summoning.Unit.GiantAntDrone";
+        private const string GiantAntDroneTraitsSymbol =
+            "KMG.Summoning.Special.GiantAntDrone.Traits";
+        private const string GiantStagBeetleUnitSymbol =
+            "KMG.Summoning.Unit.GiantStagBeetle";
+        private const string GiantStagBeetleTrampleSymbol =
+            "KMG.Summoning.Special.GiantStagBeetle.Trample";
+        // Sprint 16: the crocodilians. The Crocodile's unit already exists
+        // and must keep its identity; only its combat traits carrier is new.
+        private const string CrocodileUnitSymbol =
+            "KMG.Summoning.Unit.Crocodile";
+        private const string CrocodileCombatTraitsSymbol =
+            "KMG.Summoning.Special.Crocodile.CombatTraits";
+        private const string DireCrocodileUnitSymbol =
+            "KMG.Summoning.Unit.DireCrocodile";
+        private const string DireCrocodileCombatTraitsSymbol =
+            "KMG.Summoning.Special.DireCrocodile.CombatTraits";
+        private const string CrocodileBrainSymbol =
+            "KMG.Summoning.Special.Crocodile.Brain";
+        private const string CrocodileSprintSymbol =
+            "KMG.Summoning.Special.Crocodile.Sprint";
+        private const string CrocodileSprintAiSymbol =
+            "KMG.Summoning.Special.Crocodile.SprintAi";
+        private const string CrocodileSprintStateSymbol =
+            "KMG.Summoning.Special.Crocodile.SprintState";
+        private const string CrocodileSprintCooldownSymbol =
+            "KMG.Summoning.Special.Crocodile.SprintCooldown";
+        private const string DireCrocodileBrainSymbol =
+            "KMG.Summoning.Special.DireCrocodile.Brain";
+        private const string DireCrocodileSprintSymbol =
+            "KMG.Summoning.Special.DireCrocodile.Sprint";
+        private const string DireCrocodileSprintAiSymbol =
+            "KMG.Summoning.Special.DireCrocodile.SprintAi";
+        private const string DireCrocodileSprintStateSymbol =
+            "KMG.Summoning.Special.DireCrocodile.SprintState";
+        private const string DireCrocodileSprintCooldownSymbol =
+            "KMG.Summoning.Special.DireCrocodile.SprintCooldown";
+        private const string DireCrocodileSwallowedSymbol =
+            "KMG.Summoning.Special.DireCrocodile.Swallowed";
         private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
         private const string MonitorLizardCombatTraitsSymbol =
             "KMG.Summoning.Special.MonitorLizard.CombatTraits";
@@ -353,6 +427,7 @@ namespace KingmakerGunslinger.Blueprints
                 InvisibleStalkerUnitSymbol), extraplanar);
             ConfigureErinyes(library, Require<BlueprintUnit>(bySymbol,
                 ErinyesUnitSymbol));
+            ConfigureShadowMastiffFamily(library, bySymbol, extraplanar);
             BlueprintBuff shadowTraits = Require<BlueprintBuff>(bySymbol,
                 ShadowDemonCombatTraitsSymbol);
             ConfigureShadowDemonCombatTraits(shadowTraits);
@@ -364,19 +439,16 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, SalamanderSpearSymbol);
             BlueprintItemWeapon salamanderTail = Require<BlueprintItemWeapon>(
                 bySymbol, SalamanderTailSymbol);
-            BlueprintBuff salamanderTraits = Require<BlueprintBuff>(bySymbol,
-                SalamanderCombatTraitsSymbol);
             ConfigureSummonWeaponType(library, StandardSpearGuid,
                 "standard 1d8 spear", SalamanderSpearTypeSymbol,
-                salamanderSpearType);
+                salamanderSpearType, ExpandedSummoningSpecialProfiles.SalamanderSpearIsNatural);
             ConfigureSalamanderSpear(library, salamanderSpear,
                 salamanderSpearType);
-            ConfigureSalamanderTail(library, salamanderTail);
-            ConfigureSalamanderCombatTraits(library, salamanderTraits,
-                salamanderTail);
+            ConfigureSalamanderTail(library, salamanderTail,
+                Require<BlueprintWeaponType>(bySymbol, "KMG.Summoning.Special.Salamander.TailType"));
             ConfigureSalamander(library, Require<BlueprintUnit>(bySymbol,
                 SalamanderUnitSymbol), salamanderSpear, salamanderTail,
-                salamanderTraits, extraplanar);
+                Require<BlueprintUnitType>(bySymbol, "KMG.Summoning.Special.Salamander.UnitType"), extraplanar);
             BlueprintBuff domination = Require<BlueprintBuff>(bySymbol,
                 SuccubusDominationSymbol);
             BlueprintAbility dominate = Require<BlueprintAbility>(bySymbol,
@@ -456,6 +528,12 @@ namespace KingmakerGunslinger.Blueprints
                 AurochsTrampleSymbol, "aurochs");
             ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Bison",
                 BisonTrampleSymbol, "bison");
+            // Sprint 15: a trampling beetle on the ungulates' carrier. Its
+            // policy row derives the printed 1d6+6 and DC 17 rather than
+            // stating them, which is why no new graph was written.
+            ConfigureUngulateTrample(library, bySymbol,
+                GiantStagBeetleUnitSymbol, GiantStagBeetleTrampleSymbol,
+                "giant-stag-beetle");
             ConfigureUngulateTrample(library, bySymbol,
                 WoollyRhinocerosUnitSymbol, WoollyRhinocerosTrampleSymbol,
                 "woolly-rhinoceros");
@@ -1643,6 +1721,25 @@ namespace KingmakerGunslinger.Blueprints
                 MonitorLizardCombatTraitsSymbol, "MonitorLizard", "Monitor Lizard Grab",
                 "A bite hit lets the lizard attempt to grab a foe no larger than itself.",
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            ConfigureGrabber(library, bySymbol, "KMG.Summoning.Unit.ConstrictorSnake",
+                "KMG.Summoning.Special.ConstrictorSnake.CombatTraits",
+                "ConstrictorSnake", "Constrictor Snake Grab and Constrict",
+                "A bite hit allows a grab against a foe no larger than the snake. " +
+                "A successful grab and each later successful maintain deal constrict damage " +
+                "(1d4+4 at baseline, with live size and Strength). Active holds reset cleanly on reload.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
+                    ConstrictDice = 1, ConstrictDie = DiceType.D4, ConstrictBonus = 4,
+                    LiveSerpentineConstrict = true });
+            ConfigureGrabber(library, bySymbol, SalamanderUnitSymbol,
+                SalamanderCombatTraitsSymbol, "Salamander", "Salamander Heat and Constrict",
+                "The salamander's spear and tail deal an additional 1d6 fire damage. " +
+                "Only its tail can grab a foe no larger than itself. A successful grab and each " +
+                "later successful maintain also constrict (2d6+4 bludgeoning plus 1d6 fire at baseline, " +
+                "with live size and Strength). Active holds reset cleanly on reload.",
+                new GrabSpec { Additional = 1, Hold = hold, Grappled = grappled,
+                    ConstrictDice = ExpandedSummoningSpecialProfiles.SalamanderConstrictDice,
+                    ConstrictDie = DiceType.D6, ConstrictBonus = ExpandedSummoningSpecialProfiles.SalamanderConstrictBonus,
+                    LiveSalamanderConstrict = true });
             ConfigureGrabber(library, bySymbol, GrizzlyBearUnitSymbol,
                 GrizzlyBearCombatTraitsSymbol, "GrizzlyBear", "Grizzly Bear Grab",
                 "A claw hit lets the bear attempt to grab a foe no larger than itself.",
@@ -1651,6 +1748,62 @@ namespace KingmakerGunslinger.Blueprints
                 DireBearCombatTraitsSymbol, "DireBear", "Dire Bear Grab",
                 "A claw hit lets the bear attempt to grab a foe no larger than itself.",
                 new GrabSpec { Additional = 2, Hold = hold, Grappled = grappled });
+            // Sprint 14. The soldier's spec is the Monitor Lizard's exactly:
+            // the primary limb grabs and nothing else does. That is what keeps
+            // the grab off its sting, which is an additional limb; the sting's
+            // poison is gated on its own weapon type, which is what keeps the
+            // poison off this bite. The worker takes neither carrier, because
+            // the Worker template removes both.
+            ConfigureGrabber(library, bySymbol, GiantAntSoldierUnitSymbol,
+                GiantAntSoldierTraitsSymbol, "GiantAntSoldier",
+                "Giant Ant Grab",
+                "A bite hit lets the soldier attempt to grab a foe no larger than itself. Its sting never grabs.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            // Sprint 15: the Drone is the soldier with the advanced simple
+            // template and wings, so its grab is the soldier's grab on a
+            // different unit and takes the same spec. The carrier is its own
+            // because ConfigureGrabber is keyed by unit symbol.
+            ConfigureGrabber(library, bySymbol, GiantAntDroneUnitSymbol,
+                GiantAntDroneTraitsSymbol, "GiantAntDrone",
+                "Giant Ant Grab",
+                "A bite hit lets the drone attempt to grab a foe no larger than itself. Its sting never grabs.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            // Sprint 16: the Dire Crocodile's own swallowed state. It
+            // shared the Purple Worm's until now, which put a victim in a
+            // worm's stomach with the worm's crush. The engine behaviour the
+            // victim depends on is the native one either way - the components
+            // are the same deep clone - but the per-round damage is this
+            // creature's own.
+            BlueprintBuff direSwallowed = Require<BlueprintBuff>(bySymbol,
+                DireCrocodileSwallowedSymbol);
+            ConfigureCrocodilianSwallowedState(library, direSwallowed,
+                "dire-crocodile");
+
+            // Sprint 16. The Crocodile's stat block has read "bite +5
+            // (1d8+4 plus grab)" since Phase 1 and the creature has never had
+            // the grab: its profile recorded grab, death roll, sprint and hold
+            // breath together as omitted. Its spec is the Monitor Lizard's -
+            // the primary limb grabs and nothing else does - and the death
+            // roll rides the same maintain as every other rider, taking its
+            // numbers from the rules profile.
+            ConfigureGrabber(library, bySymbol, CrocodileUnitSymbol,
+                CrocodileCombatTraitsSymbol, "Crocodile",
+                "Crocodile Grab and Death Roll",
+                "A bite hit lets the crocodile attempt to grab a foe no larger than itself. While grappling a foe of its own size or smaller it can death roll on a successful grapple check, dealing 1d8+6 and knocking the foe prone while keeping its hold.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
+                    DeathRollCreatureKey = "crocodile" });
+            // The Dire Crocodile has both riders, so one successful check must
+            // resolve exactly one of them; the choice lives in
+            // CrocodilianRulesPolicy.SelectMaintainRider rather than here.
+            ConfigureGrabber(library, bySymbol, DireCrocodileUnitSymbol,
+                DireCrocodileCombatTraitsSymbol, "DireCrocodile",
+                "Dire Crocodile Grab, Death Roll and Swallow Whole",
+                "A bite hit lets the dire crocodile attempt to grab a foe no larger than itself. On a successful grapple check against a foe it began its turn holding it swallows a foe at least one size category smaller, or death rolls one too large to swallow for 3d6+19 and knocks it prone while keeping its hold. One check resolves one of the two.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
+                    Swallowed = direSwallowed,
+                    SwallowDelta = CrocodilianRulesPolicy.For("dire-crocodile")
+                        .SwallowSizeDelta,
+                    DeathRollCreatureKey = "dire-crocodile" });
             ConfigureGiantSpiderWeb(library, bySymbol);
             // Sprint 7, rebuilt: the cats grab with the bite (the tiger and the
             // smilodon also with their two foreclaws); the last two claws are
@@ -1690,6 +1843,15 @@ namespace KingmakerGunslinger.Blueprints
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(TigerUnitSymbol), ExpandedSummoningSpecialProfiles.TigerCoat));
             ConfigureCheetahSprint(bySymbol);
+            ConfigureCrocodilianSprint(bySymbol, "crocodile", "Crocodile",
+                CrocodileUnitSymbol, CrocodileBrainSymbol,
+                CrocodileSprintSymbol, CrocodileSprintAiSymbol,
+                CrocodileSprintStateSymbol, CrocodileSprintCooldownSymbol);
+            ConfigureCrocodilianSprint(bySymbol, "dire-crocodile",
+                "DireCrocodile", DireCrocodileUnitSymbol,
+                DireCrocodileBrainSymbol, DireCrocodileSprintSymbol,
+                DireCrocodileSprintAiSymbol, DireCrocodileSprintStateSymbol,
+                DireCrocodileSprintCooldownSymbol);
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(CheetahUnitSymbol), ExpandedSummoningSpecialProfiles.CheetahCoat));
         }
@@ -1865,15 +2027,288 @@ namespace KingmakerGunslinger.Blueprints
             internal Size SwallowMaxSize;
             internal int SwallowDelta = -1;
             internal int ConstrictDice;
+            internal DiceType ConstrictDie = DiceType.D6;
             internal int ConstrictBonus;
+            internal bool LiveSerpentineConstrict;
+            internal bool LiveSalamanderConstrict;
+            /// <summary>
+            /// A crocodilian's key. The death roll's dice and flat bonus are
+            /// read from its rules profile rather than written here, because
+            /// the bonus is one and a half times Strength and a number copied
+            /// into a call site is a number that can disagree with the stat
+            /// block later.
+            /// </summary>
+            internal string DeathRollCreatureKey;
         }
 
         /// <summary>
-        /// Sprint 8: the Cheetah's sprint. A swift extraordinary ability, one
-        /// use per summoning, that applies a one-round state carrying an
-        /// enhancement bonus to speed (the game's own speed cap still applies);
-        /// a cast action on the cheetah's brain spends it once a fight starts.
+        /// A crocodilian's own swallowed state.
+        ///
+        /// <para>Only the two audited native stat penalties are deep-cloned.
+        /// The damage graph is constructed explicitly: no activation or
+        /// deactivation damage, one creature-owned crush per later round.
+        /// Native UnitPartSwallowed still owns inability to act and escape.
+        /// Runtime graph, cadence and cleanup proof remains a separate gate.</para>
+        ///
+        /// <para>Interior armour class and interior hit points are not set
+        /// here because the engine has nowhere to put them. The bounded audit
+        /// is recorded in the Sprint 16 blocker note: UnitPartSwallowed
+        /// carries a swallower, a break-free timer and a flag; its only
+        /// methods are Init, OnRemove and TryToBreakFree; the controller's
+        /// whole surface is TickOnUnit; ContextActionSwallowWhole carries only
+        /// the buff to apply; SwallowWholeSettings has only a Head transform
+        /// and SpitOutAnimation. The live census activated the owner's
+        /// SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED decision. There is no
+        /// interior to attack and no damage pool to fill, so the printed AC 16
+        /// and 13 hp have no carrier.</para>
         /// </summary>
+        private static void ConfigureCrocodilianSwallowedState(
+            LibraryScriptableObject library, BlueprintBuff swallowed,
+            string creatureKey)
+        {
+            CrocodilianRulesProfile rules =
+                CrocodilianRulesPolicy.For(creatureKey);
+            BlueprintBuff nativeSwallowed = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativePurpleWormSwallowedGuid,
+                    "native purple worm swallowed state");
+            swallowed.name = InternalName(DireCrocodileSwallowedSymbol);
+            swallowed.Stacking = StackingType.Replace;
+            swallowed.IsClassFeature = false;
+            // The recorded native graph has one action component (empty
+            // activation/deactivation, 4d8+12 crush on NewRound), plus -2 CMB
+            // and -4 Dexterity. Native break-free lives in UnitPartSwallowed,
+            // not in that damage graph. Keep the two audited penalties and
+            // construct our one damage action explicitly. No donor damage
+            // action, nested or otherwise, can survive this construction.
+            BlueprintComponent[] native = nativeSwallowed.ComponentsArray ??
+                Array.Empty<BlueprintComponent>();
+            AddStatBonus[] penalties = native.OfType<AddStatBonus>().ToArray();
+            if (native.Length != 3 ||
+                    native.OfType<AddFactContextActions>().Count() != 1 ||
+                    penalties.Length != 2 ||
+                    !penalties.Any(value => value.Stat == StatType.AdditionalCMB &&
+                        value.Value == -2) ||
+                    !penalties.Any(value => value.Stat == StatType.Dexterity &&
+                        value.Value == -4) ||
+                    penalties.Any(value => value.Descriptor !=
+                        ModifierDescriptor.UntypedStackable || value.ScaleByBasicAttackBonus))
+                throw new InvalidOperationException(
+                    "The native swallowed-state non-damage contract changed; " +
+                    "re-audit it before constructing Dire Crocodile swallow.");
+            var crush = ScriptableObject.CreateInstance<ContextActionDealDamage>();
+            crush.DamageType = new DamageTypeDescription {
+                Type = DamageType.Physical,
+                Physical = new DamageTypeDescription.PhysicalData {
+                    Form = PhysicalDamageForm.Bludgeoning } };
+            crush.Value = new ContextDiceValue {
+                DiceType = ParseDieSides(rules.SwallowDieSides),
+                DiceCountValue = Simple(rules.SwallowDiceCount),
+                BonusValue = Simple(rules.SwallowBonus) };
+            crush.IgnoreCritical = true;
+            var cadence = ScriptableObject.CreateInstance<AddFactContextActions>();
+            cadence.Activated = new ActionList { Actions = Array.Empty<GameAction>() };
+            cadence.Deactivated = new ActionList { Actions = Array.Empty<GameAction>() };
+            cadence.NewRound = new ActionList { Actions = new GameAction[] { crush } };
+            swallowed.ComponentsArray = penalties
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .Concat(new BlueprintComponent[] { cadence }).ToArray();
+            BlueprintUnitFactAccess.Resolve().Configure(swallowed,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireCrocodile.Swallowed.Name",
+                    "Swallowed Whole"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireCrocodile.Swallowed.Description",
+                    "Swallowed by a summoned dire crocodile: crushed for " +
+                    rules.SwallowDamage + " each round, unable to act, with a " +
+                    "break-free attempt each round. Kingmaker does not model " +
+                    "cutting one's way out, so the printed interior armour " +
+                    "class and hit points are not represented."),
+                null);
+        }
+
+        /// <summary>
+        /// Sprint (Ex) for a crocodilian: +20 feet for one round, once per
+        /// minute.
+        ///
+        /// <para>The recharge is the difference from the Cheetah's burst and
+        /// is the whole reason this is a separate builder. A ten-round
+        /// cooldown buff is applied alongside the one-round speed buff, and
+        /// the ability carries a restriction refusing to run while that buff
+        /// is present. Making the limit engine state rather than project
+        /// bookkeeping is what gets save and load, double-activation races and
+        /// every lifecycle boundary right without any of them being handled
+        /// here: a buff is serialized, is applied before a second activation
+        /// could be requested, and leaves with the creature.</para>
+        ///
+        /// <para>CRPG adaptation, disclosed: the source text names no action
+        /// type for Sprint. This uses the swift action the Cheetah's sprint
+        /// uses, which is the project's narrowest consistent convention for a
+        /// monster's self-targeted movement burst.</para>
+        /// </summary>
+        private static void ConfigureCrocodilianSprint(
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string creatureKey, string token, string unitSymbol,
+            string brainSymbol, string sprintSymbol, string aiSymbol,
+            string stateSymbol, string cooldownSymbol)
+        {
+            CrocodilianRulesProfile rules =
+                CrocodilianRulesPolicy.For(creatureKey);
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintAbility sprint = Require<BlueprintAbility>(bySymbol,
+                sprintSymbol);
+            BlueprintBuff state = Require<BlueprintBuff>(bySymbol, stateSymbol);
+            BlueprintBuff cooldown = Require<BlueprintBuff>(bySymbol,
+                cooldownSymbol);
+            BlueprintAiCastSpell ai = Require<BlueprintAiCastSpell>(bySymbol,
+                aiSymbol);
+            BlueprintBrain brain = Require<BlueprintBrain>(bySymbol,
+                brainSymbol);
+            if (unit.ComponentsArray == null ||
+                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
+                throw new InvalidOperationException(
+                    "The " + token + " chassis must be configured before its " +
+                    "sprint.");
+
+            var speed = ScriptableObject.CreateInstance<
+                Kingmaker.Designers.Mechanics.Buffs.BuffMovementSpeed>();
+            // Bounded CRPG adaptation: +20 to the live land-speed stat,
+            // stacking with Haste. No mutable BaseValue snapshot/restore.
+            // Native Slow, penalties and caps still own their own semantics.
+            speed.Descriptor = ModifierDescriptor.UntypedStackable;
+            speed.Value = rules.SprintBonusFeet;
+            speed.CappedOnMultiplier = false;
+            speed.CappedMinimum = false;
+            state.name = InternalName(stateSymbol);
+            state.Stacking = StackingType.Replace;
+            state.IsClassFeature = false;
+            state.ComponentsArray = new BlueprintComponent[] { speed };
+            BlueprintUnitFactAccess.Resolve().Configure(state,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".SprintState.Name",
+                    "Sprinting"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".SprintState.Description",
+                    "Its land speed is increased by " + rules.SprintBonusFeet +
+                    " feet for this round."),
+                null);
+
+            // The recharge. Inert: it exists to be present, and the ability
+            // refuses to run while it is.
+            cooldown.name = InternalName(cooldownSymbol);
+            cooldown.Stacking = StackingType.Replace;
+            cooldown.IsClassFeature = false;
+            cooldown.ComponentsArray = Array.Empty<BlueprintComponent>();
+            BlueprintUnitFactAccess.Resolve().Configure(cooldown,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".SprintCooldown.Name",
+                    "Winded"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token +
+                    ".SprintCooldown.Description",
+                    "It has sprinted within the last minute and cannot sprint " +
+                    "again until it recovers."),
+                null);
+
+            sprint.name = InternalName(sprintSymbol);
+            sprint.Type = AbilityType.Extraordinary;
+            sprint.Parent = null;
+            sprint.Hidden = false;
+            sprint.ActionBarAutoFillIgnored = false;
+            sprint.Range = AbilityRange.Personal;
+            sprint.CanTargetEnemies = false;
+            sprint.CanTargetSelf = true;
+            sprint.CanTargetFriends = false;
+            sprint.CanTargetPoint = false;
+            sprint.SpellResistance = false;
+            sprint.NeedEquipWeapons = false;
+            sprint.EffectOnEnemy = AbilityEffectOnUnit.None;
+            sprint.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            sprint.ActionType = UnitCommand.CommandType.Swift;
+            sprint.Animation = UnitAnimationActionCastSpell
+                .CastAnimationStyle.Immediate;
+            sprint.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            sprint.ResourceAssetIds = Array.Empty<string>();
+
+            var applyState = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            applyState.Buff = state;
+            applyState.ToCaster = true;
+            applyState.DurationValue = new ContextDurationValue {
+                Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
+                BonusValue = Simple(rules.SprintRounds)
+            };
+            applyState.IsFromSpell = false;
+            applyState.IsNotDispelable = true;
+            var applyCooldown = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            applyCooldown.Buff = cooldown;
+            applyCooldown.ToCaster = true;
+            applyCooldown.DurationValue = new ContextDurationValue {
+                Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
+                BonusValue = Simple(rules.SprintCooldownRounds)
+            };
+            applyCooldown.IsFromSpell = false;
+            applyCooldown.IsNotDispelable = true;
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.Actions = new ActionList {
+                Actions = new GameAction[] { applyState, applyCooldown } };
+            var unavailable = ScriptableObject.CreateInstance<
+                AbilityCasterHasNoFacts>();
+            unavailable.Facts = new BlueprintUnitFact[] { cooldown };
+            sprint.ComponentsArray = new BlueprintComponent[] {
+                unavailable, effect };
+            BlueprintUnitFactAccess.Resolve().Configure(sprint,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".Sprint.Name", "Sprint"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".Sprint.Description",
+                    "Once per minute, as a swift action, it sprints: +" +
+                    rules.SprintBonusFeet + " feet of land speed for one " +
+                    "round. It cannot sprint again for " +
+                    rules.SprintCooldownRounds + " rounds."),
+                null);
+
+            ai.name = InternalName(aiSymbol);
+            ai.Ability = sprint;
+            ai.Variant = null;
+            ai.BaseScore = 3;
+            // The same serialized cooldown buff gates player and AI casts.
+            // A separate AI clock can drift after a player cast or reload.
+            ai.CooldownRounds = 0;
+            ai.StartCooldownRounds = 0;
+            var notEngaged = Require<Kingmaker.Controllers.Brain.Blueprints
+                .Considerations.IsEngagedConsideration>(bySymbol,
+                    CrocodilianRulesPolicy.SprintNotEngagedSymbol);
+            notEngaged.EngagedScore = CrocodilianRulesPolicy.SprintAiEngagedScore;
+            notEngaged.NotEngagedScore = CrocodilianRulesPolicy.SprintAiFreeScore;
+            notEngaged.BaseScoreModifier = 1f;
+            notEngaged.ComponentsArray = Array.Empty<BlueprintComponent>();
+            ai.ActorConsiderations = new Kingmaker.Controllers.Brain.Blueprints
+                .Considerations.Consideration[] { notEngaged };
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            brain.name = InternalName(brainSymbol);
+            BlueprintBrain naturalBrain = unit.Brain;
+            if (naturalBrain == null || ReferenceEquals(naturalBrain, brain))
+                throw new InvalidOperationException(
+                    "Crocodilian Sprint requires the configured natural-attack brain.");
+            brain.ComponentsArray = (naturalBrain.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            brain.Actions = CrocodilianRulesPolicy.AppendSprintAction<BlueprintAiAction>(
+                naturalBrain.Actions, ai);
+
+            var grant = ScriptableObject.CreateInstance<
+                AddAbilityToCharacterComponent>();
+            grant.Abilities = new[] { sprint };
+            unit.ComponentsArray = unit.ComponentsArray.Concat(
+                new BlueprintComponent[] { grant }).ToArray();
+            unit.Brain = brain;
+        }
+
         private static void ConfigureCheetahSprint(
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
@@ -2136,6 +2571,29 @@ namespace KingmakerGunslinger.Blueprints
                 WebProjectileGuid, "native thrown-object projectile for the summoned web");
         }
 
+        /// <summary>
+        /// A die size as the engine's enum. The rules profiles carry plain
+        /// integers because they are arithmetic rather than engine data, and
+        /// this is the one place that translation happens.
+        /// </summary>
+        private static DiceType ParseDieSides(int sides)
+        {
+            switch (sides)
+            {
+                case 2: return DiceType.D2;
+                case 3: return DiceType.D3;
+                case 4: return DiceType.D4;
+                case 6: return DiceType.D6;
+                case 8: return DiceType.D8;
+                case 10: return DiceType.D10;
+                case 12: return DiceType.D12;
+                case 20: return DiceType.D20;
+                default:
+                    throw new InvalidOperationException(
+                        "No die of " + sides + " sides.");
+            }
+        }
+
         private static void ConfigureGrabber(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
             string unitSymbol, string traitsSymbol, string token,
@@ -2166,12 +2624,42 @@ namespace KingmakerGunslinger.Blueprints
             grab.SwallowMaxSize = spec.SwallowMaxSize;
             grab.SwallowMaxSizeDelta = spec.SwallowDelta;
             grab.ConstrictDiceCount = spec.ConstrictDice;
-            grab.ConstrictDiceType = DiceType.D6;
+            grab.ConstrictDiceType = spec.ConstrictDie;
             grab.ConstrictBonus = spec.ConstrictBonus;
+            if (spec.LiveSerpentineConstrict) grab.ConstrictProfileOwner = unit;
+            if (spec.LiveSalamanderConstrict) grab.SalamanderProfileOwner = unit;
+            if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
+            {
+                CrocodilianRulesProfile rules = CrocodilianRulesPolicy.For(
+                    spec.DeathRollCreatureKey);
+                grab.DeathRollDiceCount = rules.DeathRollDiceCount;
+                grab.DeathRollDiceType = ParseDieSides(rules.DeathRollDieSides);
+                grab.DeathRollBonus = rules.DeathRollBonus;
+                grab.DeathRollMaxTargetSizeDelta =
+                    rules.DeathRollTargetSizeDelta;
+                grab.DeathRollKnocksProne = true;
+            }
             var bonus = ScriptableObject.CreateInstance<ManeuverBonus>();
             bonus.Type = CombatManeuver.Grapple;
             bonus.Bonus = ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;
             var components = new List<BlueprintComponent> { grab, bonus };
+            if (spec.LiveSalamanderConstrict)
+            {
+                var heat = ScriptableObject.CreateInstance<SummonSalamanderHeat>();
+                heat.OwningBlueprint = unit;
+                heat.Spear = (BlueprintItemWeapon)unit.Body.PrimaryHand;
+                heat.Tail = unit.Body.AdditionalSecondaryLimbs.Single();
+                components.Add(heat);
+            }
+            if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
+            {
+                var weaponStats = ScriptableObject.CreateInstance<SummonCrocodilianWeaponStats>();
+                weaponStats.OwningBlueprint = unit;
+                weaponStats.Bite = (BlueprintItemWeapon)unit.Body.PrimaryHand;
+                weaponStats.Tail = unit.Body.AdditionalSecondaryLimbs.Single();
+                weaponStats.BaselineSize = unit.Size;
+                components.Add(weaponStats);
+            }
             if (spec.Swallowed != null)
                 components.Add(ScriptableObject.CreateInstance<
                     SummonSwallowLifecycleComponent>());
@@ -2578,6 +3066,415 @@ namespace KingmakerGunslinger.Blueprints
                 ExpandedSummoningSpecialProfiles.ErinyesSpeedFeet);
         }
 
+        /// <summary>
+        /// Builds the Shadow Mastiff and its two printed supernatural
+        /// abilities. The creature has no native Kingmaker equivalent, so
+        /// every number here comes from its Bestiary 3 stat block and is held
+        /// in ExpandedSummoningSpecialProfiles rather than written inline.
+        /// </summary>
+        /// <summary>
+        /// Sets the two buff flags this builder cares about. The special
+        /// builder's buffs are fresh shells whose flags default to zero, so
+        /// only a buff that must read as harmful, or must stay out of the
+        /// player's buff list, needs this.
+        /// </summary>
+        private static void SetBuffFlags(BlueprintBuff buff, bool harmful,
+            bool hidden = false)
+        {
+            FieldInfo field = buff.GetType().GetField("m_Flags",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            if (field == null || !field.FieldType.IsEnum)
+                throw new MissingFieldException(typeof(BlueprintBuff).FullName,
+                    "m_Flags");
+            int value = (harmful ?
+                (int)Enum.Parse(field.FieldType, "Harmful") : 0) |
+                (hidden ? (int)Enum.Parse(field.FieldType, "HiddenInUi") : 0);
+            field.SetValue(buff, Enum.ToObject(field.FieldType, value));
+        }
+
+        private static void ConfigureShadowMastiffFamily(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintFeature extraplanar)
+        {
+            BlueprintItemWeapon tail = Require<BlueprintItemWeapon>(bySymbol,
+                ShadowMastiffTailSymbol);
+            ConfigureShadowMastiffTail(library, tail);
+            BlueprintBuff panic = Require<BlueprintBuff>(bySymbol,
+                ShadowMastiffBayPanicSymbol);
+            BlueprintBuff immunity = Require<BlueprintBuff>(bySymbol,
+                ShadowMastiffBayImmunitySymbol);
+            BlueprintAbility bay = Require<BlueprintAbility>(bySymbol,
+                ShadowMastiffBaySymbol);
+            BlueprintBuff blendState = Require<BlueprintBuff>(bySymbol,
+                ShadowMastiffShadowBlendStateSymbol);
+            BlueprintActivatableAbility blend =
+                Require<BlueprintActivatableAbility>(bySymbol,
+                    ShadowMastiffShadowBlendSymbol);
+            BlueprintFeature traits = Require<BlueprintFeature>(bySymbol,
+                ShadowMastiffTraitsSymbol);
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol,
+                ShadowMastiffUnitSymbol);
+            ConfigureShadowMastiffBayPanic(panic);
+            ConfigureShadowMastiffBayImmunity(immunity);
+            ConfigureShadowMastiffBay(library, bay, panic, immunity, unit);
+            ConfigureShadowMastiffShadowBlendState(library, blendState);
+            ConfigureShadowMastiffShadowBlend(blend, blendState);
+            ConfigureShadowMastiffTraits(traits, bay, blend);
+            ConfigureShadowMastiff(library, unit, tail, traits, extraplanar);
+        }
+
+        /// <summary>
+        /// The printed tail slap is 1d6. The native animated tail is the donor
+        /// for presentation and the dice are overridden to the printed value,
+        /// the same way the Salamander's tail is minted.
+        /// </summary>
+        private static void ConfigureShadowMastiffTail(
+            LibraryScriptableObject library, BlueprintItemWeapon tail)
+        {
+            BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, LargeTailGuid,
+                    "native animated tail weapon");
+            CopyFields(native, tail);
+            tail.name = InternalName(ShadowMastiffTailSymbol);
+            tail.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(tail, "m_OverrideDamageDice", true);
+            SetField(tail, "m_DamageDice", new DiceFormula(1, DiceType.D6));
+            tail.IsNonRemovable = true;
+            SetField(tail, "m_Cost", 0);
+            SetField(tail, "m_Weight", 0f);
+            SetField(tail, "m_Enchantments", Array.Empty<
+                Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
+        /// <summary>
+        /// The printed effect of a failed bay save. Kingmaker models one
+        /// authorable flee state, UnitCondition.Frightened, which is what
+        /// UnitFearController gates on: it interrupts every command each tick
+        /// and runs the creature away from its remembered enemies along a
+        /// partly random path, which is behaviourally what PF1 assigns to
+        /// panicked. The three printed descriptors are carried so native
+        /// sonic, mind-affecting and fear immunities apply without being
+        /// re-implemented.
+        /// </summary>
+        private static void ConfigureShadowMastiffBayPanic(BlueprintBuff buff)
+        {
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Sonic |
+                SpellDescriptor.MindAffecting | SpellDescriptor.Fear;
+            var condition = ScriptableObject.CreateInstance<AddCondition>();
+            condition.Condition = UnitCondition.Frightened;
+            buff.name = InternalName(ShadowMastiffBayPanicSymbol);
+            buff.Stacking = StackingType.Replace;
+            SetBuffFlags(buff, harmful: true);
+            buff.ResourceAssetIds = Array.Empty<string>();
+            buff.ComponentsArray = new BlueprintComponent[] {
+                descriptor, condition };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.BayPanic.Name",
+                    "Panicked (Bay)"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.BayPanic.Description",
+                    "Fleeing in terror from a shadow mastiff's bay. The creature cannot act while it runs."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed 24-hour bound: "A creature that successfully saves
+        /// cannot be affected by the same mastiff's bay for 24 hours." The
+        /// marker is inert and carries no mechanics; what makes it per-mastiff
+        /// is that the bay action compares the stored buff's caster to itself.
+        /// It deliberately outlives the summon that created it, which is the
+        /// same lifetime rule the Sprint 12 disease contract records.
+        /// </summary>
+        private static void ConfigureShadowMastiffBayImmunity(BlueprintBuff buff)
+        {
+            buff.name = InternalName(ShadowMastiffBayImmunitySymbol);
+            buff.Stacking = StackingType.Replace;
+            SetBuffFlags(buff, harmful: false, hidden: true);
+            buff.ResourceAssetIds = Array.Empty<string>();
+            buff.ComponentsArray = Array.Empty<BlueprintComponent>();
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.BayImmunity.Name",
+                    "Steeled Against That Bay"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.BayImmunity.Description",
+                    "This creature resisted one shadow mastiff's bay and cannot be affected by that same mastiff's bay for 24 hours."),
+                null);
+        }
+
+        /// <summary>
+        /// Bay, as printed: a 300-foot spread that catches every creature in
+        /// it except evil outsiders. The target type is deliberately Any, not
+        /// Enemy, because the printed rule does not spare the summoner's party
+        /// and softening that would be a change to the rule.
+        ///
+        /// <para>What is bounded instead is the decision. Bay is a player
+        /// activated standard action on the summoned mastiff and the creature's
+        /// brain never selects it, so no AI can spam it into the party and no
+        /// AI loop is possible. The charter asks for bay that is useful without
+        /// repeatedly harming allies or stalling AI, and this delivers that
+        /// without touching the printed spread, DC, duration or exposure.</para>
+        /// </summary>
+        private static void ConfigureShadowMastiffBay(
+            LibraryScriptableObject library, BlueprintAbility ability,
+            BlueprintBuff panic, BlueprintBuff immunity, BlueprintUnit unit)
+        {
+            var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
+            SetField(around, "m_Radius", new Feet(ExpandedSummoningSpecialProfiles
+                .ShadowMastiffBayRadiusFeet));
+            SetField(around, "m_TargetType",
+                Kingmaker.UnitLogic.Abilities.Components.TargetType.Any);
+            SetField(around, "m_IncludeDead", false);
+            SetField(around, "m_Condition", new ConditionsChecker {
+                Operation = Operation.And, Conditions = Array.Empty<Condition>() });
+            SetField(around, "m_SpreadSpeed", new Feet(0));
+            var resolve = ScriptableObject
+                .CreateInstance<ContextActionShadowMastiffBay>();
+            resolve.SourceUnit = unit;
+            resolve.PanicBuff = panic;
+            resolve.ImmunityBuff = immunity;
+            resolve.EvilSubtype = Feature(library, EvilSubtypeGuid,
+                "evil subtype");
+            resolve.OutsiderClass = BlueprintLibraryLookup.RequireExact<
+                BlueprintCharacterClass>(library, OutsiderClassGuid,
+                    "native outsider class");
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            // The save is rolled inside the action, against a DC derived from
+            // the mastiff's own hit dice and Charisma, so the native
+            // saving-throw component must not roll a second one here.
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList {
+                Actions = new GameAction[] { resolve } };
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Sonic |
+                SpellDescriptor.MindAffecting | SpellDescriptor.Fear;
+            ability.name = InternalName(ShadowMastiffBaySymbol);
+            ability.Type = AbilityType.Supernatural;
+            ability.Range = AbilityRange.Personal;
+            ability.CanTargetEnemies = false;
+            ability.CanTargetFriends = false;
+            ability.CanTargetPoint = false;
+            ability.CanTargetSelf = true;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.Harmful;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.Animation = UnitAnimationActionCastSpell
+                .CastAnimationStyle.Omni;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            ability.ComponentsArray = new BlueprintComponent[] {
+                around, run, descriptor };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.Bay.Name", "Bay"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.Bay.Description",
+                    "The mastiff howls. Every creature within 300 feet except evil outsiders must make a Will save or be panicked for 1d4 rounds, fleeing and unable to act. This is a sonic, mind-affecting fear effect and it does not spare your own party. A creature that saves cannot be affected by this mastiff's bay again for 24 hours."),
+                null);
+        }
+
+        /// <summary>
+        /// Shadow blend's concealment. Concealment.Total is the engine's 50%
+        /// miss chance, which is the printed value; Partial is the 20% grade.
+        /// The Blur descriptor is chosen deliberately: the printed ability is
+        /// not invisibility, so TargetIsInvisible would wrongly let See
+        /// Invisibility defeat it, and it is not fog, so Fog would wrongly tie
+        /// it to wind and weather effects.
+        /// </summary>
+        private static void ConfigureShadowMastiffShadowBlendState(
+            LibraryScriptableObject library, BlueprintBuff buff)
+        {
+            // The component owns its own concealment entry. A native
+            // AddConcealment would add one unconditionally, and the obvious
+            // way to gate it - suppressing the buff - does not work, because
+            // Buff.IsSuppressed only skips the per-round mechanics tick and
+            // never turns a component off, so the entry would survive full
+            // daylight and leave the creature stronger than its stat block.
+            //
+            // Daylight is resolved as the ability it is. This project's own
+            // audited native light-spell census records this identity as a
+            // spell blueprint, so asking the library for a buff here threw
+            // inside blueprint registration and aborted the whole bootstrap.
+            var gate = ScriptableObject
+                .CreateInstance<SummonShadowBlendComponent>();
+            gate.Grade = Concealment.Total;
+            gate.Descriptor = ConcealmentDescriptor.Blur;
+            gate.NegatingRadiusFeet = ExpandedSummoningSpecialProfiles
+                .ShadowMastiffShadowBlendDaylightRadiusFeet;
+            gate.NegatingBuffs = new[] { DaylightBuff(library) };
+            buff.name = InternalName(ShadowMastiffShadowBlendStateSymbol);
+            buff.Stacking = StackingType.Replace;
+            // The component re-decides the printed condition at each round
+            // boundary as well as at each concealment check, so the buff needs
+            // a round tick for the engine to dispatch that.
+            buff.Frequency = DurationRate.Rounds;
+            SetBuffFlags(buff, harmful: false);
+            buff.ResourceAssetIds = Array.Empty<string>();
+            buff.ComponentsArray = new BlueprintComponent[] { gate };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlend.Name",
+                    "Shadow Blend"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlend.Description",
+                    "Outside full daylight the mastiff melts into the shadows and attackers suffer a 50% miss chance. Artificial light does not disturb it; a daylight spell does."),
+                null);
+        }
+
+        /// <summary>
+        /// The buff native Daylight actually applies, read out of the spell's
+        /// own action list rather than written down as a second GUID.
+        ///
+        /// <para>Kingmaker's Daylight is a party-member-targeted light spell -
+        /// it carries AbilityTargetIsPartyMember, so it cannot be cast at a
+        /// summon at all - and it creates no region of daylight. What it does
+        /// is put a light buff on whoever carries it, which is the only thing
+        /// the shadow blend can detect.</para>
+        /// </summary>
+        private static BlueprintBuff DaylightBuff(
+            LibraryScriptableObject library)
+        {
+            BlueprintAbility daylight = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeDaylightGuid,
+                    "native Daylight spell");
+            BlueprintBuff[] applied = (daylight.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                .OfType<AbilityEffectRunAction>()
+                .SelectMany(run => run.Actions == null ||
+                    run.Actions.Actions == null ?
+                    Array.Empty<GameAction>() : run.Actions.Actions)
+                .OfType<ContextActionApplyBuff>()
+                .Select(action => action.Buff)
+                .Where(buff => buff != null)
+                .Distinct()
+                .ToArray();
+            if (applied.Length != 1)
+                throw new InvalidOperationException(
+                    "Native Daylight must apply exactly one buff for shadow blend to detect; found " +
+                    applied.Length + ".");
+            return applied[0];
+        }
+
+        /// <summary>
+        /// The printed ability can be suspended or resumed as a free action,
+        /// which is a player-facing toggle. It starts on, because an active
+        /// shadow blend is what a summoner wants and what the printed creature
+        /// has.
+        /// </summary>
+        private static void ConfigureShadowMastiffShadowBlend(
+            BlueprintActivatableAbility ability, BlueprintBuff state)
+        {
+            ability.name = InternalName(ShadowMastiffShadowBlendSymbol);
+            ability.Buff = state;
+            ability.Group = ActivatableAbilityGroup.None;
+            ability.WeightInGroup = 1;
+            ability.IsOnByDefault = true;
+            ability.ActivationType = AbilityActivationType.Immediately;
+            ability.DeactivateIfCombatEnded = false;
+            ability.DeactivateAfterFirstRound = false;
+            ability.DeactivateImmediately = false;
+            ability.DeactivateIfOwnerDisabled = false;
+            ability.DeactivateIfOwnerUnconscious = false;
+            ability.OnlyInCombat = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.ComponentsArray = Array.Empty<BlueprintComponent>();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlendToggle.Name",
+                    "Shadow Blend"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlendToggle.Description",
+                    "Suspend or resume shadow blend as a free action. While it is active and the mastiff is not standing in full daylight, attackers suffer a 50% miss chance."),
+                null);
+        }
+
+        private static void ConfigureShadowMastiffTraits(
+            BlueprintFeature feature, BlueprintAbility bay,
+            BlueprintActivatableAbility blend)
+        {
+            var grant = ScriptableObject.CreateInstance<AddFacts>();
+            grant.name = "$KMG_GrantShadowMastiffAbilities";
+            grant.Facts = new BlueprintUnitFact[] { bay, blend };
+            grant.DoNotRestoreMissingFacts = false;
+            feature.name = InternalName(ShadowMastiffTraitsSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { grant };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.Traits.Name",
+                    "Shadow Mastiff Abilities"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.Traits.Description",
+                    "Grants the mastiff's bay and shadow blend."),
+                null);
+        }
+
+        /// <summary>
+        /// Printed: NE Medium outsider (evil, extraplanar), 6d10+18, AC 18
+        /// (+2 Dex, +6 natural), Speed 50 ft., bite +10 (1d8+4 plus trip),
+        /// tail slap +5 (1d6+2), Str 19 Dex 15 Con 17 Int 4 Wis 12 Cha 13,
+        /// Base Atk +6, CMD 22 (26 vs. trip), Feats Improved Initiative, Iron
+        /// Will, Power Attack.
+        ///
+        /// <para>The attack placement follows from those numbers rather than
+        /// from the donor's limb layout. Bite +10 is base attack 6 plus
+        /// Strength 4 with full Strength damage, so it is the primary natural
+        /// weapon. Tail slap +5 is 6 + 4 - 5 and 1d6+2 is half Strength, so it
+        /// is a secondary limb. Nothing is promoted because the Worg donor
+        /// happens to have a convenient slot.</para>
+        /// </summary>
+        private static void ConfigureShadowMastiff(
+            LibraryScriptableObject library, BlueprintUnit unit,
+            BlueprintItemWeapon tail, BlueprintFeature traits,
+            BlueprintFeature extraplanar)
+        {
+            BlueprintItemWeapon bite = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, MediumBite1d8Guid,
+                    "Shadow Mastiff 1d8 bite");
+            unit.ComponentsArray = new BlueprintComponent[] {
+                OutsiderLevels(library,
+                    ExpandedSummoningSpecialProfiles.ShadowMastiffHitDice)
+            };
+            unit.Body = NaturalBody(bite, Array.Empty<BlueprintItemWeapon>(),
+                new[] { tail });
+            unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
+                library, DumbBrainGuid, "bounded natural-attack brain");
+            ConfigureUnitCore(unit, "ShadowMastiff", "Shadow Mastiff",
+                Alignment.NeutralEvil, Size.Medium,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffStrength,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffDexterity,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffConstitution,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffIntelligence,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffWisdom,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffCharisma,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffSpeedFeet);
+            unit.AddFacts = new BlueprintUnitFact[] {
+                Feature(library, EvilSubtypeGuid, "evil subtype"),
+                extraplanar,
+                // A natural-armor stack is a BlueprintUnitFact, not a
+                // BlueprintFeature; the Invisible Stalker above resolves the
+                // same identity the same way.
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                    NaturalArmor6Guid, "natural armor +6"),
+                Feature(library, TrippingBiteGuid, "printed trip on the bite"),
+                Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
+                Feature(library, IronWillGuid, "Iron Will"),
+                Feature(library, PowerAttackGuid, "Power Attack"),
+                traits
+            };
+        }
+
         private static void ConfigureShadowDemonCombatTraits(BlueprintBuff buff)
         {
             var dr = ScriptableObject.CreateInstance<AddDamageResistancePhysical>();
@@ -2660,7 +3557,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureSalamanderTail(
-            LibraryScriptableObject library, BlueprintItemWeapon tail)
+            LibraryScriptableObject library, BlueprintItemWeapon tail, BlueprintWeaponType type)
         {
             BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeTailGuid,
@@ -2670,8 +3567,13 @@ namespace KingmakerGunslinger.Blueprints
             tail.ComponentsArray = (native.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
-            SetField(tail, "m_OverrideDamageDice", true);
-            SetField(tail, "m_DamageDice", new DiceFormula(2, DiceType.D6));
+            ConfigureSummonWeaponType(library, LargeTailGuid, "native animated tail",
+                "KMG.Summoning.Special.Salamander.TailType", type);
+            SetField(type, "m_BaseDamage", new DiceFormula(2, DiceType.D6));
+            SetField(type, "m_AttackRange", new Feet(SalamanderRulesPolicy.TailReachFeet));
+            SetField(tail, "m_Type", type);
+            SetField(tail, "m_Size", Size.Medium);
+            SetField(tail, "m_OverrideDamageDice", false);
             SetField(tail, "m_Enchantments", Array.Empty<
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
         }
@@ -2696,63 +3598,35 @@ namespace KingmakerGunslinger.Blueprints
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
         }
 
-        private static void ConfigureSalamanderCombatTraits(
-            LibraryScriptableObject library, BlueprintBuff buff,
-            BlueprintItemWeapon tail)
-        {
-            BlueprintFeature nativeGrab = BlueprintLibraryLookup.RequireExact<
-                BlueprintFeature>(library, NativeGrabGuid,
-                    "native bounded grab/constrict graph");
-            AddInitiatorAttackWithWeaponTrigger grab =
-                (AddInitiatorAttackWithWeaponTrigger)
-                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
-                    nativeGrab.ComponentsArray.OfType<
-                        AddInitiatorAttackWithWeaponTrigger>().Single());
-            grab.WeaponType = tail.Type;
-            ContextActionDealDamage constrict = FindDamage(
-                new BlueprintComponent[] { grab });
-            constrict.Value = new ContextDiceValue {
-                DiceType = DiceType.D6,
-                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles
-                    .SalamanderConstrictDice),
-                BonusValue = Simple(ExpandedSummoningSpecialProfiles
-                    .SalamanderConstrictBonus)
-            };
-            ManeuverBonus grappleBonus = (ManeuverBonus)
-                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
-                    nativeGrab.ComponentsArray.OfType<ManeuverBonus>().Single());
-            var heat = ScriptableObject.CreateInstance<
-                AddInitiatorAttackWithWeaponTrigger>();
-            heat.OnlyHit = true;
-            heat.Action = new ActionList { Actions = new GameAction[] {
-                EnergyDamage(DamageEnergyType.Fire,
-                    ExpandedSummoningSpecialProfiles.SalamanderHeatDice)
-            }};
-            buff.Stacking = StackingType.Replace;
-            buff.IsClassFeature = true;
-            buff.ComponentsArray = new BlueprintComponent[] {
-                grab, grappleBonus, heat
-            };
-            BlueprintUnitFactAccess.Resolve().Configure(buff,
-                LocalizationService.Create(
-                    "KMG.ExpandedSummoning.Salamander.CombatTraits.Name",
-                    "Salamander Heat and Constrict"),
-                LocalizationService.Create(
-                    "KMG.ExpandedSummoning.Salamander.CombatTraits.Description",
-                    "Successful attacks deal 1d6 fire damage; tail hits can grab and constrict for 2d6+4 damage."), null);
-        }
-
         private static void ConfigureSalamander(LibraryScriptableObject library,
             BlueprintUnit unit, BlueprintItemWeapon spear,
             BlueprintItemWeapon tail,
-            BlueprintBuff combatTraits, BlueprintFeature extraplanar)
+            BlueprintUnitType type, BlueprintFeature extraplanar)
         {
-            unit.ComponentsArray = new BlueprintComponent[] {
-                OutsiderLevels(library,
-                    ExpandedSummoningSpecialProfiles.SalamanderHitDice)
-            };
+            AddClassLevels levels = OutsiderLevels(library, ExpandedSummoningSpecialProfiles.SalamanderHitDice);
+            levels.Skills = Array.Empty<StatType>();
+            var racial = ScriptableObject.CreateInstance<SummonSalamanderRacialProfile>();
+            racial.OwningBlueprint = unit;
+            unit.ComponentsArray = new BlueprintComponent[] { levels, racial };
+            unit.Skills = new BlueprintUnit.UnitSkills();
+            type.name = InternalName("KMG.Summoning.Special.Salamander.UnitType");
+            type.KnowledgeStat = StatType.SkillLoreReligion;
+            type.Name = LocalizationService.Create("KMG.ExpandedSummoning.Salamander.UnitType.Name", "Salamander");
+            type.Description = LocalizationService.Create("KMG.ExpandedSummoning.Salamander.UnitType.Description",
+                "A fiery extraplanar outsider with a humanoid upper body and a powerful constricting tail. " +
+                "Darkvision is unmodeled under the accepted passive-sense engine limitation.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+            unit.Type = type;
             unit.Body = NaturalBody(spear, Array.Empty<BlueprintItemWeapon>(),
                 new[] { tail });
+            BlueprintUnit humanView = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
+                SalamanderProductionViewPolicy.DonorGuid, "qualified native human Salamander carrier");
+            if (humanView.Prefab == null || humanView.Prefab.AssetId != SalamanderTailAnimationPolicy.Prefab)
+                throw new InvalidOperationException("Salamander human donor prefab changed.");
+            // Borrow only the qualified view. No NPC facts, faction, race,
+            // inventory, loot, weapons or progression enter this creature.
+            unit.Prefab = humanView.Prefab;
             unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "bounded natural-attack brain");
             ConfigureUnitCore(unit, "Salamander", "Salamander",
@@ -2770,8 +3644,11 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, DrMagic10Guid, "DR 10/magic"),
                 Feature(library, FireSubtypeGuid, "fire subtype"),
                 extraplanar,
-                Feature(library, WeaponFocusSpearGuid, "Weapon Focus (spear)"),
-                combatTraits
+                Feature(library, "d809b6c4ff2aaff4fa70d712a70f7d7b", "Cleave"),
+                Feature(library, IronWillGuid, "Iron Will"),
+                Feature(library, PowerAttackGuid, "Power Attack"),
+                Feature(library, "f74c6bdf5c5f5374fb9302ecdc1f7d64", "Skill Focus (Perception)"),
+                Feature(library, "c1b26f97b974aec469613f968439e7bb", "cannot be tripped")
             };
         }
 
@@ -3113,7 +3990,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureSummonWeaponType(
             LibraryScriptableObject library, string sourceWeaponGuid,
-            string sourceRole, string symbol, BlueprintWeaponType result)
+            string sourceRole, string symbol, BlueprintWeaponType result, bool isNatural = true)
         {
             BlueprintItemWeapon source = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, sourceWeaponGuid, sourceRole);
@@ -3122,7 +3999,9 @@ namespace KingmakerGunslinger.Blueprints
             result.ComponentsArray = (source.Type.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
-            SetField(result, "m_IsNatural", true);
+            // The Salamander's manufactured spear keeps ordinary BAB
+            // iteratives. Existing sleep-bow semantics are not changed here.
+            SetField(result, "m_IsNatural", isNatural);
             SetField(result, "m_Weight", 0f);
             SetField(result, "m_Enchantments", Array.Empty<
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());

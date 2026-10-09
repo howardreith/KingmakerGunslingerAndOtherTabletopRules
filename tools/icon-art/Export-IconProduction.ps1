@@ -58,7 +58,8 @@ foreach ($brief in $briefs) {
     $source = [Drawing.Bitmap]::new((Join-Path $RepositoryRoot $brief.source))
     try {
         if ($source.Width -ne $source.Height -or $source.Width -lt 512) { throw "Unexpected production source size: $key" }
-        $target = [Drawing.Bitmap]::new(128,128,[Drawing.Imaging.PixelFormat]::Format32bppArgb)
+        $size = if ($brief.exportProfile -ceq 'combat-emblem-64') { 64 } else { 128 }
+        $target = [Drawing.Bitmap]::new($size,$size,[Drawing.Imaging.PixelFormat]::Format32bppArgb)
         $g = [Drawing.Graphics]::FromImage($target)
         $attrs = [Drawing.Imaging.ImageAttributes]::new()
         try {
@@ -67,7 +68,7 @@ foreach ($brief in $briefs) {
             $g.CompositingQuality = [Drawing.Drawing2D.CompositingQuality]::HighQuality
             $g.CompositingMode = [Drawing.Drawing2D.CompositingMode]::SourceCopy
             $attrs.SetWrapMode([Drawing.Drawing2D.WrapMode]::TileFlipXY)
-            $g.DrawImage($source,[Drawing.Rectangle]::new(0,0,128,128),0,0,$source.Width,$source.Height,[Drawing.GraphicsUnit]::Pixel,$attrs)
+            $g.DrawImage($source,[Drawing.Rectangle]::new(0,0,$size,$size),0,0,$source.Width,$source.Height,[Drawing.GraphicsUnit]::Pixel,$attrs)
             $target.Save($exportPath,[Drawing.Imaging.ImageFormat]::Png)
         } finally { $attrs.Dispose(); $g.Dispose(); $target.Dispose() }
         $records += [ordered]@{
@@ -75,7 +76,7 @@ foreach ($brief in $briefs) {
             sourceSize=@($source.Width,$source.Height)
             export=$relativeExport
             exportSha256=(Get-FileHash -LiteralPath $exportPath -Algorithm SHA256).Hash.ToLowerInvariant()
-            exportSize=@(128,128)
+            exportSize=@($size,$size)
             brief=($relativeRoot+'briefs/'+$key+'.json')
             technicalStatus='candidate-export'; visualStatus='awaiting-owner-production-review'; approvedHash=$null
         }

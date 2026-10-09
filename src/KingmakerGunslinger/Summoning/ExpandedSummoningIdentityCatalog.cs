@@ -20,12 +20,26 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 88;
-        internal const int LogicalAbilityCount = 900;
-        internal const int TemplatedPlacementCount = 238;
+        internal const int UnitCount = 97;
+        internal const int LogicalAbilityCount = 1008;
+        internal const int TemplatedPlacementCount = 287;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 155;
+        // Sprint 14 adds eight: the soldier's sting, its poison and venom,
+        // the ants' racial Perception, a unit type for the beetle and one
+        // shared by all the ant castes, the beetle's luminescence, and the
+        // soldier's grab traits carrier. Sprint 15 adds three: the Drone's own
+        // grab traits carrier, the Giant Stag Beetle's trample and its unit
+        // type. The Drone needs no poison graph of its own, because the DC is
+        // derived live from the caster's Constitution. Sprint 16's
+        // registration adds two, both weapons: no native blueprint carries a
+        // 3d6 bite or a 4d8 tail slap, which is the Dire Crocodile's printed
+        // routine. It also owns two combat traits, ten Sprint/brain/state
+        // identities, a Dire swallowed buff, and one shared native engagement
+        // consideration. No native donor identity is repurposed.
+        // Sprint 17 adds seven creature-owned snake facts/types/states.
+        // Salamander additionally owns its tail type and species inspection.
+        internal const int SpecialIdentityCount = 202;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -234,6 +248,60 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireRat.Disease", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GoblinDog.Traits", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GoblinDog.AllergicReaction", "BlueprintBuff"));
+            // Sprint 13
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.Rage", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.RageOnset", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.RageState", "BlueprintBuff"));
+            // Sprint 13 Shadow Mastiff. Printed: bite +10 (1d8+4 plus trip),
+            // tail slap +5 (1d6+2). The tail slap's 1d6 has no project-owned
+            // identity yet; bay and shadow blend are its two printed Su
+            // abilities, and the per-mastiff bay immunity is the printed
+            // rule's own 24-hour bound.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.Bay", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.BayPanic", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.BayImmunity", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.ShadowBlend", "BlueprintActivatableAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.ShadowBlendState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.AntSting1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantAnt.Poison", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantAnt.Venom", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantAnt.RacialSkills", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantAnt.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.FireBeetle.Luminescence", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.FireBeetle.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantAntSoldier.Traits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantAntDrone.Traits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantStagBeetle.Trample", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantStagBeetle.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite3d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail4d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Crocodile.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Crocodile.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Crocodile.Sprint", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Crocodile.SprintAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Crocodile.SprintState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Crocodile.SprintCooldown", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.Sprint", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.SprintAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.SprintState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.SprintCooldown", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.Swallowed", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec(CrocodilianRulesPolicy.SprintNotEngagedSymbol,
+                "IsEngagedConsideration"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.ConstrictorSnake.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.CombatProfile", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.ConstrictorSnake.CombatProfile", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.Poison", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.Venom", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ConstrictorSnake.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Salamander.TailType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Salamander.UnitType", "BlueprintUnitType"));
             Validate(result);
             return result.AsReadOnly();
         }

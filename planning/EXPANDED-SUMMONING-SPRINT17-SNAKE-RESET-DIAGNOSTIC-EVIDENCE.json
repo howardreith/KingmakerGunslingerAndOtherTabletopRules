@@ -1,0 +1,688 @@
+{
+  "schemaVersion": 1,
+  "classification": "MANDATORY OWNER-SIDE LOADED HOLD RESET FAILURE; DIAGNOSTIC COMPLETE; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "a5875a45305f14c8036b637d44e835532ac0f084",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "1c59458b6bd56e0e44989c84c2bf1916047eefb4df4f69a6fdbddf2bad275557",
+    "dllSha256": "5834afcd2c8a538b2a19892a0872afeb4d6b96d4c06698a370c6b1b9ed428e28",
+    "dllMvid": "7cba7a29-c718-416c-bced-66010fa14dc9",
+    "zipSha256": "1dfa9582cecda098c98b6c0b5931a1755498246e8e7787d1dc5e2ad23efc9fb8",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-reset-diagnostic-source-pass-a5875a45"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 270,
+    "domain": 2072,
+    "domainSeconds": 83,
+    "gateSeconds": 178.3,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "standalonePreflight": 508,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "actualLauncher": {
+      "accepted": 13,
+      "rejected": 10
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0204309123288Z",
+    "journalSha256": "8bf7477b2e2a14f75e3640bdb60969b6c6a9347a87a693f396530ba2182c8a14",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeResetDiagnostic-Attempt1.ps1",
+    "driverSha256": "a49b9cccc8017ad691c6880b249d3c02e40927a77b436924b97d44c3a5f0a1f1",
+    "startedAtUtc": "2026-10-07T02:04:30.9518568Z",
+    "completedAtUtc": "2026-10-07T02:14:37.9430184Z",
+    "status": "NOT-QUALIFIED",
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "parameters": {},
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0204575755806Z-working-save-smoke",
+        "requestId": "20261007T0204576098307Z-1e13b3845bb7459bb110a36e263f7eec",
+        "requestSha256": "65178e763abf101a158368ce6b908aa4fb0a002dbf73202b1052499629129047",
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "resultSha256": "e6153c897b3e28d78bd2b836ae423ee7d4f36206d0aec3430a95c7a874ee1243",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "fa88e9cdf2ea4aed9d3e6f7e3cfe777084055d9317833eba866ae9b132c6776a",
+        "processId": 25988,
+        "processStartedUtc": "2026-10-07T02:04:58.5309178Z",
+        "outcome": "PASS"
+      },
+      {
+        "label": "snake-prepare",
+        "scenario": "working-save-expanded-summoning-prepare",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0207544951788Z-working-save-expanded-summoning-prepare",
+        "requestId": "20261007T0207545001918Z-f12b909e4c554f9ab507b6c803f9bf75",
+        "requestSha256": "4d40177f085412af971ba3329ff785f8ceeea48327b9eca3ed6f9451701c60b6",
+        "nativeWrites": 1,
+        "nativeStashedAreas": 2,
+        "metadataSha256": "bd43f6e478a95917848c8c072c425f9e5eb045043926e3bdd0fa9be07cdbc983",
+        "metadataRows": 10,
+        "resultSha256": "7c22fa68e5640de350a0f6f3e5e023c3272283c2690c1fca12547baa50b29feb",
+        "assertions": 13,
+        "passed": 13,
+        "failed": [],
+        "orchestrationSha256": "9e87686a04ed4a930eaaf18c4d74a033bdb3535adb51a9b4bc57c18fd326b93d",
+        "processId": 30208,
+        "processStartedUtc": "2026-10-07T02:07:55.6064868Z",
+        "outcome": "PASS"
+      },
+      {
+        "label": "snake-cleanup",
+        "scenario": "working-save-expanded-summoning-verify-cleanup",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0211333833301Z-working-save-expanded-summoning-verify-cleanup",
+        "requestId": "20261007T0211333833301Z-1eae21c9221c447cb8d211ff561556ab",
+        "requestSha256": "764c87064e541069adaf6214fb5499cbb88ae16b01a29ffef5a0ec5d409ccbce",
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "metadataSha256": "a4218fdc30395bc39333e553d08839f583aa369726617ecd8aba86fdea8be497",
+        "metadataRows": 9,
+        "resultSha256": "2be19b9e1090f9ba86c9b18409700664b08968da61eeda7a8866669dda79d85e",
+        "assertions": 12,
+        "passed": 10,
+        "failed": [
+          {
+            "name": "sprint17-persistence-session-hold-reset",
+            "status": "FAIL"
+          },
+          {
+            "name": "exact-working-save-write",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "d550919cd50921cae6eed0bfbf4616986decccbdcaa914ced38e781737080895",
+        "processId": 32220,
+        "processStartedUtc": "2026-10-07T02:11:34.3498855Z",
+        "outcome": "FAIL"
+      },
+      {
+        "scenario": "working-save-expanded-summoning-verify-absent",
+        "outcome": "NOT-RUN",
+        "reason": "A successful native cleanup save is required before claiming fresh-load absence."
+      }
+    ],
+    "deploymentManifestSha256": "e660a1e2f0b992bd1965e5576366c1ef1ce48c8c9cdb8af2f668091c759b446e",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T020431Z-6b5cfc42cee14e0d9b173e9902bc93f5\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0204316627378Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseReleased": true,
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "gameProcessesRemaining": [],
+    "stagingRemaining": false
+  },
+  "findings": [
+    {
+      "classification": "RECEIPT-OWNED STALE RECOVERY PASS",
+      "detail": "The existing native prepare fixture recognized all4previous saved owned units and natively reclaimed their12owned resources before creating the new four. No unrelated unit or save file was touched manually."
+    },
+    {
+      "classification": "CONCRETE ORPHANED OWNER-SIDE STATE",
+      "detail": "Constrictor retains native initiator referencing exact now-free prey, permanent project Hold buff, CantAct and CantMove. Project link count0; Grab present. Prey/Viper/venom target have no parts/buffs/locks; all appearanceLock=false. This is not a missing Grab or native appearance-lock explanation. Trace load-safeguard collection/subscription/order before the bounded production correction; no blanket wait or manual reset in the fixture."
+    },
+    {
+      "classification": "DEPENDENT FAIL-CLOSED SAVE REJECTION",
+      "detail": "Native destruction of all4new units/12resources passes in memory, but hold-reset failure correctly blocks cleanup write. Four newly prepared marked fixtures remain saved. Absence NOT RUN."
+    }
+  ],
+  "persistence": {
+    "prepare": {
+      "assertions": 13,
+      "passed": 13,
+      "nativeWrites": 1,
+      "rows": [
+        {
+          "enabled": true,
+          "published": 976,
+          "check": "publication",
+          "passed": true
+        },
+        {
+          "units": 4,
+          "capturedResources": 12,
+          "remainingResources": 0,
+          "remainingUnits": 0,
+          "check": "stale-native-destruction",
+          "passed": true
+        },
+        {
+          "frames": 258,
+          "nativeElapsedSeconds": 9.799999999999999,
+          "units": [
+            {
+              "id": "c666daa8-d1c8-46be-a15c-94a88443869f",
+              "fadedIn": true,
+              "dissolve": 0,
+              "canAct": true,
+              "canMove": true,
+              "appearanceLock": false
+            },
+            {
+              "id": "34163738-3e5b-4d62-9f5e-8adc5f795e29",
+              "fadedIn": true,
+              "dissolve": 0,
+              "canAct": true,
+              "canMove": true,
+              "appearanceLock": false
+            },
+            {
+              "id": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+              "fadedIn": true,
+              "dissolve": 0.00157910818,
+              "canAct": true,
+              "canMove": true,
+              "appearanceLock": false
+            },
+            {
+              "id": "cc007436-bd8d-41d0-8eab-9935628ef60a",
+              "fadedIn": true,
+              "dissolve": 0.00157910818,
+              "canAct": true,
+              "canMove": true,
+              "appearanceLock": false
+            }
+          ],
+          "check": "native-appearance",
+          "passed": true
+        },
+        {
+          "present": true,
+          "dc": 13,
+          "ticks": 1,
+          "saves": 0,
+          "round": 0,
+          "attack": {
+            "hit": true,
+            "roll": "20",
+            "bonus": 101,
+            "targetAC": 12,
+            "autoHit": false,
+            "autoMiss": false,
+            "critical": true,
+            "finalDamage": 5,
+            "targetDamageBefore": 0,
+            "targetDamageAfter": 5,
+            "targetDead": false,
+            "weapon": "0e3e5a52e7824ae5ba52f9f5cef30752",
+            "ownerEnemy": false,
+            "targetEnemy": false,
+            "liveConstitution": 14,
+            "liveConstitutionModifier": 2,
+            "targetFortitude": -99
+          },
+          "nativeInjurySaves": [
+            {
+              "dc": 13,
+              "passed": false,
+              "reasonPresent": true,
+              "target": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+              "sourceUnit": "c666daa8-d1c8-46be-a15c-94a88443869f",
+              "weapon": "0e3e5a52e7824ae5ba52f9f5cef30752",
+              "exactInFlightWoundingBite": true
+            }
+          ],
+          "nativeBuffSaves": [],
+          "nativeConstitutionDamage": [
+            {
+              "damage": 2,
+              "nativeDice": "0",
+              "nativeBonus": 2,
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c666daa8-d1c8-46be-a15c-94a88443869f",
+              "target": "c746e8ce-9258-4156-8e7a-07b0d3a3147f"
+            }
+          ],
+          "armingObservation": "wounding-bite-failed-save-venom-present",
+          "check": "arm-venom",
+          "passed": true
+        },
+        {
+          "grabbed": true,
+          "owner": "34163738-3e5b-4d62-9f5e-8adc5f795e29",
+          "target": "cc007436-bd8d-41d0-8eab-9935628ef60a",
+          "check": "arm-hold",
+          "passed": true
+        },
+        {
+          "identities": true,
+          "duration": true,
+          "count": 4,
+          "ids": [
+            "c666daa8-d1c8-46be-a15c-94a88443869f",
+            "34163738-3e5b-4d62-9f5e-8adc5f795e29",
+            "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+            "cc007436-bd8d-41d0-8eab-9935628ef60a"
+          ],
+          "check": "identities-context-duration",
+          "passed": true
+        },
+        {
+          "phase": "prepared",
+          "visual": "visual:attached;key=viper;vertices=3116;bones=16;suppressedSkins=1;suppressedStatic=0;nativeSpearResearch=False;shader=PF/StandardDynamic;declared=_BumpMap;cleared=<none>;donorTint=<none>;donorEmission=<none>;donorKeywords=FOG_OF_WAR_AFFECTED|SPECULAR_ON|_ALPHAPREMULTIPLY_ON|_ALPHATOMASK_OFF|_RIMLIGHTING_OFF|_RIMSHADENDOTL_OFF|_VERTEXINTERACTION_OFF;fogTreatment=dissolve-enabled;clonedDissolve=0;materialController=reinitialized;controllerMaterials=2;adopted=true;driven=KMG_viper_Original_-1005568 (Instance)",
+          "originalBody": true,
+          "perception": 9,
+          "stealth": 9,
+          "mobility": 9,
+          "liveDexterityDelta": 0,
+          "check": "viper-visual-skills",
+          "passed": true
+        },
+        {
+          "phase": "prepared",
+          "visual": "visual:attached;key=constrictor-snake;vertices=3242;bones=16;suppressedSkins=1;suppressedStatic=0;nativeSpearResearch=False;shader=PF/StandardDynamic;declared=_BumpMap;cleared=<none>;donorTint=<none>;donorEmission=<none>;donorKeywords=FOG_OF_WAR_AFFECTED|SPECULAR_ON|_ALPHAPREMULTIPLY_ON|_ALPHATOMASK_OFF|_RIMLIGHTING_OFF|_RIMSHADENDOTL_OFF|_VERTEXINTERACTION_OFF;fogTreatment=dissolve-enabled;clonedDissolve=0;materialController=reinitialized;controllerMaterials=2;adopted=true;driven=KMG_constrictor-snake_Original_-1006966 (Instance)",
+          "originalBody": true,
+          "perception": 12,
+          "stealth": 11,
+          "mobility": 15,
+          "liveDexterityDelta": 0,
+          "check": "constrictor-snake-visual-skills",
+          "passed": true
+        },
+        {
+          "present": true,
+          "dc": 13,
+          "ticks": 1,
+          "saves": 0,
+          "round": 0,
+          "applications": 1,
+          "savedTicks": 1,
+          "constitutionDamage": 2,
+          "savedConstitutionDamage": 2,
+          "check": "venom-state",
+          "passed": true
+        },
+        {
+          "preexistingUnits": 3,
+          "preserved": true,
+          "check": "unrelated-preserved",
+          "passed": true
+        }
+      ]
+    },
+    "cleanup": {
+      "assertions": 12,
+      "passed": 10,
+      "nativeWrites": 0,
+      "rows": [
+        {
+          "enabled": true,
+          "published": 976,
+          "check": "publication",
+          "passed": true
+        },
+        {
+          "identities": true,
+          "duration": true,
+          "count": 4,
+          "ids": [
+            "34163738-3e5b-4d62-9f5e-8adc5f795e29",
+            "c666daa8-d1c8-46be-a15c-94a88443869f",
+            "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+            "cc007436-bd8d-41d0-8eab-9935628ef60a"
+          ],
+          "check": "identities-context-duration",
+          "passed": true
+        },
+        {
+          "phase": "reloaded",
+          "visual": "visual:attached;key=viper;vertices=3116;bones=16;suppressedSkins=1;suppressedStatic=0;nativeSpearResearch=False;shader=PF/StandardDynamic;declared=_BumpMap;cleared=<none>;donorTint=<none>;donorEmission=<none>;donorKeywords=FOG_OF_WAR_AFFECTED|SPECULAR_ON|_ALPHAPREMULTIPLY_ON|_ALPHATOMASK_OFF|_RIMLIGHTING_OFF|_RIMSHADENDOTL_OFF|_VERTEXINTERACTION_OFF;fogTreatment=dissolve-enabled;clonedDissolve=0;materialController=reinitialized;controllerMaterials=2;adopted=true;driven=KMG_viper_Original_-602436 (Instance)",
+          "originalBody": true,
+          "perception": 9,
+          "stealth": 9,
+          "mobility": 9,
+          "liveDexterityDelta": 0,
+          "check": "viper-visual-skills",
+          "passed": true
+        },
+        {
+          "phase": "reloaded",
+          "visual": "visual:attached;key=constrictor-snake;vertices=3242;bones=16;suppressedSkins=1;suppressedStatic=0;nativeSpearResearch=False;shader=PF/StandardDynamic;declared=_BumpMap;cleared=<none>;donorTint=<none>;donorEmission=<none>;donorKeywords=FOG_OF_WAR_AFFECTED|SPECULAR_ON|_ALPHAPREMULTIPLY_ON|_ALPHATOMASK_OFF|_RIMLIGHTING_OFF|_RIMSHADENDOTL_OFF|_VERTEXINTERACTION_OFF;fogTreatment=dissolve-enabled;clonedDissolve=0;materialController=reinitialized;controllerMaterials=2;adopted=true;driven=KMG_constrictor-snake_Original_-603586 (Instance)",
+          "originalBody": true,
+          "perception": 12,
+          "stealth": 11,
+          "mobility": 15,
+          "liveDexterityDelta": 0,
+          "check": "constrictor-snake-visual-skills",
+          "passed": true
+        },
+        {
+          "present": true,
+          "dc": 13,
+          "ticks": 1,
+          "saves": 0,
+          "round": 0,
+          "applications": 1,
+          "savedTicks": 1,
+          "constitutionDamage": 2,
+          "savedConstitutionDamage": 2,
+          "check": "venom-state",
+          "passed": true
+        },
+        {
+          "free": false,
+          "grabPresent": true,
+          "holdBlueprint": "5af4e99c8e5744a6b978412b126d25f0",
+          "grappledBlueprint": "e49fc099e63b4392bb262f1fefa3301b",
+          "units": [
+            {
+              "id": "34163738-3e5b-4d62-9f5e-8adc5f795e29",
+              "role": "constrictor-snake",
+              "free": false,
+              "failures": [
+                "initiator-part",
+                "hold-buff",
+                "cant-act",
+                "cant-move"
+              ],
+              "initiatorPart": true,
+              "targetPart": false,
+              "initiatorTarget": "cc007436-bd8d-41d0-8eab-9935628ef60a",
+              "targetOwner": null,
+              "linksPart": true,
+              "storedLinks": 0,
+              "holdBuff": true,
+              "grappledBuff": false,
+              "cantAct": true,
+              "cantMove": true,
+              "canAct": false,
+              "canMove": false,
+              "appearanceLock": false,
+              "buffs": [
+                {
+                  "name": "KMG_Summoning_Special_ConstrictorSnake_CombatTraits",
+                  "guid": "f83dfefcac58495c9a0f5c89a4483ddf",
+                  "source": "34163738-3e5b-4d62-9f5e-8adc5f795e29",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                },
+                {
+                  "name": "SummonedUnitBuff",
+                  "guid": "8728e884eeaa8b047be04197ecf1a0e4",
+                  "source": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+                  "permanent": false,
+                  "secondsLeft": 116.19999999999999
+                },
+                {
+                  "name": "SummonedCreatureSpawnAllyI-III",
+                  "guid": "2c3b98e56c1b4e9479f692d7ef95b2d2",
+                  "source": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                },
+                {
+                  "name": "KMG_Summoning_Special_Grapple_Hold",
+                  "guid": "5af4e99c8e5744a6b978412b126d25f0",
+                  "source": "34163738-3e5b-4d62-9f5e-8adc5f795e29",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                }
+              ]
+            },
+            {
+              "id": "c666daa8-d1c8-46be-a15c-94a88443869f",
+              "role": "viper",
+              "free": true,
+              "failures": [],
+              "initiatorPart": false,
+              "targetPart": false,
+              "initiatorTarget": null,
+              "targetOwner": null,
+              "linksPart": false,
+              "storedLinks": 0,
+              "holdBuff": false,
+              "grappledBuff": false,
+              "cantAct": false,
+              "cantMove": false,
+              "canAct": true,
+              "canMove": true,
+              "appearanceLock": false,
+              "buffs": [
+                {
+                  "name": "SummonedUnitBuff",
+                  "guid": "8728e884eeaa8b047be04197ecf1a0e4",
+                  "source": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+                  "permanent": false,
+                  "secondsLeft": 116.19999999999999
+                },
+                {
+                  "name": "SummonedCreatureSpawnAllyI-III",
+                  "guid": "2c3b98e56c1b4e9479f692d7ef95b2d2",
+                  "source": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                }
+              ]
+            },
+            {
+              "id": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+              "role": "venom-target",
+              "free": true,
+              "failures": [],
+              "initiatorPart": false,
+              "targetPart": false,
+              "initiatorTarget": null,
+              "targetOwner": null,
+              "linksPart": false,
+              "storedLinks": 0,
+              "holdBuff": false,
+              "grappledBuff": false,
+              "cantAct": false,
+              "cantMove": false,
+              "canAct": true,
+              "canMove": true,
+              "appearanceLock": false,
+              "buffs": [
+                {
+                  "name": "SummonedCreatureVisual",
+                  "guid": "706c182e86d9be848b59ddccca73d13e",
+                  "source": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                },
+                {
+                  "name": "Unlootable",
+                  "guid": "0f775c7d5d8b6494197e1ce937754482",
+                  "source": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                },
+                {
+                  "name": "SummonedUnitBuff",
+                  "guid": "8728e884eeaa8b047be04197ecf1a0e4",
+                  "source": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+                  "permanent": false,
+                  "secondsLeft": 116.19999999999999
+                },
+                {
+                  "name": "SummonedCreatureSpawnAllyI-III",
+                  "guid": "2c3b98e56c1b4e9479f692d7ef95b2d2",
+                  "source": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                },
+                {
+                  "name": "KMG_Summoning_Natural_Viper_Venom",
+                  "guid": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+                  "source": "c666daa8-d1c8-46be-a15c-94a88443869f",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                },
+                {
+                  "name": "ConstitutionDamage",
+                  "guid": "f3594593b28cb7b44902493b3a232848",
+                  "source": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                }
+              ]
+            },
+            {
+              "id": "cc007436-bd8d-41d0-8eab-9935628ef60a",
+              "role": "hold-target",
+              "free": true,
+              "failures": [],
+              "initiatorPart": false,
+              "targetPart": false,
+              "initiatorTarget": null,
+              "targetOwner": null,
+              "linksPart": false,
+              "storedLinks": 0,
+              "holdBuff": false,
+              "grappledBuff": false,
+              "cantAct": false,
+              "cantMove": false,
+              "canAct": true,
+              "canMove": true,
+              "appearanceLock": false,
+              "buffs": [
+                {
+                  "name": "SummonedCreatureVisual",
+                  "guid": "706c182e86d9be848b59ddccca73d13e",
+                  "source": "cc007436-bd8d-41d0-8eab-9935628ef60a",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                },
+                {
+                  "name": "Unlootable",
+                  "guid": "0f775c7d5d8b6494197e1ce937754482",
+                  "source": "cc007436-bd8d-41d0-8eab-9935628ef60a",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                },
+                {
+                  "name": "SummonedUnitBuff",
+                  "guid": "8728e884eeaa8b047be04197ecf1a0e4",
+                  "source": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+                  "permanent": false,
+                  "secondsLeft": 116.19999999999999
+                },
+                {
+                  "name": "SummonedCreatureSpawnAllyI-III",
+                  "guid": "2c3b98e56c1b4e9479f692d7ef95b2d2",
+                  "source": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+                  "permanent": true,
+                  "secondsLeft": 922337203685.4775
+                }
+              ]
+            }
+          ],
+          "check": "session-hold-reset",
+          "passed": false
+        },
+        {
+          "before": {
+            "present": true,
+            "dc": 13,
+            "ticks": 1,
+            "saves": 0,
+            "round": 0
+          },
+          "afterOneExposure": {
+            "present": true,
+            "dc": 13,
+            "ticks": 2,
+            "saves": 0,
+            "round": 1
+          },
+          "damageDelta": 2,
+          "nativeSaves": [
+            {
+              "dc": 13,
+              "passed": false,
+              "reasonPresent": true,
+              "target": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c666daa8-d1c8-46be-a15c-94a88443869f"
+            },
+            {
+              "dc": 13,
+              "passed": true,
+              "reasonPresent": true,
+              "target": "c746e8ce-9258-4156-8e7a-07b0d3a3147f",
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c666daa8-d1c8-46be-a15c-94a88443869f"
+            }
+          ],
+          "nativeDamage": [
+            {
+              "damage": 2,
+              "nativeDice": "0",
+              "nativeBonus": 2,
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c666daa8-d1c8-46be-a15c-94a88443869f",
+              "target": "c746e8ce-9258-4156-8e7a-07b0d3a3147f"
+            }
+          ],
+          "cured": true,
+          "check": "venom-native-continuation-cure",
+          "passed": true
+        },
+        {
+          "units": 4,
+          "capturedResources": 12,
+          "remainingResources": 0,
+          "remainingUnits": 0,
+          "check": "cleanup-native-destruction",
+          "passed": true
+        },
+        {
+          "preexistingUnits": 3,
+          "preserved": true,
+          "check": "unrelated-preserved",
+          "passed": true
+        }
+      ]
+    },
+    "remainingSavedOwnedFixtureUnits": 4,
+    "manualSaveAccess": false,
+    "protectedBaselineLoadedOrWritten": false,
+    "cleanupSaveSucceeded": false
+  },
+  "nativeWorkingSaveWrites": 1,
+  "absenceQualified": false,
+  "publicationAuthorized": false,
+  "fullSprintQualified": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "sourceAudit": {
+    "safeguard": "Main.Load subscribes SummonGrappleAreaSafeguard before attaching the runtime runner. OnAreaLoadingComplete calls ResetLoadedGrapples(Game.Instance.State.Units.All) and then Sweep(false). ResetLoadedGrapples explicitly removes each selected KMG owner's native initiator and Hold buff.",
+    "fixtureEnumeration": "Persistence discovery also inspects other state unit/entity collections and party HoldingState.AllEntityData. Collection coverage or lifecycle delivery/order must be established, not assumed.",
+    "nativeHold": "HeldTarget requires reciprocal native target part; it returns null for the measured orphan. SummonHoldComponent.OnNewRound returns early for null target, so merely waiting is not a justified repair."
+  },
+  "nextAction": "Preserve/push exact NOT QUALIFIED checkpoint. Trace the production load safeguard's unit collection and callback order/subscription against the measured orphan; use a bounded callback/census observation if needed. Fix only the demonstrated miss, retain strict reset assertion, and include targeted shared-boundary regressions if production changes. Safely retire only four receipt-owned saved units through native prepare, never save surgery; full persistence protocol and exact restoration remain mandatory."
+}

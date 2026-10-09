@@ -56,10 +56,22 @@ namespace KingmakerGunslinger.DomainTests
                     "Every placement of " + value.Key +
                     " publishes after mechanics, art and lifecycle qualification.");
             }
-            Assertions.True(all.Length == 900 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 832 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 68,
-                "Sprint 11 stays published while the registered Sprint 12 set stays hidden.");
+            // The loop above owns the claim this test exists for: every
+            // placement of every Sprint 11 ungulate publishes. What is left to
+            // say is that the surface stays consistent around them - the
+            // published count is the registered one less whatever a later
+            // sprint is still withholding - and that none of what is withheld
+            // is theirs. Pinning the totals themselves only recorded whatever
+            // the roster happened to be on the day, and the comment here still
+            // described a barrier that no longer exists.
+            Assertions.True(
+                all.Length == SummonVisibilityCatalog
+                    .RegisteredLogicalPlacementCount &&
+                all.Count(SummonVisibilityCatalog.IsPublished) ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) ==
+                    SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
+                "Sprint 11 stays published alongside every later qualified sprint.");
         }
 
         internal static void FourUngulatesPublishQuantityPlacementsInBothFamilies()
@@ -569,8 +581,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\ungulates") &&
                 package.Contains("assets\\ungulates") &&
-                build.Contains("{ 293 } else { 291 }") &&
-                package.Contains("{ 293 } else { 291 }"),
+                build.Contains("{ 333 } else { 331 }") &&
+                package.Contains("{ 333 } else { 331 }"),
                 "All eight ungulate asset files enter the strict standalone package.");
         }
 
@@ -583,9 +595,16 @@ namespace KingmakerGunslinger.DomainTests
             string motion = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.PteranodonReview.cs"));
-            Assertions.True(!review.Contains("suppressedSprint11Candidate =") &&
-                review.Contains("if (!SummonVisibilityCatalog.IsPublished(variant))") &&
-                !review.Contains("suppressedSprint10Candidate =") &&
+            // The Sprint 11 and Sprint 10 review hatches are gone, and the
+            // publication guard is still the gate. The guard's exact line
+            // gains a clause for each sprint whose own creatures are being
+            // reviewed before they publish, so the pin names the guard and
+            // its refusal rather than one sprint's spelling of the condition.
+            Assertions.True(!review.Contains("suppressedSprint11Candidate") &&
+                review.Contains("!SummonVisibilityCatalog.IsPublished(variant)") &&
+                review.Contains(
+                    "A suppressed creature cannot be reviewed through a parent") &&
+                !review.Contains("suppressedSprint10Candidate") &&
                 review.Contains("key == \"aurochs\" || key == \"bison\"") &&
                 review.Contains("key == \"rhinoceros\" || key == \"woolly-rhinoceros\"") &&
                 review.Contains("IsOriginalReviewKey(key)") &&

@@ -17,7 +17,12 @@ these; their `subjectPrompt` is the composition the script realises. Sprint 3
 added Pony, Horse, Owlbear and Cyclops this way; Sprint 4 added Shambling
 Mound, Giant Flytrap and Purple Worm; Sprint 5 added the six mephits from one
 parametrized mephit builder in six elemental dressings; Sprint 8 added the
-Tiger.
+Tiger. Phase 2 continues the same way: Sprint 13 added the Shadow Mastiff, and
+Sprint 14 the Fire Beetle and both Giant Ant castes from one parametrized ant
+builder, the two castes differing in head size, mandible weight and whether a
+sting shows - the same three differences that separate them in the stat block
+and in the mesh, so a player who can tell them apart in the field can tell them
+apart in the menu.
 
 `prompts/icon-prompts.json` records the shared art direction and the distinct
 subject prompt for every concept. `tools/New-ExpandedSummoningIcons.ps1`

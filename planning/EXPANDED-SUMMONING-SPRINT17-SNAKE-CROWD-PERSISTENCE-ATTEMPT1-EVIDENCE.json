@@ -1,0 +1,273 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAILED BOUNDED SNAKE CROWD/PERSISTENCE BATCH; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "4c95cf139847b765519eccd0b39117c8bf2e56cf",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "7cde95455a8323cf8594190593e3fa4f8ba5759ff2c018088b313520b8cefb69",
+    "dllSha256": "5b22482f341f5f46b485fdb14205073f9116d7718d5663c58d9dcca364afcf34",
+    "dllMvid": "78478efe-fc27-4415-a96a-a8c8c5af5191",
+    "zipSha256": "b3c88524f360bcb036e8bc6ee9f9288132870e09dad061f8c3f463e5cbb55461",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-crowd-persistence-source-pass-4c95cf13"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 264,
+    "domain": 2066,
+    "domainSeconds": 82.5,
+    "gateSeconds": 177.7,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "standalonePreflight": 508,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "actualLauncher": {
+      "accepted": 13,
+      "rejected": 10
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0020138422914Z",
+    "journalSha256": "3d1abdb254728746005d083a5e1a70cd7866adfb1cbf02be633ffd7b55161a23",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeCrowdPersistence-Attempt1.ps1",
+    "driverSha256": "389e897d3381a97dd018bee95113147c5d48b0c1d3adc6e4af58ccb8c9b59d61",
+    "startedAtUtc": "2026-10-07T00:20:13.8997189Z",
+    "completedAtUtc": "2026-10-07T00:42:42.5922110Z",
+    "status": "NOT-QUALIFIED",
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "parameters": {},
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0020401257718Z-working-save-smoke",
+        "requestId": "20261007T0020401393341Z-aa5a3052b4eb4f72b045d10ae7a6c58e",
+        "requestSha256": "31d95b34d1b8dca7ad459cb8642a87e585da9c5efb4caa05b524b3044a87afe6",
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "resultSha256": "5872a0e538338ef89b547bef927ac455a6b4d55d2fec6f1fdaeea7f51427d6b9",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "ade40289843552a27fbc813d54e25713455762ee58e6899ba274f88bb748ae0f",
+        "processId": 18352,
+        "processStartedUtc": "2026-10-07T00:20:41.1925993Z",
+        "outcome": "PASS"
+      },
+      {
+        "label": "snake-direct",
+        "scenario": "working-save-expanded-summoning-creature-review",
+        "parameters": {
+          "creatures": "viper,constrictor-snake"
+        },
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0023440588170Z-working-save-expanded-summoning-creature-review",
+        "requestId": "20261007T0023440728640Z-19570f40cb6d46008595af80be46ed5e",
+        "requestSha256": "11ab007b47f3921578601a466a2217f7b6fdf3af6df030f73e39cedbb80ca76e",
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "resultSha256": "b4d90e91ca69b3925bb26316e8a57d903f36aa394b4ea22c70b711b71541412f",
+        "assertions": 14,
+        "passed": 14,
+        "failed": [],
+        "orchestrationSha256": "d87904dc67221d379ce5e249c1f0d22d0ef8084a5dc2343360c8dcf09bf7bfea",
+        "processId": 14984,
+        "processStartedUtc": "2026-10-07T00:23:45.2779167Z",
+        "outcome": "PASS"
+      },
+      {
+        "label": "snake-quantity",
+        "scenario": "working-save-expanded-summoning-creature-review",
+        "parameters": {
+          "quantity": "OneD4PlusOne",
+          "creatures": "viper,constrictor-snake"
+        },
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0028579675059Z-working-save-expanded-summoning-creature-review",
+        "requestId": "20261007T0028579675059Z-49b8c7ee1f8d4c6eaca78e7932b6d2c9",
+        "requestSha256": "e9dafb60fdabb3f041ad9f2ac49a05b2538e0443510ae13be02645f82fc8b17a",
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "resultSha256": "1d9fae7901ab42d23522c0d94022614d061b748619ce7c6f3f469d70a2fc7f30",
+        "assertions": 18,
+        "passed": 17,
+        "failed": [
+          {
+            "name": "expanded-summoning-ground-crowd-path-viper",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "9e25e570da216466768550929467abec1fb4b6e8d9a66d715f4506a3960076f9",
+        "processId": 30916,
+        "processStartedUtc": "2026-10-07T00:28:58.8283622Z",
+        "outcome": "FAIL"
+      },
+      {
+        "label": "snake-prepare",
+        "scenario": "working-save-expanded-summoning-prepare",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0036360014125Z-working-save-expanded-summoning-prepare",
+        "requestId": "20261007T0036360014125Z-86d1836d7f8c4d7988a697cd711db474",
+        "requestSha256": "1af016b166b165cdeca9497228ffff4d0948b0cdcb41591def5ea615e3b98bef",
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "metadataSha256": "cf63d544d0c4c01af5f5510fe2894163650bd867d1e77c277b941406dd3bce61",
+        "metadataRows": 10,
+        "resultSha256": "39570fc0e57bf19cdf51a4fe5e93b51a8f6db630be14627872ee9da4b0386472",
+        "assertions": 13,
+        "passed": 10,
+        "failed": [
+          {
+            "name": "sprint17-persistence-arm-venom",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-persistence-venom-state",
+            "status": "FAIL"
+          },
+          {
+            "name": "exact-working-save-write",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "5d16f7e31042dd3e52353ec3b8ed4988baeed7cc697a77cb28fe66192214e35d",
+        "processId": 33216,
+        "processStartedUtc": "2026-10-07T00:36:37.0678303Z",
+        "outcome": "FAIL"
+      },
+      {
+        "label": "snake-cleanup",
+        "scenario": "working-save-expanded-summoning-verify-cleanup",
+        "parameters": {
+          "persistenceScope": "snakes"
+        },
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0039447417367Z-working-save-expanded-summoning-verify-cleanup",
+        "requestId": "20261007T0039447417367Z-e6480f459e5b4ea0a3d6549026b1a094",
+        "requestSha256": "4c7766c16d2472702b508ba58f3a6861767945f450b4975bdc09d807e8884eea",
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "metadataSha256": "ca20d5072c77e1c5c5275fa6a8c96148ce9b602d1071d4a445d4aeacc2ff8419",
+        "metadataRows": 3,
+        "resultSha256": "e4f96fd568b3f1cbeb3780afd0a1594084f7b48afa3164dd2ba5da405d432bae",
+        "assertions": 6,
+        "passed": 3,
+        "failed": [
+          {
+            "name": "sprint17-persistence-identities-context-duration",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-persistence-exception",
+            "status": "FAIL"
+          },
+          {
+            "name": "exact-working-save-write",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "012cfae1a063d0c3c78d57f0694fb2ee6f975f86439bf2ee5c08cfde4611de2d",
+        "processId": 36748,
+        "processStartedUtc": "2026-10-07T00:39:45.7327066Z",
+        "outcome": "FAIL"
+      },
+      {
+        "scenario": "working-save-expanded-summoning-verify-absent",
+        "outcome": "NOT-RUN",
+        "reason": "A successful native cleanup save is required before claiming fresh-load absence."
+      }
+    ],
+    "deploymentManifestSha256": "762c45ea6d4ef6de60adcffae6079d4622381741a14c8c690604d9b10dc836cc",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T002014Z-5b9a19b7933b45a1beefdbcc4420bf9e\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0020146810604Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseReleased": true,
+    "gameProcessesRemaining": 0,
+    "stagingRemaining": false
+  },
+  "findings": [
+    {
+      "classification": "fixture restoration/observation",
+      "assertion": "expanded-summoning-ground-crowd-path-viper",
+      "result": "FAIL; awakeRestored=False",
+      "details": "All five native quantity members met movement thresholds: travel13.93/11.59/18.16/14.48/10.90m, maxvelocity2.03m/s, finalgaps0.02/0.11/0.04/0.05/1.47m. Existing restoration only removes added owned entries; it cannot restore preexisting owned awake entries that sleep/reorder. Actual changed identities were not logged, so that causal hypothesis is not yet proved.",
+      "next": "Record exact before/native-after/restored awake references and repair owned-only restoration while retaining the full SequenceEqual assertion; reject unrelated-list changes without mutation."
+    },
+    {
+      "classification": "fixture arming/diagnostic gap; production cause unresolved",
+      "assertions": [
+        "sprint17-persistence-arm-venom",
+        "sprint17-persistence-venom-state"
+      ],
+      "result": "FAIL; no venom, no Constitution damage; native hold and printed skills passed",
+      "details": "The row omitted the bite's hit/damage and native save events; it cannot distinguish miss/zero wound/successful save/trigger failure. Do not infer that a poison production change is needed.",
+      "next": "Add exact attack, native saving-throw and damage/source observations; preserve native semantics and current arming assertion."
+    },
+    {
+      "classification": "dependent fail-closed fixture result",
+      "assertions": [
+        "exact-working-save-write",
+        "sprint17-persistence-identities-context-duration",
+        "sprint17-persistence-exception"
+      ],
+      "result": "Prepare10/13 with0writes; fresh cleanup3/6 with0fixtures and0writes; absence NOT RUN",
+      "details": "No successful prepare save existed. Cleanup rejected the missing four-unit fixture; the driver correctly required a successful cleanup save before absence. No manual save repair is authorized or needed."
+    },
+    {
+      "classification": "environment/restoration",
+      "result": "PASS",
+      "details": "Five fresh Steam640820 processes, exact artifact and working descriptor, zero save writes. Exact leased136-file/.117 snapshot restored, lease completed/recovery=false/released; no game or active staging."
+    }
+  ],
+  "directReview": {
+    "assertions": 14,
+    "passed": 14,
+    "viperTravelMetres": 12.353,
+    "constrictorTravelMetres": 12.314,
+    "maxVelocityMetresPerSecond": 2.032,
+    "privateResourcesPerSubject": 6,
+    "retainedAfterNativeDestruction": 0,
+    "laterInstanceClones": 0,
+    "saveWrites": 0,
+    "scope": "bounded direct movement/appearance/owned-resource observation only; not full Sprint17"
+  },
+  "crowdReview": {
+    "assertions": 18,
+    "passed": 17,
+    "viperCount": 5,
+    "constrictorCount": 4,
+    "viperOwnedResources": 30,
+    "constrictorOwnedResources": 24,
+    "allExpiryAndResourceChecksPassed": true,
+    "allAwakeRestorationChecksPassed": false
+  },
+  "nativeWorkingSaveWrites": 0,
+  "absenceQualified": false,
+  "publicationAuthorized": false,
+  "fullSprintQualified": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "nextAction": "Bounded owned-awake repair and native venom-arming instrumentation; focused/source gates, commit/policy-push NOT QUALIFIED, new exact artifact and complete affected batch. Then lifecycle/UI/private routes, separate Salamander and full Sprint17/Phase2B gates."
+}

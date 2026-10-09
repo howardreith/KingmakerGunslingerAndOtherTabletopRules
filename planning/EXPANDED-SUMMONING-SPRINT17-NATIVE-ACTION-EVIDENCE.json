@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "status": "RESEARCH ONLY PASS; exact8022fee2 smoke11/11 and metadata14/14, all11 native prefab rows; Sprint17 NOT QUALIFIED; exact restoration VERIFIED",
+  "scope": "Closed detached native manufactured-action metadata only; no action adoption, gameplay or visual qualification",
+  "attempts": [
+    {
+      "candidate": "f6a0a20b5fe57a6e4f8c7fe76feabceb80204016",
+      "sourceFingerprint": "f3b0eb496080fade83d465c786d26fe94a0a6e7079ab68cf835a21dee9e0e091",
+      "dllSha256": "ede2ebe5d9d090e6df73fc201eed4b7c75b1e133f3263344045b79b16641965c",
+      "dllMvid": "1acc7c4a-0351-4fe7-bd92-b5cd183c3aa2",
+      "packageSha256": "a2beea4c0d6fcd22792fefb5a4cbee8d15a8b119259d6bc8fa5a2d67fd90763d",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 235,
+        "full": 2037,
+        "fullSeconds": 87.1,
+        "completeGateSeconds": 186.5,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T12:32:39.3201821Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1232402065899Z-working-save-smoke",
+          "requestId": "20261006T1232402222201Z-7da495af4d93449d82a3d6b361dc1a52",
+          "requestSha256": "4422f420c6cc285d76fc06f0c03d4a3ccb86dbe98d1d9e267d37aaf78b456745",
+          "resultSha256": "8c90b7d0513bd071583e745a7a2a7931a02b8a961105d3e66fd75c508aeb8d90",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "c3d0af7aed3f08b95090b10a7d9362773a9cd212282ddf24a66266c37807f4ba",
+          "processId": 33696,
+          "processStartedUtc": "2026-10-06T12:32:41.2945656Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T12:35:31.5947236Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-survey",
+          "startedAtUtc": "2026-10-06T12:35:37.5598729Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1235383515395Z-disposable-expanded-summoning-serpentine-survey",
+          "requestId": "20261006T1235383671580Z-570e3897707a49569fbeceff1d5adf27",
+          "requestSha256": "18c0c1ccac894d6a7a005087665c23c837971c60d07c86fcc137eb98da157b12",
+          "resultSha256": "4f5d3ace57b2d8354ebbdc9d5c10e14f45ee1cf255217d43cff625abdf844ffe",
+          "assertions": 14,
+          "passed": 13,
+          "failed": [
+            {
+              "name": "sprint17-rig-survey-exception",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "42524d4162fc90b279726875f10246108154339100de7fe11b563025002882fd",
+          "processId": 31584,
+          "processStartedUtc": "2026-10-06T12:35:39.3403080Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T12:38:47.6654463Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1232150916257Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T12:38:50.3928089Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T123214Z-e33e479e591b44b2b45b64ad11e506fc\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "8A0408F46C5A5874FD04878E51C3D0EA37CE6F11599779938586BD581753E491",
+      "driverSha256": "5579DBC701A0A6538A9DDB6A3B7AF9E2016EF2B311C8AE96238D57B14B1AD589",
+      "nativeActionMetadataSha256": "945B6095036D5AF52D56FF48F087AFF56A8D140DF28166AB3362B9AC2AE189A0",
+      "findings": {
+        "classification": "FIXTURE OBSERVATION DEFECT; no production, environment or restoration failure demonstrated",
+        "failure": "Native action-list census is incomplete or unbounded",
+        "cause": "Reader rejected zero-length, oversized or null-containing action lists using a combined guard before recording the fifth row. Exact structure is NOT established. Four prior rows were preserved in finally. Do not invent an empty/null diagnosis or claim all eleven inspected.",
+        "stoppedBeforeRecordedRow": {
+          "blueprint": "a8cbd4cdb0feaf64eab1452257c3c971",
+          "prefab": "d6db6ba3b2c459a48ba0730beef0bac8",
+          "name": "CityGatesHub_LizardfolkRattler"
+        },
+        "observations": [
+          {
+            "blueprint": "9f7a7364b76d65d43b72086aedce68ae",
+            "prefab": "c664715ff7165984285f66acc764b4b3",
+            "set": "Lizardfolk_RH_Spear_Shield_AnimationSet",
+            "mainStyles": [
+              "PiercingOneHanded"
+            ],
+            "bodyBones": 41,
+            "armorBones": 26,
+            "nativeReferencesUnchanged": true
+          },
+          {
+            "blueprint": "e8276e28b2234a745900fed80670bfdb",
+            "prefab": "9b1744531a4428e44aa9837ca984513a",
+            "set": "Lizardfolk_RH_Slashing_Shield_AnimationSet",
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "bodyBones": 39,
+            "armorBones": 19,
+            "nativeReferencesUnchanged": true
+          },
+          {
+            "blueprint": "f080877221934ea40b29e1d9fa71bc1c",
+            "prefab": "31cb7e484faf8734fa2c0ef1936b1806",
+            "set": "Lizardfolk_2H_Slashing_AnimationSet",
+            "mainStyles": [
+              "SlashingTwoHanded",
+              "AxeTwoHanded"
+            ],
+            "bodyBones": 39,
+            "armorBones": 19,
+            "nativeReferencesUnchanged": true
+          },
+          {
+            "blueprint": "f27f96f4bcc432c478615f2e9013ec2e",
+            "prefab": "cf7994611698da2428a07515d718e252",
+            "set": "Lizardfolk_RH_Slashing_Shield_AnimationSet",
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "bodyBones": 39,
+            "armorBones": 19,
+            "nativeReferencesUnchanged": true
+          }
+        ],
+        "passed": "All thirteen previous rig-survey checks, including exact owned native destruction/unit/party/area restoration and version. No save write. None of the four observed main-hand actions has PiercingTwoHanded; seven remaining rows are unknown.",
+        "next": "Preserve null enumeration, explicit empty list, null slots and duplicates as distinct bounded metadata; keep128 cap, exact references/identities and actual action-adoption guards. Rebuild a new exact head and rerun the complete affected smoke/survey batch. No blind retry or compatibility claim."
+      }
+    },
+    {
+      "candidate": "8022fee249b537d3da90adc502c2f62a7fbf59ed",
+      "sourceFingerprint": "12164ea36b9d59fde1e229148a34edf04ad31d0666f7097f7111dae831188ee4",
+      "dllSha256": "cc7bbfa44055b85dd24161b5276d41b37abab5641818219cf81c7c874cf9ddfe",
+      "dllMvid": "5f958584-c719-4840-baae-ad1b06e54775",
+      "packageSha256": "b0a1a0354128dae44f8f8fea6858f92667d5feaf7918ce3f49dd849dde39f6f0",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 236,
+        "full": 2038,
+        "fullSeconds": 81.8,
+        "completeGateSeconds": 178.4,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS",
+        "preflightInterference": "First run failed unsupported-does-not-build-or-stage-package because this session refreshed artifacts/laptop-source-owner-20261005.heartbeat during its artifact fingerprint. Failure log retained; isolated rerun PASS491 with no concurrent heartbeat/test writes. No production/package/deployment failure."
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T12:56:08.8968375Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1256098556989Z-working-save-smoke",
+          "requestId": "20261006T1256098760389Z-7506ab5e982a4f85b64c33ef545fec74",
+          "requestSha256": "4b5d8420f1dc3536a76ac5a8a52284624012f0882da069bee20b749815e99a44",
+          "resultSha256": "6e7185c88ee4720db3e0220584aefb38119c0826e03bdedc6d38a2d3c6de7116",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "d5b9de5e7a1ff4c59c093bd2bcd1011008fff6618c37ac679756cc3b0b37ff3e",
+          "processId": 34672,
+          "processStartedUtc": "2026-10-06T12:56:10.9761232Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T12:59:00.4704577Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-survey",
+          "startedAtUtc": "2026-10-06T12:59:06.5097056Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1259072936468Z-disposable-expanded-summoning-serpentine-survey",
+          "requestId": "20261006T1259072936468Z-e647066f9433462eb0e0485541aa865a",
+          "requestSha256": "9da90a0badbac9babf4a7c76833e478afed462cfac7346adf281e43ab5037e21",
+          "nativeActionMetadataSha256": "f99d1e5841da05c04adea19233526a81a70fd2d3075a6b74b1ebb0eb947d2a0a",
+          "researchMetadata": [
+            {
+              "key": "medium-water-elemental",
+              "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1259072936468Z-disposable-expanded-summoning-serpentine-survey\\sprint17-medium-water-elemental-rig-survey.json",
+              "sha256": "23f603bb7b14bd16343d206addab4a4e629355e4b6d59ec7e6fbb6fed99fd995",
+              "renderers": 7,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "salamander",
+              "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1259072936468Z-disposable-expanded-summoning-serpentine-survey\\sprint17-salamander-rig-survey.json",
+              "sha256": "51eedd6320073195e4d675ce71a9361990542fe50eeeaf4a28120b07232d175f",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "purple-worm",
+              "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1259072936468Z-disposable-expanded-summoning-serpentine-survey\\sprint17-purple-worm-rig-survey.json",
+              "sha256": "dc0ea57ca3101c2a039b04e7be9ba443bc21b0eef0628f51046f937f687f4f98",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "lizardfolk-greatclub",
+              "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1259072936468Z-disposable-expanded-summoning-serpentine-survey\\sprint17-lizardfolk-greatclub-rig-survey.json",
+              "sha256": "e5aa40a67c81146024e66b5ac8dd82029cf29dc2d711649335d76058f32d7d45",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            }
+          ],
+          "resultSha256": "f172aec171f01e128725636999b1e03a9d5d96120e4524b93d55ca220cb1474f",
+          "assertions": 14,
+          "passed": 14,
+          "failed": [],
+          "orchestrationSha256": "94c6f1a3c0b97d2e760bacd48fe2fbe448068ec5db37631e81e8c54acbfd6da8",
+          "processId": 19600,
+          "processStartedUtc": "2026-10-06T12:59:08.5704571Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T13:02:15.8214578Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1255443757094Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T13:02:18.5290194Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T125543Z-569e0b7b51964c78a6459ba884af1250\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "D85CB9DF2C4FAABED2C7DD0D4DF8D6AF6C8B52CE09712AA0287594240A9A8A89",
+      "driverSha256": "44B62F39509C381909DEFFEEEDCA2395EA9AE1A46690B0CBF1C0F9BB4EBD16DE",
+      "nativeActionMetadataSha256": "f99d1e5841da05c04adea19233526a81a70fd2d3075a6b74b1ebb0eb947d2a0a",
+      "findings": {
+        "classification": "RESEARCH ONLY PASS; Sprint17 gameplay/visuals NOT QUALIFIED",
+        "observations": [
+          {
+            "name": "CR10_LizardfolkKing",
+            "blueprint": "9f7a7364b76d65d43b72086aedce68ae",
+            "prefab": "c664715ff7165984285f66acc764b4b3",
+            "set": "Lizardfolk_RH_Spear_Shield_AnimationSet",
+            "actionCount": 11,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "PiercingOneHanded"
+            ],
+            "skins": [
+              {
+                "name": "lizardman_boss:ammunition01",
+                "bones": 26,
+                "binds": 26
+              },
+              {
+                "name": "lizardman_boss:lizardman",
+                "bones": 41,
+                "binds": 41
+              }
+            ]
+          },
+          {
+            "name": "CR1_LizardfolkStandard",
+            "blueprint": "e8276e28b2234a745900fed80670bfdb",
+            "prefab": "9b1744531a4428e44aa9837ca984513a",
+            "set": "Lizardfolk_RH_Slashing_Shield_AnimationSet",
+            "actionCount": 10,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "skins": [
+              {
+                "name": "_ammunition04",
+                "bones": 19,
+                "binds": 19
+              },
+              {
+                "name": "_lizardman001",
+                "bones": 39,
+                "binds": 39
+              }
+            ]
+          },
+          {
+            "name": "CR4_LizardfolkBarbarian",
+            "blueprint": "f080877221934ea40b29e1d9fa71bc1c",
+            "prefab": "31cb7e484faf8734fa2c0ef1936b1806",
+            "set": "Lizardfolk_2H_Slashing_AnimationSet",
+            "actionCount": 11,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "SlashingTwoHanded",
+              "AxeTwoHanded"
+            ],
+            "skins": [
+              {
+                "name": "_ammunition04",
+                "bones": 19,
+                "binds": 19
+              },
+              {
+                "name": "_lizardman001",
+                "bones": 39,
+                "binds": 39
+              }
+            ]
+          },
+          {
+            "name": "CR4_LizardfolkRogue",
+            "blueprint": "f27f96f4bcc432c478615f2e9013ec2e",
+            "prefab": "cf7994611698da2428a07515d718e252",
+            "set": "Lizardfolk_RH_Slashing_Shield_AnimationSet",
+            "actionCount": 10,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "skins": [
+              {
+                "name": "_ammunition04",
+                "bones": 19,
+                "binds": 19
+              },
+              {
+                "name": "_lizardman001",
+                "bones": 39,
+                "binds": 39
+              }
+            ]
+          },
+          {
+            "name": "CityGatesHub_LizardfolkRattler",
+            "blueprint": "a8cbd4cdb0feaf64eab1452257c3c971",
+            "prefab": "d6db6ba3b2c459a48ba0730beef0bac8",
+            "set": "Lizardfolk_FreeHands_AnimationSet",
+            "actionCount": 14,
+            "nullSlots": [
+              3,
+              5,
+              8
+            ],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "ThrownStraight"
+            ],
+            "skins": [
+              {
+                "name": "_ammunition04",
+                "bones": 19,
+                "binds": 19
+              },
+              {
+                "name": "_lizardman001",
+                "bones": 39,
+                "binds": 39
+              }
+            ]
+          },
+          {
+            "name": "LizardfolkChildHutGuard",
+            "blueprint": "bb980b317d907254093595b817a3b7ee",
+            "prefab": "067f4c19b91b0b2488ed1121f24aac9a",
+            "set": "Lizardfolk_RH_Slashing_AnimationSet",
+            "actionCount": 10,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "skins": [
+              {
+                "name": "_ammunition04",
+                "bones": 19,
+                "binds": 19
+              },
+              {
+                "name": "_lizardman001",
+                "bones": 39,
+                "binds": 39
+              }
+            ]
+          },
+          {
+            "name": "LizardfolkGatekeeper",
+            "blueprint": "bdc2c0f401cad70449452b372d26b59d",
+            "prefab": "4f11f063a6293a140b24c5b84596e418",
+            "set": "Lizardfolk_2H_Slashing_AnimationSet",
+            "actionCount": 11,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "SlashingTwoHanded",
+              "AxeTwoHanded"
+            ],
+            "skins": [
+              {
+                "name": "_ammunition04",
+                "bones": 19,
+                "binds": 19
+              },
+              {
+                "name": "_lizardman001",
+                "bones": 39,
+                "binds": 39
+              }
+            ]
+          },
+          {
+            "name": "LizardfolkKingVesket",
+            "blueprint": "5eb33299047235146936bb18a38a0af4",
+            "prefab": "d879364ccc52bb74dabbc16851c83fd5",
+            "set": "Lizardfolk_RH_Spear_Shield_AnimationSet",
+            "actionCount": 11,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "PiercingOneHanded"
+            ],
+            "skins": [
+              {
+                "name": "lizardman_boss:ammunition01",
+                "bones": 26,
+                "binds": 26
+              },
+              {
+                "name": "lizardman_boss:lizardman",
+                "bones": 41,
+                "binds": 41
+              }
+            ]
+          },
+          {
+            "name": "LizardfolkLairKing",
+            "blueprint": "73b06130e76c4554897f97a8ac453cfb",
+            "prefab": "d706840419a712a4eb07fc74c8f1d2b8",
+            "set": "Lizardfolk_RH_Slashing_AnimationSet",
+            "actionCount": 10,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "skins": [
+              {
+                "name": "lizardman_boss:ammunition01",
+                "bones": 26,
+                "binds": 26
+              },
+              {
+                "name": "lizardman_boss:lizardman",
+                "bones": 41,
+                "binds": 41
+              }
+            ]
+          },
+          {
+            "name": "Lizardfolk_GuardsHardMelee",
+            "blueprint": "4d98f6f765a999f40b587ef22f79db95",
+            "prefab": "c7799f73648f812439fc422edd6ffc7a",
+            "set": "Lizardfolk_RH_Slashing_Shield_AnimationSet",
+            "actionCount": 10,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "skins": [
+              {
+                "name": "_ammunition04",
+                "bones": 19,
+                "binds": 19
+              },
+              {
+                "name": "_lizardman001",
+                "bones": 39,
+                "binds": 39
+              }
+            ]
+          },
+          {
+            "name": "Lizardfolk_Rashor",
+            "blueprint": "a01e73eab5d86fe4e88eff103d87684a",
+            "prefab": "0a44e2f97be8f2d4980d3abc81dbfa92",
+            "set": "Lizardfolk_2H_Slashing_AnimationSet",
+            "actionCount": 11,
+            "nullSlots": [],
+            "nativeReferencesUnchanged": true,
+            "mainStyles": [
+              "SlashingTwoHanded",
+              "AxeTwoHanded"
+            ],
+            "skins": [
+              {
+                "name": "_ammunition04",
+                "bones": 19,
+                "binds": 19
+              },
+              {
+                "name": "_lizardman001",
+                "bones": 39,
+                "binds": 39
+              }
+            ]
+          }
+        ],
+        "earlierReaderFailure": "Fifth prefab has Lizardfolk_FreeHands_AnimationSet with14 slots; slots3,5,8 are null. Neither missing enumeration nor empty/oversized list. Exact f6 failure remains preserved, not retroactively qualified.",
+        "conclusion": "All11 fixed Lizardfolk prefabs captured with native references and actor membership unchanged. None of their main-hand actions supports PiercingTwoHanded. No native NPC instantiated, action adopted or new body/contact/gameplay qualification.",
+        "next": "Evaluate a different bounded actual spear/longspear-bearing donor/hybrid seam using existing archived inventory. No repeat of rejected Lizardfolk carriers, style relabel, native asset mutation or global rig subsystem. Exact570 body33/35 FAIL and all12 attempts remain."
+      }
+    }
+  ]
+}

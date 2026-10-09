@@ -146,7 +146,24 @@ namespace KingmakerGunslinger.Summoning
             new UngulateRulesProfile("rhinoceros", 5, 22, 2, 6, 0, 0,
                 4, 6, 12, false),
             new UngulateRulesProfile("woolly-rhinoceros", 8, 28, 2, 8,
-                2, 6, 4, 8, 18, false)
+                2, 6, 4, 8, 18, false),
+            // Sprint 15's Giant Stag Beetle. This type is named for the
+            // ungulates because they were the only creatures that had a
+            // trample; it is the project's trample-and-charge rules carrier
+            // rather than a taxonomy, and renaming it across every file that
+            // uses it would be more churn than the clarity is worth.
+            //
+            // Nothing here is a literal from the creature's trample line, and
+            // the derivation still lands on it exactly: damage is one and a
+            // half times the Strength modifier on 1d6, which is 1d6+6 at
+            // Strength 19, and the save is 10 plus half the hit dice plus the
+            // Strength modifier, which is DC 17 at 7 hit dice. Its primary
+            // attack is a bite rather than a gore, and the gore dice are
+            // carried only so the charge arithmetic has honest inputs; the
+            // beetle has no powerful charge and no Stampede, which belongs to
+            // the herd ungulates alone.
+            new UngulateRulesProfile("giant-stag-beetle", 7, 19, 2, 8,
+                1, 6, 0, 0, 0, false)
         };
 
         internal static IReadOnlyList<UngulateRulesProfile> All
@@ -157,8 +174,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 4 || Values.Select(value => value.Key)
-                    .Distinct(StringComparer.Ordinal).Count() != 4 ||
+            if (Values.Length != 5 || Values.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count() != 5 ||
                 Values.Any(value => value.HitDice < 1 || value.Strength < 1 ||
                     value.GoreDiceCount < 1 || value.GoreDieSides < 1 ||
                     !value.HasTrample && !value.HasPowerfulCharge))

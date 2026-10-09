@@ -31,6 +31,9 @@ param(
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$RestorationRecordRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\expanded-summoning-restoration',
     [hashtable]$ScenarioParameters = @{},
+    # Different closed guarded requests may share one candidate/snapshot.
+    # The ordinary request validator still validates every returned parameter.
+    [hashtable]$ScenarioParameterMap = @{},
     [switch]$AllowDirtyGit,
     [switch]$ExpandedSummoningDisabled,
     [ValidateRange(5, 1800)]
@@ -59,6 +62,10 @@ if ($ExpandedSummoningDisabled -and
     throw 'The temporary module-off setting is allowed only for the exact working-save Expanded Summoning verify/cleanup stage.'
 }
 
+foreach ($name in $Scenario) {
+    $null = Resolve-KmgBatchScenarioParameters -Scenarios $Scenario -CurrentScenario $name `
+        -DefaultParameters $ScenarioParameters -ParameterMap $ScenarioParameterMap
+}
 Assert-KmgNotRunning
 
 $before = Get-KmgTreeFingerprint -Directory $LiveModDirectory
@@ -151,7 +158,8 @@ try {
             $arguments = @{
                 Scenario = $name
                 ExpectedVersion = $ExpectedVersion
-                Parameters = $ScenarioParameters
+                Parameters = (Resolve-KmgBatchScenarioParameters -Scenarios $Scenario -CurrentScenario $name `
+                    -DefaultParameters $ScenarioParameters -ParameterMap $ScenarioParameterMap)
                 TimeoutSeconds = $TimeoutSeconds
                 ObserverStartupTimeoutSeconds = $ObserverStartupTimeoutSeconds
                 CompletionTimeoutSeconds = $CompletionTimeoutSeconds
@@ -233,6 +241,15 @@ try {
         if (Test-KmgScenarioOutcomeFailed $run.outcome) { $failures++ }
         $run.completedAtUtc = [DateTime]::UtcNow.ToString('o')
         $record.runs += $run
+        if (Test-KmgBatchCandidateUnavailable -FirstScenario $first -HasEvidence ([bool]$evidence) `
+            -HasDeployment ([bool]$reuseManifest) -LauncherOutcome $launcher) {
+            # A rejected source/build candidate cannot run any later scenario.
+            # Do not repeat that same full gate once per scenario. Runtime
+            # failures with current-run evidence still allow independent cells.
+            $record.abortedBeforeCandidate = $true
+            Write-Warning 'Batch stopped before a candidate existed; remaining scenarios were not launched.'
+            break
+        }
         $first = $false
     }
 }

@@ -1,0 +1,587 @@
+{
+  "schemaVersion": 1,
+  "classification": "EXACT BOUNDED SNAKE COMMAND/CONTACT PASS; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA frozen salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "d4cfc58bca68ed7bb9e7aba175b33efffb33dbf88bf4a8f3ac8ca18eb66bb148",
+    "dllSha256": "674d5b2b8b7cd4c0e9654302f53d3c461460fcb64ebd8321086da89ccafbadc5",
+    "dllMvid": "109c5a13-1163-4716-ba6b-fc8de7eb2c54",
+    "zipSha256": "57698cd36abb926053ec692b9f3e7ff9fb9d79c88bb67bb92db7a9fc92e687af",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-commands-source-pass-983828bf"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 260,
+    "domain": 2062,
+    "domainSeconds": 85.9,
+    "gateSeconds": 184.7,
+    "packageMembers": 320,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "standalonePreflight": 508,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": [
+      11,
+      3,
+      19
+    ],
+    "crowd": [
+      5,
+      7
+    ]
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261006T2258273503227Z",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeCommands-Attempt5.ps1",
+    "status": "PASS",
+    "startedAtUtc": "2026-10-06T22:58:27.3827973Z",
+    "completedAtUtc": "2026-10-06T23:11:14.0412304Z",
+    "scenarioOrder": [
+      "working-save-smoke",
+      "disposable-expanded-summoning-snake-signatures",
+      "disposable-expanded-summoning-snake-commands"
+    ],
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-06T22:58:55.7678106Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2258568162739Z-working-save-smoke",
+        "requestId": "20261006T2258568319156Z-217a38babf3b484ebcaa081bfe087523",
+        "requestSha256": "a13574e18d25f5e9a28502df81d9dd83b5cf8b28e30ffe3f4d60e7edefb710fb",
+        "resultSha256": "ea587a825add0a7f21bfe2fb8ddd24b2e99767057333d629abf188faad2337b8",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "0784d5ca0baf6a567ef5aea89339d8e16b55906b7201921e7c82f2ee726b06b3",
+        "processId": 35128,
+        "processStartedUtc": "2026-10-06T22:58:58.0124573Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T23:02:06.7424181Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-signatures",
+        "startedAtUtc": "2026-10-06T23:02:12.2270292Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2302130437347Z-disposable-expanded-summoning-snake-signatures",
+        "requestId": "20261006T2302130437347Z-6796d0e07e5a4bcba1fd4d705a3dd859",
+        "requestSha256": "81382f2107c016a30d6e9ef5aa2f1b82c4b6109100ee12eba55686134d842b3e",
+        "metadataRows": 46,
+        "signatureMetadataSha256": "c37c82396744a6570689073a84ede6132ddfc46f2d40576a820b27810577fa1c",
+        "qualificationScope": "62-assertion profile/body/signature regression ONLY; full Sprint17 remains unqualified",
+        "resultSha256": "f52537fac19aaa7329a28be1bdcb12dbcfdd37ea9caaf01810773a8b3504b2f8",
+        "assertions": 62,
+        "passed": 62,
+        "failed": [],
+        "orchestrationSha256": "41add168d844af95ef89fb411a619c2afef97bbbd79b50da7742a404f90da4ce",
+        "processId": 31928,
+        "processStartedUtc": "2026-10-06T23:02:14.5665190Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T23:05:47.4493344Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-commands",
+        "startedAtUtc": "2026-10-06T23:05:48.0221162Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2305488565542Z-disposable-expanded-summoning-snake-commands",
+        "requestId": "20261006T2305488565542Z-cd3c6085a5e1414fad4355947673a52e",
+        "requestSha256": "99b6b9134188ca80e593d03feac5a6f0d0ea2c7737abf438f868d5acadcd56d0",
+        "metadataRows": 8,
+        "commandMetadataSha256": "2caece72b7c7b302867ce5cdff13881468af707878b780f9e90b8534e064aec5",
+        "qualificationScope": "51-assertion native command/contact slice ONLY; full Sprint17 remains unqualified",
+        "resultSha256": "d18d359cb829b27b117a1ed71240eed4541ca240690444895894a234b2799e88",
+        "assertions": 51,
+        "passed": 51,
+        "failed": [],
+        "orchestrationSha256": "9043ac4301613d36481f4242f14077da335e0f795b0519b85df180f26496d687",
+        "processId": 19392,
+        "processStartedUtc": "2026-10-06T23:05:49.8240434Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T23:11:11.5716624Z"
+      }
+    ],
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T2258281699283Z",
+    "liveBefore": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "liveAfterRestore": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "restoration": "VERIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T225827Z-5f3746d62e2a41d8b6d9bd138850f2c0\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "kingmakerProcesses": [],
+    "sharedRuntimeLock": false,
+    "worktreeStaging": false,
+    "saveWrite": false
+  },
+  "cells": [
+    {
+      "cell": "viper-rtwp-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": true,
+        "cleanup": true
+      },
+      "frames": 120,
+      "travel": 3.3357172,
+      "manual": 1,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "frame": 4405,
+          "gap": 0,
+          "withinQuarterMetre": true,
+          "executing": true,
+          "wounding": true,
+          "ownedPair": true,
+          "clip": "BiteAttack01_Long_8m",
+          "clipDuration": 2.4,
+          "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+          "activeWeight": 1,
+          "handleTime": 1.11999047,
+          "animationTargetDistance": 8.321414,
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.6642828,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "renderedGap": 0,
+          "renderedCorrelated": true
+        }
+      ]
+    },
+    {
+      "cell": "viper-rtwp-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": true,
+        "cleanup": true
+      },
+      "frames": 146,
+      "travel": 3.30131054,
+      "manual": 0,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "frame": 4616,
+          "gap": 0,
+          "withinQuarterMetre": true,
+          "executing": true,
+          "wounding": true,
+          "ownedPair": true,
+          "clip": "BiteAttack01_Long_8m",
+          "clipDuration": 2.4,
+          "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+          "activeWeight": 1,
+          "handleTime": 1.11833274,
+          "animationTargetDistance": 8.493447,
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.69868946,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "renderedGap": 0,
+          "renderedCorrelated": true
+        }
+      ]
+    },
+    {
+      "cell": "viper-turn-based-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": true,
+        "cleanup": true
+      },
+      "frames": 249,
+      "travel": 3.29709935,
+      "manual": 1,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "frame": 4930,
+          "gap": 0,
+          "withinQuarterMetre": true,
+          "executing": true,
+          "wounding": true,
+          "ownedPair": true,
+          "clip": "BiteAttack01_Long_8m",
+          "clipDuration": 2.4,
+          "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+          "activeWeight": 1,
+          "handleTime": 1.1193409,
+          "animationTargetDistance": 8.514899,
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.70297992,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "renderedGap": 0,
+          "renderedCorrelated": true
+        }
+      ]
+    },
+    {
+      "cell": "viper-turn-based-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": true,
+        "cleanup": true
+      },
+      "frames": 254,
+      "travel": 3.33248138,
+      "manual": 0,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "frame": 5249,
+          "gap": 0,
+          "withinQuarterMetre": true,
+          "executing": true,
+          "wounding": true,
+          "ownedPair": true,
+          "clip": "BiteAttack01_Long_8m",
+          "clipDuration": 2.4,
+          "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+          "activeWeight": 1,
+          "handleTime": 1.12,
+          "animationTargetDistance": 8.337765,
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.66755307,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "renderedGap": 0,
+          "renderedCorrelated": true
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-rtwp-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": true,
+        "cleanup": true
+      },
+      "frames": 296,
+      "travel": 3.32434464,
+      "manual": 1,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "frame": 5459,
+          "gap": 0,
+          "withinQuarterMetre": true,
+          "executing": true,
+          "wounding": true,
+          "ownedPair": true,
+          "clip": "BiteAttack01_Long_8m",
+          "clipDuration": 2.4,
+          "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+          "activeWeight": 1,
+          "handleTime": 1.11933362,
+          "animationTargetDistance": 8.378277,
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.67565536,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "renderedGap": 0,
+          "renderedCorrelated": false
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-rtwp-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": true,
+        "cleanup": true
+      },
+      "frames": 297,
+      "travel": 3.32005215,
+      "manual": 0,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "frame": 5821,
+          "gap": 0,
+          "withinQuarterMetre": true,
+          "executing": true,
+          "wounding": true,
+          "ownedPair": true,
+          "clip": "BiteAttack01_Long_8m",
+          "clipDuration": 2.4,
+          "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+          "activeWeight": 1,
+          "handleTime": 1.11973,
+          "animationTargetDistance": 8.399739,
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.67994785,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "renderedGap": 0,
+          "renderedCorrelated": false
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-turn-based-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": true,
+        "cleanup": true
+      },
+      "frames": 388,
+      "travel": 3.33248138,
+      "manual": 1,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "frame": 6289,
+          "gap": 0,
+          "withinQuarterMetre": true,
+          "executing": true,
+          "wounding": true,
+          "ownedPair": true,
+          "clip": "BiteAttack01_Long_8m",
+          "clipDuration": 2.4,
+          "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+          "activeWeight": 1,
+          "handleTime": 1.12,
+          "animationTargetDistance": 8.337765,
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.66755307,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "renderedGap": 0,
+          "renderedCorrelated": false
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-turn-based-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": true,
+        "cleanup": true
+      },
+      "frames": 416,
+      "travel": 3.32477474,
+      "manual": 0,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "frame": 6699,
+          "gap": 0,
+          "withinQuarterMetre": true,
+          "executing": true,
+          "wounding": true,
+          "ownedPair": true,
+          "clip": "BiteAttack01_Long_8m",
+          "clipDuration": 2.4,
+          "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+          "activeWeight": 1,
+          "handleTime": 1.12,
+          "animationTargetDistance": 8.376297,
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.67525947,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "renderedGap": 0,
+          "renderedCorrelated": false
+        }
+      ]
+    }
+  ],
+  "conclusion": "All8 real native command cells pass all6 checks in RTWP/turn-based manual/AI. All8 at-rule original jaw point sets intersect target rendered bounds (gap0), with actual BiteAttack01_Long_8m playback, weight1 and projected distance8.321414..8.514899 versus world1.6642828..1.70297992. Original view0.2, corps0.6/0.5 and bite2ft remain unchanged. No tolerance waiver or attack/on-hit injection. All four prior failed attempts retained.",
+  "scopeLimits": [
+    "One observed native attack per cell; long variant01 measured in this matrix, not every possible size/distance/variant.",
+    "Test-owned accuracy/CMB/HP/defense fixtures are not ordinary-difficulty or printed-accuracy proof.",
+    "Constrictor end-frame command correlation remains false after establishing grab; at-rule contact is the authority.",
+    "Full snake lifecycle/crowd/UI/private routes/persistence and separate Salamander remain open; no publication."
+  ],
+  "nativeAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-BITE-DISTANCE-REVIEW.md",
+    "additionalConsumerScan": {
+      "readableMethodBodies": 48435,
+      "unreadableMembersOrTypes": 161,
+      "getterCallerMethods": 1,
+      "caller": "UnitAnimationActionSpecialAttack.StartBlendedAttack",
+      "limitation": "161 members/types could not be inspected with the bounded private reference set; no whole-assembly completeness claim. Failed first scan log retained."
+    }
+  },
+  "hashes": [
+    {
+      "path": "artifacts/laptop-runtime-20261006T2258273503227Z/batch.json",
+      "sha256": "689cd39a8d39ae5ec19be510ee89e972201f4f3cf0e9814a11e799908f738fcd"
+    },
+    {
+      "path": "artifacts/Invoke-LaptopSprint17-SnakeCommands-Attempt5.ps1",
+      "sha256": "c1b187eb7ba4e6123fb0ad44f5476473d005e684660972eff2b1d6367d4ea614"
+    },
+    {
+      "path": "artifacts/sprint17-bite-distance-exact-983828bf-gate.log",
+      "sha256": "b12152807f221a701e77624d8994f18048eccce18909399cb057c0b2f5cfc4ad"
+    },
+    {
+      "path": "artifacts/sprint17-bite-distance-exact-983828bf-preflight.log",
+      "sha256": "34af6c9f3c7703a443d282389820efaa2dc891caeb25cbc48e32397061a4f806"
+    },
+    {
+      "path": "artifacts/sprint17-snake-commands-source-pass-983828bf/KingmakerGunslinger-0.0.141-local-runtime.zip.build-local.json",
+      "sha256": "375e69e6d5c7cc024118e130645fe982f0c1d67bbaa0ce50b2be58de303ce5f6"
+    },
+    {
+      "path": "artifacts/sprint17-bite-distance-consumers-audit-2.log",
+      "sha256": "e400995d247848e654c58c3058a489da3b740e2901f23760e1f74c59bf92f5e6"
+    },
+    {
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261006T2305488565542Z-disposable-expanded-summoning-snake-commands/sprint17-original-body-review.json",
+      "sha256": "2caece72b7c7b302867ce5cdff13881468af707878b780f9e90b8534e064aec5"
+    }
+  ],
+  "next": "Complete remaining snake visual/lifecycle/crowd/UI/private-route/persistence coverage and bounded separate Salamander implementation. Freeze a complete Sprint17 hidden candidate only when stable; then publication and fullPhase2B closure. Stop for owner review.",
+  "boundedSliceQualified": true,
+  "fullSprintQualified": false,
+  "publicationAuthorized": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

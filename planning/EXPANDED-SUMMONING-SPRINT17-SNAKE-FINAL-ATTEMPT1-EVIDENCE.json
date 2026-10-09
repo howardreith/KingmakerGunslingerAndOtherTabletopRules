@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAILED BOUNDED SNAKE FINAL REVIEW; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "95c4d532827d06b689c60b7c5b23de4dd1e77a25",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "c0d2a6078441dabd65bf7f906f7b43092c8bfde954086fd874b8c14a5a048442",
+    "dllSha256": "d00f570027274f8ea8b9707eea46a8d7a3773c77e806def4d3a605381f50e585",
+    "dllMvid": "ec94261a-cdc1-4dd8-9c1f-2085c3a2630f",
+    "zipSha256": "78acbbe912248a52fcbd99b8100b5d93d788e7bf09e3535fc3c1dbfa3d298da9",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-final-source-pass-95c4d532"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 275,
+    "domain": 2077,
+    "domainSeconds": 84.6,
+    "gateSeconds": 183.4,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 14,
+      "rejected": 13
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0419373433888Z",
+    "journalSha256": "6a6f9b17ee3fcf9f6ade4e6b5f2d7c97da47f7cd04d86b7ef0d4cdd6d24b6aca",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeFinal-Attempt1.ps1",
+    "driverSha256": "cada3b48f6cf3dbbe2f128ebad1b967a4e991b98630ca96ea6156c03ba2617f0",
+    "startedAtUtc": "2026-10-07T04:19:37.3967849Z",
+    "completedAtUtc": "2026-10-07T04:26:53.6730555Z",
+    "status": "NOT-QUALIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T041937Z-7fd9c34107584341a8dc9d324286eeef\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0419381436351Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "parameters": {},
+        "outcome": "PASS",
+        "assertions": 11,
+        "passed": 11,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0420033113630Z-working-save-smoke",
+        "requestId": "20261007T0420033426135Z-a80bf7fa4a2a4c20a19cd2309ab01e19",
+        "processId": 32372,
+        "processStartedUtc": "2026-10-07T04:20:04.2546563Z",
+        "requestSha256": "bf42e5b445d4b6f8bc289df3b89cc98e736171c86de5c0604fe66dc1b5d2be09",
+        "resultSha256": "452e5d6860bd9b07291a84c3eb5aa4a4fe69cde14d41b1e9cf843d974a43f9a4",
+        "orchestrationSha256": "e42f7ab74568f2a8084513c097f70ac20c838b1b240ec4667bf21e16dfea3e57"
+      },
+      {
+        "label": "snake-final",
+        "scenario": "disposable-expanded-summoning-snake-final-review",
+        "parameters": {},
+        "outcome": "FAIL",
+        "assertions": 73,
+        "passed": 39,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0423028982217Z-disposable-expanded-summoning-snake-final-review",
+        "requestId": "20261007T0423028982217Z-470b4ee7e3954f3e90854690ac07d9dd",
+        "processId": 29296,
+        "processStartedUtc": "2026-10-07T04:23:04.3877690Z",
+        "requestSha256": "99440802f1da22c608d3825f8c5d144f2ec21f97a164bab380749bf9302a7c82",
+        "resultSha256": "2ec1bbc3697ae9cc344eefaa166f99815c98008534d3aa4c54e7b83b3230e2f6",
+        "orchestrationSha256": "e57c4b084b65f2d6c9f69c7606adc58925a05d2fffffa4fd95451ad3e91853ba",
+        "metadataRows": 69,
+        "metadataSha256": "743794d0c69ac48766aeb99d3139117fc38acf59235a05df9d488b4f3ac10aad"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "classification": "FIXTURE",
+      "assertions": 32,
+      "names": [
+        "private-root-Monster.1.viper.One",
+        "private-root-Monster.2.viper.OneD3",
+        "private-root-Monster.3.viper.OneD4PlusOne",
+        "private-root-Monster.3.constrictor-snake.One",
+        "private-root-Monster.4.viper.OneD4PlusOne",
+        "private-root-Monster.4.constrictor-snake.OneD3",
+        "private-root-Monster.5.viper.OneD4PlusOne",
+        "private-root-Monster.5.constrictor-snake.OneD4PlusOne",
+        "private-root-Monster.6.viper.OneD4PlusOne",
+        "private-root-Monster.6.constrictor-snake.OneD4PlusOne",
+        "private-root-Monster.7.viper.OneD4PlusOne",
+        "private-root-Monster.7.constrictor-snake.OneD4PlusOne",
+        "private-root-Monster.8.viper.OneD4PlusOne",
+        "private-root-Monster.8.constrictor-snake.OneD4PlusOne",
+        "private-root-Monster.9.viper.OneD4PlusOne",
+        "private-root-Monster.9.constrictor-snake.OneD4PlusOne",
+        "private-root-NaturesAlly.1.viper.One",
+        "private-root-NaturesAlly.2.viper.OneD3",
+        "private-root-NaturesAlly.3.viper.OneD4PlusOne",
+        "private-root-NaturesAlly.3.constrictor-snake.One",
+        "private-root-NaturesAlly.4.viper.OneD4PlusOne",
+        "private-root-NaturesAlly.4.constrictor-snake.OneD3",
+        "private-root-NaturesAlly.5.viper.OneD4PlusOne",
+        "private-root-NaturesAlly.5.constrictor-snake.OneD4PlusOne",
+        "private-root-NaturesAlly.6.viper.OneD4PlusOne",
+        "private-root-NaturesAlly.6.constrictor-snake.OneD4PlusOne",
+        "private-root-NaturesAlly.7.viper.OneD4PlusOne",
+        "private-root-NaturesAlly.7.constrictor-snake.OneD4PlusOne",
+        "private-root-NaturesAlly.8.viper.OneD4PlusOne",
+        "private-root-NaturesAlly.8.constrictor-snake.OneD4PlusOne",
+        "private-root-NaturesAlly.9.viper.OneD4PlusOne",
+        "private-root-NaturesAlly.9.constrictor-snake.OneD4PlusOne"
+      ],
+      "finding": "Every private route has one native120-second CL20 duration/context and0 grace in paused RTWP; the fixture incorrectly requires the TB-only6-second grace.",
+      "nativeObservation": "captures=1,facts=1,base=120,bonus=0,expected=120,nativeGrace=0,remaining=120,context=True,caster=True,cl=20,permanent=False",
+      "allIdentityTemplateAlignmentIconChecksPassed": true,
+      "repair": "Separate exact paused RTWP duration check; historical TB checker and production summon durations unchanged."
+    },
+    {
+      "classification": "PRODUCTION PRESENTATION",
+      "assertions": 1,
+      "name": "KMG_Summoning_Special_ConstrictorSnake_CombatTraits-native-buff-row",
+      "finding": "One visible native trait row has correct full label but null icon.",
+      "repair": "Exact owned passive species trait intentionally shares the existing original Constrictor portrait through the established cache; no pixels or other assignments changed."
+    },
+    {
+      "classification": "FIXTURE",
+      "assertions": 1,
+      "name": "sprint17-body-exception",
+      "finding": "Lifecycle used the generic native-faction hostile plus an AI-only/player-faction summon, then required the separate private-faction manual-control predicate. Isolation fails before any hit command.",
+      "repair": "Use a request-local inert actor and paired private native factions, checking distinct ownership/no player groups/mutual enemy/zero foreign enemy relations before and during actual attacks. No controllability override or unrelated actor mutation."
+    }
+  ],
+  "partialObservations": {
+    "privateCleanupRows": 32,
+    "privateCleanupPassed": 32,
+    "spawnedPrivateUnits": 93,
+    "capturedResources": 465,
+    "remainingResources": 0,
+    "viperVenomRow": "PASS; native AlchemistPoisonBomb effect sprite unchanged",
+    "nativeUiRestoration": "PASS",
+    "firstViperIntactFrame": "PASS",
+    "hitDeathFadeDespawn": "NOT REACHED; no qualification",
+    "outerChecks": [
+      {
+        "name": "sprint17-body-environment-restored",
+        "observed": "restored=True",
+        "status": "PASS"
+      },
+      {
+        "name": "sprint17-body-fixture-cleanup",
+        "observed": "cleaned=True",
+        "status": "PASS"
+      },
+      {
+        "name": "loaded-mod-version",
+        "observed": "0.0.141",
+        "status": "PASS"
+      }
+    ]
+  },
+  "nativeDurationAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "script": "artifacts/Inspect-Sprint17-PrivateDuration.ps1",
+    "scriptSha256": "49189a647cddc03a6b351279d51f784b0ac38afeac0a96a4d3c03bf2e616226a",
+    "evidence": "artifacts/sprint17-private-duration-native-il2.txt",
+    "sha256": "d688aaf2afffbbfab329260d54a0a8312ada4394245169cd2e60e00d93dc01df",
+    "finding": "RuleSummonUnit.OnTrigger IL021a tests EnableTurnBasedMode before IL02e1 adds6 seconds; RTWP adds no grace. Metadata only; no native invocation or redistribution."
+  },
+  "savePolicy": {
+    "writes": 0,
+    "fileAccess": false,
+    "protectedBaselineAccess": false,
+    "priorNativeCleanupAndFreshAbsencePreserved": true
+  },
+  "scope": "All32snake roots withheld. Earlier a429 persistence,983 commands/rules and ec972 crowd remain exact-artifact bounded. No source-only PASS or failed batch qualifies Sprint17. No environment/restoration failure."
+}
