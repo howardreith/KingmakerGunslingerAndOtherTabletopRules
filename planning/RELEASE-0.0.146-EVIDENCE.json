@@ -2,6 +2,23 @@
   "schemaVersion": 1,
   "releaseVersion": "0.0.146",
   "status": "POST_MASTER145_INTEGRATION_CANDIDATE_NOT_RUNTIME_QUALIFIED",
+  "integrationSourceGate62ae6936": {
+    "commit": "62ae6936de43f2bad42f74d557fc4c15a5031ace",
+    "status": "PASS source/build/package;NOT runtime launched",
+    "domain": "2497/2497",
+    "wrapperStaticIconRegistryManifest": "PASS",
+    "protectedSourceAudit": "197 master/261 summoning files;2922 exact ordered identities",
+    "orchestrationAssertions": 168,
+    "packageMembers": 333,
+    "seconds": 246,
+    "sourceFingerprint": "f01bedc8b35c6692490ea61df40d2241c624549439b8d49bcc7e1bd13393c4f4",
+    "zipSha256": "0c7801236a035803418910957135e978f5e13686ad1a7186a5a9027dce8a6754",
+    "dllSha256": "64f0a4cffc053d19e5ef48bb09ba0775c0a343b0abf142c7fbcff9dc6396bd0f",
+    "mvid": "8e1dfaaa-787c-440a-9445-7a60790b8ed2",
+    "archive": "artifacts/candidates/62ae6936de43f2bad42f74d557fc4c15a5031ace",
+    "preflightDisposition": "Seven request WhatIf cells passed;representative path exposed missing typed launcher normalization. Added the same closed representative scope before the no-parameters fallback;no product/DLL source behavior change. Focused normalizer tests pass;new exact committed source/package follows. No deployment/game/save access occurred.",
+    "supplementalLegacyRequestTest": "Historical scripts/Test-RuntimeRequest.ps1 still asks for0.0.87 and is rejected by the authoritative active-version preflight. Not relabeled PASS and not used as release authority. Current persistence/crowd/representative request contracts and actual scenario WhatIf preflight are the active checks."
+  },
   "integration": {
     "ledger": "planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md",
     "parents": ["c6effc3224754e1bdf250a703eb1440c1dbbfb78", "bf8a1e41b308bfb148cb028d75a576555b7e8dd1"],

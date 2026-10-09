@@ -27,7 +27,10 @@ and strict325-member pre-integration package PASS;NOT RUNTIME QUALIFIED.
 This commit is the normal master145 integration candidate:parents c6effc32/bf8a1e41.
 Source audit pins197 master/261 summoning files and all2922 ordered identities.
 146 package inventory333 (325+7master documents+146notes);2497 domain cases.
-Focused/incremental checks PASS;full exact post-merge gate and runtime NOT RUN.
+Exact62ae6936 post-merge gate PASS:2497/2497,333members,clean14-reference build.
+No runtime launch. Preflight caught missing typed launcher representative-scope
+normalization;closed boundary repaired/tested,production unchanged. This commit
+is the corrected launcher head;next exact gate precedes any deployment.
 Ledger:planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md (35files/56hunks).
 Next one exact committed146 source/build/package,OFF108cleanup/absence,
 ON9variants,inventory/menu/representativequantities,5profiles,142/144/145
