@@ -165,6 +165,16 @@ foreach ($kind in @('viper','constrictor-snake','salamander')) {
     Copy-Item -LiteralPath (Join-Path $serpentineSource "$kind-albedo.png") -Destination $serpentineDestination
 }
 Copy-Item -LiteralPath (Join-Path $serpentineSource 'salamander-human-mesh.json') -Destination $serpentineDestination
+# Closed four-file original Sprint 18 body inventory: one mesh and one
+# painting for each ape. Fail closed on a missing export; no private
+# authoring outputs and no broad folder copy.
+$primateSource = Join-Path $outputDirectory 'assets\sprint18-primates'
+$primateDestination = Join-Path $modDirectory 'assets\sprint18-primates'
+New-Item -ItemType Directory -Path $primateDestination -Force | Out-Null
+foreach ($kind in @('ape','dire-ape')) {
+    Copy-Item -LiteralPath (Join-Path $primateSource "$kind-mesh.json") -Destination $primateDestination
+    Copy-Item -LiteralPath (Join-Path $primateSource "$kind-albedo.png") -Destination $primateDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -185,7 +195,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 336 } else { 334 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 340 } else { 338 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount
