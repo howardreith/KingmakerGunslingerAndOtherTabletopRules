@@ -1115,6 +1115,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint18-exact-land-ranks", PrimateRulesTests.LandSkillsUseExactRanksAndOmitClimbHonestly),
             Case("expanded-summoning.sprint18-omitted-senses", PrimateRulesTests.OmittedSensesAndMovementAreRecordedWithoutSubstitutes),
             Case("expanded-summoning.sprint18-append-only-identities", PrimateRulesTests.NewIdentitiesAppendWithoutMovingAnything),
+            Case("blueprints.ledger-fits-the-loader-bound", BlueprintManifestSizeTests.ShippedLedgerFitsTheLoaderBound),
+            Case("blueprints.ledger-bound-still-rejects", BlueprintManifestSizeTests.TheCorruptionBoundStillRejectsBothEnds),
             Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),
             Case("expanded-summoning.crocodilian-death-roll-live-strength", ExpandedSummoningCrocodilianRulesTests.DeathRollFollowsLiveStrength),
             Case("expanded-summoning.crocodilian-death-roll-base-bite", ExpandedSummoningCrocodilianRulesTests.DeathRollAdjustsOnlyTheCapturedBaseBite),

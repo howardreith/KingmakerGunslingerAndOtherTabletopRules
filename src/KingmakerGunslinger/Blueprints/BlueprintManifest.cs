@@ -18,7 +18,21 @@ namespace KingmakerGunslinger.Blueprints
         internal const string RequiredNamespace = "KMG";
         internal const string RelativeManifestPath = "blueprints/blueprints.json";
 
-        private const long MaximumManifestBytes = 1024 * 1024;
+        /// <summary>
+        /// A corruption bound, not a product limit. It was one mebibyte, which
+        /// the ledger outgrew when Sprint 18 appended the Ape and Dire Ape: at
+        /// 2980 entries the manifest is 1,054,189 bytes, so the whole mod
+        /// failed to initialize in game while every offline gate passed. The
+        /// ledger is append-only and the charter's ideal roster is still well
+        /// short of its 145 creatures, so the bound is set where an absurd or
+        /// truncated file is still rejected and ordinary roster growth is not:
+        /// four mebibytes is roughly four times the current ledger.
+        ///
+        /// <para><c>BlueprintManifestSizeTests</c> measures the shipped
+        /// manifest against this constant offline, so the ledger can never
+        /// again cross it without a test saying so first.</para>
+        /// </summary>
+        internal const long MaximumManifestBytes = 4L * 1024 * 1024;
         private const string RequiredGuidFormat = "lowercase 32-character hexadecimal";
         private static readonly Regex SymbolPattern = new Regex(
             "^KMG\\.[A-Za-z0-9_.]+$",
