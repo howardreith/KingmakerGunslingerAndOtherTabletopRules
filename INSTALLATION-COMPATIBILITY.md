@@ -1,5 +1,9 @@
 # Installation, updates, removal, and compatibility
 
+Current release: UMM `0.0.145`, archive
+`KingmakerGunslinger-0.0.145-heirloom-nodachi-icon.zip`. It adds the Heirloom
+Weapon: Nodachi trait icon correction to the 0.0.144 findability release.
+
 Findability release: UMM `0.0.144`, archive
 `KingmakerGunslinger-0.0.144-weapon-findability-fixes.zip`. Its inherited 0.0.143
 qualification is tracked in [the findability report](docs/WEAPON-FINDABILITY-QUALIFICATION.md).
