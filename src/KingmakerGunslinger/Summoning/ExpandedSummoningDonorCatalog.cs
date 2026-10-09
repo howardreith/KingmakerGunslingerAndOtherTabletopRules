@@ -54,15 +54,19 @@ namespace KingmakerGunslinger.Summoning
                 "woolly-rhinoceros|028cc6f46e7998f46855a33ffde89567|1",
                 "viper|bf2216f48b3f4d24c9c502007649340d|1",
                 "constrictor-snake|bf2216f48b3f4d24c9c502007649340d|1",
-                // Sprint 18, PROVISIONAL pending the bounded read-only primate
-                // donor census. The installed library carries no primate unit
-                // type at all, so neither ape can ever clone a native primate;
-                // the Owlbear is the Large bipedal rig this project already
-                // validated with a bite and two forelimb contacts, which is the
-                // Dire Ape's exact routine. Both apes are suppressed, so this
-                // assignment reaches no player until the census settles it.
-                "ape|d6e0acbdbdb56114898922063ae2cba0|0",
-                "dire-ape|d6e0acbdbdb56114898922063ae2cba0|0"
+                // Sprint 18, settled by the guarded primate donor census
+                // (evidence 20261009T1721285353210Z, 28/28 rigs captured).
+                // The installed library carries no primate unit type at all, so
+                // neither ape can ever clone a native primate and both bodies
+                // are original geometry. Of the 28 surveyed rigs the Troll is
+                // the only Large one that is actually built like an ape: an
+                // upright Pelvis-rooted spine, long two-segment arms ending in
+                // real hands with a thumb and three fingers, a separate jaw,
+                // and legs with toes. The Owlbear the apes rode provisionally
+                // has 29 bones, no hands, no jaw and no toes, and is a
+                // quadruped bear; the Athach is Huge and equally handless.
+                "ape|b98735a1737ae494dbe5cbeca1c7c083|0",
+                "dire-ape|b98735a1737ae494dbe5cbeca1c7c083|0"
             });
         }
 

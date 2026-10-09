@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "sprint": 18,
   "title": "Expanded Summoning Sprint 18: Ape and Dire Ape",
-  "status": "SOURCE QUALIFIED; MOD INITIALIZATION PROVED IN GAME; SPRINT 18 RUNTIME REVIEW NOT RUN; NOT PUBLISHED; NOT RELEASED",
+  "status": "SOURCE QUALIFIED; MOD INITIALIZATION PROVED IN GAME; DONOR CENSUS PASSED; ORIGINAL BODIES NOT AUTHORED; SPRINT 18 RUNTIME REVIEW NOT RUN; NOT PUBLISHED; NOT RELEASED",
   "branch": "codex/expanded-summoning-sprint18-ape-dire-ape",
   "masterBase": "da782d2297d6cf361ac30a5e0ea07348d3b7f7d7",
   "releasedBaseline": "v0.0.146",
   "masterDelta": "NONE",
   "contract": "planning/EXPANDED-SUMMONING-SPRINT18-CONTRACT.json",
-  "sourceBoundary": "A clean committed candidate on the named base. The complete source, build and package gate ran once on it. Two guarded runtime transactions then deployed it, launched Kingmaker through Steam App ID 640820 and restored the owner installation exactly; no save was read or written.",
+  "sourceBoundary": "A clean committed candidate on the named base. The complete source, build and package gate ran once on it. Three guarded runtime transactions then deployed it, launched Kingmaker through Steam App ID 640820 and restored the owner installation exactly; no save was read or written.",
   "candidate": {
     "commit": "bd21f2447b3e68fbb95759292a1991320529f4e0",
     "sourceStateSha256": "b3c25e810d540c1507efa968c33c6157d254d8ba6469799eaece538259221f6f",
@@ -37,7 +37,7 @@
     "strictStandalonePackageValidation": "PASS; 336 members",
     "expandedSummoningOrchestration": "PASS 168 assertions",
     "runtime": "PARTIAL. The guarded harness is proved end to end on this candidate: deploy, Steam App ID 640820 launch, mod load at 0.0.147, guarded request accepted, scenario PASS, exact restoration. No Sprint 18 creature behaviour is proved.",
-    "guardedPrimateDonorCensus": "NOT RUN",
+    "guardedPrimateDonorCensus": "PASS. 288 primate-adjacent blueprints discovered, 28 view prefabs surveyed at the contract cap, 28 captured, 9/9 assertions PASS. Evidence 20261009T1721285353210Z-observe-expanded-summoning-primate-census.",
     "batchedSprint18RuntimeReview": "NOT RUN",
     "publicationGate": "NOT RUN",
     "releaseClosureMatrix": "NOT RUN"
@@ -111,12 +111,11 @@
   },
   "blockers": [
     {
-      "id": "PRIMATE_DONOR_CENSUS_NOT_RUN",
-      "gate": "Mission section 4 donor and rig audit, and therefore section 5 original visuals",
-      "detail": "The Sprint 16 and 17 mesh generators take a request-local donor bind-pose capture as their only game-sourced input, so the original Ape and Dire Ape bodies cannot be authored before that capture exists. The offline pre-census already proves the installed library has no primate unit type and no RendFeature consumer, so both bodies must be original geometry on a non-primate rig. Both creatures are withheld, so nothing player-visible depends on the provisional Owlbear donor.",
-      "ownerDecision": "None. The owner has authorized the guarded runtime work; this is remaining engineering.",
+      "id": "PRIMATE_ORIGINAL_BODIES_NOT_AUTHORED",
+      "gate": "Mission section 5 original visuals",
+      "detail": "The census has run and chosen the rig, so the input the mesh generators need now exists. The original Ape and Dire Ape geometry and albedo are not yet authored, and no view patch applies them, so both creatures would still appear as the donor Troll. Both are withheld, so nothing player-visible depends on the borrowed body.",
+      "ownerDecision": "None. Remaining engineering.",
       "blocks": [
-        "original visuals",
         "visual lifecycle review",
         "publication",
         "release"
@@ -177,12 +176,31 @@
       "auditTotals": "607 units, 2935 facts, 114 unit types",
       "primateFinding": "No primate unit and no RendFeature consumer in the installed library, confirming the offline pre-census: both ape bodies must be original geometry on a non-primate donor rig.",
       "restoration": "VERIFIED; 136 files and the intake tree hash"
+    },
+    {
+      "runId": "observe-expanded-summoning-primate-census",
+      "evidence": "20261009T1721285353210Z-observe-expanded-summoning-primate-census",
+      "scenario": "observe-expanded-summoning-primate-census",
+      "status": "PASS",
+      "candidate": "3c26705d",
+      "proves": "The bounded read-only primate donor census of mission section 4. It resolves the four contract anchors exactly, discovers by term, dedupes by prefab, caps at 28 surveys, and loads each view detached and read-only without ever instantiating an actor.",
+      "totals": "discovered=288 surveyed=28 captured=28 credibleHeight=28",
+      "outcome": "Troll CR10_FerociousTrollGuard b98735a1737ae494dbe5cbeca1c7c083 chosen as the shared rig for both apes: Large, 62 bones, Pelvis root, bind height 4.378, view scale 0.7. The only surveyed Large rig with real hands (thumb and three fingers), a separate Jaw_01 and toed feet. The provisional Owlbear donor is a 29-bone handless jawless quadruped and is dropped.",
+      "primateFinding": "Re-confirms no primate unit type and no RendFeature consumer in the installed library.",
+      "observerCorrection": "The shared Sprint 17 bind capture refused the whole view when one renderer carries an incomplete bind frame (Bloodmoon Wild Hunt Monarch's cloth cape), failing 27 of 28. Corrected request-locally: Sprint 18 captures with its own fully read-only reader that records such renderers in skippedRenderers and fails only when no usable renderer exists. Sprint 17's survey is untouched, no requirement is weakened, no native asset is mutated, and the failed run's evidence is retained.",
+      "restoration": "VERIFIED; 136 files and the intake tree hash"
     }
   ],
   "remainingWork": [
-    "Author the request-local primate donor census scenario and run it to capture bind/action records.",
-    "Author the original Ape and Dire Ape bodies against that capture, review offline, wire the view.",
+    "Author the original Ape and Dire Ape bodies against the captured Troll bind pose, review them offline, and wire the project-owned view.",
     "Author and run the batched Sprint 18 hidden-candidate runtime review.",
     "Publish the 26 roots, merge PR #32 and release v0.0.147."
+  ],
+  "resolvedBlockers": [
+    {
+      "id": "PRIMATE_DONOR_CENSUS_NOT_RUN",
+      "resolvedBy": "The guarded census run above",
+      "resolution": "Census PASS; donor rig chosen on recorded evidence and pinned in ExpandedSummoningDonorCatalog with the reasoning."
+    }
   ]
 }
