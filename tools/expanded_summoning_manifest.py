@@ -481,8 +481,11 @@ def planned():
         ("KMG.Summoning.Natural.Ape.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Natural.DireApe.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Special.DireApe.Rend", "BlueprintFeature"),
+        # Granted to exactly the two apes: a rulebook component is only
+        # subscribed when a unit fact carries it.
+        ("KMG.Summoning.Natural.Primate.FullStrengthLimbs", "BlueprintFeature"),
     ))
-    if len(rows) != 1983 or len({symbol for symbol, _ in rows}) != 1983:
+    if len(rows) != 1984 or len({symbol for symbol, _ in rows}) != 1984:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
         // bite and claw so their printed Large dice are not scaled up a
         // step, which the guarded review measured the shared native
         // weapons doing.
-        internal const int SpecialIdentityCount = 208;
+        internal const int SpecialIdentityCount = 209;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -324,6 +324,10 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Ape.UnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireApe.UnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireApe.Rend", "BlueprintFeature"));
+            // Granted to exactly the two apes. A rulebook component is
+            // only subscribed when a unit fact carries it, so the
+            // full-Strength correction needs a fact of its own.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Primate.FullStrengthLimbs", "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }

@@ -32,7 +32,7 @@ roots are suppressed, and the published surface stays at 1008 generated plus 29
 retained native wrappers - 1037 visible choices, unchanged.
 
 Identities are allocated once, now, and never move: publication is the removal
-of two suppression keys. The blueprint ledger grows from 2922 to 2982 entries
+of two suppression keys. The blueprint ledger grows from 2922 to 2983 entries
 by append only.
 
 ## Printed profiles

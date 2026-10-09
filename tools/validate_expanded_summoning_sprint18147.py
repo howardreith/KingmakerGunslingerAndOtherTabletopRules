@@ -159,7 +159,7 @@ def preserved_files(root: Path, ref: str, prefixes, allowed=()) -> int:
 
 def validate_identity_append(root: Path) -> int:
     """The ledger is append-only: master's entries keep their exact order,
-    symbol, GUID and metadata, and Sprint 18's 60 identities follow them.
+    symbol, GUID and metadata, and Sprint 18's 61 identities follow them.
 
     Sixty rather than fifty-eight because the guarded review measured the
     Dire Ape biting for 1d8 and clawing for 1d6: the shared native weapons
@@ -172,9 +172,9 @@ def validate_identity_append(root: Path) -> int:
     if current[:len(accepted)] != accepted:
         raise AssertionError("Sprint 18 moved or rewrote a historical identity")
     appended = current[len(accepted):]
-    if len(accepted) != 2922 or len(appended) != 60:
+    if len(accepted) != 2922 or len(appended) != 61:
         raise AssertionError(
-            f"Sprint 18 must append exactly 60 identities to 2922; "
+            f"Sprint 18 must append exactly 61 identities to 2922; "
             f"observed {len(accepted)} + {len(appended)}")
     if len({e["guid"] for e in current}) != len(current) or \
             len({e["symbol"] for e in current}) != len(current):
@@ -188,6 +188,7 @@ def validate_identity_append(root: Path) -> int:
         "KMG.Summoning.Natural.Ape.UnitType": "BlueprintUnitType",
         "KMG.Summoning.Natural.DireApe.UnitType": "BlueprintUnitType",
         "KMG.Summoning.Special.DireApe.Rend": "BlueprintFeature",
+        "KMG.Summoning.Natural.Primate.FullStrengthLimbs": "BlueprintFeature",
     }
     by_symbol = {e["symbol"]: e for e in appended}
     for symbol, planned in expected_tail.items():

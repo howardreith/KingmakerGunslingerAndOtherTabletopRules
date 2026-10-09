@@ -238,6 +238,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["reflex"] = stats.GetStat(StatType.SaveReflex).ModifiedValue,
                 ["will"] = stats.GetStat(StatType.SaveWill).ModifiedValue,
                 ["cmd"] = cmd.Describe("CMD"), ["deniedDexRecovered"] = deniedDex,
+                ["armorModifiers"] = DescribeSprint18Modifiers(stats.AC),
+                ["armorDexterityBonus"] = stats.AC.DexterityBonus,
+                ["additionalCmd"] = stats.AdditionalCMD.ModifiedValue,
+                ["difficulty"] = Game.Instance.Player == null ? null :
+                    Game.Instance.Player.Difficulty.ToString(),
                 ["limbs"] = limbRows,
                 ["mobility"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillMobility)),
                 ["perception"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillPerception)),
@@ -299,6 +304,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["instanceOwned"] = instanceOwned,
                 }, "the live ape wears its own body, the donor equipment is blank, " +
                    "and every created resource is named for this instance");
+        }
+
+        /// <summary>
+        /// Every modifier on a value, with its size, descriptor and source.
+        /// A total alone cannot say which term is unexpected.
+        /// </summary>
+        private static string DescribeSprint18Modifiers(ModifiableValue value)
+        {
+            return value == null ? null : "total:" + value.ModifiedValue +
+                ",base:" + value.BaseValue + ",modifiers:[" +
+                string.Join("|", value.Modifiers.Select(modifier =>
+                    modifier.ModValue + "/" + modifier.ModDescriptor + "/" +
+                    modifier.Source).ToArray()) + "]";
         }
 
         private static UnityEngine.Object[] ReviewSprint18OwnedResources(UnitEntityData owner)

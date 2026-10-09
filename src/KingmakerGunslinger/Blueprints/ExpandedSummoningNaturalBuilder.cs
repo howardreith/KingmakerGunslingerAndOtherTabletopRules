@@ -73,6 +73,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.DireApe.Bite1d6";
         private const string DireApeClaw1d4Symbol =
             "KMG.Summoning.Natural.DireApe.Claw1d4";
+        private const string PrimateFullStrengthSymbol =
+            "KMG.Summoning.Natural.Primate.FullStrengthLimbs";
         private const string ApeUnitTypeSymbol =
             "KMG.Summoning.Natural.Ape.UnitType";
         private const string DireApeUnitTypeSymbol =
@@ -375,6 +377,8 @@ namespace KingmakerGunslinger.Blueprints
                 ApeUnitTypeSymbol));
             ConfigureDireApeUnitType(Require<BlueprintUnitType>(bySymbol,
                 DireApeUnitTypeSymbol));
+            ConfigurePrimateFullStrength(Require<BlueprintFeature>(
+                bySymbol, PrimateFullStrengthSymbol));
             ConfigureDireApeRend(
                 Require<BlueprintFeature>(bySymbol, DireApeRendSymbol),
                 Require<BlueprintUnit>(bySymbol,
@@ -777,6 +781,32 @@ namespace KingmakerGunslinger.Blueprints
         /// one creature. <see cref="DireApeRendGate"/> replaces that one
         /// decision and nothing else.</para>
         /// </summary>
+        /// <summary>
+        /// Every limb of a multi-attack creature carries the plain Strength
+        /// modifier, which is what both printed ape entries say. The engine
+        /// gives a natural primary-hand weapon one and a half times the damage
+        /// stat whenever the secondary hand is empty, without looking at the
+        /// additional limbs, and the guarded review measured exactly that on
+        /// both apes. Granted to those two creatures and no others.
+        /// </summary>
+        private static void ConfigurePrimateFullStrength(BlueprintFeature feature)
+        {
+            var correction = ScriptableObject.CreateInstance<
+                SummonPrimaryLimbFullStrength>();
+            feature.name = InternalName(PrimateFullStrengthSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { correction };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Primate.FullStrengthLimbs.Name",
+                    "Multiple Natural Attacks"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Primate.FullStrengthLimbs.Description",
+                    "This creature attacks with more than one natural limb, so each limb adds its whole Strength modifier rather than one and a half times it."),
+                null);
+        }
+
         private static void ConfigureDireApeRend(BlueprintFeature feature,
             BlueprintUnit direApe, BlueprintItemWeapon claw)
         {
@@ -982,16 +1012,7 @@ namespace KingmakerGunslinger.Blueprints
                     SummonPrimateSkillRanks>();
                 ranks.CreatureKey = profile.Key;
                 ranks.OwningBlueprint = unit;
-                // Both apes attack with more than one limb, so every limb
-                // prints the plain Strength modifier. The engine gives a
-                // natural primary-hand weapon one and a half times it when
-                // the secondary hand is empty, which is what the guarded
-                // review measured on both of them.
-                var strength = UnityEngine.ScriptableObject.CreateInstance<
-                    SummonPrimaryLimbFullStrength>();
-                strength.OwningBlueprint = unit;
-                unit.ComponentsArray = new BlueprintComponent[] {
-                    levels, ranks, strength };
+                unit.ComponentsArray = new BlueprintComponent[] { levels, ranks };
             }
 
             BlueprintItemWeapon primary = Weapon(library, bySymbol,
@@ -1082,6 +1103,8 @@ namespace KingmakerGunslinger.Blueprints
                         GiantAntRacialSkillsSymbol)
                     : fact == "DireApeRend"
                     ? Require<BlueprintFeature>(bySymbol, DireApeRendSymbol)
+                    : fact == "PrimateFullStrengthLimbs"
+                    ? Require<BlueprintFeature>(bySymbol, PrimateFullStrengthSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
