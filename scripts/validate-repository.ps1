@@ -32,8 +32,8 @@ if ($LASTEXITCODE -ne 0) {
     throw "Repository validation failed with exit code $LASTEXITCODE."
 }
 
-if ((Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'Info.json') | ConvertFrom-Json).Version -eq '0.0.143') {
-    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_checkpoint143.py')
+if ((Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'Info.json') | ConvertFrom-Json).Version -eq '0.0.146') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_checkpoint146.py')
     if ($LASTEXITCODE -ne 0) { throw 'Checkpoint integration corruption fixtures failed.' }
 }
 
@@ -65,5 +65,19 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # installation, so it belongs in the gate that runs every build rather
 # than in a script nobody executes.
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
+
+# Parse the guarded entry points with the installed PowerShell parser. This
+# catches encoding and parameter-block faults before deployment or save access.
+foreach ($scriptName in @('Invoke-KingmakerRuntimeTest.ps1',
+    'RuntimeAutomation.Common.ps1', 'WeaponFindabilityPersistence.Common.ps1',
+    'Invoke-WeaponFindabilityPersistenceQualification.ps1')) {
+    $tokens = $null
+    $parseErrors = $null
+    [void][Management.Automation.Language.Parser]::ParseFile(
+        (Join-Path $PSScriptRoot $scriptName), [ref]$tokens, [ref]$parseErrors)
+    if (@($parseErrors).Count -ne 0) {
+        throw "Guarded runtime script does not parse: $scriptName ($($parseErrors.Message -join '; '))"
+    }
+}
 
 Write-Host 'Version-aware repository validation passed.'

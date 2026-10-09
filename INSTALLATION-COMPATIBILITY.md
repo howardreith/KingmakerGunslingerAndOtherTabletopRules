@@ -1,13 +1,30 @@
 # Installation, updates, removal, and compatibility
 
-Checkpoint candidate: `0.0.143-expanded-summoning-phase2b-checkpoint` (UMM
-version `0.0.143`), archive
-`KingmakerGunslinger-0.0.143-expanded-summoning-phase2b-checkpoint.zip`.
+Checkpoint version: `0.0.146-expanded-summoning-phase2b-checkpoint` (UMM
+version `0.0.146`), archive
+`KingmakerGunslinger-0.0.146-expanded-summoning-phase2b-checkpoint.zip`.
 It retains v0.0.142 traits/content and publishes qualified summoning Sprints
-12–17, including Salamander. Candidate qualification is pending; the current
-public release is v0.0.142. Install only the final standalone UMM ZIP after
+12–17, including Salamander, plus released v0.0.144 weapon recovery and v0.0.145
+Nodachi icon behavior. Install only the final standalone UMM ZIP after
 publication, not source archives or private reference bundles.
-See [checkpoint scope and limitations](docs/RELEASE-NOTES-0.0.143.md).
+See [checkpoint scope and limitations](docs/RELEASE-NOTES-0.0.146.md).
+
+### Previously released versions
+
+Latest public release before this candidate: UMM `0.0.145`, archive
+`KingmakerGunslinger-0.0.145-heirloom-nodachi-icon.zip`. It adds the Heirloom
+Weapon: Nodachi trait icon correction to the 0.0.144 findability release.
+
+Findability release: UMM `0.0.144`, archive
+`KingmakerGunslinger-0.0.144-weapon-findability-fixes.zip`. Its inherited 0.0.143
+qualification is tracked in [the findability report](docs/WEAPON-FINDABILITY-QUALIFICATION.md).
+Updating loot definitions does not guarantee that an old campaign's generated
+containers receive the moved weapons. Recovery is explicit and per weapon.
+
+Earlier full release: `0.0.141-expanded-summoning-phase2a` (UMM version `0.0.141`),
+archive `KingmakerGunslinger-0.0.141-expanded-summoning-phase2a.zip`. It
+publishes Expanded Summoning Sprints 9-11. All 68 Sprint 12 placements remain
+hidden. See [its release notes](docs/RELEASE-NOTES-0.0.141.md).
 
 Previous full release: `0.0.140-favored-class-integration` (UMM version
 `0.0.140`), archive

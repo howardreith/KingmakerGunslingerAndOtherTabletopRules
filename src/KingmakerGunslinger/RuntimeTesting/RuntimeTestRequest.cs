@@ -312,6 +312,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                request.Scenario == WeaponFindabilitySaveContract.Scenario ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRecovery ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponFindabilityScenes ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRoute ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                 RuntimeTestScenarioCatalog.IsMagicCirclePersistence(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
@@ -400,6 +404,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ValidStageTimeout(request.LoadEntryTimeoutSeconds) ||
                     !ValidStageTimeout(request.FingerprintTimeoutSeconds))
                     return "scenario-timeout-invalid";
+                if ((request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRecovery ||
+                    request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponFindabilityScenes) && !request.ExitAfterCompletion)
+                    return "weapon-fixture-automatic-exit-required";
+                bool weaponRoute = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRoute;
+                if (weaponRoute && (!request.ExitAfterCompletion || request.Parameters?["weaponKey"]?.Type != JTokenType.String ||
+                    string.IsNullOrWhiteSpace((string)request.Parameters["weaponKey"]))) return "weapon-route-key-required";
+                bool weaponSave = request.Scenario == WeaponFindabilitySaveContract.Scenario;
+                if (weaponSave && (!request.ExitAfterCompletion || !WeaponFindabilitySavePlan.ValidParameters(request.Parameters)))
+                    return "weapon-save-plan-parameters-invalid";
                 bool traitSave = request.Scenario == ElementalCharacterTraitSaveContract.Scenario;
                 if (traitSave && (!request.ExitAfterCompletion || !ElementalCharacterTraitSavePlan.ValidParameters(request.Parameters)))
                     return "trait-save-plan-parameters-invalid";
@@ -427,6 +440,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
                 bool creatureReview = request.Scenario ==
                     RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
+                bool representativePlayerPaths = request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath &&
+                    request.Parameters?.Property(ExpandedSummoningPlayerPathReviewScope.Parameter) != null;
+                if (representativePlayerPaths && (!request.ExitAfterCompletion ||
+                    request.Parameters[ExpandedSummoningPlayerPathReviewScope.Parameter].Type != JTokenType.String ||
+                    (string)request.Parameters[ExpandedSummoningPlayerPathReviewScope.Parameter] != ExpandedSummoningPlayerPathReviewScope.Representative))
+                    return "summoning-player-path-scope-invalid";
                 bool targetedSummonPersistence = (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                     request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                     request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent) &&
@@ -472,7 +491,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
@@ -513,7 +532,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? RuntimeTestScenarioCatalog
                                 .InHarmsWayHumanReproSaveName
                         : ManualSaveLoadObservation.WorkingSave;
-                if (!persistence && !fcbPersistence && !traitSave && !string.Equals(saveName, expectedSaveName,
+                if (!persistence && !fcbPersistence && !traitSave && !weaponSave && !string.Equals(saveName, expectedSaveName,
                     StringComparison.Ordinal))
                     return string.Equals(saveName, ManualSaveLoadObservation.BaselineSave,
                         StringComparison.Ordinal)

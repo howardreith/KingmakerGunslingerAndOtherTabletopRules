@@ -762,6 +762,36 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'working-save-weapon-route' = [pscustomobject]@{
+        RequiresSaveName=$true;PermittedSaveName='KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction=$false;ReadinessBehavior='autonomous-working-save'
+        TimeoutCategory='working-save';UsesCatalogTimeout=$true
+        UsesSelectionTimeouts=$true;UsesWorkingStageTimeouts=$true
+    }
+    'working-save-weapon-recovery' = [pscustomobject]@{
+        RequiresSaveName=$true;PermittedSaveName='KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction=$false;ReadinessBehavior='autonomous-working-save'
+        TimeoutCategory='working-save';UsesCatalogTimeout=$true
+        UsesSelectionTimeouts=$true;UsesWorkingStageTimeouts=$true
+    }
+    'weapon-findability-blueprints' = [pscustomobject]@{
+        RequiresSaveName=$false;PermittedSaveName=''
+        RequiresManualInteraction=$false;ReadinessBehavior='none'
+        TimeoutCategory='smoke';UsesCatalogTimeout=$false
+        UsesSelectionTimeouts=$false;UsesWorkingStageTimeouts=$false
+    }
+    'working-save-weapon-findability-scenes' = [pscustomobject]@{
+        RequiresSaveName=$true;PermittedSaveName='KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction=$false;ReadinessBehavior='autonomous-working-save'
+        TimeoutCategory='working-save';UsesCatalogTimeout=$true
+        UsesSelectionTimeouts=$true;UsesWorkingStageTimeouts=$true
+    }
+    'weapon-findability-owned-save' = [pscustomobject]@{
+        RequiresSaveName=$true;PermittedSaveName='transaction-owned weapon input'
+        RequiresManualInteraction=$false;ReadinessBehavior='autonomous-working-save'
+        TimeoutCategory='working-save';UsesCatalogTimeout=$true
+        UsesSelectionTimeouts=$true;UsesWorkingStageTimeouts=$true
+    }
     'elemental-character-traits-owned-save' = [pscustomobject]@{
         RequiresSaveName=$true;PermittedSaveName='transaction-owned trait input'
         RequiresManualInteraction=$false;ReadinessBehavior='autonomous-working-save'
@@ -1989,6 +2019,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -ceq 'observe-unpublished-whiteout-foundation' -and -not $ExitAfterCompletion) {
         throw 'Unpublished Whiteout foundation requires automatic exit.'
     }
+    if ($Scenario -cin @('working-save-weapon-recovery','working-save-weapon-findability-scenes') -and -not $ExitAfterCompletion) {
+        throw 'Request-local weapon fixtures require automatic exit.'
+    }
     if ($Scenario -ceq 'observe-whiteout-weather' -and -not $ExitAfterCompletion) {
         throw 'Whiteout read-only observation requires automatic exit.'
     }
@@ -2039,6 +2072,15 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($metadata.RequiresSaveName) {
         $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')
         $visualLifecycle = $Scenario -ceq 'working-save-creator-visual-lifecycle'
+        $weaponRoute = $Scenario -ceq 'working-save-weapon-route'
+        if ($weaponRoute -and (-not $ExitAfterCompletion -or $Parameters.Count -ne 2 -or
+            $Parameters.weaponKey -isnot [string] -or [string]::IsNullOrWhiteSpace($Parameters.weaponKey))) { throw 'One typed campaign weapon key and automatic exit required.' }
+        $weaponSave = $Scenario -ceq 'weapon-findability-owned-save'
+        if ($weaponSave) {
+            if (-not $ExitAfterCompletion -or $Parameters.Count -ne 3) { throw 'Closed automatic weapon save plan required.' }
+            . (Join-Path $PSScriptRoot 'WeaponFindabilityPersistence.Common.ps1')
+            [void](Assert-WeaponFindabilitySavePlan $Parameters.planPath $Parameters.phase $Parameters.saveName $ExpectedVersion)
+        }
         $traitSave = $Scenario -ceq 'elemental-character-traits-owned-save'
         if ($traitSave) {
             if (-not $ExitAfterCompletion -or $Parameters.Count -ne 3 -or
@@ -2116,6 +2158,11 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.ContainsKey('flightCreature')
         $crowdReview = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
             $Parameters.ContainsKey('quantity')
+        $representativePlayerPaths = $Scenario -ceq 'disposable-expanded-summoning-player-path' -and $Parameters.ContainsKey('playerPathScope')
+        if ($representativePlayerPaths -and ($Parameters.playerPathScope -isnot [string] -or
+            $Parameters.playerPathScope -cne 'representative' -or -not $ExitAfterCompletion)) {
+            throw 'The existing player-path fixture permits only playerPathScope=representative and automatic exit.'
+        }
         $targetedSummonPersistence = $Scenario -cin @('working-save-expanded-summoning-prepare',
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
@@ -2123,11 +2170,11 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster') -or -not $ExitAfterCompletion)) {
             throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes or whole-roster and automatic exit.'
         }
-        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
-            (-not $persistence -and -not $fcbPersistence -and -not $traitSave -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
+            (-not $persistence -and -not $fcbPersistence -and -not $traitSave -and -not $weaponSave -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
         }
         if ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
@@ -2404,6 +2451,8 @@ function New-KmgRuntimeRequest {
                 'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
                 $Parameters.ContainsKey('persistenceScope')) {
             [ordered]@{ saveName = [string]$Parameters.saveName; persistenceScope = [string]$Parameters.persistenceScope }
+        } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and $Parameters.ContainsKey('playerPathScope')) {
+            [ordered]@{ saveName = [string]$Parameters.saveName; playerPathScope = [string]$Parameters.playerPathScope }
         } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
             $creatureReviewParameters = [ordered]@{
                 saveName = [string]$Parameters.saveName
@@ -2424,7 +2473,9 @@ function New-KmgRuntimeRequest {
             if (Test-KmgTreacherousEffectScope $Scenario $Parameters) { $scopeArgs.qualificationEffect = 'TreacherousEarth' }
             if (Test-KmgCompletionSceneScope $Scenario $Parameters) { $scopeArgs.qualificationOperation = 'scene-roundtrip' }
             $scopeArgs
-        } elseif ($Scenario -ceq 'elemental-character-traits-owned-save') {
+        } elseif ($Scenario -ceq 'working-save-weapon-route') {
+            [ordered]@{saveName=[string]$Parameters.saveName;weaponKey=[string]$Parameters.weaponKey}
+        } elseif ($Scenario -cin @('elemental-character-traits-owned-save','weapon-findability-owned-save')) {
             [ordered]@{saveName=[string]$Parameters.saveName;phase=[string]$Parameters.phase;planPath=[string]$Parameters.planPath}
         } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
             [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
@@ -3020,8 +3071,9 @@ function Start-KmgSteamKingmaker {
                 kingmakerProcessId = $game.Id
                 kingmakerStartedAtUtc = $game.StartTime.ToUniversalTime()
             }
-            Write-Output -NoEnumerate $launchResult
-            return
+            # A scalar PSCustomObject already emits once. -NoEnumerate wraps
+            # it in List<object> on PowerShell 7.6 and loses the typed contract.
+            return $launchResult
         }
         Start-Sleep -Milliseconds 250
     } while ([DateTime]::UtcNow -lt $deadline)

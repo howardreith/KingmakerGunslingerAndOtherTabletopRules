@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 325 } else { 323 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 333 } else { 331 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
@@ -198,11 +198,13 @@ namespace KingmakerGunslinger.DomainTests
         {
             string source = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
-                "RuntimeTesting", "RuntimeTestRunner.cs"));
+                "RuntimeTesting", "RuntimeTestRunner.cs")).Replace("\r\n", "\n");
             Assertions.True(source.Contains("SummonFamily.Monster ? 0 : 9") &&
-                source.Contains("nativeExpansionCases.Count ==\n                    SummonNativeExpansionCatalog.All.Count") &&
+                source.Contains("nativeExpansionCases.Count ==\n                    nativeVariants.Length") &&
                 source.Contains("\" visible creature-named native/preservation wrappers live"),
                 "Player-path coverage must route all 17 SM and twelve SNA wrappers through their actual family parents.");
+            var defaults = KingmakerGunslinger.RuntimeTesting.ExpandedSummoningPlayerPathReviewScope.Native(false);
+            Assertions.Equal(29, defaults.Length, "Default census still selects all retained wrappers.");
             Assertions.False(source.Contains(
                     "spellbook, parents[nativeSpec.Tier - 1], distinct"),
                 "SNA wrappers may not be tested through Summon Monster parents.");

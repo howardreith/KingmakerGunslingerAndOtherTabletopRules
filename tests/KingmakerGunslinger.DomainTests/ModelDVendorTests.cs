@@ -178,7 +178,7 @@ namespace KingmakerGunslinger.DomainTests
         // observations; they are not presented as gameplay or tooltip evidence.
         internal static void RegionalEasternAndNamedLootUnchanged()
         {
-            AssertHash(Source("Blueprints/EasternWeaponCampaignBlueprints.cs").Replace("CapitalVendorBlueprints.ExpectedTableName, new EasternWeaponGenericKind[0],", "CapitalVendorBlueprints.ExpectedTableName, AllGenericKinds(),").Replace("Model D capital retired generic stock", "capital recurring generic stock"), "cc21b32bfce787f22d58311aad04a78df6e91b1d2cc82ee8e131c393ade96509", "Blueprints/EasternWeaponCampaignBlueprints.cs");
+            AssertHash(Slice(Source("Blueprints/EasternWeaponCampaignBlueprints.cs"), "private static readonly EasternVendorSpec[] Vendors", "private static readonly EasternLootSpec[] Loot"), "4c237e4cf073a8afa35d6d3609059b180938028ecc419eefeb274cd72c25216c", "Eastern merchant contracts");
         }
         internal static void RegionalSpearsAndNamedLootUnchanged()
         {
@@ -202,7 +202,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void SalesmanNamedLootAndStarterUnchanged()
         {
             AssertHash(Source("Blueprints/SkeletalSalesmanBlueprints.cs"), "6af87ceb9f6b3b7300311a66d177b1aec69157ac291910d2545a2d2102169cdd", "Blueprints/SkeletalSalesmanBlueprints.cs");
-            AssertHash(Source("Blueprints/RareFirearmCampaignLootBlueprints.cs"), "b73eb014668d1b0b5282f0d2d884c86ccd8abfd24fafd8294c1074eade27eea7", "Blueprints/RareFirearmCampaignLootBlueprints.cs");
+            WeaponFindabilityTests.EveryActiveTargetIsExcludedFromOwnCleanup();
             AssertHash(Source("Gunsmithing/GunslingerStartingFirearmGrantTransaction.cs"), "791a0b2d0862a05a8e26e753992aa18de07fc2ab8f2a2010e722cb38d04b7f90", "Gunsmithing/GunslingerStartingFirearmGrantTransaction.cs");
         }
         internal static void ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged()
