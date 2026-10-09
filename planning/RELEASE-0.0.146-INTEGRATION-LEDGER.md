@@ -63,6 +63,7 @@ The 35 conflicted files contained 56 marker hunks. Non-conflicting master hunks 
 - Shared request validators combine the targeted summoning persistence/crowd guards with master weapon-save/weapon-route guards. No save permission is broadened.
 - Request-local representative player-path scope uses the EXISTING scenario. Default remains exhaustive. Representative mode explicitly labels its six generated family/quantity routes and native family/quantity/alignment representatives; fixed real-parent/slot/template matrix retained. It never claims exhaustive PASS.
 - Read-only weapon-findability fixture adds actual Heirloom Nodachi selection/three-choice icon identity checks; no production remap.
+- Post-merge62ae6936 source/build/package passed2497/2497 and333members. Preflight, before any game launch, found the launcher lacked typed representative-scope normalization despite the request validator accepting it. One closed launcher branch now retains typed SaveName plus only the exact representative value; explicit normalization/rejection tests cover it. Production behavior is unchanged; the corrected committed head receives its own exact source/package gate.
 - New146 validator chains inherited full source checks while preserving master143/144/145 dispatch and immutable records. Historical v143 checkpoint validator remains evidence; the active integration-corruption suite targets146.
 
 ## Evidence reuse boundary

@@ -106,3 +106,28 @@ try { $null=New-KmgRuntimeRequest @pathBase -Parameters @{
     saveName='KMG_AUTOMATION_WORKING';playerPathScope='representative'} } catch { $rejected=$true }
 if (-not $rejected) { throw 'Player-path scope leaked into another scenario.' }
 Write-Host 'PASS representative player-path request: default exhaustive, exact JSON round trip and ten fail-closed cases.'
+
+# Exercise the typed launcher boundary too, without installation or game access.
+# Extract only this parameter-normalization block; the launch body is never run.
+$launcherText=Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1')
+$start=$launcherText.IndexOf("    } elseif (" + '$Scenario' + " -ceq 'disposable-expanded-summoning-player-path' -and")
+$end=$launcherText.IndexOf("    } elseif (" + '$Scenario' + " -ceq 'working-save-expanded-summoning-creature-review')", $start)
+if($start -lt 0 -or $end -le $start){throw 'Typed representative launcher boundary missing.'}
+$normalizer=[scriptblock]::Create(('if ($false) {' + $launcherText.Substring($start,$end-$start) + '}'))
+$Scenario='disposable-expanded-summoning-player-path'
+$SaveName='KMG_AUTOMATION_WORKING'
+$ExitAfterCompletion=$true
+$Parameters=@{playerPathScope='representative'}
+. $normalizer
+if($Parameters.Count -ne 2 -or $Parameters.saveName -cne $SaveName -or
+    $Parameters.playerPathScope -cne 'representative'){throw 'Typed launcher did not retain the closed scope.'}
+foreach($bad in @(@{playerPathScope=$null},@{playerPathScope=@('representative')},
+    @{playerPathScope='Representative'},@{playerPathScope='representative';extra='forbidden'})){
+    $Parameters=$bad;$rejected=$false
+    try{. $normalizer}catch{$rejected=$true}
+    if(-not $rejected){throw 'Typed launcher accepted an invalid scope.'}
+}
+$Parameters=@{playerPathScope='representative'};$ExitAfterCompletion=$false;$rejected=$false
+try{. $normalizer}catch{$rejected=$true}
+if(-not $rejected){throw 'Typed launcher accepted non-exiting scope.'}
+Write-Host 'PASS typed launcher normalization: exact representative scope and five fail-closed cases; no launch body executed.'
