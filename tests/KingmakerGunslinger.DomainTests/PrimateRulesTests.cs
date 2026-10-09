@@ -21,7 +21,11 @@ namespace KingmakerGunslinger.DomainTests
         /// thirteen templated Summon Monster roots, and four creature-owned
         /// identities.
         /// </summary>
-        internal const int AppendedLedgerIdentities = 2 + 26 + 26 + 4;
+        // 2 units, the 26 roots, the 26 template execution children of the
+        // 13 templated Summon Monster roots, and 6 creature-owned
+        // identities: two unit types, the rend feature, the slam, and the
+        // two Dire Ape weapons the guarded review proved it needs.
+        internal const int AppendedLedgerIdentities = 2 + 26 + 26 + 6;
 
         private const int ApeMonsterRoots = 7;
         private const int ApeAllyRoots = 7;
@@ -249,10 +253,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(18, rules.BaseHitPoints,
                 "Printed 30 hit points are 4d8 racial dice plus a live Constitution contribution.");
 
-            Assertions.Equal("Bite1d6", profile.PrimaryWeapon,
+            // Creature-owned weapons, not the shared native ones. The guarded
+            // review measured the shared 1d6 bite and 1d4 claw scaling up a
+            // step for a Large wielder, which is not the printed entry.
+            Assertions.Equal("DireApeBite1d6", profile.PrimaryWeapon,
                 "Dire Ape primary limb changed.");
             Assertions.True(profile.AdditionalWeapons.SequenceEqual(
-                    new[] { "Claw1d4", "Claw1d4" }),
+                    new[] { "DireApeClaw1d4", "DireApeClaw1d4" }),
                 "Both claws must be ordinary additional limbs so all three attacks are primary.");
             Assertions.Equal(0, profile.AdditionalSecondaryWeapons.Count,
                 "A secondary limb would drop a claw to a secondary attack and off the printed bonus.");
@@ -565,13 +572,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(600,
                 ExpandedSummoningIdentityCatalog.TemplateExecutionAbilityCount,
                 "Template execution identity count changed.");
-            Assertions.Equal(206,
+            Assertions.Equal(208,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount,
                 "Creature-owned identity count changed.");
-            Assertions.Equal(1981,
+            Assertions.Equal(1983,
                 ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 "Foundation identity count changed.");
-            Assertions.Equal(1981, identities.Count,
+            Assertions.Equal(1983, identities.Count,
                 "The built identity catalog must match its own invariant.");
 
             foreach (var row in new[] {

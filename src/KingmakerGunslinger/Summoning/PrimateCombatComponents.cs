@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -183,6 +184,81 @@ namespace KingmakerGunslinger.Summoning
         {
             if (unit == null) return;
             lock (Trackers) { Trackers.Remove(unit); }
+        }
+    }
+
+    /// <summary>
+    /// Keeps every limb of a multi-attack creature on the plain Strength
+    /// modifier, which is what its stat block prints.
+    ///
+    /// <para>The guarded Sprint 18 review measured the Ape slamming for
+    /// 1d6+3 with one hand and 1d6+2 with the other, and the Dire Ape biting
+    /// for one and a half times Strength while both claws carried one times
+    /// it. The cause is native and precise: RuleCalculateWeaponStats gives a
+    /// natural weapon in the primary hand one and a half times the damage
+    /// stat whenever the SECONDARY HAND is empty, and it does not look at the
+    /// additional limbs at all. A creature whose other attacks are additional
+    /// primary limbs therefore reads as a single-handed natural attacker.</para>
+    ///
+    /// <para>Pathfinder gives one and a half times Strength only to a
+    /// creature with a single natural attack. Both apes have more than one,
+    /// so both print the plain modifier on every limb. This component takes
+    /// the difference back off the one limb the engine inflated, on exactly
+    /// the unit it is attached to, and only when the engine actually applied
+    /// the multiplier to a Strength-driven primary-hand natural weapon on a
+    /// body that really does carry additional limbs.</para>
+    ///
+    /// <para>Deliberately not done here: no global rule is patched, no other
+    /// creature is touched, no bonus is added, and a creature that genuinely
+    /// has one natural attack keeps the engine's one and a half times.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class SummonPrimaryLimbFullStrength :
+        RuleInitiatorLogicComponent<RuleCalculateWeaponStats>
+    {
+        public BlueprintUnit OwningBlueprint;
+
+        public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt) { }
+
+        public override void OnEventDidTrigger(RuleCalculateWeaponStats evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || OwningBlueprint == null ||
+                !ReferenceEquals(evt.Initiator, owner) ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint)) return;
+            int correction = Correction(owner, evt);
+            if (correction == 0 || evt.DamageDescription == null ||
+                evt.DamageDescription.Count == 0) return;
+            Kingmaker.RuleSystem.Rules.Damage.DamageDescription row =
+                evt.DamageDescription[0];
+            row.Bonus -= correction;
+            evt.DamageDescription[0] = row;
+        }
+
+        /// <summary>
+        /// How much the engine added beyond the plain modifier, or zero when
+        /// this attack is not the inflated primary limb.
+        /// </summary>
+        private static int Correction(UnitEntityData owner,
+            RuleCalculateWeaponStats evt)
+        {
+            ItemEntityWeapon weapon = evt.Weapon;
+            if (weapon == null || weapon.Blueprint == null ||
+                !weapon.Blueprint.IsNatural || weapon.IsSecondary ||
+                evt.SecondaryWeapon || !evt.DamageBonusStat.HasValue ||
+                evt.DamageBonusStat.Value != StatType.Strength ||
+                evt.DamageBonusStatMultiplier <= 1f) return 0;
+            UnitBody body = owner.Body;
+            if (body == null || body.PrimaryHand == null ||
+                !ReferenceEquals(body.PrimaryHand.MaybeWeapon, weapon)) return 0;
+            // Only a creature that really does attack with more than one limb
+            // is owed the plain modifier.
+            if (body.AdditionalLimbs == null || !body.AdditionalLimbs.Any(
+                    slot => slot != null && slot.MaybeWeapon != null)) return 0;
+            int modifier = owner.Descriptor.Stats.Strength.Bonus;
+            if (modifier <= 0) return 0;
+            int applied = (int)(modifier * evt.DamageBonusStatMultiplier);
+            return applied > modifier ? applied - modifier : 0;
         }
     }
 }

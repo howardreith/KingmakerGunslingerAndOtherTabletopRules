@@ -38,7 +38,7 @@
     "expandedSummoningOrchestration": "PASS 168 assertions",
     "runtime": "PARTIAL. The guarded harness is proved end to end on this candidate: deploy, Steam App ID 640820 launch, mod load at 0.0.147, guarded request accepted, scenario PASS, exact restoration. No Sprint 18 creature behaviour is proved.",
     "guardedPrimateDonorCensus": "PASS. 288 primate-adjacent blueprints discovered, 28 view prefabs surveyed at the contract cap, 28 captured, 9/9 assertions PASS. Evidence 20261009T1721285353210Z-observe-expanded-summoning-primate-census.",
-    "batchedSprint18RuntimeReview": "NOT RUN",
+    "batchedSprint18RuntimeReview": "FAIL on the first candidate, 19 of 29. Two real product defects found and fixed, four observer corrections made. Re-run required.",
     "publicationGate": "NOT RUN",
     "releaseClosureMatrix": "NOT RUN",
     "originalPrimateBodies": "PASS. Two original meshes and two original paintings authored against the census-chosen bind pose; 6/6 offline Blender fixtures pass, including the per-shell signed-volume check the shipped winding depends on. Not runtime proved."
@@ -105,11 +105,11 @@
     },
     "productCorrectionCandidate": {
       "maximum": 1,
-      "used": 0
+      "used": 1
     },
     "observationOnlyCorrection": {
       "maximum": 1,
-      "used": 0
+      "used": 1
     }
   },
   "blockers": [
@@ -181,6 +181,37 @@
       "primateFinding": "Re-confirms no primate unit type and no RendFeature consumer in the installed library.",
       "observerCorrection": "The shared Sprint 17 bind capture refused the whole view when one renderer carries an incomplete bind frame (Bloodmoon Wild Hunt Monarch's cloth cape), failing 27 of 28. Corrected request-locally: Sprint 18 captures with its own fully read-only reader that records such renderers in skippedRenderers and fails only when no usable renderer exists. Sprint 17's survey is untouched, no requirement is weakened, no native asset is mutated, and the failed run's evidence is retained.",
       "restoration": "VERIFIED; 136 files and the intake tree hash"
+    },
+    {
+      "runId": "disposable-expanded-summoning-sprint18-review",
+      "evidence": "20261009T1926285025295Z-disposable-expanded-summoning-sprint18-review",
+      "scenario": "disposable-expanded-summoning-sprint18-review",
+      "status": "FAIL",
+      "candidate": "54693d9f",
+      "totals": "19 of 29 assertions PASS",
+      "proves": "The real-time routines are exactly the printed ones: the Ape makes two slams and the Dire Ape one bite and two claws, every limb resolved as a primary attack. Every non-qualifying rend case emits no rend. The original bodies attach, the donor equipment skin is blanked, and every created resource is named for its own instance.",
+      "defectsFound": [
+        {
+          "id": "DIRE_APE_WEAPON_DICE_SCALE_WITH_SIZE",
+          "observed": "Bite 1d8+6 and both claws 1d6+4 against a printed 1d6+4 bite and 1d4+4 claws.",
+          "cause": "The Dire Ape used the shared native 1d6 bite and 1d4 claw, which do not override their damage dice, so the engine scales them one step up for a Large wielder. The Ape's slam is a project-owned weapon with its dice overridden and measured 1d6 correctly.",
+          "fix": "The Dire Ape owns KMG.Summoning.Natural.DireApe.Bite1d6 and .Claw1d4, built by the same ConfigureWeapon path as the slam, which sets the override flag. The shared native weapons other creatures use are copied, never edited.",
+          "ledgerEffect": "Two appended identities: 2980 to 2982, and the Sprint 18 append becomes 60 rather than 58."
+        },
+        {
+          "id": "PRIMARY_LIMB_TOOK_ONE_AND_A_HALF_STRENGTH",
+          "observed": "The Ape slammed for 1d6+3 with one limb and 1d6+2 with the other; the Dire Ape bit for one and a half times Strength while both claws carried one times it.",
+          "cause": "RuleCalculateWeaponStats gives a natural weapon in the primary hand one and a half times the damage stat whenever the SECONDARY HAND is empty, and it never looks at the additional limbs. A creature whose other attacks are additional primary limbs therefore reads to the engine as a single-attack creature. Confirmed by reading the installed method rather than inferred.",
+          "fix": "SummonPrimaryLimbFullStrength, attached to the two ape blueprints only, takes the difference back off the one limb the engine inflated, and only when the engine actually applied the multiplier to a Strength-driven primary-hand natural weapon on a body that really does carry additional limbs. No global rule is patched and a creature with a single natural attack keeps its one and a half times."
+        }
+      ],
+      "observerCorrections": [
+        "The profile was read before the creature had acted, so it was flat-footed and denied its Dexterity in armour class, touch and combat manoeuvre defence. The review now reads the profile after the first full attack, which is the state a printed stat block describes.",
+        "In turn-based combat a command issued outside the owner's turn never resolves, so both turn-based routines measured zero attacks. The review now waits for the native turn controller to hand the unit its turn, ending other units' finished turns the way the qualified Sprint 16 cells do.",
+        "Resource release was counted in the same frame the unit was dismissed in, and native views are destroyed at the end of a frame. The review now lets the native teardown run before counting what survived.",
+        "The review required the donor's equipment renderer to stay enabled. The attachment never touches that flag, so its value is recorded rather than required; what is still required is that the renderer is present and blank."
+      ],
+      "restoration": "VERIFIED; the live tree was restored to its pre-run hash"
     }
   ],
   "remainingWork": [

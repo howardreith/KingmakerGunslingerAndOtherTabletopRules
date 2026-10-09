@@ -187,9 +187,9 @@ namespace KingmakerGunslinger.Summoning
                 dire.Constitution != 16 || dire.Intelligence != 2 ||
                 dire.Wisdom != 12 || dire.Charisma != 7 ||
                 dire.SpeedFeet != 30 || dire.NaturalArmor != 4 ||
-                dire.PrimaryWeapon != "Bite1d6" ||
+                dire.PrimaryWeapon != "DireApeBite1d6" ||
                 dire.AdditionalWeapons.Count != 2 ||
-                dire.AdditionalWeapons.Any(value => value != "Claw1d4") ||
+                dire.AdditionalWeapons.Any(value => value != "DireApeClaw1d4") ||
                 dire.AdditionalSecondaryWeapons.Count != 0 ||
                 !dire.Facts.Contains("IronWill") ||
                 !dire.Facts.Contains("SkillFocusPerception") ||
@@ -553,10 +553,10 @@ namespace KingmakerGunslinger.Summoning
                     "Exact land ranks retain native attribute, class-skill, size and Skill Focus contributions: one Mobility rank and one Perception rank. The third printed rank bought Climb and is not reallocated.",
                     "Kingmaker exposes one movement speed; the 30-foot ground speed is used and the 30-foot climb speed is omitted under the ordinary-map land-use scope. The printed Climb +14, and the +8 racial climb bonus inside it, have no faithful ordinary-map consumer and are omitted rather than substituted: Mobility is not raised to stand in for Climb and Athletics is not raised to simulate the racial bonus.",
                     "Low-light vision and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED. Nothing is substituted for them - no blindsense, no vision-range override - and no record claims they work.",
-                    "REGISTERED AND WITHHELD. The original project-owned gorilla body is NOT authored: this creature currently rides the Owlbear donor rig pending the bounded read-only primate donor census, and every visual and runtime gate remains open."),
+                    "REGISTERED AND WITHHELD. The original project-owned gorilla body is authored and wired on the census-chosen Troll rig; the knuckle-walking gait is the donor's and is not authored. Runtime qualification remains open."),
                 PK("dire-ape", "Dire Ape", "Animal", 4, "Large",
-                    19, 15, 16, 2, 12, 7, 30, 4, "Bite1d6",
-                    A("Claw1d4", "Claw1d4"),
+                    19, 15, 16, 2, 12, 7, 30, 4, "DireApeBite1d6",
+                    A("DireApeClaw1d4", "DireApeClaw1d4"),
                     A("IronWill", "SkillFocusPerception", "DireApeRend"),
                     A("Mobility", "Perception", "Stealth"),
                     "Sprint 18 frozen contract: one primary bite and two primary claws, all three at the printed bonus and each adding the whole Strength modifier. Rend is the only special attack.",

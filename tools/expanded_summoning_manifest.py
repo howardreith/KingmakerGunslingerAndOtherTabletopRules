@@ -69,6 +69,9 @@ DONOR_NAMES = {
     "03dd28e92faf2e44eb9564a6ba01fdd0": "DireWolfSummon",
     "04944455200bc224d955a8e9bbd64f3f": "SummonedAirElementalSmall",
     "0b214d8e81a563549ba0be37cd1c16d0": "CR4_BearStandard",
+    # Chosen by the guarded Sprint 18 primate donor census: the only
+    # Large surveyed rig with real hands, a separate jaw and toes.
+    "b98735a1737ae494dbe5cbeca1c7c083": "CR10_FerociousTrollGuard",
     "124f1c45ef24d654e9cd420fe84f7f36": "CR5_CyclopStandard",
     "0cc7a2526e4557945b1d8eb277d1fb3a": "CR7_Nymph",
     "10a820de0a417f345866f794324205ad": "MephitFireSummoned",
@@ -468,11 +471,18 @@ def planned():
         # and the Dire Ape owns the feature that carries the engine's own rend
         # damage component beside its bounded sequencing gate.
         ("KMG.Summoning.Natural.Slam1d6", "BlueprintItemWeapon"),
+        # The guarded review measured the Dire Ape biting for 1d8 and clawing
+        # for 1d6: the shared native 1d6 bite and 1d4 claw do not override
+        # their damage dice, so the engine scales them one step up for a Large
+        # wielder. Its printed entry is 1d6 and 1d4 at Large, so it owns two
+        # weapons that hold their dice; the shared ones are left alone.
+        ("KMG.Summoning.Natural.DireApe.Bite1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.DireApe.Claw1d4", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Ape.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Natural.DireApe.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Special.DireApe.Rend", "BlueprintFeature"),
     ))
-    if len(rows) != 1981 or len({symbol for symbol, _ in rows}) != 1981:
+    if len(rows) != 1983 or len({symbol for symbol, _ in rows}) != 1983:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
