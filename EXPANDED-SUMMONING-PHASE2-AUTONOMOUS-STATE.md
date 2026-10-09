@@ -1,59 +1,43 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-09 UTC - resource fix passes; release BLOCKED on module-OFF variants
+## CURRENT STATE, 2026-10-09 UTC — v0.0.146 module-boundary correction underway
 
-Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint;PR29 DRAFT.
-Exact tested candidate735751ab7da9087d7ae38d2a321cffc91a4a8037 PUSHED.
-Full2486/2486,14-reference clean Release,strict325-member package PASS.
-ZIP99272f727d67214da094dc704ee7ec09c8f5e8a7d37b95d582b02a41c979788e.
-DLL1dfa3eb712bad2ae58c9e0d7eb36e1a9af999c998e078b2b488e6182d9e79d50;
-MVID9ad58515-127e-4571-aaf3-6c9af6a8f3e6. All324 nonDLL members unchanged.
+Branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint; PR29 DRAFT.
+Verified intake local/remote30be632cdf4e9cb85c70e95e85773b89d92c5311;
+released master bf8a1e41b308bfb148cb028d75a576555b7e8dd1 / Latest v0.0.145.
+Owner authorizes narrow module-OFF correction,normal master merge and stable146
+after exact qualification. Release NOT QUALIFIED. No Sprint18/Phase2C.
+Source owner c6976c9b-99e5-4ffb-a03f-1c05ef8f5745,appserver27624/start
+2026-10-08T19:42:55.3569342Z,keeper21240;artifacts/release143-source-owner.json.
+Previouskeeper38584 ended;receipts/history/safety refs preserved.
 
-Sole diagnosis a21f9aa1 identified nine private original-flight resources:
-Eagle/DireBat/Pteranodon mesh+created material+controller material each.
-All six historical survivors plus three previously uncaptured originals.
-One narrow owner teardown correction: restore donor refs,destroy exact private
-objects,clear ownership,idempotently. No other production methods changed.
-Smoke11,ONcleanup119(native save),freshabsence6,affectedflight26 PASS.
-All137 private resources gone in1frame;198 borrowed+22 immutable caches alive
-and count-stable. Six extra native flight lifecycle cycles PASS.
-Readiness remains CLOSED. No resource survivor or observer error remains.
+Resource/readiness CLOSED. Exact735751ab ONcleanup119,absence6,flight26 PASS:
+137 private objects gone;220 borrowed/caches stable. OFFcleanup109/119 FAIL
+preserved:nine legacy variants ignored module state;profiles correct;20private
+objects cleaned but no cleanup save armed. Working retains NEW108 receipts
+from20261008T2352470423285Z. Use OFFcleanup/native save then freshabsence;
+no prepare unless invalid,no manual save surgery/protected baseline access.
 
-OFF fixture seed120 PASS,one native save;OFF publication2 PASS.
-OFFcleanup109/119 FAIL: nine exact profiles MATCH but zero-KMG-view predicate
-fails for cheetah,lion,tiger,dust/ice/magma/ooze/salt/steam-mephit.
-Owner is ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership;
-legacy tint/coat attachment has no module gate. All108 units and all20 private
-variant resources destroyed;9 borrowed stable. This is NOT another resource
-leak. Mandatory view failures prevent cleanup save;the10th failure is zero
-writes versus one required. Working retains the NEW108 OFF seed,not the old
-f5 fixture. Do not declare OFF absence or rerun prepare/manual save surgery.
+Source fix gates Apply before ownership/allocation/mutation and RimFor/Update
+on immutable FeatureModules.Active.ExpandedSummoning. Restart-bound settings,
+native OnDestroy cleanup preserved;no invented hot toggle;registrations intact.
+Existing lifecycle coversall9,duplicateattach,rimupdates,nativecontrols.
+Focused5/5,full2489/2489,repository/static/icons/14-reference clean Release
+and strict325-member pre-integration package PASS;NOT RUNTIME QUALIFIED.
+Source-qualified checkpoint;next normal latestmaster merge/version146/exactpackage,OFF108cleanup/absence,
+ON9variants,inventory/menu/representativequantities,5profiles,142/144/145
+coexistence/native-owned trait-save and exact restoration. No1008 replay
+unless integration changes an exercised surface.
 
-STOP: one diagnosis and one correction consumed. Smallest new owner scope:
-bounded module-disabled legacy tint/coat boundary correction/requalification
-and authorized native cleanup of the exact prepared108 set. No more resource,
-readiness or Crocodile diagnosis under this mission. OFFabsence,profiles5,
-v142 coexistence/native-owned trait-save NOT RUN. No merge/tag/release.
-
-Batch release143-runtime-20261008T2336534602568Z restored actual snapshot
-20261008T2336544798116Z:136files/Info0.0.117/tree
-216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Settings/FavoredClass byte-exact;native exits;leaseCompleted,no game/staging.
-Source session1a065852-cdf2-46c2-a472-7b1229e813b6/keeper38584 must release
-after reporting push;verify machine-local Released receipt before takeover.
-
-Evidence:planning/RELEASE-0.0.143-EVIDENCE.json resourceOwnershipMission.
-Historical failed results/artifacts preserved;unaffected crocodilians212,
-snakes71,Salamander,inventory50/menu3/1008roots/29wrappers retain provenance.
+Preserve original croc212,snakes71,Salamander,inventory50/menu3/1008roots/29wrappers.
+Surface: 1008 published generated placements + 29 native wrappers = 1037 visible choices.
 OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE
-preserved;no recurrence reported and no new attribution cycle.
-Surface1008+29=1037 choices. PR25/26 open,not merged. Release NOT QUALIFIED.
-No permanent deployment,Sprint18 or Phase2C.
-
-Final fetch:master40f4debbe8391d0c6574f32b6de86e5a8b92370c and real Latest
-v0.0.144 published via PR30 at2026-10-09T00:07:22Z. Release143 branch unchanged.
-No integration attempted;preserve newer master. Owner must choose updated
-integration/release identity as well as bounded module-OFF correction scope.
+retained;STOP on recurrence. No new resource/readiness/Crocodile diagnosis.
+Evidence:planning/RELEASE-0.0.146-EVIDENCE.json; historical143 retained unchanged.
+Intake lease runtime-20261009T013957Z-9f78f3988e5547d3b0587041bb37523c completed.
+Actual136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Settings/FCB unchanged;no game/runtime lease/staging/deployment.
+Only ALLPASS authorizes ready/merge29,stableLatest146,close25/26 superseded.
 
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
