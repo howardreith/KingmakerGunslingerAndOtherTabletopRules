@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 49 || Values.Select(value => value.Key)
+            if (Values.Length != 51 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -164,6 +164,48 @@ namespace KingmakerGunslinger.Summoning
                 !spider.Facts.Contains("GiantSpiderPoison"))
                 throw new InvalidOperationException(
                     "Giant Spider tabletop profile changed.");
+            NaturalSummonProfile ape = For("ape");
+            if (ape.Size != "Large" || ape.HitDice != 3 || ape.Strength != 15 ||
+                ape.Dexterity != 15 || ape.Constitution != 14 ||
+                ape.Intelligence != 2 || ape.Wisdom != 12 ||
+                ape.Charisma != 7 || ape.SpeedFeet != 30 ||
+                ape.NaturalArmor != 3 || ape.PrimaryWeapon != "Slam1d6" ||
+                ape.AdditionalWeapons.Count != 1 ||
+                ape.AdditionalWeapons[0] != "Slam1d6" ||
+                ape.AdditionalSecondaryWeapons.Count != 0 ||
+                !ape.Facts.Contains("GreatFortitude") ||
+                !ape.Facts.Contains("SkillFocusPerception") ||
+                // Not a printed feat: the carrier that keeps both slams on
+                // the plain Strength modifier the stat block prints.
+                !ape.Facts.Contains("PrimateFullStrengthLimbs") ||
+                ape.Facts.Count != 3 ||
+                ape.Facts.Contains("ReducedReach") ||
+                ape.Facts.Contains("TripDefenseFourLegs") ||
+                !ape.Skills.SequenceEqual(new[] { "Mobility", "Perception" }))
+                throw new InvalidOperationException(
+                    "Ape printed attack routine or profile changed.");
+            NaturalSummonProfile dire = For("dire-ape");
+            if (dire.Size != "Large" || dire.HitDice != 4 ||
+                dire.Strength != 19 || dire.Dexterity != 15 ||
+                dire.Constitution != 16 || dire.Intelligence != 2 ||
+                dire.Wisdom != 12 || dire.Charisma != 7 ||
+                dire.SpeedFeet != 30 || dire.NaturalArmor != 4 ||
+                dire.PrimaryWeapon != "DireApeBite1d6" ||
+                dire.AdditionalWeapons.Count != 2 ||
+                dire.AdditionalWeapons.Any(value => value != "DireApeClaw1d4") ||
+                dire.AdditionalSecondaryWeapons.Count != 0 ||
+                !dire.Facts.Contains("IronWill") ||
+                !dire.Facts.Contains("SkillFocusPerception") ||
+                !dire.Facts.Contains("DireApeRend") ||
+                !dire.Facts.Contains("PrimateFullStrengthLimbs") ||
+                dire.Facts.Count != 4 ||
+                dire.Facts.Contains("ReducedReach") ||
+                !dire.Skills.SequenceEqual(new[] {
+                    "Mobility", "Perception", "Stealth" }))
+                throw new InvalidOperationException(
+                    "Dire Ape printed attack routine or profile changed.");
+            PrimateRulesPolicy.Validate();
+            PrimateVisualPolicy.Validate();
         }
 
         private static NaturalSummonProfile[] Build()
@@ -498,7 +540,38 @@ namespace KingmakerGunslinger.Summoning
                     "Large", 28, 10, 21, 2, 13, 3, 30, 10, "Gore2d8",
                     Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
                         "GreatFortitude", "SkillFocusPerception"),
-                    "The summon-local powerful charge applies only to its gore on a native charge and uses the printed 4d8+18 result. Trample uses the disclosed Kingmaker automatic-AoO-or-Reflex adaptation. Diehard and Endurance are omitted because exact summon-safe feat identities were not proven. The sanitized Mastodon rig drives the original Woolly Rhinoceros mesh and painting.")
+                    "The summon-local powerful charge applies only to its gore on a native charge and uses the printed 4d8+18 result. Trample uses the disclosed Kingmaker automatic-AoO-or-Reflex adaptation. Diehard and Endurance are omitted because exact summon-safe feat identities were not proven. The sanitized Mastodon rig drives the original Woolly Rhinoceros mesh and painting."),
+                // Sprint 18. Both apes print Space 10 feet with Reach 10 feet,
+                // which is the ordinary Large footprint, so neither carries the
+                // reduced-reach fact the Large ungulates and crocodilians need.
+                // Neither prints a bonus against trip, so neither carries a
+                // trip-defence fact: the printed CMD 17 and 20 are exactly
+                // 10 plus base attack, Strength, Dexterity and the Large size
+                // bonus.
+                PK("ape", "Ape", "Animal", 3, "Large",
+                    15, 15, 14, 2, 12, 7, 30, 3, "Slam1d6",
+                    A("Slam1d6"),
+                    A("GreatFortitude", "SkillFocusPerception",
+                        "PrimateFullStrengthLimbs"),
+                    A("Mobility", "Perception"),
+                    "Sprint 18 frozen contract: exactly two primary slams at the printed bonus, each adding the whole Strength modifier. No bite, no claw, no rend, and no chest-thump fear or roar ability, none of which the stat block prints.",
+                    "Exact land ranks retain native attribute, class-skill, size and Skill Focus contributions: one Mobility rank and one Perception rank. The third printed rank bought Climb and is not reallocated.",
+                    "Kingmaker exposes one movement speed; the 30-foot ground speed is used and the 30-foot climb speed is omitted under the ordinary-map land-use scope. The printed Climb +14, and the +8 racial climb bonus inside it, have no faithful ordinary-map consumer and are omitted rather than substituted: Mobility is not raised to stand in for Climb and Athletics is not raised to simulate the racial bonus.",
+                    "Low-light vision and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED. Nothing is substituted for them - no blindsense, no vision-range override - and no record claims they work.",
+                    "REGISTERED AND WITHHELD. The original project-owned gorilla body is authored and wired on the census-chosen Troll rig; the knuckle-walking gait is the donor's and is not authored. Runtime qualification remains open."),
+                PK("dire-ape", "Dire Ape", "Animal", 4, "Large",
+                    19, 15, 16, 2, 12, 7, 30, 4, "DireApeBite1d6",
+                    A("DireApeClaw1d4", "DireApeClaw1d4"),
+                    A("IronWill", "SkillFocusPerception", "DireApeRend",
+                        "PrimateFullStrengthLimbs"),
+                    A("Mobility", "Perception", "Stealth"),
+                    "Sprint 18 frozen contract: one primary bite and two primary claws, all three at the printed bonus and each adding the whole Strength modifier. Rend is the only special attack.",
+                    "Rend resolves once after both claws hit the exact same target in one attack sequence, and never from one claw, from claws on different targets, from a bite and a claw, across turns or commands, or from a replayed rule event. The engine's own rend carrier deals the damage from 1d4 plus one and a half times the live Strength modifier, which is the printed 1d4+6 at Strength 19; a bounded Dire-Ape-owned gate decides only whether an attack is that rend, because the engine's command-level gate identifies a rend by hand slot and cannot express three equal primary limbs. The native rend attack animation variant is selected by that command-level gate and is therefore not played; the omission is presentation only and nothing is invented to replace it.",
+                    "No grab, pin or armor-targeting behaviour is implemented. The flavour text's remark that Dire Apes may grapple difficult foes is not a printed special attack.",
+                    "Exact land ranks retain native attribute, class-skill, size and Skill Focus contributions: one rank each in Mobility, Perception and Stealth. The fourth printed rank bought Climb and is not reallocated.",
+                    "Kingmaker exposes one movement speed; the 30-foot ground speed is used and the 30-foot climb speed is omitted under the ordinary-map land-use scope. The printed Climb +16 is omitted rather than substituted.",
+                    "Low-light vision and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED.",
+                    "REGISTERED AND WITHHELD. The original project-owned gigantopithecus body is NOT authored: this creature currently rides the Owlbear donor rig pending the bounded read-only primate donor census, and every visual and runtime gate remains open.")
             };
         }
 

@@ -142,10 +142,21 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
-Active v0.0.143 integration: 2922 stable IDs: 2920 active and 2 reserved.
-The released master2660-entry prefix is exact;262 missing qualified summoning
-identities append in import order. Production master traits/content and qualified
-summoning implementations are preserved by exact integration-boundary checks.
+Active v0.0.147 Sprint 18 candidate: 2983 stable IDs: 2981 active and 2 reserved.
+The released v0.0.146 master2922-entry prefix is exact;Sprint18 appends exactly61
+Ape and Dire Ape identities - two units,26 logical placements,26 celestial and
+fiendish execution children,one1d6 slam, the Dire Ape's own1d6 bite and1d4 claw,
+two inspectable unit types, the Dire Ape rend feature and the feature that keeps
+every limb of a multi-attack creature on the plain Strength modifier. The Dire Ape owns its
+two weapons because the guarded review measured the shared native1d6 bite and
+1d4 claw scaling one step up for a Large wielder, which is not its printed
+entry; the shared weapons other creatures use are unchanged. All26 placements are registered and withheld. Production master
+traits/content and qualified summoning implementations are preserved by exact
+integration-boundary checks.
+
+The preceding v0.0.143 integration record remains exact for its own release:
+2922 stable IDs, 2920 active and 2 reserved, on a released master2660-entry
+prefix with262 appended qualified summoning identities.
 
 ## 1. Decision summary
 

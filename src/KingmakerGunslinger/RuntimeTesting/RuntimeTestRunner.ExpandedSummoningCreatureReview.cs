@@ -151,11 +151,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool suppressedSprint17Snake =
                     SerpentineVisualPolicy.IsSnake(key) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint18Primate =
+                    PrimateVisualPolicy.Keys.Contains(key, StringComparer.Ordinal) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
                     !suppressedSprint13Candidate &&
                     !suppressedSprint14Candidate &&
                     !suppressedSprint16Candidate &&
-                    !suppressedSprint17Snake)
+                    !suppressedSprint17Snake &&
+                    !suppressedSprint18Primate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -175,7 +179,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             return IsSprint11UngulateReviewKey(key) ||
                 IsSprint12QuadrupedReviewKey(key) ||
                 CrocodilianVisualPolicy.Keys.Contains(key) ||
-                SerpentineVisualPolicy.IsSnake(key) || key == "salamander";
+                SerpentineVisualPolicy.IsSnake(key) || key == "salamander" ||
+                // The two Sprint 18 apes. Both are Large ground creatures
+                // wearing original bodies, which is exactly what a crowd
+                // review is for: several of them on one floor at once.
+                PrimateVisualPolicy.Keys.Contains(key, StringComparer.Ordinal);
         }
 
         private static bool IsSprint11UngulateReviewKey(string key)

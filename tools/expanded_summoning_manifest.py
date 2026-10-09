@@ -69,6 +69,9 @@ DONOR_NAMES = {
     "03dd28e92faf2e44eb9564a6ba01fdd0": "DireWolfSummon",
     "04944455200bc224d955a8e9bbd64f3f": "SummonedAirElementalSmall",
     "0b214d8e81a563549ba0be37cd1c16d0": "CR4_BearStandard",
+    # Chosen by the guarded Sprint 18 primate donor census: the only
+    # Large surveyed rig with real hands, a separate jaw and toes.
+    "b98735a1737ae494dbe5cbeca1c7c083": "CR10_FerociousTrollGuard",
     "124f1c45ef24d654e9cd420fe84f7f36": "CR5_CyclopStandard",
     "0cc7a2526e4557945b1d8eb277d1fb3a": "CR7_Nymph",
     "10a820de0a417f345866f794324205ad": "MephitFireSummoned",
@@ -207,8 +210,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 97:
-        raise SystemExit(f"Expected 97 parsed creatures; observed {len(values)}")
+    if len(values) != 99:
+        raise SystemExit(f"Expected 99 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -462,8 +465,27 @@ def planned():
         ("KMG.Summoning.Special.ConstrictorSnake.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Salamander.TailType", "BlueprintWeaponType"),
         ("KMG.Summoning.Special.Salamander.UnitType", "BlueprintUnitType"),
+        # Sprint 18. Nothing native carries a 1d6 slam, which is the Ape's
+        # printed routine; the installed library carries no primate unit type
+        # at all, so each ape owns its own rather than reading as its donor;
+        # and the Dire Ape owns the feature that carries the engine's own rend
+        # damage component beside its bounded sequencing gate.
+        ("KMG.Summoning.Natural.Slam1d6", "BlueprintItemWeapon"),
+        # The guarded review measured the Dire Ape biting for 1d8 and clawing
+        # for 1d6: the shared native 1d6 bite and 1d4 claw do not override
+        # their damage dice, so the engine scales them one step up for a Large
+        # wielder. Its printed entry is 1d6 and 1d4 at Large, so it owns two
+        # weapons that hold their dice; the shared ones are left alone.
+        ("KMG.Summoning.Natural.DireApe.Bite1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.DireApe.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Ape.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.DireApe.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Special.DireApe.Rend", "BlueprintFeature"),
+        # Granted to exactly the two apes: a rulebook component is only
+        # subscribed when a unit fact carries it.
+        ("KMG.Summoning.Natural.Primate.FullStrengthLimbs", "BlueprintFeature"),
     ))
-    if len(rows) != 1923 or len({symbol for symbol, _ in rows}) != 1923:
+    if len(rows) != 1984 or len({symbol for symbol, _ in rows}) != 1984:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -486,7 +508,7 @@ def generated_roster(manifest):
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-17 are technically qualified and published. Viper and Constrictor independently publish after complete hidden PASS on47e8c121 and all32 public roots PASS on996c5fe7. Salamander's observation-only reach correctiondb1da016 profile/view73/73 PASS closes Sprint17; its five existing public roots remain preserved and PASS. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Release143 integration/closure remains NOT QUALIFIED until the exact final matrix passes. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-17 are technically qualified and published. Viper and Constrictor independently publish after complete hidden PASS on47e8c121 and all32 public roots PASS on996c5fe7. Salamander's observation-only reach correctiondb1da016 profile/view73/73 PASS closes Sprint17; its five existing public roots remain preserved and PASS. Sprint18 registers the Ape and Dire Ape and withholds all26 of their roots: identities are allocated once here and publication removes two suppression keys without moving anything. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Release143 integration/closure remains NOT QUALIFIED until the exact final matrix passes. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",
@@ -548,7 +570,7 @@ def generated_roster(manifest):
     lines.extend((
         "## Explicit exclusions",
         "",
-        "No aquatic-only entries, unapproved ants, apes, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The four authorized Sprint 12 canines and rat remain hidden until their mechanics, distinct visuals and lifecycle qualify. The four authorized Sprint 11 ungulates are published only after their mechanics, original visuals and lifecycle qualified. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
+        "No aquatic-only entries, unapproved ants, unapproved apes, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The two Sprint 18 apes are authorized by that sprint and no other primate is; Girallon belongs to a later sprint and is not registered here. The four authorized Sprint 12 canines and rat remain hidden until their mechanics, distinct visuals and lifecycle qualify. The four authorized Sprint 11 ungulates are published only after their mechanics, original visuals and lifecycle qualified. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
         "",
     ))
     return "\n".join(lines)
