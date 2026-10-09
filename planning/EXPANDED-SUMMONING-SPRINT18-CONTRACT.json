@@ -25,8 +25,20 @@
         "summonMonsterRoots": 7,
         "summonNaturesAllyRoots": 7,
         "totalRoots": 14,
-        "parentTiers": [3, 4, 5, 6, 7, 8, 9],
-        "multiplicityCounts": { "One": 2, "OneD3": 2, "OneD4PlusOne": 10 }
+        "parentTiers": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "multiplicityCounts": {
+          "One": 2,
+          "OneD3": 2,
+          "OneD4PlusOne": 10
+        }
       },
       "dire-ape": {
         "key": "dire-ape",
@@ -37,8 +49,19 @@
         "summonMonsterRoots": 6,
         "summonNaturesAllyRoots": 6,
         "totalRoots": 12,
-        "parentTiers": [4, 5, 6, 7, 8, 9],
-        "multiplicityCounts": { "One": 2, "OneD3": 2, "OneD4PlusOne": 8 }
+        "parentTiers": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "multiplicityCounts": {
+          "One": 2,
+          "OneD3": 2,
+          "OneD4PlusOne": 8
+        }
       }
     },
     "newRootTotal": 26,
@@ -78,21 +101,48 @@
       "touchArmorClass": 11,
       "flatFootedArmorClass": 12,
       "naturalArmor": 3,
-      "saves": { "fortitude": 7, "reflex": 5, "will": 2 },
+      "saves": {
+        "fortitude": 7,
+        "reflex": 5,
+        "will": 2
+      },
       "speedFeet": 30,
       "climbSpeedFeet": 30,
       "attacks": [
-        { "limb": "slam", "count": 2, "attackBonus": 3, "damage": "1d6+2", "primary": true }
+        {
+          "limb": "slam",
+          "count": 2,
+          "attackBonus": 3,
+          "damage": "1d6+2",
+          "primary": true
+        }
       ],
       "spaceFeet": 10,
       "reachFeet": 10,
-      "attributes": { "strength": 15, "dexterity": 15, "constitution": 14, "intelligence": 2, "wisdom": 12, "charisma": 7 },
+      "attributes": {
+        "strength": 15,
+        "dexterity": 15,
+        "constitution": 14,
+        "intelligence": 2,
+        "wisdom": 12,
+        "charisma": 7
+      },
       "baseAttackBonus": 2,
       "combatManeuverBonus": 5,
       "combatManeuverDefense": 17,
-      "feats": ["Great Fortitude", "Skill Focus (Perception)"],
-      "skills": { "Acrobatics": 6, "Climb": 14, "Perception": 8 },
-      "senses": ["low-light vision", "scent"]
+      "feats": [
+        "Great Fortitude",
+        "Skill Focus (Perception)"
+      ],
+      "skills": {
+        "Acrobatics": 6,
+        "Climb": 14,
+        "Perception": 8
+      },
+      "senses": [
+        "low-light vision",
+        "scent"
+      ]
     },
     "derivations": {
       "attackBonus": "BAB +2 plus Strength +2 minus Large size 1 = +3 on each slam.",
@@ -116,16 +166,30 @@
     ],
     "bodyPlan": {
       "primaryHand": "Slam1d6",
-      "additionalLimbs": ["Slam1d6"],
+      "additionalLimbs": [
+        "Slam1d6"
+      ],
       "additionalSecondaryLimbs": [],
       "rationale": "The project's proven primary-plus-additional-limb layout (horse hooves, grizzly bear, owlbear) yields equal primary attacks at full Strength; a secondary-hand slot is not used because the printed routine has no secondary attack."
     },
     "skillPlan": {
-      "representedExactly": { "Mobility": 6, "Perception": 8 },
-      "allocation": { "mobilityRanks": 1, "perceptionRanks": 1, "stealthRanks": 0 },
-      "omitted": { "Climb": 14 },
+      "representedExactly": {
+        "Mobility": 6,
+        "Perception": 8
+      },
+      "allocation": {
+        "mobilityRanks": 1,
+        "perceptionRanks": 1,
+        "stealthRanks": 0
+      },
+      "omitted": {
+        "Climb": 14
+      },
       "omissionReason": "Kingmaker has no ordinary-map Climb consumer for a summoned unit and merges Climb into Athletics, whose live consumers are not the printed climb. The printed rank that paid for Climb is not reallocated, and Mobility is never inflated to stand in for Climb.",
-      "notSubstituted": ["Mobility is not substituted for Climb.", "Athletics is not raised to simulate the +8 racial climb bonus."]
+      "notSubstituted": [
+        "Mobility is not substituted for Climb.",
+        "Athletics is not raised to simulate the +8 racial climb bonus."
+      ]
     }
   },
   "direApe": {
@@ -139,25 +203,63 @@
       "touchArmorClass": 11,
       "flatFootedArmorClass": 13,
       "naturalArmor": 4,
-      "saves": { "fortitude": 7, "reflex": 6, "will": 4 },
+      "saves": {
+        "fortitude": 7,
+        "reflex": 6,
+        "will": 4
+      },
       "speedFeet": 30,
       "climbSpeedFeet": 30,
       "attacks": [
-        { "limb": "bite", "count": 1, "attackBonus": 6, "damage": "1d6+4", "primary": true },
-        { "limb": "claw", "count": 2, "attackBonus": 6, "damage": "1d4+4", "primary": true }
+        {
+          "limb": "bite",
+          "count": 1,
+          "attackBonus": 6,
+          "damage": "1d6+4",
+          "primary": true
+        },
+        {
+          "limb": "claw",
+          "count": 2,
+          "attackBonus": 6,
+          "damage": "1d4+4",
+          "primary": true
+        }
       ],
       "spaceFeet": 10,
       "reachFeet": 10,
       "specialAttacks": [
-        { "name": "rend", "trigger": "both claws hit the same target", "damage": "1d4+6" }
+        {
+          "name": "rend",
+          "trigger": "both claws hit the same target",
+          "damage": "1d4+6"
+        }
       ],
-      "attributes": { "strength": 19, "dexterity": 15, "constitution": 16, "intelligence": 2, "wisdom": 12, "charisma": 7 },
+      "attributes": {
+        "strength": 19,
+        "dexterity": 15,
+        "constitution": 16,
+        "intelligence": 2,
+        "wisdom": 12,
+        "charisma": 7
+      },
       "baseAttackBonus": 3,
       "combatManeuverBonus": 8,
       "combatManeuverDefense": 20,
-      "feats": ["Iron Will", "Skill Focus (Perception)"],
-      "skills": { "Acrobatics": 6, "Climb": 16, "Perception": 8, "Stealth": 2 },
-      "senses": ["low-light vision", "scent"]
+      "feats": [
+        "Iron Will",
+        "Skill Focus (Perception)"
+      ],
+      "skills": {
+        "Acrobatics": 6,
+        "Climb": 16,
+        "Perception": 8,
+        "Stealth": 2
+      },
+      "senses": [
+        "low-light vision",
+        "scent"
+      ]
     },
     "derivations": {
       "attackBonus": "BAB +3 plus Strength +4 minus Large size 1 = +6 on the bite and on each claw; all three are primary.",
@@ -195,16 +297,31 @@
     ],
     "bodyPlan": {
       "primaryHand": "Bite1d6",
-      "additionalLimbs": ["Claw1d4", "Claw1d4"],
+      "additionalLimbs": [
+        "Claw1d4",
+        "Claw1d4"
+      ],
       "additionalSecondaryLimbs": [],
       "rationale": "Exactly the grizzly bear, dire bear and owlbear layout already runtime-qualified in this project for a bite plus two equal primary claws at full Strength. The native command-level rend gate would instead require one claw in the secondary-hand slot, which cannot express three equal primary attacks and would also rend from a bite-then-claw pair."
     },
     "skillPlan": {
-      "representedExactly": { "Mobility": 6, "Perception": 8, "Stealth": 2 },
-      "allocation": { "mobilityRanks": 1, "perceptionRanks": 1, "stealthRanks": 1 },
-      "omitted": { "Climb": 16 },
+      "representedExactly": {
+        "Mobility": 6,
+        "Perception": 8,
+        "Stealth": 2
+      },
+      "allocation": {
+        "mobilityRanks": 1,
+        "perceptionRanks": 1,
+        "stealthRanks": 1
+      },
+      "omitted": {
+        "Climb": 16
+      },
       "omissionReason": "Same honest climb omission as the Ape. The printed rank that paid for Climb is not reallocated.",
-      "notSubstituted": ["Mobility is not substituted for Climb."]
+      "notSubstituted": [
+        "Mobility is not substituted for Climb."
+      ]
     }
   },
   "nativeRendAudit": {
@@ -213,7 +330,10 @@
     "nativeDamageCarrier": {
       "type": "Kingmaker.Designers.Mechanics.Facts.RendFeature",
       "base": "RuleInitiatorLogicComponent<RuleAttackWithWeapon>",
-      "fields": ["DiceFormula RendDamage", "DamageTypeDescription RendType"],
+      "fields": [
+        "DiceFormula RendDamage",
+        "DamageTypeDescription RendType"
+      ],
       "turnOn": "Retains UnitDescriptor.State.HasRend (a CountableFlag).",
       "didTrigger": "if (evt.IsRend && evt.AttackRoll.IsHit) { bonus = (int)(Owner.Stats.Strength.Bonus * 1.5); Rulebook.TriggerEvent(new RuleDealDamage(Owner.Unit, evt.Target, RendType.GetDamageDescriptor(RendDamage, bonus).CreateDamage())); }",
       "verdict": "ADOPTED. The engine's own rend damage event and its exact one-and-a-half Strength derivation are used unchanged."
@@ -229,7 +349,7 @@
     "adoptedDesign": "A bounded Dire-Ape-owned component replaces exactly one decision - whether this attack is a rend - and then lets the native RendFeature resolve the damage. The component owns no damage math, no global patch and no framework. It is scoped to the exact owning blueprint and its two claw limbs."
   },
   "donorAndRig": {
-    "status": "CENSUS NOT RUN",
+    "status": "CENSUS RUN AND PASSED",
     "requirement": "One bounded read-only primate donor census before either model is authored.",
     "offlinePreCensus": {
       "source": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261002T1440160968919Z-observe-expanded-summoning-native-donors/native-donor-audit.json",
@@ -237,11 +357,36 @@
       "primateUnitTypes": 0,
       "finding": "The installed library carries no ape, gorilla, monkey, baboon or other primate unit type, and the audited fact set carries no RendFeature consumer. There is therefore no native primate donor and no native rend creature to clone; both silhouettes must be original project-owned geometry on a non-primate donor rig.",
       "candidateFamilies": [
-        { "unitType": "Trolls", "guid": "5cb93605a92425b47ac9887bbe670b89", "units": 50, "why": "Large bipedal hunched humanoid with long arms, a bite and claws; closest to both ape silhouettes and to the Dire Ape's bite-and-claw contacts." },
-        { "unitType": "Athach", "guid": "8486b51462640fa44abe421c3c4e5cc4", "units": 5, "why": "Large multi-armed brute; extra arm chain is a deformation risk." },
-        { "unitType": "Bear", "guid": "0026201aece1d754aac94f9e827bcee7", "units": 12, "why": "Large quadruped with rearing claw contacts; carries an obvious bear gait the contract forbids." },
-        { "unitType": "Owlbear", "guid": "90843c23d1e467241907624382fad57f", "units": 23, "why": "Large bipedal-leaning bear-shaped rig with claw contacts." },
-        { "unitType": "WildHunt", "guid": "162b49a4826b44741bf284f88c31f824", "units": 16, "why": "Large humanoid; human gait risk." }
+        {
+          "unitType": "Trolls",
+          "guid": "5cb93605a92425b47ac9887bbe670b89",
+          "units": 50,
+          "why": "Large bipedal hunched humanoid with long arms, a bite and claws; closest to both ape silhouettes and to the Dire Ape's bite-and-claw contacts."
+        },
+        {
+          "unitType": "Athach",
+          "guid": "8486b51462640fa44abe421c3c4e5cc4",
+          "units": 5,
+          "why": "Large multi-armed brute; extra arm chain is a deformation risk."
+        },
+        {
+          "unitType": "Bear",
+          "guid": "0026201aece1d754aac94f9e827bcee7",
+          "units": 12,
+          "why": "Large quadruped with rearing claw contacts; carries an obvious bear gait the contract forbids."
+        },
+        {
+          "unitType": "Owlbear",
+          "guid": "90843c23d1e467241907624382fad57f",
+          "units": 23,
+          "why": "Large bipedal-leaning bear-shaped rig with claw contacts."
+        },
+        {
+          "unitType": "WildHunt",
+          "guid": "162b49a4826b44741bf284f88c31f824",
+          "units": 16,
+          "why": "Large humanoid; human gait risk."
+        }
       ],
       "shareDecisionRule": "One shared primate rig is preferred only if it credibly supports knuckle locomotion, two-handed slams, Dire Ape bite and claw contacts, and distinct Ape and Dire silhouettes. If it cannot without obvious deformation or a human or bear gait, the two implementations split. Reuse is not forced."
     },
@@ -250,21 +395,85 @@
       "No general primate animation system.",
       "No climbing system.",
       "No creature editor."
-    ]
+    ],
+    "census": {
+      "scenario": "observe-expanded-summoning-primate-census",
+      "evidence": "20261009T1721285353210Z-observe-expanded-summoning-primate-census",
+      "status": "PASS",
+      "method": "Detached read-only view prefabs at mod load. No campaign actor spawned, no save read or written, no native asset modified, nothing to clean up.",
+      "discoveredBlueprints": 288,
+      "surveyedPrefabs": 28,
+      "capturedPrefabs": 28,
+      "chosenDonor": {
+        "key": "troll",
+        "blueprint": "b98735a1737ae494dbe5cbeca1c7c083",
+        "blueprintName": "CR10_FerociousTrollGuard",
+        "prefab": "0bc98460fca38964aae3af6ad5c655ee",
+        "size": "Large",
+        "viewScale": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "bones": 62,
+        "rootBone": "Pelvis",
+        "bindHeight": 4.378,
+        "why": "The only Large surveyed rig actually built like an ape: an upright Pelvis-rooted spine, long two-segment arms ending in real hands with a thumb and three fingers, a separate Jaw_01, and legs with toes. It carries knuckle locomotion and two-handed slams for the Ape and bite and claw contacts for the Dire Ape without a bear or human gait."
+      },
+      "rejected": [
+        "Owlbear (the provisional donor): 29 bones, no hands, no jaw, no toes; a quadruped bear rig.",
+        "Athach: 64 bones but Huge and equally handless, rooted at LowerTorso.",
+        "Cyclops/HillGiant/FrostGiant: 48-bone upright humanoid, but a human gait and no ape arm length.",
+        "UMA human rigs (Wild Hunt, zombies): human gait, explicitly forbidden by the contract."
+      ],
+      "sharedRigDecision": "One shared rig for both apes. It credibly supports knuckle locomotion, two-handed slams, and Dire Ape bite and claw contacts, and the two silhouettes are separated by geometry rather than by rig, so reuse is correct here rather than forced.",
+      "finding": "The live library re-confirms no primate unit type and no RendFeature consumer, so both bodies must be original project-owned geometry."
+    }
   },
   "identityPlan": {
     "policy": "Append-only stable identities allocated once at registration and never reallocated after runtime evidence exists.",
-    "unitCount": { "before": 97, "after": 99 },
-    "logicalAbilityCount": { "before": 1008, "after": 1034 },
-    "templatedPlacementCount": { "before": 287, "after": 300 },
-    "templateExecutionAbilityCount": { "before": 574, "after": 600 },
+    "unitCount": {
+      "before": 97,
+      "after": 99
+    },
+    "logicalAbilityCount": {
+      "before": 1008,
+      "after": 1034
+    },
+    "templatedPlacementCount": {
+      "before": 287,
+      "after": 300
+    },
+    "templateExecutionAbilityCount": {
+      "before": 574,
+      "after": 600
+    },
     "newSpecialIdentities": [
-      { "symbol": "KMG.Summoning.Natural.Slam1d6", "plannedType": "BlueprintItemWeapon", "reason": "No native blueprint carries a 1d6 slam; the printed Ape slam needs its own project-owned weapon on a native slam animation." },
-      { "symbol": "KMG.Summoning.Natural.Ape.UnitType", "plannedType": "BlueprintUnitType", "reason": "Without its own type the unit reads as its non-primate donor's type." },
-      { "symbol": "KMG.Summoning.Natural.DireApe.UnitType", "plannedType": "BlueprintUnitType", "reason": "Same; the two apes are separate species and must not share a donor's classification." },
-      { "symbol": "KMG.Summoning.Special.DireApe.Rend", "plannedType": "BlueprintFeature", "reason": "Carries the native RendFeature component with RendDamage 1d4 plus the bounded Dire-Ape-owned sequencing gate." }
+      {
+        "symbol": "KMG.Summoning.Natural.Slam1d6",
+        "plannedType": "BlueprintItemWeapon",
+        "reason": "No native blueprint carries a 1d6 slam; the printed Ape slam needs its own project-owned weapon on a native slam animation."
+      },
+      {
+        "symbol": "KMG.Summoning.Natural.Ape.UnitType",
+        "plannedType": "BlueprintUnitType",
+        "reason": "Without its own type the unit reads as its non-primate donor's type."
+      },
+      {
+        "symbol": "KMG.Summoning.Natural.DireApe.UnitType",
+        "plannedType": "BlueprintUnitType",
+        "reason": "Same; the two apes are separate species and must not share a donor's classification."
+      },
+      {
+        "symbol": "KMG.Summoning.Special.DireApe.Rend",
+        "plannedType": "BlueprintFeature",
+        "reason": "Carries the native RendFeature component with RendDamage 1d4 plus the bounded Dire-Ape-owned sequencing gate."
+      }
     ],
-    "specialIdentityCount": { "before": 202, "after": 206 },
+    "specialIdentityCount": {
+      "before": 202,
+      "after": 206
+    },
     "note": "Final identity count is re-derived from source at implementation time and this record is corrected if the derivation differs."
   },
   "versionSurface": {
@@ -274,9 +483,18 @@
     "validatorChain": "A new tools/validate_expanded_summoning_sprint18147.py inherits the 0.0.146 chain. The 0.0.146 validator freezes src/KingmakerGunslinger/Summoning/, the Expanded Summoning blueprint builders and the shipped creature asset directories against exact commits and asserts sprint18Started == false, so Sprint 18 cannot land under the 0.0.146 record and the version surface must advance with it."
   },
   "candidateBudget": {
-    "hiddenCandidate": { "maximum": 1, "used": 0 },
-    "productCorrectionCandidate": { "maximum": 1, "used": 0 },
-    "observationOnlyCorrection": { "maximum": 1, "used": 0 },
+    "hiddenCandidate": {
+      "maximum": 1,
+      "used": 0
+    },
+    "productCorrectionCandidate": {
+      "maximum": 1,
+      "used": 0
+    },
+    "observationOnlyCorrection": {
+      "maximum": 1,
+      "used": 0
+    },
     "rule": "A retry without a meaningful code or observation-strategy change is not allowed. After two failures of the same requirement, classify it and return a precise blocker."
   },
   "acceptedEngineLimitations": [
