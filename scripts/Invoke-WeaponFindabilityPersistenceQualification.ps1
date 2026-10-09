@@ -1,5 +1,5 @@
 [CmdletBinding(SupportsShouldProcess=$true,ConfirmImpact='High')]
-param([string]$ExpectedVersion='0.0.144',[Parameter(Mandatory=$true)][string]$PackagePath,[switch]$AllowDirtyGit,[switch]$KeepFixture,[string]$WeaponKey)
+param([string]$ExpectedVersion='0.0.145',[Parameter(Mandatory=$true)][string]$PackagePath,[switch]$AllowDirtyGit,[switch]$KeepFixture,[string]$WeaponKey)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
@@ -9,7 +9,7 @@ Assert-KmgUnelevated
 Assert-KmgNotRunning
 $root=Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $manifest=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
-if($ExpectedVersion -cne '0.0.144' -or $manifest.commit -cne (& git -C $root rev-parse HEAD).Trim() -or (-not $AllowDirtyGit -and @(& git -C $root status --porcelain).Count -ne 0)){throw 'Exact clean committed artifact required.'}
+if($ExpectedVersion -cne '0.0.145' -or $manifest.commit -cne (& git -C $root rev-parse HEAD).Trim() -or (-not $AllowDirtyGit -and @(& git -C $root status --porcelain).Count -ne 0)){throw 'Exact clean committed artifact required.'}
 if(-not $PSCmdlet.ShouldProcess('new transaction-owned manual save','qualify selected weapon recovery and native acquisitions without writing preexisting saves')){return}
 $tx=[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ')+'_'+[Guid]::NewGuid().ToString('N')
 $descriptor='KMG_WEAPONS_0143_'+$tx
