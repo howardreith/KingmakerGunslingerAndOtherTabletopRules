@@ -738,8 +738,10 @@ namespace KingmakerGunslinger.DomainTests
             var masterTraits = new System.Collections.Generic.HashSet<string>(
                 KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes()
                     .Select(value => value.Symbol), StringComparer.Ordinal);
-            Assertions.Equal(2836 + AppendedLedgerIdentities + masterTraits.Count, entries.Count,
-                "Qualified Phase2B identities and all eleven released master trait identities coexist.");
+            Assertions.Equal(2836 + AppendedLedgerIdentities +
+                PrimateRulesTests.AppendedLedgerIdentities + masterTraits.Count,
+                entries.Count,
+                "Qualified Phase2B identities, the Sprint 18 appends and all eleven released master trait identities coexist.");
             // The current release preserves master's entire prefix. Project
             // only its exact eleven independently appended trait nodes out
             // when checking the historical Phase2B order/hash; never remove
@@ -870,7 +872,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1008, all.Count(SummonVisibilityCatalog.IsPublished), "Exactly 32 newly published roots.");
             Assertions.Equal(1037, all.Count(SummonVisibilityCatalog.IsPublished) +
                 SummonNativeExpansionCatalog.All.Count, "Published surface is source-derived.");
-            Assertions.True(all.Where(v => !SerpentineRulesPolicy.IsSnake(v.Creature.Key))
+            Assertions.True(all.Where(v => !SerpentineRulesPolicy.IsSnake(v.Creature.Key) &&
+                    !PrimateRulesPolicy.IsPrimate(v.Creature.Key))
                 .All(SummonVisibilityCatalog.IsPublished), "No old publication or Salamander root moved.");
         }
 

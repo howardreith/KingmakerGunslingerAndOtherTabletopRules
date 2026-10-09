@@ -980,6 +980,12 @@ namespace KingmakerGunslinger.DomainTests
                     // Newly registered Sprint 17 snakes have their own exact
                     // rank allocations; they were not part of this baseline.
                     !SerpentineRulesPolicy.IsSnake(value.Key) &&
+                    // Sprint 18's two apes likewise. Their stat blocks print
+                    // ranks the generic priority list cannot express at
+                    // Intelligence 2, and one printed rank bought a Climb this
+                    // project does not represent, so the allocation is exact
+                    // and profile-controlled rather than generic.
+                    !PrimateRulesPolicy.IsPrimate(value.Key) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

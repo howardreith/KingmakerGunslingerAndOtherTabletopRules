@@ -26,11 +26,15 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 97) throw new InvalidOperationException("Expanded Summoning unique creature count must be 97.");
+            if (Creatures.Length != 99) throw new InvalidOperationException("Expanded Summoning unique creature count must be 99.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
-            ValidateFamily(SummonFamily.Monster, 88, 506);
-            ValidateFamily(SummonFamily.NaturesAlly, 86, 502);
+            // Sprint 18 adds the two apes: the Ape at Summon Monster and
+            // Nature's Ally III contributes seven placements per family and the
+            // Dire Ape at tier IV contributes six, so 506/502 become 519/515
+            // and the twenty-six new roots are registered and suppressed.
+            ValidateFamily(SummonFamily.Monster, 90, 519);
+            ValidateFamily(SummonFamily.NaturesAlly, 88, 515);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -64,7 +68,12 @@ namespace KingmakerGunslinger.Summoning
                 C("rhinoceros","Rhinoceros",4,true,4,"Mastodon"),
                 C("woolly-rhinoceros","Woolly Rhinoceros",5,true,5,"Mastodon"),
                 C("viper","Viper",1,true,1,"Snake"),
-                C("constrictor-snake","Constrictor Snake",3,true,3,"Snake")
+                C("constrictor-snake","Constrictor Snake",3,true,3,"Snake"),
+                // Sprint 18. Both ride the Owlbear's Large bipedal rig while
+                // their original project-owned bodies are authored, so both are
+                // recorded as borrowed-body proxies and both are suppressed.
+                C("ape","Ape",3,true,3,"Owlbear"),
+                C("dire-ape","Dire Ape",4,true,4,"Owlbear")
             };
         }
 
