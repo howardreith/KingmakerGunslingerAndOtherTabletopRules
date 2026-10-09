@@ -39,7 +39,7 @@
     "runtime": "PARTIAL. The guarded harness is proved end to end on this candidate: deploy, Steam App ID 640820 launch, mod load at 0.0.147, guarded request accepted, scenario PASS, exact restoration. No Sprint 18 creature behaviour is proved.",
     "guardedPrimateDonorCensus": "PASS. 288 primate-adjacent blueprints discovered, 28 view prefabs surveyed at the contract cap, 28 captured, 9/9 assertions PASS. Evidence 20261009T1721285353210Z-observe-expanded-summoning-primate-census.",
     "batchedSprint18RuntimeReview": "PASS. 29 of 29 on disposable-expanded-summoning-sprint18-review and 12 of 12 on the party-camera creature review at 1d4+1. Two real product defects and one real component-wiring defect were found and fixed across four runs.",
-    "publicationGate": "PASS. Both suppression keys removed; 1034 of 1034 generated placements published and 1063 visible choices, with nothing v0.0.146 published moved.",
+    "publicationGate": "PASS, confirmed in game. 29 of 29 on the published candidate: 1034 published, 0 withheld, 1063 visible choices, and no previously published root moved.",
     "releaseClosureMatrix": "NOT RUN",
     "originalPrimateBodies": "PASS. Two original meshes and two original paintings authored against the census-chosen bind pose; 6/6 offline Blender fixtures pass, including the per-shell signed-volume check the shipped winding depends on. Not runtime proved."
   },
@@ -240,6 +240,15 @@
       "proves": "Both apes cast through their registered execution into the working save at 1d4+1, held under the party camera idle, moving and attacking, and dismissed through the shared cleanup. Eight review frames written.",
       "art": "The Dire Ape reads at party-camera distance as a heavy russet ape with a pale straw ruff; the Ape reads as a near-black crouched silverback. Both are Large, hunched and long-armed, and neither reads as the troll the geometry is posed on.",
       "threeRefusals": "The crowd roster guard exists in three places - the orchestrator, the invoker and the runner - and only the third refuses after a deploy and launch. A fourth guard refuses a withheld creature through a parent it does not have, and each sprint opens that door for its own hidden creatures and closes it at publication.",
+      "restoration": "VERIFIED; the live tree was restored to its pre-run hash"
+    },
+    {
+      "runId": "disposable-expanded-summoning-sprint18-review, publication gate",
+      "evidence": "20261009T2253378499008Z-disposable-expanded-summoning-sprint18-review",
+      "scenario": "disposable-expanded-summoning-sprint18-review",
+      "status": "PASS 29 of 29",
+      "candidate": "c4d4bd62, the published candidate",
+      "proves": "Everything the hidden candidate proved, proved again with both apes published: 26 of 26 roots resolve and are published, none is still withheld, the published total is 1034 with no previously published root moved, and both live profiles, both routines and every rend case are unchanged by publication.",
       "restoration": "VERIFIED; the live tree was restored to its pre-run hash"
     }
   ],
