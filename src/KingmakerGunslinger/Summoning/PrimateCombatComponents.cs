@@ -212,20 +212,22 @@ namespace KingmakerGunslinger.Summoning
     /// creature is touched, no bonus is added, and a creature that genuinely
     /// has one natural attack keeps the engine's one and a half times.</para>
     /// </summary>
+    /// <para>It rides a feature rather than the unit's own component array,
+    /// because a rulebook component is only subscribed when it is carried by
+    /// a unit fact. The first correction put it on the blueprint and the
+    /// re-run measured the inflated limb unchanged, which is how that was
+    /// found. The feature is granted to exactly the two apes.</para>
     [Serializable]
     public sealed class SummonPrimaryLimbFullStrength :
         RuleInitiatorLogicComponent<RuleCalculateWeaponStats>
     {
-        public BlueprintUnit OwningBlueprint;
-
         public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt) { }
 
         public override void OnEventDidTrigger(RuleCalculateWeaponStats evt)
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
-            if (evt == null || owner == null || OwningBlueprint == null ||
-                !ReferenceEquals(evt.Initiator, owner) ||
-                !ReferenceEquals(owner.Blueprint, OwningBlueprint)) return;
+            if (evt == null || owner == null ||
+                !ReferenceEquals(evt.Initiator, owner)) return;
             int correction = Correction(owner, evt);
             if (correction == 0 || evt.DamageDescription == null ||
                 evt.DamageDescription.Count == 0) return;

@@ -402,6 +402,8 @@ def validate(root: Path) -> None:
         ".DireApe" in symbol or ".Ape." in symbol or
         symbol == "KMG.Summoning.Unit.Ape" or
         symbol == "KMG.Summoning.Natural.Slam1d6" or
+        # Granted to exactly the two apes, so it belongs to their append.
+        symbol == "KMG.Summoning.Natural.Primate.FullStrengthLimbs" or
         symbol in {"KMG.Summoning.Special.Salamander.TailType", "KMG.Summoning.Special.Salamander.UnitType"} or
         ".Special.Crocodile." in symbol or
         symbol == "KMG.Summoning.Special.Crocodilian.SprintNotEngaged" or

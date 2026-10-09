@@ -23,9 +23,10 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         // 2 units, the 26 roots, the 26 template execution children of the
         // 13 templated Summon Monster roots, and 6 creature-owned
-        // identities: two unit types, the rend feature, the slam, and the
-        // two Dire Ape weapons the guarded review proved it needs.
-        internal const int AppendedLedgerIdentities = 2 + 26 + 26 + 6;
+        // identities: two unit types, the rend feature, the slam, the two
+        // Dire Ape weapons the guarded review proved it needs, and the
+        // feature that keeps every limb on the plain Strength modifier.
+        internal const int AppendedLedgerIdentities = 2 + 26 + 26 + 7;
 
         private const int ApeMonsterRoots = 7;
         private const int ApeAllyRoots = 7;
@@ -219,8 +220,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(profile.Facts.Any(value => value.StartsWith(
                     "TripDefense", StringComparison.Ordinal)),
                 "The Ape prints no bonus against trip.");
+            // The third entry is not a printed feat. It is the carrier the
+            // guarded review proved both apes need: the engine gives a
+            // natural primary-hand weapon one and a half times Strength when
+            // the secondary hand is empty, and the printed routine gives
+            // every limb the plain modifier.
             Assertions.True(profile.Facts.SequenceEqual(new[] {
-                    "GreatFortitude", "SkillFocusPerception" }),
+                    "GreatFortitude", "SkillFocusPerception",
+                    "PrimateFullStrengthLimbs" }),
                 "The Ape's printed feats are Great Fortitude and Skill Focus (Perception).");
             Assertions.Equal(13, rules.BaseHitPoints,
                 "Printed 19 hit points are 3d8 racial dice plus a live Constitution contribution.");
@@ -269,7 +276,8 @@ namespace KingmakerGunslinger.DomainTests
                     (profile.Strength - 10) / 2),
                 "Bite 1d6+4 and each claw 1d4+4 at Strength 19.");
             Assertions.True(profile.Facts.SequenceEqual(new[] {
-                    "IronWill", "SkillFocusPerception", "DireApeRend" }),
+                    "IronWill", "SkillFocusPerception", "DireApeRend",
+                    "PrimateFullStrengthLimbs" }),
                 "The Dire Ape's printed feats are Iron Will and Skill Focus (Perception), beside its rend.");
             Assertions.False(profile.Facts.Any(value =>
                     value.IndexOf("Grab", StringComparison.Ordinal) >= 0 ||
@@ -572,13 +580,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(600,
                 ExpandedSummoningIdentityCatalog.TemplateExecutionAbilityCount,
                 "Template execution identity count changed.");
-            Assertions.Equal(208,
+            Assertions.Equal(209,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount,
                 "Creature-owned identity count changed.");
-            Assertions.Equal(1983,
+            Assertions.Equal(1984,
                 ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 "Foundation identity count changed.");
-            Assertions.Equal(1983, identities.Count,
+            Assertions.Equal(1984, identities.Count,
                 "The built identity catalog must match its own invariant.");
 
             foreach (var row in new[] {

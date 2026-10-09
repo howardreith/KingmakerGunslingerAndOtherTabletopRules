@@ -30,7 +30,7 @@ class Sprint18Tests(unittest.TestCase):
                          VALIDATORS["0.0.145"])
 
     def test_the_append_is_exactly_fifty_eight_identities(self):
-        self.assertEqual(2982, gate.validate_identity_append(ROOT))
+        self.assertEqual(2983, gate.validate_identity_append(ROOT))
 
     def test_a_moved_historical_identity_is_rejected(self):
         current = gate.document(ROOT, "blueprints/blueprints.json")
@@ -50,7 +50,7 @@ class Sprint18Tests(unittest.TestCase):
             "guid": "0" * 32, "plannedType": "BlueprintFeature",
             "status": "active", "milestone": "Expanded Summoning", "notes": ""})
         with patch.object(gate, "document", return_value=altered):
-            with self.assertRaisesRegex(AssertionError, "exactly 60 identities"):
+            with self.assertRaisesRegex(AssertionError, "exactly 61 identities"):
                 gate.validate_identity_append(ROOT)
 
     def test_publishing_an_ape_early_is_rejected(self):

@@ -175,7 +175,10 @@ namespace KingmakerGunslinger.Summoning
                 ape.AdditionalSecondaryWeapons.Count != 0 ||
                 !ape.Facts.Contains("GreatFortitude") ||
                 !ape.Facts.Contains("SkillFocusPerception") ||
-                ape.Facts.Count != 2 ||
+                // Not a printed feat: the carrier that keeps both slams on
+                // the plain Strength modifier the stat block prints.
+                !ape.Facts.Contains("PrimateFullStrengthLimbs") ||
+                ape.Facts.Count != 3 ||
                 ape.Facts.Contains("ReducedReach") ||
                 ape.Facts.Contains("TripDefenseFourLegs") ||
                 !ape.Skills.SequenceEqual(new[] { "Mobility", "Perception" }))
@@ -194,7 +197,8 @@ namespace KingmakerGunslinger.Summoning
                 !dire.Facts.Contains("IronWill") ||
                 !dire.Facts.Contains("SkillFocusPerception") ||
                 !dire.Facts.Contains("DireApeRend") ||
-                dire.Facts.Count != 3 ||
+                !dire.Facts.Contains("PrimateFullStrengthLimbs") ||
+                dire.Facts.Count != 4 ||
                 dire.Facts.Contains("ReducedReach") ||
                 !dire.Skills.SequenceEqual(new[] {
                     "Mobility", "Perception", "Stealth" }))
@@ -547,7 +551,8 @@ namespace KingmakerGunslinger.Summoning
                 PK("ape", "Ape", "Animal", 3, "Large",
                     15, 15, 14, 2, 12, 7, 30, 3, "Slam1d6",
                     A("Slam1d6"),
-                    A("GreatFortitude", "SkillFocusPerception"),
+                    A("GreatFortitude", "SkillFocusPerception",
+                        "PrimateFullStrengthLimbs"),
                     A("Mobility", "Perception"),
                     "Sprint 18 frozen contract: exactly two primary slams at the printed bonus, each adding the whole Strength modifier. No bite, no claw, no rend, and no chest-thump fear or roar ability, none of which the stat block prints.",
                     "Exact land ranks retain native attribute, class-skill, size and Skill Focus contributions: one Mobility rank and one Perception rank. The third printed rank bought Climb and is not reallocated.",
@@ -557,7 +562,8 @@ namespace KingmakerGunslinger.Summoning
                 PK("dire-ape", "Dire Ape", "Animal", 4, "Large",
                     19, 15, 16, 2, 12, 7, 30, 4, "DireApeBite1d6",
                     A("DireApeClaw1d4", "DireApeClaw1d4"),
-                    A("IronWill", "SkillFocusPerception", "DireApeRend"),
+                    A("IronWill", "SkillFocusPerception", "DireApeRend",
+                        "PrimateFullStrengthLimbs"),
                     A("Mobility", "Perception", "Stealth"),
                     "Sprint 18 frozen contract: one primary bite and two primary claws, all three at the printed bonus and each adding the whole Strength modifier. Rend is the only special attack.",
                     "Rend resolves once after both claws hit the exact same target in one attack sequence, and never from one claw, from claws on different targets, from a bite and a claw, across turns or commands, or from a replayed rule event. The engine's own rend carrier deals the damage from 1d4 plus one and a half times the live Strength modifier, which is the printed 1d4+6 at Strength 19; a bounded Dire-Ape-owned gate decides only whether an attack is that rend, because the engine's command-level gate identifies a rend by hand slot and cannot express three equal primary limbs. The native rend attack animation variant is selected by that command-level gate and is therefore not played; the omission is presentation only and nothing is invented to replace it.",
