@@ -271,6 +271,13 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\UngulateRulesPolicy.cs"><Link>Summoning\UngulateRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\CrocodilianRulesPolicy.cs"><Link>Summoning\CrocodilianRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SerpentineRulesPolicy.cs"><Link>Summoning\SerpentineRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\PrimateRulesPolicy.cs"><Link>Summoning\PrimateRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\PrimateVisualPolicy.cs"><Link>Summoning\PrimateVisualPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\PrimateReviewPolicy.cs"><Link>RuntimeTesting\PrimateReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Blueprints\BlueprintManifest.cs"><Link>Blueprints\BlueprintManifest.cs</Link></Compile>
+    <Compile Include="PrimateRulesTests.cs" />
+    <Compile Include="PrimateVisualTests.cs" />
+    <Compile Include="BlueprintManifestSizeTests.cs" />
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RapidReloadPrerequisiteTests.cs" />
     <Compile Include="RapidReloadGateEvidenceTests.cs" />

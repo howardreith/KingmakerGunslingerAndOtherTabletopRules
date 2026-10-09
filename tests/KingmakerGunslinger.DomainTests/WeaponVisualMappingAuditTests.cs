@@ -20,9 +20,11 @@ namespace KingmakerGunslinger.DomainTests
             // 70 pre-existing weapons, the Sprint 8 claw, the Sprint 10 Wasp
             // sting and hidden Stirge carrier, the Sprint 13 Poison Frog
             // flat-1 bite and Shadow Mastiff tail slap, the Sprint 16 Dire
-            // Crocodile's 3d6 bite and 4d8 tail slap, plus 43 Better Vendors
-            // variants.
-            Assertions.Equal(78 + KingmakerGunslinger.Acquisition
+            // Crocodile's 3d6 bite and 4d8 tail slap, the Sprint 18 Ape slam
+            // and the Dire Ape's own 1d6 bite and 1d4 claw, which it needs
+            // because the shared native weapons scale up a step for a Large
+            // wielder, plus 43 Better Vendors variants.
+            Assertions.Equal(81 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -75,8 +77,11 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 13 adds the Poison Frog's printed flat-1 bite and the
             // Shadow Mastiff's 1d6 tail slap; Sprint 14 adds the Giant Ant
             // Soldier's 1d4 sting, which exists so its poison can gate on a
-            // weapon type its bite does not share.
-            Assertions.Equal(18, audit["items"].Count(value =>
+            // weapon type its bite does not share; Sprint 18 adds the Ape's
+            // 1d6 slam, which nothing native carries, and the Dire Ape's own
+            // 1d6 bite and 1d4 claw, which exist because the shared native
+            // ones scale up a step for a Large wielder.
+            Assertions.Equal(21, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>
