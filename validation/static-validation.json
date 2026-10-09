@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.144-weapon-findability-fixes",
+  "milestone": "0.0.145-heirloom-nodachi-icon",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.144",
+  "version": "0.0.145",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2126,6 +2126,22 @@
     "gameplayMechanicsUnchanged": true,
     "additionalTestSuitesRun": false,
     "additionalRuntimeScenariosRun": false,
+    "ownerRequestedNoAdditionalValidation": true,
+    "qualificationRecord": "weaponFindability143",
+    "qualificationLimitsPreserved": true
+  },
+  "heirloomNodachiIconRelease145": {
+    "releaseVersion": "0.0.145",
+    "releaseInformationalVersion": "0.0.145-heirloom-nodachi-icon",
+    "promotedFromVersion": "0.0.144",
+    "publicReleaseAuthorized": true,
+    "changedSource": "src/KingmakerGunslinger/Blueprints/HeirloomNodachiBlueprints.cs",
+    "iconKey": "nodachi",
+    "blueprintIdentitiesUnchanged": true,
+    "gameplayMechanicsUnchanged": true,
+    "additionalTestSuitesRun": false,
+    "additionalRuntimeScenariosRun": false,
+    "inGameAppearanceVerified": false,
     "ownerRequestedNoAdditionalValidation": true,
     "qualificationRecord": "weaponFindability143",
     "qualificationLimitsPreserved": true
