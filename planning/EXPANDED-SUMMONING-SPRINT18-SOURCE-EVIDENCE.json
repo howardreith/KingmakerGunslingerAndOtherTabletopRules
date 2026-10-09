@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "sprint": 18,
+  "title": "Expanded Summoning Sprint 18: Ape and Dire Ape",
+  "status": "SOURCE QUALIFIED; RUNTIME NOT QUALIFIED; NOT PUBLISHED; NOT RELEASED",
+  "branch": "codex/expanded-summoning-sprint18-ape-dire-ape",
+  "masterBase": "da782d2297d6cf361ac30a5e0ea07348d3b7f7d7",
+  "releasedBaseline": "v0.0.146",
+  "masterDelta": "NONE",
+  "contract": "planning/EXPANDED-SUMMONING-SPRINT18-CONTRACT.json",
+  "sourceBoundary": "A clean committed candidate on the named base. The complete source, build and package gate ran once on it. No Kingmaker process, deployment, runtime lease or save write occurred at any point.",
+  "candidate": {
+    "commit": "bd21f2447b3e68fbb95759292a1991320529f4e0",
+    "sourceStateSha256": "b3c25e810d540c1507efa968c33c6157d254d8ba6469799eaece538259221f6f",
+    "version": "0.0.147",
+    "informationalVersion": "0.0.147-expanded-summoning-sprint18",
+    "generatedAtUtc": "2026-10-09T13:30:05.0270223Z",
+    "generator": "scripts/Build-Local.ps1",
+    "package": "KingmakerGunslinger-0.0.147-expanded-summoning-sprint18.zip",
+    "packageMemberCount": 336,
+    "packageSha256": "205cd6585f477f5d33769115cd942b4a9aa1d91fe1a4ccd3ea8935203e378ebd",
+    "dllSha256": "9b64c911e67d87bd58c5bfa644c0b11502424f25d2341da5ec3c112fbcd8c2ec",
+    "dllMvid": "ff9911e3-7061-4fc4-8d5a-f7fa1b234955",
+    "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+    "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "validated": true
+  },
+  "gates": {
+    "repositoryValidationWrapper": "PASS (version-aware; dispatches 0.0.147 to validate_expanded_summoning_sprint18147.py)",
+    "sprint18CorruptionFixtures": "PASS 13/13 (tools/test_expanded_summoning_sprint18147.py)",
+    "repositoryValidatorRegressionFixtures": "PASS 3/3",
+    "iconCatalogFixtures": "PASS 29/29",
+    "unfilteredDomainSuite": "PASS 2508/2508, including 10 new Sprint 18 cases",
+    "cleanExactReferenceReleaseBuild": "PASS; 14 exact private references compared byte for byte against the installed Steam runtime",
+    "buildOutputValidation": "PASS",
+    "strictStandalonePackageValidation": "PASS; 336 members",
+    "expandedSummoningOrchestration": "PASS 168 assertions",
+    "runtime": "NOT RUN",
+    "guardedPrimateDonorCensus": "NOT RUN",
+    "batchedSprint18RuntimeReview": "NOT RUN",
+    "publicationGate": "NOT RUN",
+    "releaseClosureMatrix": "NOT RUN"
+  },
+  "sprint18DomainCases": [
+    "expanded-summoning.sprint18-twenty-six-roots",
+    "expanded-summoning.sprint18-registered-and-suppressed",
+    "expanded-summoning.sprint18-ape-two-slams",
+    "expanded-summoning.sprint18-dire-ape-bite-two-claws",
+    "expanded-summoning.sprint18-rend-live-strength",
+    "expanded-summoning.sprint18-rend-same-target-same-sequence",
+    "expanded-summoning.sprint18-no-stale-rend",
+    "expanded-summoning.sprint18-exact-land-ranks",
+    "expanded-summoning.sprint18-omitted-senses",
+    "expanded-summoning.sprint18-append-only-identities"
+  ],
+  "surface": {
+    "uniqueCreatures": 99,
+    "registeredGeneratedPlacements": 1034,
+    "suppressedGeneratedPlacements": 26,
+    "publishedGeneratedPlacements": 1008,
+    "retainedNativeWrappers": 29,
+    "visibleChoices": 1037,
+    "visibleChoicesAfterPublication": 1063,
+    "ledgerEntries": 2980,
+    "ledgerAppended": 58,
+    "projectIconConcepts": 111
+  },
+  "protectedBoundary": {
+    "releasedMasterFilesCompared": 198,
+    "qualifiedSummoningFilesCompared": 360,
+    "filesSprint18MayChange": 11,
+    "filesSprint18Adds": 6,
+    "rule": "Every other byte beneath the protected prefixes is compared to da782d22 and must be identical."
+  },
+  "machineState": {
+    "installationBaselineFileCount": 136,
+    "installationBaselineTreeSha256": "2043B4587E5D25197AE873BBB69A90C367F836D86499F25892D225016F93C593",
+    "installationAfterFileCount": 136,
+    "installationAfterTreeSha256": "2043B4587E5D25197AE873BBB69A90C367F836D86499F25892D225016F93C593",
+    "installedInfoVersion": "0.0.117",
+    "saveCountBefore": 118,
+    "saveCountAfter": 118,
+    "kingmakerProcess": "none at any point",
+    "deployment": "none; Build-Local reported 'No deployment was performed.'",
+    "runtimeLease": "none; compatibility.lock absent before and after",
+    "stagingTransaction": "none opened",
+    "exactRestoration": "VERIFIED by hash; nothing was deployed, so nothing needed restoring."
+  },
+  "privateReferenceRepair": {
+    "file": "UnityEngine.PhysicsModule.dll",
+    "problem": "Absent from the local private build-reference bundle, which the exact-reference gate requires.",
+    "action": "Copied read-only from the installed Steam runtime, which is the same source the project's own export script uses.",
+    "sha256": "724AC786E5DCEAE9D24521B6DCFB3C595DE7529B4A7096E70FD6871809AD2AC7",
+    "verified": "Bundle and installed bytes now hash identically; the other 13 references were already identical and none changed.",
+    "scope": "Build input only. Nothing in the repository, the installed mod or the game was modified."
+  },
+  "candidateBudget": {
+    "hiddenCandidate": { "maximum": 1, "used": 0 },
+    "productCorrectionCandidate": { "maximum": 1, "used": 0 },
+    "observationOnlyCorrection": { "maximum": 1, "used": 0 }
+  },
+  "blockers": [
+    {
+      "id": "PUSH_POLICY_ALLOWLIST",
+      "gate": "Mission section 1.7 draft PR, section 12 merge, tag and release",
+      "detail": "codex-policy/Push-KingmakerGunslinger.ps1 refuses the owner-named branch codex/expanded-summoning-sprint18-ape-dire-ape because it is not in AllowedBranches. The policy was run exactly as AGENTS.md requires and was not changed or bypassed; this is the same boundary the v0.0.143 release hit and the owner resolved.",
+      "ownerDecision": "Add codex/expanded-summoning-sprint18-ape-dire-ape to AllowedBranches in C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1.",
+      "blocks": ["push", "draft PR", "merge", "tag", "release"]
+    },
+    {
+      "id": "PRIMATE_DONOR_CENSUS_NOT_RUN",
+      "gate": "Mission section 4 donor and rig audit, and therefore section 5 original visuals",
+      "detail": "The Sprint 16 and 17 mesh generators take a request-local donor bind-pose capture as their only game-sourced input, so the original Ape and Dire Ape bodies cannot be authored before that capture exists. The offline pre-census already proves the installed library has no primate unit type and no RendFeature consumer, so both bodies must be original geometry on a non-primate rig. Both creatures are withheld, so nothing player-visible depends on the provisional Owlbear donor.",
+      "ownerDecision": "Authorize a guarded runtime session: deploy this candidate and run the bounded read-only primate donor census with bind-rig capture.",
+      "blocks": ["original visuals", "visual lifecycle review", "publication", "release"]
+    },
+    {
+      "id": "SPRINT18_RUNTIME_REVIEW_NOT_RUN",
+      "gate": "Mission section 9 hidden candidate qualification",
+      "detail": "No guarded runtime review has run. Live profiles, the two-slam and bite-and-two-claw routines, qualifying and nonqualifying rend, both combat modes, all 26 roots through the real player path, visual lifecycle, crowding, fallback, module-disabled behaviour and persistence are all unproved.",
+      "ownerDecision": "Same guarded runtime session as above, after the donor census settles the visuals.",
+      "blocks": ["publication", "release"]
+    }
+  ],
+  "independentRelease": {
+    "ape": "NOT releasable independently. Both apes share the same unauthored visual seam and the same unrun runtime review, and both are blocked by the same push-policy boundary.",
+    "direApe": "NOT releasable independently, for the same reasons."
+  },
+  "sprint19Started": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}
