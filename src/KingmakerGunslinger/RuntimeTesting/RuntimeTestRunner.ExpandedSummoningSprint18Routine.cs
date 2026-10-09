@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Controllers;
 using Kingmaker.Controllers.Combat;
+using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
@@ -275,6 +276,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>
         /// Issue one native full attack and wait for the native command to
         /// finish, bounded by frames rather than by any result.
+        ///
+        /// <para>In turn-based combat a command issued outside the owner's
+        /// turn never resolves: the first run measured zero attacks in that
+        /// mode for exactly that reason. So the review waits for the native
+        /// turn controller to hand this unit its turn, ending other units'
+        /// finished turns the way the qualified Sprint 16 cells do, and only
+        /// then issues the command. No action, movement or resource is
+        /// requested of the working-save party.</para>
         /// </summary>
         private IEnumerable<int> Sprint18RunFullAttack(
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,
@@ -286,6 +295,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (UnitEntityData unit in new[] { owner, victim })
                 if (!Game.Instance.State.AwakeUnits.Contains(unit))
                     Game.Instance.State.AwakeUnits.Add(unit);
+            int waited = 0;
+            while (CombatController.IsInTurnBasedCombat() &&
+                ++waited <= Sprint18AttackFrames)
+            {
+                if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
+                if (Sprint18OwnerIsActing(owner)) break;
+                yield return 0;
+            }
             var attack = new UnitAttack(victim) { ForceFullAttack = true };
             record(attack);
             owner.Commands.Run(attack);
@@ -293,9 +310,47 @@ namespace KingmakerGunslinger.RuntimeTesting
             while (++frames <= Sprint18AttackFrames)
             {
                 if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
+                if (CombatController.IsInTurnBasedCombat())
+                    Sprint18OwnerIsActing(owner);
                 yield return 0;
                 if (attack.IsFinished) break;
             }
+        }
+
+        private readonly UnitCombatJoinController _primateJoin =
+            new UnitCombatJoinController();
+        private readonly UnitCombatPrepareController _primatePrepare =
+            new UnitCombatPrepareController();
+        private readonly HashSet<TurnController> _primatePrepared =
+            new HashSet<TurnController>();
+
+        /// <summary>
+        /// Drive the native turn order until this unit is the one acting.
+        /// Other units' finished turns are ended; none is asked to act.
+        /// </summary>
+        private bool Sprint18OwnerIsActing(UnitEntityData owner)
+        {
+            _primateJoin.Tick();
+            _primatePrepare.Tick();
+            TurnController turn = Game.Instance.TurnBasedCombatController.CurrentTurn;
+            if (turn == null) return false;
+            if (turn.Status == TurnController.TurnStatus.None &&
+                _primatePrepared.Add(turn)) turn.Prepare();
+            bool acting = turn.Status == TurnController.TurnStatus.Preparing ||
+                turn.Status == TurnController.TurnStatus.Acting;
+            if (ReferenceEquals(turn.Unit, owner)) return acting;
+            if (acting) Sprint18EndTurn(turn);
+            return false;
+        }
+
+        private static void Sprint18EndTurn(TurnController turn)
+        {
+            turn.ForceToEnd(true);
+            System.Reflection.MethodInfo end = typeof(TurnController).GetMethod("End",
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null);
+            if (end != null) end.Invoke(turn, null);
         }
 
         /// <summary>
@@ -304,16 +359,28 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private IEnumerable<int> Sprint18AdvanceRound(UnitEntityData owner)
         {
-            int round = Game.Instance.TurnBasedCombatController.CurrentTurn == null
-                ? -1 : Game.Instance.TurnBasedCombatController.CurrentTurn.GetHashCode();
+            TurnController start = Game.Instance.TurnBasedCombatController.CurrentTurn;
             int frames = 0;
             while (++frames <= Sprint18AttackFrames)
             {
                 if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
+                if (CombatController.IsInTurnBasedCombat())
+                {
+                    TurnController turn =
+                        Game.Instance.TurnBasedCombatController.CurrentTurn;
+                    // End this unit's own turn too: a new round is what the
+                    // rend tracker is scoped against, and only the native
+                    // round boundary clears it.
+                    if (turn != null && (turn.Status == TurnController.TurnStatus.Acting ||
+                        turn.Status == TurnController.TurnStatus.Preparing))
+                        Sprint18EndTurn(turn);
+                }
                 yield return 0;
-                var current = Game.Instance.TurnBasedCombatController.CurrentTurn;
-                if ((current == null ? -1 : current.GetHashCode()) != round) break;
-                if (frames > 120 && !CombatController.IsInTurnBasedCombat()) break;
+                TurnController current =
+                    Game.Instance.TurnBasedCombatController.CurrentTurn;
+                if (!ReferenceEquals(current, start) &&
+                    (current == null || ReferenceEquals(current.Unit, owner))) break;
+                if (frames > 240 && !CombatController.IsInTurnBasedCombat()) break;
             }
         }
     }

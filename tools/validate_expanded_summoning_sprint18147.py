@@ -159,15 +159,22 @@ def preserved_files(root: Path, ref: str, prefixes, allowed=()) -> int:
 
 def validate_identity_append(root: Path) -> int:
     """The ledger is append-only: master's entries keep their exact order,
-    symbol, GUID and metadata, and Sprint 18's 58 identities follow them."""
+    symbol, GUID and metadata, and Sprint 18's 60 identities follow them.
+
+    Sixty rather than fifty-eight because the guarded review measured the
+    Dire Ape biting for 1d8 and clawing for 1d6: the shared native weapons
+    do not override their damage dice, so the engine scales them one step up
+    for a Large wielder. Its printed entry is 1d6 and 1d4, so it owns two
+    weapons of its own and the shared ones are left exactly as they were.
+    """
     accepted = json.loads(blob(root, MASTER, "blueprints/blueprints.json"))["entries"]
     current = document(root, "blueprints/blueprints.json")["entries"]
     if current[:len(accepted)] != accepted:
         raise AssertionError("Sprint 18 moved or rewrote a historical identity")
     appended = current[len(accepted):]
-    if len(accepted) != 2922 or len(appended) != 58:
+    if len(accepted) != 2922 or len(appended) != 60:
         raise AssertionError(
-            f"Sprint 18 must append exactly 58 identities to 2922; "
+            f"Sprint 18 must append exactly 60 identities to 2922; "
             f"observed {len(accepted)} + {len(appended)}")
     if len({e["guid"] for e in current}) != len(current) or \
             len({e["symbol"] for e in current}) != len(current):
@@ -176,6 +183,8 @@ def validate_identity_append(root: Path) -> int:
         raise AssertionError("Appended identity GUIDs are malformed")
     expected_tail = {
         "KMG.Summoning.Natural.Slam1d6": "BlueprintItemWeapon",
+        "KMG.Summoning.Natural.DireApe.Bite1d6": "BlueprintItemWeapon",
+        "KMG.Summoning.Natural.DireApe.Claw1d4": "BlueprintItemWeapon",
         "KMG.Summoning.Natural.Ape.UnitType": "BlueprintUnitType",
         "KMG.Summoning.Natural.DireApe.UnitType": "BlueprintUnitType",
         "KMG.Summoning.Special.DireApe.Rend": "BlueprintFeature",

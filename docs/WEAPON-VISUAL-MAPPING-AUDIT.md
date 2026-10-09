@@ -6,7 +6,7 @@ Do not hand-edit either generated output.
 
 ## Coverage and policy
 
-The blueprint manifest contains exactly **122** active
+The blueprint manifest contains exactly **124** active
 `BlueprintItemWeapon` identities and every one is represented below.
 The audit includes equipped player/development weapons, mechanics-only
 Pistol-Whip items, and Expanded Summoning creature weapons. Cosmetic
@@ -23,7 +23,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | equipped project weapon | 101 |
 | mechanics-only exclusion | 2 |
-| summoning-only exclusion | 19 |
+| summoning-only exclusion | 21 |
 
 ### Family counts
 
@@ -31,7 +31,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | Blunderbuss | 12 |
 | Elven Branched Spear | 16 |
-| Expanded Summoning creature weapon | 19 |
+| Expanded Summoning creature weapon | 21 |
 | Katana | 14 |
 | Musket | 15 |
 | Nodachi | 14 |
@@ -167,6 +167,8 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Bite3d6 | 2fda8520f73c4431b02db582e16430b7 | Bite3d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.Tail4d8 | 99fd2a7c2e0e422d8c3792b4f882e37e | Tail4d8 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.Slam1d6 | 2a445954332645149e9586fb6ac8e86d | Slam1d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
+| KMG.Summoning.Natural.DireApe.Bite1d6 | fd2c965ffc764d67b0505cc0da2cc594 | Bite1d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
+| KMG.Summoning.Natural.DireApe.Claw1d4 | bedf467ee92646858b8f0a041bdabcb0 | Claw1d4 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 
 ## Exact presentation and provenance contracts
 
@@ -294,6 +296,8 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Bite3d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 | KMG.Summoning.Natural.Tail4d8 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 | KMG.Summoning.Natural.Slam1d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
+| KMG.Summoning.Natural.DireApe.Bite1d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
+| KMG.Summoning.Natural.DireApe.Claw1d4 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 
 ## Audit conclusion before asset authoring
 
