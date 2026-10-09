@@ -401,6 +401,7 @@
     <Compile Include="AcadamaeCordPolicyTests.cs" />
     <Compile Include="PlayerFacingPresentationAndDiscoverabilityTests.cs" />
     <Compile Include="WeaponFindabilityTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\HeirloomNodachiIconObservation.cs"><Link>RuntimeTesting\HeirloomNodachiIconObservation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\WeaponFindabilitySaveContract.cs"><Link>RuntimeTesting\WeaponFindabilitySaveContract.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\CampaignWeaponRecoveryPolicy.cs"><Link>Acquisition\CampaignWeaponRecoveryPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\CampaignWeaponQualification.cs"><Link>Acquisition\CampaignWeaponQualification.cs</Link></Compile>

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "releaseVersion": "0.0.146",
-  "status": "POST_MASTER145_INTEGRATION_CANDIDATE_NOT_RUNTIME_QUALIFIED",
+  "status": "OBSERVATION_CORRECTION_CANDIDATE_NOT_QUALIFIED",
   "integrationSourceGate62ae6936": {
     "commit": "62ae6936de43f2bad42f74d557fc4c15a5031ace",
     "status": "PASS source/build/package;NOT runtime launched",
@@ -21,7 +21,10 @@
   },
   "integration": {
     "ledger": "planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md",
-    "parents": ["c6effc3224754e1bdf250a703eb1440c1dbbfb78", "bf8a1e41b308bfb148cb028d75a576555b7e8dd1"],
+    "parents": [
+      "c6effc3224754e1bdf250a703eb1440c1dbbfb78",
+      "bf8a1e41b308bfb148cb028d75a576555b7e8dd1"
+    ],
     "commonAncestor": "4ba8d4aca087391144abf401f526189f59b26535",
     "kind": "Normal merge,35 conflicted files/56 hunks;no force/history rewrite",
     "sourceAudit": "PASS:197 master-protected and261 summoning-protected files byte-exact;2922-entry ordered identity union;master143/144/145 records unchanged",
@@ -55,23 +58,42 @@
   "intakeLatestRelease": "v0.0.145",
   "historicalEvidence": "planning/RELEASE-0.0.143-EVIDENCE.json",
   "historicalModuleOffCandidate": "735751ab7da9087d7ae38d2a321cffc91a4a8037",
-  "sourceOwner": { "session": "c6976c9b-99e5-4ffb-a03f-1c05ef8f5745", "pid": 27624, "startUtc": "2026-10-08T19:42:55.3569342Z", "keeperPid": 21240, "receipt": "artifacts/release143-source-owner.json" },
+  "sourceOwner": {
+    "session": "c6976c9b-99e5-4ffb-a03f-1c05ef8f5745",
+    "pid": 27624,
+    "startUtc": "2026-10-08T19:42:55.3569342Z",
+    "keeperPid": 21240,
+    "receipt": "artifacts/release143-source-owner.json"
+  },
   "moduleBoundary": {
-    "keys": ["cheetah", "lion", "tiger", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit", "salt-mephit", "steam-mephit"],
+    "keys": [
+      "cheetah",
+      "lion",
+      "tiger",
+      "dust-mephit",
+      "ice-mephit",
+      "magma-mephit",
+      "ooze-mephit",
+      "salt-mephit",
+      "steam-mephit"
+    ],
     "authority": "ModContext.FeatureModules.Active.ExpandedSummoning, identical immutable process snapshot used by publication/assets/runtime",
     "lifecycle": "Restart-bound. FeatureModuleSettingsState.SetPending does not change Active; UI explicitly requires full restart for Expanded Summoning. Main has no UMM hot-toggle/unload callback. Native UnitEntityView.OnDestroy releases exact ownership before destruction; new disabled process gates attachment before allocation and rim Update before cache resolution/recolour. Existing ReleaseAll remains an idempotent teardown fixture seam, not a newly invented hot-toggle.",
     "registration": "UNCHANGED for saved blueprint compatibility",
     "fix": "Deferred Apply effects and RimFor lookup refuse inactive module. Controller Update checks Active before accessing cached state, removes cache entry when inactive, and never recolours while inactive.",
     "focusedTests": "5/5 PASS; three new behavior tests cover all nine keys, zero OFF effects/lookups, immutable pending/active restart boundary and later enabled attach.",
-    "runtime": "NOT RUN; final post-master-merge v146 exact package required",
+    "runtime": "PASS on exact51ad7ad4;OFF120/120,absence6/6,ON53/53. Current narrow Nodachi observer correction does not change this exercised production surface.",
     "scenarios": "Existing whole-roster cleanup adds owner/outcome/rim/renderer/global zero-allocation evidence. Existing visual lifecycle covers all nine keys, duplicate real attach, looping rims after native frames, teardown, rollback and native/original-body controls. No new scenario family."
   },
   "workingSave": {
     "name": "KMG_AUTOMATION_WORKING",
     "preparedOwnedUnits": 108,
     "prepareRun": "20261008T2352470423285Z-working-save-expanded-summoning-prepare",
-    "cleaned": false,
-    "next": "Use exact existing receipt set for OFF cleanup/native save, then fresh absence. No prepare unless receipts invalid; no manual save surgery or protected baseline access."
+    "cleaned": true,
+    "next": "Keep clean Working save;no repeat prepare. Native-owned trait-save protocol remains unrun.",
+    "nativeCleanupWrites": 1,
+    "cleanupRun": "20261009T0233367107964Z-working-save-expanded-summoning-verify-cleanup",
+    "absenceRun": "20261009T0237311487955Z-working-save-expanded-summoning-verify-absent"
   },
   "intakeMachine": {
     "lease": "runtime-20261009T013957Z-9f78f3988e5547d3b0587041bb37523c",
@@ -84,10 +106,510 @@
     "gameOrRuntimeStagingActive": false,
     "deploymentOccurred": false
   },
-  "preservedPasses": ["crocodilians 212/212", "snake commands 71/71", "Salamander", "inventory 50/50", "menu 3/3", "1008 generated roots", "29 wrappers", "enabled cleanup 119/119", "fresh absence 6/6", "flight 26/26"],
+  "preservedPasses": [
+    "crocodilians 212/212",
+    "snake commands 71/71",
+    "Salamander",
+    "inventory 50/50",
+    "menu 3/3",
+    "1008 generated roots",
+    "29 wrappers",
+    "enabled cleanup 119/119",
+    "fresh absence 6/6",
+    "flight 26/26"
+  ],
   "ownerReleaseRiskAcceptance": "HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE",
   "historicalFailuresRewritten": false,
-  "remaining": ["source-qualify narrow module fix", "normal latest-master merge and complete146 identity update", "exact146 source/build/package", "OFF smoke/cleanup/absence", "ON nine-variant regression", "inventory/menu/representative quantities after integration diff audit", "five live profiles", "v142/144/145 coexistence and native-owned trait-save", "exact restoration", "conditional PR29 merge and stable Latest146 release;close25/26 superseded"],
+  "remaining": [
+    "new exact observer-only source/build/package gate",
+    "fresh smoke and corrected weapon-findability-blueprints including4 Nodachi icon consumers",
+    "working-save-weapon-recovery",
+    "native-owned trait-save prepare/remove/absence",
+    "exact restoration",
+    "conditional PR29 ready/merge/stable Latest146;close25/26 superseded"
+  ],
   "sprint18Started": false,
-  "phase2CStarted": false
+  "phase2CStarted": false,
+  "exactCandidate51ad7ad4": {
+    "commit": "51ad7ad4bad2e2524e4541d8f862000cb93c730a",
+    "sourceFingerprint": "027201dba1cc31195c7738f9b7ac062e08d05f30a461cf1ce69ef43055a51bb8",
+    "zipSha256": "360a5f9f2bbdb95be6e1e444d5a4fe7398c9557392cf5642ab222d1c61ef55c5",
+    "dllSha256": "b6549aced8a58bfc9a3bf8ca8b9817e37235b9499200b61b9a9394bc4c814580",
+    "mvid": "0141da3a-3a88-4098-9734-38fb07efd894",
+    "packageMembers": 333,
+    "domain": "2497/2497",
+    "sourceBuildPackage": "PASS",
+    "seconds": 239.3,
+    "archive": "artifacts/candidates/51ad7ad4bad2e2524e4541d8f862000cb93c730a"
+  },
+  "moduleBoundaryQualification": {
+    "candidate": "51ad7ad4bad2e2524e4541d8f862000cb93c730a",
+    "batchId": "release146-runtime-20261009T0227405413558Z",
+    "batchSha256": "783a2a9881ae86f569152b2d16b5f3644847b2c6ef595eee7243b49a9d656524",
+    "status": "PASS",
+    "assertions": 255,
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "status": "PASS",
+        "runId": "20261009T0228091517741Z-4403642b38984dd888de9908603a0d32",
+        "evidenceId": "20261009T0228091517741Z-working-save-smoke",
+        "assertions": 11,
+        "passed": 11,
+        "resultSha256": "1e4141b544dc0283ea5924a84acf130e436a3a2350fd36d72ec746e162f959cf",
+        "requestSha256": "e7a01f40426baaeb0211704b3c9dfce81bc5cbf8003711adc52693c385892fc2",
+        "loadedIdentitySha256": "c5841ee599b92904aa216f29f25fed59aa4d4f3d4fc7e4cee720b1046d4f0fab",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "observe-expanded-summoning-module-boundary",
+        "status": "PASS",
+        "runId": "20261009T0231291877782Z-08a35880ff3e40d4a708ee83b4c203ad",
+        "evidenceId": "20261009T0231291757628Z-observe-expanded-summoning-module-boundary",
+        "assertions": 2,
+        "passed": 2,
+        "resultSha256": "bf830dfac34ab1e784634455a741ba4ecdb877f516e8ce5f9899b4243da778d4",
+        "requestSha256": "371451f3c5ebdb69adae3d059c0c37027a1517d7d1c860427294fb19a1b1e0d9",
+        "loadedIdentitySha256": "ebf59e8b1ea1c740a13ca9fce3c001a3a9ac95010ccccfa411e42d997704e5dc",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "working-save-expanded-summoning-verify-cleanup",
+        "status": "PASS",
+        "runId": "20261009T0233367210250Z-1f9b92f58c024ecda26178bc4555e1c9",
+        "evidenceId": "20261009T0233367107964Z-working-save-expanded-summoning-verify-cleanup",
+        "assertions": 120,
+        "passed": 120,
+        "resultSha256": "7025171a3dc587fb1dd0b7ff4800bb2c8401baf0d858addc2c5177f8de35947b",
+        "requestSha256": "0a693a17171a74d7b96dd384b745b41661f106877d64900bd75d5b6ac878337c",
+        "loadedIdentitySha256": "70c6e3e4a64339dde189af9102d14f5f2ed1e2aed8bf240cba1988d533221df6",
+        "nativeWrites": 1
+      },
+      {
+        "scenario": "working-save-expanded-summoning-verify-absent",
+        "status": "PASS",
+        "runId": "20261009T0237311487955Z-acc572e8f4b84c2c9e7deb0299b7ac47",
+        "evidenceId": "20261009T0237311487955Z-working-save-expanded-summoning-verify-absent",
+        "assertions": 6,
+        "passed": 6,
+        "resultSha256": "0cbfc4bf7fe40de2a8ceda641d14a8146097064cef679cd0cc68b36e1ac1417b",
+        "requestSha256": "cb71e5586238acea38bcb89d25d4442d25dbb3b7fd1611c01ef9a6e240004974",
+        "loadedIdentitySha256": "643ff57392b6b77f31dc9822b4dd1047b960325b187db3580bee86d8a1fee89a",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "disposable-expanded-summoning-visual-lifecycle",
+        "status": "PASS",
+        "runId": "20261009T0240355393587Z-6f468011de6a40269bb53e8e41a4dba5",
+        "evidenceId": "20261009T0240354769670Z-disposable-expanded-summoning-visual-lifecycle",
+        "assertions": 53,
+        "passed": 53,
+        "resultSha256": "883dfb6ed7c0f05f138efcc76cf90f1b7d5e21a42fe71d9ed81d912f84b8af2a",
+        "requestSha256": "870511ac807e3acc6445e226cdb4c4d89d6a3c73689d7bde0a260d066c7daf8c",
+        "loadedIdentitySha256": "574680e5c1e9fd3699918dc526e793f752d01c0f93e2fa8760307f4d2f819085",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "observe-expanded-summoning-inventory",
+        "status": "PASS",
+        "runId": "20261009T0244076364692Z-4875fb3752b54ae79e1dea15beafe618",
+        "evidenceId": "20261009T0244076364692Z-observe-expanded-summoning-inventory",
+        "assertions": 50,
+        "passed": 50,
+        "resultSha256": "4672a23062775b0aa877a590ff3dbaf0e67c8dd3e1f1784ed9d64882e57bbba8",
+        "requestSha256": "cb68076aed854d33cdc0b77e1df828217487d119adba091f80aefbefe676a33d",
+        "loadedIdentitySha256": "bba41ca1712d316770e60fc293e74b7af36f30c4044cca4eac3ddc995fb7c0a3",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "disposable-expanded-summoning-projected-menu",
+        "status": "PASS",
+        "runId": "20261009T0248372655721Z-a59f92ae099f416696e1d4d762685eed",
+        "evidenceId": "20261009T0248372655721Z-disposable-expanded-summoning-projected-menu",
+        "assertions": 3,
+        "passed": 3,
+        "resultSha256": "6ca1712a06b8f418a287a2c5d46dd7f61069b7c10fdb1bdbd1ef28852b0cff36",
+        "requestSha256": "3ec8f7a3909a48f576655ea721637c937f3e9de60877d31e01ffeba43cac8c4b",
+        "loadedIdentitySha256": "02f6dcca4c5b2de21c51a40082156d864c5551581666762e4b17792f68281758",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "disposable-expanded-summoning-player-path",
+        "status": "PASS",
+        "runId": "20261009T0252090403148Z-4961c26da5264f78bf781b0be44b1441",
+        "evidenceId": "20261009T0252090403148Z-disposable-expanded-summoning-player-path",
+        "assertions": 10,
+        "passed": 10,
+        "resultSha256": "94945924e5082d2cd30a1049020a65d34364d4a8adad72a7d4aa1c7518aeffd6",
+        "requestSha256": "a48a2c06c58a68b0a0f1c469661242102dccf429753f8374876799983d053353",
+        "loadedIdentitySha256": "1eaf700a3ce02f1390dfe8cf6ed8237d4c41a9b4c95760b68e759b89e38ac9f4",
+        "nativeWrites": 0
+      }
+    ],
+    "off": "108 profiles correct;0 variant materials/coat textures/live owners;all108 destroyed;one native Working cleanup save",
+    "on": "Nine keys,three cycles;duplicate real attach creates no duplicate ownership;18 materials/2 textures/9 owners each cycle;0/0/0 after every cycle;all mephit rims,rollback/sweep/native controls PASS",
+    "restoration": {
+      "snapshot": "20261009T0227414978829Z",
+      "status": "VERIFIED",
+      "lease": "runtime-20261009T022741Z-1ee18638844749408690e34219bed7b1",
+      "leaseReleased": true,
+      "before": {
+        "files": 136,
+        "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "version": "0.0.117",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+      },
+      "after": {
+        "files": 136,
+        "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "version": "0.0.117",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+      },
+      "moduleSettingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "favoredSettingsSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+      "gameProcesses": 0,
+      "staging": false
+    }
+  },
+  "fiveProfileCompatibility": {
+    "candidate": "51ad7ad4bad2e2524e4541d8f862000cb93c730a",
+    "status": "PASS",
+    "record": "release146-compatibility-20261009T0305425495123Z.json",
+    "recordSha256": "4fea4a27b0511735593fe32417a290d75aa9ea9318472697f6b2ef4c67417e68",
+    "scope": "Owner-required five-profile matrix: fresh mod-load/optional-contract/complete inventory in every profile. Save-backed mechanics and ON/OFF persistence retain separate full working-save qualification. No minimal-profile save load or save surgery.",
+    "assertions": 359,
+    "processes": 15,
+    "saveWrites": 0,
+    "profiles": [
+      {
+        "profile": "gunslinger-only",
+        "status": "PASS",
+        "transaction": "compat-20261009T025559Z-48a19f57701c",
+        "restored": true,
+        "restoredUtc": "2026-10-09T03:02:52.9152654Z",
+        "runs": [
+          {
+            "scenario": "mod-load-smoke",
+            "status": "PASS",
+            "runId": "20261009T0257323616807Z-569e80f91c0f4bb0ab63c0db56d252eb",
+            "evidenceId": "20261009T0257322489206Z-mod-load-smoke",
+            "assertions": 3,
+            "passed": 3,
+            "resultSha256": "1a52ba9f229843e13eb2d882ec0d020451ff6abba4f36c180269a8e78ba34fe2",
+            "requestSha256": "f517d3f62db038b342defe31bdd1d4247b9e6976ef94d5ddb1bf772e2942d42a",
+            "loadedIdentitySha256": "781888e1c326cc07c102e289528789c650ae9ff2c06009807a299b4555b0a4a9",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-optional-mod-compatibility",
+            "status": "PASS",
+            "runId": "20261009T0258598342469Z-d0ec744b32b84b92883a1dc324629632",
+            "evidenceId": "20261009T0258598342469Z-observe-optional-mod-compatibility",
+            "assertions": 16,
+            "passed": 16,
+            "resultSha256": "bee24ecd97bda334425e517f80ce1f4fc9b517a7008edae28dfa93cd2cc609d3",
+            "requestSha256": "8b1dffffbd98913d8f1663f8c57e9ef5fcaba3276356ad6d223350723cca0049",
+            "loadedIdentitySha256": "ce5b3d27eeec509562935bcac022d394d1ca8ccce82c098abf63b4c392acf492",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-expanded-summoning-inventory",
+            "status": "PASS",
+            "runId": "20261009T0300254396198Z-890bd03ead4246968e66fef59723f57f",
+            "evidenceId": "20261009T0300254234462Z-observe-expanded-summoning-inventory",
+            "assertions": 50,
+            "passed": 50,
+            "resultSha256": "d36bb7d818ec673dda90e9f4054d1e68910d9781bd3a23015b8a35de52b051fe",
+            "requestSha256": "c82519e25fe74e3a2343a5c562490b5489803405a2366416a1496cf14ef004e4",
+            "loadedIdentitySha256": "7ddfd54e68370e9416f18eb517eeaaf4237343bf1e2766981271bb0217a14285",
+            "nativeWrites": 0
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-call-of-the-wild",
+        "status": "PASS",
+        "transaction": "compat-20261009T030542Z-47e35226647e",
+        "restored": true,
+        "restoredUtc": "2026-10-09T03:15:22.5270243Z",
+        "runs": [
+          {
+            "scenario": "mod-load-smoke",
+            "status": "PASS",
+            "runId": "20261009T0306553610885Z-e7783ed1faf2426d88f05741f05e2c96",
+            "evidenceId": "20261009T0306553297941Z-mod-load-smoke",
+            "assertions": 3,
+            "passed": 3,
+            "resultSha256": "23b7816d4e17927964e7790a4ef1e1056367c9a07b7d018d132bfc0e7178069a",
+            "requestSha256": "c696b118bf7602ad03fd58d76cc721f0d142553122a1c2d1ca7ed8b5d0158cf4",
+            "loadedIdentitySha256": "5954bd235a4b5e1cab93e382fdfeb1de37747d7cf8d59053411a1c39050487a4",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-optional-mod-compatibility",
+            "status": "PASS",
+            "runId": "20261009T0309001011249Z-e14420b7452045ed9d458b7355a00db4",
+            "evidenceId": "20261009T0309001011249Z-observe-optional-mod-compatibility",
+            "assertions": 23,
+            "passed": 23,
+            "resultSha256": "18450b7cd6eda44a8b309f3f3ddf9f1178bd46de4440609b347fba68df0df4b5",
+            "requestSha256": "e0ea4feee4234696a2192b05405d7860d0ad418a519f0201ff8a4132c38595d1",
+            "loadedIdentitySha256": "d7da1c769dfe5bfa211b3a7f8af6d00b55e0494e249cb31bc3c5f270c44100d3",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-expanded-summoning-inventory",
+            "status": "PASS",
+            "runId": "20261009T0311018587361Z-61b209ca73a44a7191e3f675f82b969b",
+            "evidenceId": "20261009T0311018587361Z-observe-expanded-summoning-inventory",
+            "assertions": 50,
+            "passed": 50,
+            "resultSha256": "527678b7a7ef0de857ecb8424e908a63b73955fb976f1be3101ef115b3af6b35",
+            "requestSha256": "e1b70717b304d4569e83e22a83e8dd61bbd817413e3d90b45ea07c9bdfc0854a",
+            "loadedIdentitySha256": "a22f3563c6d24d94432453527fc8aff359bd47f96229239e0179d8bacd953129",
+            "nativeWrites": 0
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-arms-armor",
+        "status": "PASS",
+        "transaction": "compat-20261009T031522Z-c08c11003fef",
+        "restored": true,
+        "restoredUtc": "2026-10-09T03:21:45.7865968Z",
+        "runs": [
+          {
+            "scenario": "mod-load-smoke",
+            "status": "PASS",
+            "runId": "20261009T0316305936630Z-81d1e7be2b014c43b0f65c1bb7ccf750",
+            "evidenceId": "20261009T0316305936630Z-mod-load-smoke",
+            "assertions": 3,
+            "passed": 3,
+            "resultSha256": "4f2efa2ba765c6b84224a56e04b98d7d6793f79fdb9616a2e5bb22aa6a32e4fb",
+            "requestSha256": "5d39324f459545fe56419c867a10af66c3f7094ce81cd866927b11f9977d4eb6",
+            "loadedIdentitySha256": "9f5eca479cbccc02a6194a526db74e5daecdb8c27ddd700018372a257743117f",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-optional-mod-compatibility",
+            "status": "PASS",
+            "runId": "20261009T0317581428562Z-2999f4d901af466194cb80738cdaef61",
+            "evidenceId": "20261009T0317581407305Z-observe-optional-mod-compatibility",
+            "assertions": 16,
+            "passed": 16,
+            "resultSha256": "42d24b7ea8dd88919e2387abbb97d4251b8c1769e09c2ac286679515e22dea18",
+            "requestSha256": "4903786e7b032fc32418afeb2ba0a9e96ddea1f64d87ef4eee02bb793250e82d",
+            "loadedIdentitySha256": "b2d6f1ac2c23e7aef08386828a2efa459bb9d9f89000b699d362d803924d2f37",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-expanded-summoning-inventory",
+            "status": "PASS",
+            "runId": "20261009T0319237080455Z-3cdff08226d943ba9cefa55c24d331c7",
+            "evidenceId": "20261009T0319236924057Z-observe-expanded-summoning-inventory",
+            "assertions": 50,
+            "passed": 50,
+            "resultSha256": "f8afc1df77dd77a08dd83d0db2bcaca58805a6645b5c948594f7c7ff8555a159",
+            "requestSha256": "80a4da50af4b73d932e7a5e435c1f7343616be512fc52db73a56f0b1002db9ef",
+            "loadedIdentitySha256": "6c55edba6a27ce3e2d753090e49460316cd7d608e6dc52fb1c4f16429052d0e9",
+            "nativeWrites": 0
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-toggle-custom-soundpacks",
+        "status": "PASS",
+        "transaction": "compat-20261009T032145Z-298e7fa4f425",
+        "restored": true,
+        "restoredUtc": "2026-10-09T03:28:07.0428140Z",
+        "runs": [
+          {
+            "scenario": "mod-load-smoke",
+            "status": "PASS",
+            "runId": "20261009T0322563788104Z-e1b4985a09a9427188ab890cab66171e",
+            "evidenceId": "20261009T0322562992350Z-mod-load-smoke",
+            "assertions": 3,
+            "passed": 3,
+            "resultSha256": "334f32cbcb51d3dcb23914ab7d34c779ee9cabee3f9a4dc83dff37547b322fc7",
+            "requestSha256": "5a02cab20c1399c76eaefacc41f81a4206f8ccd55b08cb98c004c42df3831dc3",
+            "loadedIdentitySha256": "bf14452fac011350e203fece1b4b0d30600e10f1815bd3eccd6d11c213cd1be4",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-optional-mod-compatibility",
+            "status": "PASS",
+            "runId": "20261009T0324229436616Z-bf8969f4a8dc4579aa8d7547c07e21f7",
+            "evidenceId": "20261009T0324229406523Z-observe-optional-mod-compatibility",
+            "assertions": 16,
+            "passed": 16,
+            "resultSha256": "1615aa6a1e9508ccba18ea34b970c9fc51920f9721de5d9cd58899dd911de26a",
+            "requestSha256": "2b693ac9c0a77a237da517e31cdec1f5340ac424a7f87d00a647dfaf1b243c62",
+            "loadedIdentitySha256": "913aae9a9b4eb250cf52f98552cd8102603413c687aa7216fd393eb3dd4943f3",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-expanded-summoning-inventory",
+            "status": "PASS",
+            "runId": "20261009T0325476988708Z-c068104f00ef4234882120d60a6e8003",
+            "evidenceId": "20261009T0325476832130Z-observe-expanded-summoning-inventory",
+            "assertions": 50,
+            "passed": 50,
+            "resultSha256": "bcd9d9a3be0aeb8e07cef0667d3b9fb08600ac63dbddc192368294b6af7d3c67",
+            "requestSha256": "91752c7e879c77b76f2ccad61b3e354cc243a63c7454fc56177289fe2dcec610",
+            "loadedIdentitySha256": "38723b997997bdc3fd0448264667af05cc0fe47991d2c79edf0783cde7702ceb",
+            "nativeWrites": 0
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-high-risk-combined",
+        "status": "PASS",
+        "transaction": "compat-20261009T032807Z-8262adf9ad17",
+        "restored": true,
+        "restoredUtc": "2026-10-09T03:37:52.9223026Z",
+        "runs": [
+          {
+            "scenario": "mod-load-smoke",
+            "status": "PASS",
+            "runId": "20261009T0329206220859Z-1de81e61f9b2413e9baf2158435feecd",
+            "evidenceId": "20261009T0329206220859Z-mod-load-smoke",
+            "assertions": 3,
+            "passed": 3,
+            "resultSha256": "eee04741aefff2b1e18ed7d29ef2c4e12b83821fb5070405ce5f2e82d30236bd",
+            "requestSha256": "397dffb527a3acbcb9a32af9b6972416623ca04366585e6e2e2b310bdff6c4e3",
+            "loadedIdentitySha256": "fd5696f485ddd51dca6f95491a93e48a7dafec8ff83afaaf10d54b574365e94b",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-optional-mod-compatibility",
+            "status": "PASS",
+            "runId": "20261009T0331259264636Z-8fae0789ef924b7abc276daa90ce8dd0",
+            "evidenceId": "20261009T0331259264636Z-observe-optional-mod-compatibility",
+            "assertions": 23,
+            "passed": 23,
+            "resultSha256": "4215a92884072b746a18df6b14e0926e4a6fa13c553ac3b54df67680d1be9114",
+            "requestSha256": "b57547126cf04a15c9d113675b02619f153de66b24b417a2ab4b74dc0f75f9e9",
+            "loadedIdentitySha256": "eab9f85ae158c77713ef59f4ca83542178c20e9e3f7e286e809fb8ae5b6d729a",
+            "nativeWrites": 0
+          },
+          {
+            "scenario": "observe-expanded-summoning-inventory",
+            "status": "PASS",
+            "runId": "20261009T0333285382551Z-19018c57820d49678550ac5391a4e246",
+            "evidenceId": "20261009T0333285323115Z-observe-expanded-summoning-inventory",
+            "assertions": 50,
+            "passed": 50,
+            "resultSha256": "1476cd1f93469221000e0a44183e840d6ad7d884aa34b9391b50232d888891ff",
+            "requestSha256": "952e9e38f7ad38222b8a5b1af714ad3686668c0ace1dd8b6baaca672ea8e4465",
+            "loadedIdentitySha256": "004587d8a91f47b6ce79de837c1284d6692127bcf574b5a51ae9a7c25a014902",
+            "nativeWrites": 0
+          }
+        ]
+      }
+    ],
+    "harnessCorrection": {
+      "originalRecord": "release146-compatibility-20261009T0255590756835Z.json",
+      "originalSha256": "9fa7eda1c5a8c7511c950deb961a32547c2936dfe85791945b6f18530d3417af",
+      "originalStatus": "FAIL preserved;three required standalone cells PASS",
+      "cause": "Supplemental disposable-expanded-summoning was misclassified as save-free;prelaunch required explicit Working SaveName. No fourth process launched;exact WhatIf reproduced rejection.",
+      "resolution": "Private driver uses owner-required mod-load,optional-contract,complete-menu cells only. Existing standalone cells verified by request/result/identity hashes and reused;other four profiles run once. No minimum-profile Working load,source/package change,or runtime assertion waiver."
+    }
+  },
+  "coexistencePartial": {
+    "candidate": "51ad7ad4bad2e2524e4541d8f862000cb93c730a",
+    "status": "PARTIAL;required weapon observer ERROR",
+    "record": "release146-runtime-20261009T0338166586639Z/batch.json",
+    "recordSha256": "8c86e736a56135f469c559a06353ae8fcc83e8fb51ba958cf245b79d947e4a11",
+    "runs": [
+      {
+        "scenario": "observe-published-elemental-character-traits",
+        "status": "PASS",
+        "runId": "20261009T0338453779248Z-9f7eddddb9a74da2b411d17e8c79455e",
+        "evidenceId": "20261009T0338453697567Z-observe-published-elemental-character-traits",
+        "assertions": 38,
+        "passed": 38,
+        "resultSha256": "2f14a33ee17dc9dc627ebffecf30e59b1a1cb9189f7b850ab1c6c08c7f5728b0",
+        "requestSha256": "c2cdf9e6c93252e5eaefce33cc12ed861ca477ed8dc0ca33cba1303796116ed7",
+        "loadedIdentitySha256": "f44ee0e8d4cfc96afe39b8a94f9832179098497454263ac6f2268b2ec96650b7",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "observe-firearm-descriptions",
+        "status": "PASS",
+        "runId": "20261009T0341592283871Z-aeaf857525824e77a788d25a25a1b7db",
+        "evidenceId": "20261009T0341592283871Z-observe-firearm-descriptions",
+        "assertions": 8,
+        "passed": 8,
+        "resultSha256": "c1e789eb3345e6a32cecda590bef9c96ccbe96e62c8df9996ca1d7dd4ad2b0cc",
+        "requestSha256": "d7a107ebc6e839eff5672cdfd88ed87963d7520de94dc6b25fa06ee53ffc4df4",
+        "loadedIdentitySha256": "ed8edd21423797515047c02e897e7c20775624957496ab361fcbce3f341978c0",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "observe-model-d-vendors",
+        "status": "PASS",
+        "runId": "20261009T0344065648768Z-848c4bb87aed49f09509166df417be15",
+        "evidenceId": "20261009T0344065451855Z-observe-model-d-vendors",
+        "assertions": 26,
+        "passed": 26,
+        "resultSha256": "a295bb9b5b2427c637b194956ecdcd90a412071d2ed30dd2aa4128a728ccd4ea",
+        "requestSha256": "e0a23a4ca2465eddc89291e3d3e2ea61341ece56baff850ed49aad1c269e6fe3",
+        "loadedIdentitySha256": "bd6987dfd7ee73183b4e3b1462e81dfb5ae28ac5167e9dd2d9e4b975ef57e8be",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "observe-favored-class-host-state",
+        "status": "PASS",
+        "runId": "20261009T0346139042595Z-5cc52638dda04665a0c73da012b3636f",
+        "evidenceId": "20261009T0346138922041Z-observe-favored-class-host-state",
+        "assertions": 6,
+        "passed": 6,
+        "resultSha256": "ef519e8562d8982a87b5db78fb5e767e2dae497b5eb9e9292ca9ec9b4a092d40",
+        "requestSha256": "558361517634f358d388c5e3c865ee8e7441664e83686e1184911925e819ab00",
+        "loadedIdentitySha256": "451a6d5f41c9a3ff6c38bd0fae141ac91d74a448ceb65e9a524ed5e0a5f7d751",
+        "nativeWrites": 0
+      },
+      {
+        "scenario": "weapon-findability-blueprints",
+        "status": "FAIL",
+        "runId": "20261009T0348220319710Z-1e7f6167949844cea8989978aabbbf0f",
+        "evidenceId": "20261009T0348220319710Z-weapon-findability-blueprints",
+        "assertions": 0,
+        "passed": 0,
+        "resultSha256": "1da57e715593bdc7758ce65599f914ebaa80f19f40f7900b945664c65790dc2c",
+        "requestSha256": "023f727bfde237ae35b07adec4a34f344aceead79ff5f09892d41bd6fb78f547",
+        "loadedIdentitySha256": "813b3b3377c146445d125b8ed2ae43f41635a3184b8d1d3ccdf199ea11e3ed4b",
+        "nativeWrites": 0
+      }
+    ],
+    "failedGate": "weapon-findability-blueprints",
+    "failure": "RequireExact<BlueprintFeature> rejected selection5ae9f898e45846d19d3802caf91e06b6,actualBlueprintFeatureSelection. No assertions ran. Request-local observer defect,not demonstrated product defect.",
+    "restoration": {
+      "snapshot": "20261009T0338175654260Z",
+      "status": "VERIFIED",
+      "leaseReleased": true,
+      "after": {
+        "files": 136,
+        "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "version": "0.0.117",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+      },
+      "moduleSettingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "favoredSettingsSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+      "gameProcesses": 0,
+      "staging": false
+    },
+    "unrun": [
+      "working-save-weapon-recovery",
+      "native-owned trait-save prepare/remove/absence"
+    ]
+  },
+  "nodachiObserverCorrection": {
+    "status": "SOURCE_EDIT_FOCUSED_PASS;new exact gate pending",
+    "scope": "Only request-local typed consumer reader plus behavior test,compile inclusions,current test-count metadata and neutral package-note provenance wording. No production,asset,blueprint,publication,mechanics,AI,persistence or icon-assignment change.",
+    "focused": "8/8;new selection/choice exact-reader behavioral regression",
+    "expectedDomainCount": 2498,
+    "expectedMembers": 333,
+    "remaining": "Commit/push corrected exact head,full source/build/package once;fresh smoke,affected weapon observer,recovery and native-owned trait save. Reuse unaffected51 PASS evidence with original provenance;no extra whole-roster prepare/root/profile replay."
+  }
 }
