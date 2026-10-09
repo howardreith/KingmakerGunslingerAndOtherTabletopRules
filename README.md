@@ -1,14 +1,14 @@
 ﻿# Kingmaker Gunslinger
 
-The **0.0.143-weapon-findability-fixes** candidate implements the seven requested
+The **0.0.144-weapon-findability-fixes** release implements the seven requested
 weapon moves, corrects two additional scene references and adds
 [controlled old-save recovery](docs/WEAPON-FINDABILITY-RECOVERY.md). See the
-[candidate notes](docs/RELEASE-NOTES-0.0.143.md),
+[release notes](docs/RELEASE-NOTES-0.0.144.md),
 [complete acquisition inventory](planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md)
 and [qualification evidence](docs/WEAPON-FINDABILITY-QUALIFICATION.md).
 Blueprint publication does not establish a normal route, pickup or save persistence.
 
-The current full release, **0.0.141-expanded-summoning-phase2a**, publishes
+The earlier **0.0.141-expanded-summoning-phase2a** release publishes
 Expanded Summoning Sprints 9 through 11: Eagle, Dire Bat, Giant Wasp, Stirge,
 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros. Together with the retained
 native summon wrappers, the mod now exposes 911 summon choices. Sprint 12 work

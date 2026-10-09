@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.144-weapon-findability-fixes
+
+- Publish the owner-authorized weapon findability release from the merged
+  feature branch. This promotes the 0.0.143 implementation with a version
+  metadata increment; gameplay, item identities and assets are unchanged.
+- Include the seven requested moves, the two scene-backed corrections,
+  controlled per-weapon recovery and the complete player location inventory.
+- Preserve the measured 0.0.143 qualification and its limits: First Branch's
+  physical route/pickup/persistence and authentic Better Vendors kingdom-stage
+  acceptance remain unverified. No additional suites or runtime scenarios were
+  run for 0.0.144, at the owner's explicit request.
+
 ## 0.0.143-weapon-findability-fixes (candidate)
 
 - Move The Last Word and Watch at the World's End to ordinary first-floor House
