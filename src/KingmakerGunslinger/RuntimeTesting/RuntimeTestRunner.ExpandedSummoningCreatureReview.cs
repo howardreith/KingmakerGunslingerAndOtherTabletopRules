@@ -151,11 +151,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool suppressedSprint17Snake =
                     SerpentineVisualPolicy.IsSnake(key) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint18Primate =
+                    PrimateVisualPolicy.Keys.Contains(key, StringComparer.Ordinal) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
                     !suppressedSprint13Candidate &&
                     !suppressedSprint14Candidate &&
                     !suppressedSprint16Candidate &&
-                    !suppressedSprint17Snake)
+                    !suppressedSprint17Snake &&
+                    !suppressedSprint18Primate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
