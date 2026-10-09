@@ -41,12 +41,14 @@ namespace KingmakerGunslinger.Summoning
         // Salamander's retained reach-observation failure still blocks closure.
         // Existing Salamander identities and five published roots do not move.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal);
+            new HashSet<string>(new[] { "ape", "dire-ape" }, StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1008;
-        // Only Viper's18 and Constrictor's14 keys are newly exposed. Their
-        // exact public-route artifact gate is mandatory before publication PASS.
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 1034;
+        // Sprint 18 registers the Ape's fourteen roots and the Dire Ape's
+        // twelve and holds all twenty-six until the complete hidden candidate
+        // passes. Identities are allocated once here, so publication is the
+        // removal of two keys and nothing else moves.
+        internal const int SuppressedLogicalPlacementCount = 26;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

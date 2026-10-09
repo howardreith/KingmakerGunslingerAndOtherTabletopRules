@@ -32,9 +32,14 @@ if ($LASTEXITCODE -ne 0) {
     throw "Repository validation failed with exit code $LASTEXITCODE."
 }
 
-if ((Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'Info.json') | ConvertFrom-Json).Version -eq '0.0.146') {
+$activeVersion = (Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'Info.json') | ConvertFrom-Json).Version
+if ($activeVersion -eq '0.0.146') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_checkpoint146.py')
     if ($LASTEXITCODE -ne 0) { throw 'Checkpoint integration corruption fixtures failed.' }
+}
+if ($activeVersion -eq '0.0.147') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint18147.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint 18 corruption fixtures failed.' }
 }
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `

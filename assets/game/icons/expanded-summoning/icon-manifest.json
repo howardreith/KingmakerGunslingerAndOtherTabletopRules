@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  109,
+    "count":  111,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -978,6 +978,24 @@
                       "key":  "constrictor-snake",
                       "file":  "constrictor-snake.png",
                       "sha256":  "e139ba806f0d0aaedc75a8127fbed0d11a82730c06f2d2d710a569f8326e6bcf",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "ape",
+                      "file":  "ape.png",
+                      "sha256":  "a232e33fb6d1e4918cc805a27a8bd3317af1907757349425c26e69a4adfdf411",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-ape",
+                      "file":  "dire-ape.png",
+                      "sha256":  "92ae297cd83269ff5245221d4d35bac33a9ccf3475b956a80684fc81ba4ef407",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

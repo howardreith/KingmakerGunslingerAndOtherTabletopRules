@@ -411,6 +411,152 @@ def owlbear():
                        (s * 0.15, -0.6, -1.0), 0.5, 0.085, claw)
 
 
+
+
+
+
+
+
+def ape(dire=False):
+    """Sprint 18. One builder, two species, because what separates them is
+    proportion rather than parts: the gorilla is a dark knuckle-walker with a
+    silverback saddle, a crested dome and a short blunt muzzle, while the
+    gigantopithecus is a heavier reddish brute whose arms are longer, whose
+    muzzle is pushed forward over visible canines and whose hands are clawed.
+    Neither is a recolour of the other: the masses, the stance and the head are
+    authored twice.
+
+    The body is authored at the size the metaball field was tuned for and the
+    whole creature is then scaled as objects, not as numbers. A metaball
+    element's `size` expands it in the same units as its radius and its field
+    falls off over that radius, so rescaling the authored values pulls merged
+    masses apart; scaling the finished objects keeps the surface identical."""
+    if dire:
+        fur = material("Fur", (0.30, 0.145, 0.065), 0.88,
+                       noise=(9.0, 0.62, (0.15, 0.068, 0.028)))
+        mane = material("Mane", (0.44, 0.21, 0.085), 0.9,
+                        noise=(14.0, 0.5, (0.24, 0.10, 0.042)))
+        face = material("Face", (0.19, 0.095, 0.06), 0.6, subsurface=0.08)
+        nail = material("Nail", (0.36, 0.34, 0.31), 0.3)
+    else:
+        fur = material("Fur", (0.095, 0.085, 0.082), 0.9,
+                       noise=(9.0, 0.6, (0.038, 0.033, 0.035)))
+        mane = material("Saddle", (0.46, 0.46, 0.48), 0.88,
+                        noise=(13.0, 0.55, (0.24, 0.24, 0.26)))
+        face = material("Face", (0.065, 0.055, 0.055), 0.6, subsurface=0.08)
+        nail = material("Nail", (0.24, 0.22, 0.20), 0.3)
+    eye = material("Eye", (0.64, 0.42, 0.16), 0.25,
+                   emission=(0.72, 0.44, 0.13), emission_strength=0.45)
+    pupil = material("Pupil", (0.012, 0.01, 0.01), 0.2)
+    tooth = material("Tooth", (0.88, 0.84, 0.74), 0.4)
+    mouth = material("MouthDark", (0.025, 0.015, 0.012), 0.6)
+
+    before = set(bpy.context.scene.objects)
+
+    reach = 1.14 if dire else 1.0          # arm length and shoulder span
+    bulk = 1.10 if dire else 1.0
+    lean = -0.3 if dire else 0.0           # the dire ape pitches forward
+
+    body = Blob("Body", fur, 0.05)
+    # Haunch low and back, barrel chest high and forward: the mass of a
+    # knuckle-walking primate rather than a bear's level back.
+    body.ball((0.0, 0.8, -1.35), 1.5 * bulk, (1.1, 1.0, 0.85), axis=(1, 0, 0))
+    body.ball((0.0, 0.25 + lean, -0.3), 1.5 * bulk, (1.45, 1.0, 0.9), axis=(1, 0, 0))
+    body.ball((0.0, -0.15 + lean, 0.7), 0.95 * bulk, (1.2, 0.85, 0.5), axis=(1, 0, 0))
+    body.ball((0.0, -0.3 + lean, 1.2), 0.78 * bulk, (0.7, 0.6, 0.4), axis=(1, 0, 0))
+    body.ball((0.0, -0.4 + lean, 1.55), 0.6 * bulk, (0.5, 0.45, 0.25), axis=(1, 0, 0))
+    for s in (-1, 1):
+        # Shoulder, upper arm, forearm, and the knuckle the hand turns under.
+        # The forearm is the longer segment, which is the primate tell.
+        body.ball((s * 1.45 * reach, 0.1 + lean, 0.6), 0.8 * bulk)
+        body.chain((s * 1.52 * reach, 0.0 + lean, 0.35),
+                   (s * 1.66 * reach, -0.5 + lean, -0.95), 0.55, 0.43, 5)
+        body.chain((s * 1.66 * reach, -0.5 + lean, -0.95),
+                   (s * 1.6 * reach, -0.82 + lean, -2.05 * reach), 0.43, 0.37, 5)
+        # Short bent hind leg folded under the hip.
+        body.ball((s * 0.95, 0.6, -1.65), 0.62 * bulk)
+        body.chain((s * 0.97, 0.45, -1.9), (s * 1.02, -0.2, -2.3), 0.46, 0.36, 4)
+
+    head = Blob("Head", fur, 0.04)
+    # Low dome carried forward of and above the shoulder line so the face
+    # reads, with a sagittal crest on top; the dire skull is longer and flatter.
+    head.ball((0.0, -0.45 + lean, 1.72), 0.86 * bulk,
+              (0.95, 1.15 if dire else 0.9, 0.9), axis=(1, 0, 0))
+    head.ball((0.0, -0.35 + lean, 2.26), 0.34 * bulk,
+              (0.5, 1.0 if dire else 0.8, 0.22), axis=(1, 0, 0))
+    # Heavy brow ridge, then the muzzle: short and blunt on the gorilla,
+    # pushed forward with a dropped jaw on the gigantopithecus.
+    head.ball((0.0, -1.05 + lean, 1.87), 0.42 * bulk, (1.3, 0.45, 0.3), axis=(1, 0, 0))
+    muzzle_y = -1.62 if dire else -1.3
+    head.ball((0.0, muzzle_y + lean, 1.47), 0.6 * bulk,
+              (0.35, 1.05 if dire else 0.65, 0.55), axis=(0, 1, 0))
+    head.ball((0.0, muzzle_y - 0.12 + lean, 1.17), 0.46 * bulk,
+              (0.35, 0.65, 0.3), axis=(0, 1, 0))
+    for s in (-1, 1):
+        head.ball((s * 0.8 * bulk, -0.25 + lean, 1.66), 0.2)
+
+    # The hairless face, and the eyes set deep under the brow.
+    sphere("Face", (0.0, muzzle_y + 0.28 + lean, 1.67),
+           (0.5, 0.33, 0.54), face, (12 if dire else 6, 0, 0))
+    for s in (-1, 1):
+        sphere("Eye%d" % s, (s * 0.3, muzzle_y + 0.1 + lean, 1.81),
+               (0.12, 0.1, 0.12), eye)
+        sphere("Pupil%d" % s, (s * 0.3, muzzle_y - 0.02 + lean, 1.81),
+               (0.06, 0.05, 0.06), pupil)
+    sphere("Nostrils", (0.0, muzzle_y - 0.32 + lean, 1.49),
+           (0.18, 0.075, 0.075), mouth)
+    sphere("Mouth", (0.0, muzzle_y - 0.28 + lean, 1.21),
+           (0.32, 0.075, 0.1 if dire else 0.05), mouth)
+    if dire:
+        for s in (-1, 1):
+            cone_along("Canine%d" % s, (s * 0.2, muzzle_y - 0.28 + lean, 1.25),
+                       (0.0, -0.12, -1.0), 0.28, 0.06, tooth)
+            cone_along("LowerCanine%d" % s,
+                       (s * 0.17, muzzle_y - 0.28 + lean, 1.13),
+                       (0.0, -0.12, 1.0), 0.22, 0.05, tooth)
+
+    for s in (-1, 1):
+        # The hand: a closed knuckle the gorilla stands on, a splayed clawed
+        # hand on the dire ape.
+        hand = (s * 1.6 * reach, -0.86 + lean, -2.1 * reach)
+        sphere("Hand%d" % s, hand,
+               (0.5, 0.44, 0.34) if dire else (0.44, 0.48, 0.32), fur)
+        for index in range(3):
+            offset = (index - 1) * 0.22
+            if dire:
+                cone_along("Claw%d%d" % (s, index),
+                           (hand[0] + s * offset, hand[1] - 0.34, hand[2] - 0.08),
+                           (s * 0.2, -0.75, -0.6), 0.44, 0.08, nail)
+            else:
+                sphere("Knuckle%d%d" % (s, index),
+                       (hand[0] + s * offset, hand[1] - 0.22, hand[2] - 0.2),
+                       (0.14, 0.14, 0.12), fur)
+                cone_along("Nail%d%d" % (s, index),
+                           (hand[0] + s * offset, hand[1] - 0.3, hand[2] - 0.26),
+                           (0.0, -0.3, -1.0), 0.15, 0.06, nail)
+
+    # The back marking is geometry rather than a tint: a silver saddle across
+    # the gorilla's lumbar region, a coarse shoulder mane on the dire ape.
+    if dire:
+        for s in (-1, 1):
+            cone_along("Mane%d" % s, (s * 0.72, 0.15 + lean, 0.95),
+                       (s * 0.35, 0.95, 0.2), 1.05, 0.34, mane, 0.06)
+    else:
+        saddle = sphere("Saddle", (0.0, 0.6, -0.25), (1.25, 0.52, 0.85), mane,
+                        (8, 0, 0))
+        for vertex in saddle.data.vertices:
+            if vertex.co.y < 0:
+                vertex.co.y *= 0.25
+
+    # Frame it. The creature is authored around three units tall; this is the
+    # single place its size and standing height meet the roster framing.
+    fit = 0.52 if dire else 0.55
+    rise = 0.35
+    for obj in set(bpy.context.scene.objects) - before:
+        obj.scale = tuple(value * fit for value in obj.scale)
+        obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
+
+
 def cyclops():
     skin = material("Skin", (0.5, 0.33, 0.2), 0.7, subsurface=0.12,
                     noise=(7.0, 0.5, (0.33, 0.19, 0.11)))
@@ -1265,6 +1411,18 @@ CREATURES = {
                      inner=MEPHIT_DRESSINGS["steam"]["inner"], outer=MEPHIT_DRESSINGS["steam"]["outer"],
                      key=MEPHIT_DRESSINGS["steam"]["key"], rim=MEPHIT_DRESSINGS["steam"]["rim"],
                      camera=((0.3, -7.4, 0.9), (-0.1, 0.0, 0.1), 55.0)),
+    # Sprint 18. The gorilla is nearly black, so like the Shadow Mastiff its
+    # silhouette is carried by a cool rim against a deep cold backdrop; the
+    # gigantopithecus is a warm reddish brute and takes a warm key against cold
+    # jungle green, so the two are never one dressing used twice.
+    "ape": dict(build=lambda: ape(False),
+                inner=(0.10, 0.12, 0.15), outer=(0.008, 0.010, 0.013),
+                key=(0.80, 0.84, 0.95), rim=(0.60, 0.78, 1.0),
+                camera=((0.30, -7.8, 0.55), (-0.03, 0.0, -0.05), 55.0)),
+    "dire-ape": dict(build=lambda: ape(True),
+                     inner=(0.09, 0.15, 0.10), outer=(0.010, 0.016, 0.010),
+                     key=(1.0, 0.86, 0.62), rim=(0.70, 0.95, 0.80),
+                     camera=((0.42, -8.1, 0.50), (-0.03, 0.0, -0.08), 55.0)),
 }
 
 

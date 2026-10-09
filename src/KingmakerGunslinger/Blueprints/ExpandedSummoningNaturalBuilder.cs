@@ -64,6 +64,17 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Tail4d8";
         private const string Claw1d8Symbol =
             "KMG.Summoning.Natural.Claw1d8";
+        // Sprint 18: no native blueprint carries a 1d6 slam, which is the
+        // Ape's printed routine. The native Large slam supplies the animation
+        // and the printed dice are stated explicitly.
+        private const string Slam1d6Symbol =
+            "KMG.Summoning.Natural.Slam1d6";
+        private const string ApeUnitTypeSymbol =
+            "KMG.Summoning.Natural.Ape.UnitType";
+        private const string DireApeUnitTypeSymbol =
+            "KMG.Summoning.Natural.DireApe.UnitType";
+        private const string DireApeRendSymbol =
+            "KMG.Summoning.Special.DireApe.Rend";
         private const string Talon2d6Symbol =
             "KMG.Summoning.Natural.Talon2d6";
         private const string WaspSting1d8Symbol =
@@ -158,6 +169,13 @@ namespace KingmakerGunslinger.Blueprints
         // dedicated Purple Worm bite and sting.
         private const string NativePlantSlam2d6Guid =
             "27eee74857c42db499b3a6b20cfa6211";
+        /// <summary>
+        /// The native Large slam the Invisible Stalker carries. Sprint 18 uses
+        /// it as the Ape's slam animation donor and states the printed 1d6
+        /// explicitly, because nothing native carries a 1d6 slam.
+        /// </summary>
+        private const string NativeLargeSlam2d6Guid =
+            "72aa06bd4e7a8fa4db8a20d1b5f1a103";
         private const string NativeBiteLarge1d8Guid =
             "ec35ef997ed5a984280e1a6d87ae80a8";
         private const string NativePurpleWormBiteGuid =
@@ -328,6 +346,26 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, GiantStagBeetleUnitTypeSymbol));
             ConfigureWaspUnitType(Require<BlueprintUnitType>(bySymbol,
                 WaspUnitTypeSymbol));
+            // Sprint 18. The Ape's printed slam dice are stated here because
+            // no native blueprint carries a 1d6 slam; the native Large slam
+            // supplies the animation only.
+            BlueprintItemWeapon nativeLargeSlam = BlueprintLibraryLookup
+                .RequireExact<BlueprintItemWeapon>(library,
+                    NativeLargeSlam2d6Guid, "native large slam animation weapon");
+            ConfigureWeapon(nativeLargeSlam, Require<BlueprintItemWeapon>(
+                bySymbol, Slam1d6Symbol), Slam1d6Symbol, 1, DiceType.D6);
+            ConfigureApeUnitType(Require<BlueprintUnitType>(bySymbol,
+                ApeUnitTypeSymbol));
+            ConfigureDireApeUnitType(Require<BlueprintUnitType>(bySymbol,
+                DireApeUnitTypeSymbol));
+            ConfigureDireApeRend(
+                Require<BlueprintFeature>(bySymbol, DireApeRendSymbol),
+                Require<BlueprintUnit>(bySymbol,
+                    ExpandedSummoningIdentityCatalog.UnitSymbol(
+                        ExpandedSummoningCatalog.All.Single(creature =>
+                            creature.Key == PrimateRulesPolicy.DireApeKey))),
+                BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                    library, NativeClaw1d4Guid, "1d4 claw"));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
                 BlueprintBuff>(library, NativeFilthFeverGuid,
                     "native Filth Fever disease payload");
@@ -671,6 +709,93 @@ namespace KingmakerGunslinger.Blueprints
             type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
         }
 
+        /// <summary>
+        /// The Ape's own type. The installed library carries no primate unit
+        /// type at all, so without this the creature would read as whatever
+        /// its non-primate donor is classified as.
+        /// </summary>
+        private static void ConfigureApeUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(ApeUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Ape.UnitType.Name", "Ape");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Ape.UnitType.Description",
+                "A powerfully built gorilla that walks on its knuckles and fights with sweeping two-handed blows.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
+        /// <summary>
+        /// Its own type rather than the Ape's. They are different species that
+        /// happen to share a rig family, and a type carries a display name a
+        /// player reads.
+        /// </summary>
+        private static void ConfigureDireApeUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(DireApeUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.DireApe.UnitType.Name", "Dire Ape");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.DireApe.UnitType.Description",
+                "A gigantopithecus: heavier and longer-armed than a gorilla, with a bestial muzzle and clawed hands that tear a held foe apart.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
+        /// <summary>
+        /// The Dire Ape's rend. The engine owns the damage: its own
+        /// <c>RendFeature</c> deals 1d4 plus one and a half times the live
+        /// Strength modifier as a single damage event, which is the printed
+        /// 1d4+6 at Strength 19 and follows a buffed, enlarged or weakened
+        /// creature exactly. The damage type is the claws' own, copied from the
+        /// native claw's weapon type rather than invented.
+        ///
+        /// <para>Only the decision is this project's. The engine's
+        /// command-level gate fires when a secondary-hand attack follows a
+        /// primary-hand hit, which identifies a rend by hand slot: it cannot
+        /// express a bite plus two equal primary claws, it would rend from a
+        /// bite-then-claw pair, and it never checks that both hits landed on
+        /// one creature. <see cref="DireApeRendGate"/> replaces that one
+        /// decision and nothing else.</para>
+        /// </summary>
+        private static void ConfigureDireApeRend(BlueprintFeature feature,
+            BlueprintUnit direApe, BlueprintItemWeapon claw)
+        {
+            PrimateRulesProfile rules = PrimateRulesPolicy.For(
+                PrimateRulesPolicy.DireApeKey);
+            var native = ScriptableObject.CreateInstance<
+                Kingmaker.Designers.Mechanics.Facts.RendFeature>();
+            native.RendDamage = new DiceFormula(rules.RendDiceCount,
+                ParseDie(rules.RendDieSides));
+            native.RendType = claw.Type.DamageType.Copy();
+            var gate = ScriptableObject.CreateInstance<DireApeRendGate>();
+            gate.OwningBlueprint = direApe;
+            gate.Claw = claw;
+            feature.name = InternalName(DireApeRendSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { native, gate };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireApe.Rend.Name", "Rend"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireApe.Rend.Description",
+                    "When both of this dire ape's claws hit the same creature in one attack sequence, it tears the wound open for 1d4 plus one and a half times its Strength bonus - 1d4+6 for an unmodified dire ape. One claw, two claws on different creatures, a bite and a claw, and hits in separate commands or turns do not rend, and no sequence rends more than once."),
+                null);
+        }
+
+        private static DiceType ParseDie(int sides)
+        {
+            DiceType parsed;
+            if (!Enum.TryParse("D" + sides, out parsed))
+                throw new InvalidOperationException(
+                    "Unsupported die size d" + sides + ".");
+            return parsed;
+        }
+
         private static void ConfigureWaspUnitType(BlueprintUnitType type)
         {
             type.name = InternalName(WaspUnitTypeSymbol);
@@ -817,7 +942,9 @@ namespace KingmakerGunslinger.Blueprints
             // AddClassLevels repeatedly spends points in one fixed priority
             // list; it cannot express 1/2 or 6/6 at these low Int scores.
             // Only these two profiles use the exact one-time rank allocation.
-            levels.Skills = crocodilian || SerpentineRulesPolicy.IsSnake(profile.Key)
+            levels.Skills = crocodilian ||
+                SerpentineRulesPolicy.IsSnake(profile.Key) ||
+                PrimateRulesPolicy.IsPrimate(profile.Key)
                 ? Array.Empty<StatType>() :
                 profile.Skills.Select(SkillStat).ToArray();
             levels.Archetypes = Array.Empty<BlueprintArchetype>();
@@ -829,6 +956,14 @@ namespace KingmakerGunslinger.Blueprints
             {
                 var ranks = UnityEngine.ScriptableObject.CreateInstance<
                     SummonCrocodilianSkillRanks>();
+                ranks.CreatureKey = profile.Key;
+                ranks.OwningBlueprint = unit;
+                unit.ComponentsArray = new BlueprintComponent[] { levels, ranks };
+            }
+            else if (PrimateRulesPolicy.IsPrimate(profile.Key))
+            {
+                var ranks = UnityEngine.ScriptableObject.CreateInstance<
+                    SummonPrimateSkillRanks>();
                 ranks.CreatureKey = profile.Key;
                 ranks.OwningBlueprint = unit;
                 unit.ComponentsArray = new BlueprintComponent[] { levels, ranks };
@@ -873,6 +1008,12 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == "giant-stag-beetle")
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     GiantStagBeetleUnitTypeSymbol);
+            else if (profile.Key == PrimateRulesPolicy.ApeKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    ApeUnitTypeSymbol);
+            else if (profile.Key == PrimateRulesPolicy.DireApeKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    DireApeUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
@@ -914,6 +1055,8 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "GiantAntRacialSkills"
                     ? Require<BlueprintFeature>(bySymbol,
                         GiantAntRacialSkillsSymbol)
+                    : fact == "DireApeRend"
+                    ? Require<BlueprintFeature>(bySymbol, DireApeRendSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
@@ -1034,6 +1177,8 @@ namespace KingmakerGunslinger.Blueprints
             if (key == "Slam2d6") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeMastodonSlamGuid,
                     "mastodon 2d6 slam");
+            if (key == "Slam1d6") return Require<BlueprintItemWeapon>(bySymbol,
+                Slam1d6Symbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }

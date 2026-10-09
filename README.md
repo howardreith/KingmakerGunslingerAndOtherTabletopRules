@@ -1,12 +1,20 @@
 ﻿# Kingmaker Gunslinger
 
-Version **0.0.146-expanded-summoning-phase2b-checkpoint**
-retains v0.0.145 Nodachi art, v0.0.144 weapon findability/recovery,
-and v0.0.142 Elemental character traits and content polish
+Version **0.0.147-expanded-summoning-sprint18**
+is the Expanded Summoning Sprint 18 candidate: the Ape and the Dire Ape. It is
+built on released v0.0.146 and changes nothing that release qualified, so it
+still retains v0.0.145 Nodachi art, v0.0.144 weapon findability/recovery, and
+v0.0.142 Elemental character traits and content polish with qualified Expanded
+Summoning Sprints 12–17 including Salamander. Both new apes are registered and
+withheld, so the source still exposes 1008 published generated placements plus
+29 retained native wrappers: 1037 choices. Sprint 18 is NOT runtime qualified
+and its original creature bodies are not authored.
+
+The preceding v0.0.146 line retained v0.0.145 Nodachi art, v0.0.144 weapon
+findability/recovery, and v0.0.142 Elemental character traits and content polish
 with qualified Expanded Summoning Sprints 12–17. Salamander is included after
 the owner-authorized observation-only reach correction passed; production
-behavior was not changed by that correction. The source exposes 1008 generated
-placements plus 29 retained native wrappers: 1037 choices, none withheld.
+behavior was not changed by that correction.
 This is a numbered stable-release line, not an alpha or prerelease. Publication
 requires exact integration, closure, compatibility and regression qualification.
 See [the checkpoint notes](docs/RELEASE-NOTES-0.0.146.md) and

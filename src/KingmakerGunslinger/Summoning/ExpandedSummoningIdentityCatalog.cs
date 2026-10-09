@@ -20,9 +20,9 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 97;
-        internal const int LogicalAbilityCount = 1008;
-        internal const int TemplatedPlacementCount = 287;
+        internal const int UnitCount = 99;
+        internal const int LogicalAbilityCount = 1034;
+        internal const int TemplatedPlacementCount = 300;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         // Sprint 14 adds eight: the soldier's sting, its poison and venom,
@@ -39,7 +39,12 @@ namespace KingmakerGunslinger.Summoning
         // consideration. No native donor identity is repurposed.
         // Sprint 17 adds seven creature-owned snake facts/types/states.
         // Salamander additionally owns its tail type and species inspection.
-        internal const int SpecialIdentityCount = 202;
+        // Sprint 18 adds four: no native blueprint carries a 1d6 slam, which is
+        // the Ape's printed routine; each ape owns its own unit type because
+        // neither can clone a native primate and must not read as its donor;
+        // and the Dire Ape owns the feature that carries the engine's own rend
+        // damage component together with its bounded sequencing gate.
+        internal const int SpecialIdentityCount = 206;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -302,6 +307,11 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ConstrictorSnake.CombatTraits", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Salamander.TailType", "BlueprintWeaponType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Salamander.UnitType", "BlueprintUnitType"));
+            // Sprint 18
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Slam1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Ape.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireApe.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireApe.Rend", "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }
