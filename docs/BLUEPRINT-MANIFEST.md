@@ -1,8 +1,17 @@
 # Blueprint manifest and registration contract
 
-Active v0.0.143 contract: 2922 stable identifiers: 2920 active and 2 reserved.
-Every released master entry remains in place; missing qualified summoning
-entries append without identity reallocation. See the release integration ledger.
+Active v0.0.147 Sprint 18 contract: 2983 stable identifiers: 2981 active and 2 reserved.
+Every released v0.0.146 entry remains in place; Sprint 18 appends exactly 58 Ape
+and Dire Ape identities - two units, 26 logical placements, the 26 celestial and
+fiendish execution children of the 13 templated Summon Monster roots, one 1d6
+slam weapon no native blueprint carries, an inspectable unit type for each ape,
+and the Dire Ape's rend feature. All 26 placements are registered and withheld,
+so publication is the removal of two suppression keys and no identity moves.
+
+The preceding v0.0.143 contract remains exact for its own release: 2922 stable
+identifiers, 2920 active and 2 reserved. Every released master entry remains in
+place; missing qualified summoning entries append without identity reallocation.
+See the release integration ledger.
 
 The owner-authorized public-master 0.0.115 integration into the 117 expansion
 adds no blueprint identities and changes no elemental manifest entry. Its

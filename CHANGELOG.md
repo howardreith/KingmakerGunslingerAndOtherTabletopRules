@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.0.147-expanded-summoning-sprint18
+
+- Registers the Expanded Summoning Sprint 18 Ape and Dire Ape and withholds
+  both: 26 new roots (Ape 7+7, Dire Ape 6+6) take registered generated
+  placements from 1008 to 1034 while the published surface stays at 1008
+  generated plus 29 retained native wrappers, 1037 choices.
+- Appends exactly 58 append-only identities to the released v0.0.146 ledger,
+  taking it from 2922 to 2980 entries without moving a historical GUID.
+- Implements the printed profiles: the Ape's two primary slams at full
+  Strength, and the Dire Ape's primary bite with two primary claws.
+- Implements rend on the engine's own `RendFeature` damage carrier, which deals
+  its dice plus one and a half times the live Strength modifier - the printed
+  1d4+6 unmodified - driven by a bounded Dire-Ape-owned gate that fires once
+  when both claws hit one creature in one attack sequence and never across
+  limbs, targets, commands, turns or replayed rule events.
+- Allocates each ape's printed land ranks exactly and omits the printed Climb
+  skill and climb speed honestly under `ORDINARY_MAP_LAND_USE_SCOPE`, without
+  substituting Mobility or Athletics; low-light vision and scent remain omitted
+  under `PASSIVE_CREATURE_SENSES_UNMODELED`.
+- Adds two original project-owned 128x128 creature icons rendered by the
+  project's own procedural Blender tool.
+- NOT runtime qualified. The bounded primate donor census and the original Ape
+  and Dire Ape bodies are not done; both creatures currently ride the Owlbear
+  donor rig and are recorded as borrowed-body proxies.
+
 ## 0.0.146-expanded-summoning-phase2b-checkpoint
 
 - Retains v0.0.145 Nodachi icon assignment, v0.0.144 weapon findability/recovery,

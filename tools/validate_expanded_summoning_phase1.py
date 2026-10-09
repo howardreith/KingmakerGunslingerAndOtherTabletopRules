@@ -396,6 +396,14 @@ def validate(root: Path) -> None:
         ".FireBeetle" in symbol or ".GiantAnt" in symbol or
         ".GiantStagBeetle" in symbol or ".DireCrocodile" in symbol or
         ".Viper" in symbol or ".ConstrictorSnake" in symbol or
+        # Sprint 18's two apes. ".DireApe" is matched before ".Ape" would be,
+        # and the Ape's own token is dotted on both sides so it cannot swallow
+        # the Dire Ape's symbols.
+        ".DireApe" in symbol or ".Ape." in symbol or
+        symbol == "KMG.Summoning.Unit.Ape" or
+        symbol == "KMG.Summoning.Natural.Slam1d6" or
+        # Granted to exactly the two apes, so it belongs to their append.
+        symbol == "KMG.Summoning.Natural.Primate.FullStrengthLimbs" or
         symbol in {"KMG.Summoning.Special.Salamander.TailType", "KMG.Summoning.Special.Salamander.UnitType"} or
         ".Special.Crocodile." in symbol or
         symbol == "KMG.Summoning.Special.Crocodilian.SprintNotEngaged" or
@@ -415,9 +423,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 97",
-        "ValidateFamily(SummonFamily.Monster, 88, 506)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 86, 502)",
+        "Creatures.Length != 99",
+        "ValidateFamily(SummonFamily.Monster, 90, 519)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 88, 515)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -428,12 +436,14 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 1008;",
+        "RegisteredLogicalPlacementCount = 1034;",
+        # Sprint 18 published on 2026-10-09 after its complete hidden
+        # candidate passed, so nothing is withheld any more.
         "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 97;",
-        "LogicalAbilityCount = 1008;",
-        "TemplatedPlacementCount = 287;",
+        "UnitCount = 99;",
+        "LogicalAbilityCount = 1034;",
+        "TemplatedPlacementCount = 300;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
         "Values.Length != %d" % SPRINT3["nativeExpansionWrappers"],
@@ -441,10 +451,10 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != 49",
+        "Values.Length != 51",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 18))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 20))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -520,9 +530,9 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    # Eighteen Phase 2 concepts including the two hidden Sprint 17 snakes.
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 18 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 18 or \
+    # Twenty Phase 2 concepts, including the two hidden Sprint 18 apes.
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 20 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 20 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
@@ -554,6 +564,11 @@ def validate(root: Path) -> None:
     # Four unchanged master v0.0.142 trait exports join the qualified Phase2B tree.
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.146":
         package_count += 4 + 7 + 1  # traits, unchanged master145 documents, release146 notes
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.147":
+        # Everything v0.0.146 shipped, plus the Sprint 18 release notes, the
+        # two new project-owned ape icons, and the four original Sprint 18
+        # body files: one mesh and one painting for each ape.
+        package_count += 4 + 7 + 1 + 1 + 2 + 4
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.143", "0.0.144", "0.0.145"):
         # Seven player instructions and curated qualification files accompany
         # the findability repair. Historical summoning asset counts are fixed.
@@ -570,6 +585,13 @@ def validate(root: Path) -> None:
             "assets\\sprint13-creatures",
             "@('wolverine','shadow-mastiff','poisonous-frog')",
             "assets\\sprint14-insects")
+        if json.loads((root / "Info.json").read_text(
+                encoding="utf-8"))["Version"] == "0.0.147":
+            # The two original ape bodies are staged by name, like every
+            # other original body, so a missing export fails the package
+            # rather than shipping an ape that still looks like a troll.
+            require_tokens(root / "scripts" / script,
+                "assets\\sprint18-primates", "@('ape','dire-ape')")
         insect_assets = {"fire-beetle", "giant-ant-worker", "giant-ant-soldier",
                          "giant-ant-drone", "giant-stag-beetle"}
         arrays = re.findall(r"@\(([^)]*)\)",

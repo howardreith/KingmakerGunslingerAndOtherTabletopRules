@@ -185,6 +185,11 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderCommands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderLifecycle.cs" />
     <Compile Include="Summoning\SerpentineCombatComponents.cs" />
+    <Compile Include="Summoning\PrimateRulesPolicy.cs" />
+    <Compile Include="Summoning\PrimateCombatComponents.cs" />
+    <Compile Include="Summoning\PrimateVisualPolicy.cs" />
+    <Compile Include="Summoning\PrimateVisualAttachment.cs" />
+    <Compile Include="Summoning\ExpandedSummoningPrimateViewPatch.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="Summoning\ExpandedSummoningSerpentineViewPatch.cs" />
     <Compile Include="Summoning\SerpentineNativeSpearAnimation.cs" />
@@ -1205,6 +1210,12 @@
     <Compile Include="RuntimeTesting\ExpandedSummoningProjectedMenuSubject.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeDonors.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Survey.cs" />
+    <Compile Include="RuntimeTesting\PrimateRigSurveyPolicy.cs" />
+    <Compile Include="RuntimeTesting\PrimateReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Routine.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Surface.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCorrection.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint12.cs" />
@@ -1610,6 +1621,14 @@
     </Content>
     <Content Include="..\..\assets\sprint17-serpents\*-albedo.png">
       <Link>assets\sprint17-serpents\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint18-primates\*-mesh.json">
+      <Link>assets\sprint18-primates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint18-primates\*-albedo.png">
+      <Link>assets\sprint18-primates\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">

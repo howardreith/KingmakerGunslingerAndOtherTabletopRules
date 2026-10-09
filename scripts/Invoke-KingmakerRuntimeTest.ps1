@@ -143,8 +143,8 @@ if ($scenarioMetadata.RequiresSaveName) {
         if ($crowd -and ([string]$Parameters.quantity -cne 'OneD4PlusOne' -or
             @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
                 Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros',
-                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile','viper','constrictor-snake','salamander') }).Count -ne 0)) {
-            throw 'The crowd review permits only quantity=OneD4PlusOne for the closed Sprint 11/12/16/17 roster.'
+                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile','viper','constrictor-snake','salamander','ape','dire-ape') }).Count -ne 0)) {
+            throw 'The crowd review permits only quantity=OneD4PlusOne for the closed Sprint 11/12/16/17/18 roster.'
         }
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
         if ($crowd) { $Parameters.quantity = 'OneD4PlusOne' }
