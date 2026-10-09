@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.143-weapon-findability-fixes",
+  "milestone": "0.0.144-weapon-findability-fixes",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.143",
+  "version": "0.0.144",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2117,5 +2117,17 @@
     "releaseVersion": "0.0.143",
     "sceneQualification": "29/29 native active persistent sources PASS; blueprint/native treasure 29/29 PASS",
     "worldLootWeaponCount": 29
+  },
+  "weaponFindabilityRelease144": {
+    "releaseVersion": "0.0.144",
+    "releaseInformationalVersion": "0.0.144-weapon-findability-fixes",
+    "promotedFromVersion": "0.0.143",
+    "publicReleaseAuthorized": true,
+    "gameplayMechanicsUnchanged": true,
+    "additionalTestSuitesRun": false,
+    "additionalRuntimeScenariosRun": false,
+    "ownerRequestedNoAdditionalValidation": true,
+    "qualificationRecord": "weaponFindability143",
+    "qualificationLimitsPreserved": true
   }
 }

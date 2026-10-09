@@ -65,7 +65,7 @@ def validate(root):
     bridge=(root/'src/KingmakerGunslinger/Development/KingmakerDevelopmentBridge.RareFirearms.cs').read_text()
     if 'originalContentsPreserved=observer-qualified' in bridge or 'knownReferences=0:unique-area-owned' in bridge:
         raise AssertionError('Hardcoded mechanical evidence remains')
-    print('Weapon findability 0.0.143 repository validation PASS; physical qualification requires native runtime evidence')
+    print(f'Weapon findability {VERSION} repository validation PASS; physical qualification requires native runtime evidence')
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--root',type=Path,default=Path(__file__).resolve().parents[1])
