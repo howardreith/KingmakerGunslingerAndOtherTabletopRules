@@ -130,6 +130,7 @@
     <Compile Include="Summoning\StirgeVisualTouch.cs" />
     <Compile Include="Summoning\ExpandedSummoningPteranodonViewPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVisualVariantPatch.cs" />
+    <Compile Include="Summoning\SummonVisualVariantModulePolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuRuntime.cs" />
     <Compile Include="Summoning\SummonIconCatalog.cs" />

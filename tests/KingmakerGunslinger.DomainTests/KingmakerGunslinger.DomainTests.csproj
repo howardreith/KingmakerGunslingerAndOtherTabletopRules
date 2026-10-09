@@ -214,6 +214,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint17GripEvidence.cs"><Link>RuntimeTesting\Sprint17GripEvidence.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailAnimationPolicy.cs"><Link>Summoning\SalamanderTailAnimationPolicy.cs</Link></Compile>
     <Compile Include="ExpandedSummoningCorrectionTests.cs" />
+    <Compile Include="SummonVisualVariantModuleTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVisualVariantModulePolicy.cs"><Link>Summoning\SummonVisualVariantModulePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplatePolicy.cs"><Link>Summoning\SummonTemplatePolicy.cs</Link></Compile>
