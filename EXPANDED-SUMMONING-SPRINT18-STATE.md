@@ -6,7 +6,7 @@ contract lives in `planning/EXPANDED-SUMMONING-SPRINT18-CONTRACT.json` and the
 source-gate evidence in
 `planning/EXPANDED-SUMMONING-SPRINT18-SOURCE-EVIDENCE.json`.
 
-## Current state, 2026-10-09 — SOURCE QUALIFIED; CENSUS PASSED; REVIEW NOT RUN
+## Current state, 2026-10-09 — BODIES AUTHORED; RUNTIME REVIEW NOT RUN
 
 One sprint, one branch, one PR, one release. Ape (Gorilla) and Dire Ape
 (Gigantopithecus) only. Girallon, Xill, Giant Scorpion, Bebelith, Giant Crab,
@@ -15,8 +15,8 @@ Sprint 19 and any broader phase are out of scope and were not started.
 **Exact candidate `bd21f2447b3e68fbb95759292a1991320529f4e0`**, since corrected
 by `aa3d910a`. The complete source, build and package gate passed on the clean
 committed candidate, and the guarded runtime harness is now proved end to end on
-it. The donor census has run and chosen the rig; the original bodies and the
-Sprint 18 review remain.
+it. The donor census has run and chosen the rig, both original bodies are
+authored and wired, and the Sprint 18 runtime review remains.
 
 The push-policy blocker is resolved: the owner authorized adding this sprint's
 branch and the three later ones, the branch is pushed and PR #32 is open.
@@ -57,13 +57,14 @@ branch and the three later ones, the branch is pushed and PR #32 is open.
 | Sprint 18 corruption fixtures | PASS 13/13 |
 | Repository validator regression fixtures | PASS 3/3 |
 | Icon catalog fixtures | PASS 29/29 |
-| Complete unfiltered domain suite | PASS 2510/2510, including 10 Sprint 18 cases and 2 ledger-bound cases |
+| Complete unfiltered domain suite | PASS 2517/2517 — 10 Sprint 18 rules cases, 7 original-body cases, 2 ledger-bound cases |
 | Clean exact-reference Release build | PASS, 14 exact private references |
 | Build output validation | PASS |
-| Strict standalone package validation | PASS, 336 members |
+| Strict standalone package validation | PASS, 340 members (the four original body files) |
 | Expanded Summoning orchestration | PASS, 168 assertions |
 | Guarded harness end to end | PASS — deploy, Steam 640820 launch, mod load 0.0.147, scenario PASS, exact restoration |
 | Guarded primate donor census | PASS — 288 discovered, 28 surveyed, 28 captured, 9/9 assertions |
+| Original Ape and Dire Ape bodies | PASS offline — 6/6 Blender fixtures, 24 review sheets each |
 | Batched Sprint 18 runtime review | **NOT RUN** |
 | Publication gate | **NOT RUN** |
 | Release closure matrix | **NOT RUN** |
@@ -119,8 +120,10 @@ Dire Ape: 6 + 6 = 12 roots (parent tiers 4-9). Sprint total 26.
 - **Rend animation variant**: the engine selects it from its command-level rend
   gate, which this sprint does not use, so the variant is not played. The rend is
   still a visible damage event. Presentation deviation, nothing invented.
-- **Original bodies NOT authored**: both apes ride the census-chosen Troll
-  donor rig and are recorded as borrowed-body visual proxies.
+- **Knuckle-walking gait NOT authored**: the engine plays the donor rig's own
+  clips, which belong to a large upright biped. The geometry is an ape; the
+  locomotion and strike timing are the donor's. A faithful primate gait would be
+  a general animation system, which this sprint does not build.
 
 ## Defect found and fixed by the first guarded launch
 
@@ -191,12 +194,50 @@ An earlier attempt at that fix disabled the offending renderer on the loaded
 prefab. That would have mutated a native asset, so it was discarded before it
 ran.
 
+## Original bodies — authored
+
+Both apes now have original project-owned geometry: one generated mesh and one
+painted albedo each, in `assets/sprint18-primates/`. The generator, painter,
+review renderer and offline fixtures are in
+`assets-source/original-models/sprint18-primates/`, with provenance in its
+`SOURCE.md`. The only game-sourced input is the bind-pose skeleton the census
+captured; no native vertex, index, texture pixel, shader or animation curve is
+read, and none is redistributed.
+
+| | Ape | Dire Ape |
+| --- | ---: | ---: |
+| Vertices / triangles | 2720 / 3146 | 3552 / 4106 |
+| Closed shells | 51 | 67 |
+| Driver bones | 56 | 56 |
+| Max influences per vertex | 2 | 2 |
+
+The Ape is a near-black silverback with a heavy brow, a low sagittal crest, a
+broad flat face and nails. The Dire Ape is a bulkier russet Gigantopithecus with
+a tall crest, a straw-pale shoulder ruff, long canines for its 1d6 bite and
+heavy curved claws for its two primary 1d4 claws. The feature list is the
+printed routine, not decoration: the Ape has no claw attack, so it has no claws.
+
+Five donor bones carry no geometry, and the generator, the offline fixtures, the
+runtime policy and the repository validator each refuse a mesh that weights one:
+`Tail_01` and `Tail_02`, because an ape has no tail, and `Tongue_01` through
+`Tongue_03`, because neither printed routine has a tongue attack.
+
+The triangle winding is checked rather than assumed. The generator computes the
+signed volume of every connected shell and refuses to export a negative one, and
+the offline fixtures repeat that check independently. Sprint 17 needed the
+opposite convention for its coiled snake bodies; these are measured, and come
+out the other way.
+
+`ExpandedSummoningPrimateViewPatch` reaches only the two hidden apes, and only
+when immutable identity, blueprint name and donor prefab all agree.
+`PrimateVisualAttachment` swaps one instance's body mesh, bones and material,
+blanks that instance's equipment skin, and restores every native reference on
+release. Nothing shared is modified and no native component is disabled.
+
 ## Remaining work
 
-1. Author the original Ape and Dire Ape bodies against the captured Troll bind
-   pose, review them offline, and wire the project-owned view.
-2. Author and run the batched Sprint 18 hidden-candidate runtime review.
-3. Publish the 26 roots, merge PR #32 and release v0.0.147.
+1. Author and run the batched Sprint 18 hidden-candidate runtime review.
+2. Publish the 26 roots, merge PR #32 and release v0.0.147.
 
 None of these is an owner decision; the owner has authorized the guarded runtime
 work. They are remaining engineering.
@@ -227,7 +268,7 @@ installed mod or the game was modified.
 | 2 Freeze primary-source contract | DONE |
 | 3 Registration, identity, publication | REGISTERED AND WITHHELD; publication NOT RUN |
 | 4 Donor and rig audit | DONE — guarded census PASS; Troll rig chosen on recorded evidence |
-| 5 Original visuals | IN PROGRESS — rig captured; geometry and view NOT AUTHORED |
+| 5 Original visuals | DONE offline — both bodies authored, reviewed and wired; runtime NOT PROVED |
 | 6 Mechanics | IMPLEMENTED; source-proved; runtime NOT PROVED |
 | 7 Skills, senses, omitted movement | IMPLEMENTED; source-proved; live totals NOT PROVED |
 | 8 Tests and cadence | DONE — 10 Sprint 18 cases, 13 validator fixtures |

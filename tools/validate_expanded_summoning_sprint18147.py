@@ -12,6 +12,7 @@ Runtime qualification is deliberately separate and is not claimed here.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -74,6 +75,8 @@ SPRINT18_CHANGED = (
     "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
     "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
     "assets-source/original-icons/expanded-summoning/icon-manifest.json",
     "assets-source/original-icons/expanded-summoning/prompts/icon-prompts.json",
     "assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py",
@@ -83,11 +86,33 @@ SPRINT18_CHANGED = (
 SPRINT18_NEW = (
     "src/KingmakerGunslinger/Summoning/PrimateRulesPolicy.cs",
     "src/KingmakerGunslinger/Summoning/PrimateCombatComponents.cs",
+    "src/KingmakerGunslinger/Summoning/PrimateVisualPolicy.cs",
+    "src/KingmakerGunslinger/Summoning/PrimateVisualAttachment.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningPrimateViewPatch.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/PrimateRigSurveyPolicy.cs",
     "assets-source/original-icons/expanded-summoning/sources/ape.png",
     "assets-source/original-icons/expanded-summoning/sources/dire-ape.png",
     "assets/game/icons/expanded-summoning/ape.png",
     "assets/game/icons/expanded-summoning/dire-ape.png",
+    "assets/sprint18-primates/ape-mesh.json",
+    "assets/sprint18-primates/ape-albedo.png",
+    "assets/sprint18-primates/dire-ape-mesh.json",
+    "assets/sprint18-primates/dire-ape-albedo.png",
+    "assets-source/original-models/sprint18-primates/primate_capture.py",
+    "assets-source/original-models/sprint18-primates/primate_regions.py",
+    "assets-source/original-models/sprint18-primates/generate_primates.py",
+    "assets-source/original-models/sprint18-primates/paint_primate_albedo.py",
+    "assets-source/original-models/sprint18-primates/render_primate_review.py",
+    "assets-source/original-models/sprint18-primates/test_primate_prototype.py",
+    "assets-source/original-models/sprint18-primates/SOURCE.md",
 )
+
+# The four shipped Sprint 18 asset files, and what each one must say about
+# itself before the runtime is allowed to show it.
+SPRINT18_BODIES = {
+    "ape": dict(clawedHands=False, bones=56),
+    "dire-ape": dict(clawedHands=True, bones=56),
+}
 
 APE_KEYS = ("ape", "dire-ape")
 
@@ -228,6 +253,40 @@ def validate(root: Path) -> None:
         if path in tracked(root, MASTER):
             raise AssertionError("Sprint 18 claims a file the release already had: " + path)
 
+    for key, expected in SPRINT18_BODIES.items():
+        body = document(root, "assets/sprint18-primates/" + key + "-mesh.json")
+        if body.get("creature") != key:
+            raise AssertionError("Sprint 18 body is not its own creature: " + key)
+        if body.get("triangleWinding") != "shared-exporter-sprint18":
+            raise AssertionError("Sprint 18 body does not declare its winding: " + key)
+        if body.get("donorPrefab") != "0bc98460fca38964aae3af6ad5c655ee" or \
+                body.get("donorRenderer") != "Troll_base":
+            raise AssertionError("Sprint 18 body names the wrong donor: " + key)
+        # An ape has no tail and no tongue geometry, has a separate jaw and
+        # four limbs, and only the Dire Ape has claws. These are the printed
+        # entries, not preferences, so they are checked on the shipped file.
+        if body.get("tailGeometry") is not False or \
+                body.get("tongueGeometry") is not False or \
+                body.get("jawSeparated") is not True or \
+                body.get("visibleLimbs") != 4 or \
+                body.get("opposableThumbs") is not True or \
+                body.get("knuckleWalkAuthored") is not False or \
+                body.get("clawedHands") is not expected["clawedHands"]:
+            raise AssertionError("Sprint 18 body anatomy contract broken: " + key)
+        bones = body.get("bones")
+        if not isinstance(bones, list) or len(bones) != expected["bones"] or \
+                len(set(bones)) != expected["bones"]:
+            raise AssertionError("Sprint 18 body driver set changed: " + key)
+        if {"Tail_01", "Tail_02", "Tongue_01", "Tongue_02", "Tongue_03"} & set(bones):
+            raise AssertionError(
+                "Sprint 18 body weights a deliberately empty branch: " + key)
+        albedo = body.get("albedo") or {}
+        painting = root / "assets/sprint18-primates" / str(albedo.get("file"))
+        if not painting.is_file():
+            raise AssertionError("Sprint 18 body has no painting beside it: " + key)
+        if hashlib.sha256(painting.read_bytes()).hexdigest() != albedo.get("sha256"):
+            raise AssertionError("Sprint 18 painting is not the reviewed one: " + key)
+
     state = document(root, "validation/static-validation.json")
     old = json.loads(blob(root, MASTER, "validation/static-validation.json"))
     for key in ("expandedSummoningPhase2A141", "dataContentTraits142",
@@ -305,7 +364,9 @@ def validate(root: Path) -> None:
     for token in (INFORMATIONAL_VERSION, "Ape", "Dire Ape", "rend",
                   "PASSIVE_CREATURE_SENSES_UNMODELED",
                   "ORDINARY_MAP_LAND_USE_SCOPE", "withheld", "NOT runtime qualified",
-                  "NOT authored", "uninstall"):
+                  # The bodies are authored now; the gait is not, and the notes
+                  # have to keep saying which of the two is which.
+                  "NOT authored", "Troll", "census", "uninstall"):
         if token not in notes:
             raise AssertionError("Release notes lack honest disposition: " + token)
 

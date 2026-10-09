@@ -428,6 +428,48 @@
       ],
       "sharedRigDecision": "One shared rig for both apes. It credibly supports knuckle locomotion, two-handed slams, and Dire Ape bite and claw contacts, and the two silhouettes are separated by geometry rather than by rig, so reuse is correct here rather than forced.",
       "finding": "The live library re-confirms no primate unit type and no RendFeature consumer, so both bodies must be original project-owned geometry."
+    },
+    "originalBodies": {
+      "status": "AUTHORED; NOT RUNTIME QUALIFIED",
+      "authoring": "assets-source/original-models/sprint18-primates/",
+      "shipped": [
+        "assets/sprint18-primates/ape-mesh.json",
+        "assets/sprint18-primates/ape-albedo.png",
+        "assets/sprint18-primates/dire-ape-mesh.json",
+        "assets/sprint18-primates/dire-ape-albedo.png"
+      ],
+      "input": "One bind-pose skeleton: bone names, bind positions, parent links. No native vertex, index, texture pixel, shader or animation curve is read, and none is redistributed.",
+      "rigSha256": "328443db6c9b77651ab64212c7a654284c722c9ddeb6277ce66d289d72f6a4a5",
+      "ape": {
+        "vertices": 2720,
+        "triangles": 3146,
+        "shells": 51,
+        "driverBones": 56,
+        "maxInfluencesPerVertex": 2,
+        "features": "Near-black silverback: heavy brow, low sagittal crest, broad flat prognathic face, pot belly, nails. No claws and no bared canines, because the printed routine has neither."
+      },
+      "direApe": {
+        "vertices": 3552,
+        "triangles": 4106,
+        "shells": 67,
+        "driverBones": 56,
+        "maxInfluencesPerVertex": 2,
+        "features": "Russet Gigantopithecus: bulkier through chest and shoulders, tall sagittal crest, straw-pale shoulder ruff, long canines for the 1d6 bite, heavy curved claws for the two primary 1d4 claw attacks."
+      },
+      "emptyDonorBranches": {
+        "bones": [
+          "Tail_01",
+          "Tail_02",
+          "Tongue_01",
+          "Tongue_02",
+          "Tongue_03"
+        ],
+        "reason": "An ape has no tail, and neither printed routine has a tongue attack. The generator, the offline fixtures, the runtime policy and the repository validator each refuse a mesh that weights one of them."
+      },
+      "triangleWinding": "shared-exporter-sprint18. Verified rather than assumed: the generator computes the signed volume of every connected shell and refuses to export a negative one, and the offline fixtures repeat that check independently.",
+      "offlineReview": "Twenty-four private sheets per creature: clay, silhouette, textured and unlit at rest from four angles; the forward slam, a synthetic contact frame, the one-armed claw rake and the crouch; a head close-up with the jaw open; and a hand close-up with the fingers curled.",
+      "notQualified": "Nothing about these bodies is runtime proved. The offline poses are synthetic and prove no timing, no contact point and no in-game behaviour.",
+      "acceptedDeviation": "The knuckle-walking gait is not authored. The engine plays the donor rig's own clips, which belong to a large upright biped. The geometry is an ape; the locomotion and strike timing are the donor's. A faithful primate gait would be a general animation system, which this sprint does not build."
     }
   },
   "identityPlan": {
