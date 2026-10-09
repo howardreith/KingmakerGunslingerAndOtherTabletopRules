@@ -9,11 +9,13 @@ namespace KingmakerGunslinger.DomainTests
         internal static void FrozenRosterAndPlacementCounts()
         {
             ExpandedSummoningCatalog.Validate();
-            Assertions.Equal(97, ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
-            Assertions.Equal(88, ExpandedSummoningCatalog.All.Count(v => v.MonsterTier.HasValue), "SM roster count changed.");
-            Assertions.Equal(86, ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue), "SNA roster count changed.");
-            Assertions.Equal(506, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count, "SM placement count changed.");
-            Assertions.Equal(502, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count, "SNA placement count changed.");
+            // Sprint 18 adds the two apes at Summon Monster and Nature's Ally
+            // III and IV, which is seven and six placements per family.
+            Assertions.Equal(99, ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
+            Assertions.Equal(90, ExpandedSummoningCatalog.All.Count(v => v.MonsterTier.HasValue), "SM roster count changed.");
+            Assertions.Equal(88, ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue), "SNA roster count changed.");
+            Assertions.Equal(519, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count, "SM placement count changed.");
+            Assertions.Equal(515, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count, "SNA placement count changed.");
         }
         internal static void QuantityRulesAreExactAndSameKind()
         {

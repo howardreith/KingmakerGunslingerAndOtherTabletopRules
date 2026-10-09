@@ -13,16 +13,16 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(97, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(99, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(88, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(90, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(86, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(88, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(506, ExpandedSummoningBaselineInventory
+            Assertions.Equal(519, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(502, ExpandedSummoningBaselineInventory
+            Assertions.Equal(515, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -36,6 +36,9 @@ namespace KingmakerGunslinger.DomainTests
             //
             // Independently qualified Sprint 17 snakes publish sixteen roots
             // per family: 506/502 generated plus 17/12 retained wrappers.
+            // Sprint 18 registers thirteen more roots per family and withholds
+            // every one of them, so the visible totals do not move until its
+            // publication candidate removes the two suppression keys.
             Assertions.Equal(523, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
@@ -106,9 +109,10 @@ namespace KingmakerGunslinger.DomainTests
             // of its own qualification, which is allowed and is how both
             // Sprint 12 and Sprint 13 ran, but it has to be deliberate rather
             // than a leftover - which is what this pin is for.
-            Assertions.Equal(0,
-                ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
-                "Independent snake publication leaves no registered creature suppressed; Salamander's existing roots remain unchanged.");
+            Assertions.True(ExpandedSummoningBaselineInventory
+                    .RegisteredButHiddenCreatures.SequenceEqual(
+                        new[] { "ape", "dire-ape" }),
+                "Sprint 18 registers exactly the two apes ahead of their own qualification and withholds both.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -121,9 +125,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(35,
+            Assertions.Equal(37,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, and why Sprint 16's Dire Crocodile joins them on the Monitor Lizard.");
+                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, and why both Sprint 18 apes join them on the Owlbear until their original bodies are authored.");
         }
 
         /// <summary>

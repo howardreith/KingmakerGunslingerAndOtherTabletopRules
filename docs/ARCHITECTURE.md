@@ -142,10 +142,17 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
-Active v0.0.143 integration: 2922 stable IDs: 2920 active and 2 reserved.
-The released master2660-entry prefix is exact;262 missing qualified summoning
-identities append in import order. Production master traits/content and qualified
-summoning implementations are preserved by exact integration-boundary checks.
+Active v0.0.147 Sprint 18 candidate: 2980 stable IDs: 2978 active and 2 reserved.
+The released v0.0.146 master2922-entry prefix is exact;Sprint18 appends exactly58
+Ape and Dire Ape identities - two units,26 logical placements,26 celestial and
+fiendish execution children,one1d6 slam, two inspectable unit types and the Dire
+Ape rend feature. All26 placements are registered and withheld. Production master
+traits/content and qualified summoning implementations are preserved by exact
+integration-boundary checks.
+
+The preceding v0.0.143 integration record remains exact for its own release:
+2922 stable IDs, 2920 active and 2 reserved, on a released master2660-entry
+prefix with262 appended qualified summoning identities.
 
 ## 1. Decision summary
 
