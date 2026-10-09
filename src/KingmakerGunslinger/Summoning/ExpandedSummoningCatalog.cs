@@ -69,11 +69,11 @@ namespace KingmakerGunslinger.Summoning
                 C("woolly-rhinoceros","Woolly Rhinoceros",5,true,5,"Mastodon"),
                 C("viper","Viper",1,true,1,"Snake"),
                 C("constrictor-snake","Constrictor Snake",3,true,3,"Snake"),
-                // Sprint 18. Both ride the Owlbear's Large bipedal rig while
-                // their original project-owned bodies are authored, so both are
+                // Sprint 18. Both ride the census-chosen Troll rig while their
+                // original project-owned bodies are authored, so both are
                 // recorded as borrowed-body proxies and both are suppressed.
-                C("ape","Ape",3,true,3,"Owlbear"),
-                C("dire-ape","Dire Ape",4,true,4,"Owlbear")
+                C("ape","Ape",3,true,3,"Troll"),
+                C("dire-ape","Dire Ape",4,true,4,"Troll")
             };
         }
 

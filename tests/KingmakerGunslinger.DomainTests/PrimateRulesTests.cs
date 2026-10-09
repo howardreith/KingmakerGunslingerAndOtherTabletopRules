@@ -604,10 +604,17 @@ namespace KingmakerGunslinger.DomainTests
             }
             ExpandedSummoningDonorCatalog.Validate();
             Assertions.True(ExpandedSummoningBaselineInventory
-                    .ProxyVisualCreatures.Contains("ape<Owlbear") &&
+                    .ProxyVisualCreatures.Contains("ape<Troll") &&
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures
-                    .Contains("dire-ape<Owlbear"),
+                    .Contains("dire-ape<Troll"),
                 "Both apes must be recorded as borrowed-body proxies until their original models are authored.");
+            // The census chose this rig on evidence: of 28 surveyed Large rigs
+            // the Troll is the only one with real hands, a separate jaw and
+            // toes, which is what an ape body needs to be authored against.
+            foreach (string key in new[] { "ape", "dire-ape" })
+                Assertions.Equal("b98735a1737ae494dbe5cbeca1c7c083",
+                    ExpandedSummoningDonorCatalog.For(key).Guid,
+                    key + " must use the census-chosen donor rig.");
         }
     }
 }

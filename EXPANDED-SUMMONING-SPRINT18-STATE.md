@@ -6,7 +6,7 @@ contract lives in `planning/EXPANDED-SUMMONING-SPRINT18-CONTRACT.json` and the
 source-gate evidence in
 `planning/EXPANDED-SUMMONING-SPRINT18-SOURCE-EVIDENCE.json`.
 
-## Current state, 2026-10-09 — SOURCE QUALIFIED; HARNESS PROVED; REVIEW NOT RUN
+## Current state, 2026-10-09 — SOURCE QUALIFIED; CENSUS PASSED; REVIEW NOT RUN
 
 One sprint, one branch, one PR, one release. Ape (Gorilla) and Dire Ape
 (Gigantopithecus) only. Girallon, Xill, Giant Scorpion, Bebelith, Giant Crab,
@@ -15,7 +15,8 @@ Sprint 19 and any broader phase are out of scope and were not started.
 **Exact candidate `bd21f2447b3e68fbb95759292a1991320529f4e0`**, since corrected
 by `aa3d910a`. The complete source, build and package gate passed on the clean
 committed candidate, and the guarded runtime harness is now proved end to end on
-it. The donor census, the original bodies and the Sprint 18 review remain.
+it. The donor census has run and chosen the rig; the original bodies and the
+Sprint 18 review remain.
 
 The push-policy blocker is resolved: the owner authorized adding this sprint's
 branch and the three later ones, the branch is pushed and PR #32 is open.
@@ -62,7 +63,7 @@ branch and the three later ones, the branch is pushed and PR #32 is open.
 | Strict standalone package validation | PASS, 336 members |
 | Expanded Summoning orchestration | PASS, 168 assertions |
 | Guarded harness end to end | PASS — deploy, Steam 640820 launch, mod load 0.0.147, scenario PASS, exact restoration |
-| Guarded primate donor census | **NOT RUN** |
+| Guarded primate donor census | PASS — 288 discovered, 28 surveyed, 28 captured, 9/9 assertions |
 | Batched Sprint 18 runtime review | **NOT RUN** |
 | Publication gate | **NOT RUN** |
 | Release closure matrix | **NOT RUN** |
@@ -118,8 +119,8 @@ Dire Ape: 6 + 6 = 12 roots (parent tiers 4-9). Sprint total 26.
 - **Rend animation variant**: the engine selects it from its command-level rend
   gate, which this sprint does not use, so the variant is not played. The rend is
   still a visible damage event. Presentation deviation, nothing invented.
-- **Original bodies NOT authored**: both apes ride the Owlbear donor rig and are
-  recorded as borrowed-body visual proxies.
+- **Original bodies NOT authored**: both apes ride the census-chosen Troll
+  donor rig and are recorded as borrowed-body visual proxies.
 
 ## Defect found and fixed by the first guarded launch
 
@@ -144,17 +145,58 @@ by a dead mod. The re-run passed.
 
 Both runs restored the owner installation exactly.
 
+## Guarded primate donor census — PASS
+
+Mission section 4, run read-only. Evidence
+`20261009T1721285353210Z-observe-expanded-summoning-primate-census`, all nine
+assertions PASS, `discovered=288 surveyed=28 captured=28 credibleHeight=28`. The
+scenario resolves the four contract anchors exactly, discovers candidates by
+term, dedupes by prefab asset id, caps the survey at the contract's 28, and
+loads each view prefab **detached and read-only**: nothing is instantiated, no
+actor is spawned, no save is touched and no native asset is modified, so there
+is nothing to clean up.
+
+It re-confirms in the live library what the offline pre-census found: **no
+primate unit type and no `RendFeature` consumer**. Both bodies must therefore be
+original project-owned geometry.
+
+**Chosen rig: Troll `CR10_FerociousTrollGuard`**,
+`b98735a1737ae494dbe5cbeca1c7c083`, prefab `0bc98460fca38964aae3af6ad5c655ee`,
+Large, view scale 0.7, 62 bones, root `Pelvis`, bind height 4.378. Of the 28
+surveyed rigs it is the only Large one actually built like an ape: an upright
+Pelvis-rooted spine, long two-segment arms ending in real hands with a thumb and
+three fingers, a separate `Jaw_01`, and legs with toes. That is what carries
+knuckle locomotion and two-handed slams for the Ape and bite and claw contacts
+for the Dire Ape. One rig serves both; the two silhouettes are separated by
+geometry, not by rig.
+
+| Rejected | Why |
+| --- | --- |
+| Owlbear (the provisional donor) | 29 bones, no hands, no jaw, no toes; a quadruped bear |
+| Athach | 64 bones but Huge, and equally handless |
+| Cyclops / hill, frost, stone giants | 48-bone upright humanoid, but a human gait and no ape arm length |
+| Wild Hunt, zombies and other UMA humans | human gait; forbidden by the contract |
+
+### Observer correction made during this census
+
+The first run failed 27 of 28. The shared Sprint 17 bind-capture helper refuses
+an entire view when any one renderer carries an incomplete bind frame, and the
+Bloodmoon Wild Hunt Monarch has a cloth cape renderer like that. Corrected
+request-locally: Sprint 18 reads bind poses with its own fully read-only reader
+that records such renderers in `skippedRenderers` and fails only when a view has
+no usable renderer at all. Sprint 17's survey is untouched, no requirement is
+weakened, nothing in the game is mutated, and the failed run's evidence is kept.
+
+An earlier attempt at that fix disabled the offending renderer on the loaded
+prefab. That would have mutated a native asset, so it was discarded before it
+ran.
+
 ## Remaining work
 
-1. Author the request-local primate donor census scenario and run it to capture
-   the bind and action records. The fresh audit re-confirms the installed
-   library has no primate unit and no `RendFeature` consumer among its 607
-   audited units, 2935 facts and 114 unit types, so both bodies must be original
-   geometry on a non-primate rig.
-2. Author the original Ape and Dire Ape bodies against that capture, review them
-   offline, and wire the view.
-3. Author and run the batched Sprint 18 hidden-candidate runtime review.
-4. Publish the 26 roots, merge PR #32 and release v0.0.147.
+1. Author the original Ape and Dire Ape bodies against the captured Troll bind
+   pose, review them offline, and wire the project-owned view.
+2. Author and run the batched Sprint 18 hidden-candidate runtime review.
+3. Publish the 26 roots, merge PR #32 and release v0.0.147.
 
 None of these is an owner decision; the owner has authorized the guarded runtime
 work. They are remaining engineering.
@@ -184,8 +226,8 @@ installed mod or the game was modified.
 | 1 Intake and branch | DONE — branch pushed, draft PR #32 open against master |
 | 2 Freeze primary-source contract | DONE |
 | 3 Registration, identity, publication | REGISTERED AND WITHHELD; publication NOT RUN |
-| 4 Donor and rig audit | Offline pre-census DONE; guarded census NOT RUN |
-| 5 Original visuals | NOT STARTED (blocked on section 4) |
+| 4 Donor and rig audit | DONE — guarded census PASS; Troll rig chosen on recorded evidence |
+| 5 Original visuals | IN PROGRESS — rig captured; geometry and view NOT AUTHORED |
 | 6 Mechanics | IMPLEMENTED; source-proved; runtime NOT PROVED |
 | 7 Skills, senses, omitted movement | IMPLEMENTED; source-proved; live totals NOT PROVED |
 | 8 Tests and cadence | DONE — 10 Sprint 18 cases, 13 validator fixtures |
