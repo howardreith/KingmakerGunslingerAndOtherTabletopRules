@@ -1,9 +1,11 @@
 # Changelog
 
-## 0.0.143-expanded-summoning-phase2b-checkpoint (integration candidate)
+## 0.0.146-expanded-summoning-phase2b-checkpoint
 
-- Retains every released v0.0.142 Elemental character trait, Favored Class
-  integration and merchant/content-polish change.
+- Retains v0.0.145 Nodachi icon assignment, v0.0.144 weapon findability/recovery,
+  and v0.0.142 Elemental character traits, Favored Class and merchant/content.
+- Fixes legacy summon coats/tints/rims attaching while Expanded Summoning is disabled;
+  preserves save-compatible registration and native teardown.
 - Publishes previously unreleased Dire Rat, Dog, Hyena, Goblin Dog, Wolverine,
   Shadow Mastiff and Poisonous Frog; Fire Beetle and three Giant Ant castes;
   Giant Stag Beetle, revised Crocodile, Dire Crocodile, Viper and Constrictor Snake.
@@ -14,10 +16,57 @@
   and the deterministic Dire Crocodile rider-selection adaptation.
 - Integrates 2922 stable identities without reordering the released master
   prefix; 1008 generated placements plus 29 native wrappers, 1037 visible choices.
-- Integration runtime/whole-roster closure is NOT RUN. No release claim yet.
-  Future work requires a new mission: one sprint per branch/PR/release. No Sprint 18.
+- Exact qualification and release disposition are tracked in the integration
+  evidence. Future work requires a new mission: one sprint per branch/PR/release.
+  No Sprint 18.
 
-## 0.0.142-elemental-race-traits-and-content (historical candidate record; released)
+## 0.0.145-heirloom-nodachi-icon
+
+- Show the project Nodachi artwork on the Heirloom Weapon: Nodachi trait option
+  and its three choices instead of the native donor sword sprite. Blueprint
+  identities, mechanics and selection structure are unchanged.
+- Carry the 0.0.144 content forward unchanged. No additional suites, repository
+  validation or runtime scenarios were run for 0.0.145, at the owner's explicit
+  request; the trait icon has not been inspected in-game.
+
+## 0.0.144-weapon-findability-fixes
+
+- Publish the owner-authorized weapon findability release from the merged
+  feature branch. This promotes the 0.0.143 implementation with a version
+  metadata increment; gameplay, item identities and assets are unchanged.
+- Include the seven requested moves, the two scene-backed corrections,
+  controlled per-weapon recovery and the complete player location inventory.
+- Preserve the measured 0.0.143 qualification and its limits: First Branch's
+  physical route/pickup/persistence and authentic Better Vendors kingdom-stage
+  acceptance remain unverified. No additional suites or runtime scenarios were
+  run for 0.0.144, at the owner's explicit request.
+
+## 0.0.143-weapon-findability-fixes (candidate)
+
+- Move The Last Word and Watch at the World's End to ordinary first-floor House
+  chests; move Unfixed Form, Moonlit Crossing, Winter Reed, Drawn Horizon and
+  Thunder at the Gate to the specified base-campaign containers. Preserve all
+  item identities and native treasure, and clean only mod-owned retired rows.
+- Correct two additional scene-reference defects: Paper Lantern uses the actual
+  Glaive +1 barricaded chest; The River King's Measure uses the actual palace
+  chest containing a Wooden Spoon, Grinding Stone and 16 gold. The similarly
+  named retired definitions have no installed scene object.
+- Derive the 29-weapon inventory from complete publication registries. Including
+  Cord, require 30 containers in 28 exact areas and narrowly permit three named
+  weapons in the normalized House group.
+- Separate blueprint, native treasure, scene, route, pickup, revisit and
+  save/reload evidence; unknown physical evidence stays UNVERIFIED.
+- Add explicitly invoked per-weapon recovery for relocated campaign weapons,
+  with known-ownership refusal and a persisted recovery ledger. Historical
+  ownership outside supported inspections remains unknown.
+- Installed 2.1.7b: 29/29 blueprint/native-treasure and
+  29/29 active scene checks; 28/29 native entrance routes, pickups,
+  revisits and disk reloads. Recovery passed 412 preparation and 33 reload
+  assertions, including canonical and actual upgraded-copy refusal. Optional
+  authentic Better Vendors kingdom-stage acceptance remains NOT RUN; see the
+  individual evidence and limitations in the findability qualification report.
+
+## 0.0.142-elemental-race-traits-and-content (candidate)
 
 - Adds the Ifrit Fiery Glare, Oread Stoic Dignity, Sylph Aerial Observer and
   Undine Whiteout character race traits to supported Favored Class racial

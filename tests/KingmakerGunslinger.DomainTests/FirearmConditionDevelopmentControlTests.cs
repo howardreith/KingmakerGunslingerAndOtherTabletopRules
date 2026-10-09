@@ -187,7 +187,7 @@ namespace KingmakerGunslinger.DomainTests
 
             string runner = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
-                "RuntimeTestRunner.cs"));
+                "RuntimeTestRunner.cs")).Replace("\r\n", "\n");
             foreach (string token in new[] {
                 "DevelopmentControls\n                    .BreakSelectedEquippedFirearmForDebug()",
                 "DevelopmentControls\n                    .WreckSelectedEquippedFirearmForDebug()",

@@ -152,7 +152,7 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("BakedFlightVertexWorld(renderer,") &&
                 source.Contains("renderer.transform.rotation * vertex") &&
                 request.Contains("flight-activation-creature-invalid") &&
-                request.Contains("creatureReview || flightActivation ? 2 : 1") &&
+                request.Contains("flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1") &&
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
                 launcher.Contains("flightCreature = [string]$Parameters.flightCreature") &&
                 // The allowlist stays a closed, named set; Sprint 12's Dire Rat

@@ -215,6 +215,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailAnimationPolicy.cs"><Link>Summoning\SalamanderTailAnimationPolicy.cs</Link></Compile>
     <Compile Include="ExpandedSummoningCorrectionTests.cs" />
     <Compile Include="SummonVisualVariantModuleTests.cs" />
+    <Compile Include="ExpandedSummoningPlayerPathReviewTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ExpandedSummoningPlayerPathReviewScope.cs"><Link>RuntimeTesting\ExpandedSummoningPlayerPathReviewScope.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVisualVariantModulePolicy.cs"><Link>Summoning\SummonVisualVariantModulePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
@@ -398,6 +400,10 @@
     <Compile Include="ShieldOtherPolicyTests.cs" />
     <Compile Include="AcadamaeCordPolicyTests.cs" />
     <Compile Include="PlayerFacingPresentationAndDiscoverabilityTests.cs" />
+    <Compile Include="WeaponFindabilityTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\WeaponFindabilitySaveContract.cs"><Link>RuntimeTesting\WeaponFindabilitySaveContract.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\CampaignWeaponRecoveryPolicy.cs"><Link>Acquisition\CampaignWeaponRecoveryPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\CampaignWeaponQualification.cs"><Link>Acquisition\CampaignWeaponQualification.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs"><Link>Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Presentation\PlayerFacingTextPolicy.cs"><Link>Presentation\PlayerFacingTextPolicy.cs</Link></Compile>
     <Compile Include="CanonicalFatiguePolicyTests.cs" />

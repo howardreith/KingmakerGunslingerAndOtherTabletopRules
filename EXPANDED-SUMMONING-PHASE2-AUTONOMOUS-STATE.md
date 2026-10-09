@@ -24,7 +24,12 @@ native OnDestroy cleanup preserved;no invented hot toggle;registrations intact.
 Existing lifecycle coversall9,duplicateattach,rimupdates,nativecontrols.
 Focused5/5,full2489/2489,repository/static/icons/14-reference clean Release
 and strict325-member pre-integration package PASS;NOT RUNTIME QUALIFIED.
-Source-qualified checkpoint;next normal latestmaster merge/version146/exactpackage,OFF108cleanup/absence,
+This commit is the normal master145 integration candidate:parents c6effc32/bf8a1e41.
+Source audit pins197 master/261 summoning files and all2922 ordered identities.
+146 package inventory333 (325+7master documents+146notes);2497 domain cases.
+Focused/incremental checks PASS;full exact post-merge gate and runtime NOT RUN.
+Ledger:planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md (35files/56hunks).
+Next one exact committed146 source/build/package,OFF108cleanup/absence,
 ON9variants,inventory/menu/representativequantities,5profiles,142/144/145
 coexistence/native-owned trait-save and exact restoration. No1008 replay
 unless integration changes an exercised surface.

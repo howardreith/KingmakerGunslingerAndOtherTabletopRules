@@ -5,6 +5,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal static class RuntimeTestScenarioCatalog
     {
+        internal const string WorkingSaveWeaponRoute = "working-save-weapon-route";
+        internal const string WorkingSaveWeaponRecovery = "working-save-weapon-recovery";
+        internal const string WeaponFindabilityBlueprints = "weapon-findability-blueprints";
+        internal const string WorkingSaveWeaponFindabilityScenes = "working-save-weapon-findability-scenes";
         internal const string ElementalCharacterTraitsOwnedSave = "elemental-character-traits-owned-save";
         internal const string ObservePublishedElementalCharacterTraits = "observe-published-elemental-character-traits";
         internal const string ObserveUnpublishedRaceTraitFoundations = "observe-unpublished-race-trait-foundations";
@@ -659,6 +663,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
             {
+                WeaponFindabilitySaveContract.Scenario,
                 ElementalCharacterTraitsOwnedSave,
                 ObservePublishedElementalCharacterTraits,
                 ObserveUnpublishedRaceTraitFoundations,
@@ -667,6 +672,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveUnpublishedAerialObserverFoundation,
                 ObserveWhiteoutWeatherCatalog,
                 ObserveWhiteoutWeather,
+                WeaponFindabilityBlueprints,
+                WorkingSaveWeaponRoute,
+                WorkingSaveWeaponFindabilityScenes,
+            WorkingSaveWeaponRecovery,
                 ObserveModelDVendors,
             ObserveFirearmDescriptions,
                 ModLoadSmoke,
