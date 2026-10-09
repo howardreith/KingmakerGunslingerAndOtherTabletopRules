@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [string]$MSBuildPath,
     [string]$ReferenceBundleDir,
@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.142') { throw "Build-Local supports only active version 0.0.142, observed $($info.Version)." }
+if ($info.Version -ne '0.0.144') { throw "Build-Local supports only active version 0.0.144, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -51,7 +51,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean -MSBuildPath $msbuild
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.142'
+$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.144'
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -131,7 +131,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soun
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
 # two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 286 } else { 284 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 293 } else { 291 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

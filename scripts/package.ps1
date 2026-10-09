@@ -25,7 +25,7 @@ $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\Kingm
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
-$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-elemental-race-traits-and-content.zip"
+$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-weapon-findability-fixes.zip"
 $checksumPath = "$packagePath.sha256"
 
 if (Test-Path -LiteralPath $stagingDirectory) {
@@ -51,6 +51,19 @@ foreach ($copy in $copies) {
         throw "Required package input is missing: $($copy.Source)"
     }
     Copy-Item -LiteralPath $copy.Source -Destination $copy.Destination
+}
+foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
+    'docs\WEAPON-FINDABILITY-QUALIFICATION.md',
+    'planning\PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md',
+    'validation\weapon-findability-native-reference.json',
+    'validation\weapon-findability-scene-corrections.json',
+    'validation\weapon-findability-runtime-qualification.json',
+    'docs\RELEASE-NOTES-0.0.144.md')) {
+    $source = Join-Path $repositoryRoot $relative
+    if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
+    $destination = Join-Path $modDirectory $relative
+    New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
+    Copy-Item -LiteralPath $source -Destination $destination
 }
 $assetSource = Join-Path $outputDirectory 'assets\icons'
 $assetDestination = Join-Path $modDirectory 'assets\icons'
@@ -133,7 +146,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
 # two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 286 } else { 284 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 293 } else { 291 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

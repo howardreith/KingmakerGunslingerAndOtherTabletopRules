@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "gameVersion": "2.1.7b",
+  "nativeAssemblyMvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+  "corrections": [
+    {
+      "key": "PaperLantern",
+      "publishedTargetGuid": "59cb0ac65b4093440ad341b9a2f372cf",
+      "publishedSceneReferenceCount": 0,
+      "targetGuid": "5cce787544ae5964c8ac43ab7cf768ca",
+      "targetName": "Forest_BarrikadedChest1#2",
+      "area": "StagLordFort",
+      "actualSceneReferenceCount": 1,
+      "scene": "StagLordFort_Mechanics",
+      "entityId": "3c462d8f-be12-436c-b6c8-27fd5c15668b",
+      "hierarchy": "Containers/NotHiddenUnlockedGood_1+1/BarrikadedChest1",
+      "position": [
+        -25.031,
+        0.01599884,
+        19.8230019
+      ],
+      "nativeTreasure": "Glaive +1",
+      "provenance": "20261008T1236580735745Z-83f6ed18081c4e689b854d5761ab13a4; exact loaded LootComponent table census",
+      "qualification": {
+        "scene": "PASS",
+        "route": "PASS",
+        "pickup": "PASS",
+        "revisit": "PASS",
+        "saveReload": "PASS"
+      },
+      "physicalProvenance": {
+        "scene": "20261008T1838314501084Z-b99afd34801349999bf95779b61c7e7f",
+        "route": "20261008T1838314501084Z-b99afd34801349999bf95779b61c7e7f",
+        "pickup": "20261008T1838314501084Z-b99afd34801349999bf95779b61c7e7f",
+        "revisit": "20261008T1838314501084Z-b99afd34801349999bf95779b61c7e7f",
+        "saveReload": "20261008T1842449943330Z-eac0880d817446ff839896bdb47ba27a"
+      }
+    },
+    {
+      "key": "RiverKingsMeasureSymbol",
+      "publishedTargetGuid": "b34367a637010f743815aed5875152bd",
+      "publishedSceneReferenceCount": 0,
+      "targetGuid": "77ad78d755a49af45abee46d86191b16",
+      "targetName": "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)#1",
+      "area": "IrovettiPalace",
+      "actualSceneReferenceCount": 1,
+      "scene": "IrovettiPalace_Mechanics",
+      "entityId": "3b3cf5d0-826e-4a9b-8522-4372d745b409",
+      "hierarchy": "Containers/SuperTrash/IrovettiChambers_ChestHuge_Outline (3)",
+      "position": [
+        -37.201,
+        1.44,
+        -13.861
+      ],
+      "nativeTreasure": "Wooden Spoon, Grinding Stone, 16 gold; the unreferenced 632-gold definition is different",
+      "provenance": "20261008T1238254417557Z-c74285d87b8e4b27b0b2640b1f98263d; exact loaded LootComponent table census",
+      "qualification": {
+        "scene": "PASS",
+        "route": "PASS",
+        "pickup": "PASS",
+        "revisit": "PASS",
+        "saveReload": "PASS"
+      },
+      "physicalProvenance": {
+        "scene": "20261008T1745332956782Z-5282f4e48c174494b027d5fe5cebc639",
+        "route": "20261008T1745332956782Z-5282f4e48c174494b027d5fe5cebc639",
+        "pickup": "20261008T1745332956782Z-5282f4e48c174494b027d5fe5cebc639",
+        "revisit": "20261008T1745332956782Z-5282f4e48c174494b027d5fe5cebc639",
+        "saveReload": "20261008T1749320091324Z-8c8a28ad94d8437e90b9e78a849b1770"
+      }
+    }
+  ]
+}

@@ -53,4 +53,18 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # than in a script nobody executes.
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1')
 
+# Parse the guarded entry points with the installed PowerShell parser. This
+# catches encoding and parameter-block faults before deployment or save access.
+foreach ($scriptName in @('Invoke-KingmakerRuntimeTest.ps1',
+    'RuntimeAutomation.Common.ps1', 'WeaponFindabilityPersistence.Common.ps1',
+    'Invoke-WeaponFindabilityPersistenceQualification.ps1')) {
+    $tokens = $null
+    $parseErrors = $null
+    [void][Management.Automation.Language.Parser]::ParseFile(
+        (Join-Path $PSScriptRoot $scriptName), [ref]$tokens, [ref]$parseErrors)
+    if (@($parseErrors).Count -ne 0) {
+        throw "Guarded runtime script does not parse: $scriptName ($($parseErrors.Message -join '; '))"
+    }
+}
+
 Write-Host 'Version-aware repository validation passed.'
