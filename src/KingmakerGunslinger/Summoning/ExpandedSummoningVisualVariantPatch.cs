@@ -7,6 +7,7 @@ using Harmony12;
 using Kingmaker.View;
 using Kingmaker.Visual.MaterialEffects;
 using Kingmaker.Visual.MaterialEffects.RimLighting;
+using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -312,6 +313,13 @@ namespace KingmakerGunslinger.Summoning
             try
             {
                 if (__instance == null) return;
+                // Active is restart-bound, not the pending UI setting. Fail
+                // closed before lookup, cached-state allocation or recolour.
+                if (!ExpandedSummoningVisualVariantPatch.IsModuleActive)
+                {
+                    States.Remove(__instance);
+                    return;
+                }
                 State state;
                 if (!States.TryGetValue(__instance, out state))
                 {
@@ -415,6 +423,15 @@ namespace KingmakerGunslinger.Summoning
     internal static class ExpandedSummoningVisualVariantPatch
     {
         internal const string VariantMaterialName = "KMG_SummonVisualVariant";
+        internal static bool IsModuleActive
+        {
+            get
+            {
+                ModContext context;
+                return ModContext.TryGet(out context) &&
+                    context.FeatureModules.Active.ExpandedSummoning;
+            }
+        }
         private static readonly string[] ColorSlots = { "_Color", "_TintColor",
             "_BaseColor", "_MainColor" };
         private const string RimSlot = "_RimColor";
@@ -709,6 +726,12 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>The registered rim colour for a view, or none.</summary>
         internal static Color? RimFor(UnitEntityView view)
         {
+            return SummonVisualVariantModulePolicy.WhenActive(IsModuleActive,
+                () => RegisteredRimFor(view), (Color?)null);
+        }
+
+        private static Color? RegisteredRimFor(UnitEntityView view)
+        {
             if (view == null || view.EntityData == null || view.EntityData.Blueprint == null)
                 return null;
             SummonVisualVariant variant;
@@ -721,6 +744,14 @@ namespace KingmakerGunslinger.Summoning
         }
 
         internal static string Apply(UnitEntityView view, SummonVisualVariant variant)
+        {
+            // This guard also covers direct fixture calls; no ownership,
+            // texture, material or renderer mutation exists before it.
+            return SummonVisualVariantModulePolicy.WhenActive(IsModuleActive,
+                () => ApplyActive(view, variant), SummonVisualVariantModulePolicy.DisabledOutcome);
+        }
+
+        private static string ApplyActive(UnitEntityView view, SummonVisualVariant variant)
         {
             var ownership = new SummonVisualOwnership(view, view.EntityData.Blueprint.name);
             string outcome;

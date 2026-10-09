@@ -346,10 +346,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
                 var project = unit.View == null ? new UnityEngine.Object[0] : RosterPersistenceResources(unit);
                 bool visual = unit.View != null && (_context.FeatureModules.Active.ExpandedSummoning || project.Length == 0);
+                string variantOwner = ExpandedSummoningVisualVariantPatch.DescribeOwnership(unit.View);
+                string variantOutcome = ExpandedSummoningVisualVariantPatch.DescribeView(unit.View);
+                string rimState = ExpandedSummoningRimAnimationPatch.Describe(unit.View);
+                bool rimAbsent = !ExpandedSummoningVisualVariantPatch.RimFor(unit.View).HasValue;
+                bool registeredVariant = ExpandedSummoningVisualVariantPatch.RegisteredBlueprintNames.Contains(unit.Blueprint.name);
+                if (!_context.FeatureModules.Active.ExpandedSummoning)
+                    visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
+                        (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
-                        ["projectResourceCount"] = project.Length, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning },
+                        ["projectResourceCount"] = project.Length, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning,
+                        ["variantRegisteredForSaveCompatibility"] = registeredVariant, ["variantOutcome"] = variantOutcome,
+                        ["variantOwnership"] = variantOwner, ["rimLookupAbsent"] = rimAbsent, ["rimControllerState"] = rimState,
+                        ["rendererMaterials"] = new JArray(unit.View == null ? new string[0] :
+                            unit.View.GetComponentsInChildren<Renderer>(true).Where(r => r != null)
+                                .SelectMany(r => r.sharedMaterials).Select(m => m == null ? "<null>" : m.name)) },
                     "saved racial/profile/weapon identities retained exactly; module OFF deserializes natively without original-view attachment");
+            }
+            if (!_context.FeatureModules.Active.ExpandedSummoning)
+            {
+                int materials, textures, owners;
+                string counts = ExpandedSummoningVisualVariantPatch.CountOwnedObjects(out materials, out textures, out owners);
+                RosterPersistenceCheck("module-off-zero-variant-allocations", materials == 0 && textures == 0 && owners == 0,
+                    new JObject { ["counts"] = counts, ["registeredVariants"] = ExpandedSummoningVisualVariantPatch.RegisteredBlueprintNames.Count },
+                    "save-compatible registration remains; disabled views allocate no variant ownership, material or coat texture; no cached rim recolouring");
             }
             if (verify) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
