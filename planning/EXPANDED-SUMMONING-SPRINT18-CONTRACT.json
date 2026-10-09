@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "sprint": 18,
   "title": "Expanded Summoning Sprint 18: Ape and Dire Ape",
-  "status": "CONTRACT FROZEN; NOT IMPLEMENTED; NOT QUALIFIED",
+  "status": "IMPLEMENTED; RUNTIME QUALIFIED; PUBLISHED; RELEASE PENDING",
   "frozenAtUtc": "2026-10-09T00:00:00Z",
   "authority": {
     "primarySource": "Official Pathfinder Bestiary Ape entry (Gorilla, Gigantopithecus) and the official Summon Monster / Summon Nature's Ally tables.",

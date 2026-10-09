@@ -97,10 +97,11 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Both keys are withheld, every root is registered, and publication is
-        /// the removal of two keys and nothing else.
+        /// Every root is registered and every root is published. Publication
+        /// was the removal of two keys and nothing else: no identity moved,
+        /// and the icons the withheld creatures already owned did not change.
         /// </summary>
-        internal static void BothApesAreRegisteredAndSuppressed()
+        internal static void BothApesAreRegisteredAndPublished()
         {
             SummonVariantSpec[] all = ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.Monster).Concat(
@@ -109,17 +110,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1034,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placement count changed.");
-            Assertions.Equal(26,
+            // Published on 2026-10-09 after the complete hidden candidate
+            // passed. Publication removed two names and moved nothing else:
+            // every identity was allocated at registration.
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Sprint 18 must withhold exactly its own twenty-six roots.");
-            Assertions.Equal(1008,
+                "Sprint 18 withholds nothing now that its review has passed.");
+            Assertions.Equal(1034,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "No previously published root may be withheld by Sprint 18.");
+                "Every registered placement is published.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    !PrimateRulesPolicy.IsPrimate(variant.Creature.Key),
-                    SummonVisibilityCatalog.IsPublished(variant),
-                    "Only the two apes may be suppressed: " + variant.StableKey);
+                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
+                    "Nothing may be withheld: " + variant.StableKey);
             SummonVisibilityCatalog.Validate();
 
             // Identities are allocated once at registration, so a withheld
@@ -150,14 +152,16 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.Equal(2, SummonIconCatalog.All.Count(value =>
                     PrimateRulesPolicy.IsPrimate(value.Key)),
-                "A withheld creature still owns its own icon.");
+                "Each ape owns its own icon, as it did while withheld.");
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All
                 .Where(value => PrimateRulesPolicy.IsPrimate(value.Key)))
             {
                 Assertions.True(SummonIconCatalog.IsRegisteredSomewhere(creature),
                     creature.Key + " must be registered.");
-                Assertions.False(SummonIconCatalog.IsPublishedSomewhere(creature),
-                    creature.Key + " must not be published yet.");
+                // The icon was registered before publication and did not move
+                // at it: a withheld creature already owned its own face.
+                Assertions.True(SummonIconCatalog.IsPublishedSomewhere(creature),
+                    creature.Key + " must publish the icon it already owned.");
             }
         }
 

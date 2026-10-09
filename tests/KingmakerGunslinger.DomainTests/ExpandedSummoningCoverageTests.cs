@@ -74,7 +74,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(110,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures must be 99 project-owned plus 11 native wrappers.");
-            Assertions.Equal(108,
+            Assertions.Equal(110,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
                 "Both independently qualified snakes and every prior creature are published.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
@@ -217,7 +217,7 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 13 adds Shadow Mastiff's four; Sprints 14-15 publish all
             // insects under the accepted passive-sense limitation. Sprint 16
             // adds six Dire roots after its complete hidden qualification.
-            Assertions.Equal(1037,
+            Assertions.Equal(1063,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");

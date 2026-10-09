@@ -869,8 +869,8 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(rows.Select(v => v.Multiplicity).Distinct().Count() == 3,
                     "Direct, 1d3 and 1d4+1 routes retain their allocated identities.");
             }
-            Assertions.Equal(1008, all.Count(SummonVisibilityCatalog.IsPublished), "Exactly 32 newly published roots.");
-            Assertions.Equal(1037, all.Count(SummonVisibilityCatalog.IsPublished) +
+            Assertions.Equal(1034, all.Count(SummonVisibilityCatalog.IsPublished), "Exactly 32 newly published roots.");
+            Assertions.Equal(1063, all.Count(SummonVisibilityCatalog.IsPublished) +
                 SummonNativeExpansionCatalog.All.Count, "Published surface is source-derived.");
             Assertions.True(all.Where(v => !SerpentineRulesPolicy.IsSnake(v.Creature.Key) &&
                     !PrimateRulesPolicy.IsPrimate(v.Creature.Key))
