@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -25,7 +26,8 @@ namespace KingmakerGunslinger.Blueprints
             foreach (SummonVariantSpec variant in ExpandedSummoningCatalog
                 .GenerateVariants(family))
             {
-                if (!SummonVisibilityCatalog.IsPublished(variant)) continue;
+                // Hidden registration still owns its icon for private exact
+                // qualification routes; this does not publish a menu choice.
                 Sprite icon = ExpandedSummoningProjectIcons.Require(
                     variant.Creature.Key);
                 string symbol = ExpandedSummoningIdentityCatalog.AbilitySymbol(
@@ -52,6 +54,34 @@ namespace KingmakerGunslinger.Blueprints
                     "Published Giant Wasp unit type is missing.");
             ((BlueprintUnitType)waspType).Image =
                 ExpandedSummoningProjectIcons.Require("giant-wasp");
+            foreach (string key in new[] { "viper", "constrictor-snake" })
+            {
+                string token = key == "viper" ? "Viper" : "ConstrictorSnake";
+                BlueprintScriptableObject value;
+                if (!bySymbol.TryGetValue("KMG.Summoning.Natural." + token + ".UnitType", out value) ||
+                    !(value is BlueprintUnitType))
+                    throw new InvalidOperationException("Registered snake unit type is missing.");
+                ((BlueprintUnitType)value).Image = ExpandedSummoningProjectIcons.Require(key);
+            }
+            // Constrictor's passive species trait intentionally shares its
+            // existing coiled-snake painting. No new command or pixels.
+            BlueprintScriptableObject traits;
+            if (!bySymbol.TryGetValue(SummonIconCatalog.ConstrictorTraitsSymbol, out traits) ||
+                !(traits is BlueprintBuff) || traits.AssetGuid != "f83dfefcac58495c9a0f5c89a4483ddf")
+                throw new InvalidOperationException("Exact Constrictor passive trait icon consumer is missing.");
+            BlueprintUnitFactAccess.Resolve().SetIcon((BlueprintBuff)traits,
+                ExpandedSummoningProjectIcons.Require(
+                    SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.ConstrictorTraitsSymbol)));
+            BlueprintScriptableObject salamanderType;
+            if (!bySymbol.TryGetValue("KMG.Summoning.Special.Salamander.UnitType", out salamanderType) ||
+                !(salamanderType is BlueprintUnitType))
+                throw new InvalidOperationException("Salamander species icon consumer is missing.");
+            ((BlueprintUnitType)salamanderType).Image = ExpandedSummoningProjectIcons.Require("salamander");
+            if (!bySymbol.TryGetValue(SummonIconCatalog.SalamanderTraitsSymbol, out traits) ||
+                !(traits is BlueprintBuff) || traits.AssetGuid != "a47bc65d6b6b42b6a19610e22b13f171")
+                throw new InvalidOperationException("Exact Salamander passive trait icon consumer is missing.");
+            BlueprintUnitFactAccess.Resolve().SetIcon((BlueprintBuff)traits,
+                ExpandedSummoningProjectIcons.Require(SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.SalamanderTraitsSymbol)));
             // The Cyclops's own summon icon marks its Flash of Insight on the
             // action bar; the ability has no separate art of its own.
             Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",

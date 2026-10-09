@@ -133,13 +133,23 @@ def runtime_mapping_errors(root, catalog, source_text=None):
     if source_text is None:
         source_text = inside(root, mapping["source"]).read_text(encoding="utf-8-sig")
     observed = re.findall(r'new Binding\("([^"]+)", "([^"]+)", typeof\((\w+)\)\)', source_text)
-    expected = {(c["symbol"], c["concept"], c["type"]) for c in catalog["consumers"]
-                if concepts[c["concept"]]["family"] == "painted-magical"}
+    painted = {(c["symbol"], c["concept"], c["type"]) for c in catalog["consumers"]
+               if concepts[c["concept"]]["family"] == "painted-magical"}
+    emblem_keys = mapping.get("additionalEmblemConcepts", [])
+    if len(emblem_keys) != len(set(emblem_keys)) or any(
+            key not in concepts or concepts[key]["family"] != "combat-emblem" or
+            concepts[key]["exportProfile"] != "combat-emblem-64" for key in emblem_keys):
+        errors.append("Additional emblem mapping must name distinct combat-emblem-64 concepts")
+    emblems = {(c["symbol"], c["concept"], c["type"]) for c in catalog["consumers"]
+               if c["concept"] in emblem_keys}
+    expected = painted | emblems
     if len(observed) != len(set(observed)) or set(observed) != expected or source_text.count("new Binding(") != len(observed):
         errors.append("Compiled owned icon bindings disagree with exact catalog consumers")
     keys = {row[1] for row in expected}
-    if mapping["paintedConsumerCount"] != len(expected) or mapping["paintedConceptCount"] != len(keys):
+    if mapping["paintedConsumerCount"] != len(painted) or mapping["paintedConceptCount"] != len({row[1] for row in painted}):
         errors.append("Integrated icon coverage counts disagree")
+    if mapping.get("additionalEmblemConsumerCount", 0) != len(emblems) or set(emblem_keys) != {row[1] for row in emblems}:
+        errors.append("Additional emblem coverage counts disagree")
     for key in keys:
         runtime = concepts[key].get("runtimeExport", {})
         if runtime != {"path": f"assets/game/icons/{key}.png", "installedPath": f"assets/icons/{key}.png", "cacheKey": key}:
@@ -262,7 +272,10 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None, pro
                         "Runtime export must be 8-bit noninterlaced RGBA: " + key)
             except (ValueError, zlib.error, struct.error) as exc:
                 errors.append(str(exc))
-        require(record["exportSize"] == ([64, 64] if key == "rapid-reload" else [128, 128]),
+        profile = concepts.get(key, {}).get("exportProfile")
+        require(profile in {"combat-emblem-64", "project-painted-128"},
+                "Unsupported authored export profile: " + key)
+        require(record["exportSize"] == ([64, 64] if profile == "combat-emblem-64" else [128, 128]),
                 "Export profile mismatch: " + key)
         require(record["export"] == str(Path(manifest).parent / "exports" / (key + ".png")).replace("\\", "/"),
                 "Candidate silently promoted or renamed: " + key)

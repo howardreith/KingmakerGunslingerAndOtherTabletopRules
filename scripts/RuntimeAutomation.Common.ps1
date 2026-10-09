@@ -1121,6 +1121,48 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
     }
     # Correction order (2026-09-25): the focused rules cases and the visual
     # resource lifecycle, on disposable units in the guarded working save.
+    'disposable-expanded-summoning-crocodilians' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-expanded-summoning-serpentine-survey' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-expanded-summoning-serpentine-bodies' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-expanded-summoning-snake-profiles' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-expanded-summoning-snake-signatures' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-expanded-summoning-snake-commands' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-expanded-summoning-snake-final-review' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'disposable-expanded-summoning-rules' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1989,6 +2031,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -ceq 'observe-unpublished-aerial-observer-foundation' -and -not $ExitAfterCompletion) {
         throw 'Unpublished Aerial Observer foundation requires automatic exit.'
     }
+    if ($Scenario -ceq 'disposable-expanded-summoning-snake-final-review' -and -not $ExitAfterCompletion) {
+        throw 'The closed snake final review requires automatic exit.'
+    }
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
     $qualifiedElementalRaces114 =
         $PermitQualifiedElementalRaces114 -and
@@ -2106,11 +2151,26 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
         $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
             $Parameters.ContainsKey('nativeActionCase')
-        $flightActivation = $Scenario -cin @('summon-same-turn-activation', 'summon-same-turn-rtwp-control') -and
+        # The ordinary native-control case takes a named creature too: it is the
+        # unquickened Full-Round route, and a creature too far up the ladder to
+        # be quickened has nowhere else to prove ordinary turn-based behaviour.
+        $flightActivation = $Scenario -cin @('summon-same-turn-activation', 'summon-same-turn-rtwp-control', 'summon-same-turn-native-control') -and
             $Parameters.ContainsKey('flightCreature')
         $crowdReview = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
             $Parameters.ContainsKey('quantity')
-        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $weaponRoute) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $representativePlayerPaths = $Scenario -ceq 'disposable-expanded-summoning-player-path' -and $Parameters.ContainsKey('playerPathScope')
+        if ($representativePlayerPaths -and ($Parameters.playerPathScope -isnot [string] -or
+            $Parameters.playerPathScope -cne 'representative' -or -not $ExitAfterCompletion)) {
+            throw 'The existing player-path fixture permits only playerPathScope=representative and automatic exit.'
+        }
+        $targetedSummonPersistence = $Scenario -cin @('working-save-expanded-summoning-prepare',
+            'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
+            $Parameters.ContainsKey('persistenceScope')
+        if ($targetedSummonPersistence -and ($Parameters.persistenceScope -isnot [string] -or
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster') -or -not $ExitAfterCompletion)) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes or whole-roster and automatic exit.'
+        }
+        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -2125,12 +2185,14 @@ function Assert-KmgRuntimeScenarioPreflight {
         if ($crowdReview -and ($Parameters.quantity -isnot [string] -or
             $Parameters.quantity -cne 'OneD4PlusOne' -or
             @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
-                Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros') }).Count -ne 0)) {
-            throw 'The crowd review permits only 1d4+1 Sprint 11 ungulates.'
+                Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros',
+                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile',
+                    'viper','constrictor-snake','salamander') }).Count -ne 0)) {
+            throw 'The crowd review permits only 1d4+1 Sprint 11 ungulates, Sprint 12 quadrupeds, Sprint 16 crocodilians or the two Sprint 17 snakes.'
         }
         if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or
-            [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge'))) {
-            throw 'The flight activation fixture permits only Eagle, Dire Bat, Giant Wasp, or hidden Stirge.'
+            [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff'))) {
+            throw 'The activation fixture permits only Eagle, Dire Bat, Giant Wasp, Stirge, Dire Rat, Wolverine or Shadow Mastiff.'
         }
         if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
             [string]$Parameters['class'] -cne 'Fighter' -or
@@ -2385,6 +2447,12 @@ function New-KmgRuntimeRequest {
             }
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
             [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
+        } elseif ($Scenario -cin @('working-save-expanded-summoning-prepare',
+                'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
+                $Parameters.ContainsKey('persistenceScope')) {
+            [ordered]@{ saveName = [string]$Parameters.saveName; persistenceScope = [string]$Parameters.persistenceScope }
+        } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and $Parameters.ContainsKey('playerPathScope')) {
+            [ordered]@{ saveName = [string]$Parameters.saveName; playerPathScope = [string]$Parameters.playerPathScope }
         } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
             $creatureReviewParameters = [ordered]@{
                 saveName = [string]$Parameters.saveName
@@ -2395,7 +2463,8 @@ function New-KmgRuntimeRequest {
             }
             $creatureReviewParameters
         } elseif ($Scenario -cin @('summon-same-turn-activation',
-                'summon-same-turn-rtwp-control') -and
+                'summon-same-turn-rtwp-control',
+                'summon-same-turn-native-control') -and
                 $Parameters.ContainsKey('flightCreature')) {
             [ordered]@{ saveName = [string]$Parameters.saveName;
                 flightCreature = [string]$Parameters.flightCreature }

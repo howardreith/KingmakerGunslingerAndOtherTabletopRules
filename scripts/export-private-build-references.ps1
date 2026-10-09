@@ -42,6 +42,7 @@ $required = @(
     'UnityEngine.AudioModule.dll',
     'UnityEngine.AssetBundleModule.dll',
     'UnityEngine.CoreModule.dll',
+    'UnityEngine.PhysicsModule.dll',
     'UnityEngine.UI.dll',
     'UnityEngine.UIModule.dll',
     'UnityEngine.TextRenderingModule.dll',
@@ -135,6 +136,12 @@ Do not publish this archive or include its DLLs in the mod's source or release p
 }
 finally {
     if (Test-Path -LiteralPath $stagingParent) {
-        Remove-Item -LiteralPath $stagingParent -Recurse -Force
+        $resolvedStage = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $stagingParent).Path)
+        $resolvedTemp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
+        if (-not $resolvedStage.StartsWith($resolvedTemp, [StringComparison]::OrdinalIgnoreCase) -or
+            [IO.Path]::GetFileName($resolvedStage) -cnotmatch '^kmg-private-references-[0-9a-f]{32}$') {
+            throw 'Private reference cleanup target is outside its exact temporary staging scope.'
+        }
+        Remove-Item -LiteralPath $resolvedStage -Recurse -Force
     }
 }

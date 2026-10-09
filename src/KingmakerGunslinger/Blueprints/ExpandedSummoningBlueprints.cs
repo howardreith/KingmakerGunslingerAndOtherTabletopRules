@@ -9,6 +9,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints;
+using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -74,6 +75,13 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintBrain")
                     blueprint = registry.Register<BlueprintBrain>(identity.Symbol,
                         () => CreateBrainShell(identity.Symbol));
+                else if (identity.PlannedType == "IsEngagedConsideration")
+                    blueprint = registry.Register<IsEngagedConsideration>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<IsEngagedConsideration>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
                 else if (identity.PlannedType == "BlueprintItemWeapon")
                     blueprint = registry.Register<BlueprintItemWeapon>(
                         identity.Symbol, () => CreateWeaponShell(identity.Symbol));

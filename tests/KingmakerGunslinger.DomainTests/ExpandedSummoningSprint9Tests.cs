@@ -126,8 +126,15 @@ namespace KingmakerGunslinger.DomainTests
             string automation = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "scripts",
                 "RuntimeAutomation.Common.ps1"));
-            Assertions.True(source.Contains("_flightCreature == \"eagle\" ? 1 :") &&
-                source.Contains("_flightCreature == \"dire-bat\" ? 3 : 4") &&
+            // The fixture used to carry its own eagle/dire-bat/else tier table.
+            // It now reads each creature's own Summon Monster tier out of the
+            // frozen catalog, which is the same fact without a second copy of
+            // it, and refuses a creature that has no such tier.
+            Assertions.True(source.Contains(
+                    "SummonCreatureSpec creature = ExpandedSummoningCatalog.All") &&
+                source.Contains("int tier = creature.MonsterTier.Value;") &&
+                source.Contains(
+                    "The activation case needs a Summon Monster tier: ") &&
                 source.Contains("ExpandedSummoningIdentityCatalog") &&
                 source.Contains("PrepareQuickenedSummon(_spellbook,") &&
                 source.Contains("attack.Target, _enemy") &&
@@ -145,12 +152,15 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("BakedFlightVertexWorld(renderer,") &&
                 source.Contains("renderer.transform.rotation * vertex") &&
                 request.Contains("flight-activation-creature-invalid") &&
-                request.Contains("creatureReview || flightActivation ? 2 : 1") &&
+                request.Contains("flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1") &&
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
                 launcher.Contains("flightCreature = [string]$Parameters.flightCreature") &&
-                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge')") &&
+                // The allowlist stays a closed, named set; Sprint 12's Dire Rat
+                // and Sprint 13's Wolverine and Shadow Mastiff joined it so
+                // ground creatures can prove both combat modes.
+                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff')") &&
                 automation.Contains("flightCreature = [string]$Parameters.flightCreature"),
-                "The guarded combat fixture must select only the published own-tier flyers and correlate a native attack to its exact hostile.");
+                "The guarded combat fixture must select only named published creatures and correlate a native attack to its exact hostile.");
         }
 
         internal static void EagleVisualLungeIsBoundedAndRestored()
@@ -202,11 +212,17 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.NaturesAlly)).ToArray();
             SummonVariantSpec[] bat = all.Where(value =>
                 value.Creature.Key == "dire-bat").ToArray();
-            Assertions.Equal(832, all.Count(SummonVisibilityCatalog.IsPublished),
-                "The published surface must exclude only Sprint 12 candidates.");
-            Assertions.Equal(68, all.Count(value =>
+            Assertions.Equal(1008, all.Count(SummonVisibilityCatalog.IsPublished),
+                "The published surface must exclude only candidates that are unqualified or held on a proven engine barrier.");
+            Assertions.Equal(
+                SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
+                all.Count(value =>
                     !SummonVisibilityCatalog.IsPublished(value)),
-                "The authorized Sprint 12 hidden set changed.");
+                "The authorized hidden set must be exactly the size the catalog declares; which creature is in it belongs to whichever sprint is in flight, and Sprint 9's own are checked next.");
+            Assertions.Equal(0, all.Count(value =>
+                    value.Creature.Key == "dire-bat" &&
+                    !SummonVisibilityCatalog.IsPublished(value)),
+                "Sprint 9's own creatures must never be withheld.");
             Assertions.Equal(14, bat.Length,
                 "Dire Bat retains seven placements in each summon family.");
             Assertions.True(bat.All(SummonVisibilityCatalog.IsPublished),

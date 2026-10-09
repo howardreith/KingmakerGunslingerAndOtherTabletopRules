@@ -231,27 +231,33 @@ def hyena(bm, weights, uvs, rig):
          [0.15, 0.28, 0.30, 0.35, 0.36, 0.25],
          ["tail_01", "Torso_Lower", "spine_0", "Torso_Upper", "withers", "neck"],
          "body", 12)
-    muzzle = skull + forward * 0.34 + up * -0.015
+    # 2026-10-01 art repair. The first head was as wide as the torso it sat
+    # on - a 0.275 skull against a 0.36 body - and reached 0.34 forward, so a
+    # rest-pose review frame read as an amphibian rather than a hyena. The
+    # skull drops to 0.235 and the muzzle to 0.29 forward, which keeps the
+    # blunt heavy head the species is known for while letting the shoulders
+    # stay the widest part of the silhouette.
+    muzzle = skull + forward * 0.29 + up * -0.015
     tube(bm, weights, uvs,
-         [neck, skull, skull + forward * 0.10,
-          skull + forward * 0.24 + up * -0.01, muzzle],
-         [0.25, 0.275, 0.24, 0.18, 0.095],
+         [neck, skull, skull + forward * 0.085,
+          skull + forward * 0.205 + up * -0.01, muzzle],
+         [0.24, 0.235, 0.205, 0.155, 0.085],
          ["neck", "Head", "Head", "jaw_woo_up_add", "jaw_woo_up"],
          "body", 12)
     tube(bm, weights, uvs,
-         [at("jaw"), skull + forward * 0.20 + up * -0.13,
-          skull + forward * 0.32 + up * -0.10],
-         [0.15, 0.115, 0.038], ["jaw", "jaw_woo_down", "jaw_woo_down"],
+         [at("jaw"), skull + forward * 0.17 + up * -0.115,
+          skull + forward * 0.275 + up * -0.09],
+         [0.13, 0.10, 0.034], ["jaw", "jaw_woo_down", "jaw_woo_down"],
          "beak", 10)
-    ellipsoid(bm, weights, uvs, muzzle + forward * 0.025,
-              side, up, forward, (0.085, 0.07, 0.055), "jaw_woo_up",
+    ellipsoid(bm, weights, uvs, muzzle + forward * 0.022,
+              side, up, forward, (0.075, 0.062, 0.050), "jaw_woo_up",
               "crest", 5, 10)
     for ear_name, sign in (("ear_L", 1.0), ("ear_R", -1.0)):
-        ear_centre = skull + side * sign * 0.20 + up * 0.20 + forward * -0.015
+        ear_centre = skull + side * sign * 0.17 + up * 0.185 + forward * -0.015
         ellipsoid(bm, weights, uvs, ear_centre,
-                  side, up, forward, (0.030, 0.15, 0.115), ear_name,
+                  side, up, forward, (0.028, 0.125, 0.100), ear_name,
                   "body", 6, 12)
-    eyes(bm, weights, uvs, skull, side, up, forward, 0.215, 0.025, "Head")
+    eyes(bm, weights, uvs, skull, side, up, forward, 0.185, 0.023, "Head")
 
     for prefix in ("L", "R"):
         canine_leg(bm, weights, uvs, rig,
@@ -264,14 +270,39 @@ def hyena(bm, weights, uvs, rig):
              prefix + "_Leg0_Lower2", prefix + "_Foot0",
              "hindpaw_tip_" + prefix],
             [0.115, 0.090, 0.065, 0.050, 0.032], side, up, forward, 0.115)
+    # 2026-10-01 art repair. The first tail was thicker in the middle than at
+    # its root (0.105 rising to 0.12 against a 0.36 body) and was painted from
+    # the body region, so a review frame showed a broad spotted paddle rather
+    # than a tail. It now tapers from root to tip the way the Goblin Dog's
+    # does, stays in the limb region, and extends past the last bone so the
+    # bushy tip is not a flat cut face. A hyena tail is short and brushy, so
+    # it keeps more volume than the Goblin Dog's whip tail.
     tail_names = ["tail_01", "tail_02", "tail_03", "tail_04"]
-    tube(bm, weights, uvs, [at(name) for name in tail_names],
-         [0.105, 0.12, 0.095, 0.025], tail_names, "body", 10)
+    tail_points = [at(name) for name in tail_names]
+    direction = (tail_points[-1] - tail_points[-2]).normalized()
+    tail_points.append(tail_points[-1] + direction * 0.16 + up * -0.03)
+    tube(bm, weights, uvs, tail_points,
+         [0.075, 0.062, 0.042, 0.016, 0.004],
+         tail_names + ["tail_04"], "limbs", 9)
     # The raised dark mane and heavy forequarters establish the hyena at the
     # party camera even before its spotted painting resolves.
+    #
+    # 2026-10-01 art repair. The first mane ran at a fixed height that ignored
+    # the body radius under it: 0.27 above a spine of radius 0.30 buried it,
+    # 0.35 above an upper torso of radius 0.35 cut it exactly in half, and
+    # 0.27 above a neck of radius 0.25 left it floating. A rest-pose frame
+    # showed the result as a flat dark sliver lying on the back rather than a
+    # mane. Each station now sits clear of its own local radius with the bulk
+    # seated inside the body, and the profile peaks over the withers and
+    # tapers both ways, which is the shape the species actually carries.
+    # The first seated attempt cleared the body but stood so proud of it that
+    # it read as a detached slab. The ridge now rises only a little above each
+    # local radius, so it follows the dorsal line instead of hovering over it.
     tube(bm, weights, uvs,
-         [spine + up * 0.27, upper + up * 0.35, neck + up * 0.27],
-         [0.045, 0.055, 0.025], ["spine_0", "Torso_Upper", "neck"],
+         [spine + up * 0.285, upper + up * 0.345,
+          shoulder_centre + up * 0.325, neck + up * 0.235],
+         [0.040, 0.062, 0.056, 0.034],
+         ["spine_0", "Torso_Upper", "withers", "neck"],
          "crest", 8)
 
 

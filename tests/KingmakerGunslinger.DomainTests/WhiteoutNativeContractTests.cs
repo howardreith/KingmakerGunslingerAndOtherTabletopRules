@@ -25,7 +25,9 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ExactThresholds()
         {
             string s=Native("WeatherData::get_ActualWeather");
-            Assertions.True(s.Contains("RainIntensitites") && s.Contains("SnowIntensitites") && s.Contains("9.9999998e-003") && s.Contains("ldc.i4.4"), "Native five-level threshold mapping and epsilon are explicit.");
+            Assertions.True(s.Contains("RainIntensitites") && s.Contains("SnowIntensitites") &&
+                Regex.IsMatch(s, @"ldc\.r4\s+9\.9999998e-0?03\b") && s.Contains("ldc.i4.4"),
+                "Native five-level threshold mapping and exact float epsilon are explicit; ildasm exponent zero-padding is not a semantic difference.");
         }
         internal static void NativeNotificationRoute()
         {

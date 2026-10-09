@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-10-07T13:18:00Z",
+  "status": "SOURCE PASS; EXACT RUNTIME PENDING; SPRINT17 NOT QUALIFIED",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "sourceParent": "500dfcffab9f743b31c31a9aa8a07dfa271d487a",
+  "scope": "Bounded native/original hand-observation failure isolation and rejection census; no gameplay, original asset, native pose, weapon or threshold change.",
+  "sourceGate": {
+    "focused": 298,
+    "unfilteredDomain": 2100,
+    "domainSeconds": 83.5,
+    "completeSeconds": 180.4,
+    "cleanExactReferences": 14,
+    "strictPackageMembers": 321
+  },
+  "sourceArtifact": {
+    "sourceFingerprint": "67e6c4d159e6d084bb2b7683351fcf7220ad5b907639a936073e008752023ddd",
+    "dllSha256": "be7b5aa2cb37200a3b83af85183d6ce36b0b5880963e093b78bfc802725bdf5a",
+    "dllMvid": "92099327-9750-4e52-a91a-77c2191a2a63",
+    "zipSha256": "792794452510fe7a5c3d65fbda26a4df7668327d2603b50f19106c41e652387e",
+    "version": "0.0.141",
+    "archive": "artifacts/sprint17-human-weight-census-source-pass",
+    "dirtyParentNotRuntimeCandidate": true
+  },
+  "files": [
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17HumanGrip.cs",
+      "sha256": "c31887419491251edd8a2f17fce171d17aac6a95a2e5c711682e0721098f8d9e"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17HumanSalamander.cs",
+      "sha256": "4c32d40c72324322a800f101fa4d644264606c939031b99fdab6d29b20c268d6"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/SalamanderHumanBindingPolicy.cs",
+      "sha256": "90823d1ab607517e71591728de7cebb4c9d5e45cd7aaa9d69ce40ea2bae592e7"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/Program.cs",
+      "sha256": "fa7d6d07936aca78658dbd4ed7ddd7723bb2d25cbb391ed44967988fd1d8f03b"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/SalamanderHumanBindingTests.cs",
+      "sha256": "bcb8b128fdf2e75b19b6bb44cdb1ea94fd983ae14311eb4e042b2ad435ad58de"
+    },
+    {
+      "path": "tools/validate_expanded_summoning_phase2a141.py",
+      "sha256": "667bafff6443f647452b50da60db03fcb07f48adcdf7488c879f0e718e8b8d84"
+    },
+    {
+      "path": "validation/static-validation.json",
+      "sha256": "4d272bdeafccaa5685284e129e1ada72c21d8f7728e8b6bc383f45aa54b3423b"
+    },
+    {
+      "path": "artifacts/sprint17-human-weight-census-source-focused.log",
+      "sha256": "d5d0451d5e7661c2a22733ca921a11b28e3915bb21620f7bf759e4bfb77f0204"
+    },
+    {
+      "path": "artifacts/sprint17-human-weight-census-source-gate.log",
+      "sha256": "ee10a8427b78748159e6259a75ccc1b53485c6bd5f3b1f192ac841361dd3a222"
+    }
+  ],
+  "behavior": {
+    "dispositionLabels": [
+      "array-shape",
+      "non-finite",
+      "weight-range",
+      "weight-sum",
+      "below-hand-influence",
+      "selected"
+    ],
+    "selectorTruthTableUnchanged": true,
+    "weightNormalization": false,
+    "selectionInfluence": 0.5,
+    "minimumHandVertices": 8,
+    "maximumHandVertices": 8192,
+    "census": "Both side rejection counts, finite min/max weight sums, zero sum counts, positive influence/maximum and14 exact hand-driver aggregates. No coordinates or native geometry export.",
+    "failureIsolation": "Persist native selector failure and continue the real native command/timing review. Failure remains sticky and fails finite-attack-skin; missing samples cannot pass. A failing control is not repeatedly baked.",
+    "boundedTimelineRows": 512,
+    "nativeHandles": 8,
+    "cleanup": "Every allocated resource captured and destroyed; base31 for body/tail plus2probes, plus4 per successfully allocated control. Partial allocations also captured and required destroyed. Missing control remains a separate failed assertion.",
+    "gripThresholdMeters": 0.08,
+    "strikeThresholdMeters": 0.25
+  },
+  "runtimeExecuted": false,
+  "priorRuntimeEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-GRIP-BAKE-RUNTIME-EVIDENCE.json",
+  "next": "Push, clean exact-head full prelaunch/harness gates, fresh Steam640820 working-save smoke11 and all15 human checks, ZERO native save writes and exact snapshot restoration.",
+  "sprints14Through16": "COMPLETE/PUBLISHED",
+  "sprint17": "NOT QUALIFIED",
+  "counts": {
+    "registered": 1008,
+    "published": 976,
+    "withheld": 32,
+    "nativeWrappers": 29,
+    "visible": 1005
+  },
+  "HumanReview": "NOT_PERFORMED_NONBLOCKING"
+}

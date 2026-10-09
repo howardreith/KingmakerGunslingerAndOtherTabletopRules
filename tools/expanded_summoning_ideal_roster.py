@@ -15,11 +15,13 @@ import re
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True
+from expanded_summoning_manifest import suppressed_keys
+
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdealRosterCatalog.cs"
 SHIPPED = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
 WRAPPERS = ROOT / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs"
-VISIBILITY = ROOT / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
 ROSTER_DOC = ROOT / "planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md"
 TRACE_DOC = ROOT / "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md"
 
@@ -287,7 +289,14 @@ def trace_doc(entries):
             1: "Sprint 1 complete; owner acceptance pending",
             2: "Sprint 2 in progress",
             9: "Internal technical PASS: original models, Bat 40-foot imprecise blindsense and preserved publication, native combat/contact, obstructed doorway travel, lifecycle, persistence and controls; owner visual review pending",
-            10: "In progress: Giant Wasp published and technically qualified; Stirge hidden pending attack-pose, disease timing and icon/UI review"}
+            10: "Internal technical PASS: both species published with original icons; native combat/contact, signature mechanics, cleanup, player path and live menu qualified. Owner visual review pending; native Filth Fever cure timing unmeasured.",
+            11: "Internally complete and published; Phase 2 evidence index owns exact qualification; owner visual review pending",
+            12: "Internally complete and published; Phase 2 evidence index owns exact qualification; owner visual review pending",
+            13: "Internally complete and published; Phase 2 evidence index owns exact qualification; owner visual review pending",
+            14: "Internally complete and published under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
+            15: "Internally complete and published; owner visual review pending",
+            16: "Internally complete and published: exact e3aeae63 hidden and 155ada89 publication PASS, all twenty public roots; accepted engine limitations/adaptation retained; owner visual review pending",
+            17: "In progress; exact f507 native-rig research PASS 8/8 with restoration, not gameplay/visual qualification; original snake and separate Salamander weapon prototypes next"}
     for number, phase, name, weight in SPRINTS:
         owned = by_sprint.get(number, [])
         if number in AUDIT_SPRINTS:
@@ -336,13 +345,9 @@ def coverage(entries, shipped):
     wrapper_keys = set(wrap["sm"]) | set(wrap["sna"])
     wrapper_only = sorted(wrapper_keys - shipped)
 
-    visibility = VISIBILITY.read_text(encoding="utf-8")
-    suppressed = re.search(
-        r'SuppressedCreatureKeys\s*=\s*new HashSet<string>\(StringComparer.Ordinal\)\s*\{([^}]*)\}',
-        visibility, re.S)
-    if suppressed is None:
-        raise SystemExit("Cannot identify the current summon visibility catalog")
-    hidden = set(re.findall(r'"([a-z0-9-]+)"', suppressed.group(1)))
+    # Use the actual publication constructor parser, not the obsolete
+    # collection-initializer-only pattern (which missed Sprint 16's set).
+    hidden = suppressed_keys()
     if not hidden <= shipped:
         raise SystemExit("Visibility catalog suppresses an unregistered creature")
     fam_counts = {"sm": {}, "sna": {}}

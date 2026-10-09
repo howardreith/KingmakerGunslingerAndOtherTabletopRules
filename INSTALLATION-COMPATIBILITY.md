@@ -1,6 +1,17 @@
 # Installation, updates, removal, and compatibility
 
-Current release: UMM `0.0.145`, archive
+Checkpoint version: `0.0.146-expanded-summoning-phase2b-checkpoint` (UMM
+version `0.0.146`), archive
+`KingmakerGunslinger-0.0.146-expanded-summoning-phase2b-checkpoint.zip`.
+It retains v0.0.142 traits/content and publishes qualified summoning Sprints
+12–17, including Salamander, plus released v0.0.144 weapon recovery and v0.0.145
+Nodachi icon behavior. Install only the final standalone UMM ZIP after
+publication, not source archives or private reference bundles.
+See [checkpoint scope and limitations](docs/RELEASE-NOTES-0.0.146.md).
+
+### Previously released versions
+
+Latest public release before this candidate: UMM `0.0.145`, archive
 `KingmakerGunslinger-0.0.145-heirloom-nodachi-icon.zip`. It adds the Heirloom
 Weapon: Nodachi trait icon correction to the 0.0.144 findability release.
 
