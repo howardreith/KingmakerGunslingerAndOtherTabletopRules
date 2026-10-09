@@ -41,6 +41,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool wanted = Hit.Any(weapon => ReferenceEquals(weapon, evt.Weapon));
                 Owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue = wanted ? 100 : -100;
             }
+
+            /// <summary>
+            /// The resting value between rolls. A roll the fixture does not
+            /// hook must miss rather than inherit the last decision.
+            /// </summary>
+            internal void Rest()
+            { Owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue = -100; }
         }
 
         /// <summary>
@@ -138,10 +145,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int sequence = 0; sequence < sequences; sequence++)
                     {
                         accuracy.Hit = Sprint18HitSet(name, sequence, bite, first, second);
-                        if (name == "claws-across-two-turns" && sequence == 1)
+                        accuracy.Rest();
+                        // A native full attack costs the whole turn, so in
+                        // turn-based combat every sequence needs a fresh one.
+                        // Nothing here clears the rend tracker: the native
+                        // round boundary is what does that, and the case that
+                        // measures it says so.
+                        if (CombatController.IsInTurnBasedCombat() ||
+                            (name == "claws-across-two-turns" && sequence == 1))
                         {
-                            // A new round, through the native round controller,
-                            // is what clears the tracker. Nothing is reset here.
                             foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                         }
                         UnitAttack ignored = null;
@@ -152,6 +164,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     out secondBlueprint);
                             secondObserver = new Sprint16RuleObserver {
                                 Owner = owner, Target = secondTarget };
+                            // The hit chooser has to follow the target the
+                            // sequence is actually aimed at, or every limb
+                            // lands and the case earns a rend it is not owed.
+                            secondObserver.BeforeAttackRollForFixture = accuracy.Apply;
                             EventBus.Subscribe(secondObserver);
                             foreach (int step in Sprint18RunFullAttack(fixture, owner,
                                 result => ignored = result, secondTarget)) yield return step;
@@ -193,6 +209,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "A native full attack has one target, so two " +
                                 "targets necessarily means two commands; this " +
                                 "case therefore also crosses the sequence boundary.",
+                            ["turnNote"] = !turnBased ? null :
+                                "A native full attack costs the whole turn, so " +
+                                "in turn-based combat every sequence is also a " +
+                                "new turn. Only the real-time cases separate a " +
+                                "new command from a new round.",
                         }, qualifies
                             ? "exactly one rend per qualifying sequence, at the live Strength"
                             : "no rend at all from a sequence that does not qualify");
