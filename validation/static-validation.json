@@ -2119,7 +2119,7 @@
     "candidateOnly": true,
     "sprint18Started": false,
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
-    "closureStatus": "RESOURCE_OWNER_CORRECTION_PENDING: a21f9aa1 source2484/package325 PASS; smoke11 PASS; diagnosis cleanup118/119 FAIL, zero writes, exact restored. Ownership identifies nine private original-flight resources on Eagle/Dire Bat/Pteranodon, including all six historical survivors. One narrow teardown correction and strict private/cache cleanup predicate awaiting exact qualification; focused6 PASS and incremental compile PASS. Readiness closed; existing Working108 prepared set preserved; no further diagnosis authorized.",
+    "closureStatus": "BLOCKED_MODULE_DISABLED_LEGACY_VISUAL_VARIANTS: exact735751ab source2486/package325 PASS;smoke11,ONcleanup119(save1),freshabsence6,flight26 PASS;all137 private resources null in1frame,220 borrowed/cache stable. OFFseed120(save1)/publication2 PASS;OFFcleanup109/119 FAIL for9 legacy variant view rows plus no armed save. All108 units and20 private resources destroyed;OFFcleanup writes0;Working retains NEW108 OFF seed. Exact snapshot/settings restored;STOP after one diagnosis/one correction;no further cycle or release.",
     "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md"
   },
   "expandedSummoningPhase2Development": {
