@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.143-expanded-summoning-phase2b-checkpoint",
+  "milestone": "0.0.146-expanded-summoning-phase2b-checkpoint",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.143",
+  "version": "0.0.146",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2146,5 +2146,74 @@
     "mergeAuthorized": false,
     "newReleaseAuthorized": false,
     "sprint22Authorized": false
+  },
+  "weaponFindability143": {
+    "candidateOnly": true,
+    "compatibilityRuntimeQualificationPending": true,
+    "deterministicTestCount": 2301,
+    "distinctExactAreaCount": 28,
+    "distinctTargetCount": 30,
+    "inventoryItemCount": 30,
+    "nativeReferenceArchiveSha256": "6ddf33970fb9ed3c127dd8f30b6416d7d23f607303ca61a31aab1972ed43df60",
+    "nativeRuntimeQualified": false,
+    "packageMemberCount": 293,
+    "persistenceQualified": false,
+    "pickupQualification": "28/29 measured native pickup PASS; see per-placement qualification",
+    "recoveryQualification": "28 eligible; native 412-assertion prepare and 33-assertion fresh-process verification PASS",
+    "registeredManifestEntryCount": 2660,
+    "releaseInformationalVersion": "0.0.143-weapon-findability-fixes",
+    "releaseVersion": "0.0.143",
+    "sceneQualification": "29/29 native active persistent sources PASS; blueprint/native treasure 29/29 PASS",
+    "worldLootWeaponCount": 29
+  },
+  "weaponFindabilityRelease144": {
+    "releaseVersion": "0.0.144",
+    "releaseInformationalVersion": "0.0.144-weapon-findability-fixes",
+    "promotedFromVersion": "0.0.143",
+    "publicReleaseAuthorized": true,
+    "gameplayMechanicsUnchanged": true,
+    "additionalTestSuitesRun": false,
+    "additionalRuntimeScenariosRun": false,
+    "ownerRequestedNoAdditionalValidation": true,
+    "qualificationRecord": "weaponFindability143",
+    "qualificationLimitsPreserved": true
+  },
+  "expandedSummoningCheckpoint146": {
+    "releaseVersion": "0.0.146",
+    "releaseInformationalVersion": "0.0.146-expanded-summoning-phase2b-checkpoint",
+    "masterBase": "bf8a1e41b308bfb148cb028d75a576555b7e8dd1",
+    "qualifiedPhase2BImport": "c6effc3224754e1bdf250a703eb1440c1dbbfb78",
+    "deterministicTestCount": 2497,
+    "packageMemberCount": 333,
+    "registeredManifestEntryCount": 2922,
+    "publishedGeneratedPlacements": 1008,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1037,
+    "salamanderIncluded": true,
+    "runtimeQualified": false,
+    "runtimeEvidence": [],
+    "compatibilityRuntimeQualificationPending": true,
+    "publicReleaseAuthorized": true,
+    "candidateOnly": true,
+    "sprint18Started": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "integrationLedger": "planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md",
+    "closureStatus": "NOT QUALIFIED: final exact146 source/package, module-OFF108 cleanup/absence, ON9 variants, bounded integration paths, five profiles and focused coexistence pending. Prior PASS provenance preserved in RELEASE-0.0.146-EVIDENCE.json."
+  },
+  "heirloomNodachiIconRelease145": {
+    "releaseVersion": "0.0.145",
+    "releaseInformationalVersion": "0.0.145-heirloom-nodachi-icon",
+    "promotedFromVersion": "0.0.144",
+    "publicReleaseAuthorized": true,
+    "changedSource": "src/KingmakerGunslinger/Blueprints/HeirloomNodachiBlueprints.cs",
+    "iconKey": "nodachi",
+    "blueprintIdentitiesUnchanged": true,
+    "gameplayMechanicsUnchanged": true,
+    "additionalTestSuitesRun": false,
+    "additionalRuntimeScenariosRun": false,
+    "inGameAppearanceVerified": false,
+    "ownerRequestedNoAdditionalValidation": true,
+    "qualificationRecord": "weaponFindability143",
+    "qualificationLimitsPreserved": true
   }
 }

@@ -54,8 +54,8 @@ namespace KingmakerGunslinger.Blueprints
 
         private static readonly EasternLootSpec[] Loot =
         {
-            new EasternLootSpec("59cb0ac65b4093440ad341b9a2f372cf",
-                "Forest_BarrikadedChest1", "StagLordFort", "late Act I",
+            new EasternLootSpec("5cce787544ae5964c8ac43ab7cf768ca",
+                "Forest_BarrikadedChest1#2", "StagLordFort", "late Act I",
                 new[] { EasternWeaponNamedKind.PaperLantern }),
             new EasternLootSpec("020246502ff864f4aab19e2fc00e63ee",
                 "Forest_chest_close", "TrollLair_Exterior", "Act II",
@@ -67,8 +67,8 @@ namespace KingmakerGunslinger.Blueprints
             new EasternLootSpec("a2d14c56093720947a6ca4978c6a5985",
                 "Forest_OldDwarfChest", "TrollLair_SecondLevel",
                 "Act II", new[] { EasternWeaponNamedKind.QuietCurrent }),
-            new EasternLootSpec("7208dc79fd87ca849babf696e62d4e93",
-                "Forest_TrollhoundLairLoot02", "TrollhoundLair",
+            new EasternLootSpec("4dc53495b10c62f4a90d4ae094d232c3",
+                "Forest_TrollhoundLairLoot01", "TrollhoundLair",
                 "Act II", new[] { EasternWeaponNamedKind.WinterReed }),
             new EasternLootSpec("2bffac36ed3499f4f9a1e6456e96a0f6",
                 "Forest_LockedLoot01", "CandlemereTower", "Act II",
@@ -76,8 +76,8 @@ namespace KingmakerGunslinger.Blueprints
             new EasternLootSpec("df9ac89a7d8533a4e999bd267ae52b65",
                 "Forest_UnhiddenLocked01", "SilverstepGrotto_Cave", "Act III",
                 new[] { EasternWeaponNamedKind.FallingPetal }),
-            new EasternLootSpec("5e302038ce8b06f418a327d4eeadb51d",
-                "Forest_loot_box_02", "SilverstepLake_Outdoor",
+            new EasternLootSpec("d03682992a98a614c9d149fca2bab853",
+                "Forest_Backpack", "SilverstepLake_Outdoor",
                 "Act III", new[] { EasternWeaponNamedKind.DrawnHorizon }),
             new EasternLootSpec("2d95232e6fc0b594bb6e13e3d3ea0dc3",
                 "Forest_Loot01", "Varnhold", "Act IV",
@@ -85,8 +85,8 @@ namespace KingmakerGunslinger.Blueprints
             new EasternLootSpec("a9bb1f714425c564aadee3cc712fb96a",
                 "Forest_CyclopLootRoot", "DunswardOutdoor", "Act IV",
                 new[] { EasternWeaponNamedKind.FoxfireWhisper }),
-            new EasternLootSpec("399410bf927fb3349bad940394fd9abe",
-                "Barbarians_LootRoot", "ArmagsTomb", "Act IV",
+            new EasternLootSpec("dd50c5c9d07eaaf49869308ce8720aec",
+                "Barbarians_PoorLootRoot (1)", "ArmagsTomb", "Act IV",
                 new[] { EasternWeaponNamedKind.ThunderAtTheGate }),
             new EasternLootSpec("462bf0e4476e8c7498b2462219d46d25",
                 "Hills_chest_closed", "BarbarianMainCamp", "Act IV",
@@ -94,11 +94,11 @@ namespace KingmakerGunslinger.Blueprints
             new EasternLootSpec("c0f1626bb1a0b3b47ad452ce75c7f0e2",
                 "RichHuman_GoodLoot_Locked#1", "PitaxTown", "Act V",
                 new[] { EasternWeaponNamedKind.EmptySleeve }),
-            new EasternLootSpec("b4183a776ad4c0b44acbc04837630a2e",
-                "RichHuman_treasure_chest_02", "Brineheart", "Act V",
+            new EasternLootSpec("732080f3aa72fd14cb520902e4b4db89",
+                "PoorHuman_PoorLoot#1", "Littletown", "Act V",
                 new[] { EasternWeaponNamedKind.MoonlitCrossing }),
-            new EasternLootSpec("2e5e8c271f5b1ff4ca42dea4f8d8fb37",
-                "Plains_good_loot_1", "GlenebonPlains", "Act V",
+            new EasternLootSpec("3172f82c9f21b8a439a6552850b39b4c",
+                "PoorHuman_PoorLoot", "WhiteRoseAbbey", "Act V",
                 new[] { EasternWeaponNamedKind.UnfixedForm }),
             new EasternLootSpec("b3344268950f27f4b840f216959f150e",
                 "FirstWorld_GoodLoot_Trapped_1", "CastleOfKnives", "late game",
@@ -114,6 +114,24 @@ namespace KingmakerGunslinger.Blueprints
 
         private static readonly EasternLootSpec[] CleanupLoot =
         {
+            new EasternLootSpec("59cb0ac65b4093440ad341b9a2f372cf",
+                "Forest_BarrikadedChest1", "StagLordFort",
+                "findability cleanup", new EasternWeaponNamedKind[0]),
+            new EasternLootSpec("7208dc79fd87ca849babf696e62d4e93",
+                "Forest_TrollhoundLairLoot02", "TrollhoundLair",
+                "findability cleanup", new EasternWeaponNamedKind[0]),
+            new EasternLootSpec("5e302038ce8b06f418a327d4eeadb51d",
+                "Forest_loot_box_02", "SilverstepLake_Outdoor",
+                "findability cleanup", new EasternWeaponNamedKind[0]),
+            new EasternLootSpec("399410bf927fb3349bad940394fd9abe",
+                "Barbarians_LootRoot", "ArmagsTomb",
+                "findability cleanup", new EasternWeaponNamedKind[0]),
+            new EasternLootSpec("b4183a776ad4c0b44acbc04837630a2e",
+                "RichHuman_treasure_chest_02", "Brineheart",
+                "findability cleanup", new EasternWeaponNamedKind[0]),
+            new EasternLootSpec("2e5e8c271f5b1ff4ca42dea4f8d8fb37",
+                "Plains_good_loot_1", "GlenebonPlains",
+                "findability cleanup", new EasternWeaponNamedKind[0]),
             new EasternLootSpec("193b1222846a0114197e716cb35d3ce8",
                 "Forest_cache", "VordakaiTombLevel2", "Issue 12 cleanup",
                 new EasternWeaponNamedKind[0]),
@@ -184,6 +202,8 @@ namespace KingmakerGunslinger.Blueprints
         { get { return Vendors.ToArray(); } }
         internal static EasternLootSpec[] LootSpecs
         { get { return Loot.ToArray(); } }
+        internal static EasternLootSpec[] CleanupSpecs
+        { get { return CleanupLoot.ToArray(); } }
         internal static int PublicationLootTargetCount
         { get { return Loot.Length + CleanupLoot.Length; } }
 
@@ -194,6 +214,9 @@ namespace KingmakerGunslinger.Blueprints
             if (library == null || weapons == null || weapons.Named == null ||
                 logger == null) throw new ArgumentNullException(
                     "Eastern campaign publication inputs are incomplete.");
+            if (Loot.Select(value => value.Guid).Intersect(
+                    CleanupLoot.Select(value => value.Guid)).Any())
+                throw new InvalidOperationException("Active Eastern target appears in cleanup.");
             BlueprintItem[] owned = weapons.Entries.Select(value =>
                 (BlueprintItem)value.Item).Concat(weapons.Named.Entries.Select(
                     value => (BlueprintItem)value.Item)).ToArray();
@@ -289,7 +312,9 @@ namespace KingmakerGunslinger.Blueprints
                 var result = new EasternWeaponCampaignPublication(
                     vendorMutations, lootMutations);
                 result.Validate();
-                weapons.AttachCampaign(result);
+                // Attachment owns bootstrap rollback once. Repeat publication
+                // normalizes native rows without replacing that original owner.
+                if (weapons.Campaign == null) weapons.AttachCampaign(result);
                 logger.Info("eastern-weapons", "campaign.published",
                     "Published generic campaign/BTSL stock and all eighteen named weapons at distinct fixed campaign targets.");
                 return result;

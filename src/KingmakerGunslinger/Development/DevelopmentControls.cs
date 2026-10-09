@@ -54,6 +54,10 @@ namespace KingmakerGunslinger.Development
         { return Execute("rare-firearm-acquisition-audit", bridge => bridge.DescribeRareFirearmAcquisition()); }
         internal static DevelopmentActionResult DescribeProjectMagicItemAcquisition()
         { return Execute("project-magic-item-acquisition-audit", bridge => bridge.DescribeProjectMagicItemAcquisition()); }
+        internal static DevelopmentActionResult InspectCampaignWeaponRecovery(string key)
+        { return Execute("campaign-weapon-recovery-inspect", bridge => bridge.InspectCampaignWeaponRecovery(key)); }
+        internal static DevelopmentActionResult RecoverCampaignWeapon(string key, string gameId, bool acknowledged)
+        { return Execute("campaign-weapon-recovery-explicit", bridge => bridge.RecoverCampaignWeapon(key, gameId, acknowledged)); }
 
         internal static DevelopmentActionResult DescribeElvenBranchedSpearCatalog()
         { return Execute("elven-branched-spear-catalog", bridge => bridge.DescribeElvenBranchedSpearCatalog()); }

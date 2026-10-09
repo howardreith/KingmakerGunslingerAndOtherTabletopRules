@@ -52,6 +52,20 @@ foreach ($copy in $copies) {
     }
     Copy-Item -LiteralPath $copy.Source -Destination $copy.Destination
 }
+foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
+    'docs\WEAPON-FINDABILITY-QUALIFICATION.md',
+    'planning\PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md',
+    'validation\weapon-findability-native-reference.json',
+    'validation\weapon-findability-scene-corrections.json',
+    'validation\weapon-findability-runtime-qualification.json',
+    'docs\RELEASE-NOTES-0.0.145.md',
+    'docs\RELEASE-NOTES-0.0.146.md')) {
+    $source = Join-Path $repositoryRoot $relative
+    if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
+    $destination = Join-Path $modDirectory $relative
+    New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
+    Copy-Item -LiteralPath $source -Destination $destination
+}
 $assetSource = Join-Path $outputDirectory 'assets\icons'
 $assetDestination = Join-Path $modDirectory 'assets\icons'
 if (-not (Test-Path -LiteralPath $assetSource -PathType Container)) {
@@ -170,7 +184,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 325 } else { 323 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 333 } else { 331 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

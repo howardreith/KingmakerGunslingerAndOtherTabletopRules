@@ -70,3 +70,39 @@ Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
     creatures = 'viper,foreign'; quantity = 'OneD4PlusOne' } 'an arbitrary added key'
 
 Write-Host 'PASS ground crowd request: ten exact round trips and eleven fail-closed cases.'
+
+# Same existing player-path scenario, explicitly bounded for release integration.
+$pathBase = $base.Clone()
+$pathBase.Scenario = 'disposable-expanded-summoning-player-path'
+$defaultPath = New-KmgRuntimeRequest @pathBase -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+if ($defaultPath.parameters.Count -ne 1) { throw 'Default exhaustive path census changed.' }
+$representative = New-KmgRuntimeRequest @pathBase -Parameters @{
+    saveName='KMG_AUTOMATION_WORKING'; playerPathScope='representative'}
+$roundTrip = $representative | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+if ($roundTrip.parameters.playerPathScope -cne 'representative' -or
+    $representative.parameters.Count -ne 2) { throw 'Representative player-path scope did not round-trip.' }
+foreach ($badScope in @($null, '', 'Representative', 'all', @('representative'), 1)) {
+    $rejected = $false
+    try { $null = New-KmgRuntimeRequest @pathBase -Parameters @{
+        saveName='KMG_AUTOMATION_WORKING';playerPathScope=$badScope} } catch { $rejected=$true }
+    if (-not $rejected) { throw 'Invalid player-path scope accepted.' }
+}
+foreach ($badParameters in @(
+    @{saveName='KMG_AUTOMATION_BASELINE';playerPathScope='representative'},
+    @{saveName='KMG_AUTOMATION_WORKING';playerPathScope='representative';extra='forbidden'})) {
+    $rejected=$false
+    try { $null=New-KmgRuntimeRequest @pathBase -Parameters $badParameters } catch { $rejected=$true }
+    if (-not $rejected) { throw 'Unsafe player-path request accepted.' }
+}
+$pathBase.ExitAfterCompletion=$false
+$rejected=$false
+try { $null=New-KmgRuntimeRequest @pathBase -Parameters @{
+    saveName='KMG_AUTOMATION_WORKING';playerPathScope='representative'} } catch { $rejected=$true }
+if (-not $rejected) { throw 'Non-exiting representative path request accepted.' }
+$pathBase.ExitAfterCompletion=$true
+$pathBase.Scenario='working-save-smoke'
+$rejected=$false
+try { $null=New-KmgRuntimeRequest @pathBase -Parameters @{
+    saveName='KMG_AUTOMATION_WORKING';playerPathScope='representative'} } catch { $rejected=$true }
+if (-not $rejected) { throw 'Player-path scope leaked into another scenario.' }
+Write-Host 'PASS representative player-path request: default exhaustive, exact JSON round trip and ten fail-closed cases.'

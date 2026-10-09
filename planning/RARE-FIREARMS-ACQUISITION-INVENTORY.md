@@ -1,5 +1,35 @@
 # Rare Firearms Acquisition Inventory
 
+## Current 0.0.143 locations and evidence
+
+The five intended world-loot firearms use the exact targets in
+[the authoritative inventory](PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md).
+Duelist's Rebuttal is in Varnhold Stockade; The River King's Measure and
+Irovetti's Ovation use separate Pitax Royal Palace chests. Both +5 firearms now
+target ordinary first-floor House chests in the companion phase: The Last Word
+uses `b54aad6aa2844fa4c87f46088cde018b` / `FirstWorld_PoorLoot01#1`, and Watch
+at the World's End uses `e113fb75d9461924ab64df78c019991a` /
+`FirstWorld_PoorLoot02#1`. Both names retain their literal suffixes.
+
+The old FinalDungeon3 Greater Quicken Rod chest and House Third Key room Greater
+Ring of Balance cabinet are retired publication targets, not current directions.
+Neither was proven impossible to reach. The first is after the House and has a
+conditional elevated route; the second move improves ordinary encounterability.
+
+Canonical Pistol/Musket identities, enchantments, abilities, price and crafting
+registration remain unchanged. Blueprint matches are separate from scene
+presence, a normal phase/route, actual pickup and persistence. See
+[0.0.143 qualification](../docs/WEAPON-FINDABILITY-QUALIFICATION.md) and
+[bounded old-save recovery](../docs/WEAPON-FINDABILITY-RECOVERY.md).
+Roadwarden and Dead Reckoning remain merchant-only; generic stock and optional
+Better Vendors progression retain their existing rules.
+
+All earlier target selections, claims of physical accessibility and stock counts
+below are historical. Graph/reference counts alone did not prove findability.
+
+## Historical publication records (superseded directions)
+
+
 Guarded read-only baseline run
 `20260808T1720275373614Z-observe-vendor-table-contracts` (runtime ID
 `20260808T1720275529421Z-c5dbf9e887b64c1b89ac129ba490d2b3`) passed on
@@ -49,7 +79,7 @@ blueprint in the exposed graph (the exact area field is the ownership evidence).
 | The River King's Measure | `b34367a637010f743815aed5875152bd` / `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)` | `IrovettiPalace` (`bf9dbc2998849ee40bbdba9cb40a7d4c`), Pitax | fixed gems/valuables (full record in run) | zero registered direct refs; royal-chambers fixed chest | Selected |
 | Irovetti's Ovation | `aeba7802ade083841935daf88d4652d3` / `RichHuman_GoodLoot` | `IrovettiPalaceFW`, Pitax | Calistria Rapier | zero registered direct refs; ordinary fixed First World palace loot | Selected |
 | The Last Word (Pistol) | `3bc451b100283774a9e23699dd869f1a` / `FirstWorld_GoodLoot_Locked_2` | `CastleOfKnives`, final act | Greater Empower metamagic rod | zero registered direct refs; independent fixed capstone cache | Selected |
-| Watch at the World's End (Musket) | `5a9b9e4b884ae064fa7caa5a13eab065` / `FirstWorld_VeryGoodHiddenLoot02` | `HouseAtTheEdgeOfTime` (`13e7006bce054ce4e82b5064b2f3f8ff`), final act | `ForewarningShieldItem` ×1 | zero registered direct refs; separate deterministic hidden treasure | Selected |
+| Watch at the World's End (Musket) | `5a9b9e4b884ae064fa7caa5a13eab065` / `FirstWorld_VeryGoodHiddenLoot02` | `HouseAtTheEdgeOfTime` (`13e7006bce054ce4e82b5064b2f3f8ff`), final act | `ForewarningShieldItem` Ã—1 | zero registered direct refs; separate deterministic hidden treasure | Selected |
 
 Rejected examples include repeated generic `Forest_FatLoot`/`PoorLoot` palace
 containers, empty/quest-book placeholders, and DLC/other-area armories. The two

@@ -552,8 +552,12 @@ def validate(root: Path) -> None:
     # plus the separate original human/tail research mesh (shared paint).
     package_count = SPRINT3["packageFileCountWithSoundBank"] + 70
     # Four unchanged master v0.0.142 trait exports join the qualified Phase2B tree.
-    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.143":
-        package_count += 4
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.146":
+        package_count += 4 + 7 + 1  # traits, unchanged master145 documents, release146 notes
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.143", "0.0.144", "0.0.145"):
+        # Seven player instructions and curated qualification files accompany
+        # the findability repair. Historical summoning asset counts are fixed.
+        package_count += 7
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),

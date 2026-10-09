@@ -647,7 +647,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeIdentity = context.Assembly.FullName,
                 GitCommit = _loadedBuildIdentity == null ? string.Empty :
                     _loadedBuildIdentity.GitCommit,
-                GameVersion = Application.version ?? string.Empty,
+                GameVersion = Kingmaker.GameVersion.GetVersion(),
                 StartUtc = DateTime.UtcNow.ToString("o"),
                 EndUtc = DateTime.UtcNow.ToString("o"),
                 Assertions = new List<RuntimeTestAssertion>(),
@@ -740,6 +740,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveWeaponRecovery &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveWeaponFindabilityScenes &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveWeaponRoute &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutWeather &&
                     !RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
@@ -748,6 +751,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationPersistence &&
                     _request.Scenario != FcbPersistenceIdentity.Scenario &&
                     _request.Scenario != ElementalCharacterTraitSaveContract.Scenario &&
+                    _request.Scenario != WeaponFindabilitySaveContract.Scenario &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle &&
@@ -1574,6 +1578,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunDisposableCordOfStubbornResolve());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.WeaponFindabilityBlueprints)
+                { Complete(RunWeaponFindabilityBlueprints()); return; }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveRareFirearmAcquisition)
                 {
@@ -2100,6 +2106,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRecovery ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponFindabilityScenes ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRoute ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
@@ -2108,6 +2117,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
+                _request.Scenario == WeaponFindabilitySaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2225,6 +2235,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRecovery ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponFindabilityScenes ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRoute ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
@@ -2233,6 +2246,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
+                _request.Scenario == WeaponFindabilitySaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2320,6 +2334,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _fcbPersistencePlan = new FcbPersistencePlan(_request);
                 if (_request.Scenario == ElementalCharacterTraitSaveContract.Scenario)
                     _traitSavePlan = new ElementalCharacterTraitSavePlan(_request);
+                if (_request.Scenario == WeaponFindabilitySaveContract.Scenario)
+                    _weaponSavePlan = new WeaponFindabilitySavePlan(_request);
                 _workingSaveSmoke = new WorkingSaveSmokeScenario(
                     _context, _elapsed, _request.RunId, _trace.Record,
                     _request.Scenario ==
@@ -2332,6 +2348,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction,
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction,
+                    _weaponSavePlan != null ? _weaponSavePlan.Identity :
                     _traitSavePlan != null ? _traitSavePlan.Identity :
                     _teleportPersistencePlan != null ? _teleportPersistencePlan.Identity :
                     _fcbPersistencePlan != null ? _fcbPersistencePlan.Identity :
@@ -2360,7 +2377,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ? WorkingSaveSmokeIdentity
                                     .InHarmsWayHumanRepro
                             : null,
-                    pauseOnLoadCompletion: _request.Scenario == ElementalCharacterTraitSaveContract.Scenario || _request.Scenario ==
+                    pauseOnLoadCompletion: _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
+                _request.Scenario == WeaponFindabilitySaveContract.Scenario || _request.Scenario ==
                         RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                         _request.Scenario ==
                         RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2372,7 +2390,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
-                if (_traitSavePlan != null) _workingSaveSmoke.RestrictToTransactionOwnedWrites();
+                if (_traitSavePlan != null || _weaponSavePlan != null) _workingSaveSmoke.RestrictToTransactionOwnedWrites();
                 _workingSaveSmoke.Install();
                 StartTeleportationLoadDiagnostics();
                 _workingStartupStage = "hooks-install-complete";
@@ -2713,6 +2731,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_workingSaveSmoke.Complete)
             {
                 if (_traitSavePlan != null) { PollElementalTraitSave(); return; }
+                if (_weaponSavePlan != null) { PollWeaponFindabilitySave(); return; }
                 if (IsMidgameWorkingScenario()) { PollWorkingMidgameFirearms(); }
                 else
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
@@ -2931,6 +2950,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { PollWhiteoutDisposableFixture(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather)
                 { PollWhiteoutWeather(); }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponFindabilityScenes ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRoute)
+                { PollWeaponFindabilityScenes(); }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRecovery)
+                { Complete(RunWeaponRecoveryFixtures()); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain)
                 { PollMagicCircleUi(); }
@@ -6554,6 +6578,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRecovery ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponFindabilityScenes ||
+                _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveWeaponRoute ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
@@ -6562,6 +6589,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
+                _request.Scenario == WeaponFindabilitySaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -11963,7 +11991,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, validRareLoot == 5,
                     "installed live blueprint graph after transactional publication"),
                 Assertion("project-magic-item-distribution",
-                    "30 project-owned uniques on 30 distinct exact fixed targets across 29 exact areas, zero named vendor rows, and no stale loot copies",
+                    "Blueprint publication only: 29 named weapons plus Cord on 30 distinct exact fixed targets across 28 exact areas, zero named vendor rows, and no stale loot copies; physical availability unverified",
                     projectMagicDistribution, projectMagicDistributionExact,
                     "all installed BlueprintLoot and BlueprintSharedVendorTable rows by exact item reference"),
                 Assertion("production-critical-profiles",
@@ -16644,6 +16672,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunDisposableExpandedSummoningPlayerPath()
         {
+            bool representative = (string)_request.Parameters?[ExpandedSummoningPlayerPathReviewScope.Parameter] ==
+                ExpandedSummoningPlayerPathReviewScope.Representative;
+            SummonVariantSpec[] broadVariants = ExpandedSummoningPlayerPathReviewScope.Variants(representative);
+            SummonNativeExpansionSpec[] nativeVariants = ExpandedSummoningPlayerPathReviewScope.Native(representative);
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             object state = ReadExactMember(Game.Instance, "State");
@@ -16936,9 +16968,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         caster.Descriptor.RemoveFact(neutralFiendish);
                 }
 
-                stage = "all-distinct-native-expansions";
+                stage = representative ? "representative-native-expansions" : "all-distinct-native-expansions";
                 foreach (SummonNativeExpansionSpec nativeSpec in
-                    SummonNativeExpansionCatalog.All)
+                    nativeVariants)
                 {
                     stage = "native-expanded-sm" + nativeSpec.Tier + "-" +
                         nativeSpec.CreatureKey + "-" +
@@ -16975,13 +17007,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     WriteLifecycleStage(stage + "-complete");
                 }
 
-                stage = "all-" + SummonVisibilityCatalog.PublishedLogicalPlacementCount +
+                stage = (representative ? "representative-" : "all-") + broadVariants.Length +
                     "-visible-logical-roots";
-                SummonVariantSpec[] broadVariants = ExpandedSummoningCatalog
-                    .GenerateVariants(SummonFamily.Monster).Concat(
-                        ExpandedSummoningCatalog.GenerateVariants(
-                            SummonFamily.NaturesAlly)).Where(
-                                SummonVisibilityCatalog.IsPublished).ToArray();
                 int observedBroadTier = 0;
                 SummonFamily observedBroadFamily = SummonFamily.Monster;
                 foreach (SummonVariantSpec variant in broadVariants)
@@ -17061,11 +17088,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool allPlayerPaths = cases.Where(value => value.ExecutionGuid ==
                 "<none>").All(value => value.LiveContract && value.SlotContract);
             bool allBroadPlayerPaths = broadCases.Count ==
-                    SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
+                    broadVariants.Length &&
                 broadCases.All(value => value.LiveContract &&
                     value.SlotContract && value.QuantityContract);
             bool allNativeExpandedPaths = nativeExpansionCases.Count ==
-                    SummonNativeExpansionCatalog.All.Count &&
+                    nativeVariants.Length &&
                 nativeExpansionCases.All(value => value.LiveContract &&
                     value.SlotContract && value.QuantityContract);
             var assertions = new List<RuntimeTestAssertion>
@@ -17102,25 +17129,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "all non-direct cases live with exact one-slot spend",
                     string.Join(" | ", cases.Select(value => value.Describe()).ToArray()),
                     allPlayerPaths, "native spellbook selected-variant AbilityData chain"),
-                Assertion("expanded-summoning-all-logical-player-paths",
-                    SummonVisibilityCatalog.PublishedLogicalPlacementCount + "/" +
-                        SummonVisibilityCatalog.PublishedLogicalPlacementCount +
+                Assertion(representative ? "expanded-summoning-representative-logical-player-paths" : "expanded-summoning-all-logical-player-paths",
+                    broadVariants.Length + "/" +
+                        broadVariants.Length +
                         " visible roots live with one-slot and quantity contracts; " +
                         SummonVisibilityCatalog.SuppressedLogicalPlacementCount +
                         " registered identities unpublished",
                     broadCases.Count(value => value.LiveContract &&
                         value.SlotContract && value.QuantityContract) + "/" +
                         broadCases.Count, allBroadPlayerPaths,
-                    "all published SM/SNA logical placements through native spellbook parents"),
-                Assertion("expanded-summoning-distinct-native-player-paths",
-                    SummonNativeExpansionCatalog.All.Count + "/" +
-                        SummonNativeExpansionCatalog.All.Count +
+                    representative ? "one published root per family/quantity, plus fixed path matrix; NOT exhaustive" :
+                        "all published SM/SNA logical placements through native spellbook parents"),
+                Assertion(representative ? "expanded-summoning-representative-native-player-paths" : "expanded-summoning-distinct-native-player-paths",
+                    nativeVariants.Length + "/" +
+                        nativeVariants.Length +
                         " visible creature-named native/preservation wrappers live with one-slot and quantity contracts",
                     nativeExpansionCases.Count(value => value.LiveContract &&
                         value.SlotContract && value.QuantityContract) + "/" +
                         nativeExpansionCases.Count,
                     allNativeExpandedPaths,
-                    "exact SM/SNA spellbook parents with each umbrella or generic preservation source isolated into one creature-named choice"),
+                    representative ? "one native wrapper per family/quantity/alignment branch; NOT exhaustive" :
+                        "exact SM/SNA spellbook parents with each umbrella or generic preservation source isolated into one creature-named choice"),
                 Assertion("request-local-cleanup", "exact party/global snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "dispose all request-local caster and summon entities"),
@@ -36027,6 +36056,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             StopElementalTraitSave(result);
+            StopWeaponFindabilitySave(result);
+            StopWeaponFindability(result);
             StopTeleportPersistence(result);
             StopTeleportationInteraction(result);
             StopTeleportationSpellbookUi(result);
@@ -36199,7 +36230,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 LoadedModVersion = _context.ModEntry.Info.Version,
                 RuntimeIdentity = _context.Assembly.FullName,
                 GitCommit = ReadAssemblyMetadata(_context.Assembly, "GitCommit"),
-                GameVersion = Application.version ?? string.Empty,
+                GameVersion = Kingmaker.GameVersion.GetVersion(),
                 StartUtc = _startedUtc.ToString("o"),
                 EndUtc = string.Empty,
                 DurationMilliseconds = 0,
