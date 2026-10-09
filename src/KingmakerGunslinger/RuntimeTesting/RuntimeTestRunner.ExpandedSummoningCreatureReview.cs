@@ -175,7 +175,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             return IsSprint11UngulateReviewKey(key) ||
                 IsSprint12QuadrupedReviewKey(key) ||
                 CrocodilianVisualPolicy.Keys.Contains(key) ||
-                SerpentineVisualPolicy.IsSnake(key) || key == "salamander";
+                SerpentineVisualPolicy.IsSnake(key) || key == "salamander" ||
+                // The two Sprint 18 apes. Both are Large ground creatures
+                // wearing original bodies, which is exactly what a crowd
+                // review is for: several of them on one floor at once.
+                PrimateVisualPolicy.Keys.Contains(key, StringComparer.Ordinal);
         }
 
         private static bool IsSprint11UngulateReviewKey(string key)
