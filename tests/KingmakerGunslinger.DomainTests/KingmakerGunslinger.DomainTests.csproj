@@ -273,6 +273,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SerpentineRulesPolicy.cs"><Link>Summoning\SerpentineRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\PrimateRulesPolicy.cs"><Link>Summoning\PrimateRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\PrimateVisualPolicy.cs"><Link>Summoning\PrimateVisualPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\PrimateReviewPolicy.cs"><Link>RuntimeTesting\PrimateReviewPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Blueprints\BlueprintManifest.cs"><Link>Blueprints\BlueprintManifest.cs</Link></Compile>
     <Compile Include="PrimateRulesTests.cs" />
     <Compile Include="PrimateVisualTests.cs" />
