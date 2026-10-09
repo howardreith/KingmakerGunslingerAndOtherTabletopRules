@@ -40,15 +40,21 @@ namespace KingmakerGunslinger.Summoning
         // This is their publication candidate, not a full Sprint 17 PASS:
         // Salamander's retained reach-observation failure still blocks closure.
         // Existing Salamander identities and five published roots do not move.
+        //
+        // The two Sprint 18 ape keys came out on 2026-10-09 after the complete
+        // hidden candidate passed: 29 of 29 on the batched review and 12 of 12
+        // on the party-camera art review at 1d4+1, on one candidate, with the
+        // owner installation restored exactly after every run. Nothing moved
+        // but these two keys: every identity was allocated at registration.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "ape", "dire-ape" }, StringComparer.Ordinal);
+            new HashSet<string>(new string[0], StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1034;
-        // Sprint 18 registers the Ape's fourteen roots and the Dire Ape's
-        // twelve and holds all twenty-six until the complete hidden candidate
-        // passes. Identities are allocated once here, so publication is the
-        // removal of two keys and nothing else moves.
-        internal const int SuppressedLogicalPlacementCount = 26;
+        // Sprint 18 registered the Ape's fourteen roots and the Dire Ape's
+        // twelve and held all twenty-six until the complete hidden candidate
+        // passed. It has, so nothing is withheld: every registered placement
+        // is published, and publication moved nothing but two names.
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

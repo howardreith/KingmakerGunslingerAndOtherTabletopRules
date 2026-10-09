@@ -437,7 +437,9 @@ def validate(root: Path) -> None:
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 1034;",
-        "SuppressedLogicalPlacementCount = 26;")
+        # Sprint 18 published on 2026-10-09 after its complete hidden
+        # candidate passed, so nothing is withheld any more.
+        "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
         "UnitCount = 99;",
         "LogicalAbilityCount = 1034;",

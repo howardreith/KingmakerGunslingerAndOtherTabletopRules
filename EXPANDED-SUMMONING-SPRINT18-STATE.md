@@ -6,7 +6,7 @@ contract lives in `planning/EXPANDED-SUMMONING-SPRINT18-CONTRACT.json` and the
 source-gate evidence in
 `planning/EXPANDED-SUMMONING-SPRINT18-SOURCE-EVIDENCE.json`.
 
-## Current state, 2026-10-09 — BODIES AUTHORED; RUNTIME REVIEW NOT RUN
+## Current state, 2026-10-09 — QUALIFIED AND PUBLISHED; NOT YET RELEASED
 
 One sprint, one branch, one PR, one release. Ape (Gorilla) and Dire Ape
 (Gigantopithecus) only. Girallon, Xill, Giant Scorpion, Bebelith, Giant Crab,
@@ -15,8 +15,9 @@ Sprint 19 and any broader phase are out of scope and were not started.
 **Exact candidate `bd21f2447b3e68fbb95759292a1991320529f4e0`**, since corrected
 by `aa3d910a`. The complete source, build and package gate passed on the clean
 committed candidate, and the guarded runtime harness is now proved end to end on
-it. The donor census has run and chosen the rig, both original bodies are
-authored and wired, and the Sprint 18 runtime review remains.
+it. The donor census chose the rig, both original bodies are authored and
+wired, the batched runtime review passed 29/29 and the party-camera art review
+passed 12/12, and both creatures are published. The release remains.
 
 The push-policy blocker is resolved: the owner authorized adding this sprint's
 branch and the three later ones, the branch is pushed and PR #32 is open.
@@ -65,8 +66,9 @@ branch and the three later ones, the branch is pushed and PR #32 is open.
 | Guarded harness end to end | PASS — deploy, Steam 640820 launch, mod load 0.0.147, scenario PASS, exact restoration |
 | Guarded primate donor census | PASS — 288 discovered, 28 surveyed, 28 captured, 9/9 assertions |
 | Original Ape and Dire Ape bodies | PASS offline — 6/6 Blender fixtures, 24 review sheets each |
-| Batched Sprint 18 runtime review | **NOT RUN** |
-| Publication gate | **NOT RUN** |
+| Batched Sprint 18 runtime review | PASS 29/29 on the fourth candidate |
+| Party-camera art and crowding review | PASS 12/12 at 1d4+1 |
+| Publication gate | PASS — both keys removed, 1034 published, 1063 visible |
 | Release closure matrix | **NOT RUN** |
 
 ## Frozen arithmetic, derived from source
@@ -234,10 +236,42 @@ when immutable identity, blueprint name and donor prefab all agree.
 blanks that instance's equipment skin, and restores every native reference on
 release. Nothing shared is modified and no native component is disabled.
 
+## The guarded review, run by run
+
+Four candidates. Each failure was diagnosed and fixed; none was accommodated.
+
+| Run | Result | What it found |
+| --- | --- | --- |
+| 1 | 19/29 | The Dire Ape bit for 1d8 and clawed for 1d6: the shared native weapons it used do not override their damage dice, so the engine scaled them a step up for a Large wielder. Both apes added one and a half times Strength on the primary limb. The profile was read while the creature was still flat-footed. Turn-based commands resolved nothing. Resources were counted in the frame the view was destroyed in. |
+| 2 | 24/29 | The dice were right. The full-Strength carrier had done nothing: a rulebook component is only subscribed when a unit fact carries it, and it had been put on the blueprint's component array. Every turn-based second sequence made no attacks, because a native full attack costs the whole turn. |
+| 3 | 25/29 | Every limb exactly printed. The last two points were named: a Difficulty-descriptor modifier of -2 from the native DifficultOpponent feature, which the player's difficulty setting grants to every non-party creature, and which reaches armour class, touch, flat-footed and combat manoeuvre defence exactly once because the engine derives the last from touch. One rend case lost its claw to a natural one. |
+| 4 | **29/29** | Everything. |
+
+Then the party-camera art and crowding review, 12/12 at 1d4+1, which took three
+more attempts only because the crowd roster guard exists in three places and
+the third refuses after a deploy and launch.
+
+## What the live creatures are
+
+| | Ape | Dire Ape |
+| --- | --- | --- |
+| Scores | 15/15/14/2/12/7 | 19/15/16/2/12/7 |
+| Hit dice, hit points | 3, 19 | 4, 30 |
+| Armour class / touch / flat-footed | 14 / 11 / 12 | 15 / 11 / 13 |
+| Saves | +7 / +5 / +2 | +7 / +6 / +4 |
+| Combat manoeuvre defence | 17 | 20 |
+| Routine | two slams +3, 1d6+2 each | bite +6 1d6+4, two claws +6 1d4+4 |
+| Rend | none printed, none emitted | 1d4+6 on both claws, one target, one sequence |
+| Skills | Mobility 6, Perception 8 | Mobility 6, Perception 8, Stealth 2 |
+
+All four defensive numbers are measured net of the native difficulty term,
+which is recorded beside them and named in the contract. Nothing suppresses or
+compensates for that term in the game: both apes carry it exactly as every
+other creature at that difficulty does.
+
 ## Remaining work
 
-1. Author and run the batched Sprint 18 hidden-candidate runtime review.
-2. Publish the 26 roots, merge PR #32 and release v0.0.147.
+1. Merge PR #32 and release v0.0.147.
 
 None of these is an owner decision; the owner has authorized the guarded runtime
 work. They are remaining engineering.
@@ -266,14 +300,14 @@ installed mod or the game was modified.
 | --- | --- |
 | 1 Intake and branch | DONE — branch pushed, draft PR #32 open against master |
 | 2 Freeze primary-source contract | DONE |
-| 3 Registration, identity, publication | REGISTERED AND WITHHELD; publication NOT RUN |
+| 3 Registration, identity, publication | DONE — registered, withheld through four reviews, then published |
 | 4 Donor and rig audit | DONE — guarded census PASS; Troll rig chosen on recorded evidence |
-| 5 Original visuals | DONE offline — both bodies authored, reviewed and wired; runtime NOT PROVED |
-| 6 Mechanics | IMPLEMENTED; source-proved; runtime NOT PROVED |
-| 7 Skills, senses, omitted movement | IMPLEMENTED; source-proved; live totals NOT PROVED |
+| 5 Original visuals | DONE — authored, wired, and seen in game under the party camera |
+| 6 Mechanics | DONE — proved in game, in both combat modes |
+| 7 Skills, senses, omitted movement | DONE — live totals read off both creatures |
 | 8 Tests and cadence | DONE — 10 Sprint 18 cases, 13 validator fixtures |
-| 9 Hidden candidate qualification | Source half DONE; runtime half NOT RUN |
-| 10 Publication | NOT RUN |
+| 9 Hidden candidate qualification | DONE — 29/29 batched review, 12/12 art review |
+| 10 Publication | DONE — both keys removed; 1034 published, 1063 visible |
 | 11 Release closure | NOT RUN |
 | 12 Merge and release | NOT RUN |
 

@@ -39,10 +39,10 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 18 registers thirteen more roots per family and withholds
             // every one of them, so the visible totals do not move until its
             // publication candidate removes the two suppression keys.
-            Assertions.Equal(523, ExpandedSummoningBaselineInventory
+            Assertions.Equal(536, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(514, ExpandedSummoningBaselineInventory
+            Assertions.Equal(527, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
@@ -56,11 +56,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(1008, generated, "Published generated placements changed.");
+            Assertions.Equal(1034, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(1037, generated + wrappers,
+            Assertions.Equal(1063, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(1037,
+            Assertions.Equal(1063,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -104,15 +104,14 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            // Sprint 13 qualified and published, so the withheld set is empty
+            // Sprint 18 qualified and published, so the withheld set is empty
             // again. A creature appearing here is a sprint registering ahead
-            // of its own qualification, which is allowed and is how both
-            // Sprint 12 and Sprint 13 ran, but it has to be deliberate rather
-            // than a leftover - which is what this pin is for.
-            Assertions.True(ExpandedSummoningBaselineInventory
-                    .RegisteredButHiddenCreatures.SequenceEqual(
-                        new[] { "ape", "dire-ape" }),
-                "Sprint 18 registers exactly the two apes ahead of their own qualification and withholds both.");
+            // of its own qualification, which is allowed and is how Sprints
+            // 12, 13 and 18 each ran, but it has to be deliberate rather than
+            // a leftover - which is what this pin is for.
+            Assertions.Equal(0, ExpandedSummoningBaselineInventory
+                    .RegisteredButHiddenCreatures.Count,
+                "Nothing is registered and withheld: Sprint 18 published both apes.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -127,7 +126,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Smilodon displays under its own name and is not a proxy.");
             Assertions.Equal(37,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, and why both Sprint 18 apes join them on the Owlbear until their original bodies are authored.");
+                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, and why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against.");
         }
 
         /// <summary>
@@ -163,7 +162,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 1037"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 1063"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 

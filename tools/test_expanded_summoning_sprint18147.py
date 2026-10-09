@@ -74,8 +74,9 @@ class Sprint18Tests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1034;\n"
-                "SuppressedLogicalPlacementCount = 26;\n"
-                '"ape", "dire-ape"\n', encoding="utf-8")
+                "SuppressedLogicalPlacementCount = 0;\n"
+                "new HashSet<string>(new string[0], StringComparer.Ordinal)\n",
+                encoding="utf-8")
             (source / "ExpandedSummoningCatalog.cs").write_text(
                 'C("ape","Ape",3,true,3,"Owlbear"),\n'
                 'C("dire-ape","Dire Ape",5,true,5,"Owlbear"),\n'

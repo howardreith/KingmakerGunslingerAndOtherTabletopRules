@@ -1,7 +1,7 @@
 # 0.0.147-expanded-summoning-sprint18
 
-Kingmaker Gunslinger 0.0.147 is the Expanded Summoning Sprint 18 candidate:
-the Ape and the Dire Ape. It retains the qualified native Wwise firearm bank,
+Kingmaker Gunslinger 0.0.147 is Expanded Summoning Sprint 18:
+the Ape and the Dire Ape, both playable. It retains the qualified native Wwise firearm bank,
 SHA256 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`, and
 changes no firearm audio asset. The installation artifact is
 `KingmakerGunslinger-0.0.147-expanded-summoning-sprint18.zip`. Existing
@@ -13,12 +13,25 @@ It is built on the released v0.0.146 master, commit
 `da782d2297d6cf361ac30a5e0ea07348d3b7f7d7`, and changes nothing that release
 qualified.
 
-**This candidate is NOT runtime qualified.** Both new creatures are registered
-and withheld: no player can select either, and the visible summon surface is
-exactly what v0.0.146 published. The sections below describe what the source
-contains, not what has been proved in game.
+**Both creatures are runtime qualified and published.** They were registered
+and withheld through four guarded in-game reviews and published only once the
+complete hidden candidate passed: twenty-nine of twenty-nine on the batched
+mechanics review and twelve of twelve on the party-camera art review at 1d4+1,
+on one candidate, with the owner installation restored exactly after every run.
 
-## What Sprint 18 registers
+The reviews found three real defects before publication, and each was fixed
+rather than accommodated. The Dire Ape was biting for 1d8 and clawing for 1d6
+because the shared native weapons it used do not override their damage dice and
+the engine scales them a step up for a Large wielder; it now owns two weapons
+that hold the printed 1d6 and 1d4. Both apes were adding one and a half times
+Strength on their first limb, because the engine grants that to a natural
+primary-hand weapon whenever the secondary hand is empty and never looks at the
+additional limbs; a carrier granted to these two creatures takes the difference
+back off, and every limb now adds the plain modifier the stat blocks print.
+And the carrier itself did nothing at first, because a rulebook component is
+only subscribed when a unit fact carries it.
+
+## What Sprint 18 adds
 
 | | Summon Monster | Summon Nature's Ally | Roots |
 | --- | ---: | ---: | ---: |
@@ -27,13 +40,16 @@ contains, not what has been proved in game.
 
 Both follow the existing celestial/fiendish template policy and the charter's
 quantity propagation: single at their own tier, 1d3 one tier higher, 1d4+1
-above that. Registered generated placements rise from 1008 to 1034, all 26 new
-roots are suppressed, and the published surface stays at 1008 generated plus 29
-retained native wrappers - 1037 visible choices, unchanged.
+above that. Generated placements rise from 1008 to 1034 and all 26 are
+published, so the visible surface goes from 1037 to 1063 choices: 1034
+generated plus the 29 retained native wrappers. Nothing that v0.0.146
+published moved.
 
-Identities are allocated once, now, and never move: publication is the removal
-of two suppression keys. The blueprint ledger grows from 2922 to 2983 entries
-by append only.
+Identities were allocated once at registration and never moved: publication
+was the removal of two suppression keys and nothing else. The blueprint ledger
+grows from 2922 to 2983 entries by append only. Both creatures spent the whole
+sprint withheld until their review passed, which is what that machinery is
+for.
 
 ## Printed profiles
 
