@@ -99,12 +99,29 @@ procedurally with the project's own Blender creature-icon tool. The Ape is a
 dark knuckle-walking silverback; the Dire Ape is a heavier red-brown
 gigantopithecus with bared canines and clawed hands.
 
-**The original creature bodies are NOT authored.** Both apes currently ride the
-Owlbear's Large bipedal donor rig and are recorded as borrowed-body visual
-proxies. The installed library carries no primate unit type at all, so neither
-ape can ever clone a native primate and each owns its own inspectable type. The
-bounded read-only primate donor census that the original meshes depend on has
-not run. This is the main reason both creatures are withheld.
+Both creatures also have original project-owned bodies: one generated mesh and
+one painted albedo each, built against a bind-pose skeleton and nothing else.
+No proprietary mesh, texture or animation is redistributed.
+
+The donor rig was chosen by a bounded read-only census that surveyed
+twenty-eight creature rigs in the installed library. That census re-confirmed
+there is no primate unit type and no primate body in the game at all, so there
+was nothing to clone and both bodies had to be original. Of the rigs surveyed,
+the Troll guard was the only Large one actually built like an ape: an upright
+spine, long two-segment arms ending in real hands with a thumb and three
+fingers, a separate jaw, and toed feet. Both apes are posed on it, and each owns
+its own inspectable unit type.
+
+The Ape is a near-black silverback with a heavy brow, a low sagittal crest and
+nails. The Dire Ape is a bulkier russet gigantopithecus with a tall crest, a
+straw-pale shoulder ruff, long canines and the heavy curved claws its two
+primary claw attacks call for.
+
+**The knuckle-walking gait is NOT authored.** Kingmaker plays the donor rig's
+own clips, which belong to a large upright biped. The geometry is an ape; the
+walk, run and strike timing are the donor's. A faithful primate gait would be a
+general animation system, which this sprint does not build, so the shortfall is
+recorded rather than hidden.
 
 `HumanReview: NOT_PERFORMED_NONBLOCKING.`
 

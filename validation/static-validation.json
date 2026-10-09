@@ -2227,8 +2227,8 @@
     "releaseInformationalVersion": "0.0.147-expanded-summoning-sprint18",
     "masterBase": "da782d2297d6cf361ac30a5e0ea07348d3b7f7d7",
     "releasedBaseline": "v0.0.146",
-    "deterministicTestCount": 2510,
-    "packageMemberCount": 336,
+    "deterministicTestCount": 2517,
+    "packageMemberCount": 340,
     "registeredManifestEntryCount": 2980,
     "registeredGeneratedPlacements": 1034,
     "suppressedGeneratedPlacements": 26,
@@ -2241,8 +2241,8 @@
     "apeRoots": 14,
     "direApeRoots": 12,
     "bothApesSuppressed": true,
-    "originalBodiesAuthored": false,
-    "primateDonorCensusRun": false,
+    "originalBodiesAuthored": true,
+    "primateDonorCensusRun": true,
     "runtimeQualified": false,
     "runtimeEvidence": [],
     "publicReleaseAuthorized": false,
@@ -2254,6 +2254,9 @@
       "ORDINARY_MAP_LAND_USE_SCOPE"
     ],
     "closureStatus": "SOURCE QUALIFIED; RUNTIME NOT QUALIFIED. Full domain suite 2510/2510 and repository validation PASS on the registered-and-withheld surface. The first guarded runtime launch found a real defect: the appended ledger crossed the loader corruption bound and the mod refused to initialize. The bound is raised deliberately and measured offline. The bounded primate donor census, the original Ape and Dire Ape bodies, the batched guarded Sprint 18 runtime review, publication and release are all NOT RUN.",
-    "compatibilityRuntimeQualificationPending": true
+    "compatibilityRuntimeQualificationPending": true,
+    "primateDonorRig": "b98735a1737ae494dbe5cbeca1c7c083 CR10_FerociousTrollGuard",
+    "primateDonorCensusEvidence": "20261009T1721285353210Z-observe-expanded-summoning-primate-census",
+    "originalBodyFiles": 4
   }
 }
