@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Items;
