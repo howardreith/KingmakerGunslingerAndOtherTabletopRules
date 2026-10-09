@@ -6,15 +6,19 @@ contract lives in `planning/EXPANDED-SUMMONING-SPRINT18-CONTRACT.json` and the
 source-gate evidence in
 `planning/EXPANDED-SUMMONING-SPRINT18-SOURCE-EVIDENCE.json`.
 
-## Current state, 2026-10-09 — SOURCE QUALIFIED; RUNTIME NOT QUALIFIED; BLOCKED
+## Current state, 2026-10-09 — SOURCE QUALIFIED; HARNESS PROVED; REVIEW NOT RUN
 
 One sprint, one branch, one PR, one release. Ape (Gorilla) and Dire Ape
 (Gigantopithecus) only. Girallon, Xill, Giant Scorpion, Bebelith, Giant Crab,
 Sprint 19 and any broader phase are out of scope and were not started.
 
-**Exact candidate `bd21f2447b3e68fbb95759292a1991320529f4e0`.** The complete
-source, build and package gate passed once on that clean committed candidate.
-Three gates remain unrun and one is an owner decision; see Blockers.
+**Exact candidate `bd21f2447b3e68fbb95759292a1991320529f4e0`**, since corrected
+by `aa3d910a`. The complete source, build and package gate passed on the clean
+committed candidate, and the guarded runtime harness is now proved end to end on
+it. The donor census, the original bodies and the Sprint 18 review remain.
+
+The push-policy blocker is resolved: the owner authorized adding this sprint's
+branch and the three later ones, the branch is pushed and PR #32 is open.
 
 ## Intake, 2026-10-09
 
@@ -52,11 +56,12 @@ Three gates remain unrun and one is an owner decision; see Blockers.
 | Sprint 18 corruption fixtures | PASS 13/13 |
 | Repository validator regression fixtures | PASS 3/3 |
 | Icon catalog fixtures | PASS 29/29 |
-| Complete unfiltered domain suite | PASS 2508/2508, including 10 new Sprint 18 cases |
+| Complete unfiltered domain suite | PASS 2510/2510, including 10 Sprint 18 cases and 2 ledger-bound cases |
 | Clean exact-reference Release build | PASS, 14 exact private references |
 | Build output validation | PASS |
 | Strict standalone package validation | PASS, 336 members |
 | Expanded Summoning orchestration | PASS, 168 assertions |
+| Guarded harness end to end | PASS — deploy, Steam 640820 launch, mod load 0.0.147, scenario PASS, exact restoration |
 | Guarded primate donor census | **NOT RUN** |
 | Batched Sprint 18 runtime review | **NOT RUN** |
 | Publication gate | **NOT RUN** |
@@ -116,31 +121,54 @@ Dire Ape: 6 + 6 = 12 roots (parent tiers 4-9). Sprint total 26.
 - **Original bodies NOT authored**: both apes ride the Owlbear donor rig and are
   recorded as borrowed-body visual proxies.
 
-## Blockers
+## Defect found and fixed by the first guarded launch
 
-1. **`PUSH_POLICY_ALLOWLIST` — owner decision.**
-   `codex-policy/Push-KingmakerGunslinger.ps1` refuses
-   `codex/expanded-summoning-sprint18-ape-dire-ape` as non-allowlisted. The
-   policy was run exactly as `AGENTS.md` requires and was not changed or
-   bypassed. This is the same boundary the v0.0.143 release hit and the owner
-   resolved by editing the allowlist. It blocks the push, the draft PR, the
-   merge, the tag and the release.
-   *Smallest decision:* add that branch name to `AllowedBranches`.
-2. **`PRIMATE_DONOR_CENSUS_NOT_RUN`.** The Sprint 16/17 mesh generators take a
-   request-local donor bind-pose capture as their only game-sourced input, so the
-   original bodies cannot be authored before the guarded census runs.
-3. **`SPRINT18_RUNTIME_REVIEW_NOT_RUN`.** No live profile, combat, rend, visual,
-   crowding, module-disabled or persistence evidence exists.
+The first guarded run of this candidate **FAILED**, and found a real defect no
+offline gate could see. Appending the Ape and Dire Ape took
+`blueprints/blueprints.json` to 2980 entries and 1,054,189 bytes, just past the
+one-mebibyte corruption bound `BlueprintManifest.Load` enforces, so the loader
+threw and **the whole mod refused to initialize**. The Shield Other,
+Teleportation, Eastern Weapons and Favored Class failures in the same log are a
+cascade from that one cause.
+
+`aa3d910a` raises the bound to four mebibytes — still a corruption guard, not a
+product limit — and adds `BlueprintManifestSizeTests`, which measures the
+shipped ledger against the constant offline and fails while a quarter of the
+bound remains, so the next sprint to approach it is warned by a test rather than
+by a dead mod. The re-run passed.
+
+| Run | Evidence | Status |
+| --- | --- | --- |
+| First | `20261009T1431541884818Z-observe-expanded-summoning-native-donors` | FAIL — ledger bound |
+| Re-run | `20261009T1444049672874Z-observe-expanded-summoning-native-donors` | PASS |
+
+Both runs restored the owner installation exactly.
+
+## Remaining work
+
+1. Author the request-local primate donor census scenario and run it to capture
+   the bind and action records. The fresh audit re-confirms the installed
+   library has no primate unit and no `RendFeature` consumer among its 607
+   audited units, 2935 facts and 114 unit types, so both bodies must be original
+   geometry on a non-primate rig.
+2. Author the original Ape and Dire Ape bodies against that capture, review them
+   offline, and wire the view.
+3. Author and run the batched Sprint 18 hidden-candidate runtime review.
+4. Publish the 26 roots, merge PR #32 and release v0.0.147.
+
+None of these is an owner decision; the owner has authorized the guarded runtime
+work. They are remaining engineering.
 
 Neither ape can release independently: both share the same unauthored visual
-seam, the same unrun runtime review and the same push boundary.
+seam and the same unrun runtime review.
 
 ## Machine state
 
-Installation is byte-identical to intake: 136 files, tree SHA256
-`2043B458…93C593`, `Info.json` 0.0.117. Saves unchanged at 118. No Kingmaker
-process, no deployment (`Build-Local` reported "No deployment was performed"),
-no runtime lease, no staging transaction, no save write.
+Installation is byte-identical to intake after every transaction: 136 files,
+tree SHA256 `2043B458…93C593`, `Info.json` 0.0.117. Saves unchanged at 118. Two
+guarded deployments of the candidate were made and each was restored from its
+own backup; no development build remains deployed, no Kingmaker process is
+running, the runtime lease is released and no save was read or written.
 
 One build input was repaired: `UnityEngine.PhysicsModule.dll` was missing from
 the local private reference bundle and was copied read-only from the installed
@@ -153,7 +181,7 @@ installed mod or the game was modified.
 
 | Mission section | State |
 | --- | --- |
-| 1 Intake and branch | DONE except the draft PR, which the push policy blocks |
+| 1 Intake and branch | DONE — branch pushed, draft PR #32 open against master |
 | 2 Freeze primary-source contract | DONE |
 | 3 Registration, identity, publication | REGISTERED AND WITHHELD; publication NOT RUN |
 | 4 Donor and rig audit | Offline pre-census DONE; guarded census NOT RUN |
@@ -164,7 +192,7 @@ installed mod or the game was modified.
 | 9 Hidden candidate qualification | Source half DONE; runtime half NOT RUN |
 | 10 Publication | NOT RUN |
 | 11 Release closure | NOT RUN |
-| 12 Merge and release | BLOCKED on the push policy |
+| 12 Merge and release | NOT RUN |
 
 ## Candidate budget
 

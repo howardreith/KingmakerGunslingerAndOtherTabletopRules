@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "sprint": 18,
   "title": "Expanded Summoning Sprint 18: Ape and Dire Ape",
-  "status": "SOURCE QUALIFIED; RUNTIME NOT QUALIFIED; NOT PUBLISHED; NOT RELEASED",
+  "status": "SOURCE QUALIFIED; MOD INITIALIZATION PROVED IN GAME; SPRINT 18 RUNTIME REVIEW NOT RUN; NOT PUBLISHED; NOT RELEASED",
   "branch": "codex/expanded-summoning-sprint18-ape-dire-ape",
   "masterBase": "da782d2297d6cf361ac30a5e0ea07348d3b7f7d7",
   "releasedBaseline": "v0.0.146",
   "masterDelta": "NONE",
   "contract": "planning/EXPANDED-SUMMONING-SPRINT18-CONTRACT.json",
-  "sourceBoundary": "A clean committed candidate on the named base. The complete source, build and package gate ran once on it. No Kingmaker process, deployment, runtime lease or save write occurred at any point.",
+  "sourceBoundary": "A clean committed candidate on the named base. The complete source, build and package gate ran once on it. Two guarded runtime transactions then deployed it, launched Kingmaker through Steam App ID 640820 and restored the owner installation exactly; no save was read or written.",
   "candidate": {
     "commit": "bd21f2447b3e68fbb95759292a1991320529f4e0",
     "sourceStateSha256": "b3c25e810d540c1507efa968c33c6157d254d8ba6469799eaece538259221f6f",
@@ -23,19 +23,20 @@
     "dllMvid": "ff9911e3-7061-4fc4-8d5a-f7fa1b234955",
     "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
     "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
-    "validated": true
+    "validated": true,
+    "ledgerBoundFix": "aa3d910a raises BlueprintManifest.MaximumManifestBytes to 4 MiB; the packaged candidate is rebuilt on it."
   },
   "gates": {
     "repositoryValidationWrapper": "PASS (version-aware; dispatches 0.0.147 to validate_expanded_summoning_sprint18147.py)",
     "sprint18CorruptionFixtures": "PASS 13/13 (tools/test_expanded_summoning_sprint18147.py)",
     "repositoryValidatorRegressionFixtures": "PASS 3/3",
     "iconCatalogFixtures": "PASS 29/29",
-    "unfilteredDomainSuite": "PASS 2508/2508, including 10 new Sprint 18 cases",
+    "unfilteredDomainSuite": "PASS 2510/2510, including 10 Sprint 18 cases and 2 ledger-bound cases",
     "cleanExactReferenceReleaseBuild": "PASS; 14 exact private references compared byte for byte against the installed Steam runtime",
     "buildOutputValidation": "PASS",
     "strictStandalonePackageValidation": "PASS; 336 members",
     "expandedSummoningOrchestration": "PASS 168 assertions",
-    "runtime": "NOT RUN",
+    "runtime": "PARTIAL. The guarded harness is proved end to end on this candidate: deploy, Steam App ID 640820 launch, mod load at 0.0.147, guarded request accepted, scenario PASS, exact restoration. No Sprint 18 creature behaviour is proved.",
     "guardedPrimateDonorCensus": "NOT RUN",
     "batchedSprint18RuntimeReview": "NOT RUN",
     "publicationGate": "NOT RUN",
@@ -80,11 +81,11 @@
     "installedInfoVersion": "0.0.117",
     "saveCountBefore": 118,
     "saveCountAfter": 118,
-    "kingmakerProcess": "none at any point",
-    "deployment": "none; Build-Local reported 'No deployment was performed.'",
-    "runtimeLease": "none; compatibility.lock absent before and after",
+    "kingmakerProcess": "Launched twice under the guarded Steam App ID 640820 mechanism; none running afterwards.",
+    "deployment": "Two guarded deployments of the 0.0.147 candidate, each restored from its own backup. No development build remains deployed.",
+    "runtimeLease": "Acquired and released by the harness; compatibility.lock absent before and after.",
     "stagingTransaction": "none opened",
-    "exactRestoration": "VERIFIED by hash; nothing was deployed, so nothing needed restoring."
+    "exactRestoration": "VERIFIED by hash after each transaction: 136 files, tree SHA256 2043B4587E5D25197AE873BBB69A90C367F836D86499F25892D225016F93C593, Info 0.0.117, 118 saves, no Kingmaker process."
   },
   "privateReferenceRepair": {
     "file": "UnityEngine.PhysicsModule.dll",
@@ -95,37 +96,93 @@
     "scope": "Build input only. Nothing in the repository, the installed mod or the game was modified."
   },
   "candidateBudget": {
-    "hiddenCandidate": { "maximum": 1, "used": 0 },
-    "productCorrectionCandidate": { "maximum": 1, "used": 0 },
-    "observationOnlyCorrection": { "maximum": 1, "used": 0 }
+    "hiddenCandidate": {
+      "maximum": 1,
+      "used": 0
+    },
+    "productCorrectionCandidate": {
+      "maximum": 1,
+      "used": 0
+    },
+    "observationOnlyCorrection": {
+      "maximum": 1,
+      "used": 0
+    }
   },
   "blockers": [
-    {
-      "id": "PUSH_POLICY_ALLOWLIST",
-      "gate": "Mission section 1.7 draft PR, section 12 merge, tag and release",
-      "detail": "codex-policy/Push-KingmakerGunslinger.ps1 refuses the owner-named branch codex/expanded-summoning-sprint18-ape-dire-ape because it is not in AllowedBranches. The policy was run exactly as AGENTS.md requires and was not changed or bypassed; this is the same boundary the v0.0.143 release hit and the owner resolved.",
-      "ownerDecision": "Add codex/expanded-summoning-sprint18-ape-dire-ape to AllowedBranches in C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1.",
-      "blocks": ["push", "draft PR", "merge", "tag", "release"]
-    },
     {
       "id": "PRIMATE_DONOR_CENSUS_NOT_RUN",
       "gate": "Mission section 4 donor and rig audit, and therefore section 5 original visuals",
       "detail": "The Sprint 16 and 17 mesh generators take a request-local donor bind-pose capture as their only game-sourced input, so the original Ape and Dire Ape bodies cannot be authored before that capture exists. The offline pre-census already proves the installed library has no primate unit type and no RendFeature consumer, so both bodies must be original geometry on a non-primate rig. Both creatures are withheld, so nothing player-visible depends on the provisional Owlbear donor.",
-      "ownerDecision": "Authorize a guarded runtime session: deploy this candidate and run the bounded read-only primate donor census with bind-rig capture.",
-      "blocks": ["original visuals", "visual lifecycle review", "publication", "release"]
+      "ownerDecision": "None. The owner has authorized the guarded runtime work; this is remaining engineering.",
+      "blocks": [
+        "original visuals",
+        "visual lifecycle review",
+        "publication",
+        "release"
+      ]
     },
     {
       "id": "SPRINT18_RUNTIME_REVIEW_NOT_RUN",
       "gate": "Mission section 9 hidden candidate qualification",
       "detail": "No guarded runtime review has run. Live profiles, the two-slam and bite-and-two-claw routines, qualifying and nonqualifying rend, both combat modes, all 26 roots through the real player path, visual lifecycle, crowding, fallback, module-disabled behaviour and persistence are all unproved.",
-      "ownerDecision": "Same guarded runtime session as above, after the donor census settles the visuals.",
-      "blocks": ["publication", "release"]
+      "ownerDecision": "None. The owner has authorized the guarded runtime work; this is remaining engineering.",
+      "blocks": [
+        "publication",
+        "release"
+      ]
     }
   ],
   "independentRelease": {
-    "ape": "NOT releasable independently. Both apes share the same unauthored visual seam and the same unrun runtime review, and both are blocked by the same push-policy boundary.",
+    "ape": "NOT releasable independently: it shares the unauthored visual seam and the unrun runtime review with the Dire Ape.",
     "direApe": "NOT releasable independently, for the same reasons."
   },
   "sprint19Started": false,
-  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "pushPolicy": {
+    "authorizedBy": "Expanded Summoning Sequential Completion Mission, section 1",
+    "file": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "sha256Before": "75D824A3608A93C1481C44570A7A20943C2E99C06400273536EDD772AE02B972",
+    "sha256After": "4336CAA9CF815195E316974FB699547E93962A7771BA20D94F1794D2403FDED3",
+    "linesBefore": 255,
+    "linesAfter": 259,
+    "added": [
+      "codex/expanded-summoning-sprint18-ape-dire-ape",
+      "codex/expanded-summoning-sprint19-girallon-xill",
+      "codex/expanded-summoning-sprint20-giant-scorpion",
+      "codex/expanded-summoning-sprint21-bebelith-giant-crab"
+    ],
+    "removedOrReordered": "none",
+    "otherPolicyRulesChanged": "none; a full-file diff shows exactly four added lines"
+  },
+  "runtimeRuns": [
+    {
+      "runId": "20261009T1431542036493Z-95ed87f7b2ed4c37b3bbe40bc2dd6e56",
+      "evidence": "20261009T1431541884818Z-observe-expanded-summoning-native-donors",
+      "scenario": "observe-expanded-summoning-native-donors",
+      "status": "FAIL",
+      "candidate": "9928702f8b6761e0b76a662693b4d6747f7af500",
+      "finding": "bootstrapFailedAtStage=request-accepted; BlueprintManifest.Load threw InvalidDataException: ledger length 1054189 outside 1..1048576. The whole mod refused to initialize; Shield Other, Teleportation, Eastern Weapons and Favored Class failures in the same log are a cascade from it.",
+      "classification": "REAL PRODUCT DEFECT introduced by the Sprint 18 append, missed by every offline gate",
+      "restoration": "VERIFIED; 136 files and the intake tree hash",
+      "supersededBy": "aa3d910a"
+    },
+    {
+      "runId": "observe-expanded-summoning-native-donors re-run",
+      "evidence": "20261009T1444049672874Z-observe-expanded-summoning-native-donors",
+      "scenario": "observe-expanded-summoning-native-donors",
+      "status": "PASS",
+      "candidate": "aa3d910a (ledger bound raised)",
+      "proves": "Guarded deploy, Steam 640820 launch, mod load at 0.0.147, guarded request accepted, scenario completion and exact restoration all work on this candidate.",
+      "auditTotals": "607 units, 2935 facts, 114 unit types",
+      "primateFinding": "No primate unit and no RendFeature consumer in the installed library, confirming the offline pre-census: both ape bodies must be original geometry on a non-primate donor rig.",
+      "restoration": "VERIFIED; 136 files and the intake tree hash"
+    }
+  ],
+  "remainingWork": [
+    "Author the request-local primate donor census scenario and run it to capture bind/action records.",
+    "Author the original Ape and Dire Ape bodies against that capture, review offline, wire the view.",
+    "Author and run the batched Sprint 18 hidden-candidate runtime review.",
+    "Publish the 26 roots, merge PR #32 and release v0.0.147."
+  ]
 }
