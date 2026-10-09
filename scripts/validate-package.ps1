@@ -46,6 +46,7 @@ try {
         'validation\weapon-findability-runtime-qualification.json',
         'docs\RELEASE-NOTES-0.0.145.md',
         'docs\RELEASE-NOTES-0.0.146.md',
+        'docs\RELEASE-NOTES-0.0.147.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -105,9 +106,28 @@ try {
         'assets\sprint17-serpents\salamander-mesh.json',
         'assets\sprint17-serpents\salamander-human-mesh.json',
         'assets\sprint17-serpents\salamander-albedo.png',
+        'assets\sprint18-primates\ape-mesh.json',
+        'assets\sprint18-primates\ape-albedo.png',
+        'assets\sprint18-primates\dire-ape-mesh.json',
+        'assets\sprint18-primates\dire-ape-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
+    # The two original Sprint 18 ape bodies, pinned to the exact files
+    # the offline review passed. A mesh without its own painting is not
+    # the reviewed creature, so both halves are checked.
+    $primateBodies = @{
+        'assets\sprint18-primates\ape-albedo.png' = 'f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc'
+        'assets\sprint18-primates\ape-mesh.json' = '751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0'
+        'assets\sprint18-primates\dire-ape-albedo.png' = 'e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7'
+        'assets\sprint18-primates\dire-ape-mesh.json' = 'e2f0242141a01179cf3c5915f2d11cf1335b9de51aa387150fb69a42bcdd0341'
+    }
+    foreach ($entry in $primateBodies.GetEnumerator()) {
+        $path = Join-Path $modDirectory $entry.Key
+        if ((Get-KmgSha256 -Path $path) -cne $entry.Value) {
+            throw "A packaged Sprint 18 original ape body differs from its reviewed export: $($entry.Key)"
+        }
+    }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
     if ((Get-KmgSha256 -Path $humanMesh) -cne 'b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19') {
         throw 'The separately packaged Salamander human/tail mesh differs from its reviewed original export.'
@@ -136,7 +156,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 109 -or @($summonManifest.icons).Count -ne 109) {
+    if ($summonManifest.count -ne 111 -or @($summonManifest.icons).Count -ne 111) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'
