@@ -517,8 +517,12 @@ def validate(root: Path) -> None:
     package_count = SPRINT3["packageFileCountWithSoundBank"] + 31
     # Only the current whole-package count grows by the four DATA trait PNGs.
     # No summoning count or historical record changes.
-    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.142":
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.142", "0.0.143", "0.0.144"):
         package_count += 4
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.143", "0.0.144"):
+        # Seven player instructions and curated qualification files accompany
+        # the findability repair. Historical summoning asset counts are fixed.
+        package_count += 7
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),
