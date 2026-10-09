@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.145-heirloom-nodachi-icon
+
+- Show the project Nodachi artwork on the Heirloom Weapon: Nodachi trait option
+  and its three choices instead of the native donor sword sprite. Blueprint
+  identities, mechanics and selection structure are unchanged.
+- Carry the 0.0.144 content forward unchanged. No additional suites, repository
+  validation or runtime scenarios were run for 0.0.145, at the owner's explicit
+  request; the trait icon has not been inspected in-game.
+
 ## 0.0.144-weapon-findability-fixes
 
 - Publish the owner-authorized weapon findability release from the merged
