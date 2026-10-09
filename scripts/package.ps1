@@ -25,7 +25,7 @@ $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\Kingm
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
-$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-weapon-findability-fixes.zip"
+$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-heirloom-nodachi-icon.zip"
 $checksumPath = "$packagePath.sha256"
 
 if (Test-Path -LiteralPath $stagingDirectory) {
@@ -58,7 +58,7 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'validation\weapon-findability-native-reference.json',
     'validation\weapon-findability-scene-corrections.json',
     'validation\weapon-findability-runtime-qualification.json',
-    'docs\RELEASE-NOTES-0.0.144.md')) {
+    'docs\RELEASE-NOTES-0.0.145.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
