@@ -113,8 +113,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnitEntityView prefab = unit.Prefab.Load(false);
                         if (prefab == null)
                             throw new InvalidOperationException("No loadable view prefab.");
-                        row = CaptureSprint17ViewMetadata(prefab, key, unit.AssetGuid,
-                            null, unit.name, pair.Key, false);
+                        row = CapturePrimateCensusViewMetadata(prefab, key,
+                            unit.AssetGuid, unit.name, pair.Key);
                         row["isAnchor"] = PrimateRigSurveyPolicy.AnchorRank(unit.AssetGuid) !=
                             int.MaxValue;
                         row["size"] = unit.Size.ToString();
@@ -188,6 +188,117 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(
                 assertions.All(value => value.Status == "PASS") ? "PASS" : "FAIL",
                 assertions, null);
+        }
+
+
+        /// <summary>
+        /// The census's own capture, and strictly read-only.
+        ///
+        /// <para>It exists because a native view may carry a cloth or cape
+        /// renderer with no usable bind frame - the Wild Hunt Monarch does -
+        /// and the shared Sprint 17 helper treats that as an incomplete rig and
+        /// refuses the whole view, throwing away a perfectly readable body
+        /// skeleton because of a cape. This records such a renderer as a
+        /// skipped finding and captures the rest.</para>
+        ///
+        /// <para>That weakens nothing. A renderer with no bind frame carries no
+        /// skeleton to capture, and a view with no usable renderer at all still
+        /// fails below. Nothing here writes to the prefab: the detached asset
+        /// is read and left exactly as it was loaded, which is why this does
+        /// not simply disable the offending renderer before delegating.</para>
+        ///
+        /// <para>The Sprint 17 survey is deliberately left exactly as it
+        /// qualified.</para>
+        /// </summary>
+        private static JObject CapturePrimateCensusViewMetadata(UnitEntityView view,
+            string key, string nativeBlueprint, string blueprintName, string prefabId)
+        {
+            var usable = new List<SkinnedMeshRenderer>();
+            var skipped = new JArray();
+            foreach (SkinnedMeshRenderer skin in view
+                .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value != null && value.sharedMesh != null))
+            {
+                Transform[] bones = skin.bones ?? new Transform[0];
+                Matrix4x4[] poses = skin.sharedMesh.bindposes ?? new Matrix4x4[0];
+                if (bones.Length != 0 && bones.Length == poses.Length &&
+                    bones.All(value => value != null))
+                {
+                    usable.Add(skin);
+                    continue;
+                }
+                skipped.Add(new JObject {
+                    ["renderer"] = skin.name, ["meshName"] = skin.sharedMesh.name,
+                    ["boneCount"] = bones.Length, ["bindPoseCount"] = poses.Length,
+                    ["reason"] = "no usable bind frame; carries no skeleton to capture"
+                });
+            }
+            if (usable.Count == 0)
+                throw new InvalidOperationException(
+                    "No usable skinned rig for " + key);
+
+            var document = new JObject {
+                ["scope"] = "Sprint 18 primate donor census; research only, no gameplay or visual qualification",
+                ["space"] = "renderer-local bind frame; no native vertices, indices, UVs, textures or animation curves",
+                ["sourceMode"] = "detached native prefab; read-only, never instantiated, activated or modified",
+                ["key"] = key, ["nativeBlueprint"] = nativeBlueprint,
+                ["blueprintName"] = blueprintName, ["prefab"] = prefabId,
+                ["view"] = view.name,
+                ["viewScale"] = SurveyVector(view.transform.localScale),
+                ["skippedRenderers"] = skipped,
+                ["components"] = new JArray(view.GetComponentsInChildren<Component>(true)
+                    .Where(value => value != null).Select(value => value.GetType().FullName)
+                    .Distinct().OrderBy(value => value, StringComparer.Ordinal).ToArray())
+            };
+            var entries = new JArray();
+            foreach (SkinnedMeshRenderer skin in usable)
+            {
+                Transform[] bones = skin.bones;
+                Matrix4x4[] poses = skin.sharedMesh.bindposes;
+                var entry = new JObject {
+                    ["renderer"] = skin.name, ["meshName"] = skin.sharedMesh.name,
+                    ["vertexCount"] = skin.sharedMesh.vertexCount,
+                    ["enabled"] = skin.enabled,
+                    ["localBoundsCenter"] = SurveyVector(skin.localBounds.center),
+                    ["localBoundsSize"] = SurveyVector(skin.localBounds.size),
+                    ["rootBone"] = skin.rootBone == null ? null : skin.rootBone.name,
+                    ["boneCount"] = bones.Length, ["bindPoseCount"] = poses.Length
+                };
+                var frames = new JArray();
+                for (int index = 0; index < bones.Length; index++)
+                {
+                    Matrix4x4 bind = poses[index].inverse;
+                    Quaternion rotation = Quaternion.LookRotation(
+                        bind.GetColumn(2), bind.GetColumn(1));
+                    frames.Add(new JObject {
+                        ["index"] = index, ["name"] = bones[index].name,
+                        ["parent"] = bones[index].parent == null ? null : bones[index].parent.name,
+                        ["bindPosition"] = SurveyVector(bind.MultiplyPoint3x4(Vector3.zero)),
+                        ["bindRotation"] = new JArray(rotation.x, rotation.y, rotation.z, rotation.w)
+                    });
+                }
+                entry["bones"] = frames;
+                // Names and flags only; no texture pixels or shader source.
+                entry["materials"] = new JArray(skin.sharedMaterials.Select(material =>
+                    material == null ? JValue.CreateNull() : (JToken)new JObject {
+                        ["name"] = material.name,
+                        ["shader"] = material.shader == null ? null : material.shader.name
+                    }));
+                entries.Add(entry);
+            }
+            document["skinnedRenderers"] = entries;
+            document["staticMeshAnchors"] = new JArray(view
+                .GetComponentsInChildren<MeshRenderer>(true)
+                .Where(value => value != null).Select(value => {
+                    MeshFilter filter = value.GetComponent<MeshFilter>();
+                    return new JObject {
+                        ["name"] = value.name,
+                        ["parent"] = value.transform.parent == null ? null : value.transform.parent.name,
+                        ["meshName"] = filter == null || filter.sharedMesh == null
+                            ? null : filter.sharedMesh.name
+                    };
+                }));
+            return document;
         }
 
         /// <summary>
