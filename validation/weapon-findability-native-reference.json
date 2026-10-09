@@ -1,0 +1,887 @@
+{
+  "schemaVersion": 1,
+  "comparisonGameVersion": "2.1.4",
+  "archiveSha256": "6ddf33970fb9ed3c127dd8f30b6416d7d23f607303ca61a31aab1972ed43df60",
+  "qualificationAuthority": "installed 2.1.7b runtime; this file is reference data only",
+  "weapons": [
+    {
+      "key": "DuelistsRebuttalSymbol",
+      "family": "RareFirearmCampaignLootBlueprints.cs",
+      "targetGuid": "1f0bef6b8e540d644962171dc8810459",
+      "targetName": "Forest_Container_7_good",
+      "areaName": "VarnholdStockade",
+      "areaGuid": "da5ab9c569b944c4082bc5dc6587735f",
+      "mapName": "Varnhold Stockade",
+      "mechanicsScene": "VarnholdStockade_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "436ec3989c26a3442ab12cb055b2b22f",
+          "name": "CrimsonCounselor",
+          "count": 1
+        },
+        {
+          "guid": "f7d4d50f2978aab4db198b97304fbdc5",
+          "name": "TuskwaterOysters",
+          "count": 1
+        },
+        {
+          "guid": "9065c71b61e1e064199a123e0e13348c",
+          "name": "OwlbearOmelet_item",
+          "count": 1
+        },
+        {
+          "guid": "85880df1eadc4f343bfc3522a4d18f45",
+          "name": "Antique_CyclopsBoot",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "RiverKingsMeasureSymbol",
+      "family": "RareFirearmCampaignLootBlueprints.cs",
+      "targetGuid": "77ad78d755a49af45abee46d86191b16",
+      "targetName": "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)#1",
+      "areaName": "IrovettiPalace",
+      "areaGuid": "bf9dbc2998849ee40bbdba9cb40a7d4c",
+      "mapName": "Pitax Royal Palace",
+      "mechanicsScene": "IrovettiPalace_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "ce5f776a6962b20469b6eaa3e2e584b1",
+          "name": "WoodenSpoon",
+          "count": 1
+        },
+        {
+          "guid": "a903724820fc3dc42aba0a6ad4436aaa",
+          "name": "GrindingStone",
+          "count": 1
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 16
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "IrovettisOvationSymbol",
+      "family": "RareFirearmCampaignLootBlueprints.cs",
+      "targetGuid": "c5adf784c614e4b4c8dc220111f64a54",
+      "targetName": "RichHuman_ConservatoryLoot",
+      "areaName": "IrovettiPalace",
+      "areaGuid": "bf9dbc2998849ee40bbdba9cb40a7d4c",
+      "mapName": "Pitax Royal Palace",
+      "mechanicsScene": "IrovettiPalace_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "d2eb319bc6b399a48b1b1d0a73238ac4",
+          "name": "ArbitersRobeItem",
+          "count": 1
+        },
+        {
+          "guid": "c426180be627cf84284bc9abcada55af",
+          "name": "CharoiteWyvernItem",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "TheLastWordSymbol",
+      "family": "RareFirearmCampaignLootBlueprints.cs",
+      "targetGuid": "b54aad6aa2844fa4c87f46088cde018b",
+      "targetName": "FirstWorld_PoorLoot01#1",
+      "areaName": "HouseAtTheEdgeOfTime",
+      "areaGuid": "13e7006bce054ce4e82b5064b2f3f8ff",
+      "mapName": "House at the Edge of Time",
+      "mechanicsScene": "HouseAtTheEdgeOfTime_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "4f68b70286eba114bb2f5fe5f18a566c",
+          "name": "Jade",
+          "count": 2
+        },
+        {
+          "guid": "be452dba5acdd9441841d2189e1ae55a",
+          "name": "ScrollOfBless",
+          "count": 1
+        },
+        {
+          "guid": "0e0a31aaffda6464d9dd7fe97a14d267",
+          "name": "Turquoise",
+          "count": 4
+        },
+        {
+          "guid": "c92308c160d6d424fb64f1fd708aa6cd",
+          "name": "ScrollOfStinkingCloud",
+          "count": 2
+        },
+        {
+          "guid": "0c5f727578903c54e89e2c28a5f88d6d",
+          "name": "ExpensivePetal",
+          "count": 3
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 1044
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "WatchAtWorldsEndSymbol",
+      "family": "RareFirearmCampaignLootBlueprints.cs",
+      "targetGuid": "e113fb75d9461924ab64df78c019991a",
+      "targetName": "FirstWorld_PoorLoot02#1",
+      "areaName": "HouseAtTheEdgeOfTime",
+      "areaGuid": "13e7006bce054ce4e82b5064b2f3f8ff",
+      "mapName": "House at the Edge of Time",
+      "mechanicsScene": "HouseAtTheEdgeOfTime_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "6e37f3e99bfa1fb4a9ad8db1775aa7aa",
+          "name": "PotionOfResistFire",
+          "count": 3
+        },
+        {
+          "guid": "4ab290cc7e961ff46a4d8744dea3f2c9",
+          "name": "HandfulOfGems",
+          "count": 1
+        },
+        {
+          "guid": "bdc4649575bff1b498cfb2471a8934da",
+          "name": "NobleHops",
+          "count": 1
+        },
+        {
+          "guid": "c0989dca3e18c4c488b0b738b61bb924",
+          "name": "ShimmeringPollen",
+          "count": 2
+        },
+        {
+          "guid": "47d41dd302a14d04faa7df70697d23ec",
+          "name": "ScrollOfInflictSeriousWounds",
+          "count": 2
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 299
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "PaperLantern",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "5cce787544ae5964c8ac43ab7cf768ca",
+      "targetName": "Forest_BarrikadedChest1#2",
+      "areaName": "StagLordFort",
+      "areaGuid": "083fa331576e43047b3159d32c3474e5",
+      "mapName": "The Stag Lord's Fort",
+      "mechanicsScene": "StagLordFort_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "9b64866b008a35d4ab1ba6f1a23bb7dc",
+          "name": "GlaivePlus1",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "WayfarersOath",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "020246502ff864f4aab19e2fc00e63ee",
+      "targetName": "Forest_chest_close",
+      "areaName": "TrollLair_Exterior",
+      "areaGuid": "7d5711deda3c1224b8bc299c2211118f",
+      "mapName": "Troll Wilderness",
+      "mechanicsScene": "TrollLair_Exterior_Base_Mechanic",
+      "nativeRows": [
+        {
+          "guid": "5b172c2c3e356eb43ba5a8f8008a8a5a",
+          "name": "ScrollOfFireball",
+          "count": 1
+        },
+        {
+          "guid": "9a237496e6b3898498da4a2ecd9ed660",
+          "name": "DartPlus1",
+          "count": 1
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 13
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "BorderSentinel",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "e72cdc1e01c1eb144b6c29084dd111fb",
+      "targetName": "Forest_ChestWithMasterworkWeapons",
+      "areaName": "StagLordOldCamp",
+      "areaGuid": "17488ae7967d5894b913e9cfa4e71615",
+      "mapName": "Abandoned Hut",
+      "mechanicsScene": "StagLordOldCamp_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "f20fef6a2bcfdf349afdbb26ae78463b",
+          "name": "MasterworkDwarvenUrgrosh",
+          "count": 1
+        },
+        {
+          "guid": "8b4d0b16bf3bced49a4e9c40e28ff756",
+          "name": "MasterworkEarthBreaker",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "QuietCurrent",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "a2d14c56093720947a6ca4978c6a5985",
+      "targetName": "Forest_OldDwarfChest",
+      "areaName": "TrollLair_SecondLevel",
+      "areaGuid": "8ad40376ad0a1a4499102c0755103a04",
+      "mapName": "Troll Lair Depths",
+      "mechanicsScene": "TrollLair_SecondLevel_Mechanic",
+      "nativeRows": [
+        {
+          "guid": "b3157283be1ddbc4abe94008acab5943",
+          "name": "HeavyMaceFrostShockPlus1",
+          "count": 1
+        },
+        {
+          "guid": "f991f3051c3b9e64fabc87891077b613",
+          "name": "PotionOfCureModerateWounds",
+          "count": 2
+        },
+        {
+          "guid": "fac63f8aab736c5448ef775ee7250202",
+          "name": "Antique_DwarfHammer",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "WinterReed",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "4dc53495b10c62f4a90d4ae094d232c3",
+      "targetName": "Forest_TrollhoundLairLoot01",
+      "areaName": "TrollhoundLair",
+      "areaGuid": "0eb89d7d3670cca49b2e136265b1970c",
+      "mapName": "Empty Skull Rock",
+      "mechanicsScene": "TrollhoundLair_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "4aea6773c1da01c42bd382c1b7c384bc",
+          "name": "CloakOfResistance1",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "CloudCleaver",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "2bffac36ed3499f4f9a1e6456e96a0f6",
+      "targetName": "Forest_LockedLoot01",
+      "areaName": "CandlemereTower",
+      "areaGuid": "37a183451942e4340a096c561e4249d2",
+      "mapName": "Candlemere Tower",
+      "mechanicsScene": "CandlemereTower_MechanicsBase",
+      "nativeRows": [
+        {
+          "guid": "47edb64bd292707448b2f6b207599a58",
+          "name": "NobleHammer",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "FallingPetal",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "df9ac89a7d8533a4e999bd267ae52b65",
+      "targetName": "Forest_UnhiddenLocked01",
+      "areaName": "SilverstepGrotto_Cave",
+      "areaGuid": "ab0b15c40826c94489b0bbcba71dc566",
+      "mapName": "Womb of Lamashtu",
+      "mechanicsScene": "SilverstepGrotto_Cave_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "aa726088e7616f34f8fa2aed8e12efe4",
+          "name": "Decapitator",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "DrawnHorizon",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "d03682992a98a614c9d149fca2bab853",
+      "targetName": "Forest_Backpack",
+      "areaName": "SilverstepLake_Outdoor",
+      "areaGuid": "34c828a6acd7dfd4ca8c7db689dece7d",
+      "mapName": "Lake Silverstep Village",
+      "mechanicsScene": "SilverstepLake_Outdoor_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 121
+        },
+        {
+          "guid": "240d326bb03e4cf4c9fb0bdded1dcff9",
+          "name": "TalonOfTheWise",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "StormOverStone",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "2d95232e6fc0b594bb6e13e3d3ea0dc3",
+      "targetName": "Forest_Loot01",
+      "areaName": "Varnhold",
+      "areaGuid": "dc88dcb5bb6229b459e2e1d182556487",
+      "mapName": "Varnhold",
+      "mechanicsScene": "Varnhold_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "4bfb51eb194395c4c8f7c13fdbce36e0",
+          "name": "ScytheFrostPlus2",
+          "count": 1
+        },
+        {
+          "guid": "a3879b4e94c50854a873a0334fbbe36c",
+          "name": "PotionOfBearsEndurance",
+          "count": 1
+        },
+        {
+          "guid": "3f0351bb2f0608047acff46161f7a427",
+          "name": "Rice",
+          "count": 3
+        },
+        {
+          "guid": "418a5f5ce964b5244bc7d2f1787bfe4f",
+          "name": "Flour",
+          "count": 3
+        },
+        {
+          "guid": "fc7271d09ff1e9541935f1cc195682c4",
+          "name": "Onion",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "FoxfireWhisper",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "a9bb1f714425c564aadee3cc712fb96a",
+      "targetName": "Forest_CyclopLootRoot",
+      "areaName": "DunswardOutdoor",
+      "areaGuid": "63f0934aa847a88408da0b04d933669d",
+      "mapName": "City of Hollow Eyes",
+      "mechanicsScene": "DunswardOutdoor_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "12531e061aef4db40b337defa211512a",
+          "name": "Antique_CyclopsSheathe",
+          "count": 1
+        },
+        {
+          "guid": "ee15329357f8f974bacf02521d8d37fe",
+          "name": "HeadbandOfIntelligence4",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "ThunderAtTheGate",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "dd50c5c9d07eaaf49869308ce8720aec",
+      "targetName": "Barbarians_PoorLootRoot (1)",
+      "areaName": "ArmagsTomb",
+      "areaGuid": "f0e41714d8f2bc14bb604bc0d4cfe40d",
+      "mapName": "Armag's Tomb",
+      "mechanicsScene": "ArmagsTomb_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "02e9f83be5d1c5d4e927b5c44ed34840",
+          "name": "ChainmailStandard",
+          "count": 2
+        },
+        {
+          "guid": "f28f6031c2908d84d945865a80f67177",
+          "name": "StandardLongspear",
+          "count": 3
+        },
+        {
+          "guid": "c378f7531fffef049991b6f9740d6c05",
+          "name": "BrilliantFlake",
+          "count": 1
+        },
+        {
+          "guid": "19a5092244dcf99478dcd73c974828b1",
+          "name": "StandardHeavyCrossbow",
+          "count": 1
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 189
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "MountainSunder",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "462bf0e4476e8c7498b2462219d46d25",
+      "targetName": "Hills_chest_closed",
+      "areaName": "BarbarianMainCamp",
+      "areaGuid": "c01a5dc912da3f04bb7898bd958e79d9",
+      "mapName": "Kellid Barbarian Camp",
+      "mechanicsScene": "BarbarianMainCamp_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "cf7071c32c435e2469ff921b87af6aea",
+          "name": "InvestigatorsNotebook",
+          "count": 2
+        },
+        {
+          "guid": "31a74f20fcba2c9419738a94f6727dd6",
+          "name": "PotionOfProtectionFromLaw",
+          "count": 1
+        },
+        {
+          "guid": "ab1697d2523eb9142a145a773a635f36",
+          "name": "BeetleInAmber",
+          "count": 1
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 71
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "EmptySleeve",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "c0f1626bb1a0b3b47ad452ce75c7f0e2",
+      "targetName": "RichHuman_GoodLoot_Locked#1",
+      "areaName": "PitaxTown",
+      "areaGuid": "87eb9e17e4d796741960c48b0226e124",
+      "mapName": "Pitax",
+      "mechanicsScene": "PitaxTown_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "081a2ffe763320a469de20f1e9b1cd71",
+          "name": "AmuletOfNaturalArmor3",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "MoonlitCrossing",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "732080f3aa72fd14cb520902e4b4db89",
+      "targetName": "PoorHuman_PoorLoot#1",
+      "areaName": "Littletown",
+      "areaGuid": "f2c0665786c0fc142b8d6668e31fb3e1",
+      "mapName": "Littletown",
+      "mechanicsScene": "Littletown_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "17e5973a5ef49ce42ac49117d693efaa",
+          "name": "Pearl",
+          "count": 2
+        },
+        {
+          "guid": "17e5973a5ef49ce42ac49117d693efaa",
+          "name": "Pearl",
+          "count": 2
+        },
+        {
+          "guid": "d8d1c64ee071cb341a833dae24d35a10",
+          "name": "MasterworkStandardDoubleAxe",
+          "count": 1
+        },
+        {
+          "guid": "511c97c1ea111444aa186b1a58496664",
+          "name": "StandardLightCrossbow",
+          "count": 1
+        },
+        {
+          "guid": "212a1a78c7865154482ffda45796510e",
+          "name": "SilverRing",
+          "count": 2
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 85
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "UnfixedForm",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "3172f82c9f21b8a439a6552850b39b4c",
+      "targetName": "PoorHuman_PoorLoot",
+      "areaName": "WhiteRoseAbbey",
+      "areaGuid": "5ec616b225074e246a6f64b3554819fb",
+      "mapName": "Whiterose Abbey",
+      "mechanicsScene": "WhiteRoseAbbey_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "5bb722fed5172ed48baa2139246bc355",
+          "name": "PotionOfBlur",
+          "count": 1
+        },
+        {
+          "guid": "cf9694e0cab918d488dee655a08e4e1f",
+          "name": "MasterworkElvenCurvedBlade",
+          "count": 1
+        },
+        {
+          "guid": "19a5092244dcf99478dcd73c974828b1",
+          "name": "StandardHeavyCrossbow",
+          "count": 1
+        },
+        {
+          "guid": "5a76d1b8138615644b214d42abd8b8fc",
+          "name": "CarvedBeads",
+          "count": 1
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 8
+        },
+        {
+          "guid": "98f17a5556213024cae9663e4cf1164a",
+          "name": "RegBook3_Everlight",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "NightWithoutMoon",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "b3344268950f27f4b840f216959f150e",
+      "targetName": "FirstWorld_GoodLoot_Trapped_1",
+      "areaName": "CastleOfKnives",
+      "areaGuid": "4b335fbba8e7ee34cb01cf5ad704e0ff",
+      "mapName": "Castle of Knives",
+      "mechanicsScene": "CastleOfKnives_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "f0490c8af1fb22e46917359efc7bcf3d",
+          "name": "ChainshirtStandartPlus5",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "HeavensMeasure",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "e3703cd9a6de2f24c80c1505e3c9784f",
+      "targetName": "FirstWorld_2ndFloorGoodLoot05",
+      "areaName": "HouseAtTheEdgeOfTime_2ndFloor",
+      "areaGuid": "3e0878fc42c94fa47b290aba55a5aef9",
+      "mapName": "House at the Edge of Time",
+      "mechanicsScene": "HouseAtTheEdgeOfTime_2ndFloor_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "6d7992679c557c842887c8bba08a12c8",
+          "name": "HeadbandOfPerfection6",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "WorldTreeSeverer",
+      "family": "EasternWeaponCampaignBlueprints.cs",
+      "targetGuid": "7e6448d1d8a7e4f4d9cc340b8f15e732",
+      "targetName": "RichHuman_Loot_1",
+      "areaName": "FinalDungeon",
+      "areaGuid": "a39dc445480d9b9419aaa3f8df2d1ed1",
+      "mapName": "Ravaged Capital \u2014 Entrance",
+      "mechanicsScene": "FinalDungeon_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "5f6b606de240fcf4d941343e6c055179",
+          "name": "GreatswordPlus5",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "Boughkeeper",
+      "family": "ElvenBranchedSpearCampaignBlueprints.cs",
+      "targetGuid": "40db074f21260344b95d0e9919c8e682",
+      "targetName": "Forest_PoorLoot01",
+      "areaName": "CapitalRegionLair01",
+      "areaGuid": "dc892947b1d180b44bb202559ecaec33",
+      "mapName": "Old Mesa",
+      "mechanicsScene": "CapitalRegionLair01_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "0a6a7bbf0ddcebb4f8c4c7bd5d20c003",
+          "name": "PotionOfReducePerson",
+          "count": 1
+        },
+        {
+          "guid": "2eda4fe6826aadc4f9b6fa91c7c773fd",
+          "name": "SilverInkpot",
+          "count": 1
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 10
+        },
+        {
+          "guid": "3cfeae23012c8b9488b5b36d51ee4a8d",
+          "name": "AmethystEncrustedRing",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "Thornstep",
+      "family": "ElvenBranchedSpearCampaignBlueprints.cs",
+      "targetGuid": "3322c56f38031eb4983b6f87c95081b7",
+      "targetName": "Forest_GoodLoot01",
+      "areaName": "NorthNarlmarchesRegionLair01",
+      "areaGuid": "f39f8b5e85775e04c80c566c2c65126f",
+      "mapName": "Riverine Rise",
+      "mechanicsScene": "NorthNarlmarchesRegionLair01_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "1365aee7d18c85d438f5b027122ca8cf",
+          "name": "PotionOfRestorationLesser",
+          "count": 2
+        },
+        {
+          "guid": "de172db6e10f6d54896cb6a48b9fe8f7",
+          "name": "ScrollOfRemoveBlindness",
+          "count": 3
+        },
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 43
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "MoonlitFork",
+      "family": "ElvenBranchedSpearCampaignBlueprints.cs",
+      "targetGuid": "2aa7aa5c2df96b143bd2fc62a8547c9c",
+      "targetName": "Forest_TH_GreatclubBarbarianMagic",
+      "areaName": "MonsterLairHodag",
+      "areaGuid": "b73e04776eac5e7499b1dbfd1690f4cd",
+      "mapName": "Hodag Lair",
+      "mechanicsScene": "MonsterLairHodag_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "b58b29d0dce442542859ed7599d38c28",
+          "name": "GreatclubPlus2",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "VipersReach",
+      "family": "ElvenBranchedSpearCampaignBlueprints.cs",
+      "targetGuid": "8a850f7758cb77b498621a307445bb1e",
+      "targetName": "Forest_GoodLoot_withWeaponOrArmor",
+      "areaName": "LoneCyclopCave",
+      "areaGuid": "61fe89577c6db304a82a21a000f26b6a",
+      "mapName": "Saint Galvan's Gullet",
+      "mechanicsScene": "LoneCyclopCave_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "f2bc0997c24e573448c6c91d2be88afa",
+          "name": "GoldCoins",
+          "count": 940
+        },
+        {
+          "guid": "88ec5262d0bb8f14f88ab97e3dd18915",
+          "name": "TridentPlus3",
+          "count": 1
+        },
+        {
+          "guid": "abf90e9a19190b6428b2cb538b093cdd",
+          "name": "ExpeditionEstimateList",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "BriarCrownedSpear",
+      "family": "ElvenBranchedSpearCampaignBlueprints.cs",
+      "targetGuid": "decb6060ab534294eb6d35510e45d317",
+      "targetName": "RichHuman_NotHiddenLockedGood",
+      "areaName": "BlakemoorHideout",
+      "areaGuid": "f2bfb961a0ca835438669c556a145c3f",
+      "mapName": "Blakemoor's Hideout",
+      "mechanicsScene": "BlakemoorHideout_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "828561d73332c5846b11ffb4bd6df94d",
+          "name": "LocketOfPerfectCantripsItem",
+          "count": 1
+        },
+        {
+          "guid": "2258062337f6ad9488bdd3b6e6b313b1",
+          "name": "RobeOfFalseDeathItem",
+          "count": 1
+        },
+        {
+          "guid": "33674f7c73f0da0448ce6d84c6846f1a",
+          "name": "BindingsOfThePrinceItem",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    },
+    {
+      "key": "SpearOfTheFirstBranch",
+      "family": "ElvenBranchedSpearCampaignBlueprints.cs",
+      "targetGuid": "13e98ebc52714d34eb8e53f1099110fd",
+      "targetName": "RichHuman_Loot_5_2lvl",
+      "areaName": "FinalDungeon2",
+      "areaGuid": "f85f5e240e68b14438992554f5234d57",
+      "mapName": "Ravaged Capital \u2014 Central Passage",
+      "mechanicsScene": "FinalDungeon2_Mechanics",
+      "nativeRows": [
+        {
+          "guid": "11f435140501db84e8e787bf8792fac2",
+          "name": "AmuletOfNaturalArmor5",
+          "count": 1
+        },
+        {
+          "guid": "ba531e0a876d06c49aef207cc6c93056",
+          "name": "FeyBaneColdIronTongiPlus4",
+          "count": 1
+        }
+      ],
+      "sceneQualification": "UNVERIFIED",
+      "routeQualification": "UNVERIFIED",
+      "pickupQualification": "UNVERIFIED",
+      "saveReloadQualification": "UNVERIFIED"
+    }
+  ]
+}
