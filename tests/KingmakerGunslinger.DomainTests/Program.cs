@@ -1106,7 +1106,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-native-spear-bounds-uncertainty", ExpandedSummoningSprint17Tests.NativeSpearBoundsRetainConservativeUncertainty),
             Case("expanded-summoning.sprint17-two-palm-spear-mount", ExpandedSummoningSprint17Tests.TwoPalmSpearMountFitsExistingShaftWithoutRescaling),
             Case("expanded-summoning.sprint18-twenty-six-roots", PrimateRulesTests.TwentySixRootsFollowFromTheCatalogTiers),
-            Case("expanded-summoning.sprint18-registered-and-suppressed", PrimateRulesTests.BothApesAreRegisteredAndSuppressed),
+            Case("expanded-summoning.sprint18-registered-and-published", PrimateRulesTests.BothApesAreRegisteredAndPublished),
             Case("expanded-summoning.sprint18-ape-two-slams", PrimateRulesTests.ApeProfileIsTwoPrimarySlams),
             Case("expanded-summoning.sprint18-dire-ape-bite-two-claws", PrimateRulesTests.DireApeProfileIsBiteAndTwoPrimaryClaws),
             Case("expanded-summoning.sprint18-rend-live-strength", PrimateRulesTests.RendDamageFollowsLiveStrength),

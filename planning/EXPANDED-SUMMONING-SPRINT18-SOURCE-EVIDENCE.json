@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "sprint": 18,
   "title": "Expanded Summoning Sprint 18: Ape and Dire Ape",
-  "status": "SOURCE QUALIFIED; MOD INITIALIZATION PROVED IN GAME; DONOR CENSUS PASSED; ORIGINAL BODIES AUTHORED; SPRINT 18 RUNTIME REVIEW NOT RUN; NOT PUBLISHED; NOT RELEASED",
+  "status": "SOURCE QUALIFIED; ORIGINAL BODIES AUTHORED; RUNTIME QUALIFIED; PUBLISHED; NOT RELEASED",
   "branch": "codex/expanded-summoning-sprint18-ape-dire-ape",
   "masterBase": "da782d2297d6cf361ac30a5e0ea07348d3b7f7d7",
   "releasedBaseline": "v0.0.146",
@@ -38,14 +38,14 @@
     "expandedSummoningOrchestration": "PASS 168 assertions",
     "runtime": "PARTIAL. The guarded harness is proved end to end on this candidate: deploy, Steam App ID 640820 launch, mod load at 0.0.147, guarded request accepted, scenario PASS, exact restoration. No Sprint 18 creature behaviour is proved.",
     "guardedPrimateDonorCensus": "PASS. 288 primate-adjacent blueprints discovered, 28 view prefabs surveyed at the contract cap, 28 captured, 9/9 assertions PASS. Evidence 20261009T1721285353210Z-observe-expanded-summoning-primate-census.",
-    "batchedSprint18RuntimeReview": "FAIL on the first candidate, 19 of 29. Two real product defects found and fixed, four observer corrections made. Re-run required.",
-    "publicationGate": "NOT RUN",
+    "batchedSprint18RuntimeReview": "PASS. 29 of 29 on disposable-expanded-summoning-sprint18-review and 12 of 12 on the party-camera creature review at 1d4+1. Two real product defects and one real component-wiring defect were found and fixed across four runs.",
+    "publicationGate": "PASS. Both suppression keys removed; 1034 of 1034 generated placements published and 1063 visible choices, with nothing v0.0.146 published moved.",
     "releaseClosureMatrix": "NOT RUN",
     "originalPrimateBodies": "PASS. Two original meshes and two original paintings authored against the census-chosen bind pose; 6/6 offline Blender fixtures pass, including the per-shell signed-volume check the shipped winding depends on. Not runtime proved."
   },
   "sprint18DomainCases": [
     "expanded-summoning.sprint18-twenty-six-roots",
-    "expanded-summoning.sprint18-registered-and-suppressed",
+    "expanded-summoning.sprint18-registered-and-published",
     "expanded-summoning.sprint18-ape-two-slams",
     "expanded-summoning.sprint18-dire-ape-bite-two-claws",
     "expanded-summoning.sprint18-rend-live-strength",
@@ -58,13 +58,13 @@
   "surface": {
     "uniqueCreatures": 99,
     "registeredGeneratedPlacements": 1034,
-    "suppressedGeneratedPlacements": 26,
-    "publishedGeneratedPlacements": 1008,
+    "suppressedGeneratedPlacements": 0,
+    "publishedGeneratedPlacements": 1034,
     "retainedNativeWrappers": 29,
-    "visibleChoices": 1037,
+    "visibleChoices": 1063,
     "visibleChoicesAfterPublication": 1063,
-    "ledgerEntries": 2980,
-    "ledgerAppended": 58,
+    "ledgerEntries": 2983,
+    "ledgerAppended": 61,
     "projectIconConcepts": 111,
     "shippedOriginalBodyFiles": 4,
     "packageMemberCount": 340
@@ -112,18 +112,7 @@
       "used": 1
     }
   },
-  "blockers": [
-    {
-      "id": "SPRINT18_RUNTIME_REVIEW_NOT_RUN",
-      "gate": "Mission section 9 hidden candidate qualification",
-      "detail": "No guarded runtime review has run. Live profiles, the two-slam and bite-and-two-claw routines, qualifying and nonqualifying rend, both combat modes, all 26 roots through the real player path, visual lifecycle, crowding, fallback, module-disabled behaviour and persistence are all unproved.",
-      "ownerDecision": "None. The owner has authorized the guarded runtime work; this is remaining engineering.",
-      "blocks": [
-        "publication",
-        "release"
-      ]
-    }
-  ],
+  "blockers": [],
   "independentRelease": {
     "ape": "NOT releasable independently: it shares the unauthored visual seam and the unrun runtime review with the Dire Ape.",
     "direApe": "NOT releasable independently, for the same reasons."
@@ -212,11 +201,50 @@
         "The review required the donor's equipment renderer to stay enabled. The attachment never touches that flag, so its value is recorded rather than required; what is still required is that the renderer is present and blank."
       ],
       "restoration": "VERIFIED; the live tree was restored to its pre-run hash"
+    },
+    {
+      "runId": "disposable-expanded-summoning-sprint18-review re-runs",
+      "evidence": [
+        "20261009T2023006011648Z-disposable-expanded-summoning-sprint18-review",
+        "20261009T2054078116302Z-disposable-expanded-summoning-sprint18-review",
+        "20261009T2115342178525Z-disposable-expanded-summoning-sprint18-review"
+      ],
+      "scenario": "disposable-expanded-summoning-sprint18-review",
+      "status": "PASS on the third re-run, 29 of 29",
+      "progression": "19/29, then 24/29, then 25/29, then 29/29. Each failure was diagnosed and fixed rather than accommodated.",
+      "findings": [
+        "Run two proved the Dire Ape weapon fix: bite 1d6, claws 1d4 at Large.",
+        "Run two showed the full-Strength correction never fired, because a rulebook component is only subscribed when a unit fact carries it and it had been put on the blueprint's own component array. Moving it to a feature fixed it.",
+        "Run two showed every turn-based second sequence making no attacks: a native full attack costs the whole turn.",
+        "Run three named the last two points. The armour class modifier list reads Dexterity +2, Size -1, Natural Armour +3 and Difficulty -2 from the native DifficultOpponent feature, and Kingmaker derives combat manoeuvre defence from touch armour class, so that single term reached all four defensive numbers exactly once. It is the player's difficulty setting applied to every non-party creature, so the review subtracts it once and names it.",
+        "Run three lost a rend to a natural one, which always misses whatever the bonus. The review now re-attempts such a sequence up to four times and records every attempt with its d20, bonus and target armour class."
+      ],
+      "proves": {
+        "apeProfile": "Scores 15/15/14/2/12/7, Large, 3 HD, 19 hp, AC 14, touch 11, flat-footed 12, Fort +7, Ref +5, Will +2, CMD 17, Mobility 6, Perception 8, no Stealth rank. Climb 14 recorded as omitted with Athletics unraised.",
+        "apeRoutine": "Exactly two slams at +3 for 1d6+2 each, both primary, in real time and in turn-based combat.",
+        "direApeProfile": "Scores 19/15/16/2/12/7, Large, 4 HD, 30 hp, AC 15, touch 11, flat-footed 13, Fort +7, Ref +6, Will +4, CMD 20, Mobility 6, Perception 8, Stealth 2. Climb 16 recorded as omitted.",
+        "direApeRoutine": "Exactly one bite at +6 for 1d6+4 and two claws at +6 for 1d4+4, all three primary, in both combat modes.",
+        "rend": "All seven cases in both modes. Both claws on one target earn exactly one 1d4+6; one claw, bite and claw, two targets, two commands and two turns earn none; a fresh qualifying sequence earns one more.",
+        "bodies": "Both apes wear their own geometry, the donor equipment skin is blank, every created resource is named for its instance, and every one is destroyed on dismissal.",
+        "surface": "All 26 roots resolve in the live library and all 26 are withheld; no previously published root was withheld to make room.",
+        "moduleSwitch": "With Expanded Summoning off nothing is rebodied, and the native troll the bodies are posed on is never touched."
+      },
+      "restoration": "VERIFIED after every run; 136 files and the intake tree hash"
+    },
+    {
+      "runId": "working-save-expanded-summoning-creature-review",
+      "evidence": "20261009T2205445488903Z-working-save-expanded-summoning-creature-review",
+      "scenario": "working-save-expanded-summoning-creature-review",
+      "parameters": "creatures=ape,dire-ape quantity=OneD4PlusOne",
+      "status": "PASS 12 of 12",
+      "proves": "Both apes cast through their registered execution into the working save at 1d4+1, held under the party camera idle, moving and attacking, and dismissed through the shared cleanup. Eight review frames written.",
+      "art": "The Dire Ape reads at party-camera distance as a heavy russet ape with a pale straw ruff; the Ape reads as a near-black crouched silverback. Both are Large, hunched and long-armed, and neither reads as the troll the geometry is posed on.",
+      "threeRefusals": "The crowd roster guard exists in three places - the orchestrator, the invoker and the runner - and only the third refuses after a deploy and launch. A fourth guard refuses a withheld creature through a parent it does not have, and each sprint opens that door for its own hidden creatures and closes it at publication.",
+      "restoration": "VERIFIED; the live tree was restored to its pre-run hash"
     }
   ],
   "remainingWork": [
-    "Author and run the batched Sprint 18 hidden-candidate runtime review.",
-    "Publish the 26 roots, merge PR #32 and release v0.0.147."
+    "Merge PR #32 and release v0.0.147."
   ],
   "resolvedBlockers": [
     {
@@ -228,6 +256,11 @@
       "id": "PRIMATE_ORIGINAL_BODIES_NOT_AUTHORED",
       "resolvedBy": "assets-source/original-models/sprint18-primates",
       "resolution": "Both bodies authored as original project-owned geometry on the census-chosen rig, reviewed offline in clay, silhouette, textured and unlit across rest, slam, contact, rake, crouch, jaw-open and curled-hand poses, and wired through a creature-scoped view patch that swaps only this one instance and restores it exactly."
+    },
+    {
+      "id": "SPRINT18_RUNTIME_REVIEW_NOT_RUN",
+      "resolvedBy": "The guarded reviews above",
+      "resolution": "Live profiles, both printed routines in both combat modes, every rend case, the original bodies and their resources, all 26 registered roots, the module switch, and the party-camera art at 1d4+1, all passing on one candidate."
     }
   ],
   "acceptedDeviations": [
