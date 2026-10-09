@@ -53,9 +53,18 @@ RESOURCE_CORRECTION = {
         "6bd8da19c2d1bf9b85c4c9023b7037497fd3ec7400873beb760d928ed210831b"),
 }
 
+# Narrow owner-authorized module boundary correction; registrations and all
+# other creature production remain exact. The release target becomes 146
+# after this pre-integration source checkpoint passes.
+MODULE_BOUNDARY_CORRECTION = {
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningVisualVariantPatch.cs": (
+        "12596bda28029d502f63ebf4f77ba78908059e546d847e1e1a621357bd52de8d",
+        "e5005635d04f7f460931d1ba2561e7f7a84ec0a3bcbf4777072fc497d04e97b5"),
+}
+
 
 def exact_resource_correction(ref, path, accepted, current):
-    pins = RESOURCE_CORRECTION.get(path)
+    pins = RESOURCE_CORRECTION.get(path) or MODULE_BOUNDARY_CORRECTION.get(path)
     return ref == SUMMONING and pins is not None and pins == (
         hashlib.sha256(accepted).hexdigest(), hashlib.sha256(current).hexdigest())
 

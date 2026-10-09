@@ -33,6 +33,7 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using Kingmaker.Visual.MaterialEffects.RimLighting;
+using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.BodyguardFeats;
 using KingmakerGunslinger.Bootstrap;
@@ -5884,6 +5885,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _visualLifecycleFailed;
         private int _visualLifecycleCastAttempt;
         private int _visualLifecycleLoadingWait;
+        private UnitEntityData[] _visualLifecycleActiveVariants = Array.Empty<UnitEntityData>();
 
         /// <summary>
         /// A view's material identity: every renderer's material and shader
@@ -6024,12 +6026,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var outcomes = new List<string>();
                     var units = new List<UnitEntityData>();
                     bool retry = false;
-                    foreach (SummonVariantSpec variant in new[] {
-                        ExpandedSummoningOwnTierVariant("dust-mephit", SummonMultiplicity.One),
-                        ExpandedSummoningOwnTierVariant("steam-mephit", SummonMultiplicity.OneD3),
-                        ExpandedSummoningOwnTierVariant("tiger", SummonMultiplicity.One),
-                        ExpandedSummoningOwnTierVariant("cheetah", SummonMultiplicity.One),
-                        ExpandedSummoningOwnTierVariant("lion", SummonMultiplicity.One) })
+                    foreach (SummonVariantSpec variant in SummonVisualVariantModulePolicy.Keys.Select(key =>
+                        ExpandedSummoningOwnTierVariant(key, key == "steam-mephit" ? SummonMultiplicity.OneD3 : SummonMultiplicity.One)))
                     {
                         UnitEntityData[] spawned;
                         try
@@ -6063,6 +6061,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             SetExpandedSummoningBrainActive(unit, false);
                             PlaceExpandedSummoningUnit(unit, unit.Position);
+                            int beforeMaterials, beforeTextures, beforeOwners;
+                            string beforeAttach = ExpandedSummoningVisualVariantPatch.CountOwnedObjects(out beforeMaterials, out beforeTextures, out beforeOwners);
+                            string beforeOutcome = ExpandedSummoningVisualVariantPatch.DescribeView(unit.View);
+                            typeof(ExpandedSummoningVisualVariantPatch).GetMethod("Postfix", BindingFlags.Static | BindingFlags.NonPublic)
+                                .Invoke(null, new object[] { unit.View });
+                            int afterMaterials, afterTextures, afterOwners;
+                            string afterAttach = ExpandedSummoningVisualVariantPatch.CountOwnedObjects(out afterMaterials, out afterTextures, out afterOwners);
+                            bool duplicateSafe = beforeAttach == afterAttach && beforeOutcome == ExpandedSummoningVisualVariantPatch.DescribeView(unit.View) &&
+                                beforeOutcome.Contains("key=" + variant.Creature.Key + ";");
+                            _visualLifecycleCases.Add(Assertion("expanded-summoning-lifecycle-repeat-attach-" + _visualLifecycleCycle + "-" + unit.UniqueId,
+                                "same eligible view attaches exactly once with the correct profile/key", beforeAttach + ";after=" + afterAttach + ";outcome=" + beforeOutcome,
+                                duplicateSafe, "real OnDataAttached patch replay; unchanged exact ownership/material/texture counts"));
                             outcomes.Add(variant.Creature.Key + "=" + Sanitize(
                                 ExpandedSummoningVisualVariantPatch.DescribeView(unit.View)) + "{" +
                                 ExpandedSummoningVisualVariantPatch.DescribeOwnership(unit.View) + "}");
@@ -6081,17 +6091,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int materials, textures, live;
                     string counts = ExpandedSummoningVisualVariantPatch.CountOwnedObjects(
                         out materials, out textures, out live);
-                    bool allApplied = outcomes.Count >= 5 && outcomes.All(value =>
+                    bool allApplied = outcomes.Count >= SummonVisualVariantModulePolicy.Keys.Length && outcomes.All(value =>
                         value.Contains("=variant:applied"));
                     bool owned = live == units.Count && materials >= units.Count;
                     _visualLifecycleSteps.Add("cycle" + _visualLifecycleCycle + ":cast=" + units.Count +
                         ";" + string.Join(",", outcomes.ToArray()) + ";" + counts);
                     if (!allApplied || !owned) _visualLifecycleFailed = true;
-                    foreach (UnitEntityData unit in units.ToArray())
+                    _visualLifecycleActiveVariants = units.ToArray();
+                    _visualLifecycleWait = 0;
+                    _visualLifecyclePhase = 11;
+                    return;
+                }
+                if (_visualLifecyclePhase == 11)
+                {
+                    // Observe natural controller Updates before destroying the
+                    // views. The six mephits must actually recolour their own
+                    // looping settings, not merely expose a registered colour.
+                    if (_visualLifecycleWait++ < 5) return;
+                    foreach (UnitEntityData unit in _visualLifecycleActiveVariants)
+                    {
+                        Color? rim = ExpandedSummoningVisualVariantPatch.RimFor(unit.View);
+                        if (!rim.HasValue) continue;
+                        var controller = unit.View.GetComponentInChildren<StandardMaterialController>(true);
+                        var animations = ExpandedSummoningRimAnimationPatch.RimControllerOf(controller);
+                        var looping = animations == null || animations.Animations == null ?
+                            new RimLightingAnimationSettings[0] : animations.Animations.Where(a => a != null && a.LoopAnimation).ToArray();
+                        float peak = Mathf.Max(rim.Value.r, Mathf.Max(rim.Value.g, rim.Value.b));
+                        Color expected = new Color(rim.Value.r / peak, rim.Value.g / peak, rim.Value.b / peak, 1f);
+                        bool exactRim = looping.Length > 0 && looping.All(a => a.ColorOverLifetime != null &&
+                            a.ColorOverLifetime.colorKeys.Length > 0 && a.ColorOverLifetime.colorKeys.All(k =>
+                                Mathf.Abs(k.color.r - expected.r) < .001f && Mathf.Abs(k.color.g - expected.g) < .001f &&
+                                Mathf.Abs(k.color.b - expected.b) < .001f));
+                        _visualLifecycleCases.Add(Assertion("expanded-summoning-lifecycle-rim-" + _visualLifecycleCycle + "-" + unit.UniqueId,
+                            "enabled mephit looping settings use the exact registered variant colour",
+                            ExpandedSummoningVisualVariantPatch.DescribeView(unit.View) + ";" + ExpandedSummoningRimAnimationPatch.Describe(unit.View) +
+                                ";looping=" + looping.Length + ";expected=" + expected, exactRim, "native controller Update and per-view looping gradients after five frames"));
+                    }
+                    foreach (UnitEntityData unit in _visualLifecycleActiveVariants)
                     {
                         CleanupExpandedSummoningUnit(unit);
                         fixture.Created.Remove(unit);
                     }
+                    _visualLifecycleActiveVariants = Array.Empty<UnitEntityData>();
                     Game.Instance.EntityDestroyer.Tick();
                     Game.Instance.EntityDestroyer.Tick();
                     _visualLifecycleWait = 0;
@@ -6221,7 +6262,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool final = materials == _visualLifecycleBaselineMaterials &&
                         textures == _visualLifecycleBaselineTextures && live == 0;
                     _visualLifecycleCases.Add(Assertion("expanded-summoning-lifecycle-cycles",
-                        VisualLifecycleCycles + " cast-and-dispose cycles of the dust mephit, a 1d3 steam mephit cast, the tiger, the cheetah and the lion: every view attached with its variant, every owned material, texture and controller instance destroyed with the view, counts back at baseline after each cycle and at the end",
+                        VisualLifecycleCycles + " cast-and-dispose cycles of all nine registered variants, including a 1d3 steam mephit cast: every view attached once with its exact variant, every private material, texture and controller instance destroyed with the view, counts back at baseline after each cycle and at the end",
                         string.Join("||", _visualLifecycleSteps.ToArray()) + "||final=" + counts,
                         !_visualLifecycleFailed && final,
                         "ExpandedSummoningVisualVariantPatch.CountOwnedObjects, DescribeView, DescribeOwnership and ObservedReleases across frames"));

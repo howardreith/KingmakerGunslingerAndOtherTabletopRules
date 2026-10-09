@@ -63,6 +63,15 @@ class Checkpoint143Tests(unittest.TestCase):
             self.assertFalse(gate.exact_resource_correction(gate.MASTER, path, accepted, current))
             self.assertFalse(gate.exact_resource_correction(gate.SUMMONING, "other.cs", accepted, current))
 
+    def test_module_gate_is_one_exact_authorized_production_delta(self):
+        self.assertEqual(1, len(gate.MODULE_BOUNDARY_CORRECTION))
+        for path in gate.MODULE_BOUNDARY_CORRECTION:
+            accepted = gate.blob(ROOT, gate.SUMMONING, path).replace(b"\r\n", b"\n")
+            current = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+            self.assertTrue(gate.exact_resource_correction(gate.SUMMONING, path, accepted, current))
+            self.assertFalse(gate.exact_resource_correction(gate.SUMMONING, path, accepted, current + b" drift"))
+            self.assertFalse(gate.exact_resource_correction(gate.MASTER, path, accepted, current))
+
 
 if __name__ == "__main__":
     unittest.main()
