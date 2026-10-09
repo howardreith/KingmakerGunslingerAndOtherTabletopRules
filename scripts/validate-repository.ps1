@@ -25,9 +25,16 @@ if ($null -eq $python) {
     throw 'Python 3 is required to run tools\validate_repository.py.'
 }
 
+& $python.Source (Join-Path $repositoryRoot 'tools\test_repository_validator.py')
+if ($LASTEXITCODE -ne 0) { throw 'Repository validator regression fixtures failed.' }
 & $python.Source $validator --root $repositoryRoot
 if ($LASTEXITCODE -ne 0) {
     throw "Repository validation failed with exit code $LASTEXITCODE."
+}
+
+if ((Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'Info.json') | ConvertFrom-Json).Version -eq '0.0.146') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_checkpoint146.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Checkpoint integration corruption fixtures failed.' }
 }
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
@@ -45,13 +52,19 @@ if ($LASTEXITCODE -ne 0) { throw 'Icon runtime evidence corruption fixtures fail
 if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures failed.' }
 & (Join-Path $PSScriptRoot 'Test-IconCensusControlRequest.ps1')
 
+# The gate level's own contract: a qualification cannot be narrowed by an
+# inherited KMG_TEST_FILTER, a focused run restores the caller's
+# environment exactly, and the candidate pipeline performs each expensive
+# operation once. Offline and cheap; it runs no gate and builds nothing.
+& (Join-Path $PSScriptRoot 'Test-KmgGate.ps1')
+
 # Orchestration decisions for the Expanded Summoning runtime batches:
 # current-run result selection, stale-result rejection, parse failure,
 # scenario failure, restoration failure, interrupted operation, and a
 # successful transaction. It launches nothing and writes nothing to the
 # installation, so it belongs in the gate that runs every build rather
 # than in a script nobody executes.
-& (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1')
+& (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
 
 # Parse the guarded entry points with the installed PowerShell parser. This
 # catches encoding and parameter-block faults before deployment or save access.

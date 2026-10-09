@@ -1,0 +1,706 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAILED EIGHT-CELL COMMAND SLICE: FIXTURE AI ACTION LOSS AND PRODUCTION BODY/FOOTPRINT MISMATCH; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop sole owner; PR26 active; DATA PR27 salvage-only, zero ports",
+  "candidate": {
+    "commit": "17aefc2a51514d9da816ed3535180ec2227b0be7",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "4034d0ee492441e5f6a12d001443a48f826f8e188336ba2f7f64b6b0992b331a",
+    "dllSha256": "4b0ce4614a64ba26e89684e931a26b7b120a71814510ec640b6721bc22890603",
+    "dllMvid": "81d7482a-a94f-4a92-8e1e-a8ec4465942f",
+    "zipSha256": "030495bc2c8d1c51d9ec5dae224b0dfb3431c8ad2172d5c690e396b326236dc1",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-commands-source-pass-17aefc2a"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 256,
+    "domain": 2058,
+    "domainSeconds": 86.3,
+    "gateSeconds": 180.9,
+    "packageMembers": 320,
+    "standalonePreflight": 508,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": [
+      11,
+      3,
+      19
+    ],
+    "crowd": [
+      5,
+      7
+    ],
+    "cleanExactReferences": 14,
+    "strictPackage": true
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261006T2106052410132Z",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeCommands-Attempt2.ps1",
+    "status": "NOT-QUALIFIED",
+    "startedAtUtc": "2026-10-06T21:06:05.2991400Z",
+    "completedAtUtc": "2026-10-06T21:17:33.2486583Z",
+    "scenarioOrder": [
+      "working-save-smoke",
+      "disposable-expanded-summoning-snake-commands"
+    ],
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-06T21:06:31.6130821Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2106325350456Z-working-save-smoke",
+        "requestId": "20261006T2106326263905Z-2f4090b9efba433699daa69c57380e30",
+        "requestSha256": "b1e7ad1aa537527543b899b62dab242f1688eda8e5c82d92e3141fff2f7180d1",
+        "resultSha256": "afbdd486d354ef10af6595a6bd4424c427169165cc021a08d2f085c5c9943b36",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "00592bf4b105d003d2afb03b7a48f121ed7ce482504145fdda6aa3a195acb546",
+        "processId": 35352,
+        "processStartedUtc": "2026-10-06T21:06:33.7557181Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T21:09:26.6105437Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-commands",
+        "startedAtUtc": "2026-10-06T21:09:32.6736548Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2109334772030Z-disposable-expanded-summoning-snake-commands",
+        "requestId": "20261006T2109334928409Z-283367bef5744f1ea775d053ad137fe1",
+        "requestSha256": "e074e2f63b341cc7fb226e35c2a8be98b617cc0f95d1b1dd34a98620435c90a2",
+        "resultSha256": "94313a4778d1bc055a670bfeb50e6cdffa2b68bdccfc00399d998c414b62d7dd",
+        "assertions": 51,
+        "passed": 31,
+        "failed": [
+          {
+            "name": "sprint17-snake-command-viper-rtwp-manual-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-rtwp-ai-approach",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-rtwp-ai-attack",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-rtwp-ai-signature",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-rtwp-ai-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-turn-based-manual-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-turn-based-ai-approach",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-turn-based-ai-attack",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-turn-based-ai-signature",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-turn-based-ai-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-rtwp-manual-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-rtwp-ai-approach",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-rtwp-ai-attack",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-rtwp-ai-signature",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-rtwp-ai-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-turn-based-manual-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-turn-based-ai-approach",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-turn-based-ai-attack",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-turn-based-ai-signature",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-turn-based-ai-contact",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "df2b68aac09c6dfd7f22748216fa05a7a1dbace671e6408003669079baa2a0f7",
+        "processId": 35624,
+        "processStartedUtc": "2026-10-06T21:09:34.7245938Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-06T21:17:30.7487016Z"
+      }
+    ],
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T2106059589634Z",
+    "liveBefore": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "liveAfterRestore": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "restoration": "VERIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T210605Z-a803770d113941d2aff9aef7b0585c46\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "kingmakerProcesses": [],
+    "sharedRuntimeLock": false,
+    "worktreeStaging": false,
+    "saveWrite": false
+  },
+  "cells": [
+    {
+      "cell": "viper-rtwp-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 77,
+      "appearanceFrames": 64,
+      "nativePausesCleared": 1,
+      "travelMetres": 1.18647039,
+      "manualCommands": 1,
+      "nativeCommands": 1,
+      "weaponAttacks": 1,
+      "attacksAtEstablishment": -1,
+      "signature": true,
+      "riders": [],
+      "contacts": [
+        {
+          "nearestGapMeters": 2.708435,
+          "nativeAnimationContact": true,
+          "ownedPair": true,
+          "executing": true,
+          "modeObserved": true,
+          "measuredPoints": 693,
+          "hit": true,
+          "wounding": true,
+          "category": "Bite",
+          "opportunity": false
+        }
+      ]
+    },
+    {
+      "cell": "viper-rtwp-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": false,
+        "attack": false,
+        "signature": false,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 1259,
+      "appearanceFrames": 63,
+      "nativePausesCleared": 0,
+      "travelMetres": 0,
+      "manualCommands": 0,
+      "nativeCommands": 0,
+      "weaponAttacks": 0,
+      "attacksAtEstablishment": -1,
+      "signature": false,
+      "riders": [],
+      "contacts": []
+    },
+    {
+      "cell": "viper-turn-based-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 216,
+      "appearanceFrames": 63,
+      "nativePausesCleared": 0,
+      "travelMetres": 0.9302071,
+      "manualCommands": 1,
+      "nativeCommands": 1,
+      "weaponAttacks": 1,
+      "attacksAtEstablishment": -1,
+      "signature": true,
+      "riders": [],
+      "contacts": [
+        {
+          "nearestGapMeters": 2.73593235,
+          "nativeAnimationContact": true,
+          "ownedPair": true,
+          "executing": true,
+          "modeObserved": true,
+          "measuredPoints": 693,
+          "hit": true,
+          "wounding": true,
+          "category": "Bite",
+          "opportunity": false
+        }
+      ]
+    },
+    {
+      "cell": "viper-turn-based-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": false,
+        "attack": false,
+        "signature": false,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 1091,
+      "appearanceFrames": 63,
+      "nativePausesCleared": 1,
+      "travelMetres": 0,
+      "manualCommands": 0,
+      "nativeCommands": 0,
+      "weaponAttacks": 0,
+      "attacksAtEstablishment": -1,
+      "signature": false,
+      "riders": [],
+      "contacts": []
+    },
+    {
+      "cell": "constrictor-snake-rtwp-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 228,
+      "appearanceFrames": 63,
+      "nativePausesCleared": 1,
+      "travelMetres": 1.17033386,
+      "manualCommands": 1,
+      "nativeCommands": 1,
+      "weaponAttacks": 1,
+      "attacksAtEstablishment": 1,
+      "signature": true,
+      "riders": [
+        {
+          "frame": 7292,
+          "heldRound": 0,
+          "damage": 5,
+          "weaponAttacks": 1,
+          "gameTime": 46952.998999999996,
+          "line": [
+            {
+              "type": "Physical",
+              "dice": "1d4",
+              "bonus": 4,
+              "form": "Bludgeoning",
+              "material": "0",
+              "enhancement": 0,
+              "enhancementTotal": 0,
+              "energy": null
+            }
+          ]
+        },
+        {
+          "frame": 7443,
+          "heldRound": 1,
+          "damage": 5,
+          "weaponAttacks": 1,
+          "gameTime": 46959.028,
+          "line": [
+            {
+              "type": "Physical",
+              "dice": "1d4",
+              "bonus": 4,
+              "form": "Bludgeoning, Piercing, Slashing",
+              "material": "0",
+              "enhancement": 0,
+              "enhancementTotal": 0,
+              "energy": null
+            }
+          ]
+        },
+        {
+          "frame": 7443,
+          "heldRound": 1,
+          "damage": 8,
+          "weaponAttacks": 1,
+          "gameTime": 46959.028,
+          "line": [
+            {
+              "type": "Physical",
+              "dice": "1d4",
+              "bonus": 4,
+              "form": "Bludgeoning",
+              "material": "0",
+              "enhancement": 0,
+              "enhancementTotal": 0,
+              "energy": null
+            }
+          ]
+        }
+      ],
+      "contacts": [
+        {
+          "nearestGapMeters": 2.72417831,
+          "nativeAnimationContact": true,
+          "ownedPair": true,
+          "executing": true,
+          "modeObserved": true,
+          "measuredPoints": 819,
+          "hit": true,
+          "wounding": true,
+          "category": "Bite",
+          "opportunity": false
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-rtwp-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": false,
+        "attack": false,
+        "signature": false,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 1208,
+      "appearanceFrames": 63,
+      "nativePausesCleared": 0,
+      "travelMetres": 0,
+      "manualCommands": 0,
+      "nativeCommands": 0,
+      "weaponAttacks": 0,
+      "attacksAtEstablishment": -1,
+      "signature": false,
+      "riders": [],
+      "contacts": []
+    },
+    {
+      "cell": "constrictor-snake-turn-based-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 314,
+      "appearanceFrames": 63,
+      "nativePausesCleared": 0,
+      "travelMetres": 0.9302071,
+      "manualCommands": 1,
+      "nativeCommands": 1,
+      "weaponAttacks": 1,
+      "attacksAtEstablishment": 1,
+      "signature": true,
+      "riders": [
+        {
+          "frame": 8925,
+          "heldRound": 0,
+          "damage": 8,
+          "weaponAttacks": 1,
+          "gameTime": 47013.695999999996,
+          "line": [
+            {
+              "type": "Physical",
+              "dice": "1d4",
+              "bonus": 4,
+              "form": "Bludgeoning",
+              "material": "0",
+              "enhancement": 0,
+              "enhancementTotal": 0,
+              "energy": null
+            }
+          ]
+        },
+        {
+          "frame": 9095,
+          "heldRound": 1,
+          "damage": 7,
+          "weaponAttacks": 1,
+          "gameTime": 47023.176,
+          "line": [
+            {
+              "type": "Physical",
+              "dice": "1d4",
+              "bonus": 4,
+              "form": "Bludgeoning, Piercing, Slashing",
+              "material": "0",
+              "enhancement": 0,
+              "enhancementTotal": 0,
+              "energy": null
+            }
+          ]
+        },
+        {
+          "frame": 9095,
+          "heldRound": 1,
+          "damage": 6,
+          "weaponAttacks": 1,
+          "gameTime": 47023.176,
+          "line": [
+            {
+              "type": "Physical",
+              "dice": "1d4",
+              "bonus": 4,
+              "form": "Bludgeoning",
+              "material": "0",
+              "enhancement": 0,
+              "enhancementTotal": 0,
+              "energy": null
+            }
+          ]
+        }
+      ],
+      "contacts": [
+        {
+          "nearestGapMeters": 2.72925854,
+          "nativeAnimationContact": true,
+          "ownedPair": true,
+          "executing": true,
+          "modeObserved": true,
+          "measuredPoints": 819,
+          "hit": true,
+          "wounding": true,
+          "category": "Bite",
+          "opportunity": false
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-turn-based-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": false,
+        "attack": false,
+        "signature": false,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 1096,
+      "appearanceFrames": 63,
+      "nativePausesCleared": 1,
+      "travelMetres": 0,
+      "manualCommands": 0,
+      "nativeCommands": 0,
+      "weaponAttacks": 0,
+      "attacksAtEstablishment": -1,
+      "signature": false,
+      "riders": [],
+      "contacts": []
+    }
+  ],
+  "failureDisposition": [
+    {
+      "assertion": "sprint17-snake-command-viper-rtwp-manual-contact",
+      "classification": "PRODUCTION GEOMETRY",
+      "cause": "Actual native command bite and clip observed, but original weighted jaw gap2.708..2.736m. View-only .2 scale leaves native serialized footprint unchanged; native Corpulence getter uses only that radius and rules-size multiplier.",
+      "resolution": "Scale only exact production snake view's serialized base radius by the existing .2 body multiplier once; retain native minimum/live size/reach/animation. Record actual corpulence/range/approach/contact; no threshold waiver."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-rtwp-ai-approach",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-rtwp-ai-attack",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-rtwp-ai-signature",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-rtwp-ai-contact",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-turn-based-manual-contact",
+      "classification": "PRODUCTION GEOMETRY",
+      "cause": "Actual native command bite and clip observed, but original weighted jaw gap2.708..2.736m. View-only .2 scale leaves native serialized footprint unchanged; native Corpulence getter uses only that radius and rules-size multiplier.",
+      "resolution": "Scale only exact production snake view's serialized base radius by the existing .2 body multiplier once; retain native minimum/live size/reach/animation. Record actual corpulence/range/approach/contact; no threshold waiver."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-turn-based-ai-approach",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-turn-based-ai-attack",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-turn-based-ai-signature",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-turn-based-ai-contact",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-rtwp-manual-contact",
+      "classification": "PRODUCTION GEOMETRY",
+      "cause": "Actual native command bite and clip observed, but original weighted jaw gap2.708..2.736m. View-only .2 scale leaves native serialized footprint unchanged; native Corpulence getter uses only that radius and rules-size multiplier.",
+      "resolution": "Scale only exact production snake view's serialized base radius by the existing .2 body multiplier once; retain native minimum/live size/reach/animation. Record actual corpulence/range/approach/contact; no threshold waiver."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-rtwp-ai-approach",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-rtwp-ai-attack",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-rtwp-ai-signature",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-rtwp-ai-contact",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-turn-based-manual-contact",
+      "classification": "PRODUCTION GEOMETRY",
+      "cause": "Actual native command bite and clip observed, but original weighted jaw gap2.708..2.736m. View-only .2 scale leaves native serialized footprint unchanged; native Corpulence getter uses only that radius and rules-size multiplier.",
+      "resolution": "Scale only exact production snake view's serialized base radius by the existing .2 body multiplier once; retain native minimum/live size/reach/animation. Record actual corpulence/range/approach/contact; no threshold waiver."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-turn-based-ai-approach",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-turn-based-ai-attack",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-turn-based-ai-signature",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-turn-based-ai-contact",
+      "classification": "FIXTURE",
+      "cause": "Initial false brain helper cleared both Actions and AvailableActions; native RestoreAvailableActions reads Actions and cannot reconstruct it. No native command issued; approach/attack/signature/contact all fail.",
+      "resolution": "Keep the original action references; defer native scheduler only during appearance; require reference preservation and actual AI commands."
+    }
+  ],
+  "nativeAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "evidence": "artifacts/sprint17-native-command-geometry-audit-2.log",
+    "findings": [
+      "UnitBrain.RestoreAvailableActions enumerates Actions; clearing Actions is not reversed.",
+      "UnitEntityView.Corpulence=max(.5,serialized m_Corpulence*GetSizeScale); GetSizeScale derives only original/live rules sizes, not transform scale.",
+      "UnitAttack.GetApproachRadius sums both view corpulences and live weapon range."
+    ],
+    "limitation": "The failed candidate did not record actual runtime radius/range, so no numerical allocation of the full contact gap is claimed. The next candidate measures each term."
+  },
+  "hashes": [
+    {
+      "path": "artifacts/laptop-runtime-20261006T2106052410132Z/batch.json",
+      "sha256": "8ea6d5852ac211bd79650bd96f1f8855963e7096fa20a8408a8475063547302f"
+    },
+    {
+      "path": "artifacts/Invoke-LaptopSprint17-SnakeCommands-Attempt2.ps1",
+      "sha256": "8809fe404a4b895b64299bc62cafa174d57c678d9d1f355a7475a7cf734cd268"
+    },
+    {
+      "path": "artifacts/sprint17-commands-exact-17aefc2a-gate.log",
+      "sha256": "50d1865a475c4c50427400c695bbd5fec4b0a8bff598261a3140b6314e62af9b"
+    },
+    {
+      "path": "artifacts/sprint17-commands-exact-17aefc2a-preflight.log",
+      "sha256": "34af6c9f3c7703a443d282389820efaa2dc891caeb25cbc48e32397061a4f806"
+    },
+    {
+      "path": "artifacts/sprint17-snake-commands-source-pass-17aefc2a/KingmakerGunslinger-0.0.141-local-runtime.zip.build-local.json",
+      "sha256": "4a9a165818e34eeb875f6a31b3e86350bd21f61b2b3a75343bace13346e7c3b8"
+    },
+    {
+      "path": "artifacts/sprint17-native-command-geometry-audit-2.log",
+      "sha256": "d23185daecc7ceb60f9b484db37dc9e8183bd2e418ae8e05ad9d28d384032b3a"
+    },
+    {
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261006T2109334772030Z-disposable-expanded-summoning-snake-commands/sprint17-original-body-review.json",
+      "sha256": "74ca70a64a16fab28c8cdca78ba5da728fb74436ed98fa4cad72605e9edee5a8"
+    }
+  ],
+  "next": "Focused source gates, complete source qualification, commit/push NOT QUALIFIED; new immutable exact-head smoke +62 profile/body/rules regression +51 commands; lease-first actual snapshot and exact restore.",
+  "fullSprintQualified": false,
+  "publicationAuthorized": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

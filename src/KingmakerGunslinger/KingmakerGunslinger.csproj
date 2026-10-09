@@ -49,6 +49,7 @@
     <Compile Include="Acquisition\UnitPartCampaignWeaponRecovery.cs" />
     <Compile Include="Development\DevelopmentUi.WeaponRecovery.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponFindability.cs" />
+    <Compile Include="RuntimeTesting\HeirloomNodachiIconObservation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.WeaponRecovery.cs" />
     <Compile Include="RuntimeTesting\WeaponFindabilitySaveContract.cs" />
     <Compile Include="RuntimeTesting\WeaponFindabilitySavePlan.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Summoning\StirgeVisualTouch.cs" />
     <Compile Include="Summoning\ExpandedSummoningPteranodonViewPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVisualVariantPatch.cs" />
+    <Compile Include="Summoning\SummonVisualVariantModulePolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuRuntime.cs" />
     <Compile Include="Summoning\SummonIconCatalog.cs" />
@@ -156,11 +158,56 @@
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
     <Compile Include="Summoning\ExpandedSummoningSprint12CombatComponents.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSprint13CombatComponents.cs" />
+    <Compile Include="Summoning\FireBeetleVisualGlow.cs" />
+    <Compile Include="Summoning\GiantAntPoison.cs" />
+    <Compile Include="Summoning\GiantAntPoisonPolicy.cs" />
     <Compile Include="Summoning\GiantWaspPoison.cs" />
     <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
+    <Compile Include="Summoning\Sprint14BonePolicy.cs" />
+    <Compile Include="Summoning\CrocodilianVisualPolicy.cs" />
+    <Compile Include="Summoning\SerpentineVisualPolicy.cs" />
+    <Compile Include="Summoning\SalamanderTailAnimationPolicy.cs" />
+    <Compile Include="Summoning\SalamanderTailAction.cs" />
+    <Compile Include="Summoning\SalamanderHumanBindingPolicy.cs" />
+    <Compile Include="Summoning\SalamanderHumanVisualAttachment.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17HumanSalamander.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17HumanGrip.cs" />
+    <Compile Include="RuntimeTesting\Sprint17GripEvidence.cs" />
+    <Compile Include="Summoning\SerpentineRulesPolicy.cs" />
+    <Compile Include="Summoning\SalamanderRulesPolicy.cs" />
+    <Compile Include="Summoning\SalamanderCombatComponents.cs" />
+    <Compile Include="Summoning\SalamanderProductionViewPolicy.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSalamanderViewPatch.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderProfiles.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderViews.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderMechanics.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderCommands.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderLifecycle.cs" />
+    <Compile Include="Summoning\SerpentineCombatComponents.cs" />
+    <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSerpentineViewPatch.cs" />
+    <Compile Include="Summoning\SerpentineNativeSpearAnimation.cs" />
+    <Compile Include="RuntimeTesting\CrocodilianCommandReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\SerpentineRigSurveyPolicy.cs" />
+    <Compile Include="RuntimeTesting\SerpentinePoisonReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\SerpentinePersistenceReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\SerpentineCrowdReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\SerpentineCommandReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\Sprint17ObservationPolicy.cs" />
+    <Compile Include="RuntimeTesting\SerpentineFinalReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\CrocodilianDamageAttributionPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16DamageAttribution.cs" />
+    <Compile Include="Summoning\CrocodilianAttackVisualPose.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
+    <Compile Include="Summoning\SummonInjuryPoison.cs" />
+    <Compile Include="Summoning\SummonInjuryPoisonPolicy.cs" />
     <Compile Include="Summoning\SummonInjuryDiseasePolicy.cs" />
+    <Compile Include="Summoning\SummonRagePolicy.cs" />
+    <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
+    <Compile Include="Summoning\CrocodilianRulesPolicy.cs" />
     <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
     <Compile Include="Summoning\ContextActionUngulateTrample.cs" />
     <Compile Include="Summoning\SummonGrappleLinkState.cs" />
@@ -178,6 +225,7 @@
     <Compile Include="Blueprints\ExpandedSummoningAlignmentModeBlueprints.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Serpentine.cs" />
     <Compile Include="Blueprints\ExpandedSummoningTemplateBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningAbilityBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningPublication.cs" />
@@ -358,6 +406,10 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(KingmakerManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
@@ -1156,6 +1208,29 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCorrection.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint12.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint13.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint14.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint14Combat.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint15.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Survey.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Bodies.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeViews.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeProfiles.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeSignatures.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeCommands.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeFinal.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeLifecycle.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Contacts.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Crowd.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Persistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17LoadReset.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Persistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Ui.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Lifecycle.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Mechanics.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Speed.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Combat.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
@@ -1513,6 +1588,30 @@
       <Link>assets\sprint12-quadrupeds\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\assets\sprint13-creatures\*-mesh.json">
+      <Link>assets\sprint13-creatures\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint13-creatures\*-albedo.png">
+      <Link>assets\sprint13-creatures\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint16-crocodilians\*-mesh.json">
+      <Link>assets\sprint16-crocodilians\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint16-crocodilians\*-albedo.png">
+      <Link>assets\sprint16-crocodilians\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint17-serpents\*-mesh.json">
+      <Link>assets\sprint17-serpents\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint17-serpents\*-albedo.png">
+      <Link>assets\sprint17-serpents\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">
       <Link>assets\icons\expanded-summoning\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1531,6 +1630,7 @@
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AnimationModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.CoreModule.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.PhysicsModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.UI.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.UIModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.TextRenderingModule.dll" />
@@ -1558,6 +1658,13 @@
   </Target>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="RuntimeTesting\ExpandedSummoningRosterPersistencePolicy.cs" />
+    <Compile Include="RuntimeTesting\ExpandedSummoningPlayerPathReviewScope.cs" />
+    <Compile Include="RuntimeTesting\ExpandedSummoningInventoryObservationPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Firearms\FirearmEnchantmentItemText.cs" />
     <Compile Include="Blueprints\OlegFirearmVendorBlueprints.cs" />

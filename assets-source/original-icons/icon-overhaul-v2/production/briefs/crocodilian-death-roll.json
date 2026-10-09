@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "key": "crocodilian-death-roll",
+  "behavior": "Passive bite grab and a successful later-turn maintain rider. A clamped bite rolls its held prey; this is not a separately selectable attack.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+    "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/crocodilian-death-roll.png",
+  "sourceSha256": "bea6aea3640506d93061d816a0111e91299fca4d7d4073b9b248d5f6ba3d4cd9",
+  "tool": "Original vector construction in tools/icon-art/New-CrocodilianEmblems.ps1; Windows System.Drawing GDI+",
+  "referenceImages": [
+    {
+      "path": "assets/game/icons/rapid-reload.png",
+      "role": "Approved combat-emblem-64 scaffold, muted #A6533F ink, ring weight and transparent negative space; no copied pixels."
+    },
+    {
+      "path": "docs/art/ICON-REFERENCE-INDEX.md",
+      "role": "Inspected native-10 screenshot's neighboring combat emblems; local-only reference, no redistributed pixels."
+    }
+  ],
+  "prompt": "Editable vector composition, not an AI painting: Broad clamped jaws around a small bar, enclosed by a turning arrow distinct from linear Sprint. Use measured 3px ring at 64px, transparent background, no font, no square UI frame, no state overlay. All geometry is original.",
+  "visualStatus": "HumanReview: NOT_PERFORMED_NONBLOCKING",
+  "subjectAndSilhouette": "Broad clamped jaws around a small bar, enclosed by a turning arrow distinct from linear Sprint.",
+  "artFamily": "combat-emblem",
+  "reviewGroup": "crocodilian-combat",
+  "confusedWith": [
+    "crocodilian-sprint",
+    "dire-crocodile-swallowed"
+  ],
+  "uiSurfaces": [
+    "summon combat-trait buff icon and tooltip"
+  ],
+  "exportProfile": "combat-emblem-64",
+  "forbiddenInterpretations": [
+    "No magic or haste spell identity.",
+    "No aquatic bonus, general Run action or attackable-interior claim.",
+    "No owner visual approval inferred from technical tests."
+  ]
+}

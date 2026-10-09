@@ -1,0 +1,2710 @@
+{
+  "schemaVersion": 1,
+  "status": "Sprint17 NOT QUALIFIED; twelve exact research attempts preserved. Latest570a14cd smoke11 PASS/body33 of35 FAIL before Salamander attachment: fixed native donor lacks PiercingTwoHanded support and matching39-bone body. Exact restoration PASS; no native-action adoption qualified.",
+  "scope": "Closed original-body/native command-contact/resource research only; no gameplay/publication qualification",
+  "attempts": [
+    {
+      "candidate": "7b76dba2c9681b1702bed854a521b241b27a1250",
+      "sourceFingerprint": "a61a1c2545258fd4ca8a2467f53ca937818f52d2ccc014eb5296e5ed402a1c31",
+      "dllSha256": "ae4128244a0d2df1c5063f0b6daa3b2e9c7a072a37c9128b4d3eff0d010db028",
+      "dllMvid": "f5863b2b-2e75-410b-b441-7d150d1ffe01",
+      "packageSha256": "42bbb610cf6cd43baa5bea593a1fa4c13b005e787460879fd1f28f6267717ea0",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 223,
+        "full": 2025,
+        "fullSeconds": 92.4,
+        "completeGateSeconds": 187.8,
+        "runtimePreflight": 491,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T04:59:54.9607635Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0459558654026Z-working-save-smoke",
+          "requestId": "20261006T0459558876262Z-114566a901134d93b9300b07e86abf7f",
+          "requestSha256": "daa9e37ac2be1065769abf8498c9b9cd1676e5df10c7bffff17cade3355f39e2",
+          "resultSha256": "59afe9cc3225c7a93d595aa79bef04b941f925bc083cac2e85573b6d0adeedfb",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "23a949cc9f0d84939e555197fe8ccc36729b75dbbff8fd7a798ff19c0f7ae7dd",
+          "processId": 14764,
+          "processStartedUtc": "2026-10-06T04:59:56.8736190Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T05:02:46.7583101Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T05:02:52.7010049Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0502534871629Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0502534871629Z-20ca85e3b8d844f4911d6a33f89b76da",
+          "requestSha256": "d7478a160ec4a8682bf1cf7cfa68b02287de59fe22902f72a3439b4e55a23878",
+          "resultSha256": "69a618093b48ae6d1362699bf44befb866d585ecdec5fc7551e446d23b032992",
+          "assertions": 3,
+          "passed": 2,
+          "failed": [
+            {
+              "name": "sprint17-body-exception",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "6e90310697d3d6758614bad5fa35c763dbee0e3f39761c13b74420b23305f224",
+          "processId": 30680,
+          "processStartedUtc": "2026-10-06T05:02:54.7763535Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T05:05:55.1305843Z"
+        }
+      ],
+      "classification": "FIXTURE",
+      "cause": "FindExpandedSummoningUngulateArtPoint requires _creatureReviewCaster; the independent body fixture never initializes that separate scenario's field. Failure precedes attachment. Not evidence of missing native floor/sight or of a production body defect.",
+      "bodyAssertions": "2/3; exception FAIL, exact original-unit/party/area cleanup PASS, version PASS",
+      "bodyMetadataSha256": "09A6E4A1B38075ACDB6226CDD8E5C5F9CBA1EF798A3FF8D897EB7800782701A8",
+      "saveWrite": false,
+      "saveFilesystemAccess": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0459298092419Z",
+        "completedAtUtc": "2026-10-06T05:05:58.0857173Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseId": "runtime-20261006T045929Z-306095f8f8cf42fe840cb1919a748dbe",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": 0,
+        "stagingRemaining": false
+      },
+      "archive": "laptop-runtime-20261006T0459289903281Z",
+      "batchSha256": "0DE347D13A48860D8809B776A35B9F7E4F48E5C55D9286ABA69085DD2668F5C5",
+      "driverSha256": "94E712C35DD5FAB425D18ECEB32D349B6BE8E591FD982B81CBEFD538C3D4E0F7",
+      "buildSidecarSha256": "706450C18F59449D29A8CE272D4ADC4A7EBD65A6870CD032DB1E7CD63AAB4923",
+      "repair": "Explicit fixture-owned anchor parameter to the existing native path/sight floor survey; its clearance, connectivity and visibility rules unchanged. No production or wait/acceptance change. New exact-head gate and complete affected smoke/body batch required."
+    },
+    {
+      "candidate": "2045c302b071281c5dff71c883612d55218c7643",
+      "sourceFingerprint": "7f1bfdc17d3bc8c14021b43b7f0478a3850a9abe1ed33fbf282543d2c0f36c26",
+      "dllSha256": "dbb82d2416d40f5c887c489a4a69bde3b113a0d832ec7cedf9494aef79246975",
+      "dllMvid": "c07fcc33-77e9-4d8f-a80c-d685da710100",
+      "packageSha256": "c3003ea55d0e0c24f5e71256c3d3f72b3a50389f757b139aa97c7825a184f1ef",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 223,
+        "full": 2025,
+        "fullSeconds": 82.5,
+        "completeGateSeconds": 178.2,
+        "runtimePreflight": 491,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS",
+        "preservedPreflightFailure": "Driver ValidateOnly refreshed the source ownership heartbeat during the unsupported-request no-write fingerprint interval. Only the heartbeat timestamp changed. Serialized isolated preflight then passed 491/491; no source/assertion change and no game launch during the failed check."
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T05:17:31.3919513Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0517322832751Z-working-save-smoke",
+          "requestId": "20261006T0517322989112Z-6486c8a0788d489caf7d5fe504950372",
+          "requestSha256": "da7686e05ef3f8b027af0c605da1e43a0789ad5b336c15f5339cb1fb1f1c0c24",
+          "resultSha256": "3fd0c9e2c2fc56c3663f109bc33b7e7ef6efaffa5618999b9252ae3c3c398922",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "6cd28c7fe676ef35e1322fa5031395cd18805ca4b3f689a3d9160d26e105f97e",
+          "processId": 1244,
+          "processStartedUtc": "2026-10-06T05:17:33.2760084Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T05:20:23.7175555Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T05:20:30.2910512Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0520311084055Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0520311084055Z-7d8f3efc60f149e3a12c6527a50fee8c",
+          "requestSha256": "28e9388909caf38a5ccb17f03a09e43f5460e9da655fd8e6d244df79a5077d42",
+          "resultSha256": "8caa5f611e7f7a584f9c3505be7f5e8659419bcf0e4f989e6a5df5357abd5720",
+          "assertions": 3,
+          "passed": 2,
+          "failed": [
+            {
+              "name": "sprint17-body-exception",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "1a9162f0a779fca672749631ae0a4783ea7111c7fb42df8cfd64bc27e8bf5515",
+          "processId": 34584,
+          "processStartedUtc": "2026-10-06T05:20:32.1548081Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T05:23:33.3546637Z"
+        }
+      ],
+      "classification": "FIXTURE",
+      "cause": "Explicit fixture anchor works: native floor survey finds 41 candidates, 8/8 clearance and 6.01m party spacing. The new body fixture reused the qualified Master/faction adaptation but omitted the scoped RuleSummonUnit.IsDirectlyControllable input that creates the native manual summon part. Its immediate native control check failed before attachment. Prior attempt did not record full predicate terms, so remaining terms are not inferred as passing.",
+      "bodyAssertions": "2/3; native manual-control exception FAIL, exact original-unit/party/area cleanup PASS, version PASS",
+      "bodyMetadataSha256": "2621CEC9F9AD68772CD61B209A8209BBFF4AF07933A690ED3DC0773F4498F90D",
+      "saveWrite": false,
+      "saveFilesystemAccess": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0517055890005Z",
+        "completedAtUtc": "2026-10-06T05:23:35.9200899Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseId": "runtime-20261006T051705Z-3b81692e1d044718a5eef5315a115dd3",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": 0,
+        "stagingRemaining": false
+      },
+      "archive": "laptop-runtime-20261006T0517047907784Z",
+      "batchSha256": "1A269A0F4F78421CB9E4E1BF3DED55C7B12DBDD4C667060AE2550E3B71C51D00",
+      "driverSha256": "0F494A30054BBF45F8E6F5DBA826DDBF4322A2D8469A5E0585A4D1B213E444DB",
+      "buildSidecarSha256": "BD4397D66A2E4A345B02BE3F40BF6BB308D16D963C7C914442414B9D20AF1A66",
+      "repair": "Reuse the unchanged qualified Sprint16ManualSummonControl handler, subscribe only for one synchronous exact-caster/exact-blueprint cast, verify one rule and native part, unsubscribe in finally. Record all native predicate terms before setup, after setup and after native appearance settlement. Do not override IsDirectlyControllable or remove appearance buffs. Three new named native-control assertions make the nominal complete body gate 20. New immutable artifact and complete affected batch still required."
+    },
+    {
+      "candidate": "6bee8d5716bba1340adc3c629c88d15a1a1d8f25",
+      "sourceFingerprint": "a8c2ff2d2cc1b1186c362b5c7340eb88249f910a051959819f73ea4aab5c6b78",
+      "dllSha256": "e329f4ce7955940d42cafd39439a5bcdcc33ba6c7d8dd8b866c0b19533a50cbb",
+      "dllMvid": "0d2d081b-ddea-4e97-bd75-30b9e730a25c",
+      "packageSha256": "0ea7bd7f34f19d72f45ef8a43c723bfaf1d436f8066d537b94bbb39119656a03",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 223,
+        "full": 2025,
+        "fullSeconds": 85.9,
+        "completeGateSeconds": 181.8,
+        "runtimePreflight": 491,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "recordedBatchRuns": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T05:35:10.6052958Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0535115248572Z-working-save-smoke",
+          "requestId": "20261006T0535115405422Z-885f48d644684d18a56a836fc66b8469",
+          "requestSha256": "7015ab2779d459972869aebc1272104e807c000ccb59147b5275f11879a9dfb8",
+          "resultSha256": "77b74477e85d0750ff3e217ee57ed68af2a4fbf5739ae7e2928880bcde87479c",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "b192f00cf22c7b304d9d35b617ef5e3dacda83334b2c2dbadd4095cdc94d8901",
+          "processId": 33120,
+          "processStartedUtc": "2026-10-06T05:35:12.6917255Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T05:38:03.5200008Z"
+        }
+      ],
+      "bodyRuntime": {
+        "scenario": "disposable-expanded-summoning-serpentine-bodies",
+        "requestId": "20261006T0538097630063Z-c801abe6c7f945978983a4ac1b1fabd1",
+        "requestSha256": "AF0DAB3AAB4A21A4FBBA89FBE41BFF52698B061EB8A8E13A0AE5902FF4A629E3",
+        "resultSha256": "4597BFF0A9BC6A991AB1FCDE63978F0DC78DDFBF22BADB0015F932979E460EC6",
+        "orchestrationSha256": "A2A566AF3FBF064624294C0BED416744B8A31B60F9DE9D32707C406C91B3E16D",
+        "process": {
+          "kingmakerProcessId": 34260,
+          "kingmakerStartedAtUtc": "2026-10-06T05:38:11.1738806Z",
+          "steamAppId": 640820,
+          "preLaunchKingmakerProcesses": []
+        },
+        "status": "PASS",
+        "assertions": [
+          {
+            "name": "sprint17-native-control-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-appearance-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-rollback-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-intact-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-body-movement-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-owned-resource-cleanup-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-control-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-appearance-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-rollback-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-intact-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-body-movement-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-owned-resource-cleanup-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-control-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-appearance-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-rollback-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-intact-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-body-movement-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-owned-resource-cleanup-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-fixture-cleanup",
+            "status": "PASS"
+          },
+          {
+            "name": "loaded-mod-version",
+            "status": "PASS"
+          }
+        ],
+        "rows": [
+          {
+            "key": "viper",
+            "travel": 2.463896,
+            "maxVelocity": 3.04798913,
+            "samples": 12,
+            "lowestAboveActorMin": -0.107900143,
+            "lowestAboveActorMax": -0.107900143,
+            "firstActor": [
+              9.484149,
+              -6.00000238,
+              -9.130402
+            ],
+            "lastActor": [
+              11.41473,
+              -6.00000238,
+              -9.333154
+            ],
+            "firstHead": [
+              1.82728851,
+              4.179959,
+              1.239594
+            ],
+            "lastHead": [
+              1.76965272,
+              4.07271576,
+              1.10584533
+            ],
+            "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+            "settledNativeControl": true,
+            "controllableSummonPart": true,
+            "capital": false
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.46156645,
+            "maxVelocity": 3.04798937,
+            "samples": 12,
+            "lowestAboveActorMin": -0.1087389,
+            "lowestAboveActorMax": -0.1087389,
+            "firstActor": [
+              9.484383,
+              -6.00000238,
+              -9.130432
+            ],
+            "lastActor": [
+              11.4124,
+              -6.00000238,
+              -9.332906
+            ],
+            "firstHead": [
+              1.82728636,
+              4.17996,
+              1.239594
+            ],
+            "lastHead": [
+              1.45251727,
+              4.60361242,
+              0.837490857
+            ],
+            "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+            "settledNativeControl": true,
+            "controllableSummonPart": true,
+            "capital": false
+          },
+          {
+            "key": "salamander",
+            "travel": 2.46140337,
+            "maxVelocity": 3.04798913,
+            "samples": 12,
+            "lowestAboveActorMin": 0.03477955,
+            "lowestAboveActorMax": 0.3121853,
+            "firstActor": [
+              9.477695,
+              -6.00000238,
+              -9.1299305
+            ],
+            "lastActor": [
+              11.4122372,
+              -6.00000238,
+              -9.33289051
+            ],
+            "firstHead": [
+              -0.013397105,
+              1.90102148,
+              0.440805733
+            ],
+            "lastHead": [
+              0.0490519255,
+              1.78821659,
+              0.28022483
+            ],
+            "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+            "settledNativeControl": true,
+            "controllableSummonPart": true,
+            "capital": false
+          }
+        ],
+        "metadataSha256": "9888966C6B1CD4A3B4933134D217E044B005AB37193EF46006111FC4042797F6",
+        "supportingArtOnly": [
+          {
+            "file": "sprint17-constrictor-snake-owned-body.png",
+            "sha256": "2CC8299547C56A129A317088D26A1D973ED56839D631654A4A31DA18E3DD5D48"
+          },
+          {
+            "file": "sprint17-salamander-owned-body.png",
+            "sha256": "7D9AA0ABB9AF105F00D2EF1396EB5F3A07515F77B188755F55CF89072D26DA9B"
+          },
+          {
+            "file": "sprint17-viper-owned-body.png",
+            "sha256": "F336B01FE62179D9F69245B0D09879357EEF93EAADA6A176FB703B1270127E98"
+          }
+        ]
+      },
+      "batchStatus": "ERROR",
+      "classification": "ORCHESTRATION",
+      "cause": "Windows PowerShell @(Get-Content -Raw | ConvertFrom-Json) wraps the real three-row JSON array as one outer item. Runtime result is genuinely PASS 20/20; driver throws before appending that run and remains ERROR. Independent read confirms three exact keys. Do not rewrite the original batch or claim overall visual/sprint qualification.",
+      "researchFindings": "Original mesh attachment, all-renderer rollback, native movement and exact five-resource cleanup pass for all three actors. Each records 12 weighted-world samples and about 2.46m travel. Snake lowest points are about -0.108m relative to actor; Salamander varies +0.035 to +0.312m. These are actor-relative, not floor-distance measurements. Supporting frames show questionable snake coil/body junction and partially occluded hybrid tail. Ground support, credible locomotion, final anatomy, full lifecycle, weapon/contact and printed profiles remain unqualified.",
+      "saveWrite": false,
+      "saveFilesystemAccess": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0534456803703Z",
+        "completedAtUtc": "2026-10-06T05:41:55.0949538Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseId": "runtime-20261006T053445Z-deaea86406024ce2b039209b12e4a1f9",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": 0,
+        "stagingRemaining": false
+      },
+      "archive": "laptop-runtime-20261006T0534445936645Z",
+      "batchSha256": "BF2BA6666134C8F2DC661B03F698D5845BD52834E6E5CCB35C3E09FDF3EE4D00",
+      "driverSha256": "C58C4E1DFC879625597E84BDA5C5D68AB01A1FF051E72666A9B9FD978F8F800B",
+      "buildSidecarSha256": "971EEBB92F786AC6EDC568D1914F3377F57E39462074C18ECCF5B410781ABA14",
+      "repair": "Pure ConvertFrom-KmgSerpentineBodyReviewJson assigns before enumerating and validates the exact ordered three-key scope. Orchestration suite expands to 81 passing assertions, including malformed/missing/nested/duplicate/foreign/reordered cases, and reads the actual capture as three rows. Future driver must use this helper. Keep ERROR archived; next bounded evidence should measure current bone transforms and native floor separately before original geometry revision/full qualification."
+    },
+    {
+      "candidate": "f31c0e3d85a83129e92b8918b66e9697fc3e4969",
+      "sourceFingerprint": "dee72d9e5ffc771434d15b50e076a8d87650d3ab25573bf924af4d6bcf3645ff",
+      "dllSha256": "2de3aff4d69bdb245b20c47aa46e7acfa393b0cec0eb78ee23cc13cbedbefe49",
+      "dllMvid": "e4d861b0-97fb-42a2-bdbc-dae8c295691c",
+      "packageSha256": "f99428c1cd7973c498e64f5966a37b64126cf4e725be0979f4eb8c3b61aaa9b8",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 224,
+        "full": 2026,
+        "fullSeconds": 84.3,
+        "completeGateSeconds": 179.3,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "referenceProvenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T06:17:29.1883321Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0617300906634Z-working-save-smoke",
+          "requestId": "20261006T0617301219748Z-f602a70380564e9d851276948b8b89e8",
+          "requestSha256": "3a8e550bb24cf51d766d956cc42077031fa373cff455c0821c727c7ba7f847c3",
+          "resultSha256": "46b7622a9b85d97ca37f65acd5cfbc143d0e1f089d41e14d8df2e96b7834d87f",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "4c905b0039f37ce0ddfb9c5496f3cb984a2680b83918b7f0c376d43aebf3d914",
+          "processId": 33884,
+          "processStartedUtc": "2026-10-06T06:17:31.1749417Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T06:20:20.2994746Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T06:20:25.7470850Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0620265442742Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0620265442742Z-7d3ad5904cde449fbe3f28ec0b62d4fe",
+          "requestSha256": "4c8c3cbb24f1f6da538c4d86bcb55653169b8f6de75d2b6fde33fe2f3aadb540",
+          "researchMetadata": [
+            {
+              "key": "viper",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.46134448,
+              "maxVelocity": 3.04798865,
+              "supportingFrameSha256": "058e5b3b27b8d734c36842548f939433d39452d72239358297375214ecfcd785",
+              "minClearance": -0.1079011,
+              "maxClearance": -0.107899666
+            },
+            {
+              "key": "constrictor-snake",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.46174383,
+              "maxVelocity": 3.04798913,
+              "supportingFrameSha256": "562cb0ebb103e8e6a61d07ecb3a01c496028800242e2a6de159754d3f7f639de",
+              "minClearance": -0.108739853,
+              "maxClearance": -0.1087389
+            },
+            {
+              "key": "salamander",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.466233,
+              "maxVelocity": 3.04798961,
+              "supportingFrameSha256": "e7af1f6c56bce0c04519df0823ac716ab3df4ec38304685b57ee19cdbb6ace13",
+              "minClearance": 0.0343909264,
+              "maxClearance": 0.309258461
+            }
+          ],
+          "bodyReviewSha256": "81a4f31221b6c9c155e6a2801e46e210630f04a4bfa6e9123c635dc3bee5a0a0",
+          "resultSha256": "b73dde9ed520cca5bb1232940e2c35cf00f582cb2889187b8b6e01131ad62853",
+          "assertions": 23,
+          "passed": 23,
+          "failed": [],
+          "orchestrationSha256": "d35ca419ae136b2a6718c3b067186c88c3d1ae3f64016d4a367a8c849b53443c",
+          "processId": 3192,
+          "processStartedUtc": "2026-10-06T06:20:28.0887928Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T06:24:15.8712506Z"
+        }
+      ],
+      "batchStatus": "PASS",
+      "batchJournalSha256": "97357EA07776B7FACD1427826280F10DE858773F16CA75AD2D11E959A5427150",
+      "guardedDriverSha256": "5656690433F23698A43CBC39185B8AAAC8D9B7A86407FC47175C648D7F9C3C85",
+      "buildSidecarSha256": "8B723AC3979B928BA0290B4258B0B69F16B29292C5F259EAF3B26B9E6EAD83A8",
+      "gameResearchStatus": "PASS 23/23; measurement completeness, binding, movement and resource lifetime only; ground/visual/gameplay acceptance NOT QUALIFIED",
+      "saveWritingApiObserved": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0617038921947Z",
+        "completedAtUtc": "2026-10-06T06:24:18.5391362Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "noGame": true,
+        "lockPresent": false,
+        "stagingPresent": false
+      },
+      "findings": {
+        "floor": "Native mask0x200101, layer8, upward normal (0,1,0), collider Jamandis_Manson_013, Y approximately-6; actor and read-only native movement projection agree. Nav Y=-5.6 was not floor.",
+        "samplesPerBody": 13,
+        "viperClearanceMetres": [
+          -0.1079011,
+          -0.107899666
+        ],
+        "constrictorClearanceMetres": [
+          -0.108739853,
+          -0.1087389
+        ],
+        "salamanderClearanceMetres": [
+          0.0343909264,
+          0.309258461
+        ],
+        "snakeRoot": "Consistent current Hips ground-normal tilt over all26 samples. SnapToTerrain is on Stone_Joints only, not the authored body. No native snap mutation justified.",
+        "salamanderRoot": "Torso_Lower animated height varies; renderer bind frame stays stable at the measured floor. Original hybrid still floats; support/weapon/motion remain open.",
+        "noNativeGeometryExport": true
+      },
+      "offlineFollowup": {
+        "status": "PRIVATE ORIGINAL GEOMETRY ONLY; NOT STAGED OR RUNTIME QUALIFIED",
+        "captureSha256": "81a4f31221b6c9c155e6a2801e46e210630f04a4bfa6e9123c635dc3bee5a0a0",
+        "tests": {
+          "water": 4,
+          "worm": 7,
+          "hybrid": 6,
+          "replayArithmetic": 4
+        },
+        "privatePanels": 36,
+        "byteReproducedMeshes": {
+          "viper": "866123e15e287c05b67b9d9509463559e4d55fce81f5bf9654ad9e98bac7cd29",
+          "constrictor-snake": "fa6799bde8dea193db04dbe4893b665d873b83697d72eba5a7633a2fc78b7411"
+        },
+        "viperReplayedClearanceMetres": [
+          0.002908386111264427,
+          0.002909003665455323
+        ],
+        "constrictorReplayedClearanceMetres": [
+          0.0018463162087227758,
+          0.0018463331806168881
+        ],
+        "description": "Original supporting coil authored in the measured stable root plane with small skin allowance; no native rig/animation/position changes. Original staged meshes reproduce live low points to sub-micrometre arithmetic tolerance. Corrected prototypes have zero vertices below the measured flat plane in all26 captured poses. This is not a new runtime pass. Salamander unchanged."
+      }
+    },
+    {
+      "candidate": "8d3081c34cfee82239fdc908df0b561975131d24",
+      "sourceFingerprint": "c273d8f2f95096e627b2b10191c57b35ee1fffe3463c9bae0fcec0a276e00f53",
+      "dllSha256": "527e6535fb411dc993abb8303995b8a720ef9dc703e07f1bfdeefde0f64dc991",
+      "dllMvid": "5274438d-5977-4c25-bf65-fa0c1d974760",
+      "packageSha256": "d4818cdce62b72dcc72a0b49c55f39a2d763c6060d40840b3e3fe38483ceaf64",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 225,
+        "full": 2027,
+        "fullSeconds": 83,
+        "completeGateSeconds": 177.7,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "referenceProvenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T07:14:51.1103397Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0714520090316Z-working-save-smoke",
+          "requestId": "20261006T0714520312386Z-503cf965ddd2447b9b2ce79b8840e516",
+          "requestSha256": "54510bfeeffbfbac03619848ce3543fee26d663826e6469c79ac51593a51d521",
+          "resultSha256": "ad9881f3cc9ac3bf65d44c9891c6edb6ef68075a97930e7182ae6043ffc40cbc",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "6ef10dc044fd308752d9d953f9e0bedfc166fd16c08218041ef7a635dcbac6ec",
+          "processId": 3172,
+          "processStartedUtc": "2026-10-06T07:14:53.1185267Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T07:17:42.4313194Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T07:17:48.4336361Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0717492333982Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0717492439321Z-456b9411d66c49b983ef96861a5687cd",
+          "requestSha256": "49a47e79e4db6b151dfeb2e01199584f3e68d7cdd9ca99bdf600aced96576a0c",
+          "researchMetadata": [
+            {
+              "key": "viper",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.4625144,
+              "maxVelocity": 3.04798865,
+              "supportingFrameSha256": "2bb8d7e3c533ecca84f70a6dea85664df06fe98b84081e413121bde12ca2bf4f",
+              "minClearance": 0.00290822983,
+              "maxClearance": 0.00290822983
+            },
+            {
+              "key": "constrictor-snake",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.45631862,
+              "maxVelocity": 3.04798913,
+              "supportingFrameSha256": "bdbaf419277e07563380b1ecc86fb1d43dba538bae96838e4d7a9a77947b5450",
+              "minClearance": 0.00184631348,
+              "maxClearance": 0.00184679031
+            },
+            {
+              "key": "salamander",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.4543314,
+              "maxVelocity": 3.04798913,
+              "supportingFrameSha256": "0e3f00fe6d68af259936db5b042b31e6cdb18e1dc8200ccdcadb6bd236937ad2",
+              "minClearance": 0.00500011444,
+              "maxClearance": 0.00500011444
+            }
+          ],
+          "bodyReviewSha256": "7fb88e1640c4754ce58e564a5bc02a29a9928a05c66111aecbdcc98574c6548a",
+          "resultSha256": "90ab6cf2af2b7e7a0ec2792c5db78692aff6c6308100cbddec49331f478e999b",
+          "assertions": 26,
+          "passed": 26,
+          "failed": [],
+          "orchestrationSha256": "865736a992b12a6575d67fbde2583bffb8b13c13773938acfa0915c2101b07d3",
+          "processId": 34196,
+          "processStartedUtc": "2026-10-06T07:17:50.4471293Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T07:21:31.6599705Z"
+        }
+      ],
+      "batchStatus": "PASS",
+      "batchJournalSha256": "763DD4F79FE9B0FE45C9FBC2372C4A2E6DBE852BF913AE76FA6DCF68D5E9C746",
+      "guardedDriverSha256": "9E679BAAF2942ADB98A596F1C01CEC9249A6702F81F7404B19F51976DB9757E5",
+      "buildSidecarSha256": "848DF66080DC578D6E0AC5CEE6731D71545CE9A9FE01F62CFDCBA580B641CA60",
+      "gameResearchStatus": "PASS26/26; original binding, native movement, sampled measured flat-ground support, quality rollback and exact resource cleanup ONLY. Final anatomy, attacks, slopes, weapon/contact/full lifecycle/gameplay NOT QUALIFIED.",
+      "saveWritingApiObserved": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0714257255801Z",
+        "completedAtUtc": "2026-10-06T07:21:34.2656814Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "noGame": true,
+        "lockPresent": false,
+        "stagingPresent": false
+      },
+      "findings": {
+        "samplesPerBody": 13,
+        "viperClearanceMetres": [
+          0.00290822983,
+          0.00290822983
+        ],
+        "constrictorClearanceMetres": [
+          0.00184631348,
+          0.00184679031
+        ],
+        "salamanderClearanceMetres": [
+          0.00500011444,
+          0.00500011444
+        ],
+        "nativeDrivers": [
+          16,
+          16,
+          28
+        ],
+        "hybridSupportNativeTransform": "_lizardman001",
+        "sampledHeightsMetres": [
+          1.5388484,
+          1.6918211,
+          2.0830133
+        ],
+        "ownedResourceCleanup": "All3 native destruction and injected rollback assertions PASS; exact project-owned references, not name-only counts.",
+        "sourceMeshClosedManifold": true,
+        "artReview": "Supporting native frames inspected only as art. Snake supporting coils show open/ribbon-like portions or folded surfaces; investigate topology/winding/deformation through current-pose replay and actual runtime mesh before final visual acceptance. Hybrid tail partly occluded; no spear. Floor PASS does not waive these visual/weapon gates.",
+        "noNativeGeometryExport": true
+      },
+      "offlineFollowup": {
+        "tests": {
+          "water": 4,
+          "worm": 7,
+          "hybrid": 8,
+          "replayArithmetic": 6
+        },
+        "meshHashes": {
+          "viper": "866123e15e287c05b67b9d9509463559e4d55fce81f5bf9654ad9e98bac7cd29",
+          "constrictor-snake": "fa6799bde8dea193db04dbe4893b665d873b83697d72eba5a7633a2fc78b7411",
+          "salamander": "298d832320a01144ebc4f6245ddc3851cd9d01ed3e9e167c998c94fd558d8b28"
+        },
+        "staged": true,
+        "automaticProductionHook": false,
+        "byteReproduced": true,
+        "capturedReplayMatchesLiveSupport": true,
+        "failedPrototypesPreserved": "v4-v6 identity/alignment/underside/transition panels; no failed art claimed acceptable."
+      }
+    },
+    {
+      "candidate": "32b2f26e04d6b36471d39586b64731429afd8cbc",
+      "sourceFingerprint": "d8495a15dc75b6074c6a084447e0a7f67a1d89548f7052e41d959c287bcf0c53",
+      "dllSha256": "14bee1c2098ca297e438ac0ae8ca7946ad16c6fa045bc3690320c2c0c1084f26",
+      "dllMvid": "9575ffaf-3a64-455d-bbdf-b7877325c4c8",
+      "packageSha256": "92e99c4fa6921e4bb881e54939f86ff8bdd9458ee816529148fcff6f2c297ee0",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 226,
+        "full": 2028,
+        "fullSeconds": 83.7,
+        "completeGateSeconds": 179.1,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "referenceProvenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T07:52:39.5965396Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0752405983120Z-working-save-smoke",
+          "requestId": "20261006T0752406295611Z-42387160ee214eb583030f5f8684354e",
+          "requestSha256": "aea0c785e791f85c15a105eb7604da5310879d563610ee8c3b244c0feadd3bc5",
+          "resultSha256": "fac965003154f794800f1699da02479d0671bae0d939cb35f1c9e2ffb4dab15d",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "87d6207b2e8c98b61411c3d862d3972441b98fc3d07c1f09446a8d85d838cb61",
+          "processId": 34288,
+          "processStartedUtc": "2026-10-06T07:52:41.6350506Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T07:55:34.2413642Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T07:55:39.7068052Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0755404990129Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0755404990129Z-b9688e0e07cd4826a834abff583929c6",
+          "requestSha256": "be64ca3ede9620e0b3c0fac771a5ca2abc66c4869378fec66debd6bab28224e6",
+          "researchMetadata": [
+            {
+              "key": "viper",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.45604873,
+              "maxVelocity": 3.04798937,
+              "supportingFrameSha256": "82fd958d0b72bec868d85995cefc903942f78ff4db8175a609a93ea8f5c9791c",
+              "reverseWindingFrameSha256": "a81669dff7c8faa710f857bf017ddc46ee51868a43f17427dbb999979a65c6ac",
+              "materialResearch": {
+                "shader": "PF/StandardDynamic",
+                "renderQueue": 2450,
+                "keywords": [
+                  "FOG_OF_WAR_AFFECTED",
+                  "FOG_OF_WAR_DISSOLVE_ON",
+                  "SPECULAR_ON",
+                  "_ALPHAPREMULTIPLY_ON",
+                  "_ALPHATOMASK_OFF",
+                  "_RIMLIGHTING_OFF",
+                  "_RIMSHADENDOTL_OFF",
+                  "_VERTEXINTERACTION_OFF"
+                ],
+                "declaredFloatProperties": {
+                  "_Cull": null,
+                  "_CullMode": null,
+                  "_ZWrite": 1,
+                  "_ZTest": null,
+                  "_SrcBlend": 1,
+                  "_DstBlend": 0,
+                  "_Cutoff": null,
+                  "_AlphaClip": null,
+                  "_Alpha": null,
+                  "_Opacity": null,
+                  "_Dissolve": 0
+                },
+                "scope": "read only; no visibility/culling override; no shader or texture export"
+              },
+              "minClearance": 0.00290822983,
+              "maxClearance": 0.00290822983
+            },
+            {
+              "key": "constrictor-snake",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.46460152,
+              "maxVelocity": 3.04798913,
+              "supportingFrameSha256": "2b8f94122d018d72038d9f7c09484792a4f4d74d2c61f2c7ac03aa6dc480990c",
+              "reverseWindingFrameSha256": "8f5e8169856f5d33b4b03a36702b060f111a773e75658aa3c504f391150420c8",
+              "materialResearch": {
+                "shader": "PF/StandardDynamic",
+                "renderQueue": 2450,
+                "keywords": [
+                  "FOG_OF_WAR_AFFECTED",
+                  "FOG_OF_WAR_DISSOLVE_ON",
+                  "SPECULAR_ON",
+                  "_ALPHAPREMULTIPLY_ON",
+                  "_ALPHATOMASK_OFF",
+                  "_RIMLIGHTING_OFF",
+                  "_RIMSHADENDOTL_OFF",
+                  "_VERTEXINTERACTION_OFF"
+                ],
+                "declaredFloatProperties": {
+                  "_Cull": null,
+                  "_CullMode": null,
+                  "_ZWrite": 1,
+                  "_ZTest": null,
+                  "_SrcBlend": 1,
+                  "_DstBlend": 0,
+                  "_Cutoff": null,
+                  "_AlphaClip": null,
+                  "_Alpha": null,
+                  "_Opacity": null,
+                  "_Dissolve": 0
+                },
+                "scope": "read only; no visibility/culling override; no shader or texture export"
+              },
+              "minClearance": 0.00184631348,
+              "maxClearance": 0.00184679031
+            },
+            {
+              "key": "salamander",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.46562,
+              "maxVelocity": 3.04798961,
+              "supportingFrameSha256": "732386d3c9199d2709471efc37bd092308aaf74ab5acd530389f75dbcd5a122e",
+              "reverseWindingFrameSha256": "c4fbf050c4064d7aceeed5512771b6a3e11c12c1c6f252b1b1367b441fe9b3ee",
+              "materialResearch": {
+                "shader": "PF/StandardDynamic",
+                "renderQueue": 2000,
+                "keywords": [
+                  "DISSOLVE_ON",
+                  "FOG_OF_WAR_AFFECTED",
+                  "FOG_OF_WAR_DISSOLVE_ON",
+                  "_ALPHATOMASK_OFF",
+                  "_RIMLIGHTING_OFF",
+                  "_RIMSHADENDOTL_OFF",
+                  "_VERTEXINTERACTION_OFF"
+                ],
+                "declaredFloatProperties": {
+                  "_Cull": null,
+                  "_CullMode": null,
+                  "_ZWrite": 1,
+                  "_ZTest": null,
+                  "_SrcBlend": 1,
+                  "_DstBlend": 0,
+                  "_Cutoff": null,
+                  "_AlphaClip": null,
+                  "_Alpha": null,
+                  "_Opacity": null,
+                  "_Dissolve": 0
+                },
+                "scope": "read only; no visibility/culling override; no shader or texture export"
+              },
+              "minClearance": 0.00500011444,
+              "maxClearance": 0.00500011444
+            }
+          ],
+          "bodyReviewSha256": "083a13e42bec20aae5b3b872e1819c0f081f8883f3820c4b1f8e609242a11f29",
+          "resultSha256": "4747423dc8f29853b97e924a0716a10921f4297e8d215212d9338ae22fd478ed",
+          "assertions": 29,
+          "passed": 29,
+          "failed": [],
+          "orchestrationSha256": "9676e2ce9efa8d6170c972d7ba59e653a1897f688da876f23e5fab7af838dc24",
+          "processId": 33812,
+          "processStartedUtc": "2026-10-06T07:55:42.2176240Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T07:59:24.9581902Z"
+        }
+      ],
+      "batchStatus": "PASS",
+      "batchJournalSha256": "27AFD367DDA5E61485AC3BB8D34C53BB4AE85AE76785F5ED872E43C05A1A46A5",
+      "guardedDriverSha256": "E15FCF8B65E84658064E635FA2CA7FBA1891263D59389D774DA03831BA84EE3F",
+      "buildSidecarSha256": "4BE45BC4564C59C1C3BACDBE1AF4A654DEB33CFC212544BB7C068349F49B7B5E",
+      "gameResearchStatus": "PASS29/29; original binding, native movement, sampled support, exact reversible triangle-order comparison, rollback and owned-resource cleanup ONLY. Final visuals, weapon/contact/full lifecycle/gameplay NOT QUALIFIED.",
+      "saveWritingApiObserved": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0752138198384Z",
+        "completedAtUtc": "2026-10-06T07:59:27.6045620Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "noGame": true,
+        "lockPresent": false,
+        "stagingPresent": false
+      },
+      "findings": {
+        "artComparison": "All six native supporting frames inspected as ART ONLY. Reversed original triangle order renders the snake coils and hybrid surface solid; original order exposes apparent inner surfaces/open coils. Normals, material references, bones, visibility/culling, and vertices stayed unchanged; indices restored exactly. Evidence supports an S17-only authored winding correction, not a global exporter or shader change.",
+        "material": "PF/StandardDynamic; original snake queue2450, hybrid2000; ZWrite1, SrcBlend1, DstBlend0, Dissolve0 on all3; no declared Cull/CullMode. No property changes.",
+        "primarySpear": "Existing project weapon99394d453c6f425f84d4b92f7a8deea0, category Spear, native TH_SpearArmy/WP_SpearArmy model; bounds approximately .0494 x1.7707 x.0386m, local longitudinal Y. Existing WeaponPivot follows R_Palm. This is metadata, not equipped-view or two-hand grip/contact proof.",
+        "animationSurveyLimit": "Generic UnitAnimationType.SpecialAttack returns only the first matching action. Earlier survey is NOT an exhaustive census of UnitAnimationSpecialAttackType.Bite/Tail/etc. Expand the bounded census and prove actual commands before deciding attack support.",
+        "noNativeGeometryExport": true
+      }
+    },
+    {
+      "candidate": "21eecc676e367feeed9e73c37c1997c6368e3326",
+      "sourceFingerprint": "3334d8cdd18d6077e37a494447abde4e67181efb9574dc8bfb3ae2e15938ce34",
+      "dllSha256": "12027238046d3be358c5588d7f801fdc3ceafa23c62c81fbf69cb21071da5b22",
+      "dllMvid": "a708a140-3805-4123-983f-1c14f062931e",
+      "packageSha256": "06c728ceedb7df58b47c2d2cd798338e582ae08ec83675ffc88b71786eeec620",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 228,
+        "full": 2030,
+        "fullSeconds": 86.8,
+        "completeGateSeconds": 180.5,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "referenceProvenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T08:45:57.9782399Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0845590835059Z-working-save-smoke",
+          "requestId": "20261006T0845591678671Z-6d59e6ca88b5463782284b0024a5a7c8",
+          "requestSha256": "619d98278726920fcec381f50b7cab23b400e14c534448cee2905ca1597541b4",
+          "resultSha256": "f393342bc724e779181f77159d242884b9eb05ad78b6440d0acf7467dd9e65f5",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "3a15fb7cbf870d309abc7405eb52cf9c06724d09f04350b8005e56b484307cbe",
+          "processId": 25568,
+          "processStartedUtc": "2026-10-06T08:46:00.2885681Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T08:49:37.0463308Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T08:49:43.6844794Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0849445084747Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0849445184844Z-cb7f9860354441acbb8ced6c3078337c",
+          "requestSha256": "dd0c4122efc0deb3095a137f1bb0073152a315429cf0872e67f97aa1cb12f85e",
+          "resultSha256": "d467028620cc47aa093664b93625ac8e2843888534370a6bcf24966edacee9f3",
+          "assertions": 34,
+          "passed": 32,
+          "failed": [
+            {
+              "name": "sprint17-native-body-movement-viper",
+              "status": "FAIL"
+            },
+            {
+              "name": "sprint17-native-attack-research-salamander",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "88f045331e823b85886a34ae6da2fb46bf429b4c1cbe1d75e2c6a4059b1193a9",
+          "processId": 27664,
+          "processStartedUtc": "2026-10-06T08:49:45.8609196Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T08:55:15.6099535Z"
+        }
+      ],
+      "batchStatus": "NOT-QUALIFIED",
+      "batchJournalSha256": "BFAC8218216BFAC3743310834F9FF3B34DAFC183152DA193285439301261F14D",
+      "guardedDriverSha256": "09380F5C192F49FDC5D5407D147AE211CF6B6490462EAB401B04BFD474698E5D",
+      "buildSidecarSha256": "9EDB96B5F4A069E9D365FC97D124C065B9C256B1381847DF9B74741152745C8F",
+      "bodyReviewSha256": "24DD7B2920F2315C2B70CE617B9D687BE66DBE62F1E647BCDB68FC0BB64110AA",
+      "gameResearchStatus": "FAIL32/34. Viper movement absent; Salamander queued command finished without starting. No Sprint17 qualification.",
+      "saveWritingApiObserved": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0845286601577Z",
+        "completedAtUtc": "2026-10-06T08:55:18.2580581Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "noGame": true,
+        "lockPresent": false,
+        "stagingPresent": false
+      },
+      "failures": [
+        {
+          "name": "sprint17-native-body-movement-viper",
+          "observed": "travel=0;velocity=0;samples=57",
+          "evidence": "Weighted world vertices recorded separately from actor movement; not attack/contact acceptance.",
+          "classification": "fixture scheduling/isolation observation incomplete; exact cause not proved; no production failure inferred"
+        },
+        {
+          "name": "sprint17-native-attack-research-salamander",
+          "observed": "contacts=0;poses=106;started=False",
+          "evidence": "Research completeness only. Measured gaps and grip failures remain unqualified, never waived.",
+          "classification": "fixture scheduling/isolation observation incomplete; exact cause not proved; no production failure inferred"
+        }
+      ],
+      "findings": {
+        "snakeBites": [
+          {
+            "key": "viper",
+            "issuedAttacks": 2,
+            "primary": {
+              "frame": 5145,
+              "category": "Bite",
+              "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+              "opportunity": false,
+              "nativeAnimationContact": true,
+              "finite": true,
+              "poseMethod": "sum(weight * bone.localToWorld * bindpose * originalVertex)",
+              "vertices": 693,
+              "targetBoundsCenter": [
+                10.488534,
+                -5.184489,
+                -9.474384
+              ],
+              "targetBoundsSize": [
+                1.30233872,
+                1.958216,
+                1.53738284
+              ],
+              "actorPosition": [
+                8.950837,
+                -6.00000238,
+                -9.337016
+              ],
+              "targetPosition": [
+                10.4508371,
+                -6.00000238,
+                -9.337016
+              ],
+              "nearestGapMeters": 0,
+              "withinQuarterMetre": true,
+              "issuedCommandExecuting": true,
+              "supportingFrame": "sprint17-viper-attack-1-owned-body.png;supporting-art-only;native-camera-untouched"
+            },
+            "attackFloorRange": [
+              0.00290822983,
+              0.00290822983
+            ]
+          },
+          {
+            "key": "constrictor-snake",
+            "issuedAttacks": 2,
+            "primary": {
+              "frame": 5648,
+              "category": "Bite",
+              "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+              "opportunity": false,
+              "nativeAnimationContact": true,
+              "finite": true,
+              "poseMethod": "sum(weight * bone.localToWorld * bindpose * originalVertex)",
+              "vertices": 819,
+              "targetBoundsCenter": [
+                12.9680519,
+                -5.19748259,
+                -9.466067
+              ],
+              "targetBoundsSize": [
+                1.28575528,
+                1.95654213,
+                1.5252856
+              ],
+              "actorPosition": [
+                11.4328022,
+                -6.00000238,
+                -9.337016
+              ],
+              "targetPosition": [
+                12.9328022,
+                -6.00000238,
+                -9.337016
+              ],
+              "nearestGapMeters": 0,
+              "withinQuarterMetre": true,
+              "issuedCommandExecuting": true,
+              "supportingFrame": "sprint17-constrictor-snake-attack-1-owned-body.png;supporting-art-only;native-camera-untouched"
+            },
+            "attackFloorRange": [
+              0.00184631348,
+              0.00184631348
+            ]
+          }
+        ],
+        "movement": [
+          {
+            "key": "viper",
+            "travel": 0,
+            "maxVelocity": 0
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.481965,
+            "maxVelocity": 2.032
+          },
+          {
+            "key": "salamander",
+            "travel": 2.481965,
+            "maxVelocity": 2.032
+          }
+        ],
+        "hybrid": {
+          "prefab": "31cb7e484faf8734fa2c0ef1936b1806",
+          "spearRenderer": {
+            "enabled": true,
+            "active": true,
+            "nativeMeshAlive": true,
+            "materialsAdopted": true
+          },
+          "commandStarted": false,
+          "commandFinished": true,
+          "contacts": 0,
+          "attackWindowFloorRange": [
+            -0.0883097649,
+            0.0049996376
+          ]
+        },
+        "cleanup": "Every exact rollback, original-resource restoration, owned-resource destruction, borrowed spear survival, unit/party/area census and mode/clock/pause/selection/group/awake snapshot assertion PASS.",
+        "art": "Native snake bite and hybrid idle frames inspected as supporting ART ONLY: outward surfaces render solid; spear present. Hybrid tail occluded. These do not diagnose command failure or prove grip. Final shape/contact/lifecycle remain open.",
+        "next": "Scope RTWP before initial movement; no target until contact cell; fresh isolated request-local faction/target and owned group per cell; preserve native controllable faction and BAB. Record actual command result, pause/mode/conditions, damage provenance and action declared type; require real spear AND tail. No unchanged retry or longer waits.",
+        "noNativeGeometryExport": true
+      }
+    },
+    {
+      "candidate": "a09648b01486f4f3da556df7efacc6ac189c5bb7",
+      "sourceFingerprint": "3940799ab62ab11280f935bf8d97d454f717f8d9f7160c7a296d42c9bd698d58",
+      "dllSha256": "0d2db90b2f898b6d49dd29950a37f40ee205a554491316aa362f8e7b3dd25eff",
+      "dllMvid": "bfb06ed6-57a0-425a-95c9-84de8683448f",
+      "packageSha256": "5bd692dfa49fad3c6249055495e69eae49505262ed9740a3df2ca35365b4a16e",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 229,
+        "full": 2031,
+        "fullSeconds": 84.1,
+        "completeGateSeconds": 177.6,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T09:21:22.9905981Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0921239139712Z-working-save-smoke",
+          "requestId": "20261006T0921239452690Z-2705105957824369a42048a39e2854f0",
+          "requestSha256": "de0d6ed43baf23054d9fb843d7c560a474c97b6d7cb21871d3f094a20a4291fd",
+          "resultSha256": "2d3825acf154c3f59a26070988247beabb0f2981fc74a99bcacd5247ec814849",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "f1628d8b33ffca0ee22ab260e7afc8600132ccff121c0ef7935099ec82447f33",
+          "processId": 28592,
+          "processStartedUtc": "2026-10-06T09:21:25.0254177Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T09:24:14.7009565Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T09:24:21.2657203Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0924220519160Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0924220519160Z-777ffb9fc38749529ff595dbddfd053a",
+          "requestSha256": "dd242e3e733d778096bc591ab1cb2cc77d95a465287f9d2b8544a38d93350807",
+          "resultSha256": "309d63ce29547ea3a5012a569bab895cf88077e22b1429119ad0ffcd97c283b4",
+          "assertions": 37,
+          "passed": 36,
+          "failed": [
+            {
+              "name": "sprint17-native-attack-research-salamander",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "0b7999f979a502ad11e0a75bf743aa0adad3e2bed637dd1de56800e300f12ea4",
+          "processId": 12220,
+          "processStartedUtc": "2026-10-06T09:24:23.0015267Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T09:29:14.8718662Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T0920583696673Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T09:29:17.3815135Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T092057Z-0a7b35b564b54195a8a0c181e1bc39c8\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "saveWrite": false
+      },
+      "journalSha256": "A827D78C9B50C488B2C8DDA4F22B7CED3FC0E62B7BB25307339EA5DDDF6E1AEE",
+      "bodyCaptureSha256": "F9DCD49041DD4215BE26CE30A293A16BE6361234413A097778F7FD2040AF0C01",
+      "driverSha256": "64AEFCA1D27E2275028242C7C51A13250C56A063740AA26454F9C7B5656CEA43",
+      "status": "NOT-QUALIFIED; smoke11 PASS/body36 of37 FAIL; restoration VERIFIED",
+      "findings": {
+        "movement": [
+          {
+            "key": "viper",
+            "travel": 2.46448326,
+            "maxVelocity": 3.04798961
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.453666,
+            "maxVelocity": 3.04798937
+          },
+          {
+            "key": "salamander",
+            "travel": 2.45200682,
+            "maxVelocity": 3.04798913
+          }
+        ],
+        "snakeBiteGapsMeters": {
+          "viper": 0.034277916,
+          "constrictorSnake": 0.03347206
+        },
+        "hybrid": {
+          "commandStarted": true,
+          "commandResult": "Success",
+          "attackRows": 2,
+          "damageRows": 4,
+          "retainedContact": "exact project tail 93e097b8d3db42d3a37656502899e1a9; not spear",
+          "tailMeasuredVertices": 499,
+          "tailGapMeters": 0.2666912,
+          "attackWindowFloorRange": [
+            -0.06939936,
+            0.00500011444
+          ],
+          "spearOwnershipAndNativeSurvival": "PASS",
+          "grip": "NOT MEASURED"
+        },
+        "failureClassification": [
+          {
+            "class": "fixture",
+            "finding": "Native WP_SpearArmy is not CPU-readable. Vertex access returned no usable points and the measurement did not survive the callback. Do not infer that spear command execution was absent.",
+            "evidence": {
+              "log": "output_log.txt",
+              "sha256": "345AC8671DF1F7AEC93B2E07EFDF483D370FFAE980DC6CB456BE975B75A77FDF",
+              "line": 5037,
+              "excerpt": "Not allowed to access vertices on mesh 'WP_SpearArmy' (isReadable is false; Read/Write must be enabled in import settings)"
+            }
+          },
+          {
+            "class": "fixture",
+            "finding": "All three initial pair-isolation assertions PASS, but attackBefore/After show mutual enemy=false. Initial isolation did not persist. Native UnitValidationController.ValidateUnit repairs PlayerFaction actors to the player group; group-isolation claim is withdrawn pending post-settlement proof.",
+            "nativeIlSha256": "2AA7DC0BF64D791FE5DD75F9C7A2C3224B3BFBC0B21AB233FD81E461EE5FE50B"
+          },
+          {
+            "class": "original visual",
+            "finding": "Tail contact gap26.7cm and hybrid attack floor minimum-6.94cm remain open; research finite-geometry PASS does not qualify shape/contact."
+          }
+        ],
+        "cleanup": "Every rollback, native resource restoration, project-owned destruction, borrowed mesh survival, environment and unit/party/area restoration assertion PASS; exact installation restored. No save writing or save filesystem access.",
+        "art": "Native tail-contact frame inspected as ART ONLY: original hybrid visible with spear, bending body and partly occluded tail. No mechanical inference or final visual acceptance.",
+        "next": "Preserve every event/error; use explicit conservative native spear end-centre/bounds metadata instead of unreadable vertices. Give only the disposable owner a request-local copy of its native controllable faction, not PlayerFaction identity; require isolated enemies after settlement and throughout command. Native controllers untouched. New exact-head complete batch required.",
+        "noNativeGeometryExport": true
+      }
+    },
+    {
+      "candidate": "7ebb34eb0124a732c1f8a034b84f01dbd381aa6c",
+      "sourceFingerprint": "5db8cd907dcf216d32a5546381e2217aa97875c42b5f6e55d3c760866e5837a1",
+      "dllSha256": "822c1739a29d42c59e0e3304902bcc28e6b01af0f142d590c7eddd6933bddf9c",
+      "dllMvid": "1e2298ff-47ae-4c10-be84-78f75f102872",
+      "packageSha256": "cc157eb434c0e25b1d34feccd42508bd9c5cb6bc57f74dd1a0136cec3589a81b",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 230,
+        "full": 2032,
+        "fullSeconds": 83.2,
+        "completeGateSeconds": 179.4,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T09:52:22.9810815Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0952242569066Z-working-save-smoke",
+          "requestId": "20261006T0952242811293Z-b6ed231b15a64c708427b36a817e491d",
+          "requestSha256": "50c5a0b810a45d6b81354b7134785666d94843c066263b61a919c25b0a80b3a5",
+          "resultSha256": "4e293b1a910971cdde2f2f38fbe200f2487b15b73e8fbe6283ae11ca0813da9b",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "17891ab5204aaf4a0c273f88077f23c584992d5d0296d553f7664e97684d82ce",
+          "processId": 34460,
+          "processStartedUtc": "2026-10-06T09:52:25.3568052Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T09:55:16.6258171Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T09:55:22.6156960Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0955234248989Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0955234339438Z-8d53adb13edb4b4dbf8c2d685986a451",
+          "requestSha256": "f9d485b56120a45c7df5a424705a451cfbdda355e5dc1d3bef65a8729770b72e",
+          "bodyReviewSha256": "b9df8b3e2c07b2b3ad778dcab43c16eb11c7538ca5da1040e246d6f182b5c810",
+          "resultSha256": "250ea57814438d1a3268721540a47ff48545cf6b9ef99f6bceb7470d89691866",
+          "assertions": 40,
+          "passed": 40,
+          "failed": [],
+          "orchestrationSha256": "76e38396169ff23acab77c803390ffc3d163c1e6c835dee3e05188ab07fcd479",
+          "processId": 33876,
+          "processStartedUtc": "2026-10-06T09:55:24.6850016Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T09:59:47.2981464Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T0951581493121Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T09:59:49.8837081Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T095157Z-5ec4350d601f4c5c9ba997202ab9f77e\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "586B5588B3679D0BB7792DAA995F19F52F7B5DFEB3305074E0728A3762371234",
+      "bodyCaptureSha256": "B9DF8B3E2C07B2B3AD778DCAB43C16EB11C7538CA5DA1040E246D6F182B5C810",
+      "driverSha256": "EA32A5EE8EB4E8EAA869B6337B634B51E476884763605A0959709FE9BE774627",
+      "status": "RESEARCH ONLY PASS; smoke11/11/body40/40; complete driver PASS; Sprint17 final visuals/gameplay NOT QUALIFIED",
+      "findings": {
+        "bodies": [
+          {
+            "key": "viper",
+            "travel": 2.46243048,
+            "velocity": 3.04798961,
+            "isolationAfterSettlement": true,
+            "isolatedSamples": 19,
+            "poseSamples": 19,
+            "contacts": [
+              {
+                "frame": 4676,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "vertices": 693,
+                "poseMethod": "sum(weight * bone.localToWorld * bindpose * originalVertex)",
+                "measuredPoints": 693,
+                "targetBoundsCenter": [
+                  12.9531708,
+                  -5.19271231,
+                  -9.465727
+                ],
+                "targetBoundsSize": [
+                  1.28896117,
+                  1.93609285,
+                  1.54178345
+                ],
+                "actorPosition": [
+                  11.4132643,
+                  -6.00000238,
+                  -9.332996
+                ],
+                "targetPosition": [
+                  12.9132643,
+                  -6.00000238,
+                  -9.332996
+                ],
+                "nearestGapMeters": 0,
+                "withinQuarterMetre": true,
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-viper-attack-1-owned-body.png;supporting-art-only;native-camera-untouched"
+              },
+              {
+                "frame": 4751,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "notApplicable": "unprinted donor attack",
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-viper-attack-2-owned-body.png;supporting-art-only;native-camera-untouched"
+              }
+            ],
+            "floorMin": 0.00290822983,
+            "floorMax": 0.00290822983
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.45961,
+            "velocity": 3.04798865,
+            "isolationAfterSettlement": true,
+            "isolatedSamples": 20,
+            "poseSamples": 20,
+            "contacts": [
+              {
+                "frame": 5240,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "vertices": 819,
+                "poseMethod": "sum(weight * bone.localToWorld * bindpose * originalVertex)",
+                "measuredPoints": 819,
+                "targetBoundsCenter": [
+                  12.9507637,
+                  -5.19077826,
+                  -9.46657
+                ],
+                "targetBoundsSize": [
+                  1.29284751,
+                  1.93201232,
+                  1.54635608
+                ],
+                "actorPosition": [
+                  11.4104433,
+                  -6.00000238,
+                  -9.332692
+                ],
+                "targetPosition": [
+                  12.9104433,
+                  -6.00000238,
+                  -9.332692
+                ],
+                "nearestGapMeters": 0,
+                "withinQuarterMetre": true,
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-constrictor-snake-attack-1-owned-body.png;supporting-art-only;native-camera-untouched"
+              },
+              {
+                "frame": 5315,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "notApplicable": "unprinted donor attack",
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-constrictor-snake-attack-2-owned-body.png;supporting-art-only;native-camera-untouched"
+              }
+            ],
+            "floorMin": 0.00184631348,
+            "floorMax": 0.00184631348
+          },
+          {
+            "key": "salamander",
+            "travel": 2.48243785,
+            "velocity": 3.04798937,
+            "isolationAfterSettlement": true,
+            "isolatedSamples": 17,
+            "poseSamples": 17,
+            "contacts": [
+              {
+                "frame": 5779,
+                "category": "Spear",
+                "weapon": "99394d453c6f425f84d4b92f7a8deea0",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "nativeMeshReadable": false,
+                "nativeBoundsSize": [
+                  0.04938568,
+                  1.77067316,
+                  0.03862965
+                ],
+                "transverseUncertaintyMeters": 0.03134963,
+                "shaftEndCentres": [
+                  [
+                    11.04331,
+                    -5.74105024,
+                    -9.444716
+                  ],
+                  [
+                    11.9759083,
+                    -4.355248,
+                    -10.0321646
+                  ]
+                ],
+                "RPalmToSpearAxisMeters": 4.76837158e-7,
+                "LPalmToSpearAxisMeters": 0.6380596,
+                "poseMethod": "native bounds Y end centres transformed by existing weapon renderer; gap includes transverse uncertainty; NOT surface vertices",
+                "measuredPoints": 2,
+                "targetBoundsCenter": [
+                  12.9675608,
+                  -5.191165,
+                  -9.468669
+                ],
+                "targetBoundsSize": [
+                  1.29580545,
+                  1.95254242,
+                  1.53242135
+                ],
+                "actorPosition": [
+                  11.4332743,
+                  -6.00000238,
+                  -9.335137
+                ],
+                "targetPosition": [
+                  12.9332743,
+                  -6.00000238,
+                  -9.335137
+                ],
+                "endCentreGapMeters": 0.34375,
+                "nearestGapMeters": 0.375099629,
+                "withinQuarterMetre": false,
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-salamander-attack-1-owned-body.png;supporting-art-only;native-camera-untouched"
+              },
+              {
+                "frame": 5867,
+                "category": "OtherNaturalWeapons",
+                "weapon": "93e097b8d3db42d3a37656502899e1a9",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": true,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "vertices": 499,
+                "poseMethod": "sum(weight * bone.localToWorld * bindpose * originalVertex)",
+                "measuredPoints": 499,
+                "targetBoundsCenter": [
+                  12.966465,
+                  -5.19727039,
+                  -9.464818
+                ],
+                "targetBoundsSize": [
+                  1.28842723,
+                  1.95180249,
+                  1.52704775
+                ],
+                "actorPosition": [
+                  11.4332743,
+                  -6.00000238,
+                  -9.335137
+                ],
+                "targetPosition": [
+                  12.9332743,
+                  -6.00000238,
+                  -9.335137
+                ],
+                "nearestGapMeters": 0.161898613,
+                "withinQuarterMetre": true,
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-salamander-attack-2-owned-body.png;supporting-art-only;native-camera-untouched"
+              }
+            ],
+            "floorMin": -0.112885,
+            "floorMax": 0.00500011444
+          }
+        ],
+        "requiredNext": "Correct original distal-tail penetration using captured poses; correct two-palm spear mounting without native mesh/bone/controller mutation. Left grip0.638m and conservative spear gap0.375m remain NOT QUALIFIED, not waived by research completeness.",
+        "art": "Native spear-contact supporting frame inspected as ART ONLY; original body/spear visible, left hand detached and coil partly occluded. Mechanical distances come from structured data, never screenshot inference.",
+        "allOwnershipCleanup": "PASS exact rollback, native references, owned-resource destruction, borrowed spear survival, unit/party/area and environment snapshots.",
+        "noNativeGeometryExport": true
+      }
+    },
+    {
+      "candidate": "66900038d04ee8f5c64bcbaecc96fa61ae348f68",
+      "sourceFingerprint": "9ec9b0bc505e95052473aefa264e766d38b6abc4d5dad535b4a73f9ce6f63890",
+      "dllSha256": "15c6c3cb3c7a2b95bf185e22bec20fa0ee92f75ed40542c16ab93f9d0c22571f",
+      "dllMvid": "45fda816-6671-46e5-8d9a-175f9c1eaaf3",
+      "packageSha256": "e9de08e51dd316326a2b26b7b5d93e1727166d04fb42f62622a032f29f66b062",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 231,
+        "full": 2033,
+        "fullSeconds": 86.3,
+        "completeGateSeconds": 180.2,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T10:33:21.8348889Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1033227525352Z-working-save-smoke",
+          "requestId": "20261006T1033227681763Z-ee361517e5fe46c69692474164b27aab",
+          "requestSha256": "c983a4d045b0d6d2e92d954ec9f49513c75d44717b069189737bdc832b118d44",
+          "resultSha256": "9f928cdc1b69e7a6cf110c1f4c9b9418dfc9d4fa8a0b002b9dde5932e9ceac52",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "541bd1369fbb3ff362ccafedcdcb8ab88659a20bd6a47de05b3d882d713bdc73",
+          "processId": 35268,
+          "processStartedUtc": "2026-10-06T10:33:23.8204615Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T10:36:15.3838778Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T10:36:21.4249661Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1036222111345Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T1036222111345Z-2ff97884086b47f3af1747a941b41f23",
+          "requestSha256": "3fec15df3f4dc86ba3ce82bcdfe0030d19662d9894c6401069ed5ae4dded4e40",
+          "resultSha256": "27b0f85fd1b78395097d201bab25ed4fb15d9bf4fd6c5b524225b9b89be42829",
+          "assertions": 47,
+          "passed": 46,
+          "failed": [
+            {
+              "name": "sprint17-issued-attack-contact-salamander",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "183c6edf9c3a0354af6e69d2329781ba69cc27e97b424880f4a6e312f475fc82",
+          "processId": 14180,
+          "processStartedUtc": "2026-10-06T10:36:23.4157673Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T10:40:44.5258606Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1032557994699Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T10:40:47.0701589Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T103255Z-664b804b3f424d5d8c2df548920efa94\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "A3EA13FC4F385C2992F9BCE50B42374821EFAD45DE50118ADAD0DBEF175113BE",
+      "bodyCaptureSha256": "614DE8080D72E61B4CB47F9A62683329BA8046797B1522D18BA61A7A071EFC63",
+      "driverSha256": "CAA3AEE78854E8652443C77E6192A83A6421A2B73DBC27BE0EE0370E246F6B4F",
+      "status": "NOT QUALIFIED; smoke11/11 PASS; body46/47 FAIL; exact restoration VERIFIED; Sprint17 final visuals/gameplay NOT QUALIFIED",
+      "findings": {
+        "classification": "One original hybrid weapon-contact defect. No fixture, environment or restoration failure. ExitCode1 follows the structured FAIL, not an orchestration crash.",
+        "bodies": [
+          {
+            "key": "viper",
+            "travel": 2.462338,
+            "maxVelocity": 3.04798961,
+            "attackPoseSamples": 20,
+            "exactContactPoses": 2,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00290822983,
+            "maxAttackFloor": 0.00290822983,
+            "contacts": [
+              {
+                "frame": 4731,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "finite": true,
+                "notApplicable": null,
+                "opportunity": false,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "contactEnd": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "nearestGapMeters": 0,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "vertices": 693,
+                "measuredPoints": 693,
+                "floorClearance": 0.00290822983
+              },
+              {
+                "frame": 4806,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "finite": true,
+                "notApplicable": "unprinted donor attack",
+                "opportunity": false,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "contactEnd": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "nearestGapMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "vertices": null,
+                "measuredPoints": null,
+                "floorClearance": 0.00290822983
+              }
+            ]
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.45908737,
+            "maxVelocity": 3.04798865,
+            "attackPoseSamples": 19,
+            "exactContactPoses": 2,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00184631348,
+            "maxAttackFloor": 0.00184631348,
+            "contacts": [
+              {
+                "frame": 5294,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "finite": true,
+                "notApplicable": null,
+                "opportunity": false,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "contactEnd": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "nearestGapMeters": 0,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "vertices": 819,
+                "measuredPoints": 819,
+                "floorClearance": 0.00184631348
+              },
+              {
+                "frame": 5369,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "finite": true,
+                "notApplicable": "unprinted donor attack",
+                "opportunity": false,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "contactEnd": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "nearestGapMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "vertices": null,
+                "measuredPoints": null,
+                "floorClearance": 0.00184631348
+              }
+            ]
+          },
+          {
+            "key": "salamander",
+            "travel": 2.4847846,
+            "maxVelocity": 3.04798913,
+            "attackPoseSamples": 17,
+            "exactContactPoses": 2,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00500011444,
+            "maxAttackFloor": 0.00500011444,
+            "contacts": [
+              {
+                "frame": 5833,
+                "category": "Spear",
+                "weapon": "99394d453c6f425f84d4b92f7a8deea0",
+                "finite": true,
+                "notApplicable": null,
+                "opportunity": false,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "contactEnd": "forward positive-Y bound only",
+                "endCentreGapMeters": 0.5628788,
+                "transverseUncertaintyMeters": 0.03134963,
+                "nearestGapMeters": 0.5942284,
+                "RPalmToSpearAxisMeters": 0,
+                "LPalmToSpearAxisMeters": 0,
+                "spearMountStatus": "two-native-palms:instance-weapon-only",
+                "spearMountFrame": 5833,
+                "vertices": null,
+                "measuredPoints": 2,
+                "floorClearance": 0.00500011444
+              },
+              {
+                "frame": 5923,
+                "category": "OtherNaturalWeapons",
+                "weapon": "93e097b8d3db42d3a37656502899e1a9",
+                "finite": true,
+                "notApplicable": null,
+                "opportunity": false,
+                "exactHybridTail": true,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "contactEnd": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "nearestGapMeters": 0.166540146,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "vertices": 499,
+                "measuredPoints": 499,
+                "floorClearance": 0.00500011444
+              }
+            ]
+          }
+        ],
+        "resolved": "Current sampled ground support and exact native-event two-palm shaft grip PASS. Distal v9 rest-shape correction changes393 original vertices; weights/UVs/triangles/native drivers unchanged. Snake bites0 gap; tail gap0.166540m.",
+        "open": "Spear forward-end gap0.562879m plus0.031350m conservative uncertainty =0.594228m. Both palms exactly on shaft at native contact frame5833, but native greatclub-derived arm pose points spear across rather than into target. No threshold waived; no runtime or source-qualified claim for this contact.",
+        "next": "Read-only native manufactured-attack action/pose audit and exact-event original-pose replay before selecting the smallest owned-view correction. No unchanged-candidate retry, native-asset edits, global limb/animation rewrite or contact waiver.",
+        "supportingArt": "Native same-event spear frame inspected as ART ONLY. Original hybrid/two palms visible; forward spear/tail partly occluded by native wall. Structured measurement, not image, establishes failure."
+      }
+    },
+    {
+      "candidate": "09087d0f45103ed8ba94084ac059f253b97f6a10",
+      "sourceFingerprint": "c9b6a3d1e9473a392706987acf1a603aa293c9fbe0fc49e6345d805d647451ae",
+      "dllSha256": "f24dea708569df9c50f211b9467dfe0c3c375e6f71005057bd2db018b1b194cd",
+      "dllMvid": "9e372fa7-8567-42e0-8655-0bd24b93819e",
+      "packageSha256": "13587ad8c72ddc90cdd1100314a54c0b41aae288a390f3879c8d3a64fe234620",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 232,
+        "full": 2034,
+        "fullSeconds": 83.3,
+        "completeGateSeconds": 180.5,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T11:12:40.6037217Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1112415176370Z-working-save-smoke",
+          "requestId": "20261006T1112415460404Z-b0ab5578faaf4c93871457ae2e84d87d",
+          "requestSha256": "b853665bd966d5917fdc5626adcb5f5660704203c2d8a69752071b936e34c4f0",
+          "resultSha256": "e8a4e35a29488617bb4977aef219199ed968ab27558643d0fd135ae750d675c7",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "91fbcdf63bb87c4c58c740146471ac5e535dc64675ce251449d1af78feedcdf2",
+          "processId": 29104,
+          "processStartedUtc": "2026-10-06T11:12:42.5446647Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T11:15:34.6027158Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T11:15:42.2445052Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1115430240618Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T1115430306171Z-86987099c56e4389a896f50f9715ee7e",
+          "requestSha256": "07bc5addf99ba77034ece4abe7b0e17c7a1af1a431cd7bc6ac6c4cffb7634eb1",
+          "resultSha256": "c28cde640c196408d2d1e0cf184d7e40962d7861444c24a61d45ba351e306df3",
+          "assertions": 47,
+          "passed": 44,
+          "failed": [
+            {
+              "name": "sprint17-native-attack-research-salamander",
+              "status": "FAIL"
+            },
+            {
+              "name": "sprint17-issued-attack-contact-salamander",
+              "status": "FAIL"
+            },
+            {
+              "name": "sprint17-spear-two-palm-contact-grip",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "2fb6381464bf21be3e520c34ab3243fb301e51ccb50a20ba4ebee429e025730c",
+          "processId": 25552,
+          "processStartedUtc": "2026-10-06T11:15:44.1214313Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T11:20:03.8886688Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1112148857824Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T11:20:06.3390196Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T111214Z-47ff415fe79d4b07b2a85b305206f35a\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "B10ED8A40739015EC306E04665552768D625659128AA1D744A4A1F87008A7092",
+      "bodyCaptureSha256": "804225C6943055C85B18676A0E9CBB610AD08DC93F6FFB543537D5E42313BBF9",
+      "driverSha256": "28A20EEF6715ADFEA40400CA415F441E6ED1DAE4DD203D17E6F9D89170688FC9",
+      "nativeOutputLogSha256": "090E5C7D90784AC7ED546F79C6BC90BCFF3D7BE8C3816689FC74CADAD5B5FC67",
+      "status": "NOT QUALIFIED; smoke11/11 PASS; body44/47 FAIL; exact restoration VERIFIED; Sprint17 NOT QUALIFIED",
+      "findings": {
+        "classification": "One demonstrated original-view integration defect: spear requires PiercingTwoHanded but donor MainHandAttack offers only SlashingTwoHanded and AxeTwoHanded. Three dependent strengthened assertions fail; no environment/restoration failure.",
+        "bodies": [
+          {
+            "key": "viper",
+            "travel": 2.459797,
+            "maxVelocity": 3.04798913,
+            "attackPoseSamples": 19,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00290822983,
+            "handCensus": [
+              {
+                "kind": "MainHandAttack",
+                "actionClass": null,
+                "actionName": null
+              },
+              {
+                "kind": "OffHandAttack",
+                "actionClass": null,
+                "actionName": null
+              }
+            ],
+            "contacts": [
+              {
+                "frame": 4685,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": 0,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 4685,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 1.08,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Purple_Worm_AnimationSet_Bite 1",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 1.07999992,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "BiteAttack01_Short_3.5m",
+                    "durationSeconds": 2.4,
+                    "events": []
+                  }
+                }
+              },
+              {
+                "frame": 4760,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 4760,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 1.11144054,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Purple_Worm_AnimationSet_Sting",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 1.07144034,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "StingAttack_4.5m",
+                    "durationSeconds": 2.4666667,
+                    "events": []
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.46163225,
+            "maxVelocity": 3.047989,
+            "attackPoseSamples": 19,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00184631348,
+            "handCensus": [
+              {
+                "kind": "MainHandAttack",
+                "actionClass": null,
+                "actionName": null
+              },
+              {
+                "kind": "OffHandAttack",
+                "actionClass": null,
+                "actionName": null
+              }
+            ],
+            "contacts": [
+              {
+                "frame": 5248,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": 0,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 5248,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 1.09507537,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Purple_Worm_AnimationSet_Bite 1",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 1.05507541,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "BiteAttack01_Short_3.5m",
+                    "durationSeconds": 2.4,
+                    "events": []
+                  }
+                }
+              },
+              {
+                "frame": 5323,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 5323,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 1.11758792,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Purple_Worm_AnimationSet_Sting",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 1.07758772,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "StingAttack_4.5m",
+                    "durationSeconds": 2.4666667,
+                    "events": []
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "key": "salamander",
+            "travel": 2.48433256,
+            "maxVelocity": 3.04798937,
+            "attackPoseSamples": 17,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00500011444,
+            "handCensus": [
+              {
+                "kind": "MainHandAttack",
+                "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionHandAttack",
+                "actionName": "Lizardfolk_2H_Slashing_AnimationSet_MainHandAttack",
+                "styles": [
+                  {
+                    "style": "SlashingTwoHanded",
+                    "variants": [
+                      {
+                        "name": "Attack_02_1",
+                        "durationSeconds": 2,
+                        "events": [
+                          {
+                            "function": "PostEventMapped",
+                            "time": 0.186226964
+                          },
+                          {
+                            "function": "PostMainWeaponWhooshEvent",
+                            "time": 0.587778866
+                          },
+                          {
+                            "function": "PostCommandActEvent",
+                            "time": 0.7984395
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Attack_02_2",
+                        "durationSeconds": 1.33333337,
+                        "events": [
+                          {
+                            "function": "PostEventMapped",
+                            "time": 0.3
+                          },
+                          {
+                            "function": "PostMainWeaponWhooshEvent",
+                            "time": 0.314258
+                          },
+                          {
+                            "function": "PostCommandActEvent",
+                            "time": 0.6311227
+                          }
+                        ]
+                      }
+                    ],
+                    "rend": null,
+                    "charge": null
+                  },
+                  {
+                    "style": "AxeTwoHanded",
+                    "variants": [
+                      {
+                        "name": "Attack_02_1",
+                        "durationSeconds": 2,
+                        "events": [
+                          {
+                            "function": "PostEventMapped",
+                            "time": 0.186226964
+                          },
+                          {
+                            "function": "PostMainWeaponWhooshEvent",
+                            "time": 0.587778866
+                          },
+                          {
+                            "function": "PostCommandActEvent",
+                            "time": 0.7984395
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Attack_02_2",
+                        "durationSeconds": 1.33333337,
+                        "events": [
+                          {
+                            "function": "PostEventMapped",
+                            "time": 0.3
+                          },
+                          {
+                            "function": "PostMainWeaponWhooshEvent",
+                            "time": 0.314258
+                          },
+                          {
+                            "function": "PostCommandActEvent",
+                            "time": 0.6311227
+                          }
+                        ]
+                      }
+                    ],
+                    "rend": null,
+                    "charge": null
+                  }
+                ]
+              },
+              {
+                "kind": "OffHandAttack",
+                "actionClass": null,
+                "actionName": null
+              }
+            ],
+            "contacts": [
+              {
+                "frame": 5787,
+                "category": "Spear",
+                "weapon": "99394d453c6f425f84d4b92f7a8deea0",
+                "exactHybridTail": false,
+                "nativeAnimationContact": false,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": 0.5922998,
+                "endCentreGapMeters": 0.56095016,
+                "transverseUncertaintyMeters": 0.03134963,
+                "RPalmToSpearAxisMeters": 0,
+                "LPalmToSpearAxisMeters": 4.76837158e-7,
+                "spearMountStatus": "two-native-palms:instance-weapon-only",
+                "spearMountFrame": 5787,
+                "issuedAnimation": {
+                  "frame": 5787,
+                  "handlePresent": true,
+                  "observedActedClip": false,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 0.12,
+                  "weaponStyle": "PiercingTwoHanded",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionHandAttack",
+                  "actionName": "Lizardfolk_2H_Slashing_AnimationSet_MainHandAttack",
+                  "activeAnimationPresent": false
+                }
+              },
+              {
+                "frame": 5876,
+                "category": "OtherNaturalWeapons",
+                "weapon": "93e097b8d3db42d3a37656502899e1a9",
+                "exactHybridTail": true,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": 0.164152145,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 5876,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 0.636114,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Lizardfolk_2H_Slashing_AnimationSet_Bite",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 0.636114,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "Bite_Attack",
+                    "durationSeconds": 1.4666667,
+                    "events": []
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "cause": "Exact spear frame5787: issued handle started/acted at0.12s, requested PiercingTwoHanded, activeAnimationPresent=false. This is native missing-clip fallback, not an actual spear animation. The two-palm distances remain zero but actual-attack grip is NOT QUALIFIED. Conservative spear miss0.5922998m. No native bone correction is justified from a missing animation.",
+        "resolved": "Stronger exact-command read-only observations separate missing-clip fallback from real native playback. Snake bites play BiteAttack01_Short_3.5m, gap0. Hybrid tail uses native Bite_Attack, gap0.164152145m; that is a research measurement, not final tail-action qualification. All original support, movement, isolation, rollback/native destruction/resources/environment checks pass.",
+        "next": "Use archived native LizardfolkKing shortspear carrier9f7a7364b76d65d43b72086aedce68ae/prefabc664715ff7165984285f66acc764b4b3 as the single bounded existing piercing-action candidate. Verify its style/rig bindings before instance-only adoption; no style relabel, native asset mutation, bone twist, reach inflation, global animation framework or threshold waiver.",
+        "priorClaims": "Prior669 exact-event shaft grip measurements remain numeric evidence, but acted-only did not establish a real attack clip; withdraw that interpretation without changing the archived failure."
+      }
+    },
+    {
+      "candidate": "570a14cd48d9008058e524f732b79c9701c1076c",
+      "sourceFingerprint": "2c0f74048b524ed0563cf311cf817e4b29e9001a477216a90e10cc68bbabc94e",
+      "dllSha256": "e1d283e4a7e7609c24cba3044936a5e6210d682fdcf90d7da907dfde7d5f6a29",
+      "dllMvid": "8f77bf87-282f-456a-9eb4-79c391f73341",
+      "packageSha256": "a0db47e8b5dd18a267537020b09c3d8ca34d62296972674d3457336bec3372c9",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 234,
+        "full": 2036,
+        "fullSeconds": 84.6,
+        "completeGateSeconds": 181.3,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T12:04:27.8422475Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1204287624103Z-working-save-smoke",
+          "requestId": "20261006T1204287937520Z-d1e7e3aeed1a45a98045920bd6119b0d",
+          "requestSha256": "38c6050104bf81677360c8542832a234a43e8d1133880cbc93fb8d33c108765f",
+          "resultSha256": "c91b12a5c8f1af050d1b73757fd79391bac17fddba236049c3351b13d1971ac7",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "737cdbbcff1d12035a040c64168618862d5b281567b859855d7e30ff75644f55",
+          "processId": 31152,
+          "processStartedUtc": "2026-10-06T12:04:29.8615038Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T12:07:21.7024449Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T12:07:27.7428204Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1207285117966Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T1207285117966Z-32e6e018ad124423ba758e7c086a517a",
+          "requestSha256": "a540de5159dca92b10e8c2921b59028941541e8144b06f109c82fb1c05ac55ab",
+          "resultSha256": "5b9e2cbb1e9526c0328f614868b5b1300a7c48374e9f206c0b634b986b9cf388",
+          "assertions": 35,
+          "passed": 33,
+          "failed": [
+            {
+              "name": "sprint17-body-rollback-salamander",
+              "status": "FAIL"
+            },
+            {
+              "name": "sprint17-body-exception",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "4c9dfe3b5a0f935d447beb487ed8f70f44cd67e9cb22bef6960633f3bfbda0cd",
+          "processId": 27144,
+          "processStartedUtc": "2026-10-06T12:07:30.1463464Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T12:11:28.1949976Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1204024052635Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T12:11:30.6828777Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T120401Z-9dea3160291f4441960c01fb995722a9\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "008A868413EA81BC9845B2200C24C5B1579368CBCC8041BD453E5ABC2C2B1E55",
+      "bodyCaptureSha256": "A36FD0AF1232174494428D8CA61A0D689CAC743CE9E900FCCC6DFE6B355864E4",
+      "driverSha256": "32F71409369B8D1DA8878FF1C9F1A0BE03CD32FA1A46EC98E6FBADFB53479216",
+      "status": "NOT QUALIFIED; smoke11/11 PASS; body33/35 FAIL before Salamander attachment; exact restoration VERIFIED; 48-assertion complete gate not reached",
+      "findings": {
+        "classification": "RESEARCH CARRIER INCOMPATIBILITY; pre-attachment guard rejects the fixed donor. Dependent rollback assertion fails because the post-swap drill was never reached, not because restoration leaked.",
+        "donor": "9f7a7364b76d65d43b72086aedce68ae/prefabc664715ff7165984285f66acc764b4b3",
+        "nativeSet": "Lizardfolk_RH_Spear_Shield_AnimationSet",
+        "nativeAction": "Lizardfolk_RH_Spear_Shield_AnimationSet_MainHandAttack",
+        "piercingTwoHandedSupported": false,
+        "matching39BoneBodies": 0,
+        "ownedResourcesCapturedAtPostSwap": 0,
+        "failures": [
+          {
+            "assertion": "sprint17-body-rollback-salamander",
+            "cause": "Adapter rejected before PostSwapFaultForTest; captured=0; no qualifying rollback drill."
+          },
+          {
+            "assertion": "sprint17-body-exception",
+            "cause": "Same exact style/rig guard rejection on attachment; no owned animation-set substitution or final hybrid contact measurement."
+          }
+        ],
+        "passed": "All 28 snake body/movement/floor/contact/isolation/rollback/resource assertions, two Salamander native-control/appearance checks, environment restoration, fixture cleanup and version:33 total. Viper/constrictor real native bite gaps0 at frames4726/5289; donor sting remains unprinted research data only.",
+        "next": "Do not retry this donor or relabel its one-handed action. Change observation strategy to bounded read-only native action/style/renderer metadata before any further carrier choice. Preserve existing identity, actual two-handed spear rules, original assets and complete contact gates. No production hook or DATA import."
+      }
+    }
+  ]
+}

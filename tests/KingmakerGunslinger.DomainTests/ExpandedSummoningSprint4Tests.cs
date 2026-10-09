@@ -131,11 +131,16 @@ namespace KingmakerGunslinger.DomainTests
                 "9393cc36ea29d084bab7433e3a28d40b", "case \"Plant\"",
                 "27eee74857c42db499b3a6b20cfa6211", "ec35ef997ed5a984280e1a6d87ae80a8",
                 "7e4b9b41a9358264d9e3c69c183ca0a2", "287cd06241fdaf8408410b226f744093",
-                "4179c5c08d606a6439a62bf178b738e1", "eee672c8f6555b445a89dbbb91361d64",
                 "24700a71dd3dc844ea585345f6dd18f6", "416386972c8de2e42953533c4946599a",
                 "236ec7f226d3d784884f066aa4be1570", "728446b9d0bf47144a1b621169299c2a" })
                 Assertions.True(builder.Contains(token),
                     "Sprint 4 natural builder contract is missing: " + token);
+            Assertions.Equal("4179c5c08d606a6439a62bf178b738e1",
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(10),
+                "Sprint 4 native +10 natural-armor binding changed.");
+            Assertions.Equal("eee672c8f6555b445a89dbbb91361d64",
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(22),
+                "Purple Worm native natural-armor binding changed.");
         }
 
         internal static void GrappleLifecycleIsBounded()
@@ -182,6 +187,20 @@ namespace KingmakerGunslinger.DomainTests
                 !ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(false, true, 1, true) &&
                 !ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(true, true, 1, false),
                 "A swallow is a later turn's successful check on a held target of an allowed size, never the grab.");
+            // The shared maintain path now uses the single-rider selector.
+            // Pin the older swallow-only behavior for every combination, not
+            // the spelling of the helper that used to implement it.
+            foreach (bool success in new[] { false, true })
+            foreach (bool held in new[] { false, true })
+            foreach (int rounds in new[] { 0, 1, 2 })
+            foreach (bool allowed in new[] { false, true })
+                Assertions.Equal(
+                    ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(
+                        success, held, rounds, allowed),
+                    CrocodilianRulesPolicy.SelectMaintainRider(success, held,
+                        rounds, false, false, true, allowed, true) ==
+                        CrocodilianMaintainRider.SwallowWhole,
+                    "The shared selector changed a non-crocodilian swallow condition.");
             Assertions.Equal(4, ExpandedSummoningSpecialProfiles.GiantFlytrapBiteCount,
                 "The Flytrap holds one target per bite.");
             Assertions.True(ExpandedSummoningSpecialProfiles.ShouldMaintainSummonHold(true, true),
@@ -217,7 +236,7 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitPartGrappleTarget", "UnitPartSwallowWhole", "SpitOut(true)",
                 "IPartyLeaveAreaHandler", "IAreaLoadingStagesHandler",
                 "public override void OnTurnOff()", "UnitHelper.TryBreakFree",
-                "ShouldAttemptSummonGrab", "ShouldMaintainSummonHold", "ShouldSwallowOnMaintain",
+                "ShouldAttemptSummonGrab", "ShouldMaintainSummonHold",
                 "IsGrabSizeAllowed", "IsSwallowSizeAllowed", "IsHeldSinceRoundStart" })
                 Assertions.True(components.Contains(token),
                     "Grapple lifecycle component contract is missing: " + token);

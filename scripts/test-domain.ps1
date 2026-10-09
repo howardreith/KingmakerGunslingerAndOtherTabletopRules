@@ -5,7 +5,15 @@ param(
 
     [string]$MSBuildPath,
 
-    [switch]$Clean
+    [switch]$Clean,
+
+    # For a caller that has already validated the repository itself, and for
+    # the inner loop. Build-Local.ps1 passes it because it runs the wrapper
+    # directly one line earlier, which is how a candidate pipeline validates
+    # the repository exactly once; Invoke-KmgGate.ps1 passes it at the Focused
+    # level, where the wrapper is deferred to the sprint candidate boundary.
+    # No qualification level reaches the complete suite without the wrapper.
+    [switch]$SkipRepositoryValidation
 )
 
 Set-StrictMode -Version Latest
@@ -15,7 +23,11 @@ $ErrorActionPreference = 'Stop'
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $projectPath = Join-Path $repositoryRoot 'tests\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.csproj'
 
-& (Join-Path $PSScriptRoot 'validate-repository.ps1')
+if ($SkipRepositoryValidation) {
+    Write-Host 'Repository validation skipped: the caller runs it, or this is a focused run.'
+} else {
+    & (Join-Path $PSScriptRoot 'validate-repository.ps1')
+}
 
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 $processPath = $env:Path

@@ -10,12 +10,59 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
 DONORS = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningDonorCatalog.cs"
+VISIBILITY = ROOT / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
 MANIFEST = ROOT / "blueprints/blueprints.json"
 ROSTER = ROOT / "planning/EXPANDED-SUMMONING-ROSTER.md"
 ENTRY = re.compile(
     r'C\("([^"]+)","([^"]+)",(null|\d+),(true|false),(null|\d+)'
     r'(?:,"([^"]+)")?\)')
 DONOR = re.compile(r'"([a-z0-9-]+)\|([0-9a-f]{32})\|([01])"')
+SUPPRESSED = re.compile(
+    r"SuppressedCreatureKeys\s*=\s*\n?\s*new HashSet<string>\((.*?)\);", re.S)
+
+# Published creatures whose qualification is worth more than the structural
+# line. A creature that is withheld never appears here: what it is waiting for
+# is decided by the visibility catalog, not by this table.
+QUALIFICATION_NOTES = {
+    "viper": "Independently qualified/published: all hidden gates47e8c121 PASS and all18 public roots996c5fe7 PASS; HumanReview NOT_PERFORMED_NONBLOCKING",
+    "constrictor-snake": "Independently qualified/published: all hidden gates47e8c121 PASS and all14 public roots996c5fe7 PASS; HumanReview NOT_PERFORMED_NONBLOCKING",
+    "salamander": "Five existing roots/identities preserved; mechanics/view/UI/crowd/persistence47e8c121 and public996c5fe7 PASS; final observation-only reach correctiondb1da016 profile/view73/73 PASS; Sprint17 technically qualified; HumanReview NOT_PERFORMED_NONBLOCKING",
+    "crocodile": "Existing fourteen roots and identity retained; Sprint 16 complete: exact e3aeae63 hidden mechanics/original visual and 155ada89 public-route PASS; owner visual review pending",
+    "dire-crocodile": "Six preserved roots published and qualified on exact 155ada89 after complete e3aeae63 hidden PASS; SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED; owner visual review pending",
+    "fire-beetle": "Published; Sprint 14 qualified; owner visual review pending",
+    "giant-ant-worker": "Published; Sprint 14 qualified under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
+    "giant-ant-soldier": "Published; Sprint 14 qualified under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
+    "giant-ant-drone": "Published; Sprint 15 qualified under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
+    "giant-stag-beetle": "Published; Sprint 15 qualified; owner visual review pending",
+    "giant-wasp": "Published; Sprint 10 Wasp mechanics, view, menu and player path technical PASS; owner visual review pending",
+    "stirge": "Published; Stirge attach, drain, visual contact, icon, player path and live menu technical PASS; owner visual review pending",
+    "aurochs": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
+    "bison": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
+    "rhinoceros": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
+    "woolly-rhinoceros": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
+    "dire-rat": "Published; Sprint 12 mechanics, disease lifetime, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+    "dog": "Published; Sprint 12 mechanics, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+    "hyena": "Published; Sprint 12 mechanics, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+    "goblin-dog": "Published; Sprint 12 mechanics, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+    "wolverine": "Published; Sprint 13 rage lifetime, original visual, navigation, both combat modes and persistence technical PASS; owner visual review pending",
+    "shadow-mastiff": "Published; Sprint 13 bay, shadow blend, original visual, both combat modes and persistence technical PASS; owner visual review pending",
+    "poisonous-frog": "Published; Sprint 13 mechanics, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+}
+
+
+def suppressed_keys():
+    """The creatures the visibility catalog withholds, read from the catalog.
+
+    Registering ahead of qualification is what allocates a creature's
+    identities once and keeps them from ever moving, so the roster has to be
+    able to say that a row exists and is not yet published. That is decided in
+    exactly one place and this reads it rather than repeating it.
+    """
+    text = VISIBILITY.read_text(encoding="utf-8")
+    match = SUPPRESSED.search(text)
+    if match is None:
+        raise SystemExit("cannot read SuppressedCreatureKeys")
+    return set(re.findall(r'"([a-z0-9-]+)"', match.group(1)))
 
 DONOR_NAMES = {
     "028cc6f46e7998f46855a33ffde89567": "MastodonSummon",
@@ -160,8 +207,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 88:
-        raise SystemExit(f"Expected 88 parsed creatures; observed {len(values)}")
+    if len(values) != 97:
+        raise SystemExit(f"Expected 97 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -356,27 +403,90 @@ def planned():
         ("KMG.Summoning.Natural.DireRat.Disease", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GoblinDog.Traits", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GoblinDog.AllergicReaction", "BlueprintBuff"),
+        # Sprint 13
+        ("KMG.Summoning.Natural.Bite1", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Wolverine.Rage", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Wolverine.RageOnset", "BlueprintBuff"),
+        ("KMG.Summoning.Natural.Wolverine.RageState", "BlueprintBuff"),
+        # Sprint 13 Shadow Mastiff
+        ("KMG.Summoning.Natural.Tail1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.ShadowMastiff.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.Special.ShadowMastiff.Bay", "BlueprintAbility"),
+        ("KMG.Summoning.Special.ShadowMastiff.BayPanic", "BlueprintBuff"),
+        ("KMG.Summoning.Special.ShadowMastiff.BayImmunity", "BlueprintBuff"),
+        ("KMG.Summoning.Special.ShadowMastiff.ShadowBlend", "BlueprintActivatableAbility"),
+        ("KMG.Summoning.Special.ShadowMastiff.ShadowBlendState", "BlueprintBuff"),
+        # Sprint 14. The soldier's sting is its own weapon so the poison
+        # trigger can gate on that weapon's type and never reach the bite,
+        # and its grab rides the shared grapple lifecycle on the primary limb
+        # alone. The beetle's luminescence is a display feature beside a
+        # view-local light; Kingmaker has no mechanics-layer illumination
+        # model, so it grants and denies nothing.
+        ("KMG.Summoning.Natural.AntSting1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.GiantAnt.Poison", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantAnt.Venom", "BlueprintBuff"),
+        ("KMG.Summoning.Natural.FireBeetle.Luminescence", "BlueprintFeature"),
+        ("KMG.Summoning.Special.GiantAntSoldier.Traits", "BlueprintBuff"),
+        # Sprint 14 follow-up: the ants' printed racial Perception, and
+        # project unit types so the three insects are not classified as
+        # the Giant Spider they borrow. One ant type serves both castes.
+        ("KMG.Summoning.Natural.GiantAnt.RacialSkills", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.FireBeetle.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.GiantAnt.UnitType", "BlueprintUnitType"),
+        # Existing Sprint 15-16 identities; never allocate replacements.
+        ("KMG.Summoning.Special.GiantAntDrone.Traits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.GiantStagBeetle.Trample", "BlueprintAbility"),
+        ("KMG.Summoning.Natural.GiantStagBeetle.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Bite3d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Tail4d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Crocodile.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DireCrocodile.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Crocodile.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.Crocodile.Sprint", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Crocodile.SprintAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Crocodile.SprintState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Crocodile.SprintCooldown", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DireCrocodile.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.DireCrocodile.Sprint", "BlueprintAbility"),
+        ("KMG.Summoning.Special.DireCrocodile.SprintAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.DireCrocodile.SprintState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DireCrocodile.SprintCooldown", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DireCrocodile.Swallowed", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Crocodilian.SprintNotEngaged", "IsEngagedConsideration"),
+        ("KMG.Summoning.Natural.Viper.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.ConstrictorSnake.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Viper.CombatProfile", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.ConstrictorSnake.CombatProfile", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Viper.Poison", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Viper.Venom", "BlueprintBuff"),
+        ("KMG.Summoning.Special.ConstrictorSnake.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Salamander.TailType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Special.Salamander.UnitType", "BlueprintUnitType"),
     ))
-    if len(rows) != 1661 or len({symbol for symbol, _ in rows}) != 1661:
+    if len(rows) != 1923 or len({symbol for symbol, _ in rows}) != 1923:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
 
 def generated_roster(manifest):
+    withheld = suppressed_keys()
     by_symbol = {entry["symbol"]: entry for entry in manifest["entries"]}
     donors = {
         key: {"guid": guid, "dedicated": dedicated == "1"}
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 88 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != len(creatures) or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
+    registered = sum(10-c[field] for c in creatures for field in ("monster", "ally") if c[field] is not None)
+    hidden = suppressed_keys()
+    withheld_count = sum(10-c[field] for c in creatures for field in ("monster", "ally") if c[field] is not None and c["key"] in hidden)
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Registered totals: 80 Summon Monster entries / 453 placements; 78 Summon Nature's Ally entries / 447 placements; 88 unique units; 832 of 900 placements are published. The 68 Dire Rat, Dog, Hyena and Goblin Dog placements remain hidden during Sprint 12 qualification. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-17 are technically qualified and published. Viper and Constrictor independently publish after complete hidden PASS on47e8c121 and all32 public roots PASS on996c5fe7. Salamander's observation-only reach correctiondb1da016 profile/view73/73 PASS closes Sprint17; its five existing public roots remain preserved and PASS. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Release143 integration/closure remains NOT QUALIFIED until the exact final matrix passes. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",
@@ -423,11 +533,12 @@ def generated_roster(manifest):
                        "and summon/conjure surfaces removed; ")
             adaptation = SPECIAL_NOTES.get(creature["key"],
                 "Dedicated mechanics reused only where exact; otherwise donor is view/rig only and the checked-in tabletop profile owns stats, attacks, facts, and deviations.")
-            qualification = ("Hidden; Sprint 12 mechanics, visual identity and lifecycle qualification pending" if creature["key"] in ("dire-rat", "dog", "hyena", "goblin-dog") else
-                "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending" if creature["key"] in ("aurochs", "bison", "rhinoceros", "woolly-rhinoceros") else
-                "Published; Sprint 10 Wasp mechanics, view, menu and player path technical PASS; owner visual review pending" if creature["key"] == "giant-wasp" else
-                "Published; Stirge attach, drain, visual contact, icon, player path and live menu technical PASS; owner visual review pending" if creature["key"] == "stirge" else
-                "Structural PASS; native cast PASS; visual contract PASS; required profiles PASS")
+            qualification = (
+                "Registered and withheld; mechanics, original visual, both "
+                "combat modes and lifecycle qualification pending"
+                if creature["key"] in withheld else
+                QUALIFICATION_NOTES.get(creature["key"],
+                    "Structural PASS; native cast PASS; visual contract PASS; required profiles PASS"))
             lines.append(
                 f"| {source} / {creature['name']} | {policy} | {donor_text} | "
                 f"`{unit_guid}` | {';<br>'.join(abilities)} | {removed}{adaptation} "
@@ -462,6 +573,20 @@ def validate(manifest, plan):
     print(f"Expanded Summoning manifest PASS: foundation={len(plan)} active={active} reserved={reserved} total={len(entries)}")
 
 
+def write_lf(path, text):
+    """Write with LF endings, which is what .gitattributes declares.
+
+    Path.write_text translates to the platform's newline, so on Windows
+    this silently produced CRLF in files the repository stores as LF. The
+    file then hashes differently in the working tree than in a fresh
+    checkout, and the icon catalog pins the ledger's hash, so the
+    mismatch would surface as an icon validation failure on a clean clone
+    rather than where it was caused.
+    """
+    with open(path, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--allocate", action="store_true")
@@ -488,18 +613,18 @@ def main():
                 "milestone": "Expanded Summoning",
                 "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
             })
-        MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        write_lf(MANIFEST, json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     if args.activate:
         planned_symbols = {symbol for symbol, _ in plan}
         for entry in manifest["entries"]:
-            if entry["symbol"] in planned_symbols:
+            if entry["symbol"] in planned_symbols and entry["status"] != "active":
                 entry["status"] = "active"
                 entry["notes"] = "Registered in every feature-module state; live parent publication remains independently gated."
-        MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        write_lf(MANIFEST, json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     validate(manifest, plan)
     roster = generated_roster(manifest)
     if args.emit_roster:
-        ROSTER.write_text(roster, encoding="utf-8")
+        write_lf(ROSTER, roster)
     elif not ROSTER.is_file() or ROSTER.read_text(encoding="utf-8") != roster:
         raise SystemExit(
             "Expanded Summoning roster ledger is stale; run with --emit-roster")

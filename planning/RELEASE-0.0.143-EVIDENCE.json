@@ -1,0 +1,2502 @@
+{
+  "schemaVersion": 1,
+  "releaseVersion": "0.0.143",
+  "status": "BLOCKED_MODULE_DISABLED_LEGACY_VISUAL_VARIANTS",
+  "readinessObserverRepairMission": {
+    "authority": "v0.0.143 Readiness Observer Repair and Final Release Order",
+    "intakeReportingHead": "95ff2ee1d3703ed0f863525bd943e573e49fd869",
+    "priorFailedDiagnosticCandidate": "e2e8682ad9f2f18cb6aa28e4b5de14a5ec3a6492",
+    "ownerDisposition": "Prior allowance reset because no readiness diagnosis occurred;run failed request-local observer serialization before a per-unit report. Demonstrated test-observer defect,not a product failure or an unresolved readiness result.",
+    "diagnosisRunsAuthorized": 1,
+    "diagnosisRunsUsed": 1,
+    "correctionCandidatesAuthorized": 1,
+    "correctionCandidatesUsed": 1,
+    "repair": "Explicit deterministic JObject predicate-to-nullable-frame mapping without configured serialization;top-level report allocated before rows;per-row errors retain key/id/exception/stage;other rows survive;summary excludes failed rows;finally clears tracking and records outcome;evidence written before mandatory observer-error gate can fail the scenario.",
+    "originalSnakeReadinessPredicateRetainedForDiagnosis": true,
+    "productionChanged": false,
+    "focusedPassed": 7,
+    "focusedFailed": 0,
+    "expectedFullTests": 2478,
+    "nextGate": "STOP: one repaired diagnosis and one correction candidate used. Readiness resolved,prepare119/119 PASS,cleanup116/118 FAIL with6/95 surviving captured resources despite108/108 unit destruction. No cleanup save or fresh absence. Smallest new owner scope: separate bounded resource-ownership/disposal diagnosis and authorized native working-save cleanup;no readiness or Crocodile re-observation.",
+    "furtherCrocodileAttributionCycleAuthorized": false,
+    "completedQualificationEvidenceReusedWithOriginalProvenance": true,
+    "sprint18Authorized": false,
+    "repairedCandidate": "205c98535c83515d07541cd0849e5b77efa8ee79",
+    "repairedSourceGate": {
+      "status": "PASS",
+      "passed": 2478,
+      "failed": 0,
+      "references": 14,
+      "members": 325,
+      "sourceFingerprint": "f59ce0fe529d3318e441a4588e13246676626f74cb039e5e57267aff75714913",
+      "zipSha256": "394ecd0d750254a0019cac9d592197db9378e4ef5f5d6fa0500d9133fdaf841f",
+      "dllSha256": "006534580cc7ec0123816b153a14397f14e260f387dff3d84fd02741c7af2f84",
+      "mvid": "b6fb4694-babc-4612-9a84-e5a7c48e2825",
+      "strictPackage": "PASS",
+      "seconds": 215.7,
+      "logSha256": "f6364db285ebea091af95b6776a852f33cd70768117fc29945fce51fd2fd8348"
+    },
+    "diagnosis": {
+      "status": "COMPLETED;ORIGINAL_PREPARE_FAIL_PRESERVED",
+      "batchId": "release143-runtime-20261008T2024111882861Z",
+      "batchRecordSha256": "33bba5e74c793a27c1bfe818eae6f57a08bc87cc3ddb5d03553e8876e13b41cd",
+      "evidenceId": "20261008T2027408175747Z-working-save-expanded-summoning-prepare",
+      "reportSha256": "980cd3c346c9c516447c7ce71a540d98afc6ebea8fb52923ca9a7c4b0343b7b9",
+      "witnessSha256": "1c200ef6d857d1c238edc6ddb5b14948fbc5f2cb1dab2b1e233995f17a31ac0f",
+      "smokePassed": 11,
+      "preparePassed": 117,
+      "prepareFailed": 2,
+      "nativeWrites": 0,
+      "requestId": "20261008T2027408175747Z-43df05a5f99b46eb90ea72ebf2648547",
+      "requestSha256": "5f55023fcba23fa7bd02b43f0735c80f52fa5c455a2dfb0630044a1bb32540aa",
+      "resultSha256": "6c57b6c5f565a2fcbd98387f3181a1d6843411af9816f9a8094fc7c430f84e2f",
+      "pid": 38112,
+      "startedUtc": "2026-10-08T20:27:41.6971917Z",
+      "units": 108,
+      "successfulRows": 108,
+      "observerErrors": 0,
+      "observerClearedInFinally": true,
+      "allValidLiveViews": true,
+      "allAliveConscious": true,
+      "allDissolveFinite": true,
+      "allNativeAppearanceLocksGoneAndControlRestoredAtFrame": 4312,
+      "summaryByFailedPredicate": {
+        "DissolveSettled": {
+          "count": 44,
+          "keys": [
+            "air-mephit",
+            "bralani-azata",
+            "constrictor-snake",
+            "dust-mephit",
+            "earth-mephit",
+            "elder-earth-elemental",
+            "elephant",
+            "fire-mephit",
+            "ghaele-azata",
+            "giant-frog",
+            "goblin-dog",
+            "greater-earth-elemental",
+            "greater-fire-elemental",
+            "greater-water-elemental",
+            "hell-hound",
+            "huge-earth-elemental",
+            "ice-mephit",
+            "invisible-stalker",
+            "large-earth-elemental",
+            "leopard",
+            "magma-mephit",
+            "medium-earth-elemental",
+            "medium-fire-elemental",
+            "native:0c433dcdefcaaeb4db78b07c3ebf4c94",
+            "native:1618961b217a446459c6a91481065d2c",
+            "native:32a7776fb5bb9fa408b97757c04d4247",
+            "native:590cd3d5e76fdc649a5f97bc984cd3c4",
+            "native:5adafaa653dc4de40b3ac73fa002a2ec",
+            "native:7b7701ffc8f335a47a9ed97516531b71",
+            "native:af8bcff074b93c84b97938e486184222",
+            "native:afe56099ff6046b40a359b7562c0424e",
+            "native:e287515e761bb1a48a61e1bbcb3527b1",
+            "ooze-mephit",
+            "purple-worm",
+            "roc",
+            "salt-mephit",
+            "shadow-mastiff",
+            "shambling-mound",
+            "small-earth-elemental",
+            "steam-mephit",
+            "tiger",
+            "viper",
+            "water-mephit",
+            "wolf"
+          ]
+        },
+        "EntityFadedIn": {
+          "count": 24,
+          "keys": [
+            "constrictor-snake",
+            "elder-earth-elemental",
+            "elephant",
+            "goblin-dog",
+            "greater-fire-elemental",
+            "greater-water-elemental",
+            "hell-hound",
+            "leopard",
+            "medium-fire-elemental",
+            "native:1618961b217a446459c6a91481065d2c",
+            "native:32a7776fb5bb9fa408b97757c04d4247",
+            "native:4f04734e4ad930e438eec3182dfd95fe",
+            "native:5adafaa653dc4de40b3ac73fa002a2ec",
+            "native:af8bcff074b93c84b97938e486184222",
+            "native:afe56099ff6046b40a359b7562c0424e",
+            "ooze-mephit",
+            "pixie",
+            "purple-worm",
+            "roc",
+            "shadow-demon",
+            "shadow-mastiff",
+            "shambling-mound",
+            "tiger",
+            "viper"
+          ]
+        }
+      },
+      "compactFailingUnits": [
+        {
+          "key": "air-mephit",
+          "unitId": "45744216-879c-42ee-a712-000c1575a5d0",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "bralani-azata",
+          "unitId": "f3165e92-4c14-4c0d-b185-6e95c6922af9",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "constrictor-snake",
+          "unitId": "aa85ca55-efd2-415d-adbe-a1ac1e65dd5d",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "dust-mephit",
+          "unitId": "e1f77b1b-329c-46e6-ac43-0635eb777b7a",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "earth-mephit",
+          "unitId": "04bc1d9e-e058-42a6-8ec7-f2549a70b2b9",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "elder-earth-elemental",
+          "unitId": "13cf7bb9-f0c0-41ad-887d-24cbfa5d900c",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "elephant",
+          "unitId": "f5f9db98-a1d6-495f-b95b-57bb6ecac0eb",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "fire-mephit",
+          "unitId": "15653d60-4377-4128-b2c9-8040afa9d2ef",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "ghaele-azata",
+          "unitId": "6fc031d5-7991-46cb-92ea-792cfdabccbb",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "giant-frog",
+          "unitId": "8f0eddd6-2743-4f47-ac47-b90ca64f7b09",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "goblin-dog",
+          "unitId": "786f8a6f-18b2-41e3-a33d-923b084b2e4e",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "greater-earth-elemental",
+          "unitId": "92bf8c33-c36b-4fb6-b0b1-63badcefdc7c",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "greater-fire-elemental",
+          "unitId": "34355539-b99e-430b-8327-29ff33b08479",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "greater-water-elemental",
+          "unitId": "8c3ed883-b871-491d-b671-7af6caec43d9",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "hell-hound",
+          "unitId": "84b0a9eb-634b-41f9-8f99-24a8e8cf309f",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "huge-earth-elemental",
+          "unitId": "0934b431-0ab8-4657-8216-3280844a61f9",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "ice-mephit",
+          "unitId": "d2400233-ccad-459f-86a7-30953a975445",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "invisible-stalker",
+          "unitId": "64ec5f43-275d-4f5b-82f7-34bb1d689342",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "large-earth-elemental",
+          "unitId": "f650dadd-cb77-4d9a-8b2d-15d4621e7bfe",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "leopard",
+          "unitId": "9f9b90ab-8bc9-40b6-99f1-9b5f8da463bd",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "magma-mephit",
+          "unitId": "2fd6e387-f561-4877-a1bd-b135f1b83b6a",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "medium-earth-elemental",
+          "unitId": "cacbff6d-4e8f-4e4d-a884-4074631bea28",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "medium-fire-elemental",
+          "unitId": "4f9f0d50-8a83-4cf2-bf34-dc995bac7474",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:0c433dcdefcaaeb4db78b07c3ebf4c94",
+          "unitId": "e32b321d-e3ae-45b9-a768-7b4ea312a359",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "native:1618961b217a446459c6a91481065d2c",
+          "unitId": "7610819d-ff22-4e6a-ac57-58bb10705b0e",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:32a7776fb5bb9fa408b97757c04d4247",
+          "unitId": "c4802701-60f9-4197-840b-c4c604ea2387",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:4f04734e4ad930e438eec3182dfd95fe",
+          "unitId": "8a12b8d6-019a-497e-a9f2-8a4ae85bd10a",
+          "failedObservedPredicateNames": [
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:590cd3d5e76fdc649a5f97bc984cd3c4",
+          "unitId": "c5ea3168-cc32-48f1-be84-6850b367a90f",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "native:5adafaa653dc4de40b3ac73fa002a2ec",
+          "unitId": "346c4842-39fb-4465-b2c3-4d0862d88741",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:7b7701ffc8f335a47a9ed97516531b71",
+          "unitId": "dfc3c6de-e303-4f19-be54-b584662c68f1",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "native:af8bcff074b93c84b97938e486184222",
+          "unitId": "aaad3979-36c2-4028-ad67-9b68b49c52b7",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:afe56099ff6046b40a359b7562c0424e",
+          "unitId": "51c17e88-b37c-44ce-998a-9ecb1010f6dd",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "native:e287515e761bb1a48a61e1bbcb3527b1",
+          "unitId": "242f7364-c390-4769-a972-fd71a72fd834",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "ooze-mephit",
+          "unitId": "eb1204ed-cb55-47c1-9c39-2aa8e1e7a338",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "pixie",
+          "unitId": "e0e9a14d-fc04-4005-908b-1b18621e1479",
+          "failedObservedPredicateNames": [
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "purple-worm",
+          "unitId": "35264340-6898-4bbf-917f-d8b06fbde2fd",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "roc",
+          "unitId": "5ef149ba-da9f-422b-9382-7231fc775e1e",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "salt-mephit",
+          "unitId": "403c433d-5f51-4c39-a0ef-f05b55ef69fd",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "shadow-demon",
+          "unitId": "0b0b238d-ed6f-4f4a-8678-bbf8d512ca17",
+          "failedObservedPredicateNames": [
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "shadow-mastiff",
+          "unitId": "a5f52812-37a4-419d-8e29-0dbaad763800",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "shambling-mound",
+          "unitId": "b0612b47-b36c-4acc-a094-dc3628c6da30",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "small-earth-elemental",
+          "unitId": "7cbcee5b-2d65-4f17-a4fe-9e89fd30880b",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "steam-mephit",
+          "unitId": "2a1f0785-3704-4683-91d3-97dd7172219e",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "tiger",
+          "unitId": "fb979c1c-2169-45ca-9d20-a88083123470",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "viper",
+          "unitId": "65757632-7b3b-4752-a056-84cb687b890d",
+          "failedObservedPredicateNames": [
+            "DissolveSettled",
+            "EntityFadedIn"
+          ]
+        },
+        {
+          "key": "water-mephit",
+          "unitId": "32c93d39-a2cd-482e-9d52-ba235908ce6a",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        },
+        {
+          "key": "wolf",
+          "unitId": "399624e3-76b2-4eee-a540-4f0f8be5aaa5",
+          "failedObservedPredicateNames": [
+            "DissolveSettled"
+          ]
+        }
+      ],
+      "classification": "FIXTURE: all108 naturally settled native appearance/control.47 fail visual presentation only:24unfaded/44nonzero dissolve(overlap).21never-zero units native-asleep;22visible units settled earlier;Invisible Stalker carries NaturalInvisibilityBuff. Not all108 were ever visibly intact. No production defect demonstrated.",
+      "historicalFailurePreserved": true
+    },
+    "nativeSemanticAudit": {
+      "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "mvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+      "appearance": "RuleSummonUnit.OnTrigger applies SummonedUnitAppearBuff for two seconds;all108 naturally lost lock and regained CanAct/CanMove at4312.",
+      "presentation": "EntityViewBase.SetVisible drives EntityFader.Visible,which uses FogOfWarDissolveSettings and renderer visibility. DissolveAnimationController.Update writes CurrentDissolve to material;first-renderer _Dissolve is not an exclusive summon appearance-completion token.",
+      "privateIl": "artifacts/inspection/bodyguard-native/Assembly-CSharp.il;MVID matched exact reference"
+    },
+    "diagnosisRestoration": {
+      "status": "VERIFIED",
+      "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261008T2024119794133Z",
+      "live": {
+        "files": 136,
+        "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "version": "0.0.117",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+      },
+      "favoredSettingsSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+      "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261008T202411Z-0d55c49b948c472da24873bfbbb318a2\\runtime-lease.json",
+      "leaseReleased": true,
+      "noGame": true,
+      "noActiveStaging": true,
+      "nativeWorkingWrites": 0,
+      "protectedBaselineLoadedOrWritten": false
+    },
+    "correction": {
+      "status": "READINESS_PASS;RELEASE_BLOCKED_CLEANUP_RESOURCE_LIFECYCLE",
+      "policy": "Separate whole-roster predicate: current valid live View/Data/IsInGame,finite dissolve,CanAct/CanMove,no native appearance buff,and per-unit first successful native-control settlement;alive/conscious/non-destroyed at save. Simultaneous camera/fog/invisibility presentation is not a save prerequisite. Original creature visual predicates/evidence unchanged.",
+      "productionChanged": false,
+      "noVisibilityCameraFaderBuffForcing": true,
+      "focusedPassed": 9,
+      "focusedFailed": 0,
+      "expectedFullTests": 2480,
+      "candidate": "f5f812d72ac4214cd4ddefbd5bd34e8791720ba9",
+      "sourceGate": {
+        "status": "PASS",
+        "passed": 2480,
+        "failed": 0,
+        "cleanExactReferences": 14,
+        "strictPackage": "PASS",
+        "members": 325,
+        "sourceFingerprint": "d7ed1a8bb3e7a6176b24bcbcd904e3063de633856566b2bb829061871e645b7b",
+        "zipSha256": "55a3d16690b8a74cad14257ba5caf5a418602370f7fd809d3dd2ebc31c129778",
+        "dllSha256": "0d2a30b5c7c90f365edfbfc2d4695695d8bf11b1b5177fc470ea1f9be13c066a",
+        "mvid": "c37e6363-5fb6-450b-9921-1c0595a9d253",
+        "seconds": 215.6,
+        "logSha256": "8e6c73b216622eb02675cf03baecb1c3db1d3594ffc974df145f8eaa83819fc3"
+      },
+      "deltaAudit": {
+        "status": "PASS",
+        "baseline": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+        "productionChanged": false,
+        "members": 325,
+        "onlyChangedPackagedMember": "KingmakerGunslinger/KingmakerGunslinger.dll",
+        "recordSha256": "34b1ae844e39f49dbc1a2134ad15339de3afa7dba1157e947c294230e6011e2d"
+      },
+      "runtime": {
+        "status": "FAIL_PRESERVED",
+        "batchId": "release143-runtime-20261008T2047099052204Z",
+        "batchRecordSha256": "8a95c256687cf8a0b1aefc512434c4f256398f18a0b4984bda77a09fb1a65cdd",
+        "runs": [
+          {
+            "scenario": "working-save-smoke",
+            "label": "authorized-working-seed",
+            "status": "PASS",
+            "passed": 11,
+            "assertions": 11,
+            "nativeWrites": 0,
+            "nativeStashedAreas": 0,
+            "evidenceId": "20261008T2047377508480Z-working-save-smoke",
+            "requestId": "20261008T2047377664792Z-961b1692ffe64d90b3a04d23b7e258be",
+            "requestSha256": "9385fb1d80a50a30e4f3a5ad6a462774a5faa8319a1eb410cbcf93611b8d4a7f",
+            "resultSha256": "6eee2ebc2710ef939dfab8202ea9550c9575050af9dcf4546396c93a50817c96",
+            "pid": 33796,
+            "startedUtc": "2026-10-08T20:47:38.7897835Z",
+            "extra": {
+              "scenario": "working-save-smoke",
+              "label": "authorized-working-seed"
+            }
+          },
+          {
+            "scenario": "working-save-expanded-summoning-prepare",
+            "label": "whole-roster-on-prepare",
+            "status": "PASS",
+            "passed": 119,
+            "assertions": 119,
+            "nativeWrites": 1,
+            "nativeStashedAreas": 2,
+            "evidenceId": "20261008T2050390465901Z-working-save-expanded-summoning-prepare",
+            "requestId": "20261008T2050390465901Z-59c5cb872fa041c4a9b71427ad2b4c9d",
+            "requestSha256": "b74ae38d56374501c10aef2fb2030ae5ea5d99468b88abf3246952aa24f11947",
+            "resultSha256": "b37a23bf6b8fb8f9099dd25d53b6ecc0852dc2464baba7ff196b0e1bb2f19aa2",
+            "pid": 38416,
+            "startedUtc": "2026-10-08T20:50:40.2979172Z",
+            "extra": {
+              "scenario": "working-save-expanded-summoning-prepare",
+              "label": "whole-roster-on-prepare",
+              "expanded-summoning-roster-readiness.json": "00f58cb49ed9af1d03fcb88bccf8125128a5d970f4b5d60e0b6a93c79cafc873",
+              "expanded-summoning-whole-roster-persistence.json": "9719cf3eb4a9e4e200e185398aa6ade334db7a8d744778b2a2ad5a7244ced03e",
+              "readyUnits": 108,
+              "observerErrors": 0,
+              "cleared": true
+            }
+          },
+          {
+            "scenario": "working-save-expanded-summoning-verify-cleanup",
+            "label": "whole-roster-on-native-cleanup-save",
+            "status": "FAIL",
+            "passed": 116,
+            "assertions": 118,
+            "nativeWrites": 0,
+            "nativeStashedAreas": 0,
+            "evidenceId": "20261008T2054388817096Z-working-save-expanded-summoning-verify-cleanup",
+            "requestId": "20261008T2054388817096Z-6b4ba98c8050492babadd893daa539fb",
+            "requestSha256": "d3fe5c8e8122f9ea5d1d5033f65b862d9fb32620a8998997ef6125deec080a45",
+            "resultSha256": "409fbc7c7fdf67d0d454057b8da9cd597331140a1ef2e655266d2550323b22ae",
+            "pid": 38124,
+            "startedUtc": "2026-10-08T20:54:39.7421541Z",
+            "extra": {
+              "scenario": "working-save-expanded-summoning-verify-cleanup",
+              "label": "whole-roster-on-native-cleanup-save",
+              "expanded-summoning-roster-readiness.json": "323c10fed33498e6653f56e7029b7b8e322a2f4b705e4acc69a3fb44b2c49599",
+              "expanded-summoning-whole-roster-persistence.json": "49d01f158c2ee148c38ba9db1f675a238dc96f879116c432d26dc5553cf15ea6",
+              "readyUnits": 108,
+              "observerErrors": 0,
+              "cleared": true
+            }
+          }
+        ],
+        "readiness": "PASS: all108 persistence-ready before prepare save AND after fresh cleanup load;zero observer errors;tracking cleared in both reports.",
+        "failedGate": "whole-roster-persistence-cleanup-native-destruction",
+        "observed": {
+          "units": 108,
+          "capturedProjectResources": 95,
+          "remainingResources": 6,
+          "remainingUnits": 0
+        },
+        "classification": "UNRESOLVED_RESOURCE_OWNERSHIP_OR_DISPOSAL: real cleanup gate failure;current aggregate witness records no identities/types/owning units for the six surviving resources. Do not infer a production defect or waive the failure.",
+        "consequentialFailure": "exact-working-save-write: cleanup save not armed after mandatory resource failure",
+        "allProfileViewIdentityChecksPassed": true,
+        "unrelatedUnitsAndPartyPreserved": true,
+        "noFurtherRuntimeAuthorized": true
+      },
+      "workingSave": {
+        "name": "KMG_AUTOMATION_WORKING",
+        "nativePrepareWrites": 1,
+        "nativeCleanupWrites": 0,
+        "stateAtStop": "PREPARED_FIXTURE_REMAINS_IN_WORKING_SAVE:108 receipt-owned units from successful prepare. Cleanup retired all108 only in its disposable loaded session but refused to persist because6resources survived. Do not declare absence or load it for ordinary play as a clean seed.",
+        "manualSaveEditingCopyingParsingReplacement": false,
+        "protectedBaselineLoadedOrWritten": false,
+        "freshAbsenceRun": false
+      },
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261008T2047106234079Z",
+        "live": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "favoredOriginalSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+        "favoredRestoredSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+        "settingsByteExact": true,
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261008T204710Z-a47dd9a809ba4a889002fd998d731ad9\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "noGame": true,
+        "stagingArchived": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\release-0.0.143-expanded-summoning-phase2b-checkpoint\\artifacts\\release143-runtime-20261008T2047099052204Z\\deployed-package-extraction",
+        "saveByteRestorationClaimed": false
+      },
+      "unrun": [
+        "whole-roster fresh absence",
+        "module-disabled persistence/deserialization/cleanup",
+        "five-profile live matrix",
+        "v142 coexistence/native-owned trait-save"
+      ]
+    },
+    "furtherReadinessDiagnosisAuthorized": false,
+    "readinessResolved": true,
+    "releaseQualified": false
+  },
+  "wholeRosterReadinessMission": {
+    "historicalRecord": true,
+    "supersededBy": "readinessObserverRepairMission;latest owner reset because serialization failure produced no readiness diagnosis",
+    "authority": "v0.0.143 Whole-Roster Readiness Diagnosis and Release Completion Order",
+    "priorReportingHead": "444979bbe2d95f35efbe5f2e5620202cdf6661cf",
+    "priorFailedCandidate": "fb25ad153124552f06b7d8a9a3b63fd2e4141eb8",
+    "diagnosisRunsAuthorized": 1,
+    "diagnosisRunsUsed": 1,
+    "correctionCandidatesAuthorized": 1,
+    "correctionCandidatesUsed": 0,
+    "scope": "Request-local read-only per-unit first-predicate transitions and final native view/control/buff/condition/renderer state in existing whole-roster persistence fixture. No per-frame log, visibility forcing, buff/condition removal, camera/fader change or production change.",
+    "originalSnakeReadinessPredicateRetainedForDiagnosis": true,
+    "observerClearedInFinally": "NO_RUNTIME_CLEARANCE_RECEIPT: source finally clears tracking on serialization exception;per-unit report never written;native game process exited",
+    "focusedPassed": 5,
+    "focusedFailed": 0,
+    "expectedFullTests": 2474,
+    "prelaunchSourceFailure": {
+      "candidate": "0cca50526822f063dcf24f121e4127f39fbbbb3a",
+      "registered": 2474,
+      "failed": 1,
+      "test": "expanded-summoning.published-records-match-derivation",
+      "reason": "Short controlling header omitted the unchanged source-derived published/visible equation",
+      "correction": "Restore1008 published+29 native wrappers=1037 visible in controlling header;no executable/test/predicate change",
+      "buildPackageOrRuntimeRan": false,
+      "failurePreserved": true
+    },
+    "candidate": "e2e8682ad9f2f18cb6aa28e4b5de14a5ec3a6492",
+    "sourceGate": {
+      "status": "PASS",
+      "registered": 2474,
+      "passed": 2474,
+      "failed": 0,
+      "cleanExactReferences": 14,
+      "members": 325,
+      "sourceFingerprint": "c661ea9f2be081222299c37d8b87e3ba4095346640c4eaa7ee8f20c95bc957c8",
+      "zipSha256": "33fb15ae85b81e50c01b56c6f9de6362362dc6f29128753bf7bbb8c5501c2b6e",
+      "dllSha256": "bf714b9564ae5469de0e8170005aaf618304fc859232060dcfa966bcf013c7e6",
+      "dllMvid": "299514df-bb74-4252-91a0-1ed7c0e52b8d",
+      "strictPackage": "PASS",
+      "seconds": 214.7,
+      "logSha256": "90c05ae273c1a0b16509a5799da85fd7ad7e7f885505510e467a2a5265e1facd"
+    },
+    "outerNativeStderrCaptureRejection": {
+      "candidate": "e2e8682ad9f2f18cb6aa28e4b5de14a5ec3a6492",
+      "classification": "ORCHESTRATION: outer stderr-to-Tee pipeline promoted Python unittest progress to NativeCommandError before wrapper completed;no domain/build/package/runtime",
+      "seconds": 1.4,
+      "preserved": true,
+      "correction": "Use the existing transcript invocation without native stderr interception;no source change"
+    },
+    "deltaAudit": {
+      "status": "PASS",
+      "baseline": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+      "productionChanged": false,
+      "members": 325,
+      "onlyChangedMember": "KingmakerGunslinger/KingmakerGunslinger.dll",
+      "recordSha256": "b76e7d2ab0d2978c45988cf7baa3a52550bcf867ad662d7529dbf0517632c043",
+      "scope": "Only request-local whole-roster fixture/observation,focused tests/registration and qualification reporting;no production/asset/profile/AI/catalog/menu/identity change"
+    },
+    "diagnosis": {
+      "status": "FAIL_PRESERVED",
+      "classification": "DIAGNOSTIC_FIXTURE_SERIALIZATION_FAILURE;underlying unit/readiness predicate STILL UNIDENTIFIED;no production defect inferred",
+      "batchId": "release143-runtime-20261008T1759280994725Z",
+      "batchRecordSha256": "042f030948fe4cf1694d81ae32706e2a232ba1659f4fd1197fc01af1f6eaecfd",
+      "smoke": {
+        "passed": 11,
+        "failed": 0,
+        "saveWrites": 0,
+        "evidenceId": "20261008T1759572209639Z-working-save-smoke",
+        "requestId": "20261008T1759572209639Z-2a77cb6c2f924471a3cff96d103cfc05",
+        "requestSha256": "f0ee9864ef4c88b8600cd73c5e698c2df272df0dc41c1d394eb0762ee6231976",
+        "resultSha256": "e2e2169a1572c0687918929e0219e96e7b03253c8edf18c098c7b16c403955cf",
+        "pid": 33488,
+        "startedUtc": "2026-10-08T17:59:58.3613837Z"
+      },
+      "prepare": {
+        "passed": 6,
+        "failed": 2,
+        "saveWrites": 0,
+        "evidenceId": "20261008T1803163459921Z-working-save-expanded-summoning-prepare",
+        "requestId": "20261008T1803163459921Z-e6c528a26e0e49ca9b72ccb7663ec3c1",
+        "requestSha256": "2048364cd1c0e388e4d3f5ef893f74fa24b4ea77f8d32cef7de85f9f08639a9a",
+        "resultSha256": "9108047344f0f9e15a39645a96b8e8fe76876793f7388ec8e0571b9f4b445214",
+        "witnessSha256": "d59a4b84657f152426c19d675124059e0e56eb996d8bb3a571517d95ce89b0f9",
+        "pid": 35652,
+        "startedUtc": "2026-10-08T18:03:17.0743485Z"
+      },
+      "failedAssertion": "whole-roster-persistence-exception",
+      "exception": "ArgumentException:Object serialized to Array. JObject instance expected.",
+      "exactSourceBoundary": "FlushAndClearRosterReadiness: JObject.FromObject(entry.Timeline.FirstTrueIncludingNever)",
+      "stack": "JObject.FromObject(Object,JsonSerializer) < JObject.FromObject(Object) < RuntimeTestRunner.FlushAndClearRosterReadiness < RunRosterPersistence.MoveNext < StartRosterPersistence",
+      "perUnitReportProduced": false,
+      "failedUnitKey": null,
+      "failedReadinessPredicates": null,
+      "unitAttributionUnavailableReason": "Serialization throws before the first row/report is written;source dictionaries are cleared in finally. No fabricated per-unit result or readiness classification.",
+      "appearancePredicateChanged": false,
+      "productionChanged": false,
+      "visibilityBuffFaderCameraOrConditionForced": false,
+      "consequentialFailure": "exact-working-save-write: zero writes/stashed because mandatory checks did not pass",
+      "historicalExpiryDamageReproduced": false,
+      "expiryEvidenceCaveat": "No new post-expiry event reported;failed readiness observer is not a new Crocodile attribution cycle",
+      "restoration": "VERIFIED",
+      "snapshot": "20261008T1759293873173Z",
+      "restoredFiles": 136,
+      "restoredVersion": "0.0.117",
+      "restoredTreeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+      "favoredClassOriginalAndRestoredSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+      "settingsByteExactRestored": true,
+      "runtimeLeaseCompleted": true,
+      "runtimeLeaseReleased": true,
+      "runtimeLeaseId": "runtime-20261008T175928Z-78302ee127f942d3bcb8266fc48ebaed",
+      "noKingmakerProcess": true,
+      "stagingAbsent": true,
+      "forcedTermination": false,
+      "protectedBaselineLoadedOrWritten": false,
+      "saveSurgery": false
+    },
+    "nextGate": "STOP: sole diagnosis did not identify a failing unit/readiness predicate;no additional diagnosis launch authorized. Correction candidate not attempted;cleanup/module-off/profiles/v142 remain unrun.",
+    "smallestOwnerDecision": "New explicit authority would be required to repair failed observer dictionary serialization and obtain missing per-unit readiness evidence before deciding a correction. No further launch under this order;no new Crocodile observer.",
+    "furtherCrocodileAttributionCycleAuthorized": false,
+    "sprint18Authorized": false,
+    "historicalFailuresPreserved": true
+  },
+  "remainingReleaseGates": {
+    "status": "BLOCKED_MODULE_DISABLED_LEGACY_VISUAL_VARIANTS",
+    "enabledPersistence": "PASS119cleanup/6freshabsence on735751ab;oldprepare provenance retained",
+    "affectedOriginalFlightLifecycle": "PASS26 on735751ab",
+    "moduleDisabledPersistence": "FAIL109/119;9 variant view assertions plus unarmed-save assertion;cleanup resourcesPASS20/20 but zero native save writes",
+    "compatibility": "NOT_RUN",
+    "v142Coexistence": "NOT_RUN",
+    "nativeOwnedTraitSave": "NOT_RUN",
+    "historicalCrocodileRisk": "Preserved;no recurrence observed in these gates;no new attribution cycle"
+  },
+  "branch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
+  "masterBase": "4ba8d4aca087391144abf401f526189f59b26535",
+  "qualifiedSummoningImport": "8592b1e680a8b3c92b43d353b47bf7ff5f52c664",
+  "integrationCandidate": "06aac4b7fae3abab18c900df5cfd351d6c819a37",
+  "ownerReleaseRiskAcceptance": {
+    "decision": "OwnerReleaseRiskAcceptance: HISTORICAL_CROCODILE_EXPIRY_DAMAGE_UNATTRIBUTED_NONREPRODUCIBLE",
+    "authority": "Owner Release-Scope Disposition and v0.0.143 Completion Order",
+    "scope": "v0.0.143 only; release-risk acceptance, NOT an engine limitation or waiver of the current no-post-expiry-damage requirement",
+    "status": "ACTIVE_FOR_0.0.143_ONLY",
+    "historicalCandidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
+    "historicalResult": "GENUINE_FAIL_PRESERVED: aggregate prey damage0to2;source not recorded;never relabeled PASS or claimed harmless",
+    "testedCandidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "currentExpiryGate": "PASS",
+    "sameNamedBoundary": true,
+    "damageBeforeAndAfter": 0,
+    "hpUnchanged": true,
+    "damageRules": 0,
+    "healingEvents": 0,
+    "nativeHealthMutations": 0,
+    "frameGapMutations": 0,
+    "ownerDestroyed": true,
+    "relationshipReleased": true,
+    "buffsAndConditionsRemoved": true,
+    "observerRemovedWithoutError": true,
+    "crocodilianAssertionsPassed": 212,
+    "productionDeltaFromHistoricalCandidate": false,
+    "delta": "Request-local observation/test code and qualification metadata only; exact existing source/package delta audit preserved",
+    "sourceExplainedOrFixed": false,
+    "historicalFailureRewrittenOrWaived": false,
+    "furtherAttributionCycleAuthorized": false,
+    "observerAndRegressionRetained": true,
+    "revokeAndStopIfLaterGateReproducesPostExpiryDamage": true,
+    "revoked": false,
+    "technicalStatement": "One historical guarded run observed two unattributed damage points during Crocodile expiry. The event did not reproduce under the final read-only attribution observer; the exact release candidate passed the complete crocodilian regression with no damage or health mutation. The historical failure remains preserved."
+  },
+  "pushBlocker": {
+    "gate": "required repository policy checkpoint publication",
+    "script": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "reason": "Refusing to push non-allowlisted branch codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
+    "overrideAvailable": false,
+    "bypassed": false,
+    "policyModified": false,
+    "smallestOwnerAction": "Add the exact release integration branch to AllowedBranches,then resume this preserved descendant through the mandatory wrapper.",
+    "checkpointUnpushed": false,
+    "resolvedByOwner": true,
+    "resolvedAtUtc": "2026-10-08T01:12:20Z",
+    "policyWrapperPush": "PASS"
+  },
+  "salamander": {
+    "disposition": "INCLUDED_TECHNICALLY_QUALIFIED",
+    "observationCandidate": "db1da016c8ded77550c619d9f672691bbb64e08d",
+    "productionChangedByObservation": false,
+    "smokeAssertions": 11,
+    "profileViewAssertions": 73,
+    "result": "PASS",
+    "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json#checkpointRelease143"
+  },
+  "integrationLedger": "planning/RELEASE-0.0.143-INTEGRATION-LEDGER.md",
+  "surface": {
+    "generated": 1008,
+    "wrappers": 29,
+    "visible": 1037,
+    "withheld": 0
+  },
+  "identities": {
+    "entries": 2922,
+    "active": 2920,
+    "reserved": 2,
+    "masterPrefix": 2660,
+    "append": 262
+  },
+  "developmentChecks": {
+    "focusedSummoning": {
+      "passed": 324,
+      "failed": 0
+    },
+    "focusedMasterFeatures": {
+      "passed": 412,
+      "failed": 0
+    },
+    "persistenceRequests": {
+      "roundTrips": 9,
+      "historicalDefaults": 3,
+      "rejected": 84
+    },
+    "actualLauncherWhatIf": {
+      "valid": 21,
+      "rejected": 17,
+      "runtimeMutation": false
+    },
+    "identityCorruptionFixtures": 4
+  },
+  "exactIntegrationSourceGate": {
+    "candidate": "1f4a25c8445bfb48a3c14ed01e255cf51a8b76c9",
+    "status": "PASS",
+    "passed": 2462,
+    "failed": 0,
+    "registered": 2462,
+    "logSha256": "d3a84b5cead74a85d4b85244774cbaa123c17f1b5415f2638e602ddd53bd4ed1",
+    "sourceFingerprint": "04ec73efcd4ac134e4c643ca04b13c282e18ba189012909a2ac8c320499b89cf",
+    "zipSha256": "ad8614bf7b4b7986f5024c18c6ade65453e7f765606f68f367a70c33a05b29a0",
+    "dllSha256": "41d89486b1b699c35d366c0379b2a3c5a35b940ce032c12860127f1b7fb52384",
+    "dllMvid": "30bc049a-e114-4f65-b8bf-14952daa3f99",
+    "members": 325
+  },
+  "historicalIntegrationClosureGate": {
+    "status": "FAIL_OBSERVER_CONTRACT",
+    "candidate": "1f4a25c8445bfb48a3c14ed01e255cf51a8b76c9",
+    "smoke": {
+      "passed": 11,
+      "failed": 0,
+      "resultSha256": "740192d4846a2ef9ace8896f6a769c6d1076fb12201a485246f3b4f6d05a35cb"
+    },
+    "inventory": {
+      "passed": 48,
+      "failed": 2,
+      "resultSha256": "0b8fe5bace8a6cb6288459a7b550586c7bcc239ef575a76d56b2adf27450eb75",
+      "failureNames": [
+        "expanded-summoning-salamander",
+        "expanded-summoning-prohibited-references"
+      ]
+    },
+    "classification": "FIXTURE: legacy Salamander carrier contract and 17 exact legitimate manifest-owned references; no demonstrated product defect",
+    "laterGates": "NOT RUN",
+    "saveWrites": 0,
+    "restoration": "VERIFIED"
+  },
+  "compatibilityGate": "NOT RUN",
+  "masterRegressionGate": "NOT RUN",
+  "releaseAuthorizedAfterAllGates": true,
+  "intendedPublicRelease": {
+    "tag": "v0.0.143",
+    "draft": false,
+    "prerelease": false,
+    "latest": true
+  },
+  "sourceOwner": {
+    "session": "1a065852-cdf2-46c2-a472-7b1229e813b6",
+    "keeperPid": 38584,
+    "keeperStartedUtc": "2026-10-08T22:51:23.2603654Z",
+    "releaseOnHandoff": true,
+    "statusAtReportingCommit": "ACTIVE;release marker will end keeper after reporting checkpoint push;verify receipt Released before final response"
+  },
+  "releasePublished": false,
+  "sprint18Started": false,
+  "permanentDeployment": false,
+  "integrationRuntimeStarted": true,
+  "integrationSaveWrites": 0,
+  "integrationDeployment": true,
+  "lastVerifiedRestoration": {
+    "snapshot": "20261008T2336544798116Z",
+    "files": 136,
+    "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "version": "0.0.117",
+    "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+    "baselineForced": false,
+    "noKingmakerProcess": true,
+    "runtimeLeaseReleased": true,
+    "stagingPresent": false,
+    "favoredClassSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+    "settingsRestoredExactly": true,
+    "batchRecordSha256": "1cebf018563831a5b3ab0d2f94356cc8f3b4c3c9261c0ffb11e1833bb8ce827e",
+    "workingSave": "Two authorized native Working writes: original108 cleanup then new108 OFF seed. OFF cleanup wrote0 after mandatory failure;Working retains exact newly prepared108. No save editing/copy/parse/replacement;protected baseline not loaded or written."
+  },
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "next": "STOP: resource diagnosis and correction allowances used. Original-flight ownership fix passed exact source, enabled cleanup/absence and repeated affected lifecycle. Module-OFF cleanup failed nine pre-destruction legacy variant-view assertions (profiles match;all20 private resources destroyed), so zero OFF cleanup writes and Working retains newly prepared108. No OFF absence/five-profile/v142/trait-save launch. Smallest new scope: narrow module-disabled legacy tint/coat boundary correction/requalification plus authorized native Working cleanup;no resource/readiness/Crocodile diagnosis. Final fetch additionally found real Latestv0.0.144/master40f4debb via PR30;no integration attempted. Owner must choose updated integration/release identity before any eventual release.",
+  "integrationPr": 29,
+  "observationCorrection": {
+    "used": 1,
+    "maximum": 1,
+    "productCorrectionsUsed": 0,
+    "expectedRegisteredTests": 2465,
+    "focusedSummoning": {
+      "passed": 327,
+      "failed": 0
+    },
+    "scope": "Inventory observation only; strict GUID/name/carrier authority and qualified current Salamander live carriers. Canonical preflight duplicate-list/crowd active-version fixtures repaired without weaker assertions.",
+    "productionChanged": false,
+    "qualification": "SOURCE_PASS_RUNTIME_PARTIAL_FAIL_NOT_RELEASE_QUALIFIED"
+  },
+  "historicalObserverReleaseSourceGate": {
+    "candidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
+    "status": "PASS",
+    "passed": 2465,
+    "failed": 0,
+    "registered": 2465,
+    "logSha256": "188bf532028dd2b1deed766a18f1efef4c755fcc2ab5513d05aba61d31f89875",
+    "sourceFingerprint": "71e810e9f1c0fa2b637086180919d32ccb518289cb71b1db356d5e7c92062217",
+    "zipSha256": "5e23d5657c4899b4c9e8ea8cb067e463e571985d48ea5890bb61e500cba33c68",
+    "dllSha256": "28ba43082b41c42a0564fe22485bbef2bb0767a8698a9127b057ed535226c9a0",
+    "dllMvid": "5802a996-1b5f-4cbf-8e99-924aa964f643",
+    "members": 325,
+    "outerShellExitCode": 1,
+    "outerShellCaveat": "Native Python unittest stderr was formatted as a PowerShell NativeCommandError by the outer Tee pipeline. Inner gate checked Build-Local exit, timing failed=false and manifest validated=true; all validators, tests, build and package passed. Canonical subsequent prelaunch process exited0. No source gate was rerun to erase this evidence."
+  },
+  "exactReleasePrelaunch": {
+    "scenarioAssertions": 546,
+    "orchestrationAssertions": 168,
+    "persistenceSource": 11,
+    "persistenceRoundTrips": 9,
+    "historicalDefaults": 3,
+    "persistenceRejections": 84,
+    "crowdRoundTrips": 10,
+    "crowdRejections": 11,
+    "traitSaveHelpers": 56,
+    "launcherRequestContracts": 18,
+    "profileResolutions": 5,
+    "status": "PASS"
+  },
+  "historicalCorrectedClosureGate": {
+    "candidate": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
+    "status": "FAIL_DAMAGE_SOURCE_UNRESOLVED",
+    "smoke": {
+      "passed": 11,
+      "failed": 0,
+      "evidenceId": "20261008T0201517849083Z-working-save-smoke",
+      "resultSha256": "496da1490b1751aae8f8d21b9266e45c4066c40d52b6322855c9e820ce9e2dc9"
+    },
+    "inventory": {
+      "passed": 50,
+      "failed": 0,
+      "evidenceId": "20261008T0204597562162Z-observe-expanded-summoning-inventory",
+      "resultSha256": "7f35c1ca44501492b02d910fd3fb8395317f03fb4441a12ba7dc9a8a3ec4dd4b"
+    },
+    "projectedMenu": {
+      "passed": 3,
+      "failed": 0,
+      "evidenceId": "20261008T0215227622039Z-disposable-expanded-summoning-projected-menu",
+      "resultSha256": "0f32d5afea364a091478624400a2ebbab521d063e9ef0f62946abeb6216cddcd"
+    },
+    "exhaustivePlayerPath": {
+      "passed": 10,
+      "failed": 0,
+      "generatedRoots": 1008,
+      "nativeWrappers": 29,
+      "evidenceId": "20261008T0219049452195Z-disposable-expanded-summoning-player-path",
+      "resultSha256": "79a9c1c668249c85161cecd234362a55476ebf42a1ce7738f05af101047f95f2",
+      "nativeSaveWrites": 0
+    },
+    "crocodilians": {
+      "passed": 210,
+      "failed": 1,
+      "evidenceId": "20261008T0246419368407Z-disposable-expanded-summoning-crocodilians",
+      "resultSha256": "b1eab6a0a1bc25e9ca07b17a1aac02aa25ffa07a5388841501f917ccf4ff2a39",
+      "failureName": "sprint16-crocodile-cooldown-expiry",
+      "armed": true,
+      "initialSpeedState": true,
+      "ownerDestroyed": true,
+      "relationshipReleased": true,
+      "heldOrSwallowedStateRemains": false,
+      "victimDamageBefore": 0,
+      "victimDamageAfter": 2,
+      "nativeSeconds": 1.8,
+      "damageSourceRecorded": false,
+      "classification": "UNRESOLVED_PRODUCT_OR_FIXTURE; aggregate damage witness cannot attribute the two damage points. No assertion waived and no product defect claimed.",
+      "nativeSaveWrites": 0
+    },
+    "laterGates": "NOT RUN: snake-command regression, whole-roster ON/OFF native persistence/cleanup/absence, five-profile live compatibility, v142 live coexistence and native-owned trait-save protocol",
+    "saveWrites": 0,
+    "restoration": "VERIFIED",
+    "forcedTermination": false,
+    "smallestOwnerDecision": "Extend the bounded candidate cycle for one request-local damage-source observation/fixture correction; no production behavior change without demonstrated evidence."
+  },
+  "finalAttributionCycle": {
+    "authority": "v0.0.143 Final Blocker Resolution and Release Completion Order",
+    "maximumObservationCycles": 1,
+    "runtimeCyclesUsed": 1,
+    "status": "COMPLETE_CLASS_D_HISTORICAL_EVENT_NOT_REPRODUCED_STILL_UNATTRIBUTED",
+    "focusedTestsPassed": 14,
+    "focusedTestsFailed": 0,
+    "developmentPrivateReferenceCompile": "PASS",
+    "expectedFullTests": 2469,
+    "scope": "Read-only existing request-owned crocodile cooldown expiry window; RuleDealDamage/RuleHealDamage plus inspected UnitDescriptor.Damage and native HP/Constitution setters, frame-gap witness, complete statuses/source/rule-parent/component attribution. No production behavior or no-damage assertion change.",
+    "candidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "evidenceId": "20261008T0346101259375Z-disposable-expanded-summoning-crocodilians",
+    "witnessSha256": "0c8ca64f896ff805f865f0e03a49441e7b729e7677cf7d991fabfd0516a55150",
+    "beforeFrame": 9859,
+    "afterFrame": 9909,
+    "beforeGameTime": "13:01:33.7770000",
+    "afterGameTime": "13:01:35.7770000",
+    "damageBefore": 0,
+    "damageAfter": 0,
+    "hitPointsBefore": 100000,
+    "hitPointsAfter": 100000,
+    "temporaryHpBeforeAndAfter": 0,
+    "constitutionBeforeAndAfter": 10,
+    "nonlethalBeforeAndAfter": 0,
+    "events": 0,
+    "nativeMutationOrFrameGapChanges": 0,
+    "observerErrors": [],
+    "observerRemoved": true,
+    "beforeBuffs": [
+      "KMG_Summoning_Special_Grapple_Grappled",
+      "EntangledBuff"
+    ],
+    "beforeConditions": [
+      "Entangled",
+      "CantMove"
+    ],
+    "afterBuffs": [],
+    "afterConditions": [],
+    "ownerDestroyedAndRelationshipReleased": true,
+    "historicalTwoPointEventAttributed": false,
+    "whyUnattributed": "The sole bounded cycle observed no damage/HP change or event in the exact named window. The preserved historical aggregate-only record cannot retroactively yield initiating source/context/component attribution. Non-reproduction proves neither fixture interference nor legitimate damage nor a product defect.",
+    "fixtureCorrectionsMade": 0,
+    "productCorrectionsMade": 0,
+    "additionalCycleRequested": false,
+    "historicalFailureRewrittenOrWaived": false,
+    "ownerDecision": "Owner review of exact witness and release-scope disposition for unresolved Sprint16 damage;no additional observation cycle requested."
+  },
+  "exactReleaseSourceGate": {
+    "candidate": "735751ab7da9087d7ae38d2a321cffc91a4a8037",
+    "status": "PASS",
+    "domainPassed": 2486,
+    "domainFailed": 0,
+    "validatorPinTests": 6,
+    "protectedMasterFiles": 176,
+    "protectedSummoningFiles": 260,
+    "exactCorrectedProductionPins": 2,
+    "exactReferenceCount": 14,
+    "strictPackageMembers": 325,
+    "seconds": 227.6,
+    "log": "artifacts/release143-resource-correction-pinned-exact-source-gate.log",
+    "sha256": "54ebbd2f916ccd2755d4631640c667ec52311743b19b0189bb4546578a98a2cb",
+    "deltaAudit": "artifacts/release143-resource-correction-delta.json",
+    "deltaSha256": "ea0738803275c8b0f0dc99a4ca0e8edeebfba40205a26336a414bc39943ad0d2",
+    "nonDllPackageMembersByteIdenticalToB8": 324,
+    "sourceFingerprint": "4f8dea2aca4c198bf1a7bb7e617f13ca4f22b607447640c6197c798ea0efa31e",
+    "packageSha256": "99272f727d67214da094dc704ee7ec09c8f5e8a7d37b95d582b02a41c979788e",
+    "dllSha256": "1dfa3eb712bad2ae58c9e0d7eb36e1a9af999c998e078b2b488e6182d9e79d50",
+    "mvid": "9ad58515-127e-4571-aaf3-6c9af6a8f3e6",
+    "members": 325,
+    "archive": "artifacts/candidates/735751ab7da9087d7ae38d2a321cffc91a4a8037/KingmakerGunslinger-0.0.143-local-runtime.zip"
+  },
+  "closureGate": {
+    "status": "BLOCKED_MODULE_DISABLED_LEGACY_VISUAL_VARIANTS",
+    "exactCandidate": "735751ab7da9087d7ae38d2a321cffc91a4a8037",
+    "batch": "artifacts/release143-runtime-20261008T2336534602568Z/batch.json",
+    "batchSha256": "1cebf018563831a5b3ab0d2f94356cc8f3b4c3c9261c0ffb11e1833bb8ce827e",
+    "priorPassProvenance": "Retain historical inventory50/menu3/1008roots/29wrappers/crocodilians212/snakes71/Salamander;none rerun or relabeled",
+    "currentRuntime": [
+      {
+        "label": "authorized-working-seed",
+        "scenario": "working-save-smoke",
+        "status": "PASS",
+        "passed": 11,
+        "assertions": 11,
+        "nativeWrites": 0,
+        "requestId": "20261008T2337232904755Z-0e381ccd0c484624be8cd1a14221d107",
+        "requestSha256": "18a80be70d224cb9ad81641759aa44e459f5048b0ee13639b3e1935efb149805",
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2337232904755Z-working-save-smoke",
+        "resultSha256": "914f70b45621512624902435c56a05f20fbb94ea682422f38c159b71f6c96d90",
+        "processId": 25092,
+        "processStartedUtc": "2026-10-08T23:37:24.4447269Z"
+      },
+      {
+        "label": "whole-roster-on-native-cleanup-save",
+        "scenario": "working-save-expanded-summoning-verify-cleanup",
+        "status": "PASS",
+        "passed": 119,
+        "assertions": 119,
+        "nativeWrites": 1,
+        "requestId": "20261008T2340387704292Z-e3433aeea11144308ecb2b50e53a1dea",
+        "requestSha256": "62859af652ec96bbb389456b8c761a4770048fc6e2b6301cb516af7861b00070",
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2340387653818Z-working-save-expanded-summoning-verify-cleanup",
+        "resultSha256": "70fdcf3372db801d5fd3dcfbf28e9e260da50335ee1b5018d438a9ad97263064",
+        "processId": 37144,
+        "processStartedUtc": "2026-10-08T23:40:40.1417405Z"
+      },
+      {
+        "label": "whole-roster-on-fresh-absence",
+        "scenario": "working-save-expanded-summoning-verify-absent",
+        "status": "PASS",
+        "passed": 6,
+        "assertions": 6,
+        "nativeWrites": 0,
+        "requestId": "20261008T2344576810327Z-f894d87ae3ac474aa90d02dc5d3e7df1",
+        "requestSha256": "8a53a92e1d04ae6d423223b38affdda90ae7fcee5263b70d13282825407c2c47",
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2344576810327Z-working-save-expanded-summoning-verify-absent",
+        "resultSha256": "3d3d3d3c24e488936416a77d120fe39bab5f5dd5730fca80c6fef50a7cb28797",
+        "processId": 37892,
+        "processStartedUtc": "2026-10-08T23:44:58.7208573Z"
+      },
+      {
+        "label": "affected-original-flight-views-and-repeated-native-teardown",
+        "scenario": "working-save-expanded-summoning-creature-review",
+        "status": "PASS",
+        "passed": 26,
+        "assertions": 26,
+        "nativeWrites": 0,
+        "requestId": "20261008T2348033402929Z-713ae0ef61864b89b89abcc0e017ee4b",
+        "requestSha256": "4e9e9f08b43e6e9e3d1f58fc4d76e33f9b15ab206f73b45cba53aaa4a10b3b11",
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2348033246508Z-working-save-expanded-summoning-creature-review",
+        "resultSha256": "328075c722f6bb036a9ca95a454833414270060adb8cf799fbb76f41e1963fcb",
+        "processId": 32816,
+        "processStartedUtc": "2026-10-08T23:48:04.2810489Z"
+      },
+      {
+        "label": "whole-roster-off-prepare-on",
+        "scenario": "working-save-expanded-summoning-prepare",
+        "status": "PASS",
+        "passed": 120,
+        "assertions": 120,
+        "nativeWrites": 1,
+        "requestId": "20261008T2352470423285Z-7e926d7392a84614a033a950dcf9af62",
+        "requestSha256": "82e1265de5dafa9f1e37ccc456fd5682893fec71fa950ce8f0c302ba7b315ee2",
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2352470423285Z-working-save-expanded-summoning-prepare",
+        "resultSha256": "bbb125c5c81c9eff53f330e8ca4eeec24e00f7064ed7518cc19e08de748fbd96",
+        "processId": 28024,
+        "processStartedUtc": "2026-10-08T23:52:47.8420079Z"
+      },
+      {
+        "label": "module-disabled-registration-publication",
+        "scenario": "observe-expanded-summoning-module-boundary",
+        "status": "PASS",
+        "passed": 2,
+        "assertions": 2,
+        "nativeWrites": 0,
+        "requestId": "20261008T2356486213141Z-ad537063d2f9420ebe60084baf52692f",
+        "requestSha256": "68eb6f1e31067d338b1e69aa1966c291f010d1413126397e39a329357326582f",
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2356486213141Z-observe-expanded-summoning-module-boundary",
+        "resultSha256": "c10dfc0ce407896e6bb91a0727bf47efbe3de679d1ebc2261c85d6f71becd97e",
+        "processId": 33548,
+        "processStartedUtc": "2026-10-08T23:56:49.4827449Z"
+      },
+      {
+        "label": "whole-roster-off-deserialization-and-native-cleanup-save",
+        "scenario": "working-save-expanded-summoning-verify-cleanup",
+        "status": "FAIL",
+        "passed": 109,
+        "assertions": 119,
+        "nativeWrites": 0,
+        "requestId": "20261008T2358537036725Z-69cf9572b4064befb8e3a164b6729c28",
+        "requestSha256": "fffdc11e9796f26d456b7b472b97e54ca78d04a8484aa7d133fe0a2aab1c4024",
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2358537036725Z-working-save-expanded-summoning-verify-cleanup",
+        "resultSha256": "3cbb912ead69151e378907ead901f12cf4aeb0c5f86c9df4b88fd57b0828f2f9",
+        "processId": 36004,
+        "processStartedUtc": "2026-10-08T23:58:54.7099341Z"
+      }
+    ],
+    "releaseQualified": false
+  },
+  "nativeExitRecovery": {
+    "processPid": 22044,
+    "processStartedUtc": "2026-10-08T02:19:05.8859434Z",
+    "originalTransactionId": "release143-runtime-20261008T0214517324941Z",
+    "originalStatus": "RESTORATION-ERROR_NATIVE_QUIT_EXCEEDED_WAIT",
+    "nativeExitObservedBeforeOwnerTerminationApproval": true,
+    "forcedTermination": false,
+    "ownerTerminationApprovalUsed": false,
+    "snapshot": "20261008T0214525781465Z",
+    "recoveryReceiptSha256": "c8869166c54dc8fd66131bb43babb9c09c555bc1a5924c8548e2404d570703a6",
+    "status": "RESTORED_VERIFIED",
+    "runtimeLeaseReleased": true,
+    "stagingAbsent": true,
+    "historicalFailureRewritten": false
+  },
+  "resourceOwnershipMission": {
+    "authority": "v0.0.143 Final Resource-Ownership Cleanup and Release Order",
+    "intakeHead": "38ed9cd43887af92d34189fa04ab04c71fdeebb6",
+    "priorExactCandidate": "f5f812d72ac4214cd4ddefbd5bd34e8791720ba9",
+    "diagnosisRunsAuthorized": 1,
+    "diagnosisRunsUsed": 1,
+    "correctionCandidatesAuthorized": 1,
+    "correctionCandidatesUsed": 1,
+    "readinessClosed": true,
+    "productionChanged": true,
+    "workingSaveState": "108 prepared receipt-owned units remain in authorized Working;no cleanup write at prior failure",
+    "scope": "Existing whole-roster verify-cleanup only: read-only explicit owner/cache/borrowed/reference receipts, natural destruction settlement up to60 frames after native unit retirement;diagnosis preserves prepared save (zero writes)",
+    "forbidden": [
+      "new readiness diagnosis",
+      "Crocodile attribution cycle",
+      "broad resource framework",
+      "force destruction/cache clearing/unload-unused-assets during diagnosis",
+      "manual save manipulation",
+      "Sprint18/Phase2C"
+    ],
+    "next": "Freeze/push sole correction candidate;one full exact source/build/package gate;one guarded corrected persistence+affected flight lifecycle batch,then remaining compatibility/coexistence if all pass. No further diagnosis or correction cycle.",
+    "diagnosticCandidate": "a21f9aa1b1db4071adafc1fdd76cef474cd62524",
+    "diagnosticSourceGate": {
+      "status": "PASS",
+      "passed": 2484,
+      "failed": 0,
+      "cleanReferences": 14,
+      "strictPackageMembers": 325,
+      "sourceFingerprint": "0945c8766231c2f089eda5552e0f194afb36cce0379678e3e3334f0b48f3a391",
+      "zipSha256": "9d0e59ee91a3f2dc6eb973be34deea28e65266bac0f9591d0bc4a9146431d98a",
+      "dllSha256": "c2ae282f8b7dee01494720d06f001fc3f2dc4b50774c045b9501e8680bebecbf",
+      "mvid": "cafdaacc-236d-4f1e-ae94-5fde00bd5c72",
+      "seconds": 216.4,
+      "logSha256": "6aabd952e260f6e67229bde12562cbfdd1dc2f1e575d943ed87295306fd33eee",
+      "deltaSha256": "da626b562e5c1e11bb9adc213fc6d107444dc1c22aa495f6176a52ebdd206aa2"
+    },
+    "diagnosis": {
+      "reportSha256": "7535875153585d012891e1fdfcae8111190d5e4be45ace2731f9d32fac1c4fca",
+      "reportBytes": 1044652,
+      "units": 108,
+      "allUnitsDestroyed": true,
+      "observedFrames": 61,
+      "startFrame": 4415,
+      "unitsGoneFrame": 4416,
+      "baselineFrame": 0,
+      "totalCapturedReferences": 538,
+      "uniqueObjects": 357,
+      "sharedObjects": 8,
+      "expectedPrivateObjects": 137,
+      "borrowedObjects": 198,
+      "immutableCaches": 22,
+      "privateGone": 128,
+      "privateMaximumNullFrame": 1,
+      "legacyObjects": 95,
+      "legacySurvivors": 6,
+      "observerErrors": 0,
+      "observerCleared": true,
+      "classification": "C: demonstrated per-view owner defect",
+      "survivors": [
+        {
+          "instanceId": -731244,
+          "name": "KMG_PteranodonMembrane",
+          "type": "UnityEngine.Mesh",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "pteranodon"
+          ],
+          "unitIds": [
+            "a1709327-4072-4755-8102-373e14f84eb5"
+          ],
+          "guids": [
+            "c9a94142c9164ab793f7a06ae3fdcf56"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Mesh",
+            "skinned mesh",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -639068,
+          "name": "KMG_EagleFeathers",
+          "type": "UnityEngine.Mesh",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "eagle"
+          ],
+          "unitIds": [
+            "84e2289f-7be7-4650-8f89-d6d4929e32a4"
+          ],
+          "guids": [
+            "7383db28c1d74dce98533ddc257a2e3c"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Mesh",
+            "skinned mesh",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -629274,
+          "name": "KMG_DireBatMembrane",
+          "type": "UnityEngine.Mesh",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "dire-bat"
+          ],
+          "unitIds": [
+            "73bd1a9a-13ef-4c8b-bba4-c927f392f9ca"
+          ],
+          "guids": [
+            "d867cb795b5640219a8362661f447697"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Mesh",
+            "skinned mesh",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -731248,
+          "name": "KMG_PteranodonMembrane (Instance)",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "pteranodon"
+          ],
+          "unitIds": [
+            "a1709327-4072-4755-8102-373e14f84eb5"
+          ],
+          "guids": [
+            "c9a94142c9164ab793f7a06ae3fdcf56"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "swapped donor renderer material (native controller instance)",
+            "renderer material",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": false,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -731246,
+          "name": "KMG_PteranodonMembrane",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": false,
+          "keys": [
+            "pteranodon"
+          ],
+          "unitIds": [
+            "a1709327-4072-4755-8102-373e14f84eb5"
+          ],
+          "guids": [
+            "c9a94142c9164ab793f7a06ae3fdcf56"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Material"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -639072,
+          "name": "KMG_EagleFeathers (Instance)",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "eagle"
+          ],
+          "unitIds": [
+            "84e2289f-7be7-4650-8f89-d6d4929e32a4"
+          ],
+          "guids": [
+            "7383db28c1d74dce98533ddc257a2e3c"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "swapped donor renderer material (native controller instance)",
+            "renderer material",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": false,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -639070,
+          "name": "KMG_EagleFeathers",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": false,
+          "keys": [
+            "eagle"
+          ],
+          "unitIds": [
+            "84e2289f-7be7-4650-8f89-d6d4929e32a4"
+          ],
+          "guids": [
+            "7383db28c1d74dce98533ddc257a2e3c"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Material"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -629278,
+          "name": "KMG_DireBatMembrane (Instance)",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": true,
+          "keys": [
+            "dire-bat"
+          ],
+          "unitIds": [
+            "73bd1a9a-13ef-4c8b-bba4-c927f392f9ca"
+          ],
+          "guids": [
+            "d867cb795b5640219a8362661f447697"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "swapped donor renderer material (native controller instance)",
+            "renderer material",
+            "historical flat witness cross-check"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": false,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        },
+        {
+          "instanceId": -629276,
+          "name": "KMG_DireBatMembrane",
+          "type": "UnityEngine.Material",
+          "ownership": "PRIVATE_VIEW_OWNED",
+          "legacy": false,
+          "keys": [
+            "dire-bat"
+          ],
+          "unitIds": [
+            "73bd1a9a-13ef-4c8b-bba4-c927f392f9ca"
+          ],
+          "guids": [
+            "d867cb795b5640219a8362661f447697"
+          ],
+          "owners": [
+            "ExpandedSummoningPteranodonViewPatch.Applied.Attachment"
+          ],
+          "sources": [
+            "attachment private Material"
+          ],
+          "sharing": 1,
+          "retainedAsOwned": true,
+          "baseline": 0,
+          "before": 1,
+          "after": 1
+        }
+      ],
+      "batchId": "release143-runtime-20261008T2304555739206Z",
+      "batchSha256": "fbe84635bc9d008bef1ab9a19364a586c74bd51977f84cf498ae7cf24b6b4eab",
+      "evidenceId": "20261008T2308454108621Z-working-save-expanded-summoning-verify-cleanup",
+      "resultSha256": "0fa37ce8a9a103dd8851cae51fbc0517fb5b2167003b7b270dadb2743b3bcf5d",
+      "passed": 118,
+      "failed": 1,
+      "nativeWrites": 0,
+      "smoke": {
+        "passed": 11,
+        "failed": 0,
+        "resultSha256": "1f1f46feb4f746a9d84904b0da428dd07249f5fdaa049c0f766d793e91556d2f",
+        "nativeWrites": 0
+      },
+      "historicalFailurePreserved": true,
+      "rootCause": "ExpandedSummoningWaspVisualTeardownPatch invokes ReleasePhase2View, whose explicit owner-key gate excludes Eagle/DireBat/Pteranodon. Each retained exact Attachment.Mesh and Attachment.Material plus one controller-instanced material. Six historical scan survivors plus three additional authoritative private originals. All nine persist beyond60 frames after native unit destruction;not cache assets.",
+      "borrowedAndCacheDisposition": "198 explicitly borrowed native objects remain alive with pre/post cleanup counts equal;22 reference-identified immutable original albedos remain alive with pre-load/pre-cleanup/post-cleanup counts1/1/1. No ownership inferred by prefix."
+    },
+    "correction": {
+      "status": "RESOURCE_FIX_QUALIFIED_IN_AFFECTED_ON_GATES;RELEASE_NOT_QUALIFIED",
+      "scope": "One narrow ReleaseOriginalFlightView path for only Eagle/DireBat/Pteranodon, before unchanged Phase2 teardown. Restore exact donor references;destroy reference-selected created and installed private materials plus private mesh;clear attachment record;idempotent. No global resource scan/cache sweep;no other production path or asset change.",
+      "productionFiles": [
+        "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs",
+        "src/KingmakerGunslinger/Summoning/EagleAttackLungePolicy.cs"
+      ],
+      "focusedPassed": 6,
+      "focusedFailed": 0,
+      "incrementalCompilation": "PASS;not qualification",
+      "preartifactGateIntegration": {
+        "head": "e64660ce4b32abead732fc9649d1536bd6365cf2",
+        "status": "REJECTED_BEFORE_BUILD_OR_RUNTIME",
+        "reason": "Checkpoint validator still required byte-exact pre-correction Summoning production. Updated only two explicit imported/corrected SHA256 pins with negative drift/master/unrelated-file tests; no additional product change or runtime attempt.",
+        "log": "artifacts/release143-resource-correction-exact-source-gate.log"
+      },
+      "fixture": "All authoritative private resources must be Unity-null;known borrowed/cache exact identities must survive count-stably. No unknown/conflicting classification waived. Restore normal one native cleanup-save requirement.",
+      "affectedRegression": "Existing creature review for eagle,dire-bat,pteranodon: unchanged movement/attack/view checks plus exact original body and two further native spawn/destroy/idempotence cycles per key. No new scenario family.",
+      "protocol": "smoke;cleanup existing saved108;fresh absence;affected3 flight review;native prepare ONLY to seed OFF108 after clean absence makes receipt set empty;OFF boundary/cleanup/absence;restoredON boundary. Three native Working writes,never manual save copy/parse/replacement.",
+      "candidate": "735751ab7da9087d7ae38d2a321cffc91a4a8037",
+      "artifact": {
+        "sourceFingerprint": "4f8dea2aca4c198bf1a7bb7e617f13ca4f22b607447640c6197c798ea0efa31e",
+        "packageSha256": "99272f727d67214da094dc704ee7ec09c8f5e8a7d37b95d582b02a41c979788e",
+        "dllSha256": "1dfa3eb712bad2ae58c9e0d7eb36e1a9af999c998e078b2b488e6182d9e79d50",
+        "mvid": "9ad58515-127e-4571-aaf3-6c9af6a8f3e6",
+        "members": 325,
+        "archive": "artifacts/candidates/735751ab7da9087d7ae38d2a321cffc91a4a8037/KingmakerGunslinger-0.0.143-local-runtime.zip"
+      },
+      "sourceGate": {
+        "status": "PASS",
+        "domainPassed": 2486,
+        "domainFailed": 0,
+        "validatorPinTests": 6,
+        "protectedMasterFiles": 176,
+        "protectedSummoningFiles": 260,
+        "exactCorrectedProductionPins": 2,
+        "exactReferenceCount": 14,
+        "strictPackageMembers": 325,
+        "seconds": 227.6,
+        "log": "artifacts/release143-resource-correction-pinned-exact-source-gate.log",
+        "sha256": "54ebbd2f916ccd2755d4631640c667ec52311743b19b0189bb4546578a98a2cb",
+        "deltaAudit": "artifacts/release143-resource-correction-delta.json",
+        "deltaSha256": "ea0738803275c8b0f0dc99a4ca0e8edeebfba40205a26336a414bc39943ad0d2",
+        "nonDllPackageMembersByteIdenticalToB8": 324
+      },
+      "batch": {
+        "path": "artifacts/release143-runtime-20261008T2336534602568Z/batch.json",
+        "sha256": "1cebf018563831a5b3ab0d2f94356cc8f3b4c3c9261c0ffb11e1833bb8ce827e",
+        "status": "ERROR",
+        "restoration": "VERIFIED",
+        "leaseReleased": true,
+        "runs": [
+          {
+            "label": "authorized-working-seed",
+            "scenario": "working-save-smoke",
+            "status": "PASS",
+            "passed": 11,
+            "assertions": 11,
+            "nativeWrites": 0,
+            "requestId": "20261008T2337232904755Z-0e381ccd0c484624be8cd1a14221d107",
+            "requestSha256": "18a80be70d224cb9ad81641759aa44e459f5048b0ee13639b3e1935efb149805",
+            "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2337232904755Z-working-save-smoke",
+            "resultSha256": "914f70b45621512624902435c56a05f20fbb94ea682422f38c159b71f6c96d90",
+            "processId": 25092,
+            "processStartedUtc": "2026-10-08T23:37:24.4447269Z"
+          },
+          {
+            "label": "whole-roster-on-native-cleanup-save",
+            "scenario": "working-save-expanded-summoning-verify-cleanup",
+            "status": "PASS",
+            "passed": 119,
+            "assertions": 119,
+            "nativeWrites": 1,
+            "requestId": "20261008T2340387704292Z-e3433aeea11144308ecb2b50e53a1dea",
+            "requestSha256": "62859af652ec96bbb389456b8c761a4770048fc6e2b6301cb516af7861b00070",
+            "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2340387653818Z-working-save-expanded-summoning-verify-cleanup",
+            "resultSha256": "70fdcf3372db801d5fd3dcfbf28e9e260da50335ee1b5018d438a9ad97263064",
+            "processId": 37144,
+            "processStartedUtc": "2026-10-08T23:40:40.1417405Z"
+          },
+          {
+            "label": "whole-roster-on-fresh-absence",
+            "scenario": "working-save-expanded-summoning-verify-absent",
+            "status": "PASS",
+            "passed": 6,
+            "assertions": 6,
+            "nativeWrites": 0,
+            "requestId": "20261008T2344576810327Z-f894d87ae3ac474aa90d02dc5d3e7df1",
+            "requestSha256": "8a53a92e1d04ae6d423223b38affdda90ae7fcee5263b70d13282825407c2c47",
+            "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2344576810327Z-working-save-expanded-summoning-verify-absent",
+            "resultSha256": "3d3d3d3c24e488936416a77d120fe39bab5f5dd5730fca80c6fef50a7cb28797",
+            "processId": 37892,
+            "processStartedUtc": "2026-10-08T23:44:58.7208573Z"
+          },
+          {
+            "label": "affected-original-flight-views-and-repeated-native-teardown",
+            "scenario": "working-save-expanded-summoning-creature-review",
+            "status": "PASS",
+            "passed": 26,
+            "assertions": 26,
+            "nativeWrites": 0,
+            "requestId": "20261008T2348033402929Z-713ae0ef61864b89b89abcc0e017ee4b",
+            "requestSha256": "4e9e9f08b43e6e9e3d1f58fc4d76e33f9b15ab206f73b45cba53aaa4a10b3b11",
+            "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2348033246508Z-working-save-expanded-summoning-creature-review",
+            "resultSha256": "328075c722f6bb036a9ca95a454833414270060adb8cf799fbb76f41e1963fcb",
+            "processId": 32816,
+            "processStartedUtc": "2026-10-08T23:48:04.2810489Z"
+          },
+          {
+            "label": "whole-roster-off-prepare-on",
+            "scenario": "working-save-expanded-summoning-prepare",
+            "status": "PASS",
+            "passed": 120,
+            "assertions": 120,
+            "nativeWrites": 1,
+            "requestId": "20261008T2352470423285Z-7e926d7392a84614a033a950dcf9af62",
+            "requestSha256": "82e1265de5dafa9f1e37ccc456fd5682893fec71fa950ce8f0c302ba7b315ee2",
+            "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2352470423285Z-working-save-expanded-summoning-prepare",
+            "resultSha256": "bbb125c5c81c9eff53f330e8ca4eeec24e00f7064ed7518cc19e08de748fbd96",
+            "processId": 28024,
+            "processStartedUtc": "2026-10-08T23:52:47.8420079Z"
+          },
+          {
+            "label": "module-disabled-registration-publication",
+            "scenario": "observe-expanded-summoning-module-boundary",
+            "status": "PASS",
+            "passed": 2,
+            "assertions": 2,
+            "nativeWrites": 0,
+            "requestId": "20261008T2356486213141Z-ad537063d2f9420ebe60084baf52692f",
+            "requestSha256": "68eb6f1e31067d338b1e69aa1966c291f010d1413126397e39a329357326582f",
+            "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2356486213141Z-observe-expanded-summoning-module-boundary",
+            "resultSha256": "c10dfc0ce407896e6bb91a0727bf47efbe3de679d1ebc2261c85d6f71becd97e",
+            "processId": 33548,
+            "processStartedUtc": "2026-10-08T23:56:49.4827449Z"
+          },
+          {
+            "label": "whole-roster-off-deserialization-and-native-cleanup-save",
+            "scenario": "working-save-expanded-summoning-verify-cleanup",
+            "status": "FAIL",
+            "passed": 109,
+            "assertions": 119,
+            "nativeWrites": 0,
+            "requestId": "20261008T2358537036725Z-69cf9572b4064befb8e3a164b6729c28",
+            "requestSha256": "fffdc11e9796f26d456b7b472b97e54ca78d04a8484aa7d133fe0a2aab1c4024",
+            "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261008T2358537036725Z-working-save-expanded-summoning-verify-cleanup",
+            "resultSha256": "3cbb912ead69151e378907ead901f12cf4aeb0c5f86c9df4b88fd57b0828f2f9",
+            "processId": 36004,
+            "processStartedUtc": "2026-10-08T23:58:54.7099341Z"
+          }
+        ]
+      },
+      "enabledCleanup": {
+        "status": "PASS",
+        "passed": 119,
+        "nativeWrites": 1,
+        "unitsDestroyed": 108,
+        "uniqueResources": 357,
+        "privateResources": 137,
+        "privateSurvivors": 0,
+        "maximumFramesUntilUnityNull": 1,
+        "borrowedNative": 198,
+        "immutableProcessCaches": 22,
+        "cacheBorrowedSurvivalAndCounts": "PASS;all220 alive with zero pre/post count drift;22 cache preload counts also stable",
+        "observerErrors": 0,
+        "observerCleared": true,
+        "allNineDiagnosedPrivateResourcesDestroyed": true,
+        "reportSha256": "76b22b77cb3a6b1c21229d6673868c0259dcce1935f1518fcbf7c34c98868990"
+      },
+      "freshEnabledAbsence": {
+        "status": "PASS",
+        "passed": 6,
+        "nativeWrites": 0,
+        "remainingReceipts": 0
+      },
+      "affectedOriginalFlightRegression": {
+        "status": "PASS",
+        "passed": 26,
+        "nativeWrites": 0,
+        "keys": [
+          "eagle",
+          "dire-bat",
+          "pteranodon"
+        ],
+        "extraNativeCyclesPerKey": 2,
+        "allSixRepeatedCycleObservations": "captured=3;exact=True;released=True;borrowed=True;idempotent=True"
+      },
+      "moduleOffFailure": {
+        "status": "FAIL",
+        "passed": 109,
+        "assertions": 119,
+        "primaryFailedAssertions": 9,
+        "consequentialSaveAssertion": "exact-working-save-write count=0;stashed=0 because mandatory failure prevents arming save",
+        "classification": "MODULE_DISABLED_VISUAL_VARIANT_BOUNDARY_MISMATCH;not a resource-cleanup failure",
+        "keys": [
+          {
+            "assertion": "whole-roster-persistence-profile-view-cheetah",
+            "key": "cheetah",
+            "blueprint": "6eb29e76792c41c5ab9e3812fe4b66e0",
+            "profileMatches": true,
+            "projectResourceCount": 2,
+            "moduleEnabled": false
+          },
+          {
+            "assertion": "whole-roster-persistence-profile-view-dust-mephit",
+            "key": "dust-mephit",
+            "blueprint": "30f6615badf14d21b41d6468d5c93ac3",
+            "profileMatches": true,
+            "projectResourceCount": 1,
+            "moduleEnabled": false
+          },
+          {
+            "assertion": "whole-roster-persistence-profile-view-ice-mephit",
+            "key": "ice-mephit",
+            "blueprint": "b37cdd78c8cc43be8799e9ffd6953ba2",
+            "profileMatches": true,
+            "projectResourceCount": 1,
+            "moduleEnabled": false
+          },
+          {
+            "assertion": "whole-roster-persistence-profile-view-lion",
+            "key": "lion",
+            "blueprint": "14c7cbb0f32f4e30bbefaeaccba10269",
+            "profileMatches": true,
+            "projectResourceCount": 1,
+            "moduleEnabled": false
+          },
+          {
+            "assertion": "whole-roster-persistence-profile-view-magma-mephit",
+            "key": "magma-mephit",
+            "blueprint": "ce9551f1413d4fdcb59941734d4546b1",
+            "profileMatches": true,
+            "projectResourceCount": 1,
+            "moduleEnabled": false
+          },
+          {
+            "assertion": "whole-roster-persistence-profile-view-ooze-mephit",
+            "key": "ooze-mephit",
+            "blueprint": "7cbf19a6c83f4b8e849d17b8a54e6d51",
+            "profileMatches": true,
+            "projectResourceCount": 1,
+            "moduleEnabled": false
+          },
+          {
+            "assertion": "whole-roster-persistence-profile-view-salt-mephit",
+            "key": "salt-mephit",
+            "blueprint": "8c8fe6eb536b450a9a2c10b8cbef9fbe",
+            "profileMatches": true,
+            "projectResourceCount": 1,
+            "moduleEnabled": false
+          },
+          {
+            "assertion": "whole-roster-persistence-profile-view-steam-mephit",
+            "key": "steam-mephit",
+            "blueprint": "047f68ee53554d8ab1702de189ecd85d",
+            "profileMatches": true,
+            "projectResourceCount": 1,
+            "moduleEnabled": false
+          },
+          {
+            "assertion": "whole-roster-persistence-profile-view-tiger",
+            "key": "tiger",
+            "blueprint": "5182125341e34ae98491eaf991bc0ef3",
+            "profileMatches": true,
+            "projectResourceCount": 2,
+            "moduleEnabled": false
+          }
+        ],
+        "ownerComponent": "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership",
+        "sourceEvidence": {
+          "fixture": "RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs profile-view loop requires project.Length==0 when OFF",
+          "production": "ExpandedSummoningVisualVariantPatch.OnDataAttached Postfix applies registered tint/coat variants without an ExpandedSummoning module gate;unchanged legacy implementation",
+          "profileAndCleanup": "All nine saved profiles match;all108 units and all20 private variant resources destroyed in1 frame;9 borrowed assets remain stable;zero observer errors",
+          "inference": "The observed disagreement is between module-OFF attachment behavior and the fixture contract, not a surviving-object leak. Not waived or characterized as harmless;no second correction made."
+        },
+        "resources": [
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -752940,
+            "keys": [
+              "tiger"
+            ],
+            "unitIds": [
+              "d4d640c9-028d-44c3-b6b9-3e6d5c2721fa"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -752938,
+            "keys": [
+              "tiger"
+            ],
+            "unitIds": [
+              "d4d640c9-028d-44c3-b6b9-3e6d5c2721fa"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -749176,
+            "keys": [
+              "steam-mephit"
+            ],
+            "unitIds": [
+              "e0faafbc-e679-45a8-9058-e17f8b97a94c"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -749174,
+            "keys": [
+              "steam-mephit"
+            ],
+            "unitIds": [
+              "e0faafbc-e679-45a8-9058-e17f8b97a94c"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -738302,
+            "keys": [
+              "salt-mephit"
+            ],
+            "unitIds": [
+              "e4bed7c0-4bec-44d5-b990-707b56b6cb9c"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -738300,
+            "keys": [
+              "salt-mephit"
+            ],
+            "unitIds": [
+              "e4bed7c0-4bec-44d5-b990-707b56b6cb9c"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -725456,
+            "keys": [
+              "ooze-mephit"
+            ],
+            "unitIds": [
+              "af899e3c-2541-48ce-bd62-33ae09307673"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -725454,
+            "keys": [
+              "ooze-mephit"
+            ],
+            "unitIds": [
+              "af899e3c-2541-48ce-bd62-33ae09307673"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -699496,
+            "keys": [
+              "magma-mephit"
+            ],
+            "unitIds": [
+              "c482179e-c7ed-4727-8fba-7412e10f34fd"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -699494,
+            "keys": [
+              "magma-mephit"
+            ],
+            "unitIds": [
+              "c482179e-c7ed-4727-8fba-7412e10f34fd"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -698108,
+            "keys": [
+              "lion"
+            ],
+            "unitIds": [
+              "f53d7c61-c14f-41c8-87f6-6321f247e84d"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -698106,
+            "keys": [
+              "lion"
+            ],
+            "unitIds": [
+              "f53d7c61-c14f-41c8-87f6-6321f247e84d"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -688638,
+            "keys": [
+              "ice-mephit"
+            ],
+            "unitIds": [
+              "d48ba2cd-c5e9-4d92-96a2-8e773dbf54a4"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -688636,
+            "keys": [
+              "ice-mephit"
+            ],
+            "unitIds": [
+              "d48ba2cd-c5e9-4d92-96a2-8e773dbf54a4"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -637858,
+            "keys": [
+              "dust-mephit"
+            ],
+            "unitIds": [
+              "34c89a5e-a7fa-4a86-8c72-13c7a46f7c5a"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -637856,
+            "keys": [
+              "dust-mephit"
+            ],
+            "unitIds": [
+              "34c89a5e-a7fa-4a86-8c72-13c7a46f7c5a"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant (Instance)",
+            "type": "UnityEngine.Material",
+            "instanceId": -625190,
+            "keys": [
+              "cheetah"
+            ],
+            "unitIds": [
+              "da71f8b7-d16a-47a2-877e-8bdd540080e8"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer material",
+              "variant renderer controller instance"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant",
+            "type": "UnityEngine.Material",
+            "instanceId": -625188,
+            "keys": [
+              "cheetah"
+            ],
+            "unitIds": [
+              "da71f8b7-d16a-47a2-877e-8bdd540080e8"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "variant material ownership"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant_tiger",
+            "type": "UnityEngine.Texture2D",
+            "instanceId": -752936,
+            "keys": [
+              "tiger"
+            ],
+            "unitIds": [
+              "d4d640c9-028d-44c3-b6b9-3e6d5c2721fa"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer texture _MainTex",
+              "variant texture"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          },
+          {
+            "name": "KMG_SummonVisualVariant_cheetah",
+            "type": "UnityEngine.Texture2D",
+            "instanceId": -625186,
+            "keys": [
+              "cheetah"
+            ],
+            "unitIds": [
+              "da71f8b7-d16a-47a2-877e-8bdd540080e8"
+            ],
+            "owners": [
+              "ExpandedSummoningVisualVariantPatch.Ownerships.SummonVisualOwnership"
+            ],
+            "sources": [
+              "historical flat witness cross-check",
+              "renderer texture _MainTex",
+              "variant texture"
+            ],
+            "aliveAfter": false,
+            "framesUntilNull": 1,
+            "ownershipClass": "PRIVATE_VIEW_OWNED"
+          }
+        ],
+        "resourceReportSha256": "51865f5575b78d9b0e1939cf6affa9597c4d84a05c5c147955ddda7bbf75ef73",
+        "nativeWrites": 0,
+        "workingSave": "New108 prepared OFF fixture remains because OFF cleanup did not save",
+        "unrun": [
+          "fresh module-OFF absence",
+          "restored-ON publication scenario",
+          "five-profile live compatibility",
+          "focused v142 coexistence",
+          "native-owned trait-save protocol"
+        ],
+        "smallestOwnerDecision": "Authorize a separate bounded correction/requalification of the module-disabled legacy tint/coat attachment boundary and safe native cleanup of the exact prepared108 Working set. No additional resource diagnosis is needed or requested."
+      }
+    },
+    "status": "DIAGNOSIS_COMPLETE;SINGLE_CORRECTION_PARTIAL_PASS;RELEASE_BLOCKED_BY_SEPARATE_MODULE_OFF_VIEW_BOUNDARY",
+    "furtherDiagnosisAuthorized": false,
+    "furtherCorrectionAuthorized": false
+  },
+  "historicalRemainingReleaseGates": {
+    "historicalRecord": true,
+    "currentAuthorityAndStop": "wholeRosterReadinessMission above supersedes the prior stop;the new sole diagnosis failed observer serialization and underlying readiness remains unidentified",
+    "firstBatch": "release143-runtime-20261008T1202456959003Z",
+    "candidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "snakeCommands": {
+      "passed": 71,
+      "failed": 0,
+      "saveWrites": 0,
+      "evidenceId": "20261008T1203124981644Z-disposable-expanded-summoning-snake-commands",
+      "resultSha256": "d10748890bff70138ba2f7463dc761af4052b3f0f1be8d1f1ceffd10b355c573"
+    },
+    "historicalPrepareFailure": {
+      "passed": 5,
+      "failed": 2,
+      "saveWrites": 0,
+      "evidenceId": "20261008T1210064499525Z-working-save-expanded-summoning-prepare",
+      "resultSha256": "e6eb7080b847e883a74f72f99382518e6c51c6f8e5e979c00045389e47e43148",
+      "classification": "FIXTURE: native Thanadaemon leaves caster NeutralEvil; following Celestial Poisonous Frog correctly rejects that alignment; cleanup save never armed",
+      "failurePreserved": true
+    },
+    "historicalExpiryDamageReproduced": false,
+    "restoration": "VERIFIED: actual snapshot20261008T1202465602314Z;136 files;Info0.0.117;tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;settings/FavoredClass byte-exact;zero save writes;no process/lease/staging",
+    "boundedCorrectionsMaximum": 1,
+    "boundedCorrectionsUsed": 1,
+    "correction": "Request-local whole-roster fixture selects legal caster alignment for every generated/native cast, retains native availability check, restores original alignment in finally with an explicit witness. No production/asset/profile/AI/menu/identity change.",
+    "focusedTestsPassed": 5,
+    "focusedTestsFailed": 0,
+    "correctedExactCandidate": "fb25ad153124552f06b7d8a9a3b63fd2e4141eb8",
+    "prelaunchMetadataRejection": {
+      "candidate": "118b8eb7f4c6291d673b2cd7c8ad2c1b8549788d",
+      "gate": "repository wrapper",
+      "reason": "Active checkpoint deterministicTestCount still2469 after adding two tests;corrected to2471",
+      "fullSuiteBuildPackageOrRuntimeRan": false,
+      "failurePreserved": true
+    },
+    "correctedSourceGate": {
+      "status": "PASS",
+      "registered": 2471,
+      "passed": 2471,
+      "failed": 0,
+      "cleanExactReferences": 14,
+      "members": 325,
+      "sourceFingerprint": "cb6c355658317642d528c3973feee859aacded44384856b51916fa90913c4767",
+      "zipSha256": "2b6497954e890bc27a8a91cda9c9a5fb818065f2ec0345def85c342861ba780d",
+      "dllSha256": "c9abc3380d07dee1278648f829f149b68307f83ced7c2416fc94f8f2bcb25e69",
+      "dllMvid": "73675dde-165a-4a5c-87c9-d4eed307d4bd",
+      "strictPackage": "PASS",
+      "seconds": 218.6,
+      "logSha256": "36ad57b58ce3a290f710a8de289a3a81fb281ae8ba74c09190ef3eee123e27ee"
+    },
+    "deltaAudit": {
+      "status": "PASS",
+      "baseline": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+      "productionChanged": false,
+      "members": 325,
+      "onlyChangedMember": "KingmakerGunslinger/KingmakerGunslinger.dll",
+      "recordSha256": "01f4fdcaa2b40900494bba00bf01ea261d47549a255dde299af791b46e859816",
+      "scope": "Only request-local roster alignment policy/runner, focused tests/registration and qualification reporting; no damage/attack/lifecycle/profile/AI/assets/menu/identity change",
+      "reused": "Original b8 smoke11/crocodilians212/snake71; f65 inventory50/menu3/all1008 generated roots/29 wrappers; original Salamander qualification"
+    },
+    "correctedPrepare": {
+      "status": "FAIL_PRESERVED",
+      "batchId": "release143-runtime-20261008T1234137648103Z",
+      "batchRecordSha256": "f5d1dc9d390c4787f18247fcba46fb16d30786d6298577262a594bd023261b0c",
+      "evidenceId": "20261008T1234423517881Z-working-save-expanded-summoning-prepare",
+      "requestId": "20261008T1234423674138Z-9446dc86f7054dd08109ceb6e94a23da",
+      "resultSha256": "5b4c85ac3182443c038715e08821e5bc7cd9c17cc33b940fe8c535d888568eda",
+      "witnessSha256": "e3908d1f02bb4e8b717654e4508c69d8f9e5a2b82cdaf18452ef7d326ac4f053",
+      "passed": 116,
+      "failed": 2,
+      "units": 108,
+      "allIdentityContextDurationChecks": "PASS",
+      "all108ProfileViewChecks": "PASS",
+      "casterAlignmentOriginalAndRestored": "NeutralGood",
+      "unrelatedUnitsPreserved": 3,
+      "failedGate": "whole-roster-persistence-native-appearance",
+      "observed": {
+        "units": 108,
+        "ready": false
+      },
+      "appearanceWaitFrames": 600,
+      "readinessPredicate": [
+        "EntityFadedIn",
+        "DissolveAmount",
+        "CanAct",
+        "CanMove",
+        "SummonedUnitAppearBuff absent"
+      ],
+      "classification": "UNRESOLVED_PRODUCT_OR_FIXTURE_READINESS: aggregate false does not identify the unit or failing predicate; no product defect inferred or assertion waived",
+      "consequentialFailure": "exact-working-save-write: no mandatory-pass fixture, so no native save armed",
+      "saveWrites": 0,
+      "stashedAreas": 0,
+      "historicalExpiryDamageReproduced": false,
+      "expiryEvidenceCaveat": "No post-expiry damage event reported; this is a readiness failure, not another crocodilian attribution cycle",
+      "restoration": "VERIFIED",
+      "snapshot": "20261008T1234145690114Z",
+      "restoredFiles": 136,
+      "restoredVersion": "0.0.117",
+      "restoredTreeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "favoredClassOriginalAndRestoredSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+      "settingsByteExactRestored": true,
+      "runtimeLeaseCompleted": true,
+      "noKingmakerProcess": true,
+      "stagingAbsent": true,
+      "forcedTermination": false,
+      "protectedBaselineLoadedOrWritten": false,
+      "saveSurgery": false
+    },
+    "remaining": "NOT RUN after mandatory prepare failure: enabled cleanup/fresh absence; module-disabled protocol; five-profile compatibility; v142 coexistence/native-owned trait save",
+    "smallestOwnerDecision": "New authority for one bounded whole-roster per-unit readiness diagnosis/correction and affected persistence requalification. No further Crocodile damage-attribution cycle requested or authorized. Current single correction allowance is exhausted.",
+    "releaseMergedTaggedOrPublished": false,
+    "sprint18Started": false
+  },
+  "historicalAcceptedAttributionClosureGate": {
+    "candidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "releaseStatus": "BLOCKED_AT_REMAINING_WHOLE_ROSTER_PREPARE_NATIVE_APPEARANCE_AFTER_SINGLE_CORRECTION",
+    "batchStatus": "PASS",
+    "batchId": "release143-runtime-20261008T0342433390867Z",
+    "batchRecordSha256": "c79242d89a683776495979221df014e151bab241e40fea60be361c4b25931d65",
+    "smoke": {
+      "passed": 11,
+      "failed": 0,
+      "evidenceId": "20261008T0343103936734Z-working-save-smoke",
+      "resultSha256": "a91bc552e5554f6fb01e048a1d279981867e923c1e3a97b924b3cfc604757bc8",
+      "requestId": "20261008T0343104093118Z-5025c78508fa4047ad0adb87702e49c6"
+    },
+    "crocodilians": {
+      "passed": 212,
+      "failed": 0,
+      "evidenceId": "20261008T0346101259375Z-disposable-expanded-summoning-crocodilians",
+      "resultSha256": "af8c4c15ae2204367b10ad50461a63e67db1cc34d91fc5dd0f72cc7406fb44cb",
+      "requestId": "20261008T0346101415785Z-9ed87e23a1584e77acbb6471d269a76e"
+    },
+    "reusedPriorPass": {
+      "inventory": 50,
+      "menu": 3,
+      "generatedRoots": 1008,
+      "nativeWrappers": 29,
+      "source": "f65eedb3d511ef1ddfc79b60dbd77b4e3c1e75a4",
+      "surfaceAudit": "PASS: all325 package entries identical except DLL; reviewed source delta only request-local observer/tests/qualification metadata"
+    },
+    "laterGates": "See remainingReleaseGates: snake71PASS; first prepare5/7FAIL restored; corrected fb25ad15 source2471/package325PASS and prepare116/118FAIL aggregate native-appearance,zero writes,exact restore. Single correction exhausted;remaining gates NOT RUN, release BLOCKED",
+    "saveWrites": 0,
+    "restoration": "VERIFIED",
+    "forcedTermination": false,
+    "noKingmakerProcess": true,
+    "runtimeLeaseReleased": true,
+    "stagingAbsent": true
+  },
+  "historicalAttributionExactSourceGate": {
+    "candidate": "b8d67c3b8102af2e1c14a0b3104b69d777d3f1bf",
+    "status": "PASS",
+    "passed": 2469,
+    "failed": 0,
+    "registered": 2469,
+    "gateRunsOnExactHead": 1,
+    "logSha256": "e8be2e23e5b2ad1ec31ebc0b184941555bba3d9fc8ac1f5f9321069b13f54895",
+    "sourceFingerprint": "5a202b1ce7e3b35a98dcc5d09b4fef48e222d8486d1027a3d3c9c4d63f1cee4c",
+    "zipSha256": "097f6be62d33ab3f9bb2d5a93307133d421709a7c22cd1b752da683397330ed8",
+    "dllSha256": "ac09efca4736bb9742e1d5b88edd84b32d0ef202181a615a89bb22078f973a1f",
+    "dllMvid": "efeb0bb5-5215-4c89-9c97-3b71fe1cec24",
+    "members": 325,
+    "processExitCode": 0
+  },
+  "externalReleaseAdvance": {
+    "observedAtHandoff": true,
+    "originMaster": "40f4debbe8391d0c6574f32b6de86e5a8b92370c",
+    "tag": "v0.0.144",
+    "tagTarget": "40f4debbe8391d0c6574f32b6de86e5a8b92370c",
+    "release": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.144",
+    "draft": false,
+    "prerelease": false,
+    "latest": true,
+    "publishedUtc": "2026-10-09T00:07:22Z",
+    "sourcePr": 30,
+    "sourceBranch": "codex/weapon-findability-fixes",
+    "deltaFilesFromAcceptedMaster": 88,
+    "release143Absent": true,
+    "activeReleaseBranchUnexpectedMotion": false,
+    "integrated": false,
+    "action": "Read-only fetch/inspection;preserve master144 safety ref. No merge/rebase/reset/cherry-pick/version change or release action.",
+    "ownerDecision": "Choose updated integration/release identity after v0.0.144 and authorize its reconciliation/affected qualification;do not silently publish older v0.0.143 as Latest or overwrite new master features."
+  }
+}

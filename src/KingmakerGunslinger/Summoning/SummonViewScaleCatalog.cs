@@ -44,7 +44,32 @@ namespace KingmakerGunslinger.Summoning
             S("woolly-rhinoceros", 0.60f),
             // Sprint 8: the tiger on the leopard rig reads Large; the cheetah lean
             S("tiger", 1.25f),
-            S("cheetah", 0.92f)
+            S("cheetah", 0.92f),
+            // Sprint 14: the Fire Beetle is Small and rides the Medium Giant
+            // Spider, so without this it renders at a Medium body. The first
+            // guarded party-camera review showed it reading as large as a
+            // party member. Both Giant Ant castes are Medium on the same
+            // Medium donor and need no entry.
+            S("fire-beetle", 0.65f),
+            // The Drone is the soldier with the advanced template: a little
+            // larger than the Medium caste it is built from, but still
+            // Medium, so it needs only a touch over the donor.
+            S("giant-ant-drone", 1.08f),
+            // Large on a Medium donor, at the catalog's accepted ceiling.
+            // The engine does not scale a summon's view by its unit size -
+            // that is what left the Small Fire Beetle rendering as large as a
+            // party member until Sprint 14 gave it 0.65 - so a Large creature
+            // does need scaling up here. It is held to 1.25 rather than the
+            // 1.45 a Large-over-Medium step would suggest, because the bound
+            // is reviewed policy and widening a safety limit to fit a number
+            // is the wrong direction. Whether 1.25 reads as Large is a
+            // question for the guarded party-camera review, and if it does not
+            // that is a finding to raise rather than a bound to quietly move.
+            S("giant-stag-beetle", 1.25f),
+            // Sprint 16 original Gargantuan body on the Large crocodilian
+            // frame: exactly this identity gets the 2x visual-only step.
+            // Existing creatures retain their old bounds and multipliers.
+            S("dire-crocodile", 2.0f)
         };
 
         internal static IReadOnlyList<SummonViewScaleSpec> All
@@ -62,8 +87,9 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 13 || Values.Any(value => value.Multiplier <
-                    0.20f || value.Multiplier > 1.25f) ||
+            if (Values.Length != 17 || Values.Any(value => value.Multiplier <
+                    0.20f || value.Multiplier >
+                    (value.CreatureKey == "dire-crocodile" ? 2.0f : 1.25f)) ||
                 Values.Select(value => value.CreatureKey).Distinct(
                     StringComparer.Ordinal).Count() != Values.Length ||
                 Values.Any(value => !ExpandedSummoningCatalog.All.Any(

@@ -20,13 +20,13 @@ forbids an automatic Sprint 46.
 | S8 | 1 | Big-Cat Roster Completion | 4 | Cheetah, Tiger | Not started |
 | S9 | 2 | Flying Animal Rig - Eagle and Dire Bat | 5 | Dire Bat, Eagle | Internal technical PASS: original models, Bat 40-foot imprecise blindsense and preserved publication, native combat/contact, obstructed doorway travel, lifecycle, persistence and controls; owner visual review pending |
 | S10 | 2 | Flying Vermin - Stirge and Giant Wasp | 6 | Giant Wasp, Stirge | Internal technical PASS: both species published with original icons; native combat/contact, signature mechanics, cleanup, player path and live menu qualified. Owner visual review pending; native Filth Fever cure timing unmeasured. |
-| S11 | 2 | Equines and Ungulates | 7 | Aurochs, Bison, Rhinoceros, Woolly Rhinoceros | Not started |
-| S12 | 2 | Canines and Small Quadrupeds I | 8 | Dire Rat, Dog, Goblin Dog, Hyena | Not started |
-| S13 | 2 | Canines and Small Quadrupeds II plus Tiny Frog | 6 | Poisonous Frog, Shadow Mastiff, Wolverine | Not started |
-| S14 | 2 | Insect Rig I - Fire Beetle and Ground Ants | 8 | Fire Beetle, Giant Ant (Soldier), Giant Ant (Worker) | Not started |
-| S15 | 2 | Insect Rig II - Drone Ant and Giant Stag Beetle | 5 | Giant Ant (Drone), Giant Stag Beetle | Not started |
-| S16 | 2 | Crocodilian Rig | 5 | Crocodile, Dire Crocodile | Not started |
-| S17 | 2 | Snake and Serpentine Rig | 9 | Constrictor Snake, Salamander, Viper | Not started |
+| S11 | 2 | Equines and Ungulates | 7 | Aurochs, Bison, Rhinoceros, Woolly Rhinoceros | Internally complete and published; Phase 2 evidence index owns exact qualification; owner visual review pending |
+| S12 | 2 | Canines and Small Quadrupeds I | 8 | Dire Rat, Dog, Goblin Dog, Hyena | Internally complete and published; Phase 2 evidence index owns exact qualification; owner visual review pending |
+| S13 | 2 | Canines and Small Quadrupeds II plus Tiny Frog | 6 | Poisonous Frog, Shadow Mastiff, Wolverine | Internally complete and published; Phase 2 evidence index owns exact qualification; owner visual review pending |
+| S14 | 2 | Insect Rig I - Fire Beetle and Ground Ants | 8 | Fire Beetle, Giant Ant (Soldier), Giant Ant (Worker) | Internally complete and published under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending |
+| S15 | 2 | Insect Rig II - Drone Ant and Giant Stag Beetle | 5 | Giant Ant (Drone), Giant Stag Beetle | Internally complete and published; owner visual review pending |
+| S16 | 2 | Crocodilian Rig | 5 | Crocodile, Dire Crocodile | Internally complete and published: exact e3aeae63 hidden and 155ada89 publication PASS, all twenty public roots; accepted engine limitations/adaptation retained; owner visual review pending |
+| S17 | 2 | Snake and Serpentine Rig | 9 | Constrictor Snake, Salamander, Viper | In progress; exact f507 native-rig research PASS 8/8 with restoration, not gameplay/visual qualification; original snake and separate Salamander weapon prototypes next |
 | S18 | 2 | Primate Rig | 5 | Ape, Dire Ape | Not started |
 | S19 | 2 | Four-Arm Rig - Girallon and Xill | 8 | Girallon, Xill | Not started |
 | S20 | 2 | Giant Scorpion | 4 | Giant Scorpion | Not started |

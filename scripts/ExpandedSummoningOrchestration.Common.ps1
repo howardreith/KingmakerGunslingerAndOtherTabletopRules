@@ -21,6 +21,234 @@ branch without a runtime lease, a deployment, or a launch.
 
 Set-StrictMode -Version Latest
 
+function ConvertFrom-KmgSerpentineBodyReviewJson {
+    param([Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json)
+    # Windows PowerShell emits a parsed top-level JSON array as one pipeline
+    # object. Do not wrap ConvertFrom-Json directly in @(...), which produces
+    # a misleading one-row outer array. Assignment retains its real array;
+    # the function then emits the validated individual rows to its caller.
+    $rows = $Json | ConvertFrom-Json -ErrorAction Stop
+    $keys = @('viper', 'constrictor-snake', 'salamander')
+    if ($rows -isnot [System.Array] -or $rows.Count -ne $keys.Count) {
+        throw 'Body research must contain exactly three top-level rows.'
+    }
+    for ($index = 0; $index -lt $keys.Count; $index++) {
+        $row = $rows[$index]
+        if ($null -eq $row -or $row -is [System.Array] -or
+            $null -eq $row.PSObject.Properties['key'] -or
+            $row.key -isnot [string] -or $row.key -cne $keys[$index]) {
+            throw 'Body research keys differ from the exact ordered scope.'
+        }
+    }
+    return $rows
+}
+
+function ConvertFrom-KmgSnakeProfileSliceEvidence {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][object[]]$Assertions
+    )
+    # This is the closed two-snake slice, not the three-creature donor survey
+    # or full Sprint17 qualification. Keep the native assertion verdict and
+    # metadata identity/completeness as separate requirements.
+    $keys = @('viper', 'constrictor-snake')
+    $kinds = @('scores', 'defenses', 'land-skills', 'one-bite', 'base',
+        'strength-plus4', 'strength-seven', 'native-animal-growth', 'modifiers-restored')
+    $expectedNames = @()
+    $expectedChecks = @()
+    foreach ($key in $keys) {
+        foreach ($case in @('rollback', 'normal')) {
+            foreach ($kind in @('binding', 'scale', 'once', 'destroy')) {
+                $expectedNames += 'sprint17-production-' + $kind + '-' + $key + '-' + $case
+            }
+        }
+        foreach ($kind in $kinds) {
+            $expectedChecks += $key + '-' + $kind
+            $expectedNames += 'sprint17-snake-profile-' + $key + '-' + $kind
+        }
+    }
+    $expectedNames += @('sprint17-production-native-worm-negative-control',
+        'sprint17-body-environment-restored', 'sprint17-body-fixture-cleanup', 'loaded-mod-version')
+    if ($Assertions.Count -ne 38) { throw 'The closed snake slice requires all38 native assertions.' }
+    $actualNames = @()
+    foreach ($assertion in $Assertions) {
+        if ($null -eq $assertion -or $assertion -is [System.Array] -or
+            $null -eq $assertion.PSObject.Properties['name'] -or
+            $null -eq $assertion.PSObject.Properties['status'] -or
+            $assertion.name -isnot [string] -or $assertion.status -isnot [string] -or $assertion.status -cne 'PASS') {
+            throw 'Every native snake-slice assertion must explicitly pass.'
+        }
+        $actualNames += $assertion.name
+    }
+    if ((($actualNames | Sort-Object) -join ',') -cne (($expectedNames | Sort-Object) -join ',')) {
+        throw 'Missing, duplicate or foreign native snake-slice assertions.'
+    }
+
+    # Direct assignment is intentional: @($Json | ConvertFrom-Json) nests a
+    # top-level JSON array in Windows PowerShell5 and hid all22 real rows.
+    $rows = $Json | ConvertFrom-Json -ErrorAction Stop
+    if ($rows -isnot [System.Array] -or $rows.Count -ne 22) {
+        throw 'The closed snake slice requires four body and eighteen profile rows.'
+    }
+    for ($index = 0; $index -lt $rows.Count; $index++) {
+        $row = $rows[$index]
+        if ($null -eq $row -or $row -is [System.Array]) { throw 'Invalid nested or null snake evidence row.' }
+        if ($index -lt 4) {
+            $key = $keys[[int][Math]::Floor($index / 2)]
+            if ($null -eq $row.PSObject.Properties['key'] -or $row.key -isnot [string] -or $row.key -cne $key -or
+                $null -eq $row.PSObject.Properties['scope'] -or $row.scope -isnot [string] -or $row.scope -cne 'production hidden-snake body binding' -or
+                $null -eq $row.PSObject.Properties['faultInjected'] -or $row.faultInjected -isnot [bool] -or
+                $row.faultInjected -ne ($index % 2 -eq 0) -or
+                $null -eq $row.PSObject.Properties['gameplayQualified'] -or $row.gameplayQualified -isnot [bool] -or
+                $row.gameplayQualified -or
+                $null -eq $row.PSObject.Properties['intact'] -or $row.intact -isnot [bool] -or -not $row.intact) {
+                throw 'Body metadata differs from the exact two-snake normal/rollback scope.'
+            }
+        }
+        else {
+            $check = $expectedChecks[$index - 4]
+            $key = $keys[[int][Math]::Floor(($index - 4) / $kinds.Count)]
+            if ($null -eq $row.PSObject.Properties['check'] -or $row.check -isnot [string] -or $row.check -cne $check -or
+                $null -eq $row.PSObject.Properties['passed'] -or $row.passed -isnot [bool] -or -not $row.passed -or
+                ($null -ne $row.PSObject.Properties['key'] -and ($row.key -isnot [string] -or $row.key -cne $key))) {
+                throw 'Missing, failed, mistyped or out-of-scope snake profile observation.'
+            }
+        }
+    }
+    return $rows
+}
+
+function ConvertFrom-KmgSnakeSignatureSliceEvidence {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][object[]]$Assertions
+    )
+    # Separate closed request. Never weaken the previously qualified38-check
+    # profile collector to accept a partial signature or full gameplay claim.
+    $signatures = @('viper-contract', 'viper-wounds', 'viper-misses', 'viper-zero-damage',
+        'viper-non-bite', 'viper-live-dc-0', 'viper-live-dc-4', 'viper-live-dc--6',
+        'viper-six-exposures', 'viper-native-cure', 'viper-source-destruction',
+        'constrict-grab-rejections', 'constrict-bite-delivery', 'constrict-no-application-frame-maintain',
+        'constrict-later-maintain-once', 'constrict-strength-0', 'constrict-strength-4',
+        'constrict-strength--10', 'constrict-native-growth', 'constrict-modifiers-restored',
+        'constrict-lethal-prey', 'constrict-dead-prey-rejected', 'constrict-destroyed-prey-rejected',
+        'constrict-owner-death')
+    if ($Assertions.Count -ne 62) { throw 'The signature rules slice requires all62 native assertions.' }
+    $baseAssertions = @()
+    $actualNames = @()
+    foreach ($assertion in $Assertions) {
+        if ($null -eq $assertion -or $assertion -is [System.Array] -or
+            $null -eq $assertion.PSObject.Properties['name'] -or
+            $null -eq $assertion.PSObject.Properties['status'] -or
+            $assertion.name -isnot [string] -or $assertion.status -isnot [string] -or
+            $assertion.status -cne 'PASS') {
+            throw 'Every native signature-slice assertion must explicitly pass.'
+        }
+        if ($assertion.name.StartsWith('sprint17-snake-signature-', [StringComparison]::Ordinal)) {
+            $actualNames += $assertion.name.Substring('sprint17-snake-signature-'.Length)
+        }
+        else { $baseAssertions += $assertion }
+    }
+    if ((($actualNames | Sort-Object) -join ',') -cne (($signatures | Sort-Object) -join ',')) {
+        throw 'Missing, duplicate or foreign native signature assertions.'
+    }
+    $rows = $Json | ConvertFrom-Json -ErrorAction Stop
+    if ($rows -isnot [System.Array] -or $rows.Count -ne 46) {
+        throw 'The signature slice requires22 profile/body and24 signature observations.'
+    }
+    $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Assertions $baseAssertions -Json (
+        ConvertTo-Json -InputObject $rows[0..21] -Depth 100)
+    for ($index = 0; $index -lt $signatures.Count; $index++) {
+        $row = $rows[$index + 22]
+        if ($null -eq $row -or $row -is [System.Array] -or
+            $null -eq $row.PSObject.Properties['signature'] -or $row.signature -isnot [string] -or
+            $row.signature -cne $signatures[$index] -or
+            $null -eq $row.PSObject.Properties['passed'] -or $row.passed -isnot [bool] -or -not $row.passed) {
+            throw 'Missing, failed, mistyped or out-of-scope snake signature observation.'
+        }
+    }
+    return $rows
+}
+
+function ConvertFrom-KmgSnakeCommandSliceEvidence {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][object[]]$Assertions
+    )
+    $cells = @()
+    foreach ($key in @('viper', 'constrictor-snake')) {
+        foreach ($mode in @('rtwp', 'turn-based')) {
+            foreach ($driver in @('manual', 'ai')) { $cells += "$key-$mode-$driver" }
+        }
+    }
+    $checks = @('native-setup', 'approach', 'attack', 'signature', 'contact', 'cleanup')
+    $names = @('sprint17-body-environment-restored', 'sprint17-body-fixture-cleanup', 'loaded-mod-version')
+    foreach ($cell in $cells) {
+        foreach ($check in $checks) { $names += "sprint17-snake-command-$cell-$check" }
+    }
+    if ($Assertions.Count -ne 51) { throw 'Every closed command assertion is mandatory:48 cell checks and3 restoration/version.' }
+    $actual = @()
+    foreach ($assertion in $Assertions) {
+        if ($null -eq $assertion -or $assertion -is [Array] -or
+            $null -eq $assertion.PSObject.Properties['name'] -or $assertion.name -isnot [string] -or
+            $null -eq $assertion.PSObject.Properties['status'] -or $assertion.status -cne 'PASS') {
+            throw 'Every native command assertion must explicitly pass.'
+        }
+        $actual += $assertion.name
+    }
+    if ((($actual | Sort-Object) -join ',') -cne (($names | Sort-Object) -join ',')) {
+        throw 'Missing, duplicate or foreign command assertions.'
+    }
+    $rows = $Json | ConvertFrom-Json -ErrorAction Stop
+    if ($rows -isnot [Array] -or $rows.Count -ne 8) { throw 'The command matrix requires exactly8 flat rows.' }
+    for ($index = 0; $index -lt 8; $index++) {
+        $row = $rows[$index]
+        if ($null -eq $row -or $row -is [Array] -or
+            $null -eq $row.PSObject.Properties['cell'] -or $row.cell -cne $cells[$index] -or
+            $null -eq $row.PSObject.Properties['scope'] -or $row.scope -cne 'production hidden-snake native command/contact slice' -or
+            $null -eq $row.PSObject.Properties['passed'] -or $row.passed -isnot [bool] -or -not $row.passed -or
+            $null -eq $row.PSObject.Properties['checks'] -or $null -eq $row.checks -or $row.checks -is [Array]) {
+            throw 'Malformed, failed, reordered or foreign command row.'
+        }
+        if ((($row.checks.PSObject.Properties.Name | Sort-Object) -join ',') -cne (($checks | Sort-Object) -join ',')) {
+            throw 'The six independent command requirements cannot be omitted or renamed.'
+        }
+        foreach ($check in $checks) {
+            if ($row.checks.$check -isnot [bool] -or -not $row.checks.$check) {
+                throw 'A row-level PASS cannot hide a failed or mistyped native requirement.'
+            }
+        }
+    }
+    return $rows
+}
+
+function Test-KmgBatchCandidateUnavailable {
+    param([bool]$FirstScenario, [bool]$HasEvidence, [bool]$HasDeployment,
+          [ValidateSet('Clean', 'Unclean')][string]$LauncherOutcome)
+    return $FirstScenario -and -not $HasEvidence -and -not $HasDeployment -and $LauncherOutcome -ceq 'Unclean'
+}
+
+function Resolve-KmgBatchScenarioParameters {
+    param([Parameter(Mandatory = $true)][string[]]$Scenarios,
+          [Parameter(Mandatory = $true)][string]$CurrentScenario,
+          [hashtable]$DefaultParameters = @{},
+          [hashtable]$ParameterMap = @{})
+    if ($Scenarios -cnotcontains $CurrentScenario) {
+        throw 'The current scenario must be an exact member of the requested batch.'
+    }
+    if ($ParameterMap.Count -gt 0 -and $DefaultParameters.Count -gt 0) {
+        throw 'Use common parameters or a per-scenario map, never both.'
+    }
+    foreach ($key in $ParameterMap.Keys) {
+        if ($key -isnot [string] -or $Scenarios -cnotcontains $key -or
+            $ParameterMap[$key] -isnot [hashtable]) {
+            throw 'Every parameter-map entry must name an exact requested scenario and contain a hashtable.'
+        }
+    }
+    if ($ParameterMap.ContainsKey($CurrentScenario)) { return $ParameterMap[$CurrentScenario].Clone() }
+    return $DefaultParameters.Clone()
+}
+
 function ConvertTo-KmgDisabledExpandedSummoningSettingsBytes {
     param([Parameter(Mandatory = $true)][byte[]]$OriginalBytes)
     $encoding = New-Object System.Text.UTF8Encoding($false, $true)
