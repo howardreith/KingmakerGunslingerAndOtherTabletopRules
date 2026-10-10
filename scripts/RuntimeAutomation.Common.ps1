@@ -1150,6 +1150,14 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    # The Sprint 19 hidden-candidate review runs on the same terms: it
+    # summons, fights and dismisses disposable actors and writes nothing back.
+    'disposable-expanded-summoning-sprint19-review' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'disposable-expanded-summoning-serpentine-bodies' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -2204,7 +2212,8 @@ function Assert-KmgRuntimeScenarioPreflight {
             @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
                 Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros',
                     'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile',
-                    'viper','constrictor-snake','salamander','ape','dire-ape') }).Count -ne 0)) {
+                    'viper','constrictor-snake','salamander','ape','dire-ape',
+                    'girallon','xill') }).Count -ne 0)) {
             throw 'The crowd review permits only 1d4+1 Sprint 11 ungulates, Sprint 12 quadrupeds, Sprint 16 crocodilians, the two Sprint 17 snakes or the two Sprint 18 apes.'
         }
         if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or

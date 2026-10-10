@@ -91,6 +91,7 @@ SPRINT19_CHANGED = (
     "scripts/RuntimeAutomation.Common.ps1",
     "assets-source/original-icons/expanded-summoning/icon-manifest.json",
     "assets-source/original-icons/expanded-summoning/prompts/icon-prompts.json",
+    "assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py",
     "assets/game/icons/expanded-summoning/icon-manifest.json",
     "assets-source/original-models/sprint18-primates/generate_primates.py",
     "assets-source/original-models/sprint18-primates/primate_regions.py",
@@ -269,15 +270,28 @@ def validate_icons(root: Path) -> None:
         raise AssertionError("Project summon icon concept count must be 113")
     rows = {row["key"]: row for row in manifest["icons"]}
     for key in SPRINT19_KEYS:
-        row = rows.get(key)
-        if row is None:
+        if key not in rows:
             raise AssertionError("Missing Sprint 19 icon concept: " + key)
+    # Two creatures, two icons. A player picking between them in the menu
+    # has the icon and the name, so sharing one painting would leave only
+    # the name - and these two are not alike enough for that to be an
+    # accident worth tolerating. Checked before the per-key hashes, because
+    # a shared painting necessarily fails one of those first and "the xill
+    # icon is not the reviewed one" is the wrong thing to say about it.
+    if rows["girallon"]["outputSha256"] == rows["xill"]["outputSha256"] or             rows["girallon"]["sourceSha256"] == rows["xill"]["sourceSha256"]:
+        raise AssertionError(
+            "The Girallon and the Xill must not share one painting")
+    digests = [value["outputSha256"] for value in manifest["icons"]]
+    if len(set(digests)) != len(digests):
+        raise AssertionError("Two creatures share one shipped icon")
+    for key in SPRINT19_KEYS:
+        row = rows[key]
         if row["width"] != 128 or row["height"] != 128 or row["format"] != "RGBA PNG":
             raise AssertionError("Sprint 19 icon concept is not the house format: " + key)
         shipped = root / "assets/game/icons/expanded-summoning" / (key + ".png")
         if not shipped.is_file():
             raise AssertionError("Sprint 19 icon is not shipped: " + key)
-        if hashlib.sha256(shipped.read_bytes()).hexdigest() != row["sha256"]:
+        if hashlib.sha256(shipped.read_bytes()).hexdigest() != row["outputSha256"]:
             raise AssertionError("Sprint 19 shipped icon is not the reviewed one: " + key)
 
 
