@@ -82,7 +82,9 @@ $requiredFiles = @(
     'assets\sprint19-fourarmed\girallon-mesh.json',
     'assets\sprint19-fourarmed\girallon-albedo.png',
     'assets\sprint19-fourarmed\xill-mesh.json',
-    'assets\sprint19-fourarmed\xill-albedo.png'
+    'assets\sprint19-fourarmed\xill-albedo.png',
+    'assets\sprint20-arachnids\giant-scorpion-mesh.json',
+    'assets\sprint20-arachnids\giant-scorpion-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -190,6 +192,8 @@ $allowedRelativePaths = @{
     'assets\sprint19-fourarmed\girallon-albedo.png' = $true
     'assets\sprint19-fourarmed\xill-mesh.json' = $true
     'assets\sprint19-fourarmed\xill-albedo.png' = $true
+    'assets\sprint20-arachnids\giant-scorpion-mesh.json' = $true
+    'assets\sprint20-arachnids\giant-scorpion-albedo.png' = $true
 }
 
 $unexpected = @()
