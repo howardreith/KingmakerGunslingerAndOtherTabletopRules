@@ -52,7 +52,7 @@ carried Sprint 18's 340 unchanged and nothing would have caught it.
 | Gate | Result |
 | --- | --- |
 | Version-aware repository validation wrapper | PASS |
-| Sprint 19 corruption fixtures | PASS 21/21 |
+| Sprint 19 corruption fixtures | PASS 22/22 |
 | Repository validator regression fixtures | PASS 3/3 |
 | Complete unfiltered domain suite | PASS 2529/2529 |
 | Clean exact-reference Release build | PASS |
@@ -64,6 +64,26 @@ carried Sprint 18's 340 unchanged and nothing would have caught it.
 | Party-camera art and crowding review | PASS 12/12 on the second attempt |
 | Publication gate | PASS in game — 39/39, both keys removed, 1044 published, 1073 visible |
 | Release closure matrix | **PENDING** |
+
+## One defect found at release
+
+The first publication attempt failed, and correctly. `validate-build-output.ps1`
+refused the release build because
+`assets\sprint19-fourarmed\girallon-mesh.json` was not in it.
+
+The four body files were copied by `Build-Local.ps1` and declared nowhere else,
+so the local build, the 346-member package and its strict validation were all
+complete while a clean `build.ps1` release build produced none of them. The
+hand copy masked the missing declaration. Two things were wrong and both are
+fixed: the project file now declares the four files the way it already declared
+Sprint 18's, and the release was published through the provenance-checked
+`Build-Local.ps1` path with the private reference bundle, which is the path
+v0.0.147 used.
+
+The offline gate now carries the catch, generally rather than for this sprint:
+every shipped creature body must be required by `validate-build-output.ps1`, so
+no build path can omit it silently, and copied by the release builder. A fixture
+proves it rejects a body that only the builder knows about.
 
 ## Frozen arithmetic, derived from source
 
