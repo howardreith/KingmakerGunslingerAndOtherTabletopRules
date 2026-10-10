@@ -1069,9 +1069,14 @@ namespace KingmakerGunslinger.Blueprints
             // AddClassLevels repeatedly spends points in one fixed priority
             // list; it cannot express 1/2 or 6/6 at these low Int scores.
             // Only these two profiles use the exact one-time rank allocation.
+            // Sprint 19's Girallon joins the apes here. Seven ranks at
+            // Intelligence 2 spent four on Perception and three on Stealth is
+            // not something a fixed priority list can express: left to it the
+            // creature put all seven on Perception and none on Stealth.
+            bool exactRanks = PrimateRulesPolicy.IsPrimate(profile.Key) ||
+                profile.Key == GirallonRulesPolicy.GirallonKey;
             levels.Skills = crocodilian ||
-                SerpentineRulesPolicy.IsSnake(profile.Key) ||
-                PrimateRulesPolicy.IsPrimate(profile.Key)
+                SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
                 profile.Skills.Select(SkillStat).ToArray();
             levels.Archetypes = Array.Empty<BlueprintArchetype>();
@@ -1087,12 +1092,31 @@ namespace KingmakerGunslinger.Blueprints
                 ranks.OwningBlueprint = unit;
                 unit.ComponentsArray = new BlueprintComponent[] { levels, ranks };
             }
-            else if (PrimateRulesPolicy.IsPrimate(profile.Key))
+            else if (exactRanks)
             {
                 var ranks = UnityEngine.ScriptableObject.CreateInstance<
                     SummonPrimateSkillRanks>();
                 ranks.CreatureKey = profile.Key;
                 ranks.OwningBlueprint = unit;
+                if (profile.Key == GirallonRulesPolicy.GirallonKey)
+                {
+                    ranks.MobilityRanks = 0;
+                    ranks.PerceptionRanks = GirallonRulesPolicy.PerceptionRanks;
+                    ranks.StealthRanks = GirallonRulesPolicy.StealthRanks;
+                    ranks.BaseHitPoints =
+                        GirallonRulesPolicy.BaseRacialHitPoints;
+                }
+                else
+                {
+                    int mobility = 0, perception = 0, stealth = 0;
+                    PrimateRulesPolicy.AllocateLandRanks(profile.Key,
+                        ref mobility, ref perception, ref stealth);
+                    ranks.MobilityRanks = mobility;
+                    ranks.PerceptionRanks = perception;
+                    ranks.StealthRanks = stealth;
+                    ranks.BaseHitPoints =
+                        PrimateRulesPolicy.For(profile.Key).BaseHitPoints;
+                }
                 unit.ComponentsArray = new BlueprintComponent[] { levels, ranks };
             }
 
@@ -1141,6 +1165,9 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == PrimateRulesPolicy.DireApeKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     DireApeUnitTypeSymbol);
+            else if (profile.Key == GirallonRulesPolicy.GirallonKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    GirallonUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
