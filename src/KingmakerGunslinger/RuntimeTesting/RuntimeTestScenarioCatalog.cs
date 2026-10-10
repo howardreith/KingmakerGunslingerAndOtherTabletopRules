@@ -751,6 +751,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningNativeDonors,
                 ObserveExpandedSummoningPrimateCensus,
                 DisposableExpandedSummoningSprint18Review,
+                DisposableExpandedSummoningSprint19Review,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
