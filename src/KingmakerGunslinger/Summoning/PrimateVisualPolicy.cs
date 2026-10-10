@@ -36,8 +36,12 @@ namespace KingmakerGunslinger.Summoning
         internal const string DireApeGuid = "5482b49785a3492aa7d29a4ee575cd66";
         internal const string ApeBlueprintName = "KMG_Summoning_Unit_Ape";
         internal const string DireApeBlueprintName = "KMG_Summoning_Unit_DireApe";
-        internal const string GirallonGuid = "ce4a1d1c1b7a4cd1b8f1e7c3b9d6a240";
-        internal const string XillGuid = "7d5b8e2a6f3c4e1a9b0d2f8c4a6e1357";
+        // The identities the ledger allocated. The first Sprint 19
+        // guarded run measured both bodies as outcome=not-attempted,
+        // because these two constants were invented rather than read
+        // and nothing could ever have matched them.
+        internal const string GirallonGuid = "b9187f2a07a74c84b07d5a34280753a6";
+        internal const string XillGuid = "440bd760511f4bdd9515ff59a0c5eb33";
         internal const string GirallonBlueprintName = "KMG_Summoning_Unit_Girallon";
         internal const string XillBlueprintName = "KMG_Summoning_Unit_Xill";
 
