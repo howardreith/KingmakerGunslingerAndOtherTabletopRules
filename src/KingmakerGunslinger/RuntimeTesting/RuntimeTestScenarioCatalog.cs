@@ -139,6 +139,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string DisposableExpandedSummoningSprint18Review =
             "disposable-expanded-summoning-sprint18-review";
+        /// <summary>
+        /// The Sprint 19 hidden-candidate review: the Girallon and the Xill
+        /// as they are in a running game. Live profiles with a per-limb
+        /// attack bonus, the printed five-limb routines, every four-claw
+        /// rend case including the three-of-four one a two-claw gate would
+        /// get wrong, the Xill's paralysis, both combat modes, the original
+        /// four-armed bodies, the registered ten roots and the module
+        /// switch, on the working save.
+        /// </summary>
+        internal const string DisposableExpandedSummoningSprint19Review =
+            "disposable-expanded-summoning-sprint19-review";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
         internal const string ObserveExpandedSummoningVariantMenu =
@@ -217,7 +228,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == DisposableExpandedSummoningSnakeSignatures ||
                 scenario == DisposableExpandedSummoningSnakeCommands ||
                 scenario == DisposableExpandedSummoningSnakeFinalReview ||
-                scenario == DisposableExpandedSummoningSprint18Review;
+                scenario == DisposableExpandedSummoningSprint18Review ||
+                scenario == DisposableExpandedSummoningSprint19Review;
         }
         /// <summary>
         /// Correction order (2026-09-25): repeated cast-and-dispose cycles of

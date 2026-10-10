@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.147-expanded-summoning-sprint18",
+  "milestone": "0.0.148-expanded-summoning-sprint19",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.147",
+  "version": "0.0.148",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2268,7 +2268,7 @@
     "releaseInformationalVersion": "0.0.148-expanded-summoning-sprint19",
     "masterBase": "95d610348d7d2322ddc00ef04fa06d2cd352dbdd",
     "releasedBaseline": "v0.0.147",
-    "deterministicTestCount": 2518,
+    "deterministicTestCount": 2527,
     "packageMemberCount": 340,
     "registeredManifestEntryCount": 3005,
     "registeredGeneratedPlacements": 1044,
@@ -2282,7 +2282,7 @@
     "girallonRoots": 5,
     "xillRoots": 5,
     "bothSuppressed": true,
-    "originalBodiesAuthored": false,
+    "originalBodiesAuthored": true,
     "donorRigReuseVerified": true,
     "donorRig": "b98735a1737ae494dbe5cbeca1c7c083 CR10_FerociousTrollGuard",
     "donorRigReuseNote": "The Sprint 18 guarded census capture, sha256 328443db6c9b77651ab64212c7a654284c722c9ddeb6277ce66d289d72f6a4a5, re-decoded at Sprint 19 intake: 61 of 61 bind-pose bones, Pelvis root, 56 drivers, 5 deliberately empty branches, bind height 4.3781 inside the surveyed 4.0 to 4.6 gate, uniform view scale 0.7. No new census was run and no owner runtime transaction was spent to re-derive it.",
@@ -2300,8 +2300,8 @@
       "IMPLANT_UNREPRESENTED",
       "ETHEREAL_TRAVEL_UNMODELED"
     ],
-    "closureStatus": "CONTRACT FROZEN; REGISTERED AND WITHHELD. The two creatures hold ten roots and no player can select either. Rules, original bodies, icons, tests, the guarded Sprint 19 runtime review, publication and release are all NOT RUN.",
+    "closureStatus": "REGISTERED AND WITHHELD; BODIES AND ICONS AUTHORED. The two creatures hold ten roots and no player can select either. Rules, original four-armed bodies, icons and the offline suite are done; the guarded Sprint 19 runtime review, publication and release are NOT RUN.",
     "compatibilityRuntimeQualificationPending": true,
-    "originalBodyFiles": 0
+    "originalBodyFiles": 4
   }
 }
