@@ -113,7 +113,8 @@
     {
       "id": "STEALTH_DERIVES_TO_PLUS_ONE",
       "question": "The printed Stealth total recalled at intake was +0, and the derivation gives +1.",
-      "resolution": "Frozen at the derived +1. Dexterity 12 is pinned independently three times over - by armour class 16, by touch 10 and by Reflex +2 - and the racial modifier line prints +4 Stealth, and a Large creature takes -4. Those give +1 and nothing in the block supports +0 without contradicting one of the three identities that close exactly. Recorded here rather than silently chosen so the owner can check this single number against the book; if the printed line really is +0 then either the racial bonus or the size line differs from what was read, and only this one skill moves."
+      "resolution": "Frozen at the derived +1. Dexterity 12 is pinned independently three times over - by armour class 16, by touch 10 and by Reflex +2 - and the racial modifier line prints +4 Stealth, and a Large creature takes -4. Those give +1 and nothing in the block supports +0 without contradicting one of the three identities that close exactly. Recorded here rather than silently chosen so the owner can check this single number against the book; if the printed line really is +0 then either the racial bonus or the size line differs from what was read, and only this one skill moves.",
+      "answeredByTheEngine": "The live creature reads Stealth +1 on run 20261010T1615114043487Z-disposable-expanded-summoning-sprint20-review, from the same three terms the derivation names: ability modifier +1, a racial +4 from the creature's own carrier, and -4 for Large size. The derivation stands; the +0 recalled at intake does not. This was the only printed number the contract could not close at intake, and it is closed by measurement rather than by argument. Note that it read -3 on the first guarded run, because the racial +4 existed only in this derivation and nothing carried it - see measuredFindings."
     },
     {
       "id": "PER_LIMB_REACH",
@@ -230,5 +231,47 @@
     "publicationGate": "The same mechanics review re-run against the published surface, requiring all twelve roots live and published, nothing withheld anywhere, and registered equal to published at 1056.",
     "launchMechanism": "Every launch uses the repository's guarded Steam App ID 640820 mechanism. Kingmaker.exe is never launched directly, KMG_AUTOMATION_BASELINE is never loaded or written, saves are never edited or copied by hand, and no development build is left deployed."
   },
-  "hardBoundaries": "One sprint, one branch, one PR, one release. No multi-sprint branch, no stacked PR, no unreleased carryover into Sprint 21, no Sprint 22, no expanded summon feats, no aquatic movement or combat subsystem, no general arbitrary-limb system, no general creature editor, no global AI rewrite, no proprietary asset redistribution, no force-push, no direct master commit and no unguarded Kingmaker launch."
+  "hardBoundaries": "One sprint, one branch, one PR, one release. No multi-sprint branch, no stacked PR, no unreleased carryover into Sprint 21, no Sprint 22, no expanded summon feats, no aquatic movement or combat subsystem, no general arbitrary-limb system, no general creature editor, no global AI rewrite, no proprietary asset redistribution, no force-push, no direct master commit and no unguarded Kingmaker launch.",
+  "measuredFindings": [
+    {
+      "id": "PRINTED_GRAB_HAD_NO_CARRIER",
+      "found": "offline, while writing the review",
+      "claim": "Grab on the two claws, which is the whole of the printed difference between CMB +8 and grapple +12.",
+      "reality": "Nothing in the mod grabbed. The claim appeared in the natural profile's attribution line, in this contract's own derivation and in the registration commit's message; none of those is the thing that grabs, and none of them would have failed.",
+      "fix": "Its own grab carrier keyed to this unit, on the grapple lifecycle Sprint 6 built and Sprint 19 taught to hold several limbs. Primary limb plus one additional limb is both claws and stops short of the sting, which is the second additional limb.",
+      "verified": "Live: a claw hit attempts a grapple and seizes, a sting hit attempts none, and the printed grapple figure reads +12 against +8 with nothing held."
+    },
+    {
+      "id": "ANTI_TRIP_DEFENCE_WAS_EIGHT_NOT_TWELVE",
+      "found": "20261010T1530568462425Z-disposable-expanded-summoning-sprint20-review",
+      "claim": "The printed CMD 31 against trip is the project's existing eight-leg carrier, so nothing new is needed.",
+      "reality": "The live creature read CMD 27 against trip. The shared native TripDefenseEightLegs fact delivers +8, which is correct for the creatures holding it: the stat-block convention is four per pair of legs beyond the first, so a six-legged insect prints +8 and this eight-legged arachnid prints +12. The fact's name says eight legs and its value says six.",
+      "fix": "This creature's own +12 carrier on the engine's own manoeuvre-defence component, gated on trip alone so its ordinary manoeuvre defence stays at the printed 19. Nothing about the shared native fact changes and no released creature moves.",
+      "verified": "Live: 19 ordinary and 31 against trip, measured against the engine's own trip manoeuvre."
+    },
+    {
+      "id": "PRINTED_RACIAL_BONUS_WAS_NOT_CARRIED",
+      "found": "20261010T1530568462425Z-disposable-expanded-summoning-sprint20-review",
+      "claim": "Perception +4 and Stealth +1, each derived as ability plus the printed racial +4.",
+      "reality": "The live creature read Perception 0 and Stealth -3: the same absent bonus twice. The racial half existed only in the derivation.",
+      "fix": "Its own racial-skills carrier covering the two printed skills Kingmaker has. The Giant Ants' carrier is theirs - printed Perception alone, with Survival recorded as omitted - and the printed Climb +8 stays omitted under ORDINARY_MAP_LAND_USE_SCOPE with nothing standing in for it.",
+      "verified": "Live: Perception +4 and Stealth +1, each from ability plus a Racial-descriptor +4 named for this creature's own feature."
+    },
+    {
+      "id": "REVIEW_READ_THE_GRAPPLE_FIGURE_WHILE_HOLDING",
+      "found": "20261010T1530568462425Z-disposable-expanded-summoning-sprint20-review",
+      "claim": "n/a - this one was the review rather than the creature.",
+      "reality": "The printed grapple figure read 17 against 12. A claw case before it had legitimately seized the hostile, and resetting the victim does not clear the holder's side of a hold, so the maintain bonus was sitting on top of the grab. Both numbers were right; their sum was not.",
+      "fix": "The hold is released on this one request-local creature before the printed figures are read, the release is asserted rather than assumed, and the +4 grab delta is required there too.",
+      "verified": "Live: +12, with the released hold recorded in the evidence row."
+    },
+    {
+      "id": "REVIEW_TRIALS_SPOILED_BY_A_NATURAL_TWENTY",
+      "found": "20261010T1530568462425Z and 20261010T1559117802359Z",
+      "claim": "n/a - the review again.",
+      "reality": "A natural twenty made a save the fixture had chosen to fail, and on the next run it landed limbs the fixture had not chosen - a sting in a claw-only trial, which poisoned, and a claw in a sting-only trial, which attempted a grapple. A natural twenty always succeeds whatever the modifier, exactly as a natural one always fails.",
+      "fix": "Both are abandoned trials now, retried under the same bounded re-attempt the review already used for a chosen limb missing on a natural one. Every save's natural roll and the scored trial's own rolls are recorded, so an abandoned trial is visible rather than inferred. No requirement is weakened: a claw-only sequence must still force no Fortitude save at all and a sting-only sequence must still attempt no grapple at all.",
+      "verified": "20261010T1615114043487Z: 20 of 20 in both combat modes, and the same again on the publication gate."
+    }
+  ]
 }
