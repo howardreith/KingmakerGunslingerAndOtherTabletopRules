@@ -32,6 +32,10 @@ namespace KingmakerGunslinger.Summoning
         internal const string SoldierKey = "giant-ant-soldier";
         internal const string DroneKey = "giant-ant-drone";
         internal const string StagBeetleKey = "giant-stag-beetle";
+        // Sprint 20. An arachnid, not an insect: it is on this rig and in
+        // this policy because it shares the donor, and it is the only
+        // creature here that is allowed all four leg chains.
+        internal const string ScorpionKey = "giant-scorpion";
 
         /// <summary>
         /// The donor's fourth leg chain. Its feet are forbidden to every
@@ -70,6 +74,33 @@ namespace KingmakerGunslinger.Summoning
             "R_Leg2_Upper", "R_Leg2_Lower", "R_Foot2"
         };
 
+        /// <summary>
+        /// The Giant Scorpion's bones: the shared body and mouthparts, every
+        /// one of the seven pedipalp joints a side because a chela is built
+        /// along the whole chain, and all four leg chains with their feet.
+        ///
+        /// <para>This is the only list here that contains L_Foot3 and
+        /// R_Foot3. A scorpion has eight legs; the measured donor has eight.
+        /// </para>
+        /// </summary>
+        internal static readonly string[] ScorpionBones =
+        {
+            "LowerTorso", "Tail1_M", "UpperTorso", "Tail3_M",
+            "chelicera_L", "chelicera_R",
+            "pedipalp1_L", "pedipalp2_L", "pedipalp3_L", "pedipalp4_L",
+            "pedipalp5_L", "pedipalp6_L", "pedipalp7_L",
+            "pedipalp1_R", "pedipalp2_R", "pedipalp3_R", "pedipalp4_R",
+            "pedipalp5_R", "pedipalp6_R", "pedipalp7_R",
+            "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0",
+            "L_Leg1_Upper", "L_Leg1_Lower", "L_Foot1",
+            "L_Leg2_Upper", "L_Leg2_Lower", "L_Foot2",
+            "L_Leg3_Upper", "L_Leg3_Lower", "L_Foot3",
+            "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0",
+            "R_Leg1_Upper", "R_Leg1_Lower", "R_Foot1",
+            "R_Leg2_Upper", "R_Leg2_Lower", "R_Foot2",
+            "R_Leg3_Upper", "R_Leg3_Lower", "R_Foot3"
+        };
+
         /// <summary>The ant's list plus the two wing drivers, and nothing else.</summary>
         internal static readonly string[] WingedBones =
             AntBones.Concat(FourthChainWingDrivers).ToArray();
@@ -97,7 +128,26 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal static string[] AllowedBones(string key)
         {
-            return Flies(key) ? WingedBones : AntBones;
+            return key == ScorpionKey ? ScorpionBones
+                : Flies(key) ? WingedBones : AntBones;
+        }
+
+        /// <summary>
+        /// Whether this creature walks on the donor's fourth leg chain.
+        ///
+        /// <para>Exactly one does. Every Sprint 14 and 15 creature here is a
+        /// six-legged insect, so the rule above is that nothing may plant an
+        /// eighth foot. A scorpion is an arachnid with eight legs, and the
+        /// Sprint 20 census measured the donor's fourth chain to be a
+        /// complete leg - upper, lower and foot, both sides - rather than the
+        /// footless spare the ants leave empty and the beetles use for wings.
+        /// So the eighth foot is permitted here and nowhere else, by name,
+        /// and the Sprint 14 rule is untouched for the creatures it was
+        /// written for.</para>
+        /// </summary>
+        internal static bool WalksOnEightLegs(string key)
+        {
+            return key == ScorpionKey;
         }
 
         /// <summary>

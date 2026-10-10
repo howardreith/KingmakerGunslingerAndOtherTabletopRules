@@ -212,7 +212,7 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.NaturesAlly)).ToArray();
             SummonVariantSpec[] bat = all.Where(value =>
                 value.Creature.Key == "dire-bat").ToArray();
-            Assertions.Equal(1044, all.Count(SummonVisibilityCatalog.IsPublished),
+            Assertions.Equal(1056, all.Count(SummonVisibilityCatalog.IsPublished),
                 "The published surface must exclude only candidates that are unqualified or held on a proven engine barrier.");
             Assertions.Equal(
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,

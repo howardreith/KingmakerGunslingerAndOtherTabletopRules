@@ -15,6 +15,7 @@ using Kingmaker.Enums;
 using Kingmaker.ElementsSystem;
 using Kingmaker.Localization;
 using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -89,6 +90,22 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Girallon.UnitType";
         private const string GirallonRendSymbol =
             "KMG.Summoning.Special.Girallon.Rend";
+        private const string GiantScorpionClaw1d6Symbol =
+            "KMG.Summoning.Natural.GiantScorpion.Claw1d6";
+        private const string GiantScorpionSting1d6Symbol =
+            "KMG.Summoning.Natural.GiantScorpion.Sting1d6";
+        private const string GiantScorpionUnitTypeSymbol =
+            "KMG.Summoning.Natural.GiantScorpion.UnitType";
+        private const string GiantScorpionTripDefenseSymbol =
+            "KMG.Summoning.Natural.GiantScorpion.TripDefense";
+        private const string GiantScorpionRacialSkillsSymbol =
+            "KMG.Summoning.Natural.GiantScorpion.RacialSkills";
+        private const string GiantScorpionPoisonSymbol =
+            "KMG.Summoning.Natural.GiantScorpion.Poison";
+        private const string GiantScorpionVenomSymbol =
+            "KMG.Summoning.Natural.GiantScorpion.Venom";
+        private const string GiantScorpionMindlessImmunitySymbol =
+            "KMG.Summoning.Natural.GiantScorpion.MindlessImmunity";
         private const string Talon2d6Symbol =
             "KMG.Summoning.Natural.Talon2d6";
         private const string WaspSting1d8Symbol =
@@ -415,6 +432,34 @@ namespace KingmakerGunslinger.Blueprints
                         ExpandedSummoningCatalog.All.Single(creature =>
                             creature.Key == GirallonRulesPolicy.GirallonKey))),
                 Require<BlueprintItemWeapon>(bySymbol, GirallonClaw1d4Symbol));
+            // Sprint 20. The Giant Scorpion is Large and prints 1d6 on both
+            // its claws and its sting, so it owns both weapons for the same
+            // two reasons its predecessors did: a shared native carries no
+            // damage-dice override and the engine scales it one step up for a
+            // Large wielder, and the sting's poison trigger gates on that
+            // weapon's own type and must never reach a claw.
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                    library, NativeClaw1d6Guid, "1d6 claw"),
+                Require<BlueprintItemWeapon>(bySymbol, GiantScorpionClaw1d6Symbol),
+                GiantScorpionClaw1d6Symbol, 1, DiceType.D6);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                    BlueprintItemWeapon>(library, NativePurpleWormStingGuid,
+                        "native sting animation weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, GiantScorpionSting1d6Symbol),
+                GiantScorpionSting1d6Symbol, 1, DiceType.D6);
+            ConfigureGiantScorpionUnitType(Require<BlueprintUnitType>(bySymbol,
+                GiantScorpionUnitTypeSymbol));
+            ConfigureGiantScorpionPoison(library,
+                Require<BlueprintFeature>(bySymbol, GiantScorpionPoisonSymbol),
+                Require<BlueprintBuff>(bySymbol, GiantScorpionVenomSymbol),
+                Require<BlueprintItemWeapon>(bySymbol,
+                    GiantScorpionSting1d6Symbol));
+            ConfigureGiantScorpionMindlessImmunity(Require<BlueprintFeature>(
+                bySymbol, GiantScorpionMindlessImmunitySymbol));
+            ConfigureGiantScorpionTripDefense(Require<BlueprintFeature>(
+                bySymbol, GiantScorpionTripDefenseSymbol));
+            ConfigureGiantScorpionRacialSkills(Require<BlueprintFeature>(
+                bySymbol, GiantScorpionRacialSkillsSymbol));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
                 BlueprintBuff>(library, NativeFilthFeverGuid,
                     "native Filth Fever disease payload");
@@ -544,6 +589,205 @@ namespace KingmakerGunslinger.Blueprints
         /// The two gates are independent - one on limb position, one on weapon
         /// type - so neither attack can acquire the other's rider.</para>
         /// </summary>
+        /// <summary>
+        /// The Giant Scorpion's poison: the same cloned native lifecycle the
+        /// Giant Ant uses, with the printed graph this creature actually has.
+        ///
+        /// <para>Six exposures rather than four is the whole reason it needs
+        /// its own carrier instead of sharing one, and the printed difficulty
+        /// class is never written down: a context action sets it live from the
+        /// scorpion's own Constitution immediately before the cloned save, so
+        /// a buffed or weakened scorpion poisons for what it supports. At the
+        /// printed Constitution 16 and five hit dice that is DC 15.</para>
+        ///
+        /// <para>The trigger gates on the sting's own weapon type, so neither
+        /// claw can ever deliver it, and it rides the same wound gate the ant
+        /// and the wasp carry: the sting must hit and must deal positive final
+        /// damage.</para>
+        /// </summary>
+        private static void ConfigureGiantScorpionPoison(
+            LibraryScriptableObject library, BlueprintFeature feature,
+            BlueprintBuff venom, BlueprintItemWeapon sting)
+        {
+            BlueprintBuff nativeBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeSpiderPoisonBuffGuid,
+                    "native saved poison lifecycle");
+            CopyFields(nativeBuff, venom);
+            venom.name = InternalName(GiantScorpionVenomSymbol);
+            venom.ComponentsArray = (nativeBuff.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            venom.Stacking = StackingType.Poison;
+            BuffPoisonStatDamage damage = venom.ComponentsArray.OfType<
+                BuffPoisonStatDamage>().Single();
+            damage.Stat = StatType.Strength;
+            damage.Value = new DiceFormula(
+                GiantScorpionRulesPolicy.PoisonDiceCount, DiceType.D2);
+            damage.Ticks = GiantScorpionRulesPolicy.PoisonRounds;
+            damage.SuccesfullSaves = GiantScorpionRulesPolicy.PoisonCureSaves;
+            damage.SaveType = SavingThrowType.Fortitude;
+            BlueprintUnitFactAccess.Resolve().Configure(venom,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.Venom.Name",
+                    "Giant Scorpion Venom"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.Venom.Description",
+                    "Injury poison: Fortitude DC 15; 1d2 Strength damage each round for six total exposures; one successful save cures it."),
+                nativeBuff.Icon);
+
+            BlueprintFeature nativeFeature = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeSpiderPoisonFeatureGuid,
+                    "native poison-on-hit feature");
+            CopyFields(nativeFeature, feature);
+            feature.name = InternalName(GiantScorpionPoisonSymbol);
+            feature.HideInUI = true;
+            feature.IsClassFeature = false;
+            BlueprintComponent[] components = (nativeFeature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AddInitiatorAttackWithWeaponTrigger trigger = components.OfType<
+                AddInitiatorAttackWithWeaponTrigger>().Single();
+            trigger.WeaponType = sting.Type;
+            trigger.OnlyHit = true;
+            ContextActionSavingThrow save = trigger.Action.Actions.OfType<
+                ContextActionSavingThrow>().Single();
+            ContextActionConditionalSaved outcome = save.Actions.Actions.OfType<
+                ContextActionConditionalSaved>().Single();
+            ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
+                ContextActionApplyBuff>().Single();
+            apply.Buff = venom;
+            trigger.Action.Actions = new GameAction[] {
+                new ContextActionOnlyIfWeaponWounded {
+                    Actions = new ActionList {
+                        Actions = (new GameAction[] {
+                            new ContextActionSetGiantScorpionPoisonDc() }).Concat(
+                                trigger.Action.Actions).ToArray() } } };
+            feature.ComponentsArray = components;
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.Poison.Name",
+                    "Giant Scorpion Poison"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.Poison.Description",
+                    "A sting delivers Giant Scorpion venom on a hit. The claws do not."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed immunity to mind-affecting effects.
+        ///
+        /// <para>Carried explicitly on the game's own descriptor immunity, the
+        /// same component the Goblin Dog uses for disease, rather than being
+        /// inferred from an Intelligence score. That distinction matters here:
+        /// the printed Intelligence is an em dash and Kingmaker cannot hold an
+        /// absent score, so this creature ships at Intelligence 1 like every
+        /// other vermin the project has built - and an Intelligence of 1 is
+        /// not mindless as far as the engine is concerned. Without this fact
+        /// the printed immunity would simply be absent.</para>
+        ///
+        /// <para>The vermin that shipped before this one do not carry it. They
+        /// are released and inside this sprint's protected boundary, so they
+        /// are not changed; the gap is recorded rather than quietly fixed
+        /// across creatures nobody re-qualified.</para>
+        /// </summary>
+        private static void ConfigureGiantScorpionMindlessImmunity(
+            BlueprintFeature feature)
+        {
+            feature.name = InternalName(GiantScorpionMindlessImmunitySymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            var immunity = ScriptableObject.CreateInstance<
+                BuffDescriptorImmunity>();
+            immunity.CheckFact = false;
+            immunity.Descriptor = SpellDescriptor.MindAffecting;
+            immunity.FactToCheck = null;
+            immunity.IgnoreFeature = null;
+            feature.ComponentsArray = new BlueprintComponent[] { immunity };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.MindlessImmunity.Name",
+                    "Mindless"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.MindlessImmunity.Description",
+                    "A mindless creature is immune to mind-affecting effects."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed stability bonus against trip: CMD 19 becoming 31.
+        ///
+        /// <para>Its own rather than the shared native eight-leg fact, for a
+        /// measured reason. The first guarded review read the live creature at
+        /// CMD 27 against trip with that fact on it, because it is worth +8 -
+        /// the stat-block convention is four per pair of legs beyond the
+        /// first, so a six-legged insect prints +8 and this eight-legged
+        /// arachnid prints +12. The shared fact is native and the creatures
+        /// holding it are released, so nothing about it changes.</para>
+        ///
+        /// <para>The engine's own manoeuvre-defence component does the work,
+        /// gated on the trip manoeuvre alone, so the ordinary manoeuvre
+        /// defence stays at the printed 19.</para>
+        /// </summary>
+        private static void ConfigureGiantScorpionTripDefense(
+            BlueprintFeature feature)
+        {
+            var defence = ScriptableObject.CreateInstance<
+                ManeuverDefenceBonus>();
+            defence.Type = CombatManeuver.Trip;
+            defence.Bonus = GiantScorpionRulesPolicy.EightLegTripBonus;
+            feature.name = InternalName(GiantScorpionTripDefenseSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { defence };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.TripDefense.Name",
+                    "Eight Legs"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.TripDefense.Description",
+                    "A giant scorpion stands on eight legs and is hard to knock down: +12 to its combat maneuver defense against trip attempts, which is what its stat block prints."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed racial +4 on Perception and Stealth.
+        ///
+        /// <para>The first guarded review found this missing entirely: the
+        /// live creature read Perception 0 against a printed +4 and Stealth -3
+        /// against a printed +1. Both are the same bonus, and it existed only
+        /// in the arithmetic that derived the printed totals.</para>
+        ///
+        /// <para>Its own carrier rather than the Giant Ants', which is theirs:
+        /// that one covers the ants' printed Perception alone and records
+        /// their Survival as omitted. The printed Climb +8 stays omitted under
+        /// ORDINARY_MAP_LAND_USE_SCOPE and nothing stands in for it.</para>
+        /// </summary>
+        private static void ConfigureGiantScorpionRacialSkills(
+            BlueprintFeature feature)
+        {
+            var perception = ScriptableObject.CreateInstance<AddStatBonus>();
+            perception.Stat = StatType.SkillPerception;
+            perception.Value = GiantScorpionRulesPolicy.RacialSkillBonus;
+            perception.Descriptor = ModifierDescriptor.Racial;
+            var stealth = ScriptableObject.CreateInstance<AddStatBonus>();
+            stealth.Stat = StatType.SkillStealth;
+            stealth.Value = GiantScorpionRulesPolicy.RacialSkillBonus;
+            stealth.Descriptor = ModifierDescriptor.Racial;
+            feature.name = InternalName(GiantScorpionRacialSkillsSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] {
+                perception, stealth };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.RacialSkills.Name",
+                    "Giant Scorpion Senses"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.RacialSkills.Description",
+                    "A giant scorpion has a +4 racial bonus on Perception and Stealth checks. Its printed +4 Climb bonus has no Kingmaker equivalent and is omitted rather than substituted."),
+                null);
+        }
+
         private static void ConfigureGiantAntPoison(
             LibraryScriptableObject library, BlueprintFeature feature,
             BlueprintBuff venom, BlueprintItemWeapon sting)
@@ -862,6 +1106,25 @@ namespace KingmakerGunslinger.Blueprints
                 null);
         }
 
+        /// <summary>
+        /// A project unit type, so the scorpion is not classified as the Giant
+        /// Spider whose rig it borrows. The same reason the three Sprint 14
+        /// insects each got one.
+        /// </summary>
+        private static void ConfigureGiantScorpionUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(GiantScorpionUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantScorpion.UnitType.Name",
+                "Giant Scorpion");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantScorpion.UnitType.Description",
+                "A Large vermin that seizes a foe in two grasping claws and stings it over its own back. Mindless and immune to mind-affecting effects. Darkvision and tremorsense are unmodeled under the accepted passive-sense engine limitation, and the claws' shorter printed reach cannot be expressed beside the sting's.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
         private static void ConfigureGirallonUnitType(BlueprintUnitType type)
         {
             type.name = InternalName(GirallonUnitTypeSymbol);
@@ -1073,8 +1336,15 @@ namespace KingmakerGunslinger.Blueprints
             // Intelligence 2 spent four on Perception and three on Stealth is
             // not something a fixed priority list can express: left to it the
             // creature put all seven on Perception and none on Stealth.
+            // Sprint 20's Giant Scorpion joins them for the opposite reason:
+            // it must get NO ranks at all, because a creature with no
+            // Intelligence score buys none, and it needs its printed racial
+            // hit points set explicitly for the same reason the Girallon does
+            // - the engine does not produce the tabletop average, which is how
+            // a Girallon read 81 against a printed 73.
             bool exactRanks = PrimateRulesPolicy.IsPrimate(profile.Key) ||
-                profile.Key == GirallonRulesPolicy.GirallonKey;
+                profile.Key == GirallonRulesPolicy.GirallonKey ||
+                profile.Key == GiantScorpionRulesPolicy.GiantScorpionKey;
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
@@ -1095,7 +1365,7 @@ namespace KingmakerGunslinger.Blueprints
             else if (exactRanks)
             {
                 var ranks = UnityEngine.ScriptableObject.CreateInstance<
-                    SummonPrimateSkillRanks>();
+                    SummonExactSkillRanks>();
                 ranks.CreatureKey = profile.Key;
                 ranks.OwningBlueprint = unit;
                 if (profile.Key == GirallonRulesPolicy.GirallonKey)
@@ -1105,6 +1375,19 @@ namespace KingmakerGunslinger.Blueprints
                     ranks.StealthRanks = GirallonRulesPolicy.StealthRanks;
                     ranks.BaseHitPoints =
                         GirallonRulesPolicy.BaseRacialHitPoints;
+                }
+                else if (profile.Key ==
+                    GiantScorpionRulesPolicy.GiantScorpionKey)
+                {
+                    // Zero, zero, zero. The printed Perception +4 and
+                    // Stealth +1 are entirely ability plus racial bonus, so a
+                    // single rank anywhere would put this creature above its
+                    // stat block.
+                    ranks.MobilityRanks = GiantScorpionRulesPolicy.SkillRanks;
+                    ranks.PerceptionRanks = GiantScorpionRulesPolicy.SkillRanks;
+                    ranks.StealthRanks = GiantScorpionRulesPolicy.SkillRanks;
+                    ranks.BaseHitPoints =
+                        GiantScorpionRulesPolicy.BaseRacialHitPoints;
                 }
                 else
                 {
@@ -1168,6 +1451,9 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == GirallonRulesPolicy.GirallonKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     GirallonUnitTypeSymbol);
+            else if (profile.Key == GiantScorpionRulesPolicy.GiantScorpionKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    GiantScorpionUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
@@ -1215,6 +1501,18 @@ namespace KingmakerGunslinger.Blueprints
                     ? Require<BlueprintFeature>(bySymbol, GirallonRendSymbol)
                     : fact == "PrimateFullStrengthLimbs"
                     ? Require<BlueprintFeature>(bySymbol, PrimateFullStrengthSymbol)
+                    : fact == "GiantScorpionPoison"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantScorpionPoisonSymbol)
+                    : fact == "GiantScorpionMindlessImmunity"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantScorpionMindlessImmunitySymbol)
+                    : fact == "GiantScorpionTripDefense"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantScorpionTripDefenseSymbol)
+                    : fact == "GiantScorpionRacialSkills"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantScorpionRacialSkillsSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
@@ -1345,6 +1643,10 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, GirallonBite1d6Symbol);
             if (key == "GirallonClaw1d4") return Require<BlueprintItemWeapon>(
                 bySymbol, GirallonClaw1d4Symbol);
+            if (key == "GiantScorpionClaw1d6") return Require<BlueprintItemWeapon>(
+                bySymbol, GiantScorpionClaw1d6Symbol);
+            if (key == "GiantScorpionSting1d6") return Require<BlueprintItemWeapon>(
+                bySymbol, GiantScorpionSting1d6Symbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }

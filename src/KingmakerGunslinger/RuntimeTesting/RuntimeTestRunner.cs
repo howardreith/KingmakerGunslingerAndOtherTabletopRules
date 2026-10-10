@@ -1303,6 +1303,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveExpandedSummoningArachnidCensus)
+                {
+                    Complete(RunExpandedSummoningArachnidCensus());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableShieldOther)
                 {
                     Complete(RunDisposableShieldOther());
@@ -2861,6 +2867,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningSprint19Review)
                 {
                     PollSprint19Review();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint20Review)
+                {
+                    PollSprint20Review();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSerpentineSurvey)
@@ -36064,6 +36075,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopSprint17Bodies(result);
             StopSprint18Review(result);
             StopSprint19Review(result);
+            StopSprint20Review(result);
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  113,
+    "count":  114,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3370,6 +3370,46 @@
                                                "KMG.Summoning.Ability.SM.Tier8.Xill.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SM.Tier9.Xill.OneD4PlusOne",
                                                "KMG.Summoning.Unit.Xill"
+                                           ]
+                  },
+                  {
+                      "key":  "giant-scorpion",
+                      "displayName":  "Giant Scorpion",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/giant-scorpion.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/giant-scorpion.png",
+                      "sourceSha256":  "180c34a13ca3a68de4de0d14aaa202e5fa9edb488c6eec85b648c62cb4f59b47",
+                      "outputSha256":  "91f309af50d8a523cbd194a427695ebf71a406dc2d67a4c60401680bef10ef28",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier4.GiantScorpion.One",
+                                               "KMG.Summoning.Ability.SM.Tier4.GiantScorpion.One.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier4.GiantScorpion.One.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier5.GiantScorpion.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier5.GiantScorpion.OneD3.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier5.GiantScorpion.OneD3.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier6.GiantScorpion.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier6.GiantScorpion.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier6.GiantScorpion.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier7.GiantScorpion.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier7.GiantScorpion.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier7.GiantScorpion.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier8.GiantScorpion.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier8.GiantScorpion.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier8.GiantScorpion.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier9.GiantScorpion.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.GiantScorpion.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier9.GiantScorpion.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SNA.Tier4.GiantScorpion.One",
+                                               "KMG.Summoning.Ability.SNA.Tier5.GiantScorpion.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier6.GiantScorpion.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier7.GiantScorpion.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.GiantScorpion.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.GiantScorpion.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.GiantScorpion.UnitType",
+                                               "KMG.Summoning.Unit.GiantScorpion"
                                            ]
                   }
               ]
