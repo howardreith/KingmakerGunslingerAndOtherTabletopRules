@@ -421,6 +421,50 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// Every weapon a natural profile names can actually be resolved.
+        ///
+        /// <para>The builder maps a profile's weapon key to a blueprint
+        /// through a chain of exact string comparisons and throws
+        /// "Unknown natural weapon key" on anything it does not recognise.
+        /// That throw happens during blueprint initialization, so the whole
+        /// mod fails to load and every registration is rolled back - which is
+        /// exactly what the first real Sprint 19 guarded run measured, for
+        /// GirallonBite1d6, after a deploy and a launch.</para>
+        ///
+        /// <para>This is checked over the source text because the resolver is
+        /// a comparison chain rather than a table. It is not elegant, and it
+        /// catches the precise defect that cost an owner runtime transaction,
+        /// for every creature rather than only this sprint's.</para>
+        /// </summary>
+        internal static void EveryProfileWeaponKeyResolvesInTheBuilder()
+        {
+            string root = RepositoryRoot();
+            string builder = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                root, "src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningNaturalBuilder.cs"));
+            var keys = new HashSet<string>(StringComparer.Ordinal);
+            foreach (NaturalSummonProfile profile in
+                ExpandedSummoningNaturalProfiles.All)
+            {
+                keys.Add(profile.PrimaryWeapon);
+                foreach (string key in profile.AdditionalWeapons) keys.Add(key);
+                foreach (string key in profile.AdditionalSecondaryWeapons)
+                    keys.Add(key);
+            }
+            Assertions.True(keys.Count > 20,
+                "The profiles must name a real set of weapons.");
+            foreach (string key in keys.OrderBy(value => value,
+                StringComparer.Ordinal))
+                Assertions.True(builder.Contains("key == " + Quote(key)),
+                    "The natural builder cannot resolve the weapon key " +
+                    Quote(key) + ", so blueprint initialization would throw "
+                    + "and roll back every registration.");
+        }
+
+        private static string Quote(string value)
+        { return "\"" + value + "\""; }
+
+        /// <summary>
         /// The repository root, found by walking up to the solution file.
         /// The test binary lives several directories below it and the depth
         /// is not the same from every build output.
