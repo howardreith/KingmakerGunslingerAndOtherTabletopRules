@@ -157,6 +157,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string DisposableExpandedSummoningSprint19Review =
             "disposable-expanded-summoning-sprint19-review";
+        /// <summary>
+        /// The Sprint 20 hidden-candidate review: the Giant Scorpion as
+        /// it is in a running game. The live profile with every printed
+        /// number including the grapple figure, the three-limb routine,
+        /// the grab on the claws and the poison on the sting with each
+        /// proved absent from the other limb, the live poison difficulty
+        /// class on both sides of the save, the eight-legged trip
+        /// defence, the mind-affecting immunity, both combat modes, the
+        /// original eight-legged body, the registered twelve roots still
+        /// withheld and the module switch, on the working save.
+        /// </summary>
+        internal const string DisposableExpandedSummoningSprint20Review =
+            "disposable-expanded-summoning-sprint20-review";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
         internal const string ObserveExpandedSummoningVariantMenu =
@@ -236,7 +249,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == DisposableExpandedSummoningSnakeCommands ||
                 scenario == DisposableExpandedSummoningSnakeFinalReview ||
                 scenario == DisposableExpandedSummoningSprint18Review ||
-                scenario == DisposableExpandedSummoningSprint19Review;
+                scenario == DisposableExpandedSummoningSprint19Review ||
+                scenario == DisposableExpandedSummoningSprint20Review;
         }
         /// <summary>
         /// Correction order (2026-09-25): repeated cast-and-dispose cycles of
@@ -760,6 +774,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningArachnidCensus,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
+                DisposableExpandedSummoningSprint20Review,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,

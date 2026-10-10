@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.DomainTests
         /// where Sprint 19 spent twenty-two on two: the difference is
         /// templating, not waste.
         /// </summary>
-        internal const int AppendedLedgerIdentities = 1 + 12 + 12 + 6;
+        internal const int AppendedLedgerIdentities = 1 + 12 + 12 + 7;
 
         internal const int MonsterRoots = 6;
         internal const int NaturesAllyRoots = 6;
@@ -157,25 +157,26 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// The append is exactly thirty-one entries at the end of the ledger,
+        /// The append is exactly thirty-two entries at the end of the ledger,
         /// all of them this creature's, and nothing before them moved.
         /// </summary>
         internal static void TheLedgerAppendIsExactAndAppendOnly()
         {
             string[] appended = AppendedSymbols();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
-                "Sprint 20 appends exactly thirty-one identities.");
+                "Sprint 20 appends exactly thirty-two identities.");
             foreach (string symbol in appended)
                 Assertions.True(symbol.Contains("GiantScorpion"),
                     "Sprint 20 allocates for one creature only: " + symbol);
-            // The six it owns beyond its unit and placements.
+            // The seven it owns beyond its unit and placements.
             foreach (string tail in new[] {
                 "KMG.Summoning.Natural.GiantScorpion.Claw1d6",
                 "KMG.Summoning.Natural.GiantScorpion.Sting1d6",
                 "KMG.Summoning.Natural.GiantScorpion.UnitType",
                 "KMG.Summoning.Natural.GiantScorpion.Poison",
                 "KMG.Summoning.Natural.GiantScorpion.Venom",
-                "KMG.Summoning.Natural.GiantScorpion.MindlessImmunity" })
+                "KMG.Summoning.Natural.GiantScorpion.MindlessImmunity",
+                "KMG.Summoning.Special.GiantScorpion.Traits" })
                 Assertions.True(appended.Contains(tail, StringComparer.Ordinal),
                     "Missing Sprint 20 identity: " + tail);
             // The released Sprint 18 carrier is granted, never copied: a
@@ -228,6 +229,101 @@ namespace KingmakerGunslinger.DomainTests
                 "The poison is gated on the sting's own weapon type.");
             Assertions.False(call.Contains("GiantScorpionClaw1d6Symbol"),
                 "A claw must never deliver this poison.");
+
+            // The grab half, which was a claim in three places before it was
+            // a carrier anywhere: the profile's attribution line, the printed
+            // +12 grapple derivation, and the registration commit's own
+            // message. None of those is the thing that grabs, and none of
+            // them would have failed.
+            string special = File.ReadAllText(Path.Combine(RepositoryRoot(),
+                "src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningSpecialBuilder.cs"));
+            int grab = special.IndexOf(
+                "ConfigureGrabber(library, bySymbol, GiantScorpionUnitSymbol",
+                StringComparison.Ordinal);
+            Assertions.True(grab > 0,
+                "The scorpion's claws must carry a grab carrier.");
+            string spec = special.Substring(grab,
+                Math.Min(760, special.Length - grab));
+            // The primary limb plus one additional limb is both claws and
+            // stops short of the sting, which is the second additional limb.
+            // A spec counting one limb further would grab with the sting.
+            Assertions.True(spec.Contains("Primary = true"),
+                "The scorpion's primary limb is a claw and grabs.");
+            Assertions.True(spec.Contains(
+                    "Additional = GiantScorpionRulesPolicy.ClawCount - 1"),
+                "The grab reaches the second claw and stops before the sting.");
+            Assertions.True(spec.Contains(
+                    "MaxHeld = GiantScorpionRulesPolicy.ClawCount"),
+                "Two claws hold two foes.");
+            Assertions.False(spec.Contains("Rake ="),
+                "A scorpion rakes nothing.");
+        }
+
+        /// <summary>
+        /// The review scenario is admitted by every gate that can refuse it.
+        ///
+        /// <para>Four gates stand between the orchestrator and this review and
+        /// the last of them refuses only after a deploy and a launch. Sprint
+        /// 19 spent an owner runtime transaction learning that. This costs
+        /// nothing and learns it offline.</para>
+        /// </summary>
+        internal static void TheReviewScenarioIsWiredAtEveryGate()
+        {
+            const string scenario = "disposable-expanded-summoning-sprint20-review";
+            Assertions.Equal(scenario, KingmakerGunslinger.RuntimeTesting
+                    .RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint20Review,
+                "The scenario name is what the orchestrator asks for.");
+            // The gate that rejected Sprint 19's first run: the mod refuses
+            // any scenario not on its own allowlist, before any hook installs.
+            Assertions.True(KingmakerGunslinger.RuntimeTesting
+                    .RuntimeTestScenarioCatalog.IsAllowed(scenario),
+                "The mod request validator must admit the Sprint 20 review.");
+            // The group that decides which requests may use the working save
+            // and the disposable-actor fixture.
+            Assertions.True(KingmakerGunslinger.RuntimeTesting
+                    .RuntimeTestScenarioCatalog
+                    .IsExpandedSummoningRulesScenario(scenario),
+                "The Sprint 20 review is an Expanded Summoning rules scenario.");
+            string root = RepositoryRoot();
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            Assertions.True(automation.Contains("'" + scenario + "'"),
+                "The orchestrator needs a descriptor for the Sprint 20 review.");
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            Assertions.True(runner.Contains(
+                    "DisposableExpandedSummoningSprint20Review"),
+                "The runner must dispatch the Sprint 20 review.");
+            Assertions.True(runner.Contains("StopSprint20Review(result)"),
+                "A timed-out review must still restore its fixture.");
+            // The other guarded run this sprint needs: the party-camera body
+            // review. It casts through a parent this creature does not
+            // publish, so the roster has to waive the publication guard for it
+            // by name.
+            string review = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningCreatureReview.cs"));
+            Assertions.True(review.Contains("Sprint14BonePolicy.ScorpionKey"),
+                "The creature review roster must admit the withheld scorpion.");
+            // The view patch is what actually puts the body on the creature.
+            // A creature missing from its map spawns wearing its donor and
+            // nothing else about the creature looks wrong. The patch is Unity
+            // code, so it is read as text here the way Sprint 10 reads it.
+            string patch = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningPteranodonViewPatch.cs"));
+            Assertions.True(patch.Contains(
+                    "{ GiantScorpionBlueprintName, Sprint14BonePolicy.ScorpionKey }"),
+                "The view patch must map this creature's blueprint to its key.");
+            Assertions.True(patch.Contains(
+                    "\"KMG_Summoning_Unit_GiantScorpion\""),
+                "The mapped blueprint name must be the registered one.");
+            // The review's own expectations, which must agree with the rules
+            // policy rather than restate it.
+            KingmakerGunslinger.RuntimeTesting.Sprint20ReviewPolicy.Validate();
         }
 
         /// <summary>
