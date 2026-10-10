@@ -174,10 +174,12 @@ SPRINT20_IDENTITIES = (1 + SPRINT20_ROOTS + SPRINT20_EXECUTION_CHILDREN +
 MASTER_LEDGER_ENTRIES = 3005
 
 REGISTERED_PLACEMENTS = 1056
-SUPPRESSED_PLACEMENTS = 12
-PUBLISHED_WHILE_WITHHELD = 1044
+SUPPRESSED_PLACEMENTS = 0
+# What v0.0.148 published, kept as the number this release must not have
+# reduced rather than as the number it shows.
+PUBLISHED_BY_THE_PRIOR_RELEASE = 1044
 NATIVE_WRAPPERS = 29
-VISIBLE_WHILE_WITHHELD = PUBLISHED_WHILE_WITHHELD + NATIVE_WRAPPERS
+VISIBLE_WHILE_WITHHELD = PUBLISHED_BY_THE_PRIOR_RELEASE + NATIVE_WRAPPERS
 VISIBLE_AFTER_PUBLICATION = REGISTERED_PLACEMENTS + NATIVE_WRAPPERS
 UNIQUE_CREATURES = 102
 ICON_CONCEPTS = 114
@@ -404,9 +406,11 @@ def validate_identity_append(root: Path) -> int:
 def validate_suppression(root: Path) -> None:
     visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
                   ).read_text(encoding="utf-8")
-    # Withheld. What the suppression set contains is checked before what the
+    # Published. What the suppression set contains is checked before what the
     # counts claim, so a file that withholds the wrong thing names the creature
-    # rather than only reporting that a number moved.
+    # rather than only reporting that a number moved. The named checks come
+    # first for the same reason: the dangerous mistakes get their own message.
+    #
     # The DECLARATION, not the last mention: the name appears again in the
     # IsPublished lookup, and that occurrence carries no creature keys at all,
     # so taking the last one would read an empty suppression set as correct
@@ -416,21 +420,28 @@ def validate_suppression(root: Path) -> None:
         raise AssertionError(
             "The suppression set must be declared exactly once")
     suppressed = declaration[1].split(";")[0]
-    if '"' + SPRINT20_KEY + '"' not in suppressed:
+    if '"' + SPRINT20_KEY + '"' in suppressed:
         raise AssertionError(
-            "Sprint 20 must register its creature withheld: " + SPRINT20_KEY)
+            "Sprint 20 publication did not remove its key: " + SPRINT20_KEY)
     # Everything v0.0.148 published stays published. Sprint 18's apes and
     # Sprint 19's Girallon and Xill are the ones a careless edit would reach.
     for key in ("ape", "dire-ape", "girallon", "xill"):
         if '"' + key + '"' in suppressed:
             raise AssertionError(
                 "Sprint 20 withheld a creature v0.0.148 published: " + key)
+    if '"' in suppressed:
+        raise AssertionError("Sprint 20 publishes everything; nothing may be "
+                             "withheld: " + suppressed.strip())
+    # The set is empty rather than absent, and every registered placement is
+    # visible. Publication is the removal of one key and nothing else, so the
+    # registered count must be the one registration allocated.
     for token in ("RegisteredLogicalPlacementCount = "
                   + str(REGISTERED_PLACEMENTS),
                   "SuppressedLogicalPlacementCount = "
-                  + str(SUPPRESSED_PLACEMENTS)):
+                  + str(SUPPRESSED_PLACEMENTS),
+                  "new HashSet<string>(Array.Empty<string>()"):
         if token not in visibility:
-            raise AssertionError("Sprint 20 candidate surface differs: " + token)
+            raise AssertionError("Sprint 20 publication surface differs: " + token)
     catalog = (root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
                ).read_text(encoding="utf-8")
     for token in ('C("giant-scorpion","Giant Scorpion",4,true,4',
@@ -614,7 +625,11 @@ def validate(root: Path) -> None:
     # sprint is in, so this is a relation rather than a pinned pair.
     suppressed = record.get("suppressedGeneratedPlacements")
     published = record.get("publishedGeneratedPlacements")
-    if suppressed not in (0, SUPPRESSED_PLACEMENTS):
+    # All twelve or none, which is what keeps a half-published creature out.
+    # This takes the ROOT count rather than the surface constant: the surface
+    # constant is zero now that the creature has published, and reading it here
+    # would collapse the two states into one.
+    if suppressed not in (0, SPRINT20_ROOTS):
         raise AssertionError(
             "Sprint 20 withholds all twelve of its roots or none of them")
     if published != REGISTERED_PLACEMENTS - suppressed:
