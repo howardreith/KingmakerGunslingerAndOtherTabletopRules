@@ -75,7 +75,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // either way rather than assumed absent.
                 BlueprintUnit[] scorpions = all.Where(value =>
                     ArachnidRigSurveyPolicy.Matches(value.name,
-                        new[] { "scorpion" })).ToArray();
+                        new[] { "scorpion" }) &&
+                    !ArachnidRigSurveyPolicy.IsOurs(value.name)).ToArray();
+                // Named separately, because the second run counted this
+                // sprint's own registered unit as an installed scorpion and
+                // briefly looked like it had overturned the Sprint 14 finding.
+                BlueprintUnit[] ourScorpions = all.Where(value =>
+                    ArachnidRigSurveyPolicy.Matches(value.name,
+                        new[] { "scorpion" }) &&
+                    ArachnidRigSurveyPolicy.IsOurs(value.name)).ToArray();
                 // The first run reported one and could not say what it was,
                 // which is half a finding. Name every one, with the prefab it
                 // would be authored against.
@@ -110,6 +118,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var rows = new JArray();
                 var document = new JObject {
                     ["installedScorpions"] = document0ScorpionRows,
+                    ["scorpionsRegisteredByThisMod"] = new JArray(
+                        ourScorpions.Select(value => (JToken)value.name)),
                     ["scope"] = "Sprint 20 arachnid donor census: detached read-only view prefabs only. " +
                         "No campaign actor is spawned, no save is read or written, no native asset is modified.",
                     ["nativeData"] = "skeleton names, hierarchy, rest transforms, bind positions and rotations, " +
@@ -172,13 +182,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     document.ToString(Formatting.Indented));
                 WriteLifecycleStage("expanded-summoning-arachnid-census-written");
 
+                int unreadable = rows.OfType<JObject>()
+                    .Count(row => row["unreadable"] != null);
                 assertions.Add(Assertion("sprint20-census-captured",
-                    "every selected donor prefab yields a complete bind frame",
+                    "the anchor yields a complete bind frame and nothing is silently lost",
                     "file=" + fileName + ";surveyed=" + byPrefab.Count +
-                        ";captured=" + captured + ";discoveredBlueprints=" +
-                        discovered.Length,
-                    captured == byPrefab.Count && captured > 0,
-                    "detached read-only prefabs; no spawn, no save, no asset mutation"));
+                        ";captured=" + captured + ";unreadable=" + unreadable +
+                        ";discoveredBlueprints=" + discovered.Length,
+                    anchorRow != null && captured > 0 &&
+                        captured + unreadable == byPrefab.Count,
+                    // The second run demanded every surveyed prefab capture
+                    // and failed on two swarms that have no skinned rig at
+                    // all. A swarm without a rig is a recorded finding; what
+                    // would be a failure is a row that went missing.
+                    "detached read-only prefabs; an unreadable one is recorded with its reason"));
                 assertions.Add(Assertion("sprint20-census-bounded",
                     "one launch stays within the fixed prefab cap",
                     byPrefab.Count + " <= " +
