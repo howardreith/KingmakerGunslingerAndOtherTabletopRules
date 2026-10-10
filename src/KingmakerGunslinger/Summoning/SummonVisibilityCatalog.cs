@@ -46,18 +46,18 @@ namespace KingmakerGunslinger.Summoning
         // on the party-camera art review at 1d4+1, on one candidate, with the
         // owner installation restored exactly after every run. Nothing moved
         // but these two keys: every identity was allocated at registration.
-        // Sprint 19 registers the Girallon and the Xill and withholds both
-        // until their own complete hidden candidate passes. Each takes five
-        // roots: the Girallon from Summon Nature's Ally tiers five to nine,
-        // the Xill from Summon Monster tiers five to nine. Their identities
-        // are allocated now, at registration, and publication will remove
-        // these two names and nothing else.
+        // Sprint 19 registered the Girallon and the Xill and withheld both
+        // through eleven guarded in-game reviews, publishing only once the
+        // complete hidden candidate passed: 39 of 39 on the batched mechanics
+        // review and 12 of 12 on the party-camera art review at 1d4+1, on one
+        // candidate, with the owner installation restored exactly after every
+        // run. Nothing moved but these two keys: every identity was allocated
+        // at registration.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "girallon", "xill" },
-                StringComparer.Ordinal);
+            new HashSet<string>(new string[0], StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1044;
-        internal const int SuppressedLogicalPlacementCount = 10;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

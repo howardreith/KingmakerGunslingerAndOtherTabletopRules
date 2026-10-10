@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.0.148-expanded-summoning-sprint19
+
+- Publishes the Expanded Summoning Sprint 19 Girallon and Xill. Ten new roots
+  (Girallon 5 on Summon Nature's Ally, Xill 5 on Summon Monster) take
+  registered generated placements from 1034 to 1044, and all ten are published,
+  so the visible surface rises from 1063 choices to 1073: 1044 generated plus
+  29 retained native wrappers. Nothing v0.0.147 published moved.
+- Appends exactly 22 append-only identities to the released v0.0.147 ledger,
+  taking it from 2983 to 3005 entries without moving a historical GUID.
+  Publication was the removal of two suppression keys and nothing else.
+- Implements the printed profiles exactly: the Girallon's primary bite and four
+  primary claws at the whole Strength modifier with rend 1d4+6, and the Xill's
+  four Weapon Focus claws with grab and its lower-bonus paralysing bite, with
+  the printed +2 shield bonus and SR 17 carried rather than dropped.
+- Generalises the Sprint 18 rend gate from two hard-coded claws to a claw
+  count. The Dire Ape still rends on two and the Girallon on four, each from
+  its own feature, and the released Dire Ape feature keeps its identity. No
+  general multi-hit or arbitrary-limb framework is built.
+- Ships two original project-owned bodies and two original icons. Both
+  creatures print four arms on a two-armed donor rig, so each side's two arms
+  share that side's driver chain under the recorded
+  `FOUR_ARMS_SHARE_TWO_DRIVER_CHAINS` limitation; the lower arms cannot be
+  posed independently and the runtime refuses a body that claims otherwise.
+- Records rather than approximates what the engine cannot carry: the Xill's
+  six-weapon armed routine, its implant, its planewalk, the Girallon's climb
+  speed, both creatures' passive senses, and the paralysis duration bounded to
+  the summon's lifetime.
+- Qualified by two passing guarded runtime reviews - 39 of 39 on mechanics and
+  12 of 12 on the bodies - after ten runs that each found a real defect, all of
+  which are listed in the release notes.
+- Notes, without changing it, that the 0.0.147 entry below describes that
+  sprint's hidden candidate rather than what it released: v0.0.147 shipped
+  both apes published, appended 61 identities taking the ledger from 2922 to
+  2983 entries, and published 1034 generated placements for 1063 visible
+  choices. `docs/RELEASE-NOTES-0.0.147.md` records that correctly. Released
+  history is left verbatim here because a released record is immutable and
+  this sprint's gate enforces it.
+
 ## 0.0.147-expanded-summoning-sprint18
 
 - Registers the Expanded Summoning Sprint 18 Ape and Dire Ape and withholds

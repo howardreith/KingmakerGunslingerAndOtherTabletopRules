@@ -176,11 +176,13 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Both creatures are registered and withheld, and nothing published
-        /// before this branch moved. The published total is the number the
-        /// player can actually see, and it is exactly v0.0.147's.
+        /// Both creatures are published, and nothing published before this
+        /// branch moved. They were withheld through eleven guarded reviews
+        /// and published only once the complete hidden candidate passed:
+        /// 39 of 39 on the batched mechanics review and 12 of 12 on the
+        /// party-camera art review.
         /// </summary>
-        internal static void BothCreaturesAreRegisteredAndWithheld()
+        internal static void BothCreaturesAreRegisteredAndPublished()
         {
             SummonVariantSpec[] all = ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.Monster).Concat(
@@ -189,19 +191,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1044,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(10,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All ten are withheld.");
-            Assertions.Equal(1034,
+                "Publication withheld nothing.");
+            Assertions.Equal(1044,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The published surface is exactly what v0.0.147 showed.");
+                "All ten new roots are published, and nothing else moved.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key != GirallonRulesPolicy.GirallonKey &&
-                        variant.Creature.Key != XillRulesPolicy.XillKey,
-                    SummonVisibilityCatalog.IsPublished(variant),
-                    "Exactly the Sprint 19 creatures are withheld: "
-                    + variant.StableKey);
+                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
+                    "Nothing may be withheld: " + variant.StableKey);
             SummonVisibilityCatalog.Validate();
         }
 

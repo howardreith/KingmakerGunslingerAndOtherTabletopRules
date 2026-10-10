@@ -16,9 +16,9 @@ namespace KingmakerGunslinger.RuntimeTesting
     ///
     /// <para>The surface checks are blueprint-level and read-only: every one
     /// of the ten new roots exists in the live library with the quantity the
-    /// charter gives it, every one of them is still withheld from the player,
-    /// and no previously published root - the Sprint 18 apes included - has
-    /// been withheld to make room.</para>
+    /// charter gives it, every one of them is published now that the hidden
+    /// candidate has passed, and nothing published before Sprint 19 - the
+    /// Sprint 18 apes included - was withheld to make room.</para>
     /// </summary>
     internal sealed partial class RuntimeTestRunner
     {
@@ -43,6 +43,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var rows = new JArray();
                 var missing = new List<string>();
                 var published = new List<string>();
+                var stillWithheld = new List<string>();
                 foreach (SummonVariantSpec variant in mine
                     .OrderBy(value => value.StableKey, StringComparer.Ordinal))
                 {
@@ -52,7 +53,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ResolveSprint18Ability(manifest, symbol);
                     bool withheld = !SummonVisibilityCatalog.IsPublished(variant);
                     if (ability == null) missing.Add(variant.StableKey);
-                    if (!withheld) published.Add(variant.StableKey);
+                    if (withheld) stillWithheld.Add(variant.StableKey);
+                    else published.Add(variant.StableKey);
                     rows.Add(new JObject {
                         ["root"] = variant.StableKey,
                         ["family"] = variant.Family.ToString(),
@@ -66,22 +68,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint19Check(_sprint19Assertions, _sprint19Rows,
                     "ten-roots-live",
                     mine.Length == 10 && missing.Count == 0 &&
-                    published.Count == 0,
+                    published.Count == 10 && stillWithheld.Count == 0,
                     new JObject { ["roots"] = mine.Length,
                         ["missing"] = new JArray(missing),
-                        ["wronglyPublished"] = new JArray(published),
+                        ["published"] = published.Count,
+                        ["stillWithheld"] = new JArray(stillWithheld),
                         ["detail"] = rows },
                     "all ten new roots exist in the live library and all are "
-                    + "withheld");
+                    + "published");
 
                 int withheldElsewhere = all.Count(value =>
-                    !Sprint19ReviewPolicy.Keys.Contains(value.Creature.Key,
-                        StringComparer.Ordinal) &&
                     !SummonVisibilityCatalog.IsPublished(value));
                 Sprint19Check(_sprint19Assertions, _sprint19Rows,
                     "no-other-root-withheld",
                     withheldElsewhere == 0 && SummonVisibilityCatalog
-                        .PublishedLogicalPlacementCount == 1034,
+                        .PublishedLogicalPlacementCount == 1044,
                     new JObject {
                         ["registered"] = SummonVisibilityCatalog
                             .RegisteredLogicalPlacementCount,
@@ -90,8 +91,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["published"] = SummonVisibilityCatalog
                             .PublishedLogicalPlacementCount,
                         ["otherWithheld"] = withheldElsewhere },
-                    "Sprint 19 withholds exactly its own roots and no "
-                    + "previously published one");
+                    "nothing is withheld and no previously published root "
+                    + "moved");
 
                 // The module switch. With Expanded Summoning off, neither new
                 // creature may be rebodied at all, whatever its identity, and

@@ -239,19 +239,30 @@ def validate_identity_append(root: Path) -> int:
 def validate_suppression(root: Path) -> None:
     visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
                   ).read_text(encoding="utf-8")
-    # Withheld. Ten placements are registered and held; the published surface
-    # is exactly what v0.0.147 showed.
-    for token in ("RegisteredLogicalPlacementCount = 1044",
-                  "SuppressedLogicalPlacementCount = 10",
-                  '"girallon", "xill"'):
-        if token not in visibility:
-            raise AssertionError("Sprint 19 candidate surface differs: " + token)
-    # Sprint 18 shipped. Neither ape may be withheld to make room.
+    # Published. What the suppression set contains is checked before what the
+    # counts claim, so a file that withholds something still says which
+    # creature rather than only that a number moved. The named checks come
+    # first for the same reason: the dangerous mistakes get their own message.
     suppressed = visibility.split("SuppressedCreatureKeys")[-1].split(";")[0]
-    for key in ("ape", "dire-ape"):
+    # Sprint 18 shipped. Neither ape may be withheld to make room.
+    for key in ("dire-ape", "ape"):
         if '"' + key + '"' in suppressed:
             raise AssertionError(
                 "Sprint 19 withheld a creature v0.0.147 published: " + key)
+    for key in ("girallon", "xill"):
+        if '"' + key + '"' in suppressed:
+            raise AssertionError(
+                "Sprint 19 publication did not remove its two keys: " + key)
+    if '"' in suppressed:
+        raise AssertionError("Sprint 19 publishes everything; nothing may be "
+                             "withheld: " + suppressed.strip())
+    # Every registered placement is visible, and the suppression set is empty
+    # rather than missing: the two names came out and nothing else moved.
+    for token in ("RegisteredLogicalPlacementCount = 1044",
+                  "SuppressedLogicalPlacementCount = 0",
+                  "new HashSet<string>(new string[0], StringComparer.Ordinal)"):
+        if token not in visibility:
+            raise AssertionError("Sprint 19 publication surface differs: " + token)
     catalog = (root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
                ).read_text(encoding="utf-8")
     for token in ('C("girallon","Girallon",null,false,5',
@@ -303,7 +314,6 @@ def validate_contract(root: Path) -> None:
     placement = contract["placement"]
     if placement["newRootTotal"] != 10 or \
             placement["surfaceAfter"]["registeredGeneratedPlacements"] != 1044 or \
-            placement["surfaceAfter"]["visibleChoicesWhileWithheld"] != 1063 or \
             placement["surfaceAfter"]["visibleChoicesAfterPublication"] != 1073:
         raise AssertionError("The frozen contract arithmetic drifted")
     # The two printed lines this sprint is most likely to get wrong: a rend
@@ -395,16 +405,16 @@ def validate(root: Path) -> None:
         "deterministicTestCount": count,
         "registeredManifestEntryCount": identities,
         "registeredGeneratedPlacements": 1044,
-        "suppressedGeneratedPlacements": 10,
-        "publishedGeneratedPlacements": 1034,
+        "suppressedGeneratedPlacements": 0,
+        "publishedGeneratedPlacements": 1044,
         "retainedNativeWrappers": 29,
-        "visibleChoiceTotal": 1063,
+        "visibleChoiceTotal": 1073,
         "uniqueCreatures": 101,
         "projectIconConcepts": 113,
         "newRoots": 10,
         "girallonRoots": 5,
         "xillRoots": 5,
-        "bothSuppressed": True,
+        "bothSuppressed": False,
     }
     for key, value in expected.items():
         if record.get(key) != value:
@@ -454,7 +464,7 @@ def validate(root: Path) -> None:
             raise AssertionError("Release notes lack honest disposition: " + token)
 
     print(f"Sprint19 {VERSION} source validation PASS: tests={count}; "
-          f"identities={identities}; registered=1044; withheld=10; published=1034; "
+          f"identities={identities}; registered=1044; withheld=0; published=1044; "
           f"protected master={protected_master}; protected summons={protected_summons}.")
 
 

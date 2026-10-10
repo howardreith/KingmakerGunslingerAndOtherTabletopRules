@@ -1119,7 +1119,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint19-climb-costs-no-rank", Sprint19RulesTests.TheOmittedClimbForfeitsNoPrintedRank),
             Case("expanded-summoning.sprint19-merged-skills", Sprint19RulesTests.MergedSkillsAreRecordedRatherThanAdded),
             Case("expanded-summoning.sprint19-ten-roots", Sprint19RulesTests.TenRootsFollowFromTheCatalogTiers),
-            Case("expanded-summoning.sprint19-registered-and-withheld", Sprint19RulesTests.BothCreaturesAreRegisteredAndWithheld),
+            Case("expanded-summoning.sprint19-registered-and-published", Sprint19RulesTests.BothCreaturesAreRegisteredAndPublished),
             Case("expanded-summoning.sprint19-four-claw-rend", Sprint19RulesTests.FourClawRendNeedsAllFourClawsOnOneTarget),
             Case("expanded-summoning.sprint19-no-stale-rend", Sprint19RulesTests.NoStaleFourClawRendCrossesACommand),
             Case("expanded-summoning.sprint19-review-agrees", Sprint19RulesTests.ReviewExpectationsAgreeWithTheRulesPolicies),
