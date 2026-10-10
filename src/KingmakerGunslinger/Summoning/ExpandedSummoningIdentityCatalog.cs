@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 102;
-        internal const int LogicalAbilityCount = 1056;
+        internal const int UnitCount = 103;
+        internal const int LogicalAbilityCount = 1063;
         internal const int TemplatedPlacementCount = 306;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -56,7 +56,12 @@ namespace KingmakerGunslinger.Summoning
         // guarded review proved missing: its own +12 anti-trip defence, where
         // the shared native eight-leg fact delivers the +8 a six-legged insect
         // prints, and its printed racial +4 on Perception and Stealth.
-        internal const int SpecialIdentityCount = 228;
+        // Five more in Sprint 21: the crab's unit type, its printed
+        // immunity to mind-affecting effects, its own +12 anti-trip defence,
+        // its printed racial +4 Perception, and the grab carrier its two claws
+        // need. It owns no weapon, because a Medium creature takes the shared
+        // native 1d4 claw unscaled.
+        internal const int SpecialIdentityCount = 233;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -387,6 +392,20 @@ namespace KingmakerGunslinger.Summoning
             // Stealth -3.
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.TripDefense", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.RacialSkills", "BlueprintFeature"));
+            // Sprint 21's Giant Crab. Five of its own: a unit type because no
+            // native crab type exists and borrowing the Giant Spider's would
+            // make it read as its donor; the printed immunity to
+            // mind-affecting effects; the printed +12 against trip, which the
+            // shared native eight-leg fact cannot deliver and the Sprint 20
+            // carrier delivers under a scorpion's name; the printed racial +4
+            // Perception; and the grab carrier both its claws need. It owns no
+            // weapon: it is Medium, so the shared native 1d4 claw is not
+            // scaled for it and already carries the printed dice.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.MindlessImmunity", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.TripDefense", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.RacialSkills", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantCrab.Traits", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

@@ -100,6 +100,14 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.GiantScorpion.TripDefense";
         private const string GiantScorpionRacialSkillsSymbol =
             "KMG.Summoning.Natural.GiantScorpion.RacialSkills";
+        private const string GiantCrabUnitTypeSymbol =
+            "KMG.Summoning.Natural.GiantCrab.UnitType";
+        private const string GiantCrabMindlessImmunitySymbol =
+            "KMG.Summoning.Natural.GiantCrab.MindlessImmunity";
+        private const string GiantCrabTripDefenseSymbol =
+            "KMG.Summoning.Natural.GiantCrab.TripDefense";
+        private const string GiantCrabRacialSkillsSymbol =
+            "KMG.Summoning.Natural.GiantCrab.RacialSkills";
         private const string GiantScorpionPoisonSymbol =
             "KMG.Summoning.Natural.GiantScorpion.Poison";
         private const string GiantScorpionVenomSymbol =
@@ -460,6 +468,14 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, GiantScorpionTripDefenseSymbol));
             ConfigureGiantScorpionRacialSkills(Require<BlueprintFeature>(
                 bySymbol, GiantScorpionRacialSkillsSymbol));
+            ConfigureGiantCrabUnitType(Require<BlueprintUnitType>(
+                bySymbol, GiantCrabUnitTypeSymbol));
+            ConfigureGiantCrabMindlessImmunity(Require<BlueprintFeature>(
+                bySymbol, GiantCrabMindlessImmunitySymbol));
+            ConfigureGiantCrabTripDefense(Require<BlueprintFeature>(
+                bySymbol, GiantCrabTripDefenseSymbol));
+            ConfigureGiantCrabRacialSkills(Require<BlueprintFeature>(
+                bySymbol, GiantCrabRacialSkillsSymbol));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
                 BlueprintBuff>(library, NativeFilthFeverGuid,
                     "native Filth Fever disease payload");
@@ -785,6 +801,117 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.GiantScorpion.RacialSkills.Description",
                     "A giant scorpion has a +4 racial bonus on Perception and Stealth checks. Its printed +4 Climb bonus has no Kingmaker equivalent and is omitted rather than substituted."),
+                null);
+        }
+
+        /// <summary>
+        /// The Giant Crab's own unit type. A crab has no native type to
+        /// inherit, and a creature that does not ask for one keeps its
+        /// donor's - so without this the inspection window would call it a
+        /// Giant Spider.
+        /// </summary>
+        private static void ConfigureGiantCrabUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(GiantCrabUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantCrab.UnitType.Name",
+                "Giant Crab");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantCrab.UnitType.Description",
+                "A crab the size of a man, armoured in a thick carapace and armed with two heavy pincers.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
+        /// <summary>
+        /// The printed immunity to mind-affecting effects, carried as its own
+        /// fact rather than inferred from the Intelligence score. Kingmaker
+        /// cannot hold an absent one, so this creature ships at 1, and 1 is
+        /// not mindless as far as the engine is concerned.
+        /// </summary>
+        private static void ConfigureGiantCrabMindlessImmunity(
+            BlueprintFeature feature)
+        {
+            feature.name = InternalName(GiantCrabMindlessImmunitySymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            var immunity = ScriptableObject.CreateInstance<
+                BuffDescriptorImmunity>();
+            immunity.CheckFact = false;
+            immunity.Descriptor = SpellDescriptor.MindAffecting;
+            immunity.FactToCheck = null;
+            immunity.IgnoreFeature = null;
+            feature.ComponentsArray = new BlueprintComponent[] { immunity };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantCrab.MindlessImmunity.Name",
+                    "Mindless"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantCrab.MindlessImmunity.Description",
+                    "A mindless creature is immune to mind-affecting effects."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed stability bonus against trip: CMD 15 becoming 27.
+        ///
+        /// <para>Its own, for two measured reasons. The shared native
+        /// eight-leg fact delivers +8, which Sprint 20 read off a live
+        /// creature - the convention is four per pair of legs beyond the
+        /// first, so a six-legged insect prints +8 and this eight-legged one
+        /// prints +12. And the Sprint 20 carrier that does deliver +12 is
+        /// named "Eight Legs" and described for a scorpion, so a crab wearing
+        /// it would show the wrong creature's feature.</para>
+        /// </summary>
+        private static void ConfigureGiantCrabTripDefense(
+            BlueprintFeature feature)
+        {
+            var defence = ScriptableObject.CreateInstance<
+                ManeuverDefenceBonus>();
+            defence.Type = CombatManeuver.Trip;
+            defence.Bonus = GiantCrabRulesPolicy.EightLegTripBonus;
+            feature.name = InternalName(GiantCrabTripDefenseSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { defence };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantCrab.TripDefense.Name",
+                    "Eight Legs"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantCrab.TripDefense.Description",
+                    "A giant crab stands low on eight legs and is hard to knock down: +12 to its combat maneuver defense against trip attempts, which is what its stat block prints."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed racial +4 Perception.
+        ///
+        /// <para>The printed racial +8 Swim is not here and nothing stands in
+        /// for it: Kingmaker has no Swim skill, and raising another skill to
+        /// carry it would be a substitution rather than an omission. The
+        /// creature forfeits no rank either way - it has no Intelligence score
+        /// and so none to spend.</para>
+        /// </summary>
+        private static void ConfigureGiantCrabRacialSkills(
+            BlueprintFeature feature)
+        {
+            var perception = ScriptableObject.CreateInstance<AddStatBonus>();
+            perception.Stat = StatType.SkillPerception;
+            perception.Value = GiantCrabRulesPolicy.RacialPerceptionBonus;
+            perception.Descriptor = ModifierDescriptor.Racial;
+            feature.name = InternalName(GiantCrabRacialSkillsSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { perception };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantCrab.RacialSkills.Name",
+                    "Giant Crab Senses"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantCrab.RacialSkills.Description",
+                    "A giant crab has a +4 racial bonus on Perception checks. Its printed +8 Swim bonus has no Kingmaker equivalent and is omitted rather than substituted."),
                 null);
         }
 
@@ -1344,7 +1471,8 @@ namespace KingmakerGunslinger.Blueprints
             // a Girallon read 81 against a printed 73.
             bool exactRanks = PrimateRulesPolicy.IsPrimate(profile.Key) ||
                 profile.Key == GirallonRulesPolicy.GirallonKey ||
-                profile.Key == GiantScorpionRulesPolicy.GiantScorpionKey;
+                profile.Key == GiantScorpionRulesPolicy.GiantScorpionKey ||
+                profile.Key == GiantCrabRulesPolicy.GiantCrabKey;
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
@@ -1388,6 +1516,17 @@ namespace KingmakerGunslinger.Blueprints
                     ranks.StealthRanks = GiantScorpionRulesPolicy.SkillRanks;
                     ranks.BaseHitPoints =
                         GiantScorpionRulesPolicy.BaseRacialHitPoints;
+                }
+                else if (profile.Key == GiantCrabRulesPolicy.GiantCrabKey)
+                {
+                    // Zero again, for the same reason: the printed
+                    // Perception +4 is Wisdom 0 plus a racial 4, and the
+                    // printed Swim +10 is a skill Kingmaker does not have.
+                    ranks.MobilityRanks = GiantCrabRulesPolicy.SkillRanks;
+                    ranks.PerceptionRanks = GiantCrabRulesPolicy.SkillRanks;
+                    ranks.StealthRanks = GiantCrabRulesPolicy.SkillRanks;
+                    ranks.BaseHitPoints =
+                        GiantCrabRulesPolicy.BaseRacialHitPoints;
                 }
                 else
                 {
@@ -1454,6 +1593,9 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == GiantScorpionRulesPolicy.GiantScorpionKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     GiantScorpionUnitTypeSymbol);
+            else if (profile.Key == GiantCrabRulesPolicy.GiantCrabKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    GiantCrabUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
@@ -1513,6 +1655,15 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "GiantScorpionRacialSkills"
                     ? Require<BlueprintFeature>(bySymbol,
                         GiantScorpionRacialSkillsSymbol)
+                    : fact == "GiantCrabMindlessImmunity"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantCrabMindlessImmunitySymbol)
+                    : fact == "GiantCrabTripDefense"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantCrabTripDefenseSymbol)
+                    : fact == "GiantCrabRacialSkills"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantCrabRacialSkillsSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)

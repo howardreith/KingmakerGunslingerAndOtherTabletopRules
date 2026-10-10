@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.Summoning
         // this policy because it shares the donor, and it is the only
         // creature here that is allowed all four leg chains.
         internal const string ScorpionKey = "giant-scorpion";
+        internal const string CrabKey = "giant-crab";
 
         /// <summary>
         /// The donor's fourth leg chain. Its feet are forbidden to every
@@ -101,6 +102,18 @@ namespace KingmakerGunslinger.Summoning
             "R_Leg3_Upper", "R_Leg3_Lower", "R_Foot3"
         };
 
+        /// <summary>
+        /// The Giant Crab's list, which is the scorpion's set of bones.
+        ///
+        /// <para>Same rig, same eight legs, same seven-bone pedipalp chains
+        /// carrying the pincers. It is its own name rather than a shared
+        /// reference because the two creatures do different things with the
+        /// abdomen chain - the scorpion arches a metasoma off it and the crab
+        /// hangs the back of its carapace on it - and a shared list would
+        /// quietly imply the next creature on this rig need not decide.</para>
+        /// </summary>
+        internal static readonly string[] CrabBones = ScorpionBones;
+
         /// <summary>The ant's list plus the two wing drivers, and nothing else.</summary>
         internal static readonly string[] WingedBones =
             AntBones.Concat(FourthChainWingDrivers).ToArray();
@@ -129,25 +142,26 @@ namespace KingmakerGunslinger.Summoning
         internal static string[] AllowedBones(string key)
         {
             return key == ScorpionKey ? ScorpionBones
+                : key == CrabKey ? CrabBones
                 : Flies(key) ? WingedBones : AntBones;
         }
 
         /// <summary>
         /// Whether this creature walks on the donor's fourth leg chain.
         ///
-        /// <para>Exactly one does. Every Sprint 14 and 15 creature here is a
-        /// six-legged insect, so the rule above is that nothing may plant an
-        /// eighth foot. A scorpion is an arachnid with eight legs, and the
-        /// Sprint 20 census measured the donor's fourth chain to be a
-        /// complete leg - upper, lower and foot, both sides - rather than the
-        /// footless spare the ants leave empty and the beetles use for wings.
-        /// So the eighth foot is permitted here and nowhere else, by name,
-        /// and the Sprint 14 rule is untouched for the creatures it was
-        /// written for.</para>
+        /// <para>Two do, and both are arachnid-rig arthropods. Every Sprint
+        /// 14 and 15 creature here is a six-legged insect, so the rule above
+        /// is that nothing may plant an eighth foot. A scorpion and a crab
+        /// both have eight legs, and the Sprint 20 census measured the
+        /// donor's fourth chain to be a complete leg - upper, lower and foot,
+        /// both sides - rather than the footless spare the ants leave empty
+        /// and the beetles use for wings. So the eighth foot is permitted for
+        /// these two by name and nowhere else, and the Sprint 14 rule is
+        /// untouched for the creatures it was written for.</para>
         /// </summary>
         internal static bool WalksOnEightLegs(string key)
         {
-            return key == ScorpionKey;
+            return key == ScorpionKey || key == CrabKey;
         }
 
         /// <summary>
