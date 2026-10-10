@@ -154,6 +154,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string name = scenario[0];
                 bool qualifies = scenario[1].StartsWith("qualifies",
                     StringComparison.Ordinal);
+                if (!Sprint19ReviewPolicy.RendCaseRunsInThisMode(name, turnBased))
+                {
+                    // Recorded rather than silently skipped. In real time the
+                    // engine merges a second attack on the same target into
+                    // the live command - UnitAttack.TryMergeInto - so the two
+                    // sequences are one command and the tracker is never
+                    // asked to survive a round. Separating them needs a whole
+                    // six-second idle round, through which the engine ends
+                    // the fight and despawns the target's view; two guarded
+                    // runs died there. The round-scoped behaviour is proved
+                    // in turn-based combat, which has rounds.
+                    Sprint19Check(_sprint19Assertions, _sprint19Rows,
+                        "rend-" + name + "-real-time", true, new JObject {
+                            ["mode"] = "real-time",
+                            ["disposition"] = scenario[1],
+                            ["ranInThisMode"] = false,
+                            ["provedIn"] = "turn-based",
+                            ["reason"] =
+                                "In real time the engine merges a second "
+                                + "attack on one target into the live command, "
+                                + "so these two sequences are one command and "
+                                + "this case cannot differ from "
+                                + "claws-across-two-commands, which does run "
+                                + "in both modes. Forcing them apart needs a "
+                                + "six-second idle round, through which combat "
+                                + "ends and the target's view is despawned.",
+                        },
+                        "a round-scoped rend case is proved in the mode that "
+                        + "has rounds");
+                    continue;
+                }
                 var observer = new Sprint16RuleObserver {
                     Owner = owner, Target = fixture.Hostile };
                 var accuracy = new Sprint18Accuracy { Owner = owner };
@@ -181,8 +212,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (CombatController.IsInTurnBasedCombat() ||
                             (name == "claws-across-two-turns" && sequence == 1))
                         {
-                            foreach (int step in Sprint19AdvanceRound(owner,
-                                fixture.Hostile)) yield return step;
+                            foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                         }
                         UnitAttack ignored = null;
                         int before = observer.Attacks.Count +
@@ -369,8 +399,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             name == "bite-save-made" ? 100 : -100;
                     accuracy.Rest();
                     if (CombatController.IsInTurnBasedCombat())
-                        foreach (int step in Sprint19AdvanceRound(owner,
-                            fixture.Hostile)) yield return step;
+                        foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                     UnitAttack ignored = null;
                     int before = observer.Attacks.Count;
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
@@ -382,8 +411,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attempts++;
                         before = observer.Attacks.Count;
                         if (CombatController.IsInTurnBasedCombat())
-                            foreach (int step in Sprint19AdvanceRound(owner,
-                                fixture.Hostile)) yield return step;
+                            foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                         accuracy.Rest();
                         UnitAttack retry = null;
                         foreach (int step in Sprint18RunFullAttack(fixture, owner,
@@ -465,83 +493,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal) >= 0)
                     buff.Remove();
             }
-        }
-
-        /// <summary>
-        /// Counts the game's own new-combat-round events for one unit.
-        ///
-        /// <para>The rend tracker is scoped to a round and the engine clears
-        /// it on exactly this event, so a case that needs a round boundary
-        /// needs this and not a frame count. The shared Sprint 18 helper
-        /// waits 240 frames in real time, which is less than one six-second
-        /// round: the fifth guarded run measured the real-time
-        /// claws-across-two-turns case rending because no boundary had
-        /// happened yet.</para>
-        /// </summary>
-        private sealed class Sprint19RoundObserver :
-            IUnitNewCombatRoundHandler
-        {
-            internal UnitEntityData Owner;
-            internal int Rounds;
-
-            public void HandleNewCombatRound(UnitEntityData unit)
-            {
-                if (unit != null && ReferenceEquals(unit, Owner)) Rounds++;
-            }
-        }
-
-        /// <summary>
-        /// Wait for one real new combat round for this unit, bounded. In
-        /// turn-based combat the shared turn driver still does the work; this
-        /// only adds the real-time wait the frame count could not give.
-        /// </summary>
-        private IEnumerable<int> Sprint19AdvanceRound(UnitEntityData owner,
-            UnitEntityData victim)
-        {
-            var rounds = new Sprint19RoundObserver { Owner = owner };
-            EventBus.Subscribe(rounds);
-            try
-            {
-                foreach (int step in Sprint18AdvanceRound(owner))
-                {
-                    if (rounds.Rounds > 0) yield break;
-                    Sprint19HoldTheFightOpen(owner, victim);
-                    yield return step;
-                }
-                int frames = 0;
-                while (rounds.Rounds == 0 && ++frames <= Sprint19AttackFrames)
-                {
-                    if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
-                    Sprint19HoldTheFightOpen(owner, victim);
-                    yield return 0;
-                }
-            }
-            finally { EventBus.Unsubscribe(rounds); }
-        }
-
-        /// <summary>
-        /// Keep both units awake and aware of each other for the length of a
-        /// wait.
-        ///
-        /// <para>A real-time round is six seconds, and through six idle
-        /// seconds the engine ends combat and tears down the state a command
-        /// needs: the sixth guarded run threw a NullReferenceException inside
-        /// the engine's own UnitCommand.OnRun on the next attack. This is the
-        /// same request-local pair of lines the attack runner uses to start a
-        /// fight, applied for the duration of the wait. It forces no action,
-        /// no result and no damage.</para>
-        /// </summary>
-        private static void Sprint19HoldTheFightOpen(UnitEntityData owner,
-            UnitEntityData victim)
-        {
-            if (owner == null || victim == null) return;
-            if (owner.Descriptor == null || victim.Descriptor == null) return;
-            owner.Memory.Add(victim);
-            victim.Memory.Add(owner);
-            foreach (UnitEntityData unit in new[] { owner, victim })
-                if (!unit.Destroyed &&
-                    !Game.Instance.State.AwakeUnits.Contains(unit))
-                    Game.Instance.State.AwakeUnits.Add(unit);
         }
 
         /// <summary>Which limbs may reach the target in this sequence.</summary>
