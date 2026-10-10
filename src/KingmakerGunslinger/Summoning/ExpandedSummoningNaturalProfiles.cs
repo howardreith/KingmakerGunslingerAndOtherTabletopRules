@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 52 || Values.Select(value => value.Key)
+            if (Values.Length != 53 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -204,6 +204,45 @@ namespace KingmakerGunslinger.Summoning
                     "Mobility", "Perception", "Stealth" }))
                 throw new InvalidOperationException(
                     "Dire Ape printed attack routine or profile changed.");
+            NaturalSummonProfile scorpion = For("giant-scorpion");
+            if (scorpion.Size != "Large" || scorpion.HitDieClass != "Vermin" ||
+                scorpion.HitDice != GiantScorpionRulesPolicy.HitDice ||
+                scorpion.Strength != GiantScorpionRulesPolicy.Strength ||
+                scorpion.Dexterity != GiantScorpionRulesPolicy.Dexterity ||
+                scorpion.Constitution != GiantScorpionRulesPolicy.Constitution ||
+                scorpion.Intelligence !=
+                    GiantScorpionRulesPolicy.SubstitutedIntelligence ||
+                scorpion.Wisdom != GiantScorpionRulesPolicy.Wisdom ||
+                scorpion.Charisma != GiantScorpionRulesPolicy.Charisma ||
+                scorpion.SpeedFeet != GiantScorpionRulesPolicy.SpeedFeet ||
+                scorpion.NaturalArmor != GiantScorpionRulesPolicy.NaturalArmor ||
+                scorpion.PrimaryWeapon != "GiantScorpionClaw1d6" ||
+                // Two more limbs: the second claw and the sting. A scorpion
+                // whose sting shares the claws' weapon would poison with a
+                // claw and grab with its sting.
+                scorpion.AdditionalWeapons.Count != 2 ||
+                scorpion.AdditionalWeapons[0] != "GiantScorpionClaw1d6" ||
+                scorpion.AdditionalWeapons[1] != "GiantScorpionSting1d6" ||
+                scorpion.AdditionalSecondaryWeapons.Count != 0)
+                throw new InvalidOperationException(
+                    "The Giant Scorpion profile no longer matches its printed "
+                    + "stat block.");
+            // A mindless creature buys no ranks, so an empty skill list is the
+            // whole point of this entry rather than an oversight: the default
+            // list would grant three ranks the stat block never prints.
+            if (scorpion.Skills.Count != 0)
+                throw new InvalidOperationException(
+                    "The Giant Scorpion has no Intelligence score and must "
+                    + "therefore carry no skill ranks at all.");
+            if (!scorpion.Facts.Contains("TripDefenseEightLegs") ||
+                !scorpion.Facts.Contains("GiantScorpionPoison") ||
+                !scorpion.Facts.Contains("GiantScorpionMindlessImmunity") ||
+                !scorpion.Facts.Contains("PrimateFullStrengthLimbs"))
+                throw new InvalidOperationException(
+                    "The Giant Scorpion is missing a fact its printed block "
+                    + "requires.");
+            GiantScorpionRulesPolicy.Validate();
+
             NaturalSummonProfile girallon = For("girallon");
             if (girallon.Size != "Large" || girallon.HitDieClass != "MagicalBeast" ||
                 girallon.HitDice != 7 || girallon.Strength != 19 ||
@@ -593,6 +632,34 @@ namespace KingmakerGunslinger.Summoning
                 // three on Stealth, none on Climb. Climb costs it no rank, so
                 // unlike the Sprint 18 apes the omitted climb speed forfeits
                 // nothing.
+                PK("giant-scorpion", "Giant Scorpion", "Vermin", 5, "Large",
+                    19, 12, 16, 1, 10, 2, 50, 6, "GiantScorpionClaw1d6",
+                    A("GiantScorpionClaw1d6", "GiantScorpionSting1d6"),
+                    A("TripDefenseEightLegs", "GiantScorpionPoison",
+                      "GiantScorpionMindlessImmunity",
+                      // Not a printed feat: the carrier that keeps all three
+                      // limbs on the plain Strength modifier the stat block
+                      // prints. The symbol is Sprint 18's, reused rather than
+                      // renamed, because it shipped in v0.0.147.
+                      "PrimateFullStrengthLimbs"),
+                    // No ranks at all. A creature with no Intelligence score
+                    // buys none, so the builder must be told so explicitly or
+                    // its default Perception, Mobility and Stealth ranks make
+                    // the creature read better than its stat block. Nothing is
+                    // forfeited: all three printed totals are ability plus
+                    // racial bonus.
+                    Array.Empty<string>(),
+                    "Sprint 20 frozen contract: Summon Monster IV and Summon Nature's Ally IV, templated on the Monster table like every other vermin there, hidden pending complete runtime qualification. Two claws +6 (1d6+4 plus grab) and a sting +6 (1d6+4 plus poison), all three primary at the whole Strength modifier.",
+                    "Grab is on the two claws and never on the sting; it rides the grapple lifecycle Sprint 6 built and Sprint 19 taught to hold several limbs, gated on the claw weapon type. The poison is on the sting and never on a claw, gated on the sting's own weapon type exactly as the Giant Ant's sting poison is. The printed Fortitude DC 15 is what the Constitution-scaled formula produces unaided at 5 hit dice and Constitution 16, and is not hard-coded.",
+                    "The poison graph needs its own carrier rather than a shared one: the printed effect is 1d2 Strength once per round for six rounds cured by one save, and every poison this project ships runs four rounds. Nothing about the shared carriers is changed to accommodate it.",
+                    "Both weapons are project-owned at the printed dice with overridden damage dice, because the engine scales a shared native 1d6 one step up for a Large wielder - the exact defect the guarded Sprint 18 review measured on the Dire Ape - and no native blueprint carries a scorpion sting at all.",
+                    "The printed +12 manoeuvre defence against trip uses the project's existing eight-legged trip defence, the carrier the Giant Centipede and both Giant Ant castes already hold. A scorpion has eight legs and the printed difference between CMD 19 and CMD 31 against trip is exactly that bonus.",
+                    "Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used, as on the Giant Spider, both Giant Ant castes and the Giant Stag Beetle. The printed immunity to mind-affecting effects is carried as its own fact on the game's own descriptor immunity - the component the Goblin Dog uses for disease - and is never inferred from that substituted score.",
+                    "Kingmaker exposes one movement speed; the 50-foot ground speed is used. The printed Climb +8 is omitted under ORDINARY_MAP_LAND_USE_SCOPE and neither Athletics nor Mobility is raised to stand in for it. It costs no rank, because this creature has none, so nothing is forfeited.",
+                    "Printed Space 10 feet with Reach 10 feet, and a parenthetical 5 feet for the claws. The creature keeps the 10, which is also the engine's own reach for a Large creature, so the claws threaten at 10 feet rather than 5 under PER_LIMB_REACH_UNREPRESENTED. The project's reduced-reach carrier is deliberately NOT applied: the Giant Stag Beetle uses it because that creature's whole printed Reach line is 5 feet, where this one's is 10.",
+                    "Darkvision 60 feet and tremorsense 30 feet are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03. Nothing is substituted. The Sprint 6 Giant Spider stands native blindsight in for its tremorsense; that shipped decision is left exactly as it is and deliberately not extended here.",
+                    "Vermin have no feats, so no feat is dropped and none is invented. Every printed number derives from hit dice, ability scores, size and racial bonuses alone.",
+                    "REGISTERED AND WITHHELD. The original project-owned scorpion body is NOT authored: this creature currently rides the Giant Spider donor rig pending the bounded read-only arachnid donor census, and every visual and runtime gate remains open."),
                 PK("girallon", "Girallon", "MagicalBeast", 7, "Large",
                     19, 17, 18, 2, 12, 7, 40, 6, "GirallonBite1d6",
                     A("GirallonClaw1d4", "GirallonClaw1d4",

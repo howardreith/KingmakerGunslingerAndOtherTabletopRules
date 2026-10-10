@@ -46,7 +46,7 @@ try {
         'validation\weapon-findability-runtime-qualification.json',
         'docs\RELEASE-NOTES-0.0.145.md',
         'docs\RELEASE-NOTES-0.0.146.md',
-        'docs\RELEASE-NOTES-0.0.148.md',
+        'docs\RELEASE-NOTES-0.0.149.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -164,7 +164,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 113 -or @($summonManifest.icons).Count -ne 113) {
+    if ($summonManifest.count -ne 114 -or @($summonManifest.icons).Count -ne 114) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'

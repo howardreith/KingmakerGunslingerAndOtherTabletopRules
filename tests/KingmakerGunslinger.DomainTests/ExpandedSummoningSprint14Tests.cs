@@ -815,10 +815,13 @@ namespace KingmakerGunslinger.DomainTests
                     "The disease gate and the poison gate must agree.");
             string builder = Source("Blueprints",
                 "ExpandedSummoningNaturalBuilder.cs");
+            // Three now: the wasp's, the ant's, and the Sprint 20 Giant
+            // Scorpion's. A new injury poison that skipped this gate would
+            // fire on a hit the target shrugged off entirely.
             if (builder.Split(new[] { "ContextActionOnlyIfWeaponWounded" },
-                    StringSplitOptions.None).Length - 1 != 2)
+                    StringSplitOptions.None).Length - 1 != 3)
                 throw new InvalidOperationException(
-                    "Both injury poisons must carry the wound gate.");
+                    "Every injury poison must carry the wound gate.");
         }
 
         /// <summary>
@@ -992,6 +995,11 @@ namespace KingmakerGunslinger.DomainTests
                     // express either.
                     !KingmakerGunslinger.RuntimeTesting.Sprint19ReviewPolicy
                         .IsSprint19Creature(value.Key) &&
+                    // Sprint 20's Giant Scorpion for the opposite reason:
+                    // it names an empty skill list because a creature with
+                    // no Intelligence score buys no ranks at all, and the
+                    // default three would put it above its stat block.
+                    value.Key != GiantScorpionRulesPolicy.GiantScorpionKey &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

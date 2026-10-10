@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.148-expanded-summoning-sprint19",
+  "milestone": "0.0.149-expanded-summoning-sprint20",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.148",
+  "version": "0.0.149",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2311,5 +2311,41 @@
     "ownerInstallationRestoredTo": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
     "priorRecordNote": "The released v0.0.147 record is left exactly as it shipped, because a released record is immutable and this sprint's own gate enforces that. For a reader: its closureStatus sentence is the one written during the Sprint 18 candidate pass and was never amended at release, so it reads SOURCE QUALIFIED; RUNTIME NOT QUALIFIED beside its own runtimeQualified true, candidateOnly false and three passing runs. Every number in that record is correct and v0.0.147 shipped both apes published; only that one sentence is stale. The same stale wording is in the 0.0.147 CHANGELOG entry, which says 58 appended identities and a published surface frozen at 1008: the release actually appended 61 identities, taking the ledger from 2922 to 2983 entries, and published 1034 generated placements for 1063 visible choices, which is what docs/RELEASE-NOTES-0.0.147.md records correctly.",
     "publicationGate": "PASS, confirmed in game. 39 of 39 on the published candidate: ten roots live and published, nothing withheld anywhere, registered 1044 = published 1044, and every printed number of both creatures read back unchanged by publication. Evidence 20261010T0840306592691Z-disposable-expanded-summoning-sprint19-review."
+  },
+  "expandedSummoningSprint20149": {
+    "releaseVersion": "0.0.149",
+    "releaseInformationalVersion": "0.0.149-expanded-summoning-sprint20",
+    "masterBase": "37eb4ee5656ec1f59def1ad2dc2b0892edd22c83",
+    "releasedBaseline": "v0.0.148",
+    "deterministicTestCount": 2536,
+    "registeredManifestEntryCount": 3036,
+    "registeredGeneratedPlacements": 1056,
+    "suppressedGeneratedPlacements": 12,
+    "publishedGeneratedPlacements": 1044,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1073,
+    "uniqueCreatures": 102,
+    "newRoots": 12,
+    "executionChildren": 12,
+    "templated": true,
+    "creatureSuppressed": true,
+    "originalBodiesAuthored": false,
+    "donorRigReuseVerified": false,
+    "donorRig": "9e120b5e0ad3c794491c049aa24b9fde Giant Spider",
+    "donorRigNote": "The Sprint 14 census established that Kingmaker has no scorpion and that the Giant Spider is the only compact many-legged arthropod in the game: four leg chains a side, seven-bone pedipalps, chelicerae and an abdomen chain. A scorpion has eight legs for the donor's eight, its claws ARE pedipalps, and its metasoma goes on the abdomen chain. That capture did not survive - its SOURCE.md records that the request-local capture stays outside Git and the package - so unlike Sprint 19 this sprint must spend one bounded read-only census to re-measure the bind pose, the full bone roster and the abdomen chain before any geometry is authored.",
+    "runtimeQualified": false,
+    "runtimeEvidence": [],
+    "publicReleaseAuthorized": false,
+    "candidateOnly": true,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "contract": "planning/EXPANDED-SUMMONING-SPRINT20-CONTRACT.json",
+    "acceptedEngineLimitations": [
+      "PASSIVE_CREATURE_SENSES_UNMODELED",
+      "ORDINARY_MAP_LAND_USE_SCOPE",
+      "PER_LIMB_REACH_UNREPRESENTED"
+    ],
+    "closureStatus": "REGISTERED AND WITHHELD. The Giant Scorpion holds twelve roots and no player can select it; because it is templated, twenty-four celestial and fiendish execution children are allocated and inert behind those twelve. Rules are implemented: three primary limbs at the plain Strength modifier, grab on the claws only, a six-round poison on the sting only with its difficulty class computed live from Constitution, the eight-legged trip defence, and the printed immunity to mind-affecting effects on the game's own descriptor immunity. One original project-owned icon is authored, over five passes. The bounded arachnid donor census, the original body, the guarded runtime review, publication and release are all NOT RUN.",
+    "compatibilityRuntimeQualificationPending": true,
+    "projectIconConcepts": 114
   }
 }

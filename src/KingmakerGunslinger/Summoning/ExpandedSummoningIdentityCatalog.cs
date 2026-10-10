@@ -20,9 +20,9 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 101;
-        internal const int LogicalAbilityCount = 1044;
-        internal const int TemplatedPlacementCount = 300;
+        internal const int UnitCount = 102;
+        internal const int LogicalAbilityCount = 1056;
+        internal const int TemplatedPlacementCount = 306;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         // Sprint 14 adds eight: the soldier's sting, its poison and venom,
@@ -48,7 +48,10 @@ namespace KingmakerGunslinger.Summoning
         // bite and claw so their printed Large dice are not scaled up a
         // step, which the guarded review measured the shared native
         // weapons doing.
-        internal const int SpecialIdentityCount = 219;
+        // Six more in Sprint 20: the scorpion's own claw and sting, its
+        // unit type, its poison feature and venom buff, and the printed
+        // immunity to mind-affecting effects.
+        internal const int SpecialIdentityCount = 225;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -349,6 +352,22 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.CombatTraits", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.Paralysis", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.FullStrengthLimbs", "BlueprintFeature"));
+            // Sprint 20. The Giant Scorpion owns its claw because a shared
+            // native 1d6 is scaled a step up for a Large wielder, and owns
+            // its sting because the poison trigger gates on that weapon's own
+            // type and must never reach a claw. Its poison graph is new - six
+            // rounds where every shipped carrier runs four - and its printed
+            // immunity to mind-affecting effects rides the game's own
+            // descriptor immunity, carried explicitly rather than inferred
+            // from the Intelligence 1 the engine forces on a mindless
+            // creature. It is granted the released Sprint 18 full-Strength
+            // carrier rather than a copy of it.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.Claw1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.Sting1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.Poison", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.Venom", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.MindlessImmunity", "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }

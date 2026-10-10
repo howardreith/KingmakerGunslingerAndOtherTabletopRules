@@ -53,11 +53,18 @@ namespace KingmakerGunslinger.Summoning
         // candidate, with the owner installation restored exactly after every
         // run. Nothing moved but these two keys: every identity was allocated
         // at registration.
+        // Sprint 20 registers the Giant Scorpion and withholds all twelve
+        // of its roots. It is the first creature in this programme to be
+        // templated while withheld, so twelve suppressed placements also hold
+        // back twenty-four celestial and fiendish execution children that are
+        // allocated and inert. Nothing published before this branch moves: the
+        // visible surface stays at the 1073 choices v0.0.148 shows.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new string[0], StringComparer.Ordinal);
+            new HashSet<string>(new[] { "giant-scorpion" },
+                StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1044;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 1056;
+        internal const int SuppressedLogicalPlacementCount = 12;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

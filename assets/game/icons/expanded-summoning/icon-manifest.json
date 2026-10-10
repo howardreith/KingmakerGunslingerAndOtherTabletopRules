@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  113,
+    "count":  114,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1014,6 +1014,15 @@
                       "key":  "xill",
                       "file":  "xill.png",
                       "sha256":  "eb8673752c7e26c914f72412bab480be7b5bf6f68b1bfec3b0d732434cb82e42",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-scorpion",
+                      "file":  "giant-scorpion.png",
+                      "sha256":  "91f309af50d8a523cbd194a427695ebf71a406dc2d67a4c60401680bef10ef28",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

@@ -142,7 +142,18 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
-Active v0.0.148 Sprint 19 release: 3005 stable IDs: 3003 active and 2 reserved.
+Active v0.0.149 Sprint 20 candidate: 3036 stable IDs: 3034 active and 2 reserved.
+The released v0.0.148 master3005-entry prefix is exact;Sprint20 appends exactly31
+Giant Scorpion identities - one unit,12 logical placements,12 celestial and
+fiendish execution children,the scorpion's own1d6 claw and1d6 sting, an
+inspectable unit type, its six-round poison feature and venom buff, and the
+printed immunity to mind-affecting effects. Unlike either Sprint 19 creature
+this one IS templated, so its six Summon Monster roots each own a celestial and
+a fiendish child while its six Summon Nature's Ally roots own none. All12
+placements are registered and withheld. The released Sprint 18 full-Strength
+limb carrier is granted rather than copied, so no released GUID is retired.
+
+Preceding v0.0.148 Sprint 19 release: 3005 stable IDs: 3003 active and 2 reserved.
 The released v0.0.147 master2983-entry prefix is exact;Sprint19 appends exactly22
 Girallon and Xill identities - two units,10 logical placements, the Girallon's
 own1d6 bite and1d4 claw and the Xill's own1d4 claw and1d3 bite, two inspectable

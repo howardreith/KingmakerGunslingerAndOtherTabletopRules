@@ -192,6 +192,8 @@
     <Compile Include="Summoning\ExpandedSummoningPrimateViewPatch.cs" />
     <Compile Include="Summoning\GirallonRulesPolicy.cs" />
     <Compile Include="Summoning\XillRulesPolicy.cs" />
+    <Compile Include="Summoning\GiantScorpionRulesPolicy.cs" />
+    <Compile Include="Summoning\GiantScorpionPoison.cs" />
     <Compile Include="Summoning\XillCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="Summoning\ExpandedSummoningSerpentineViewPatch.cs" />

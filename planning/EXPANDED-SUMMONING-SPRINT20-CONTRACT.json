@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "sprint": 20,
+  "title": "Expanded Summoning Sprint 20 - Giant Scorpion",
+  "status": "FROZEN AT INTAKE; IMPLEMENTATION NOT STARTED",
+  "frozenAtUtc": "2026-10-10",
+  "scope": "Sprint 20 only. The Giant Scorpion and nothing else. Bebelith, Giant Crab, Sprint 21, Sprint 22 and any broader phase are out of scope on this branch. No expanded summon feats, no aquatic movement or combat subsystem, no general arbitrary-limb system, no general creature editor and no global AI rewrite.",
+
+  "authority": {
+    "masterBase": "37eb4ee5656ec1f59def1ad2dc2b0892edd22c83",
+    "releasedBaseline": "v0.0.148",
+    "masterDelta": "NONE. origin/master is exactly the v0.0.148 tag target at intake, and v0.0.148 is the latest release. Verified at intake: both resolve to 37eb4ee5656ec1f59def1ad2dc2b0892edd22c83.",
+    "branch": "codex/expanded-summoning-sprint20-giant-scorpion",
+    "branchAuthorization": "Already present in the owner-authorized AllowedBranches collection of codex-policy/Push-KingmakerGunslinger.ps1, added during Sprint 18 in the single authorized edit alongside sprints 19 and 21. No further policy edit is needed or permitted.",
+    "worktreeAtIntake": "clean",
+    "kingmakerProcess": "none at intake",
+    "runtimeLeaseOrLock": "none at intake",
+    "stagingTransaction": "none in flight at intake",
+    "installationBaseline": {
+      "files": 136,
+      "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "installedInfoVersion": "0.0.117",
+      "note": "Byte-identical to the baseline every Sprint 19 guarded transaction restored, so nothing was left behind by thirteen runs."
+    },
+    "privateBuildReference": {
+      "file": "UnityEngine.PhysicsModule.dll",
+      "bundlePath": "C:/Dev/KingmakerGunslingerLab/private/extracted-references/KingmakerGunslinger-private-build-references/Managed/UnityEngine.PhysicsModule.dll",
+      "installedSourcePath": "C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker/Kingmaker_Data/Managed/UnityEngine.PhysicsModule.dll",
+      "sha256": "724ac786e5dceae9d24521b6dcfb3c595de7529b4a7096e70fd6871809ad2ac7",
+      "verifiedAtIntake": "Both copies hash identically, so no read-only refresh was needed.",
+      "provenanceOfRecord": "scripts/ReferenceProvenance.Common.ps1 lists this file in KmgPrivateReferencePaths and Build-Local.ps1 asserts every listed path against the installed Steam runtime on every build, so the path and hash are recorded and re-verified continuously rather than once.",
+      "observation": "The private bundle's own reference-manifest.json carries only 13 of the bundle's 14 files and does not list UnityEngine.PhysicsModule.dll. It is a stale snapshot written by an export that predates this file joining the list; nothing reads it at build time, and the committed path list above is the authority. Recorded rather than hand-edited, because the bundle is machine-local and its manifest is generated.",
+      "prohibitions": "Never committed, packaged, uploaded or exposed as a user artifact. The installed Steam copy is never altered."
+    }
+  },
+
+  "printedProfile": {
+    "source": "Pathfinder Roleplaying Game Bestiary, Giant Scorpion.",
+    "name": "Giant Scorpion",
+    "alignmentAndType": "N Large vermin",
+    "challengeRating": 3,
+    "initiative": "+1",
+    "senses": "darkvision 60 ft., tremorsense 30 ft.; Perception +4",
+    "armorClass": { "total": 16, "touch": 10, "flatFooted": 15, "components": "+1 Dex, +6 natural, -1 size" },
+    "hitPoints": { "total": 37, "formula": "5d8+15" },
+    "saves": { "fortitude": 7, "reflex": 2, "will": 1 },
+    "immunities": "mind-affecting effects",
+    "speedFeet": 50,
+    "melee": "2 claws +6 (1d6+4 plus grab), sting +6 (1d6+4 plus poison)",
+    "spaceFeet": 10,
+    "reach": "10 ft. (5 ft. with claws)",
+    "abilityScores": { "strength": 19, "dexterity": 12, "constitution": 16, "intelligence": null, "wisdom": 10, "charisma": 2 },
+    "baseAttackBonus": 3,
+    "combatManeuverBonus": { "base": 8, "grapple": 12 },
+    "combatManeuverDefense": { "base": 19, "versusTrip": 31 },
+    "feats": "none; vermin have no feats",
+    "skills": { "climb": 8, "perception": 4, "stealth": 1 },
+    "racialSkillModifiers": "+4 Climb, +4 Perception, +4 Stealth",
+    "poison": {
+      "delivery": "Sting - injury",
+      "save": "Fort DC 15",
+      "frequency": "1/round for 6 rounds",
+      "effect": "1d2 Strength damage",
+      "cure": "1 save"
+    }
+  },
+
+  "derivations": {
+    "hitPoints": "5d8 at the monster convention of 4.5 per die is 22 racial, plus 5 hit dice times the Constitution 16 modifier of +3 is 15, so 22 + 15 = 37. Exact.",
+    "armorClass": "10 + 1 Dexterity + 6 natural - 1 size = 16. Touch is 10 + 1 - 1 = 10. Flat-footed is 10 + 6 - 1 = 15. All three close, which independently pins Dexterity at 12.",
+    "fortitude": "Vermin take the animal-style good Fortitude progression: 2 + 5/2 = 4, plus Constitution +3 = +7. Exact.",
+    "reflex": "Poor progression 5/3 = 1, plus Dexterity +1 = +2. Exact, and the second identity that pins Dexterity at 12.",
+    "will": "Poor progression 1, plus Wisdom 10 modifier 0 = +1. Exact.",
+    "baseAttackBonus": "Vermin use the 3/4 progression: floor(5 * 3/4) = 3. Exact.",
+    "attackBonus": "3 base attack + 4 Strength - 1 size = +6, which is what all three limbs print. All three are primary natural attacks at one bonus.",
+    "damageBonus": "Every limb prints 1d6+4, which is the plain Strength 19 modifier and NOT one and a half times it. One and a half times +4 is +6, so a primary natural limb left to the engine's own rule would read 1d6+6 and be wrong by two.",
+    "combatManeuverBonus": "3 base attack + 4 Strength + 1 Large size = +8. Exact.",
+    "grappleBonus": "+8 plus the +4 that Grab grants to grapple = +12. Exact.",
+    "combatManeuverDefense": "10 + 3 base attack + 4 Strength + 1 Dexterity + 1 size = 19. Exact.",
+    "tripDefence": "31 - 19 = +12, which is the eight-legged stability bonus the project's TripDefenseEightLegs carrier already produces for the Giant Centipede and both Giant Ant castes.",
+    "poisonDifficultyClass": "10 + half the 5 hit dice (2) + the Constitution 16 modifier (3) = 15. Exact, and the project's poison carriers compute this live from Constitution rather than hard-coding it, so a buffed or weakened scorpion follows.",
+    "climb": "Strength +4 plus the racial +4 = +8, with no ranks, because a creature with no Intelligence score has no skill ranks at all. Exact.",
+    "perception": "Wisdom 10 modifier 0 plus the racial +4 = +4, with no ranks. Exact.",
+    "stealth": "Dexterity +1 plus the racial +4 minus the Large size penalty of 4 = +1, with no ranks. See the open question below."
+  },
+
+  "openQuestions": [
+    {
+      "id": "STEALTH_DERIVES_TO_PLUS_ONE",
+      "question": "The printed Stealth total recalled at intake was +0, and the derivation gives +1.",
+      "resolution": "Frozen at the derived +1. Dexterity 12 is pinned independently three times over - by armour class 16, by touch 10 and by Reflex +2 - and the racial modifier line prints +4 Stealth, and a Large creature takes -4. Those give +1 and nothing in the block supports +0 without contradicting one of the three identities that close exactly. Recorded here rather than silently chosen so the owner can check this single number against the book; if the printed line really is +0 then either the racial bonus or the size line differs from what was read, and only this one skill moves."
+    },
+    {
+      "id": "PER_LIMB_REACH",
+      "question": "The printed line is Space 10 ft.; Reach 10 ft. (5 ft. with claws). Kingmaker gives a creature one reach, not one per limb.",
+      "resolution": "The creature keeps the printed 10-foot reach, which is also the engine's natural reach for a Large creature, and the claws' 5-foot exception is recorded as unrepresented. The project's ReducedReach carrier is deliberately NOT applied: the Giant Stag Beetle uses it because that creature's whole printed Reach line is 5 feet, whereas this one's is 10 and only a parenthetical narrows the claws. The consequence is stated plainly rather than buried - the claws threaten at 10 feet instead of 5 - and it follows from the engine's single-reach model rather than from a decision to make the creature stronger."
+    },
+    {
+      "id": "ABSENT_INTELLIGENCE",
+      "question": "The printed Intelligence is an em dash: the creature is mindless.",
+      "resolution": "Intelligence 1, exactly as the Giant Spider, both Giant Ant castes and the Giant Stag Beetle already ship, because Kingmaker cannot represent an absent Intelligence score. The printed immunity to mind-affecting effects is carried separately and is not inferred from the score."
+    }
+  ],
+
+  "buildPathDecisions": {
+    "builder": "ExpandedSummoningNaturalBuilder with the Vermin hit-die class, which is what every shipped vermin uses: the Giant Spider, both Giant Ant castes, the Giant Stag Beetle, the Giant Centipede and the Fire Beetle. The special builder is for outsiders and is not used here.",
+    "skills": "PK with an empty skill list, the same as the Giant Ant castes and the Giant Stag Beetle. A creature with no Intelligence score has no ranks to place, so the builder must not grant its default Perception, Mobility and Stealth ranks. Nothing is forfeited by this: all three printed skill totals are ability plus racial bonus and no rank.",
+    "fullStrengthLimbs": "Granted the released KMG.Summoning.Natural.Primate.FullStrengthLimbs, the carrier Sprint 18 shipped and Sprint 19 reused. Every limb prints the plain Strength modifier, and without this carrier the engine's primary-hand rule would add half again on one limb. No new identity is allocated and no released symbol is renamed - the symbol keeps the primate name it shipped with in v0.0.147, because renaming it would retire a released GUID.",
+    "weapons": "Two new project-owned weapons at the printed dice, GiantScorpionClaw1d6 and GiantScorpionSting1d6, both with overridden damage dice so the engine cannot scale them for a Large wielder. A shared native 1d6 claw would scale one step up for Large, which is the exact defect the guarded Sprint 18 review found on the Dire Ape, and no native blueprint carries a 1d6 scorpion sting at all.",
+    "limbLayout": "A claw is the primary limb and the second claw and the sting are additional limbs, all primary and all at one bonus. The claw is primary so that the shared summon grapple lifecycle, which attaches on the primary limb, lands on a claw rather than on the sting.",
+    "grab": "The two claws grab and the sting does not. This uses the multi-limb grabber Sprint 19 built for the Xill rather than a second mechanism, gated on the claw weapon type so the sting can never grab.",
+    "poison": "The sting poisons and the claws do not, gated on the sting's own weapon type exactly as the Giant Ant's sting poison is. A new GiantScorpionPoison carrier is needed because the printed graph is 1d2 Strength for 6 rounds cured by one save, and no shipped carrier has that graph: the Giant Ant's is 1d2 Strength for 4 rounds and the Giant Spider's is 1d2 Strength for 4 rounds. The difficulty class is computed live from Constitution and is not hard-coded.",
+    "tripDefence": "TripDefenseEightLegs, the existing carrier, which produces exactly the printed +12.",
+    "mindlessImmunity": "The printed immunity to mind-affecting effects is carried explicitly rather than inferred from the Intelligence score the engine forces to 1.",
+    "notTemplated": "FALSE - this creature IS templated. It appears on Summon Monster at tier 4, so its six Summon Monster roots each own celestial and fiendish execution children, exactly as every other vermin and animal on both tables does. That is the opposite of Sprint 19, where neither creature was templated, and it is why this sprint allocates more identities than Sprint 19 did for more placements."
+  },
+
+  "placement": {
+    "summonMonsterTier": 4,
+    "summonNaturesAllyTier": 4,
+    "templated": true,
+    "quantityPropagation": "The charter's rule: one at the creature's own tier, 1d3 one tier higher, 1d4+1 at every tier above that, through tier 9.",
+    "surfaceBefore": {
+      "uniqueCreatures": 101,
+      "summonMonsterRoster": 91,
+      "summonMonsterPlacements": 524,
+      "summonNaturesAllyRoster": 89,
+      "summonNaturesAllyPlacements": 520,
+      "registeredGeneratedPlacements": 1044,
+      "suppressedGeneratedPlacements": 0,
+      "publishedGeneratedPlacements": 1044,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1073,
+      "ledgerEntries": 3005
+    },
+    "newRoots": { "summonMonster": 6, "summonNaturesAlly": 6, "total": 12 },
+    "executionChildren": 12,
+    "surfaceAfter": {
+      "uniqueCreatures": 102,
+      "summonMonsterRoster": 92,
+      "summonMonsterPlacements": 530,
+      "summonNaturesAllyRoster": 90,
+      "summonNaturesAllyPlacements": 526,
+      "registeredGeneratedPlacements": 1056,
+      "visibleChoicesWhileWithheld": 1073,
+      "visibleChoicesAfterPublication": 1085
+    },
+    "registrationModel": "All twelve placements are registered withheld, so the published surface stays at exactly the 1073 choices v0.0.148 shows until the complete hidden candidate passes in game. Publication is then the removal of one suppression key and nothing else: identities are allocated once, here, and never move."
+  },
+
+  "visualDecisions": {
+    "donor": "The native Giant Spider renderer, rigSha256 60074cc2edb939cd4ab3e49961eec470866f94096d40e97f490dedae60faa19b as recorded in every shipped Sprint 14 and 15 insect mesh.",
+    "donorCensusDecision": "ONE BOUNDED READ-ONLY CENSUS IS REQUIRED, unlike Sprint 19. Sprint 19 skipped a census because Sprint 18's capture survived under runtime-evidence and could be re-decoded offline. The Sprint 14 spider capture did not survive: its SOURCE.md records that the geometry-free request-local capture stays outside Git and the package, and it is not in runtime-evidence. The shipped insect meshes give the bone names those creatures used and the rig fingerprint, but not the full bone roster, the bind-pose transforms, or how many segments the abdomen chain has - and a scorpion's tail is authored onto that chain. Guessing it is not acceptable, so one census is spent.",
+    "whyTheSpiderRigFitsAScorpion": "Better than any donor this project has reused. The Sprint 14 census established that Kingmaker has no scorpion and that the Giant Spider is the only compact many-legged arthropod in the game, with four leg chains a side, seven-bone pedipalps, chelicerae and an abdomen chain. A scorpion has eight legs and the donor has eight: the fourth pair, which the ants leave empty and the beetles use for wings, is a real leg here, so this is the first creature in the project to weight all four chains a side as legs. A scorpion's claws ARE its pedipalps, so the chelae go on the seven-bone pedipalp chains the donor already has - anatomy rather than substitution, and ample articulation for a chela. The metasoma and telson are authored onto the abdomen chain, which sits behind and above the body where a scorpion's tail attaches.",
+    "expectedLimitation": "METASOMA_DRIVEN_BY_THE_ABDOMEN_CHAIN. The donor's abdomen chain has far fewer bones than a scorpion's five metasomal segments plus telson, so the tail curls as that chain moves rather than articulating segment by segment, and the sting cannot be driven as its own strike. Exact bone count is unknown until the census returns and this record is amended with it. No new rig, bone or animation is built: that would be the general arbitrary-limb and animation system this sprint must not build.",
+    "ownership": "One original project-owned procedural mesh and one original painted albedo, built against the donor's bind-pose skeleton and nothing else, plus one original 128x128 icon. No proprietary mesh, texture, material or animation is redistributed.",
+    "legChainInvariant": "The generator must prove all four leg chains a side are weighted as legs, from the built geometry rather than from a manifest field, the way Sprint 14's EXPECTED_CHAINS and Sprint 19's driver-chain test do."
+  },
+
+  "honestOmissions": [
+    {
+      "id": "PASSIVE_CREATURE_SENSES_UNMODELED",
+      "what": "Darkvision 60 feet and tremorsense 30 feet.",
+      "decision": "Omitted under the owner's accepted limitation of 2026-10-03. Nothing is substituted: no blindsense, no blindsight, no vision-range override, and no record claims they work. The Sprint 6 Giant Spider stands native blindsight in for tremorsense; that earlier decision is left exactly as it shipped and is deliberately NOT extended here, because substituting one sense for another is what Sprints 14 through 19 stopped doing."
+    },
+    {
+      "id": "ORDINARY_MAP_LAND_USE_SCOPE",
+      "what": "The printed Climb +8.",
+      "decision": "Kingmaker has no Climb skill. The 50-foot ground speed is used, the printed Climb total is omitted, and neither Athletics nor Mobility is raised to stand in for it. Nothing is forfeited: the creature has no Intelligence score and therefore no ranks, so Climb costs it nothing that any other skill could have had."
+    },
+    {
+      "id": "PER_LIMB_REACH_UNREPRESENTED",
+      "what": "The claws' printed 5-foot reach inside a 10-foot creature reach.",
+      "decision": "The creature keeps its printed 10-foot reach and the claws therefore threaten at 10 feet rather than 5. Stated as a consequence of the engine's single-reach model, not presented as faithful."
+    },
+    {
+      "id": "VERMIN_FEATLESSNESS",
+      "what": "Nothing. Recorded so the absence is not mistaken for an omission.",
+      "decision": "Vermin have no feats, so no feat is dropped and none is invented. Every number in the block derives from hit dice, ability scores, size and racial bonuses alone."
+    }
+  ],
+
+  "guardedRuntimeRequirements": {
+    "census": "One bounded, read-only Giant Spider donor census. Reads the bind frame, bone graph, driver set and renderer; writes no save, deploys no permanent build, and restores the installation exactly.",
+    "mechanicsReview": "Every printed number read back from the live engine - hit points, armour class, touch, flat-footed, all three saves, combat manoeuvre bonus and defence including the trip case, every skill total, every limb's attack bonus and damage - plus grab on the claws only, poison on the sting only with its live difficulty class, the mind-affecting immunity, and the eight-legged trip defence. Run in both real time and turn-based combat.",
+    "bodyReview": "Party-camera review of the original body, requiring renderer attached, dissolve clear and geometry intact, with the four weighted leg chains and the authored metasoma visible.",
+    "publicationGate": "The same mechanics review re-run against the published surface, requiring all twelve roots live and published, nothing withheld anywhere, and registered equal to published at 1056.",
+    "launchMechanism": "Every launch uses the repository's guarded Steam App ID 640820 mechanism. Kingmaker.exe is never launched directly, KMG_AUTOMATION_BASELINE is never loaded or written, saves are never edited or copied by hand, and no development build is left deployed."
+  },
+
+  "hardBoundaries": "One sprint, one branch, one PR, one release. No multi-sprint branch, no stacked PR, no unreleased carryover into Sprint 21, no Sprint 22, no expanded summon feats, no aquatic movement or combat subsystem, no general arbitrary-limb system, no general creature editor, no global AI rewrite, no proprietary asset redistribution, no force-push, no direct master commit and no unguarded Kingmaker launch."
+}
