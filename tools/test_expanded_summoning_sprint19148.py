@@ -165,6 +165,27 @@ class Sprint19Tests(unittest.TestCase):
                     AssertionError, "nothing may be"):
                 gate.validate_suppression(root)
 
+    def test_a_body_the_build_output_does_not_require_is_rejected(self):
+        """A builder hand copy must not be the only thing that ships a body."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            shipped = root / "assets/sprint19-fourarmed"
+            shipped.mkdir(parents=True)
+            (shipped / "girallon-mesh.json").write_text("{}", encoding="utf-8")
+            (shipped / "girallon-albedo.png").write_bytes(b"png")
+            scripts = root / "scripts"
+            scripts.mkdir()
+            # The builder copies both; the output validator requires only
+            # the mesh, which is how a painting ships from a local build and
+            # vanishes from a clean one.
+            (scripts / "Build-Local.ps1").write_text(
+                "sprint19-fourarmed girallon", encoding="utf-8")
+            (scripts / "validate-build-output.ps1").write_text(
+                "'assets\\sprint19-fourarmed\\girallon-mesh.json'", encoding="utf-8")
+            with self.assertRaisesRegex(
+                    AssertionError, "not required of the build output"):
+                gate.validate_shipped_bodies_reach_the_release_build(root)
+
     def test_one_painting_cannot_serve_both_creatures(self):
         manifest = gate.document(
             ROOT,
