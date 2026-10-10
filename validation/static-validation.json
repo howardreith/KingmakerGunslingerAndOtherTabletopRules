@@ -2337,7 +2337,8 @@
     "runtimeEvidence": [
       "20261010T1328444995657Z-observe-expanded-summoning-arachnid-census",
       "20261010T1535502794822Z-working-save-expanded-summoning-creature-review",
-      "20261010T1615114043487Z-disposable-expanded-summoning-sprint20-review"
+      "20261010T1615114043487Z-disposable-expanded-summoning-sprint20-review",
+      "20261010T1648433410286Z-disposable-expanded-summoning-sprint20-review"
     ],
     "publicReleaseAuthorized": true,
     "candidateOnly": false,
@@ -2353,10 +2354,10 @@
     "compatibilityRuntimeQualificationPending": true,
     "projectIconConcepts": 114,
     "donorCensusEvidence": "20261010T1328444995657Z-observe-expanded-summoning-arachnid-census",
-    "guardedRuntimeRunsSpent": 7,
+    "guardedRuntimeRunsSpent": 8,
     "packageMemberCount": 349,
     "originalBodyFiles": 2,
-    "runtimeEvidenceNote": "Three runs carry the qualification and the two before them are kept because they are what found the defects. 20261010T1530568462425Z-disposable-expanded-summoning-sprint20-review returned 17 of 20 and measured three: a printed grab with no carrier anywhere, an anti-trip defence of 27 against a printed 31 because the shared native eight-leg fact delivers 8, and Perception 0 with Stealth -3 because the printed racial +4 existed only in the arithmetic. 20261010T1559117802359Z returned 18 of 20 with every printed number right and two trials spoiled by a natural twenty landing a limb the fixture had not chosen. 20261010T1615114043487Z returned 20 of 20 in both combat modes. The body review passed first time. Every run restored the owner installation to 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.",
+    "runtimeEvidenceNote": "Three runs carry the qualification and the two before them are kept because they are what found the defects. 20261010T1530568462425Z-disposable-expanded-summoning-sprint20-review returned 17 of 20 and measured three: a printed grab with no carrier anywhere, an anti-trip defence of 27 against a printed 31 because the shared native eight-leg fact delivers 8, and Perception 0 with Stealth -3 because the printed racial +4 existed only in the arithmetic. 20261010T1559117802359Z returned 18 of 20 with every printed number right and two trials spoiled by a natural twenty landing a limb the fixture had not chosen. 20261010T1615114043487Z returned 20 of 20 in both combat modes, and the publication gate 20261010T1648433410286Z returned 20 of 20 again against the published surface with all twelve roots live, registered equal to published at 1056 and nothing withheld anywhere. The body review passed first time. Every run restored the owner installation to 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.",
     "stealthQuestionAnswered": "The frozen contract recorded STEALTH_DERIVES_TO_PLUS_ONE as a question against the book: the derivation gives Dexterity +1 plus racial +4 less 4 for Large size = +1, where the value recalled at intake was +0. The live engine answers +1 on run 20261010T1615114043487Z, from the same three terms, so the derivation stands and the recalled +0 does not.",
     "tripDefenceNote": "The shared native TripDefenseEightLegs fact delivers +8, measured on a live creature rather than inferred from its name: the stat-block convention is four per pair of legs beyond the first, so the project's six-legged insects print +8 and this eight-legged arachnid prints +12. The Giant Scorpion carries its own +12 carrier on the engine's own manoeuvre-defence component, gated on trip alone. Nothing about the shared native fact changes and no released creature moves."
   }

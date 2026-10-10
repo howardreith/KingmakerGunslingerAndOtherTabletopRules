@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.0.149-expanded-summoning-sprint20
+
+- Publishes the Expanded Summoning Sprint 20 Giant Scorpion. Twelve new roots
+  (six on Summon Monster IV, six on Summon Nature's Ally IV) take registered
+  generated placements from 1044 to 1056, and all twelve are published, so the
+  visible surface rises from 1073 choices to 1085: 1056 generated plus 29
+  retained native wrappers. Nothing v0.0.148 published moved.
+- Appends exactly 34 append-only identities to the released v0.0.148 ledger,
+  taking it from 3005 to 3039 entries without moving a historical GUID. It is
+  the first creature this programme registered as templated while withheld, so
+  its twelve placements also held back twelve celestial and fiendish execution
+  children; publishing the twelve published those. Publication was the removal
+  of one suppression key and nothing else.
+- Implements the printed profile exactly: two claws and a sting, all three
+  primary, all three at +6 for 1d6+4 - the whole Strength modifier rather than
+  one and a half times it, which is why it carries the released Sprint 18
+  full-Strength limb carrier rather than a renamed copy.
+- Grab rides the two claws and never the sting, on the grapple lifecycle
+  Sprint 6 built and Sprint 19 taught to hold several limbs. The spec counts
+  limbs rather than naming weapons, which is what stops it at the second claw.
+- Poison rides the sting and never a claw, and needs its own carrier because
+  the printed graph runs six rounds where every poison this project ships runs
+  four. Its difficulty class is computed live from Constitution rather than
+  stored, and at the printed Constitution 16 and five hit dice that is DC 15.
+- Carries its own +12 anti-trip defence rather than the shared native eight-leg
+  fact, which a guarded review measured delivering +8. That is correct for the
+  creatures holding it - the convention is four per pair of legs beyond the
+  first, so a six-legged insect prints +8 - and the shared native fact is
+  unchanged.
+- Carries its own printed racial +4 on Perception and Stealth, which a guarded
+  review found missing entirely: the live creature read Perception 0 and
+  Stealth -3. This also closes the one number the frozen contract could not
+  close at intake, by measurement rather than argument.
+- Carries the printed immunity to mind-affecting effects explicitly, on the
+  game's own descriptor immunity, because Kingmaker cannot hold an absent
+  Intelligence score and the 1 it forces is not mindless to the engine.
+- Ships one original project-owned body and one original icon on the measured
+  Giant Spider rig. It is the first creature in the project to weight all four
+  leg chains a side as real legs. Its tail is authored under the recorded
+  `METASOMA_DRIVEN_BY_A_TWO_BONE_CHAIN` limitation: the rig's abdomen chain is
+  two bones where every other tail this project has authored runs five, so the
+  metasoma sways with the abdomen rather than articulating segment by segment
+  and the sting cannot be driven as a strike of its own. Measured, not guessed.
+- Records rather than approximates what the engine cannot carry: darkvision and
+  tremorsense under `PASSIVE_CREATURE_SENSES_UNMODELED`, the printed Climb +8
+  under `ORDINARY_MAP_LAND_USE_SCOPE` with nothing raised to stand in for it,
+  and the claws' 5-foot reach under `PER_LIMB_REACH_UNREPRESENTED`.
+- Qualified by three guarded mechanics reviews and one party-camera art review
+  - 20 of 20 in both combat modes, 20 of 20 again against the published
+  surface, and 4 of 4 on the art - with the owner installation restored exactly
+  after every run. The first two mechanics runs failed and what they measured
+  is in the release notes rather than summarised away.
+
 ## 0.0.148-expanded-summoning-sprint19
 
 - Publishes the Expanded Summoning Sprint 19 Girallon and Xill. Ten new roots
