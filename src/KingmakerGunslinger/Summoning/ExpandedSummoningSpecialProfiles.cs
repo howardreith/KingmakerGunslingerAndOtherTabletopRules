@@ -397,10 +397,65 @@ namespace KingmakerGunslinger.Summoning
         internal const int BebelithCharisma = 13;
         internal const int BebelithSpeedFeet = 40;
         internal const int BebelithDamageReduction = 10;
-        internal const int BebelithDismantleReflexDc = 25;
-        internal const int BebelithDismantleAcPenalty = 2;
-        internal const int BebelithDismantleRounds = 1;
-        internal const int BebelithDemonHunterBonus = 2;
+
+        /// <summary>
+        /// Dismantle Armor's consequence, and the one part of this sprint's
+        /// contract Kingmaker cannot represent literally.
+        ///
+        /// <para>The printed ability destroys the piece it catches. A
+        /// reflection pass over the game's own assembly finds no broken
+        /// condition, no durability value and no item-damage component of any
+        /// kind: <c>CombatManeuver.SunderArmor</c> exists as a manoeuvre the
+        /// engine will roll, and nothing behind it a mod can reach. Inventing
+        /// the missing half would be the global item-durability system this
+        /// sprint is forbidden to build, and mutating the equipped item
+        /// directly is what the mandatory safety list exists to prevent.</para>
+        ///
+        /// <para>So the piece keeps existing and stops protecting. The
+        /// dismantled state is wearer-side and cancels the whole armour-class
+        /// contribution of exactly one dismantled piece - its base bonus and
+        /// its enchantment - which is the mechanical content of "destroyed"
+        /// for everything the creature's attack sequence can observe. Nothing
+        /// in any inventory is read for a write, moved, unequipped or
+        /// changed.</para>
+        /// </summary>
+        internal const bool BebelithDismantleCancelsWholeContribution = true;
+        /// <summary>
+        /// The destruction is permanent, as printed, and safe to be permanent
+        /// because the penalty is recomputed from the equipped piece every
+        /// time armour class is calculated rather than stored. A saved game
+        /// reloads the state, not a number that could have gone stale.
+        /// </summary>
+        internal const bool BebelithDismantleIsPermanent = true;
+        /// <summary>
+        /// Armour first, shield second. Both are eligible, and the printed
+        /// ability destroys one piece, so a target wearing both loses the suit
+        /// - the larger and the one the ability is named for.
+        /// </summary>
+        internal const bool BebelithDismantlePrefersArmorOverShield = true;
+
+        /// <summary>
+        /// Penetrating strike's magic half, as the enhancement the engine
+        /// already understands for overcoming damage reduction. One is enough:
+        /// the printed ability says the weapons count as magic, not that they
+        /// carry a numeric bonus, so this is the smallest value that makes the
+        /// descriptor true and adds nothing to the damage total.
+        /// </summary>
+        internal const int BebelithPenetratingEnhancement = 1;
+
+        /// <summary>
+        /// The Bebelith's web. Its range, duration, size limit and uses are
+        /// this creature's rather than the Giant Spider's, and it reaches them
+        /// through the same parameterized seam Sprint 6 built - so the spider's
+        /// released web is proved unchanged by the code path that builds this
+        /// one. Its difficulty class is not here: rot and the web share one
+        /// derived from live Constitution.
+        /// </summary>
+        internal const int BebelithWebUses = 3;
+        internal const int BebelithWebRangeFeet = 60;
+        internal const int BebelithWebRounds = 10;
+        internal const int BebelithWebSpellLevel = 3;
+        internal const int BebelithWebMaxSizeDelta = 0;
 
         internal const int PixieHitDice = 4;
         internal const int PixieStrength = 7;
@@ -456,12 +511,26 @@ namespace KingmakerGunslinger.Summoning
         internal const int ShamblingMoundConstrictDice = 2;
         internal const int ShamblingMoundConstrictBonus = 7;
 
+        /// <summary>
+        /// Dismantle Armor's trigger, which is a conjunction of five things
+        /// and is the whole of this mechanic's safety.
+        ///
+        /// <para>A claw, a hit, and exactly one prior claw hit on this same
+        /// target in this same round - which is what "both claws hit the same
+        /// target in one sequence" means and is why the count is compared to
+        /// one rather than tested for "two or more". The target must have an
+        /// eligible equipped piece: a natural-armoured or unarmoured target
+        /// has nothing to dismantle and sees no effect at all. And it may not
+        /// already have been attempted against this target this round, which
+        /// is what makes a replayed or duplicated attack resolution
+        /// idempotent.</para>
+        /// </summary>
         internal static bool ShouldAttemptBebelithDismantle(bool isClaw,
-            bool isHit, bool targetHasArmor, int priorClawHits,
-            bool alreadyAttempted)
+            bool isHit, bool targetHasArmor, bool targetHasShield,
+            int priorClawHits, bool alreadyAttempted)
         {
-            return isClaw && isHit && targetHasArmor && priorClawHits == 1 &&
-                !alreadyAttempted;
+            return isClaw && isHit && (targetHasArmor || targetHasShield) &&
+                priorClawHits == 1 && !alreadyAttempted;
         }
 
         internal static bool IsBebelithDemonHuntingTarget(bool isOutsider,
@@ -733,8 +802,13 @@ namespace KingmakerGunslinger.Summoning
             SummonShadowMastiffPolicy.Validate();
             if (ErinyesHitDice != 9 || ErinyesDexterity != 23 ||
                 ErinyesSpeedFeet != 50 || BebelithHitDice != 12 ||
-                BebelithDismantleReflexDc != 25 ||
-                BebelithDismantleAcPenalty < 1 || BebelithDismantleRounds != 1 ||
+                BebelithWebUses != 3 || BebelithWebRangeFeet != 60 ||
+                BebelithWebRounds != 10 || BebelithWebSpellLevel != 3 ||
+                BebelithWebMaxSizeDelta != 0 ||
+                BebelithPenetratingEnhancement != 1 ||
+                !BebelithDismantleCancelsWholeContribution ||
+                !BebelithDismantleIsPermanent ||
+                !BebelithDismantlePrefersArmorOverShield ||
                 PixieHitDice != 4 || PixieSleepArrowUses != 16 ||
                 PixieSleepArrowWillDc != 15 || PixieSleepArrowRounds != 50 ||
                 PixieDanceUses != 1 || PixieDanceCasterLevel != 8 ||

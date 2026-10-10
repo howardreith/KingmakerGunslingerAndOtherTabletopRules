@@ -91,7 +91,15 @@ namespace KingmakerGunslinger.DomainTests
             string builder = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
             foreach (string token in new[] {
-                "ConfigureGiantSpiderWeb(library, bySymbol)", "a719abac0ea0ce346b401060754cc1c0",
+                // Sprint 21 turned this into a parameterized seam so the
+                // Bebelith's web could reuse qualified behaviour. The spider's
+                // own released values must still arrive at it, by name, which
+                // is checked in full by the Sprint 21 tests; here the point is
+                // that the spider is still configured through a web seam at
+                // all.
+                "ConfigureSummonWeb(library, bySymbol,",
+                "UnitSymbol = GiantSpiderUnitSymbol",
+                "a719abac0ea0ce346b401060754cc1c0",
                 "AbilityRange.Custom", "GiantSpiderWebRangeFeet", "deliver.NeedAttackRoll = true",
                 "SummonWebTargetSizeChecker", "NativeRayWeaponGuid",
                 "GiantSpiderWebRounds", "GiantSpiderWebUses", "web.CanTargetEnemies = true",
@@ -161,7 +169,7 @@ namespace KingmakerGunslinger.DomainTests
                 .All(value => !appended.Contains(value)),
                 "The Sprint 5 append stays exactly before the Sprint 6 append.");
             SummonIconCatalog.Validate();
-            Assertions.Equal(114, SummonIconCatalog.All.Count,
+            Assertions.Equal(115, SummonIconCatalog.All.Count,
                 "The current catalog includes the Sprint 12 Dire Rat and Sprint 13 Shadow Mastiff icons without changing Sprint 6 identities.");
         }
     }

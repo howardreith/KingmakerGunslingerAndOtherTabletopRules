@@ -46,11 +46,14 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.NaturesAlly).ToArray();
             Assertions.Equal(530, monster.Length,
                 "Summon Monster registered placements changed.");
-            Assertions.Equal(526, ally.Length,
+            Assertions.Equal(533, ally.Length,
                 "Summon Nature's Ally registered placements changed.");
-            Assertions.Equal(1056, monster.Length + ally.Length,
+            Assertions.Equal(1063, monster.Length + ally.Length,
                 "Registered generated placements must be 1008 plus Sprint 18's "
-                + "26 roots, Sprint 19's 10 and Sprint 20's 12.");
+                + "26 roots, Sprint 19's 10, Sprint 20's 12 and Sprint 21's "
+                + "7 - the last of which are Nature's Ally only, because a "
+                + "crab is not a demon and belongs on no summoning table "
+                + "that calls one.");
 
             foreach (var row in new[] {
                 new { Key = "ape", Tier = 3, Monster = ApeMonsterRoots, Ally = ApeAllyRoots },
@@ -93,8 +96,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(26, monster.Concat(ally).Count(value =>
                     PrimateRulesPolicy.IsPrimate(value.Creature.Key)),
                 "Sprint 18 must add exactly twenty-six roots.");
-            Assertions.Equal(102, ExpandedSummoningCatalog.All.Count,
-                "Unique creature count must be 102.");
+            Assertions.Equal(103, ExpandedSummoningCatalog.All.Count,
+                "Unique creature count must be 103.");
         }
 
         /// <summary>
@@ -108,24 +111,26 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(1056,
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placement count changed.");
             // The apes published on 2026-10-09 after their complete hidden
-            // candidate passed, and nothing has withheld them since. Sprint 20
-            // published its own creature on 2026-10-10, so nothing is withheld
-            // at all and every registered placement is selectable.
-            Assertions.Equal(0,
+            // candidate passed, and nothing has withheld them since. What is
+            // withheld now is Sprint 21's Giant Crab and nothing else, which
+            // is this test's real subject: a later sprint's hidden candidate
+            // must not reach back and suppress a published creature.
+            Assertions.Equal(7,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Nothing is withheld.");
+                "Exactly Sprint 21's seven roots are withheld.");
             Assertions.Equal(1056,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The apes stay published and every registered placement is "
-                + "visible.");
+                "The apes stay published, and the published surface is "
+                + "exactly what v0.0.149 showed.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.True(
+                Assertions.Equal(
+                    variant.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey,
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Every placement is published now that Sprint 20 has: "
+                    "Exactly the Sprint 21 creature is withheld: "
                     + variant.StableKey);
             SummonVisibilityCatalog.Validate();
 
@@ -578,9 +583,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(102, ExpandedSummoningIdentityCatalog.UnitCount,
+            Assertions.Equal(103, ExpandedSummoningIdentityCatalog.UnitCount,
                 "Unit identity count changed.");
-            Assertions.Equal(1056,
+            Assertions.Equal(1063,
                 ExpandedSummoningIdentityCatalog.LogicalAbilityCount,
                 "Logical ability identity count changed.");
             Assertions.Equal(306,
@@ -589,13 +594,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(612,
                 ExpandedSummoningIdentityCatalog.TemplateExecutionAbilityCount,
                 "Template execution identity count changed.");
-            Assertions.Equal(228,
+            // Sprint 20's five for the scorpion, then Sprint 21's five for
+            // the crab and nine for the Bebelith overhaul.
+            Assertions.Equal(242,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount,
                 "Creature-owned identity count changed.");
-            Assertions.Equal(2040,
+            Assertions.Equal(2062,
                 ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 "Foundation identity count changed.");
-            Assertions.Equal(2040, identities.Count,
+            Assertions.Equal(2062, identities.Count,
                 "The built identity catalog must match its own invariant.");
 
             foreach (var row in new[] {

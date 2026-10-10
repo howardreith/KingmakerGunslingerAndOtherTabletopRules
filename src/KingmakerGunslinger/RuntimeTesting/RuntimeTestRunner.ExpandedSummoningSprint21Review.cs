@@ -350,10 +350,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["expectedSpeed"] = expected.SpeedFeet,
                     // What this creature does not represent, as numbers rather
                     // than silences. Nothing stands in for any of them.
-                    ["printedSwimSkillOmitted"] =
-                        GiantCrabRulesPolicy.PrintedSwimSkill,
                     ["printedSwimSpeedOmitted"] =
                         GiantCrabRulesPolicy.PrintedSwimSpeedFeet,
+                    ["waterDependencyOmitted"] = true,
                     ["athleticsUnraised"] =
                         stats.GetStat(StatType.SkillAthletics).BaseValue,
                     ["mobilityUnraised"] =

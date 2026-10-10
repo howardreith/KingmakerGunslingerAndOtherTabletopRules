@@ -47,7 +47,8 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        self.assertEqual("9e3f3bbcd65035562db7e1003d07d1d311805ee2cd5ae89937c4f17c7bcb2d94", actual)
+        # Repinned by Sprint 21, which added the Giant Crab concept.
+        self.assertEqual("3e32f1e50be8e69823d93674f2fc5b56e1885b11719adc89c45f971f00a691f0", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6"

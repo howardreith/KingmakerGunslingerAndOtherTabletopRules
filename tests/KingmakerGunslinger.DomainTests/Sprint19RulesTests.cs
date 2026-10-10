@@ -188,19 +188,20 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(1056,
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(0,
+            Assertions.Equal(7,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Nothing is withheld now that Sprint 20 has published.");
+                "Exactly Sprint 21's seven roots are withheld.");
             Assertions.Equal(1056,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.True(
+                Assertions.Equal(
+                    variant.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey,
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Every placement is published now that Sprint 20 has: "
+                    "Only Sprint 21's hidden candidate is withheld: "
                     + variant.StableKey);
             SummonVisibilityCatalog.Validate();
         }
