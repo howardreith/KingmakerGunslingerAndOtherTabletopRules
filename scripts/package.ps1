@@ -184,6 +184,15 @@ foreach ($kind in @('girallon','xill')) {
     Copy-Item -LiteralPath (Join-Path $fourArmedSource "$kind-mesh.json") -Destination $fourArmedDestination
     Copy-Item -LiteralPath (Join-Path $fourArmedSource "$kind-albedo.png") -Destination $fourArmedDestination
 }
+# Sprint 20's two-file original body, on the same terms: one mesh and
+# one painting for the one arachnid.
+$arachnidSource = Join-Path $outputDirectory 'assets\sprint20-arachnids'
+$arachnidDestination = Join-Path $modDirectory 'assets\sprint20-arachnids'
+New-Item -ItemType Directory -Path $arachnidDestination -Force | Out-Null
+foreach ($kind in @('giant-scorpion')) {
+    Copy-Item -LiteralPath (Join-Path $arachnidSource "$kind-mesh.json") -Destination $arachnidDestination
+    Copy-Item -LiteralPath (Join-Path $arachnidSource "$kind-albedo.png") -Destination $arachnidDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -204,7 +213,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 347 } else { 345 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 349 } else { 347 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount
