@@ -794,6 +794,115 @@ def xill():
         obj.scale = tuple(value * fit for value in obj.scale)
         obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
 
+def giant_scorpion():
+    """Sprint 20. A scorpion is three shapes and nothing else matters at icon
+    size: two raised chelae, a low segmented body, and a tail arched over the
+    back with the sting at its top. Nothing else in this roster has anything
+    above the body line, so the tail is what tells a player which icon this is.
+
+    Built four times, and every pass fixed something the previous one got
+    wrong rather than restyling it.
+
+    One: the metasoma's beads were spaced about two radii apart and the
+    metaball field never fused them, so what rendered was seven detached eggs
+    in an arc beside a floating dart. A metaball element's field falls off
+    over its radius, so the beads are spaced well inside one radius here and
+    the tail is a single tapering tube with joint swellings.
+
+    Two: it fused and then overdid it, wrapping nearly a full circle so the
+    tail became the whole icon.
+
+    Three: replacing the hand-placed beads with a trig arc got the arc
+    backwards - it rose in front of the body rather than behind it, so the
+    tail floated clear of the creature with its sting pointing away from the
+    head. Explicit points, anchored so the first bead overlaps the body's rear
+    segment, are what actually work here.
+
+    Four: this one. The arc rises behind the body, comes forward over it and
+    ends above the head with the sting angled down and forward, which is the
+    pose the animal strikes from. The chelae are pulled inside the ring, which
+    took all four passes, and the venom bead is placed at the computed tip of
+    its own cone so it cannot drift off the sting again."""
+    chitin = material("Chitin", (0.158, 0.096, 0.040), 0.30,
+                      noise=(8.0, 0.44, (0.072, 0.040, 0.016)))
+    plate = material("Plate", (0.218, 0.136, 0.058), 0.26,
+                     noise=(13.0, 0.38, (0.100, 0.058, 0.024)))
+    limb = material("Limb", (0.118, 0.070, 0.030), 0.38)
+    claw = material("ClawTip", (0.050, 0.028, 0.013), 0.24)
+    venom = material("Venom", (0.68, 0.84, 0.28), 0.18,
+                     emission=(0.52, 0.76, 0.16), emission_strength=1.2)
+    eye = material("ScorpionEye", (0.022, 0.020, 0.018), 0.10)
+
+    # Prosoma and mesosoma. Shorter and deeper than the earlier passes, which
+    # read as a flat shoe: the carapace has to carry some height or the tail
+    # looks stuck onto a plank.
+    body = Blob("Body", chitin, 0.034)
+    body.ball((-0.60, 0.0, 0.56), 0.40, (1.14, 1.16, 0.84), axis=(1, 0, 0))
+    body.ball((-0.26, 0.0, 0.54), 0.37, (1.10, 1.04, 0.82), axis=(1, 0, 0))
+    body.ball((0.06, 0.0, 0.52), 0.32, (1.08, 0.92, 0.78), axis=(1, 0, 0))
+    body.ball((0.34, 0.0, 0.51), 0.27, (1.06, 0.82, 0.74), axis=(1, 0, 0))
+    body.ball((0.58, 0.0, 0.50), 0.23, (1.04, 0.74, 0.70), axis=(1, 0, 0))
+
+    # The metasoma. Explicit points: up out of the body's rear, over the back,
+    # forward to above the head. The first bead overlaps the last body
+    # segment, which is what makes the tail part of the animal.
+    tail = Blob("Metasoma", plate, 0.030)
+    arc = (
+        (0.74, 0.56, 0.205), (0.94, 0.76, 0.196), (1.06, 1.00, 0.187),
+        (1.10, 1.26, 0.178), (1.06, 1.52, 0.168), (0.94, 1.74, 0.158),
+        (0.76, 1.90, 0.148), (0.54, 2.00, 0.138), (0.30, 2.03, 0.128),
+        (0.06, 2.00, 0.118),
+    )
+    for x, z, radius in arc:
+        tail.ball((x, 0.0, z), radius, (1.0, 0.88, 0.88), stiffness=2.8)
+    # The telson bulb, then the sting continuing down and forward out of it.
+    tail.ball((-0.14, 0.0, 1.93), 0.125, (1.08, 0.94, 0.90), axis=(1, 0, 0))
+    sting_from = (-0.22, 0.0, 1.88)
+    sting_dir = (-0.88, 0.0, -0.48)
+    sting_len = 0.44
+    norm = (sting_dir[0] ** 2 + sting_dir[2] ** 2) ** 0.5
+    cone_along("Sting", sting_from, sting_dir, sting_len, 0.058, claw, 0.005)
+    # The bead sits at the cone's computed tip, not where it looked right.
+    sphere("VenomBead",
+           (sting_from[0] + sting_dir[0] / norm * sting_len, 0.0,
+            sting_from[2] + sting_dir[2] / norm * sting_len),
+           (0.042, 0.042, 0.048), venom)
+
+    for s in (-1, 1):
+        # Median eyes on the carapace, small and close together.
+        sphere("Eye%d" % s, (-0.78, s * 0.13, 0.80),
+               (0.052, 0.044, 0.048), eye)
+        # The pedipalp: upper arm out and forward, forearm reaching in, then
+        # the chela as a boxy open hand. These are the limbs the stat block
+        # grabs with and they carry the silhouette, so they stay large - and
+        # they stay inside the ring, which took four tries.
+        cone_along("PalpUpper%d" % s, (-0.74, s * 0.36, 0.58),
+                   (-0.40, s * 0.94, 0.16), 0.44, 0.100, limb, 0.086)
+        cone_along("PalpFore%d" % s, (-0.92, s * 0.78, 0.66),
+                   (-1.0, -s * 0.62, -0.02), 0.40, 0.090, limb, 0.076)
+        hand = Blob("Chela%d" % s, plate, 0.028)
+        hand.ball((-1.24, s * 0.52, 0.62), 0.20, (1.30, 0.94, 0.74),
+                  axis=(1, 0, 0))
+        # Two fingers with a gap between them: an open claw reads at 64
+        # pixels and a shut one does not.
+        cone_along("Finger%dA" % s, (-1.37, s * 0.44, 0.67),
+                   (-1.0, -s * 0.18, 0.28), 0.30, 0.052, claw, 0.008)
+        cone_along("Finger%dB" % s, (-1.35, s * 0.62, 0.55),
+                   (-1.0, s * 0.24, -0.14), 0.26, 0.045, claw, 0.007)
+        # Eight legs, four a side, fanned front to back. Short, angled out and
+        # bent at the knee rather than straight down, which is what made the
+        # earlier passes read as a row of spikes.
+        for index, (root, out, back) in enumerate((
+                (-0.62, 1.00, -0.34), (-0.34, 1.00, -0.08),
+                (-0.06, 0.94, 0.16), (0.22, 0.84, 0.38))):
+            cone_along("Femur%d%d" % (s, index), (root, s * 0.24, 0.48),
+                       (back * 0.6, s * out, 0.46), 0.40, 0.050, limb, 0.038)
+            cone_along("Tibia%d%d" % (s, index),
+                       (root + back * 0.22, s * (0.24 + out * 0.36), 0.64),
+                       (back * 0.48, s * out * 0.46, -1.0), 0.52, 0.038,
+                       limb, 0.012)
+
+
 def cyclops():
     skin = material("Skin", (0.5, 0.33, 0.2), 0.7, subsurface=0.12,
                     noise=(7.0, 0.5, (0.33, 0.19, 0.11)))
@@ -1668,6 +1777,16 @@ CREATURES = {
                      inner=(0.14, 0.10, 0.08), outer=(0.016, 0.010, 0.007),
                      key=(0.86, 0.90, 1.0), rim=(0.65, 0.80, 1.0),
                      camera=((0.36, -8.4, 0.70), (-0.03, 0.0, 0.05), 55.0)),
+    # Sprint 20. A desert scorpion is warm chitin, so the ground goes cold
+    # blue-green and the key cools only slightly: the opposite dressing to the
+    # ants and the beetles, which are the other arthropods a player chooses
+    # between, and nothing like either Sprint 19 creature. The camera sits a
+    # little higher and further back than the ants' because the arched tail is
+    # the tallest thing any icon in this roster has.
+    "giant-scorpion": dict(build=giant_scorpion,
+                           inner=(0.06, 0.11, 0.13), outer=(0.005, 0.010, 0.012),
+                           key=(1.0, 0.90, 0.72), rim=(0.50, 0.88, 0.95),
+                           camera=((-0.05, -6.6, 1.52), (-0.42, 0.0, 1.02), 55.0)),
     "xill": dict(build=xill,
                  inner=(0.07, 0.12, 0.09), outer=(0.006, 0.012, 0.009),
                  key=(0.78, 0.88, 1.0), rim=(0.45, 0.95, 0.70),

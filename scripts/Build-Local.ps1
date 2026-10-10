@@ -31,7 +31,7 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.148') { throw "Build-Local supports only active version 0.0.148, observed $($info.Version)." }
+if ($info.Version -ne '0.0.149') { throw "Build-Local supports only active version 0.0.149, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -74,7 +74,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
     -MSBuildPath $msbuild -SkipRepositoryValidation
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.148'
+$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.149'
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -154,6 +154,11 @@ foreach ($kind in @('girallon','xill')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint19-fourarmed\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint19-fourarmed') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint19-fourarmed\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint19-fourarmed') -Force
 }
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint20-arachnids') -Force | Out-Null
+foreach ($kind in @('giant-scorpion')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint20-arachnids\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint20-arachnids') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint20-arachnids\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint20-arachnids') -Force
+}
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
@@ -197,7 +202,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soun
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
 # two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 346 } else { 344 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 349 } else { 347 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

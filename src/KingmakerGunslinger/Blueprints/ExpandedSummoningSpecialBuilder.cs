@@ -240,6 +240,10 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.GiantAntDrone";
         private const string GiantAntDroneTraitsSymbol =
             "KMG.Summoning.Special.GiantAntDrone.Traits";
+        private const string GiantScorpionUnitSymbol =
+            "KMG.Summoning.Unit.GiantScorpion";
+        private const string GiantScorpionTraitsSymbol =
+            "KMG.Summoning.Special.GiantScorpion.Traits";
         private const string GiantStagBeetleUnitSymbol =
             "KMG.Summoning.Unit.GiantStagBeetle";
         private const string GiantStagBeetleTrampleSymbol =
@@ -1830,6 +1834,28 @@ namespace KingmakerGunslinger.Blueprints
                 "Giant Ant Grab",
                 "A bite hit lets the drone attempt to grab a foe no larger than itself. Its sting never grabs.",
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            // Sprint 20. The scorpion is the first creature here whose
+            // GRABBING limbs are the ones the stat block leads with: its
+            // primary limb is a claw and so is its first additional limb,
+            // so the spec takes both and stops, which is what leaves the
+            // sting - the second additional limb - out. Both Giant Ants
+            // read the other way round, grabbing with a primary bite and
+            // never with the additional sting; the gate is the same one
+            // counting differently, and that is the point of expressing it
+            // as a limb count rather than a weapon list.
+            //
+            // It holds with two claws, so it takes the multi-target hold
+            // Sprint 19 built for the Xill rather than the single one: two
+            // claws that could only ever hold one foe between them would be
+            // a quieter creature than the stat block prints.
+            ConfigureGrabber(library, bySymbol, GiantScorpionUnitSymbol,
+                GiantScorpionTraitsSymbol, "GiantScorpion",
+                "Giant Scorpion Grab",
+                "Either claw that hits lets the scorpion attempt to grab a foe no larger than itself, and it can hold one foe in each claw. Its sting never grabs - the sting delivers its poison instead.",
+                new GrabSpec { Primary = true,
+                    Additional = GiantScorpionRulesPolicy.ClawCount - 1,
+                    MaxHeld = GiantScorpionRulesPolicy.ClawCount,
+                    Hold = multiHold, Grappled = multiHeld });
             // Sprint 16: the Dire Crocodile's own swallowed state. It
             // shared the Purple Worm's until now, which put a victim in a
             // worm's stomach with the worm's crush. The engine behaviour the

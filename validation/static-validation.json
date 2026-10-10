@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.148-expanded-summoning-sprint19",
+  "milestone": "0.0.149-expanded-summoning-sprint20",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.148",
+  "version": "0.0.149",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2311,5 +2311,54 @@
     "ownerInstallationRestoredTo": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
     "priorRecordNote": "The released v0.0.147 record is left exactly as it shipped, because a released record is immutable and this sprint's own gate enforces that. For a reader: its closureStatus sentence is the one written during the Sprint 18 candidate pass and was never amended at release, so it reads SOURCE QUALIFIED; RUNTIME NOT QUALIFIED beside its own runtimeQualified true, candidateOnly false and three passing runs. Every number in that record is correct and v0.0.147 shipped both apes published; only that one sentence is stale. The same stale wording is in the 0.0.147 CHANGELOG entry, which says 58 appended identities and a published surface frozen at 1008: the release actually appended 61 identities, taking the ledger from 2922 to 2983 entries, and published 1034 generated placements for 1063 visible choices, which is what docs/RELEASE-NOTES-0.0.147.md records correctly.",
     "publicationGate": "PASS, confirmed in game. 39 of 39 on the published candidate: ten roots live and published, nothing withheld anywhere, registered 1044 = published 1044, and every printed number of both creatures read back unchanged by publication. Evidence 20261010T0840306592691Z-disposable-expanded-summoning-sprint19-review."
+  },
+  "expandedSummoningSprint20149": {
+    "releaseVersion": "0.0.149",
+    "releaseInformationalVersion": "0.0.149-expanded-summoning-sprint20",
+    "masterBase": "37eb4ee5656ec1f59def1ad2dc2b0892edd22c83",
+    "releasedBaseline": "v0.0.148",
+    "deterministicTestCount": 2538,
+    "registeredManifestEntryCount": 3039,
+    "registeredGeneratedPlacements": 1056,
+    "suppressedGeneratedPlacements": 0,
+    "publishedGeneratedPlacements": 1056,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1085,
+    "uniqueCreatures": 102,
+    "newRoots": 12,
+    "executionChildren": 12,
+    "templated": true,
+    "creatureSuppressed": false,
+    "originalBodiesAuthored": true,
+    "donorRigReuseVerified": true,
+    "donorRig": "9e120b5e0ad3c794491c049aa24b9fde Giant Spider",
+    "donorRigNote": "Measured, not recalled. The bounded read-only census 20261010T1328444995657Z-observe-expanded-summoning-arachnid-census passed and found the Giant Spider rig to be 51 bones with a two-bone abdomen chain (Tail1_M, Tail3_M), a seven-bone pedipalp chain each side, and a fourth leg pair that is a complete leg - upper, lower and foot on both sides - where the Sprint 14 ants leave it empty and the beetles hang wings on it. Three independent Giant Spider prefabs agree. Kingmaker has no native scorpion: the Sprint 14 conclusion holds. Four guarded transactions were spent, three of them on defects in the census itself - an assertion that forbade what it should have reported, a discovery term short enough to match adamANTine and peasANT, and a scan that counted this sprint's own registered unit as an installed scorpion.",
+    "runtimeQualified": true,
+    "runtimeEvidence": [
+      "20261010T1328444995657Z-observe-expanded-summoning-arachnid-census",
+      "20261010T1535502794822Z-working-save-expanded-summoning-creature-review",
+      "20261010T1615114043487Z-disposable-expanded-summoning-sprint20-review",
+      "20261010T1648433410286Z-disposable-expanded-summoning-sprint20-review"
+    ],
+    "publicReleaseAuthorized": true,
+    "candidateOnly": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "contract": "planning/EXPANDED-SUMMONING-SPRINT20-CONTRACT.json",
+    "acceptedEngineLimitations": [
+      "PASSIVE_CREATURE_SENSES_UNMODELED",
+      "ORDINARY_MAP_LAND_USE_SCOPE",
+      "PER_LIMB_REACH_UNREPRESENTED",
+      "METASOMA_DRIVEN_BY_A_TWO_BONE_CHAIN"
+    ],
+    "closureStatus": "PUBLISHED AND QUALIFIED. The Giant Scorpion's twelve roots are live and selectable: Summon Monster IV and Summon Nature's Ally IV with their charter quantities through tier 9, and because it is templated its six Monster roots publish twelve celestial and fiendish execution children with them. The visible surface rises from the 1073 choices v0.0.148 published to 1085, and publication was the removal of one suppression key: every identity was allocated at registration and none moved. 20 of 20 on the batched mechanics review in real time and in turn-based combat - every printed number off the live creature including hit points 37, armour class 16/10/15, manoeuvre bonus +8, grapple +12, manoeuvre defence 19 and 31 against trip, Perception +4 and Stealth +1; grab on both claws and neither the sting nor anything else; poison on the sting at the live Constitution-scaled DC 15, proved on both sides of the save and absent from a claw; the printed three-limb routine at one bonus; and the mind-affecting immunity read off the component the rules layer consults. 4 of 4 on the party-camera art review, with the original body attached, all eight leg chains weighted and the authored metasoma visible. Accepted: METASOMA_DRIVEN_BY_A_TWO_BONE_CHAIN, measured rather than guessed. HumanReview NOT_PERFORMED_NONBLOCKING.",
+    "compatibilityRuntimeQualificationPending": true,
+    "projectIconConcepts": 114,
+    "donorCensusEvidence": "20261010T1328444995657Z-observe-expanded-summoning-arachnid-census",
+    "guardedRuntimeRunsSpent": 8,
+    "packageMemberCount": 349,
+    "originalBodyFiles": 2,
+    "runtimeEvidenceNote": "Three runs carry the qualification and the two before them are kept because they are what found the defects. 20261010T1530568462425Z-disposable-expanded-summoning-sprint20-review returned 17 of 20 and measured three: a printed grab with no carrier anywhere, an anti-trip defence of 27 against a printed 31 because the shared native eight-leg fact delivers 8, and Perception 0 with Stealth -3 because the printed racial +4 existed only in the arithmetic. 20261010T1559117802359Z returned 18 of 20 with every printed number right and two trials spoiled by a natural twenty landing a limb the fixture had not chosen. 20261010T1615114043487Z returned 20 of 20 in both combat modes, and the publication gate 20261010T1648433410286Z returned 20 of 20 again against the published surface with all twelve roots live, registered equal to published at 1056 and nothing withheld anywhere. The body review passed first time. Every run restored the owner installation to 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.",
+    "stealthQuestionAnswered": "The frozen contract recorded STEALTH_DERIVES_TO_PLUS_ONE as a question against the book: the derivation gives Dexterity +1 plus racial +4 less 4 for Large size = +1, where the value recalled at intake was +0. The live engine answers +1 on run 20261010T1615114043487Z, from the same three terms, so the derivation stands and the recalled +0 does not.",
+    "tripDefenceNote": "The shared native TripDefenseEightLegs fact delivers +8, measured on a live creature rather than inferred from its name: the stat-block convention is four per pair of legs beyond the first, so the project's six-legged insects print +8 and this eight-legged arachnid prints +12. The Giant Scorpion carries its own +12 carrier on the engine's own manoeuvre-defence component, gated on trip alone. Nothing about the shared native fact changes and no released creature moves."
   }
 }

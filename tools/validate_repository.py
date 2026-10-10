@@ -126,6 +126,7 @@ VALIDATORS = {
     "0.0.146": "validate_expanded_summoning_checkpoint146.py",
     "0.0.147": "validate_expanded_summoning_sprint18147.py",
     "0.0.148": "validate_expanded_summoning_sprint19148.py",
+    "0.0.149": "validate_expanded_summoning_sprint20149.py",
 }
 
 
