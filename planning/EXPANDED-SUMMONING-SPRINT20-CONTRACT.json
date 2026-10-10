@@ -2,10 +2,9 @@
   "schemaVersion": 1,
   "sprint": 20,
   "title": "Expanded Summoning Sprint 20 - Giant Scorpion",
-  "status": "FROZEN AT INTAKE; IMPLEMENTATION NOT STARTED",
+  "status": "FROZEN AT INTAKE; REGISTERED WITHHELD; DONOR RIG MEASURED; BODY NOT AUTHORED",
   "frozenAtUtc": "2026-10-10",
   "scope": "Sprint 20 only. The Giant Scorpion and nothing else. Bebelith, Giant Crab, Sprint 21, Sprint 22 and any broader phase are out of scope on this branch. No expanded summon feats, no aquatic movement or combat subsystem, no general arbitrary-limb system, no general creature editor and no global AI rewrite.",
-
   "authority": {
     "masterBase": "37eb4ee5656ec1f59def1ad2dc2b0892edd22c83",
     "releasedBaseline": "v0.0.148",
@@ -33,7 +32,6 @@
       "prohibitions": "Never committed, packaged, uploaded or exposed as a user artifact. The installed Steam copy is never altered."
     }
   },
-
   "printedProfile": {
     "source": "Pathfinder Roleplaying Game Bestiary, Giant Scorpion.",
     "name": "Giant Scorpion",
@@ -41,20 +39,49 @@
     "challengeRating": 3,
     "initiative": "+1",
     "senses": "darkvision 60 ft., tremorsense 30 ft.; Perception +4",
-    "armorClass": { "total": 16, "touch": 10, "flatFooted": 15, "components": "+1 Dex, +6 natural, -1 size" },
-    "hitPoints": { "total": 37, "formula": "5d8+15" },
-    "saves": { "fortitude": 7, "reflex": 2, "will": 1 },
+    "armorClass": {
+      "total": 16,
+      "touch": 10,
+      "flatFooted": 15,
+      "components": "+1 Dex, +6 natural, -1 size"
+    },
+    "hitPoints": {
+      "total": 37,
+      "formula": "5d8+15"
+    },
+    "saves": {
+      "fortitude": 7,
+      "reflex": 2,
+      "will": 1
+    },
     "immunities": "mind-affecting effects",
     "speedFeet": 50,
     "melee": "2 claws +6 (1d6+4 plus grab), sting +6 (1d6+4 plus poison)",
     "spaceFeet": 10,
     "reach": "10 ft. (5 ft. with claws)",
-    "abilityScores": { "strength": 19, "dexterity": 12, "constitution": 16, "intelligence": null, "wisdom": 10, "charisma": 2 },
+    "abilityScores": {
+      "strength": 19,
+      "dexterity": 12,
+      "constitution": 16,
+      "intelligence": null,
+      "wisdom": 10,
+      "charisma": 2
+    },
     "baseAttackBonus": 3,
-    "combatManeuverBonus": { "base": 8, "grapple": 12 },
-    "combatManeuverDefense": { "base": 19, "versusTrip": 31 },
+    "combatManeuverBonus": {
+      "base": 8,
+      "grapple": 12
+    },
+    "combatManeuverDefense": {
+      "base": 19,
+      "versusTrip": 31
+    },
     "feats": "none; vermin have no feats",
-    "skills": { "climb": 8, "perception": 4, "stealth": 1 },
+    "skills": {
+      "climb": 8,
+      "perception": 4,
+      "stealth": 1
+    },
     "racialSkillModifiers": "+4 Climb, +4 Perception, +4 Stealth",
     "poison": {
       "delivery": "Sting - injury",
@@ -64,7 +91,6 @@
       "cure": "1 save"
     }
   },
-
   "derivations": {
     "hitPoints": "5d8 at the monster convention of 4.5 per die is 22 racial, plus 5 hit dice times the Constitution 16 modifier of +3 is 15, so 22 + 15 = 37. Exact.",
     "armorClass": "10 + 1 Dexterity + 6 natural - 1 size = 16. Touch is 10 + 1 - 1 = 10. Flat-footed is 10 + 6 - 1 = 15. All three close, which independently pins Dexterity at 12.",
@@ -83,7 +109,6 @@
     "perception": "Wisdom 10 modifier 0 plus the racial +4 = +4, with no ranks. Exact.",
     "stealth": "Dexterity +1 plus the racial +4 minus the Large size penalty of 4 = +1, with no ranks. See the open question below."
   },
-
   "openQuestions": [
     {
       "id": "STEALTH_DERIVES_TO_PLUS_ONE",
@@ -101,7 +126,6 @@
       "resolution": "Intelligence 1, exactly as the Giant Spider, both Giant Ant castes and the Giant Stag Beetle already ship, because Kingmaker cannot represent an absent Intelligence score. The printed immunity to mind-affecting effects is carried separately and is not inferred from the score."
     }
   ],
-
   "buildPathDecisions": {
     "builder": "ExpandedSummoningNaturalBuilder with the Vermin hit-die class, which is what every shipped vermin uses: the Giant Spider, both Giant Ant castes, the Giant Stag Beetle, the Giant Centipede and the Fire Beetle. The special builder is for outsiders and is not used here.",
     "skills": "PK with an empty skill list, the same as the Giant Ant castes and the Giant Stag Beetle. A creature with no Intelligence score has no ranks to place, so the builder must not grant its default Perception, Mobility and Stealth ranks. Nothing is forfeited by this: all three printed skill totals are ability plus racial bonus and no rank.",
@@ -114,7 +138,6 @@
     "mindlessImmunity": "The printed immunity to mind-affecting effects is carried explicitly rather than inferred from the Intelligence score the engine forces to 1.",
     "notTemplated": "FALSE - this creature IS templated. It appears on Summon Monster at tier 4, so its six Summon Monster roots each own celestial and fiendish execution children, exactly as every other vermin and animal on both tables does. That is the opposite of Sprint 19, where neither creature was templated, and it is why this sprint allocates more identities than Sprint 19 did for more placements."
   },
-
   "placement": {
     "summonMonsterTier": 4,
     "summonNaturesAllyTier": 4,
@@ -133,7 +156,11 @@
       "visibleChoices": 1073,
       "ledgerEntries": 3005
     },
-    "newRoots": { "summonMonster": 6, "summonNaturesAlly": 6, "total": 12 },
+    "newRoots": {
+      "summonMonster": 6,
+      "summonNaturesAlly": 6,
+      "total": 12
+    },
     "executionChildren": 12,
     "surfaceAfter": {
       "uniqueCreatures": 102,
@@ -147,16 +174,33 @@
     },
     "registrationModel": "All twelve placements are registered withheld, so the published surface stays at exactly the 1073 choices v0.0.148 shows until the complete hidden candidate passes in game. Publication is then the removal of one suppression key and nothing else: identities are allocated once, here, and never move."
   },
-
   "visualDecisions": {
     "donor": "The native Giant Spider renderer, rigSha256 60074cc2edb939cd4ab3e49961eec470866f94096d40e97f490dedae60faa19b as recorded in every shipped Sprint 14 and 15 insect mesh.",
     "donorCensusDecision": "ONE BOUNDED READ-ONLY CENSUS IS REQUIRED, unlike Sprint 19. Sprint 19 skipped a census because Sprint 18's capture survived under runtime-evidence and could be re-decoded offline. The Sprint 14 spider capture did not survive: its SOURCE.md records that the geometry-free request-local capture stays outside Git and the package, and it is not in runtime-evidence. The shipped insect meshes give the bone names those creatures used and the rig fingerprint, but not the full bone roster, the bind-pose transforms, or how many segments the abdomen chain has - and a scorpion's tail is authored onto that chain. Guessing it is not acceptable, so one census is spent.",
     "whyTheSpiderRigFitsAScorpion": "Better than any donor this project has reused. The Sprint 14 census established that Kingmaker has no scorpion and that the Giant Spider is the only compact many-legged arthropod in the game, with four leg chains a side, seven-bone pedipalps, chelicerae and an abdomen chain. A scorpion has eight legs and the donor has eight: the fourth pair, which the ants leave empty and the beetles use for wings, is a real leg here, so this is the first creature in the project to weight all four chains a side as legs. A scorpion's claws ARE its pedipalps, so the chelae go on the seven-bone pedipalp chains the donor already has - anatomy rather than substitution, and ample articulation for a chela. The metasoma and telson are authored onto the abdomen chain, which sits behind and above the body where a scorpion's tail attaches.",
-    "expectedLimitation": "METASOMA_DRIVEN_BY_THE_ABDOMEN_CHAIN. The donor's abdomen chain has far fewer bones than a scorpion's five metasomal segments plus telson, so the tail curls as that chain moves rather than articulating segment by segment, and the sting cannot be driven as its own strike. Exact bone count is unknown until the census returns and this record is amended with it. No new rig, bone or animation is built: that would be the general arbitrary-limb and animation system this sprint must not build.",
+    "expectedLimitation": "METASOMA_DRIVEN_BY_A_TWO_BONE_CHAIN. Measured, not predicted: the donor's abdomen chain is exactly two bones, Tail1_M and Tail3_M. A scorpion's metasoma is five segments and a telson, so the whole tail curls as those two bones move rather than articulating segment by segment, and the sting cannot be driven as its own strike. This is the Sprint 20 equivalent of Sprint 19's shared arm chains, and it is the number that would have been guessed wrong: the project's other tails run Tail0 through Tail4.",
     "ownership": "One original project-owned procedural mesh and one original painted albedo, built against the donor's bind-pose skeleton and nothing else, plus one original 128x128 icon. No proprietary mesh, texture, material or animation is redistributed.",
-    "legChainInvariant": "The generator must prove all four leg chains a side are weighted as legs, from the built geometry rather than from a manifest field, the way Sprint 14's EXPECTED_CHAINS and Sprint 19's driver-chain test do."
+    "legChainInvariant": "The generator must prove all four leg chains a side are weighted as legs, from the built geometry rather than from a manifest field, the way Sprint 14's EXPECTED_CHAINS and Sprint 19's driver-chain test do.",
+    "censusEvidence": "20261010T1328444995657Z-observe-expanded-summoning-arachnid-census",
+    "measuredDonorRig": {
+      "bones": 51,
+      "abdomenChainBones": 2,
+      "abdomenChainPresent": [
+        "Tail1_M",
+        "Tail3_M"
+      ],
+      "pedipalpChainBonesPerSide": 7,
+      "fourthLegBones": 6,
+      "fourthLegNote": "Upper, lower AND foot on both sides: a complete leg, where the Sprint 14 ants leave this chain empty and the beetles hang wings on it. A scorpion has eight legs and this rig has eight.",
+      "agreedAcross": [
+        "GiantSpiderSummoned",
+        "GiantSpiderMiniboss",
+        "GiantSpider_Cutscene"
+      ],
+      "nativeScorpionsInstalled": 0,
+      "nativeScorpionNote": "The Sprint 14 conclusion holds and is now measured rather than recalled. Two earlier runs of this census reported one installed scorpion; it was this sprint's own KMG_Summoning_Unit_GiantScorpion, and the census now excludes blueprints this mod registered."
+    }
   },
-
   "honestOmissions": [
     {
       "id": "PASSIVE_CREATURE_SENSES_UNMODELED",
@@ -179,7 +223,6 @@
       "decision": "Vermin have no feats, so no feat is dropped and none is invented. Every number in the block derives from hit dice, ability scores, size and racial bonuses alone."
     }
   ],
-
   "guardedRuntimeRequirements": {
     "census": "One bounded, read-only Giant Spider donor census. Reads the bind frame, bone graph, driver set and renderer; writes no save, deploys no permanent build, and restores the installation exactly.",
     "mechanicsReview": "Every printed number read back from the live engine - hit points, armour class, touch, flat-footed, all three saves, combat manoeuvre bonus and defence including the trip case, every skill total, every limb's attack bonus and damage - plus grab on the claws only, poison on the sting only with its live difficulty class, the mind-affecting immunity, and the eight-legged trip defence. Run in both real time and turn-based combat.",
@@ -187,6 +230,5 @@
     "publicationGate": "The same mechanics review re-run against the published surface, requiring all twelve roots live and published, nothing withheld anywhere, and registered equal to published at 1056.",
     "launchMechanism": "Every launch uses the repository's guarded Steam App ID 640820 mechanism. Kingmaker.exe is never launched directly, KMG_AUTOMATION_BASELINE is never loaded or written, saves are never edited or copied by hand, and no development build is left deployed."
   },
-
   "hardBoundaries": "One sprint, one branch, one PR, one release. No multi-sprint branch, no stacked PR, no unreleased carryover into Sprint 21, no Sprint 22, no expanded summon feats, no aquatic movement or combat subsystem, no general arbitrary-limb system, no general creature editor, no global AI rewrite, no proprietary asset redistribution, no force-push, no direct master commit and no unguarded Kingmaker launch."
 }
