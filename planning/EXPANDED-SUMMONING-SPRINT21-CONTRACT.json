@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "sprint": 21,
+  "title": "Expanded Summoning Sprint 21: the Giant Crab and the Bebelith's own body",
+  "status": "FROZEN AT INTAKE",
+  "frozenAtUtc": "2026-10-10T17:30:00Z",
+  "releasedBaseline": "v0.0.149",
+  "masterBase": "d0ceafae",
+  "scope": "Two creatures with deliberately different shapes. The GIANT CRAB is new in every respect: one creature, seven Summon Nature's Ally roots, its own rules, its own icon and its own original project-owned body. The BEBELITH is already registered, published and runtime qualified - it shipped with 1009/1009 domain PASS and a complete live qualification - and this sprint owns exactly one thing for it: the original project-owned body it has never had, because it currently wears the native Doomspider's view. Its rules, chassis, identities, placements and recorded deviations are released and are NOT touched.",
+  "authority": "Expanded Summoning Sequential Completion Mission. One sprint, one branch, one PR, one release. The series ends here: there is no Sprint 22.",
+  "whyTheBebelithIsHalfASprint": "Its mechanics were qualified in an earlier phase and its fidelity entry records what the project deliberately did not represent - permanent armour destruction replaced by a bounded one-round armour-class penalty, demon hunting keyed to exact chaotic-evil outsider facts, rot and climb omitted. Re-opening any of that would move a creature that has already published, which the series forbids. Its visual, by contrast, is the only remaining item the ideal roster assigns to this sprint: asset package 'Arachnids & scorpion'. The shipped chassis also differs from the printed Bestiary block on purpose - Huge rather than Large, with its own claw dice - and this sprint does not reconcile the two, because the released creature is the qualified one.",
+  "printedProfile": {
+    "creature": "Giant Crab",
+    "source": "Printed Bestiary entry, transcribed at intake",
+    "alignmentTypeSize": "N Medium vermin (aquatic)",
+    "hitDice": 3,
+    "hitDieClass": "Vermin",
+    "hitPoints": { "dice": "3d8+6", "total": 19 },
+    "armorClass": { "total": 15, "touch": 11, "flatFooted": 14, "parts": "+1 Dex, +4 natural" },
+    "saves": { "fortitude": 5, "reflex": 2, "will": 1 },
+    "immunities": "mind-affecting effects",
+    "speedFeet": 30,
+    "swimSpeedFeet": 20,
+    "melee": "2 claws +4 (1d4+2 plus grab)",
+    "spaceFeet": 5,
+    "reachFeet": 5,
+    "abilityScores": {
+      "strength": 15, "dexterity": 12, "constitution": 14,
+      "intelligence": null, "wisdom": 10, "charisma": 2
+    },
+    "baseAttackBonus": 2,
+    "combatManeuverBonus": 4,
+    "grappleBonus": 8,
+    "combatManeuverDefense": { "base": 15, "versusTrip": 27 },
+    "skills": { "Perception": 4, "Swim": 10 },
+    "racialModifiers": { "Perception": 4, "Swim": 8 },
+    "specialQualities": "amphibious"
+  },
+  "derivations": [
+    "Armour class: 10 + 1 Dex + 4 natural = 15; touch 10 + 1 = 11; flat-footed 10 + 4 = 14. Medium, so no size term. These three pin Dexterity at 12 twice over and the natural armour at +4 once.",
+    "Hit points: 3d8 at the monster convention averages 13, plus 6 from Constitution 14 across three dice, giving the printed 19. No third term: vermin have no feats and so no Toughness.",
+    "Saves: vermin take the good Fortitude with two poor saves. Three hit dice give +3 on the good one and +1 on each poor one. Fortitude 3 + 2 = 5; Reflex 1 + 1 = 2, which is the third place Dexterity 12 is pinned; Will 1 + 0 = 1.",
+    "Base attack: vermin use the 3/4 progression, so three hit dice give +2.",
+    "Attack bonus: 2 base attack + 2 Strength + 0 size = +4 on both claws, and both are primary at the whole Strength modifier, so 1d4+2 each rather than one at 1d4+3.",
+    "Manoeuvre bonus: 2 base attack + 2 Strength + 0 size = +4. The printed grapple +8 is that plus the grab bonus of 4, which is the whole of the difference.",
+    "Manoeuvre defence: 10 + 2 base attack + 2 Strength + 1 Dexterity + 0 size = 15.",
+    "Anti-trip defence: the printed 27 is 12 above the ordinary 15. A crab walks on eight legs, and the stat-block convention is four per pair of legs beyond the first - three extra pairs, +12. This is the same figure and the same arithmetic as the Giant Scorpion, and it is NOT the shared native eight-leg fact, which Sprint 20 measured delivering +8.",
+    "Skills: no Intelligence score means no ranks, so both printed totals are ability plus racial bonus. Perception 0 Wisdom + 4 racial = +4. Swim 2 Strength + 8 racial = +10.",
+    "Every one of the ten identities above closes exactly. Nothing in this block had to be rounded to fit, and no number is recorded as a question against the book."
+  ],
+  "openQuestions": [
+    {
+      "id": "AQUATIC_SUBTYPE_AND_SWIM_SPEED",
+      "question": "The printed line is N Medium vermin (aquatic), speed 30 ft., swim 20 ft., with a racial +8 Swim and the amphibious special quality.",
+      "resolution": "The creature ships as a land creature at its printed 30-foot ground speed. The swim speed, the aquatic subtype, the amphibious quality and the racial +8 Swim are recorded as unrepresented under ORDINARY_MAP_LAND_USE_SCOPE, and nothing is substituted for any of them: no swim speed is folded into the ground speed, no skill is raised to stand in for Swim, and no breathing or drowning state is invented. Kingmaker models neither swimming nor drowning, and this mission's hard boundaries forbid building an aquatic movement or combat subsystem - so the honest form of the printed line is a recorded absence rather than an approximation. The creature loses nothing it could have spent: with no Intelligence score it has no ranks, and the +8 is entirely racial.",
+      "consequence": "A player who summons a Giant Crab gets a land creature. That is a smaller creature than the book's in exactly one dimension, and the dimension is named here rather than left for a reader to discover."
+    },
+    {
+      "id": "ABSENT_INTELLIGENCE",
+      "question": "The printed Intelligence is an em dash: the creature is mindless.",
+      "resolution": "Kingmaker cannot hold an absent Intelligence score, so 1 is used - exactly as the Giant Spider, all three Giant Ant castes, the Giant Stag Beetle and the Sprint 20 Giant Scorpion already ship. The printed immunity to mind-affecting effects is carried as its own fact on the game's own descriptor immunity and is never inferred from the substituted score, because 1 is not mindless as far as the engine is concerned."
+    },
+    {
+      "id": "BEBELITH_PRINTED_BLOCK_VERSUS_RELEASED_CHASSIS",
+      "question": "The released Bebelith is Huge with its own claw dice, where the printed Bestiary Bebilith is Large with different ones.",
+      "resolution": "Not reconciled, deliberately. The released creature is the qualified one: it passed a complete live qualification in an earlier phase and its recorded deviations were accepted then. This sprint's Bebelith scope is its body and nothing else, so nothing about its chassis, its offence, its dismantle behaviour or its identities moves. Recorded here so a reader who compares the shipped creature with the book finds the difference explained rather than apparently overlooked."
+    }
+  ],
+  "placement": {
+    "giantCrab": {
+      "family": "Summon Nature's Ally only",
+      "ownTier": 3,
+      "templated": false,
+      "templatedReason": "Summon Nature's Ally never templates, and this creature is not on the Summon Monster table at all, so it owns no celestial or fiendish execution children.",
+      "roots": 7,
+      "rootsDerivation": "Parents 3 through 9: One at its own tier 3, OneD3 at tier 4, OneD4PlusOne at tiers 5 through 9. It is the first creature in the roster to sit at Summon Nature's Ally III with no Summon Monster tier.",
+      "registeredPlacementsBefore": 1056,
+      "registeredPlacementsAfter": 1063,
+      "naturesAllyRosterBefore": 90,
+      "naturesAllyRosterAfter": 91,
+      "naturesAllyPlacementsBefore": 526,
+      "naturesAllyPlacementsAfter": 533,
+      "monsterUnchanged": "92 roster, 530 placements",
+      "uniqueCreaturesBefore": 102,
+      "uniqueCreaturesAfter": 103
+    },
+    "bebelith": {
+      "family": "Summon Monster only",
+      "ownTier": 7,
+      "roots": 3,
+      "change": "none - all three roots, their identities and their quantities are released and untouched"
+    }
+  },
+  "identityPlan": {
+    "appended": 13,
+    "derivation": "One unit, seven placements, and five of the creature's own blueprints.",
+    "ownBlueprints": [
+      "UnitType - a crab has no native unit type to inherit, and borrowing the Giant Spider's would make the creature read as its donor on inspection.",
+      "MindlessImmunity - the printed immunity to mind-affecting effects, carried explicitly.",
+      "TripDefense - the printed +12 against trip. Its own rather than the Sprint 20 scorpion's, which is named and described for that creature, and rather than the shared native eight-leg fact, which delivers +8.",
+      "RacialSkills - the printed racial +4 Perception. The printed racial +8 Swim has no Kingmaker equivalent and is recorded as omitted rather than substituted.",
+      "Traits - the grab carrier, keyed to this unit: both claws grab and it can hold one foe in each."
+    ],
+    "reusedNeverCopied": [
+      "The shared native Medium 1d4 claw. This creature is Medium, so the engine does not scale a Medium-authored weapon for it - which is the whole reason the Large Sprint 18 and 20 creatures had to own their weapons - and the printed dice are exactly what the shared weapon already carries.",
+      "KMG.Summoning.Natural.Primate.FullStrengthLimbs, released in v0.0.147. Both claws are primary at the whole Strength modifier, and the engine grants one and a half times Strength to a natural primary-hand weapon when the other hand is empty, so without this carrier one claw would read 1d4+3 against a printed 1d4+2."
+    ]
+  },
+  "buildPathDecisions": [
+    "The Giant Crab's rules go in the natural builder, because it is a vermin with a chassis the natural profile shape already describes. Nothing in the special builder changes except its own grab carrier, which is where every grabber in the project is configured.",
+    "The Giant Crab's grab spec is the Sprint 20 scorpion's minus the sting: the primary limb plus one additional limb is both claws, and there is no third limb to stop short of. MaxHeld is 2 and the multi-target hold is used, because two claws hold two foes.",
+    "The Bebelith's body is a view-layer addition. No rules file it touches is edited; the view patch learns its blueprint name and the asset runtime learns its key, which is exactly the shape of every body this programme has shipped."
+  ],
+  "visualDecisions": [
+    "Both bodies are original, procedural and project-owned. No native vertex, triangle, texture, material or animation is copied, and nothing proprietary is redistributed.",
+    "The Giant Crab rides the Giant Spider rig, for the same anatomical reasons the Sprint 20 scorpion does: a crab's claws ARE its pedipalps, and the rig has a seven-bone pedipalp chain a side; and a crab walks on eight legs, which is the four chains a side Sprint 20 proved are all real legs on that rig. It carries no tail, so the abdomen chain holds the carapace rather than a metasoma.",
+    "The Bebelith's body must be weighted to the rig its own view uses, which is the Doomspider's rather than the Giant Spider's. Whether those are the same skeleton is a measurement and not an assumption: Sprint 20 spent a census rather than inherit Sprint 14's conclusion about the same rig family, and the same discipline applies here.",
+    "The Sprint 20 arachnid capture does not survive - it is request-local and stays outside Git and the package - so this sprint needs its own census regardless. One bounded read-only run measures both anchors."
+  ],
+  "honestOmissions": [
+    {
+      "id": "ORDINARY_MAP_LAND_USE_SCOPE",
+      "applies": "giant-crab",
+      "detail": "The printed swim 20 ft., the aquatic subtype, the amphibious quality and the racial +8 Swim. Kingmaker has no Swim skill and models neither swimming nor drowning. Nothing is substituted and no record claims any of them works."
+    },
+    {
+      "id": "PASSIVE_CREATURE_SENSES_UNMODELED",
+      "applies": "giant-crab",
+      "detail": "Darkvision 60 feet, omitted under the owner's accepted limitation. Nothing stands in for it - no blindsense, no blindsight, no vision-range override."
+    },
+    {
+      "id": "VERMIN_HAVE_NO_FEATS",
+      "applies": "giant-crab",
+      "detail": "No feat is dropped and none is invented. Recorded so the absence is not mistaken for an omission."
+    }
+  ],
+  "guardedRuntimeRequirements": {
+    "census": "One bounded, read-only census measuring both donor rigs: the Giant Spider the crab will ride and the Doomspider the Bebelith already wears. Reads the bind frame, bone graph, driver set and renderer of each; writes no save, deploys no permanent build, and restores the installation exactly.",
+    "mechanicsReview": "Every printed Giant Crab number read back from the live engine - hit points, armour class, touch, flat-footed, all three saves, manoeuvre bonus and defence including the trip case, both mapped skill totals, and each claw's attack bonus and damage - plus grab on both claws with nothing held, the mind-affecting immunity, and the printed routine of exactly two primary claws at one bonus. Run in both real time and turn-based combat.",
+    "bodyReview": "Party-camera review of both original bodies, requiring renderer attached, dissolve clear and geometry intact, with the crab's eight weighted leg chains and claws visible and the Bebelith's body replacing its donor presentation.",
+    "publicationGate": "The same mechanics review re-run against the published surface, requiring all seven Giant Crab roots live and published, nothing withheld anywhere, and registered equal to published at 1063.",
+    "launchMechanism": "Every launch uses the repository's guarded Steam App ID 640820 mechanism. Kingmaker.exe is never launched directly, KMG_AUTOMATION_BASELINE is never loaded or written, saves are never edited or copied by hand, and no development build is left deployed."
+  },
+  "hardBoundaries": [
+    "No multi-sprint branch, stacked pull request, or unreleased carryover into a next sprint. There is no Sprint 22.",
+    "No expanded summon feats.",
+    "No aquatic movement or combat subsystem. This is the boundary the Giant Crab tests, and the answer is a recorded omission rather than a subsystem.",
+    "No general arbitrary-limb system, general creature editor, or global AI rewrite.",
+    "No proprietary asset redistribution.",
+    "No force-push, history rewrite, destructive reset, or direct commit to master.",
+    "No unguarded Kingmaker launch.",
+    "No change to the released Bebelith's rules, chassis, identities, placements or recorded deviations. Its body is the whole of this sprint's Bebelith scope."
+  ]
+}

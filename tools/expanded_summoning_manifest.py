@@ -210,8 +210,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 102:
-        raise SystemExit(f"Expected 102 parsed creatures; observed {len(values)}")
+    if len(values) != 103:
+        raise SystemExit(f"Expected 103 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -532,8 +532,19 @@ def planned():
         # the arithmetic that derived those totals.
         ("KMG.Summoning.Natural.GiantScorpion.TripDefense", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GiantScorpion.RacialSkills", "BlueprintFeature"),
+        # Sprint 21's Giant Crab. Five of its own and no weapon: a Medium
+        # creature takes the shared native 1d4 claw unscaled, which is why
+        # the Large Sprint 18 and 20 creatures had to own theirs and this
+        # one does not. Its anti-trip carrier is its own because the shared
+        # native eight-leg fact delivers +8 and the Sprint 20 carrier that
+        # delivers +12 is named and described for a scorpion.
+        ("KMG.Summoning.Natural.GiantCrab.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.GiantCrab.MindlessImmunity", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantCrab.TripDefense", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantCrab.RacialSkills", "BlueprintFeature"),
+        ("KMG.Summoning.Special.GiantCrab.Traits", "BlueprintBuff"),
     ))
-    if len(rows) != 2040 or len({symbol for symbol, _ in rows}) != 2040:
+    if len(rows) != 2053 or len({symbol for symbol, _ in rows}) != 2053:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

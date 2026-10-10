@@ -52,7 +52,7 @@ def validate(root: Path) -> None:
     active = [entry for entry in entries if entry.get("status") == "active"]
     reserved = [entry for entry in entries if entry.get("status") == "reserved"]
     elemental = [entry for entry in entries
-        if entry.get("symbol", "").startswith("KMG.ElementalRaces.") and not (VERSION in {"0.0.142", "0.0.143", "0.0.144", "0.0.145", "0.0.146", "0.0.147", "0.0.148", "0.0.149"} and entry.get("symbol", "").startswith("KMG.ElementalRaces.CharacterTraits."))]
+        if entry.get("symbol", "").startswith("KMG.ElementalRaces.") and not (VERSION in {"0.0.142", "0.0.143", "0.0.144", "0.0.145", "0.0.146", "0.0.147", "0.0.148", "0.0.149", "0.0.150"} and entry.get("symbol", "").startswith("KMG.ElementalRaces.CharacterTraits."))]
     elemental_active = [entry for entry in elemental
         if entry.get("status") == "active"]
     races = [entry for entry in elemental_active

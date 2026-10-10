@@ -1,6 +1,6 @@
 # Blueprint manifest and registration contract
 
-Active v0.0.149 Sprint 20 contract: 3039 stable identifiers: 3037 active and 2 reserved.
+Active v0.0.149 Sprint 20 contract: 3052 stable identifiers: 3050 active and 2 reserved.
 Every released v0.0.148 entry remains in place; Sprint 20 appends exactly 31
 Giant Scorpion identities - one unit, 12 logical placements, the 12 celestial
 and fiendish execution children of its 6 templated Summon Monster roots, its
