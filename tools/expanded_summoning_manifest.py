@@ -520,8 +520,13 @@ def planned():
         ("KMG.Summoning.Natural.GiantScorpion.Poison", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GiantScorpion.Venom", "BlueprintBuff"),
         ("KMG.Summoning.Natural.GiantScorpion.MindlessImmunity", "BlueprintFeature"),
+        # Grab: a printed claw rider and the whole of the difference
+        # between the printed +8 manoeuvre bonus and the +12 grapple
+        # figure. Keyed to this unit, with the primary claw and one
+        # additional limb grabbing, which is what keeps it off the sting.
+        ("KMG.Summoning.Special.GiantScorpion.Traits", "BlueprintBuff"),
     ))
-    if len(rows) != 2037 or len({symbol for symbol, _ in rows}) != 2037:
+    if len(rows) != 2038 or len({symbol for symbol, _ in rows}) != 2038:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
