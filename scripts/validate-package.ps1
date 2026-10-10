@@ -46,7 +46,7 @@ try {
         'validation\weapon-findability-runtime-qualification.json',
         'docs\RELEASE-NOTES-0.0.145.md',
         'docs\RELEASE-NOTES-0.0.146.md',
-        'docs\RELEASE-NOTES-0.0.147.md',
+        'docs\RELEASE-NOTES-0.0.148.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',

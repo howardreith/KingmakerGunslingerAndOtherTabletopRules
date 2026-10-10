@@ -60,7 +60,7 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'validation\weapon-findability-runtime-qualification.json',
     'docs\RELEASE-NOTES-0.0.145.md',
     'docs\RELEASE-NOTES-0.0.146.md',
-    'docs\RELEASE-NOTES-0.0.147.md')) {
+    'docs\RELEASE-NOTES-0.0.148.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
