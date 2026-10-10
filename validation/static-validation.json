@@ -2330,9 +2330,9 @@
     "templated": true,
     "creatureSuppressed": true,
     "originalBodiesAuthored": false,
-    "donorRigReuseVerified": false,
+    "donorRigReuseVerified": true,
     "donorRig": "9e120b5e0ad3c794491c049aa24b9fde Giant Spider",
-    "donorRigNote": "The Sprint 14 census established that Kingmaker has no scorpion and that the Giant Spider is the only compact many-legged arthropod in the game: four leg chains a side, seven-bone pedipalps, chelicerae and an abdomen chain. A scorpion has eight legs for the donor's eight, its claws ARE pedipalps, and its metasoma goes on the abdomen chain. That capture did not survive - its SOURCE.md records that the request-local capture stays outside Git and the package - so unlike Sprint 19 this sprint must spend one bounded read-only census to re-measure the bind pose, the full bone roster and the abdomen chain before any geometry is authored.",
+    "donorRigNote": "Measured, not recalled. The bounded read-only census 20261010T1328444995657Z-observe-expanded-summoning-arachnid-census passed and found the Giant Spider rig to be 51 bones with a two-bone abdomen chain (Tail1_M, Tail3_M), a seven-bone pedipalp chain each side, and a fourth leg pair that is a complete leg - upper, lower and foot on both sides - where the Sprint 14 ants leave it empty and the beetles hang wings on it. Three independent Giant Spider prefabs agree. Kingmaker has no native scorpion: the Sprint 14 conclusion holds. Four guarded transactions were spent, three of them on defects in the census itself - an assertion that forbade what it should have reported, a discovery term short enough to match adamANTine and peasANT, and a scan that counted this sprint's own registered unit as an installed scorpion.",
     "runtimeQualified": false,
     "runtimeEvidence": [],
     "publicReleaseAuthorized": false,
@@ -2342,10 +2342,13 @@
     "acceptedEngineLimitations": [
       "PASSIVE_CREATURE_SENSES_UNMODELED",
       "ORDINARY_MAP_LAND_USE_SCOPE",
-      "PER_LIMB_REACH_UNREPRESENTED"
+      "PER_LIMB_REACH_UNREPRESENTED",
+      "METASOMA_DRIVEN_BY_A_TWO_BONE_CHAIN"
     ],
-    "closureStatus": "REGISTERED AND WITHHELD. The Giant Scorpion holds twelve roots and no player can select it; because it is templated, twenty-four celestial and fiendish execution children are allocated and inert behind those twelve. Rules are implemented: three primary limbs at the plain Strength modifier, grab on the claws only, a six-round poison on the sting only with its difficulty class computed live from Constitution, the eight-legged trip defence, and the printed immunity to mind-affecting effects on the game's own descriptor immunity. One original project-owned icon is authored, over five passes. The bounded arachnid donor census, the original body, the guarded runtime review, publication and release are all NOT RUN.",
+    "closureStatus": "REGISTERED AND WITHHELD. The Giant Scorpion holds twelve roots and no player can select it; because it is templated, twenty-four celestial and fiendish execution children are allocated and inert behind those twelve. Rules are implemented: three primary limbs at the plain Strength modifier, grab on the claws only, a six-round poison on the sting only with its difficulty class computed live from Constitution, the eight-legged trip defence, and the printed immunity to mind-affecting effects on the game's own descriptor immunity. One original project-owned icon is authored, over five passes. The bounded arachnid donor census PASSED and measured the rig. The original body, the guarded runtime review, publication and release are NOT RUN.",
     "compatibilityRuntimeQualificationPending": true,
-    "projectIconConcepts": 114
+    "projectIconConcepts": 114,
+    "donorCensusEvidence": "20261010T1328444995657Z-observe-expanded-summoning-arachnid-census",
+    "guardedRuntimeRunsSpent": 4
   }
 }
