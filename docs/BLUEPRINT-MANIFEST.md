@@ -1,6 +1,17 @@
 # Blueprint manifest and registration contract
 
-Active v0.0.148 Sprint 19 contract: 3005 stable identifiers: 3003 active and 2 reserved.
+Active v0.0.149 Sprint 20 contract: 3036 stable identifiers: 3034 active and 2 reserved.
+Every released v0.0.148 entry remains in place; Sprint 20 appends exactly 31
+Giant Scorpion identities - one unit, 12 logical placements, the 12 celestial
+and fiendish execution children of its 6 templated Summon Monster roots, its
+own 1d6 claw and 1d6 sting at the printed dice, an inspectable unit type, the
+six-round poison feature and its venom buff, and the printed immunity to
+mind-affecting effects. All 12 placements are registered and withheld, so
+publication is the removal of one suppression key and no identity moves. The
+released Sprint 18 full-Strength limb carrier is granted to this creature
+rather than copied, so no released GUID is retired.
+
+Preceding v0.0.148 Sprint 19 contract: 3005 stable identifiers: 3003 active and 2 reserved.
 Every released v0.0.147 entry remains in place; Sprint 19 appends exactly 22
 Girallon and Xill identities - two units, 10 logical placements, four natural
 weapons no native blueprint carries at the printed dice, an inspectable unit

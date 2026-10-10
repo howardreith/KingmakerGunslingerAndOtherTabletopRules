@@ -740,7 +740,8 @@ namespace KingmakerGunslinger.DomainTests
                     .Select(value => value.Symbol), StringComparer.Ordinal);
             Assertions.Equal(2836 + AppendedLedgerIdentities +
                 PrimateRulesTests.AppendedLedgerIdentities +
-                Sprint19RulesTests.AppendedLedgerIdentities + masterTraits.Count,
+                Sprint19RulesTests.AppendedLedgerIdentities +
+                Sprint20RulesTests.AppendedLedgerIdentities + masterTraits.Count,
                 entries.Count,
                 "Qualified Phase2B identities, the Sprint 18 appends and all eleven released master trait identities coexist.");
             // The current release preserves master's entire prefix. Project
@@ -876,7 +877,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(all.Where(v => !SerpentineRulesPolicy.IsSnake(v.Creature.Key) &&
                     !PrimateRulesPolicy.IsPrimate(v.Creature.Key) &&
                     !KingmakerGunslinger.RuntimeTesting.Sprint19ReviewPolicy
-                        .IsSprint19Creature(v.Creature.Key))
+                        .IsSprint19Creature(v.Creature.Key) &&
+                    v.Creature.Key != GiantScorpionRulesPolicy.GiantScorpionKey)
                 .All(SummonVisibilityCatalog.IsPublished), "No old publication or Salamander root moved.");
         }
 

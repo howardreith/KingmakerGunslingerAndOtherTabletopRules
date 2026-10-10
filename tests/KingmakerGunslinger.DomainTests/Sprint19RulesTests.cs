@@ -188,18 +188,22 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(1044,
+            Assertions.Equal(1056,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(0,
+            Assertions.Equal(12,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Publication withheld nothing.");
+                "Only Sprint 20's own twelve roots are withheld now.");
             Assertions.Equal(1044,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "All ten new roots are published, and nothing else moved.");
+                "All ten Sprint 19 roots stay published; nothing else moved.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
-                    "Nothing may be withheld: " + variant.StableKey);
+                Assertions.Equal(
+                    variant.Creature.Key !=
+                        GiantScorpionRulesPolicy.GiantScorpionKey,
+                    SummonVisibilityCatalog.IsPublished(variant),
+                    "Nothing but the Sprint 20 creature may be withheld: "
+                    + variant.StableKey);
             SummonVisibilityCatalog.Validate();
         }
 

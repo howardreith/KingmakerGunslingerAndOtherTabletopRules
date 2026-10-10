@@ -133,7 +133,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(113, SummonIconCatalog.All.Count,
+            Assertions.Equal(114, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
                 .DisplayName, "Dire Bat requires its own creature icon identity.");
