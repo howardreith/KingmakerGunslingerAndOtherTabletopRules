@@ -72,6 +72,8 @@ namespace KingmakerGunslinger.Assets
             "assets/sprint13-creatures/";
         private const string Sprint14InsectDirectory =
             "assets/sprint14-insects/";
+        private const string Sprint20ArachnidDirectory =
+            "assets/sprint20-arachnids/";
         private const string CrocodilianDirectory = "assets/sprint16-crocodilians/";
         internal const int SupportedSchemaVersion = 2;
 
@@ -254,7 +256,12 @@ namespace KingmakerGunslinger.Assets
                     { "giant-ant-worker", new Sprint13CreatureVisual() },
                     { "giant-ant-soldier", new Sprint13CreatureVisual() },
                     { "giant-ant-drone", new Sprint13CreatureVisual() },
-                    { "giant-stag-beetle", new Sprint13CreatureVisual() }
+                    { "giant-stag-beetle", new Sprint13CreatureVisual() },
+                    // Sprint 20. An arachnid on the same donor rig and
+                    // through the same loader: one path for one rig family.
+                    // Its bone list is its own, because it is the only
+                    // creature here that walks on the fourth leg chain.
+                    { "giant-scorpion", new Sprint13CreatureVisual() }
                 };
 
         /// <summary>
@@ -656,8 +663,11 @@ namespace KingmakerGunslinger.Assets
                 lock (Sync)
                     if (visual.Mesh != null && visual.Bones != null &&
                         visual.Albedo != null) continue;
+                string directory =
+                    key == Sprint14BonePolicy.ScorpionKey
+                        ? Sprint20ArachnidDirectory : Sprint14InsectDirectory;
                 string path = Path.Combine(context.ModEntry.Path,
-                    (Sprint14InsectDirectory + key + "-mesh.json")
+                    (directory + key + "-mesh.json")
                     .Replace('/', Path.DirectorySeparatorChar));
                 if (!File.Exists(path))
                 {

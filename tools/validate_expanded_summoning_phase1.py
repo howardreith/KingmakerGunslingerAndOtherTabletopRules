@@ -593,9 +593,9 @@ def validate(root: Path) -> None:
         # icon and body are not authored yet and add nothing here.
         package_count += 4 + 7 + 1 + 1 + 2 + 4
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.149":
-        # One more: the Giant Scorpion's icon. Its original body is not
-        # authored yet, so no mesh or painting joins the package.
-        package_count += 1
+        # Three more: the Giant Scorpion's icon, its original mesh and its
+        # painting.
+        package_count += 3
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.143", "0.0.144", "0.0.145"):
         # Seven player instructions and curated qualification files accompany
         # the findability repair. Historical summoning asset counts are fixed.

@@ -86,6 +86,9 @@ SPRINT20_CHANGED = (
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
     "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
     "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/Sprint14BonePolicy.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs",
+    "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs",
     # The exact-rank component, which Sprint 19 had already reduced to plain
     # fields and which this sprint renames from primate to exact because a
     # scorpion now uses it. Behaviour is unchanged.
@@ -106,6 +109,14 @@ SPRINT20_NEW = (
     "src/KingmakerGunslinger/RuntimeTesting/ArachnidRigSurveyPolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint20Survey.cs",
     "tests/KingmakerGunslinger.DomainTests/Sprint20RulesTests.cs",
+    "assets/sprint20-arachnids/giant-scorpion-mesh.json",
+    "assets/sprint20-arachnids/giant-scorpion-albedo.png",
+    "assets-source/original-models/sprint20-arachnids/arachnid_capture.py",
+    "assets-source/original-models/sprint20-arachnids/generate_scorpion.py",
+    "assets-source/original-models/sprint20-arachnids/paint_scorpion_albedo.py",
+    "assets-source/original-models/sprint20-arachnids/render_scorpion_review.py",
+    "assets-source/original-models/sprint20-arachnids/test_scorpion_prototype.py",
+    "assets-source/original-models/sprint20-arachnids/SOURCE.md",
     "planning/EXPANDED-SUMMONING-SPRINT20-CONTRACT.json",
     "docs/RELEASE-NOTES-0.0.149.md",
     "tools/validate_expanded_summoning_sprint20149.py",
