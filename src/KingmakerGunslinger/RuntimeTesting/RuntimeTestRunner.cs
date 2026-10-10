@@ -2869,6 +2869,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PollSprint19Review();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint20Review)
+                {
+                    PollSprint20Review();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSerpentineSurvey)
                 {
                     PollSprint17RigSurvey();
@@ -36070,6 +36075,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopSprint17Bodies(result);
             StopSprint18Review(result);
             StopSprint19Review(result);
+            StopSprint20Review(result);
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

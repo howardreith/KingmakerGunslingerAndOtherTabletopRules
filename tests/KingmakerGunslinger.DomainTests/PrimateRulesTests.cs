@@ -590,13 +590,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(612,
                 ExpandedSummoningIdentityCatalog.TemplateExecutionAbilityCount,
                 "Template execution identity count changed.");
-            Assertions.Equal(225,
+            Assertions.Equal(226,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount,
                 "Creature-owned identity count changed.");
-            Assertions.Equal(2037,
+            Assertions.Equal(2038,
                 ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 "Foundation identity count changed.");
-            Assertions.Equal(2037, identities.Count,
+            Assertions.Equal(2038, identities.Count,
                 "The built identity catalog must match its own invariant.");
 
             foreach (var row in new[] {

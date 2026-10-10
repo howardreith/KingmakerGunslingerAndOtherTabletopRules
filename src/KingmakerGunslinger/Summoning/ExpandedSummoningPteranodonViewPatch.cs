@@ -82,6 +82,8 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_GiantAntDrone";
         internal const string GiantStagBeetleBlueprintName =
             "KMG_Summoning_Unit_GiantStagBeetle";
+        internal const string GiantScorpionBlueprintName =
+            "KMG_Summoning_Unit_GiantScorpion";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -114,6 +116,7 @@ namespace KingmakerGunslinger.Summoning
                 { GiantAntSoldierBlueprintName, "giant-ant-soldier" },
                 { GiantAntDroneBlueprintName, "giant-ant-drone" },
                 { GiantStagBeetleBlueprintName, "giant-stag-beetle" },
+                { GiantScorpionBlueprintName, Sprint14BonePolicy.ScorpionKey },
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
                 { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" }
             };

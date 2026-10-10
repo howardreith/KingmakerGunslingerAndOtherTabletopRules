@@ -142,7 +142,7 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
-Active v0.0.149 Sprint 20 candidate: 3036 stable IDs: 3034 active and 2 reserved.
+Active v0.0.149 Sprint 20 candidate: 3037 stable IDs: 3035 active and 2 reserved.
 The released v0.0.148 master3005-entry prefix is exact;Sprint20 appends exactly31
 Giant Scorpion identities - one unit,12 logical placements,12 celestial and
 fiendish execution children,the scorpion's own1d6 claw and1d6 sting, an
