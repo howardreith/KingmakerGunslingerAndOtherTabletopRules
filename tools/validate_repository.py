@@ -125,6 +125,7 @@ VALIDATORS = {
     "0.0.145": "validate_heirloom_nodachi_icon145.py",
     "0.0.146": "validate_expanded_summoning_checkpoint146.py",
     "0.0.147": "validate_expanded_summoning_sprint18147.py",
+    "0.0.148": "validate_expanded_summoning_sprint19148.py",
 }
 
 

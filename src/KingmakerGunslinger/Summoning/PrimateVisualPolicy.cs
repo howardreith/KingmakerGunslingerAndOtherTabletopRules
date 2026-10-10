@@ -30,14 +30,57 @@ namespace KingmakerGunslinger.Summoning
         internal const int BodyBoneCount = 61;
         internal const int EquipmentBoneCount = 62;
         internal const string AuthoredWinding = "shared-exporter-sprint18";
-        internal const string AssetDirectory = "sprint18-primates";
+        internal const string ApeAssetDirectory = "sprint18-primates";
+        internal const string FourArmedAssetDirectory = "sprint19-fourarmed";
         internal const string ApeGuid = "c53c3e23097e4f25a411c50ce2868c60";
         internal const string DireApeGuid = "5482b49785a3492aa7d29a4ee575cd66";
         internal const string ApeBlueprintName = "KMG_Summoning_Unit_Ape";
         internal const string DireApeBlueprintName = "KMG_Summoning_Unit_DireApe";
+        // The identities the ledger allocated. The first Sprint 19
+        // guarded run measured both bodies as outcome=not-attempted,
+        // because these two constants were invented rather than read
+        // and nothing could ever have matched them.
+        internal const string GirallonGuid = "b9187f2a07a74c84b07d5a34280753a6";
+        internal const string XillGuid = "440bd760511f4bdd9515ff59a0c5eb33";
+        internal const string GirallonBlueprintName = "KMG_Summoning_Unit_Girallon";
+        internal const string XillBlueprintName = "KMG_Summoning_Unit_Xill";
 
-        internal static string[] Keys
+        /// <summary>The Sprint 18 pair: two-armed apes.</summary>
+        internal static string[] ApeKeys
         { get { return new[] { PrimateRulesPolicy.ApeKey, PrimateRulesPolicy.DireApeKey }; } }
+
+        /// <summary>
+        /// The Sprint 19 pair: four-armed bodies on the same two-armed donor
+        /// rig, which is the authored limitation
+        /// FOUR_ARMS_SHARE_TWO_DRIVER_CHAINS.
+        /// </summary>
+        internal static string[] FourArmedKeys
+        {
+            get
+            {
+                return new[] { GirallonRulesPolicy.GirallonKey,
+                    XillRulesPolicy.XillKey };
+            }
+        }
+
+        /// <summary>
+        /// Every creature rebodied on this donor rig. The rig, the drivers and
+        /// the exporter are the same for all four, which is why they share one
+        /// policy rather than two.
+        /// </summary>
+        internal static string[] Keys
+        { get { return ApeKeys.Concat(FourArmedKeys).ToArray(); } }
+
+        internal static bool IsFourArmed(string key)
+        { return FourArmedKeys.Contains(key, StringComparer.Ordinal); }
+
+        /// <summary>Where this creature's shipped body files live.</summary>
+        internal static string AssetDirectory(string key)
+        {
+            return IsFourArmed(key) ? FourArmedAssetDirectory :
+                ApeKeys.Contains(key, StringComparer.Ordinal) ?
+                    ApeAssetDirectory : null;
+        }
 
         /// <summary>
         /// Every donor bone the original bodies may weight geometry to.
@@ -90,6 +133,10 @@ namespace KingmakerGunslinger.Summoning
                 key = PrimateRulesPolicy.ApeKey;
             else if (guid == DireApeGuid && blueprintName == DireApeBlueprintName)
                 key = PrimateRulesPolicy.DireApeKey;
+            else if (guid == GirallonGuid && blueprintName == GirallonBlueprintName)
+                key = GirallonRulesPolicy.GirallonKey;
+            else if (guid == XillGuid && blueprintName == XillBlueprintName)
+                key = XillRulesPolicy.XillKey;
             return key != null;
         }
 
@@ -128,11 +175,36 @@ namespace KingmakerGunslinger.Summoning
             bool? tongueGeometry, bool? jawSeparated, int? visibleLimbs,
             bool? clawedHands, bool? opposableThumbs, bool? knuckleWalkAuthored)
         {
-            if (!Keys.Contains(key, StringComparer.Ordinal)) return false;
+            if (!ApeKeys.Contains(key, StringComparer.Ordinal)) return false;
             return tailGeometry == false && tongueGeometry == false &&
                 jawSeparated == true && visibleLimbs == 4 &&
                 opposableThumbs == true && knuckleWalkAuthored == false &&
                 clawedHands == (key == PrimateRulesPolicy.DireApeKey);
+        }
+
+        /// <summary>
+        /// The anatomy a four-armed body declares about itself, checked
+        /// against what the printed entries say and against what the donor rig
+        /// can actually do.
+        ///
+        /// <para>Six visible limbs: four arms and two legs. Four visible arms
+        /// on exactly two animation driver chains, with the lower arms
+        /// skinned to the upper arms' bones - which the mesh must declare,
+        /// because a body claiming four independent chains would be claiming
+        /// a rig this project did not build. Both creatures have clawed hands:
+        /// the Girallon prints four claw attacks and the Xill four.</para>
+        /// </summary>
+        internal static bool PermitsFourArmedAnatomy(string key,
+            int? visibleLimbs, int? visibleArms, int? armDriverChains,
+            bool? lowerArmsShareUpperArmDrivers, bool? clawedHands,
+            string printedSize)
+        {
+            if (!IsFourArmed(key)) return false;
+            return visibleLimbs == 6 && visibleArms == 4 &&
+                armDriverChains == 2 &&
+                lowerArmsShareUpperArmDrivers == true && clawedHands == true &&
+                printedSize == (key == GirallonRulesPolicy.GirallonKey ?
+                    "Large" : "Medium");
         }
 
         internal static bool ExactSet(IEnumerable<string> actual, IEnumerable<string> expected)
@@ -207,11 +279,43 @@ namespace KingmakerGunslinger.Summoning
                 if (bones.Intersect(ExcludedBones, StringComparer.Ordinal).Any())
                     throw new InvalidOperationException(
                         "A Sprint 18 driver is one of the deliberately empty branches.");
-                if (!PermitsAnatomy(key, false, false, true, 4,
+                if (AssetDirectory(key) == null)
+                    throw new InvalidOperationException(
+                        "A rebodied creature has no shipped body directory: " + key);
+                if (IsFourArmed(key))
+                {
+                    if (!PermitsFourArmedAnatomy(key, 6, 4, 2, true, true,
+                            key == GirallonRulesPolicy.GirallonKey ?
+                                "Large" : "Medium"))
+                        throw new InvalidOperationException(
+                            "The Sprint 19 anatomy contract rejects its own creature: "
+                            + key);
+                    // A four-armed body must never satisfy the ape contract:
+                    // the two schemas describe different anatomies and a mesh
+                    // that passed both would mean one of them had stopped
+                    // saying anything.
+                    if (PermitsAnatomy(key, false, false, true, 4, true, true, false))
+                        throw new InvalidOperationException(
+                            "A four-armed body must not pass the ape anatomy contract: "
+                            + key);
+                }
+                else if (!PermitsAnatomy(key, false, false, true, 4,
                         key == PrimateRulesPolicy.DireApeKey, true, false))
                     throw new InvalidOperationException(
                         "The Sprint 18 anatomy contract rejects its own creature: " + key);
             }
+            string[] guids = ProductionGuids;
+            string[] names = ProductionBlueprintNames;
+            if (names.Length != Keys.Length ||
+                names.Distinct(StringComparer.Ordinal).Count() != names.Length ||
+                names.Any(string.IsNullOrEmpty))
+                throw new InvalidOperationException(
+                    "Each rebodied creature needs its own blueprint name.");
+            if (guids.Length != Keys.Length ||
+                guids.Distinct(StringComparer.Ordinal).Count() != guids.Length ||
+                guids.Any(guid => guid == null || guid.Length != 32))
+                throw new InvalidOperationException(
+                    "Each rebodied creature needs its own distinct identity.");
             if (DriverAndEmptyBranchCount() != BodyBoneCount)
                 throw new InvalidOperationException(
                     "The reviewed and deliberately empty donor branches must together " +
@@ -220,5 +324,27 @@ namespace KingmakerGunslinger.Summoning
 
         private static int DriverAndEmptyBranchCount()
         { return Bones(PrimateRulesPolicy.ApeKey).Length + ExcludedBones.Length; }
+
+        /// <summary>
+        /// The four identities this policy may rebody, so a duplicated or
+        /// mistyped constant cannot quietly make two creatures the same one.
+        /// </summary>
+        internal static string[] ProductionGuids
+        { get { return new[] { ApeGuid, DireApeGuid, GirallonGuid, XillGuid }; } }
+
+        /// <summary>
+        /// The four unit blueprint names this policy may rebody, in the same
+        /// order as <see cref="Keys"/>. The guarded crowd review matches a
+        /// subject by name, so it needs them stated rather than rebuilt from
+        /// a key by a second rule that could disagree.
+        /// </summary>
+        internal static string[] ProductionBlueprintNames
+        {
+            get
+            {
+                return new[] { ApeBlueprintName, DireApeBlueprintName,
+                    GirallonBlueprintName, XillBlueprintName };
+            }
+        }
     }
 }

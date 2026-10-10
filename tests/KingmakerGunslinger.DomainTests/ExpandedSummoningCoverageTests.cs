@@ -69,12 +69,12 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(99, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(101, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(110,
+            Assertions.Equal(112,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 99 project-owned plus 11 native wrappers.");
-            Assertions.Equal(110,
+                "Represented creatures must be 101 project-owned plus 11 native wrappers.");
+            Assertions.Equal(112,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
                 "Both independently qualified snakes and every prior creature are published.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
@@ -87,8 +87,9 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(35, notRepresented,
-                "35 ideal-roster creatures remain unregistered after the two ape identities.");
+            Assertions.Equal(33, notRepresented,
+                "33 ideal-roster creatures remain unregistered after the two "
+                + "Sprint 19 identities.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");
@@ -217,7 +218,7 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 13 adds Shadow Mastiff's four; Sprints 14-15 publish all
             // insects under the accepted passive-sense limitation. Sprint 16
             // adds six Dire roots after its complete hidden qualification.
-            Assertions.Equal(1063,
+            Assertions.Equal(1073,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");

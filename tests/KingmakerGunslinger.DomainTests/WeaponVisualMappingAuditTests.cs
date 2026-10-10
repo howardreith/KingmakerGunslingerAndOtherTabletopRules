@@ -23,8 +23,11 @@ namespace KingmakerGunslinger.DomainTests
             // Crocodile's 3d6 bite and 4d8 tail slap, the Sprint 18 Ape slam
             // and the Dire Ape's own 1d6 bite and 1d4 claw, which it needs
             // because the shared native weapons scale up a step for a Large
-            // wielder, plus 43 Better Vendors variants.
-            Assertions.Equal(81 + KingmakerGunslinger.Acquisition
+            // wielder, the Sprint 19 Girallon's own 1d6 bite and 1d4 claw for
+            // the same reason and the Xill's own 1d4 claw and 1d3 bite, which
+            // it owns because its claws carry grab and its bite paralysis,
+            // plus 43 Better Vendors variants.
+            Assertions.Equal(85 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -80,8 +83,11 @@ namespace KingmakerGunslinger.DomainTests
             // weapon type its bite does not share; Sprint 18 adds the Ape's
             // 1d6 slam, which nothing native carries, and the Dire Ape's own
             // 1d6 bite and 1d4 claw, which exist because the shared native
-            // ones scale up a step for a Large wielder.
-            Assertions.Equal(21, audit["items"].Count(value =>
+            // ones scale up a step for a Large wielder; and Sprint 19 adds
+            // the Girallon's own 1d6 bite and 1d4 claw for that same reason
+            // and the Xill's own 1d4 claw and 1d3 bite, which it owns because
+            // its claws carry grab and its bite carries paralysis.
+            Assertions.Equal(25, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>

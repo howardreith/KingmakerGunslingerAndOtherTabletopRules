@@ -46,14 +46,17 @@ namespace KingmakerGunslinger.Summoning
         // on the party-camera art review at 1d4+1, on one candidate, with the
         // owner installation restored exactly after every run. Nothing moved
         // but these two keys: every identity was allocated at registration.
+        // Sprint 19 registered the Girallon and the Xill and withheld both
+        // through eleven guarded in-game reviews, publishing only once the
+        // complete hidden candidate passed: 39 of 39 on the batched mechanics
+        // review and 12 of 12 on the party-camera art review at 1d4+1, on one
+        // candidate, with the owner installation restored exactly after every
+        // run. Nothing moved but these two keys: every identity was allocated
+        // at registration.
         private static readonly HashSet<string> SuppressedCreatureKeys =
             new HashSet<string>(new string[0], StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1034;
-        // Sprint 18 registered the Ape's fourteen roots and the Dire Ape's
-        // twelve and held all twenty-six until the complete hidden candidate
-        // passed. It has, so nothing is withheld: every registered placement
-        // is published, and publication moved nothing but two names.
+        internal const int RegisteredLogicalPlacementCount = 1044;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;

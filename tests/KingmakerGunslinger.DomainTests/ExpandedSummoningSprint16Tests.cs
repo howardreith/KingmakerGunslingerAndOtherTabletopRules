@@ -354,13 +354,13 @@ namespace KingmakerGunslinger.DomainTests
             if (mine.Any(value => !SummonVisibilityCatalog.IsPublished(value)))
                 throw new InvalidOperationException(
                     "Every qualified Dire Crocodile placement must publish.");
-            Assertions.Equal(996, all.Count(value =>
+            Assertions.Equal(1006, all.Count(value =>
                     value.Creature.Key != DireKey && !SerpentineRulesPolicy.IsSnake(value.Creature.Key) &&
                     SummonVisibilityCatalog.IsPublished(value)),
                 "Dire publication must preserve all 970 previously published roots.");
-            Assertions.Equal(1002, all.Count(value => !SerpentineRulesPolicy.IsSnake(value.Creature.Key) &&
+            Assertions.Equal(1012, all.Count(value => !SerpentineRulesPolicy.IsSnake(value.Creature.Key) &&
                     SummonVisibilityCatalog.IsPublished(value)),
-                "Later snake and ape publications preserve the exact completed Sprint16 surface.");
+                "Later snake, ape and four-armed publications preserve the exact completed Sprint16 surface.");
             // Its own tier is a single creature, the next is 1d3, the rest
             // 1d4+1 - the same quantity rule every creature follows.
             foreach (SummonFamily family in new[] { SummonFamily.Monster,
@@ -382,12 +382,14 @@ namespace KingmakerGunslinger.DomainTests
                         "is wrong.");
             }
             // Later hidden registration cannot undo a qualified publication.
-            // Sprint 17's snakes and Sprint 18's apes registered after this
-            // sprint qualified, so they are excluded by name rather than by
-            // relaxing the check.
+            // Sprint 17's snakes, Sprint 18's apes and Sprint 19's four-armed
+            // pair all registered after this sprint qualified, so they are
+            // excluded by name rather than by relaxing the check.
             Assertions.Equal(0, all.Count(value =>
                 !SerpentineRulesPolicy.IsSnake(value.Creature.Key) &&
                 !PrimateRulesPolicy.IsPrimate(value.Creature.Key) &&
+                !KingmakerGunslinger.RuntimeTesting.Sprint19ReviewPolicy
+                    .IsSprint19Creature(value.Creature.Key) &&
                 !SummonVisibilityCatalog.IsPublished(value)),
                 "No creature qualified through Sprint 16 may become withheld.");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -

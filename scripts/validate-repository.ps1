@@ -41,6 +41,10 @@ if ($activeVersion -eq '0.0.147') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint18147.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 18 corruption fixtures failed.' }
 }
+if ($activeVersion -eq '0.0.148') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint19148.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint 19 corruption fixtures failed.' }
+}
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
     -RepositoryRoot $repositoryRoot
