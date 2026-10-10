@@ -151,7 +151,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool suppressedSprint17Snake =
                     SerpentineVisualPolicy.IsSnake(key) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
-                bool suppressedSprint18Primate =
+                // Every creature rebodied on the donor rig: the Sprint 18
+                // apes and the Sprint 19 four-armed pair. A withheld one of
+                // these may be reviewed through a parent, because that is
+                // what a hidden candidate review is for.
+                bool suppressedDonorRigCandidate =
                     PrimateVisualPolicy.Keys.Contains(key, StringComparer.Ordinal) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
@@ -159,7 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !suppressedSprint14Candidate &&
                     !suppressedSprint16Candidate &&
                     !suppressedSprint17Snake &&
-                    !suppressedSprint18Primate)
+                    !suppressedDonorRigCandidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -180,9 +184,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 IsSprint12QuadrupedReviewKey(key) ||
                 CrocodilianVisualPolicy.Keys.Contains(key) ||
                 SerpentineVisualPolicy.IsSnake(key) || key == "salamander" ||
-                // The two Sprint 18 apes. Both are Large ground creatures
-                // wearing original bodies, which is exactly what a crowd
-                // review is for: several of them on one floor at once.
+                // Every creature on the donor rig: the two Sprint 18 apes
+                // and the two Sprint 19 four-armed creatures. All four are
+                // ground creatures wearing original bodies, which is exactly
+                // what a crowd review is for - several of them on one floor
+                // at once, where a body that only works alone shows up.
                 PrimateVisualPolicy.Keys.Contains(key, StringComparer.Ordinal);
         }
 

@@ -1,6 +1,6 @@
 ﻿# Kingmaker Gunslinger
 
-Version **0.0.147-expanded-summoning-sprint18**
+Version **0.0.148-expanded-summoning-sprint19**
 is the Expanded Summoning Sprint 18 candidate: the Ape and the Dire Ape. It is
 built on released v0.0.146 and changes nothing that release qualified, so it
 still retains v0.0.145 Nodachi art, v0.0.144 weapon findability/recovery, and

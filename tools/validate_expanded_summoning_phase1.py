@@ -403,7 +403,11 @@ def validate(root: Path) -> None:
         symbol == "KMG.Summoning.Unit.Ape" or
         symbol == "KMG.Summoning.Natural.Slam1d6" or
         # Granted to exactly the two apes, so it belongs to their append.
+        # Sprint 19's Girallon is granted this same released feature rather
+        # than a renamed copy, which is why it stays in the Sprint 18 block.
         symbol == "KMG.Summoning.Natural.Primate.FullStrengthLimbs" or
+        # Sprint 19's two creatures.
+        ".Girallon" in symbol or ".Xill" in symbol or
         symbol in {"KMG.Summoning.Special.Salamander.TailType", "KMG.Summoning.Special.Salamander.UnitType"} or
         ".Special.Crocodile." in symbol or
         symbol == "KMG.Summoning.Special.Crocodilian.SprintNotEngaged" or
@@ -423,9 +427,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 99",
-        "ValidateFamily(SummonFamily.Monster, 90, 519)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 88, 515)",
+        "Creatures.Length != 101",
+        "ValidateFamily(SummonFamily.Monster, 91, 524)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 89, 520)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -436,13 +440,15 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 1034;",
+        "RegisteredLogicalPlacementCount = 1044;",
         # Sprint 18 published on 2026-10-09 after its complete hidden
-        # candidate passed, so nothing is withheld any more.
-        "SuppressedLogicalPlacementCount = 0;")
+        # candidate passed. Sprint 19 registers ten placements of its
+        # own and withholds all ten, so the published surface is still
+        # the 1034 v0.0.147 showed.
+        "SuppressedLogicalPlacementCount = 10;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 99;",
-        "LogicalAbilityCount = 1034;",
+        "UnitCount = 101;",
+        "LogicalAbilityCount = 1044;",
         "TemplatedPlacementCount = 300;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
@@ -451,10 +457,12 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != 51",
+        "Values.Length != 52",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
+    # Twenty-two beyond the Sprint 3 baseline: the twenty Phase 2 concepts
+    # plus the two Sprint 19 creatures.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 20))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 22))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -531,8 +539,8 @@ def validate(root: Path) -> None:
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
     # Twenty Phase 2 concepts, including the two hidden Sprint 18 apes.
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 20 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 20 or \
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 22 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 22 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
@@ -560,7 +568,10 @@ def validate(root: Path) -> None:
     # package count with the Phase 2 bird, vermin, quadruped and icon
     # additions, including seven Sprint 17 files: three body/paint pairs
     # plus the separate original human/tail research mesh (shared paint).
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 70
+    # Seventy-six beyond the Sprint 3 baseline: the seventy Phase 2
+    # members, the four Sprint 19 body files and the two Sprint 19
+    # icons.
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 76
     # Four unchanged master v0.0.142 trait exports join the qualified Phase2B tree.
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.146":
         package_count += 4 + 7 + 1  # traits, unchanged master145 documents, release146 notes
