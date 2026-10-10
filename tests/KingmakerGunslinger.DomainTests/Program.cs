@@ -1127,6 +1127,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint20-ledger-append", Sprint20RulesTests.TheLedgerAppendIsExactAndAppendOnly),
             Case("expanded-summoning.sprint20-weapon-keys-resolve", Sprint20RulesTests.EveryProfileWeaponKeyResolvesInTheBuilder),
             Case("expanded-summoning.sprint20-grab-and-poison-stay-put", Sprint20RulesTests.GrabAndPoisonStayOnTheirOwnLimbs),
+            Case("expanded-summoning.sprint20-census-wired", Sprint20RulesTests.TheCensusScenarioIsWiredAtEveryGate),
             Case("expanded-summoning.sprint19-four-claw-rend", Sprint19RulesTests.FourClawRendNeedsAllFourClawsOnOneTarget),
             Case("expanded-summoning.sprint19-no-stale-rend", Sprint19RulesTests.NoStaleFourClawRendCrossesACommand),
             Case("expanded-summoning.sprint19-review-agrees", Sprint19RulesTests.ReviewExpectationsAgreeWithTheRulesPolicies),

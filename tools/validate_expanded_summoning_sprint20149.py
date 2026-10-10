@@ -103,6 +103,9 @@ SPRINT20_CHANGED = (
 SPRINT20_NEW = (
     "src/KingmakerGunslinger/Summoning/GiantScorpionRulesPolicy.cs",
     "src/KingmakerGunslinger/Summoning/GiantScorpionPoison.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/ArachnidRigSurveyPolicy.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint20Survey.cs",
+    "tests/KingmakerGunslinger.DomainTests/Sprint20RulesTests.cs",
     "planning/EXPANDED-SUMMONING-SPRINT20-CONTRACT.json",
     "docs/RELEASE-NOTES-0.0.149.md",
     "tools/validate_expanded_summoning_sprint20149.py",
