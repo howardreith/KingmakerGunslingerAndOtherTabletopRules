@@ -3907,6 +3907,20 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException(
                     "The Xill grab must be configured before its defences.");
 
+            // Persuasion and Knowledge (arcana) are class skills for an
+            // outsider and are not on the donor class's list, so the live
+            // creature read 9 and 11 against a printed 12 and 14 - exactly
+            // the missing +3 each. Mobility, Stealth and Perception are on
+            // that list and were already exact. These two facts add the
+            // class-skill status the stat block assumes, and nothing else:
+            // no rank, no bonus, no modifier.
+            var persuasionClassSkill =
+                ScriptableObject.CreateInstance<AddClassSkill>();
+            persuasionClassSkill.Skill = StatType.SkillPersuasion;
+            var arcanaClassSkill =
+                ScriptableObject.CreateInstance<AddClassSkill>();
+            arcanaClassSkill.Skill = StatType.SkillKnowledgeArcana;
+
             var resistance = ScriptableObject.CreateInstance<AddSpellResistance>();
             resistance.Value = Simple(XillRulesPolicy.PrintedSpellResistance);
             resistance.AddCR = false;
@@ -3944,7 +3958,8 @@ namespace KingmakerGunslinger.Blueprints
                                 trigger.Action.Actions).ToArray() } } };
 
             traits.ComponentsArray = traits.ComponentsArray
-                .Concat(new BlueprintComponent[] { resistance, shield, trigger })
+                .Concat(new BlueprintComponent[] { resistance, shield, trigger,
+                    persuasionClassSkill, arcanaClassSkill })
                 .ToArray();
         }
 
