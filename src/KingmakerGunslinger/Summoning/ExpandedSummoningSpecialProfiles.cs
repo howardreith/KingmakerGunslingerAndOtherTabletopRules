@@ -368,6 +368,11 @@ namespace KingmakerGunslinger.Summoning
         internal const int SalamanderHeatDice = 1;
         internal const int SalamanderConstrictDice = 2;
         internal const int SalamanderConstrictBonus = 4;
+        // Sprint 19. The Xill's own numbers live in XillRulesPolicy, which
+        // derives them rather than listing them; these are the two the shared
+        // special-profile surface is asked for.
+        internal const int XillHitDice = 9;
+        internal const int XillClawCount = 4;
 
         internal const int SuccubusHitDice = 8;
         internal const int SuccubusStrength = 13;

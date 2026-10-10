@@ -210,8 +210,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 99:
-        raise SystemExit(f"Expected 99 parsed creatures; observed {len(values)}")
+    if len(values) != 101:
+        raise SystemExit(f"Expected 101 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -484,8 +484,26 @@ def planned():
         # Granted to exactly the two apes: a rulebook component is only
         # subscribed when a unit fact carries it.
         ("KMG.Summoning.Natural.Primate.FullStrengthLimbs", "BlueprintFeature"),
+        # Sprint 19. Girallon is a Large magical beast printing a 1d6 bite
+        # and 1d4 claws, so like the Dire Ape it owns its own pair rather than
+        # letting the engine scale shared natives a step up. Xill is Medium
+        # and would not be scaled, but owns its pair too: its claws carry grab
+        # and its bite carries paralysis, and neither belongs on a weapon
+        # other creatures share. Girallon takes the existing Sprint 18
+        # full-Strength carrier rather than a renamed copy; Xill is built by
+        # the special builder, which owns its own facts.
+        ("KMG.Summoning.Natural.Girallon.Bite1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Girallon.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Girallon.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Special.Girallon.Rend", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Xill.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Xill.Bite1d3", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Xill.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Special.Xill.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Xill.Paralysis", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Xill.FullStrengthLimbs", "BlueprintFeature"),
     ))
-    if len(rows) != 1984 or len({symbol for symbol, _ in rows}) != 1984:
+    if len(rows) != 2006 or len({symbol for symbol, _ in rows}) != 2006:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

@@ -44,12 +44,13 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).ToArray();
             SummonVariantSpec[] ally = ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.NaturesAlly).ToArray();
-            Assertions.Equal(519, monster.Length,
+            Assertions.Equal(524, monster.Length,
                 "Summon Monster registered placements changed.");
-            Assertions.Equal(515, ally.Length,
+            Assertions.Equal(520, ally.Length,
                 "Summon Nature's Ally registered placements changed.");
-            Assertions.Equal(1034, monster.Length + ally.Length,
-                "Registered generated placements must be 1008 plus the 26 new roots.");
+            Assertions.Equal(1044, monster.Length + ally.Length,
+                "Registered generated placements must be 1008 plus Sprint 18's "
+                + "26 roots plus Sprint 19's 10.");
 
             foreach (var row in new[] {
                 new { Key = "ape", Tier = 3, Monster = ApeMonsterRoots, Ally = ApeAllyRoots },
@@ -92,8 +93,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(26, monster.Concat(ally).Count(value =>
                     PrimateRulesPolicy.IsPrimate(value.Creature.Key)),
                 "Sprint 18 must add exactly twenty-six roots.");
-            Assertions.Equal(99, ExpandedSummoningCatalog.All.Count,
-                "Unique creature count must be 99.");
+            Assertions.Equal(101, ExpandedSummoningCatalog.All.Count,
+                "Unique creature count must be 101.");
         }
 
         /// <summary>
@@ -107,21 +108,26 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(1034,
+            Assertions.Equal(1044,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placement count changed.");
-            // Published on 2026-10-09 after the complete hidden candidate
-            // passed. Publication removed two names and moved nothing else:
-            // every identity was allocated at registration.
-            Assertions.Equal(0,
+            // The apes published on 2026-10-09 after their complete hidden
+            // candidate passed, and nothing has withheld them since. Sprint 19
+            // registers ten placements of its own and holds all ten, so the
+            // published total is exactly what v0.0.147 showed.
+            Assertions.Equal(10,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Sprint 18 withholds nothing now that its review has passed.");
+                "Sprint 19 withholds its own ten roots.");
             Assertions.Equal(1034,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "Every registered placement is published.");
+                "The published surface is unchanged from v0.0.147.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
-                    "Nothing may be withheld: " + variant.StableKey);
+                Assertions.Equal(
+                    variant.Creature.Key != "girallon" &&
+                        variant.Creature.Key != "xill",
+                    SummonVisibilityCatalog.IsPublished(variant),
+                    "Exactly the Sprint 19 creatures are withheld: "
+                    + variant.StableKey);
             SummonVisibilityCatalog.Validate();
 
             // Identities are allocated once at registration, so a withheld
@@ -341,62 +347,62 @@ namespace KingmakerGunslinger.DomainTests
             object other = new object();
 
             // One claw alone never rends.
-            var tracker = new DireApeRendTracker();
-            Assertions.False(tracker.TryArm(sequence, DireApeClawLimb.First, target),
+            var tracker = new ClawRendTracker(2);
+            Assertions.False(tracker.TryArm(sequence, 1, target),
                 "The first claw cannot rend with nothing before it.");
-            tracker.RecordOutcome(sequence, DireApeClawLimb.First, target, true);
+            tracker.RecordOutcome(sequence, 1, target, true);
             Assertions.False(tracker.HasEmitted,
                 "A single claw hit emits no rend.");
 
             // The same claw striking twice is not two claws.
-            Assertions.False(tracker.TryArm(sequence, DireApeClawLimb.First, target),
+            Assertions.False(tracker.TryArm(sequence, 1, target),
                 "One claw hitting twice is not a rend.");
 
             // The second claw on the same target in the same sequence rends.
-            Assertions.True(tracker.TryArm(sequence, DireApeClawLimb.Second, target),
+            Assertions.True(tracker.TryArm(sequence, 2, target),
                 "Both claws on one target in one sequence must rend.");
             Assertions.True(tracker.IsArmed, "The qualifying claw must be armed.");
-            tracker.RecordOutcome(sequence, DireApeClawLimb.Second, target, true);
+            tracker.RecordOutcome(sequence, 2, target, true);
             Assertions.True(tracker.HasEmitted, "The armed rend must resolve.");
             Assertions.False(tracker.IsArmed,
                 "A resolved rend leaves nothing pending.");
 
             // Exactly one rend per qualifying sequence.
-            Assertions.False(tracker.TryArm(sequence, DireApeClawLimb.First, target),
+            Assertions.False(tracker.TryArm(sequence, 1, target),
                 "A sequence rends at most once.");
-            Assertions.False(tracker.TryArm(sequence, DireApeClawLimb.Second, target),
+            Assertions.False(tracker.TryArm(sequence, 2, target),
                 "A sequence rends at most once, from either claw.");
 
             // Claws on different targets never rend.
-            var split = new DireApeRendTracker();
-            split.RecordOutcome(sequence, DireApeClawLimb.First, target, true);
-            Assertions.False(split.TryArm(sequence, DireApeClawLimb.Second, other),
+            var split = new ClawRendTracker(2);
+            split.RecordOutcome(sequence, 1, target, true);
+            Assertions.False(split.TryArm(sequence, 2, other),
                 "Claws that hit different creatures do not rend.");
             Assertions.False(split.HasEmitted, "No rend may be emitted.");
             // ...and the first claw's recorded hit is still the one it made, so
             // a later claw on that target is still a legitimate rend.
-            Assertions.True(split.TryArm(sequence, DireApeClawLimb.Second, target),
+            Assertions.True(split.TryArm(sequence, 2, target),
                 "A second claw that does reach the first claw's target still rends.");
 
             // A missed qualifying claw emits nothing and leaves nothing armed.
-            var missed = new DireApeRendTracker();
-            missed.RecordOutcome(sequence, DireApeClawLimb.First, target, true);
-            Assertions.True(missed.TryArm(sequence, DireApeClawLimb.Second, target),
+            var missed = new ClawRendTracker(2);
+            missed.RecordOutcome(sequence, 1, target, true);
+            Assertions.True(missed.TryArm(sequence, 2, target),
                 "The second claw qualifies before its roll is known.");
-            missed.RecordOutcome(sequence, DireApeClawLimb.Second, target, false);
+            missed.RecordOutcome(sequence, 2, target, false);
             Assertions.False(missed.HasEmitted, "A missed claw rends for nothing.");
             Assertions.False(missed.IsArmed, "A miss leaves nothing armed.");
 
             // A claw that misses records no hit, so it cannot pair later.
-            var onlyMisses = new DireApeRendTracker();
-            onlyMisses.RecordOutcome(sequence, DireApeClawLimb.First, target, false);
-            Assertions.False(onlyMisses.TryArm(sequence, DireApeClawLimb.Second,
+            var onlyMisses = new ClawRendTracker(2);
+            onlyMisses.RecordOutcome(sequence, 1, target, false);
+            Assertions.False(onlyMisses.TryArm(sequence, 2,
                     target), "A missed claw is not a hit to pair with.");
 
             // An attack with no live command is not a sequence and never rends.
-            var replayed = new DireApeRendTracker();
-            replayed.RecordOutcome(sequence, DireApeClawLimb.First, target, true);
-            Assertions.False(replayed.TryArm(null, DireApeClawLimb.Second, target),
+            var replayed = new ClawRendTracker(2);
+            replayed.RecordOutcome(sequence, 1, target, true);
+            Assertions.False(replayed.TryArm(null, 2, target),
                 "An attack with no live attack command never rends.");
 
             // The decision function itself refuses every missing operand.
@@ -426,23 +432,23 @@ namespace KingmakerGunslinger.DomainTests
             object second = new object();
             object target = new object();
 
-            var tracker = new DireApeRendTracker();
-            tracker.RecordOutcome(first, DireApeClawLimb.First, target, true);
+            var tracker = new ClawRendTracker(2);
+            tracker.RecordOutcome(first, 1, target, true);
             Assertions.True(ReferenceEquals(first, tracker.Sequence),
                 "The tracker must follow the command it observed.");
             // A new command is a new sequence: the previous claw hit is gone.
-            Assertions.False(tracker.TryArm(second, DireApeClawLimb.Second, target),
+            Assertions.False(tracker.TryArm(second, 2, target),
                 "A claw hit in an earlier command cannot pair with a later one.");
             Assertions.True(ReferenceEquals(second, tracker.Sequence),
                 "The tracker must move to the new command.");
             Assertions.False(tracker.HasEmitted, "Nothing may be emitted.");
 
             // An armed rend does not survive into the next command either.
-            var armed = new DireApeRendTracker();
-            armed.RecordOutcome(first, DireApeClawLimb.First, target, true);
-            Assertions.True(armed.TryArm(first, DireApeClawLimb.Second, target),
+            var armed = new ClawRendTracker(2);
+            armed.RecordOutcome(first, 1, target, true);
+            Assertions.True(armed.TryArm(first, 2, target),
                 "The qualifying claw arms inside its own command.");
-            armed.RecordOutcome(second, DireApeClawLimb.First, target, true);
+            armed.RecordOutcome(second, 1, target, true);
             Assertions.False(armed.IsArmed,
                 "An arming cannot cross a command boundary.");
             Assertions.False(armed.HasEmitted,
@@ -450,22 +456,22 @@ namespace KingmakerGunslinger.DomainTests
 
             // Reset is what a new round, a fact turning off and a vanished unit
             // all reduce to.
-            var reset = new DireApeRendTracker();
-            reset.RecordOutcome(first, DireApeClawLimb.First, target, true);
+            var reset = new ClawRendTracker(2);
+            reset.RecordOutcome(first, 1, target, true);
             reset.Reset();
             Assertions.True(reset.Sequence == null,
                 "A reset tracker follows no sequence.");
-            Assertions.False(reset.TryArm(first, DireApeClawLimb.Second, target),
+            Assertions.False(reset.TryArm(first, 2, target),
                 "A reset tracker remembers no earlier claw hit.");
 
             // A null sequence resets rather than remembering.
-            var cleared = new DireApeRendTracker();
-            cleared.RecordOutcome(first, DireApeClawLimb.First, target, true);
-            cleared.RecordOutcome(null, DireApeClawLimb.First, target, true);
+            var cleared = new ClawRendTracker(2);
+            cleared.RecordOutcome(first, 1, target, true);
+            cleared.RecordOutcome(null, 1, target, true);
             Assertions.True(cleared.Sequence == null,
                 "An uncommanded attack clears the sequence rather than joining it.");
 
-            Assertions.False(typeof(DireApeRendTracker).IsSerializable,
+            Assertions.False(typeof(ClawRendTracker).IsSerializable,
                 "The rend tracker must never be serialized into a save.");
         }
 
@@ -573,9 +579,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(99, ExpandedSummoningIdentityCatalog.UnitCount,
+            Assertions.Equal(101, ExpandedSummoningIdentityCatalog.UnitCount,
                 "Unit identity count changed.");
-            Assertions.Equal(1034,
+            Assertions.Equal(1044,
                 ExpandedSummoningIdentityCatalog.LogicalAbilityCount,
                 "Logical ability identity count changed.");
             Assertions.Equal(300,
@@ -584,13 +590,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(600,
                 ExpandedSummoningIdentityCatalog.TemplateExecutionAbilityCount,
                 "Template execution identity count changed.");
-            Assertions.Equal(209,
+            Assertions.Equal(219,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount,
                 "Creature-owned identity count changed.");
-            Assertions.Equal(1984,
+            Assertions.Equal(2006,
                 ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 "Foundation identity count changed.");
-            Assertions.Equal(1984, identities.Count,
+            Assertions.Equal(2006, identities.Count,
                 "The built identity catalog must match its own invariant.");
 
             foreach (var row in new[] {
