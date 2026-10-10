@@ -305,6 +305,12 @@ namespace KingmakerGunslinger.Summoning
                         "The Sprint 18 anatomy contract rejects its own creature: " + key);
             }
             string[] guids = ProductionGuids;
+            string[] names = ProductionBlueprintNames;
+            if (names.Length != Keys.Length ||
+                names.Distinct(StringComparer.Ordinal).Count() != names.Length ||
+                names.Any(string.IsNullOrEmpty))
+                throw new InvalidOperationException(
+                    "Each rebodied creature needs its own blueprint name.");
             if (guids.Length != Keys.Length ||
                 guids.Distinct(StringComparer.Ordinal).Count() != guids.Length ||
                 guids.Any(guid => guid == null || guid.Length != 32))
@@ -325,5 +331,20 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal static string[] ProductionGuids
         { get { return new[] { ApeGuid, DireApeGuid, GirallonGuid, XillGuid }; } }
+
+        /// <summary>
+        /// The four unit blueprint names this policy may rebody, in the same
+        /// order as <see cref="Keys"/>. The guarded crowd review matches a
+        /// subject by name, so it needs them stated rather than rebuilt from
+        /// a key by a second rule that could disagree.
+        /// </summary>
+        internal static string[] ProductionBlueprintNames
+        {
+            get
+            {
+                return new[] { ApeBlueprintName, DireApeBlueprintName,
+                    GirallonBlueprintName, XillBlueprintName };
+            }
+        }
     }
 }
