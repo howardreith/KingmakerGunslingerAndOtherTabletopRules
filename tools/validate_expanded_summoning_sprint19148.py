@@ -125,6 +125,7 @@ SPRINT19_NEW = (
     "assets-source/original-models/sprint19-fourarmed/SOURCE.md",
     "planning/EXPANDED-SUMMONING-SPRINT19-CONTRACT.json",
     "docs/RELEASE-NOTES-0.0.148.md",
+    "EXPANDED-SUMMONING-SPRINT19-STATE.md",
     "tools/validate_expanded_summoning_sprint19148.py",
     "tools/test_expanded_summoning_sprint19148.py",
 )
@@ -403,6 +404,9 @@ def validate(root: Path) -> None:
         "releaseInformationalVersion": INFORMATIONAL_VERSION,
         "masterBase": MASTER,
         "deterministicTestCount": count,
+        # Sprint 18's 340 plus this sprint's four body files and two icons.
+        # Pinned because the record first carried Sprint 18's 340 unchanged.
+        "packageMemberCount": 346,
         "registeredManifestEntryCount": identities,
         "registeredGeneratedPlacements": 1044,
         "suppressedGeneratedPlacements": 0,
