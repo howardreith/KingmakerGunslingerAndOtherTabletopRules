@@ -376,6 +376,73 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// The guarded review scenario is wired at every gate that can refuse
+        /// it.
+        ///
+        /// <para>Four separate places have to know a scenario name before a
+        /// guarded run can reach the review, and the last of them refuses
+        /// only after a deploy and a launch. The first Sprint 19 run was
+        /// rejected at exactly that gate - the mod's own request allowlist -
+        /// and spent an owner runtime transaction to learn it. This test
+        /// costs nothing and learns it offline.</para>
+        /// </summary>
+        internal static void TheReviewScenarioIsWiredAtEveryGate()
+        {
+            const string scenario = "disposable-expanded-summoning-sprint19-review";
+            Assertions.Equal(scenario, RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint19Review,
+                "The scenario name is what the orchestrator asks for.");
+            // The gate that rejected the first run: the mod refuses any
+            // scenario not on its own allowlist, before any hook installs.
+            Assertions.True(RuntimeTestScenarioCatalog.IsAllowed(scenario),
+                "The mod request validator must admit the Sprint 19 review.");
+            // The group that decides which requests may use the working save
+            // and the disposable-actor fixture.
+            Assertions.True(RuntimeTestScenarioCatalog
+                    .IsExpandedSummoningRulesScenario(scenario),
+                "The Sprint 19 review is an Expanded Summoning rules scenario.");
+            // The two PowerShell gates, checked as text because that is what
+            // they are: a descriptor the orchestrator looks up by name, and a
+            // crowd roster that refuses an unknown creature key.
+            string root = RepositoryRoot();
+            string automation = System.IO.File.ReadAllText(
+                System.IO.Path.Combine(root, "scripts", "RuntimeAutomation.Common.ps1"));
+            Assertions.True(automation.Contains("'" + scenario + "'"),
+                "The orchestrator needs a descriptor for the Sprint 19 review.");
+            foreach (string key in Sprint19ReviewPolicy.Keys)
+            {
+                Assertions.True(automation.Contains("'" + key + "'"),
+                    "The orchestrator crowd roster must know " + key + ".");
+                string launcher = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                    root, "scripts", "Invoke-KingmakerRuntimeTest.ps1"));
+                Assertions.True(launcher.Contains("'" + key + "'"),
+                    "The launcher crowd roster must know " + key + ".");
+            }
+        }
+
+        /// <summary>
+        /// The repository root, found by walking up to the solution file.
+        /// The test binary lives several directories below it and the depth
+        /// is not the same from every build output.
+        /// </summary>
+        private static string RepositoryRoot()
+        {
+            var cursor = new System.IO.DirectoryInfo(
+                System.AppDomain.CurrentDomain.BaseDirectory);
+            while (cursor != null)
+            {
+                if (System.IO.File.Exists(System.IO.Path.Combine(
+                        cursor.FullName, "KingmakerGunslinger.sln")) &&
+                    System.IO.Directory.Exists(System.IO.Path.Combine(
+                        cursor.FullName, "scripts")))
+                    return cursor.FullName;
+                cursor = cursor.Parent;
+            }
+            throw new InvalidOperationException(
+                "The repository root is not above the test binary.");
+        }
+
+        /// <summary>
         /// Both bodies ride the Sprint 18 donor rig and both declare the
         /// authored limitation rather than claiming four independent arms.
         /// </summary>
