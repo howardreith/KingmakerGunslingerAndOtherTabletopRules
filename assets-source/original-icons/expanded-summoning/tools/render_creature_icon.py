@@ -903,6 +903,130 @@ def giant_scorpion():
                        limb, 0.012)
 
 
+def giant_crab():
+    """Sprint 21. A crab at icon size is three facts: a shell wider than it is
+    long, two pincers held in front of it, and a fringe of legs below it on
+    both sides. Everything else - eyestalks, shell texture, joints - survives
+    at 128 pixels and is gone by 32, so those three have to carry it alone.
+
+    Three passes, each fixing something the last one got wrong.
+
+    One used a square-on camera, which foreshortens everything reaching toward
+    the viewer to nothing: the forward pincers projected onto the shell's own
+    horizontal line and read as two heads flanking a bald grey egg. The fix is
+    to look down, which is how a crab is photographed and costs none of the
+    width that mattered.
+
+    Two built every carapace ellipsoid on the Y axis, so the shell came out
+    half again as long as it was wide - the exact inverse of the proportion
+    that identifies the animal - and a tall grey oval with two eyestalks on it
+    reads as a face. It also placed each knee by eye rather than at the end of
+    the femur that reaches it, so every leg rendered as two parallel bars and
+    the fringe became a fan of rods above the shell.
+
+    Three is this one: the shell on the X axis and wide, every knee computed
+    from its own femur, and the claws low and forward where the raised camera
+    sees them against the backdrop instead of against the body. The pincers
+    stay unequal, because two matched claws held symmetrically read as a
+    machine and a figure that mirrors about its own vertical axis reads at 32
+    pixels as a pattern rather than a creature.
+    """
+    shell = material("CrabShell", (0.132, 0.164, 0.192), 0.28,
+                     noise=(9.0, 0.46, (0.058, 0.080, 0.104)))
+    plate = material("CrabPlate", (0.190, 0.216, 0.236), 0.22,
+                     noise=(15.0, 0.36, (0.082, 0.102, 0.122)))
+    limb = material("CrabLimb", (0.100, 0.122, 0.144), 0.34)
+    tip = material("CrabTip", (0.236, 0.152, 0.112), 0.20)
+    eye = material("CrabEye", (0.020, 0.018, 0.016), 0.10)
+
+    # The carapace, on the X axis so its long dimension is its width. Sizes
+    # are (along the axis, across, up): wide, shallow front to back, low.
+    body = Blob("Carapace", shell, 0.026)
+    body.ball((0.0, 0.02, 0.54), 0.46, (1.80, 0.96, 0.46), axis=(1, 0, 0))
+    body.ball((0.0, -0.26, 0.51), 0.40, (1.62, 0.78, 0.42), axis=(1, 0, 0))
+    body.ball((0.0, 0.28, 0.51), 0.35, (1.34, 0.80, 0.42), axis=(1, 0, 0))
+    # A low centre ridge so a shell seen from above has a highlight to catch
+    # and does not render as a flat disc.
+    body.ball((0.0, -0.02, 0.66), 0.22, (1.05, 0.70, 0.34), axis=(1, 0, 0))
+
+    # The anterolateral teeth along the front edge, in the carapace's own
+    # metaball object so they fuse with it. The third pass gave them their own
+    # object and they rendered as six pearls floating beside the shell: two
+    # metaball objects never merge, however close their elements sit.
+    for s in (-1, 1):
+        for x, y in ((0.56, -0.40), (0.84, -0.28), (1.04, -0.10)):
+            body.ball((s * x, y, 0.46), 0.15, (0.62, 0.66, 0.26),
+                      axis=(1, 0, 0), stiffness=2.6)
+
+    for s in (-1, 1):
+        # Eyestalks: short, close together, on the front edge. Small on
+        # purpose - two large dots on a wide shell is how the second pass
+        # turned the animal into a face.
+        cone_along("Stalk%d" % s, (s * 0.15, -0.52, 0.52),
+                   (s * 0.10, -0.22, 1.0), 0.20, 0.030, limb, 0.024)
+        sphere("Eye%d" % s, (s * 0.173, -0.564, 0.715),
+               (0.044, 0.044, 0.050), eye)
+
+        # The pincers, in front of the shell and below its line. The left is
+        # the larger: thicker arm, bigger hand, carried a little higher.
+        big = s < 0
+        scale = 1.28 if big else 1.0
+        lift = 0.14 if big else 0.0
+        arm_from = Vector((s * 0.66, -0.34, 0.46))
+        arm_dir = Vector((s * 0.52, -1.0, -0.30)).normalized()
+        arm_len = 0.56
+        cone_along("CrabArm%d" % s, arm_from, arm_dir, arm_len,
+                   0.105 * scale, limb, 0.084 * scale)
+        wrist = arm_from + arm_dir * arm_len
+        # The hand: a flattened oval, long along the reach rather than across
+        # it, because a chela is a blade and not a ball.
+        palm = Vector((wrist.x + s * 0.05, wrist.y - 0.18, wrist.z + lift))
+        hand = Blob("Chela%d" % s, plate, 0.022)
+        # Wider across the reach than the third pass, which built a blade seen
+        # edge-on and rendered as a spoon.
+        hand.ball(palm, 0.22 * scale, (1.18, 1.34, 0.70), axis=(0, 1, 0))
+        # Two fingers, held apart in height rather than side by side. The
+        # third pass put them within one radius of each other and the
+        # metaball palm swallowed the lower one, leaving a single spike that
+        # read as a beak. An open claw reads at 64 pixels and a shut one does
+        # not, which is what the scorpion's chelae needed four passes to
+        # learn too.
+        # Both bases sit inside the palm and emerge from its front face. The
+        # fourth pass put the lower one on the palm's underside and angled it
+        # further down, so it detached and rendered as a spike falling out of
+        # the claw.
+        base = palm + Vector((0.0, -0.10 * scale, 0.0))
+        cone_along("CrabFinger%dA" % s,
+                   base + Vector((s * 0.04, 0.0, 0.085 * scale)),
+                   (s * 0.14, -1.0, 0.20), 0.44, 0.056 * scale, tip, 0.010)
+        cone_along("CrabFinger%dB" % s,
+                   base + Vector((s * 0.04, 0.0, -0.085 * scale)),
+                   (s * 0.14, -1.0, -0.16), 0.38, 0.048 * scale, tip, 0.009)
+
+        # Eight walking legs, four a side. Out of the shell's flank, outward
+        # and backward, then down at the knee - and the knee is the end of the
+        # femur, computed, which the second pass got wrong and which is the
+        # whole difference between a fringe of legs and a fan of rods.
+        # Each leg drops a little more steeply than the one in front of it,
+        # so the four are not parallel. Four parallel femurs render as a
+        # ladder, which is what the fourth pass produced.
+        for index, (along, out, back, drop) in enumerate((
+                (-0.30, 1.00, -0.26, -0.10), (-0.02, 1.06, 0.04, -0.18),
+                (0.24, 0.98, 0.34, -0.26), (0.46, 0.82, 0.60, -0.34))):
+            hip = Vector((s * 0.60, along, 0.42))
+            # Out and DOWN, not level: the third pass left the flank at the
+            # shell's own height and the fringe sat on its outline instead of
+            # under it, so the legs read as antennae.
+            femur = Vector((s * out, back, drop)).normalized()
+            length = 0.48
+            cone_along("CrabFemur%d%d" % (s, index), hip, femur, length,
+                       0.054, limb, 0.038)
+            knee = hip + femur * length
+            cone_along("CrabTibia%d%d" % (s, index), knee,
+                       (s * out * 0.30, back * 0.24, -1.0), 0.76, 0.038,
+                       limb, 0.010)
+
+
 def cyclops():
     skin = material("Skin", (0.5, 0.33, 0.2), 0.7, subsurface=0.12,
                     noise=(7.0, 0.5, (0.33, 0.19, 0.11)))
@@ -1787,6 +1911,18 @@ CREATURES = {
                            inner=(0.06, 0.11, 0.13), outer=(0.005, 0.010, 0.012),
                            key=(1.0, 0.90, 0.72), rim=(0.50, 0.88, 0.95),
                            camera=((-0.05, -6.6, 1.52), (-0.42, 0.0, 1.02), 55.0)),
+    # Sprint 21. The inverse dressing to the scorpion's, on purpose: warm sand
+    # under a wet blue-grey shell, where the scorpion is warm chitin on cold
+    # ground. Those two are the arthropods a Nature's Ally caster chooses
+    # between, so they must not share a palette. The camera is square to the
+    # front and raised, which no other arthropod icon in this roster is. A crab
+    # is identified across the body rather than along it, and the first pass
+    # proved that a square-on camera at body height flattens its forward claws
+    # into two heads beside a bald shell - so the view looks down.
+    "giant-crab": dict(build=giant_crab,
+                       inner=(0.30, 0.21, 0.12), outer=(0.034, 0.023, 0.013),
+                       key=(1.0, 0.92, 0.74), rim=(0.62, 0.84, 1.0),
+                       camera=((0.0, -5.15, 3.35), (0.0, -0.06, 0.26), 50.0)),
     "xill": dict(build=xill,
                  inner=(0.07, 0.12, 0.09), outer=(0.006, 0.012, 0.009),
                  key=(0.78, 0.88, 1.0), rim=(0.45, 0.95, 0.70),

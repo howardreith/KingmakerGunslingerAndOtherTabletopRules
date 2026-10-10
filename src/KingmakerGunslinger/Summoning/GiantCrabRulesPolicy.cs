@@ -31,12 +31,12 @@ namespace KingmakerGunslinger.Summoning
         // The printed stat block, transcribed at intake.
         internal const int HitDice = 3;
         internal const int Strength = 15;
-        internal const int Dexterity = 12;
+        internal const int Dexterity = 13;
         internal const int Constitution = 14;
         internal const int Wisdom = 10;
         internal const int Charisma = 2;
         internal const int SpeedFeet = 30;
-        internal const int NaturalArmor = 4;
+        internal const int NaturalArmor = 5;
         internal const int BaseAttackBonus = 2;
 
         /// <summary>
@@ -64,9 +64,9 @@ namespace KingmakerGunslinger.Summoning
         internal const int GoodSave = 3;
         internal const int PoorSave = 1;
 
-        internal const int PrintedArmorClass = 15;
+        internal const int PrintedArmorClass = 16;
         internal const int PrintedTouchArmorClass = 11;
-        internal const int PrintedFlatFootedArmorClass = 14;
+        internal const int PrintedFlatFootedArmorClass = 15;
         internal const int PrintedFortitude = 5;
         internal const int PrintedReflex = 2;
         internal const int PrintedWill = 1;
@@ -83,6 +83,19 @@ namespace KingmakerGunslinger.Summoning
         internal const int ClawCount = 2;
         internal const int PrintedAttackBonus = 4;
         internal const int ClawDieSides = 4;
+
+        /// <summary>
+        /// Constrict, which the printed block gives at the claw's own damage.
+        ///
+        /// <para>1d4 plus the whole Strength modifier, computed from live
+        /// Strength rather than stored, and applied only to the exact target
+        /// held by the maintaining claw. Each claw holds its own foe under the
+        /// multi-limb lifecycle Sprint 19 built, so "the target it is holding"
+        /// is a per-limb question here rather than a per-creature one - which
+        /// is the whole reason this creature is worth reviewing live.</para>
+        /// </summary>
+        internal const int ConstrictDiceCount = 1;
+        internal const int ConstrictDieSides = 4;
 
         /// <summary>
         /// The printed stability bonus against trip: the difference between
@@ -123,23 +136,19 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal const int SkillRanks = 0;
         internal const int RacialPerceptionBonus = 4;
-        internal const int RacialSwimBonus = 8;
         internal const int PrintedPerceptionSkill = 4;
-
-        /// <summary>
-        /// The printed Swim total this project does not represent, because
-        /// Kingmaker has no Swim skill and models neither swimming nor
-        /// drowning. Omitting it forfeits no rank - this creature has none to
-        /// spend, and the +8 is entirely racial - and nothing is raised to
-        /// stand in for it. Kept as a recorded number rather than a silence.
-        /// </summary>
-        internal const int PrintedSwimSkill = 10;
 
         /// <summary>
         /// The printed swim speed, recorded and unrepresented. The creature
         /// ships at its printed 30-foot ground speed; this number is not folded
-        /// into that one, and no aquatic movement subsystem is built - which is
-        /// one of this mission's hard boundaries as well as the honest answer.
+        /// into that one, no skill is raised to stand in for Swim, and no
+        /// aquatic movement subsystem is built - which is one of this mission's
+        /// hard boundaries as well as the honest answer.
+        ///
+        /// <para>Water dependency goes the same way. It has no practical
+        /// trigger inside an ordinary summon duration and no drowning consumer
+        /// inside ordinary-map scope, so it is recorded here rather than
+        /// implemented.</para>
         /// </summary>
         internal const int PrintedSwimSpeedFeet = 20;
 
@@ -217,10 +226,16 @@ namespace KingmakerGunslinger.Summoning
             if (SkillRanks != 0)
                 throw new InvalidOperationException(
                     "A creature with no Intelligence score buys no skill ranks.");
-            if (WisdomModifier + RacialPerceptionBonus != PrintedPerceptionSkill ||
-                StrengthModifier + RacialSwimBonus != PrintedSwimSkill)
+            if (WisdomModifier + RacialPerceptionBonus != PrintedPerceptionSkill)
                 throw new InvalidOperationException(
                     "Giant Crab printed skill derivation changed.");
+            // Constrict is the claw's own damage, so it adds the whole
+            // Strength modifier and nothing else. A constrict that differed
+            // from the claw would mean one of the two had drifted.
+            if (ConstrictDiceCount != 1 || ConstrictDieSides != ClawDieSides)
+                throw new InvalidOperationException(
+                    "Giant Crab printed constrict derivation changed: it is "
+                    + "the claw's own die plus the whole Strength modifier.");
             // Space and reach are the engine's own for a Medium creature, so
             // there is nothing to represent and nothing to omit. Asserted
             // rather than assumed, because every earlier creature in this
