@@ -1,16 +1,24 @@
 # Installation, updates, removal, and compatibility
 
-Current version: `0.0.148-expanded-summoning-sprint19` (UMM
-version `0.0.148`), archive
-`KingmakerGunslinger-0.0.148-expanded-summoning-sprint19.zip`.
-It is built on released v0.0.147 and changes nothing that release qualified, so
-it retains v0.0.142 traits/content and the qualified summoning Sprints 12–18
-including Salamander and both apes, plus released v0.0.144 weapon recovery and
-v0.0.145 Nodachi icon behavior. Its own Sprint 19 Girallon and Xill are runtime
-qualified and published: both are selectable. Install only the standalone UMM
-ZIP, not source archives or private reference bundles.
-See [Sprint 19 scope and limitations](docs/RELEASE-NOTES-0.0.148.md) and the
-preceding [Sprint 18 scope](docs/RELEASE-NOTES-0.0.147.md).
+Candidate version: `0.0.149-expanded-summoning-sprint20` (UMM
+version `0.0.149`), archive
+`KingmakerGunslinger-0.0.149-expanded-summoning-sprint20.zip`.
+It is built on released v0.0.148 and changes nothing that release qualified, so
+it retains v0.0.142 traits/content and the qualified summoning Sprints 12–19
+including Salamander, both apes, the Girallon and the Xill, plus released
+v0.0.144 weapon recovery and v0.0.145 Nodachi icon behavior. Its own Sprint 20
+Giant Scorpion is registered and withheld and is NOT runtime qualified. Install
+only the final standalone UMM ZIP after publication, not source archives or
+private reference bundles.
+See [Sprint 20 scope and limitations](docs/RELEASE-NOTES-0.0.149.md) and the
+preceding [Sprint 19 scope](docs/RELEASE-NOTES-0.0.148.md).
+
+### Latest public release
+
+UMM `0.0.148`, archive
+`KingmakerGunslinger-0.0.148-expanded-summoning-sprint19.zip`. It published the
+Girallon and the Xill after 39/39 mechanics and 12/12 body review; both are
+selectable.
 
 ### Previously released versions
 

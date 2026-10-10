@@ -44,13 +44,13 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).ToArray();
             SummonVariantSpec[] ally = ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.NaturesAlly).ToArray();
-            Assertions.Equal(524, monster.Length,
+            Assertions.Equal(530, monster.Length,
                 "Summon Monster registered placements changed.");
-            Assertions.Equal(520, ally.Length,
+            Assertions.Equal(526, ally.Length,
                 "Summon Nature's Ally registered placements changed.");
-            Assertions.Equal(1044, monster.Length + ally.Length,
+            Assertions.Equal(1056, monster.Length + ally.Length,
                 "Registered generated placements must be 1008 plus Sprint 18's "
-                + "26 roots plus Sprint 19's 10.");
+                + "26 roots, Sprint 19's 10 and Sprint 20's 12.");
 
             foreach (var row in new[] {
                 new { Key = "ape", Tier = 3, Monster = ApeMonsterRoots, Ally = ApeAllyRoots },
@@ -93,8 +93,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(26, monster.Concat(ally).Count(value =>
                     PrimateRulesPolicy.IsPrimate(value.Creature.Key)),
                 "Sprint 18 must add exactly twenty-six roots.");
-            Assertions.Equal(101, ExpandedSummoningCatalog.All.Count,
-                "Unique creature count must be 101.");
+            Assertions.Equal(102, ExpandedSummoningCatalog.All.Count,
+                "Unique creature count must be 102.");
         }
 
         /// <summary>
@@ -108,22 +108,26 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(1044,
+            Assertions.Equal(1056,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placement count changed.");
             // The apes published on 2026-10-09 after their complete hidden
             // candidate passed, and nothing has withheld them since. Sprint 19
             // registers ten placements of its own and holds all ten, so the
             // published total is exactly what v0.0.147 showed.
-            Assertions.Equal(0,
+            Assertions.Equal(12,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Nothing is withheld now that Sprint 19's review has passed.");
+                "Only Sprint 20's own twelve roots are withheld.");
             Assertions.Equal(1044,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "Every registered placement is published.");
+                "The apes stay published and the surface is v0.0.148's.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
-                    "Nothing may be withheld: " + variant.StableKey);
+                Assertions.Equal(
+                    variant.Creature.Key !=
+                        GiantScorpionRulesPolicy.GiantScorpionKey,
+                    SummonVisibilityCatalog.IsPublished(variant),
+                    "Nothing but the Sprint 20 creature may be withheld: "
+                    + variant.StableKey);
             SummonVisibilityCatalog.Validate();
 
             // Identities are allocated once at registration, so a withheld
@@ -575,24 +579,24 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(101, ExpandedSummoningIdentityCatalog.UnitCount,
+            Assertions.Equal(102, ExpandedSummoningIdentityCatalog.UnitCount,
                 "Unit identity count changed.");
-            Assertions.Equal(1044,
+            Assertions.Equal(1056,
                 ExpandedSummoningIdentityCatalog.LogicalAbilityCount,
                 "Logical ability identity count changed.");
-            Assertions.Equal(300,
+            Assertions.Equal(306,
                 ExpandedSummoningIdentityCatalog.TemplatedPlacementCount,
                 "Templated placement count changed.");
-            Assertions.Equal(600,
+            Assertions.Equal(612,
                 ExpandedSummoningIdentityCatalog.TemplateExecutionAbilityCount,
                 "Template execution identity count changed.");
-            Assertions.Equal(219,
+            Assertions.Equal(225,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount,
                 "Creature-owned identity count changed.");
-            Assertions.Equal(2006,
+            Assertions.Equal(2037,
                 ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 "Foundation identity count changed.");
-            Assertions.Equal(2006, identities.Count,
+            Assertions.Equal(2037, identities.Count,
                 "The built identity catalog must match its own invariant.");
 
             foreach (var row in new[] {
