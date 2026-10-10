@@ -115,19 +115,15 @@ namespace KingmakerGunslinger.DomainTests
             // candidate passed, and nothing has withheld them since. Sprint 19
             // registers ten placements of its own and holds all ten, so the
             // published total is exactly what v0.0.147 showed.
-            Assertions.Equal(10,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Sprint 19 withholds its own ten roots.");
-            Assertions.Equal(1034,
+                "Nothing is withheld now that Sprint 19's review has passed.");
+            Assertions.Equal(1044,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The published surface is unchanged from v0.0.147.");
+                "Every registered placement is published.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key != "girallon" &&
-                        variant.Creature.Key != "xill",
-                    SummonVisibilityCatalog.IsPublished(variant),
-                    "Exactly the Sprint 19 creatures are withheld: "
-                    + variant.StableKey);
+                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
+                    "Nothing may be withheld: " + variant.StableKey);
             SummonVisibilityCatalog.Validate();
 
             // Identities are allocated once at registration, so a withheld

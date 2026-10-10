@@ -36,13 +36,13 @@ namespace KingmakerGunslinger.DomainTests
             //
             // Independently qualified Sprint 17 snakes publish sixteen roots
             // per family: 506/502 generated plus 17/12 retained wrappers.
-            // Sprint 18 registers thirteen more roots per family and withholds
-            // every one of them, so the visible totals do not move until its
-            // publication candidate removes the two suppression keys.
-            Assertions.Equal(536, ExpandedSummoningBaselineInventory
+            // Sprint 18 published its thirteen roots per family, and
+            // Sprint 19 adds five visible Summon Monster roots for the Xill
+            // and five Summon Nature's Ally roots for the Girallon.
+            Assertions.Equal(541, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(527, ExpandedSummoningBaselineInventory
+            Assertions.Equal(532, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
@@ -56,11 +56,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(1034, generated, "Published generated placements changed.");
+            Assertions.Equal(1044, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(1063, generated + wrappers,
+            Assertions.Equal(1073, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(1063,
+            Assertions.Equal(1073,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -109,11 +109,10 @@ namespace KingmakerGunslinger.DomainTests
             // of its own qualification, which is allowed and is how Sprints
             // 12, 13 and 18 each ran, but it has to be deliberate rather than
             // a leftover - which is what this pin is for.
-            Assertions.True(ExpandedSummoningBaselineInventory
-                    .RegisteredButHiddenCreatures.SequenceEqual(
-                        new[] { "girallon", "xill" }),
-                "Sprint 19 registers exactly the Girallon and the Xill ahead of "
-                + "their own qualification and withholds both.");
+            Assertions.Equal(0, ExpandedSummoningBaselineInventory
+                    .RegisteredButHiddenCreatures.Count,
+                "Nothing is registered and withheld: Sprint 19 published both "
+                + "the Girallon and the Xill.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -164,7 +163,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 1063"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 1073"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 

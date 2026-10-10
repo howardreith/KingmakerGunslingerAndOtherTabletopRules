@@ -1,13 +1,13 @@
 # 0.0.148-expanded-summoning-sprint19
 
-Kingmaker Gunslinger 0.0.148 is the Expanded Summoning Sprint 19 candidate:
-the Girallon and the Xill. It retains the qualified native Wwise firearm bank,
+Kingmaker Gunslinger 0.0.148 is Expanded Summoning Sprint 19: the Girallon
+and the Xill. It retains the qualified native Wwise firearm bank,
 SHA256 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`, and
 changes no firearm audio asset. The installation artifact is
 `KingmakerGunslinger-0.0.148-expanded-summoning-sprint19.zip`. Existing
 `CraftMagicItems.dll` compatibility is inherited; no new crafting integration
 is claimed. Historical content and fatigue-authority records retain their 1,288
-and 1,325 test counts; neither describes this candidate's larger current suite.
+and 1,325 test counts; neither describes this release's larger current suite.
 
 It is built on the released v0.0.147 master, commit
 `95d610348d7d2322ddc00ef04fa06d2cd352dbdd`, and changes nothing that release
@@ -15,10 +15,11 @@ qualified. Sprint 18's Ape and Dire Ape stay exactly as v0.0.147 published
 them: their roots, their identities, their rules and their four shipped body
 files are all inside this sprint's protected boundary.
 
-**This candidate is NOT runtime qualified.** Both new creatures are registered
-and withheld: no player can select either, and the visible summon surface is
-exactly what v0.0.147 published. The sections below describe what the source
-contains, not what has been proved in game.
+**Both creatures are runtime qualified and published.** They were registered
+with all ten of their roots withheld and stayed withheld through every guarded
+runtime review; publication removed the two suppression keys only after the
+complete hidden candidate passed. The visible summon surface rises from 1063
+choices to 1073 and nothing v0.0.147 published moved.
 
 ## What Sprint 19 adds
 
@@ -34,12 +35,13 @@ outsider. Ten roots are therefore ten identities rather than thirty.
 
 Both follow the charter's quantity propagation: single at their own tier, 1d3
 one tier higher, 1d4+1 above that. Registered generated placements rise from
-1034 to 1044, all 10 new roots are suppressed, and the published surface stays
-at 1034 generated plus 29 retained native wrappers — 1063 visible choices,
-unchanged.
+1034 to 1044 and all ten are published, so the surface is 1044 generated plus
+29 retained native wrappers — 1073 visible choices, ten more than v0.0.147.
 
-Identities are allocated once, now, and never move: publication will be the
-removal of two suppression keys and nothing else.
+Identities were allocated once and never moved. Publication was the removal of
+two suppression keys and nothing else: no GUID was reallocated, no symbol was
+renamed, and every placement the player saw in v0.0.147 is the same placement
+it was.
 
 ## Printed profiles
 
@@ -120,6 +122,70 @@ shortfall is recorded rather than replaced with something invented.
   and that bound is recorded here rather than presented as the printed
   duration.
 
+## Runtime qualification
+
+Twelve guarded runtime transactions were spent. Two passed and are this
+release's evidence:
+
+- **Mechanics, 39 of 39.**
+  `20261010T0649575611737Z-disposable-expanded-summoning-sprint19-review`,
+  608 seconds, on a disposable save. Every printed number for both creatures
+  read back from the live engine — hit points, armour class, touch,
+  flat-footed, saves, spell resistance, CMB, CMD, every skill, every limb's
+  attack bonus and damage — plus the nine rend cases in both combat modes and
+  the Xill's paralysis.
+- **Bodies, 12 of 12.**
+  `20261010T0744422373426Z-working-save-expanded-summoning-creature-review`,
+  on the authorized working save. All eight party-camera captures came back
+  `renderer=true dissolve=0 intact=true`.
+
+Ten runs before those found real defects, all of them this project's own, and
+each is recorded rather than smoothed over:
+
+1. The scenario name was refused by a fourth allowlist inside the mod itself,
+   which only answers after a deploy and a launch. An offline test now proves
+   the name is wired at every gate, so that failure cannot cost another run.
+2. Mod initialization threw on an unknown natural weapon key and rolled back
+   2,376 registrations: the Girallon's two weapons were never added to the
+   builder's key resolver. An offline test now resolves every creature's every
+   profile weapon key.
+3. A harness mistake of mine — the run's timeouts were left at their defaults
+   rather than the values a review of this size needs — and the run stalled.
+4. 29 of 39. Four invented placeholder body GUIDs meant neither body was ever
+   attempted; the Girallon kept the donor's unit type; its hit points and two
+   skills were wrong because the exact-rank component was gated to primates
+   only; and the Xill was missing its shield bonus, its spell resistance and
+   any paralysis trigger at all.
+5. 31 of 39. The Xill's configuration overwrote its donor prefab with a human
+   one, copied from the method it was modelled on, and the paralysis cases
+   measured the condition left over from the case before.
+6, 7. Two engine `NullReferenceException`s. A round-waiter I had added idled
+   real-time combat for a full six-second round, through which the engine ends
+   the fight and despawns the target's view. The waiter is gone; the one case
+   that genuinely needs a round boundary now runs turn-based only, and its
+   real-time row records why instead of going quiet.
+8. 38 of 39. Two Xill skills were each exactly three short: Persuasion and
+   Knowledge (arcana) are outsider class skills and the donor's class list
+   does not carry them.
+9. 38 of 39. Retry accumulation. The engine's rend tracker is scoped to the
+   attack command, not to the review's idea of an attempt, so claws from
+   abandoned attempts still counted and four distinct claws eventually reached
+   one target although no single attempt landed four. A rend case is now one
+   atomic trial, abandoned whole and retried from nothing.
+10. 38 of 39. `UnitAttack.TryMergeInto` folds a second attack on one target
+    into a live command, so the review's "second sequence" could be the same
+    command as its first. The live command is now interrupted and waited out
+    before each later sequence, which forces no roll and no damage and only
+    makes a second command be a second command.
+
+The art review also failed once at 11 of 12, with the Girallon captured
+mid-dissolve: the crowd review's native-fade wait was gated to three earlier
+creature families and did not cover a donor-rig body. The gate was widened and
+the re-run passed 12 of 12.
+
+The owner installation was restored to its exact recorded state after every
+transaction, and no process, lease or lock was left outstanding.
+
 ## Visuals
 
 Both creatures ship two new original project-owned 128x128 icons, rendered
@@ -153,6 +219,6 @@ build.
 
 ## Uninstall
 
-To uninstall, remove the mod directory, exactly as before. Withheld creatures
-register no player-visible choice, so a save made with this build loads without
-them exactly as it loads without any other unreleased content.
+To uninstall, remove the mod directory, exactly as before. A save made with
+the Girallon or the Xill summoned loads without them, exactly as a save made
+with any other summon from this mod does.

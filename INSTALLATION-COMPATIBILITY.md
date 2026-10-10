@@ -1,21 +1,20 @@
 # Installation, updates, removal, and compatibility
 
-Candidate version: `0.0.148-expanded-summoning-sprint19` (UMM
+Current version: `0.0.148-expanded-summoning-sprint19` (UMM
 version `0.0.148`), archive
 `KingmakerGunslinger-0.0.148-expanded-summoning-sprint19.zip`.
 It is built on released v0.0.147 and changes nothing that release qualified, so
 it retains v0.0.142 traits/content and the qualified summoning Sprints 12–18
 including Salamander and both apes, plus released v0.0.144 weapon recovery and
-v0.0.145 Nodachi icon behavior. Its own Sprint 19 Girallon and Xill are
-registered and withheld and are NOT runtime qualified. Install only the final
-standalone UMM ZIP after publication, not source archives or private reference
-bundles.
+v0.0.145 Nodachi icon behavior. Its own Sprint 19 Girallon and Xill are runtime
+qualified and published: both are selectable. Install only the standalone UMM
+ZIP, not source archives or private reference bundles.
 See [Sprint 19 scope and limitations](docs/RELEASE-NOTES-0.0.148.md) and the
 preceding [Sprint 18 scope](docs/RELEASE-NOTES-0.0.147.md).
 
 ### Previously released versions
 
-Latest public release before this candidate: UMM `0.0.145`, archive
+Latest public release before this one: UMM `0.0.145`, archive
 `KingmakerGunslinger-0.0.145-heirloom-nodachi-icon.zip`. It adds the Heirloom
 Weapon: Nodachi trait icon correction to the 0.0.144 findability release.
 

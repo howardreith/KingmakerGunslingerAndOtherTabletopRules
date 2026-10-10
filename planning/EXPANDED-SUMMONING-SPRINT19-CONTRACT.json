@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "sprint": 19,
   "title": "Expanded Summoning Sprint 19: Girallon and Xill",
-  "status": "CONTRACT FROZEN; BUILD PATHS DECIDED; NOT IMPLEMENTED; NOT QUALIFIED",
+  "status": "IMPLEMENTED; RUNTIME QUALIFIED; PUBLISHED; RELEASE PENDING",
   "frozenAtUtc": "2026-10-09T23:55:00Z",
   "authority": {
     "primarySource": "The official Pathfinder Bestiary entries for Girallon and Xill, and the official Summon Monster and Summon Nature's Ally tables, read from the Archives of Nethys and the Pathfinder SRD at intake rather than from memory.",

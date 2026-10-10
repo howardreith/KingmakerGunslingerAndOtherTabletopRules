@@ -441,11 +441,10 @@ def validate(root: Path) -> None:
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 1044;",
-        # Sprint 18 published on 2026-10-09 after its complete hidden
-        # candidate passed. Sprint 19 registers ten placements of its
-        # own and withholds all ten, so the published surface is still
-        # the 1034 v0.0.147 showed.
-        "SuppressedLogicalPlacementCount = 10;")
+        # Sprint 18 published on 2026-10-09 and Sprint 19 on 2026-10-10,
+        # each after its own complete hidden candidate passed, so nothing
+        # is withheld any more.
+        "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
         "UnitCount = 101;",
         "LogicalAbilityCount = 1044;",
