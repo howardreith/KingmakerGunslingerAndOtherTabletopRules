@@ -542,12 +542,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         result => attack = result)) yield return step;
                     int attempts = 1;
                     int savesBefore = 0;
+                    int rollsBefore = 0;
                     while (attempts < 8 && (Sprint18ChosenLimbMissed(
                             observer, null, before, accuracy) ||
+                        Sprint20UnchosenLimbLanded(observer, rollsBefore,
+                            accuracy) ||
                         Sprint20SaveRolledTwenty(saves, savesBefore, saveMade)))
                     {
                         attempts++;
                         before = observer.Attacks.Count;
+                        rollsBefore = observer.Attacks.Count;
                         savesBefore = saves.Saves.Count;
                         if (CombatController.IsInTurnBasedCombat())
                             foreach (int step in Sprint18AdvanceRound(owner))
@@ -600,6 +604,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["disposition"] = scenario[3],
                             ["startedClean"] = startedClean,
                             ["attempts"] = attempts,
+                            ["abandonedTrials"] = attempts - 1,
+                            ["scoredTrialRolls"] = new JArray(
+                                Sprint18AttemptRolls(observer, null, before)
+                                    .Select(roll => new JObject {
+                                        ["weapon"] = roll.Weapon == null ? null :
+                                            roll.Weapon.Blueprint.name,
+                                        ["hit"] = roll.IsHit,
+                                        ["chosen"] = roll.Weapon != null &&
+                                            accuracy.Hit.Any(chosen =>
+                                                ReferenceEquals(chosen,
+                                                    roll.Weapon)) })),
                             ["rolls"] = new JArray(
                                 Sprint18AttemptRolls(observer, null, 0)
                                     .Select(roll => new JObject {
@@ -1067,6 +1082,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             return cleared.Count == 0
                 ? "nothing-held"
                 : "nothing-held;cleared=" + string.Join(",", cleared.ToArray());
+        }
+
+        /// <summary>
+        /// Whether a limb the fixture did not choose landed anyway.
+        ///
+        /// <para>The mirror of the chosen limb missing, and the same rule
+        /// seen from the other side: a natural twenty always hits, whatever
+        /// the modifier, so a limb held at minus a hundred still lands one
+        /// roll in twenty. When it does, this trial no longer isolates one
+        /// limb - a sting that landed in a claw case poisons, and a claw that
+        /// landed in a sting case attempts a grapple - and what it would
+        /// measure is the dice rather than the gating. The trial is abandoned
+        /// whole and retried, exactly as one whose chosen limb missed is.</para>
+        ///
+        /// <para>The requirement is untouched: a claw-only sequence must
+        /// still force no Fortitude save and a sting-only sequence must still
+        /// attempt no grapple. This only refuses to score a sequence that was
+        /// never claw-only or sting-only.</para>
+        /// </summary>
+        private static bool Sprint20UnchosenLimbLanded(
+            Sprint16RuleObserver observer, int from, Sprint18Accuracy accuracy)
+        {
+            return Sprint18AttemptRolls(observer, null, from).Any(roll =>
+                roll.IsHit && roll.Weapon != null &&
+                !accuracy.Hit.Any(chosen => ReferenceEquals(chosen, roll.Weapon)));
         }
 
         /// <summary>
