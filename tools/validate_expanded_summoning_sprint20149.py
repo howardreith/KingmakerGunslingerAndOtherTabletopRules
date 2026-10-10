@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import difflib
 import json
 import re
 import subprocess
@@ -94,6 +95,11 @@ SPRINT20_CHANGED = (
     # scorpion now uses it. Behaviour is unchanged.
     "src/KingmakerGunslinger/Summoning/PrimateCombatComponents.cs",
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.cs",
+    # Every grabber in the project is configured in one pass here, natural
+    # creatures included - both Giant Ant castes are configured in this file -
+    # so a scorpion whose claws grab has to reach it. Admitted with its own
+    # check rather than on trust: see validate_the_grab_is_the_only_addition.
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningCreatureReview.cs",
@@ -108,6 +114,8 @@ SPRINT20_NEW = (
     "src/KingmakerGunslinger/Summoning/GiantScorpionPoison.cs",
     "src/KingmakerGunslinger/RuntimeTesting/ArachnidRigSurveyPolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint20Survey.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/Sprint20ReviewPolicy.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint20Review.cs",
     "tests/KingmakerGunslinger.DomainTests/Sprint20RulesTests.cs",
     "assets/sprint20-arachnids/giant-scorpion-mesh.json",
     "assets/sprint20-arachnids/giant-scorpion-albedo.png",
@@ -139,8 +147,13 @@ SPRINT20_IDENTITY_TAIL = {
     "KMG.Summoning.Natural.GiantScorpion.Poison": "BlueprintFeature",
     "KMG.Summoning.Natural.GiantScorpion.Venom": "BlueprintBuff",
     "KMG.Summoning.Natural.GiantScorpion.MindlessImmunity": "BlueprintFeature",
+    # The grab carrier. Grab is a printed claw rider and the whole of the
+    # difference between the printed +8 manoeuvre bonus and the +12
+    # grapple figure, so a creature without it reads two points light on a
+    # number its own stat block prints.
+    "KMG.Summoning.Special.GiantScorpion.Traits": "BlueprintBuff",
 }
-# One unit, twelve roots, twelve execution children, six tail entries.
+# One unit, twelve roots, twelve execution children, seven tail entries.
 # Twelve children rather than twenty-four: only the six Summon Monster roots
 # are templated, and each owns one celestial and one fiendish child. Summon
 # Nature's Ally never templates, so its six roots own none.
@@ -195,14 +208,84 @@ def preserved_files(root: Path, ref: str, prefixes, allowed=()) -> int:
     return checked
 
 
+def validate_the_grab_is_the_only_addition(root: Path) -> int:
+    """The special builder gains this creature's grab and nothing else.
+
+    The file is admitted into the boundary because every grabber in the
+    project lives in it, which makes a blanket byte comparison impossible and
+    a blanket waiver dangerous: this one file configures the grab, constrict,
+    swallow, rake and death roll of two dozen creatures that have already
+    qualified. So the waiver is narrow. Nothing may be removed, and every
+    added line must belong to the Giant Scorpion - which is checked by
+    rebuilding the file from the released one plus the additions and requiring
+    the result to be byte-identical to what is on disk.
+    """
+    accepted = blob(root, MASTER,
+                    "src/KingmakerGunslinger/Blueprints/"
+                    "ExpandedSummoningSpecialBuilder.cs").decode("utf-8")
+    current = (root / "src/KingmakerGunslinger/Blueprints/"
+               "ExpandedSummoningSpecialBuilder.cs").read_text(encoding="utf-8")
+    was = accepted.replace("\r\n", "\n").split("\n")
+    now = current.replace("\r\n", "\n").split("\n")
+    matcher = difflib.SequenceMatcher(None, was, now, autojunk=False)
+    added = []
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            continue
+        if tag in ("delete", "replace"):
+            raise AssertionError(
+                "Sprint 20 removed or rewrote a released line of the special "
+                "builder: " + "; ".join(was[i1:i2])[:200])
+        added.extend(now[j1:j2])
+    if not added:
+        raise AssertionError(
+            "The scorpion's grab is not wired in the special builder at all, "
+            "which is how the printed +12 grapple figure went two points "
+            "light while three places claimed it worked.")
+    # No added CODE line may name another creature. Comments are exempt, and
+    # deliberately so: the scorpion takes the multi-target hold Sprint 19
+    # built for the Xill, and a comment forbidden from saying which creature a
+    # shared buff came from is a worse comment rather than a safer file. What
+    # this refuses is a line that configures, requires or renames another
+    # creature's wiring.
+    code = [line for line in added if not line.strip().startswith("//")]
+    for other in ("GiantAnt", "Owlbear", "PurpleWorm", "Xill", "Tiger",
+                  "Lion", "Leopard", "Crocodile", "Salamander", "Bear",
+                  "ShamblingMound", "GiantFlytrap", "MonitorLizard",
+                  "ConstrictorSnake", "Cheetah", "Stirge", "Cyclops"):
+        if any(other in line for line in code):
+            raise AssertionError(
+                "Sprint 20 touched another creature's wiring in the special "
+                "builder: " + other)
+    if not any("ConfigureGrabber(library, bySymbol, GiantScorpionUnitSymbol"
+               in line for line in code):
+        raise AssertionError("The addition does not configure a grabber")
+    # Primary plus one additional limb is both claws and stops short of the
+    # sting, which is the second additional limb.
+    joined = "\n".join(code)
+    for required in ("Primary = true",
+                     "Additional = GiantScorpionRulesPolicy.ClawCount - 1",
+                     "MaxHeld = GiantScorpionRulesPolicy.ClawCount",
+                     "Hold = multiHold, Grappled = multiHeld",
+                     '"KMG.Summoning.Special.GiantScorpion.Traits"'):
+        if required not in joined:
+            raise AssertionError(
+                "The scorpion's grab spec is missing: " + required)
+    if "Rake" in joined:
+        raise AssertionError("A scorpion rakes nothing")
+    return len(added)
+
+
 def validate_identity_append(root: Path) -> int:
     """The ledger is append-only: the released v0.0.148 entries keep their
     exact order, symbol, GUID and metadata, and Sprint 20 identities follow.
 
-    Thirty-one entries for one creature, where Sprint 19 spent twenty-two on
-    two. The difference is templating, not waste: this creature appears on the
-    Summon Monster table, so each of its six Monster roots owns a celestial
-    and a fiendish execution child. Twelve roots, twenty-four children.
+    Thirty-two entries for one creature, where Sprint 19 spent twenty-two on
+    two. The difference is mostly templating rather than waste: this creature
+    appears on the Summon Monster table, so each of its six Monster roots owns
+    a celestial and a fiendish execution child. Twelve roots, twelve children,
+    and seven facts of its own - one more than it first registered, because
+    the grab the stat block prints needed a carrier it did not have.
     """
     accepted = json.loads(blob(root, MASTER, "blueprints/blueprints.json"))["entries"]
     current = document(root, "blueprints/blueprints.json")["entries"]
@@ -444,6 +527,7 @@ def validate(root: Path) -> None:
             raise AssertionError(
                 "Sprint 20 claims a file the release already had: " + path)
 
+    grabLines = validate_the_grab_is_the_only_addition(root)
     validate_suppression(root)
     validate_contract(root)
     validate_shipped_bodies_reach_the_release_build(root)
@@ -559,7 +643,8 @@ def validate(root: Path) -> None:
           f"identities={identities}; registered={REGISTERED_PLACEMENTS}; "
           f"withheld={suppressed}; published={published}; "
           f"protected master={protected_master}; "
-          f"protected summons={protected_summons}.")
+          f"protected summons={protected_summons}; "
+          f"grab wiring lines={grabLines}.")
 
 
 def main() -> int:

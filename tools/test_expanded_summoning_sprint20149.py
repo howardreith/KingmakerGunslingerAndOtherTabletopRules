@@ -30,16 +30,73 @@ class Sprint20Tests(unittest.TestCase):
         self.assertEqual("validate_expanded_summoning_sprint18147.py",
                          VALIDATORS["0.0.147"])
 
-    def test_the_append_is_exactly_thirty_one_identities(self):
-        self.assertEqual(3036, gate.validate_identity_append(ROOT))
+    def test_the_append_is_exactly_thirty_two_identities(self):
+        self.assertEqual(3037, gate.validate_identity_append(ROOT))
 
     def test_the_identity_arithmetic_is_stated_rather_than_a_magic_number(self):
-        """Thirty-one is a derivation, and it must stay one."""
+        """Thirty-two is a derivation, and it must stay one.
+
+        It was thirty-one until the grab got a carrier. The creature printed
+        grab from its first commit - in its profile's attribution line, in its
+        +12 grapple derivation and in the registration commit's own message -
+        and carried nothing that grabs, so the tail is counted here rather
+        than written down.
+        """
         self.assertEqual(12, gate.SPRINT20_ROOTS)
         self.assertEqual(12, gate.SPRINT20_EXECUTION_CHILDREN)
         self.assertEqual(6, gate.SPRINT20_MONSTER_ROOTS)
-        self.assertEqual(31, gate.SPRINT20_IDENTITIES)
-        self.assertEqual(1 + 12 + 12 + 6, gate.SPRINT20_IDENTITIES)
+        self.assertEqual(7, len(gate.SPRINT20_IDENTITY_TAIL))
+        self.assertEqual(32, gate.SPRINT20_IDENTITIES)
+        self.assertEqual(1 + 12 + 12 + len(gate.SPRINT20_IDENTITY_TAIL),
+                         gate.SPRINT20_IDENTITIES)
+        self.assertIn("KMG.Summoning.Special.GiantScorpion.Traits",
+                      gate.SPRINT20_IDENTITY_TAIL)
+
+    def test_a_grab_claimed_in_prose_with_no_carrier_is_rejected(self):
+        """What actually went wrong, held to a fixture.
+
+        Grab is a printed claw rider and the whole of the difference between
+        the printed CMB +8 and grapple +12. Three places said this creature
+        had it: its profile's attribution line, that derivation, and the
+        registration commit's message. None of them is the thing that grabs
+        and none of them would have failed.
+
+        A released file identical to the working tree is exactly the shape of
+        that defect - nothing was added, so nothing was wired - and it is the
+        one case the check must refuse rather than pass quietly.
+        """
+        unchanged = (ROOT / "src/KingmakerGunslinger/Blueprints"
+                     / "ExpandedSummoningSpecialBuilder.cs").read_bytes()
+
+        def already_released(root, ref, path):
+            return unchanged
+        with patch.object(gate, "blob", side_effect=already_released):
+            with self.assertRaisesRegex(AssertionError,
+                                        "not wired in the special builder"):
+                gate.validate_the_grab_is_the_only_addition(ROOT)
+
+    def test_a_grab_that_reaches_the_sting_is_rejected(self):
+        """One limb too far and the sting grabs.
+
+        The spec counts limbs rather than naming weapons, so the whole of what
+        keeps grab off the sting is that the count stops at the second claw.
+        A spec reading ClawCount rather than ClawCount - 1 would reach the
+        sting, and nothing else about the creature would look wrong.
+        """
+        released = (ROOT / "src/KingmakerGunslinger/Blueprints"
+                    / "ExpandedSummoningSpecialBuilder.cs").read_text(
+                        encoding="utf-8")
+        overreaching = released.replace(
+            "Additional = GiantScorpionRulesPolicy.ClawCount - 1",
+            "Additional = GiantScorpionRulesPolicy.ClawCount")
+        self.assertNotEqual(released, overreaching)
+        # The released side stays the real one, so the block reads as this
+        # sprint's own addition exactly as it does in a real run.
+        with patch.object(gate.Path, "read_text",
+                          lambda self, **kw: overreaching):
+            with self.assertRaisesRegex(AssertionError,
+                                        "grab spec is missing"):
+                gate.validate_the_grab_is_the_only_addition(ROOT)
 
     def test_a_moved_historical_identity_is_rejected(self):
         current = gate.document(ROOT, "blueprints/blueprints.json")
@@ -60,7 +117,7 @@ class Sprint20Tests(unittest.TestCase):
             "status": "active", "milestone": "Expanded Summoning", "notes": ""})
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError,
-                                        "exactly 31 identities"):
+                                        "exactly 32 identities"):
                 gate.validate_identity_append(ROOT)
 
     def test_an_identity_outside_the_one_creature_is_rejected(self):
@@ -98,7 +155,7 @@ class Sprint20Tests(unittest.TestCase):
             or "GiantScorpion" not in e["symbol"]]
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError,
-                                        "exactly 31 identities"):
+                                        "exactly 32 identities"):
                 gate.validate_identity_append(ROOT)
 
     def test_a_templated_natures_ally_root_is_rejected(self):

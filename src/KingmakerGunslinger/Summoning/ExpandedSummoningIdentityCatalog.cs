@@ -48,10 +48,12 @@ namespace KingmakerGunslinger.Summoning
         // bite and claw so their printed Large dice are not scaled up a
         // step, which the guarded review measured the shared native
         // weapons doing.
-        // Six more in Sprint 20: the scorpion's own claw and sting, its
-        // unit type, its poison feature and venom buff, and the printed
-        // immunity to mind-affecting effects.
-        internal const int SpecialIdentityCount = 225;
+        // Seven more in Sprint 20: the scorpion's own claw and sting, its
+        // unit type, its poison feature and venom buff, the printed
+        // immunity to mind-affecting effects, and the grab carrier its two
+        // claws need - which is the whole of the difference between its
+        // printed CMB +8 and its printed grapple +12.
+        internal const int SpecialIdentityCount = 226;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -368,6 +370,12 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.Poison", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.Venom", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.MindlessImmunity", "BlueprintFeature"));
+            // The grab carrier. Grab is a printed claw rider, and the whole
+            // of the difference between the printed +8 manoeuvre bonus and
+            // its +12 grapple figure; it rides the grapple lifecycle Sprint 6
+            // built and Sprint 19 taught to hold more than one limb, keyed to
+            // this unit so the two claws grab and the sting never does.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantScorpion.Traits", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }
