@@ -181,7 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (CombatController.IsInTurnBasedCombat() ||
                             (name == "claws-across-two-turns" && sequence == 1))
                         {
-                            foreach (int step in Sprint18AdvanceRound(owner))
+                            foreach (int step in Sprint19AdvanceRound(owner))
                                 yield return step;
                         }
                         UnitAttack ignored = null;
@@ -352,6 +352,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EventBus.Subscribe(saves);
                 try
                 {
+                    // Start from a free target. The first case correctly
+                    // paralyzes it, and paralysis bounded to the summon's
+                    // lifetime outlives the case that caused it, so without
+                    // this the later cases measure the leftover rather than
+                    // their own outcome. Request-local, on the disposable
+                    // hostile only, and asserted rather than assumed.
+                    Sprint19ClearParalysis(fixture.Hostile);
+                    bool startedFree = !fixture.Hostile.Descriptor.State
+                        .HasCondition(Kingmaker.UnitLogic.UnitCondition.Paralyzed);
                     // Only the disposable target's own save moves, and only to
                     // choose which side of the printed difficulty class this
                     // case is on. The difficulty class itself is the game's.
@@ -360,7 +369,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             name == "bite-save-made" ? 100 : -100;
                     accuracy.Rest();
                     if (CombatController.IsInTurnBasedCombat())
-                        foreach (int step in Sprint18AdvanceRound(owner))
+                        foreach (int step in Sprint19AdvanceRound(owner))
                             yield return step;
                     UnitAttack ignored = null;
                     int before = observer.Attacks.Count;
@@ -373,7 +382,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attempts++;
                         before = observer.Attacks.Count;
                         if (CombatController.IsInTurnBasedCombat())
-                            foreach (int step in Sprint18AdvanceRound(owner))
+                            foreach (int step in Sprint19AdvanceRound(owner))
                                 yield return step;
                         accuracy.Rest();
                         UnitAttack retry = null;
@@ -395,13 +404,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ? fortitude.Length == 0
                         : fortitude.Length > 0 && fortitude.All(save =>
                             save.DifficultyClass == expectedDc);
-                    bool shape = paralyzed == wantParalyzed && dcExact;
+                    bool shape = paralyzed == wantParalyzed && dcExact &&
+                        startedFree;
                     Sprint19Check(_sprint19Assertions, _sprint19Rows,
                         "paralysis-" + name +
                             (turnBased ? "-turn-based" : "-real-time"),
                         shape, new JObject {
                             ["mode"] = turnBased ? "turn-based" : "real-time",
                             ["disposition"] = scenario[1],
+                            ["startedFree"] = startedFree,
                             ["paralyzed"] = paralyzed,
                             ["expectedParalyzed"] = wantParalyzed,
                             ["fortitudeSaves"] = new JArray(fortitude.Select(save =>
@@ -436,6 +447,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 yield return 0;
             }
+        }
+
+        /// <summary>
+        /// Remove any paralysis this review's own earlier case applied, so a
+        /// case measures its own outcome. Only the disposable hostile is
+        /// touched, and only this project's own paralysis buff is removed.
+        /// </summary>
+        private static void Sprint19ClearParalysis(UnitEntityData target)
+        {
+            if (target == null || target.Descriptor == null) return;
+            foreach (Kingmaker.UnitLogic.Buffs.Buff buff in
+                target.Descriptor.Buffs.Enumerable.ToArray())
+            {
+                if (buff == null || buff.Blueprint == null) continue;
+                if (buff.Blueprint.name.IndexOf("Xill_Paralysis",
+                        StringComparison.Ordinal) >= 0)
+                    buff.Remove();
+            }
+        }
+
+        /// <summary>
+        /// Counts the game's own new-combat-round events for one unit.
+        ///
+        /// <para>The rend tracker is scoped to a round and the engine clears
+        /// it on exactly this event, so a case that needs a round boundary
+        /// needs this and not a frame count. The shared Sprint 18 helper
+        /// waits 240 frames in real time, which is less than one six-second
+        /// round: the fifth guarded run measured the real-time
+        /// claws-across-two-turns case rending because no boundary had
+        /// happened yet.</para>
+        /// </summary>
+        private sealed class Sprint19RoundObserver :
+            IUnitNewCombatRoundHandler
+        {
+            internal UnitEntityData Owner;
+            internal int Rounds;
+
+            public void HandleNewCombatRound(UnitEntityData unit)
+            {
+                if (unit != null && ReferenceEquals(unit, Owner)) Rounds++;
+            }
+        }
+
+        /// <summary>
+        /// Wait for one real new combat round for this unit, bounded. In
+        /// turn-based combat the shared turn driver still does the work; this
+        /// only adds the real-time wait the frame count could not give.
+        /// </summary>
+        private IEnumerable<int> Sprint19AdvanceRound(UnitEntityData owner)
+        {
+            var rounds = new Sprint19RoundObserver { Owner = owner };
+            EventBus.Subscribe(rounds);
+            try
+            {
+                foreach (int step in Sprint18AdvanceRound(owner))
+                {
+                    if (rounds.Rounds > 0) yield break;
+                    yield return step;
+                }
+                int frames = 0;
+                while (rounds.Rounds == 0 && ++frames <= Sprint19AttackFrames)
+                {
+                    if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
+                    yield return 0;
+                }
+            }
+            finally { EventBus.Unsubscribe(rounds); }
         }
 
         /// <summary>Which limbs may reach the target in this sequence.</summary>
