@@ -1,12 +1,15 @@
 # Blueprint manifest and registration contract
 
-Active v0.0.147 Sprint 18 contract: 3005 stable identifiers: 3003 active and 2 reserved.
-Every released v0.0.146 entry remains in place; Sprint 18 appends exactly 58 Ape
-and Dire Ape identities - two units, 26 logical placements, the 26 celestial and
-fiendish execution children of the 13 templated Summon Monster roots, one 1d6
-slam weapon no native blueprint carries, an inspectable unit type for each ape,
-and the Dire Ape's rend feature. All 26 placements are registered and withheld,
-so publication is the removal of two suppression keys and no identity moves.
+Active v0.0.148 Sprint 19 contract: 3005 stable identifiers: 3003 active and 2 reserved.
+Every released v0.0.147 entry remains in place; Sprint 19 appends exactly 22
+Girallon and Xill identities - two units, 10 logical placements, four natural
+weapons no native blueprint carries at the printed dice, an inspectable unit
+type for each creature, the Girallon's rend feature, the Xill's combat-traits
+and paralysis buffs, and the feature that keeps every Xill limb on the whole
+Strength modifier. There are no execution children because neither creature is
+templated: the Girallon has no Summon Monster entry and the Xill is already an
+evil outsider. All 10 placements were registered withheld and published in
+v0.0.148 by the removal of two suppression keys; no identity moved.
 
 The preceding v0.0.143 contract remains exact for its own release: 2922 stable
 identifiers, 2920 active and 2 reserved. Every released master entry remains in

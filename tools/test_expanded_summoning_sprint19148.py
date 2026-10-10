@@ -93,18 +93,20 @@ class Sprint19Tests(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError, "exactly 22 identities"):
                 gate.validate_identity_append(ROOT)
 
-    def test_publishing_a_sprint19_creature_early_is_rejected(self):
+    def test_leaving_a_sprint19_creature_withheld_is_rejected(self):
+        """Publication is all ten roots or none of them."""
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "src/KingmakerGunslinger/Summoning"
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1044;\n"
-                "SuppressedLogicalPlacementCount = 0;\n"
-                'new HashSet<string>(new string[0], StringComparer.Ordinal);\n',
+                "SuppressedLogicalPlacementCount = 10;\n"
+                'SuppressedCreatureKeys = new HashSet<string>(new[] { '
+                '"girallon", "xill" }, StringComparer.Ordinal);\n',
                 encoding="utf-8")
             with self.assertRaisesRegex(
-                    AssertionError, "candidate surface differs"):
+                    AssertionError, "did not remove its two keys: girallon"):
                 gate.validate_suppression(root)
 
     def test_withholding_a_released_ape_is_rejected(self):
@@ -115,7 +117,7 @@ class Sprint19Tests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1044;\n"
-                "SuppressedLogicalPlacementCount = 10;\n"
+                "SuppressedLogicalPlacementCount = 12;\n"
                 'SuppressedCreatureKeys = new HashSet<string>(new[] { '
                 '"girallon", "xill", "dire-ape" }, StringComparer.Ordinal);\n',
                 encoding="utf-8")
@@ -130,9 +132,8 @@ class Sprint19Tests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1044;\n"
-                "SuppressedLogicalPlacementCount = 10;\n"
-                'SuppressedCreatureKeys = new HashSet<string>(new[] { '
-                '"girallon", "xill" }, StringComparer.Ordinal);\n',
+                "SuppressedLogicalPlacementCount = 0;\n"
+                "new HashSet<string>(new string[0], StringComparer.Ordinal)\n",
                 encoding="utf-8")
             # A Girallon on the Summon Monster table, which no printed table
             # puts it on, and a roster that did not grow.
@@ -146,6 +147,22 @@ class Sprint19Tests(unittest.TestCase):
                 encoding="utf-8")
             with self.assertRaisesRegex(
                     AssertionError, "placement contract differs"):
+                gate.validate_suppression(root)
+
+    def test_withholding_any_other_creature_is_rejected(self):
+        """Publication means nothing is withheld, not nothing of ours is."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "src/KingmakerGunslinger/Summoning"
+            source.mkdir(parents=True)
+            (source / "SummonVisibilityCatalog.cs").write_text(
+                "RegisteredLogicalPlacementCount = 1044;\n"
+                "SuppressedLogicalPlacementCount = 0;\n"
+                'SuppressedCreatureKeys = new HashSet<string>(new[] { '
+                '"salamander" }, StringComparer.Ordinal);\n',
+                encoding="utf-8")
+            with self.assertRaisesRegex(
+                    AssertionError, "nothing may be"):
                 gate.validate_suppression(root)
 
     def test_one_painting_cannot_serve_both_creatures(self):
@@ -199,7 +216,7 @@ class Sprint19Tests(unittest.TestCase):
         contract = gate.document(
             ROOT, "planning/EXPANDED-SUMMONING-SPRINT19-CONTRACT.json")
         altered = copy.deepcopy(contract)
-        altered["placement"]["surfaceAfter"]["visibleChoicesWhileWithheld"] = 1073
+        altered["placement"]["surfaceAfter"]["visibleChoicesAfterPublication"] = 1063
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError, "arithmetic drifted"):
                 gate.validate_contract(ROOT)
