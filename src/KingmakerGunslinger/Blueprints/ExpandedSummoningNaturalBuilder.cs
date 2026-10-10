@@ -1314,6 +1314,10 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, DireApeBite1d6Symbol);
             if (key == "DireApeClaw1d4") return Require<BlueprintItemWeapon>(
                 bySymbol, DireApeClaw1d4Symbol);
+            if (key == "GirallonBite1d6") return Require<BlueprintItemWeapon>(
+                bySymbol, GirallonBite1d6Symbol);
+            if (key == "GirallonClaw1d4") return Require<BlueprintItemWeapon>(
+                bySymbol, GirallonClaw1d4Symbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }

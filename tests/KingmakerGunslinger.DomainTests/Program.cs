@@ -1124,6 +1124,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint19-no-stale-rend", Sprint19RulesTests.NoStaleFourClawRendCrossesACommand),
             Case("expanded-summoning.sprint19-review-agrees", Sprint19RulesTests.ReviewExpectationsAgreeWithTheRulesPolicies),
             Case("expanded-summoning.sprint19-scenario-wired", Sprint19RulesTests.TheReviewScenarioIsWiredAtEveryGate),
+            Case("expanded-summoning.natural-weapon-keys-resolve", Sprint19RulesTests.EveryProfileWeaponKeyResolvesInTheBuilder),
             Case("expanded-summoning.sprint19-shared-driver-chains", Sprint19RulesTests.BothBodiesDeclareTheSharedDriverChains),
             Case("expanded-summoning.sprint18-donor-is-the-census-choice", PrimateVisualTests.OnlyTheCensusChosenDonorIsAccepted),
             Case("expanded-summoning.sprint18-only-the-two-apes-rebodied", PrimateVisualTests.OnlyTheTwoHiddenApesAreRebodied),
