@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "sprint": 19,
+  "title": "Expanded Summoning Sprint 19: Girallon and Xill",
+  "status": "CONTRACT FROZEN; BUILD PATHS DECIDED; NOT IMPLEMENTED; NOT QUALIFIED",
+  "frozenAtUtc": "2026-10-09T23:55:00Z",
+  "authority": {
+    "primarySource": "The official Pathfinder Bestiary entries for Girallon and Xill, and the official Summon Monster and Summon Nature's Ally tables, read from the Archives of Nethys and the Pathfinder SRD at intake rather than from memory.",
+    "whyFetched": "The recalled Girallon profile was wrong in several places: it is Str 19 not 22, 73 hit points from Toughness as well as Constitution, a 1d6 bite with four 1d4 claws rather than 1d6 claws with a 1d8 bite, and its rend needs all four claws, not two. Transcribing from the printed entry is the only way that error does not reach the player.",
+    "rule": "Mechanics are transcribed from the printed stat blocks and the official tables only. Flavour prose, donor units, planning shorthand and test expectations are not authorities. Anything the implementation cannot deliver exactly is raised against this record rather than quietly adapted.",
+    "branch": "codex/expanded-summoning-sprint19-girallon-xill",
+    "masterBase": "95d610348d7d2322ddc00ef04fa06d2cd352dbdd",
+    "releasedBaseline": "v0.0.147",
+    "masterDelta": "NONE. origin/master is exactly the v0.0.147 tag target at intake, and v0.0.147 is the latest release.",
+    "scope": "Sprint 19 only. Giant Scorpion, Bebelith, Giant Crab, Sprint 20, Sprint 21 and any broader phase are out of scope on this branch."
+  },
+  "placement": {
+    "derivedFrom": "The official summon tables decide the tiers; src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs quantity semantics (own tier single, one tier lower 1d3, everything lower 1d4+1) decide the placements, evaluated for parent tiers 1-9.",
+    "tables": {
+      "girallon": "Summon Nature's Ally 5, no alignment subtype. Girallon appears on NO Summon Monster table.",
+      "xill": "Summon Monster 5, Evil subtype. Xill appears on NO Summon Nature's Ally table."
+    },
+    "creatures": {
+      "girallon": {
+        "key": "girallon",
+        "displayName": "Girallon",
+        "summonMonsterTier": null,
+        "summonNaturesAllyTier": 5,
+        "monsterTemplated": false,
+        "summonMonsterRoots": 0,
+        "summonNaturesAllyRoots": 5,
+        "totalRoots": 5,
+        "parentTiers": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "multiplicityCounts": {
+          "One": 1,
+          "OneD3": 1,
+          "OneD4PlusOne": 3
+        }
+      },
+      "xill": {
+        "key": "xill",
+        "displayName": "Xill",
+        "summonMonsterTier": 5,
+        "summonNaturesAllyTier": null,
+        "monsterTemplated": false,
+        "summonMonsterRoots": 5,
+        "summonNaturesAllyRoots": 0,
+        "totalRoots": 5,
+        "parentTiers": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "multiplicityCounts": {
+          "One": 1,
+          "OneD3": 1,
+          "OneD4PlusOne": 3
+        }
+      }
+    },
+    "newRootTotal": 10,
+    "templatePolicy": "Neither creature is templated. The project templates only the Summon Monster placements of creatures the tables mark for the celestial and fiendish templates, which are the animals; Girallon is a magical beast with no Summon Monster entry at all, and Xill is already an evil outsider. No template execution children are allocated, so the ten roots are ten identities and not thirty.",
+    "surfaceBefore": {
+      "uniqueCreatures": 99,
+      "monsterRoster": 90,
+      "monsterPlacements": 519,
+      "naturesAllyRoster": 88,
+      "naturesAllyPlacements": 515,
+      "registeredGeneratedPlacements": 1034,
+      "publishedGeneratedPlacements": 1034,
+      "templatedPlacements": 300,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1063
+    },
+    "surfaceAfter": {
+      "uniqueCreatures": 101,
+      "monsterRoster": 91,
+      "monsterPlacements": 524,
+      "naturesAllyRoster": 89,
+      "naturesAllyPlacements": 520,
+      "registeredGeneratedPlacements": 1044,
+      "templatedPlacements": 300,
+      "retainedNativeWrappers": 29,
+      "visibleChoicesWhileWithheld": 1063,
+      "visibleChoicesAfterPublication": 1073
+    },
+    "suppressionPlan": "Both creature keys are suppressed in SummonVisibilityCatalog from registration until the complete hidden candidate passes. Identities are allocated once at registration and are never reallocated at publication, exactly as Sprint 18 did."
+  },
+  "girallon": {
+    "printedProfile": {
+      "source": "Archives of Nethys, Girallon",
+      "challengeRating": 6,
+      "alignment": "N",
+      "size": "Large",
+      "creatureType": "magical beast",
+      "initiative": 7,
+      "senses": [
+        "darkvision 60 ft.",
+        "low-light vision",
+        "scent"
+      ],
+      "armorClass": 18,
+      "touchArmorClass": 12,
+      "flatFootedArmorClass": 15,
+      "naturalArmor": 6,
+      "hitDice": "7d10+35",
+      "hitPoints": 73,
+      "saves": {
+        "fortitude": 9,
+        "reflex": 8,
+        "will": 5
+      },
+      "speedFeet": 40,
+      "climbSpeedFeet": 40,
+      "attacks": [
+        {
+          "limb": "bite",
+          "count": 1,
+          "attackBonus": 10,
+          "damage": "1d6+4",
+          "primary": true
+        },
+        {
+          "limb": "claw",
+          "count": 4,
+          "attackBonus": 10,
+          "damage": "1d4+4",
+          "primary": true
+        }
+      ],
+      "spaceFeet": 10,
+      "reachFeet": 10,
+      "specialAttacks": [
+        {
+          "name": "rend",
+          "trigger": "all four claws hit the same target",
+          "damage": "1d4+6"
+        }
+      ],
+      "attributes": {
+        "strength": 19,
+        "dexterity": 17,
+        "constitution": 18,
+        "intelligence": 2,
+        "wisdom": 12,
+        "charisma": 7
+      },
+      "baseAttackBonus": 7,
+      "combatManeuverBonus": 12,
+      "combatManeuverDefense": 25,
+      "feats": [
+        "Improved Initiative",
+        "Iron Will",
+        "Skill Focus (Perception)",
+        "Toughness"
+      ],
+      "skills": {
+        "Climb": 12,
+        "Perception": 11,
+        "Stealth": 5
+      }
+    },
+    "derivations": {
+      "attackBonus": "BAB +7 plus Strength +4 minus Large size 1 = +10 on the bite and on each of the four claws; all five are primary.",
+      "attackDamage": "Full Strength modifier on every limb: bite 1d6+4, each claw 1d4+4 at Strength 19.",
+      "rendDamage": "1d4 plus one and a half times the Strength modifier: 1d4+6 at Strength 19. The multiplier is the implementation, not the printed constant, so a buffed or weakened Girallon rends for what its live Strength supports while the printed baseline reproduces 1d4+6 exactly.",
+      "rendTrigger": "ALL FOUR claws, not two. This is the single most important difference from the Dire Ape, whose rend needs two of two.",
+      "armorClass": "10 + 6 natural + 3 Dexterity - 1 size = 18; touch 10 + 3 - 1 = 12; flat-footed 10 + 6 - 1 = 15.",
+      "hitPoints": "7d10 racial dice (38) plus Constitution +4 per die (28) plus Toughness (+7 at 7 hit dice) = 73. The racial roll alone is 38.",
+      "fortitude": "Magical beast 7 HD good Fortitude +5 plus Constitution +4 = +9.",
+      "reflex": "Magical beast 7 HD good Reflex +5 plus Dexterity +3 = +8.",
+      "will": "Magical beast 7 HD poor Will +2 plus Wisdom +1 plus Iron Will +2 = +5.",
+      "combatManeuverBonus": "BAB 7 + Strength 4 + Large size 1 = +12.",
+      "combatManeuverDefense": "10 + BAB 7 + Strength 4 + Dexterity 3 + Large size 1 = 25.",
+      "skillRanks": "A magical beast gets 2 + Intelligence modifier ranks per hit die, minimum 1; at Intelligence 2 that is one rank per die, so seven ranks. They allocate exactly: Stealth 3 ranks (3 + 3 class + 3 Dexterity - 4 size = +5), Perception 4 ranks (4 + 3 class + 1 Wisdom + 3 Skill Focus = +11), and Climb 0 ranks (0 + 4 Strength + 8 racial climb-speed bonus = +12).",
+      "climbCostsNoRanks": "The printed Climb +12 is Strength and the racial climb-speed bonus alone. Unlike the Sprint 18 apes, omitting climb movement here forfeits no printed rank: Girallon spends none on it."
+    },
+    "implementationConsequences": [
+      "One primary bite and four primary claws, every one at +10 and at full Strength.",
+      "Rend only when all four claws hit one target in one attack sequence.",
+      "Climb movement is omitted under the ordinary-map land-use scope, and costs no printed rank.",
+      "Darkvision, low-light vision and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED.",
+      "Improved Initiative and Toughness are ordinary native feats and are granted as such.",
+      "No four-arm framework: the four claws are four entries in this one creature's additional-limb list, the same list the Dire Ape uses for two."
+    ],
+    "bodyPlan": {
+      "primaryHand": "GirallonBite1d6",
+      "additionalLimbs": [
+        "GirallonClaw1d4",
+        "GirallonClaw1d4",
+        "GirallonClaw1d4",
+        "GirallonClaw1d4"
+      ],
+      "additionalSecondaryLimbs": [],
+      "rationale": "Exactly the Dire Ape layout with four claws instead of two. Sprint 18 proved in game that a primary hand plus additional limbs yields equal primary attacks at full Strength once the creature carries the full-Strength correction, and that creature-owned weapons are required so the printed Large dice are not scaled up a step.",
+      "weaponsAreCreatureOwned": "Required. Sprint 18's guarded review measured the shared native 1d6 bite and 1d4 claw scaling to 1d8 and 1d6 for a Large wielder. Girallon is Large and prints 1d6 and 1d4, so it owns its own pair with overridden dice."
+    },
+    "skillPlan": {
+      "representedExactly": {
+        "Perception": 11,
+        "Stealth": 5
+      },
+      "allocation": {
+        "perceptionRanks": 4,
+        "stealthRanks": 3,
+        "climbRanks": 0
+      },
+      "omitted": {
+        "Climb": 12
+      },
+      "omissionReason": "Kingmaker has no ordinary-map Climb consumer for a summoned unit and merges Climb into Athletics, whose live consumers are not the printed climb. Girallon spends no rank on Climb, so nothing is forfeited and nothing is reallocated.",
+      "notSubstituted": [
+        "Mobility is not substituted for Climb.",
+        "Athletics is not raised to simulate the racial climb bonus."
+      ]
+    },
+    "sharedCarrierDecision": "CORRECTED AT IMPLEMENTATION INTAKE. The first reading of this decision said the Sprint 18 full-Strength carrier would be renamed for what it does. That is wrong and was caught before any code was written. Its symbol KMG.Summoning.Natural.Primate.FullStrengthLimbs shipped in v0.0.147, and this project allocates a blueprint identity once against a symbol in an append-only ledger. Renaming the symbol would retire a released GUID and mint a new one for the same fact, which is exactly the move the ledger discipline exists to prevent and which could strand a save that references the released fact. The released symbol therefore stays, historical name and all, with a comment recording why, and Girallon is simply granted the same existing feature. The name is slightly wrong and the identity is right, which is the correct way round.",
+    "rendCarrierDecision": "The rend state machine is generalised from two hard-coded claws to a claw count, and the two internal classes that hold it are renamed to say claw rather than dire ape, because they are internal implementation and carry no identity. The blueprints are not merged: the released KMG.Summoning.Natural.DireApe.Rend keeps its identity and its two claws, and Girallon gets a new KMG.Summoning.Natural.Girallon.Rend at four. One feature per creature, one shared state machine, no general multi-hit framework."
+  },
+  "xill": {
+    "printedProfile": {
+      "source": "Archives of Nethys, Xill",
+      "challengeRating": 6,
+      "alignment": "LE",
+      "size": "Medium",
+      "creatureType": "outsider",
+      "subtypes": [
+        "evil",
+        "extraplanar"
+      ],
+      "initiative": 8,
+      "senses": [
+        "darkvision 60 ft."
+      ],
+      "armorClass": 21,
+      "touchArmorClass": 14,
+      "flatFootedArmorClass": 17,
+      "armorClassBreakdown": "+4 Dexterity, +5 natural, +2 shield",
+      "naturalArmor": 5,
+      "shieldBonus": 2,
+      "hitDice": "9d10+18",
+      "hitPoints": 67,
+      "saves": {
+        "fortitude": 8,
+        "reflex": 10,
+        "will": 6
+      },
+      "spellResistance": 17,
+      "speedFeet": 40,
+      "meleeRoutines": {
+        "armed": "short swords +13/+13/+8 (1d6+3/19-20), claw +13 (1d4+3 plus grab), bite +7 (1d3+1 plus paralysis)",
+        "natural": "4 claws +13 (1d4+3 plus grab), bite +12 (1d3+3 plus paralysis)"
+      },
+      "ranged": "2 longbows +13 (1d8/x3)",
+      "spaceFeet": 5,
+      "reachFeet": 5,
+      "specialAttacks": [
+        "implant",
+        "paralysis (1d4 hours, DC 16)"
+      ],
+      "attributes": {
+        "strength": 17,
+        "dexterity": 18,
+        "constitution": 14,
+        "intelligence": 15,
+        "wisdom": 12,
+        "charisma": 11
+      },
+      "baseAttackBonus": 9,
+      "combatManeuverBonus": 12,
+      "combatManeuverBonusGrapple": 16,
+      "combatManeuverDefense": 26,
+      "feats": [
+        "Combat Reflexes",
+        "Improved Initiative",
+        "Iron Will",
+        "Weapon Focus (claw)",
+        "Weapon Focus (short sword)"
+      ],
+      "skills": {
+        "Acrobatics": 16,
+        "Bluff": 12,
+        "Intimidate": 12,
+        "Knowledge (arcana)": 14,
+        "Knowledge (planes)": 14,
+        "Perception": 13,
+        "Sense Motive": 13,
+        "Stealth": 14
+      },
+      "languages": [
+        "Common",
+        "Infernal"
+      ],
+      "specialQualities": [
+        "multiweapon mastery",
+        "planewalk"
+      ]
+    },
+    "derivations": {
+      "attackBonus": "Claws: BAB +9 plus Strength +3 plus Weapon Focus (claw) +1 = +13. Bite: BAB +9 plus Strength +3 = +12, with no Weapon Focus.",
+      "attackDamage": "Full Strength on every natural limb, which is what multiweapon mastery says in so many words: claws 1d4+3 and bite 1d3+3 at Strength 17. The armed routine's bite is 1d3+1 because it is secondary there; the natural routine's bite is 1d3+3 because it is not.",
+      "armorClass": "10 + 5 natural + 4 Dexterity + 2 shield = 21; touch 10 + 4 = 14; flat-footed 10 + 5 + 2 = 17. The +2 is a shield bonus from carried gear, not natural armour.",
+      "hitPoints": "9d10 racial dice (49) plus Constitution +2 per die (18) = 67.",
+      "fortitude": "Outsider 9 HD good Fortitude +6 plus Constitution +2 = +8.",
+      "reflex": "Outsider 9 HD good Reflex +6 plus Dexterity +4 = +10.",
+      "will": "Outsider 9 HD poor Will +3 plus Wisdom +1 plus Iron Will +2 = +6.",
+      "combatManeuverBonus": "BAB 9 + Strength 3 = +12; grapple +16 because grab adds +4.",
+      "combatManeuverDefense": "10 + BAB 9 + Strength 3 + Dexterity 4 = 26."
+    },
+    "openQuestionsForImplementation": [
+      "Xill is an outsider, and this project has no outsider hit-die class: the natural-profile builder supports Animal, Vermin, MagicalBeast, Humanoid and Plant only. Either an outsider class is added to that closed map, or Xill is built on the special-builder path the Salamander and the other outsiders use. The choice is recorded before any code is written.",
+      "The armed routine wields four short swords and two longbows through multiweapon mastery. Kingmaker's body has one primary hand, one secondary hand and additional limbs, and its two-weapon rules apply to the two hands only. Whether the armed routine can be expressed at all is an implementation question, and if it cannot, the natural four-claw routine is implemented exactly and the armed routine is recorded as unrepresented rather than approximated.",
+      "The printed +2 shield bonus comes from carried gear. A summoned Xill with no gear would read AC 19, not 21. Whether the shield bonus is carried, and how, is decided before the profile is frozen in code.",
+      "Implant lays eggs in a helpless creature and deals Constitution damage over 24 hours. It has no faithful bounded carrier here and is expected to be recorded as omitted rather than approximated.",
+      "Planewalk is ethereal travel with no ordinary-map consumer and is expected to be omitted.",
+      "Eight printed skills across Acrobatics, Bluff, Intimidate, two Knowledges, Perception, Sense Motive and Stealth must be mapped onto Kingmaker's skill set honestly, with every unmapped skill recorded rather than folded into a neighbour."
+    ],
+    "resolvedOpenQuestions": {
+      "hitDieClass": "RESOLVED: special-builder path on the native outsider class. No Outsider entry is added to the natural builder.",
+      "armedRoutine": "RESOLVED AS UNREPRESENTED. The four-short-sword and two-longbow routines need Kingmaker to accept six wielded weapons on a body that has two hands and applies its two-weapon rules to those two hands only. The natural four-claw and bite routine is implemented exactly, and the armed routine is recorded as unrepresented under MULTIWEAPON_ARMED_ROUTINE_UNREPRESENTED rather than approximated with a substitute that would print the wrong numbers.",
+      "shieldBonus": "RESOLVED AS CARRIED. The printed AC 21 includes a +2 shield bonus from gear a summoned Xill would not otherwise have, and dropping it would make the creature read AC 19 against a stat block that says 21. The +2 is carried as a shield bonus so that armour class, touch and flat-footed reproduce 21, 14 and 17 exactly, and so that it behaves like a shield bonus rather than natural armour when something suppresses one and not the other.",
+      "implant": "RESOLVED AS OMITTED under IMPLANT_UNREPRESENTED. Egg-laying in a helpless creature with Constitution damage over the following day has no faithful bounded carrier here and no ordinary-map consumer; it is omitted rather than approximated.",
+      "planewalk": "RESOLVED AS OMITTED under ETHEREAL_TRAVEL_UNMODELED. Ethereal travel has no ordinary-map consumer.",
+      "skills": "PENDING the skill-mapping step, which maps each of the eight printed skills onto a Kingmaker skill or records it as unmapped. Nothing is folded into a neighbouring skill to hide a gap.",
+      "fullStrengthCarrier": "Xill is built by the special builder, which owns its own facts, so it gets its own full-Strength carrier there rather than reaching across into the natural builder released feature. Same correction, same reason, separate blueprint."
+    }
+  },
+  "sharedWithSprint18": {
+    "fullStrengthCarrier": "KMG.Summoning.Natural.Primate.FullStrengthLimbs exists and is granted to exactly the two apes. Girallon and Xill need the same correction, and the honest choice is either to widen that carrier's grant set and rename it for what it does, or to give each creature its own. Whichever is chosen is recorded; neither becomes a general limb framework.",
+    "rendTracker": "DireApeRendTracker is a pure state machine over two claws. Girallon needs four. Extending it to a claw count, scoped to the creatures that print a claw rend, is a bounded change; inventing a general multi-hit framework is not."
+  },
+  "candidateBudget": {
+    "hiddenCandidate": {
+      "maximum": 1,
+      "used": 0
+    },
+    "productCorrectionCandidate": {
+      "maximum": 1,
+      "used": 0
+    },
+    "observationOnlyCorrection": {
+      "maximum": 1,
+      "used": 0
+    }
+  },
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "buildPathDecisions": {
+    "investigatedAtIntake": "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs closes its hit-die classes to Animal, Vermin, MagicalBeast, Humanoid and Plant, and every outsider this project ships is built instead by src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs through its OutsiderLevels helper, which binds the native outsider character class and then corrects the creature-specific save pair and racial hit points with a per-creature racial-profile component. The Salamander is the nearest precedent: a Summon Monster 5 outsider with project-owned rules and an original production view.",
+    "girallon": {
+      "path": "natural-profile",
+      "hitDieClass": "MagicalBeast",
+      "precedent": "Owlbear, the existing Large MagicalBeast natural profile.",
+      "why": "Girallon is a magical beast with no special ability outside its rend, and the natural builder already produces exactly this shape: racial hit dice, printed scores, a primary natural weapon, additional primary limbs, native feats and profile-controlled skill ranks. Nothing about it needs the special builder."
+    },
+    "xill": {
+      "path": "special-builder",
+      "hitDieBinding": "OutsiderLevels(library, 9)",
+      "racialProfileComponent": "SummonXillRacialProfile, modelled on SummonSalamanderRacialProfile",
+      "why": "Xill is an outsider, and adding an Outsider entry to the natural builder closed hit-die map would widen a shared surface for one creature while still leaving its grab, paralysis and spell resistance to the special builder. Following the Salamander keeps the change inside the builder that already owns outsiders.",
+      "reusedMachinery": [
+        "OutsiderLevels for the native outsider class and racial hit dice.",
+        "A racial-profile component for the good Fortitude and Reflex, poor Will pair and the printed racial hit points, set once at creation on racial bases only.",
+        "AddSpellResistance for spell resistance 17, as the Shadow Demon and Succubus already do.",
+        "The existing grab and hold lifecycle the Constrictor Snake and Salamander share, for the claws grab.",
+        "The native Weapon Focus (claw) feat, already mapped as WeaponFocusClaw in the natural builder feat table."
+      ],
+      "newMachinery": [
+        "A paralysis carrier on the bite. No paralysis carrier exists in this project, so this is the sprint one genuinely new rules graph: a Fortitude save at the printed DC 16 and, on a failure, a native paralysis condition. The printed 1d4-hour duration has no ordinary-map meaning for a summon that lasts rounds, so the duration is recorded as bounded to the summon own lifetime rather than silently reinterpreted."
+      ]
+    }
+  },
+  "artDecision": {
+    "donorRig": "The Sprint 18 census rig is reused: native unit b98735a1737ae494dbe5cbeca1c7c083 with prefab 0bc98460fca38964aae3af6ad5c655ee, the 61-bone Pelvis-rooted biped whose bind pose the Sprint 18 geometry is already authored against.",
+    "whyNoNewCensus": "Both Sprint 19 creatures are bipeds of the same broad build as the Sprint 18 apes, and the rig that census chose is already captured, validated and shipping. Re-running a guarded capture to re-derive the same answer would spend an owner runtime transaction to learn nothing. The reuse is verified rather than assumed: the capture bone graph and bind height are re-checked against the installed runtime at intake, and the census decision is recorded as reused rather than re-run.",
+    "fourArmProblem": "Both creatures print four arms and the donor rig has two. No four-arm rig is built, no bone is invented and no general arbitrary-limb or animation framework is written, because all three are out of scope.",
+    "fourArmSolution": "Each side two arms are skinned to that side single existing driver chain, with the lower arm geometry offset down and out from the upper arm. Both right arms therefore swing together on the donor right-arm animation, and both left arms on its left. For a creature whose printed routine is four claws striking one target in one sequence this reads correctly, and it costs no new rig.",
+    "recordedLimitation": "FOUR_ARMS_SHARE_TWO_DRIVER_CHAINS",
+    "limitationHonesty": "The lower arms cannot be posed independently of the upper arms. This is stated in the asset provenance and in the release notes rather than left for a player to notice."
+  }
+}

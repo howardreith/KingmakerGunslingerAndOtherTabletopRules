@@ -66,7 +66,19 @@ namespace KingmakerGunslinger.Summoning
                 // has 29 bones, no hands, no jaw and no toes, and is a
                 // quadruped bear; the Athach is Huge and equally handless.
                 "ape|b98735a1737ae494dbe5cbeca1c7c083|0",
-                "dire-ape|b98735a1737ae494dbe5cbeca1c7c083|0"
+                "dire-ape|b98735a1737ae494dbe5cbeca1c7c083|0",
+                // Sprint 19 reuses that same census answer rather than
+                // spending an owner runtime transaction to re-derive it. Both
+                // creatures are bipeds of the same broad build, and the
+                // capture was re-decoded at intake: 61 of 61 bind-pose bones,
+                // Pelvis root, 56 drivers, bind height 4.3781 inside the
+                // surveyed gate. Neither creature can clone a native body
+                // either - the library has no four-armed primate and no xill -
+                // so both bodies are original geometry, and both are marked
+                // borrowed rather than dedicated because they ride a rig whose
+                // own animation clips they do not replace.
+                "girallon|b98735a1737ae494dbe5cbeca1c7c083|0",
+                "xill|b98735a1737ae494dbe5cbeca1c7c083|0"
             });
         }
 

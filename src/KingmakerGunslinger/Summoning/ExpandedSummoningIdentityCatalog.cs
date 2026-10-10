@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 99;
-        internal const int LogicalAbilityCount = 1034;
+        internal const int UnitCount = 101;
+        internal const int LogicalAbilityCount = 1044;
         internal const int TemplatedPlacementCount = 300;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
         // bite and claw so their printed Large dice are not scaled up a
         // step, which the guarded review measured the shared native
         // weapons doing.
-        internal const int SpecialIdentityCount = 209;
+        internal const int SpecialIdentityCount = 219;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -328,6 +328,27 @@ namespace KingmakerGunslinger.Summoning
             // only subscribed when a unit fact carries it, so the
             // full-Strength correction needs a fact of its own.
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Primate.FullStrengthLimbs", "BlueprintFeature"));
+            // Sprint 19. Girallon is a Large magical beast that prints a 1d6
+            // bite and 1d4 claws, so like the Dire Ape it owns its own pair:
+            // the shared natives do not override their damage dice and the
+            // engine would scale them one step up for a Large wielder. Xill
+            // is Medium and would not be scaled, but it owns its pair too,
+            // because its claws carry grab and its bite carries paralysis and
+            // neither belongs on a weapon other creatures share. Each
+            // creature owns an inspectable unit type. Girallon takes the
+            // existing Sprint 18 full-Strength carrier rather than a renamed
+            // copy of it; Xill is built by the special builder, which owns
+            // its own facts, so it gets its own.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Girallon.Bite1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Girallon.Claw1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Girallon.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Girallon.Rend", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.Claw1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.Bite1d3", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.Paralysis", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Xill.FullStrengthLimbs", "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }

@@ -81,6 +81,14 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.DireApe.UnitType";
         private const string DireApeRendSymbol =
             "KMG.Summoning.Special.DireApe.Rend";
+        private const string GirallonBite1d6Symbol =
+            "KMG.Summoning.Natural.Girallon.Bite1d6";
+        private const string GirallonClaw1d4Symbol =
+            "KMG.Summoning.Natural.Girallon.Claw1d4";
+        private const string GirallonUnitTypeSymbol =
+            "KMG.Summoning.Natural.Girallon.UnitType";
+        private const string GirallonRendSymbol =
+            "KMG.Summoning.Special.Girallon.Rend";
         private const string Talon2d6Symbol =
             "KMG.Summoning.Natural.Talon2d6";
         private const string WaspSting1d8Symbol =
@@ -386,6 +394,27 @@ namespace KingmakerGunslinger.Blueprints
                         ExpandedSummoningCatalog.All.Single(creature =>
                             creature.Key == PrimateRulesPolicy.DireApeKey))),
                 Require<BlueprintItemWeapon>(bySymbol, DireApeClaw1d4Symbol));
+            // Sprint 19. The Girallon is Large and prints a 1d6 bite with
+            // four 1d4 claws, so it owns both weapons for the same reason the
+            // Dire Ape does: the shared natives carry no damage-dice override
+            // and the engine scales them one step up for a Large wielder.
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                    library, NativeBite1d6Guid, "1d6 bite"),
+                Require<BlueprintItemWeapon>(bySymbol, GirallonBite1d6Symbol),
+                GirallonBite1d6Symbol, 1, DiceType.D6);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                    library, NativeClaw1d4Guid, "1d4 claw"),
+                Require<BlueprintItemWeapon>(bySymbol, GirallonClaw1d4Symbol),
+                GirallonClaw1d4Symbol, 1, DiceType.D4);
+            ConfigureGirallonUnitType(Require<BlueprintUnitType>(bySymbol,
+                GirallonUnitTypeSymbol));
+            ConfigureGirallonRend(
+                Require<BlueprintFeature>(bySymbol, GirallonRendSymbol),
+                Require<BlueprintUnit>(bySymbol,
+                    ExpandedSummoningIdentityCatalog.UnitSymbol(
+                        ExpandedSummoningCatalog.All.Single(creature =>
+                            creature.Key == GirallonRulesPolicy.GirallonKey))),
+                Require<BlueprintItemWeapon>(bySymbol, GirallonClaw1d4Symbol));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
                 BlueprintBuff>(library, NativeFilthFeverGuid,
                     "native Filth Fever disease payload");
@@ -833,6 +862,58 @@ namespace KingmakerGunslinger.Blueprints
                 null);
         }
 
+        private static void ConfigureGirallonUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(GirallonUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Girallon.UnitType.Name", "Girallon");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Girallon.UnitType.Description",
+                "A white-furred four-armed ape the size of a gorilla and far stronger, which tears a held foe apart with all four sets of claws at once. Darkvision, low-light vision and scent are unmodeled under the accepted passive-sense engine limitation.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
+        /// <summary>
+        /// The Girallon's rend, which needs all four claws rather than two.
+        /// The engine owns the damage exactly as it does for the Dire Ape: its
+        /// own <c>RendFeature</c> deals 1d4 plus one and a half times the live
+        /// Strength modifier as one damage event, which is the printed 1d4+6
+        /// for an unmodified Girallon.
+        ///
+        /// <para>Only the decision is this project's, and it is the same
+        /// decision Sprint 18 already wrote, given a claw count instead of
+        /// being copied. The two creatures keep separate features, so the Dire
+        /// Ape still rends on two and the Girallon on four, and the released
+        /// Dire Ape feature keeps its own identity.</para>
+        /// </summary>
+        private static void ConfigureGirallonRend(BlueprintFeature feature,
+            BlueprintUnit girallon, BlueprintItemWeapon claw)
+        {
+            var native = ScriptableObject.CreateInstance<
+                Kingmaker.Designers.Mechanics.Facts.RendFeature>();
+            native.RendDamage = new DiceFormula(
+                GirallonRulesPolicy.RendDiceCount,
+                ParseDie(GirallonRulesPolicy.RendDieSides));
+            native.RendType = claw.Type.DamageType.Copy();
+            var gate = ScriptableObject.CreateInstance<DireApeRendGate>();
+            gate.OwningBlueprint = girallon;
+            gate.Claw = claw;
+            gate.RendClawCount = GirallonRulesPolicy.ClawCount;
+            feature.name = InternalName(GirallonRendSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { native, gate };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Girallon.Rend.Name", "Rend"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Girallon.Rend.Description",
+                    "When all four of this girallon's claws hit the same creature in one attack sequence, it tears the wound open for 1d4 plus one and a half times its Strength bonus - 1d4+6 for an unmodified girallon. Three claws, four claws on different creatures, a bite standing in for a claw, and hits in separate commands or turns do not rend, and no sequence rends more than once."),
+                null);
+        }
+
         private static DiceType ParseDie(int sides)
         {
             DiceType parsed;
@@ -1103,6 +1184,8 @@ namespace KingmakerGunslinger.Blueprints
                         GiantAntRacialSkillsSymbol)
                     : fact == "DireApeRend"
                     ? Require<BlueprintFeature>(bySymbol, DireApeRendSymbol)
+                    : fact == "GirallonRend"
+                    ? Require<BlueprintFeature>(bySymbol, GirallonRendSymbol)
                     : fact == "PrimateFullStrengthLimbs"
                     ? Require<BlueprintFeature>(bySymbol, PrimateFullStrengthSymbol)
                     : BaseUnitFactKeys.Contains(fact)
