@@ -328,6 +328,40 @@ def validate_contract(root: Path) -> None:
         raise AssertionError("The frozen printed Xill profile changed")
 
 
+def validate_shipped_bodies_reach_the_release_build(root: Path) -> None:
+    """Every shipped creature body must be required and copied by the build.
+
+    Sprint 19 shipped four body files that a clean release build produced none
+    of: the builder copied them in the local path and the project file never
+    declared them, so a locally validated 346-member package looked complete.
+    The build-output validator caught it, and this check is the offline
+    version of that catch.
+
+    Two textual requirements, both on scripts the release actually runs:
+    validate-build-output.ps1 must require the file, so no build path can omit
+    it silently, and Build-Local.ps1 must copy it, so the provenance-checked
+    release build produces it. Deliberately general - any shipped body, this
+    sprint's or a later one's.
+    """
+    required = (root / "scripts/validate-build-output.ps1").read_text(
+        encoding="utf-8-sig")
+    builder = (root / "scripts/Build-Local.ps1").read_text(encoding="utf-8-sig")
+    bodies = sorted((root / "assets").glob("*/*-mesh.json")) + \
+        sorted((root / "assets").glob("*/*-albedo.png"))
+    if not bodies:
+        raise AssertionError("No shipped creature bodies were found at all")
+    for body in bodies:
+        relative = "assets\\" + body.parent.name + "\\" + body.name
+        if relative not in required:
+            raise AssertionError(
+                "A shipped body is not required of the build output, so a "
+                "release could omit it silently: " + relative)
+        if body.parent.name not in builder or body.name.split("-")[0] not in builder:
+            raise AssertionError(
+                "A shipped body is never copied by the release builder: "
+                + relative)
+
+
 def validate(root: Path) -> None:
     identities = validate_identity_append(root)
     protected_master = preserved_files(root, MASTER, MASTER_PROTECTED)
@@ -393,6 +427,7 @@ def validate(root: Path) -> None:
     validate_suppression(root)
     validate_icons(root)
     validate_contract(root)
+    validate_shipped_bodies_reach_the_release_build(root)
 
     count = len(re.findall(
         r'\bCase\("',
