@@ -557,6 +557,243 @@ def ape(dire=False):
         obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
 
 
+def girallon():
+    """Sprint 19. A white four-armed ape, and not the Sprint 18 gorilla with
+    two arms added: a girallon stands upright rather than knuckle-walking, so
+    its spine is vertical, its haunches are under it rather than behind it, and
+    its weight sits on its legs.
+
+    The four arms are the whole silhouette, which sets every proportion here.
+    Both pairs are long and deliberately thin, and the two shoulders on a side
+    are further apart than their metaball fields are wide - the first pass put
+    them 0.80 apart with 0.82 radii and the field fused them into a single
+    slab with no arms in it at all. The lower pair hangs further forward so the
+    four hands land at four distinct heights at three-quarter view.
+
+    Authored at the size the metaball field was tuned for and scaled as
+    objects, not as numbers: a metaball element's field falls off over its
+    radius, so rescaling the authored values pulls merged masses apart."""
+    fur = material("Fur", (0.82, 0.81, 0.78), 0.92,
+                   noise=(10.0, 0.55, (0.56, 0.55, 0.53)))
+    shade = material("Shade", (0.50, 0.49, 0.47), 0.9,
+                     noise=(16.0, 0.5, (0.32, 0.31, 0.30)))
+    face = material("Face", (0.16, 0.11, 0.10), 0.6, subsurface=0.08)
+    nail = material("Claw", (0.18, 0.17, 0.16), 0.28)
+    eye = material("Eye", (0.82, 0.24, 0.12), 0.25,
+                   emission=(0.92, 0.22, 0.08), emission_strength=0.8)
+    pupil = material("Pupil", (0.012, 0.01, 0.01), 0.2)
+    tooth = material("Tooth", (0.92, 0.89, 0.80), 0.4)
+    mouth = material("MouthDark", (0.030, 0.014, 0.012), 0.6)
+
+    before = set(bpy.context.scene.objects)
+
+    body = Blob("Body", fur, 0.05)
+    # An upright trunk, narrower than the arm span so the arms carry the
+    # outline: hips under the shoulders, a deep chest, a waist drawn in.
+    body.ball((0.0, 0.12, -1.50), 1.05, (1.00, 0.95, 0.78), axis=(1, 0, 0))
+    body.ball((0.0, 0.02, -0.60), 0.92, (1.00, 0.90, 0.78), axis=(1, 0, 0))
+    body.ball((0.0, -0.10, 0.45), 1.12, (1.18, 0.92, 0.85), axis=(1, 0, 0))
+    body.ball((0.0, -0.18, 1.25), 0.88, (1.10, 0.84, 0.55), axis=(1, 0, 0))
+    body.ball((0.0, -0.22, 1.78), 0.46, (0.48, 0.44, 0.30), axis=(1, 0, 0))
+
+    # Both arm pairs. The two shoulders on a side sit 1.30 apart with 0.50
+    # radii, so their fields stay separate and four arms actually read.
+    hands = []
+    for s in (-1, 1):
+        for upper in (True, False):
+            shoulder_z = 1.15 if upper else -0.15
+            reach = 1.0 if upper else 0.90
+            forward = -0.10 if upper else -0.70
+            body.ball((s * 1.38, forward * 0.35, shoulder_z), 0.50)
+            elbow = (s * 1.80 * reach, forward - 0.30, shoulder_z - 1.25)
+            wrist = (s * 1.58 * reach, forward - 0.72,
+                     shoulder_z - 2.40 * reach)
+            body.chain((s * 1.46, forward * 0.35, shoulder_z - 0.22),
+                       elbow, 0.34, 0.27, 6)
+            body.chain(elbow, wrist, 0.27, 0.22, 6)
+            hands.append((s, wrist))
+        # Standing legs, long enough to carry the body rather than nubs.
+        body.ball((s * 0.68, 0.10, -1.95), 0.56)
+        body.chain((s * 0.70, 0.05, -2.20), (s * 0.78, -0.05, -3.35),
+                   0.46, 0.34, 6)
+        body.ball((s * 0.80, -0.38, -3.48), 0.30, (0.62, 1.15, 0.38),
+                  axis=(0, 1, 0))
+
+    head = Blob("Head", fur, 0.04)
+    # A broad flat skull, carried high and forward so it reads at icon size.
+    # The first pass made it a third of this and the creature read as a toy.
+    head.ball((0.0, -0.34, 2.14), 1.00, (1.02, 0.92, 0.80), axis=(1, 0, 0))
+    # A low sagittal crest, and a brow heavy enough that the eyes sit under
+    # it rather than on the front of a round skull.
+    head.ball((0.0, -0.26, 2.62), 0.34, (0.46, 0.86, 0.20), axis=(1, 0, 0))
+    head.ball((0.0, -1.10, 2.26), 0.52, (1.34, 0.40, 0.30), axis=(1, 0, 0))
+    head.ball((0.0, -1.56, 1.84), 0.64, (0.40, 1.05, 0.50), axis=(0, 1, 0))
+    head.ball((0.0, -1.70, 1.50), 0.48, (0.36, 0.72, 0.28), axis=(0, 1, 0))
+    for s in (-1, 1):
+        # Small ears flat against the skull, not round tabs beside it.
+        head.ball((s * 0.86, -0.18, 2.06), 0.17, (0.5, 0.9, 1.0),
+                  axis=(1, 0, 0))
+
+    sphere("Face", (0.0, -1.24, 1.98), (0.54, 0.38, 0.56), face, (10, 0, 0))
+    for s in (-1, 1):
+        sphere("Eye%d" % s, (s * 0.30, -1.44, 2.12), (0.12, 0.10, 0.11), eye)
+        sphere("Pupil%d" % s, (s * 0.30, -1.54, 2.12),
+               (0.06, 0.05, 0.055), pupil)
+    sphere("Nostrils", (0.0, -1.96, 1.82), (0.18, 0.08, 0.07), mouth)
+    sphere("Mouth", (0.0, -1.92, 1.52), (0.34, 0.08, 0.11), mouth)
+    # Four canines rather than two: a girallon is a predator, and the open
+    # mouth is most of what separates it from an ape at icon size.
+    for s in (-1, 1):
+        cone_along("Canine%d" % s, (s * 0.22, -1.90, 1.58),
+                   (0.0, -0.16, -1.0), 0.32, 0.07, tooth)
+        cone_along("LowerCanine%d" % s, (s * 0.18, -1.88, 1.44),
+                   (0.0, -0.16, 1.0), 0.24, 0.055, tooth)
+
+    # Four clawed hands, three claws each. The claws are the printed attack,
+    # so they are geometry and not a tint.
+    for index, (s, wrist) in enumerate(hands):
+        hand = (wrist[0], wrist[1] - 0.16, wrist[2] - 0.20)
+        sphere("Hand%d" % index, hand, (0.36, 0.34, 0.26), fur)
+        for digit in range(3):
+            offset = (digit - 1) * 0.18
+            cone_along("Claw%d%d" % (index, digit),
+                       (hand[0] + s * offset, hand[1] - 0.22, hand[2] - 0.08),
+                       (s * 0.18, -0.70, -0.68), 0.40, 0.065, nail)
+
+    # A grey mantle across the upper shoulders, as geometry rather than a
+    # tint, so a nearly white creature still has a silhouette against a pale
+    # rim. It sits above the upper arm sockets and clear of the lower pair.
+    for s in (-1, 1):
+        cone_along("Mantle%d" % s, (s * 0.62, -0.06, 1.34),
+                   (s * 0.42, 0.88, 0.08), 0.88, 0.26, shade, 0.05)
+
+    # Frame it. The creature stands about seven authored units from sole to
+    # crest, centred near -0.3, so this is the single place its size and
+    # standing height meet the roster framing. The second pass left it a
+    # half unit above the camera target with empty space beneath it.
+    fit = 0.44
+    rise = 0.18
+    for obj in set(bpy.context.scene.objects) - before:
+        obj.scale = tuple(value * fit for value in obj.scale)
+        obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
+
+def xill():
+    """Sprint 19. A chitinous four-armed outsider: not a primate at all, so
+    nothing here is borrowed from the Girallon. The trunk is a segmented
+    insect thorax over a narrow abdomen, the limbs are thin and jointed rather
+    than muscled, the head is a wedge on a real neck with mandibles and four
+    compound eyes, and all four hands end in hooked claws.
+
+    The first pass sank the head into the shoulders, merged the four eyes into
+    one green mass and authored the thoracic plates inside the trunk where
+    nothing could see them. The head is larger and lifted on a neck now, the
+    eyes are smaller and spaced, and the plates sit proud of the chest."""
+    chitin = material("Chitin", (0.52, 0.17, 0.09), 0.38,
+                      noise=(12.0, 0.4, (0.34, 0.10, 0.05)))
+    plate = material("Plate", (0.70, 0.28, 0.12), 0.28,
+                     noise=(18.0, 0.35, (0.46, 0.17, 0.07)))
+    joint = material("Joint", (0.20, 0.07, 0.04), 0.55)
+    nail = material("Claw", (0.13, 0.11, 0.10), 0.25)
+    eye = material("Eye", (0.05, 0.42, 0.16), 0.2,
+                   emission=(0.06, 0.52, 0.18), emission_strength=0.6)
+    mouth = material("Maw", (0.030, 0.012, 0.010), 0.6)
+
+    before = set(bpy.context.scene.objects)
+
+    body = Blob("Body", chitin, 0.045)
+    # Narrow hips, a tall thorax that widens where the arm pairs anchor, and
+    # a neck that actually lifts the head clear of the shoulders.
+    body.ball((0.0, 0.10, -1.45), 0.82, (0.82, 0.80, 0.72), axis=(1, 0, 0))
+    body.ball((0.0, 0.00, -0.70), 0.80, (0.80, 0.78, 0.68), axis=(1, 0, 0))
+    body.ball((0.0, -0.12, 0.15), 1.02, (1.06, 0.82, 0.68), axis=(1, 0, 0))
+    body.ball((0.0, -0.18, 0.95), 0.96, (1.10, 0.80, 0.60), axis=(1, 0, 0))
+    # A neck that actually bridges thorax and head. The second pass left a
+    # visible gap and the head read as a separate object floating above the
+    # shoulders.
+    body.ball((0.0, -0.24, 1.52), 0.40, (0.46, 0.46, 0.46), axis=(1, 0, 0))
+    body.chain((0.0, -0.26, 1.58), (0.0, -0.34, 2.00), 0.34, 0.30, 4)
+
+    # Two arm pairs, 1.24 apart with 0.40 radii so their fields stay clear.
+    hands = []
+    for s in (-1, 1):
+        for upper in (True, False):
+            shoulder_z = 1.02 if upper else -0.22
+            reach = 1.0 if upper else 0.92
+            forward = -0.20 if upper else -0.66
+            body.ball((s * 1.12, forward * 0.25, shoulder_z), 0.40)
+            elbow = (s * 1.68 * reach, forward - 0.46, shoulder_z - 0.92)
+            wrist = (s * 1.26 * reach, forward - 0.92,
+                     shoulder_z - 2.02 * reach)
+            body.chain((s * 1.20, forward * 0.25, shoulder_z - 0.14),
+                       elbow, 0.26, 0.19, 6)
+            body.chain(elbow, wrist, 0.19, 0.15, 6)
+            sphere("Elbow%d%d" % (s, 1 if upper else 0), elbow,
+                   (0.17, 0.17, 0.17), joint)
+            hands.append((s, wrist))
+        # Digitigrade legs: a long thigh, a reversed shin, a narrow foot.
+        body.ball((s * 0.58, 0.08, -1.72), 0.44)
+        knee = (s * 0.72, 0.40, -2.52)
+        body.chain((s * 0.60, 0.05, -1.92), knee, 0.34, 0.24, 6)
+        body.chain(knee, (s * 0.70, -0.34, -3.32), 0.24, 0.16, 6)
+        sphere("Knee%d" % s, knee, (0.22, 0.22, 0.22), joint)
+        sphere("Foot%d" % s, (s * 0.72, -0.62, -3.40), (0.18, 0.56, 0.14),
+               chitin)
+
+    head = Blob("Head", plate, 0.035)
+    # A forward wedge carried on the neck, large enough to read at icon size
+    # and low enough to sit on the shoulders rather than hover over them.
+    head.ball((0.0, -0.44, 1.98), 0.80, (0.88, 0.98, 0.62), axis=(1, 0, 0))
+    head.ball((0.0, -1.16, 1.80), 0.56, (0.60, 0.92, 0.42), axis=(0, 1, 0))
+    head.ball((0.0, -0.16, 2.16), 0.42, (0.78, 0.54, 0.30), axis=(1, 0, 0))
+
+    # Four compound eyes: a large pair forward and a small pair above and
+    # outboard, spaced so they read as four and not as one mass.
+    # Four compound eyes on the FRONT of the wedge, where a face is, rather
+    # than on the sides of the skull where the second pass put them and they
+    # read as two pale blobs stuck on.
+    for s in (-1, 1):
+        sphere("EyeBig%d" % s, (s * 0.26, -1.30, 1.90),
+               (0.14, 0.12, 0.13), eye)
+        sphere("EyeSmall%d" % s, (s * 0.40, -1.06, 2.10),
+               (0.085, 0.08, 0.085), eye)
+    sphere("Maw", (0.0, -1.46, 1.68), (0.20, 0.10, 0.12), mouth)
+    # Mandibles: the printed bite, so they are geometry.
+    for s in (-1, 1):
+        cone_along("Mandible%d" % s, (s * 0.30, -1.28, 1.74),
+                   (-s * 0.50, -1.0, -0.30), 0.66, 0.08, plate, 0.02)
+        cone_along("Palp%d" % s, (s * 0.16, -1.42, 1.54),
+                   (-s * 0.2, -0.7, -0.8), 0.32, 0.045, joint)
+
+    # Four hooked claws, two hooks each: thin and curved rather than the
+    # Girallon's broad nails, because nothing about these two is shared.
+    for index, (s, wrist) in enumerate(hands):
+        hand = (wrist[0], wrist[1] - 0.12, wrist[2] - 0.14)
+        sphere("Hand%d" % index, hand, (0.18, 0.21, 0.15), chitin)
+        for digit in range(2):
+            offset = (digit - 0.5) * 0.18
+            cone_along("Claw%d%d" % (index, digit),
+                       (hand[0] + s * offset, hand[1] - 0.16, hand[2] - 0.05),
+                       (s * 0.3, -0.80, -0.55), 0.38, 0.05, nail)
+
+    # A segmented abdomen, as rings that hug the trunk below both arm
+    # sockets. The second pass laid three boxes on the chest and they read as
+    # rectangles stuck on; the third made the rings wider than the body and
+    # they read as hoops hanging off it and cutting across the arms. These
+    # sit between the lower shoulders and the hips, where the trunk is
+    # narrow and nothing else is in the way.
+    for row in range(3):
+        torus("Segment%d" % row, (0.0, -0.04 + row * 0.03, -0.58 - row * 0.40),
+              0.60 - row * 0.03, 0.065, plate)
+
+    # Frame it. The creature stands about six authored units from sole to
+    # crown, centred near -0.45, so this is the single place its size and
+    # standing height meet the roster framing.
+    fit = 0.47
+    rise = 0.24
+    for obj in set(bpy.context.scene.objects) - before:
+        obj.scale = tuple(value * fit for value in obj.scale)
+        obj.location = Vector(obj.location) * fit + Vector((0.0, 0.0, rise))
+
 def cyclops():
     skin = material("Skin", (0.5, 0.33, 0.2), 0.7, subsurface=0.12,
                     noise=(7.0, 0.5, (0.33, 0.19, 0.11)))
@@ -1423,6 +1660,18 @@ CREATURES = {
                      inner=(0.09, 0.15, 0.10), outer=(0.010, 0.016, 0.010),
                      key=(1.0, 0.86, 0.62), rim=(0.70, 0.95, 0.80),
                      camera=((0.42, -8.1, 0.50), (-0.03, 0.0, -0.08), 55.0)),
+    # Sprint 19. A nearly white girallon needs a dark warm ground and a cool
+    # key, which is the inverse of the near-black gorilla's dressing; the xill
+    # is a hot orange-red and takes a cold key against deep green-black, so
+    # neither Sprint 19 creature reuses a Sprint 18 dressing.
+    "girallon": dict(build=girallon,
+                     inner=(0.14, 0.10, 0.08), outer=(0.016, 0.010, 0.007),
+                     key=(0.86, 0.90, 1.0), rim=(0.65, 0.80, 1.0),
+                     camera=((0.36, -8.4, 0.70), (-0.03, 0.0, 0.05), 55.0)),
+    "xill": dict(build=xill,
+                 inner=(0.07, 0.12, 0.09), outer=(0.006, 0.012, 0.009),
+                 key=(0.78, 0.88, 1.0), rim=(0.45, 0.95, 0.70),
+                 camera=((0.30, -8.0, 0.62), (-0.02, 0.0, 0.02), 55.0)),
 }
 
 

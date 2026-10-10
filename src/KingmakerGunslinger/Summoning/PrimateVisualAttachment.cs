@@ -114,6 +114,31 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
+        /// <summary>
+        /// Whether the shipped mesh declares an anatomy this creature is
+        /// allowed to have. Two schemas, chosen by creature family: an ape
+        /// declares no tail, no tongue, a separate jaw and four limbs, and a
+        /// four-armed body declares six limbs on two driver chains with its
+        /// lower arms sharing the upper arms bones. Neither is asked about the
+        /// other, and a body matching the wrong one is refused rather than
+        /// shown.
+        /// </summary>
+        private static bool PrimateAnatomyAccepted(string key, JObject payload)
+        {
+            if (PrimateVisualPolicy.IsFourArmed(key))
+                return PrimateVisualPolicy.PermitsFourArmedAnatomy(key,
+                    (int?)payload["visibleLimbs"], (int?)payload["visibleArms"],
+                    (int?)payload["armDriverChains"],
+                    (bool?)payload["lowerArmsShareUpperArmDrivers"],
+                    (bool?)payload["clawedHands"],
+                    (string)payload["printedSize"]);
+            return PrimateVisualPolicy.PermitsAnatomy(key,
+                (bool?)payload["tailGeometry"], (bool?)payload["tongueGeometry"],
+                (bool?)payload["jawSeparated"], (int?)payload["visibleLimbs"],
+                (bool?)payload["clawedHands"], (bool?)payload["opposableThumbs"],
+                (bool?)payload["knuckleWalkAuthored"]);
+        }
+
         private string Attach(string key, ModContext context)
         {
             SkinnedMeshRenderer[] skins = _view
@@ -150,18 +175,14 @@ namespace KingmakerGunslinger.Summoning
             // The closed key is the only path input. No request can supply an
             // asset path, another rig, an arbitrary bone or a native export.
             string directory = Path.Combine(context.ModEntry.Path,
-                Path.Combine("assets", PrimateVisualPolicy.AssetDirectory));
+                Path.Combine("assets", PrimateVisualPolicy.AssetDirectory(key)));
             string json = File.ReadAllText(Path.Combine(directory, key + "-mesh.json"));
             JObject payload = JObject.Parse(json);
             if (!PrimateVisualPolicy.PermitsBones(key, payload["bones"] == null ? null :
                     payload["bones"].Values<string>()) ||
                 !PrimateVisualPolicy.PermitsOriginalWinding(key,
                     (string)payload["triangleWinding"]) ||
-                !PrimateVisualPolicy.PermitsAnatomy(key, (bool?)payload["tailGeometry"],
-                    (bool?)payload["tongueGeometry"], (bool?)payload["jawSeparated"],
-                    (int?)payload["visibleLimbs"], (bool?)payload["clawedHands"],
-                    (bool?)payload["opposableThumbs"],
-                    (bool?)payload["knuckleWalkAuthored"]) ||
+                !PrimateAnatomyAccepted(key, payload) ||
                 (string)payload["creature"] != key ||
                 (string)payload["donorPrefab"] != PrimateVisualPolicy.TrollPrefab ||
                 (string)payload["donorRenderer"] != PrimateVisualPolicy.BodyRenderer)

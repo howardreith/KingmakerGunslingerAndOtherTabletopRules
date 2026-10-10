@@ -13,16 +13,16 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(99, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(101, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(90, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(91, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(88, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(89, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(519, ExpandedSummoningBaselineInventory
+            Assertions.Equal(524, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(515, ExpandedSummoningBaselineInventory
+            Assertions.Equal(520, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -36,13 +36,13 @@ namespace KingmakerGunslinger.DomainTests
             //
             // Independently qualified Sprint 17 snakes publish sixteen roots
             // per family: 506/502 generated plus 17/12 retained wrappers.
-            // Sprint 18 registers thirteen more roots per family and withholds
-            // every one of them, so the visible totals do not move until its
-            // publication candidate removes the two suppression keys.
-            Assertions.Equal(536, ExpandedSummoningBaselineInventory
+            // Sprint 18 published its thirteen roots per family, and
+            // Sprint 19 adds five visible Summon Monster roots for the Xill
+            // and five Summon Nature's Ally roots for the Girallon.
+            Assertions.Equal(541, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(527, ExpandedSummoningBaselineInventory
+            Assertions.Equal(532, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
@@ -56,11 +56,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(1034, generated, "Published generated placements changed.");
+            Assertions.Equal(1044, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(1063, generated + wrappers,
+            Assertions.Equal(1073, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(1063,
+            Assertions.Equal(1073,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -111,7 +111,8 @@ namespace KingmakerGunslinger.DomainTests
             // a leftover - which is what this pin is for.
             Assertions.Equal(0, ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.Count,
-                "Nothing is registered and withheld: Sprint 18 published both apes.");
+                "Nothing is registered and withheld: Sprint 19 published both "
+                + "the Girallon and the Xill.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -124,9 +125,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(37,
+            Assertions.Equal(39,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, and why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against.");
+                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, and why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against, and why both Sprint 19 four-armed creatures join them on that same Troll rig.");
         }
 
         /// <summary>
@@ -162,7 +163,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 1063"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 1073"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 

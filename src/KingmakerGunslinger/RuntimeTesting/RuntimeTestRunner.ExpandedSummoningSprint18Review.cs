@@ -102,7 +102,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Kingmaker.UI.SettingsUI.SettingsRoot.Instance
                         .EnableTurnBasedMode.CurrentValue = turnBased;
                     Game.Instance.TurnBasedCombatController.Activate();
-                    foreach (string key in PrimateVisualPolicy.Keys)
+                    foreach (string key in PrimateVisualPolicy.ApeKeys)
                     {
                         UnitEntityData owner = CastExpandedSummoningOwnTier(fixture, key);
                         SetExpandedSummoningBrainActive(owner, false);

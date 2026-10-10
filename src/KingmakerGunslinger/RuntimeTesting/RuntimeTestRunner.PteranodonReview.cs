@@ -324,12 +324,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool snake = _motionReviewSubjectName == "KMG_Summoning_Unit_Viper" ||
                     _motionReviewSubjectName == "KMG_Summoning_Unit_ConstrictorSnake";
                 bool salamander = _motionReviewSubjectName == SalamanderRulesPolicy.UnitName;
+                // Every creature rebodied on the census donor rig: the two
+                // Sprint 18 apes and the two Sprint 19 four-armed creatures.
+                // The wait below is about the native dissolve, which is not a
+                // property of any creature family - it is just that only the
+                // families listed here were ever given it. The Sprint 19
+                // Girallon captured its idle frame with the renderer still
+                // off and both moving frames at dissolve 0.785, which is what
+                // this wait exists to prevent.
+                bool donorRigBody = PrimateVisualPolicy.ProductionBlueprintNames
+                    .Contains(_motionReviewSubjectName, StringComparer.Ordinal);
                 bool captureFrame = _motionReviewFrame == moveFrames || _motionReviewFrame == moveFrames * 2 ||
                     _motionReviewFrame >= (_motionReviewDoorwayRoute ? moveFrames * 2 + 6 : MotionReviewAttackFrame);
                 // A surveyed doorway route can cross a native fog fade between
                 // captures. Wait for that native transition, without overriding
                 // visibility/materials or relaxing the intact-frame assertion.
-                if ((crocodilian || snake || salamander) && captureFrame && _motionReviewCaptureFadeWaited < MotionReviewFadeBudget &&
+                if ((crocodilian || snake || salamander || donorRigBody) && captureFrame && _motionReviewCaptureFadeWaited < MotionReviewFadeBudget &&
                     (!EntityFadedIn(unit) || DissolveAmount(unit) > MotionReviewIntactDissolve))
                 {
                     _motionReviewCaptureFadeWaited++;

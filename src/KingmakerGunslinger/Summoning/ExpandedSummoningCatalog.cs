@@ -26,15 +26,15 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 99) throw new InvalidOperationException("Expanded Summoning unique creature count must be 99.");
+            if (Creatures.Length != 101) throw new InvalidOperationException("Expanded Summoning unique creature count must be 101.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             // Sprint 18 adds the two apes: the Ape at Summon Monster and
             // Nature's Ally III contributes seven placements per family and the
             // Dire Ape at tier IV contributes six, so 506/502 become 519/515
             // and the twenty-six new roots are registered and suppressed.
-            ValidateFamily(SummonFamily.Monster, 90, 519);
-            ValidateFamily(SummonFamily.NaturesAlly, 88, 515);
+            ValidateFamily(SummonFamily.Monster, 91, 524);
+            ValidateFamily(SummonFamily.NaturesAlly, 89, 520);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -73,7 +73,15 @@ namespace KingmakerGunslinger.Summoning
                 // original project-owned bodies are authored, so both are
                 // recorded as borrowed-body proxies and both are suppressed.
                 C("ape","Ape",3,true,3,"Troll"),
-                C("dire-ape","Dire Ape",4,true,4,"Troll")
+                C("dire-ape","Dire Ape",4,true,4,"Troll"),
+                // Sprint 19. Girallon is a Summon Nature's Ally 5 magical
+                // beast and Xill a Summon Monster 5 evil outsider, so neither
+                // is templated and neither appears on the other's table. Both
+                // ride the Sprint 18 census rig while their original bodies
+                // are authored, so both are borrowed-body proxies, and both
+                // are suppressed until the complete candidate passes.
+                C("girallon","Girallon",null,false,5,"Troll"),
+                C("xill","Xill",5,false,null,"Troll")
             };
         }
 

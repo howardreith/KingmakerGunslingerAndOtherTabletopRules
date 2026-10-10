@@ -27,6 +27,24 @@ namespace KingmakerGunslinger.Summoning
         public string CreatureKey;
         public BlueprintUnit OwningBlueprint;
 
+        /// <summary>
+        /// The exact printed allocation, set by the builder from whichever
+        /// policy owns this creature.
+        ///
+        /// <para>These were a creature-key lookup into the Sprint 18 ape
+        /// policy, which is why the Sprint 19 Girallon - not one of the two
+        /// apes - fell through to the generic priority list and read
+        /// Perception 14 and Stealth -1 against a printed 11 and 5, with 81
+        /// hit points against a printed 73. Taking the numbers as fields
+        /// makes which creatures get an exact allocation the builder's
+        /// business, and leaves the component with no special cases at
+        /// all.</para>
+        /// </summary>
+        public int MobilityRanks;
+        public int PerceptionRanks;
+        public int StealthRanks;
+        public int BaseHitPoints;
+
         public void OnEntityCreated(UnitEntityData unit)
         {
             // IHandleEntityComponent is invoked on the shared blueprint
@@ -34,23 +52,25 @@ namespace KingmakerGunslinger.Summoning
             // Native Initialize calls this only on creation, not deserialization.
             if (unit == null || !ReferenceEquals(unit.Blueprint, OwningBlueprint))
                 throw new InvalidOperationException(
-                    "Ape rank allocation requires its exact owning unit.");
+                    "Exact rank allocation requires its exact owning unit.");
+            if (BaseHitPoints < 1)
+                throw new InvalidOperationException(
+                    "Exact rank allocation needs its creature's printed racial "
+                    + "hit points: " + CreatureKey + ".");
             ModifiableValue mobility = unit.Descriptor.Stats.GetStat(
                 StatType.SkillMobility);
             ModifiableValue perception = unit.Descriptor.Stats.GetStat(
                 StatType.SkillPerception);
             ModifiableValue stealth = unit.Descriptor.Stats.GetStat(
                 StatType.SkillStealth);
-            int mobilityRanks = mobility.BaseValue;
-            int perceptionRanks = perception.BaseValue;
-            int stealthRanks = stealth.BaseValue;
-            PrimateRulesPolicy.AllocateLandRanks(CreatureKey,
-                ref mobilityRanks, ref perceptionRanks, ref stealthRanks);
-            mobility.BaseValue = mobilityRanks;
-            perception.BaseValue = perceptionRanks;
-            stealth.BaseValue = stealthRanks;
-            unit.Descriptor.Stats.HitPoints.BaseValue =
-                PrimateRulesPolicy.For(CreatureKey).BaseHitPoints;
+            if (mobility.BaseValue != 0 || perception.BaseValue != 0 ||
+                stealth.BaseValue != 0)
+                throw new InvalidOperationException(
+                    "Class ranks must start unallocated: " + CreatureKey + ".");
+            mobility.BaseValue = MobilityRanks;
+            perception.BaseValue = PerceptionRanks;
+            stealth.BaseValue = StealthRanks;
+            unit.Descriptor.Stats.HitPoints.BaseValue = BaseHitPoints;
         }
 
         public void OnEntityRemoved(UnitEntityData unit) { }
@@ -83,23 +103,30 @@ namespace KingmakerGunslinger.Summoning
         RuleInitiatorLogicComponent<RuleAttackWithWeapon>, ITickEachRound
     {
         private static readonly ConditionalWeakTable<UnitEntityData,
-            DireApeRendTracker> Trackers =
-            new ConditionalWeakTable<UnitEntityData, DireApeRendTracker>();
+            ClawRendTracker> Trackers =
+            new ConditionalWeakTable<UnitEntityData, ClawRendTracker>();
 
         public BlueprintUnit OwningBlueprint;
         public BlueprintItemWeapon Claw;
+
+        /// <summary>
+        /// How many claws this creature's printed rend needs. Two for the
+        /// Dire Ape, four for the Girallon. Set by the builder from the
+        /// creature's own printed line, so the gate never guesses.
+        /// </summary>
+        public int RendClawCount = 2;
 
         public override void OnEventAboutToTrigger(RuleAttackWithWeapon evt)
         {
             UnitEntityData owner = Mine(evt);
             if (owner == null) return;
-            DireApeClawLimb limb = ClawLimb(owner, evt.Weapon);
-            if (limb == DireApeClawLimb.None) return;
+            int claw = ClawLimb(owner, evt.Weapon);
+            if (claw == ClawIndex.None) return;
             object sequence = Sequence(owner);
             lock (Trackers)
             {
-                DireApeRendTracker tracker = Trackers.GetOrCreateValue(owner);
-                if (tracker.TryArm(sequence, limb, evt.Target)) evt.IsRend = true;
+                ClawRendTracker tracker = TrackerFor(owner);
+                if (tracker.TryArm(sequence, claw, evt.Target)) evt.IsRend = true;
             }
         }
 
@@ -107,13 +134,13 @@ namespace KingmakerGunslinger.Summoning
         {
             UnitEntityData owner = Mine(evt);
             if (owner == null) return;
-            DireApeClawLimb limb = ClawLimb(owner, evt.Weapon);
-            if (limb == DireApeClawLimb.None) return;
+            int claw = ClawLimb(owner, evt.Weapon);
+            if (claw == ClawIndex.None) return;
             bool hit = evt.AttackRoll != null && evt.AttackRoll.IsHit;
             lock (Trackers)
             {
-                Trackers.GetOrCreateValue(owner).RecordOutcome(Sequence(owner),
-                    limb, evt.Target, hit);
+                TrackerFor(owner).RecordOutcome(Sequence(owner),
+                    claw, evt.Target, hit);
             }
         }
 
@@ -157,24 +184,41 @@ namespace KingmakerGunslinger.Summoning
         /// by their blueprint; the bite sits in the primary hand and is never a
         /// claw limb.
         /// </summary>
-        private DireApeClawLimb ClawLimb(UnitEntityData owner,
-            ItemEntityWeapon weapon)
+        private int ClawLimb(UnitEntityData owner, ItemEntityWeapon weapon)
         {
             if (weapon == null || weapon.Blueprint == null ||
                 !ReferenceEquals(weapon.Blueprint, Claw))
-                return DireApeClawLimb.None;
+                return ClawIndex.None;
             int index;
             if (SummonLimbs.Classify(owner, weapon, out index) !=
-                SummonLimbKind.Additional) return DireApeClawLimb.None;
-            return index == 0 ? DireApeClawLimb.First :
-                index == 1 ? DireApeClawLimb.Second : DireApeClawLimb.None;
+                SummonLimbKind.Additional) return ClawIndex.None;
+            return index >= 0 && index < RendClawCount ?
+                index + 1 : ClawIndex.None;
+        }
+
+        /// <summary>
+        /// This unit's tracker, sized by this creature's printed claw count.
+        /// A tracker built for a different count is discarded rather than
+        /// reused, so a Girallon can never rend on a Dire Ape's two.
+        /// </summary>
+        private ClawRendTracker TrackerFor(UnitEntityData owner)
+        {
+            ClawRendTracker tracker;
+            if (Trackers.TryGetValue(owner, out tracker))
+            {
+                if (tracker.ClawCount == RendClawCount) return tracker;
+                Trackers.Remove(owner);
+            }
+            tracker = new ClawRendTracker(RendClawCount);
+            Trackers.Add(owner, tracker);
+            return tracker;
         }
 
         /// <summary>For the guarded runtime fixture: this unit's live tracker.</summary>
-        internal static DireApeRendTracker ObservedTracker(UnitEntityData unit)
+        internal static ClawRendTracker ObservedTracker(UnitEntityData unit)
         {
             if (unit == null) return null;
-            DireApeRendTracker tracker;
+            ClawRendTracker tracker;
             lock (Trackers)
             { return Trackers.TryGetValue(unit, out tracker) ? tracker : null; }
         }
