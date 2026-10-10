@@ -74,6 +74,8 @@ namespace KingmakerGunslinger.Assets
             "assets/sprint14-insects/";
         private const string Sprint20ArachnidDirectory =
             "assets/sprint20-arachnids/";
+        private const string Sprint21CrustaceanDirectory =
+            "assets/sprint21-crustaceans/";
         private const string CrocodilianDirectory = "assets/sprint16-crocodilians/";
         internal const int SupportedSchemaVersion = 2;
 
@@ -261,7 +263,12 @@ namespace KingmakerGunslinger.Assets
                     // through the same loader: one path for one rig family.
                     // Its bone list is its own, because it is the only
                     // creature here that walks on the fourth leg chain.
-                    { "giant-scorpion", new Sprint13CreatureVisual() }
+                    { "giant-scorpion", new Sprint13CreatureVisual() },
+                    // Sprint 21. The third family member on this donor and the
+                    // second arthropod: same rig, same loader, same pipeline.
+                    // Its bone list is its own because it carries no tail -
+                    // the abdomen chain holds the back of the carapace.
+                    { "giant-crab", new Sprint13CreatureVisual() }
                 };
 
         /// <summary>

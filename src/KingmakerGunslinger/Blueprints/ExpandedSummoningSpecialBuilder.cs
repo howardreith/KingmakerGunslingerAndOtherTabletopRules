@@ -244,6 +244,10 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.GiantScorpion";
         private const string GiantScorpionTraitsSymbol =
             "KMG.Summoning.Special.GiantScorpion.Traits";
+        private const string GiantCrabUnitSymbol =
+            "KMG.Summoning.Unit.GiantCrab";
+        private const string GiantCrabTraitsSymbol =
+            "KMG.Summoning.Special.GiantCrab.Traits";
         private const string GiantStagBeetleUnitSymbol =
             "KMG.Summoning.Unit.GiantStagBeetle";
         private const string GiantStagBeetleTrampleSymbol =
@@ -1855,6 +1859,20 @@ namespace KingmakerGunslinger.Blueprints
                 new GrabSpec { Primary = true,
                     Additional = GiantScorpionRulesPolicy.ClawCount - 1,
                     MaxHeld = GiantScorpionRulesPolicy.ClawCount,
+                    Hold = multiHold, Grappled = multiHeld });
+            // Sprint 21. The scorpion's spec with nothing left over: this
+            // creature has two claws and no third limb, so the primary limb
+            // plus one additional limb is every limb it has. There is nothing
+            // to stop short of, which is why the count still reads as a count
+            // rather than being replaced by "all of them" - the next creature
+            // with a third limb would need it to mean what it says.
+            ConfigureGrabber(library, bySymbol, GiantCrabUnitSymbol,
+                GiantCrabTraitsSymbol, "GiantCrab",
+                "Giant Crab Grab",
+                "Either pincer that hits lets the crab attempt to grab a foe no larger than itself, and it can hold one foe in each.",
+                new GrabSpec { Primary = true,
+                    Additional = GiantCrabRulesPolicy.ClawCount - 1,
+                    MaxHeld = GiantCrabRulesPolicy.ClawCount,
                     Hold = multiHold, Grappled = multiHeld });
             // Sprint 16: the Dire Crocodile's own swallowed state. It
             // shared the Purple Worm's until now, which put a victim in a

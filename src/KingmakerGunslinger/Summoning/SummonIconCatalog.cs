@@ -58,7 +58,7 @@ namespace KingmakerGunslinger.Summoning
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
-            if (Values.Length != 114 || expected.Length != 114 ||
+            if (Values.Length != 115 || expected.Length != 115 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||

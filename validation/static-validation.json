@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.149-expanded-summoning-sprint20",
+  "milestone": "0.0.150-expanded-summoning-sprint21",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.149",
+  "version": "0.0.150",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2360,5 +2360,41 @@
     "runtimeEvidenceNote": "Three runs carry the qualification and the two before them are kept because they are what found the defects. 20261010T1530568462425Z-disposable-expanded-summoning-sprint20-review returned 17 of 20 and measured three: a printed grab with no carrier anywhere, an anti-trip defence of 27 against a printed 31 because the shared native eight-leg fact delivers 8, and Perception 0 with Stealth -3 because the printed racial +4 existed only in the arithmetic. 20261010T1559117802359Z returned 18 of 20 with every printed number right and two trials spoiled by a natural twenty landing a limb the fixture had not chosen. 20261010T1615114043487Z returned 20 of 20 in both combat modes, and the publication gate 20261010T1648433410286Z returned 20 of 20 again against the published surface with all twelve roots live, registered equal to published at 1056 and nothing withheld anywhere. The body review passed first time. Every run restored the owner installation to 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.",
     "stealthQuestionAnswered": "The frozen contract recorded STEALTH_DERIVES_TO_PLUS_ONE as a question against the book: the derivation gives Dexterity +1 plus racial +4 less 4 for Large size = +1, where the value recalled at intake was +0. The live engine answers +1 on run 20261010T1615114043487Z, from the same three terms, so the derivation stands and the recalled +0 does not.",
     "tripDefenceNote": "The shared native TripDefenseEightLegs fact delivers +8, measured on a live creature rather than inferred from its name: the stat-block convention is four per pair of legs beyond the first, so the project's six-legged insects print +8 and this eight-legged arachnid prints +12. The Giant Scorpion carries its own +12 carrier on the engine's own manoeuvre-defence component, gated on trip alone. Nothing about the shared native fact changes and no released creature moves."
+  },
+  "expandedSummoningSprint21150": {
+    "releaseVersion": "0.0.150",
+    "releaseInformationalVersion": "0.0.150-expanded-summoning-sprint21",
+    "masterBase": "d0ceafae75c1d74a1e0d4fa318193ef002240da1",
+    "releasedBaseline": "v0.0.149",
+    "deterministicTestCount": 2549,
+    "registeredManifestEntryCount": 3052,
+    "registeredGeneratedPlacements": 1063,
+    "suppressedGeneratedPlacements": 7,
+    "publishedGeneratedPlacements": 1056,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1085,
+    "uniqueCreatures": 103,
+    "newRoots": 7,
+    "executionChildren": 0,
+    "templated": false,
+    "creatureSuppressed": true,
+    "originalBodiesAuthored": false,
+    "donorRigReuseVerified": false,
+    "runtimeQualified": false,
+    "runtimeEvidence": [],
+    "publicReleaseAuthorized": false,
+    "candidateOnly": true,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "contract": "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json",
+    "acceptedEngineLimitations": [
+      "PASSIVE_CREATURE_SENSES_UNMODELED",
+      "ORDINARY_MAP_LAND_USE_SCOPE"
+    ],
+    "seriesPosition": "Last sprint of the Expanded Summoning series. There is no Sprint 22.",
+    "scopeNote": "Two creatures at different stages. The Giant Crab is new in every respect. The Bebelith is already registered, published and runtime qualified, and this sprint owns exactly one thing for it: the original project-owned body it has never had, because it currently wears the native Doomspider's view. Its rules, chassis, identities, placements and recorded deviations are released and untouched, which the gate checks line by line in all three files that mention it.",
+    "closureStatus": "REGISTERED AND WITHHELD. The Giant Crab holds seven Summon Nature's Ally roots and no player can select it; it is the first creature in the roster to sit at Nature's Ally III with no Summon Monster tier, so it owns no execution children at all. Rules are implemented: two primary claws at the plain Strength modifier, grab on both pincers, its own +12 anti-trip defence because the shared native eight-leg fact delivers +8, its own printed racial +4 Perception, and the printed immunity to mind-affecting effects on the game's own descriptor immunity. It owns no weapon: a Medium creature takes the shared native 1d4 claw unscaled. Sixteen independent identities close on the frozen printed block and every one closed at intake. The icon, both original bodies, the donor census, the guarded runtime review, publication and release are NOT RUN.",
+    "compatibilityRuntimeQualificationPending": true,
+    "projectIconConcepts": null,
+    "guardedRuntimeRunsSpent": 0
   }
 }

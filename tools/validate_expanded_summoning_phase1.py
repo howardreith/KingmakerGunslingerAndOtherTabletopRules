@@ -413,6 +413,13 @@ def validate(root: Path) -> None:
         # templated Summon Monster roots, its own claw and sting, its unit
         # type, its poison feature and venom buff, and its mindless immunity.
         ".GiantScorpion" in symbol or
+        # Sprint 21's Giant Crab. One token covers its unit, its seven Nature's
+        # Ally placements - it owns no execution children, being untemplated and
+        # absent from the Summon Monster table - its unit type, its mindless
+        # immunity, its own anti-trip defence and racial Perception carriers,
+        # and its grab traits. It owns no weapon: a Medium creature takes the
+        # shared native 1d4 claw unscaled.
+        ".GiantCrab" in symbol or
         symbol in {"KMG.Summoning.Special.Salamander.TailType", "KMG.Summoning.Special.Salamander.UnitType"} or
         ".Special.Crocodile." in symbol or
         symbol == "KMG.Summoning.Special.Crocodilian.SprintNotEngaged" or
@@ -432,9 +439,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 102",
+        "Creatures.Length != 103",
         "ValidateFamily(SummonFamily.Monster, 92, 530)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 90, 526)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 91, 533)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -445,16 +452,16 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 1056;",
+        "RegisteredLogicalPlacementCount = 1063;",
         # Sprint 18 published on 2026-10-09 and Sprints 19 and 20 on
         # 2026-10-10, each after its own complete hidden candidate passed.
         # Nothing is withheld now: all 1056 registered placements are
         # selectable, which with the 29 retained native wrappers is 1085
         # visible choices.
-        "SuppressedLogicalPlacementCount = 0;")
+        "SuppressedLogicalPlacementCount = 7;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 102;",
-        "LogicalAbilityCount = 1056;",
+        "UnitCount = 103;",
+        "LogicalAbilityCount = 1063;",
         "TemplatedPlacementCount = 306;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
@@ -463,12 +470,12 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != 53",
+        "Values.Length != 54",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     # Twenty-three beyond the Sprint 3 baseline: the twenty Phase 2
     # concepts, the two Sprint 19 creatures and the Sprint 20 scorpion.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 23))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 24))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -583,7 +590,7 @@ def validate(root: Path) -> None:
     # Four unchanged master v0.0.142 trait exports join the qualified Phase2B tree.
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.146":
         package_count += 4 + 7 + 1  # traits, unchanged master145 documents, release146 notes
-    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in {"0.0.147", "0.0.148", "0.0.149"}:
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in {"0.0.147", "0.0.148", "0.0.149", "0.0.150"}:
         # Everything v0.0.146 shipped, plus the current release's notes, the
         # two new project-owned ape icons, and the four original Sprint 18
         # body files: one mesh and one painting for each ape. The package
@@ -592,9 +599,12 @@ def validate(root: Path) -> None:
         # body files and two icons are counted in the +76 above. Sprint 20's
         # icon and body are not authored yet and add nothing here.
         package_count += 4 + 7 + 1 + 1 + 2 + 4
-    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.149":
+    if json.loads((root / "Info.json").read_text(
+            encoding="utf-8"))["Version"] in ("0.0.149", "0.0.150"):
         # Three more: the Giant Scorpion's icon, its original mesh and its
-        # painting.
+        # painting. Sprint 21's own three - the Giant Crab's icon, mesh and
+        # painting - and the Bebelith's two are not authored yet and add
+        # nothing here.
         package_count += 3
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.143", "0.0.144", "0.0.145"):
         # Seven player instructions and curated qualification files accompany
