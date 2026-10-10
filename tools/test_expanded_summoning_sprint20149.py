@@ -202,19 +202,27 @@ class Sprint20Tests(unittest.TestCase):
                     AssertionError, "Summon Nature's Ally never templates"):
                 gate.validate_identity_append(ROOT)
 
-    def test_publishing_the_scorpion_early_is_rejected(self):
+    def test_leaving_the_scorpion_withheld_after_publication_is_rejected(self):
+        """The mirror of the fixture this replaces.
+
+        Until the review passed, the gate's job was to refuse a creature that
+        had published without earning it. Now that it has published, the job
+        is to refuse a release that still withholds it - a key left in by
+        accident would ship twelve roots no player can reach while every
+        count and record said they were live.
+        """
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "src/KingmakerGunslinger/Summoning"
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1056;\n"
-                "SuppressedLogicalPlacementCount = 0;\n"
-                "SuppressedCreatureKeys = new HashSet<string>(new string[0], "
-                "StringComparer.Ordinal);\n",
+                "SuppressedLogicalPlacementCount = 12;\n"
+                "SuppressedCreatureKeys = new HashSet<string>(new[] { "
+                '"giant-scorpion" }, StringComparer.Ordinal);\n',
                 encoding="utf-8")
             with self.assertRaisesRegex(
-                    AssertionError, "register its creature withheld"):
+                    AssertionError, "did not remove its key"):
                 gate.validate_suppression(root)
 
     def test_withholding_a_released_creature_is_rejected(self):
@@ -225,9 +233,9 @@ class Sprint20Tests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1056;\n"
-                "SuppressedLogicalPlacementCount = 17;\n"
+                "SuppressedLogicalPlacementCount = 6;\n"
                 'SuppressedCreatureKeys = new HashSet<string>(new[] { '
-                '"giant-scorpion", "girallon" }, StringComparer.Ordinal);\n',
+                '"girallon" }, StringComparer.Ordinal);\n',
                 encoding="utf-8")
             with self.assertRaisesRegex(
                     AssertionError, "withheld a creature v0.0.148 published"):
@@ -240,9 +248,9 @@ class Sprint20Tests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1056;\n"
-                "SuppressedLogicalPlacementCount = 12;\n"
-                'SuppressedCreatureKeys = new HashSet<string>(new[] { '
-                '"giant-scorpion" }, StringComparer.Ordinal);\n',
+                "SuppressedLogicalPlacementCount = 0;\n"
+                "SuppressedCreatureKeys = new HashSet<string>("
+                "Array.Empty<string>(), StringComparer.Ordinal);\n",
                 encoding="utf-8")
             # A tier-3 scorpion, which no printed table puts it on, and a
             # roster that did not grow.

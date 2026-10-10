@@ -53,18 +53,29 @@ namespace KingmakerGunslinger.Summoning
         // candidate, with the owner installation restored exactly after every
         // run. Nothing moved but these two keys: every identity was allocated
         // at registration.
-        // Sprint 20 registers the Giant Scorpion and withholds all twelve
-        // of its roots. It is the first creature in this programme to be
-        // templated while withheld, so twelve suppressed placements also hold
-        // back twenty-four celestial and fiendish execution children that are
-        // allocated and inert. Nothing published before this branch moves: the
-        // visible surface stays at the 1073 choices v0.0.148 shows.
+        // Sprint 20 registered the Giant Scorpion withheld and published it
+        // on 2026-10-10, once the complete hidden candidate passed: 20 of 20
+        // on the batched mechanics review in both combat modes and 4 of 4 on
+        // the party-camera art review, on one candidate, with the owner
+        // installation restored exactly after every run. It took three
+        // guarded reviews to get there and all three disagreements were
+        // measured rather than argued - a printed grab with no carrier, an
+        // anti-trip defence eight points where the stat block prints twelve,
+        // and a racial +4 that existed only in the arithmetic.
+        //
+        // It is the first creature in this programme that was templated while
+        // withheld, so its twelve placements also held back twenty-four
+        // celestial and fiendish execution children, allocated and inert, and
+        // publishing the twelve publishes those too. Nothing else moves:
+        // removing this key is the whole of publication, every identity having
+        // been allocated at registration. The visible surface goes from the
+        // 1073 choices v0.0.148 shows to 1085.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "giant-scorpion" },
+            new HashSet<string>(Array.Empty<string>(),
                 StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1056;
-        internal const int SuppressedLogicalPlacementCount = 12;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

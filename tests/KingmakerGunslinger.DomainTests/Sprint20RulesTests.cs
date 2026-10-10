@@ -109,21 +109,24 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(NaturesAllyRoots, mine.Count(value =>
                 value.Family == SummonFamily.NaturesAlly),
                 "Six Summon Nature's Ally roots.");
-            Assertions.Equal(12,
+            // Published on 2026-10-10, once the complete hidden candidate
+            // passed: 20 of 20 on the batched mechanics review in both combat
+            // modes and 4 of 4 on the party-camera art review. Publication was
+            // the removal of one suppression key, so the registered count is
+            // the one registration allocated and nothing moved to make room.
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All twelve are withheld.");
+                "All twelve are published.");
             Assertions.Equal(1056,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
-                "Registered placements rise from 1044 to 1056.");
-            Assertions.Equal(1044,
+                "Registered placements rose from 1044 to 1056.");
+            Assertions.Equal(1056,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The published surface is exactly what v0.0.148 showed.");
+                "The published surface is every registered placement.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key !=
-                        GiantScorpionRulesPolicy.GiantScorpionKey,
+                Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Exactly the Sprint 20 creature is withheld: "
+                    "Every placement is published, this creature's included: "
                     + variant.StableKey);
         }
 
