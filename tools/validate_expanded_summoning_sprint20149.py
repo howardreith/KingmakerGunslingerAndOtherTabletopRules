@@ -152,8 +152,17 @@ SPRINT20_IDENTITY_TAIL = {
     # grapple figure, so a creature without it reads two points light on a
     # number its own stat block prints.
     "KMG.Summoning.Special.GiantScorpion.Traits": "BlueprintBuff",
+    # Two carriers the first guarded review proved missing. The shared native
+    # eight-leg trip defence delivers +8 - the stat-block convention is four
+    # per pair of legs beyond the first, so that is what a six-legged insect
+    # prints - where this eight-legged creature prints +12. And the printed
+    # racial +4 on Perception and Stealth existed only in the arithmetic that
+    # derived those totals, so the live creature read Perception 0 and
+    # Stealth -3.
+    "KMG.Summoning.Natural.GiantScorpion.TripDefense": "BlueprintFeature",
+    "KMG.Summoning.Natural.GiantScorpion.RacialSkills": "BlueprintFeature",
 }
-# One unit, twelve roots, twelve execution children, seven tail entries.
+# One unit, twelve roots, twelve execution children, nine tail entries.
 # Twelve children rather than twenty-four: only the six Summon Monster roots
 # are templated, and each owns one celestial and one fiendish child. Summon
 # Nature's Ally never templates, so its six roots own none.
@@ -276,16 +285,63 @@ def validate_the_grab_is_the_only_addition(root: Path) -> int:
     return len(added)
 
 
+def validate_the_measured_carriers_are_wired(root: Path) -> int:
+    """The two carriers the first guarded review earned, wired rather than named.
+
+    Both were printed lines with a derivation and no implementation, and both
+    read wrong on a live creature: the anti-trip defence at 27 against a
+    printed 31, and Perception at 0 against a printed +4. A registered
+    identity would not have fixed either, so this reads the builder.
+    """
+    builder = (root / "src/KingmakerGunslinger/Blueprints"
+               / "ExpandedSummoningNaturalBuilder.cs").read_text(
+                   encoding="utf-8-sig")
+    profiles = (root / "src/KingmakerGunslinger/Summoning"
+                / "ExpandedSummoningNaturalProfiles.cs").read_text(
+                    encoding="utf-8-sig")
+    checked = 0
+    for fact, configure in (("GiantScorpionTripDefense",
+                             "ConfigureGiantScorpionTripDefense"),
+                            ("GiantScorpionRacialSkills",
+                             "ConfigureGiantScorpionRacialSkills")):
+        if ('"' + fact + '"') not in profiles:
+            raise AssertionError("The profile does not carry " + fact)
+        if (configure + "(Require<BlueprintFeature>") not in builder:
+            raise AssertionError("The builder does not configure " + fact)
+        if ('fact == "' + fact + '"') not in builder:
+            raise AssertionError("The builder cannot resolve " + fact)
+        checked += 1
+    # The shared native carrier delivers eight and this creature prints
+    # twelve, so taking the shared one is the defect, not the fix.
+    if '"TripDefenseEightLegs"' in profiles.split(
+            'PK("giant-scorpion"')[1].split("PK(")[0]:
+        raise AssertionError(
+            "The Giant Scorpion must not take the shared eight-leg carrier")
+    # The anti-trip value is the printed one and is not written twice.
+    if "defence.Bonus = GiantScorpionRulesPolicy.EightLegTripBonus" \
+            not in builder:
+        raise AssertionError(
+            "The anti-trip carrier must take its value from the rules policy")
+    if "perception.Value = GiantScorpionRulesPolicy.RacialSkillBonus" \
+            not in builder or \
+            "stealth.Value = GiantScorpionRulesPolicy.RacialSkillBonus" \
+            not in builder:
+        raise AssertionError(
+            "Both printed racial skill bonuses must come from the rules policy")
+    return checked
+
+
 def validate_identity_append(root: Path) -> int:
     """The ledger is append-only: the released v0.0.148 entries keep their
     exact order, symbol, GUID and metadata, and Sprint 20 identities follow.
 
-    Thirty-two entries for one creature, where Sprint 19 spent twenty-two on
+    Thirty-four entries for one creature, where Sprint 19 spent twenty-two on
     two. The difference is mostly templating rather than waste: this creature
     appears on the Summon Monster table, so each of its six Monster roots owns
     a celestial and a fiendish execution child. Twelve roots, twelve children,
-    and seven facts of its own - one more than it first registered, because
-    the grab the stat block prints needed a carrier it did not have.
+    and nine facts of its own - three more than it first registered, each of
+    them a printed line that had a derivation and no carrier: the grab, the
+    twelve-point anti-trip defence, and the racial +4 on two skills.
     """
     accepted = json.loads(blob(root, MASTER, "blueprints/blueprints.json"))["entries"]
     current = document(root, "blueprints/blueprints.json")["entries"]
@@ -528,6 +584,7 @@ def validate(root: Path) -> None:
                 "Sprint 20 claims a file the release already had: " + path)
 
     grabLines = validate_the_grab_is_the_only_addition(root)
+    carriers = validate_the_measured_carriers_are_wired(root)
     validate_suppression(root)
     validate_contract(root)
     validate_shipped_bodies_reach_the_release_build(root)
@@ -644,7 +701,8 @@ def validate(root: Path) -> None:
           f"withheld={suppressed}; published={published}; "
           f"protected master={protected_master}; "
           f"protected summons={protected_summons}; "
-          f"grab wiring lines={grabLines}.")
+          f"grab wiring lines={grabLines}; "
+          f"measured carriers={carriers}.")
 
 
 def main() -> int:

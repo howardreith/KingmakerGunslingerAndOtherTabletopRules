@@ -15,6 +15,7 @@ using Kingmaker.Enums;
 using Kingmaker.ElementsSystem;
 using Kingmaker.Localization;
 using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -95,6 +96,10 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.GiantScorpion.Sting1d6";
         private const string GiantScorpionUnitTypeSymbol =
             "KMG.Summoning.Natural.GiantScorpion.UnitType";
+        private const string GiantScorpionTripDefenseSymbol =
+            "KMG.Summoning.Natural.GiantScorpion.TripDefense";
+        private const string GiantScorpionRacialSkillsSymbol =
+            "KMG.Summoning.Natural.GiantScorpion.RacialSkills";
         private const string GiantScorpionPoisonSymbol =
             "KMG.Summoning.Natural.GiantScorpion.Poison";
         private const string GiantScorpionVenomSymbol =
@@ -451,6 +456,10 @@ namespace KingmakerGunslinger.Blueprints
                     GiantScorpionSting1d6Symbol));
             ConfigureGiantScorpionMindlessImmunity(Require<BlueprintFeature>(
                 bySymbol, GiantScorpionMindlessImmunitySymbol));
+            ConfigureGiantScorpionTripDefense(Require<BlueprintFeature>(
+                bySymbol, GiantScorpionTripDefenseSymbol));
+            ConfigureGiantScorpionRacialSkills(Require<BlueprintFeature>(
+                bySymbol, GiantScorpionRacialSkillsSymbol));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
                 BlueprintBuff>(library, NativeFilthFeverGuid,
                     "native Filth Fever disease payload");
@@ -701,6 +710,81 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.GiantScorpion.MindlessImmunity.Description",
                     "A mindless creature is immune to mind-affecting effects."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed stability bonus against trip: CMD 19 becoming 31.
+        ///
+        /// <para>Its own rather than the shared native eight-leg fact, for a
+        /// measured reason. The first guarded review read the live creature at
+        /// CMD 27 against trip with that fact on it, because it is worth +8 -
+        /// the stat-block convention is four per pair of legs beyond the
+        /// first, so a six-legged insect prints +8 and this eight-legged
+        /// arachnid prints +12. The shared fact is native and the creatures
+        /// holding it are released, so nothing about it changes.</para>
+        ///
+        /// <para>The engine's own manoeuvre-defence component does the work,
+        /// gated on the trip manoeuvre alone, so the ordinary manoeuvre
+        /// defence stays at the printed 19.</para>
+        /// </summary>
+        private static void ConfigureGiantScorpionTripDefense(
+            BlueprintFeature feature)
+        {
+            var defence = ScriptableObject.CreateInstance<
+                ManeuverDefenceBonus>();
+            defence.Type = CombatManeuver.Trip;
+            defence.Bonus = GiantScorpionRulesPolicy.EightLegTripBonus;
+            feature.name = InternalName(GiantScorpionTripDefenseSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { defence };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.TripDefense.Name",
+                    "Eight Legs"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.TripDefense.Description",
+                    "A giant scorpion stands on eight legs and is hard to knock down: +12 to its combat maneuver defense against trip attempts, which is what its stat block prints."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed racial +4 on Perception and Stealth.
+        ///
+        /// <para>The first guarded review found this missing entirely: the
+        /// live creature read Perception 0 against a printed +4 and Stealth -3
+        /// against a printed +1. Both are the same bonus, and it existed only
+        /// in the arithmetic that derived the printed totals.</para>
+        ///
+        /// <para>Its own carrier rather than the Giant Ants', which is theirs:
+        /// that one covers the ants' printed Perception alone and records
+        /// their Survival as omitted. The printed Climb +8 stays omitted under
+        /// ORDINARY_MAP_LAND_USE_SCOPE and nothing stands in for it.</para>
+        /// </summary>
+        private static void ConfigureGiantScorpionRacialSkills(
+            BlueprintFeature feature)
+        {
+            var perception = ScriptableObject.CreateInstance<AddStatBonus>();
+            perception.Stat = StatType.SkillPerception;
+            perception.Value = GiantScorpionRulesPolicy.RacialSkillBonus;
+            perception.Descriptor = ModifierDescriptor.Racial;
+            var stealth = ScriptableObject.CreateInstance<AddStatBonus>();
+            stealth.Stat = StatType.SkillStealth;
+            stealth.Value = GiantScorpionRulesPolicy.RacialSkillBonus;
+            stealth.Descriptor = ModifierDescriptor.Racial;
+            feature.name = InternalName(GiantScorpionRacialSkillsSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] {
+                perception, stealth };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.RacialSkills.Name",
+                    "Giant Scorpion Senses"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantScorpion.RacialSkills.Description",
+                    "A giant scorpion has a +4 racial bonus on Perception and Stealth checks. Its printed +4 Climb bonus has no Kingmaker equivalent and is omitted rather than substituted."),
                 null);
         }
 
@@ -1423,6 +1507,12 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "GiantScorpionMindlessImmunity"
                     ? Require<BlueprintFeature>(bySymbol,
                         GiantScorpionMindlessImmunitySymbol)
+                    : fact == "GiantScorpionTripDefense"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantScorpionTripDefenseSymbol)
+                    : fact == "GiantScorpionRacialSkills"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantScorpionRacialSkillsSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)

@@ -30,27 +30,48 @@ class Sprint20Tests(unittest.TestCase):
         self.assertEqual("validate_expanded_summoning_sprint18147.py",
                          VALIDATORS["0.0.147"])
 
-    def test_the_append_is_exactly_thirty_two_identities(self):
-        self.assertEqual(3037, gate.validate_identity_append(ROOT))
+    def test_the_append_is_exactly_thirty_four_identities(self):
+        self.assertEqual(3039, gate.validate_identity_append(ROOT))
 
     def test_the_identity_arithmetic_is_stated_rather_than_a_magic_number(self):
-        """Thirty-two is a derivation, and it must stay one.
+        """Thirty-four is a derivation, and it must stay one.
 
-        It was thirty-one until the grab got a carrier. The creature printed
-        grab from its first commit - in its profile's attribution line, in its
-        +12 grapple derivation and in the registration commit's own message -
-        and carried nothing that grabs, so the tail is counted here rather
-        than written down.
+        It was thirty-one at registration. Three printed lines turned out to
+        have a derivation and no carrier - the grab, the twelve-point
+        anti-trip defence and the racial +4 on two skills - and the last two
+        were found by a live creature reading 27 against a printed 31 and
+        Perception 0 against a printed +4. The tail is counted here rather
+        than written down for that reason.
         """
         self.assertEqual(12, gate.SPRINT20_ROOTS)
         self.assertEqual(12, gate.SPRINT20_EXECUTION_CHILDREN)
         self.assertEqual(6, gate.SPRINT20_MONSTER_ROOTS)
-        self.assertEqual(7, len(gate.SPRINT20_IDENTITY_TAIL))
-        self.assertEqual(32, gate.SPRINT20_IDENTITIES)
+        self.assertEqual(9, len(gate.SPRINT20_IDENTITY_TAIL))
+        self.assertEqual(34, gate.SPRINT20_IDENTITIES)
         self.assertEqual(1 + 12 + 12 + len(gate.SPRINT20_IDENTITY_TAIL),
                          gate.SPRINT20_IDENTITIES)
-        self.assertIn("KMG.Summoning.Special.GiantScorpion.Traits",
-                      gate.SPRINT20_IDENTITY_TAIL)
+        for required in ("KMG.Summoning.Special.GiantScorpion.Traits",
+                         "KMG.Summoning.Natural.GiantScorpion.TripDefense",
+                         "KMG.Summoning.Natural.GiantScorpion.RacialSkills"):
+            self.assertIn(required, gate.SPRINT20_IDENTITY_TAIL)
+
+    def test_the_shared_eight_leg_carrier_is_refused(self):
+        """It delivers eight and this creature prints twelve.
+
+        Measured on a live creature, not inferred: with that fact on it the
+        scorpion read CMD 27 against trip where its stat block prints 31. The
+        shared fact is native and the creatures holding it are released, so
+        nothing about it changes - this creature just must not take it.
+        """
+        profiles = (ROOT / "src/KingmakerGunslinger/Summoning"
+                    / "ExpandedSummoningNaturalProfiles.cs").read_text(
+                        encoding="utf-8-sig")
+        block = profiles.split('PK("giant-scorpion"')[1].split("PK(")[0]
+        self.assertNotIn('"TripDefenseEightLegs"', block)
+        self.assertIn('"GiantScorpionTripDefense"', block)
+        self.assertIn('"GiantScorpionRacialSkills"', block)
+        self.assertGreater(gate.validate_the_measured_carriers_are_wired(ROOT),
+                           0)
 
     def test_a_grab_claimed_in_prose_with_no_carrier_is_rejected(self):
         """What actually went wrong, held to a fixture.
@@ -117,7 +138,7 @@ class Sprint20Tests(unittest.TestCase):
             "status": "active", "milestone": "Expanded Summoning", "notes": ""})
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError,
-                                        "exactly 32 identities"):
+                                        "exactly 34 identities"):
                 gate.validate_identity_append(ROOT)
 
     def test_an_identity_outside_the_one_creature_is_rejected(self):
@@ -155,7 +176,7 @@ class Sprint20Tests(unittest.TestCase):
             or "GiantScorpion" not in e["symbol"]]
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError,
-                                        "exactly 32 identities"):
+                                        "exactly 34 identities"):
                 gate.validate_identity_append(ROOT)
 
     def test_a_templated_natures_ally_root_is_rejected(self):

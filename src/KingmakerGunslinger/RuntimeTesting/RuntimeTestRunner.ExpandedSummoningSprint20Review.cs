@@ -287,6 +287,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 noRanks &= baseValue == GiantScorpionRulesPolicy.SkillRanks;
             }
 
+            // Nothing held, on both sides. A scorpion still holding its
+            // target carries the separate maintain bonus on top of its grab,
+            // and the printed +12 would read 17 - which is what the first
+            // guarded run measured, out of two numbers that were each right.
+            // ResetExpandedSummoningHostile clears the victim's side of a
+            // hold; this clears the holder's.
+            string released = Sprint20ReleaseOwnHold(fixture, owner);
             int grapple = Rulebook.Trigger(new RuleCalculateCMB(owner,
                 fixture.Hostile, CombatManeuver.Grapple)).Result;
             int ordinaryCmb = Rulebook.Trigger(new RuleCalculateCMB(owner,
@@ -312,6 +319,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ordinaryCmb == GiantScorpionRulesPolicy
                     .PrintedCombatManeuverBonus &&
                 grapple == GiantScorpionRulesPolicy.PrintedGrappleBonus &&
+                grapple - ordinaryCmb ==
+                    GiantScorpionRulesPolicy.GrabGrappleBonus &&
+                released.StartsWith("nothing-held",
+                    StringComparison.Ordinal) &&
                 skillsExact && limbsExact && noRanks;
             Sprint20Check("live-profile-" +
                     (turnBased ? "turn-based" : "real-time"), exactProfile,
@@ -338,6 +349,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["cmdNetOfDifficulty"] = cmd.Result + deniedDex - difficulty,
                     ["maneuverBonus"] = ordinaryCmb,
                     ["grappleBonus"] = grapple,
+                    ["holdReleasedBeforeReading"] = released,
                     ["expectedManeuverBonus"] = GiantScorpionRulesPolicy
                         .PrintedCombatManeuverBonus,
                     ["expectedGrappleBonus"] = GiantScorpionRulesPolicy
@@ -529,15 +541,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
                         result => attack = result)) yield return step;
                     int attempts = 1;
-                    while (attempts < 8 && Sprint18ChosenLimbMissed(
-                        observer, null, before, accuracy))
+                    int savesBefore = 0;
+                    while (attempts < 8 && (Sprint18ChosenLimbMissed(
+                            observer, null, before, accuracy) ||
+                        Sprint20SaveRolledTwenty(saves, savesBefore, saveMade)))
                     {
                         attempts++;
                         before = observer.Attacks.Count;
+                        savesBefore = saves.Saves.Count;
                         if (CombatController.IsInTurnBasedCombat())
                             foreach (int step in Sprint18AdvanceRound(owner))
                                 yield return step;
                         accuracy.Rest();
+                        Sprint20ClearVenom(fixture);
                         UnitAttack retry = null;
                         foreach (int step in Sprint18RunFullAttack(fixture,
                             owner, result => retry = result)) yield return step;
@@ -598,6 +614,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["fortitudeSaves"] = new JArray(fortitude.Select(
                                 save => new JObject {
                                     ["dc"] = save.DifficultyClass,
+                                    ["naturalRoll"] = save.D20.Value,
                                     ["passed"] = save.IsPassed })),
                             ["expectedDc"] = expectedDc,
                             ["printedDc"] = GiantScorpionRulesPolicy
@@ -1007,6 +1024,66 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "the registered surface review completes without an "
                     + "exception");
             }
+        }
+
+        /// <summary>
+        /// Release any hold this review's own earlier case established, so the
+        /// printed manoeuvre figures are read with nothing held.
+        ///
+        /// <para>A creature holding its target carries the maintain bonus as
+        /// well as its grab, and the first guarded run read the printed +12
+        /// grapple figure as 17 for exactly that reason. Only this
+        /// request-local creature and this disposable hostile are touched, and
+        /// only this project's own hold states are removed.</para>
+        /// </summary>
+        private static string Sprint20ReleaseOwnHold(
+            ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner)
+        {
+            SummonGrabComponent grab = SummonGrabComponent.Find(owner);
+            var cleared = new List<string>();
+            ResetExpandedSummoningHostile(fixture);
+            if (owner.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>()
+                    != null)
+            {
+                owner.Remove<
+                    Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>();
+                cleared.Add("grappleInitiator");
+            }
+            if (grab != null && grab.HoldBuff != null)
+                foreach (Buff buff in owner.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Where(value => value != null &&
+                        ReferenceEquals(value.Blueprint, grab.HoldBuff))
+                    .ToArray())
+                {
+                    cleared.Add(buff.Blueprint.name);
+                    buff.Remove();
+                }
+            bool holding = owner.Get<
+                    Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() != null ||
+                (grab != null && grab.HoldBuff != null &&
+                    owner.Descriptor.Buffs.GetBuff(grab.HoldBuff) != null) ||
+                (grab != null && grab.HeldCount(owner) != 0);
+            if (holding) return "still-holding";
+            return cleared.Count == 0
+                ? "nothing-held"
+                : "nothing-held;cleared=" + string.Join(",", cleared.ToArray());
+        }
+
+        /// <summary>
+        /// Whether the save this trial forced was an automatic success.
+        ///
+        /// <para>A natural twenty always makes a save, whatever the modifier,
+        /// so a trial that wanted a failed save and rolled one has measured
+        /// the dice rather than the rule - exactly as a natural one always
+        /// misses. The trial is abandoned whole and retried.</para>
+        /// </summary>
+        private static bool Sprint20SaveRolledTwenty(
+            Sprint19SaveObserver saves, int from, bool saveMade)
+        {
+            if (saveMade) return false;
+            RuleSavingThrow[] forced = saves.Saves.Skip(from).Where(save =>
+                save.StatType == StatType.SaveFortitude).ToArray();
+            return forced.Length > 0 && forced.All(save => save.D20.Value == 20);
         }
 
         /// <summary>This creature's own venom buff, by its registered name.</summary>
