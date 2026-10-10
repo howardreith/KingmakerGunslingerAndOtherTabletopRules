@@ -101,6 +101,22 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal static bool[] CombatModes { get { return new[] { false, true }; } }
 
+        /// <summary>
+        /// Whether a rend case can be driven in this combat mode.
+        ///
+        /// <para>Exactly one cannot. claws-across-two-turns needs its two
+        /// sequences to fall either side of a round boundary, and in real
+        /// time the engine merges a second attack on one target into the live
+        /// command, so they are one command and the case cannot differ from
+        /// claws-across-two-commands. Forcing them apart needs a whole
+        /// six-second idle round, through which the engine ends combat and
+        /// despawns the target's view. The behaviour is proved in turn-based
+        /// combat, where a round boundary is a real observable thing, and the
+        /// real-time row records that rather than going quiet.</para>
+        /// </summary>
+        internal static bool RendCaseRunsInThisMode(string name, bool turnBased)
+        { return turnBased || name != "claws-across-two-turns"; }
+
         internal static Sprint19LiveProfile For(string key)
         {
             if (key == GirallonRulesPolicy.GirallonKey)
@@ -203,6 +219,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (CombatModes.Length != 2 || CombatModes[0] == CombatModes[1])
                 throw new InvalidOperationException(
                     "Both combat modes must be reviewed.");
+            // Exactly one case is mode-limited, and only the one the engine's
+            // command merging makes meaningless in real time.
+            string[] limited = RendCases.Select(row => row[0])
+                .Where(name => !RendCaseRunsInThisMode(name, false)).ToArray();
+            if (limited.Length != 1 || limited[0] != "claws-across-two-turns")
+                throw new InvalidOperationException(
+                    "Only the round-boundary case may be turn-based only.");
+            if (RendCases.Any(row => !RendCaseRunsInThisMode(row[0], true)))
+                throw new InvalidOperationException(
+                    "Every rend case must run in turn-based combat.");
         }
 
         private static void ValidateGirallon(string key,
