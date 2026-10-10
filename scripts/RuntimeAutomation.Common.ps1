@@ -1036,6 +1036,15 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    # Sprint 20 arachnid donor census: the same detached read-only shape
+    # at mod load. One known donor measured rather than a field chosen
+    # between. No save, no spawn, nothing to restore beyond the deployment.
+    'observe-expanded-summoning-arachnid-census' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-expanded-summoning-inventory' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1153,6 +1162,16 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
     # The Sprint 19 hidden-candidate review runs on the same terms: it
     # summons, fights and dismisses disposable actors and writes nothing back.
     'disposable-expanded-summoning-sprint19-review' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    # Sprint 20's review, on the same terms again. It additionally takes a
+    # grab carrier off its own request-local creature for one case and
+    # dismisses that creature immediately after; nothing else is touched
+    # and nothing is written back.
+    'disposable-expanded-summoning-sprint20-review' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true

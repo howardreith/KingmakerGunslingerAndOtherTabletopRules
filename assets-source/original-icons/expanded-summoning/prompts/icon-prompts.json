@@ -609,6 +609,12 @@
       "key": "xill",
       "displayName": "Xill",
       "subjectPrompt": "A rust-red chitinous four-armed outsider in three-quarter view, a segmented abdomen under a tall thorax, two pairs of thin jointed arms ending in hooked claws, digitigrade legs, and a wedge of a head on a real neck carrying four green compound eyes above a maw flanked by mandibles. Procedural Blender render: tools/render_creature_icon.py --creature xill."
+    },
+    {
+      "key": "giant-scorpion",
+      "displayName": "Giant Scorpion",
+      "subjectPrompt": "A giant scorpion in near profile turned slightly toward the viewer, a low broad warm-brown carapace over a tapering body, eight thin legs fanned front to back with gaps between them, two pedipalps held forward ending in open two-fingered chelae, and a segmented metasoma arching up out of the body's rear and forward over the back to end above the head with the sting angled down and a single bead of green venom at its tip; cold blue-green radial backdrop against the warm chitin, the arched tail the tallest thing in the frame because nothing else in this roster has anything above its body line. Procedural Blender render: tools/render_creature_icon.py --creature giant-scorpion.",
+      "generator": "blender-procedural"
     }
   ]
 }

@@ -82,6 +82,8 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_GiantAntDrone";
         internal const string GiantStagBeetleBlueprintName =
             "KMG_Summoning_Unit_GiantStagBeetle";
+        internal const string GiantScorpionBlueprintName =
+            "KMG_Summoning_Unit_GiantScorpion";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -114,6 +116,7 @@ namespace KingmakerGunslinger.Summoning
                 { GiantAntSoldierBlueprintName, "giant-ant-soldier" },
                 { GiantAntDroneBlueprintName, "giant-ant-drone" },
                 { GiantStagBeetleBlueprintName, "giant-stag-beetle" },
+                { GiantScorpionBlueprintName, Sprint14BonePolicy.ScorpionKey },
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
                 { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" }
             };
@@ -129,10 +132,15 @@ namespace KingmakerGunslinger.Summoning
         // The whole insect family on the Giant Spider rig, Sprints 14 and 15
         // together: they share a donor, a bone policy and an asset pipeline, so
         // every seam that asks "is this one of the insects" wants all five.
+        // Sprint 20's Giant Scorpion joins them: same donor, same asset
+        // pipeline, same loader. Its bone policy differs - it is the one
+        // creature here that walks on the fourth leg chain - but every seam
+        // that asks "does this creature ride the Giant Spider rig" wants it.
         private static readonly HashSet<string> Sprint14InsectKeys =
             new HashSet<string>(StringComparer.Ordinal)
             { "fire-beetle", "giant-ant-worker", "giant-ant-soldier",
-              "giant-ant-drone", "giant-stag-beetle" };
+              "giant-ant-drone", "giant-stag-beetle",
+              Sprint14BonePolicy.ScorpionKey };
         private const string MainTexture = "_MainTex";
         private static bool IsCrocodilian(string key)
         { return CrocodilianVisualPolicy.Keys.Contains(key, StringComparer.Ordinal); }
