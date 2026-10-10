@@ -48,12 +48,15 @@ namespace KingmakerGunslinger.Summoning
         // bite and claw so their printed Large dice are not scaled up a
         // step, which the guarded review measured the shared native
         // weapons doing.
-        // Seven more in Sprint 20: the scorpion's own claw and sting, its
+        // Nine more in Sprint 20: the scorpion's own claw and sting, its
         // unit type, its poison feature and venom buff, the printed
-        // immunity to mind-affecting effects, and the grab carrier its two
-        // claws need - which is the whole of the difference between its
-        // printed CMB +8 and its printed grapple +12.
-        internal const int SpecialIdentityCount = 226;
+        // immunity to mind-affecting effects, the grab carrier its two claws
+        // need - which is the whole of the difference between its printed
+        // CMB +8 and its printed grapple +12 - and the two carriers its first
+        // guarded review proved missing: its own +12 anti-trip defence, where
+        // the shared native eight-leg fact delivers the +8 a six-legged insect
+        // prints, and its printed racial +4 on Perception and Stealth.
+        internal const int SpecialIdentityCount = 228;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -376,6 +379,14 @@ namespace KingmakerGunslinger.Summoning
             // built and Sprint 19 taught to hold more than one limb, keyed to
             // this unit so the two claws grab and the sting never does.
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantScorpion.Traits", "BlueprintBuff"));
+            // Two carriers the first guarded review proved were missing. The
+            // printed anti-trip defence is +12 and the shared native
+            // eight-leg fact delivers +8, so this creature owns its own; and
+            // the printed racial +4 on Perception and Stealth existed only in
+            // the arithmetic, so the live creature read Perception 0 and
+            // Stealth -3.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.TripDefense", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.RacialSkills", "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }

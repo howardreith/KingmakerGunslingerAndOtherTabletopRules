@@ -234,13 +234,24 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException(
                     "The Giant Scorpion has no Intelligence score and must "
                     + "therefore carry no skill ranks at all.");
-            if (!scorpion.Facts.Contains("TripDefenseEightLegs") ||
+            if (!scorpion.Facts.Contains("GiantScorpionTripDefense") ||
+                !scorpion.Facts.Contains("GiantScorpionRacialSkills") ||
                 !scorpion.Facts.Contains("GiantScorpionPoison") ||
                 !scorpion.Facts.Contains("GiantScorpionMindlessImmunity") ||
                 !scorpion.Facts.Contains("PrimateFullStrengthLimbs"))
                 throw new InvalidOperationException(
                     "The Giant Scorpion is missing a fact its printed block "
                     + "requires.");
+            // Not the shared native carrier. The first guarded review measured
+            // that one delivering +8 where this creature prints +12, so taking
+            // it would read two points light on an anti-trip defence the stat
+            // block states exactly.
+            if (scorpion.Facts.Contains("TripDefenseEightLegs"))
+                throw new InvalidOperationException(
+                    "The shared eight-leg carrier is worth "
+                    + GiantScorpionRulesPolicy.SharedNativeTripBonus
+                    + " and this creature prints "
+                    + GiantScorpionRulesPolicy.EightLegTripBonus + ".");
             GiantScorpionRulesPolicy.Validate();
 
             NaturalSummonProfile girallon = For("girallon");
@@ -635,7 +646,14 @@ namespace KingmakerGunslinger.Summoning
                 PK("giant-scorpion", "Giant Scorpion", "Vermin", 5, "Large",
                     19, 12, 16, 1, 10, 2, 50, 6, "GiantScorpionClaw1d6",
                     A("GiantScorpionClaw1d6", "GiantScorpionSting1d6"),
-                    A("TripDefenseEightLegs", "GiantScorpionPoison",
+                    // Its own anti-trip carrier rather than the shared
+                    // native one: measured, that one is worth +8, which is
+                    // what a six-legged insect prints. Its own racial +4 as
+                    // well, on the two printed skills Kingmaker has - the
+                    // Giant Ants' carrier is theirs and covers Perception
+                    // alone.
+                    A("GiantScorpionTripDefense", "GiantScorpionRacialSkills",
+                      "GiantScorpionPoison",
                       "GiantScorpionMindlessImmunity",
                       // Not a printed feat: the carrier that keeps all three
                       // limbs on the plain Strength modifier the stat block

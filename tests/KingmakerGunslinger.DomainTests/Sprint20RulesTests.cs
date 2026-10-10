@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.DomainTests
         /// where Sprint 19 spent twenty-two on two: the difference is
         /// templating, not waste.
         /// </summary>
-        internal const int AppendedLedgerIdentities = 1 + 12 + 12 + 7;
+        internal const int AppendedLedgerIdentities = 1 + 12 + 12 + 9;
 
         internal const int MonsterRoots = 6;
         internal const int NaturesAllyRoots = 6;
@@ -157,18 +157,18 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// The append is exactly thirty-two entries at the end of the ledger,
+        /// The append is exactly thirty-four entries at the end of the ledger,
         /// all of them this creature's, and nothing before them moved.
         /// </summary>
         internal static void TheLedgerAppendIsExactAndAppendOnly()
         {
             string[] appended = AppendedSymbols();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
-                "Sprint 20 appends exactly thirty-two identities.");
+                "Sprint 20 appends exactly thirty-four identities.");
             foreach (string symbol in appended)
                 Assertions.True(symbol.Contains("GiantScorpion"),
                     "Sprint 20 allocates for one creature only: " + symbol);
-            // The seven it owns beyond its unit and placements.
+            // The nine it owns beyond its unit and placements.
             foreach (string tail in new[] {
                 "KMG.Summoning.Natural.GiantScorpion.Claw1d6",
                 "KMG.Summoning.Natural.GiantScorpion.Sting1d6",
@@ -176,7 +176,9 @@ namespace KingmakerGunslinger.DomainTests
                 "KMG.Summoning.Natural.GiantScorpion.Poison",
                 "KMG.Summoning.Natural.GiantScorpion.Venom",
                 "KMG.Summoning.Natural.GiantScorpion.MindlessImmunity",
-                "KMG.Summoning.Special.GiantScorpion.Traits" })
+                "KMG.Summoning.Special.GiantScorpion.Traits",
+                "KMG.Summoning.Natural.GiantScorpion.TripDefense",
+                "KMG.Summoning.Natural.GiantScorpion.RacialSkills" })
                 Assertions.True(appended.Contains(tail, StringComparer.Ordinal),
                     "Missing Sprint 20 identity: " + tail);
             // The released Sprint 18 carrier is granted, never copied: a
