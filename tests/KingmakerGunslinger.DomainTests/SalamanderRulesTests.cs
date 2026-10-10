@@ -70,7 +70,7 @@ namespace KingmakerGunslinger.DomainTests
             var salamander = variants.Where(v => v.Creature.Key == "salamander").ToArray();
             Assertions.Equal(5, salamander.Length, "Existing five routes retained.");
             Assertions.True(salamander.All(SummonVisibilityCatalog.IsPublished), "No accidental Salamander suppression.");
-            Assertions.Equal(0, variants.Count(v => !SummonVisibilityCatalog.IsPublished(v) && !PrimateRulesPolicy.IsPrimate(v.Creature.Key) && !KingmakerGunslinger.RuntimeTesting.Sprint19ReviewPolicy.IsSprint19Creature(v.Creature.Key) && v.Creature.Key != GiantScorpionRulesPolicy.GiantScorpionKey), "Neither the independent snake publication nor the hidden Sprint 18 apes nor the hidden Sprint 19 pair nor the hidden Sprint 20 scorpion move or suppress existing Salamander roots.");
+            Assertions.Equal(0, variants.Count(v => !SummonVisibilityCatalog.IsPublished(v) && !PrimateRulesPolicy.IsPrimate(v.Creature.Key) && !KingmakerGunslinger.RuntimeTesting.Sprint19ReviewPolicy.IsSprint19Creature(v.Creature.Key) && v.Creature.Key != GiantScorpionRulesPolicy.GiantScorpionKey && v.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey), "Neither the independent snake publication nor the hidden Sprint 18 apes nor the hidden Sprint 19 pair nor the hidden Sprint 20 scorpion nor the hidden Sprint 21 crab move or suppress existing Salamander roots.");
             Assertions.Equal("salamander", SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.SalamanderTraitsSymbol), "Existing original species painting, no new art or action icon.");
         }
     }

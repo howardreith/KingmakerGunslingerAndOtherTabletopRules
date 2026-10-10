@@ -236,7 +236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return key == "fire-beetle" || key == "giant-ant-worker" ||
                 key == "giant-ant-soldier" || key == "giant-ant-drone" ||
                 key == "giant-stag-beetle" ||
-                key == Sprint14BonePolicy.ScorpionKey;
+                key == Sprint14BonePolicy.ScorpionKey ||
+                key == Sprint14BonePolicy.CrabKey;
         }
 
         private static bool IsOriginalReviewKey(string key)

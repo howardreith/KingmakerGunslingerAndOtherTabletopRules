@@ -210,8 +210,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 102:
-        raise SystemExit(f"Expected 102 parsed creatures; observed {len(values)}")
+    if len(values) != 103:
+        raise SystemExit(f"Expected 103 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -532,8 +532,31 @@ def planned():
         # the arithmetic that derived those totals.
         ("KMG.Summoning.Natural.GiantScorpion.TripDefense", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GiantScorpion.RacialSkills", "BlueprintFeature"),
+        # Sprint 21's Giant Crab. Five of its own and no weapon: a Medium
+        # creature takes the shared native 1d4 claw unscaled, which is why
+        # the Large Sprint 18 and 20 creatures had to own theirs and this
+        # one does not. Its anti-trip carrier is its own because the shared
+        # native eight-leg fact delivers +8 and the Sprint 20 carrier that
+        # delivers +12 is named and described for a scorpion.
+        ("KMG.Summoning.Natural.GiantCrab.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.GiantCrab.MindlessImmunity", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantCrab.TripDefense", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantCrab.RacialSkills", "BlueprintFeature"),
+        ("KMG.Summoning.Special.GiantCrab.Traits", "BlueprintBuff"),
+        # Sprint 21's Bebelith overhaul: nine identities for what the
+        # released build left out or got wrong. Its unit and its three
+        # roots are released and are not reallocated.
+        ("KMG.Summoning.Special.Bebelith.Rot", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Bebelith.RotState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Bebelith.PenetratingStrike", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Bebelith.TripDefense", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Bebelith.RacialSkills", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Bebelith.Web", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Bebelith.WebResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.Bebelith.WebAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Bebelith.Brain", "BlueprintBrain"),
     ))
-    if len(rows) != 2040 or len({symbol for symbol, _ in rows}) != 2040:
+    if len(rows) != 2062 or len({symbol for symbol, _ in rows}) != 2062:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

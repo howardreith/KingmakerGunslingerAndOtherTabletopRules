@@ -1000,6 +1000,10 @@ namespace KingmakerGunslinger.DomainTests
                     // no Intelligence score buys no ranks at all, and the
                     // default three would put it above its stat block.
                     value.Key != GiantScorpionRulesPolicy.GiantScorpionKey &&
+                    // Sprint 21's Giant Crab, for exactly the same reason as
+                    // the scorpion: no Intelligence score, so no ranks, so an
+                    // empty list rather than the default three.
+                    value.Key != GiantCrabRulesPolicy.GiantCrabKey &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

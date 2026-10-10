@@ -170,6 +170,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string DisposableExpandedSummoningSprint20Review =
             "disposable-expanded-summoning-sprint20-review";
+        /// <summary>
+        /// The Sprint 21 hidden-candidate review: the Giant Crab as it is in a
+        /// running game. The live profile with every printed number, the
+        /// two-pincer routine, grab on both pincers with nothing held, the two
+        /// carriers this creature owns because its printed lines derived
+        /// without them, the eight-legged trip defence measured against the
+        /// engine's own trip manoeuvre, the mind-affecting immunity, both
+        /// combat modes, the original body, the registered seven roots still
+        /// withheld, and the released Bebelith's three published roots left
+        /// exactly where they were.
+        /// </summary>
+        internal const string DisposableExpandedSummoningSprint21Review =
+            "disposable-expanded-summoning-sprint21-review";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
         internal const string ObserveExpandedSummoningVariantMenu =
@@ -250,7 +263,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == DisposableExpandedSummoningSnakeFinalReview ||
                 scenario == DisposableExpandedSummoningSprint18Review ||
                 scenario == DisposableExpandedSummoningSprint19Review ||
-                scenario == DisposableExpandedSummoningSprint20Review;
+                scenario == DisposableExpandedSummoningSprint20Review ||
+                scenario == DisposableExpandedSummoningSprint21Review;
         }
         /// <summary>
         /// Correction order (2026-09-25): repeated cast-and-dispose cycles of
@@ -775,6 +789,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
+                DisposableExpandedSummoningSprint21Review,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,

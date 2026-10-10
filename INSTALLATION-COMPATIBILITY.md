@@ -1,8 +1,8 @@
 # Installation, updates, removal, and compatibility
 
-Candidate version: `0.0.149-expanded-summoning-sprint20` (UMM
+Candidate version: `0.0.150-expanded-summoning-sprint21` (UMM
 version `0.0.149`), archive
-`KingmakerGunslinger-0.0.149-expanded-summoning-sprint20.zip`.
+`KingmakerGunslinger-0.0.150-expanded-summoning-sprint21.zip`.
 It is built on released v0.0.148 and changes nothing that release qualified, so
 it retains v0.0.142 traits/content and the qualified summoning Sprints 12–19
 including Salamander, both apes, the Girallon and the Xill, plus released

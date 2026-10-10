@@ -84,6 +84,8 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_GiantStagBeetle";
         internal const string GiantScorpionBlueprintName =
             "KMG_Summoning_Unit_GiantScorpion";
+        internal const string GiantCrabBlueprintName =
+            "KMG_Summoning_Unit_GiantCrab";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -117,6 +119,7 @@ namespace KingmakerGunslinger.Summoning
                 { GiantAntDroneBlueprintName, "giant-ant-drone" },
                 { GiantStagBeetleBlueprintName, "giant-stag-beetle" },
                 { GiantScorpionBlueprintName, Sprint14BonePolicy.ScorpionKey },
+                { GiantCrabBlueprintName, Sprint14BonePolicy.CrabKey },
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
                 { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" }
             };
@@ -140,7 +143,7 @@ namespace KingmakerGunslinger.Summoning
             new HashSet<string>(StringComparer.Ordinal)
             { "fire-beetle", "giant-ant-worker", "giant-ant-soldier",
               "giant-ant-drone", "giant-stag-beetle",
-              Sprint14BonePolicy.ScorpionKey };
+              Sprint14BonePolicy.ScorpionKey, Sprint14BonePolicy.CrabKey };
         private const string MainTexture = "_MainTex";
         private static bool IsCrocodilian(string key)
         { return CrocodilianVisualPolicy.Keys.Contains(key, StringComparer.Ordinal); }

@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 102;
-        internal const int LogicalAbilityCount = 1056;
+        internal const int UnitCount = 103;
+        internal const int LogicalAbilityCount = 1063;
         internal const int TemplatedPlacementCount = 306;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -56,7 +56,12 @@ namespace KingmakerGunslinger.Summoning
         // guarded review proved missing: its own +12 anti-trip defence, where
         // the shared native eight-leg fact delivers the +8 a six-legged insect
         // prints, and its printed racial +4 on Perception and Stealth.
-        internal const int SpecialIdentityCount = 228;
+        // Five more in Sprint 21: the crab's unit type, its printed
+        // immunity to mind-affecting effects, its own +12 anti-trip defence,
+        // its printed racial +4 Perception, and the grab carrier its two claws
+        // need. It owns no weapon, because a Medium creature takes the shared
+        // native 1d4 claw unscaled.
+        internal const int SpecialIdentityCount = 242;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -387,6 +392,41 @@ namespace KingmakerGunslinger.Summoning
             // Stealth -3.
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.TripDefense", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantScorpion.RacialSkills", "BlueprintFeature"));
+            // Sprint 21's Giant Crab. Five of its own: a unit type because no
+            // native crab type exists and borrowing the Giant Spider's would
+            // make it read as its donor; the printed immunity to
+            // mind-affecting effects; the printed +12 against trip, which the
+            // shared native eight-leg fact cannot deliver and the Sprint 20
+            // carrier delivers under a scorpion's name; the printed racial +4
+            // Perception; and the grab carrier both its claws need. It owns no
+            // weapon: it is Medium, so the shared native 1d4 claw is not
+            // scaled for it and already carries the printed dice.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.MindlessImmunity", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.TripDefense", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.RacialSkills", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantCrab.Traits", "BlueprintBuff"));
+            // Sprint 21's Bebelith overhaul. Its unit and its three roots are
+            // released and are NOT reallocated; these nine are what the
+            // released build left out or got wrong. Rot is a bite-only injury
+            // effect whose graph - two Constitution a save, five exposures, two
+            // consecutive successes to cure - is longer than any poison carrier
+            // this project ships, so it owns one. Penetrating strike replaces an
+            // invented +2 against chaotic-evil outsiders with the printed
+            // descriptors. The anti-trip defence is +12 where the shared native
+            // eight-leg fact delivers +8, for the third time in this series. The
+            // racial +8 Stealth existed nowhere. And the web needs an ability, a
+            // resource, an AI action and a brain to cast it, because the released
+            // creature takes the native brain that casts nothing.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Rot", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.RotState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.PenetratingStrike", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.TripDefense", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.RacialSkills", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Web", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }

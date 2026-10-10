@@ -193,6 +193,9 @@
     <Compile Include="Summoning\GirallonRulesPolicy.cs" />
     <Compile Include="Summoning\XillRulesPolicy.cs" />
     <Compile Include="Summoning\GiantScorpionRulesPolicy.cs" />
+    <Compile Include="Summoning\GiantCrabRulesPolicy.cs" />
+    <Compile Include="Summoning\BebelithRulesPolicy.cs" />
+    <Compile Include="Summoning\BebelithRot.cs" />
     <Compile Include="Summoning\GiantScorpionPoison.cs" />
     <Compile Include="Summoning\XillCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
@@ -1226,6 +1229,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Surface.cs" />
     <Compile Include="RuntimeTesting\Sprint20ReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Review.cs" />
+    <Compile Include="RuntimeTesting\Sprint21ReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Routine.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Surface.cs" />
