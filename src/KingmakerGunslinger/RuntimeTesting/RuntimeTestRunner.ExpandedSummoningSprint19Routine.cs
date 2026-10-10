@@ -198,97 +198,101 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData secondTarget = null;
                 Kingmaker.Blueprints.BlueprintUnit secondBlueprint = null;
                 Sprint16RuleObserver secondObserver = null;
+                int trials = 0;
+                bool clean = false;
+                int firstRendFrom = 0, secondRendFrom = 0;
                 try
                 {
-                    for (int sequence = 0; sequence < sequences; sequence++)
+                    // One case is one atomic trial. A natural one always
+                    // misses whatever the bonus, so a trial whose chosen
+                    // claws did not all land is a roll of the dice and not a
+                    // result; it is abandoned whole and retried from nothing.
+                    //
+                    // Retrying a single sequence instead was wrong, and the
+                    // ninth guarded run showed how: the rend tracker is
+                    // scoped to the attack command rather than to the
+                    // review's idea of an attempt, so claws that landed in an
+                    // abandoned attempt still counted, and four distinct
+                    // claws eventually hit one target although no single
+                    // attempt landed four. Clearing between whole trials is
+                    // sound where clearing between sequences would not be:
+                    // what is under test is accumulation within a sequence
+                    // and across sequences, and a discarded trial is neither.
+                    while (!clean && ++trials <= 6)
                     {
-                        accuracy.Hit = Sprint19HitSet(name, sequence, bite, claws);
-                        accuracy.Rest();
-                        // A native full attack costs the whole turn, so in
-                        // turn-based combat every sequence needs a fresh one.
-                        // Nothing here clears the rend tracker: the native
-                        // round boundary is what does that, and the case that
-                        // measures it says so.
-                        if (CombatController.IsInTurnBasedCombat() ||
-                            (name == "claws-across-two-turns" && sequence == 1))
+                        DireApeRendGate.ForgetObserved(owner);
+                        ResetExpandedSummoningHostile(fixture);
+                        firstRendFrom = observer.Damage.Count;
+                        secondRendFrom = secondObserver == null ? 0 :
+                            secondObserver.Damage.Count;
+                        emissions = new JArray();
+                        clean = true;
+                        for (int sequence = 0; sequence < sequences; sequence++)
                         {
-                            foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
-                        }
-                        UnitAttack ignored = null;
-                        int before = observer.Attacks.Count +
-                            (secondObserver == null ? 0 :
-                                secondObserver.Attacks.Count);
-                        if (name == "four-claws-split-targets" && sequence == 0)
-                        {
-                            if (secondTarget == null)
-                                secondTarget = Sprint18SecondTarget(fixture,
-                                    out secondBlueprint);
-                            secondObserver = new Sprint16RuleObserver {
-                                Owner = owner, Target = secondTarget };
-                            // The hit chooser has to follow the target the
-                            // sequence is actually aimed at, or every limb
-                            // lands and the case earns a rend it is not owed.
-                            secondObserver.BeforeAttackRollForFixture =
-                                accuracy.Apply;
-                            EventBus.Subscribe(secondObserver);
-                            foreach (int step in Sprint18RunFullAttack(fixture,
-                                owner, result => ignored = result, secondTarget))
-                                yield return step;
-                        }
-                        else
-                            foreach (int step in Sprint18RunFullAttack(fixture,
-                                owner, result => ignored = result))
-                                yield return step;
-                        // A natural one always misses, whatever the bonus, so a
-                        // sequence whose chosen limbs did not all land is a roll
-                        // of the dice and not a result. Re-attempt it, bounded,
-                        // and record every attempt. Nothing is forced: the rolls
-                        // stay native and only the precondition the case needs
-                        // is waited for. Four chosen claws make this far more
-                        // likely than Sprint 18's two, so the bound is wider.
-                        int attempts = 1;
-                        var rolls = new JArray(Sprint18Rolls(observer,
-                            secondObserver, before));
-                        while (attempts < 8 && Sprint18ChosenLimbMissed(
-                            observer, secondObserver, before, accuracy))
-                        {
-                            attempts++;
-                            int retryFrom = observer.Attacks.Count +
-                                (secondObserver == null ? 0 :
-                                    secondObserver.Attacks.Count);
-                            if (CombatController.IsInTurnBasedCombat())
+                            accuracy.Hit = Sprint19HitSet(name, sequence, bite, claws);
+                            accuracy.Rest();
+                            // A native full attack costs the whole turn, so in
+                            // turn-based combat every sequence needs a fresh
+                            // one. Nothing here clears the rend tracker inside
+                            // a trial: the native round boundary is what does
+                            // that, and the case that measures it says so.
+                            if (CombatController.IsInTurnBasedCombat() ||
+                                (name == "claws-across-two-turns" && sequence == 1))
+                            {
                                 foreach (int step in Sprint18AdvanceRound(owner))
                                     yield return step;
-                            accuracy.Rest();
-                            UnitAttack retry = null;
-                            foreach (int step in Sprint18RunFullAttack(fixture,
-                                owner, result => retry = result,
-                                name == "four-claws-split-targets" && sequence == 0
-                                    ? secondTarget : null)) yield return step;
-                            ignored = retry;
-                            rolls = new JArray(Sprint18Rolls(observer,
-                                secondObserver, retryFrom));
-                            before = retryFrom;
+                            }
+                            UnitAttack ignored = null;
+                            int before = observer.Attacks.Count +
+                                (secondObserver == null ? 0 :
+                                    secondObserver.Attacks.Count);
+                            if (name == "four-claws-split-targets" && sequence == 0)
+                            {
+                                if (secondTarget == null)
+                                {
+                                    secondTarget = Sprint18SecondTarget(fixture,
+                                        out secondBlueprint);
+                                    secondObserver = new Sprint16RuleObserver {
+                                        Owner = owner, Target = secondTarget };
+                                    // The hit chooser has to follow the target
+                                    // the sequence is actually aimed at, or
+                                    // every limb lands and the case earns a
+                                    // rend it is not owed.
+                                    secondObserver.BeforeAttackRollForFixture =
+                                        accuracy.Apply;
+                                    EventBus.Subscribe(secondObserver);
+                                    secondRendFrom = secondObserver.Damage.Count;
+                                }
+                                foreach (int step in Sprint18RunFullAttack(fixture,
+                                    owner, result => ignored = result, secondTarget))
+                                    yield return step;
+                            }
+                            else
+                                foreach (int step in Sprint18RunFullAttack(fixture,
+                                    owner, result => ignored = result))
+                                    yield return step;
+                            bool landed = !Sprint18ChosenLimbMissed(
+                                observer, secondObserver, before, accuracy);
+                            emissions.Add(new JObject {
+                                ["sequence"] = sequence,
+                                ["chosenClaws"] = accuracy.Hit.Length,
+                                ["everyChosenLimbLanded"] = landed,
+                                ["rolls"] = new JArray(Sprint18Rolls(
+                                    observer, secondObserver, before)),
+                                ["commandFinished"] = ignored != null &&
+                                    ignored.IsFinished });
+                            if (!landed) { clean = false; break; }
                         }
-                        emissions.Add(new JObject {
-                            ["sequence"] = sequence,
-                            ["chosenClaws"] = accuracy.Hit.Length,
-                            ["attacks"] = observer.Attacks.Count,
-                            ["hits"] = observer.Attacks.Count(roll => roll.IsHit),
-                            ["attempts"] = attempts,
-                            ["lastAttemptRolls"] = rolls,
-                            ["commandFinished"] = ignored != null &&
-                                ignored.IsFinished });
                     }
-                    RuleDealDamage[] rends = observer.Damage.Concat(
-                            secondObserver == null ?
-                                Enumerable.Empty<RuleDealDamage>() :
-                                secondObserver.Damage)
+                    RuleDealDamage[] rends = observer.Damage.Skip(firstRendFrom)
+                        .Concat(secondObserver == null ?
+                            Enumerable.Empty<RuleDealDamage>() :
+                            secondObserver.Damage.Skip(secondRendFrom))
                         .Where(value => ReferenceEquals(value.Initiator, owner) &&
                             value.AttackRoll == null).ToArray();
                     int wanted = qualifies ?
                         (name == "second-sequence-after-a-rend" ? 2 : 1) : 0;
-                    bool shape = rends.Length == wanted && rends.All(rend =>
+                    bool shape = clean && rends.Length == wanted && rends.All(rend =>
                         rend.DamageBundle.First().Dice.Rolls ==
                             expected.RendRolls &&
                         (int)rend.DamageBundle.First().Dice.Dice ==
@@ -303,6 +307,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["clawsRequired"] = GirallonRulesPolicy.ClawCount,
                             ["expectedRends"] = wanted,
                             ["observedRends"] = rends.Length,
+                            ["trials"] = trials,
+                            ["everyChosenLimbLandedInTheMeasuredTrial"] = clean,
                             ["rendDamage"] = new JArray(rends.Select(rend =>
                                 Sprint16DamageLine(rend.DamageBundle.First()))),
                             ["sequences"] = emissions,
