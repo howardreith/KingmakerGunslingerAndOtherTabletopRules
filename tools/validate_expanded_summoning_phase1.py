@@ -446,12 +446,12 @@ def validate(root: Path) -> None:
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 1056;",
-        # Sprint 18 published on 2026-10-09 and Sprint 19 on 2026-10-10,
-        # each after its own complete hidden candidate passed. Sprint 20
-        # registers the Giant Scorpion and withholds all twelve of its
-        # roots, so the published surface is still the 1044 v0.0.148
-        # showed.
-        "SuppressedLogicalPlacementCount = 12;")
+        # Sprint 18 published on 2026-10-09 and Sprints 19 and 20 on
+        # 2026-10-10, each after its own complete hidden candidate passed.
+        # Nothing is withheld now: all 1056 registered placements are
+        # selectable, which with the 29 retained native wrappers is 1085
+        # visible choices.
+        "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
         "UnitCount = 102;",
         "LogicalAbilityCount = 1056;",

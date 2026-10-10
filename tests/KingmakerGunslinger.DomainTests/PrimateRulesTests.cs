@@ -112,21 +112,20 @@ namespace KingmakerGunslinger.DomainTests
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placement count changed.");
             // The apes published on 2026-10-09 after their complete hidden
-            // candidate passed, and nothing has withheld them since. Sprint 19
-            // registers ten placements of its own and holds all ten, so the
-            // published total is exactly what v0.0.147 showed.
-            Assertions.Equal(12,
+            // candidate passed, and nothing has withheld them since. Sprint 20
+            // published its own creature on 2026-10-10, so nothing is withheld
+            // at all and every registered placement is selectable.
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only Sprint 20's own twelve roots are withheld.");
-            Assertions.Equal(1044,
+                "Nothing is withheld.");
+            Assertions.Equal(1056,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The apes stay published and the surface is v0.0.148's.");
+                "The apes stay published and every registered placement is "
+                + "visible.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key !=
-                        GiantScorpionRulesPolicy.GiantScorpionKey,
+                Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Nothing but the Sprint 20 creature may be withheld: "
+                    "Every placement is published now that Sprint 20 has: "
                     + variant.StableKey);
             SummonVisibilityCatalog.Validate();
 

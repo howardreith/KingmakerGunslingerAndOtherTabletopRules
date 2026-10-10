@@ -982,27 +982,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["guid"] = ability == null ? null : ability.AssetGuid,
                         ["withheld"] = hidden });
                 }
+                // Two consistent states and no third. Before publication
+                // every root exists and every one is withheld; after it every
+                // root exists and every one is published. A run where some
+                // are and some are not is a half-published creature, which is
+                // the thing this cannot be allowed to pass.
+                bool allWithheld = withheld.Count == 12 && published.Count == 0;
+                bool allPublished = published.Count == 12 && withheld.Count == 0;
                 Sprint20Check("twelve-roots-live",
                     mine.Length == 12 && missing.Count == 0 &&
-                    withheld.Count == 12 && published.Count == 0,
+                    (allWithheld || allPublished),
                     new JObject { ["roots"] = mine.Length,
                         ["missing"] = new JArray(missing),
                         ["withheld"] = withheld.Count,
-                        ["wronglyPublished"] = new JArray(published),
+                        ["published"] = published.Count,
+                        ["state"] = allPublished ? "published"
+                            : allWithheld ? "withheld" : "split",
                         ["detail"] = rows },
-                    "all twelve new roots exist in the live library and all "
-                    + "twelve are still withheld");
+                    "all twelve new roots exist in the live library and are "
+                    + "either all withheld or all published, never split");
 
                 int withheldElsewhere = all.Count(value =>
                     !Sprint20ReviewPolicy.IsSprint20Creature(
                         value.Creature.Key) &&
                     !SummonVisibilityCatalog.IsPublished(value));
+                // The published count follows from the state above and is
+                // arithmetic rather than a second opinion: withheld means the
+                // 1044 v0.0.148 published, published means all 1056. Either
+                // way nothing outside this creature may be withheld, which is
+                // what says no earlier release moved to make room.
+                int expectedPublished = allPublished ? 1056 : 1044;
                 Sprint20Check("no-other-root-withheld",
                     withheldElsewhere == 0 &&
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount ==
-                        1044 &&
+                        expectedPublished &&
                     SummonVisibilityCatalog.RegisteredLogicalPlacementCount ==
-                        1056,
+                        1056 &&
+                    SummonVisibilityCatalog.SuppressedLogicalPlacementCount ==
+                        (allPublished ? 0 : 12),
                     new JObject {
                         ["registered"] = SummonVisibilityCatalog
                             .RegisteredLogicalPlacementCount,
@@ -1010,9 +1027,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .SuppressedLogicalPlacementCount,
                         ["published"] = SummonVisibilityCatalog
                             .PublishedLogicalPlacementCount,
+                        ["expectedPublished"] = expectedPublished,
                         ["otherWithheld"] = withheldElsewhere },
-                    "Sprint 20 withholds exactly its own twelve roots and no "
-                    + "previously published one moved");
+                    "the live surface matches the state the roots are in, and "
+                    + "no root outside this creature is withheld");
 
                 // The module switch: the view patch knows this creature's
                 // blueprint, and the module that owns it is the one running.

@@ -289,12 +289,12 @@
     "newRoots": 32,
     "preservedSalamanderRoots": 5,
     "surface": {
-      "registered": 1044,
-      "published": 1044,
+      "registered": 1056,
+      "published": 1056,
       "withheld": 0,
       "nativeWrappers": 29,
-      "visibleChoices": 1073,
-      "note": "Sprint 19 published the Girallon and the Xill on 2026-10-10, which adds its ten roots to this surface. Nothing Sprint 17 published moved: the snakes' and Salamander's roots are untouched, and neither are Sprint 18's apes."
+      "visibleChoices": 1085,
+      "note": "Sprint 19 published the Girallon and the Xill on 2026-10-10 and Sprint 20 published the Giant Scorpion the same day, which adds their ten and twelve roots to this surface. Nothing Sprint 17 published moved: the snakes' and Salamander's roots are untouched, and neither are Sprint 18's apes. Nothing is withheld now."
     },
     "gates": {
       "focused": "PASS321/321 of2123 after six stale publication count/record expectations were updated;artifacts/sprint17-independent-publication-focused.log. Current state/evidence candidate equation is checked without rewriting immutable historical checkpoint counts.",

@@ -191,18 +191,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1056,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(12,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only Sprint 20's own twelve roots are withheld now.");
-            Assertions.Equal(1044,
+                "Nothing is withheld now that Sprint 20 has published.");
+            Assertions.Equal(1056,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key !=
-                        GiantScorpionRulesPolicy.GiantScorpionKey,
+                Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Nothing but the Sprint 20 creature may be withheld: "
+                    "Every placement is published now that Sprint 20 has: "
                     + variant.StableKey);
             SummonVisibilityCatalog.Validate();
         }
