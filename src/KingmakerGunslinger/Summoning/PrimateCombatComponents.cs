@@ -27,6 +27,24 @@ namespace KingmakerGunslinger.Summoning
         public string CreatureKey;
         public BlueprintUnit OwningBlueprint;
 
+        /// <summary>
+        /// The exact printed allocation, set by the builder from whichever
+        /// policy owns this creature.
+        ///
+        /// <para>These were a creature-key lookup into the Sprint 18 ape
+        /// policy, which is why the Sprint 19 Girallon - not one of the two
+        /// apes - fell through to the generic priority list and read
+        /// Perception 14 and Stealth -1 against a printed 11 and 5, with 81
+        /// hit points against a printed 73. Taking the numbers as fields
+        /// makes which creatures get an exact allocation the builder's
+        /// business, and leaves the component with no special cases at
+        /// all.</para>
+        /// </summary>
+        public int MobilityRanks;
+        public int PerceptionRanks;
+        public int StealthRanks;
+        public int BaseHitPoints;
+
         public void OnEntityCreated(UnitEntityData unit)
         {
             // IHandleEntityComponent is invoked on the shared blueprint
@@ -34,23 +52,25 @@ namespace KingmakerGunslinger.Summoning
             // Native Initialize calls this only on creation, not deserialization.
             if (unit == null || !ReferenceEquals(unit.Blueprint, OwningBlueprint))
                 throw new InvalidOperationException(
-                    "Ape rank allocation requires its exact owning unit.");
+                    "Exact rank allocation requires its exact owning unit.");
+            if (BaseHitPoints < 1)
+                throw new InvalidOperationException(
+                    "Exact rank allocation needs its creature's printed racial "
+                    + "hit points: " + CreatureKey + ".");
             ModifiableValue mobility = unit.Descriptor.Stats.GetStat(
                 StatType.SkillMobility);
             ModifiableValue perception = unit.Descriptor.Stats.GetStat(
                 StatType.SkillPerception);
             ModifiableValue stealth = unit.Descriptor.Stats.GetStat(
                 StatType.SkillStealth);
-            int mobilityRanks = mobility.BaseValue;
-            int perceptionRanks = perception.BaseValue;
-            int stealthRanks = stealth.BaseValue;
-            PrimateRulesPolicy.AllocateLandRanks(CreatureKey,
-                ref mobilityRanks, ref perceptionRanks, ref stealthRanks);
-            mobility.BaseValue = mobilityRanks;
-            perception.BaseValue = perceptionRanks;
-            stealth.BaseValue = stealthRanks;
-            unit.Descriptor.Stats.HitPoints.BaseValue =
-                PrimateRulesPolicy.For(CreatureKey).BaseHitPoints;
+            if (mobility.BaseValue != 0 || perception.BaseValue != 0 ||
+                stealth.BaseValue != 0)
+                throw new InvalidOperationException(
+                    "Class ranks must start unallocated: " + CreatureKey + ".");
+            mobility.BaseValue = MobilityRanks;
+            perception.BaseValue = PerceptionRanks;
+            stealth.BaseValue = StealthRanks;
+            unit.Descriptor.Stats.HitPoints.BaseValue = BaseHitPoints;
         }
 
         public void OnEntityRemoved(UnitEntityData unit) { }

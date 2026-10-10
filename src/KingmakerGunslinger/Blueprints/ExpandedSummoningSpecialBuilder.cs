@@ -372,6 +372,11 @@ namespace KingmakerGunslinger.Blueprints
         private const string AuraOfMenaceBuffGuid = "1ce4878b5e714f659d0854a12f4b3cf2";
         private const string DumbBrainGuid = "5abc8884c6f15204c8604cb01a2efbab";
         private const string NaturalArmor5Guid = "7661741dbb9604842a642457456fd0e4";
+        // The native poison-on-hit feature the Xill paralysis clones its
+        // wound gate, saving throw and conditional from. The natural
+        // builder names the same identity; neither edits the original.
+        private const string NativePoisonOnHitFeatureGuid =
+            "094714bb08f4e1943a8e9d2384ebe573";
         private const string NaturalArmor6Guid = "987ba44303e88054c9504cb3083ba0c9";
         // The two shared natural weapons the Xill clones its own pair
         // from. The natural builder names the same identities; neither
@@ -560,6 +565,9 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDocileHooves(bySymbol, PonyUnitSymbol, PonyCombatTraitsSymbol, "Pony");
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
+            // After the grapplers, because ConfigureGrabber replaces
+            // the traits buff's component array and these append to it.
+            ConfigureXillDefences(library, bySymbol);
             ConfigureStirgeAttachment(library, bySymbol);
             ConfigureUngulatePowerfulCharge(bySymbol, RhinocerosUnitSymbol,
                 RhinocerosPowerfulChargeSymbol, "rhinoceros");
@@ -3851,6 +3859,88 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, WeaponFocusClawGuid, "Weapon Focus (claw)"),
                 fullStrength
             };
+        }
+
+        /// <summary>
+        /// The Xill's spell resistance, its carried shield bonus and its
+        /// paralytic bite, appended to the combat-traits buff the grabber
+        /// already attached to the creature.
+        ///
+        /// <para>The shield bonus is the printed stat block's, from gear a
+        /// summoned xill would not otherwise carry. Dropping it would make
+        /// the creature read armour class 19 and flat-footed 15 against an
+        /// entry that says 21 and 17, which is what the guarded review
+        /// measured. It is a shield bonus rather than more natural armour so
+        /// that it misses a touch attack and behaves like a shield when
+        /// something suppresses one and not the other.</para>
+        ///
+        /// <para>The paralysis clones the native poison-on-hit graph: the
+        /// wound gate, the saving throw and the conditional are the game's
+        /// own, and only three things change - the save is Fortitude at the
+        /// printed derived difficulty class, the trigger is the bite rather
+        /// than a sting, and the payload is a paralysis condition rather than
+        /// ability damage. The printed 1d4-hour duration is NOT reproduced: a
+        /// summoned xill exists for rounds, so the condition is bounded to
+        /// the summon's own lifetime and that bound is recorded rather than
+        /// presented as the printed duration.</para>
+        /// </summary>
+        private static void ConfigureXillDefences(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, XillUnitSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
+                XillCombatTraitsSymbol);
+            BlueprintBuff paralysis = Require<BlueprintBuff>(bySymbol,
+                XillParalysisSymbol);
+            var bite = (BlueprintItemWeapon)unit.Body.PrimaryHand;
+            if (bite == null || bite.name != InternalName(XillBiteSymbol))
+                throw new InvalidOperationException(
+                    "The Xill paralysis must ride its own bite.");
+            if (traits.ComponentsArray == null ||
+                !traits.ComponentsArray.OfType<SummonGrabComponent>().Any())
+                throw new InvalidOperationException(
+                    "The Xill grab must be configured before its defences.");
+
+            var resistance = ScriptableObject.CreateInstance<AddSpellResistance>();
+            resistance.Value = Simple(XillRulesPolicy.PrintedSpellResistance);
+            resistance.AddCR = false;
+            var shield = ScriptableObject.CreateInstance<AddStatBonus>();
+            shield.Stat = StatType.AC;
+            shield.Value = XillRulesPolicy.ShieldBonus;
+            shield.Descriptor = ModifierDescriptor.Shield;
+
+            BlueprintFeature nativeFeature = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativePoisonOnHitFeatureGuid,
+                    "native poison-on-hit feature");
+            BlueprintComponent[] cloned = (nativeFeature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AddInitiatorAttackWithWeaponTrigger trigger = cloned.OfType<
+                AddInitiatorAttackWithWeaponTrigger>().Single();
+            trigger.WeaponType = bite.Type;
+            trigger.OnlyHit = true;
+            ContextActionSavingThrow save = trigger.Action.Actions.OfType<
+                ContextActionSavingThrow>().Single();
+            save.Type = SavingThrowType.Fortitude;
+            ContextActionConditionalSaved outcome = save.Actions.Actions.OfType<
+                ContextActionConditionalSaved>().Single();
+            ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
+                ContextActionApplyBuff>().Single();
+            apply.Buff = paralysis;
+            // A paralytic bite is delivered by a wound, and OnlyHit is the
+            // weaker test: an attack reduced to zero damage has hit without
+            // wounding. The same correction the Sprint 10 poisons carry.
+            trigger.Action.Actions = new GameAction[] {
+                new ContextActionOnlyIfWeaponWounded {
+                    Actions = new ActionList {
+                        Actions = (new GameAction[] {
+                            new ContextActionSetXillParalysisDc() }).Concat(
+                                trigger.Action.Actions).ToArray() } } };
+
+            traits.ComponentsArray = traits.ComponentsArray
+                .Concat(new BlueprintComponent[] { resistance, shield, trigger })
+                .ToArray();
         }
 
         private static void ConfigureSuccubusDomination(
