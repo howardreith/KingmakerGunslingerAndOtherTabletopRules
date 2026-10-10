@@ -210,8 +210,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 101:
-        raise SystemExit(f"Expected 101 parsed creatures; observed {len(values)}")
+    if len(values) != 102:
+        raise SystemExit(f"Expected 102 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -502,8 +502,26 @@ def planned():
         ("KMG.Summoning.Special.Xill.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Xill.Paralysis", "BlueprintBuff"),
         ("KMG.Summoning.Special.Xill.FullStrengthLimbs", "BlueprintFeature"),
+        # Sprint 20. The scorpion owns its claw because a shared native
+        # 1d6 is scaled a step up for a Large wielder - the exact defect
+        # the guarded Sprint 18 review measured on the Dire Ape - and it
+        # owns its sting because the poison trigger gates on that
+        # weapon's own type and must never reach a claw, which is why the
+        # Giant Ant has its own sting too. The poison graph is new: the
+        # printed one runs six rounds where every shipped carrier runs
+        # four. Its difficulty class is computed live from Constitution.
+        # The printed immunity to mind-affecting effects rides the game's
+        # own descriptor immunity, the same component the Goblin Dog uses
+        # for disease; it is carried explicitly rather than inferred from
+        # the Intelligence score the engine forces to 1.
+        ("KMG.Summoning.Natural.GiantScorpion.Claw1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.GiantScorpion.Sting1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.GiantScorpion.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.GiantScorpion.Poison", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantScorpion.Venom", "BlueprintBuff"),
+        ("KMG.Summoning.Natural.GiantScorpion.MindlessImmunity", "BlueprintFeature"),
     ))
-    if len(rows) != 2006 or len({symbol for symbol, _ in rows}) != 2006:
+    if len(rows) != 2037 or len({symbol for symbol, _ in rows}) != 2037:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -526,7 +544,7 @@ def generated_roster(manifest):
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-17 are technically qualified and published. Viper and Constrictor independently publish after complete hidden PASS on47e8c121 and all32 public roots PASS on996c5fe7. Salamander's observation-only reach correctiondb1da016 profile/view73/73 PASS closes Sprint17; its five existing public roots remain preserved and PASS. Sprint18's Ape and Dire Ape published in v0.0.147 after their complete hidden candidate passed. Sprint19 registered the Girallon and the Xill with all10 of their roots withheld and published them in v0.0.148 after 39/39 mechanics and 12/12 body review: identities were allocated once and publication removed two suppression keys without moving anything. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Release143 integration/closure remains NOT QUALIFIED until the exact final matrix passes. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-17 are technically qualified and published. Viper and Constrictor independently publish after complete hidden PASS on47e8c121 and all32 public roots PASS on996c5fe7. Salamander's observation-only reach correctiondb1da016 profile/view73/73 PASS closes Sprint17; its five existing public roots remain preserved and PASS. Sprint18's Ape and Dire Ape published in v0.0.147 after their complete hidden candidate passed. Sprint19 registered the Girallon and the Xill with all10 of their roots withheld and published them in v0.0.148 after 39/39 mechanics and 12/12 body review: identities were allocated once and publication removed two suppression keys without moving anything. Sprint20 registers the Giant Scorpion and withholds all12 of its roots; it is templated, so twelve suppressed placements also hold back twenty-four allocated and inert celestial and fiendish execution children. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Release143 integration/closure remains NOT QUALIFIED until the exact final matrix passes. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",
