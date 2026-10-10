@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 51 || Values.Select(value => value.Key)
+            if (Values.Length != 52 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -204,8 +204,34 @@ namespace KingmakerGunslinger.Summoning
                     "Mobility", "Perception", "Stealth" }))
                 throw new InvalidOperationException(
                     "Dire Ape printed attack routine or profile changed.");
+            NaturalSummonProfile girallon = For("girallon");
+            if (girallon.Size != "Large" || girallon.HitDieClass != "MagicalBeast" ||
+                girallon.HitDice != 7 || girallon.Strength != 19 ||
+                girallon.Dexterity != 17 || girallon.Constitution != 18 ||
+                girallon.Intelligence != 2 || girallon.Wisdom != 12 ||
+                girallon.Charisma != 7 || girallon.SpeedFeet != 40 ||
+                girallon.NaturalArmor != 6 ||
+                girallon.PrimaryWeapon != "GirallonBite1d6" ||
+                // Four claws, not two. A girallon that rends on two is the
+                // single most likely way to get this creature wrong.
+                girallon.AdditionalWeapons.Count != 4 ||
+                girallon.AdditionalWeapons.Any(value => value != "GirallonClaw1d4") ||
+                girallon.AdditionalSecondaryWeapons.Count != 0 ||
+                !girallon.Facts.Contains("ImprovedInitiative") ||
+                !girallon.Facts.Contains("IronWill") ||
+                !girallon.Facts.Contains("SkillFocusPerception") ||
+                !girallon.Facts.Contains("Toughness") ||
+                !girallon.Facts.Contains("GirallonRend") ||
+                !girallon.Facts.Contains("PrimateFullStrengthLimbs") ||
+                girallon.Facts.Count != 6 ||
+                girallon.Facts.Contains("ReducedReach") ||
+                girallon.Facts.Contains("DireApeRend") ||
+                !girallon.Skills.SequenceEqual(new[] { "Perception", "Stealth" }))
+                throw new InvalidOperationException(
+                    "Girallon printed attack routine or profile changed.");
             PrimateRulesPolicy.Validate();
             PrimateVisualPolicy.Validate();
+            GirallonRulesPolicy.Validate();
         }
 
         private static NaturalSummonProfile[] Build()
@@ -559,6 +585,29 @@ namespace KingmakerGunslinger.Summoning
                     "Kingmaker exposes one movement speed; the 30-foot ground speed is used and the 30-foot climb speed is omitted under the ordinary-map land-use scope. The printed Climb +14, and the +8 racial climb bonus inside it, have no faithful ordinary-map consumer and are omitted rather than substituted: Mobility is not raised to stand in for Climb and Athletics is not raised to simulate the racial bonus.",
                     "Low-light vision and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED. Nothing is substituted for them - no blindsense, no vision-range override - and no record claims they work.",
                     "REGISTERED AND WITHHELD. The original project-owned gorilla body is authored and wired on the census-chosen Troll rig; the knuckle-walking gait is the donor's and is not authored. Runtime qualification remains open."),
+                // Sprint 19. Seven magical-beast hit dice, one primary
+                // 1d6 bite and four primary 1d4 claws, all five at +10 and at
+                // the whole Strength modifier, and a rend that needs all four
+                // claws on one creature. Seven skill ranks, spent exactly
+                // where the stat block spends them: four on Perception and
+                // three on Stealth, none on Climb. Climb costs it no rank, so
+                // unlike the Sprint 18 apes the omitted climb speed forfeits
+                // nothing.
+                PK("girallon", "Girallon", "MagicalBeast", 7, "Large",
+                    19, 17, 18, 2, 12, 7, 40, 6, "GirallonBite1d6",
+                    A("GirallonClaw1d4", "GirallonClaw1d4",
+                      "GirallonClaw1d4", "GirallonClaw1d4"),
+                    A("ImprovedInitiative", "IronWill", "SkillFocusPerception",
+                      "Toughness", "GirallonRend",
+                      // Not a printed feat: the carrier that keeps all five
+                      // limbs on the plain Strength modifier the stat block
+                      // prints. The symbol is Sprint 18's and is reused rather
+                      // than renamed, because it shipped in v0.0.147 and this
+                      // ledger allocates an identity once.
+                      "PrimateFullStrengthLimbs"),
+                    A("Perception", "Stealth"),
+                    "Sprint 19 frozen contract: Summon Nature's Ally V only, untemplated, hidden pending complete runtime qualification. Bite +10 (1d6+4) and four claws +10 (1d4+4), every attack primary at the whole Strength modifier. Rend 1d4+6 only when all four claws hit one creature in one attack sequence; the damage is the engine's own derivation and follows live Strength.",
+                    "Exact land ranks and racial bonuses retain native attribute, feat and class-skill contributions. The 40-foot climb speed is omitted under ORDINARY_MAP_LAND_USE_SCOPE; the printed Climb +12 is Strength plus the racial climb-speed bonus and costs no rank, so nothing is forfeited and nothing is reallocated. Darkvision, low-light vision and scent remain PASSIVE_CREATURE_SENSES_UNMODELED without substitute senses. The body rides the reused Sprint 18 census rig, so its four arms share two animation driver chains under FOUR_ARMS_SHARE_TWO_DRIVER_CHAINS."),
                 PK("dire-ape", "Dire Ape", "Animal", 4, "Large",
                     19, 15, 16, 2, 12, 7, 30, 4, "DireApeBite1d6",
                     A("DireApeClaw1d4", "DireApeClaw1d4"),

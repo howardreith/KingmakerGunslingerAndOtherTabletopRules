@@ -599,6 +599,16 @@
       "key": "dire-ape",
       "displayName": "Dire Ape",
       "subjectPrompt": "A gigantopithecus looming forward, heavier and longer-armed than a gorilla, a coarse red-brown pelt with a shoulder mane, a bestial muzzle pushed forward over bared canines, splayed clawed hands. Procedural Blender render: tools/render_creature_icon.py --creature dire-ape."
+    },
+    {
+      "key": "girallon",
+      "displayName": "Girallon",
+      "subjectPrompt": "A white-furred four-armed ape standing upright in three-quarter view, two pairs of long arms hanging from a deep chest with the lower pair set below and forward of the upper so all four clawed hands read at once, a heavy brow over a longer muzzle with four bared canines, small ears flat against a crested skull, standing on its legs rather than on its knuckles. Procedural Blender render: tools/render_creature_icon.py --creature girallon."
+    },
+    {
+      "key": "xill",
+      "displayName": "Xill",
+      "subjectPrompt": "A rust-red chitinous four-armed outsider in three-quarter view, a segmented abdomen under a tall thorax, two pairs of thin jointed arms ending in hooked claws, digitigrade legs, and a wedge of a head on a real neck carrying four green compound eyes above a maw flanked by mandibles. Procedural Blender render: tools/render_creature_icon.py --creature xill."
     }
   ]
 }

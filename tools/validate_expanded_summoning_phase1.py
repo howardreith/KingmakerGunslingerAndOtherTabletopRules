@@ -564,7 +564,7 @@ def validate(root: Path) -> None:
     # Four unchanged master v0.0.142 trait exports join the qualified Phase2B tree.
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.146":
         package_count += 4 + 7 + 1  # traits, unchanged master145 documents, release146 notes
-    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.147":
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in {"0.0.147", "0.0.148"}:
         # Everything v0.0.146 shipped, plus the Sprint 18 release notes, the
         # two new project-owned ape icons, and the four original Sprint 18
         # body files: one mesh and one painting for each ape.
@@ -586,7 +586,7 @@ def validate(root: Path) -> None:
             "@('wolverine','shadow-mastiff','poisonous-frog')",
             "assets\\sprint14-insects")
         if json.loads((root / "Info.json").read_text(
-                encoding="utf-8"))["Version"] == "0.0.147":
+                encoding="utf-8"))["Version"] in {"0.0.147", "0.0.148"}:
             # The two original ape bodies are staged by name, like every
             # other original body, so a missing export fails the package
             # rather than shipping an ape that still looks like a troll.

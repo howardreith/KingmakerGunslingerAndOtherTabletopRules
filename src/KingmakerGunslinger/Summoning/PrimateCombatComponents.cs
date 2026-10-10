@@ -83,23 +83,30 @@ namespace KingmakerGunslinger.Summoning
         RuleInitiatorLogicComponent<RuleAttackWithWeapon>, ITickEachRound
     {
         private static readonly ConditionalWeakTable<UnitEntityData,
-            DireApeRendTracker> Trackers =
-            new ConditionalWeakTable<UnitEntityData, DireApeRendTracker>();
+            ClawRendTracker> Trackers =
+            new ConditionalWeakTable<UnitEntityData, ClawRendTracker>();
 
         public BlueprintUnit OwningBlueprint;
         public BlueprintItemWeapon Claw;
+
+        /// <summary>
+        /// How many claws this creature's printed rend needs. Two for the
+        /// Dire Ape, four for the Girallon. Set by the builder from the
+        /// creature's own printed line, so the gate never guesses.
+        /// </summary>
+        public int RendClawCount = 2;
 
         public override void OnEventAboutToTrigger(RuleAttackWithWeapon evt)
         {
             UnitEntityData owner = Mine(evt);
             if (owner == null) return;
-            DireApeClawLimb limb = ClawLimb(owner, evt.Weapon);
-            if (limb == DireApeClawLimb.None) return;
+            int claw = ClawLimb(owner, evt.Weapon);
+            if (claw == ClawIndex.None) return;
             object sequence = Sequence(owner);
             lock (Trackers)
             {
-                DireApeRendTracker tracker = Trackers.GetOrCreateValue(owner);
-                if (tracker.TryArm(sequence, limb, evt.Target)) evt.IsRend = true;
+                ClawRendTracker tracker = TrackerFor(owner);
+                if (tracker.TryArm(sequence, claw, evt.Target)) evt.IsRend = true;
             }
         }
 
@@ -107,13 +114,13 @@ namespace KingmakerGunslinger.Summoning
         {
             UnitEntityData owner = Mine(evt);
             if (owner == null) return;
-            DireApeClawLimb limb = ClawLimb(owner, evt.Weapon);
-            if (limb == DireApeClawLimb.None) return;
+            int claw = ClawLimb(owner, evt.Weapon);
+            if (claw == ClawIndex.None) return;
             bool hit = evt.AttackRoll != null && evt.AttackRoll.IsHit;
             lock (Trackers)
             {
-                Trackers.GetOrCreateValue(owner).RecordOutcome(Sequence(owner),
-                    limb, evt.Target, hit);
+                TrackerFor(owner).RecordOutcome(Sequence(owner),
+                    claw, evt.Target, hit);
             }
         }
 
@@ -157,24 +164,41 @@ namespace KingmakerGunslinger.Summoning
         /// by their blueprint; the bite sits in the primary hand and is never a
         /// claw limb.
         /// </summary>
-        private DireApeClawLimb ClawLimb(UnitEntityData owner,
-            ItemEntityWeapon weapon)
+        private int ClawLimb(UnitEntityData owner, ItemEntityWeapon weapon)
         {
             if (weapon == null || weapon.Blueprint == null ||
                 !ReferenceEquals(weapon.Blueprint, Claw))
-                return DireApeClawLimb.None;
+                return ClawIndex.None;
             int index;
             if (SummonLimbs.Classify(owner, weapon, out index) !=
-                SummonLimbKind.Additional) return DireApeClawLimb.None;
-            return index == 0 ? DireApeClawLimb.First :
-                index == 1 ? DireApeClawLimb.Second : DireApeClawLimb.None;
+                SummonLimbKind.Additional) return ClawIndex.None;
+            return index >= 0 && index < RendClawCount ?
+                index + 1 : ClawIndex.None;
+        }
+
+        /// <summary>
+        /// This unit's tracker, sized by this creature's printed claw count.
+        /// A tracker built for a different count is discarded rather than
+        /// reused, so a Girallon can never rend on a Dire Ape's two.
+        /// </summary>
+        private ClawRendTracker TrackerFor(UnitEntityData owner)
+        {
+            ClawRendTracker tracker;
+            if (Trackers.TryGetValue(owner, out tracker))
+            {
+                if (tracker.ClawCount == RendClawCount) return tracker;
+                Trackers.Remove(owner);
+            }
+            tracker = new ClawRendTracker(RendClawCount);
+            Trackers.Add(owner, tracker);
+            return tracker;
         }
 
         /// <summary>For the guarded runtime fixture: this unit's live tracker.</summary>
-        internal static DireApeRendTracker ObservedTracker(UnitEntityData unit)
+        internal static ClawRendTracker ObservedTracker(UnitEntityData unit)
         {
             if (unit == null) return null;
-            DireApeRendTracker tracker;
+            ClawRendTracker tracker;
             lock (Trackers)
             { return Trackers.TryGetValue(unit, out tracker) ? tracker : null; }
         }

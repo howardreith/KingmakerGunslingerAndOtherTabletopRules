@@ -13,16 +13,16 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(99, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(101, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(90, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(91, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(88, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(89, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(519, ExpandedSummoningBaselineInventory
+            Assertions.Equal(524, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(515, ExpandedSummoningBaselineInventory
+            Assertions.Equal(520, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -109,9 +109,11 @@ namespace KingmakerGunslinger.DomainTests
             // of its own qualification, which is allowed and is how Sprints
             // 12, 13 and 18 each ran, but it has to be deliberate rather than
             // a leftover - which is what this pin is for.
-            Assertions.Equal(0, ExpandedSummoningBaselineInventory
-                    .RegisteredButHiddenCreatures.Count,
-                "Nothing is registered and withheld: Sprint 18 published both apes.");
+            Assertions.True(ExpandedSummoningBaselineInventory
+                    .RegisteredButHiddenCreatures.SequenceEqual(
+                        new[] { "girallon", "xill" }),
+                "Sprint 19 registers exactly the Girallon and the Xill ahead of "
+                + "their own qualification and withholds both.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -124,9 +126,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(37,
+            Assertions.Equal(39,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, and why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against.");
+                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, and why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against, and why both Sprint 19 four-armed creatures join them on that same Troll rig.");
         }
 
         /// <summary>

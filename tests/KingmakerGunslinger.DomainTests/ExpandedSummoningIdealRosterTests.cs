@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(99, reused,
+            Assertions.Equal(101, reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,10 +133,10 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(35, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(33, ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
-                "The remaining ideal roster needs 35 new creature identities.");
+                "The remaining ideal roster needs 33 new creature identities: the Girallon and the Xill came off it in Sprint 19.");
         }
 
         /// <summary>
@@ -175,13 +175,13 @@ namespace KingmakerGunslinger.DomainTests
 
             // The Shadow Mastiff moved from this set into the represented
             // one when Sprint 13 registered it.
-            Assertions.Equal(35, ExpandedSummoningIdealRosterCatalog.All.Count(
+            Assertions.Equal(33, ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "35 ideal-roster creatures remain unregistered after the two hidden Sprint 18 apes.");
-            Assertions.Equal(110,
+                "33 ideal-roster creatures remain unregistered after the two hidden Sprint 19 creatures.");
+            Assertions.Equal(112,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "110 creatures own or retain a unit identity; registration is not publication.");
+                "112 creatures own or retain a unit identity; registration is not publication.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
