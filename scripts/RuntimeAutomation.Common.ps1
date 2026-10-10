@@ -1177,6 +1177,13 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    # Sprint 21's review, the last in the series, on the same terms.
+    'disposable-expanded-summoning-sprint21-review' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'disposable-expanded-summoning-serpentine-bodies' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
