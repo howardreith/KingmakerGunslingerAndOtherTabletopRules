@@ -117,6 +117,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         { return Matches(name, PriorityTerms); }
 
         /// <summary>
+        /// Whether a blueprint is one this mod registered.
+        ///
+        /// <para>A census of the installation must not count what the mod
+        /// being censused just added. The second run reported one installed
+        /// scorpion and it was KMG_Summoning_Unit_GiantScorpion - this
+        /// sprint's own unit, registered minutes earlier - which for a while
+        /// looked like it had overturned the Sprint 14 finding.</para>
+        /// </summary>
+        internal static bool IsOurs(string name)
+        {
+            return !string.IsNullOrEmpty(name) &&
+                name.StartsWith("KMG_", StringComparison.Ordinal);
+        }
+
+        /// <summary>
         /// One launch, a fixed ceiling. A census that could grow with the
         /// installation is not bounded.
         /// </summary>
