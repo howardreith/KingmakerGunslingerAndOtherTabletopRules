@@ -3832,12 +3832,17 @@ namespace KingmakerGunslinger.Blueprints
             unit.Body = NaturalBody(bite,
                 new[] { claw, claw, claw, claw },
                 Array.Empty<BlueprintItemWeapon>());
-            BlueprintUnit humanView = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
-                library, SalamanderProductionViewPolicy.DonorGuid,
-                "qualified native human carrier");
-            // Borrow only the qualified view. No NPC facts, faction, race,
-            // inventory, loot, weapons or progression enter this creature.
-            unit.Prefab = humanView.Prefab;
+            // The Xill keeps the view its donor entry chose, which is the
+            // census Troll rig its original four-armed body is authored
+            // against. The method this was modelled on borrows the
+            // Salamander's human carrier, and copying that line put the Xill
+            // on a rig its own mesh does not fit: the guarded review read its
+            // body as not-attempted twice before this was found.
+            if (unit.Prefab == null ||
+                unit.Prefab.AssetId != PrimateVisualPolicy.TrollPrefab)
+                throw new InvalidOperationException(
+                    "The Xill must keep the census donor rig its body is "
+                    + "authored against.");
             unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "bounded natural-attack brain");
             ConfigureUnitCore(unit, "Xill", "Xill",
