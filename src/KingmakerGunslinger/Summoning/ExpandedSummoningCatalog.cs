@@ -26,15 +26,15 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 101) throw new InvalidOperationException("Expanded Summoning unique creature count must be 101.");
+            if (Creatures.Length != 102) throw new InvalidOperationException("Expanded Summoning unique creature count must be 102.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             // Sprint 18 adds the two apes: the Ape at Summon Monster and
             // Nature's Ally III contributes seven placements per family and the
             // Dire Ape at tier IV contributes six, so 506/502 become 519/515
             // and the twenty-six new roots are registered and suppressed.
-            ValidateFamily(SummonFamily.Monster, 91, 524);
-            ValidateFamily(SummonFamily.NaturesAlly, 89, 520);
+            ValidateFamily(SummonFamily.Monster, 92, 530);
+            ValidateFamily(SummonFamily.NaturesAlly, 90, 526);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -80,6 +80,15 @@ namespace KingmakerGunslinger.Summoning
                 // ride the Sprint 18 census rig while their original bodies
                 // are authored, so both are borrowed-body proxies, and both
                 // are suppressed until the complete candidate passes.
+                // Sprint 20. A Large vermin on both tables at tier 4 and
+                // templated, like every other vermin there, so its six
+                // Summon Monster roots each own celestial and fiendish
+                // execution children. It rides the Giant Spider rig the
+                // Sprint 14 census chose - the only compact many-legged
+                // arthropod the game has - while its original body is
+                // authored, and all twelve placements are suppressed
+                // until the complete candidate passes.
+                C("giant-scorpion","Giant Scorpion",4,true,4,"Giant Spider"),
                 C("girallon","Girallon",null,false,5,"Troll"),
                 C("xill","Xill",5,false,null,"Troll")
             };

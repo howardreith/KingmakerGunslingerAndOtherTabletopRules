@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.Summoning
     /// reallocation.
     /// </summary>
     [Serializable]
-    public sealed class SummonPrimateSkillRanks :
+    public sealed class SummonExactSkillRanks :
         OwnedGameLogicComponent<UnitDescriptor>,
         IHandleEntityComponent<UnitEntityData>
     {

@@ -36,14 +36,22 @@ Native-owned trait-save67/67 across3fresh processes;2authorized writes only
 to new owned descriptor,then descriptor removed;118preexisting saves byte-exact.
 All reused results retain original candidate/request/result provenance.
 
-Sprints9-19 technically complete,Salamander INCLUDED;Phase2B closure PASS.
-Surface: 1044 published generated placements + 29 native wrappers = 1073 visible choices.
+Sprints9-20 technically complete,Salamander INCLUDED;Phase2B closure PASS.
+Surface: 1056 published generated placements + 29 native wrappers = 1085 visible choices.
 Sprint18 published the Ape and Dire Ape on 2026-10-09 after a complete hidden
 candidate: 29/29 batched review and 12/12 party-camera art review at 1d4+1 on one
 candidate, with the owner installation restored exactly after every run.
 Sprint19 published the Girallon and Xill on 2026-10-10 on the same terms: 39/39
 batched mechanics review and 12/12 party-camera art review at 1d4+1 on one
 candidate, with the owner installation restored exactly after every run.
+Sprint20 published the Giant Scorpion on 2026-10-10 on the same terms: 20/20
+batched mechanics review in both combat modes and 4/4 party-camera art review
+on one candidate, with the owner installation restored exactly after every run.
+Three guarded reviews were spent and all three disagreements were measured: a
+printed grab with no carrier, an anti-trip defence of 27 against a printed 31
+because the shared native eight-leg fact delivers 8, and Perception 0/Stealth
+-3 because the printed racial +4 existed only in the arithmetic. Nothing is
+withheld now: every registered placement is selectable.
 Prior735751ab enabledcleanup119,absence6,flight26 and137private gone/
 220borrowed-cache stable retained. Croc212,snakes71,Salamander and historical
 1008roots/29wrappers retained. No historical FAIL/ERROR rewritten.

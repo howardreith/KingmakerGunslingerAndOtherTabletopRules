@@ -192,6 +192,8 @@
     <Compile Include="Summoning\ExpandedSummoningPrimateViewPatch.cs" />
     <Compile Include="Summoning\GirallonRulesPolicy.cs" />
     <Compile Include="Summoning\XillRulesPolicy.cs" />
+    <Compile Include="Summoning\GiantScorpionRulesPolicy.cs" />
+    <Compile Include="Summoning\GiantScorpionPoison.cs" />
     <Compile Include="Summoning\XillCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="Summoning\ExpandedSummoningSerpentineViewPatch.cs" />
@@ -1215,11 +1217,15 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeDonors.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Survey.cs" />
     <Compile Include="RuntimeTesting\PrimateRigSurveyPolicy.cs" />
+    <Compile Include="RuntimeTesting\ArachnidRigSurveyPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Survey.cs" />
     <Compile Include="RuntimeTesting\PrimateReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\Sprint19ReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Routine.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Surface.cs" />
+    <Compile Include="RuntimeTesting\Sprint20ReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Routine.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Surface.cs" />

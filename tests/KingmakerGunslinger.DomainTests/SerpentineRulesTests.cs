@@ -740,7 +740,8 @@ namespace KingmakerGunslinger.DomainTests
                     .Select(value => value.Symbol), StringComparer.Ordinal);
             Assertions.Equal(2836 + AppendedLedgerIdentities +
                 PrimateRulesTests.AppendedLedgerIdentities +
-                Sprint19RulesTests.AppendedLedgerIdentities + masterTraits.Count,
+                Sprint19RulesTests.AppendedLedgerIdentities +
+                Sprint20RulesTests.AppendedLedgerIdentities + masterTraits.Count,
                 entries.Count,
                 "Qualified Phase2B identities, the Sprint 18 appends and all eleven released master trait identities coexist.");
             // The current release preserves master's entire prefix. Project
@@ -870,13 +871,14 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(rows.Select(v => v.Multiplicity).Distinct().Count() == 3,
                     "Direct, 1d3 and 1d4+1 routes retain their allocated identities.");
             }
-            Assertions.Equal(1044, all.Count(SummonVisibilityCatalog.IsPublished), "Exactly 32 newly published roots.");
-            Assertions.Equal(1073, all.Count(SummonVisibilityCatalog.IsPublished) +
+            Assertions.Equal(1056, all.Count(SummonVisibilityCatalog.IsPublished), "Exactly 32 newly published roots.");
+            Assertions.Equal(1085, all.Count(SummonVisibilityCatalog.IsPublished) +
                 SummonNativeExpansionCatalog.All.Count, "Published surface is source-derived.");
             Assertions.True(all.Where(v => !SerpentineRulesPolicy.IsSnake(v.Creature.Key) &&
                     !PrimateRulesPolicy.IsPrimate(v.Creature.Key) &&
                     !KingmakerGunslinger.RuntimeTesting.Sprint19ReviewPolicy
-                        .IsSprint19Creature(v.Creature.Key))
+                        .IsSprint19Creature(v.Creature.Key) &&
+                    v.Creature.Key != GiantScorpionRulesPolicy.GiantScorpionKey)
                 .All(SummonVisibilityCatalog.IsPublished), "No old publication or Salamander root moved.");
         }
 

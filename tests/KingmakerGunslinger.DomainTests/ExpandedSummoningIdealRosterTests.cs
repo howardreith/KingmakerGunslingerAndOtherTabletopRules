@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(101, reused,
+            Assertions.Equal(102, reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,10 +133,10 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(33, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(32, ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
-                "The remaining ideal roster needs 33 new creature identities: the Girallon and the Xill came off it in Sprint 19.");
+                "The remaining ideal roster needs 32 new creature identities: the Girallon and the Xill came off it in Sprint 19 and the Giant Scorpion in Sprint 20.");
         }
 
         /// <summary>
@@ -175,13 +175,13 @@ namespace KingmakerGunslinger.DomainTests
 
             // The Shadow Mastiff moved from this set into the represented
             // one when Sprint 13 registered it.
-            Assertions.Equal(33, ExpandedSummoningIdealRosterCatalog.All.Count(
+            Assertions.Equal(32, ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "33 ideal-roster creatures remain unregistered after the two hidden Sprint 19 creatures.");
-            Assertions.Equal(112,
+                "32 ideal-roster creatures remain unregistered after the two hidden Sprint 19 creatures and the hidden Sprint 20 scorpion.");
+            Assertions.Equal(113,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "112 creatures own or retain a unit identity; registration is not publication.");
+                "113 creatures own or retain a unit identity; registration is not publication.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
@@ -194,7 +194,7 @@ namespace KingmakerGunslinger.DomainTests
             // followed it under the accepted passive-sense limitation, and 999
             // with Sprint 15's Drone and Giant Stag Beetle; 1005 when Sprint 16
             // publishes Dire Crocodile's six preserved placements.
-            Assertions.Equal(1073,
+            Assertions.Equal(1085,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");
