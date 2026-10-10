@@ -986,6 +986,12 @@ namespace KingmakerGunslinger.DomainTests
                     // project does not represent, so the allocation is exact
                     // and profile-controlled rather than generic.
                     !PrimateRulesPolicy.IsPrimate(value.Key) &&
+                    // Sprint 19's Girallon likewise: seven ranks at
+                    // Intelligence 2, spent exactly where its stat block
+                    // spends them, which the generic priority list cannot
+                    // express either.
+                    !KingmakerGunslinger.RuntimeTesting.Sprint19ReviewPolicy
+                        .IsSprint19Creature(value.Key) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

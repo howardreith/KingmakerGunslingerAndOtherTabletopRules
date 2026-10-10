@@ -7,11 +7,18 @@ namespace KingmakerGunslinger.Summoning
     /// decision needs to tell them apart, because one claw striking twice is
     /// not two claws striking once.
     /// </summary>
-    internal enum DireApeClawLimb
+    /// <summary>
+    /// Which claw an attack came from, as a one-based index into the
+    /// creature's own claw limbs. Zero means the attack was not one of them.
+    ///
+    /// <para>Sprint 18 held this in a two-valued enum, which was exactly
+    /// right for a creature that prints two claws and cannot express one that
+    /// prints four. The index is the same decision with the count taken out
+    /// of the type.</para>
+    /// </summary>
+    internal static class ClawIndex
     {
-        None = 0,
-        First = 1,
-        Second = 2
+        internal const int None = 0;
     }
 
     /// <summary>
@@ -191,19 +198,24 @@ namespace KingmakerGunslinger.Summoning
         /// rend: a rend is a thing the creature's attack sequence does.</para>
         /// </summary>
         internal static bool ShouldRend(bool isOwnedClaw, bool hasLiveSequence,
-            bool otherClawHitThisTargetInSequence, bool rendAlreadyArmed,
+            bool everyOtherClawHitThisTargetInSequence, bool rendAlreadyArmed,
             bool rendAlreadyEmittedInSequence)
         {
             return isOwnedClaw && hasLiveSequence &&
-                otherClawHitThisTargetInSequence && !rendAlreadyArmed &&
+                everyOtherClawHitThisTargetInSequence && !rendAlreadyArmed &&
                 !rendAlreadyEmittedInSequence;
         }
 
-        internal static DireApeClawLimb OtherClaw(DireApeClawLimb limb)
+        /// <summary>
+        /// How many claws a printed rend needs. Two for the Dire Ape, four for
+        /// the Girallon, and nothing for a creature that prints no rend. This
+        /// is a lookup over the creatures that print one, not a framework for
+        /// creatures that do not.
+        /// </summary>
+        internal static int RendClawCount(string key)
         {
-            return limb == DireApeClawLimb.First ? DireApeClawLimb.Second :
-                limb == DireApeClawLimb.Second ? DireApeClawLimb.First :
-                DireApeClawLimb.None;
+            return key == DireApeKey ? 2 :
+                key == GirallonRulesPolicy.GirallonKey ? 4 : 0;
         }
 
         internal static void Validate()
@@ -240,10 +252,13 @@ namespace KingmakerGunslinger.Summoning
             if (PrimaryLimbDamageBonus(4) != 4 || PrimaryLimbDamageBonus(-2) != -2)
                 throw new InvalidOperationException(
                     "Ape limbs must add the ordinary Strength modifier.");
-            if (OtherClaw(DireApeClawLimb.First) != DireApeClawLimb.Second ||
-                OtherClaw(DireApeClawLimb.Second) != DireApeClawLimb.First ||
-                OtherClaw(DireApeClawLimb.None) != DireApeClawLimb.None)
-                throw new InvalidOperationException("Claw pairing changed.");
+            // The printed rend lines, by claw count. The Girallon needs
+            // all four and the Dire Ape both of two; an Ape prints no rend
+            // and must stay at nothing.
+            if (RendClawCount(DireApeKey) != 2 ||
+                RendClawCount(GirallonRulesPolicy.GirallonKey) != 4 ||
+                RendClawCount(ApeKey) != 0 || RendClawCount("girallon") != 4)
+                throw new InvalidOperationException("Printed rend claw count changed.");
             if (ape.RendHasTargetSizeGate || dire.RendHasTargetSizeGate)
                 throw new InvalidOperationException(
                     "Nothing printed gates a rend on target size.");
@@ -270,13 +285,25 @@ namespace KingmakerGunslinger.Summoning
     /// reload, a death, a dismissal and an expiry all start from nothing, and
     /// a new round or a new attack command resets it.</para>
     /// </summary>
-    internal sealed class DireApeRendTracker
+    internal sealed class ClawRendTracker
     {
+        private readonly object[] _clawTargets;
         private object _sequence;
-        private object _firstClawTarget;
-        private object _secondClawTarget;
         private bool _armed;
         private bool _emitted;
+
+        /// <summary>
+        /// A tracker for a creature that rends on exactly this many claws.
+        /// </summary>
+        internal ClawRendTracker(int clawCount)
+        {
+            if (clawCount < 2)
+                throw new ArgumentOutOfRangeException("clawCount",
+                    "A printed rend needs at least two claws.");
+            _clawTargets = new object[clawCount];
+        }
+
+        internal int ClawCount { get { return _clawTargets.Length; } }
 
         /// <summary>The attack command this tracker is following, if any.</summary>
         internal object Sequence { get { return _sequence; } }
@@ -286,8 +313,8 @@ namespace KingmakerGunslinger.Summoning
         internal void Reset()
         {
             _sequence = null;
-            _firstClawTarget = null;
-            _secondClawTarget = null;
+            for (int index = 0; index < _clawTargets.Length; index++)
+                _clawTargets[index] = null;
             _armed = false;
             _emitted = false;
         }
@@ -296,41 +323,51 @@ namespace KingmakerGunslinger.Summoning
         /// Whether a rend should resolve on this claw attack, and arm it when
         /// it should. A null sequence never rends.
         /// </summary>
-        internal bool TryArm(object sequence, DireApeClawLimb limb, object target)
+        internal bool TryArm(object sequence, int claw, object target)
         {
-            if (sequence == null || target == null ||
-                limb == DireApeClawLimb.None) return false;
+            if (sequence == null || target == null || !Holds(claw)) return false;
             Follow(sequence);
-            object other = TargetOf(PrimateRulesPolicy.OtherClaw(limb));
             bool qualifies = PrimateRulesPolicy.ShouldRend(true, true,
-                other != null && ReferenceEquals(other, target), _armed,
-                _emitted);
+                EveryOtherClawHit(claw, target), _armed, _emitted);
             if (qualifies) _armed = true;
             return qualifies;
         }
+
+        /// <summary>
+        /// Whether every claw but this one has already hit this exact target
+        /// in this sequence. For the Dire Ape that is the one other claw; for
+        /// the Girallon it is the other three, which is what its printed line
+        /// requires and what three of four hits must not satisfy.
+        /// </summary>
+        private bool EveryOtherClawHit(int claw, object target)
+        {
+            for (int index = 0; index < _clawTargets.Length; index++)
+            {
+                if (index == claw - 1) continue;
+                if (_clawTargets[index] == null ||
+                    !ReferenceEquals(_clawTargets[index], target)) return false;
+            }
+            return true;
+        }
+
+        private bool Holds(int claw)
+        { return claw >= 1 && claw <= _clawTargets.Length; }
 
         /// <summary>
         /// What the claw attack actually did. A miss disarms without emitting,
         /// so nothing is left pending; a hit that was armed is the one rend
         /// this sequence gets.
         /// </summary>
-        internal void RecordOutcome(object sequence, DireApeClawLimb limb,
+        internal void RecordOutcome(object sequence, int claw,
             object target, bool hit)
         {
             if (sequence == null) { Reset(); return; }
-            if (limb == DireApeClawLimb.None) return;
+            if (!Holds(claw)) return;
             Follow(sequence);
             if (!hit) { _armed = false; return; }
             if (_armed) { _armed = false; _emitted = true; return; }
             if (target == null) return;
-            if (limb == DireApeClawLimb.First) _firstClawTarget = target;
-            else _secondClawTarget = target;
-        }
-
-        private object TargetOf(DireApeClawLimb limb)
-        {
-            return limb == DireApeClawLimb.First ? _firstClawTarget :
-                limb == DireApeClawLimb.Second ? _secondClawTarget : null;
+            _clawTargets[claw - 1] = target;
         }
 
         private void Follow(object sequence)

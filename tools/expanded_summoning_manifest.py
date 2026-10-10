@@ -210,8 +210,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 99:
-        raise SystemExit(f"Expected 99 parsed creatures; observed {len(values)}")
+    if len(values) != 101:
+        raise SystemExit(f"Expected 101 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -484,8 +484,26 @@ def planned():
         # Granted to exactly the two apes: a rulebook component is only
         # subscribed when a unit fact carries it.
         ("KMG.Summoning.Natural.Primate.FullStrengthLimbs", "BlueprintFeature"),
+        # Sprint 19. Girallon is a Large magical beast printing a 1d6 bite
+        # and 1d4 claws, so like the Dire Ape it owns its own pair rather than
+        # letting the engine scale shared natives a step up. Xill is Medium
+        # and would not be scaled, but owns its pair too: its claws carry grab
+        # and its bite carries paralysis, and neither belongs on a weapon
+        # other creatures share. Girallon takes the existing Sprint 18
+        # full-Strength carrier rather than a renamed copy; Xill is built by
+        # the special builder, which owns its own facts.
+        ("KMG.Summoning.Natural.Girallon.Bite1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Girallon.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Girallon.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Special.Girallon.Rend", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Xill.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Xill.Bite1d3", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Xill.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Special.Xill.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Xill.Paralysis", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Xill.FullStrengthLimbs", "BlueprintFeature"),
     ))
-    if len(rows) != 1984 or len({symbol for symbol, _ in rows}) != 1984:
+    if len(rows) != 2006 or len({symbol for symbol, _ in rows}) != 2006:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -508,7 +526,7 @@ def generated_roster(manifest):
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-17 are technically qualified and published. Viper and Constrictor independently publish after complete hidden PASS on47e8c121 and all32 public roots PASS on996c5fe7. Salamander's observation-only reach correctiondb1da016 profile/view73/73 PASS closes Sprint17; its five existing public roots remain preserved and PASS. Sprint18 registers the Ape and Dire Ape and withholds all26 of their roots: identities are allocated once here and publication removes two suppression keys without moving anything. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Release143 integration/closure remains NOT QUALIFIED until the exact final matrix passes. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-17 are technically qualified and published. Viper and Constrictor independently publish after complete hidden PASS on47e8c121 and all32 public roots PASS on996c5fe7. Salamander's observation-only reach correctiondb1da016 profile/view73/73 PASS closes Sprint17; its five existing public roots remain preserved and PASS. Sprint18's Ape and Dire Ape published in v0.0.147 after their complete hidden candidate passed. Sprint19 registered the Girallon and the Xill with all10 of their roots withheld and published them in v0.0.148 after 39/39 mechanics and 12/12 body review: identities were allocated once and publication removed two suppression keys without moving anything. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Release143 integration/closure remains NOT QUALIFIED until the exact final matrix passes. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",
