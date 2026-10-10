@@ -181,8 +181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (CombatController.IsInTurnBasedCombat() ||
                             (name == "claws-across-two-turns" && sequence == 1))
                         {
-                            foreach (int step in Sprint19AdvanceRound(owner))
-                                yield return step;
+                            foreach (int step in Sprint19AdvanceRound(owner,
+                                fixture.Hostile)) yield return step;
                         }
                         UnitAttack ignored = null;
                         int before = observer.Attacks.Count +
@@ -369,8 +369,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             name == "bite-save-made" ? 100 : -100;
                     accuracy.Rest();
                     if (CombatController.IsInTurnBasedCombat())
-                        foreach (int step in Sprint19AdvanceRound(owner))
-                            yield return step;
+                        foreach (int step in Sprint19AdvanceRound(owner,
+                            fixture.Hostile)) yield return step;
                     UnitAttack ignored = null;
                     int before = observer.Attacks.Count;
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
@@ -382,8 +382,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attempts++;
                         before = observer.Attacks.Count;
                         if (CombatController.IsInTurnBasedCombat())
-                            foreach (int step in Sprint19AdvanceRound(owner))
-                                yield return step;
+                            foreach (int step in Sprint19AdvanceRound(owner,
+                                fixture.Hostile)) yield return step;
                         accuracy.Rest();
                         UnitAttack retry = null;
                         foreach (int step in Sprint18RunFullAttack(fixture, owner,
@@ -495,7 +495,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// turn-based combat the shared turn driver still does the work; this
         /// only adds the real-time wait the frame count could not give.
         /// </summary>
-        private IEnumerable<int> Sprint19AdvanceRound(UnitEntityData owner)
+        private IEnumerable<int> Sprint19AdvanceRound(UnitEntityData owner,
+            UnitEntityData victim)
         {
             var rounds = new Sprint19RoundObserver { Owner = owner };
             EventBus.Subscribe(rounds);
@@ -504,16 +505,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int step in Sprint18AdvanceRound(owner))
                 {
                     if (rounds.Rounds > 0) yield break;
+                    Sprint19HoldTheFightOpen(owner, victim);
                     yield return step;
                 }
                 int frames = 0;
                 while (rounds.Rounds == 0 && ++frames <= Sprint19AttackFrames)
                 {
                     if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
+                    Sprint19HoldTheFightOpen(owner, victim);
                     yield return 0;
                 }
             }
             finally { EventBus.Unsubscribe(rounds); }
+        }
+
+        /// <summary>
+        /// Keep both units awake and aware of each other for the length of a
+        /// wait.
+        ///
+        /// <para>A real-time round is six seconds, and through six idle
+        /// seconds the engine ends combat and tears down the state a command
+        /// needs: the sixth guarded run threw a NullReferenceException inside
+        /// the engine's own UnitCommand.OnRun on the next attack. This is the
+        /// same request-local pair of lines the attack runner uses to start a
+        /// fight, applied for the duration of the wait. It forces no action,
+        /// no result and no damage.</para>
+        /// </summary>
+        private static void Sprint19HoldTheFightOpen(UnitEntityData owner,
+            UnitEntityData victim)
+        {
+            if (owner == null || victim == null) return;
+            if (owner.Descriptor == null || victim.Descriptor == null) return;
+            owner.Memory.Add(victim);
+            victim.Memory.Add(owner);
+            foreach (UnitEntityData unit in new[] { owner, victim })
+                if (!unit.Destroyed &&
+                    !Game.Instance.State.AwakeUnits.Contains(unit))
+                    Game.Instance.State.AwakeUnits.Add(unit);
         }
 
         /// <summary>Which limbs may reach the target in this sequence.</summary>
