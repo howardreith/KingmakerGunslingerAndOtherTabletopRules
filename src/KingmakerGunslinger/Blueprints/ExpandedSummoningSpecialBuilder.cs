@@ -11,6 +11,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Designers.EventConditionActionSystem.Actions;
+using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.ElementsSystem;
@@ -83,6 +84,15 @@ namespace KingmakerGunslinger.Blueprints
         /// </summary>
         private const string TrippingBiteGuid = "f957b4444b6fb404e84ae2a5765797bb";
         private const string IronWillGuid = "175d1577bb6c9a04baf88eec99c66334";
+        /// <summary>
+        /// The native saved poison lifecycle the project's injury effects are
+        /// cloned from. Sprint 21 reuses it for the Bebelith's rot, which is
+        /// an injury effect with a longer graph rather than a new mechanism.
+        /// </summary>
+        private const string NativeSpiderPoisonBuffGuid =
+            "094714bb08f4e1943a8e9d2384ebe573";
+        private const string NativeSpiderPoisonFeatureGuid =
+            "f0b5db73cb1dd54419fe6a65d0b23f3f";
         private const string PowerAttackGuid = "9972f33f977fc724c838e59641b2fca5";
         private const string NativeDaylightGuid = "2b877386976817a429002e8bb10bb3fc";
         private const string ShadowDemonUnitSymbol =
@@ -129,6 +139,24 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.Bebelith";
         private const string BebelithClawSymbol =
             "KMG.Summoning.Special.Bebelith.Claw";
+        private const string BebelithRotSymbol =
+            "KMG.Summoning.Special.Bebelith.Rot";
+        private const string BebelithRotStateSymbol =
+            "KMG.Summoning.Special.Bebelith.RotState";
+        private const string BebelithPenetratingStrikeSymbol =
+            "KMG.Summoning.Special.Bebelith.PenetratingStrike";
+        private const string BebelithTripDefenseSymbol =
+            "KMG.Summoning.Special.Bebelith.TripDefense";
+        private const string BebelithRacialSkillsSymbol =
+            "KMG.Summoning.Special.Bebelith.RacialSkills";
+        private const string BebelithWebSymbol =
+            "KMG.Summoning.Special.Bebelith.Web";
+        private const string BebelithWebResourceSymbol =
+            "KMG.Summoning.Special.Bebelith.WebResource";
+        private const string BebelithWebAiSymbol =
+            "KMG.Summoning.Special.Bebelith.WebAi";
+        private const string BebelithBrainSymbol =
+            "KMG.Summoning.Special.Bebelith.Brain";
         private const string BebelithCombatTraitsSymbol =
             "KMG.Summoning.Special.Bebelith.CombatTraits";
         private const string BebelithDismantledArmorSymbol =
@@ -530,9 +558,51 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureBebelithDismantledArmor(dismantledArmor);
             ConfigureBebelithCombatTraits(library, bebelithTraits,
                 bebelithClaw, dismantledArmor);
+            // Sprint 21. Five facts the released build left out, and the web,
+            // which needs an ability, a resource, an AI action and a brain
+            // because the released creature takes the native brain that casts
+            // nothing at all.
+            ConfigureBebelithRot(library,
+                Require<BlueprintFeature>(bySymbol, BebelithRotSymbol),
+                Require<BlueprintBuff>(bySymbol, BebelithRotStateSymbol),
+                BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                    library, HugeBiteGuid, "Bebelith 2d6 bite"));
+            ConfigureBebelithPenetratingStrike(Require<BlueprintFeature>(
+                bySymbol, BebelithPenetratingStrikeSymbol));
+            ConfigureBebelithTripDefense(Require<BlueprintFeature>(
+                bySymbol, BebelithTripDefenseSymbol));
+            ConfigureBebelithRacialSkills(Require<BlueprintFeature>(
+                bySymbol, BebelithRacialSkillsSymbol));
+            ConfigureSummonWeb(library, bySymbol, new WebSpec {
+                UnitSymbol = BebelithUnitSymbol,
+                AbilitySymbol = BebelithWebSymbol,
+                ResourceSymbol = BebelithWebResourceSymbol,
+                AiSymbol = BebelithWebAiSymbol,
+                BrainSymbol = BebelithBrainSymbol,
+                TraitsSymbol = BebelithCombatTraitsSymbol,
+                Token = "Bebelith",
+                RangeFeet = ExpandedSummoningSpecialProfiles
+                    .BebelithWebRangeFeet,
+                Rounds = ExpandedSummoningSpecialProfiles.BebelithWebRounds,
+                MaxSizeDelta = ExpandedSummoningSpecialProfiles
+                    .BebelithWebMaxSizeDelta,
+                SpellLevel = ExpandedSummoningSpecialProfiles
+                    .BebelithWebSpellLevel,
+                Uses = ExpandedSummoningSpecialProfiles.BebelithWebUses,
+                CasterHitDice = BebelithRulesPolicy.HitDice,
+                DisplayName = "Web",
+                Description = "The bebelith hurls a mass of sticky web at one foe within 60 feet: a ranged attack that, on a hit, leaves the foe entangled and held in place until it tears free. The web has 12 hit points as an object. Three uses per summoning.",
+            });
             ConfigureBebelith(library, Require<BlueprintUnit>(bySymbol,
                 BebelithUnitSymbol), bebelithClaw, bebelithTraits,
-                extraplanar);
+                extraplanar,
+                Require<BlueprintFeature>(bySymbol, BebelithRotSymbol),
+                Require<BlueprintFeature>(bySymbol,
+                    BebelithPenetratingStrikeSymbol),
+                Require<BlueprintFeature>(bySymbol, BebelithTripDefenseSymbol),
+                Require<BlueprintFeature>(bySymbol, BebelithRacialSkillsSymbol),
+                Require<BlueprintAbility>(bySymbol, BebelithWebSymbol),
+                Require<BlueprintBrain>(bySymbol, BebelithBrainSymbol));
             BlueprintWeaponType pixieSleepBowType = Require<BlueprintWeaponType>(
                 bySymbol, PixieSleepBowTypeSymbol);
             BlueprintItemWeapon pixieSleepBow = Require<BlueprintItemWeapon>(
@@ -1869,10 +1939,14 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureGrabber(library, bySymbol, GiantCrabUnitSymbol,
                 GiantCrabTraitsSymbol, "GiantCrab",
                 "Giant Crab Grab",
-                "Either pincer that hits lets the crab attempt to grab a foe no larger than itself, and it can hold one foe in each.",
+                "Either pincer that hits lets the crab attempt to grab a foe no larger than itself, and it can hold one foe in each. A held foe is crushed for 1d4 plus the crab's Strength each time that pincer keeps its grip.",
                 new GrabSpec { Primary = true,
                     Additional = GiantCrabRulesPolicy.ClawCount - 1,
                     MaxHeld = GiantCrabRulesPolicy.ClawCount,
+                    ConstrictDice = GiantCrabRulesPolicy.ConstrictDiceCount,
+                    ConstrictDie = ParseDieSides(
+                        GiantCrabRulesPolicy.ConstrictDieSides),
+                    LiveCrabConstrict = true,
                     Hold = multiHold, Grappled = multiHeld });
             // Sprint 16: the Dire Crocodile's own swallowed state. It
             // shared the Purple Worm's until now, which put a victim in a
@@ -1910,7 +1984,30 @@ namespace KingmakerGunslinger.Blueprints
                     SwallowDelta = CrocodilianRulesPolicy.For("dire-crocodile")
                         .SwallowSizeDelta,
                     DeathRollCreatureKey = "dire-crocodile" });
-            ConfigureGiantSpiderWeb(library, bySymbol);
+            ConfigureSummonWeb(library, bySymbol, new WebSpec {
+                UnitSymbol = GiantSpiderUnitSymbol,
+                AbilitySymbol = GiantSpiderWebSymbol,
+                ResourceSymbol = GiantSpiderWebResourceSymbol,
+                AiSymbol = GiantSpiderWebAiSymbol,
+                BrainSymbol = GiantSpiderBrainSymbol,
+                TraitsSymbol = GiantSpiderCombatTraitsSymbol,
+                Token = "GiantSpider",
+                RangeFeet = ExpandedSummoningSpecialProfiles
+                    .GiantSpiderWebRangeFeet,
+                Rounds = ExpandedSummoningSpecialProfiles.GiantSpiderWebRounds,
+                MaxSizeDelta = ExpandedSummoningSpecialProfiles
+                    .GiantSpiderWebMaxSizeDelta,
+                SpellLevel = ExpandedSummoningSpecialProfiles
+                    .GiantSpiderWebSpellLevel,
+                Uses = ExpandedSummoningSpecialProfiles.GiantSpiderWebUses,
+                CasterHitDice = ExpandedSummoningNaturalProfiles
+                    .For("giant-spider").HitDice,
+                DisplayName = "Web",
+                Description = "The spider throws a web at one foe within 50 feet, no more than one size larger than itself: a ranged touch attack that, on a hit, leaves the foe entangled and held in place until it breaks free (up to ten rounds). Two uses per summoning.",
+                OwnsTraits = true,
+                TraitsName = "Giant Spider Traits",
+                TraitsDescription = "Two webs for this summoning.",
+            });
             // Sprint 7, rebuilt: the cats grab with the bite (the tiger and the
             // smilodon also with their two foreclaws); the last two claws are
             // the rake, which never grabs and strikes only on a charge or
@@ -2137,6 +2234,12 @@ namespace KingmakerGunslinger.Blueprints
             internal int ConstrictBonus;
             internal bool LiveSerpentineConstrict;
             internal bool LiveSalamanderConstrict;
+            /// <summary>
+            /// Sprint 21's Giant Crab: its printed constrict at the claw's own
+            /// die plus live Strength, applied to the foe the holding claw is
+            /// actually holding.
+            /// </summary>
+            internal bool LiveCrabConstrict;
             /// <summary>
             /// A crocodilian's key. The death roll's dice and flat bonus are
             /// read from its rules profile rather than written here, because
@@ -2544,31 +2647,79 @@ namespace KingmakerGunslinger.Blueprints
         /// the spider fights. The spider itself carries the native web
         /// immunity (natural profile).
         /// </summary>
-        private static void ConfigureGiantSpiderWeb(LibraryScriptableObject library,
-            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        /// <summary>
+        /// One creature's web: a resource-backed extraordinary ability that
+        /// throws a net at a single foe and leaves it held until it tears free.
+        ///
+        /// <para>Sprint 6 built this for the Giant Spider and it qualified
+        /// there. Sprint 21 needed the same behaviour at the Bebelith's
+        /// numbers, so the configuration became this seam and the spider now
+        /// passes exactly the values it already had - which means the released
+        /// web is built by the same code path as the new one rather than by a
+        /// copy that could drift away from it.</para>
+        ///
+        /// <para>What the seam does not parameterize is the delivery: every
+        /// web here throws the native projectile and makes the game's own
+        /// ranged attack roll with the native ray weapon, applies the native
+        /// web-grappled state, and derives its difficulty class from the
+        /// caster's live Constitution and its own hit dice. Those are the parts
+        /// that were qualified, so they stay fixed.</para>
+        /// </summary>
+        private sealed class WebSpec
         {
-            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, GiantSpiderUnitSymbol);
-            BlueprintAbility web = Require<BlueprintAbility>(bySymbol, GiantSpiderWebSymbol);
+            internal string UnitSymbol;
+            internal string AbilitySymbol;
+            internal string ResourceSymbol;
+            internal string AiSymbol;
+            internal string BrainSymbol;
+            internal string TraitsSymbol;
+            internal string Token;
+            internal int RangeFeet;
+            internal int Rounds;
+            internal int MaxSizeDelta;
+            internal int SpellLevel;
+            internal int Uses;
+            internal int CasterHitDice;
+            internal string DisplayName;
+            internal string Description;
+            /// <summary>
+            /// Whether this creature's traits buff exists only to carry the
+            /// web's resource. True for the Giant Spider, which has no other
+            /// traits; false for the Bebelith, whose traits buff already
+            /// carries its combat component and its own wording.
+            /// </summary>
+            internal bool OwnsTraits;
+            internal string TraitsName;
+            internal string TraitsDescription;
+        }
+
+        private static void ConfigureSummonWeb(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            WebSpec spec)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, spec.UnitSymbol);
+            BlueprintAbility web = Require<BlueprintAbility>(bySymbol, spec.AbilitySymbol);
             BlueprintAbilityResource resource = Require<BlueprintAbilityResource>(
-                bySymbol, GiantSpiderWebResourceSymbol);
+                bySymbol, spec.ResourceSymbol);
             BlueprintAiCastSpell ai = Require<BlueprintAiCastSpell>(bySymbol,
-                GiantSpiderWebAiSymbol);
-            BlueprintBrain brain = Require<BlueprintBrain>(bySymbol, GiantSpiderBrainSymbol);
+                spec.AiSymbol);
+            BlueprintBrain brain = Require<BlueprintBrain>(bySymbol, spec.BrainSymbol);
             BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
-                GiantSpiderCombatTraitsSymbol);
+                spec.TraitsSymbol);
             if (unit.ComponentsArray == null ||
                 unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
                 throw new InvalidOperationException(
-                    "The Giant Spider chassis must be configured before its web.");
+                    "The " + spec.Token
+                    + " chassis must be configured before its web.");
             BlueprintBuff webbed = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
                 library, NativeWebGrappledGuid, "native web-grappled state");
-            web.name = InternalName(GiantSpiderWebSymbol);
+            web.name = InternalName(spec.AbilitySymbol);
             web.Type = AbilityType.Extraordinary;
             web.Parent = null;
             web.Hidden = false;
             web.ActionBarAutoFillIgnored = false;
             web.Range = AbilityRange.Custom;
-            web.CustomRange = new Feet(ExpandedSummoningSpecialProfiles.GiantSpiderWebRangeFeet);
+            web.CustomRange = new Feet(spec.RangeFeet);
             web.CanTargetEnemies = true;
             web.CanTargetSelf = false;
             web.CanTargetFriends = false;
@@ -2588,7 +2739,7 @@ namespace KingmakerGunslinger.Blueprints
                 Rate = DurationRate.Rounds,
                 DiceType = DiceType.Zero,
                 DiceCountValue = Simple(0),
-                BonusValue = Simple(ExpandedSummoningSpecialProfiles.GiantSpiderWebRounds)
+                BonusValue = Simple(spec.Rounds)
             };
             apply.IsFromSpell = false;
             apply.IsNotDispelable = false;
@@ -2607,16 +2758,16 @@ namespace KingmakerGunslinger.Blueprints
             deliver.UseMaxProjectilesCount = false;
             deliver.DelayBetweenProjectiles = 0f;
             var size = ScriptableObject.CreateInstance<SummonWebTargetSizeChecker>();
-            size.MaxSizeDelta = ExpandedSummoningSpecialProfiles.GiantSpiderWebMaxSizeDelta;
+            size.MaxSizeDelta = spec.MaxSizeDelta;
             var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             run.SavingThrowType = SavingThrowType.Unknown;
             run.Actions = new ActionList { Actions = new GameAction[] { apply } };
             var parameters = ScriptableObject.CreateInstance<ContextCalculateAbilityParams>();
             parameters.StatType = StatType.Constitution;
             parameters.ReplaceCasterLevel = true;
-            parameters.CasterLevel = Simple(ExpandedSummoningNaturalProfiles.For("giant-spider").HitDice);
+            parameters.CasterLevel = Simple(spec.CasterHitDice);
             parameters.ReplaceSpellLevel = true;
-            parameters.SpellLevel = Simple(ExpandedSummoningSpecialProfiles.GiantSpiderWebSpellLevel);
+            parameters.SpellLevel = Simple(spec.SpellLevel);
             var cost = ScriptableObject.CreateInstance<AbilityResourceLogic>();
             cost.RequiredResource = resource;
             cost.IsSpendResource = true;
@@ -2624,15 +2775,17 @@ namespace KingmakerGunslinger.Blueprints
             cost.Amount = 1;
             web.ComponentsArray = new BlueprintComponent[] { deliver, size, run, parameters, cost };
             BlueprintUnitFactAccess.Resolve().Configure(web,
-                LocalizationService.Create("KMG.ExpandedSummoning.GiantSpider.Web.Name", "Web"),
-                LocalizationService.Create("KMG.ExpandedSummoning.GiantSpider.Web.Description",
-                    "The spider throws a web at one foe within 50 feet, no more than one size larger than itself: a ranged touch attack that, on a hit, leaves the foe entangled and held in place until it breaks free (up to ten rounds). Two uses per summoning."),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + spec.Token + ".Web.Name",
+                    spec.DisplayName),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + spec.Token + ".Web.Description",
+                    spec.Description),
                 null);
-            ConfigureNamedResource(resource, GiantSpiderWebResourceSymbol,
-                "KMG.ExpandedSummoning.GiantSpider.Web.Resource", "Web",
-                "Webs remaining for this summoned spider.",
-                ExpandedSummoningSpecialProfiles.GiantSpiderWebUses);
-            ai.name = InternalName(GiantSpiderWebAiSymbol);
+            ConfigureNamedResource(resource, spec.ResourceSymbol,
+                "KMG.ExpandedSummoning." + spec.Token + ".Web.Resource", "Web",
+                "Webs remaining for this summoning.", spec.Uses);
+            ai.name = InternalName(spec.AiSymbol);
             ai.Ability = web;
             ai.Variant = null;
             ai.BaseScore = 3;
@@ -2643,21 +2796,38 @@ namespace KingmakerGunslinger.Blueprints
             ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
                 .Blueprints.Considerations.Consideration>();
             ai.Locators = Array.Empty<EntityReference>();
-            brain.name = InternalName(GiantSpiderBrainSymbol);
+            brain.name = InternalName(spec.BrainSymbol);
             brain.Actions = new BlueprintAiAction[] { ai };
-            traits.name = InternalName(GiantSpiderCombatTraitsSymbol);
+            // The traits buff carries the resource. Where the creature has no
+            // other traits - the Giant Spider - the seam owns the buff
+            // outright. Where it already has some, as the Bebelith does with
+            // its combat component, the resource is appended to what is
+            // already there and the existing wording is left alone. That is
+            // the one place the two creatures differ, and it is the place a
+            // copied configuration would have diverged silently.
+            traits.name = InternalName(spec.TraitsSymbol);
             traits.Stacking = StackingType.Replace;
             traits.IsClassFeature = true;
-            traits.ComponentsArray = new BlueprintComponent[] { AddResource(resource) };
-            BlueprintUnitFactAccess.Resolve().Configure(traits,
-                LocalizationService.Create("KMG.ExpandedSummoning.GiantSpider.CombatTraits.Name",
-                    "Giant Spider Traits"),
-                LocalizationService.Create(
-                    "KMG.ExpandedSummoning.GiantSpider.CombatTraits.Description",
-                    "Two webs for this summoning."), null);
+            traits.ComponentsArray = spec.OwnsTraits
+                ? new BlueprintComponent[] { AddResource(resource) }
+                : (traits.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                    .Concat(new BlueprintComponent[] { AddResource(resource) })
+                    .ToArray();
+            if (spec.OwnsTraits)
+                BlueprintUnitFactAccess.Resolve().Configure(traits,
+                    LocalizationService.Create(
+                        "KMG.ExpandedSummoning." + spec.Token
+                            + ".CombatTraits.Name",
+                        spec.TraitsName),
+                    LocalizationService.Create(
+                        "KMG.ExpandedSummoning." + spec.Token
+                            + ".CombatTraits.Description",
+                        spec.TraitsDescription), null);
             unit.Brain = brain;
             unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
-                .Concat(new BlueprintUnitFact[] { web, traits }).ToArray();
+                .Concat(new BlueprintUnitFact[] { web, traits })
+                .Distinct().ToArray();
         }
 
         /// <summary>
@@ -2734,6 +2904,7 @@ namespace KingmakerGunslinger.Blueprints
             grab.ConstrictBonus = spec.ConstrictBonus;
             if (spec.LiveSerpentineConstrict) grab.ConstrictProfileOwner = unit;
             if (spec.LiveSalamanderConstrict) grab.SalamanderProfileOwner = unit;
+            if (spec.LiveCrabConstrict) grab.CrabProfileOwner = unit;
             if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
             {
                 CrocodilianRulesProfile rules = CrocodilianRulesPolicy.For(
@@ -4229,23 +4400,33 @@ namespace KingmakerGunslinger.Blueprints
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
         }
 
+        /// <summary>
+        /// The dismantled state, as a permanent wearer-side effect with no
+        /// stored number.
+        ///
+        /// <para>The released build gave this a flat two points for one round,
+        /// which was neither the printed effect nor derived from anything. The
+        /// printed effect is destruction, so the piece's whole armour-class
+        /// contribution goes and does not come back - computed live from the
+        /// equipped piece every time armour class is calculated, which is what
+        /// lets a permanent state be safe across a save and a reload. The item
+        /// itself is never read for a write, never moved and never changed;
+        /// the surviving gap is recorded on the component.</para>
+        /// </summary>
         private static void ConfigureBebelithDismantledArmor(BlueprintBuff buff)
         {
-            var penalty = ScriptableObject.CreateInstance<AddStatBonus>();
-            penalty.Stat = StatType.AC;
-            penalty.Descriptor = ModifierDescriptor.UntypedStackable;
-            penalty.Value = -ExpandedSummoningSpecialProfiles
-                .BebelithDismantleAcPenalty;
+            var dismantled = ScriptableObject.CreateInstance<
+                BebelithDismantledArmorComponent>();
             buff.Stacking = StackingType.Replace;
             buff.IsClassFeature = false;
-            buff.ComponentsArray = new BlueprintComponent[] { penalty };
+            buff.ComponentsArray = new BlueprintComponent[] { dismantled };
             BlueprintUnitFactAccess.Resolve().Configure(buff,
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Bebelith.DismantledArmor.Name",
                     "Dismantled Armor"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Bebelith.DismantledArmor.Description",
-                    "A Bebelith caught and tore the armor. The target takes a bounded -2 AC penalty for one round; no equipped item is mutated."),
+                    "A Bebelith tore this creature's armor apart. The piece no longer protects it: its entire armor class contribution is gone. No item is moved, unequipped or altered."),
                 null);
         }
 
@@ -4283,13 +4464,16 @@ namespace KingmakerGunslinger.Blueprints
                     "Bebelith Combat Traits"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Bebelith.CombatTraits.Description",
-                    "Natural armor, DR 10/good, a bounded armor-dismantling claw sequence, and a +2 attack and damage bonus against chaotic evil outsiders."),
+                    "Natural armor 13 and DR 10/good. Both claws landing on one armored or shielded foe in a round let the Bebelith attempt to tear the piece apart."),
                 null);
         }
 
         private static void ConfigureBebelith(LibraryScriptableObject library,
             BlueprintUnit unit, BlueprintItemWeapon claw,
-            BlueprintBuff combatTraits, BlueprintFeature extraplanar)
+            BlueprintBuff combatTraits, BlueprintFeature extraplanar,
+            BlueprintFeature rot, BlueprintFeature penetratingStrike,
+            BlueprintFeature tripDefense, BlueprintFeature racialSkills,
+            BlueprintAbility web, BlueprintBrain brain)
         {
             BlueprintItemWeapon bite = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, HugeBiteGuid,
@@ -4298,9 +4482,15 @@ namespace KingmakerGunslinger.Blueprints
                 OutsiderLevels(library,
                     ExpandedSummoningSpecialProfiles.BebelithHitDice)
             };
-            unit.Body = NaturalBody(claw, new[] { claw }, new[] { bite });
-            unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
-                library, DumbBrainGuid, "bounded natural-attack brain");
+            // The bite is the primary limb, because rot rides the bite and the
+            // released build's limb order put a claw there. Two claws follow
+            // as additional limbs, which is also what makes the dismantle
+            // trigger readable: "both claws" is additional limbs 0 and 1.
+            unit.Body = NaturalBody(bite, new[] { claw, claw },
+                Array.Empty<BlueprintItemWeapon>());
+            // Its own brain, so the web has something that casts it. The
+            // released creature took the native brain that casts nothing.
+            unit.Brain = brain;
             ConfigureUnitCore(unit, "Bebelith", "Bebelith",
                 Alignment.ChaoticEvil, Size.Huge,
                 ExpandedSummoningSpecialProfiles.BebelithStrength,
@@ -4317,8 +4507,208 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar,
                 Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, LightningReflexesGuid, "Lightning Reflexes"),
-                combatTraits
+                // Sprint 21: the printed Iron Will the released build omitted,
+                // which is what the printed Will of +7 needs on top of a poor
+                // save.
+                Feature(library, IronWillGuid, "Iron Will"),
+                combatTraits,
+                rot, penetratingStrike, tripDefense, racialSkills, web
             };
+        }
+
+        /// <summary>
+        /// Rot: a bite-only injury effect on the project's existing poison
+        /// lifecycle.
+        ///
+        /// <para>The route is the Giant Scorpion's exactly - clone the native
+        /// poison feature and its saved buff, then rewire four values - because
+        /// rot is an injury effect with a longer graph rather than a new
+        /// mechanism. Cloning is what gives it the engine's own per-round save,
+        /// cure counting and cadence; a trigger written from scratch would have
+        /// had one exposure and no cure.</para>
+        ///
+        /// <para>The four values are what make it rot. Two Constitution on
+        /// each failed save rather than a die of one ability; five exposures,
+        /// which is the bite round and four after it; and two consecutive
+        /// successes to cure, where every poison this project ships cures on
+        /// one. That last one is the reason it cannot share a carrier.</para>
+        ///
+        /// <para>The gate is the bite's own weapon type inside the wound gate
+        /// the ant, the wasp and the scorpion all carry: the bite must hit and
+        /// must deal positive final damage. That is what keeps rot off the
+        /// claws and off the web, and the difficulty class is set live from
+        /// Constitution immediately before the game's own save - so an
+        /// already-applied rot keeps the number the bite that caused it
+        /// produced, even after the bebelith is gone.</para>
+        /// </summary>
+        private static void ConfigureBebelithRot(
+            LibraryScriptableObject library, BlueprintFeature feature,
+            BlueprintBuff state, BlueprintItemWeapon bite)
+        {
+            BlueprintBuff nativeBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeSpiderPoisonBuffGuid,
+                    "native saved poison lifecycle");
+            CopyFields(nativeBuff, state);
+            state.name = InternalName(BebelithRotStateSymbol);
+            state.ComponentsArray = (nativeBuff.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            state.Stacking = StackingType.Poison;
+            BuffPoisonStatDamage damage = state.ComponentsArray.OfType<
+                BuffPoisonStatDamage>().Single();
+            damage.Stat = StatType.Constitution;
+            // Two, flat: the printed effect is a fixed amount rather than a
+            // die, so the dice formula is emptied and the bonus carries it.
+            damage.Value = new DiceFormula(0, DiceType.Zero);
+            damage.Bonus = BebelithRulesPolicy.RotConstitutionDamage;
+            damage.Ticks = BebelithRulesPolicy.RotExposures;
+            damage.SuccesfullSaves = BebelithRulesPolicy.RotCureSaves;
+            damage.SaveType = SavingThrowType.Fortitude;
+            BlueprintUnitFactAccess.Resolve().Configure(state,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.RotState.Name", "Rot"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.RotState.Description",
+                    "Abyssal rot: Fortitude DC 23; 2 Constitution damage each round for five total exposures; two consecutive successful saves cure it."),
+                nativeBuff.Icon);
+
+            BlueprintFeature nativeFeature = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeSpiderPoisonFeatureGuid,
+                    "native poison-on-hit feature");
+            CopyFields(nativeFeature, feature);
+            feature.name = InternalName(BebelithRotSymbol);
+            feature.HideInUI = true;
+            feature.IsClassFeature = false;
+            BlueprintComponent[] components = (nativeFeature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AddInitiatorAttackWithWeaponTrigger trigger = components.OfType<
+                AddInitiatorAttackWithWeaponTrigger>().Single();
+            trigger.WeaponType = bite.Type;
+            trigger.OnlyHit = true;
+            ContextActionSavingThrow save = trigger.Action.Actions.OfType<
+                ContextActionSavingThrow>().Single();
+            ContextActionConditionalSaved outcome = save.Actions.Actions.OfType<
+                ContextActionConditionalSaved>().Single();
+            ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
+                ContextActionApplyBuff>().Single();
+            apply.Buff = state;
+            trigger.Action.Actions = new GameAction[] {
+                new ContextActionOnlyIfWeaponWounded {
+                    Actions = new ActionList {
+                        Actions = (new GameAction[] {
+                            new ContextActionSetBebelithRotDc() }).Concat(
+                                trigger.Action.Actions).ToArray() } } };
+            feature.ComponentsArray = components;
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.Rot.Name", "Rot"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.Rot.Description",
+                    "A bite delivers abyssal rot on a wounding hit. The claws and the web do not."),
+                null);
+        }
+
+        /// <summary>
+        /// Penetrating strike, as a declared fact beside the live component
+        /// that carries it.
+        ///
+        /// <para>The engine's own damage-property component carries the half
+        /// that is always true - chaotic and magic - and the live component
+        /// carries the demon half, because the printed ability grants cold
+        /// iron and good against demons only and that component has no target
+        /// check. Both halves are descriptors rather than numbers: the
+        /// released build granted +2 attack and damage against chaotic-evil
+        /// outsiders, which no printed line gives.</para>
+        /// </summary>
+        private static void ConfigureBebelithPenetratingStrike(
+            BlueprintFeature feature)
+        {
+            var property = ScriptableObject.CreateInstance<
+                AddOutgoingPhysicalDamageProperty>();
+            property.AffectAnyPhysicalDamage = true;
+            property.AddMagic = true;
+            property.AddAlignment = true;
+            property.Alignment = DamageAlignment.Chaotic;
+            property.AddMaterial = false;
+            property.AddForm = false;
+            property.MyAlignment = false;
+            property.AddReality = false;
+            property.CheckWeaponType = false;
+            property.CheckRange = false;
+            feature.name = InternalName(BebelithPenetratingStrikeSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { property };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.PenetratingStrike.Name",
+                    "Penetrating Strike"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.PenetratingStrike.Description",
+                    "A bebelith's natural weapons count as chaotic and magic, and as cold iron and good against demons. They never count as cold iron or good against anything else."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed stability bonus against trip: CMD 34 becoming 46.
+        ///
+        /// <para>Its own carrier for the third time in this series, and for
+        /// the reason Sprint 20 measured: the shared native eight-leg fact
+        /// delivers +8, which is what a six-legged insect prints, and an
+        /// eight-legged creature prints +12. The Sprint 20 and Sprint 21
+        /// carriers that do deliver +12 are named and described for a scorpion
+        /// and a crab, so a demon wearing either would show the wrong
+        /// creature's feature.</para>
+        /// </summary>
+        private static void ConfigureBebelithTripDefense(
+            BlueprintFeature feature)
+        {
+            var defence = ScriptableObject.CreateInstance<
+                ManeuverDefenceBonus>();
+            defence.Type = CombatManeuver.Trip;
+            defence.Bonus = BebelithRulesPolicy.EightLegTripBonus;
+            feature.name = InternalName(BebelithTripDefenseSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { defence };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.TripDefense.Name",
+                    "Eight Legs"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.TripDefense.Description",
+                    "A bebelith stands on eight legs and is hard to knock down: +12 to its combat maneuver defense against trip attempts, which is what its stat block prints."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed racial +8 Stealth, which existed nowhere in the
+        /// released build.
+        ///
+        /// <para>The printed Climb that accompanies it is omitted under
+        /// ORDINARY_MAP_LAND_USE_SCOPE and nothing stands in for it: Kingmaker
+        /// has no Climb skill and no climbing movement.</para>
+        /// </summary>
+        private static void ConfigureBebelithRacialSkills(
+            BlueprintFeature feature)
+        {
+            var stealth = ScriptableObject.CreateInstance<AddStatBonus>();
+            stealth.Stat = StatType.SkillStealth;
+            stealth.Value = BebelithRulesPolicy.RacialStealthBonus;
+            stealth.Descriptor = ModifierDescriptor.Racial;
+            feature.name = InternalName(BebelithRacialSkillsSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { stealth };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.RacialSkills.Name",
+                    "Bebelith Stealth"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.RacialSkills.Description",
+                    "A bebelith has a +8 racial bonus on Stealth checks. Its printed climb speed and Climb bonus have no Kingmaker equivalent and are omitted rather than substituted."),
+                null);
         }
 
         private static void ConfigurePixieSleepBow(

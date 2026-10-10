@@ -114,19 +114,25 @@ namespace KingmakerGunslinger.DomainTests
             // modes and 4 of 4 on the party-camera art review. Publication was
             // the removal of one suppression key, so the registered count is
             // the one registration allocated and nothing moved to make room.
-            Assertions.Equal(0,
+            Assertions.Equal(7,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All twelve are published.");
-            Assertions.Equal(1056,
+                "All twelve of this creature's are published; what is "
+                + "withheld is Sprint 21's hidden candidate and nothing "
+                + "else.");
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
-                "Registered placements rose from 1044 to 1056.");
+                "Registered placements rose from 1044 to 1056, and Sprint 21 "
+                + "registered seven more.");
             Assertions.Equal(1056,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The published surface is every registered placement.");
+                "The published surface is unchanged by a later sprint's "
+                + "hidden candidate, which is this test's real subject.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.True(
+                Assertions.Equal(
+                    variant.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey,
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Every placement is published, this creature's included: "
+                    "Every placement is published, this creature's included, "
+                    + "except Sprint 21's withheld candidate: "
                     + variant.StableKey);
         }
 
@@ -374,11 +380,18 @@ namespace KingmakerGunslinger.DomainTests
                 System.Text.RegularExpressions.Regex.Matches(ledger,
                     @"""symbol""\s*:\s*""([^""]+)"""))
                 symbols.Add(match.Groups[1].Value);
-            if (symbols.Count < AppendedLedgerIdentities)
+            // Sprint 21 appends after this block, so this is no longer the
+            // tail of the ledger and cannot be read as one. The window is
+            // this sprint's own, measured back from whatever has been
+            // appended since - which is the only reading that keeps meaning
+            // what it meant when it was written.
+            int later = Sprint21RulesTests.AppendedLedgerIdentities;
+            if (symbols.Count < AppendedLedgerIdentities + later)
                 throw new InvalidOperationException(
                     "The ledger parsed to " + symbols.Count + " symbols.");
-            return symbols.Skip(symbols.Count - AppendedLedgerIdentities)
-                .ToArray();
+            return symbols
+                .Skip(symbols.Count - later - AppendedLedgerIdentities)
+                .Take(AppendedLedgerIdentities).ToArray();
         }
 
         private static string RepositoryRoot()

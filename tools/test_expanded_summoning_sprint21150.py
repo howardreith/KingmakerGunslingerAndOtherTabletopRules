@@ -37,21 +37,26 @@ class Sprint21Tests(unittest.TestCase):
         self.assertEqual("validate_expanded_summoning_sprint19148.py",
                          VALIDATORS["0.0.148"])
 
-    def test_the_append_is_exactly_thirteen_identities(self):
-        self.assertEqual(3052, gate.validate_identity_append(ROOT))
+    def test_the_append_is_exactly_twentytwo_identities(self):
+        self.assertEqual(3061, gate.validate_identity_append(ROOT))
 
     def test_the_identity_arithmetic_is_stated_rather_than_a_magic_number(self):
-        """Thirteen is a derivation, and it must stay one.
+        """Twenty-two is a derivation, and it must stay one.
 
-        One unit, seven placements, five facts, and - uniquely in this series -
-        no execution children at all.
+        For the crab: one unit, seven placements, five facts, and - uniquely
+        in this series - no execution children at all. For the Bebelith: nine
+        facts and nothing else, because its unit and its three roots were
+        allocated when it shipped and this sprint changes only what stands
+        behind them.
         """
         self.assertEqual(7, gate.SPRINT21_ROOTS)
         self.assertEqual(0, gate.SPRINT21_MONSTER_ROOTS)
         self.assertEqual(0, gate.SPRINT21_EXECUTION_CHILDREN)
         self.assertEqual(5, len(gate.SPRINT21_IDENTITY_TAIL))
-        self.assertEqual(13, gate.SPRINT21_IDENTITIES)
-        self.assertEqual(1 + 7 + 0 + len(gate.SPRINT21_IDENTITY_TAIL),
+        self.assertEqual(9, len(gate.BEBELITH_IDENTITY_TAIL))
+        self.assertEqual(22, gate.SPRINT21_IDENTITIES)
+        self.assertEqual(1 + 7 + 0 + len(gate.SPRINT21_IDENTITY_TAIL)
+                         + len(gate.BEBELITH_IDENTITY_TAIL),
                          gate.SPRINT21_IDENTITIES)
         for required in ("KMG.Summoning.Natural.GiantCrab.UnitType",
                          "KMG.Summoning.Natural.GiantCrab.MindlessImmunity",
@@ -59,6 +64,24 @@ class Sprint21Tests(unittest.TestCase):
                          "KMG.Summoning.Natural.GiantCrab.RacialSkills",
                          "KMG.Summoning.Special.GiantCrab.Traits"):
             self.assertIn(required, gate.SPRINT21_IDENTITY_TAIL)
+        # Rot needs two - a carrier and the victim-owned state that outlives
+        # the summon - and the web needs four, because an ability nothing
+        # casts is an ability the creature does not have.
+        for required in ("KMG.Summoning.Special.Bebelith.Rot",
+                         "KMG.Summoning.Special.Bebelith.RotState",
+                         "KMG.Summoning.Special.Bebelith.PenetratingStrike",
+                         "KMG.Summoning.Special.Bebelith.TripDefense",
+                         "KMG.Summoning.Special.Bebelith.RacialSkills",
+                         "KMG.Summoning.Special.Bebelith.Web",
+                         "KMG.Summoning.Special.Bebelith.WebResource",
+                         "KMG.Summoning.Special.Bebelith.WebAi",
+                         "KMG.Summoning.Special.Bebelith.Brain"):
+            self.assertIn(required, gate.BEBELITH_IDENTITY_TAIL)
+        # And the released four are NOT appended. Re-appending one would mean
+        # the creature had been reallocated rather than overhauled.
+        for released in gate.BEBELITH_RELEASED_IDENTITIES:
+            self.assertNotIn(released, gate.SPRINT21_IDENTITY_TAIL)
+            self.assertNotIn(released, gate.BEBELITH_IDENTITY_TAIL)
         # No weapon. A Medium creature takes the shared native 1d4 claw
         # unscaled, which is why the Large Sprint 18 and 20 creatures had to
         # own theirs and this one does not.
@@ -85,7 +108,7 @@ class Sprint21Tests(unittest.TestCase):
             "notes": "unreviewed"})
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError,
-                                        "exactly 13 identities"):
+                                        "exactly 22 identities"):
                 gate.validate_identity_append(ROOT)
 
     def test_an_identity_outside_the_one_creature_is_rejected(self):
@@ -95,7 +118,7 @@ class Sprint21Tests(unittest.TestCase):
                                       symbol="KMG.Summoning.Natural.Lobster.Claw")
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(
-                    AssertionError, "outside its one creature"):
+                    AssertionError, "outside its two creatures"):
                 gate.validate_identity_append(ROOT)
 
     def test_publishing_the_crab_early_is_rejected(self):
@@ -182,7 +205,7 @@ class Sprint21Tests(unittest.TestCase):
         contract = gate.document(
             ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
         altered = copy.deepcopy(contract)
-        altered["printedProfile"]["hitPoints"]["total"] = 25
+        altered["giantCrab"]["printedProfile"]["hitPoints"]["total"] = 25
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError,
                                         "printed Giant Crab profile changed"):
@@ -193,7 +216,8 @@ class Sprint21Tests(unittest.TestCase):
         contract = gate.document(
             ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
         altered = copy.deepcopy(contract)
-        altered["printedProfile"]["combatManeuverDefense"]["versusTrip"] = 23
+        altered["giantCrab"]["printedProfile"]["combatManeuverDefense"][
+            "versusTrip"] = 23
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(
                     AssertionError, "eight-legged trip defence changed"):
@@ -210,7 +234,7 @@ class Sprint21Tests(unittest.TestCase):
         contract = gate.document(
             ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
         altered = copy.deepcopy(contract)
-        altered["printedProfile"]["swimSpeedFeet"] = 30
+        altered["giantCrab"]["printedProfile"]["swimSpeedFeet"] = 30
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError, "aquatic line changed"):
                 gate.validate_contract(ROOT)
@@ -219,8 +243,12 @@ class Sprint21Tests(unittest.TestCase):
         contract = gate.document(
             ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
         altered = copy.deepcopy(contract)
-        altered["honestOmissions"] = [row for row in altered["honestOmissions"]
-                                      if row["id"] != "ORDINARY_MAP_LAND_USE_SCOPE"]
+        altered["giantCrab"]["acceptedLimitations"] = [
+            row for row in altered["giantCrab"]["acceptedLimitations"]
+            if row["id"] != "ORDINARY_MAP_LAND_USE_SCOPE"]
+        altered["bebelith"]["acceptedLimitations"] = [
+            row for row in altered["bebelith"]["acceptedLimitations"]
+            if row["id"] != "ORDINARY_MAP_LAND_USE_SCOPE"]
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(
                     AssertionError, "stopped recording an omission"):
@@ -234,46 +262,111 @@ class Sprint21Tests(unittest.TestCase):
                                      if "aquatic" not in row.lower()]
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(
-                    AssertionError, "forbidding an aquatic subsystem"):
+                    AssertionError, "stopped forbidding: aquatic"):
                 gate.validate_contract(ROOT)
 
-    def test_a_contract_that_moves_the_bebelith_is_rejected(self):
+    def test_a_contract_that_drops_the_bebelith_roots_is_rejected(self):
+        """Three roots at tiers seven, eight and nine, published.
+
+        The Bebelith's implementation is this sprint's work and its identity
+        is not. A contract that stopped declaring the roots preserved would
+        let a save made against v0.0.149 stop resolving them.
+        """
         contract = gate.document(
             ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
         altered = copy.deepcopy(contract)
-        altered["placement"]["bebelith"]["change"] = "rebuilt to the printed block"
+        altered["bebelith"]["releasedIdentity"]["roots"] = \
+            altered["bebelith"]["releasedIdentity"]["roots"][:2]
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(
-                    AssertionError, "declaring the Bebelith unchanged"):
+                    AssertionError, "released identity preserved"):
                 gate.validate_contract(ROOT)
 
-    def test_a_changed_released_bebelith_line_is_rejected(self):
+    def test_renaming_the_released_bebelith_is_rejected(self):
+        """A source may print Bebilith. Renaming the shipped key is a save
+        and user-interface migration, not a creature correction, and the
+        frozen contract has to keep saying so."""
+        contract = gate.document(
+            ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
+        altered = copy.deepcopy(contract)
+        altered["spelling"]["key"] = "bebilith"
+        with patch.object(gate, "document", return_value=altered):
+            with self.assertRaisesRegex(AssertionError, "spelling"):
+                gate.validate_contract(ROOT)
+
+    def test_penetrating_strike_leaking_onto_non_demons_is_rejected(self):
+        """The asymmetry a live review exists to catch.
+
+        Cold iron and good are granted against demons only. Granting them
+        universally is invisible against a demon and wrong against everything
+        else, so the prohibition has to stay in the frozen contract.
+        """
+        contract = gate.document(
+            ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
+        altered = copy.deepcopy(contract)
+        altered["bebelith"]["penetratingStrike"]["prohibitions"] = [
+            row for row in
+            altered["bebelith"]["penetratingStrike"]["prohibitions"]
+            if "non-demon" not in row]
+        with patch.object(gate, "document", return_value=altered):
+            with self.assertRaisesRegex(
+                    AssertionError, "penetrating strike contract changed"):
+                gate.validate_contract(ROOT)
+
+    def test_dropping_a_dismantle_safety_clause_is_rejected(self):
+        """The highest-risk mechanic in the sprint, and the list that bounds
+        it. Any one of these clauses going missing is the difference between
+        a wearer-side effect and a mutated inventory."""
+        contract = gate.document(
+            ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
+        for clause in ("never owner party gear", "unarmoured target",
+                       "permanent inventory corruption"):
+            altered = copy.deepcopy(contract)
+            altered["bebelith"]["dismantleArmor"]["mandatorySafety"] = [
+                row for row in
+                altered["bebelith"]["dismantleArmor"]["mandatorySafety"]
+                if clause not in row]
+            with patch.object(gate, "document", return_value=altered):
+                with self.assertRaisesRegex(
+                        AssertionError, "safety list dropped"):
+                    gate.validate_contract(ROOT)
+
+    def test_inventing_an_item_durability_system_is_rejected(self):
+        """Kingmaker exposes no item-durability component to a mod, so the
+        only way to make Dismantle Armor destroy an item literally is to
+        build one. The frozen contract forbids it and must keep doing so."""
+        contract = gate.document(
+            ROOT, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
+        altered = copy.deepcopy(contract)
+        altered["bebelith"]["dismantleArmor"]["engineGapPolicy"] = \
+            "Build whatever the printed effect needs."
+        with patch.object(gate, "document", return_value=altered):
+            with self.assertRaisesRegex(
+                    AssertionError, "item-durability system"):
+                gate.validate_contract(ROOT)
+
+    def test_a_moved_released_bebelith_identity_is_rejected(self):
         """The easiest way for this sprint to go wrong.
 
-        The Bebelith's rules were qualified in an earlier phase and its
-        recorded deviations were accepted then. This sprint owns its body. A
-        released line that changed - even to something more faithful to the
-        printed Bestiary block - would move a creature that has published.
+        Its implementation is this sprint's work, which is why the released
+        comparison that an earlier draft of this gate made line by line is
+        gone. What replaces it is narrower and is the thing that actually
+        must not move: the unit and the three roots keep the exact GUIDs they
+        shipped with, so a save made against v0.0.149 still resolves them.
+        Reallocating one would be a save and user-interface migration.
         """
-        path = gate.BEBELITH_RULES[0]
-        released = (ROOT / path).read_text(encoding="utf-8-sig")
-        improved = released.replace("bebelithClaw", "bebelithImprovedClaw", 1)
-        self.assertNotEqual(released, improved)
-        original = gate.blob
-
-        def unimproved(root, ref, target):
-            if target == path:
-                return released.encode("utf-8")
-            return original(root, ref, target)
-
-        with patch.object(gate.Path, "read_text",
-                          lambda self, **kw: improved
-                          if self.name.endswith("ExpandedSummoningSpecialBuilder.cs")
-                          else released):
-            with patch.object(gate, "blob", side_effect=unimproved):
-                with self.assertRaisesRegex(
-                        AssertionError, "released Bebelith line"):
-                    gate.validate_the_released_bebelith_is_untouched(ROOT)
+        ledger = gate.document(ROOT, "blueprints/blueprints.json")
+        moved = copy.deepcopy(ledger)
+        for entry in moved["entries"]:
+            if entry["symbol"] == "KMG.Summoning.Unit.Bebelith":
+                entry["guid"] = "0" * 32
+                break
+        else:
+            self.fail("The released Bebelith unit is not in the ledger.")
+        with patch.object(gate, "document", return_value=moved):
+            with self.assertRaisesRegex(
+                    AssertionError, "moved a released Bebelith identity"):
+                gate.validate_the_released_bebelith_identity_is_preserved(ROOT)
 
     def test_an_unwired_carrier_is_rejected(self):
         """What Sprint 20 shipped twice.

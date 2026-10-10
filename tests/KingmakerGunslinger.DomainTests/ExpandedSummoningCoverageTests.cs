@@ -69,15 +69,15 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(102, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(103, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(113,
+            Assertions.Equal(114,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 101 project-owned plus 11 native wrappers.");
+                "Represented creatures must be 102 project-owned plus 11 native wrappers, and the Giant Crab Sprint 21 registered.");
             Assertions.Equal(113,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "Every represented creature is published: Sprint 20's scorpion "
-                + "was the last one withheld.");
+                "Represented is not published: Sprint 21's Giant Crab is "
+                + "registered and withheld until its own review passes.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
                 .Contains("stirge"),
                 "The requalified Stirge must count as published coverage.");
@@ -88,10 +88,10 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(32, notRepresented,
-                "32 ideal-roster creatures remain unregistered after the "
-                + "Sprint 20 Giant Scorpion joins the two Sprint 19 "
-                + "identities.");
+            Assertions.Equal(31, notRepresented,
+                "31 ideal-roster creatures remain unregistered after the "
+                + "Sprint 21 Giant Crab joins the Sprint 20 Giant Scorpion "
+                + "and the two Sprint 19 identities.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");

@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(102, reused,
+            Assertions.Equal(103, reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,10 +133,10 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(32, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(31, ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
-                "The remaining ideal roster needs 32 new creature identities: the Girallon and the Xill came off it in Sprint 19 and the Giant Scorpion in Sprint 20.");
+                "The remaining ideal roster needs 31 new creature identities: the Girallon and the Xill came off it in Sprint 19, the Giant Scorpion in Sprint 20 and the Giant Crab in Sprint 21.");
         }
 
         /// <summary>
@@ -175,13 +175,13 @@ namespace KingmakerGunslinger.DomainTests
 
             // The Shadow Mastiff moved from this set into the represented
             // one when Sprint 13 registered it.
-            Assertions.Equal(32, ExpandedSummoningIdealRosterCatalog.All.Count(
+            Assertions.Equal(31, ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "32 ideal-roster creatures remain unregistered after the two hidden Sprint 19 creatures and the hidden Sprint 20 scorpion.");
-            Assertions.Equal(113,
+                "31 ideal-roster creatures remain unregistered now that Sprint 21 has registered the Giant Crab. Registration, not publication: it is withheld until its own review passes, and this count tracks whether a creature exists at all.");
+            Assertions.Equal(114,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "113 creatures own or retain a unit identity; registration is not publication.");
+                "114 creatures own or retain a unit identity; registration is not publication, which is exactly what the withheld Giant Crab demonstrates.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828

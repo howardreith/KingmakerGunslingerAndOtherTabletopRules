@@ -700,7 +700,7 @@ namespace KingmakerGunslinger.Summoning
                 // which is the whole reason the Large Sprint 18 and 20
                 // creatures had to own theirs.
                 PK("giant-crab", "Giant Crab", "Vermin", 3, "Medium",
-                    15, 12, 14, 1, 10, 2, 30, 4, "Claw1d4",
+                    15, 13, 14, 1, 10, 2, 30, 5, "Claw1d4",
                     A("Claw1d4"),
                     A("GiantCrabTripDefense", "GiantCrabRacialSkills",
                       "GiantCrabMindlessImmunity",
@@ -711,7 +711,7 @@ namespace KingmakerGunslinger.Summoning
                       "PrimateFullStrengthLimbs"),
                     Array.Empty<string>(),
                     "Sprint 21 frozen contract: Summon Nature's Ally III only, the first creature in the roster shaped that way, hidden pending complete runtime qualification. Two claws +4 (1d4+2 plus grab), both primary at the whole Strength modifier.",
-                    "The printed swim 20 ft., the aquatic subtype, the amphibious quality and the racial +8 Swim are omitted under OwnerAcceptedEngineLimitation: ORDINARY_MAP_LAND_USE_SCOPE. Kingmaker has no Swim skill and models neither swimming nor drowning, and this mission's hard boundaries forbid building an aquatic subsystem. Nothing is substituted: the swim speed is not folded into the 30-foot ground speed, no skill is raised to stand in for Swim, and no breathing state is invented. The creature forfeits no rank, because it has none to spend and the +8 is entirely racial.",
+                    "The printed swim 20 ft., the aquatic subtype and the printed water dependency are omitted under OwnerAcceptedEngineLimitation: ORDINARY_MAP_LAND_USE_SCOPE. Kingmaker has no Swim skill and models neither swimming nor drowning, and this mission's hard boundaries forbid building an aquatic subsystem. Nothing is substituted: the 20-foot swim speed is not folded into the 30-foot ground speed, Athletics and Mobility are not raised to stand in for Swim, and no breathing or dehydration state is invented. Water dependency is recorded honestly as unrepresented rather than approximated. The creature forfeits no rank, because a creature with no Intelligence score has none to spend.",
                     "The printed darkvision 60 feet is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, on the same evidence and with the same prohibitions as every earlier vermin.",
                     "Grab is on both claws, which is every limb it has, on the grapple lifecycle Sprint 6 built and Sprint 19 taught to hold several limbs; it holds one foe in each claw. The printed +12 anti-trip defence is its own carrier rather than the shared native eight-leg fact, which Sprint 20 measured delivering +8 - the convention is four per pair of legs beyond the first, so a six-legged insect prints +8 and this eight-legged creature prints +12 - and rather than the Sprint 20 carrier, which is named and described for a scorpion. The printed racial +4 Perception is its own carrier for the same reason.",
                     "An absent Intelligence score is represented as 1, and the printed immunity to mind-affecting effects is carried as its own fact rather than inferred from it, because 1 is not mindless to the engine."),

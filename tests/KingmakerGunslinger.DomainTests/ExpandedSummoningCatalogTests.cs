@@ -11,11 +11,11 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningCatalog.Validate();
             // Sprint 18 adds the two apes at Summon Monster and Nature's Ally
             // III and IV, which is seven and six placements per family.
-            Assertions.Equal(102, ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
+            Assertions.Equal(103, ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
             Assertions.Equal(92, ExpandedSummoningCatalog.All.Count(v => v.MonsterTier.HasValue), "SM roster count changed.");
-            Assertions.Equal(90, ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue), "SNA roster count changed.");
+            Assertions.Equal(91, ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue), "SNA roster count changed.");
             Assertions.Equal(530, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count, "SM placement count changed.");
-            Assertions.Equal(526, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count, "SNA placement count changed.");
+            Assertions.Equal(533, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count, "SNA placement count changed.");
         }
         internal static void QuantityRulesAreExactAndSameKind()
         {

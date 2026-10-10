@@ -11,22 +11,22 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(2040, first.Count, "Foundation identity count changed.");
-            Assertions.Equal(102, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1731, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(2062, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(103, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
+            Assertions.Equal(1739, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(78, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
-            Assertions.Equal(26, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
-            Assertions.Equal(14, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(80, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(27, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
+            Assertions.Equal(15, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "IsEngagedConsideration"),
                 "Only the bounded crocodilian engagement scorer is registered.");
             Assertions.Equal(27, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
-            Assertions.Equal(12, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
-            Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(25, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(13, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
+            Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
+            Assertions.Equal(32, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             // The alignment-mode toggle, plus the Shadow Mastiff's shadow
             // blend, whose printed text makes suspending and resuming it a
@@ -333,7 +333,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();
-            Assertions.Equal(53, ExpandedSummoningNaturalProfiles.All.Count,
+            Assertions.Equal(54, ExpandedSummoningNaturalProfiles.All.Count,
                 "Natural reconstruction count changed.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
             Assertions.Equal("Small", dog.Size, "Dog size changed.");
@@ -749,13 +749,13 @@ namespace KingmakerGunslinger.DomainTests
                     "Logical placement identity missing or duplicated: " + symbol);
                 found++;
             }
-            Assertions.Equal(1056, found, "Logical placement traversal changed.");
+            Assertions.Equal(1063, found, "Logical placement traversal changed.");
         }
 
         internal static void DonorsCoverEveryFrozenCreature()
         {
             ExpandedSummoningDonorCatalog.Validate();
-            Assertions.Equal(102, ExpandedSummoningDonorCatalog.All.Count,
+            Assertions.Equal(103, ExpandedSummoningDonorCatalog.All.Count,
                 "Every unique creature requires exactly one frozen donor decision.");
             Assertions.Equal("676f8b7d0a170674cb6e504e0e30b4f0",
                 ExpandedSummoningDonorCatalog.For("invisible-stalker").Guid,
@@ -803,20 +803,49 @@ namespace KingmakerGunslinger.DomainTests
                 .SuccubusCharisma, "Succubus Charisma changed.");
             Assertions.Equal(12, ExpandedSummoningSpecialProfiles
                 .BebelithHitDice, "Bebelith HD changed.");
-            Assertions.Equal(25, ExpandedSummoningSpecialProfiles
-                .BebelithDismantleReflexDc, "Bebelith dismantle DC changed.");
+            // Sprint 21 removed the invented difficulty class 25. The printed
+            // one is 23 and is derived live from this creature's own
+            // Constitution by the shared formula, so there is no constant to
+            // pin here - the derivation is pinned in BebelithRulesPolicy
+            // instead, and the live review reads what the engine produces.
+            Assertions.Equal(23, BebelithRulesPolicy.DifficultyClass(
+                    BebelithRulesPolicy.HitDice,
+                    BebelithRulesPolicy.ConstitutionModifier),
+                "The printed Bebelith difficulty class is derived, not stored.");
+            Assertions.Equal(1, ExpandedSummoningSpecialProfiles
+                .BebelithPenetratingEnhancement,
+                "Penetrating strike makes the weapons magic without adding to "
+                + "the damage total.");
             Assertions.True(ExpandedSummoningSpecialProfiles
-                .ShouldAttemptBebelithDismantle(true, true, true, 1, false),
+                .ShouldAttemptBebelithDismantle(true, true, true, false, 1, false),
                 "A second same-round claw hit against armor must attempt dismantle.");
+            Assertions.True(ExpandedSummoningSpecialProfiles
+                .ShouldAttemptBebelithDismantle(true, true, false, true, 1, false),
+                "A shield is eligible too, which is what the frozen trigger "
+                + "says and what the released build did not admit.");
             Assertions.False(ExpandedSummoningSpecialProfiles
-                .ShouldAttemptBebelithDismantle(true, true, true, 0, false),
+                .ShouldAttemptBebelithDismantle(true, true, true, false, 0, false),
                 "A first claw hit must not dismantle armor.");
             Assertions.False(ExpandedSummoningSpecialProfiles
-                .ShouldAttemptBebelithDismantle(true, true, false, 1, false),
-                "An unarmored target must not receive the adapted AC penalty.");
+                .ShouldAttemptBebelithDismantle(true, true, true, true, 2, false),
+                "A third claw hit in the same round must not dismantle again: "
+                + "the count is compared to one, not tested for 'at least "
+                + "two', so a replayed sequence cannot apply twice.");
+            Assertions.False(ExpandedSummoningSpecialProfiles
+                .ShouldAttemptBebelithDismantle(true, true, false, false, 1, false),
+                "An unarmored or natural-armored target has nothing to "
+                + "dismantle and must see no effect at all.");
+            Assertions.False(ExpandedSummoningSpecialProfiles
+                .ShouldAttemptBebelithDismantle(true, true, true, true, 1, true),
+                "Already attempted against this target this round: no "
+                + "duplicate application from a replayed resolution.");
+            Assertions.False(ExpandedSummoningSpecialProfiles
+                .ShouldAttemptBebelithDismantle(false, true, true, true, 1, false),
+                "The bite never dismantles armor.");
             Assertions.True(ExpandedSummoningSpecialProfiles
                 .IsBebelithDemonHuntingTarget(true, 20),
-                "Chaotic evil outsiders must receive the demon-hunting bonus.");
+                "Chaotic evil outsiders are the demons penetrating strike "
+                + "grants cold iron and good against.");
             Assertions.False(ExpandedSummoningSpecialProfiles
                 .IsBebelithDemonHuntingTarget(false, 20),
                 "A chaotic evil non-outsider must not be treated as a demon.");
@@ -925,7 +954,12 @@ namespace KingmakerGunslinger.DomainTests
                 "Summoning", "ExpandedSummoningSpecialCombatComponents.cs"));
             foreach (string token in new[] { "ITickEachRound",
                 "RuleSavingThrow(evt.Target", "SavingThrowType.Reflex",
-                "SavingThrowType.Will", "Body.Armor.HasArmor",
+                "SavingThrowType.Will",
+                // Sprint 21 moved every equipment question Dismantle Armor
+                // asks into one place, so that "all of them are reads" is
+                // checkable rather than asserted.
+                "BebelithDismantle.HasEligibleArmor(evt.Target)",
+                "BebelithDismantle.HasEligibleShield(evt.Target)",
                 "ReferenceEquals(evt.Weapon.Blueprint, SleepBow)",
                 "Owner.Resources.Spend(SleepArrowResource, 1)",
                 "TimeSpan.FromSeconds(6d" })

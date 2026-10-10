@@ -13,16 +13,19 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(102, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(103, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
             Assertions.Equal(92, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(90, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(91, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
             Assertions.Equal(530, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(526, ExpandedSummoningBaselineInventory
+            // Sprint 21's Giant Crab is a Nature's Ally creature alone and
+            // puts all seven of its placements on that side. Registered, not
+            // visible: it ships withheld.
+            Assertions.Equal(533, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -106,16 +109,18 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            // Sprint 20 qualified and published, so the withheld set is
-            // empty again. A creature appearing here is a sprint registering
-            // ahead of its own qualification, which is allowed and is how
-            // Sprints 12, 13, 18, 19 and 20 each ran, but it has to be
-            // deliberate rather than a leftover - which is what this pin is
-            // for, and an empty set is the strongest form of it.
-            Assertions.Equal(0, ExpandedSummoningBaselineInventory
-                    .RegisteredButHiddenCreatures.Count,
-                "Nothing is registered and withheld: Sprint 20 published the "
-                + "Giant Scorpion once its own review passed.");
+            // A creature appearing here is a sprint registering ahead of
+            // its own qualification, which is allowed and is how Sprints 12,
+            // 13, 18, 19 and 20 each ran - but it has to be deliberate rather
+            // than a leftover, which is what this pin is for. Naming the
+            // creature is the strongest form of it: an unexpected arrival and
+            // a forgotten departure both fail.
+            Assertions.True(ExpandedSummoningBaselineInventory
+                    .RegisteredButHiddenCreatures.SequenceEqual(
+                        new[] { GiantCrabRulesPolicy.GiantCrabKey }),
+                "Exactly Sprint 21's Giant Crab is registered and withheld: "
+                + string.Join(", ", ExpandedSummoningBaselineInventory
+                    .RegisteredButHiddenCreatures));
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -128,9 +133,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(40,
+            Assertions.Equal(41,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against, why both Sprint 19 four-armed creatures join them on that same Troll rig, and why Sprint 20's Giant Scorpion joins them on the Giant Spider while its own body is unauthored.");
+                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against, why both Sprint 19 four-armed creatures join them on that same Troll rig, why Sprint 20's Giant Scorpion joins them on the Giant Spider, and why Sprint 21's Giant Crab does too while its own body is unauthored.");
         }
 
         /// <summary>
