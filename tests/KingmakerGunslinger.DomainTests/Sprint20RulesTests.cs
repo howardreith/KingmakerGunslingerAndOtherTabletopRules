@@ -230,6 +230,37 @@ namespace KingmakerGunslinger.DomainTests
                 "A claw must never deliver this poison.");
         }
 
+        /// <summary>
+        /// The census scenario is admitted by every gate that can refuse it.
+        ///
+        /// <para>Sprint 19's first guarded run was spent discovering that the
+        /// mod keeps its own allowlist and refuses an unknown scenario only
+        /// after a deploy and a launch. That cost an owner transaction to
+        /// learn, so it is checked offline here instead.</para>
+        /// </summary>
+        internal static void TheCensusScenarioIsWiredAtEveryGate()
+        {
+            const string scenario = "observe-expanded-summoning-arachnid-census";
+            Assertions.Equal(scenario, KingmakerGunslinger.RuntimeTesting
+                    .RuntimeTestScenarioCatalog.ObserveExpandedSummoningArachnidCensus,
+                "The scenario name is what the orchestrator asks for.");
+            Assertions.True(KingmakerGunslinger.RuntimeTesting
+                    .RuntimeTestScenarioCatalog.IsAllowed(scenario),
+                "The mod request validator must admit the Sprint 20 census.");
+            string root = RepositoryRoot();
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            Assertions.True(automation.Contains("'" + scenario + "'"),
+                "The orchestrator needs a descriptor for the Sprint 20 census.");
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(runner.Contains(
+                    "ObserveExpandedSummoningArachnidCensus"),
+                "The runner must dispatch the Sprint 20 census.");
+            // And the survey's own bounds hold.
+            KingmakerGunslinger.RuntimeTesting.ArachnidRigSurveyPolicy.Validate();
+        }
+
         private static string[] AppendedSymbols()
         {
             string ledger = File.ReadAllText(Path.Combine(RepositoryRoot(),

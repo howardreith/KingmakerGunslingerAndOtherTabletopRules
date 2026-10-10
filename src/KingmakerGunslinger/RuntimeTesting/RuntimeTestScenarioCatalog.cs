@@ -132,6 +132,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ObserveExpandedSummoningPrimateCensus =
             "observe-expanded-summoning-primate-census";
         /// <summary>
+        /// The Sprint 20 arachnid donor census: the one Giant Spider rig every
+        /// shipped insect mesh is weighted to, measured rather than chosen,
+        /// at mod load, no save, no spawn. Research only.
+        /// </summary>
+        internal const string ObserveExpandedSummoningArachnidCensus =
+            "observe-expanded-summoning-arachnid-census";
+        /// <summary>
         /// The Sprint 18 hidden-candidate review: the two apes as they are in
         /// a running game. Live profiles, the printed routines, every rend
         /// case, both combat modes, the original bodies, the registered
@@ -750,6 +757,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveMagicCircleScene,
                 ObserveExpandedSummoningNativeDonors,
                 ObserveExpandedSummoningPrimateCensus,
+                ObserveExpandedSummoningArachnidCensus,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 ObserveExpandedSummoningInventory,
