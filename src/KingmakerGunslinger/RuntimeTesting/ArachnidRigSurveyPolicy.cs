@@ -6,14 +6,19 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// <summary>
     /// What the Sprint 20 arachnid donor census is allowed to look at.
     ///
-    /// <para>This census asks a narrower question than Sprint 18's. Sprint 18
-    /// had to <em>choose</em> a rig from a field of candidates; Sprint 20
-    /// already knows its donor, because the Sprint 14 census established that
-    /// Kingmaker has no scorpion and that the Giant Spider is the only compact
-    /// many-legged arthropod the game has. What Sprint 20 needs is the rig's
-    /// measurements - the full bone roster, the bind-pose transforms, and how
-    /// many segments the abdomen chain has, because a scorpion's metasoma is
-    /// authored onto that chain.</para>
+    /// <para>It was written expecting a narrower question than Sprint 18's.
+    /// Sprint 18 had to <em>choose</em> a rig from a field of candidates, and
+    /// Sprint 20 believed its donor was already settled: the Sprint 14 census
+    /// recorded that Kingmaker has no scorpion and that the Giant Spider is
+    /// the only compact many-legged arthropod the game has.</para>
+    ///
+    /// <para>The first run disproved that. One scorpion blueprint exists in
+    /// the live library, which is exactly the kind of thing a census is for
+    /// and exactly what re-reading Sprint 14's notes would never have found.
+    /// So this is a choosing census after all, and the measurements it was
+    /// written for - the full bone roster, the bind frame, and the length of
+    /// the abdomen chain a metasoma is authored onto - are now taken for
+    /// whatever candidates it finds rather than for one assumed donor.</para>
     ///
     /// <para>Sprint 19 skipped a census because Sprint 18's capture survived
     /// under runtime-evidence and could be re-decoded offline. The Sprint 14
@@ -78,18 +83,38 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// Every arthropod term the installation might answer to. Not a
         /// shortlist of candidates - the donor is already decided - but a
         /// check that the Sprint 14 finding still holds.
+        ///
+        /// <para>The first census run matched on bare "ant" and spent eleven
+        /// of its twelve prefab slots on adamANTine golems, a treANT, a
+        /// mANTicore and a peasANT, so the arthropods it was meant to find
+        /// never reached the survey. A term this short is a substring trap;
+        /// the ants this project already ships are reached through the Giant
+        /// Spider anchor anyway, so the term is simply gone.</para>
         /// </summary>
         internal static string[] DiscoveryTerms
         {
             get
             {
                 return new[] {
-                    "spider", "scorpion", "centipede", "vermin", "insect",
-                    "beetle", "ant", "crab", "arachn", "wasp", "mantis",
-                    "swarm"
+                    "spider", "scorpion", "centipede", "beetle", "arachn",
+                    "crab", "mantis", "wasp", "vermin", "swarm"
                 };
             }
         }
+
+        /// <summary>
+        /// Names that make a blueprint worth a prefab slot ahead of the rest.
+        /// A scorpion rig, if one exists, changes this sprint's whole visual
+        /// decision, so it is measured rather than merely counted - the first
+        /// run reported that one exists and could not say what it was.
+        /// </summary>
+        internal static string[] PriorityTerms
+        {
+            get { return new[] { "scorpion", "spider", "arachn" }; }
+        }
+
+        internal static bool IsPriority(string name)
+        { return Matches(name, PriorityTerms); }
 
         /// <summary>
         /// One launch, a fixed ceiling. A census that could grow with the
@@ -154,10 +179,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (MaximumSurveyedPrefabs < AnchorDonors.Length)
                 throw new InvalidOperationException(
                     "The prefab cap cannot exclude the anchor.");
-            if (!DiscoveryTerms.Contains("scorpion"))
+            if (!DiscoveryTerms.Contains("scorpion") ||
+                !PriorityTerms.Contains("scorpion"))
                 throw new InvalidOperationException(
-                    "A census that does not look for a scorpion cannot report "
-                    + "that the game has none.");
+                    "A census that does not look for a scorpion, and give it a "
+                    + "prefab slot, cannot report what the game has.");
+            // The substring trap the first run fell into. Any term this short
+            // matches words that have nothing to do with arthropods.
+            foreach (string term in DiscoveryTerms.Concat(PriorityTerms))
+                if (term.Length < 4)
+                    throw new InvalidOperationException(
+                        "A discovery term shorter than four characters matches "
+                        + "unrelated names: " + term);
             if (AbdomenChainCandidates.Length < 2 ||
                 ChelaChainCandidates.Length < 2 ||
                 FourthLegCandidates.Length < 2)

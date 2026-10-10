@@ -39,6 +39,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             WriteLifecycleStage("expanded-summoning-arachnid-census-start");
             var assertions = new List<RuntimeTestAssertion>();
+            JArray document0ScorpionRows = new JArray();
             try
             {
                 ArachnidRigSurveyPolicy.Validate();
@@ -75,12 +76,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintUnit[] scorpions = all.Where(value =>
                     ArachnidRigSurveyPolicy.Matches(value.name,
                         new[] { "scorpion" })).ToArray();
+                // The first run reported one and could not say what it was,
+                // which is half a finding. Name every one, with the prefab it
+                // would be authored against.
+                document0ScorpionRows = new JArray(scorpions.Select(value =>
+                    (JToken)new JObject {
+                        ["blueprintName"] = value.name,
+                        ["nativeBlueprint"] = value.AssetGuid,
+                        ["size"] = value.Size.ToString(),
+                        ["prefab"] = value.Prefab == null ? null
+                            : value.Prefab.AssetId,
+                        ["unitType"] = value.Type == null ? null : value.Type.name
+                    }));
 
                 // One rig per prefab: many blueprints share a handful of views,
                 // and the view is what a body is authored against.
                 var byPrefab = new Dictionary<string, BlueprintUnit>(
                     StringComparer.Ordinal);
-                foreach (BlueprintUnit unit in selected.Concat(discovered))
+                foreach (BlueprintUnit unit in selected
+                    .Concat(discovered.Where(value =>
+                        ArachnidRigSurveyPolicy.IsPriority(value.name)))
+                    .Concat(discovered.Where(value =>
+                        !ArachnidRigSurveyPolicy.IsPriority(value.name))))
                 {
                     string prefab = unit.Prefab == null ? null : unit.Prefab.AssetId;
                     if (string.IsNullOrEmpty(prefab) || byPrefab.ContainsKey(prefab))
@@ -92,6 +109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 var rows = new JArray();
                 var document = new JObject {
+                    ["installedScorpions"] = document0ScorpionRows,
                     ["scope"] = "Sprint 20 arachnid donor census: detached read-only view prefabs only. " +
                         "No campaign actor is spawned, no save is read or written, no native asset is modified.",
                     ["nativeData"] = "skeleton names, hierarchy, rest transforms, bind positions and rotations, " +
@@ -174,11 +192,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "baseline for the scorpion's geometry, not a result"));
                 // The whole premise of reusing this rig. Reported as a measured
                 // finding rather than inherited from Sprint 14's notes.
-                assertions.Add(Assertion("sprint20-census-no-native-scorpion",
-                    "no installed scorpion donor exists, so the body must be original geometry",
-                    "scorpionBlueprints=" + scorpions.Length,
-                    scorpions.Length == 0,
-                    "re-measured against the live library, not recalled"));
+                // The first run failed here, and the assertion was wrong
+                // rather than the installation. "The game has no scorpion" is
+                // a conclusion Sprint 14 drew, not a bound this census may
+                // impose: a census reports what is there. What it must do is
+                // name and measure whatever it finds, so the donor decision
+                // is made by reading this file.
+                assertions.Add(Assertion("sprint20-census-scorpions-named",
+                    "every installed scorpion blueprint is named with its prefab",
+                    "scorpionBlueprints=" + scorpions.Length + ";named=" +
+                        document0ScorpionRows.Count,
+                    document0ScorpionRows.Count == scorpions.Length,
+                    "counting one without naming it is half a finding"));
+                assertions.Add(Assertion("sprint20-census-scorpion-rig-surveyed",
+                    "any scorpion prefab the library has is measured, not just counted",
+                    string.Join(";", scorpions.Select(value =>
+                        value.name + "=" + (value.Prefab == null ? "none" :
+                            (rows.OfType<JObject>().Any(row =>
+                                (string)row["prefab"] == value.Prefab.AssetId)
+                                ? "surveyed" : "not-surveyed")))),
+                    scorpions.All(value => value.Prefab == null ||
+                        rows.OfType<JObject>().Any(row =>
+                            (string)row["prefab"] == value.Prefab.AssetId)),
+                    "a rig that changes the donor decision must be measured"));
                 assertions.Add(Assertion("sprint20-census-abdomen-chain-measured",
                     "the abdomen chain a metasoma is authored onto is counted",
                     anchorRow == null ? "no anchor row" :
