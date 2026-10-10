@@ -124,7 +124,7 @@ shortfall is recorded rather than replaced with something invented.
 
 ## Runtime qualification
 
-Twelve guarded runtime transactions were spent. Two passed and are this
+Thirteen guarded runtime transactions were spent. Three passed and are this
 release's evidence:
 
 - **Mechanics, 39 of 39.**
@@ -138,6 +138,12 @@ release's evidence:
   `20261010T0744422373426Z-working-save-expanded-summoning-creature-review`,
   on the authorized working save. All eight party-camera captures came back
   `renderer=true dissolve=0 intact=true`.
+- **Publication, 39 of 39.**
+  `20261010T0840306592691Z-disposable-expanded-summoning-sprint19-review`, the
+  same review re-run against the published surface. All ten roots are live and
+  published, nothing is withheld anywhere, registered 1044 equals published
+  1044, and every printed number of both creatures read back unchanged by
+  publication.
 
 Ten runs before those found real defects, all of them this project's own, and
 each is recorded rather than smoothed over:
