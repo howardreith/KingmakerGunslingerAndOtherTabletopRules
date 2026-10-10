@@ -61,7 +61,7 @@ namespace KingmakerGunslinger.Summoning
         // its printed racial +4 Perception, and the grab carrier its two claws
         // need. It owns no weapon, because a Medium creature takes the shared
         // native 1d4 claw unscaled.
-        internal const int SpecialIdentityCount = 233;
+        internal const int SpecialIdentityCount = 242;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -406,6 +406,27 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.TripDefense", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantCrab.RacialSkills", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantCrab.Traits", "BlueprintBuff"));
+            // Sprint 21's Bebelith overhaul. Its unit and its three roots are
+            // released and are NOT reallocated; these nine are what the
+            // released build left out or got wrong. Rot is a bite-only injury
+            // effect whose graph - two Constitution a save, five exposures, two
+            // consecutive successes to cure - is longer than any poison carrier
+            // this project ships, so it owns one. Penetrating strike replaces an
+            // invented +2 against chaotic-evil outsiders with the printed
+            // descriptors. The anti-trip defence is +12 where the shared native
+            // eight-leg fact delivers +8, for the third time in this series. The
+            // racial +8 Stealth existed nowhere. And the web needs an ability, a
+            // resource, an AI action and a brain to cast it, because the released
+            // creature takes the native brain that casts nothing.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Rot", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.RotState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.PenetratingStrike", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.TripDefense", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.RacialSkills", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Web", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }

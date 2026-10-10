@@ -279,6 +279,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\XillRulesPolicy.cs"><Link>Summoning\XillRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantScorpionRulesPolicy.cs"><Link>Summoning\GiantScorpionRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantCrabRulesPolicy.cs"><Link>Summoning\GiantCrabRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\BebelithRulesPolicy.cs"><Link>Summoning\BebelithRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ArachnidRigSurveyPolicy.cs"><Link>RuntimeTesting\ArachnidRigSurveyPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\PrimateVisualPolicy.cs"><Link>Summoning\PrimateVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\PrimateReviewPolicy.cs"><Link>RuntimeTesting\PrimateReviewPolicy.cs</Link></Compile>

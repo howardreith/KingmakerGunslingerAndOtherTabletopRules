@@ -89,19 +89,6 @@ SUMMONING_PROTECTED = (
     "assets-source/original-models/sprint20-arachnids/",
 )
 
-# The released Bebelith, named file by file. This sprint owns its body and
-# nothing else, and the easiest way for it to go wrong is to improve a
-# creature that already published: its rules are qualified, its recorded
-# deviations were accepted then, and its chassis differs from the printed
-# Bestiary block on purpose. Every one of these is already inside
-# SUMMONING_PROTECTED; they are named again here so a failure says Bebelith
-# rather than only naming a file.
-BEBELITH_RULES = (
-    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
-    "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
-    "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
-)
-
 # Exactly what Sprint 21 adds to or changes in that tree. A file not listed
 # here and not new is compared byte for byte.
 SPRINT21_CHANGED = (
@@ -117,16 +104,26 @@ SPRINT21_CHANGED = (
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.cs",
     # Every grabber in the project is configured in one pass here, natural
     # creatures included, so a crab whose pincers grab has to reach it - and
-    # the released Bebelith's own traits are configured in the same file.
-    # Admitted with two checks rather than on trust: see
-    # validate_the_grab_is_the_only_addition, which requires every added code
-    # line to belong to the Giant Crab, and
-    # validate_the_released_bebelith_is_untouched, which requires every line
-    # mentioning the Bebelith to be the released one.
+    # the Bebelith's own mechanics are rebuilt in the same file. Admitted with
+    # two checks rather than on trust: validate_only_this_sprints_creatures_
+    # changed, which refuses any changed line of code naming a third
+    # creature and requires the Giant Spider's released web values to still
+    # arrive at the generalised seam, and
+    # validate_the_released_bebelith_identity_is_preserved, which holds its
+    # symbols and GUIDs to the release.
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+    # Sprint 21 overhauls the released Bebelith's mechanics, which this
+    # mission authorises. Its released identity is preserved by
+    # validate_the_released_bebelith_identity_is_preserved instead of by a
+    # byte comparison, because a byte comparison would refuse the work.
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningCreatureReview.cs",
+    # The procedural renderer gains this sprint's creature, which is what
+    # every sprint that ships an icon does to it.
+    "assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py",
     "assets-source/original-icons/expanded-summoning/icon-manifest.json",
     "assets-source/original-icons/expanded-summoning/prompts/icon-prompts.json",
     "assets/game/icons/expanded-summoning/icon-manifest.json",
@@ -134,6 +131,13 @@ SPRINT21_CHANGED = (
 
 SPRINT21_NEW = (
     "src/KingmakerGunslinger/Summoning/GiantCrabRulesPolicy.cs",
+    # The Bebelith's printed contract, and the action that derives its
+    # difficulty class live from Constitution immediately before the engine's
+    # own save. Neither existed while this sprint owned only its body.
+    "src/KingmakerGunslinger/Summoning/BebelithRulesPolicy.cs",
+    "src/KingmakerGunslinger/Summoning/BebelithRot.cs",
+    "assets-source/original-icons/expanded-summoning/sources/giant-crab.png",
+    "assets/game/icons/expanded-summoning/giant-crab.png",
     "src/KingmakerGunslinger/RuntimeTesting/Sprint21ReviewPolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint21Review.cs",
     "tests/KingmakerGunslinger.DomainTests/Sprint21RulesTests.cs",
@@ -152,6 +156,45 @@ SPRINT21_KEYS = (SPRINT21_KEY,)
 # the existing KMG.Summoning.Natural.Primate.FullStrengthLimbs rather than a
 # renamed copy, because that symbol shipped in v0.0.147 and renaming it would
 # retire a released GUID and mint a new one for the same fact.
+# The Bebelith's nine. Its unit and its three roots are released and are NOT
+# in this list: they keep their allocated identities, and this sprint changes
+# only what stands behind them.
+BEBELITH_IDENTITY_TAIL = {
+    # Rot's own carrier and its victim-owned state. Its graph is longer than
+    # any poison this project ships - two Constitution a save, five exposures,
+    # two consecutive successes to cure - which is why it cannot share one.
+    "KMG.Summoning.Special.Bebelith.Rot": "BlueprintFeature",
+    "KMG.Summoning.Special.Bebelith.RotState": "BlueprintBuff",
+    # Penetrating strike, replacing an invented +2 against chaotic-evil
+    # outsiders with the printed descriptors.
+    "KMG.Summoning.Special.Bebelith.PenetratingStrike": "BlueprintFeature",
+    # The printed +12 against trip, where the shared native eight-leg fact
+    # delivers +8. The third creature in this series to need its own.
+    "KMG.Summoning.Special.Bebelith.TripDefense": "BlueprintFeature",
+    # The printed racial +8 Stealth, which existed nowhere.
+    "KMG.Summoning.Special.Bebelith.RacialSkills": "BlueprintFeature",
+    # The web: an ability, the resource that limits it, the AI action that
+    # chooses it and a brain that can cast at all. The released creature takes
+    # the native brain that casts nothing.
+    "KMG.Summoning.Special.Bebelith.Web": "BlueprintAbility",
+    "KMG.Summoning.Special.Bebelith.WebResource": "BlueprintAbilityResource",
+    "KMG.Summoning.Special.Bebelith.WebAi": "BlueprintAiCastSpell",
+    "KMG.Summoning.Special.Bebelith.Brain": "BlueprintBrain",
+}
+
+# The released Bebelith identities this sprint must not move. Checked by symbol
+# and by GUID against the release, because a reallocated root would be a save
+# and user-interface migration rather than a creature correction.
+BEBELITH_RELEASED_IDENTITIES = (
+    "KMG.Summoning.Unit.Bebelith",
+    "KMG.Summoning.Ability.SM.Tier7.Bebelith.One",
+    "KMG.Summoning.Ability.SM.Tier8.Bebelith.OneD3",
+    "KMG.Summoning.Ability.SM.Tier9.Bebelith.OneD4PlusOne",
+    "KMG.Summoning.Special.Bebelith.Claw",
+    "KMG.Summoning.Special.Bebelith.CombatTraits",
+    "KMG.Summoning.Special.Bebelith.DismantledArmor",
+)
+
 SPRINT21_IDENTITY_TAIL = {
     # A crab has no native unit type to inherit, and a creature that does not
     # ask for one keeps its donor's - so without this the inspection window
@@ -187,7 +230,8 @@ SPRINT21_ROOTS = 7
 SPRINT21_MONSTER_ROOTS = 0
 SPRINT21_EXECUTION_CHILDREN = SPRINT21_MONSTER_ROOTS * 2
 SPRINT21_IDENTITIES = (1 + SPRINT21_ROOTS + SPRINT21_EXECUTION_CHILDREN +
-                       len(SPRINT21_IDENTITY_TAIL))
+                       len(SPRINT21_IDENTITY_TAIL) +
+                       len(BEBELITH_IDENTITY_TAIL))
 MASTER_LEDGER_ENTRIES = 3039
 
 REGISTERED_PLACEMENTS = 1063
@@ -236,17 +280,22 @@ def preserved_files(root: Path, ref: str, prefixes, allowed=()) -> int:
     return checked
 
 
-def validate_the_grab_is_the_only_addition(root: Path) -> int:
-    """The special builder gains this creature's grab and nothing else.
+def validate_only_this_sprints_creatures_changed(root: Path) -> int:
+    """Nothing that changed in the special builder belongs to a third creature.
 
-    The file is admitted into the boundary because every grabber in the
-    project lives in it, which makes a blanket byte comparison impossible and
-    a blanket waiver dangerous: this one file configures the grab, constrict,
-    swallow, rake and death roll of two dozen creatures that have already
-    qualified. So the waiver is narrow. Nothing may be removed, and every
-    added line must belong to the Giant Crab - which is checked by
-    rebuilding the file from the released one plus the additions and requiring
-    the result to be byte-identical to what is on disk.
+    Two dozen creatures have qualified mechanics in this one file - grab,
+    constrict, swallow, rake, death roll, breath, sprint - so the risk worth
+    checking is a change that reaches one of them. Sprint 20's version of this
+    check required the file to be addition-only, which was right for a sprint
+    that only added a grabber and is wrong for one that overhauls a released
+    creature and generalises a released seam.
+
+    The Giant Spider gets its own clause. Turning its web configuration into a
+    parameterized seam is exactly the kind of refactor that can alter a
+    released creature without anybody noticing, so its five released values
+    must all still be passed by name - which proves the spider's web arrives at
+    the same numbers through the new code path rather than merely that the old
+    path is gone.
     """
     accepted = blob(root, MASTER,
                     "src/KingmakerGunslinger/Blueprints/"
@@ -256,53 +305,80 @@ def validate_the_grab_is_the_only_addition(root: Path) -> int:
     was = accepted.replace("\r\n", "\n").split("\n")
     now = current.replace("\r\n", "\n").split("\n")
     matcher = difflib.SequenceMatcher(None, was, now, autojunk=False)
-    added = []
+    touched = []
     for tag, i1, i2, j1, j2 in matcher.get_opcodes():
         if tag == "equal":
             continue
-        if tag in ("delete", "replace"):
-            raise AssertionError(
-                "Sprint 21 removed or rewrote a released line of the special "
-                "builder: " + "; ".join(was[i1:i2])[:200])
-        added.extend(now[j1:j2])
-    if not added:
+        touched.extend(was[i1:i2])
+        touched.extend(now[j1:j2])
+    if not touched:
         raise AssertionError(
-            "The crab's grab is not wired in the special builder at all, "
-            "which is how the printed +12 grapple figure went two points "
-            "light while three places claimed it worked.")
-    # No added CODE line may name another creature. Comments are exempt, and
-    # deliberately so: the scorpion takes the multi-target hold Sprint 19
-    # built for the Xill, and a comment forbidden from saying which creature a
-    # shared buff came from is a worse comment rather than a safer file. What
-    # this refuses is a line that configures, requires or renames another
-    # creature's wiring.
-    code = [line for line in added if not line.strip().startswith("//")]
+            "The special builder is unchanged, so neither the Bebelith "
+            "overhaul nor the crab's grab reached it")
+    # Comments are exempt, deliberately: a comment that cannot name the
+    # creature a shared seam was built for is a worse comment, not a safer
+    # file. What this refuses is a line of CODE that configures another
+    # creature.
+    code = [line for line in touched if not line.strip().startswith("//")
+            and not line.strip().startswith("///")]
+    allowed = ("GiantCrab", "Bebelith", "GiantSpider", "WebSpec", "spec.",
+               "ConfigureSummonWeb", "LiveCrabConstrict", "CrabProfileOwner")
     for other in ("GiantAnt", "Owlbear", "PurpleWorm", "Xill", "Tiger",
                   "Lion", "Leopard", "Crocodile", "Salamander", "Bear",
                   "ShamblingMound", "GiantFlytrap", "MonitorLizard",
-                  "ConstrictorSnake", "Cheetah", "Stirge", "Cyclops"):
-        if any(other in line for line in code):
+                  "ConstrictorSnake", "Cheetah", "Stirge", "Cyclops",
+                  "Succubus", "Pixie", "Erinyes", "ShadowDemon",
+                  "GiantScorpion", "GiantStagBeetle"):
+        for line in code:
+            if other in line and not any(ok in line for ok in allowed):
+                raise AssertionError(
+                    "Sprint 21 touched another creature's wiring in the "
+                    "special builder: " + other + " at " + line.strip()[:120])
+    # The Giant Spider's released web, proved to arrive through the new seam at
+    # the values it already had.
+    for required in ("UnitSymbol = GiantSpiderUnitSymbol",
+                     "AbilitySymbol = GiantSpiderWebSymbol",
+                     "ResourceSymbol = GiantSpiderWebResourceSymbol",
+                     "AiSymbol = GiantSpiderWebAiSymbol",
+                     "BrainSymbol = GiantSpiderBrainSymbol",
+                     "TraitsSymbol = GiantSpiderCombatTraitsSymbol",
+                     ".GiantSpiderWebRangeFeet",
+                     ".GiantSpiderWebRounds",
+                     ".GiantSpiderWebMaxSizeDelta",
+                     ".GiantSpiderWebSpellLevel",
+                     ".GiantSpiderWebUses",
+                     'For("giant-spider").HitDice'):
+        if required not in current:
             raise AssertionError(
-                "Sprint 21 touched another creature's wiring in the special "
-                "builder: " + other)
-    if not any("ConfigureGrabber(library, bySymbol, GiantCrabUnitSymbol"
-               in line for line in code):
-        raise AssertionError("The addition does not configure a grabber")
-    # Primary plus one additional limb is both claws and stops short of the
-    # sting, which is the second additional limb.
-    joined = "\n".join(code)
+                "The Giant Spider's released web value is no longer passed to "
+                "the generalised seam: " + required)
+    # The Bebelith's own web, at its own values, through the same seam.
+    for required in ("UnitSymbol = BebelithUnitSymbol",
+                     "AbilitySymbol = BebelithWebSymbol",
+                     ".BebelithWebRangeFeet", ".BebelithWebRounds",
+                     ".BebelithWebUses",
+                     "CasterHitDice = BebelithRulesPolicy.HitDice"):
+        if required not in current:
+            raise AssertionError(
+                "The Bebelith's web is not configured through the generalised "
+                "seam: " + required)
+    # And the crab's grab, which is the other half of this file's changes.
+    if "ConfigureGrabber(library, bySymbol, GiantCrabUnitSymbol" not in current:
+        raise AssertionError("The crab's pincers must carry a grab carrier")
     for required in ("Primary = true",
                      "Additional = GiantCrabRulesPolicy.ClawCount - 1",
                      "MaxHeld = GiantCrabRulesPolicy.ClawCount",
-                     "Hold = multiHold, Grappled = multiHeld",
-                     '"KMG.Summoning.Special.GiantCrab.Traits"'):
-        if required not in joined:
-            raise AssertionError(
-                "The crab's grab spec is missing: " + required)
-    if "Rake" in joined:
-        raise AssertionError("A crab rakes nothing")
-    return len(added)
-
+                     "LiveCrabConstrict = true"):
+        if required not in current:
+            raise AssertionError("The crab's grab spec is missing: " + required)
+    # The invented demon-hunting bonus is gone, replaced by the printed
+    # descriptors. A constant left behind would mean the payload had not
+    # actually moved.
+    if "BebelithDemonHunterBonus" in current:
+        raise AssertionError(
+            "The invented demon-hunting bonus must be gone: penetrating "
+            "strike is a descriptor, not a numeric bonus")
+    return len(code)
 
 def validate_the_measured_carriers_are_wired(root: Path) -> int:
     """The two carriers the first guarded review earned, wired rather than named.
@@ -392,17 +468,37 @@ def validate_identity_append(root: Path) -> int:
     if not all(re.fullmatch(r"[0-9a-f]{32}", e["guid"]) for e in appended):
         raise AssertionError("Appended identity GUIDs are malformed")
     for entry in appended:
-        if "GiantCrab" not in entry["symbol"]:
+        if "GiantCrab" not in entry["symbol"] and \
+                "Bebelith" not in entry["symbol"]:
             raise AssertionError(
-                "Sprint 21 allocated an identity outside its one creature: "
+                "Sprint 21 allocated an identity outside its two creatures: "
                 + entry["symbol"])
     by_symbol = {e["symbol"]: e for e in appended}
-    for symbol, planned in SPRINT21_IDENTITY_TAIL.items():
-        entry = by_symbol.get(symbol)
-        if entry is None or entry["plannedType"] != planned:
-            raise AssertionError("Missing or mistyped Sprint 21 identity: " + symbol)
+    for tail in (SPRINT21_IDENTITY_TAIL, BEBELITH_IDENTITY_TAIL):
+        for symbol, planned in tail.items():
+            entry = by_symbol.get(symbol)
+            if entry is None or entry["plannedType"] != planned:
+                raise AssertionError(
+                    "Missing or mistyped Sprint 21 identity: " + symbol)
+    # The Bebelith's released identities must NOT be among the appended: they
+    # were allocated when it shipped, and re-appending one would mean the
+    # creature had been reallocated rather than overhauled.
+    for symbol in BEBELITH_RELEASED_IDENTITIES:
+        if symbol in by_symbol:
+            raise AssertionError(
+                "Sprint 21 reallocated a released Bebelith identity: " + symbol)
     units = [e for e in appended if e["plannedType"] == "BlueprintUnit"]
-    abilities = [e for e in appended if e["plannedType"] == "BlueprintAbility"]
+    # Placement abilities and creature abilities are different things and this
+    # sprint appends both: seven generated placements for the Giant Crab, and
+    # one creature ability - the Bebelith's web - which is not a root and must
+    # not be counted as one. The prefix separates them, because every generated
+    # placement is allocated under KMG.Summoning.Ability and every
+    # creature-owned blueprint under KMG.Summoning.Special.
+    abilities = [e for e in appended if e["plannedType"] == "BlueprintAbility"
+                 and e["symbol"].startswith("KMG.Summoning.Ability.")]
+    creatureAbilities = [e for e in appended
+                         if e["plannedType"] == "BlueprintAbility"
+                         and not e["symbol"].startswith("KMG.Summoning.Ability.")]
     children = [e for e in abilities
                 if e["symbol"].endswith(".Celestial") or
                 e["symbol"].endswith(".Fiendish")]
@@ -412,6 +508,10 @@ def validate_identity_append(root: Path) -> int:
         raise AssertionError(
             f"Sprint 21 appends {SPRINT21_ROOTS} roots and "
             f"{SPRINT21_EXECUTION_CHILDREN} execution children")
+    if len(creatureAbilities) != 1 or             creatureAbilities[0]["symbol"] !=             "KMG.Summoning.Special.Bebelith.Web":
+        raise AssertionError(
+            "The only creature ability this sprint appends is the Bebelith's "
+            "web; observed " + ", ".join(e["symbol"] for e in creatureAbilities))
     if len(children) != SPRINT21_EXECUTION_CHILDREN:
         raise AssertionError(
             "A templated creature's Summon Monster roots each own a celestial "
@@ -534,16 +634,37 @@ def validate_icons(root: Path) -> None:
 
 def validate_contract(root: Path) -> None:
     contract = document(root, "planning/EXPANDED-SUMMONING-SPRINT21-CONTRACT.json")
-    if contract.get("sprint") != 21 or contract.get("masterBase") not in (
-            MASTER, MASTER[:8]):
+    if contract.get("schemaVersion") != 2 or contract.get("sprint") != 21 or \
+            contract.get("masterBase") not in (MASTER, MASTER[:8]):
         raise AssertionError(
             "The frozen Sprint 21 contract does not match this branch")
-    placement = contract["placement"]["giantCrab"]
+    # The superseded first draft scoped the Bebelith to a body and mis-copied
+    # three Giant Crab numbers. A contract that stopped saying so would let the
+    # correction be forgotten.
+    if "supersedes" not in contract:
+        raise AssertionError(
+            "The frozen contract must record what it corrected and why")
+
+    surface = contract["surface"]
+    if surface["registeredPlacementsAfter"] != REGISTERED_PLACEMENTS or \
+            surface["uniqueCreaturesAfter"] != UNIQUE_CREATURES or \
+            surface["visibleChoicesAfterPublication"] != \
+            VISIBLE_AFTER_PUBLICATION or \
+            surface["monsterPlacementsUnchanged"] != 530 or \
+            surface["naturesAllyPlacementsAfter"] != 533:
+        raise AssertionError("The frozen contract arithmetic drifted")
+    if "Ten" not in surface["affectedRoots"]:
+        raise AssertionError(
+            "The frozen contract must name all ten affected roots: the crab's "
+            "seven new ones and the Bebelith's three existing ones")
+
+    # ---------------------------------------------------------------- the crab
+    placement = contract["giantCrab"]["placement"]
     if placement["roots"] != SPRINT21_ROOTS or \
             placement["templated"] is not False or \
-            placement["registeredPlacementsAfter"] != REGISTERED_PLACEMENTS or \
-            placement["uniqueCreaturesAfter"] != UNIQUE_CREATURES:
-        raise AssertionError("The frozen contract arithmetic drifted")
+            placement["ownTier"] != 3 or \
+            placement["family"] != "Summon Nature's Ally only":
+        raise AssertionError("The frozen Giant Crab placement drifted")
     # No execution children at all, which is the structural difference from
     # every templated creature in the series, and the contract has to say why
     # rather than leaving a zero to be read as an oversight.
@@ -552,20 +673,14 @@ def validate_contract(root: Path) -> None:
         raise AssertionError(
             "An untemplated Nature's Ally creature owns no execution children "
             "and the contract has to say why")
-    # The released Bebelith's three roots, declared and unchanged.
-    bebelith = contract["placement"]["bebelith"]
-    if bebelith["roots"] != 3 or "untouched" not in bebelith["change"]:
-        raise AssertionError(
-            "The frozen contract stopped declaring the Bebelith unchanged")
-    # The printed lines this sprint is most likely to get wrong: two claws at
-    # the plain Strength modifier rather than one and a half times it, the
-    # eight legs that produce the printed anti-trip defence, and the aquatic
-    # half of the block that must stay recorded rather than implemented.
-    printed = contract["printedProfile"]
+    printed = contract["giantCrab"]["printedProfile"]
     if printed["abilityScores"]["strength"] != 15 or \
+            printed["abilityScores"]["dexterity"] != 13 or \
             printed["abilityScores"]["intelligence"] is not None or \
             printed["hitPoints"]["total"] != 19 or \
-            printed["armorClass"]["total"] != 15:
+            printed["armorClass"]["total"] != 16 or \
+            printed["armorClass"]["flatFooted"] != 15 or \
+            printed["naturalArmor"] != 5:
         raise AssertionError("The frozen printed Giant Crab profile changed")
     if "1d4+2" not in printed["melee"] or "plus grab" not in printed["melee"] \
             or "2 claws" not in printed["melee"]:
@@ -574,6 +689,10 @@ def validate_contract(root: Path) -> None:
         raise AssertionError(
             "A crab prints no poison; a contract that claimed one would owe a "
             "carrier and a review case neither this sprint nor its review has")
+    if printed.get("constrict") != "1d4+2":
+        raise AssertionError(
+            "The frozen printed constrict changed. The first draft of this "
+            "contract omitted it entirely, which is why it is pinned here")
     if printed["combatManeuverDefense"]["versusTrip"] - \
             printed["combatManeuverDefense"]["base"] != 12:
         raise AssertionError(
@@ -582,55 +701,139 @@ def validate_contract(root: Path) -> None:
     # omission cannot quietly become a substitution: a swim speed folded into
     # the ground speed, or a skill raised to stand in for Swim.
     if printed["swimSpeedFeet"] != 20 or printed["speedFeet"] != 30 or \
-            printed["racialModifiers"]["Swim"] != 8 or \
-            printed["skills"]["Swim"] != 10:
+            "water dependency" not in printed["specialQualities"]:
         raise AssertionError("The frozen printed aquatic line changed")
     if printed["swimSpeedFeet"] == printed["speedFeet"]:
         raise AssertionError(
             "The printed swim speed must stay distinct from the ground speed "
             "it is not substituted into")
-    # Every honest omission this sprint owes a reader must stay named in the
-    # contract, so one cannot quietly become an implementation.
-    recorded = {row["id"] for row in contract["honestOmissions"]}
+
+    # ------------------------------------------------------------ the Bebelith
+    released = contract["bebelith"]["releasedIdentity"]
+    if len(released["roots"]) != 3 or \
+            any(row["family"] != "Monster" for row in released["roots"]) or \
+            sorted(row["parentTier"] for row in released["roots"]) != [7, 8, 9] or \
+            "suppressed" not in released["notSuppressed"]:
+        raise AssertionError(
+            "The frozen contract stopped declaring the Bebelith's released "
+            "identity preserved")
+    bebelith = contract["bebelith"]["printedProfile"]
+    if bebelith["hitDice"] != 12 or bebelith["hitPoints"] != 150 or \
+            bebelith["armorClass"]["total"] != 22 or \
+            bebelith["saves"]["will"] != 7 or \
+            bebelith["racialModifiers"]["Stealth"] != 8 or \
+            bebelith["web"]["difficultyClass"] != 23 or \
+            bebelith["web"]["hitPoints"] != 12:
+        raise AssertionError("The frozen printed Bebelith profile changed")
+    if bebelith["combatManeuverDefense"]["versusTrip"] - \
+            bebelith["combatManeuverDefense"]["base"] != 12:
+        raise AssertionError(
+            "The frozen printed Bebelith trip defence changed")
+    if "critical 19-20" not in bebelith["melee"] or \
+            "plus rot" not in bebelith["melee"]:
+        raise AssertionError("The frozen printed Bebelith melee line changed")
+    rot = contract["bebelith"]["rot"]
+    if "bite only" not in rot["delivery"] or \
+            rot["cure"] != "two consecutive successful saves" or \
+            "2 Constitution damage" not in rot["effect"]:
+        raise AssertionError("The frozen printed rot graph changed")
+    if not any("claw" in row for row in rot["prohibitions"]):
+        raise AssertionError(
+            "The frozen contract stopped forbidding rot from a claw")
+    strike = contract["bebelith"]["penetratingStrike"]
+    if "chaotic and magic" not in strike["generally"] or \
+            "cold iron and good" not in strike["versusDemons"] or \
+            not any("non-demon" in row for row in strike["prohibitions"]):
+        raise AssertionError(
+            "The frozen penetrating strike contract changed")
+    dismantle = contract["bebelith"]["dismantleArmor"]
+    # Lowered once: the contract sentence starts with a capital, and the
+    # printed trigger is a conjunction whose four clauses all matter.
+    trigger = dismantle["trigger"].lower()
+    for clause in ("both claws", "same target", "one qualifying",
+                   "combat manoeuvre check succeeds"):
+        if clause not in trigger:
+            raise AssertionError(
+                "The frozen Dismantle Armor trigger dropped a clause: "
+                + clause)
+    for required in ("never owner party gear", "unarmoured target",
+                     "natural-armour target", "unrelated inventory item",
+                     "duplicate application", "permanent inventory corruption"):
+        if not any(required in row for row in dismantle["mandatorySafety"]):
+            raise AssertionError(
+                "The frozen Dismantle Armor safety list dropped: " + required)
+    if "No global item-durability system is invented" not in \
+            dismantle["engineGapPolicy"]:
+        raise AssertionError(
+            "The frozen contract stopped forbidding an item-durability system")
+
+    # --------------------------------------------- omissions and boundaries
+    recorded = {row["id"] for row in
+                contract["giantCrab"]["acceptedLimitations"]} | \
+               {row["id"] for row in
+                contract["bebelith"]["acceptedLimitations"]}
     for required in ("PASSIVE_CREATURE_SENSES_UNMODELED",
-                     "ORDINARY_MAP_LAND_USE_SCOPE"):
+                     "ORDINARY_MAP_LAND_USE_SCOPE",
+                     "SUMMONED_PLANAR_TRAVEL_FORBIDDEN"):
         if required not in recorded:
             raise AssertionError(
                 "The frozen contract stopped recording an omission: " + required)
-    # And the boundary this creature exists to test. An aquatic creature is
-    # exactly the thing that would tempt a subsystem into being.
-    if not any("aquatic" in row.lower() for row in contract["hardBoundaries"]):
+    boundaries = contract["hardBoundaries"]
+    for required in ("aquatic", "item-durability", "Sprint 22",
+                     "rename of the released bebelith key"):
+        if not any(required.lower() in row.lower() for row in boundaries):
+            raise AssertionError(
+                "The frozen contract stopped forbidding: " + required)
+    # The released spelling, which a source may disagree with and this sprint
+    # does not change.
+    spelling = contract["spelling"]
+    if spelling["key"] != "bebelith" or spelling["display"] != "Bebelith" or \
+            "migration" not in spelling["decision"]:
         raise AssertionError(
-            "The frozen contract stopped forbidding an aquatic subsystem")
+            "The released Bebelith spelling and the reason it is kept must "
+            "stay in the frozen contract")
 
+def validate_the_released_bebelith_identity_is_preserved(root: Path) -> int:
+    """The Bebelith's released identity is intact; its implementation is not.
 
-def validate_the_released_bebelith_is_untouched(root: Path) -> int:
-    """The Bebelith's rules are the release's, line for line.
-
-    This sprint owns its body and nothing else. Its mechanics were qualified in
-    an earlier phase, its recorded deviations - a bounded one-round armour-class
-    penalty in place of permanent armour destruction, demon hunting keyed to
-    exact chaotic-evil outsider facts, rot and climb omitted - were accepted
-    then, and its chassis differs from the printed Bestiary block on purpose.
-    The easiest way for this sprint to go wrong is to improve it, so every line
-    of every file that mentions it has to be the released one.
+    This sprint overhauls its mechanics on purpose, so the released-line
+    comparison an earlier draft of this gate used would now refuse the work it
+    is meant to admit. What must not move is narrower and more important: the
+    unit, the three generated roots and the three blueprints it already owned
+    keep their exact symbols and their exact GUIDs, so a save made against the
+    released build still resolves every one of them. Changing the code behind a
+    stable identity is a creature correction; changing the identity would be a
+    save and user-interface migration.
     """
+    accepted = {entry["symbol"]: entry["guid"] for entry in
+                json.loads(blob(root, MASTER, "blueprints/blueprints.json"))
+                ["entries"]}
+    current = {entry["symbol"]: entry["guid"] for entry in
+               document(root, "blueprints/blueprints.json")["entries"]}
     checked = 0
-    for path in BEBELITH_RULES:
-        accepted = blob(root, MASTER, path).decode("utf-8").replace(
-            "\r\n", "\n").split("\n")
-        current = (root / path).read_text(encoding="utf-8-sig").replace(
-            "\r\n", "\n").split("\n")
-        was = [line for line in accepted if "ebelith" in line]
-        now = [line for line in current if "ebelith" in line]
-        if was != now:
+    for symbol in BEBELITH_RELEASED_IDENTITIES:
+        if symbol not in accepted:
             raise AssertionError(
-                "Sprint 21 changed a released Bebelith line in " + path)
-        if not was:
+                "This check names a Bebelith identity the release did not "
+                "have, so it has stopped checking anything: " + symbol)
+        if current.get(symbol) != accepted[symbol]:
             raise AssertionError(
-                "No Bebelith line found in " + path + ", so this check has "
-                "stopped checking anything")
-        checked += len(was)
+                "Sprint 21 moved a released Bebelith identity: " + symbol)
+        checked += 1
+    # Its three roots stay on the Summon Monster table at their printed tiers
+    # and quantities, and nothing withholds them.
+    catalog = (root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
+               ).read_text(encoding="utf-8")
+    if 'C("bebelith","Bebelith",7,false,null,"Doomspider")' not in catalog:
+        raise AssertionError(
+            "The released Bebelith row must stay Summon Monster VII, "
+            "untemplated, with no Nature's Ally tier")
+    visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
+                  ).read_text(encoding="utf-8")
+    declaration = visibility.split("SuppressedCreatureKeys =")[1].split(";")[0]
+    if '"bebelith"' in declaration:
+        raise AssertionError(
+            "The released Bebelith is published and must stay published")
     return checked
 
 
@@ -692,9 +895,9 @@ def validate(root: Path) -> None:
             raise AssertionError(
                 "Sprint 21 claims a file the release already had: " + path)
 
-    grabLines = validate_the_grab_is_the_only_addition(root)
+    touched = validate_only_this_sprints_creatures_changed(root)
     carriers = validate_the_measured_carriers_are_wired(root)
-    bebelith = validate_the_released_bebelith_is_untouched(root)
+    bebelith = validate_the_released_bebelith_identity_is_preserved(root)
     validate_suppression(root)
     validate_contract(root)
     validate_shipped_bodies_reach_the_release_build(root)
@@ -819,9 +1022,9 @@ def validate(root: Path) -> None:
           f"withheld={suppressed}; published={published}; "
           f"protected master={protected_master}; "
           f"protected summons={protected_summons}; "
-          f"grab wiring lines={grabLines}; "
+          f"special-builder code lines touched={touched}; "
           f"measured carriers={carriers}; "
-          f"released Bebelith lines={bebelith}.")
+          f"preserved Bebelith identities={bebelith}.")
 
 
 def main() -> int:

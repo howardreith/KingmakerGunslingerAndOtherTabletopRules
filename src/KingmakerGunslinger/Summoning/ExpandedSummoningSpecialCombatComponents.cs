@@ -117,10 +117,139 @@ namespace KingmakerGunslinger.Summoning
         public override void OnEventDidTrigger(RuleCalculateWeaponStats evt) { }
     }
 
+    /// <summary>
+    /// The Bebelith's live combat behaviour: penetrating strike on every
+    /// natural attack, and dismantle armor on the second claw to land on one
+    /// target in a sequence.
+    ///
+    /// <para>Sprint 21 replaced two invented pieces here with printed ones and
+    /// kept the third. The released build granted +2 attack and damage against
+    /// chaotic-evil outsiders, which no printed line gives; the printed ability
+    /// is penetrating strike, a set of damage descriptors, so the numeric bonus
+    /// is gone and the descriptors are applied through the engine's own damage
+    /// API. The released build also invented a difficulty class of 25 for
+    /// dismantle armor and skipped the printed combat manoeuvre check
+    /// altogether; both are corrected. What did not change is the trigger,
+    /// because the released trigger was already the printed one.</para>
+    /// </summary>
     [Serializable]
+    /// <summary>
+    /// What Dismantle Armor may touch, and what it costs the wearer.
+    ///
+    /// <para>Every question this mechanic asks about equipment is asked here,
+    /// in one place, and every one of them is a read. Nothing in this file
+    /// unequips, moves, mutates, destroys or writes to an item, an inventory
+    /// or an item collection - which is the whole of the mandatory safety
+    /// list, discharged by the shape of the code rather than by a check that
+    /// could be forgotten.</para>
+    /// </summary>
+    internal static class BebelithDismantle
+    {
+        internal static ItemEntityArmor EligibleArmor(UnitEntityData target)
+        {
+            UnitBody body = target == null || target.Descriptor == null ? null
+                : target.Descriptor.Body;
+            if (body == null || body.Armor == null || !body.Armor.HasArmor)
+                return null;
+            return body.Armor.MaybeArmor;
+        }
+
+        internal static ItemEntityShield EligibleShield(UnitEntityData target)
+        {
+            UnitBody body = target == null || target.Descriptor == null ? null
+                : target.Descriptor.Body;
+            if (body == null) return null;
+            // Either hand: a shield normally rides the off-hand, and reading
+            // both costs nothing and is the honest question.
+            foreach (Kingmaker.Items.Slots.HandSlot hand in new[] {
+                body.SecondaryHand, body.PrimaryHand })
+                if (hand != null && hand.HasShield && hand.MaybeShield != null)
+                    return hand.MaybeShield;
+            return null;
+        }
+
+        internal static bool HasEligibleArmor(UnitEntityData target)
+        { return EligibleArmor(target) != null; }
+
+        internal static bool HasEligibleShield(UnitEntityData target)
+        { return EligibleShield(target) != null; }
+
+        /// <summary>
+        /// The armour-class contribution of the one piece the printed ability
+        /// destroys: its base bonus plus its enchantment. Armour first, since
+        /// the ability is named for it and it is the larger of the two.
+        /// </summary>
+        internal static int LostArmorClass(UnitEntityData target)
+        {
+            ItemEntityArmor armor = EligibleArmor(target);
+            if (armor != null && ExpandedSummoningSpecialProfiles
+                    .BebelithDismantlePrefersArmorOverShield)
+                return Contribution(armor);
+            ItemEntityShield shield = EligibleShield(target);
+            if (shield != null)
+                return Contribution(shield.ArmorComponent) +
+                    Math.Max(0, shield.EnchantmentValue);
+            return armor == null ? 0 : Contribution(armor);
+        }
+
+        private static int Contribution(ItemEntityArmor armor)
+        {
+            if (armor == null || armor.Blueprint == null) return 0;
+            return Math.Max(0, armor.Blueprint.ArmorBonus) +
+                Math.Max(0, armor.EnchantmentValue);
+        }
+    }
+
+    /// <summary>
+    /// The dismantled state: the wearer keeps the piece and stops being
+    /// protected by it.
+    ///
+    /// <para>This is the one place this sprint's contract could not be met
+    /// literally, and the gap is exact. Kingmaker has no broken condition, no
+    /// durability value and no item-damage component a mod can reach - the
+    /// game's own assembly declares none of the three - so the printed "falls
+    /// to pieces" cannot be an item mutation through any existing seam, and
+    /// building the missing one would be the global item-durability system
+    /// this sprint is forbidden to invent. What is modelled instead is the
+    /// whole mechanical content of destruction for everything a combat
+    /// sequence can observe: the piece's entire armour-class contribution,
+    /// base and enchantment, is gone, permanently.</para>
+    ///
+    /// <para>The penalty is computed here rather than stored, which is what
+    /// makes a permanent state safe. A reloaded save recomputes it from
+    /// whatever is still equipped; a piece swapped afterwards simply stops
+    /// being penalised instead of leaving a phantom number behind; and no
+    /// inventory, collection or item is written to at any point.</para>
+    ///
+    /// <para>What remains unmodelled, precisely: the object itself survives,
+    /// so the wearer keeps its armour check penalty, its maximum Dexterity
+    /// limit, its arcane spell failure chance and any enchantment that is not
+    /// an armour-class bonus. Recorded under
+    /// <c>ITEM_DESTRUCTION_UNMODELED</c>.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class BebelithDismantledArmorComponent :
+        RuleTargetLogicComponent<RuleCalculateAC>
+    {
+        public override void OnEventAboutToTrigger(RuleCalculateAC evt)
+        {
+            if (evt == null || Owner == null || Owner.Unit == null ||
+                !ReferenceEquals(evt.Target, Owner.Unit)) return;
+            int lost = BebelithDismantle.LostArmorClass(Owner.Unit);
+            if (lost <= 0) return;
+            ModifiableValue.Modifier modifier = Owner.Stats.AC.AddModifier(
+                -lost, Fact, GetType().FullName,
+                ModifierDescriptor.UntypedStackable);
+            if (modifier == null) return;
+            Owner.Stats.AC.UpdateValue();
+            evt.AddTemporaryModifier(modifier);
+        }
+
+        public override void OnEventDidTrigger(RuleCalculateAC evt) { }
+    }
+
     public sealed class BebelithCombatComponent :
-        RuleInitiatorLogicComponent<RuleAttackRoll>,
-        IInitiatorRulebookHandler<RuleCalculateWeaponStats>,
+        RuleInitiatorLogicComponent<RuleDealDamage>,
         IInitiatorRulebookHandler<RuleAttackWithWeapon>, ITickEachRound
     {
         private static readonly ConditionalWeakTable<UnitEntityData, OwnerState>
@@ -131,26 +260,47 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnitFact OutsiderType;
         public BlueprintBuff DismantledArmor;
 
-        public override void OnEventAboutToTrigger(RuleAttackRoll evt)
+        /// <summary>
+        /// Penetrating strike, on the damage the engine is about to deal.
+        ///
+        /// <para>Chaotic and magic on every natural attack this creature
+        /// makes; cold iron and good only when the target is a demon. The
+        /// printed ability is exactly this and no more, so a non-demon never
+        /// sees cold iron or good - which is the control the live review
+        /// exists to check, because granting them universally would be
+        /// invisible against a demon and wrong against everything else.</para>
+        /// </summary>
+        public override void OnEventAboutToTrigger(RuleDealDamage evt)
         {
-            if (evt == null || !IsNaturalWeapon(evt.Weapon == null ? null :
-                    evt.Weapon.Blueprint) || !IsDemon(evt.Target)) return;
-            evt.SetAttackBonusPenalty(evt.AttackBonusPenalty -
-                ExpandedSummoningSpecialProfiles.BebelithDemonHunterBonus);
+            if (evt == null || evt.DamageBundle == null || Owner == null ||
+                !ReferenceEquals(evt.Initiator, Owner.Unit)) return;
+            // The weapon comes from the attack roll that caused the
+            // damage. Spell and area damage carry no attack roll and are
+            // therefore never this creature's natural weapons, which is the
+            // discrimination penetrating strike needs.
+            if (evt.AttackRoll == null || evt.AttackRoll.Weapon == null ||
+                !IsNaturalWeapon(evt.AttackRoll.Weapon.Blueprint)) return;
+            bool demon = IsDemon(evt.Target);
+            foreach (BaseDamage damage in evt.DamageBundle)
+            {
+                if (damage == null) continue;
+                // Magic, as an enhancement the engine already understands for
+                // overcoming damage reduction.
+                var physical = damage as PhysicalDamage;
+                if (physical != null && physical.Enchantment <
+                        ExpandedSummoningSpecialProfiles
+                            .BebelithPenetratingEnhancement)
+                    physical.Enchantment = ExpandedSummoningSpecialProfiles
+                        .BebelithPenetratingEnhancement;
+                damage.AddAlignment(DamageAlignment.Chaotic);
+                if (!demon) continue;
+                damage.AddAlignment(DamageAlignment.Good);
+                if (physical != null)
+                    physical.AddMaterial(PhysicalDamageMaterial.ColdIron);
+            }
         }
 
-        public override void OnEventDidTrigger(RuleAttackRoll evt) { }
-
-        public void OnEventAboutToTrigger(RuleCalculateWeaponStats evt)
-        {
-            if (evt == null || evt.AttackWithWeapon == null ||
-                !IsNaturalWeapon(evt.Weapon == null ? null : evt.Weapon.Blueprint) ||
-                !IsDemon(evt.AttackWithWeapon.Target)) return;
-            evt.AddBonusDamage(
-                ExpandedSummoningSpecialProfiles.BebelithDemonHunterBonus);
-        }
-
-        public void OnEventDidTrigger(RuleCalculateWeaponStats evt) { }
+        public override void OnEventDidTrigger(RuleDealDamage evt) { }
 
         public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
 
@@ -160,8 +310,12 @@ namespace KingmakerGunslinger.Summoning
                 evt.Target == null || evt.Weapon == null ||
                 !ReferenceEquals(evt.Weapon.Blueprint, Claw) || Owner == null ||
                 Owner.Unit == null || DismantledArmor == null) return;
-            bool hasArmor = evt.Target.Body != null &&
-                evt.Target.Body.Armor != null && evt.Target.Body.Armor.HasArmor;
+            // Eligibility is read from the target's own equipped pieces and
+            // nowhere else. A natural-armoured creature and an unarmoured one
+            // both answer false here and never reach the manoeuvre, which is
+            // two of the mandatory safety clauses discharged before any roll.
+            bool hasArmor = BebelithDismantle.HasEligibleArmor(evt.Target);
+            bool hasShield = BebelithDismantle.HasEligibleShield(evt.Target);
             bool attempt;
             lock (States)
             {
@@ -169,21 +323,43 @@ namespace KingmakerGunslinger.Summoning
                 int priorHits = state.HitCount(evt.Target);
                 attempt = ExpandedSummoningSpecialProfiles
                     .ShouldAttemptBebelithDismantle(true, true, hasArmor,
-                        priorHits, state.WasAttempted(evt.Target));
+                        hasShield, priorHits, state.WasAttempted(evt.Target));
                 state.RecordHit(evt.Target);
                 if (attempt) state.MarkAttempted(evt.Target);
             }
             if (!attempt) return;
+            // The printed sequence is a combat manoeuvre check first, and then
+            // a Reflex save. The released build had neither: it went straight
+            // to an invented difficulty class. The check goes through the
+            // engine's own sunder-armour manoeuvre, which resolves it with the
+            // game's combat manoeuvre bonus and defence rather than a rule of
+            // this project's - and which is also what keeps the whole feature
+            // away from the inventory, because a manoeuvre is a roll and not
+            // an item mutation.
+            var sunder = new RuleCombatManeuver(Owner.Unit, evt.Target,
+                CombatManeuver.SunderArmor);
+            Rulebook.Trigger(sunder);
+            if (!sunder.Success) return;
+            // The difficulty class is the printed one, derived live from this
+            // creature's own Constitution by the shared formula rather than
+            // stored. At the printed Constitution 24 and twelve hit dice it is
+            // 23, where the released build used an invented 25.
             var saving = new RuleSavingThrow(evt.Target,
                 SavingThrowType.Reflex,
-                ExpandedSummoningSpecialProfiles.BebelithDismantleReflexDc);
+                BebelithRulesPolicy.DifficultyClass(
+                    BebelithRulesPolicy.HitDice,
+                    Owner.Unit.Descriptor.Stats.Constitution.Bonus));
             Rulebook.Trigger(saving);
             if (saving.IsPassed || evt.Target.Descriptor.HasFact(
                     DismantledArmor)) return;
+            // The destruction is permanent, as printed. Safe to be permanent
+            // because the state carries no number: the penalty is recomputed
+            // from whatever is still equipped every time armour class is
+            // calculated, so nothing can go stale across a save and load, and
+            // disarming or swapping the piece simply stops the penalty
+            // applying rather than leaving a phantom behind.
             evt.Target.Descriptor.Buffs.AddBuff(DismantledArmor,
-                Fact == null ? null : Fact.MaybeContext,
-                TimeSpan.FromSeconds(6d * ExpandedSummoningSpecialProfiles
-                    .BebelithDismantleRounds));
+                Fact == null ? null : Fact.MaybeContext);
         }
 
         public void OnNewRound()
@@ -642,6 +818,12 @@ namespace KingmakerGunslinger.Summoning
         // Separate opt-in: Salamander constricts with its additional tail and
         // fire, never the snake's primary bite/physical-only damage path.
         public BlueprintUnit SalamanderProfileOwner;
+        // Third opt-in, Sprint 21: the Giant Crab constricts with whichever
+        // pincer is holding the foe, at its own die plus live Strength. The
+        // snake's path takes the primary bite because a snake has one mouth;
+        // this creature has two claws that hold two different foes, so the
+        // limb has to come from the hold rather than from the body.
+        public BlueprintUnit CrabProfileOwner;
         /// <summary>
         /// Set for a crocodilian. A death roll is a maintain-time rider like
         /// constrict, but it is not a second attack. These fields retain the
@@ -835,7 +1017,19 @@ namespace KingmakerGunslinger.Summoning
             }
             DiceFormula dice = new DiceFormula(ConstrictDiceCount, ConstrictDiceType);
             int bonus = ConstrictBonus;
-            if (ConstrictProfileOwner != null)
+            if (CrabProfileOwner != null)
+            {
+                if (!ReferenceEquals(owner.Blueprint, CrabProfileOwner) ||
+                    target.Destroyed || target.Descriptor.State.IsDead) return;
+                // The claw that established this hold, not the body's first
+                // limb. With two claws holding two foes, taking the primary
+                // limb would constrict the wrong target with the wrong limb.
+                ItemEntityWeapon pincer = SummonGrappleLinks.EstablishingWeapon(
+                    owner, target);
+                if (pincer == null || !IsGrabLimb(owner, pincer)) return;
+                bonus = owner.Descriptor.Stats.Strength.Bonus;
+            }
+            else if (ConstrictProfileOwner != null)
             {
                 if (!ReferenceEquals(owner.Blueprint, ConstrictProfileOwner) ||
                     target.Destroyed || target.Descriptor.State.IsDead) return;

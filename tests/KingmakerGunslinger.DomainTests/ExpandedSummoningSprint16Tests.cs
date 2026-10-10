@@ -383,9 +383,9 @@ namespace KingmakerGunslinger.DomainTests
             }
             // Later hidden registration cannot undo a qualified publication.
             // Sprint 17's snakes, Sprint 18's apes, Sprint 19's four-armed
-            // pair and Sprint 20's Giant Scorpion all registered after this
-            // sprint qualified, so they are excluded by name rather than by
-            // relaxing the check.
+            // pair, Sprint 20's Giant Scorpion and Sprint 21's Giant Crab all
+            // registered after this sprint qualified, so they are excluded by
+            // name rather than by relaxing the check.
             Assertions.Equal(0, all.Count(value =>
                 !SerpentineRulesPolicy.IsSnake(value.Creature.Key) &&
                 !PrimateRulesPolicy.IsPrimate(value.Creature.Key) &&
@@ -393,6 +393,7 @@ namespace KingmakerGunslinger.DomainTests
                     .IsSprint19Creature(value.Creature.Key) &&
                 value.Creature.Key !=
                     GiantScorpionRulesPolicy.GiantScorpionKey &&
+                value.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey &&
                 !SummonVisibilityCatalog.IsPublished(value)),
                 "No creature qualified through Sprint 16 may become withheld.");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
