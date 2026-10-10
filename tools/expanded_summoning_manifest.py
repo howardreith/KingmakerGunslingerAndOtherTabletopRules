@@ -525,8 +525,15 @@ def planned():
         # figure. Keyed to this unit, with the primary claw and one
         # additional limb grabbing, which is what keeps it off the sting.
         ("KMG.Summoning.Special.GiantScorpion.Traits", "BlueprintBuff"),
+        # Two carriers the first guarded review proved missing. The shared
+        # native eight-leg trip defence delivers +8 - what a six-legged
+        # insect prints - where this eight-legged creature prints +12, and
+        # the printed racial +4 on Perception and Stealth existed only in
+        # the arithmetic that derived those totals.
+        ("KMG.Summoning.Natural.GiantScorpion.TripDefense", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantScorpion.RacialSkills", "BlueprintFeature"),
     ))
-    if len(rows) != 2038 or len({symbol for symbol, _ in rows}) != 2038:
+    if len(rows) != 2040 or len({symbol for symbol, _ in rows}) != 2040:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

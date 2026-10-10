@@ -17,10 +17,12 @@ namespace KingmakerGunslinger.Summoning
     ///
     /// <para>Nothing here is a framework. It is one creature's arithmetic,
     /// reachable by one creature. What it shares with earlier sprints it
-    /// reuses rather than reimplements: the eight-legged trip defence the
-    /// Giant Centipede and both Giant Ant castes already carry, the grapple
-    /// lifecycle Sprint 6 built and Sprint 19 taught to hold several limbs,
-    /// and the full-Strength limb carrier Sprint 18 shipped.</para>
+    /// reuses rather than reimplements: the grapple lifecycle Sprint 6 built
+    /// and Sprint 19 taught to hold several limbs, and the full-Strength limb
+    /// carrier Sprint 18 shipped. What it does NOT share is the shared
+    /// eight-leg trip defence the Giant Centipede and both Giant Ant castes
+    /// carry: the first guarded review measured that one delivering +8, which
+    /// is what a six-legged insect prints, and this creature prints +12.</para>
     /// </summary>
     internal static class GiantScorpionRulesPolicy
     {
@@ -88,12 +90,29 @@ namespace KingmakerGunslinger.Summoning
         internal const int StingDieSides = 6;
 
         /// <summary>
-        /// The eight-legged stability bonus, which the project's existing
-        /// TripDefenseEightLegs carrier produces. A scorpion has eight legs
-        /// and the printed difference between its ordinary and anti-trip
-        /// manoeuvre defence is exactly this.
+        /// The printed stability bonus against trip: the difference between
+        /// CMD 19 and CMD 31.
+        ///
+        /// <para>This creature carries its own carrier for it, which the first
+        /// guarded review is the reason for. The shared native
+        /// TripDefenseEightLegs fact the Giant Centipede and both Giant Ant
+        /// castes hold is worth <see cref="SharedNativeTripBonus"/>, and that
+        /// is correct for them: the stat-block convention is four per pair of
+        /// legs beyond the first, so a six-legged insect prints +8 and this
+        /// eight-legged arachnid prints +12. The fact's name says eight legs
+        /// and its value says six. Nothing about the shared fact changes -
+        /// it is native, and the creatures using it are released - so this
+        /// creature owns a carrier at its own printed value.</para>
         /// </summary>
         internal const int EightLegTripBonus = 12;
+
+        /// <summary>
+        /// What the shared native carrier actually delivers, measured on a
+        /// live creature rather than inferred from its name. Recorded so the
+        /// reason this creature owns a carrier is a number rather than a
+        /// comment.
+        /// </summary>
+        internal const int SharedNativeTripBonus = 8;
 
         /// <summary>
         /// Grab adds this to a grapple attempt, which is the whole of the
@@ -252,6 +271,20 @@ namespace KingmakerGunslinger.Summoning
                 PrintedClawReachFeet >= PrintedReachFeet)
                 throw new InvalidOperationException(
                     "Giant Scorpion printed reach derivation changed.");
+            // The whole reason this creature owns an anti-trip carrier. If
+            // these ever become equal the shared native fact would do, and
+            // this creature should take it rather than keep its own.
+            if (EightLegTripBonus == SharedNativeTripBonus)
+                throw new InvalidOperationException(
+                    "A creature whose printed stability bonus equals the "
+                    + "shared native carrier's must use the shared one.");
+            // Both printed skill totals are ability plus the racial bonus and
+            // nothing else, which is what the racial carrier has to deliver.
+            // The first guarded review found the derivation closing here and
+            // nothing delivering it: Perception read 0 and Stealth -3.
+            if (RacialSkillBonus != 4)
+                throw new InvalidOperationException(
+                    "The printed Giant Scorpion racial skill bonus changed.");
         }
     }
 }
