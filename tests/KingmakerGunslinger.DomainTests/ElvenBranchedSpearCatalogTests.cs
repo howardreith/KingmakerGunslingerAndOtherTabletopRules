@@ -64,7 +64,7 @@ namespace KingmakerGunslinger.DomainTests
                 assembly.Contains("AssemblyInformationalVersion(\"0.0.148-expanded-summoning-sprint19\")"),
                 "Release and assembly identity are not transactionally pinned to the DATA content release candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-expanded-summoning-sprint18.zip") &&
+                "$($info.Id)-$($info.Version)-expanded-summoning-sprint19.zip") &&
                 !package.Contains("expanded-summoning.zip"),
                 "Package identity is not pinned to the Favored Class integration archive.");
             Assertions.True(runtime.Contains("if ($ExpectedVersion -cne $activeVersion") && runtime.Contains("ExpectedVersion must be exactly the active version $activeVersion.") &&

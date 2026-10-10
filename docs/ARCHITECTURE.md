@@ -142,7 +142,7 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
-Active v0.0.147 Sprint 18 candidate: 2983 stable IDs: 2981 active and 2 reserved.
+Active v0.0.148 Sprint 19 candidate: 3005 stable IDs: 3003 active and 2 reserved.
 The released v0.0.146 master2922-entry prefix is exact;Sprint18 appends exactly61
 Ape and Dire Ape identities - two units,26 logical placements,26 celestial and
 fiendish execution children,one1d6 slam, the Dire Ape's own1d6 bite and1d4 claw,

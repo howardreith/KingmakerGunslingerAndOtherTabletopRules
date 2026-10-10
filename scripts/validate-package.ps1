@@ -110,6 +110,10 @@ try {
         'assets\sprint18-primates\ape-albedo.png',
         'assets\sprint18-primates\dire-ape-mesh.json',
         'assets\sprint18-primates\dire-ape-albedo.png',
+        'assets\sprint19-fourarmed\girallon-mesh.json',
+        'assets\sprint19-fourarmed\girallon-albedo.png',
+        'assets\sprint19-fourarmed\xill-mesh.json',
+        'assets\sprint19-fourarmed\xill-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -117,6 +121,10 @@ try {
     # the offline review passed. A mesh without its own painting is not
     # the reviewed creature, so both halves are checked.
     $primateBodies = @{
+        'assets\sprint19-fourarmed\girallon-mesh.json' = '475a8ca131056251c02680c625c16ab7c3c84cba1546782b95054e8c3334e7e9'
+        'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
+        'assets\sprint19-fourarmed\xill-mesh.json' = 'b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d'
+        'assets\sprint19-fourarmed\xill-albedo.png' = 'f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4'
         'assets\sprint18-primates\ape-albedo.png' = 'f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc'
         'assets\sprint18-primates\ape-mesh.json' = '751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0'
         'assets\sprint18-primates\dire-ape-albedo.png' = 'e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7'
@@ -156,7 +164,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 111 -or @($summonManifest.icons).Count -ne 111) {
+    if ($summonManifest.count -ne 113 -or @($summonManifest.icons).Count -ne 113) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'
