@@ -231,6 +231,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             accuracy.Hit = Sprint19HitSet(name, sequence, bite, claws);
                             accuracy.Rest();
+                            // A second sequence has to be a second command,
+                            // and the engine will merge a second attack on
+                            // one target into a live one. Clear the command
+                            // first so there is nothing to merge into. No
+                            // roll, result or damage is forced by this.
+                            if (sequence > 0)
+                                foreach (int step in Sprint19EndLiveCommand(owner))
+                                    yield return step;
                             // A native full attack costs the whole turn, so in
                             // turn-based combat every sequence needs a fresh
                             // one. Nothing here clears the rend tracker inside
@@ -498,6 +506,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (buff.Blueprint.name.IndexOf("Xill_Paralysis",
                         StringComparison.Ordinal) >= 0)
                     buff.Remove();
+            }
+        }
+
+        /// <summary>
+        /// Interrupt the owner's live attack command and wait for it to
+        /// clear, bounded.
+        ///
+        /// <para>UnitAttack.TryMergeInto folds a new attack on the same
+        /// target into a live command, so without this the review's second
+        /// sequence can be the same command as its first and a case about
+        /// crossing a sequence boundary never crosses one. Run nine and run
+        /// ten each failed a different one of those cases, which is what a
+        /// hoped-for precondition looks like.</para>
+        /// </summary>
+        private IEnumerable<int> Sprint19EndLiveCommand(UnitEntityData owner)
+        {
+            if (owner == null || owner.Commands == null) yield break;
+            owner.Commands.InterruptAll();
+            int frames = 0;
+            while (owner.Commands.Attack != null &&
+                ++frames <= Sprint19SettleFrames)
+            {
+                if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
+                yield return 0;
             }
         }
 
