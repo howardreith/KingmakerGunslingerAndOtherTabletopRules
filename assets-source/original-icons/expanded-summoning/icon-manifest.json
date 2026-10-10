@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  111,
+    "count":  113,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3329,6 +3329,47 @@
                                                "KMG.Summoning.Ability.SNA.Tier9.DireApe.OneD4PlusOne",
                                                "KMG.Summoning.Natural.DireApe.UnitType",
                                                "KMG.Summoning.Unit.DireApe"
+                                           ]
+                  },
+                  {
+                      "key":  "girallon",
+                      "displayName":  "Girallon",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/girallon.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/girallon.png",
+                      "sourceSha256":  "f6c6952c8b60ab0e82def1f953c2167e8f26f7395ea14f6b090d8b1abc264f5d",
+                      "outputSha256":  "beac44a33d67a741fb2fd79d41ac412313c3fdc4ea687981a80a97d69afa8497",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier5.Girallon.One",
+                                               "KMG.Summoning.Ability.SNA.Tier6.Girallon.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier7.Girallon.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Girallon.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Girallon.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.Girallon.UnitType",
+                                               "KMG.Summoning.Unit.Girallon"
+                                           ]
+                  },
+                  {
+                      "key":  "xill",
+                      "displayName":  "Xill",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/xill.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/xill.png",
+                      "sourceSha256":  "0e25949eeb70c1f122e250f0c69a2ba2d1deadc72be89fb049800e6d05f00fb2",
+                      "outputSha256":  "eb8673752c7e26c914f72412bab480be7b5bf6f68b1bfec3b0d732434cb82e42",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier5.Xill.One",
+                                               "KMG.Summoning.Ability.SM.Tier6.Xill.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier7.Xill.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier8.Xill.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.Xill.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.Xill"
                                            ]
                   }
               ]

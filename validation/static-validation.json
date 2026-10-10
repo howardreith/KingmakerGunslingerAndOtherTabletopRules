@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.147-expanded-summoning-sprint18",
+  "milestone": "0.0.148-expanded-summoning-sprint19",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.147",
+  "version": "0.0.148",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2262,5 +2262,54 @@
     "primateDonorRig": "b98735a1737ae494dbe5cbeca1c7c083 CR10_FerociousTrollGuard",
     "primateDonorCensusEvidence": "20261009T1721285353210Z-observe-expanded-summoning-primate-census",
     "originalBodyFiles": 4
+  },
+  "expandedSummoningSprint19148": {
+    "releaseVersion": "0.0.148",
+    "releaseInformationalVersion": "0.0.148-expanded-summoning-sprint19",
+    "masterBase": "95d610348d7d2322ddc00ef04fa06d2cd352dbdd",
+    "releasedBaseline": "v0.0.147",
+    "deterministicTestCount": 2529,
+    "packageMemberCount": 346,
+    "registeredManifestEntryCount": 3005,
+    "registeredGeneratedPlacements": 1044,
+    "suppressedGeneratedPlacements": 0,
+    "publishedGeneratedPlacements": 1044,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1073,
+    "uniqueCreatures": 101,
+    "projectIconConcepts": 113,
+    "newRoots": 10,
+    "girallonRoots": 5,
+    "xillRoots": 5,
+    "bothSuppressed": false,
+    "originalBodiesAuthored": true,
+    "donorRigReuseVerified": true,
+    "donorRig": "b98735a1737ae494dbe5cbeca1c7c083 CR10_FerociousTrollGuard",
+    "donorRigReuseNote": "The Sprint 18 guarded census capture, sha256 328443db6c9b77651ab64212c7a654284c722c9ddeb6277ce66d289d72f6a4a5, re-decoded at Sprint 19 intake: 61 of 61 bind-pose bones, Pelvis root, 56 drivers, 5 deliberately empty branches, bind height 4.3781 inside the surveyed 4.0 to 4.6 gate, uniform view scale 0.7. No new census was run and no owner runtime transaction was spent to re-derive it.",
+    "runtimeQualified": true,
+    "runtimeEvidence": [
+      "20261010T0649575611737Z-disposable-expanded-summoning-sprint19-review",
+      "20261010T0744422373426Z-working-save-expanded-summoning-creature-review",
+      "20261010T0840306592691Z-disposable-expanded-summoning-sprint19-review"
+    ],
+    "publicReleaseAuthorized": true,
+    "candidateOnly": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "contract": "planning/EXPANDED-SUMMONING-SPRINT19-CONTRACT.json",
+    "acceptedEngineLimitations": [
+      "PASSIVE_CREATURE_SENSES_UNMODELED",
+      "ORDINARY_MAP_LAND_USE_SCOPE",
+      "FOUR_ARMS_SHARE_TWO_DRIVER_CHAINS",
+      "MULTIWEAPON_ARMED_ROUTINE_UNREPRESENTED",
+      "IMPLANT_UNREPRESENTED",
+      "ETHEREAL_TRAVEL_UNMODELED"
+    ],
+    "closureStatus": "RUNTIME QUALIFIED AND PUBLISHED. The Girallon and the Xill were registered with all ten of their roots withheld and stayed withheld through eleven guarded runtime reviews. The batched mechanics review passed 39 of 39 (20261010T0649575611737Z-disposable-expanded-summoning-sprint19-review) and the party-camera art review passed 12 of 12 with all eight captures renderer=true dissolve=0 intact=true (20261010T0744422373426Z-working-save-expanded-summoning-creature-review). Ten earlier runs each found a real defect and every one is recorded in the release notes: four invented body GUIDs, a donor unit type left in place, an exact-rank component gated to the wrong creatures, three missing Xill defences, an overwritten donor prefab, leaked paralysis state, two engine crashes from idling a real-time round, two outsider class skills, retry accumulation in the rend tracker and the engine merging a second attack into a live command. Publication removed the two suppression names and reallocated no identity: the visible surface went from 1063 choices to 1073 and nothing published before this branch moved. The published surface was then confirmed in game, 39 of 39, on evidence 20261010T0840306592691Z-disposable-expanded-summoning-sprint19-review.",
+    "compatibilityRuntimeQualificationPending": false,
+    "originalBodyFiles": 4,
+    "guardedRuntimeRunsSpent": 13,
+    "ownerInstallationRestoredTo": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "priorRecordNote": "The released v0.0.147 record is left exactly as it shipped, because a released record is immutable and this sprint's own gate enforces that. For a reader: its closureStatus sentence is the one written during the Sprint 18 candidate pass and was never amended at release, so it reads SOURCE QUALIFIED; RUNTIME NOT QUALIFIED beside its own runtimeQualified true, candidateOnly false and three passing runs. Every number in that record is correct and v0.0.147 shipped both apes published; only that one sentence is stale. The same stale wording is in the 0.0.147 CHANGELOG entry, which says 58 appended identities and a published surface frozen at 1008: the release actually appended 61 identities, taking the ledger from 2922 to 2983 entries, and published 1034 generated placements for 1063 visible choices, which is what docs/RELEASE-NOTES-0.0.147.md records correctly.",
+    "publicationGate": "PASS, confirmed in game. 39 of 39 on the published candidate: ten roots live and published, nothing withheld anywhere, registered 1044 = published 1044, and every printed number of both creatures read back unchanged by publication. Evidence 20261010T0840306592691Z-disposable-expanded-summoning-sprint19-review."
   }
 }

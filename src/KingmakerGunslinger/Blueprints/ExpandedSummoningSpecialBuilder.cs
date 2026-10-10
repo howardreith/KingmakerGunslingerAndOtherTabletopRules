@@ -99,6 +99,20 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.Salamander.Tail";
         private const string SalamanderCombatTraitsSymbol =
             "KMG.Summoning.Special.Salamander.CombatTraits";
+        private const string XillUnitSymbol =
+            "KMG.Summoning.Unit.Xill";
+        private const string XillClawSymbol =
+            "KMG.Summoning.Special.Xill.Claw1d4";
+        private const string XillBiteSymbol =
+            "KMG.Summoning.Special.Xill.Bite1d3";
+        private const string XillUnitTypeSymbol =
+            "KMG.Summoning.Special.Xill.UnitType";
+        private const string XillCombatTraitsSymbol =
+            "KMG.Summoning.Special.Xill.CombatTraits";
+        private const string XillParalysisSymbol =
+            "KMG.Summoning.Special.Xill.Paralysis";
+        private const string XillFullStrengthSymbol =
+            "KMG.Summoning.Special.Xill.FullStrengthLimbs";
         private const string SuccubusUnitSymbol =
             "KMG.Summoning.Unit.Succubus";
         private const string SuccubusDominateSymbol =
@@ -357,7 +371,18 @@ namespace KingmakerGunslinger.Blueprints
         private const string AirborneGuid = "70cffb448c132fa409e49156d013b175";
         private const string AuraOfMenaceBuffGuid = "1ce4878b5e714f659d0854a12f4b3cf2";
         private const string DumbBrainGuid = "5abc8884c6f15204c8604cb01a2efbab";
+        private const string NaturalArmor5Guid = "7661741dbb9604842a642457456fd0e4";
+        // The native poison-on-hit feature the Xill paralysis clones its
+        // wound gate, saving throw and conditional from. The natural
+        // builder names the same identity; neither edits the original.
+        private const string NativePoisonOnHitFeatureGuid =
+            "094714bb08f4e1943a8e9d2384ebe573";
         private const string NaturalArmor6Guid = "987ba44303e88054c9504cb3083ba0c9";
+        // The two shared natural weapons the Xill clones its own pair
+        // from. The natural builder names the same identities; neither
+        // builder edits the shared originals.
+        private const string NativeBite1d6Guid = "a000716f88c969c499a535dadcf09286";
+        private const string NativeClaw1d4Guid = "118fdd03e569a66459ab01a20af6811a";
         private const string NaturalInvisibilityGuid = "94b2838e8a492c44ebf89e7fe7a75a62";
         private const string IncorporealGuid = "c4a7f98d743bc784c9d4cf2105852c39";
         private const string ElementalSubtypeGuid = "198fd8924dabcb5478d0f78bd453c586";
@@ -449,6 +474,27 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureSalamander(library, Require<BlueprintUnit>(bySymbol,
                 SalamanderUnitSymbol), salamanderSpear, salamanderTail,
                 Require<BlueprintUnitType>(bySymbol, "KMG.Summoning.Special.Salamander.UnitType"), extraplanar);
+            // Sprint 19: the Xill, an evil outsider on the same chassis the
+            // Salamander uses. It owns its claw and bite rather than sharing
+            // the natives, because its claws carry grab and its bite carries
+            // paralysis and neither belongs on a weapon other creatures use.
+            BlueprintItemWeapon xillClaw = Require<BlueprintItemWeapon>(
+                bySymbol, XillClawSymbol);
+            BlueprintItemWeapon xillBite = Require<BlueprintItemWeapon>(
+                bySymbol, XillBiteSymbol);
+            ConfigureXillWeapon(library, NativeClaw1d4Guid, "1d4 claw",
+                xillClaw, XillClawSymbol, XillRulesPolicy.ClawDieSides);
+            ConfigureXillWeapon(library, NativeBite1d6Guid, "1d6 bite",
+                xillBite, XillBiteSymbol, XillRulesPolicy.BiteDieSides);
+            ConfigureXillParalysis(library,
+                Require<BlueprintBuff>(bySymbol, XillParalysisSymbol));
+            ConfigureXillFullStrength(Require<BlueprintFeature>(bySymbol,
+                XillFullStrengthSymbol));
+            ConfigureXill(library, Require<BlueprintUnit>(bySymbol,
+                XillUnitSymbol), xillClaw, xillBite,
+                Require<BlueprintUnitType>(bySymbol, XillUnitTypeSymbol),
+                Require<BlueprintFeature>(bySymbol, XillFullStrengthSymbol),
+                extraplanar);
             BlueprintBuff domination = Require<BlueprintBuff>(bySymbol,
                 SuccubusDominationSymbol);
             BlueprintAbility dominate = Require<BlueprintAbility>(bySymbol,
@@ -519,6 +565,9 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDocileHooves(bySymbol, PonyUnitSymbol, PonyCombatTraitsSymbol, "Pony");
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
+            // After the grapplers, because ConfigureGrabber replaces
+            // the traits buff's component array and these append to it.
+            ConfigureXillDefences(library, bySymbol);
             ConfigureStirgeAttachment(library, bySymbol);
             ConfigureUngulatePowerfulCharge(bySymbol, RhinocerosUnitSymbol,
                 RhinocerosPowerfulChargeSymbol, "rhinoceros");
@@ -1740,6 +1789,19 @@ namespace KingmakerGunslinger.Blueprints
                     ConstrictDice = ExpandedSummoningSpecialProfiles.SalamanderConstrictDice,
                     ConstrictDie = DiceType.D6, ConstrictBonus = ExpandedSummoningSpecialProfiles.SalamanderConstrictBonus,
                     LiveSalamanderConstrict = true });
+            // Sprint 19. All four of the Xill's claws grab, which is what the
+            // printed line says and what its +16 grapple figure accounts for.
+            // No constrict: the stat block prints none.
+            ConfigureGrabber(library, bySymbol, XillUnitSymbol,
+                XillCombatTraitsSymbol, "Xill", "Xill Grab and Paralysis",
+                "Each of the xill's four claws that hits may attempt to grab a foe no larger than itself. " +
+                "Its bite paralyzes on a failed Fortitude save - DC 16 for an unmodified xill, derived from " +
+                "its hit dice and live Constitution. The printed 1d4-hour paralysis is bounded to this " +
+                "summon's own lifetime. Its implant and planewalk are not represented. " +
+                "Active holds reset cleanly on reload.",
+                new GrabSpec { Additional = XillRulesPolicy.ClawCount,
+                    MaxHeld = XillRulesPolicy.ClawCount,
+                    Hold = multiHold, Grappled = multiHeld });
             ConfigureGrabber(library, bySymbol, GrizzlyBearUnitSymbol,
                 GrizzlyBearCombatTraitsSymbol, "GrizzlyBear", "Grizzly Bear Grab",
                 "A claw hit lets the bear attempt to grab a foe no larger than itself.",
@@ -3650,6 +3712,255 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, "f74c6bdf5c5f5374fb9302ecdc1f7d64", "Skill Focus (Perception)"),
                 Feature(library, "c1b26f97b974aec469613f968439e7bb", "cannot be tripped")
             };
+        }
+
+        /// <summary>
+        /// One of the Xill's own natural weapons, cloned from the native it
+        /// matches with its damage dice overridden so the engine cannot scale
+        /// it. The Xill is Medium and would not be scaled today, but the
+        /// override is what makes that a property of the weapon rather than a
+        /// property of the creature's current size.
+        /// </summary>
+        private static void ConfigureXillWeapon(LibraryScriptableObject library,
+            string nativeGuid, string nativeLabel, BlueprintItemWeapon target,
+            string symbol, int dieSides)
+        {
+            BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, nativeGuid, nativeLabel);
+            CopyFields(native, target);
+            target.name = InternalName(symbol);
+            target.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(target, "m_OverrideDamageDice", true);
+            SetField(target, "m_DamageDice",
+                new DiceFormula(1, ParseDieSides(dieSides)));
+            SetField(target, "m_Enchantments", Array.Empty<Kingmaker.Blueprints
+                .Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
+        /// <summary>
+        /// The Xill's paralysis: the one genuinely new rules graph this sprint
+        /// writes, and it writes as little as it can. The native poison-on-hit
+        /// feature already carries the shape - a wound gate, a saving throw, a
+        /// conditional on failure, and a buff with a bounded lifecycle - so
+        /// the clone keeps all of it and changes three things: the save is
+        /// Fortitude at the printed derived difficulty class, the payload is a
+        /// paralysis condition rather than ability damage, and the trigger is
+        /// the bite rather than a sting.
+        ///
+        /// <para>The printed 1d4-hour duration is deliberately NOT reproduced.
+        /// A summoned Xill exists for rounds, so an hours-long condition has
+        /// no ordinary-map meaning; the condition is bounded to the summon's
+        /// own lifetime and that bound is recorded rather than presented as
+        /// the printed duration.</para>
+        /// </summary>
+        private static void ConfigureXillParalysis(
+            LibraryScriptableObject library, BlueprintBuff buff)
+        {
+            var paralyzed = ScriptableObject.CreateInstance<AddCondition>();
+            paralyzed.Condition = UnitCondition.Paralyzed;
+            buff.name = InternalName(XillParalysisSymbol);
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = false;
+            SetBuffFlags(buff, harmful: true);
+            buff.ComponentsArray = new BlueprintComponent[] { paralyzed };
+            buff.ResourceAssetIds = Array.Empty<string>();
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Xill.Paralysis.Name", "Paralyzed"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Xill.Paralysis.Description",
+                    "Paralyzed by a xill's bite. The printed duration is 1d4 hours; because a summoned xill exists for rounds, this condition is bounded to the summon's own lifetime rather than the printed hours."),
+                null);
+        }
+
+        /// <summary>
+        /// Keeps every one of the Xill's five limbs on the plain Strength
+        /// modifier. Multiweapon mastery says so in as many words, and the
+        /// engine does not: it gives a natural primary-hand weapon one and a
+        /// half times the damage stat whenever the secondary hand is empty and
+        /// never looks at the additional limbs. The same component Sprint 18
+        /// proved in game, on this creature's own feature, because the special
+        /// builder owns its own facts and the Sprint 18 symbol is released.
+        /// </summary>
+        private static void ConfigureXillFullStrength(BlueprintFeature feature)
+        {
+            var correction = ScriptableObject.CreateInstance<
+                SummonPrimaryLimbFullStrength>();
+            feature.name = InternalName(XillFullStrengthSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { correction };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Xill.FullStrengthLimbs.Name",
+                    "Multiweapon Mastery"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Xill.FullStrengthLimbs.Description",
+                    "This creature attacks with four claws and a bite, so each limb adds its whole Strength modifier rather than one and a half times it. Its printed armed routine, which wields four short swords or two longbows, is not represented."),
+                null);
+        }
+
+        private static void ConfigureXill(LibraryScriptableObject library,
+            BlueprintUnit unit, BlueprintItemWeapon claw,
+            BlueprintItemWeapon bite, BlueprintUnitType type,
+            BlueprintFeature fullStrength, BlueprintFeature extraplanar)
+        {
+            AddClassLevels levels = OutsiderLevels(library,
+                XillRulesPolicy.HitDice);
+            // The racial profile owns the skills, so the generic donor's three
+            // are cleared rather than left to fight with it.
+            levels.Skills = Array.Empty<StatType>();
+            var racial = ScriptableObject.CreateInstance<SummonXillRacialProfile>();
+            racial.OwningBlueprint = unit;
+            unit.ComponentsArray = new BlueprintComponent[] { levels, racial };
+            unit.Skills = new BlueprintUnit.UnitSkills();
+            type.name = InternalName(XillUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillKnowledgeArcana;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Xill.UnitType.Name", "Xill");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.Xill.UnitType.Description",
+                "A four-armed insectoid outsider from the Ethereal Plane, which pins a foe with its claws and paralyzes it with a bite. Darkvision is unmodeled under the accepted passive-sense engine limitation, and its ethereal travel and egg-laying implant are not represented.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+            unit.Type = type;
+            // A primary bite with four additional primary claws. The claws
+            // carry Weapon Focus and the bite does not, which is exactly why
+            // the printed bonuses differ by one.
+            unit.Body = NaturalBody(bite,
+                new[] { claw, claw, claw, claw },
+                Array.Empty<BlueprintItemWeapon>());
+            // The Xill keeps the view its donor entry chose, which is the
+            // census Troll rig its original four-armed body is authored
+            // against. The method this was modelled on borrows the
+            // Salamander's human carrier, and copying that line put the Xill
+            // on a rig its own mesh does not fit: the guarded review read its
+            // body as not-attempted twice before this was found.
+            if (unit.Prefab == null ||
+                unit.Prefab.AssetId != PrimateVisualPolicy.TrollPrefab)
+                throw new InvalidOperationException(
+                    "The Xill must keep the census donor rig its body is "
+                    + "authored against.");
+            unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
+                library, DumbBrainGuid, "bounded natural-attack brain");
+            ConfigureUnitCore(unit, "Xill", "Xill",
+                Alignment.LawfulEvil, Size.Medium,
+                XillRulesPolicy.Strength, XillRulesPolicy.Dexterity,
+                XillRulesPolicy.Constitution, XillRulesPolicy.Intelligence,
+                XillRulesPolicy.Wisdom, XillRulesPolicy.Charisma,
+                XillRulesPolicy.SpeedFeet);
+            unit.AddFacts = new BlueprintUnitFact[] {
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                    NaturalArmor5Guid, "natural armor +5"),
+                extraplanar,
+                Feature(library, CombatReflexesGuid, "Combat Reflexes"),
+                Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
+                Feature(library, IronWillGuid, "Iron Will"),
+                // The printed claws are +13 and the bite +12. This feat is the
+                // whole difference, so it is granted rather than folded into a
+                // flat bonus that would reach the bite too.
+                Feature(library, WeaponFocusClawGuid, "Weapon Focus (claw)"),
+                fullStrength
+            };
+        }
+
+        /// <summary>
+        /// The Xill's spell resistance, its carried shield bonus and its
+        /// paralytic bite, appended to the combat-traits buff the grabber
+        /// already attached to the creature.
+        ///
+        /// <para>The shield bonus is the printed stat block's, from gear a
+        /// summoned xill would not otherwise carry. Dropping it would make
+        /// the creature read armour class 19 and flat-footed 15 against an
+        /// entry that says 21 and 17, which is what the guarded review
+        /// measured. It is a shield bonus rather than more natural armour so
+        /// that it misses a touch attack and behaves like a shield when
+        /// something suppresses one and not the other.</para>
+        ///
+        /// <para>The paralysis clones the native poison-on-hit graph: the
+        /// wound gate, the saving throw and the conditional are the game's
+        /// own, and only three things change - the save is Fortitude at the
+        /// printed derived difficulty class, the trigger is the bite rather
+        /// than a sting, and the payload is a paralysis condition rather than
+        /// ability damage. The printed 1d4-hour duration is NOT reproduced: a
+        /// summoned xill exists for rounds, so the condition is bounded to
+        /// the summon's own lifetime and that bound is recorded rather than
+        /// presented as the printed duration.</para>
+        /// </summary>
+        private static void ConfigureXillDefences(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, XillUnitSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
+                XillCombatTraitsSymbol);
+            BlueprintBuff paralysis = Require<BlueprintBuff>(bySymbol,
+                XillParalysisSymbol);
+            var bite = (BlueprintItemWeapon)unit.Body.PrimaryHand;
+            if (bite == null || bite.name != InternalName(XillBiteSymbol))
+                throw new InvalidOperationException(
+                    "The Xill paralysis must ride its own bite.");
+            if (traits.ComponentsArray == null ||
+                !traits.ComponentsArray.OfType<SummonGrabComponent>().Any())
+                throw new InvalidOperationException(
+                    "The Xill grab must be configured before its defences.");
+
+            // Persuasion and Knowledge (arcana) are class skills for an
+            // outsider and are not on the donor class's list, so the live
+            // creature read 9 and 11 against a printed 12 and 14 - exactly
+            // the missing +3 each. Mobility, Stealth and Perception are on
+            // that list and were already exact. These two facts add the
+            // class-skill status the stat block assumes, and nothing else:
+            // no rank, no bonus, no modifier.
+            var persuasionClassSkill =
+                ScriptableObject.CreateInstance<AddClassSkill>();
+            persuasionClassSkill.Skill = StatType.SkillPersuasion;
+            var arcanaClassSkill =
+                ScriptableObject.CreateInstance<AddClassSkill>();
+            arcanaClassSkill.Skill = StatType.SkillKnowledgeArcana;
+
+            var resistance = ScriptableObject.CreateInstance<AddSpellResistance>();
+            resistance.Value = Simple(XillRulesPolicy.PrintedSpellResistance);
+            resistance.AddCR = false;
+            var shield = ScriptableObject.CreateInstance<AddStatBonus>();
+            shield.Stat = StatType.AC;
+            shield.Value = XillRulesPolicy.ShieldBonus;
+            shield.Descriptor = ModifierDescriptor.Shield;
+
+            BlueprintFeature nativeFeature = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativePoisonOnHitFeatureGuid,
+                    "native poison-on-hit feature");
+            BlueprintComponent[] cloned = (nativeFeature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AddInitiatorAttackWithWeaponTrigger trigger = cloned.OfType<
+                AddInitiatorAttackWithWeaponTrigger>().Single();
+            trigger.WeaponType = bite.Type;
+            trigger.OnlyHit = true;
+            ContextActionSavingThrow save = trigger.Action.Actions.OfType<
+                ContextActionSavingThrow>().Single();
+            save.Type = SavingThrowType.Fortitude;
+            ContextActionConditionalSaved outcome = save.Actions.Actions.OfType<
+                ContextActionConditionalSaved>().Single();
+            ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
+                ContextActionApplyBuff>().Single();
+            apply.Buff = paralysis;
+            // A paralytic bite is delivered by a wound, and OnlyHit is the
+            // weaker test: an attack reduced to zero damage has hit without
+            // wounding. The same correction the Sprint 10 poisons carry.
+            trigger.Action.Actions = new GameAction[] {
+                new ContextActionOnlyIfWeaponWounded {
+                    Actions = new ActionList {
+                        Actions = (new GameAction[] {
+                            new ContextActionSetXillParalysisDc() }).Concat(
+                                trigger.Action.Actions).ToArray() } } };
+
+            traits.ComponentsArray = traits.ComponentsArray
+                .Concat(new BlueprintComponent[] { resistance, shield, trigger,
+                    persuasionClassSkill, arcanaClassSkill })
+                .ToArray();
         }
 
         private static void ConfigureSuccubusDomination(
