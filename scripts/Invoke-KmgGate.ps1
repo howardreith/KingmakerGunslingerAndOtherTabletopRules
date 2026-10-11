@@ -4,13 +4,13 @@ Runs one of three named validation levels and says plainly which gates it ran
 and which it deferred by policy.
 
 .DESCRIPTION
-The owner's 2026-10-02 workflow amendment for Expanded Summoning Sprints 14-21
-reads the repository's "validate after a source change" instruction at a
-coherent candidate boundary rather than at every edit. The quality bar is
-unchanged; what changes is how often the expensive sequence runs.
+The owner's 2026-10-11 validation policy makes Focused the ordinary development
+checkpoint. Sprint/Tranche are explicitly selected broad candidate boundaries;
+neither is a prerequisite for a narrow review handoff.
 
-  Focused  - the inner development loop. A named subset of the domain tests and
-             nothing else. Requires an explicit filter, and is never a gate.
+  Focused  - the default development/review entry: production compilation and a
+             named domain subset. Requires a filter; no full/native or release
+             qualification is claimed. See docs/VALIDATION-POLICY.md.
   Sprint   - the candidate boundary. One repository-wrapper pass, one complete
              domain suite, one clean exact-reference Release build, one package
              assembly and one strict package validation, producing the single
@@ -27,13 +27,14 @@ never launches the game.
 #>
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
     [ValidateSet('Focused', 'Sprint', 'Tranche')]
-    [string]$Level,
+    [string]$Level = 'Focused',
     # Focused only, and required there. Semicolon- or comma-separated
     # substrings of test names. Sprint and Tranche refuse it.
     [string]$Filter,
     [string]$ReferenceBundleDir,
+    [string]$KingmakerInstallDir,
+    [string]$MSBuildPath,
     [string]$TimingPath
 )
 
@@ -43,11 +44,14 @@ $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 if (-not $TimingPath) { $TimingPath = Join-Path $root 'artifacts\gate-timings.jsonl' }
-New-Item -ItemType Directory -Path (Split-Path -Parent $TimingPath) -Force | Out-Null
 
 # Resolved before anything runs, so a level/filter disagreement is refused
 # rather than discovered after a hundred seconds of testing.
 $effectiveFilter = Resolve-KmgGateFilter -Level $Level -Filter $Filter
+if ($Level -eq 'Focused' -and $ReferenceBundleDir) {
+    throw 'Focused compilation uses GamePath.props or -KingmakerInstallDir. Select Sprint/Tranche for the private-reference candidate builder.'
+}
+New-Item -ItemType Directory -Path (Split-Path -Parent $TimingPath) -Force | Out-Null
 
 $script:ran = @()
 $script:deferred = @()
@@ -80,14 +84,20 @@ function Invoke-KmgGateStep([string]$Gate, [scriptblock]$Body) {
 }
 
 if ($Level -eq 'Focused') {
+    Invoke-KmgGateStep 'production compilation' {
+        $compileArguments = @{ Configuration = 'Release'; CompileOnly = $true }
+        if ($KingmakerInstallDir) { $compileArguments.KingmakerInstallDir = $KingmakerInstallDir }
+        if ($MSBuildPath) { $compileArguments.MSBuildPath = $MSBuildPath }
+        & (Join-Path $PSScriptRoot 'build.ps1') @compileArguments
+    }
     Invoke-KmgWithTestFilter -Filter $effectiveFilter -Body {
         Invoke-KmgGateStep 'domain-tests (focused)' {
-            & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -SkipRepositoryValidation
+            & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -SkipRepositoryValidation -MSBuildPath $MSBuildPath
         }
     }
     Add-KmgDeferred 'repository wrapper' 'Focused level; runs at the sprint candidate boundary'
     Add-KmgDeferred 'complete domain suite' 'Focused level; runs at the sprint candidate boundary'
-    Add-KmgDeferred 'exact-reference Release build' 'Focused level; runs at the sprint candidate boundary'
+    Add-KmgDeferred 'exact-reference frozen Release candidate' 'Focused compiled production; immutable packaging is an explicit candidate boundary'
     Add-KmgDeferred 'package assembly and strict validation' 'Focused level; runs at the sprint candidate boundary'
 } else {
     # One pipeline, one pass of each expensive operation. Build-Local.ps1 owns
@@ -99,6 +109,8 @@ if ($Level -eq 'Focused') {
         Invoke-KmgGateStep 'repository wrapper, complete suite, exact build, package and strict validation' {
             $arguments = @{}
             if ($ReferenceBundleDir) { $arguments.ReferenceBundleDir = $ReferenceBundleDir }
+            if ($KingmakerInstallDir) { $arguments.KingmakerInstallDir = $KingmakerInstallDir }
+            if ($MSBuildPath) { $arguments.MSBuildPath = $MSBuildPath }
             & (Join-Path $PSScriptRoot 'Build-Local.ps1') @arguments
             if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
                 throw "Build-Local failed with exit code $LASTEXITCODE."
@@ -125,5 +137,5 @@ if ($script:deferred.Count -eq 0) {
 }
 Write-Host "Timings appended to $TimingPath"
 if ($Level -eq 'Focused') {
-    Write-Host "FOCUSED RUN - NOT A QUALIFICATION. Filter '$effectiveFilter' selected a subset; the sprint candidate gate is the authority."
+    Write-Host "FOCUSED DEVELOPMENT CHECKPOINT. Production compiled; filter '$effectiveFilter' selected related tests. Full/native/release qualification deferred."
 }
