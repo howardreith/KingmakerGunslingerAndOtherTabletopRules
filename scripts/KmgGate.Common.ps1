@@ -35,7 +35,8 @@ function Resolve-KmgGateFilter {
             # Required rather than optional. A Focused run with no filter is an
             # unfiltered suite wearing the word "focused", which is the one
             # thing a reader must never have to guess about.
-            if ($trimmed -eq '') {
+            $terms = @($trimmed -split '[,;]' | Where-Object { $_.Trim() })
+            if ($terms.Count -eq 0) {
                 throw 'The Focused level requires a non-empty -Filter. Run -Level Sprint for the complete suite.'
             }
             return $trimmed

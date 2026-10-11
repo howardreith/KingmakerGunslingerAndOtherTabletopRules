@@ -1,3 +1,10 @@
+## Current owner validation directive - October 11, 2026
+
+Read ../docs/VALIDATION-POLICY.md. The full gates and definition of done below
+describe feature/release closure, not every edit, checkpoint commit or review.
+Ordinary fixes stop at a reviewable focused checkpoint. This workflow task does
+not authorize resuming the series closure or historical release next actions.
+
 # CODEX MISSION: Expanded Summon Monster and Summon Nature's Ally
 
 Status: complete and release-qualified on 2026-08-12. Authority received
@@ -92,7 +99,10 @@ State must record the baseline branch/SHA, working branch/current SHA, release
 version, completed phase, next action, domain/build/package results, runtime IDs
 and result paths, compatibility profiles, unresolved deviations, push status,
 and draft PR number or blocker. Update journal/state after meaningful phases. A
-report or checkpoint is never permission to stop.
+reviewable development checkpoint may finish ordinary work under the validation
+policy. Completion of an explicitly selected release mission still requires its
+real final obligations. The original wording is preserved in
+../docs/history/EXPANDED-SUMMONING-MISSION-before-workflow-reset-2026-10-11.md.
 
 ## 3. Feature objective
 
@@ -406,7 +416,7 @@ transaction. No optional compile dependency.
 ## 17. Validation and packaging
 
 Inspect current scripts/reports rather than stale root documents, and update
-stale guidance. Required gates: `git diff --check`; roster/manifest validation;
+stale guidance. At explicit frozen release qualification, required gates: `git diff --check`; roster/manifest validation;
 repository static validation; complete domain suite; clean Release against
 exact local 2.1.7b references and warnings-as-errors where required;
 deterministic repeat build/package; strict package validation; exact source,

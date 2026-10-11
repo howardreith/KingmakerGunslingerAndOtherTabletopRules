@@ -1,5 +1,18 @@
+[CmdletBinding()]
+param(
+    [string]$PackagePath,
+    [switch]$ReuseCandidate
+)
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($ReuseCandidate -and [string]::IsNullOrWhiteSpace($PackagePath)) {
+    throw '-ReuseCandidate requires the exact immutable -PackagePath.'
+}
+if (-not $ReuseCandidate -and -not [string]::IsNullOrWhiteSpace($PackagePath)) {
+    throw '-PackagePath requires -ReuseCandidate; omit both to build one new candidate.'
+}
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
 # Sprint 0 item B6: the Expanded Summoning compatibility and feature-boundary
 # matrix.
@@ -143,12 +156,9 @@ $steps = @(
         Parameters = @{} }
 )
 
-# Outside the repository, with every other piece of runtime evidence. This
-# wrote into scripts\ and then dirtied the very tree its own later steps
-# require to be clean: the series closure watched step 1 write the report and
-# steps 2 through 7 each fail with "Runtime execution requires a clean Git
-# state", so not one profile step ran. The report is evidence, and evidence
-# does not live in the source tree.
+$repositoryRoot = Split-Path -Parent $PSScriptRoot
+$productVersion = [string](Get-Content -LiteralPath (Join-Path $repositoryRoot 'Info.json') -Raw | ConvertFrom-Json).Version
+# Evidence must not dirty the source tree required clean by later profiles.
 $reportRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\expanded-summoning-compatibility'
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
 $reportPath = Join-Path $reportRoot ('b6-matrix-report-' +
@@ -158,9 +168,7 @@ $record = [ordered]@{
     schemaVersion = 2
     startedAtUtc  = [DateTime]::UtcNow.ToString('o')
     # Recorded in the report only; the launcher resolves the version itself.
-    # The series closure runs this at 0.0.150, and a report that still said
-    # 0.0.141 would misdate the evidence it is written to carry.
-    expectedVersion = '0.0.150'
+    expectedVersion = $productVersion
     runtimeTimeoutSeconds = $runtimeTimeoutSeconds
     liveBefore = [ordered]@{ files = $before.Files; version = $before.Version
         dll = $before.Dll }
@@ -170,6 +178,20 @@ Write-Host ("Live tree before: version={0} files={1}" -f $before.Version, $befor
 Assert-KmgScenariosUnattended (@($steps | ForEach-Object { $_.Scenario }) |
     ForEach-Object { $_ })
 Assert-KmgMachineClean 'before the matrix'
+
+# Freeze and validate once, before any profile transaction. A supplied candidate
+# is reused only through the existing manifest/package validation path.
+if (-not $ReuseCandidate) {
+    & (Join-Path $PSScriptRoot 'Build-Local.ps1') | Out-Host
+    $PackagePath = Join-Path $repositoryRoot "artifacts\local-runtime\$productVersion\KingmakerGunslinger-$productVersion-local-runtime.zip"
+}
+$candidate = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $repositoryRoot
+$candidateGit = Get-KmgGitState -RepositoryRoot $repositoryRoot
+if ($candidate.commit -cne $candidateGit.Commit -or
+    $candidate.sourceStateSha256 -cne (Get-KmgSourceStateFingerprint -RepositoryRoot $repositoryRoot)) {
+    throw 'Matrix candidate must match the unchanged product worktree before any profile is entered.'
+}
+$record.candidate = $candidate
 
 $halted = $null
 foreach ($step in $steps) {
@@ -186,10 +208,12 @@ foreach ($step in $steps) {
         Scenario  = @($step.Scenario)
         RuntimeTimeoutSeconds = $runtimeTimeoutSeconds
         Confirm   = $false
+        ReuseInstalledArtifact = $true
+        PackagePath = $PackagePath
     }
     if ($step.Parameters.Count -gt 0) { $arguments.Parameters = $step.Parameters }
     try {
-        & '.\scripts\compatibility\Invoke-KingmakerCompatibilityProfile.ps1' @arguments
+        & (Join-Path $PSScriptRoot 'compatibility\Invoke-KingmakerCompatibilityProfile.ps1') @arguments
         $entry.outcome = 'COMPLETED'
     }
     catch {

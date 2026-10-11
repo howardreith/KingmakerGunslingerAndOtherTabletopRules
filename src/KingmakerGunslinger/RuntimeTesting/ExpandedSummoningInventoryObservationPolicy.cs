@@ -75,6 +75,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 r[2] == referenceGuid && r[3] == referenceName && r[4] == carrier);
         }
 
+        internal static bool BebelithPrimaryBite(string guid, int dice, int sides)
+        {
+            return guid == "d2f99947db522e24293a7ec4eded453f" &&
+                dice == 2 && sides == 6;
+        }
+
         internal static bool SalamanderCarriers(bool spearNatural, int tailCount,
             bool tailNatural, int tailDice, int tailSides, bool exactRacialOwner,
             int heatCount, bool exactHeatOwnerAndWeapons, int grabCount,
@@ -87,4 +93,3 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
     }
 }
-

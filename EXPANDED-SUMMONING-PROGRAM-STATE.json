@@ -1,4 +1,12 @@
 {
+  "workflowPolicy": {
+    "authority": "owner 2026-10-11",
+    "document": "docs/VALIDATION-POLICY.md",
+    "default": "Focused development/review",
+    "activeTask": "Sprint 21 focused verification on HOWARD-LAPTOP; integrate merged workflow, verify Bebelith inventory correction, classify boundary failures, push reviewable checkpoint; no release or Sprint 22",
+    "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
+    "archive": "docs/history/EXPANDED-SUMMONING-PROGRAM-STATE-before-workflow-reset-2026-10-11.json"
+  },
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
   "phase2Mission": {
@@ -203,7 +211,7 @@
       "runtimeReviewExecuted": 15,
       "nativeHandAnimationDriverVertices": 0,
       "originalHandVerticesPerSide": 222,
-      "originalBakeAgreementMeters": 0.000001,
+      "originalBakeAgreementMeters": 1e-06,
       "nativeComparisonQualified": false,
       "restoration": "VERIFIED 2026-10-07T14:02:54.6098627Z",
       "nativeSaveWrites": 0,
