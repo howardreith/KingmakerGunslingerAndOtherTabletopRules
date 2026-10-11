@@ -358,8 +358,11 @@ namespace KingmakerGunslinger.Summoning
             // calculated, so nothing can go stale across a save and load, and
             // disarming or swapping the piece simply stops the penalty
             // applying rather than leaving a phantom behind.
+            // No duration: the printed effect is destruction, and the
+            // engine's own overload spells that as a null duration rather
+            // than as an omitted argument.
             evt.Target.Descriptor.Buffs.AddBuff(DismantledArmor,
-                Fact == null ? null : Fact.MaybeContext);
+                Fact == null ? null : Fact.MaybeContext, null);
         }
 
         public void OnNewRound()
