@@ -627,10 +627,11 @@ def validate(root: Path) -> None:
         package_count += 3
     if json.loads((root / "Info.json").read_text(
             encoding="utf-8"))["Version"] == "0.0.150":
-        # Sprint 21's icon. Its two original bodies - the Giant Crab's and
-        # the Bebelith's - and their paintings are not authored yet and will
-        # add four more when they are.
-        package_count += 1
+        # Sprint 21's five: the Giant Crab's icon, and a mesh and a painting
+        # for each of the two original bodies. The Bebelith's is the first
+        # body in the series authored for a creature that already ships
+        # wearing something, and it is counted here like any other.
+        package_count += 5
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.143", "0.0.144", "0.0.145"):
         # Seven player instructions and curated qualification files accompany
         # the findability repair. Historical summoning asset counts are fixed.

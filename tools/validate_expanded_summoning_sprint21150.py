@@ -121,6 +121,11 @@ SPRINT21_CHANGED = (
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningCreatureReview.cs",
+    # The Bebelith's authored body replaces a released visual, so the view
+    # patch, the bone policy and the asset loader all gain an entry for a
+    # creature that already ships.
+    "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs",
+    "src/KingmakerGunslinger/Summoning/Sprint14BonePolicy.cs",
     # The procedural renderer gains this sprint's creature, which is what
     # every sprint that ships an icon does to it.
     "assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py",
@@ -138,6 +143,21 @@ SPRINT21_NEW = (
     "src/KingmakerGunslinger/Summoning/BebelithRot.cs",
     "assets-source/original-icons/expanded-summoning/sources/giant-crab.png",
     "assets/game/icons/expanded-summoning/giant-crab.png",
+    # The two original bodies and the authoring that produced them. The
+    # Bebelith's is the first in this series authored for a creature that
+    # already ships wearing something, which is why its generator refuses to
+    # build a body that walks on eight legs.
+    "assets-source/original-models/sprint21-arthropods/SOURCE.md",
+    "assets-source/original-models/sprint21-arthropods/sprint21_capture.py",
+    "assets-source/original-models/sprint21-arthropods/generate_bebelith.py",
+    "assets-source/original-models/sprint21-arthropods/generate_giant_crab.py",
+    "assets-source/original-models/sprint21-arthropods/paint_bebelith_albedo.py",
+    "assets-source/original-models/sprint21-arthropods/paint_giant_crab_albedo.py",
+    "assets-source/original-models/sprint21-arthropods/render_sprint21_review.py",
+    "assets/sprint21-arthropods/bebelith-mesh.json",
+    "assets/sprint21-arthropods/bebelith-albedo.png",
+    "assets/sprint21-arthropods/giant-crab-mesh.json",
+    "assets/sprint21-arthropods/giant-crab-albedo.png",
     "src/KingmakerGunslinger/RuntimeTesting/Sprint21ReviewPolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint21Review.cs",
     "tests/KingmakerGunslinger.DomainTests/Sprint21RulesTests.cs",
