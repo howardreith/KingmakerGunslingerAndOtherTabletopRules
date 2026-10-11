@@ -116,6 +116,10 @@ try {
         'assets\sprint19-fourarmed\xill-albedo.png',
         'assets\sprint20-arachnids\giant-scorpion-mesh.json',
         'assets\sprint20-arachnids\giant-scorpion-albedo.png',
+        'assets\sprint21-arthropods\giant-crab-mesh.json',
+        'assets\sprint21-arthropods\giant-crab-albedo.png',
+        'assets\sprint21-arthropods\bebelith-mesh.json',
+        'assets\sprint21-arthropods\bebelith-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -129,6 +133,10 @@ try {
         'assets\sprint19-fourarmed\xill-albedo.png' = 'f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4'
         'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '813dfed7e48f7bb281fbaa0a6ba2c426febf653a76cc92a4fda201642dba8004'
         'assets\sprint20-arachnids\giant-scorpion-albedo.png' = 'c4a5a29d54ee52c3c1679de55a6c0f3d7e46e8ad56d02b0c25e51c43f55feb1a'
+        'assets\sprint21-arthropods\giant-crab-mesh.json' = 'c2b84d93f304df674aad4b8f0d80e1c62871574a611885435f1c7ea3827f847a'
+        'assets\sprint21-arthropods\giant-crab-albedo.png' = '42be10115e53644da45f66f5e1d9beb989a310eeee061756d1fe842d78c07781'
+        'assets\sprint21-arthropods\bebelith-mesh.json' = '7ff4e4dd8fc8edf4beb9dd983f245c329f40d94c751111888e8c5c658d1ab68e'
+        'assets\sprint21-arthropods\bebelith-albedo.png' = 'afd98003bcc96ae32db4c3da63fdf3377d84f07141148ef7742cf8d3742fd554'
         'assets\sprint18-primates\ape-albedo.png' = 'f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc'
         'assets\sprint18-primates\ape-mesh.json' = '751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0'
         'assets\sprint18-primates\dire-ape-albedo.png' = 'e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7'
