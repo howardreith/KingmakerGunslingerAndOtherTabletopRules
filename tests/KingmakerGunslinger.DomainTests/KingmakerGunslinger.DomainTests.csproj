@@ -207,6 +207,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint19ReviewPolicy.cs"><Link>RuntimeTesting\Sprint19ReviewPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint20ReviewPolicy.cs"><Link>RuntimeTesting\Sprint20ReviewPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint21ReviewPolicy.cs"><Link>RuntimeTesting\Sprint21ReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint21BebelithReviewPolicy.cs"><Link>RuntimeTesting\Sprint21BebelithReviewPolicy.cs</Link></Compile>
     <Compile Include="SalamanderRulesTests.cs" />
     <Compile Include="SalamanderProductionViewTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderProductionViewPolicy.cs"><Link>Summoning\SalamanderProductionViewPolicy.cs</Link></Compile>

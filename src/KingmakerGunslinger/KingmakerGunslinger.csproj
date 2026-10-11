@@ -1233,6 +1233,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Review.cs" />
     <Compile Include="RuntimeTesting\Sprint21ReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Review.cs" />
+    <Compile Include="RuntimeTesting\Sprint21BebelithReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Bebelith.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Routine.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Surface.cs" />
