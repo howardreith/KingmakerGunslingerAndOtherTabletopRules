@@ -1140,6 +1140,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint21-bebelith-printed-profile", Sprint21RulesTests.TheBebelithPrintedProfileDerives),
             Case("expanded-summoning.sprint21-released-bebelith-identity", Sprint21RulesTests.TheReleasedBebelithIdentityIsPreserved),
             Case("expanded-summoning.sprint21-rot-is-bite-only", Sprint21RulesTests.RotIsBiteOnlyWithThePrintedGraph),
+            Case("expanded-summoning.sprint21-rot-clones-released-natives", Sprint21RulesTests.RotClonesTheSameNativeIdentitiesAsTheReleasedPoisons),
             Case("expanded-summoning.sprint21-penetrating-strike", Sprint21RulesTests.PenetratingStrikeIsDescriptorsAndNotABonus),
             Case("expanded-summoning.sprint21-dismantle-touches-no-inventory", Sprint21RulesTests.DismantleArmorTouchesNoInventory),
             Case("expanded-summoning.sprint21-web-reuses-the-seam", Sprint21RulesTests.TheWebReusesTheQualifiedSeam),

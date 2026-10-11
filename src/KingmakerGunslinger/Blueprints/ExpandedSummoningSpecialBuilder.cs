@@ -88,11 +88,20 @@ namespace KingmakerGunslinger.Blueprints
         /// The native saved poison lifecycle the project's injury effects are
         /// cloned from. Sprint 21 reuses it for the Bebelith's rot, which is
         /// an injury effect with a longer graph rather than a new mechanism.
+        ///
+        /// <para>These are the exact two identities the released natural
+        /// builder clones for the viper, the ant and the scorpion. The first
+        /// guarded run of this sprint died on mod initialization because this
+        /// pair had been written from memory rather than copied: the feature's
+        /// own asset id had been used for the buff, so the type check refused
+        /// a BlueprintFeature where a BlueprintBuff was required and rolled
+        /// back 2432 registrations. An offline test now holds both to the
+        /// released builder's values.</para>
         /// </summary>
         private const string NativeSpiderPoisonBuffGuid =
-            "094714bb08f4e1943a8e9d2384ebe573";
+            "56ec8788092b6314e8f3c1c502e8433f";
         private const string NativeSpiderPoisonFeatureGuid =
-            "f0b5db73cb1dd54419fe6a65d0b23f3f";
+            "094714bb08f4e1943a8e9d2384ebe573";
         private const string PowerAttackGuid = "9972f33f977fc724c838e59641b2fca5";
         private const string NativeDaylightGuid = "2b877386976817a429002e8bb10bb3fc";
         private const string ShadowDemonUnitSymbol =
