@@ -1,13 +1,13 @@
-# Sprint 21 focused verification - October 11, 2026
+# Sprint 21 inventory boundary complete - October 11, 2026
 
 Active host: HOWARD-LAPTOP. Active worktree:
 `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger`, branch
 `codex/expanded-summoning-sprint21-bebelith-giant-crab`, draft PR #36.
 
-The owner authorized integrating origin/master into this feature branch,
-verifying the pending Bebelith inventory correction, classifying seven boundary
-failures, and pushing a reviewable checkpoint. No Sprint 22, reverse merge into
-master, tagging, release publication or permanent deployment is selected.
+The owner selected exactly one follow-up boundary: prepare a validated candidate,
+run gunslinger-only / observe-expanded-summoning-inventory, restore, report and
+stop. That boundary is complete. No further candidate, native campaign, matched
+baseline comparison, master merge, tag, release or Sprint 22 is selected.
 
 Read AGENTS.md and docs/VALIDATION-POLICY.md before selecting checks. The merged
 workflow implementation is 42b9644c0f6a71cec9f58dda30fd5a1981acbd3b, merged into
@@ -34,23 +34,38 @@ handoff's 0.0.117 pin. Use exact transaction receipt RunIds, never the newest
 directory. Raw logs belong outside this source tree. Start subsequent Codex
 sessions freshly here so instruction discovery loads the merged policy.
 
-Current checkpoint evidence and remaining work are recorded in
+The original focused checkpoint evidence and remaining work are recorded in
 docs/SPRINT21-FOCUSED-CHECKPOINT-2026-10-11.md. Integration checkpoint 5541ac07 and
 validation-provenance repair 99a4224d were pushed through the owner helper.
 Focused inventory/Sprint 21 checks passed 28/28. Candidate preparation's complete
 runner failed five workflow text expectations (2554/2559); the repaired five
-passed 5/5 with fresh binary evidence. Do not convert that historical full run to
-PASS or assume a matching native package exists.
+passed 5/5 with fresh binary evidence. Those focused runs did not establish a
+complete-suite or native PASS; the subsequent evidence below has its own source
+and artifact identity. Do not convert the historical failed full run to PASS.
 
-Status: REVIEWABLE CHECKPOINT. 20efcd71 is source verified, native deferred.
-No game, deployment, transaction, configuration or save change occurred. Current
-Mods/settings/Favored Class state was compared to actual intake, not a historical
-pin. Brown-Fur is a demonstrated fixture/expectation defect; three teleportation
-assertions failed before Sprint 21 but their cause remains unresolved; three
-vendor discrepancies require a matched released149 baseline comparison.
+Status: REVIEWABLE CHECKPOINT. The subsequent selected boundary froze reviewed
+f2fe16ca4fc2c8a8068b07b159f1c97efeb92108 through preparation and restoration.
+Invoke-KmgGate.ps1 -Level Sprint completed one clean unfiltered **2559/2559**
+suite, exact build and strict validated package. This is a new run; the earlier
+2554/2559 remains FAIL. The selected native inventory passed **50/50** on the
+matching candidate. 20efcd71 and the actual bite-dice observer are now native
+verified: primary 2d6 bite identity, two additional 2d4 claws, no secondary limbs.
 
-Next separately selected boundary: freeze this reviewed source, prepare one
-validated candidate and run only gunslinger-only
-observe-expanded-summoning-inventory through the guarded profile launcher.
-Estimate 6-10 minutes including exact restoration. Do not start Tranche, a full
-matrix, a master merge or release without explicit selection.
+Candidate ZIP SHA-256:
+c43ca89596bad1d837e34886ef0c7d8193c6532d2426480273bbf50182fd142d.
+DLL SHA-256: 60019b72dca27956c418f7195e6809b4b1e59179831094c5a886978a1e575bf7.
+MVID: 43a5bf9e-92f1-4ca4-b4c8-2eda1a186456.
+Exact transaction compat-20261011T174333Z-e7d434e8ec85 is Restored with verified
+restoration. All 968 actual intake Mods entries and settings/Favored Class match;
+no game/profile owner or coordination lock remains. No save load/write occurred.
+
+See docs/SPRINT21-INVENTORY-CHECKPOINT-2026-10-11.md for exact package/manifest,
+runner freshness, native result, supervision limitations and timing evidence.
+Documentation commits have separate provenance from the tested f2fe16ca bytes;
+do not rebuild the package just to stamp a reporting HEAD or reuse the restored
+transaction's deployment authority.
+
+Stop. Brown-Fur remains a fixture/expectation defect, not repaired. Teleportation
+causes and vendor discrepancies remain unresolved. Matched released149 comparison,
+other profiles, whole-roster persistence and final qualification remain pending.
+Do not start Tranche, a matrix, master merge or release without explicit selection.
