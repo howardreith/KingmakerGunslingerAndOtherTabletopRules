@@ -4,7 +4,8 @@ param(
     [string]$Configuration = 'Release',
 
     [switch]$IncludeSymbols,
-    [switch]$AllowMissingFirearmSoundBank
+    [switch]$AllowMissingFirearmSoundBank,
+    [string]$PackagePath
 )
 
 Set-StrictMode -Version Latest
@@ -18,14 +19,24 @@ if ($IncludeSymbols) {
     throw 'The standalone UMM package contract permits exactly one binary. PDB symbols must not be included.'
 }
 
-& (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration $Configuration
-& (Join-Path $PSScriptRoot 'Validate-FirearmSoundBank.ps1') -AllowMissing:$AllowMissingFirearmSoundBank
-
 $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger"
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
-$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint20.zip"
+if (-not $PackagePath) {
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint20.zip"
+}
+$packagePath = [IO.Path]::GetFullPath($PackagePath)
+$artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
+if (-not $packagePath.StartsWith($artifactRoot, [StringComparison]::OrdinalIgnoreCase) -or
+    [IO.Path]::GetExtension($packagePath) -ine '.zip') {
+    $PSCmdlet.ThrowTerminatingError([Management.Automation.ErrorRecord]::new(
+        [ArgumentException]::new('PackagePath must name a ZIP inside this repository artifacts directory.'),
+        'KMG_PACKAGE_OUTPUT_PATH', [Management.Automation.ErrorCategory]::InvalidArgument, $PackagePath))
+}
+& (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration $Configuration
+& (Join-Path $PSScriptRoot 'Validate-FirearmSoundBank.ps1') -AllowMissing:$AllowMissingFirearmSoundBank
+New-Item -ItemType Directory -Path (Split-Path -Parent $packagePath) -Force | Out-Null
 $checksumPath = "$packagePath.sha256"
 
 if (Test-Path -LiteralPath $stagingDirectory) {
