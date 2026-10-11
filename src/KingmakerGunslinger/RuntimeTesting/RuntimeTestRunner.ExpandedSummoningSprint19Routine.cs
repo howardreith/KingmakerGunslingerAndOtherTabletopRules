@@ -201,6 +201,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int trials = 0;
                 bool clean = false;
                 int firstRendFrom = 0, secondRendFrom = 0;
+                int secondTargetDamage = 0;
+                string secondReset = "second=none";
                 try
                 {
                     // One case is one atomic trial. A natural one always
@@ -222,6 +224,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         DireApeRendGate.ForgetObserved(owner);
                         ResetExpandedSummoningHostile(fixture);
+                        // The second target too. Without this it accumulated
+                        // damage across trials, died, and the engine threw
+                        // from its own command-merge path on the next attempt.
+                        secondReset = Sprint18ResetSecondTarget(
+                            secondTarget, secondTargetDamage);
                         firstRendFrom = observer.Damage.Count;
                         secondRendFrom = secondObserver == null ? 0 :
                             secondObserver.Damage.Count;
@@ -270,6 +277,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         accuracy.Apply;
                                     EventBus.Subscribe(secondObserver);
                                     secondRendFrom = secondObserver.Damage.Count;
+                                    secondTargetDamage =
+                                        secondTarget.Descriptor.Damage;
                                 }
                                 foreach (int step in Sprint18RunFullAttack(fixture,
                                     owner, result => ignored = result, secondTarget))
@@ -317,6 +326,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["observedRends"] = rends.Length,
                             ["trials"] = trials,
                             ["everyChosenLimbLandedInTheMeasuredTrial"] = clean,
+                            ["secondTargetReset"] = secondReset,
                             ["rendDamage"] = new JArray(rends.Select(rend =>
                                 Sprint16DamageLine(rend.DamageBundle.First()))),
                             ["sequences"] = emissions,
