@@ -179,6 +179,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fixture, turnBased)) yield return step;
                     bodyRead = true;
                 }
+                // Once, after both modes. The engine refuses to unequip
+                // armour while a fight is live, and in real time the fight
+                // outlasts the summon that was in it.
+                FinishSprint21BebelithFixture(fixture);
             }
             finally
             {
