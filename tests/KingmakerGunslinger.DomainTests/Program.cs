@@ -1147,6 +1147,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint21-bebelith-carriers-wired", Sprint21RulesTests.TheBebelithCarriersAreWiredRatherThanNamed),
             Case("expanded-summoning.sprint21-review-wired", Sprint21RulesTests.TheReviewScenarioIsWiredAtEveryGate),
             Case("expanded-summoning.sprint21-census-wired", Sprint21RulesTests.TheDonorCensusIsWiredAndSurveysTwoFamilies),
+            Case("expanded-summoning.sprint21-bebelith-review-wired", Sprint21RulesTests.TheBebelithReviewIsReachedAndIsMostlyControls),
             Case("expanded-summoning.sprint21-eighth-foot-is-named", Sprint21RulesTests.OnlyTheEightLeggedCreaturesWalkOnTheFourthChain),
             Case("expanded-summoning.sprint19-four-claw-rend", Sprint19RulesTests.FourClawRendNeedsAllFourClawsOnOneTarget),
             Case("expanded-summoning.sprint19-no-stale-rend", Sprint19RulesTests.NoStaleFourClawRendCrossesACommand),
