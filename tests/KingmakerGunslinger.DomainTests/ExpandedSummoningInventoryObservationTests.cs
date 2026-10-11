@@ -49,6 +49,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningInventoryObservationPolicy.QualifiedProjectReference("unit","KMG_Summoning_Unit_FireBeetle","fact","KMG_Summoning_Natural_FireBeetle_Teleport","AddFacts"), "Project-looking names cannot hide hazardous behavior.");
         }
 
+        internal static void BebelithBiteRequiresItsIdentityAndObservedDice()
+        {
+            const string bite = "d2f99947db522e24293a7ec4eded453f";
+            Func<string, int, int, bool> check = ExpandedSummoningInventoryObservationPolicy.BebelithPrimaryBite;
+            Assertions.True(check(bite, 2, 6), "The actual primary bite must carry its native identity and 2d6 base damage.");
+            foreach (string wrong in new[] { null, "", "foreign", bite.ToUpperInvariant() })
+                Assertions.False(check(wrong, 2, 6), "Correct dice cannot qualify a different primary weapon.");
+            Assertions.False(check(bite, 1, 6), "The correct GUID alone cannot prove the number of dice.");
+            Assertions.False(check(bite, 2, 4), "The correct GUID alone cannot prove die size.");
+        }
+
         internal static void SalamanderCarriersDoNotExpectLegacyOnHitRiders()
         {
             Func<bool,int,bool,int,int,bool,int,bool,int,bool,int,int,bool> check = ExpandedSummoningInventoryObservationPolicy.SalamanderCarriers;

@@ -13,7 +13,9 @@ param(
 
     [switch]$IncludeSymbols,
 
-    [switch]$SkipDomainTests
+    [switch]$SkipDomainTests,
+    # Development compilation only: no aggregate tests, package or release gate.
+    [switch]$CompileOnly
 )
 
 Set-StrictMode -Version Latest
@@ -22,13 +24,17 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'common.ps1')
 
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
-$solutionPath = Join-Path $repositoryRoot 'KingmakerGunslinger.sln'
+$projectPath = Join-Path $repositoryRoot 'src\KingmakerGunslinger\KingmakerGunslinger.csproj'
 $localPropsPath = Join-Path $repositoryRoot 'GamePath.props'
 
-& (Join-Path $PSScriptRoot 'validate-repository.ps1')
-
-if (-not $SkipDomainTests) {
-    & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration $Configuration -MSBuildPath $MSBuildPath
+if ($CompileOnly -and ($Package -or $IncludeSymbols)) {
+    throw '-CompileOnly does not accept packaging options.'
+}
+if (-not $CompileOnly) {
+    & (Join-Path $PSScriptRoot 'validate-repository.ps1')
+    if (-not $SkipDomainTests) {
+        & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration $Configuration -MSBuildPath $MSBuildPath -SkipRepositoryValidation
+    }
 }
 
 if (-not $KingmakerInstallDir -and -not (Test-Path -LiteralPath $localPropsPath -PathType Leaf)) {
@@ -45,13 +51,16 @@ if ($KingmakerInstallDir) {
 
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 $target = if ($Clean) { 'Rebuild' } else { 'Build' }
+# test-domain already compiles the runner. Building the solution here would
+# compile it again along with production.
+$platform = 'AnyCPU'
 $arguments = @(
-    $solutionPath,
+    $projectPath,
     '/nologo',
     '/m',
     "/t:$target",
     "/p:Configuration=$Configuration",
-    '/p:Platform=Any CPU',
+    "/p:Platform=$platform",
     '/verbosity:minimal'
 )
 
@@ -65,7 +74,10 @@ if ($LASTEXITCODE -ne 0) {
     throw "MSBuild failed with exit code $LASTEXITCODE."
 }
 
-& (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration $Configuration
+if ($CompileOnly) {
+    Write-Host 'Development production compilation passed; package/release checks deferred.'
+    return
+}
 
 if ($Package) {
     $packageArguments = @{
@@ -76,4 +88,6 @@ if ($Package) {
     }
 
     & (Join-Path $PSScriptRoot 'package.ps1') @packageArguments
+} else {
+    & (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration $Configuration
 }

@@ -32,6 +32,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.release143-inventory-owned-references", ExpandedSummoningInventoryObservationTests.QualifiedReferencesAreExactManifestOwnedRows),
             Case("expanded-summoning.release143-inventory-spoof-rejection", ExpandedSummoningInventoryObservationTests.QualifiedReferencesRejectSpoofingAndOtherCarriers),
             Case("expanded-summoning.release143-inventory-salamander-carriers", ExpandedSummoningInventoryObservationTests.SalamanderCarriersDoNotExpectLegacyOnHitRiders),
+            Case("expanded-summoning.release143-inventory-bebelith-bite", ExpandedSummoningInventoryObservationTests.BebelithBiteRequiresItsIdentityAndObservedDice),
             Case("expanded-summoning.release143-whole-roster-coverage", ExpandedSummoningRosterPersistenceTests.EveryCreatureAndNativeUnitIsCoveredOnce),
             Case("expanded-summoning.release143-resource-authority", ExpandedSummoningRosterPersistenceTests.ResourceClassificationRequiresExactAuthorityNotNameOrSharing),
             Case("expanded-summoning.release143-resource-flight-repeated-owner", ExpandedSummoningRosterPersistenceTests.OriginalFlightCleanupIsNarrowReferenceOwnedAndRepeatable),
