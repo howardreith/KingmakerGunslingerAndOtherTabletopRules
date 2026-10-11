@@ -143,7 +143,16 @@ $steps = @(
         Parameters = @{} }
 )
 
-$reportPath = Join-Path $PSScriptRoot 'b6-matrix-report.json'
+# Outside the repository, with every other piece of runtime evidence. This
+# wrote into scripts\ and then dirtied the very tree its own later steps
+# require to be clean: the series closure watched step 1 write the report and
+# steps 2 through 7 each fail with "Runtime execution requires a clean Git
+# state", so not one profile step ran. The report is evidence, and evidence
+# does not live in the source tree.
+$reportRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\expanded-summoning-compatibility'
+New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
+$reportPath = Join-Path $reportRoot ('b6-matrix-report-' +
+    [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '.json')
 $before = Get-KmgLiveFingerprint
 $record = [ordered]@{
     schemaVersion = 2
