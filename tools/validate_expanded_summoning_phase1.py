@@ -364,6 +364,20 @@ def require_tokens(path: Path, *tokens: str) -> None:
             raise AssertionError(f"{path.name} lacks required token: {token}")
 
 
+def validate_package_count_owners(root: Path, package_count: int) -> None:
+    expected = "{ %d } else { %d }" % (package_count, package_count - 2)
+    package = root / "scripts/package.ps1"
+    builder = root / "scripts/Build-Local.ps1"
+    require_tokens(package, expected, "--expected-file-count $expectedPackageFileCount",
+                   "validate-package.ps1")
+    if expected not in builder.read_text(encoding="utf-8-sig"):
+        # October 11 workflow integration moved assembly and strict validation
+        # into package.ps1. Admit exactly that delegation, keeping its output
+        # binding and the package owner's unchanged inventory requirement.
+        require_tokens(builder,
+            "& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath")
+
+
 def validate(root: Path) -> None:
     if len(APPENDED) != SPRINT3["appendedLedgerIdentities"] or \
             len({guid for _, guid, _ in APPENDED}) != len(APPENDED) or \
@@ -639,9 +653,9 @@ def validate(root: Path) -> None:
         # Seven player instructions and curated qualification files accompany
         # the findability repair. Historical summoning asset counts are fixed.
         package_count += 7
+    validate_package_count_owners(root, package_count)
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
-            "{ %d } else { %d }" % (package_count, package_count - 2),
             "dire-bat-mesh.json", "dire-bat-albedo.png",
             "eagle-mesh.json", "eagle-albedo.png",
             "giant-wasp-mesh.json", "giant-wasp-albedo.png",
