@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Package identity is not pinned to the Favored Class integration archive.");
             Assertions.True(runtime.Contains("if ($ExpectedVersion -cne $activeVersion") && runtime.Contains("ExpectedVersion must be exactly the active version $activeVersion.") &&
                 localBuild.Contains("active version 0.0.150") &&
-                localBuild.Contains("local-runtime\\0.0.150"),
+                localBuild.Contains("artifacts\\local-runtime\\$($info.Version)"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 
