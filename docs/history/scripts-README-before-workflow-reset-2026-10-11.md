@@ -1,0 +1,65 @@
+# Build and qualification scripts
+
+The PowerShell scripts target a local Windows installation of Pathfinder: Kingmaker 2.1.7b.
+
+`Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-smoke` requires
+`-SaveName KMG_AUTOMATION_WORKING`, rejects manual-interaction mode, and launches
+only through Steam App ID 640820. See `docs\WORKING-SAVE-SMOKE.md`.
+
+- `qualify-runtime-candidate.ps1` is the Windows source-to-candidate path. For 0.0.29 it requires 599 tests three times, two same-output-path Release compiles, and strict package validation.
+- `build.ps1` compiles the mod against the exact installed private Kingmaker, Unity, UMM, Harmony, and Newtonsoft references.
+- `package.ps1` produces the strict standalone nine-file UMM ZIP, including
+  the installation/update/removal/compatibility guide.
+- `inspect-runtime-contracts.ps1` records the retained attack, natural-roll, save, damage, item, inventory, and state contracts from the supplied installation.
+- `export-private-build-references.ps1` creates the narrow private compiler-input archive. Never include that archive or its DLLs in a UMM package.
+- `package-source.ps1` creates the source archive without loose binaries or private references.
+- `validate-repository.ps1`, `validate-build-output.ps1`, and `validate-package.ps1` enforce source, build, and package boundaries.
+
+The cross-platform evidence tools in `tools/` provide the equivalent exact-reference compile, 599-test three-run execution, Sprint 29 source validation, and standalone-package validation used for the current artifacts.
+
+## Local runtime harness
+
+`Build-Local.ps1` is the non-deploying Sprint 30 build entry point. It uses the
+version-aware validator, complete domain suite, preserved qualified references,
+existing package staging/validation, and deterministic ZIP writer. The
+Backup/Deploy/Restore scripts are exact-directory constrained and support
+`-WhatIf`. Launching and all live writes require a separate explicit task.
+
+The harness does not need `.worktreeinclude`: it derives the isolated reference
+location from the lab workspace and never copies ignored machine configuration
+into a worktree.
+
+`Invoke-KingmakerRuntimeTest.ps1` is the guarded Windows 10 orchestration entry
+point. It includes guarded smoke tests and explicitly supervised observation
+scenarios; use `-WhatIf` for source-only qualification.
+`observe-save-catalog-provider` requires `-ManualInteractionRequired`, waits
+for hook readiness, and permits only the human opening the Load Game screen.
+`Test-RuntimeRequest.ps1`,
+`Test-RuntimeResult.ps1`, and `Test-RuntimeRunner.ps1` validate the guarded
+protocol without launching Kingmaker. `Capture-WindowEvidence.ps1` optionally
+captures one explicit process-owned window with GDI and returns warning-only
+failure; it is never a correctness source.
+
+Do not bypass a failed report. Exact compilation and tests establish candidate quality; `SMOKE-TEST-GUIDE-0.0.29.md` establishes the complete action-bar maintenance loop, interruption safety, exact resource deltas, and persistence. Sprint 30 remains blocked until the 0.0.29 runtime gate passes.
+
+
+`Test-FirearmInputControlFlow.ps1 -ModDllPath <candidate DLL under artifacts>`
+runs ten isolated CLR/Harmony behavior checks against the compiled firearm input
+wrapper: desktop Boolean returns, controller void returns, ordinary exits,
+exceptions and nested native finally blocks. Run it with Windows PowerShell 5.1
+after `Build-Local.ps1`. It reads the installed private references, launches no
+game, and reports the exact tested DLL hash. These synthetic control-flow checks
+supplement guarded runtime input proof; they do not qualify firearm mechanics.
+
+## Firearm postrelease native qualification
+
+`Test-FirearmInputControlFlow.ps1 -ModDllPath <candidate DLL under artifacts>`
+runs ten synthetic managed return/exception/finally checks on the compiled native
+input wrapper. Use Windows PowerShell 5.1; this is separate from game proof.
+
+The guarded `disposable-firearm-break-interruption` scenario at version 0.0.128
+executes the real native desktop/controller order adapters, reload/action economy,
+weapon rules, recovery and stale-order negatives in request-owned save-free
+fixtures. Its 145 assertions and precise pause/rest boundaries are documented in
+`docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md`. It never uses authorization
+bridges, direct suppression resets, save selection or save mutation.

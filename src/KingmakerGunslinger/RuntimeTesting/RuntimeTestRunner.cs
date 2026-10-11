@@ -16229,10 +16229,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             // put a claw there, and both claws are additional limbs 0 and 1,
             // which is what makes "both claws hit the same target" a readable
             // dismantle gate.
+            BlueprintItemWeapon bebelithBite = bebelith.Body.PrimaryHand
+                as BlueprintItemWeapon;
             bebelithPart("bitePrimary2d6",
-                bebelith.Body.PrimaryHand != null &&
-                bebelith.Body.PrimaryHand.AssetGuid ==
-                    "d2f99947db522e24293a7ec4eded453f");
+                bebelithBite != null &&
+                ExpandedSummoningInventoryObservationPolicy.BebelithPrimaryBite(
+                    bebelithBite.AssetGuid,
+                    bebelithBite.Damage.Rolls,
+                    bebelithBite.Damage.Dice == DiceType.D6 ? 6 : 0));
             bebelithPart("twoClaws2d4",
                 bebelithClaw.Damage.Rolls == 2 &&
                 bebelithClaw.Damage.Dice == DiceType.D4 &&
