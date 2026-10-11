@@ -20,6 +20,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'common.ps1')
+. (Join-Path $PSScriptRoot 'KmgGate.Common.ps1')
 
 function Assert-CommandAvailable {
     param([Parameter(Mandatory = $true)][string]$Name)
@@ -101,12 +102,16 @@ function Invoke-QualifiedBuildAndPackage {
         [Parameter(Mandatory = $true)][string]$RepositoryRoot,
         [string]$ConfiguredKingmakerInstallDir,
         [string]$ConfiguredMSBuildPath,
-        [string]$ConfiguredReferenceBundleDir
+        [string]$ConfiguredReferenceBundleDir,
+        [switch]$SkipDomainTests
     )
 
+    # A release qualification cannot inherit an earlier development filter.
+    Invoke-KmgWithTestFilter -Filter '' -Body {
     $buildArguments = @{
         Configuration = 'Release'
         Clean = $true
+        SkipDomainTests = [bool]$SkipDomainTests
     }
     if (-not [string]::IsNullOrWhiteSpace($ConfiguredKingmakerInstallDir)) {
         $buildArguments.KingmakerInstallDir = $ConfiguredKingmakerInstallDir
@@ -122,7 +127,7 @@ function Invoke-QualifiedBuildAndPackage {
     else {
         # The existing provenance-checked builder retains net47/Harmony12
         # without replacing the owner's newer installed UMM dependencies.
-        $exactArguments = @{ ReferenceBundleDir = $ConfiguredReferenceBundleDir }
+        $exactArguments = @{ ReferenceBundleDir = $ConfiguredReferenceBundleDir; SkipDomainTests = [bool]$SkipDomainTests }
         if ($ConfiguredKingmakerInstallDir) {
             $exactArguments.KingmakerInstallDir = $ConfiguredKingmakerInstallDir
         }
@@ -131,10 +136,22 @@ function Invoke-QualifiedBuildAndPackage {
             ForEach-Object { Write-Host ([string]$_) }
     }
 
-    $packageOutput = @(
-        & (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release
-    )
-    $packagePath = [string]($packageOutput | Select-Object -Last 1)
+    if ([string]::IsNullOrWhiteSpace($ConfiguredReferenceBundleDir)) {
+        $packageOutput = @(& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release)
+        $packagePath = [string]($packageOutput | Select-Object -Last 1)
+    } else {
+        # Build-Local already assembled/validated this exact package.
+        $packageInfo = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'Info.json') -Raw | ConvertFrom-Json
+        $packageVersion = $packageInfo.Version
+        $candidatePath = Join-Path $RepositoryRoot "artifacts\local-runtime\$packageVersion\KingmakerGunslinger-$packageVersion-local-runtime.zip"
+        # Preserve the existing public asset name using the same verified bytes.
+        $packagePath = Join-Path $RepositoryRoot "artifacts\packages\$($packageInfo.Id)-$packageVersion-expanded-summoning-sprint20.zip"
+        New-Item -ItemType Directory -Path (Split-Path -Parent $packagePath) -Force | Out-Null
+        Copy-Item -LiteralPath $candidatePath -Destination $packagePath -Force
+        if ((Get-KmgSha256 -Path $candidatePath) -cne (Get-KmgSha256 -Path $packagePath)) {
+            throw 'Publication copy differs from the verified candidate.'
+        }
+    }
     if ([string]::IsNullOrWhiteSpace($packagePath)) {
         throw 'package.ps1 did not return the generated package path.'
     }
@@ -144,8 +161,8 @@ function Invoke-QualifiedBuildAndPackage {
         -Path $packagePath
     Assert-FileExists -Path $packagePath -Label 'Qualified UMM package'
 
-    & (Join-Path $PSScriptRoot 'validate-package.ps1') `
-        -PackagePath $packagePath
+    # Both package.ps1 and Build-Local already perform strict validation on
+    # this newly assembled package. Keep later publication intake checks.
 
     $dllPath = Join-Path $RepositoryRoot `
         'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'
@@ -156,6 +173,7 @@ function Invoke-QualifiedBuildAndPackage {
         PackageSha256 = Get-KmgSha256 -Path $packagePath
         DllPath = $dllPath
         DllSha256 = Get-KmgSha256 -Path $dllPath
+    }
     }
 }
 
@@ -302,7 +320,7 @@ try {
         -RepositoryRoot $root `
         -ConfiguredKingmakerInstallDir $KingmakerInstallDir `
         -ConfiguredMSBuildPath $MSBuildPath `
-        -ConfiguredReferenceBundleDir $ReferenceBundleDir
+        -ConfiguredReferenceBundleDir $ReferenceBundleDir -SkipDomainTests
     if ($first.PackageSha256 -cne $second.PackageSha256 -or
         $first.DllSha256 -cne $second.DllSha256) {
         throw "Deterministic release build failed: package $($first.PackageSha256)/$($second.PackageSha256), DLL $($first.DllSha256)/$($second.DllSha256)."
