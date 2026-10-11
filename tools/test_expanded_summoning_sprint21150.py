@@ -23,12 +23,58 @@ from unittest.mock import patch
 sys.dont_write_bytecode = True
 
 import validate_expanded_summoning_sprint21150 as gate
+import validate_expanded_summoning_phase1 as phase1
 from validate_repository import VALIDATORS
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class Sprint21Tests(unittest.TestCase):
+    def test_current_package_owner_retains_exact_inventory(self):
+        phase1.validate_package_count_owners(ROOT, 354)
+
+    def test_delegated_builder_cannot_drop_output_binding(self):
+        real_read = Path.read_text
+        def wrong_binding(path, *args, **kwargs):
+            text = real_read(path, *args, **kwargs)
+            return text.replace("-PackagePath $packagePath", "") if path.name == "Build-Local.ps1" else text
+        with patch.object(Path, "read_text", wrong_binding):
+            with self.assertRaisesRegex(AssertionError, "Build-Local.ps1 lacks required token"):
+                phase1.validate_package_count_owners(ROOT, 354)
+
+    def test_delegation_cannot_hide_package_inventory_drift(self):
+        real_read = Path.read_text
+        def wrong_count(path, *args, **kwargs):
+            text = real_read(path, *args, **kwargs)
+            return text.replace("{ 354 } else { 352 }", "{ 355 } else { 353 }") if path.name == "package.ps1" else text
+        with patch.object(Path, "read_text", wrong_count):
+            with self.assertRaisesRegex(AssertionError, "package.ps1 lacks required token"):
+                phase1.validate_package_count_owners(ROOT, 354)
+
+    def test_additional_checkpoint_tests_preserve_the_alpha_record(self):
+        record = gate.document(ROOT, "validation/static-validation.json")[gate.KEY]
+        current = (ROOT / "tests/KingmakerGunslinger.DomainTests/Program.cs").read_text(
+            encoding="utf-8-sig")
+        self.assertEqual(len(gate.re.findall(r'\bCase\("([^"\n]+)"', current)),
+                         gate.validate_test_count_provenance(ROOT, record))
+
+    def test_relabelling_the_alpha_test_count_is_rejected(self):
+        record = copy.deepcopy(gate.document(ROOT, "validation/static-validation.json")[gate.KEY])
+        record["deterministicTestCount"] += 1
+        with self.assertRaisesRegex(AssertionError, "Historical alpha"):
+            gate.validate_test_count_provenance(ROOT, record)
+
+    def test_removing_an_alpha_test_is_rejected(self):
+        record = gate.document(ROOT, "validation/static-validation.json")[gate.KEY]
+        real_read = Path.read_text
+        def missing_case(path, *args, **kwargs):
+            text = real_read(path, *args, **kwargs)
+            return text.replace('Case("expanded-summoning.release143-inventory-owned-references"',
+                                'Case("replacement-without-the-qualified-test"') if path.name == "Program.cs" else text
+        with patch.object(Path, "read_text", missing_case):
+            with self.assertRaisesRegex(AssertionError, "registrations were removed"):
+                gate.validate_test_count_provenance(ROOT, record)
+
     def test_version_dispatch_and_historical_dispatch_are_intact(self):
         self.assertEqual("validate_expanded_summoning_sprint21150.py",
                          VALIDATORS["0.0.150"])

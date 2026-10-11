@@ -41,6 +41,7 @@ import inspect_elemental_character_trait_icons as trait_icons
 VERSION = "0.0.150"
 INFORMATIONAL_VERSION = VERSION + "-expanded-summoning-sprint21"
 MASTER = "d0ceafae75c1d74a1e0d4fa318193ef002240da1"
+QUALIFIED_ALPHA = "adddef438c9bc5798d462d95f6667671ca852344"
 KEY = "expandedSummoningSprint21150"
 
 # The released production surfaces Sprint 21 may not touch at all.
@@ -898,6 +899,28 @@ def validate_shipped_bodies_reach_the_release_build(root: Path) -> None:
                 + relative)
 
 
+def validate_test_count_provenance(root: Path, record: dict) -> int:
+    """Preserve the alpha record while admitting additional checkpoint tests.
+
+    Registration counts are source metadata, not proof that a binary executed.
+    The current runner must still be built and run by the selected gate.
+    """
+    program_path = "tests/KingmakerGunslinger.DomainTests/Program.cs"
+    alpha_record = json.loads(blob(root, QUALIFIED_ALPHA,
+                                   "validation/static-validation.json"))[KEY]
+    alpha_names = re.findall(r'\bCase\("([^"\n]+)"',
+                             blob(root, QUALIFIED_ALPHA, program_path).decode("utf-8-sig"))
+    current_names = re.findall(r'\bCase\("([^"\n]+)"',
+                               (root / program_path).read_text(encoding="utf-8-sig"))
+    if not alpha_names or alpha_record["deterministicTestCount"] != len(alpha_names):
+        raise AssertionError("Frozen alpha registration metadata is inconsistent")
+    if record.get("deterministicTestCount") != alpha_record["deterministicTestCount"]:
+        raise AssertionError("Historical alpha deterministic test count changed")
+    if not set(alpha_names).issubset(current_names):
+        raise AssertionError("Qualified alpha test registrations were removed")
+    return len(current_names)
+
+
 def validate(root: Path) -> None:
     info = document(root, "Info.json")
     if info["Version"] != VERSION:
@@ -930,15 +953,11 @@ def validate(root: Path) -> None:
     validate_shipped_bodies_reach_the_release_build(root)
 
     record = state[KEY]
-    count = len(re.findall(
-        r'\bCase\("',
-        (root / "tests/KingmakerGunslinger.DomainTests/Program.cs").read_text(
-            encoding="utf-8-sig")))
+    count = validate_test_count_provenance(root, record)
     expected = {
         "releaseVersion": VERSION,
         "releaseInformationalVersion": INFORMATIONAL_VERSION,
         "masterBase": MASTER,
-        "deterministicTestCount": count,
         "registeredManifestEntryCount": identities,
         "registeredGeneratedPlacements": REGISTERED_PLACEMENTS,
         "retainedNativeWrappers": NATIVE_WRAPPERS,
