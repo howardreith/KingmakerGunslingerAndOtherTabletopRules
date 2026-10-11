@@ -158,6 +158,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.Bebelith.TripDefense";
         private const string BebelithRacialSkillsSymbol =
             "KMG.Summoning.Special.Bebelith.RacialSkills";
+        private const string BebelithChassisCorrectionSymbol =
+            "KMG.Summoning.Special.Bebelith.ChassisCorrection";
         private const string BebelithWebSymbol =
             "KMG.Summoning.Special.Bebelith.Web";
         private const string BebelithWebResourceSymbol =
@@ -582,6 +584,8 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, BebelithTripDefenseSymbol));
             ConfigureBebelithRacialSkills(Require<BlueprintFeature>(
                 bySymbol, BebelithRacialSkillsSymbol));
+            ConfigureBebelithChassisCorrection(Require<BlueprintFeature>(
+                bySymbol, BebelithChassisCorrectionSymbol));
             ConfigureSummonWeb(library, bySymbol, new WebSpec {
                 UnitSymbol = BebelithUnitSymbol,
                 AbilitySymbol = BebelithWebSymbol,
@@ -610,6 +614,8 @@ namespace KingmakerGunslinger.Blueprints
                     BebelithPenetratingStrikeSymbol),
                 Require<BlueprintFeature>(bySymbol, BebelithTripDefenseSymbol),
                 Require<BlueprintFeature>(bySymbol, BebelithRacialSkillsSymbol),
+                Require<BlueprintFeature>(bySymbol,
+                    BebelithChassisCorrectionSymbol),
                 Require<BlueprintAbility>(bySymbol, BebelithWebSymbol),
                 Require<BlueprintBrain>(bySymbol, BebelithBrainSymbol));
             BlueprintWeaponType pixieSleepBowType = Require<BlueprintWeaponType>(
@@ -4482,6 +4488,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintBuff combatTraits, BlueprintFeature extraplanar,
             BlueprintFeature rot, BlueprintFeature penetratingStrike,
             BlueprintFeature tripDefense, BlueprintFeature racialSkills,
+            BlueprintFeature chassisCorrection,
             BlueprintAbility web, BlueprintBrain brain)
         {
             BlueprintItemWeapon bite = BlueprintLibraryLookup.RequireExact<
@@ -4521,7 +4528,8 @@ namespace KingmakerGunslinger.Blueprints
                 // save.
                 Feature(library, IronWillGuid, "Iron Will"),
                 combatTraits,
-                rot, penetratingStrike, tripDefense, racialSkills, web
+                rot, penetratingStrike, tripDefense, racialSkills,
+                chassisCorrection, web
             };
         }
 
@@ -4670,6 +4678,43 @@ namespace KingmakerGunslinger.Blueprints
         /// and a crab, so a demon wearing either would show the wrong
         /// creature's feature.</para>
         /// </summary>
+        /// <summary>
+        /// The three printed numbers the native outsider chassis cannot
+        /// produce, corrected on the creature.
+        ///
+        /// <para>Measured rather than assumed. The first guarded run of this
+        /// sprint read a live Bebelith back as Fortitude +11, Reflex +11,
+        /// Will +11 against a printed +15, +11 and +7: Reflex right, and the
+        /// other two assigned to each other's slots. It also read 162 hit
+        /// points against a printed 150, with the same 84 from Constitution
+        /// in both, so the whole difference is one point a die in the racial
+        /// half.</para>
+        ///
+        /// <para>The shared native outsider class is untouched. It is the
+        /// chassis of a dozen released creatures, and correcting one of them
+        /// by editing what all of them stand on is how a sprint reaches past
+        /// its own boundary - so the correction is creature-owned and is a
+        /// difference from what the engine actually applied.</para>
+        /// </summary>
+        private static void ConfigureBebelithChassisCorrection(
+            BlueprintFeature feature)
+        {
+            var correction = ScriptableObject.CreateInstance<
+                BebelithChassisCorrectionComponent>();
+            feature.name = InternalName(BebelithChassisCorrectionSymbol);
+            feature.IsClassFeature = true;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { correction };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.ChassisCorrection.Name",
+                    "Demonic Resilience"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Bebelith.ChassisCorrection.Description",
+                    "A bebelith's stat block prints a strong Fortitude save and a weak Will; the engine's outsider chassis assigns them the other way round and is a little tougher than the block. This restores the printed Fortitude +15, Will +7 and 150 hit points."),
+                null);
+        }
+
         private static void ConfigureBebelithTripDefense(
             BlueprintFeature feature)
         {

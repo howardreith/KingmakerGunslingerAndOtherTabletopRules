@@ -807,12 +807,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 names.Contains("R_Leg" + index + "_Upper"));
             bool chelae = names.Contains("pedipalp7_L") &&
                 names.Contains("pedipalp7_R");
-            // A crab has no tail. The abdomen chain carries the back of the
-            // carapace instead, so the chain is used but nothing arches off
-            // it - which is the one way this body differs structurally from
-            // the Sprint 20 scorpion's on the same rig.
-            bool carapaceOnAbdomen = names.Contains("Tail3_M") &&
-                names.Contains("UpperTorso");
+            // A crab has no abdomen at all, and this is the bone that
+            // would give it one: Tail3_M is where a spider's abdomen and a
+            // scorpion's metasoma hang. The authored shell is one rigid mass
+            // on LowerTorso and the generator refuses to build a crab that
+            // reaches that chain, so the review requires the absence rather
+            // than - as its first version did - the presence.
+            bool noAbdomenChain = !names.Contains("Tail3_M");
             string[] reviewedBones = Sprint14BonePolicy.AllowedBones(
                 Sprint21ReviewPolicy.CrabKey);
             bool reviewed = bones != null && bones.All(name =>
@@ -820,7 +821,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool attached = outcome.StartsWith("visual:attached;",
                 StringComparison.Ordinal);
             Sprint21Check("original-body", loaded && attached && legs == 4 &&
-                    chelae && carapaceOnAbdomen && reviewed && mesh != null &&
+                    chelae && noAbdomenChain && reviewed && mesh != null &&
                     mesh.vertexCount > 0,
                 new JObject {
                     ["outcome"] = outcome,
@@ -831,14 +832,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["bones"] = bones == null ? 0 : bones.Length,
                     ["legChainsWeighted"] = legs,
                     ["chelaeOnPedipalps"] = chelae,
-                    ["carapaceOnAbdomenChain"] = carapaceOnAbdomen,
+                    ["reachesNoAbdomenChain"] = noAbdomenChain,
                     ["everyBoneReviewed"] = reviewed,
                     ["albedo"] = albedo == null ? null :
                         albedo.width + "x" + albedo.height,
                     ["carriesNoTail"] = true },
                 "the live creature wears its own body, binds all eight legs, "
-                + "carries its pincers on the pedipalp chains and weights no "
-                + "bone outside its reviewed list");
+                + "carries its pincers on the pedipalp chains, reaches no "
+                + "abdomen chain at all and weights no bone outside its "
+                + "reviewed list");
         }
 
         /// <summary>

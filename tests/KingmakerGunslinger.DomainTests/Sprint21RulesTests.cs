@@ -29,7 +29,7 @@ namespace KingmakerGunslinger.DomainTests
         /// for the Bebelith, whose own unit and three roots are released and
         /// keep the identities they already have.
         /// </summary>
-        internal const int AppendedLedgerIdentities = 1 + 7 + 5 + 9;
+        internal const int AppendedLedgerIdentities = 1 + 7 + 5 + 10;
 
         /// <summary>
         /// The printed profile derives, all sixteen identities of it.
@@ -204,7 +204,7 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// The append is exactly twenty-two entries at the end of the ledger,
+        /// The append is exactly twenty-three entries at the end of the ledger,
         /// all of them this sprint's two creatures', and nothing before them
         /// moved.
         /// </summary>
@@ -212,7 +212,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             string[] appended = AppendedSymbols();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
-                "Sprint 21 appends exactly twenty-two identities.");
+                "Sprint 21 appends exactly twenty-three identities.");
             foreach (string symbol in appended)
                 Assertions.True(symbol.Contains("GiantCrab") ||
                         symbol.Contains("Bebelith"),
@@ -236,7 +236,12 @@ namespace KingmakerGunslinger.DomainTests
                 "KMG.Summoning.Special.Bebelith.Web",
                 "KMG.Summoning.Special.Bebelith.WebResource",
                 "KMG.Summoning.Special.Bebelith.WebAi",
-                "KMG.Summoning.Special.Bebelith.Brain" })
+                "KMG.Summoning.Special.Bebelith.Brain",
+                // Measured in the first guarded run: the native outsider
+                // chassis assigns this creature's Fortitude and Will to each
+                // other's slots and gives it one hit point per die more than
+                // its block prints.
+                "KMG.Summoning.Special.Bebelith.ChassisCorrection" })
                 Assertions.True(appended.Contains(tail, StringComparer.Ordinal),
                     "Missing Sprint 21 identity: " + tail);
             // The Bebelith's released identities must NOT be here. Appending

@@ -37,11 +37,11 @@ class Sprint21Tests(unittest.TestCase):
         self.assertEqual("validate_expanded_summoning_sprint19148.py",
                          VALIDATORS["0.0.148"])
 
-    def test_the_append_is_exactly_twentytwo_identities(self):
-        self.assertEqual(3061, gate.validate_identity_append(ROOT))
+    def test_the_append_is_exactly_twentythree_identities(self):
+        self.assertEqual(3062, gate.validate_identity_append(ROOT))
 
     def test_the_identity_arithmetic_is_stated_rather_than_a_magic_number(self):
-        """Twenty-two is a derivation, and it must stay one.
+        """Twenty-three is a derivation, and it must stay one.
 
         For the crab: one unit, seven placements, five facts, and - uniquely
         in this series - no execution children at all. For the Bebelith: nine
@@ -53,8 +53,8 @@ class Sprint21Tests(unittest.TestCase):
         self.assertEqual(0, gate.SPRINT21_MONSTER_ROOTS)
         self.assertEqual(0, gate.SPRINT21_EXECUTION_CHILDREN)
         self.assertEqual(5, len(gate.SPRINT21_IDENTITY_TAIL))
-        self.assertEqual(9, len(gate.BEBELITH_IDENTITY_TAIL))
-        self.assertEqual(22, gate.SPRINT21_IDENTITIES)
+        self.assertEqual(10, len(gate.BEBELITH_IDENTITY_TAIL))
+        self.assertEqual(23, gate.SPRINT21_IDENTITIES)
         self.assertEqual(1 + 7 + 0 + len(gate.SPRINT21_IDENTITY_TAIL)
                          + len(gate.BEBELITH_IDENTITY_TAIL),
                          gate.SPRINT21_IDENTITIES)
@@ -75,7 +75,8 @@ class Sprint21Tests(unittest.TestCase):
                          "KMG.Summoning.Special.Bebelith.Web",
                          "KMG.Summoning.Special.Bebelith.WebResource",
                          "KMG.Summoning.Special.Bebelith.WebAi",
-                         "KMG.Summoning.Special.Bebelith.Brain"):
+                         "KMG.Summoning.Special.Bebelith.Brain",
+                         "KMG.Summoning.Special.Bebelith.ChassisCorrection"):
             self.assertIn(required, gate.BEBELITH_IDENTITY_TAIL)
         # And the released four are NOT appended. Re-appending one would mean
         # the creature had been reallocated rather than overhauled.
@@ -108,7 +109,7 @@ class Sprint21Tests(unittest.TestCase):
             "notes": "unreviewed"})
         with patch.object(gate, "document", return_value=altered):
             with self.assertRaisesRegex(AssertionError,
-                                        "exactly 22 identities"):
+                                        "exactly 23 identities"):
                 gate.validate_identity_append(ROOT)
 
     def test_an_identity_outside_the_one_creature_is_rejected(self):
