@@ -16206,32 +16206,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "KMG_Summoning_Special_Bebelith_DismantledArmor");
             BebelithCombatComponent bebelithCombat = bebelithTraits
                 .ComponentsArray.OfType<BebelithCombatComponent>().Single();
-            bool bebelithExact = bebelith.ComponentsArray
-                    .OfType<AddClassLevels>().Single().Levels == 12 &&
-                bebelith.Size == Size.Huge &&
-                bebelith.Alignment == Alignment.ChaoticEvil &&
+            // Sprint 21 overhauled this creature, so this census describes
+            // what it is now - and reports its PARTS rather than one word. A
+            // conjunction this long answering only "exact" or "mismatch"
+            // tells a reader nothing about which clause failed: the series
+            // closure had to read the builder to work out that the stale
+            // clause was the retired flat -2.
+            var bebelithParts = new System.Collections.Generic.List<string>();
+            Action<string, bool> bebelithPart = (name, ok) => {
+                bebelithParts.Add(name + "=" + (ok ? "ok" : "MISMATCH")); };
+            bebelithPart("hitDice", bebelith.ComponentsArray
+                .OfType<AddClassLevels>().Single().Levels == 12);
+            bebelithPart("huge", bebelith.Size == Size.Huge);
+            bebelithPart("chaoticEvil",
+                bebelith.Alignment == Alignment.ChaoticEvil);
+            bebelithPart("abilityScores",
                 bebelith.Strength == 28 && bebelith.Dexterity == 12 &&
                 bebelith.Constitution == 24 && bebelith.Intelligence == 11 &&
-                bebelith.Wisdom == 13 && bebelith.Charisma == 13 &&
+                bebelith.Wisdom == 13 && bebelith.Charisma == 13);
+            bebelithPart("claws2d4",
                 bebelithClaw.Damage.Rolls == 2 &&
                 bebelithClaw.Damage.Dice == DiceType.D4 &&
                 bebelith.Body.PrimaryHand == bebelithClaw &&
                 bebelith.Body.AdditionalLimbs.SequenceEqual(new[] {
-                    bebelithClaw }) &&
+                    bebelithClaw }));
+            bebelithPart("bite2d6",
                 bebelith.Body.AdditionalSecondaryLimbs.Length == 1 &&
                 bebelith.Body.AdditionalSecondaryLimbs[0].AssetGuid ==
-                    "d2f99947db522e24293a7ec4eded453f" &&
+                    "d2f99947db522e24293a7ec4eded453f");
+            // The two native facts this creature must never carry. Rot clones
+            // the native poison GRAPH, which is a different thing from
+            // carrying a native fact, and the released pair stays forbidden.
+            bebelithPart("noForbiddenNativeFacts",
                 bebelith.AddFacts.All(value => value == null ||
                     (value.AssetGuid != "ef60cd888b834a549898824e6b684918" &&
-                     value.AssetGuid != "3051e7002c803fc47a11bcfa381b9fbd")) &&
-                ReferenceEquals(bebelithCombat.Claw, bebelithClaw) &&
+                     value.AssetGuid != "3051e7002c803fc47a11bcfa381b9fbd")));
+            bebelithPart("combatOwnsClaw",
+                ReferenceEquals(bebelithCombat.Claw, bebelithClaw));
+            bebelithPart("combatOwnsDismantledArmor",
                 ReferenceEquals(bebelithCombat.DismantledArmor,
-                    dismantledArmor) &&
+                    dismantledArmor));
+            bebelithPart("damageResistanceGood",
                 bebelithTraits.ComponentsArray.OfType<
-                    AddDamageResistancePhysical>().Single().Alignment ==
-                        DamageAlignment.Good &&
-                dismantledArmor.ComponentsArray.OfType<AddStatBonus>()
-                    .Single().Value == -2;
+                    AddDamageResistancePhysical>().Any(value =>
+                        value.Alignment == DamageAlignment.Good));
+            // The overhaul, in the one place a flat number used to be. The
+            // released build applied an invented -2 to armour class; Kingmaker
+            // exposes no item-durability component to a mod, so the piece now
+            // survives and loses its WHOLE contribution through a component
+            // that reads the live equipment. A flat bonus here again would be
+            // the invented number coming back.
+            bebelithPart("dismantleIsAWearerState",
+                dismantledArmor.ComponentsArray
+                    .OfType<BebelithDismantledArmorComponent>().Count() == 1 &&
+                !dismantledArmor.ComponentsArray.OfType<AddStatBonus>().Any());
+            string bebelithEvidence = string.Join(";", bebelithParts.ToArray());
+            bool bebelithExact = bebelithParts.All(value =>
+                value.EndsWith("=ok", StringComparison.Ordinal));
             BlueprintUnit pixie = all.OfType<BlueprintUnit>().Single(value =>
                 value.name == "KMG_Summoning_Unit_Pixie");
             BlueprintItemWeapon pixieSleepBow = all.OfType<BlueprintItemWeapon>()
@@ -16518,8 +16549,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     succubusExact ? "exact" : "mismatch", succubusExact,
                     "8-HD demon with bounded domination, first-hit temporary drain, and demonic defenses"),
                 Assertion("expanded-summoning-bebelith", "exact",
-                    bebelithExact ? "exact" : "mismatch", bebelithExact,
-                    "12-HD Huge outsider, poison/web-free 2d4 claws and 2d6 bite, DR/good, bounded dismantle, and demon hunting"),
+                    bebelithEvidence, bebelithExact,
+                    "12-HD Huge outsider, 2d4 claws and 2d6 bite, DR/good, a dismantle that is a wearer state rather than an invented flat penalty, and demon hunting"),
                 Assertion("expanded-summoning-pixie", "exact",
                     pixieExact ? "exact" : "mismatch", pixieExact,
                     "4-HD Small fey with native arrow rig, sixteen sleep arrows, one dance use, native invisibility, DR, and SR"),
