@@ -114,25 +114,23 @@ namespace KingmakerGunslinger.DomainTests
             // modes and 4 of 4 on the party-camera art review. Publication was
             // the removal of one suppression key, so the registered count is
             // the one registration allocated and nothing moved to make room.
-            Assertions.Equal(7,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All twelve of this creature's are published; what is "
-                + "withheld is Sprint 21's hidden candidate and nothing "
-                + "else.");
+                "All twelve of this creature's are published, and so is "
+                + "everything else.");
             Assertions.Equal(1063,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placements rose from 1044 to 1056, and Sprint 21 "
                 + "registered seven more.");
-            Assertions.Equal(1056,
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The published surface is unchanged by a later sprint's "
-                + "hidden candidate, which is this test's real subject.");
+                "The published surface is every registered placement, which "
+                + "is this test's real subject: a later sprint must not reach "
+                + "back and suppress a published creature.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey,
+                Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Every placement is published, this creature's included, "
-                    + "except Sprint 21's withheld candidate: "
+                    "Every placement is published, this creature's included: "
                     + variant.StableKey);
         }
 

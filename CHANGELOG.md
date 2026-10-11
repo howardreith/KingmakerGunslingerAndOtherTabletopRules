@@ -2,18 +2,20 @@
 
 ## 0.0.150-expanded-summoning-sprint21
 
-- Registers the Expanded Summoning Sprint 21 Giant Crab and withholds it.
-  Seven new roots on Summon Nature's Ally III take registered generated
-  placements from 1056 to 1063; none of them is selectable, so the visible
-  surface stays at the 1085 choices v0.0.149 published. It is the first
-  creature in the roster with a Nature's Ally tier and no Summon Monster one,
-  so it owns no execution children at all.
+- Publishes the Expanded Summoning Sprint 21 Giant Crab. Seven new roots on
+  Summon Nature's Ally III take registered generated placements from 1056 to
+  1063, and all seven are published, so the visible surface rises from 1085
+  choices to 1092: 1063 generated plus 29 retained native wrappers. It is the
+  first creature in the roster with a Nature's Ally tier and no Summon Monster
+  one, so it owns no execution children at all. Publication was the removal of
+  one suppression key and nothing else; nothing v0.0.149 published moved.
 - Rebuilds the released Bebelith against its printed block without moving its
   identity. The unit and all three Summon Monster roots keep the exact GUIDs
   they shipped with, at the same tiers and quantities, published as they
   already were, so a save made against v0.0.149 resolves every one of them.
   The released spelling is kept: renaming the shipped key would retire a GUID
-  and migrate every save that holds one.
+  and migrate every save that holds one. Its three roots were already on the
+  menu, which is why ten roots changed and the visible surface rose by seven.
 - Appends exactly 23 append-only identities to the released v0.0.149 ledger,
   taking it from 3039 to 3062 entries without moving a historical GUID: one
   unit, seven placements and five facts for the crab, and ten for the
@@ -50,6 +52,13 @@
   wider than it is long, stands laterally on eight legs, carries two unequal
   pincers and reaches no abdomen chain. Both generators refuse to build a body
   that breaks those rules.
+- Qualified by a guarded review that returned 44 of 44 in both real time and
+  turn-based combat, covering both creatures and both original bodies, across
+  eleven guarded transactions that each restored the installation exactly. Two
+  engine behaviours it measured are recorded rather than worked around:
+  Kingmaker stacks poison, so rot's per-round saves run above its application
+  save because each bite is another dose, and Kingmaker refuses to unequip
+  armour while a unit is in combat.
 
 ## 0.0.149-expanded-summoning-sprint20
 

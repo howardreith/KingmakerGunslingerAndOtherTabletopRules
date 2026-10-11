@@ -467,12 +467,12 @@ def validate(root: Path) -> None:
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 1063;",
-        # Sprint 18 published on 2026-10-09 and Sprints 19 and 20 on
-        # 2026-10-10, each after its own complete hidden candidate passed.
-        # Nothing is withheld now: all 1056 registered placements are
-        # selectable, which with the 29 retained native wrappers is 1085
-        # visible choices.
-        "SuppressedLogicalPlacementCount = 7;")
+        # Sprint 18 published on 2026-10-09, Sprints 19 and 20 on 2026-10-10
+        # and Sprint 21 on 2026-10-11, each after its own complete hidden
+        # candidate passed. Nothing is withheld now: all 1063 registered
+        # placements are selectable, which with the 29 retained native
+        # wrappers is 1092 visible choices.
+        "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
         "UnitCount = 103;",
         "LogicalAbilityCount = 1063;",

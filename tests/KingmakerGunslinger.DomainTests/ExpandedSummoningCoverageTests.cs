@@ -74,10 +74,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(114,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures must be 102 project-owned plus 11 native wrappers, and the Giant Crab Sprint 21 registered.");
-            Assertions.Equal(113,
+            // Represented is now published, for every one of them: the
+            // Giant Crab was the last creature in the series still withheld.
+            Assertions.Equal(114,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "Represented is not published: Sprint 21's Giant Crab is "
-                + "registered and withheld until its own review passes.");
+                "Every represented creature is published after Sprint 21.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
                 .Contains("stirge"),
                 "The requalified Stirge must count as published coverage.");
@@ -220,7 +221,7 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 13 adds Shadow Mastiff's four; Sprints 14-15 publish all
             // insects under the accepted passive-sense limitation. Sprint 16
             // adds six Dire roots after its complete hidden qualification.
-            Assertions.Equal(1085,
+            Assertions.Equal(1092,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");

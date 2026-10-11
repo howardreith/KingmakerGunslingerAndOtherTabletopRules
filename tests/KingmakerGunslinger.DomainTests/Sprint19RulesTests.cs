@@ -191,18 +191,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1063,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(7,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Exactly Sprint 21's seven roots are withheld.");
-            Assertions.Equal(1056,
+                "Nothing is withheld once Sprint 21 publishes.");
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey,
+                Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Only Sprint 21's hidden candidate is withheld: "
-                    + variant.StableKey);
+                    "Every placement is published: " + variant.StableKey);
             SummonVisibilityCatalog.Validate();
         }
 

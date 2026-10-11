@@ -122,20 +122,29 @@ class Sprint21Tests(unittest.TestCase):
                     AssertionError, "outside its two creatures"):
                 gate.validate_identity_append(ROOT)
 
-    def test_publishing_the_crab_early_is_rejected(self):
-        """Publication is earned by a passing review, not by an edit."""
+    def test_leaving_the_crab_withheld_after_publication_is_rejected(self):
+        """The mirror of the fixture this replaces.
+
+        Until the review passed, the gate's job was to refuse a creature that
+        had published without earning it. It has now passed 44 of 44 in both
+        combat modes, so the job is the other one: refuse a release that still
+        withholds it. A key left in by accident would ship seven roots no
+        player can reach while every count and record said they were live -
+        and this is the last sprint in the series, so no later one would
+        notice.
+        """
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "src/KingmakerGunslinger/Summoning"
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1063;\n"
-                "SuppressedLogicalPlacementCount = 0;\n"
-                "SuppressedCreatureKeys = new HashSet<string>("
-                "Array.Empty<string>(), StringComparer.Ordinal);\n",
+                "SuppressedLogicalPlacementCount = 7;\n"
+                "SuppressedCreatureKeys = new HashSet<string>(new[] { "
+                '"giant-crab" }, StringComparer.Ordinal);\n',
                 encoding="utf-8")
             with self.assertRaisesRegex(
-                    AssertionError, "register its creature withheld"):
+                    AssertionError, "did not remove its key"):
                 gate.validate_suppression(root)
 
     def test_withholding_a_released_creature_is_rejected(self):
@@ -146,9 +155,9 @@ class Sprint21Tests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1063;\n"
-                "SuppressedLogicalPlacementCount = 19;\n"
+                "SuppressedLogicalPlacementCount = 12;\n"
                 'SuppressedCreatureKeys = new HashSet<string>(new[] { '
-                '"giant-crab", "giant-scorpion" }, StringComparer.Ordinal);\n',
+                '"giant-scorpion" }, StringComparer.Ordinal);\n',
                 encoding="utf-8")
             with self.assertRaisesRegex(
                     AssertionError, "withheld a creature v0.0.149 published"):
@@ -162,9 +171,9 @@ class Sprint21Tests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1063;\n"
-                "SuppressedLogicalPlacementCount = 10;\n"
+                "SuppressedLogicalPlacementCount = 3;\n"
                 'SuppressedCreatureKeys = new HashSet<string>(new[] { '
-                '"giant-crab", "bebelith" }, StringComparer.Ordinal);\n',
+                '"bebelith" }, StringComparer.Ordinal);\n',
                 encoding="utf-8")
             with self.assertRaisesRegex(
                     AssertionError, "withheld a creature v0.0.149 published"):
@@ -185,9 +194,9 @@ class Sprint21Tests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "SummonVisibilityCatalog.cs").write_text(
                 "RegisteredLogicalPlacementCount = 1063;\n"
-                "SuppressedLogicalPlacementCount = 7;\n"
-                'SuppressedCreatureKeys = new HashSet<string>(new[] { '
-                '"giant-crab" }, StringComparer.Ordinal);\n',
+                "SuppressedLogicalPlacementCount = 0;\n"
+                "SuppressedCreatureKeys = new HashSet<string>("
+                "Array.Empty<string>(), StringComparer.Ordinal);\n",
                 encoding="utf-8")
             (source / "ExpandedSummoningCatalog.cs").write_text(
                 'C("giant-crab","Giant Crab",null,true,3,"Giant Spider"),\n'

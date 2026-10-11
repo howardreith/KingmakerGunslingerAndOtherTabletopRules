@@ -260,8 +260,8 @@ SPRINT21_IDENTITIES = (1 + SPRINT21_ROOTS + SPRINT21_EXECUTION_CHILDREN +
 MASTER_LEDGER_ENTRIES = 3039
 
 REGISTERED_PLACEMENTS = 1063
-SUPPRESSED_PLACEMENTS = 7
-# What v0.0.148 published, kept as the number this release must not have
+SUPPRESSED_PLACEMENTS = 0
+# What v0.0.149 published, kept as the number this release must not have
 # reduced rather than as the number it shows.
 PUBLISHED_BY_THE_PRIOR_RELEASE = 1056
 NATIVE_WRAPPERS = 29
@@ -575,9 +575,9 @@ def validate_suppression(root: Path) -> None:
         raise AssertionError(
             "The suppression set must be declared exactly once")
     suppressed = declaration[1].split(";")[0]
-    if '"' + SPRINT21_KEY + '"' not in suppressed:
+    if '"' + SPRINT21_KEY + '"' in suppressed:
         raise AssertionError(
-            "Sprint 21 must register its creature withheld: " + SPRINT21_KEY)
+            "Sprint 21 publication did not remove its key: " + SPRINT21_KEY)
     # Everything v0.0.148 published stays published. Sprint 18's apes and
     # Sprint 19's Girallon and Xill are the ones a careless edit would reach.
     for key in ("ape", "dire-ape", "girallon", "xill", "giant-scorpion",
@@ -585,11 +585,12 @@ def validate_suppression(root: Path) -> None:
         if '"' + key + '"' in suppressed:
             raise AssertionError(
                 "Sprint 21 withheld a creature v0.0.149 published: " + key)
-    # Exactly one creature withheld, and it is this one. A second name here
-    # would be a creature registered and then forgotten.
-    if suppressed.count('"') != 2:
-        raise AssertionError(
-            "Sprint 21 withholds exactly its own creature: " + suppressed.strip())
+    # Nothing at all withheld. This is the last sprint in the series, so a
+    # name here would be a creature registered and then forgotten with no
+    # later sprint to publish it.
+    if '"' in suppressed:
+        raise AssertionError("Sprint 21 publishes everything; nothing may be "
+                             "withheld: " + suppressed.strip())
     # The set is empty rather than absent, and every registered placement is
     # visible. Publication is the removal of one key and nothing else, so the
     # registered count must be the one registration allocated.
@@ -597,9 +598,10 @@ def validate_suppression(root: Path) -> None:
                   + str(REGISTERED_PLACEMENTS),
                   "SuppressedLogicalPlacementCount = "
                   + str(SUPPRESSED_PLACEMENTS),
-                  'new HashSet<string>(new[] { "giant-crab" }'):
+                  "new HashSet<string>(Array.Empty<string>()"):
         if token not in visibility:
-            raise AssertionError("Sprint 21 candidate surface differs: " + token)
+            raise AssertionError(
+                "Sprint 21 publication surface differs: " + token)
     catalog = (root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
                ).read_text(encoding="utf-8")
     # This sprint's creature is the other way round, and it is the structural
@@ -1037,7 +1039,10 @@ def validate(root: Path) -> None:
                 "weaponFindability143", "weaponFindabilityRelease144",
                 "heirloomNodachiIconRelease145", "expandedSummoningCheckpoint146",
                 "expandedSummoningCheckpoint143", "expandedSummoningSprint18147",
-                "expandedSummoningSprint19148"):
+                # v0.0.149's own record, which this gate did not protect until
+                # a 354 that belongs to v0.0.150 was written onto it. Its
+                # package shipped 349 members and always will.
+                "expandedSummoningSprint19148", "expandedSummoningSprint20149"):
         if state[key] != json.loads(
                 blob(root, MASTER, "validation/static-validation.json"))[key]:
             raise AssertionError("Historical release record changed: " + key)
