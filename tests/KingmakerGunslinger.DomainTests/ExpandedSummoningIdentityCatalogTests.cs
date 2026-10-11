@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(2062, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(2063, first.Count, "Foundation identity count changed.");
             Assertions.Equal(103, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1739, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
             Assertions.Equal(13, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
             Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(32, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(33, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             // The alignment-mode toggle, plus the Shadow Mastiff's shadow
             // blend, whose printed text makes suspending and resuming it a
