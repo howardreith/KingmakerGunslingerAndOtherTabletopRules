@@ -74,8 +74,11 @@ namespace KingmakerGunslinger.Assets
             "assets/sprint14-insects/";
         private const string Sprint20ArachnidDirectory =
             "assets/sprint20-arachnids/";
-        private const string Sprint21CrustaceanDirectory =
-            "assets/sprint21-crustaceans/";
+        // Both Sprint 21 bodies ship here. The folder is named for the
+        // phylum rather than for a crustacean because the sprint authors a
+        // crab and a demon, and they share a rig, a loader and a pipeline.
+        private const string Sprint21ArthropodDirectory =
+            "assets/sprint21-arthropods/";
         private const string CrocodilianDirectory = "assets/sprint16-crocodilians/";
         internal const int SupportedSchemaVersion = 2;
 
@@ -268,7 +271,12 @@ namespace KingmakerGunslinger.Assets
                     // second arthropod: same rig, same loader, same pipeline.
                     // Its bone list is its own because it carries no tail -
                     // the abdomen chain holds the back of the carapace.
-                    { "giant-crab", new Sprint13CreatureVisual() }
+                    { "giant-crab", new Sprint13CreatureVisual() },
+                    // Sprint 21's other body, and the only creature in this
+                    // table that is already released: it ships today wearing
+                    // the game's own Doomspider, and this entry is what
+                    // replaces that with the authored body.
+                    { "bebelith", new Sprint13CreatureVisual() }
                 };
 
         /// <summary>
@@ -672,7 +680,11 @@ namespace KingmakerGunslinger.Assets
                         visual.Albedo != null) continue;
                 string directory =
                     key == Sprint14BonePolicy.ScorpionKey
-                        ? Sprint20ArachnidDirectory : Sprint14InsectDirectory;
+                        ? Sprint20ArachnidDirectory
+                    : key == Sprint14BonePolicy.CrabKey ||
+                      key == Sprint14BonePolicy.BebelithKey
+                        ? Sprint21ArthropodDirectory
+                        : Sprint14InsectDirectory;
                 string path = Path.Combine(context.ModEntry.Path,
                     (directory + key + "-mesh.json")
                     .Replace('/', Path.DirectorySeparatorChar));

@@ -303,8 +303,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // that is a stub.
             int pairs = 0;
             for (int index = 0; index < 4; index++)
-                if (names.Contains("L_Foot" + index) &&
-                    names.Contains("R_Foot" + index))
+                if (Sprint21DonorSurveyPolicy.HasBone(names, "L_Foot" + index) &&
+                    Sprint21DonorSurveyPolicy.HasBone(names, "R_Foot" + index))
                     pairs++;
             row["walkingLegPairs"] = pairs;
             row["allBoneNames"] = new JArray(names.OrderBy(value => value,
@@ -314,8 +314,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void Report(JObject row, HashSet<string> names,
             string prefix, string[] candidates)
         {
-            row[prefix + "Bones"] = candidates.Count(names.Contains);
-            row[prefix + "Present"] = new JArray(candidates.Where(names.Contains));
+            // Case-insensitive, because this rig family spells its legs
+            // capitalised and its pedipalps and cheliceræ lowercase in one
+            // skeleton, and an exact comparison reported no jaw on a rig
+            // that has two.
+            Func<string, bool> present = candidate =>
+                Sprint21DonorSurveyPolicy.HasBone(names, candidate);
+            row[prefix + "Bones"] = candidates.Count(present);
+            row[prefix + "Present"] = new JArray(candidates.Where(present));
         }
     }
 }

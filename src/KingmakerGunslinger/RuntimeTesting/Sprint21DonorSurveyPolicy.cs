@@ -214,14 +214,39 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// The jaw. The Bebelith's bite is a printed primary attack with its
         /// own damage die, so whether the rig has a real jaw chain or only a
         /// painted face changes how the bite is authored.
+        ///
+        /// <para>The first run reported no jaw on a rig that plainly has one.
+        /// This skeleton spells its legs and feet capitalised and its
+        /// pedipalps and cheliceræ lowercase, in one bone roster, and the
+        /// candidate list had "Chelicera_L" with a capital. The raw roster
+        /// the capture also writes is what exposed it, which is the reason
+        /// the capture writes one. Chain matching is case-insensitive now,
+        /// everywhere, because the same trap was available on every other
+        /// chain.</para>
         /// </summary>
         internal static string[] JawCandidates
         {
             get
             {
-                return new[] { "Jaw_M", "Jaw0_M", "Jaw1_M", "Chelicera_L",
-                    "Chelicera_R", "Mandible_L", "Mandible_R", "Head_M" };
+                return new[] { "Jaw_M", "Jaw0_M", "Jaw1_M", "chelicera_L",
+                    "chelicera_R", "Mandible_L", "Mandible_R", "Head_M" };
             }
+        }
+
+        /// <summary>
+        /// Whether a bone roster contains a named candidate, ignoring case.
+        /// One skeleton here mixes both conventions, so an exact comparison
+        /// silently under-reports a chain that exists.
+        /// </summary>
+        internal static bool HasBone(System.Collections.Generic.ICollection<string> names,
+            string candidate)
+        {
+            if (names == null || string.IsNullOrEmpty(candidate)) return false;
+            foreach (string name in names)
+                if (string.Equals(name, candidate,
+                        StringComparison.OrdinalIgnoreCase))
+                    return true;
+            return false;
         }
 
         internal static bool Matches(string name, string[] terms)

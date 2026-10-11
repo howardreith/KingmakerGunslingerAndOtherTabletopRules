@@ -193,6 +193,16 @@ foreach ($kind in @('giant-scorpion')) {
     Copy-Item -LiteralPath (Join-Path $arachnidSource "$kind-mesh.json") -Destination $arachnidDestination
     Copy-Item -LiteralPath (Join-Path $arachnidSource "$kind-albedo.png") -Destination $arachnidDestination
 }
+# Sprint 21's two original bodies, staged by name on the same terms: a
+# missing export fails the package rather than shipping a crab that never
+# arrives and a bebelith that still looks like the Doomspider it replaces.
+$arthropodSource = Join-Path $outputDirectory 'assets\sprint21-arthropods'
+$arthropodDestination = Join-Path $modDirectory 'assets\sprint21-arthropods'
+New-Item -ItemType Directory -Path $arthropodDestination -Force | Out-Null
+foreach ($kind in @('giant-crab','bebelith')) {
+    Copy-Item -LiteralPath (Join-Path $arthropodSource "$kind-mesh.json") -Destination $arthropodDestination
+    Copy-Item -LiteralPath (Join-Path $arthropodSource "$kind-albedo.png") -Destination $arthropodDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -213,7 +223,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 350 } else { 348 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 354 } else { 352 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount
