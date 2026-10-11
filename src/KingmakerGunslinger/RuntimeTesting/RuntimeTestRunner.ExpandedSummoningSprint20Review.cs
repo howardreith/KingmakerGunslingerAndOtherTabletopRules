@@ -542,16 +542,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         result => attack = result)) yield return step;
                     int attempts = 1;
                     int savesBefore = 0;
-                    int rollsBefore = 0;
-                    while (attempts < 8 && (Sprint18ChosenLimbMissed(
+                    // Both of this review's own trial predicates moved
+                    // into the shared seam, which now covers an unchosen limb
+                    // landing and a save landing on either wrong side rather
+                    // than only on a natural twenty.
+                    while (attempts < 8 && (Sprint18ChosenSequenceMissed(
                             observer, null, before, accuracy) ||
-                        Sprint20UnchosenLimbLanded(observer, rollsBefore,
-                            accuracy) ||
-                        Sprint20SaveRolledTwenty(saves, savesBefore, saveMade)))
+                        Sprint18ChosenSaveSideMissed(saves, savesBefore,
+                            saveMade)))
                     {
                         attempts++;
                         before = observer.Attacks.Count;
-                        rollsBefore = observer.Attacks.Count;
                         savesBefore = saves.Saves.Count;
                         if (CombatController.IsInTurnBasedCombat())
                             foreach (int step in Sprint18AdvanceRound(owner))
@@ -1007,17 +1008,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Creature.Key) &&
                     !SummonVisibilityCatalog.IsPublished(value));
                 // The published count follows from the state above and is
-                // arithmetic rather than a second opinion: withheld means the
-                // 1044 v0.0.148 published, published means all 1056. Either
-                // way nothing outside this creature may be withheld, which is
+                // arithmetic rather than a second opinion: withheld means this
+                // creature's twelve are the only roots held back, published
+                // means the surface is the whole registered one. Either way
+                // nothing outside this creature may be withheld, which is
                 // what says no earlier release moved to make room.
-                int expectedPublished = allPublished ? 1056 : 1044;
+                //
+                // A relation rather than the 1056 and 1044 this release
+                // showed: Sprint 21 registered seven more roots and published
+                // them, so a pin on either literal fails the series closure
+                // on a creature that is exactly right.
+                int registered =
+                    SummonVisibilityCatalog.RegisteredLogicalPlacementCount;
+                int expectedPublished = allPublished
+                    ? registered : registered - 12;
                 Sprint20Check("no-other-root-withheld",
                     withheldElsewhere == 0 &&
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount ==
                         expectedPublished &&
-                    SummonVisibilityCatalog.RegisteredLogicalPlacementCount ==
-                        1056 &&
+                    registered >= 1056 &&
                     SummonVisibilityCatalog.SuppressedLogicalPlacementCount ==
                         (allPublished ? 0 : 12),
                     new JObject {
@@ -1119,31 +1128,6 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// attempt no grapple. This only refuses to score a sequence that was
         /// never claw-only or sting-only.</para>
         /// </summary>
-        private static bool Sprint20UnchosenLimbLanded(
-            Sprint16RuleObserver observer, int from, Sprint18Accuracy accuracy)
-        {
-            return Sprint18AttemptRolls(observer, null, from).Any(roll =>
-                roll.IsHit && roll.Weapon != null &&
-                !accuracy.Hit.Any(chosen => ReferenceEquals(chosen, roll.Weapon)));
-        }
-
-        /// <summary>
-        /// Whether the save this trial forced was an automatic success.
-        ///
-        /// <para>A natural twenty always makes a save, whatever the modifier,
-        /// so a trial that wanted a failed save and rolled one has measured
-        /// the dice rather than the rule - exactly as a natural one always
-        /// misses. The trial is abandoned whole and retried.</para>
-        /// </summary>
-        private static bool Sprint20SaveRolledTwenty(
-            Sprint19SaveObserver saves, int from, bool saveMade)
-        {
-            if (saveMade) return false;
-            RuleSavingThrow[] forced = saves.Saves.Skip(from).Where(save =>
-                save.StatType == StatType.SaveFortitude).ToArray();
-            return forced.Length > 0 && forced.All(save => save.D20.Value == 20);
-        }
-
         /// <summary>This creature's own venom buff, by its registered name.</summary>
         private static BlueprintBuff Sprint20Venom(
             ExpandedSummoningCorrectionFixture fixture)
