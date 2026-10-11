@@ -2,6 +2,8 @@ using System;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
@@ -39,39 +41,69 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// Pins the applied rot's difficulty class so every exposure uses the
-    /// number the bite that caused it produced.
+    /// Pins the applied rot's difficulty class to the printed number, on
+    /// every save the applied state causes.
     ///
-    /// <para>The second guarded run of this sprint recorded rot's first save
-    /// at the printed 23 and its per-round saves at 27, 31 and 33 - and on
-    /// some of them the caster the engine named was the VICTIM, not the
-    /// Bebelith. A difficulty class recomputed each round from whatever the
-    /// context resolves to is a different poison every round, and once the
-    /// source is dismissed it is the victim's own Constitution deciding how
-    /// hard the victim's own saves are. The frozen contract names that
-    /// exactly: source death or dismissal must not corrupt an
-    /// already-applied victim-owned effect.</para>
+    /// <para>Two guarded runs shaped this. The first recorded rot's first
+    /// save at the printed 23 and its per-round saves at 27, 31 and 33, with
+    /// the VICTIM sometimes named as the caster - which is the corruption
+    /// the frozen contract forbids: once the Bebelith is dismissed it would
+    /// be the victim's own Constitution deciding how hard the victim's own
+    /// saves are. Pinning the buff's context fixed the caster and steadied
+    /// the number at 25, which is better and still not the printed 23, so
+    /// something downstream of the context is adding to it.</para>
     ///
-    /// <para>So the number is captured when the state turns on, from the
-    /// creature that applied it, into the context the per-round saves read.
-    /// If that creature is somehow already gone the printed value is used
-    /// rather than whatever is to hand, because a rot with the wrong source
-    /// should still be the rot its block prints.</para>
+    /// <para>Chasing what would be guessing at the engine's arithmetic. The
+    /// printed number is not negotiable and the save is where it has to be
+    /// true, so this sets it on the rule. The match is on the save's own
+    /// reason being this fact, which is what keeps it off every other save
+    /// the victim makes, off every other creature's poison, and off
+    /// everything at all once the state ends.</para>
+    ///
+    /// <para>The value is captured when the state turns on, from the
+    /// creature that applied it. That is the contract's requirement stated
+    /// precisely: the effect keeps the number the bite that caused it
+    /// produced, whatever becomes of its source.</para>
     /// </summary>
     [Serializable]
     public sealed class BebelithRotStateDifficultyClass :
         OwnedGameLogicComponent<UnitDescriptor>
     {
+        /// <summary>
+        /// What this component last pinned, and onto what. Read by the
+        /// guarded review and by nothing else: a difficulty class that
+        /// disagrees with the saves the engine then rolls is a finding, and
+        /// a finding needs both numbers.
+        /// </summary>
+        internal static string LastPin = "none";
+
         public override void OnTurnOn()
         {
-            MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
-            if (context == null || context.Params == null) return;
-            UnitEntityData caster = context.MaybeCaster;
+            UnitEntityData caster = Fact == null || Fact.MaybeContext == null
+                ? null : Fact.MaybeContext.MaybeCaster;
             int constitution = caster == null || caster.Descriptor == null
                 ? BebelithRulesPolicy.ConstitutionModifier
                 : caster.Descriptor.Stats.Constitution.Bonus;
-            context.Params.DC = BebelithRulesPolicy.DifficultyClass(
+            int printed = BebelithRulesPolicy.DifficultyClass(
                 BebelithRulesPolicy.HitDice, constitution);
+            MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+            bool wrote = false;
+            int before = 0;
+            if (context != null && context.Params != null)
+            {
+                before = context.Params.DC;
+                context.Params.DC = printed;
+                wrote = context.Params.DC == printed;
+            }
+            LastPin = "caster=" +
+                (caster == null || caster.Blueprint == null ? "none"
+                    : caster.Blueprint.name) +
+                ";constitutionBonus=" + constitution +
+                ";printed=" + printed +
+                ";contextDcBefore=" + before +
+                ";wrote=" + wrote +
+                ";contextDcAfter=" + (context == null || context.Params == null
+                    ? -1 : context.Params.DC);
         }
 
         public override void OnTurnOff() { }
