@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 349 } else { 347 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 350 } else { 348 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 

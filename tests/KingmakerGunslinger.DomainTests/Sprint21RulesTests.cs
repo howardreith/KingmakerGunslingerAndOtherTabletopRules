@@ -804,6 +804,81 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// The two-family donor census is admitted by every gate that can
+        /// refuse it, and it really is two families.
+        ///
+        /// <para>The scenario wiring half of this is the Sprint 19 lesson
+        /// learned for free. The two-family half is this sprint's own risk:
+        /// a Huge demonic spider-hunter and a Medium lateral crab share
+        /// nothing but an exoskeleton, and the easiest wrong decision
+        /// available is to survey once and author both bodies against
+        /// whichever rig the single survey liked.</para>
+        /// </summary>
+        internal static void TheDonorCensusIsWiredAndSurveysTwoFamilies()
+        {
+            const string scenario = "observe-expanded-summoning-sprint21-census";
+            Assertions.Equal(scenario, KingmakerGunslinger.RuntimeTesting
+                    .RuntimeTestScenarioCatalog
+                    .ObserveExpandedSummoningSprint21Census,
+                "The scenario name is what the orchestrator asks for.");
+            Assertions.True(KingmakerGunslinger.RuntimeTesting
+                    .RuntimeTestScenarioCatalog.IsAllowed(scenario),
+                "The mod request validator must admit the Sprint 21 census.");
+            string root = RepositoryRoot();
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            Assertions.True(automation.Contains("'" + scenario + "'"),
+                "The orchestrator needs a descriptor for the census.");
+            // No save, at mod load: a census that needed a save would be
+            // spending a working-save transaction to read view prefabs.
+            int descriptor = automation.IndexOf("'" + scenario + "'",
+                StringComparison.Ordinal);
+            string block = automation.Substring(descriptor,
+                Math.Min(320, automation.Length - descriptor));
+            Assertions.True(block.Contains("RequiresSaveName = $false") &&
+                    block.Contains("ReadinessBehavior = 'mod-load'"),
+                "A read-only prefab census needs no save and no interaction.");
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            Assertions.True(runner.Contains(
+                    "RunExpandedSummoningSprint21DonorCensus()"),
+                "The runner must dispatch the census.");
+            KingmakerGunslinger.RuntimeTesting.Sprint21DonorSurveyPolicy
+                .Validate();
+            var families = KingmakerGunslinger.RuntimeTesting
+                .Sprint21DonorSurveyPolicy.Families;
+            Assertions.Equal(2, families.Length,
+                "Two bodies that share nothing but an exoskeleton are two "
+                + "censuses, not one.");
+            Assertions.Equal("bebelith", families[0].Key,
+                "The Bebelith's family comes first.");
+            Assertions.Equal("giant-crab", families[1].Key,
+                "The Giant Crab's is audited independently.");
+            // Each must be able to find its own creature. A Bebelith census
+            // that looks only at arachnids has already decided the creature
+            // is a spider; a crab census that does not look for a crab
+            // reports nothing about this sprint's second body.
+            Assertions.True(families[0].DiscoveryTerms.Contains("demon"),
+                "The Bebelith is a demon as well as an arthropod.");
+            Assertions.True(families[1].DiscoveryTerms.Contains("crab"),
+                "The crab census must look for a crab.");
+            Assertions.False(families[1].Anchors.Any(value => value[1] ==
+                    KingmakerGunslinger.RuntimeTesting
+                        .Sprint21DonorSurveyPolicy.DoomspiderDonorGuid),
+                "The Doomspider is the Bebelith's released donor and is not "
+                + "a crab candidate.");
+            // The census must exclude what this mod just registered. Sprint
+            // 20's second run reported one installed scorpion and it was its
+            // own unit, registered minutes earlier.
+            Assertions.True(KingmakerGunslinger.RuntimeTesting
+                    .Sprint21DonorSurveyPolicy.IsOurs(
+                        "KMG_Summoning_Unit_GiantCrab"),
+                "A census of the game must not count the creature being "
+                + "authored.");
+        }
+
+        /// <summary>
         /// Both eight-legged creatures on this rig may plant an eighth foot,
         /// and nothing else may.
         /// </summary>

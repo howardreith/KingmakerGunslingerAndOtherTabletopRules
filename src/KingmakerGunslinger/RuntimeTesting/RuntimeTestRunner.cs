@@ -1309,6 +1309,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveExpandedSummoningSprint21Census)
+                {
+                    Complete(RunExpandedSummoningSprint21DonorCensus());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableShieldOther)
                 {
                     Complete(RunDisposableShieldOther());
