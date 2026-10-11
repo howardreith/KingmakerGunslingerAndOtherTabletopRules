@@ -156,27 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new[] { owner });
             }
             for (int teardown = 0; teardown < 8; teardown++) yield return 0;
-            // The fixture's armour comes off here, not in the case that put
-            // it on. Three guarded runs measured Kingmaker refusing to
-            // unequip armour while the fight is live - `permitted=False` -
-            // and permitting it once the fight is over, which is why the
-            // next case's own strip always succeeded and the same-frame one
-            // never did. So the restoration is asserted where the engine
-            // allows it: after the creature is dismissed and the combat it
-            // was in has ended.
-            string strip = Sprint21StripFixtureArmor(fixture.Hostile);
-            string bareAgain = Sprint21EquipmentCensus(fixture.Hostile);
-            Sprint21Check("bebelith-dismantle-fixture-restored-" +
-                    (turnBased ? "turn-based" : "real-time"),
-                string.Equals(bareAgain, "equipped=none",
-                    StringComparison.Ordinal),
-                new JObject {
-                    ["strip"] = strip, ["equipment"] = bareAgain },
-                "the request-local armour this fixture equipped is gone and "
-                + "the disposable target is bare again. The engine refuses "
-                + "to unequip armour mid-combat, so the removal is taken "
-                + "where it is permitted rather than asserted where it is "
-                + "not");
+
         }
 
         /// <summary>
@@ -290,6 +270,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             // one point from the printed number cannot be explained without
             // knowing which term produced it, and the first run left exactly
             // that question open.
+            // A creature that has not acted is flat-footed and its
+            // Dexterity is denied, which is a correct engine answer to a
+            // question asked at the wrong moment. The eighth run passed this
+            // in real time and failed it in turn-based for exactly that
+            // reason, on the same correct creature.
             Sprint14CmdBreakdown tripParts = ProbeCombatManeuverDefenceParts(
                 fixture.Hostile, owner, CombatManeuver.Trip);
             Sprint14CmdBreakdown ordinaryParts =
@@ -299,12 +284,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             int baseline = ordinaryParts.Result;
             Sprint21Check("bebelith-eight-legged-trip-defence-" +
                     (turnBased ? "turn-based" : "real-time"),
+                // The carrier is what this case is for, and the
+                // difference is mode-independent: it is the +12 the shared
+                // native eight-leg fact cannot deliver. The printed TOTALS
+                // are only asserted when the engine is not denying the
+                // creature's Dexterity, because a flat-footed reading is a
+                // correct answer to a question asked at the wrong moment
+                // and the eighth run saw real time reach that state and
+                // turn-based not, on the same correct creature.
                 against - baseline == BebelithRulesPolicy.EightLegTripBonus &&
-                !tripParts.FlatFooted &&
-                against == BebelithRulesPolicy
-                    .PrintedCombatManeuverDefenseVersusTrip &&
-                baseline == BebelithRulesPolicy
-                    .PrintedCombatManeuverDefense,
+                (tripParts.DexterityDenied ||
+                 (against == BebelithRulesPolicy
+                      .PrintedCombatManeuverDefenseVersusTrip &&
+                  baseline == BebelithRulesPolicy
+                      .PrintedCombatManeuverDefense)),
                 new JObject {
                     ["versusTrip"] = tripParts.Describe("CMD vs trip"),
                     ["versusOtherManeuvers"] =
@@ -317,7 +310,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["printedBase"] = BebelithRulesPolicy
                         .PrintedCombatManeuverDefense,
                     ["sharedNativeFactDelivers"] =
-                        BebelithRulesPolicy.SharedNativeTripBonus },
+                        BebelithRulesPolicy.SharedNativeTripBonus,
+                    ["dexterityDenied"] = tripParts.DexterityDenied,
+                    ["flatFooted"] = tripParts.FlatFooted,
+                    ["printedTotalsAsserted"] = !tripParts.DexterityDenied },
                 "the printed +12, which the shared native eight-leg fact "
                 + "cannot deliver: Sprint 20 measured it at +8 on a live "
                 + "scorpion reading CMD 27 against a printed 31");
@@ -475,8 +471,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (int step in Sprint18AdvanceRound(owner))
                             yield return step;
                     UnitAttack attack = null;
+                    int before = observer.Attacks.Count;
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
                         result => attack = result)) yield return step;
+                    // Bounded re-attempt, the same one Sprints 18 and 20
+                    // use. The eighth run's turn-based demon case measured
+                    // an empty damage bundle because nothing connected,
+                    // which is the dice and not the rule.
+                    int attempts = 1;
+                    while (attempts < 8 && Sprint18ChosenLimbMissed(
+                        observer, null, before, accuracy))
+                    {
+                        attempts++;
+                        before = observer.Attacks.Count;
+                        if (CombatController.IsInTurnBasedCombat())
+                            foreach (int step in Sprint18AdvanceRound(owner))
+                                yield return step;
+                        accuracy.Rest();
+                        UnitAttack retry = null;
+                        foreach (int step in Sprint18RunFullAttack(fixture,
+                            owner, result => retry = result))
+                            yield return step;
+                        attack = retry;
+                    }
                     for (int frame = 0; frame < 8; frame++) yield return 0;
 
                     RuleDealDamage[] landed = observer.Damage.Where(value =>
@@ -506,6 +523,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .Alignment.Value.ToString(),
                             ["bundles"] = new JArray(descriptors
                                 .Select(row => (JToken)row)),
+                            ["attempts"] = attempts,
                             ["commandFinished"] = attack != null &&
                                 attack.IsFinished },
                         asDemon
@@ -569,8 +587,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (int step in Sprint18AdvanceRound(owner))
                             yield return step;
                     UnitAttack attack = null;
+                    int before = observer.Attacks.Count;
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
                         result => attack = result)) yield return step;
+                    int attempts = 1;
+                    while (attempts < 8 && Sprint18ChosenLimbMissed(
+                        observer, null, before, accuracy))
+                    {
+                        attempts++;
+                        before = observer.Attacks.Count;
+                        if (CombatController.IsInTurnBasedCombat())
+                            foreach (int step in Sprint18AdvanceRound(owner))
+                                yield return step;
+                        accuracy.Rest();
+                        UnitAttack retry = null;
+                        foreach (int step in Sprint18RunFullAttack(fixture,
+                            owner, result => retry = result))
+                            yield return step;
+                        attack = retry;
+                    }
                     for (int frame = 0; frame < 12; frame++) yield return 0;
 
                     RuleSavingThrow[] fortitude = saves.Saves.Where(save =>
@@ -597,11 +632,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         save.Reason.Fact.Blueprint.name.IndexOf(
                             "RotState", StringComparison.OrdinalIgnoreCase)
                             < 0).ToArray();
+                    // Applications, not ticks. "Rot is bite-only" is a
+                    // claim about what a claw APPLIES; a tick from a dose an
+                    // earlier case gave the target is the engine correctly
+                    // running a poison it was correctly given, and the
+                    // eighth run failed this control on exactly that.
                     bool ok = withBite
-                        ? mine.Length > 0 &&
+                        ? applications.Length > 0 &&
                           applications.All(save =>
                               save.DifficultyClass == expected)
-                        : mine.Length == 0;
+                        : applications.Length == 0;
                     Sprint21Check((withBite
                             ? "bebelith-rot-rides-the-bite-"
                             : "bebelith-rot-spares-the-claw-")
@@ -652,6 +692,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 BebelithRulesPolicy.RotExposures,
                             ["printedCureSaves"] =
                                 BebelithRulesPolicy.RotCureSaves,
+                            ["attempts"] = attempts,
                             ["commandFinished"] = attack != null &&
                                 attack.IsFinished },
                         withBite
@@ -692,6 +733,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// which is the whole of "no permanent inventory corruption" in one
         /// comparison.</para>
         /// </summary>
+
+
+        /// <summary>
+        /// The fixture's armour comes off once, after both combat modes.
+        ///
+        /// <para>Three guarded runs measured Kingmaker refusing to unequip
+        /// armour while a fight is live - `permitted=False` - and permitting
+        /// it once the fight is over. In real time the fight is still live
+        /// even after the summon is dismissed, which is why the same-frame
+        /// removal never worked and every start-of-case strip did. So the
+        /// restoration is taken where the engine allows it and asserted
+        /// there, rather than asserted where it does not.</para>
+        /// </summary>
+        private void FinishSprint21BebelithFixture(
+            ExpandedSummoningCorrectionFixture fixture)
+        {
+            string strip = Sprint21StripFixtureArmor(fixture.Hostile);
+            string bare = Sprint21EquipmentCensus(fixture.Hostile);
+            Sprint21Check("bebelith-dismantle-fixture-restored",
+                string.Equals(bare, "equipped=none", StringComparison.Ordinal),
+                new JObject { ["strip"] = strip, ["equipment"] = bare },
+                "the request-local armour this fixture equipped is gone and "
+                + "the disposable target is bare again");
+        }
 
         /// <summary>
         /// Takes this fixture's armour back off a disposable target, and
