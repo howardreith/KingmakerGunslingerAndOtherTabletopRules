@@ -3,10 +3,12 @@ param(
     [string]$MSBuildPath,
     [string]$ReferenceBundleDir,
     [string]$KingmakerInstallDir = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
-    # Prints the ordered pipeline and exits without running any of it, so a
-    # cheap test can prove each expensive operation appears exactly once for
-    # one immutable commit. It produces no artifact and qualifies nothing.
-    [switch]$PlanOnly
+    # Prints a descriptive plan only; it does not prove actual child counts
+    # or qualify an artifact. Tests must observe the executed nested calls.
+    [switch]$PlanOnly,
+    # Used only by a second reproducibility compilation of unchanged inputs,
+    # after the release publisher has already run the unchanged domain suite.
+    [switch]$SkipDomainTests
 )
 
 Set-StrictMode -Version Latest
@@ -71,8 +73,10 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 # The repository wrapper has just run. test-domain.ps1 would otherwise run it
 # again, which is the duplication the 2026-10-02 amendment called out: a
 # tranche gate for one immutable commit must validate the repository once.
-& (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
-    -MSBuildPath $msbuild -SkipRepositoryValidation
+if (-not $SkipDomainTests) {
+    & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
+        -MSBuildPath $msbuild -SkipRepositoryValidation
+}
 
 $localRoot = Join-Path $root 'artifacts\local-runtime\0.0.150'
 $exactRoot = Join-Path $localRoot 'exact-build'
@@ -189,8 +193,9 @@ if ($spearManifest.Count -ne 1 -or $easternManifest.Count -ne 1 -or
 Copy-Item -LiteralPath $spearBundle -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 Copy-Item -LiteralPath $easternBundle -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Destination (Join-Path $buildOutput 'assets\bundles') -Force
-& (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration Release
-& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release
+# package.ps1 owns output validation, one assembly and strict validation.
+$packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
+& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath | Out-Host
 
 # The build above was produced for $git.Commit. If the tree moved underneath
 # this run - a concurrent commit, a checkout - the package would carry one
@@ -203,18 +208,7 @@ if ($packagingCommit.Commit -ne $git.Commit) {
         'one commit.')
 }
 
-$packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
-New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
 $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
-$hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Strict package inventory including the six reviewed Sprint 12 quadruped
-# mesh/painting files. The soundbank and its manifest account for the optional
-# two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 354 } else { 352 }
-& $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
-if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
-& (Join-Path $PSScriptRoot 'validate-package.ps1') `
-    -PackagePath $packagePath -Configuration Release
 
 $dllPath = Join-Path $buildOutput 'KingmakerGunslinger.dll'
 $firearmManifestPath = Join-Path $stagedMod `

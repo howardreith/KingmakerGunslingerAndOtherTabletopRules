@@ -1,4 +1,18 @@
-# Building version 0.0.29
+# Building and validation
+
+Ordinary development follows [VALIDATION-POLICY.md](VALIDATION-POLICY.md):
+`scripts/Invoke-KmgGate.ps1 -Filter <affected names>` compiles production and the
+selected current domain tests. Documentation uses text/link checks. Sprint and
+Tranche are explicit broad boundaries, with package/native/release work selected
+separately. Verify the actual installed/private reference provenance; do not
+replace the owner's current dependencies with a historical version pin.
+
+## Historical version 0.0.29 build reference
+
+The retained commands/contracts below describe that original artifact. Its
+599-test count and three-run reproducibility instructions are historical,
+not current ordinary checkpoint gates. The pre-reset document is intact in
+[history](history/BUILDING-before-workflow-reset-2026-10-11.md).
 
 ## Required target
 
