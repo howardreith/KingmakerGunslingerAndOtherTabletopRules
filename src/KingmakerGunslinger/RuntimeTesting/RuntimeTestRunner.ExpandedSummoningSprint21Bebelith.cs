@@ -133,10 +133,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 ReviewSprint21BebelithProfile(fixture, owner, turnBased);
-                ReviewSprint21BebelithCarriers(fixture, owner, turnBased);
                 ReviewSprint21BebelithBody(owner, turnBased);
                 foreach (int step in ReviewSprint21BebelithStrike(
                     fixture, owner, turnBased)) yield return step;
+                // After the creature has acted, which is the state a printed
+                // stat block describes. The second guarded run read its
+                // combat-manoeuvre defence at 33 against a printed 34 and
+                // the engine's own working said why: the Dexterity bonus was
+                // denied because the creature was still flat-footed. The
+                // crab's review already orders its reading this way.
+                ReviewSprint21BebelithCarriers(fixture, owner, turnBased);
                 foreach (int step in ReviewSprint21BebelithRot(
                     fixture, owner, turnBased)) yield return step;
                 foreach (int step in ReviewSprint21BebelithDismantle(
@@ -193,6 +199,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 measured,
                 "the printed Bebelith ability scores, read off the live "
                 + "creature rather than off the builder");
+            // The two numbers the chassis correction exists for, beside the
+            // one it leaves alone. The first guarded run read Fortitude +11
+            // against a printed +15 and 162 hit points against a printed
+            // 150, with Reflex already right, so all three are asserted here
+            // rather than merely recorded.
+            Sprint21Check("bebelith-printed-saves-and-hit-points-" +
+                    (turnBased ? "turn-based" : "real-time"),
+                live.Stats.SaveFortitude.ModifiedValue == printed.Fortitude &&
+                live.Stats.SaveReflex.ModifiedValue == printed.Reflex &&
+                live.Stats.HitPoints.ModifiedValue == printed.HitPoints,
+                new JObject {
+                    ["printedFortitude"] = printed.Fortitude,
+                    ["measuredFortitude"] =
+                        live.Stats.SaveFortitude.ModifiedValue,
+                    ["printedReflex"] = printed.Reflex,
+                    ["measuredReflex"] = live.Stats.SaveReflex.ModifiedValue,
+                    ["printedHitPoints"] = printed.HitPoints,
+                    ["measuredHitPoints"] =
+                        live.Stats.HitPoints.ModifiedValue,
+                    ["chassisSaveSwap"] =
+                        BebelithChassisCorrection.SaveSwap,
+                    ["chassisHitPointCorrection"] =
+                        BebelithChassisCorrection.HitPointCorrection },
+                "the printed Fortitude, Reflex and hit points. The native "
+                + "outsider chassis assigns this creature's Fortitude and "
+                + "Will to each other's slots and is one point a die "
+                + "tougher than its block, and this is where the "
+                + "creature-owned correction is proved rather than assumed");
             // The Will save, named separately because it is the one number
             // the released build could not produce: a poor save plus Iron
             // Will, where three good saves cannot reach +7.
@@ -243,7 +277,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             int baseline = ordinaryParts.Result;
             Sprint21Check("bebelith-eight-legged-trip-defence-" +
                     (turnBased ? "turn-based" : "real-time"),
-                against - baseline == BebelithRulesPolicy.EightLegTripBonus,
+                against - baseline == BebelithRulesPolicy.EightLegTripBonus &&
+                !tripParts.FlatFooted &&
+                against == BebelithRulesPolicy
+                    .PrintedCombatManeuverDefenseVersusTrip &&
+                baseline == BebelithRulesPolicy
+                    .PrintedCombatManeuverDefense,
                 new JObject {
                     ["versusTrip"] = tripParts.Describe("CMD vs trip"),
                     ["versusOtherManeuvers"] =
@@ -718,9 +757,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // fire at all, so a round where the fixture could only
                     // land one is reported rather than failed: that is the
                     // dice, not the rule.
+                    // The control also asserts its own precondition: a
+                    // target that arrived already wearing something is not an
+                    // unarmoured control, however the armour got there.
                     bool ok = armoured
                         ? unchanged && (clawsLanded < 2 || sunders.Length > 0)
-                        : unchanged && sunders.Length == 0;
+                        : unchanged && sunders.Length == 0 &&
+                          !hasArmor && !hasShield &&
+                          string.Equals(bare, "equipped=none",
+                              StringComparison.Ordinal);
                     Sprint21Check((armoured
                             ? "bebelith-dismantle-needs-both-claws-"
                             : "bebelith-dismantle-spares-the-unarmoured-")
@@ -759,9 +804,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         restoreAttack;
                     ResetExpandedSummoningHostile(fixture);
                 }
-                // The fixture put the armour on and took it off; this is the
-                // third census, and it is what proves the removal rather
-                // than assuming it.
+                // Settle before reading. The second guarded run took this
+                // census in the same frame as the removal, found the armour
+                // still on, and then began the next case with it still
+                // equipped - so an unarmoured control ran against an
+                // armoured target. A fixture that leaks between cases makes
+                // the next case's evidence worthless, which is the whole
+                // reason this third census exists.
+                for (int settle = 0; settle < 12; settle++) yield return 0;
                 if (armoured)
                 {
                     string restored = Sprint21EquipmentCensus(fixture.Hostile);
