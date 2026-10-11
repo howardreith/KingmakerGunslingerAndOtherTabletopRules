@@ -942,7 +942,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // sprint must not have moved them.
                 SummonVariantSpec[] bebelith = all.Where(value =>
                     value.Creature.Key == "bebelith").ToArray();
+                // Resolved out of the live manifest, exactly as the crab's
+                // seven are. These three were allocated by v0.0.147, so
+                // reading their abilities back is what proves this sprint
+                // re-allocated nothing - and that a root whose entire
+                // mechanics were rebuilt behind it still reaches a working
+                // ability.
+                var bebelithRows = new JArray();
+                var bebelithMissing = new List<string>();
+                foreach (SummonVariantSpec variant in bebelith
+                    .OrderBy(value => value.ParentTier))
+                {
+                    string symbol = ExpandedSummoningIdentityCatalog
+                        .AbilitySymbol(variant);
+                    BlueprintAbility ability =
+                        ResolveSprint18Ability(manifest, symbol);
+                    if (ability == null) bebelithMissing.Add(variant.StableKey);
+                    bebelithRows.Add(new JObject {
+                        ["root"] = variant.StableKey,
+                        ["parentTier"] = variant.ParentTier,
+                        ["quantity"] = variant.Multiplicity.ToString(),
+                        ["symbol"] = symbol,
+                        ["resolved"] = ability != null,
+                        ["guid"] = ability == null ? null : ability.AssetGuid,
+                        ["published"] =
+                            SummonVisibilityCatalog.IsPublished(variant) });
+                }
+                // The three printed quantity routes, which is what makes them
+                // three roots rather than one repeated: a single creature at
+                // its own tier, 1d3 at the next, 1d4+1 after.
+                bool quantities = bebelith
+                    .Select(value => value.Multiplicity).Distinct().Count() == 3;
                 bool bebelithIntact = bebelith.Length == 3 &&
+                    bebelithMissing.Count == 0 && quantities &&
                     bebelith.All(value =>
                         value.Family == SummonFamily.Monster &&
                         SummonVisibilityCatalog.IsPublished(value));
@@ -953,12 +985,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                             value.Family == SummonFamily.Monster),
                         ["allPublished"] = bebelith.All(
                             SummonVisibilityCatalog.IsPublished),
+                        ["allResolved"] = bebelithMissing.Count == 0,
+                        ["missing"] = new JArray(bebelithMissing),
+                        ["distinctQuantities"] = quantities,
                         ["tiers"] = new JArray(bebelith
                             .Select(value => value.ParentTier)
-                            .OrderBy(value => value)) },
+                            .OrderBy(value => value)),
+                        ["detail"] = bebelithRows },
                     "the released Bebelith still holds its three published "
-                    + "Summon Monster roots: this sprint owns its body and "
-                    + "nothing else");
+                    + "Summon Monster roots, each resolving to the ability it "
+                    + "was allocated at its printed quantity: this sprint owns "
+                    + "what stands behind them and not which they are");
             }
             catch (Exception error)
             {
