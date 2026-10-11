@@ -149,7 +149,9 @@ $record = [ordered]@{
     schemaVersion = 2
     startedAtUtc  = [DateTime]::UtcNow.ToString('o')
     # Recorded in the report only; the launcher resolves the version itself.
-    expectedVersion = '0.0.141'
+    # The series closure runs this at 0.0.150, and a report that still said
+    # 0.0.141 would misdate the evidence it is written to carry.
+    expectedVersion = '0.0.150'
     runtimeTimeoutSeconds = $runtimeTimeoutSeconds
     liveBefore = [ordered]@{ files = $before.Files; version = $before.Version
         dll = $before.Dll }
