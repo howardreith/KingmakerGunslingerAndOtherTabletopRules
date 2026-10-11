@@ -1,8 +1,8 @@
 # 0.0.150-expanded-summoning-sprint21
 
-Kingmaker Gunslinger 0.0.150 is the Expanded Summoning Sprint 21 candidate, and
-the last sprint in the series: the Giant Crab, and the Bebelith's own body. It
-retains the qualified native Wwise firearm bank, SHA256
+Kingmaker Gunslinger 0.0.150 is the Expanded Summoning Sprint 21 candidate and
+the last of the series: the Giant Crab, and a full overhaul of the released
+Bebelith. It retains the qualified native Wwise firearm bank, SHA256
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`, and changes
 no firearm audio asset. The installation artifact is
 `KingmakerGunslinger-0.0.150-expanded-summoning-sprint21.zip`. Existing
@@ -10,154 +10,202 @@ no firearm audio asset. The installation artifact is
 claimed. Historical content and fatigue-authority records retain their 1,288 and
 1,325 test counts; neither describes this candidate's larger current suite.
 
-It is built on the released v0.0.149 master and changes nothing that release
-qualified. The Sprint 20 Giant Scorpion, its nine own blueprints and its two
-shipped body files are inside this sprint's protected boundary, as is every
-creature before it.
+It is built on the released v0.0.149 master, commit
+`d0ceafae75c1d74a1e0d4fa318193ef002240da1`. Sprint 18's Ape and Dire Ape,
+Sprint 19's Girallon and Xill and Sprint 20's Giant Scorpion stay exactly as
+v0.0.149 published them: their roots, their identities, their rules and their
+ten shipped body files are all inside this sprint's protected boundary.
 
-**This candidate is NOT runtime qualified.** The Giant Crab is registered and
-withheld: no player can select it, and the visible summon surface is exactly
-what v0.0.149 published. The sections below describe what the source contains,
-not what has been proved in game.
+## Two creatures at different stages of life
 
-## Two creatures at different stages
+| | Summon Monster | Summon Nature's Ally | Roots | State |
+| --- | ---: | ---: | ---: | --- |
+| Giant Crab | — | III | 7 | New |
+| Bebelith | VII | — | 3 | Released in v0.0.147; rebuilt here |
 
-This sprint has a shape no earlier one had. The **Giant Crab** is new in every
-respect: seven Summon Nature's Ally roots, its own rules, its own icon and its
-own original body. The **Bebelith** is already registered, published and
-runtime qualified - it shipped with a complete live qualification in an earlier
-phase - and this sprint owns exactly one thing for it: the original
-project-owned body it has never had, because it currently wears the native
-Doomspider's view. Its rules, chassis, identities, placements and recorded
-deviations are released and are not touched, which this sprint's gate checks by
-name rather than by trust.
+That difference shapes everything. The Giant Crab is new in every respect and
+the question about it is whether it arrives correct. The Bebelith is already
+registered, published and runtime qualified — a player can summon one today —
+and the question about it is whether an overhaul that deliberately keeps its
+identity has actually changed its mechanics.
 
-The shipped Bebelith's chassis also differs from the printed Bestiary Bebilith
-on purpose - Huge rather than Large, with its own claw dice - and this sprint
-does not reconcile the two. The released creature is the qualified one, its
-deviations were accepted when it shipped, and re-opening them would move a
-creature that has already published. Recorded here so a reader who compares the
-shipped creature with the book finds the difference explained rather than
-apparently overlooked.
+Its identity does not move. The unit and all three Summon Monster roots keep
+the exact GUIDs they shipped with, at the same tiers and quantities, published
+as they already were, so a save made against v0.0.149 resolves every one of
+them. The released spelling is kept as well: a source may print "Bebilith",
+and renaming the shipped key would retire a GUID and migrate every save that
+holds one. Changing the code behind a stable identity is a creature
+correction; changing the identity would be a migration.
 
-## What Sprint 21 adds
+Sprint 21 appends 23 identities: one unit, seven placements and five facts for
+the crab, and ten for the Bebelith. Registered generated placements rise from
+1056 to 1063 and the ledger from 3039 to 3062.
 
-| | Summon Monster | Summon Nature's Ally | Roots |
-| --- | ---: | ---: | ---: |
-| Giant Crab | — | III | 0 + 7 = 7 |
+## The contract corrected itself first
 
-One creature, seven roots, on one table. It is the first creature in the roster
-to sit at Summon Nature's Ally III with no Summon Monster tier, which is why it
-owes seven placements rather than the twelve a two-table creature owes - parents
-3 through 9, single at its own tier, 1d3 at the next and 1d4+1 thereafter - and
-why it owns no execution children at all: Summon Nature's Ally never templates,
-and this creature is not on the other table.
+The frozen contract is at schemaVersion 2 and records what it supersedes. Its
+first draft scoped the Bebelith to a body and mis-copied three Giant Crab
+numbers: Dexterity 13 rather than 12, and natural armour 5 rather than 4 —
+two errors that cancelled into the same armour class of 16 and so looked right
+— and constrict omitted outright. It also recorded a racial +8 Swim the block
+does not print, which is removed: recording more than the source says is as
+wrong as recording less.
 
-Thirteen appended identities: one unit, seven placements, and five of its own
-blueprints. Registered generated placements rise from 1056 to 1063, all seven
-new roots are suppressed, and the published surface stays at 1056 generated plus
-29 retained native wrappers — 1085 visible choices, unchanged.
+## Printed profiles
 
-Identities are allocated once, now, and never move: publication will be the
-removal of one suppression key and nothing else.
+**Giant Crab**, N Medium vermin (aquatic), 3d8+6 (19 hp), AC 16/11/15, Fort +5
+Ref +2 Will +1, immune to mind-affecting effects, speed 30 ft., swim 20 ft.,
+two claws +4 (1d4+2 plus grab), Space 5 ft., Reach 5 ft., constrict 1d4+2, Str
+15 Dex 13 Con 14 Int — Wis 10 Cha 2, BAB +2, CMB +4 (+8 grapple), CMD 15 (27
+vs. trip), Perception +4, water dependency.
 
-## Printed profile
+Both claws are primary, at the same bonus, and each adds the whole Strength
+modifier rather than one and a half times it. With no Intelligence score there
+are no ranks and no feats, so every number falls out of hit dice, ability
+scores, size and racial bonuses alone, and all sixteen derivations closed at
+intake.
 
-**Giant Crab**, N Medium vermin (aquatic), 3d8+6 (19 hp), AC 15/11/14, Fort +5
-Ref +2 Will +1, immune to mind-affecting effects, speed 30 ft., swim 20 ft., two
-claws +4 (1d4+2 plus grab), Space 5 ft., Reach 5 ft., Str 15 Dex 12 Con 14 Int —
-Wis 10 Cha 2, BAB +2, CMB +4 (+8 grapple), CMD 15 (27 vs. trip), Perception +4,
-Swim +10, racial +4 Perception and +8 Swim, amphibious.
+**Bebelith**, CE Huge outsider (chaotic, demon, evil, extraplanar), 12d10+84
+(150 hp), AC 22/9/21, Fort +15 Ref +11 Will +7, DR 10/good, speed 40 ft., climb
+20 ft., bite +19 (2d6+9 plus rot) and two claws +19 (2d4+9, crit 19–20), Space
+15 ft., Reach 15 ft., Str 28 Dex 12 Con 24 Int 11 Wis 13 Cha 13, BAB +12, CMB
++23, CMD 34 (46 vs. trip), web (ranged +11, DC 23, 12 hp), Dismantle Armor,
+Penetrating Strike, rot (bite, injury, Fort DC 23, 2 Constitution, five
+exposures, cure 2 consecutive saves), racial +8 Stealth.
 
-Both claws are primary, at the same bonus, and each adds the **whole** Strength
-modifier rather than one and a half times it — 1d4+2, not 1d4+3. The 19 hit
-points are 13 racial plus 6 from Constitution, with no third term, because
-vermin have no feats and so no Toughness.
+## What the Bebelith overhaul changes
 
-Sixteen independent identities close on this transcription and every one of them
-closed at intake. Unlike Sprint 20's, nothing in this block is recorded as a
-question against the book.
+**Rot** is a bite-only injury effect on the engine's own poison lifecycle,
+cloned and rewired exactly as the viper's, the ant's and the scorpion's
+poisons are. Three of the four rewired values are what make it rot rather than
+a poison: two Constitution flat on each failed save, five exposures — the bite
+round and four after it — and two consecutive successes to cure, where every
+poison this project ships cures on one. That last value is the whole reason it
+cannot share a carrier. The difficulty class is never written down: a context
+action sets it live from the creature's own Constitution immediately before the
+game's own save, so an already-applied rot keeps the number the bite that
+caused it produced even after the Bebelith is dismissed or killed.
 
-## Mechanics
+Its two asset ids were the sprint's most expensive mistake. They were written
+from memory rather than copied from the released builder that already clones
+them, and the poison FEATURE's id ended up in the BUFF's constant. Nothing
+offline noticed — the gate checks that the clone happens and the suite checks
+the rewired values, and both are satisfied by a pair of plausible
+thirty-two-character strings. The game refused it in the first second of mod
+initialization and rolled back 2,432 registrations. The fix ships with a test
+that is an equality between two files rather than a new pin.
 
-**Grab** is on both claws, which is every limb this creature has. It reuses the
-grapple lifecycle Sprint 6 built and Sprint 19 taught to hold several limbs, and
-takes the multi-target hold rather than the single one because two claws hold
-two foes. The spec counts limbs rather than naming weapons, and the count is
-still written as the printed claw count rather than "all of them", so a creature
-that grew a third limb would fail rather than absorb it.
+**Penetrating Strike** replaces an invented +2 against chaotic evil outsiders —
+which is neither what the ability says nor something the printed block can
+produce — with the printed descriptors. Every natural attack counts as chaotic
+and as magic; cold iron and good are added against demons only. That asymmetry
+is invisible against a demon and wrong against everything else, so the live
+review's case that can see it hits an ordinary target and reads the damage
+bundle back.
 
-**The anti-trip defence** is its own +12 carrier. A crab walks on eight legs and
-the convention is four per pair of legs beyond the first, so its printed CMD 27
-is twelve above its 15. The shared native eight-leg fact delivers +8 — Sprint 20
-measured that on a live creature — and the Sprint 20 carrier that does deliver
-+12 is named and described for a scorpion, so this creature owns one rather than
-wearing the wrong creature's feature.
+**Dismantle Armor** is the sprint's highest-risk mechanic and the one place the
+contract could not be met literally. The printed sequence is a combat manoeuvre
+check and then a Reflex save; the released build had neither and went straight
+to an invented difficulty class of 25. The check is now the engine's own
+sunder-armour manoeuvre, which is also what keeps the whole feature away from
+equipment, and the save is the printed 23 derived from the same formula rot
+uses.
 
-**The printed racial +4 Perception** is its own carrier for the same reason.
-Sprint 20 shipped this exact kind of line with a derivation and no carrier, and
-the live creature read Perception 0; this one is wired, and the review reads the
-bonus out of the live skill's modifier list rather than out of the builder.
+What cannot be done is recorded rather than approximated. A reflection pass
+over the game's own assembly finds no broken condition, no durability value and
+no item-damage component a mod can reach: `CombatManeuver.SunderArmor` exists as
+a manoeuvre the engine will roll, and nothing behind it. Building the missing
+half would be the global item-durability system this sprint is forbidden to
+invent, so the piece keeps existing and stops protecting — its entire
+armour-class contribution gone, permanently, computed live from the equipped
+item rather than stored, which is what lets a permanent state survive a save
+and a reload. Every equipment question the mechanic asks is a read. Recorded as
+`ITEM_DESTRUCTION_UNMODELED`: the object survives, so the wearer keeps its
+armour check penalty, maximum Dexterity limit, arcane spell failure chance and
+any enchantment that is not an armour-class bonus.
 
-**The printed immunity to mind-affecting effects** rides the game's own
-descriptor immunity, carried explicitly rather than inferred from an
-Intelligence score: the printed Intelligence is an em dash, Kingmaker cannot
-hold an absent score, so this creature ships at 1 like every vermin before it,
-and 1 is not mindless as far as the engine is concerned.
+**The web** reuses the Sprint 6 seam rather than a second copy of one. That
+seam is now parameterized, and the Giant Spider's five released values are
+checked by name on the new code path — which proves the spider's web arrives at
+the numbers it already had, rather than merely that the old path is gone. The
+Bebelith also gets a brain that can cast: the released creature took the native
+brain that casts nothing, so an ability alone would have been an ability the
+creature never used.
 
-**It owns no weapon.** This is the first creature in the last four sprints that
-does not, and the reason is size: it is Medium, so the engine does not scale the
-shared native 1d4 claw for it. That scaling is exactly why the Large Sprint 18
-and Sprint 20 creatures had to own theirs, and the shared claw already carries
-the printed dice.
+**Three carriers** exist because printed lines had a derivation and no carrier,
+which is the defect class Sprint 20 paid two guarded runs to find. The printed
++12 against trip is the creature's own, because the shared native eight-leg
+fact delivers +8 — the stat-block convention is four per pair of legs beyond
+the first, so a six-legged insect prints +8 and an eight-legged creature prints
++12. The printed racial +8 Stealth existed nowhere. And the chassis correction
+below.
 
-## Honest omissions
+## What the guarded reviews measured
 
-- `ORDINARY_MAP_LAND_USE_SCOPE`: the printed swim 20 ft., the aquatic subtype,
-  the amphibious quality and the racial +8 Swim. Kingmaker has no Swim skill and
-  models neither swimming nor drowning, and this mission's hard boundaries
-  forbid building an aquatic subsystem. Nothing is substituted: the swim speed
-  is not folded into the 30-foot ground speed, no skill is raised to stand in
-  for Swim, and no breathing or drowning state is invented. The creature
-  forfeits no rank — it has no Intelligence score and so none to spend, and the
-  +8 is entirely racial. A player who summons a Giant Crab gets a land creature,
-  which is smaller than the book's in exactly one dimension, and the dimension
-  is named here rather than left to be discovered.
-- `PASSIVE_CREATURE_SENSES_UNMODELED`: darkvision 60 feet, omitted under the
-  owner's accepted limitation with nothing substituted.
-- `PER_LIMB_REACH_UNREPRESENTED`: recorded as inherited rather than newly
-  incurred. This creature's printed Space and Reach are both 5 feet, which is
-  the engine's own for a Medium creature, so it has nothing to omit — the label
-  stays in the series record because the Sprint 20 creature does.
-- Vermin have no feats, so no feat is dropped and none is invented. Recorded so
-  the absence is not mistaken for an omission.
+Everything in this section was read back off a live creature in a running game,
+in both real time and turn-based combat.
 
-## Visuals
+The first review found three numbers the native outsider chassis cannot
+produce, and they are all one finding: the chassis this Bebelith stands on is
+not the chassis its block was written for. A live creature read Fortitude +11,
+Reflex +11 and Will +11 against a printed +15, +11 and +7 — Reflex right, and
+the other two assigned to each other's slots — and 162 hit points against a
+printed 150, with the same 84 from Constitution in both, so the whole
+difference is one point a die in the racial half.
 
-**Not yet authored.** The original project-owned Giant Crab body and icon, and
-the Bebelith's original body, are NOT in this candidate. The crab currently
-rides the native Giant Spider renderer and the Bebelith still wears the
-Doomspider, which is why the crab is withheld.
+One creature-owned carrier corrects all three, and every value in it is a
+difference from what the engine actually applied rather than a number typed to
+make a total come out. The shared native outsider class is untouched: it is a
+dozen released creatures' chassis, and correcting one of them by editing what
+all of them stand on is how a sprint reaches past its own boundary.
 
-The crab's donor is chosen for the reasons the Sprint 20 scorpion's was, and
-they are anatomical rather than approximate: a crab's pincers **are** its
-pedipalps, and the rig has a seven-bone pedipalp chain a side; and a crab walks
-on eight legs, which is the four chains a side Sprint 20 proved are all real
-legs on that rig. It carries no tail, so the abdomen chain holds the back of the
-carapace rather than a metasoma — the one structural difference from the
-scorpion's body on the same rig.
+That review also proved the hard half of penetrating strike correct, and the
+authored bodies entirely.
 
-The Bebelith's body must be weighted to the rig its own view uses, which is the
-Doomspider's rather than the Giant Spider's. Whether those are the same skeleton
-is a measurement and not an assumption, and the Sprint 20 capture does not
-survive — it is request-local and stays outside Git and the package — so this
-sprint needs its own census regardless. One bounded read-only run measures both
-anchors.
+## Original bodies
 
-`HumanReview: NOT_PERFORMED_NONBLOCKING.`
+Both creatures ride the Giant Spider rig, and the census that decided it
+surveyed them independently — separate anchors, discovery terms and prefab
+budgets — because the easiest wrong decision available was to notice that both
+are arthropods, survey once, and author both against whichever rig the single
+survey liked. They landed on the same skeleton for different measured reasons:
+the Bebelith because its released Doomspider donor is that same 51-bone rig
+bone for bone and the only other demonic candidate the library offers is a
+biped, and the crab because centipedes report four leg pairs of nothing and
+this is the only rig in the installation with eight real leg chains and two
+forward articulated ones.
 
-## Uninstall
+The Bebelith's body is the first in the series authored for a creature that
+already ships wearing something, so its authoring problem is inverted: not what
+the rig can carry but what the body must do so it is not a repaint. It walks on
+**six** — the fourth leg chain carries no geometry at all, and the generator
+refuses to build a body that uses it — carries two elevated barbed foreclaws on
+the pedipalp chains, has a real jaw on the two cheliceræ, and ends in
+spinnerets. The crab's width over length is measured from the built mesh and
+must exceed one, which no other creature on this rig does, and its generator
+refuses to build a crab that reaches the bone a spider's abdomen hangs on.
 
-To uninstall, remove the mod directory, exactly as before. Withheld creatures
-register no player-visible choice, so a save made with this build loads without
-the Giant Crab exactly as it loads without any other unreleased content.
+Recorded limitations: `BEBELITH_ABDOMEN_RIDES_A_TWO_BONE_CHAIN`, so the
+spinnerets cannot aim; and `CRAB_WALKS_A_SPIDER_RIG_FRONT_TO_BACK`, so the
+stance reads laterally but the walk cycle is the donor's.
+
+## Accepted limitations
+
+- `PASSIVE_CREATURE_SENSES_UNMODELED` — darkvision and scent on both creatures.
+- `ORDINARY_MAP_LAND_USE_SCOPE` — the Bebelith's 20-foot climb and the crab's
+  20-foot swim speed, the Climb and Swim skills, the aquatic subtype and water
+  dependency. Nothing is substituted: no speed is folded into another, and no
+  skill is raised to stand in for one Kingmaker does not have.
+- `SUMMONED_PLANAR_TRAVEL_FORBIDDEN` — plane shift, under the summon spell's
+  own restriction. No other mobility or concealment ability replaces it.
+- `ITEM_DESTRUCTION_UNMODELED` — Dismantle Armor, as described above.
+
+One limitation the series carried does **not** recur here, and a reader is
+owed that as plainly as the ones that do. Sprint 20 recorded
+`PER_LIMB_REACH_UNREPRESENTED` because the Giant Scorpion prints Reach 10 ft.
+(5 ft. with claws) and Kingmaker gives a creature one reach rather than one
+per limb, so its claws threaten at ten feet instead of five. Neither Sprint 21
+creature has a per-limb reach line: the Giant Crab prints Space 5 ft., Reach
+5 ft. and the Bebelith prints Space 15 ft., Reach 15 ft., both uniform across
+every limb. The engine's single-reach model costs these two creatures nothing,
+and the project's reduced-reach carrier is correctly not applied to either.
