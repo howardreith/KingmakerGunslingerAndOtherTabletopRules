@@ -11,8 +11,21 @@ namespace KingmakerGunslinger.DomainTests
         internal static void QualifiedReferencesAreExactManifestOwnedRows()
         {
             var rows = ExpandedSummoningInventoryObservationPolicy.QualifiedReferenceRows;
-            Assertions.Equal(17, rows.Length, "All observed qualified Phase2B references, no blanket prefix exception.");
-            Assertions.Equal(17, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
+            // Seventeen through Sprint 17, and twenty-four more for Sprints 18
+            // through 21: three for the apes, four for the Girallon and Xill,
+            // six for the Giant Scorpion and eleven for this sprint's Giant
+            // Crab and overhauled Bebelith. The table went four sprints stale
+            // because the only thing that reads it is the inventory observer,
+            // and the only thing that runs the inventory observer is the
+            // compatibility matrix - a tranche-closure gate.
+            //
+            // The count is the cheap half of this test. The per-row checks
+            // below are the real one: every GUID and every internal name must
+            // resolve to exactly one ledger symbol, so a row cannot qualify a
+            // reference that does not exist or name one thing while pointing
+            // at another.
+            Assertions.Equal(41, rows.Length, "All observed qualified Phase2B references, no blanket prefix exception.");
+            Assertions.Equal(41, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
             var entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
             foreach (var r in rows)
             {
