@@ -549,6 +549,41 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+
+        /// <summary>
+        /// Clears any rot the target is already carrying, and says what it
+        /// cleared.
+        ///
+        /// <para>The ninth guarded run's turn-based bite case recorded one
+        /// rot tick and no rot APPLICATION: the target was still rotting
+        /// from the previous pass, and Kingmaker stacks a further dose onto
+        /// the existing state rather than rolling a fresh application save.
+        /// Correct engine behaviour, and it means a case that measures the
+        /// application has to start from a target that is not already
+        /// rotting.</para>
+        ///
+        /// <para>This is the same lesson Sprint 20 paid for with a leftover
+        /// grapple: the shared hostile reset clears the victim's side of
+        /// what the review knew about, and anything a case applies itself
+        /// has to be cleared by that case.</para>
+        /// </summary>
+        private static string Sprint21ClearRot(UnitEntityData unit)
+        {
+            if (unit == null || unit.Descriptor == null) return "no-target";
+            var cleared = new List<string>();
+            foreach (Kingmaker.UnitLogic.Buffs.Buff buff in
+                unit.Descriptor.Buffs.Enumerable.ToArray())
+            {
+                if (buff == null || buff.Blueprint == null) continue;
+                if (buff.Blueprint.name.IndexOf("Bebelith_Rot",
+                        StringComparison.OrdinalIgnoreCase) < 0) continue;
+                cleared.Add(buff.Blueprint.name);
+                buff.Remove();
+            }
+            return cleared.Count == 0 ? "nothing-rotting"
+                : "cleared=" + string.Join(",", cleared.ToArray());
+        }
+
         /// <summary>
         /// Rot: on the bite, and on nothing else.
         ///
@@ -579,9 +614,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 observer.BeforeAttackRollForFixture = accuracy.Apply;
                 EventBus.Subscribe(observer);
                 EventBus.Subscribe(saves);
+                string rotCleared = "not-attempted";
                 try
                 {
                     ResetExpandedSummoningHostile(fixture);
+                    // A target that is already rotting takes a further dose
+                    // onto the existing state instead of rolling a fresh
+                    // application save, so a case that measures the
+                    // application has to start from one that is not.
+                    rotCleared = Sprint21ClearRot(fixture.Hostile);
                     accuracy.Rest();
                     if (CombatController.IsInTurnBasedCombat())
                         foreach (int step in Sprint18AdvanceRound(owner))
@@ -693,6 +734,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["printedCureSaves"] =
                                 BebelithRulesPolicy.RotCureSaves,
                             ["attempts"] = attempts,
+                            ["rotClearedBeforeCase"] = rotCleared,
                             ["commandFinished"] = attack != null &&
                                 attack.IsFinished },
                         withBite
@@ -709,6 +751,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    Sprint21ClearRot(fixture.Hostile);
                     EventBus.Unsubscribe(saves);
                     EventBus.Unsubscribe(observer);
                     owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue =
