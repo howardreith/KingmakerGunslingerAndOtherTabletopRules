@@ -1,5 +1,18 @@
+[CmdletBinding()]
+param(
+    [string]$PackagePath,
+    [switch]$ReuseCandidate
+)
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($ReuseCandidate -and [string]::IsNullOrWhiteSpace($PackagePath)) {
+    throw '-ReuseCandidate requires the exact immutable -PackagePath.'
+}
+if (-not $ReuseCandidate -and -not [string]::IsNullOrWhiteSpace($PackagePath)) {
+    throw '-PackagePath requires -ReuseCandidate; omit both to build one new candidate.'
+}
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
 # Sprint 0 item B6: the Expanded Summoning compatibility and feature-boundary
 # matrix.
@@ -171,6 +184,21 @@ Assert-KmgScenariosUnattended (@($steps | ForEach-Object { $_.Scenario }) |
     ForEach-Object { $_ })
 Assert-KmgMachineClean 'before the matrix'
 
+# Freeze and validate once, before any profile transaction. A supplied candidate
+# is reused only through the existing manifest/package validation path.
+$repositoryRoot = Split-Path -Parent $PSScriptRoot
+if (-not $ReuseCandidate) {
+    & (Join-Path $PSScriptRoot 'Build-Local.ps1') | Out-Host
+    $PackagePath = Join-Path $repositoryRoot 'artifacts\local-runtime\0.0.150\KingmakerGunslinger-0.0.150-local-runtime.zip'
+}
+$candidate = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $repositoryRoot
+$candidateGit = Get-KmgGitState -RepositoryRoot $repositoryRoot
+if ($candidate.commit -cne $candidateGit.Commit -or
+    $candidate.sourceStateSha256 -cne (Get-KmgSourceStateFingerprint -RepositoryRoot $repositoryRoot)) {
+    throw 'Matrix candidate must match the unchanged product worktree before any profile is entered.'
+}
+$record.candidate = $candidate
+
 $halted = $null
 foreach ($step in $steps) {
     Write-Host ''
@@ -186,10 +214,12 @@ foreach ($step in $steps) {
         Scenario  = @($step.Scenario)
         RuntimeTimeoutSeconds = $runtimeTimeoutSeconds
         Confirm   = $false
+        ReuseInstalledArtifact = $true
+        PackagePath = $PackagePath
     }
     if ($step.Parameters.Count -gt 0) { $arguments.Parameters = $step.Parameters }
     try {
-        & '.\scripts\compatibility\Invoke-KingmakerCompatibilityProfile.ps1' @arguments
+        & (Join-Path $PSScriptRoot 'compatibility\Invoke-KingmakerCompatibilityProfile.ps1') @arguments
         $entry.outcome = 'COMPLETED'
     }
     catch {

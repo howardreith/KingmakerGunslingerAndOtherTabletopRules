@@ -1,3 +1,9 @@
+> October 11, 2026 owner amendment: this is historical release evidence and
+> remaining release coverage. docs/VALIDATION-POLICY.md governs ordinary work.
+> Do not launch the matrix/closure as this workflow task's next action. On/off
+> matching alone is insufficient attribution for the unresolved boundary/vendor
+> findings; their original failures and uncertainty remain recorded below.
+
 # Handoff — Expanded Summoning Sprint 21 (v0.0.150), alpha
 
 **Branch** `codex/expanded-summoning-sprint21-bebelith-giant-crab`
@@ -106,7 +112,9 @@ mtime is after your edit before trusting a pass.
 powershell -File scripts/Invoke-ExpandedSummoningCompatibilityMatrix.ps1
 ```
 
-Seven steps, ~90 minutes, seven game launches. **Do not touch the git tree
+Seven profile transactions schedule 19 scenario invocations. The original report
+estimated ~90 minutes; this is not a new timing measurement. These commands are
+explicit release qualification only. **Do not touch the git tree
 while it runs** — every step after the first checks for a clean tree, and an
 edit mid-run makes the rest fail with *"Runtime execution requires a clean Git
 state."* **Do not kill it mid-step either**: it leaves an open compatibility
@@ -118,7 +126,9 @@ powershell -File scripts/compatibility/Restore-KingmakerCompatibilityProfile.ps1
 ```
 
 The run id is the newest directory in `C:\Dev\KingmakerGunslingerLab\compatibility-state`.
-Afterwards verify 0.0.117 / 136 files / DLL `FD2FC61C…F35F`, no
+Afterwards verify the transaction's actual original intake. This historical run
+used 0.0.117 / 136 files / DLL `FD2FC61C…F35F`; that pin is not a current
+restoration target. Verify no
 `Mods.kmg-compat-*` directory under the Kingmaker install, and
 `compatibility-state\compatibility.lock` absent.
 
@@ -144,10 +154,10 @@ stops a profile's list at its first non-PASS.
 
 ### 3.3 Decide the boundary-step question (§4.1) — needs a judgement call
 
-The two boundary steps fail seven gates that have nothing to do with Expanded
-Summoning. I believe they should not block this release, and §4.1 sets out the
-evidence. **That is a call the owner may want to make**, not something to
-assume.
+The two boundary steps recorded seven failures. The four earlier observations
+and three unresolved vendor-count differences are retained in §4.1. They need
+classification against a matched baseline or precise contract before any release
+waiver; on/off symmetry alone does not establish attribution.
 
 ### 3.4 Re-take the closure on one candidate
 
@@ -209,11 +219,11 @@ what makes the census exhaustive over all 1063 roots.
 
 ## 4. The things that will confuse you
 
-### 4.1 Seven boundary-step failures that are not this sprint's
+### 4.1 Seven boundary-step failures: retained historical status
 
 `observe-feature-module-settings` fails the same seven gates in both boundary
 steps — with Expanded Summoning **on** and **off**, identically. That symmetry
-is the point: none of them can be caused by Expanded Summoning.
+records correlation, not proof that none can be caused by Expanded Summoning.
 
 - **Four are pre-existing by ten releases.** The same scenario at **v0.0.140**
   (evidence `20260927T1030110774186Z-observe-feature-module-settings`) already
@@ -223,7 +233,8 @@ is the point: none of them can be caused by Expanded Summoning.
   `easternVendors` 66→54, `spearVendors` 34→28 — in the gunslinger,
   eastern-weapon and elven-spear gates, whose own expectations read *"plus six
   rows per installed BTSL table"*. The `gunslinger-only` profile stages no
-  optional mods, so those rows are legitimately absent.
+  optional mods. Profile-sensitive expectations are a hypothesis to inspect,
+  not established qualification; the three differences remain unresolved.
 
 Sprint 21's whole diff against master touches no vendor, loot, weapon or
 teleportation data. The five files matching those names are version strings and
@@ -305,13 +316,11 @@ Two product corrections worth noting:
 
 ## 6. PR #36
 
-Still a **draft**. A full body is drafted at
-`<session scratchpad>/pr36_body.md`; if that is gone, the material is §2, §4
-and §5 above. It ends with the required
-`🤖 Generated with [Claude Code](https://claude.com/claude-code)` line.
-
-Commit messages must end with
-`Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>`.
+This handoff recorded PR #36 as a draft. Its former Claude-specific authorship
+directions are historical, archived in
+[the original handoff](history/HANDOFF-0.0.150-SPRINT21-ALPHA-before-workflow-reset-2026-10-11.md).
+Current Codex review/checkpoint work follows [VALIDATION-POLICY.md](VALIDATION-POLICY.md)
+and records actual authorship; the old PR is not this workflow task's next action.
 
 ---
 
