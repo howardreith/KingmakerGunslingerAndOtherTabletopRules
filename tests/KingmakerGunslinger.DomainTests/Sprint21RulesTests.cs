@@ -163,21 +163,23 @@ namespace KingmakerGunslinger.DomainTests
                 value.Family == SummonFamily.Monster),
                 "It is not on the Summon Monster table at all, which is why "
                 + "it owns no execution children.");
-            Assertions.Equal(7,
+            // Published on 2026-10-11, after a guarded review that
+            // passed 44 of 44 in both combat modes. Publication was the
+            // removal of one suppression key: the registered count is the one
+            // registration allocated, so nothing moved to make room.
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All seven are withheld.");
+                "All seven are published; nothing is withheld.");
             Assertions.Equal(1063,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placements rise from 1056 to 1063.");
-            Assertions.Equal(1056,
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The published surface is exactly what v0.0.149 showed.");
+                "And every one of them is visible.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey,
+                Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Exactly the Sprint 21 creature is withheld: "
-                    + variant.StableKey);
+                    "Every placement is published: " + variant.StableKey);
         }
 
         /// <summary>
