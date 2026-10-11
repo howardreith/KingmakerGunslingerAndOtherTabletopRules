@@ -88,10 +88,11 @@ The earlier false 2558/2558 remains corrected history. Focused compilation used
 the resolved merge tree over intake HEAD; this does not claim execution of the
 unchanged intake commit or the frozen alpha.
 
-Native confirmation is pending the single validated candidate and guarded
-gunslinger-only inventory invocation. Estimated candidate plus scenario and
-restoration: 6-10 minutes, within the selected checkpoint ceiling. This necessary
-package preparation is not selection of the full release campaign.
+20efcd71 status: SOURCE VERIFIED; NATIVE DEFERRED. The alpha did not test the
+corrected observer. No matching new candidate was packaged or deployed, and no
+native scenario ran in this pass. Candidate preparation exposed workflow
+expectations described below. A further build plus native observation would
+exceed the remaining aggregate budget; it is a separately selected next boundary.
 
 Integration checkpoint 5541ac07217cab05f95320d87669c9d4af433726 was pushed through
 the owner helper. GitHub subsequently reported PR #36 OPEN/draft/MERGEABLE/CLEAN.
@@ -116,11 +117,64 @@ files and 391 protected summoning files still enforced. No released record,
 package count, alpha asset or current runner expectation was changed to obtain
 a pass. Failed preparation/validator logs remain alongside the corrected ones.
 
+Validation repair checkpoint 99a4224dcda5edd26472ca1628abf17ac78c61a5 was also
+pushed through the owner helper. A second Build-Local attempt on that commit
+passed repository validation, rebuilt the domain target, and ran its complete
+runner: **2554/2559 PASS, five failures**, 93.6s runner / 199.45s preparation
+(2026-10-11T16:42:26.3906459Z through 16:45:45.8464223Z). It stopped before exact
+candidate compilation, package creation, deployment or game launch. This failed
+run remains failed. Its rebuilt executable hash was not captured before the
+subsequent focused rebuild; its path, Rebuild invocation and build log are retained.
+
+The five failures asserted inline Build-Local package counts or a literal version
+directory. Their checks now require the dynamically resolved version directory,
+the explicit output-bound package delegation, and the unchanged 354/352 count in
+the package owner. Asset and strict-package expectations remain enforced.
+The final focused reproduction selected these exact registered names:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-KmgGate.ps1 -Filter 'elven-branched-spear.release-identity;expanded-summoning.sprint11-original-ungulate-visuals;expanded-summoning.sprint12-hidden-foundation;expanded-summoning.sprint13-original-visuals;paper-mode.source-contract' -TimingPath '<log-root>/gate-timings.jsonl'
+```
+
+It passed **5/5**, with production compilation 0.8s, domain build/test 4.3s,
+5.66s total, build and runner exit zero. Source was 99a4224 plus these five test
+repairs. The same absolute runner path above was rebuilt with the recorded
+MSBuild /t:Build invocation; mtime 2026-10-11T16:48:22.6609611Z, SHA-256
+872E2B112310750680CEF3693DDE5E4E2816BFC968CCDED598DCCEFDCA67A2B6.
+No old compiler/test process remained. Logs and freshness receipt are
+workflow-reproductions-gate.log/json. No complete suite was repeated after this
+repair; final full-suite, package and native qualification remain pending.
+
+Ordinary validation began at 2026-10-11T16:23:25.4347996Z. The final focused gate
+ended at 16:48:23.7099989Z, 24m58s after that start. No further candidate or broad
+validation batch was started. Initial and failed preparation logs remain in the
+same local log directory, with command, exit, source and duration records.
+
 The actual current installation was independently snapshotted before package
 preparation: version 0.0.117, 136 Gunslinger files, tree SHA-256
 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3. These newly
 observed values happen to match the handoff; the full current Mods manifest and
 current settings presence/hashes, rather than the historical pin, govern restore.
+
+Final state verification is recorded in actual-install-final.json and
+actual-mods-final-comparison-v3.json outside source: all 968 current Mods manifest
+entries, FeatureModules.json, absent Gunslinger settings.json, Favored Class
+settings and CotW settings match intake exactly. The first manifest reader
+wrapped PowerShell 5.1's JSON array as one item and reported a mismatch; a second
+reader emitted directory-property errors. Both verdicts are retained. The final
+reader passes the two raw deserialized arrays directly to the repository-owned
+exact matcher, exits zero without errors, and confirms the immutable manifests
+are identical. No installation repair was needed or attempted.
+No game/compile/test process, active compatibility transaction or lock remains.
+No new transaction RunId exists; no restore command was required or invoked.
+There was no game launch, deployment, configuration change, or save interaction;
+KMG_AUTOMATION_WORKING and KMG_AUTOMATION_BASELINE were untouched.
+
+The final process/transaction/settings receipt completed at 16:53:01.4737176Z,
+29m36s after validation started. Resolving the already-in-progress read-only
+manifest comparison finished at 16:54:51.3730659Z, 31m26s after the start. This
+1m26s beyond the ordinary ceiling was state-verification completion only; no
+additional candidate, product test batch or native run was selected.
 
 ## Boundary classification
 
@@ -173,10 +227,16 @@ Not yet run: affected native inventory, high-risk-combined, remaining compatibil
 profiles and disposable mechanical case, matched released149 boundary comparison,
 final candidate closure and stable release. The full matrix is not this pass.
 
-The next release-qualification action is one matched v0.0.149 gunslinger-only
-observe-feature-module-settings comparison for the disputed vendor condition,
-with the same current machine, DLC availability, optional-mod versions, module
-state and fixture. Separately plan 10-20 minutes including artifact validation,
-transaction and exact restoration; declare/freeze its baseline inputs first.
-If it demonstrates a real baseline product failure, record the smallest explicit
-release-risk decision instead of repairing an unrelated system in this handoff.
+The next release-qualification action is to freeze the reviewed source, prepare
+one matching Build-Local candidate, then run only gunslinger-only
+observe-expanded-summoning-inventory through the existing guarded profile
+launcher with that validated package. Separately estimate 6-10 minutes including
+preparation, scenario and exact restoration; retain its exact receipt RunId.
+This is not selection of Tranche or the full matrix.
+
+After that observation, the disputed vendor attribution needs at most one matched
+v0.0.149 gunslinger-only observe-feature-module-settings comparison, same machine,
+DLC availability, optional-mod versions, module state and fixture. Estimate
+10-20 minutes separately and freeze the baseline inputs first. If it demonstrates
+a real baseline product failure, record the smallest explicit release-risk
+decision instead of repairing an unrelated system in this handoff.
