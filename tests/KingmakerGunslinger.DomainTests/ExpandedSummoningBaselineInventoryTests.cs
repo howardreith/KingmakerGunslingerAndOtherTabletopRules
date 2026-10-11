@@ -47,7 +47,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(547, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(538, ExpandedSummoningBaselineInventory
+            // Sprint 21 publishes the Giant Crab's seven roots, every
+            // one of them a Nature's Ally choice: it is not on the Summon
+            // Monster table, which is why that side does not move.
+            Assertions.Equal(545, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
@@ -61,11 +64,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(1056, generated, "Published generated placements changed.");
+            Assertions.Equal(1063, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(1085, generated + wrappers,
+            Assertions.Equal(1092, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(1085,
+            Assertions.Equal(1092,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -115,10 +118,13 @@ namespace KingmakerGunslinger.DomainTests
             // than a leftover, which is what this pin is for. Naming the
             // creature is the strongest form of it: an unexpected arrival and
             // a forgotten departure both fail.
-            Assertions.True(ExpandedSummoningBaselineInventory
-                    .RegisteredButHiddenCreatures.SequenceEqual(
-                        new[] { GiantCrabRulesPolicy.GiantCrabKey }),
-                "Exactly Sprint 21's Giant Crab is registered and withheld: "
+            // Empty, and for the last time in this series: Sprint 21
+            // is its end, and its Giant Crab published once its own guarded
+            // review passed 44 of 44 in both combat modes. An arrival here
+            // now would be a creature registered and then forgotten.
+            Assertions.Equal(0, ExpandedSummoningBaselineInventory
+                    .RegisteredButHiddenCreatures.Count,
+                "Nothing is registered and withheld: "
                 + string.Join(", ", ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures));
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
@@ -171,7 +177,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 1085"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 1092"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 

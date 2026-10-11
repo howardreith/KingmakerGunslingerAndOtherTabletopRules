@@ -1,6 +1,6 @@
 # 0.0.150-expanded-summoning-sprint21
 
-Kingmaker Gunslinger 0.0.150 is the Expanded Summoning Sprint 21 candidate and
+Kingmaker Gunslinger 0.0.150 is the Expanded Summoning Sprint 21 release and
 the last of the series: the Giant Crab, and a full overhaul of the released
 Bebelith. It retains the qualified native Wwise firearm bank, SHA256
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`, and changes
@@ -8,7 +8,7 @@ no firearm audio asset. The installation artifact is
 `KingmakerGunslinger-0.0.150-expanded-summoning-sprint21.zip`. Existing
 `CraftMagicItems.dll` compatibility is inherited; no new crafting integration is
 claimed. Historical content and fatigue-authority records retain their 1,288 and
-1,325 test counts; neither describes this candidate's larger current suite.
+1,325 test counts; neither describes this release's larger current suite.
 
 It is built on the released v0.0.149 master, commit
 `d0ceafae75c1d74a1e0d4fa318193ef002240da1`. Sprint 18's Ape and Dire Ape,
@@ -40,6 +40,16 @@ correction; changing the identity would be a migration.
 Sprint 21 appends 23 identities: one unit, seven placements and five facts for
 the crab, and ten for the Bebelith. Registered generated placements rise from
 1056 to 1063 and the ledger from 3039 to 3062.
+
+The visible surface rises by seven, not ten, and the difference is the whole
+point of the paragraph above: 1092 choices, from 1063 published generated
+placements plus the 29 retained native wrappers, where v0.0.149 showed 1085.
+The crab's seven roots are new to the menu. The Bebelith's three were already
+on it. Publication was the removal of one suppression key and nothing else —
+every identity was allocated at registration, so no GUID moved, nothing was
+renamed, and nothing published earlier was withheld to make room. Summon
+Monster is unchanged at 92 creatures and 530 placements; Summon Nature's Ally
+rises from 90 creatures and 526 placements to 91 and 533.
 
 ## The contract corrected itself first
 
@@ -161,6 +171,27 @@ all of them stand on is how a sprint reaches past its own boundary.
 
 That review also proved the hard half of penetrating strike correct, and the
 authored bodies entirely.
+
+Two more findings belong here because they are the engine's answers and not
+this sprint's, and a reader is owed both. Rot's per-round saves read four and
+eight above the printed 23, which looked like a difficulty class recomputed
+from whatever the context resolved to — the corruption the contract forbids.
+An instrumented pin reported that the context already held the printed 23
+before anything touched it: the higher numbers are Kingmaker's own poison
+stacking, because this creature lands a bite every round and each bite is
+another dose. Correct Pathfinder, correct engine, and the review was wrong to
+demand otherwise, so it now asserts the printed difficulty class on rot's
+application save and records the stacking. And Kingmaker refuses to unequip
+armour while a unit is in combat — `ArmorSlot.CanRemoveItem()` returned false
+in both combat modes and after the summon was dismissed — so the dismantle
+case asserts the disposition the engine permits rather than one it does not.
+
+The qualifying run returned **44 of 44** in both combat modes, covering both
+creatures and both original bodies, and restored the installation exactly.
+Eleven guarded transactions were spent in all: two on the census, one of which
+failed, and nine on the review. Every failure any of them found was this
+sprint's own code or its own observer, and each is described above or in the
+release record.
 
 ## Original bodies
 

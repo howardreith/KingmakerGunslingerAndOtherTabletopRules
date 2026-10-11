@@ -76,12 +76,16 @@ namespace KingmakerGunslinger.Summoning
         // hold back seven roots and no execution children. Nothing published
         // before this branch moves: the visible surface stays at the 1085
         // choices v0.0.149 shows.
+        // Empty again. Sprint 21's Giant Crab published once its own
+        // guarded review passed, which is what every creature in this series
+        // has had to do, and publication was the removal of this one key and
+        // nothing else.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "giant-crab" },
+            new HashSet<string>(Array.Empty<string>(),
                 StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1063;
-        internal const int SuppressedLogicalPlacementCount = 7;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

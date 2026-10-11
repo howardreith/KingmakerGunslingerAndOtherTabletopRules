@@ -114,24 +114,23 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1063,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placement count changed.");
-            // The apes published on 2026-10-09 after their complete hidden
-            // candidate passed, and nothing has withheld them since. What is
-            // withheld now is Sprint 21's Giant Crab and nothing else, which
-            // is this test's real subject: a later sprint's hidden candidate
-            // must not reach back and suppress a published creature.
-            Assertions.Equal(7,
+            // The apes published on 2026-10-09 after their complete
+            // hidden candidate passed, and nothing has withheld them since -
+            // which is this test's real subject: a later sprint's hidden
+            // candidate must not reach back and suppress a published
+            // creature, and now that Sprint 21 has published its own there is
+            // nothing withheld at all.
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Exactly Sprint 21's seven roots are withheld.");
-            Assertions.Equal(1056,
+                "Nothing is withheld: Sprint 21 published the last of it.");
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The apes stay published, and the published surface is "
-                + "exactly what v0.0.149 showed.");
+                "The apes stay published, and every registered placement is "
+                + "visible.");
             foreach (SummonVariantSpec variant in all)
-                Assertions.Equal(
-                    variant.Creature.Key != GiantCrabRulesPolicy.GiantCrabKey,
+                Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Exactly the Sprint 21 creature is withheld: "
-                    + variant.StableKey);
+                    "Every placement is published: " + variant.StableKey);
             SummonVisibilityCatalog.Validate();
 
             // Identities are allocated once at registration, so a withheld
