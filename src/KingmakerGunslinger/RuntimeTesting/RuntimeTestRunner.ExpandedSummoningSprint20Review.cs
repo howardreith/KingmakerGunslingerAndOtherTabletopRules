@@ -607,7 +607,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["attempts"] = attempts,
                             ["abandonedTrials"] = attempts - 1,
                             ["scoredTrialRolls"] = new JArray(
-                                Sprint18AttemptRolls(observer, null, before)
+                                Sprint18AttemptRolls(observer, null, before, 0)
                                     .Select(roll => new JObject {
                                         ["weapon"] = roll.Weapon == null ? null :
                                             roll.Weapon.Blueprint.name,
@@ -617,7 +617,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                                 ReferenceEquals(chosen,
                                                     roll.Weapon)) })),
                             ["rolls"] = new JArray(
-                                Sprint18AttemptRolls(observer, null, 0)
+                                Sprint18AttemptRolls(observer, null, 0, 0)
                                     .Select(roll => new JObject {
                                         ["weapon"] = roll.Weapon == null ? null :
                                             roll.Weapon.Blueprint.name,

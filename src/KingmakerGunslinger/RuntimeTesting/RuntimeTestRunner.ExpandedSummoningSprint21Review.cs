@@ -610,7 +610,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["startedClean"] = startedClean,
                             ["attempts"] = attempts,
                             ["rolls"] = new JArray(
-                                Sprint18AttemptRolls(observer, null, 0)
+                                Sprint18AttemptRolls(observer, null, 0, 0)
                                     .Select(roll => new JObject {
                                         ["weapon"] = roll.Weapon == null ? null :
                                             roll.Weapon.Blueprint.name,

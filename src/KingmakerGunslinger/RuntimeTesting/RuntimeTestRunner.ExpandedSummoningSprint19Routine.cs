@@ -222,6 +222,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // and across sequences, and a discarded trial is neither.
                     while (!clean && ++trials <= 6)
                     {
+                        // A trial begins where the last one's final
+                        // sequence ended, so its live command has to go the
+                        // same way it does between sequences: the engine
+                        // merges a second attack into a live one, and the
+                        // series closure recorded what that costs when the
+                        // live command's target is gone - a
+                        // NullReferenceException from
+                        // UnitAttack.GetApproachRadius, inside the engine's
+                        // own merge path. No roll, result or damage is forced.
+                        foreach (int step in Sprint19EndLiveCommand(owner))
+                            yield return step;
                         DireApeRendGate.ForgetObserved(owner);
                         ResetExpandedSummoningHostile(fixture);
                         // The second target too. Without this it accumulated
@@ -258,9 +269,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     yield return step;
                             }
                             UnitAttack ignored = null;
-                            int before = observer.Attacks.Count +
-                                (secondObserver == null ? 0 :
-                                    secondObserver.Attacks.Count);
+                            // A cursor each: the first list grows in the
+                            // middle of the concatenation, so one combined
+                            // count reads the wrong window.
+                            int before = observer.Attacks.Count;
+                            int secondBefore = secondObserver == null ? 0 :
+                                secondObserver.Attacks.Count;
                             if (name == "four-claws-split-targets" && sequence == 0)
                             {
                                 if (secondTarget == null)
@@ -289,13 +303,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     owner, result => ignored = result))
                                     yield return step;
                             bool landed = !Sprint18ChosenSequenceMissed(
-                                observer, secondObserver, before, accuracy);
+                                observer, secondObserver, before, accuracy,
+                                secondBefore);
                             emissions.Add(new JObject {
                                 ["sequence"] = sequence,
                                 ["chosenClaws"] = accuracy.Hit.Length,
                                 ["exactlyTheChosenLimbsLanded"] = landed,
                                 ["rolls"] = new JArray(Sprint18Rolls(
-                                    observer, secondObserver, before)),
+                                    observer, secondObserver, before,
+                                    secondBefore)),
                                 ["commandFinished"] = ignored != null &&
                                     ignored.IsFinished });
                             if (!landed) { clean = false; break; }
