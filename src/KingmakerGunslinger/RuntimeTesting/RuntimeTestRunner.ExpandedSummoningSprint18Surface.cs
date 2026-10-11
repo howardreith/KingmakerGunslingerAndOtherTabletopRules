@@ -73,15 +73,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int publishedElsewhere = all.Count(value =>
                     !PrimateRulesPolicy.IsPrimate(value.Creature.Key) &&
                     !SummonVisibilityCatalog.IsPublished(value));
+                // The invariant, not a snapshot of it. This pinned the
+                // published count to 1034, which is what v0.0.147 showed and
+                // what every later sprint that publishes correctly moves - so
+                // the pin failed the series closure on a creature that was
+                // exactly right. What it ever meant is below, with the old
+                // literal kept as the floor the surface may never fall back
+                // through.
                 Sprint18Check(_primateAssertions, _primateRows, "no-other-root-withheld",
-                    publishedElsewhere == 0 && SummonVisibilityCatalog
-                        .PublishedLogicalPlacementCount == 1034,
+                    publishedElsewhere == 0 &&
+                    SummonVisibilityCatalog.SuppressedLogicalPlacementCount == 0 &&
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount ==
+                        SummonVisibilityCatalog.RegisteredLogicalPlacementCount &&
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount >= 1034,
                     new JObject {
                         ["registered"] = SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                         ["suppressed"] = SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                         ["published"] = SummonVisibilityCatalog.PublishedLogicalPlacementCount,
+                        ["publishedAtThisRelease"] = 1034,
                         ["otherWithheld"] = publishedElsewhere },
-                    "nothing is withheld and no previously published root moved");
+                    "nothing is withheld, the published surface is the whole "
+                    + "registered one, and it never fell below the 1034 roots "
+                    + "v0.0.147 published");
 
                 // The module switch. With Expanded Summoning off, no ape may
                 // be rebodied at all, whatever its identity.

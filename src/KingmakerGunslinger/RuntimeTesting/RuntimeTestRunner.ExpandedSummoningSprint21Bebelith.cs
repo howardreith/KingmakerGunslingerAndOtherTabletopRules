@@ -479,7 +479,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // an empty damage bundle because nothing connected,
                     // which is the dice and not the rule.
                     int attempts = 1;
-                    while (attempts < 8 && Sprint18ChosenLimbMissed(
+                    while (attempts < 8 && Sprint18ChosenSequenceMissed(
                         observer, null, before, accuracy))
                     {
                         attempts++;
@@ -632,7 +632,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
                         result => attack = result)) yield return step;
                     int attempts = 1;
-                    while (attempts < 8 && Sprint18ChosenLimbMissed(
+                    while (attempts < 8 && Sprint18ChosenSequenceMissed(
                         observer, null, before, accuracy))
                     {
                         attempts++;

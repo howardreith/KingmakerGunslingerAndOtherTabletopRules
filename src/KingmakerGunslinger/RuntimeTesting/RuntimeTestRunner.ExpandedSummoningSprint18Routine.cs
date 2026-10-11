@@ -6,6 +6,7 @@ using Kingmaker.Controllers;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -177,15 +178,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         else
                             foreach (int step in Sprint18RunFullAttack(fixture, owner,
                                 result => ignored = result)) yield return step;
-                        // A natural one always misses, whatever the bonus,
-                        // so a sequence whose chosen limbs did not all land is
-                        // a roll of the dice and not a result. Re-attempt it,
-                        // bounded, and record every attempt. Nothing is forced:
-                        // the rolls stay native and only the precondition the
-                        // case needs is waited for.
+                        // A natural one always misses and a natural twenty
+                        // always hits, whatever the bonus, so a sequence in
+                        // which exactly the chosen limbs did not land is a
+                        // roll of the dice and not a result. Re-attempt it,
+                        // bounded, and record every attempt. Nothing is
+                        // forced: the rolls stay native and only the
+                        // precondition the case needs is waited for.
                         int attempts = 1;
                         var rolls = new JArray(Sprint18Rolls(observer, secondObserver, before));
-                        while (attempts < 4 && Sprint18ChosenLimbMissed(
+                        while (attempts < 4 && Sprint18ChosenSequenceMissed(
                             observer, secondObserver, before, accuracy))
                         {
                             attempts++;
@@ -302,14 +304,73 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// misses whatever the bonus, so this is the precondition a rend case
         /// needs, not the thing it measures.
         /// </summary>
-        private static bool Sprint18ChosenLimbMissed(Sprint16RuleObserver observer,
+        /// <summary>
+        /// Did the sequence the fixture set up actually happen?
+        ///
+        /// <para>Both halves, because the dice break a setup in both
+        /// directions. A chosen limb can miss - a natural one always misses,
+        /// whatever the +100 says - and a limb told to miss at -100 can land,
+        /// because a natural twenty always hits. The series closure measured
+        /// the second twice: the Ape's one-claw-only rend case rolled a twenty
+        /// on the claw it had told to miss, and the Girallon's
+        /// bite-and-three-claws case did the same. Both times every claw
+        /// landed, rend correctly fired, and the review recorded a rend
+        /// violation for a sequence it had never arranged.</para>
+        ///
+        /// <para>So the trial is spoiled unless EXACTLY the chosen limbs
+        /// landed. No requirement moves: a sequence that does not qualify must
+        /// still produce no rend at all, and the rolls stay native - the only
+        /// thing waited for is the precondition the case needs. Where the
+        /// chosen set is every limb, as in the full-attack routine, the second
+        /// half can never fire.</para>
+        ///
+        /// <para>Sprint 20 found this first and answered it with a second
+        /// predicate of its own; this absorbs that one rather than keeping two
+        /// copies of the same rule.</para>
+        /// </summary>
+        private static bool Sprint18ChosenSequenceMissed(Sprint16RuleObserver observer,
             Sprint16RuleObserver second, int from, Sprint18Accuracy accuracy)
         {
             if (accuracy.Hit.Length == 0) return false;
             RuleAttackRoll[] rolls = Sprint18AttemptRolls(observer, second, from);
             if (rolls.Length == 0) return true;
-            return accuracy.Hit.Any(weapon => !rolls.Any(roll =>
-                ReferenceEquals(roll.Weapon, weapon) && roll.IsHit));
+            if (accuracy.Hit.Any(weapon => !rolls.Any(roll =>
+                ReferenceEquals(roll.Weapon, weapon) && roll.IsHit))) return true;
+            return rolls.Any(roll => roll.IsHit && roll.Weapon != null &&
+                !accuracy.Hit.Any(weapon =>
+                    ReferenceEquals(weapon, roll.Weapon)));
+        }
+
+        /// <summary>
+        /// Did the saving throw land on the side the fixture chose?
+        ///
+        /// <para>The same shape as the limbs, on the other side of a save. A
+        /// natural one always fails and a natural twenty always makes it,
+        /// whatever modifier the fixture set on the disposable target, so a
+        /// trial that chose one side and measured the other has measured the
+        /// dice rather than the rule. The series closure measured it on the
+        /// Xill: a paralysis case that set the target's own Fortitude to +100
+        /// read a failed save at the printed difficulty class.</para>
+        ///
+        /// <para>Both directions, unlike the Sprint 20 predicate this
+        /// replaces, which covered only the natural twenty because that is the
+        /// one its own run hit. Stated as the side rather than as the d20
+        /// face, so a fixture whose modifier is not actually decisive fails
+        /// its bound instead of passing on a trial it never established -
+        /// which is the right outcome, not a silent pass.</para>
+        ///
+        /// <para>A trial that forced no save at all is not spoiled here. A
+        /// claw forcing no save is a REQUIREMENT of these cases, and a bite
+        /// that never landed is already the limb predicate's business.</para>
+        /// </summary>
+        private static bool Sprint18ChosenSaveSideMissed(
+            Sprint19SaveObserver saves, int from, bool wantMade)
+        {
+            RuleSavingThrow[] forced = saves.Saves.Skip(from).Where(save =>
+                save != null && save.StatType == StatType.SaveFortitude)
+                .ToArray();
+            if (forced.Length == 0) return false;
+            return forced.Any(save => save.IsPassed != wantMade);
         }
 
         private static RuleAttackRoll[] Sprint18AttemptRolls(
