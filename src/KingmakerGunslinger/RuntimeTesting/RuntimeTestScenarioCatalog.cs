@@ -139,6 +139,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ObserveExpandedSummoningArachnidCensus =
             "observe-expanded-summoning-arachnid-census";
         /// <summary>
+        /// The Sprint 21 two-family donor census: the Huge demonic
+        /// spider-hunter and the Medium lateral crab, surveyed independently
+        /// because they share nothing but an exoskeleton. Detached read-only
+        /// view prefabs, at mod load, no save, no spawn. Research only.
+        /// </summary>
+        internal const string ObserveExpandedSummoningSprint21Census =
+            "observe-expanded-summoning-sprint21-census";
+        /// <summary>
         /// The Sprint 18 hidden-candidate review: the two apes as they are in
         /// a running game. Live profiles, the printed routines, every rend
         /// case, both combat modes, the original bodies, the registered
@@ -786,6 +794,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningNativeDonors,
                 ObserveExpandedSummoningPrimateCensus,
                 ObserveExpandedSummoningArachnidCensus,
+                ObserveExpandedSummoningSprint21Census,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
