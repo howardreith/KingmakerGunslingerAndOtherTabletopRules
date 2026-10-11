@@ -279,12 +279,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 foreach (int step in Sprint18RunFullAttack(fixture,
                                     owner, result => ignored = result))
                                     yield return step;
-                            bool landed = !Sprint18ChosenLimbMissed(
+                            bool landed = !Sprint18ChosenSequenceMissed(
                                 observer, secondObserver, before, accuracy);
                             emissions.Add(new JObject {
                                 ["sequence"] = sequence,
                                 ["chosenClaws"] = accuracy.Hit.Length,
-                                ["everyChosenLimbLanded"] = landed,
+                                ["exactlyTheChosenLimbsLanded"] = landed,
                                 ["rolls"] = new JArray(Sprint18Rolls(
                                     observer, secondObserver, before)),
                                 ["commandFinished"] = ignored != null &&
@@ -403,6 +403,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // their own outcome. Request-local, on the disposable
                     // hostile only, and asserted rather than assumed.
                     Sprint19ClearParalysis(fixture.Hostile);
+                    // Reassigned by the bounded re-attempt below, which
+                    // has to free a target a spoiled attempt paralyzed.
                     bool startedFree = !fixture.Hostile.Descriptor.State
                         .HasCondition(Kingmaker.UnitLogic.UnitCondition.Paralyzed);
                     // Only the disposable target's own save moves, and only to
@@ -416,14 +418,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                     UnitAttack ignored = null;
                     int before = observer.Attacks.Count;
+                    int savesBefore = saves.Saves.Count;
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
                         result => ignored = result)) yield return step;
+                    // The save side as well as the limbs. A natural one always
+                    // fails, so this case's +100 does not guarantee the made
+                    // save it chose, and the series closure measured exactly
+                    // that: a failed Fortitude at the printed difficulty class
+                    // with the target's own save at +100. The claw-only case
+                    // asks nothing of the save side, because a claw forcing no
+                    // save is its requirement rather than its precondition.
                     int attempts = 1;
-                    while (attempts < 8 && Sprint18ChosenLimbMissed(
-                        observer, null, before, accuracy))
+                    while (attempts < 8 && (Sprint18ChosenSequenceMissed(
+                            observer, null, before, accuracy) ||
+                        (name != "claw-only" && Sprint18ChosenSaveSideMissed(
+                            saves, savesBefore, name == "bite-save-made"))))
                     {
                         attempts++;
                         before = observer.Attacks.Count;
+                        savesBefore = saves.Saves.Count;
+                        // A spoiled attempt may have paralyzed the target, and
+                        // paralysis bounded to the summon's lifetime outlives
+                        // the attempt that caused it. The retry has to begin
+                        // from a free target exactly as the first attempt did,
+                        // and that claim is carried forward rather than
+                        // dropped.
+                        Sprint19ClearParalysis(fixture.Hostile);
+                        startedFree = startedFree &&
+                            !fixture.Hostile.Descriptor.State.HasCondition(
+                                Kingmaker.UnitLogic.UnitCondition.Paralyzed);
                         if (CombatController.IsInTurnBasedCombat())
                             foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                         accuracy.Rest();

@@ -572,7 +572,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
                         result => attack = result)) yield return step;
                     int attempts = 1;
-                    while (attempts < 8 && Sprint18ChosenLimbMissed(
+                    while (attempts < 8 && Sprint18ChosenSequenceMissed(
                         observer, null, before, accuracy))
                     {
                         attempts++;
