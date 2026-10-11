@@ -16224,16 +16224,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bebelith.Strength == 28 && bebelith.Dexterity == 12 &&
                 bebelith.Constitution == 24 && bebelith.Intelligence == 11 &&
                 bebelith.Wisdom == 13 && bebelith.Charisma == 13);
-            bebelithPart("claws2d4",
+            // The limb layout this sprint built, and the builder says why:
+            // the bite is primary because rot rides it and the released order
+            // put a claw there, and both claws are additional limbs 0 and 1,
+            // which is what makes "both claws hit the same target" a readable
+            // dismantle gate.
+            bebelithPart("bitePrimary2d6",
+                bebelith.Body.PrimaryHand != null &&
+                bebelith.Body.PrimaryHand.AssetGuid ==
+                    "d2f99947db522e24293a7ec4eded453f");
+            bebelithPart("twoClaws2d4",
                 bebelithClaw.Damage.Rolls == 2 &&
                 bebelithClaw.Damage.Dice == DiceType.D4 &&
-                bebelith.Body.PrimaryHand == bebelithClaw &&
                 bebelith.Body.AdditionalLimbs.SequenceEqual(new[] {
-                    bebelithClaw }));
-            bebelithPart("bite2d6",
-                bebelith.Body.AdditionalSecondaryLimbs.Length == 1 &&
-                bebelith.Body.AdditionalSecondaryLimbs[0].AssetGuid ==
-                    "d2f99947db522e24293a7ec4eded453f");
+                    bebelithClaw, bebelithClaw }));
+            // And nothing secondary, which the old census never checked. The
+            // printed block gives the bite and both claws +19 apiece; a
+            // secondary limb would take -5 and half the Strength bonus, which
+            // is the error three equal attack lines make easy to ship.
+            bebelithPart("noSecondaryLimbs",
+                bebelith.Body.AdditionalSecondaryLimbs.Length == 0);
             // The two native facts this creature must never carry. Rot clones
             // the native poison GRAPH, which is a different thing from
             // carrying a native fact, and the released pair stays forbidden.
