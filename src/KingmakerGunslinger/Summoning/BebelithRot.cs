@@ -41,29 +41,31 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// Pins the applied rot's difficulty class to the printed number, on
-    /// every save the applied state causes.
+    /// Captures the applied rot's base difficulty class from the creature
+    /// that applied it.
     ///
-    /// <para>Two guarded runs shaped this. The first recorded rot's first
-    /// save at the printed 23 and its per-round saves at 27, 31 and 33, with
-    /// the VICTIM sometimes named as the caster - which is the corruption
-    /// the frozen contract forbids: once the Bebelith is dismissed it would
-    /// be the victim's own Constitution deciding how hard the victim's own
-    /// saves are. Pinning the buff's context fixed the caster and steadied
-    /// the number at 25, which is better and still not the printed 23, so
-    /// something downstream of the context is adding to it.</para>
+    /// <para>Three guarded runs shaped this, and the third overturned what
+    /// the first two suggested. The early runs saw rot's per-round saves at
+    /// 27, 31 and 33 against a printed 23, with the VICTIM sometimes named
+    /// as the caster, which looked like a difficulty class recomputed from
+    /// whatever the context resolved to - the corruption the frozen contract
+    /// forbids. So this component was added to pin it, and instrumented to
+    /// say what it pinned.</para>
     ///
-    /// <para>Chasing what would be guessing at the engine's arithmetic. The
-    /// printed number is not negotiable and the save is where it has to be
-    /// true, so this sets it on the rule. The match is on the save's own
-    /// reason being this fact, which is what keeps it off every other save
-    /// the victim makes, off every other creature's poison, and off
-    /// everything at all once the state ends.</para>
+    /// <para>What it reported was `contextDcBefore=23; wrote=True;
+    /// contextDcAfter=23`. The context already held the printed number
+    /// before anything pinned it, and the saves still came out four and
+    /// eight higher. That is Kingmaker's own poison stacking: in those cases
+    /// the Bebelith lands a bite every round, each bite is another dose, and
+    /// a stacked poison is harder to shake. Correct behaviour, and the
+    /// review was wrong to demand otherwise.</para>
     ///
-    /// <para>The value is captured when the state turns on, from the
-    /// creature that applied it. That is the contract's requirement stated
-    /// precisely: the effect keeps the number the bite that caused it
-    /// produced, whatever becomes of its source.</para>
+    /// <para>This stays because the other half of what it saw is real: the
+    /// context's caster does sometimes resolve to the victim. Capturing the
+    /// base from the applier at the moment the state turns on makes the
+    /// number independent of that, which is what the contract asks - an
+    /// already-applied victim-owned effect keeps the difficulty class the
+    /// bite that caused it produced, whatever becomes of its source.</para>
     /// </summary>
     [Serializable]
     public sealed class BebelithRotStateDifficultyClass :
