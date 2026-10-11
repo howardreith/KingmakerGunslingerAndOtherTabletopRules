@@ -4581,6 +4581,15 @@ namespace KingmakerGunslinger.Blueprints
             damage.Ticks = BebelithRulesPolicy.RotExposures;
             damage.SuccesfullSaves = BebelithRulesPolicy.RotCureSaves;
             damage.SaveType = SavingThrowType.Fortitude;
+            // The applied state pins its own difficulty class. Without this
+            // the per-round saves recompute it from whatever the context
+            // resolves to, which the second guarded run measured arriving at
+            // 27, 31 and 33 against a printed 23 - and on some of them with
+            // the victim named as the caster.
+            var pin = ScriptableObject.CreateInstance<
+                BebelithRotStateDifficultyClass>();
+            state.ComponentsArray = state.ComponentsArray
+                .Concat(new BlueprintComponent[] { pin }).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(state,
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Bebelith.RotState.Name", "Rot"),
