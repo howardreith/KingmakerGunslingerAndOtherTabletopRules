@@ -488,6 +488,74 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// Rot clones the exact native identities the released poisons clone.
+        ///
+        /// <para>This test exists because the first guarded run of this sprint
+        /// died in the first second of mod initialization. The two asset ids
+        /// the rot graph clones had been written from memory rather than
+        /// copied, and the native poison FEATURE's id had ended up in the
+        /// BUFF's constant - so the engine refused a BlueprintFeature where a
+        /// BlueprintBuff was required and rolled back 2432 registrations.</para>
+        ///
+        /// <para>Nothing offline had noticed, and nothing would have: the gate
+        /// checks that the clone happens, this suite checks the rewired
+        /// values, and both are satisfied by a pair of plausible
+        /// thirty-two-character strings. What makes it checkable is that the
+        /// released natural builder already names the same two identities,
+        /// correctly, for the viper, the ant and the scorpion. So this is an
+        /// equality between two files rather than a new pin, and it cannot go
+        /// stale: if the released values ever move, both sides move with
+        /// them.</para>
+        /// </summary>
+        internal static void RotClonesTheSameNativeIdentitiesAsTheReleasedPoisons()
+        {
+            string root = RepositoryRoot();
+            string natural = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningNaturalBuilder.cs"));
+            string special = SpecialBuilder();
+            foreach (string name in new[] { "NativeSpiderPoisonBuffGuid",
+                "NativeSpiderPoisonFeatureGuid" })
+            {
+                string released = AssetIdFor(natural, name);
+                string mine = AssetIdFor(special, name);
+                Assertions.True(released.Length == 32,
+                    "The released natural builder must still declare "
+                    + name + "; this test is an equality, and an equality "
+                    + "against nothing proves nothing.");
+                Assertions.Equal(released, mine,
+                    "The Bebelith's rot must clone the same native " + name
+                    + " the released viper, ant and scorpion poisons clone. "
+                    + "A plausible but wrong asset id fails mod "
+                    + "initialization and rolls back every registration.");
+            }
+            // And the two are not the same identity, which is the specific
+            // way they were wrong: one is the feature that carries the
+            // on-hit gate, the other is the saved buff that runs the
+            // lifecycle.
+            Assertions.False(AssetIdFor(special, "NativeSpiderPoisonBuffGuid") ==
+                    AssetIdFor(special, "NativeSpiderPoisonFeatureGuid"),
+                "The poison feature and the poison buff are two different "
+                + "blueprints of two different types.");
+        }
+
+        /// <summary>
+        /// The thirty-two-character asset id a named constant declares, read
+        /// from source so the comparison is between what two builders
+        /// actually say rather than between two copies of a literal.
+        /// </summary>
+        private static string AssetIdFor(string source, string constant)
+        {
+            int at = source.IndexOf("string " + constant + " =",
+                StringComparison.Ordinal);
+            if (at < 0) return string.Empty;
+            int open = source.IndexOf('"', at);
+            int close = open < 0 ? -1 : source.IndexOf('"', open + 1);
+            return open < 0 || close < 0 ? string.Empty
+                : source.Substring(open + 1, close - open - 1);
+        }
+
+        /// <summary>
         /// Penetrating strike is a set of damage descriptors, not a bonus,
         /// and the demon half does not leak.
         ///
