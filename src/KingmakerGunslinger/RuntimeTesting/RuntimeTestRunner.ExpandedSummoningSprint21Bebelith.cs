@@ -10,6 +10,7 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.Items;
+using Kingmaker.Items.Slots;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -605,6 +606,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             : save.Reason.Caster.Blueprint.name,
                                     ["passed"] = save.IsPassed })),
                             ["printedDifficultyClass"] = expected,
+                            // What the state's own component pinned, beside
+                            // the difficulty class the engine then used. Two
+                            // numbers, because one cannot say whether a pin
+                            // failed to reach the save or the save added to
+                            // it.
+                            ["statePin"] =
+                                BebelithRotStateDifficultyClass.LastPin,
                             ["liveConstitutionBonus"] =
                                 owner.Descriptor.Stats.Constitution.Bonus,
                             ["printedExposures"] =
@@ -647,6 +655,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// which is the whole of "no permanent inventory corruption" in one
         /// comparison.</para>
         /// </summary>
+
+        /// <summary>
+        /// Takes this fixture's armour back off a disposable target, and
+        /// says what the engine allowed.
+        ///
+        /// <para>The sixth guarded run found a suit still equipped after the
+        /// case that put it there, which turned the next mode's unarmoured
+        /// control into an armoured one. Kingmaker refuses to unequip armour
+        /// in some states, and a fixture that cannot report the refusal
+        /// leaks it into the next case's evidence instead.</para>
+        /// </summary>
+        private static string Sprint21StripFixtureArmor(UnitEntityData unit)
+        {
+            ArmorSlot slot = unit == null || unit.Descriptor == null ? null
+                : unit.Descriptor.Body.Armor;
+            if (slot == null) return "no-armour-slot";
+            if (!slot.HasArmor) return "already-bare";
+            bool permitted = slot.CanRemoveItem();
+            bool removed = slot.RemoveItem(false);
+            if (slot.HasArmor) removed = slot.RemoveItem(true) || removed;
+            return "permitted=" + permitted + ";removed=" + removed +
+                ";stillEquipped=" + slot.HasArmor;
+        }
+
         /// <summary>
         /// The one native armour this fixture equips on a disposable target
         /// so Dismantle Armor has something to catch.
@@ -701,9 +733,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EventBus.Subscribe(observer);
                 string bare = null, before = null, after = null;
                 bool equipped = false;
+                string removal = "not-attempted";
                 try
                 {
                     ResetExpandedSummoningHostile(fixture);
+                    // Clear anything an earlier case left equipped before
+                    // reading the bare state. Kingmaker refuses to unequip
+                    // armour in some states, and the sixth guarded run found
+                    // a leftover suit turning the next mode's unarmoured
+                    // control into an armoured one.
+                    removal = Sprint21StripFixtureArmor(fixture.Hostile);
                     bare = Sprint21EquipmentCensus(fixture.Hostile);
                     if (armoured)
                     {
@@ -783,6 +822,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["equipmentBefore"] = before,
                             ["equipmentAfter"] = after,
                             ["equipmentUnchanged"] = unchanged,
+                            ["fixtureArmorRemoval"] = removal,
                             ["commandFinished"] = attack != null &&
                                 attack.IsFinished },
                         armoured
@@ -796,9 +836,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
-                    if (equipped &&
-                        fixture.Hostile.Descriptor.Body.Armor.HasArmor)
-                        fixture.Hostile.Descriptor.Body.Armor.RemoveItem(false);
+                    if (equipped)
+                        removal = Sprint21StripFixtureArmor(fixture.Hostile);
                     EventBus.Unsubscribe(observer);
                     owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue =
                         restoreAttack;
@@ -819,7 +858,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (turnBased ? "turn-based" : "real-time"),
                         string.Equals(restored, bare, StringComparison.Ordinal),
                         new JObject {
-                            ["bare"] = bare, ["restored"] = restored },
+                            ["bare"] = bare, ["restored"] = restored,
+                            ["fixtureArmorRemoval"] = removal },
                         "the request-local armour this fixture equipped is "
                         + "gone, and the target is exactly as the fixture "
                         + "found it");
