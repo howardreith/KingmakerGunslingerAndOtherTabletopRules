@@ -623,10 +623,14 @@ def validate(root: Path) -> None:
     if json.loads((root / "Info.json").read_text(
             encoding="utf-8"))["Version"] in ("0.0.149", "0.0.150"):
         # Three more: the Giant Scorpion's icon, its original mesh and its
-        # painting. Sprint 21's own three - the Giant Crab's icon, mesh and
-        # painting - and the Bebelith's two are not authored yet and add
-        # nothing here.
+        # painting.
         package_count += 3
+    if json.loads((root / "Info.json").read_text(
+            encoding="utf-8"))["Version"] == "0.0.150":
+        # Sprint 21's icon. Its two original bodies - the Giant Crab's and
+        # the Bebelith's - and their paintings are not authored yet and will
+        # add four more when they are.
+        package_count += 1
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in ("0.0.143", "0.0.144", "0.0.145"):
         # Seven player instructions and curated qualification files accompany
         # the findability repair. Historical summoning asset counts are fixed.
