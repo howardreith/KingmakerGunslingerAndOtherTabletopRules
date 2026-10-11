@@ -34,5 +34,23 @@ handoff's 0.0.117 pin. Use exact transaction receipt RunIds, never the newest
 directory. Raw logs belong outside this source tree. Start subsequent Codex
 sessions freshly here so instruction discovery loads the merged policy.
 
-Current checkpoint evidence and remaining work will be recorded in
-docs/SPRINT21-FOCUSED-CHECKPOINT-2026-10-11.md.
+Current checkpoint evidence and remaining work are recorded in
+docs/SPRINT21-FOCUSED-CHECKPOINT-2026-10-11.md. Integration checkpoint 5541ac07 and
+validation-provenance repair 99a4224d were pushed through the owner helper.
+Focused inventory/Sprint 21 checks passed 28/28. Candidate preparation's complete
+runner failed five workflow text expectations (2554/2559); the repaired five
+passed 5/5 with fresh binary evidence. Do not convert that historical full run to
+PASS or assume a matching native package exists.
+
+Status: REVIEWABLE CHECKPOINT. 20efcd71 is source verified, native deferred.
+No game, deployment, transaction, configuration or save change occurred. Current
+Mods/settings/Favored Class state was compared to actual intake, not a historical
+pin. Brown-Fur is a demonstrated fixture/expectation defect; three teleportation
+assertions failed before Sprint 21 but their cause remains unresolved; three
+vendor discrepancies require a matched released149 baseline comparison.
+
+Next separately selected boundary: freeze this reviewed source, prepare one
+validated candidate and run only gunslinger-only
+observe-expanded-summoning-inventory through the guarded profile launcher.
+Estimate 6-10 minutes including exact restoration. Do not start Tranche, a full
+matrix, a master merge or release without explicit selection.
