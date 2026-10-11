@@ -431,6 +431,9 @@ def validate(root: Path) -> None:
         ".Bebelith.RacialSkills" in symbol or
         ".Bebelith.Web" in symbol or
         ".Bebelith.Brain" in symbol or
+        # The tenth, allocated after the first guarded run measured three
+        # printed numbers the native outsider chassis cannot produce.
+        ".Bebelith.ChassisCorrection" in symbol or
         symbol in {"KMG.Summoning.Special.Salamander.TailType", "KMG.Summoning.Special.Salamander.UnitType"} or
         ".Special.Crocodile." in symbol or
         symbol == "KMG.Summoning.Special.Crocodilian.SprintNotEngaged" or

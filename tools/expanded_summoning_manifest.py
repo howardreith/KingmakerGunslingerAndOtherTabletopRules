@@ -543,7 +543,7 @@ def planned():
         ("KMG.Summoning.Natural.GiantCrab.TripDefense", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GiantCrab.RacialSkills", "BlueprintFeature"),
         ("KMG.Summoning.Special.GiantCrab.Traits", "BlueprintBuff"),
-        # Sprint 21's Bebelith overhaul: nine identities for what the
+        # Sprint 21's Bebelith overhaul: ten identities for what the
         # released build left out or got wrong. Its unit and its three
         # roots are released and are not reallocated.
         ("KMG.Summoning.Special.Bebelith.Rot", "BlueprintFeature"),
@@ -555,8 +555,13 @@ def planned():
         ("KMG.Summoning.Special.Bebelith.WebResource", "BlueprintAbilityResource"),
         ("KMG.Summoning.Special.Bebelith.WebAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.Bebelith.Brain", "BlueprintBrain"),
+        # The tenth, allocated after the first guarded run measured three
+        # printed numbers the native outsider chassis cannot produce: a
+        # Fortitude and a Will assigned to each other's slots, and one hit
+        # point per die more than the block prints.
+        ("KMG.Summoning.Special.Bebelith.ChassisCorrection", "BlueprintFeature"),
     ))
-    if len(rows) != 2062 or len({symbol for symbol, _ in rows}) != 2062:
+    if len(rows) != 2063 or len({symbol for symbol, _ in rows}) != 2063:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

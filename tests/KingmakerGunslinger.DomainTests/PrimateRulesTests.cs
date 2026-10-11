@@ -596,13 +596,13 @@ namespace KingmakerGunslinger.DomainTests
                 "Template execution identity count changed.");
             // Sprint 20's five for the scorpion, then Sprint 21's five for
             // the crab and nine for the Bebelith overhaul.
-            Assertions.Equal(242,
+            Assertions.Equal(243,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount,
                 "Creature-owned identity count changed.");
-            Assertions.Equal(2062,
+            Assertions.Equal(2063,
                 ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 "Foundation identity count changed.");
-            Assertions.Equal(2062, identities.Count,
+            Assertions.Equal(2063, identities.Count,
                 "The built identity catalog must match its own invariant.");
 
             foreach (var row in new[] {

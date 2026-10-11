@@ -196,6 +196,7 @@
     <Compile Include="Summoning\GiantCrabRulesPolicy.cs" />
     <Compile Include="Summoning\BebelithRulesPolicy.cs" />
     <Compile Include="Summoning\BebelithRot.cs" />
+    <Compile Include="Summoning\BebelithChassisCorrection.cs" />
     <Compile Include="Summoning\GiantScorpionPoison.cs" />
     <Compile Include="Summoning\XillCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
