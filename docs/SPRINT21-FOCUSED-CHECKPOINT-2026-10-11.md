@@ -93,6 +93,35 @@ gunslinger-only inventory invocation. Estimated candidate plus scenario and
 restoration: 6-10 minutes, within the selected checkpoint ceiling. This necessary
 package preparation is not selection of the full release campaign.
 
+Integration checkpoint 5541ac07217cab05f95320d87669c9d4af433726 was pushed through
+the owner helper. GitHub subsequently reported PR #36 OPEN/draft/MERGEABLE/CLEAN.
+The first package-preparation invocation stopped at source validation after
+32.71s, before domain execution, compilation, packaging, deployment or launch.
+It exposed two inherited validation assumptions during the imported workflow:
+
+- The alpha record's 2558 test registrations were being compared to today's
+  runner. Its original record remains unchanged. The validator now binds that
+  count to adddef43's immutable metadata and source, requires every qualified
+  registration to remain present, and independently reports the current 2559.
+  All 28 Sprint 21 validator tests passed in 22.90s, including positive and
+  negative provenance cases.
+- The inherited package check demanded count logic in both Build-Local and
+  package.ps1. It now follows the explicit output-bound delegation to the
+  authoritative package owner, preserving the 354/352 inventory and strict
+  validation. Three focused positive/negative tests passed; output-binding loss
+  and package-count drift remain failures.
+
+The corrected Sprint 21 source validator passes with all 200 protected master
+files and 391 protected summoning files still enforced. No released record,
+package count, alpha asset or current runner expectation was changed to obtain
+a pass. Failed preparation/validator logs remain alongside the corrected ones.
+
+The actual current installation was independently snapshotted before package
+preparation: version 0.0.117, 136 Gunslinger files, tree SHA-256
+216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3. These newly
+observed values happen to match the handoff; the full current Mods manifest and
+current settings presence/hashes, rather than the historical pin, govern restore.
+
 ## Boundary classification
 
 Common current environment B: HOWARD-LAPTOP, gunslinger-only transaction, staged
