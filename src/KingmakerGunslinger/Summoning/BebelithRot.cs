@@ -1,4 +1,9 @@
 using System;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Facts;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 
 namespace KingmakerGunslinger.Summoning
@@ -31,5 +36,44 @@ namespace KingmakerGunslinger.Summoning
                 BebelithRulesPolicy.HitDice,
                 Context.MaybeCaster.Stats.Constitution.Bonus);
         }
+    }
+
+    /// <summary>
+    /// Pins the applied rot's difficulty class so every exposure uses the
+    /// number the bite that caused it produced.
+    ///
+    /// <para>The second guarded run of this sprint recorded rot's first save
+    /// at the printed 23 and its per-round saves at 27, 31 and 33 - and on
+    /// some of them the caster the engine named was the VICTIM, not the
+    /// Bebelith. A difficulty class recomputed each round from whatever the
+    /// context resolves to is a different poison every round, and once the
+    /// source is dismissed it is the victim's own Constitution deciding how
+    /// hard the victim's own saves are. The frozen contract names that
+    /// exactly: source death or dismissal must not corrupt an
+    /// already-applied victim-owned effect.</para>
+    ///
+    /// <para>So the number is captured when the state turns on, from the
+    /// creature that applied it, into the context the per-round saves read.
+    /// If that creature is somehow already gone the printed value is used
+    /// rather than whatever is to hand, because a rot with the wrong source
+    /// should still be the rot its block prints.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class BebelithRotStateDifficultyClass :
+        OwnedGameLogicComponent<UnitDescriptor>
+    {
+        public override void OnTurnOn()
+        {
+            MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+            if (context == null || context.Params == null) return;
+            UnitEntityData caster = context.MaybeCaster;
+            int constitution = caster == null || caster.Descriptor == null
+                ? BebelithRulesPolicy.ConstitutionModifier
+                : caster.Descriptor.Stats.Constitution.Bonus;
+            context.Params.DC = BebelithRulesPolicy.DifficultyClass(
+                BebelithRulesPolicy.HitDice, constitution);
+        }
+
+        public override void OnTurnOff() { }
     }
 }
