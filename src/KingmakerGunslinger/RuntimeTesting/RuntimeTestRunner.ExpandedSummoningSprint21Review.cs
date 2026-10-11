@@ -170,6 +170,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     for (int teardown = 0; teardown < 8; teardown++)
                         yield return 0;
+                    // The other half of this sprint, on the same fixture and
+                    // in the same mode. It is a separate creature with a
+                    // separate review because the questions are different:
+                    // the crab is new and must arrive correct, the Bebelith
+                    // is released and must have actually changed.
+                    foreach (int step in ReviewSprint21Bebelith(
+                        fixture, turnBased)) yield return step;
                     bodyRead = true;
                 }
             }
