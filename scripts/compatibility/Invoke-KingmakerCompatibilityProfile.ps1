@@ -123,11 +123,17 @@ $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
-$expectedVersion = [string](Read-KmgCompatibilityJson (Join-Path $root 'Info.json')).Version
-if (-not $PackagePath) { $PackagePath = Get-KmgCompatibilityDefaultPackage $root }
-if ((Get-KmgCompatibilityPackageVersion $PackagePath) -cne $expectedVersion) {
-    throw 'Compatibility package version does not match the current repository; no profile was entered.'
+. (Join-Path (Split-Path $PSScriptRoot) 'RuntimeHarness.Common.ps1')
+if (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath)) {
+    throw 'A profile transaction requires a fresh deployment record; an external -DeploymentManifestPath cannot survive restoration/profile changes.'
 }
+$liveModDirectory = Join-Path $KingmakerInstallDir 'Mods\KingmakerGunslinger'
+$expectedInstall = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker'
+if (-not [IO.Path]::GetFullPath($KingmakerInstallDir).TrimEnd('\').Equals(
+    [IO.Path]::GetFullPath($expectedInstall).TrimEnd('\'), [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'The runtime/deployment guards support only the exact current Kingmaker installation; no profile was entered.'
+}
+$expectedVersion = [string](Read-KmgCompatibilityJson (Join-Path $root 'Info.json')).Version
 $runId = 'compat-' + [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ') + '-' +
     [Guid]::NewGuid().ToString('N').Substring(0, 12)
 $entered = $false
@@ -236,6 +242,20 @@ if ($moduleScenario) {
     throw 'Compatibility profile parameters are supported only for feature-module, module-state vendor, or asset-attribution observations.'
 }
 
+# Fast argument checks above precede candidate work; no profile is active yet.
+if (-not $ReuseInstalledArtifact -and -not $WhatIfPreference) {
+    & (Join-Path (Split-Path $PSScriptRoot) 'Build-Local.ps1') | Out-Host
+}
+if (-not $PackagePath) { $PackagePath = Get-KmgCompatibilityDefaultPackage $root }
+if ((Get-KmgCompatibilityPackageVersion $PackagePath) -cne $expectedVersion) {
+    throw 'Compatibility package version does not match the current repository; no profile was entered.'
+}
+$profileCandidate = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
+$candidateGit = Get-KmgGitState -RepositoryRoot $root
+if ($profileCandidate.commit -cne $candidateGit.Commit -or
+    $profileCandidate.sourceStateSha256 -cne (Get-KmgSourceStateFingerprint -RepositoryRoot $root)) {
+    throw 'Compatibility candidate must match the unchanged product worktree before profile entry.'
+}
 $compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
@@ -338,6 +358,13 @@ try {
             (New-Object Text.UTF8Encoding($false)))
         Move-Item -LiteralPath $temporary -Destination $settingsPath -Force
     }
+    # Enter staged this candidate in a fresh profile. Create its own validated
+    # deployment receipt under the transaction lease, after profile settings.
+    # The outer finally still restores the exact original profile intake.
+    & (Join-Path $root 'scripts\Deploy-Local.ps1') -PackagePath $PackagePath `
+        -LiveModDirectory $liveModDirectory -RuntimeLease $compatRuntimeLease -WhatIf -Confirm:$false
+    $profileDeploymentPath = & (Join-Path $root 'scripts\Deploy-Local.ps1') `
+        -PackagePath $PackagePath -LiveModDirectory $liveModDirectory -RuntimeLease $compatRuntimeLease -PassThru -Confirm:$false
     foreach ($name in $Scenario) {
         $before = [DateTime]::UtcNow
         $arguments = @{
@@ -364,15 +391,9 @@ try {
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
             $arguments.Parameters = $Parameters
         }
-        if ($ReuseInstalledArtifact) {
-            if ([string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
-                [string]::IsNullOrWhiteSpace($PackagePath)) {
-                throw '-ReuseInstalledArtifact requires deployment and package paths.'
-            }
-            $arguments.ReuseInstalledArtifact = $true
-            $arguments.DeploymentManifestPath = $DeploymentManifestPath
-            $arguments.PackagePath = $PackagePath
-        }
+        $arguments.ReuseInstalledArtifact = $true
+        $arguments.DeploymentManifestPath = $profileDeploymentPath
+        $arguments.PackagePath = $PackagePath
         if ($name -in @('musket-master-mechanics-and-starter',
             'disposable-expanded-summoning',
             'working-save-smoke', 'disposable-brown-fur-native-cast',

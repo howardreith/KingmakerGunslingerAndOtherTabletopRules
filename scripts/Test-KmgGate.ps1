@@ -1,15 +1,5 @@
-<#
-.SYNOPSIS
-Proves the gate level's filter hygiene and that its pipeline runs each
-expensive operation once.
-
-.DESCRIPTION
-Cheap and offline. It never runs a gate, builds anything or launches the game;
-it exercises the two filter decisions directly and reads Build-Local's own
-plan. The point is that a qualification cannot be narrowed by an inherited
-KMG_TEST_FILTER, and that nobody has to run a five-minute pipeline to find out
-whether it validates the repository twice.
-#>
+<# Filter decisions and exact environment restoration. Actual child calls
+are checked by Test-DevelopmentGate.ps1; PlanOnly is descriptive, not proof. #>
 [CmdletBinding()]
 param()
 
@@ -17,6 +7,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'KmgGate.Common.ps1')
 
+$savedFilter = $env:KMG_TEST_FILTER
+try {
 $failures = @()
 function Assert([bool]$Condition, [string]$Message) {
     if ($Condition) { Write-Host "PASS gate.$Message" }
@@ -37,6 +29,10 @@ Assert (Throws { Resolve-KmgGateFilter -Level 'Focused' -Filter '   ' }) `
     'focused-with-a-blank-filter-fails'
 Assert (Throws { Resolve-KmgGateFilter -Level 'Focused' -Filter $null }) `
     'focused-with-a-null-filter-fails'
+Assert (Throws { Resolve-KmgGateFilter -Level 'Focused' -Filter ',; , ' }) `
+    'focused-with-only-separators-fails'
+Assert ((Resolve-KmgGateFilter -Level 'Focused' -Filter 'sprint14; sprint15') -eq 'sprint14; sprint15') `
+    'focused-keeps-multiple-real-terms'
 Assert ((Resolve-KmgGateFilter -Level 'Sprint' -Filter '') -eq '') `
     'sprint-clears-the-filter'
 Assert ((Resolve-KmgGateFilter -Level 'Tranche' -Filter $null) -eq '') `
@@ -80,38 +76,12 @@ try { Invoke-KmgWithTestFilter -Filter 'x' -Body { throw 'boom' } } catch { }
 Assert ($env:KMG_TEST_FILTER -eq 'prior') 'a-failing-body-still-restores-the-filter'
 Remove-Item Env:\KMG_TEST_FILTER -ErrorAction SilentlyContinue
 
-# --- each expensive operation appears exactly once --------------------------
-$plan = @(@(& (Join-Path $PSScriptRoot 'Build-Local.ps1') -PlanOnly) |
-    ForEach-Object { $_.ToString().Trim() } |
-    Where-Object { $_ })
-foreach ($step in @('repository-wrapper', 'complete-domain-suite',
-        'exact-reference-release-build', 'package-assembly',
-        'strict-package-validation')) {
-    Assert (@($plan | Where-Object { $_ -eq $step }).Count -eq 1) "plan-runs-$step-once"
-}
-Assert ($plan.Count -eq 5) 'plan-contains-exactly-the-five-operations'
-
 $missingInput = Join-Path ([IO.Path]::GetTempPath()) ('kmg-no-reference-input-' + [Guid]::NewGuid().ToString('N'))
-$portablePlan = @(& (Join-Path $PSScriptRoot 'Build-Local.ps1') -PlanOnly `
-    -ReferenceBundleDir $missingInput -KingmakerInstallDir $missingInput -MSBuildPath $missingInput)
-Assert (($portablePlan -join ',') -ceq ($plan -join ',')) 'plan-needs-no-game-references-or-compiler'
 Assert (Throws {
     & (Join-Path $PSScriptRoot 'Build-Local.ps1') -ReferenceBundleDir $missingInput -KingmakerInstallDir $missingInput
-}) 'real-build-still-rejects-missing-reference-input-before-any-gate'
-Assert (-not (Test-Path -LiteralPath $missingInput)) 'plan-and-rejected-build-create-no-input-fixture'
-
-# The duplication the amendment named: Build-Local validates the repository
-# itself and must therefore tell test-domain.ps1 not to do it again.
-$buildLocal = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'Build-Local.ps1') -Raw
-Assert ($buildLocal -match 'test-domain\.ps1.*(\r?\n\s*)?-MSBuildPath \$msbuild -SkipRepositoryValidation') `
-    'build-local-validates-the-repository-once'
-
-# A qualification level must not be able to defer its own build.
-$gate = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'Invoke-KmgGate.ps1') -Raw
-Assert ($gate -notmatch '\$SkipBuild') 'no-skip-build-on-a-qualification-level'
-
-if ($failures.Count -ne 0) {
-    throw ("Gate-level contract failures: " + ($failures -join ', '))
-}
-Write-Host ("Gate-level contract validation passed: " +
-    "filter hygiene, environment restoration and a single-pass pipeline.")
+}) 'real-build-refuses-missing-references'
+Assert (-not (Test-Path -LiteralPath $missingInput)) 'refused-build-creates-no-reference-fixture'
+if ($failures.Count -ne 0) { throw ('Gate-level contract failures: ' + ($failures -join ', ')) }
+Write-Host 'Gate filter/refusal contracts passed.'
+& (Join-Path $PSScriptRoot 'Test-DevelopmentGate.ps1')
+} finally { $env:KMG_TEST_FILTER = $savedFilter }
