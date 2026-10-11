@@ -156,6 +156,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new[] { owner });
             }
             for (int teardown = 0; teardown < 8; teardown++) yield return 0;
+            // The fixture's armour comes off here, not in the case that put
+            // it on. Three guarded runs measured Kingmaker refusing to
+            // unequip armour while the fight is live - `permitted=False` -
+            // and permitting it once the fight is over, which is why the
+            // next case's own strip always succeeded and the same-frame one
+            // never did. So the restoration is asserted where the engine
+            // allows it: after the creature is dismissed and the combat it
+            // was in has ended.
+            string strip = Sprint21StripFixtureArmor(fixture.Hostile);
+            string bareAgain = Sprint21EquipmentCensus(fixture.Hostile);
+            Sprint21Check("bebelith-dismantle-fixture-restored-" +
+                    (turnBased ? "turn-based" : "real-time"),
+                string.Equals(bareAgain, "equipped=none",
+                    StringComparison.Ordinal),
+                new JObject {
+                    ["strip"] = strip, ["equipment"] = bareAgain },
+                "the request-local armour this fixture equipped is gone and "
+                + "the disposable target is bare again. The engine refuses "
+                + "to unequip armour mid-combat, so the removal is taken "
+                + "where it is permitted rather than asserted where it is "
+                + "not");
         }
 
         /// <summary>
@@ -558,20 +579,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int expected = BebelithRulesPolicy.DifficultyClass(
                         BebelithRulesPolicy.HitDice,
                         owner.Descriptor.Stats.Constitution.Bonus);
-                    // Rot's own saves, which is what this case measures.
-                    // A target in a running fight rolls Fortitude for other
-                    // reasons, and the first run failed on exactly that: a
-                    // correct rot at the printed 23 beside saves at 27 that
-                    // belonged to something else.
+                    // Rot's saves, split by what forced them. The
+                    // APPLICATION save comes from the rot fact and is the
+                    // one the printed difficulty class describes. The saves
+                    // the applied state forces afterwards are a different
+                    // question: Kingmaker stacks poison, each bite is
+                    // another dose, and three guarded runs measured them at
+                    // four and eight above the single-dose number. That is
+                    // correct, so they are recorded rather than required.
                     RuleSavingThrow[] mine = fortitude.Where(save =>
                         save.Reason.Fact != null &&
                         save.Reason.Fact.Blueprint != null &&
                         save.Reason.Fact.Blueprint.name.IndexOf(
                             "Bebelith", StringComparison.OrdinalIgnoreCase)
                             >= 0).ToArray();
+                    RuleSavingThrow[] applications = mine.Where(save =>
+                        save.Reason.Fact.Blueprint.name.IndexOf(
+                            "RotState", StringComparison.OrdinalIgnoreCase)
+                            < 0).ToArray();
                     bool ok = withBite
                         ? mine.Length > 0 &&
-                          mine.All(save => save.DifficultyClass == expected)
+                          applications.All(save =>
+                              save.DifficultyClass == expected)
                         : mine.Length == 0;
                     Sprint21Check((withBite
                             ? "bebelith-rot-rides-the-bite-"
@@ -582,6 +611,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["weapon"] = chosen == null ? null
                                 : chosen.Blueprint.name,
                             ["fortitudeSaves"] = fortitude.Length,
+                            ["rotApplicationSaves"] = applications.Length,
+                            ["rotApplicationDifficultyClasses"] = new JArray(
+                                applications.Select(save =>
+                                    (JToken)save.DifficultyClass)),
                             ["rotSaves"] = fortitude.Count(save =>
                                 save.Reason.Fact != null &&
                                 save.Reason.Fact.Blueprint != null &&
@@ -624,7 +657,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         withBite
                             ? "a bite that wounds forces a Fortitude save at "
                             + "the printed difficulty class, derived live "
-                            + "from this creature's own Constitution"
+                            + "from this creature's own Constitution. The "
+                            + "applied state's later saves come out higher "
+                            + "because Kingmaker stacks poison and each bite "
+                            + "is another dose, which is correct and is "
+                            + "recorded rather than required"
                             : "a claw forces nothing: rot that leaked onto "
                             + "the claws would be six Constitution a round "
                             + "where the block prints two");
@@ -843,27 +880,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         restoreAttack;
                     ResetExpandedSummoningHostile(fixture);
                 }
-                // Settle before reading. The second guarded run took this
-                // census in the same frame as the removal, found the armour
-                // still on, and then began the next case with it still
-                // equipped - so an unarmoured control ran against an
-                // armoured target. A fixture that leaks between cases makes
-                // the next case's evidence worthless, which is the whole
-                // reason this third census exists.
                 for (int settle = 0; settle < 12; settle++) yield return 0;
-                if (armoured)
-                {
-                    string restored = Sprint21EquipmentCensus(fixture.Hostile);
-                    Sprint21Check("bebelith-dismantle-fixture-restored-" +
-                            (turnBased ? "turn-based" : "real-time"),
-                        string.Equals(restored, bare, StringComparison.Ordinal),
-                        new JObject {
-                            ["bare"] = bare, ["restored"] = restored,
-                            ["fixtureArmorRemoval"] = removal },
-                        "the request-local armour this fixture equipped is "
-                        + "gone, and the target is exactly as the fixture "
-                        + "found it");
-                }
                 yield return 0;
             }
         }
