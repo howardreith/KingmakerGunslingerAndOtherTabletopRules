@@ -167,6 +167,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // a discarded trial is neither.
                     while (!clean && ++trials <= 6)
                     {
+                        // The same reason Sprint 19 clears it: a trial
+                        // begins where the last one's final sequence ended,
+                        // and the engine merges a second attack into a live
+                        // one. No roll, result or damage is forced.
+                        foreach (int step in Sprint19EndLiveCommand(owner))
+                            yield return step;
                         DireApeRendGate.ForgetObserved(owner);
                         ResetExpandedSummoningHostile(fixture);
                         secondReset = Sprint18ResetSecondTarget(
@@ -191,8 +197,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                             }
                             UnitAttack ignored = null;
-                            int before = observer.Attacks.Count +
-                                (secondObserver == null ? 0 : secondObserver.Attacks.Count);
+                            int before = observer.Attacks.Count;
+                            int secondBefore = secondObserver == null ? 0 :
+                                secondObserver.Attacks.Count;
                             if (name == "claws-on-two-targets" && sequence == 0)
                             {
                                 // Created and subscribed once, across every trial.
@@ -223,13 +230,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 foreach (int step in Sprint18RunFullAttack(fixture, owner,
                                     result => ignored = result)) yield return step;
                             bool landed = !Sprint18ChosenSequenceMissed(
-                                observer, secondObserver, before, accuracy);
+                                observer, secondObserver, before, accuracy,
+                                secondBefore);
                             emissions.Add(new JObject {
                                 ["sequence"] = sequence,
                                 ["chosenLimbs"] = accuracy.Hit.Length,
                                 ["exactlyTheChosenLimbsLanded"] = landed,
                                 ["rolls"] = new JArray(Sprint18Rolls(
-                                    observer, secondObserver, before)),
+                                    observer, secondObserver, before,
+                                    secondBefore)),
                                 ["commandFinished"] = ignored != null && ignored.IsFinished });
                             if (!landed) { clean = false; break; }
                         }
@@ -353,10 +362,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// copies of the same rule.</para>
         /// </summary>
         private static bool Sprint18ChosenSequenceMissed(Sprint16RuleObserver observer,
-            Sprint16RuleObserver second, int from, Sprint18Accuracy accuracy)
+            Sprint16RuleObserver second, int from, Sprint18Accuracy accuracy,
+            int secondFrom = 0)
         {
             if (accuracy.Hit.Length == 0) return false;
-            RuleAttackRoll[] rolls = Sprint18AttemptRolls(observer, second, from);
+            RuleAttackRoll[] rolls = Sprint18AttemptRolls(
+                observer, second, from, secondFrom);
             if (rolls.Length == 0) return true;
             if (accuracy.Hit.Any(weapon => !rolls.Any(roll =>
                 ReferenceEquals(roll.Weapon, weapon) && roll.IsHit))) return true;
@@ -417,18 +428,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             return "second=reset";
         }
 
+        /// <summary>
+        /// The rolls one attempt produced, across both observers.
+        ///
+        /// <para>A cursor EACH, because one cursor over the concatenation is
+        /// wrong as soon as the second observer exists: new rolls land at the
+        /// end of the first list, which is the MIDDLE of the concatenated
+        /// sequence, so skipping a combined count skips live rolls and returns
+        /// stale ones. The series closure found it through the symptom - the
+        /// two-target rend case exhausted its trial bound with
+        /// `observedRends` correctly 0, because the window it read contained a
+        /// hit by an excluded limb from an earlier, already-abandoned
+        /// trial.</para>
+        /// </summary>
         private static RuleAttackRoll[] Sprint18AttemptRolls(
-            Sprint16RuleObserver observer, Sprint16RuleObserver second, int from)
+            Sprint16RuleObserver observer, Sprint16RuleObserver second,
+            int from, int secondFrom)
         {
-            IEnumerable<RuleAttackRoll> all = observer.Attacks;
-            if (second != null) all = all.Concat(second.Attacks);
-            return all.Skip(from).ToArray();
+            IEnumerable<RuleAttackRoll> all = observer.Attacks.Skip(from);
+            if (second != null) all = all.Concat(second.Attacks.Skip(secondFrom));
+            return all.ToArray();
         }
 
         private static JObject[] Sprint18Rolls(Sprint16RuleObserver observer,
-            Sprint16RuleObserver second, int from)
+            Sprint16RuleObserver second, int from, int secondFrom)
         {
-            return Sprint18AttemptRolls(observer, second, from).Select(roll =>
+            return Sprint18AttemptRolls(observer, second, from, secondFrom).Select(roll =>
                 new JObject {
                     ["weapon"] = roll.Weapon == null ? null :
                         roll.Weapon.Blueprint.AssetGuid,
