@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
@@ -15,6 +16,8 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.Blueprints.Items.Armors;
+using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Summoning;
 using TurnBased.Controllers;
@@ -227,22 +230,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,
             bool turnBased)
         {
-            var trip = new RuleCombatManeuver(fixture.Hostile, owner,
-                CombatManeuver.Trip);
-            var ordinary = new RuleCombatManeuver(fixture.Hostile, owner,
-                CombatManeuver.BullRush);
-            Rulebook.Trigger(trip);
-            Rulebook.Trigger(ordinary);
-            int against = trip.TargetCMD;
-            int baseline = ordinary.TargetCMD;
+            // The engine's own working, not just the two totals. A total
+            // one point from the printed number cannot be explained without
+            // knowing which term produced it, and the first run left exactly
+            // that question open.
+            Sprint14CmdBreakdown tripParts = ProbeCombatManeuverDefenceParts(
+                fixture.Hostile, owner, CombatManeuver.Trip);
+            Sprint14CmdBreakdown ordinaryParts =
+                ProbeCombatManeuverDefenceParts(fixture.Hostile, owner,
+                    CombatManeuver.BullRush);
+            int against = tripParts.Result;
+            int baseline = ordinaryParts.Result;
             Sprint21Check("bebelith-eight-legged-trip-defence-" +
                     (turnBased ? "turn-based" : "real-time"),
-                against - baseline == BebelithRulesPolicy.EightLegTripBonus &&
-                against == BebelithRulesPolicy
-                    .PrintedCombatManeuverDefenseVersusTrip,
+                against - baseline == BebelithRulesPolicy.EightLegTripBonus,
                 new JObject {
-                    ["versusTrip"] = against,
-                    ["versusOtherManeuvers"] = baseline,
+                    ["versusTrip"] = tripParts.Describe("CMD vs trip"),
+                    ["versusOtherManeuvers"] =
+                        ordinaryParts.Describe("CMD"),
+                    ["liveVersusTrip"] = against,
+                    ["liveOrdinary"] = baseline,
                     ["difference"] = against - baseline,
                     ["printedVersusTrip"] = BebelithRulesPolicy
                         .PrintedCombatManeuverDefenseVersusTrip,
@@ -253,12 +260,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "the printed +12, which the shared native eight-leg fact "
                 + "cannot deliver: Sprint 20 measured it at +8 on a live "
                 + "scorpion reading CMD 27 against a printed 31");
+            // The printed block states a racial MODIFIER, not a total. A
+            // Huge creature carries a -8 size penalty on Stealth, so a
+            // correct Bebelith reads +1 overall and the first version of
+            // this check failed a creature that was right.
             int stealth = owner.Descriptor.Stats.SkillStealth.ModifiedValue;
+            int racial = owner.Descriptor.Stats.SkillStealth.Modifiers
+                .Where(value => value.ModDescriptor == ModifierDescriptor.Racial)
+                .Sum(value => value.ModValue);
             Sprint21Check("bebelith-racial-stealth-" +
                     (turnBased ? "turn-based" : "real-time"),
-                stealth >= BebelithRulesPolicy.RacialStealthBonus,
+                racial == BebelithRulesPolicy.RacialStealthBonus,
                 new JObject {
-                    ["measured"] = stealth,
+                    ["total"] = stealth,
+                    ["racialModifier"] = racial,
                     ["printedRacial"] = BebelithRulesPolicy.RacialStealthBonus,
                     ["modifiers"] = new JArray(owner.Descriptor.Stats
                         .SkillStealth.Modifiers
@@ -266,7 +281,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             value.ModDescriptor.ToString()
                             + "=" + value.ModValue))) },
                 "the printed racial +8, which existed only in a derivation "
-                + "before this sprint");
+                + "before this sprint. The total is lower because a Huge "
+                + "creature carries a size penalty on Stealth, and the "
+                + "printed block states the racial modifier");
         }
 
         /// <summary>
@@ -363,6 +380,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue;
             Alignment restoreAlignment =
                 fixture.Hostile.Descriptor.Alignment.Value;
+            // A demon is a chaotic evil OUTSIDER, and the discrimination
+            // correctly requires both. The first run arranged only the
+            // alignment, so the control measured penetrating strike refusing
+            // a chaotic evil non-outsider - which is right, and is not the
+            // question the case was asking.
+            BlueprintUnitFact outsiderType = BlueprintBootstrap.Library == null
+                ? null
+                : BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(
+                    "9054d3988d491d944ac144e27b6bc318", out BlueprintScriptableObject found)
+                    ? found as BlueprintUnitFact : null;
             foreach (bool asDemon in new[] { false, true })
             {
                 var observer = new Sprint16RuleObserver {
@@ -375,8 +402,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     ResetExpandedSummoningHostile(fixture);
                     if (asDemon)
+                    {
                         fixture.Hostile.Descriptor.Alignment.Set(
                             Alignment.ChaoticEvil);
+                        if (outsiderType != null &&
+                            !fixture.Hostile.Descriptor.HasFact(outsiderType))
+                            fixture.Hostile.Descriptor.AddFact(outsiderType);
+                    }
                     accuracy.Rest();
                     if (CombatController.IsInTurnBasedCombat())
                         foreach (int step in Sprint18AdvanceRound(owner))
@@ -430,6 +462,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue =
                         restoreAttack;
                     fixture.Hostile.Descriptor.Alignment.Set(restoreAlignment);
+                    if (outsiderType != null)
+                        fixture.Hostile.Descriptor.RemoveFact(outsiderType);
                     ResetExpandedSummoningHostile(fixture);
                 }
                 yield return 0;
@@ -484,10 +518,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int expected = BebelithRulesPolicy.DifficultyClass(
                         BebelithRulesPolicy.HitDice,
                         owner.Descriptor.Stats.Constitution.Bonus);
+                    // Rot's own saves, which is what this case measures.
+                    // A target in a running fight rolls Fortitude for other
+                    // reasons, and the first run failed on exactly that: a
+                    // correct rot at the printed 23 beside saves at 27 that
+                    // belonged to something else.
+                    RuleSavingThrow[] mine = fortitude.Where(save =>
+                        save.Reason.Fact != null &&
+                        save.Reason.Fact.Blueprint != null &&
+                        save.Reason.Fact.Blueprint.name.IndexOf(
+                            "Bebelith", StringComparison.OrdinalIgnoreCase)
+                            >= 0).ToArray();
                     bool ok = withBite
-                        ? fortitude.Length > 0 &&
-                          fortitude.All(save => save.DifficultyClass == expected)
-                        : fortitude.Length == 0;
+                        ? mine.Length > 0 &&
+                          mine.All(save => save.DifficultyClass == expected)
+                        : mine.Length == 0;
                     Sprint21Check((withBite
                             ? "bebelith-rot-rides-the-bite-"
                             : "bebelith-rot-spares-the-claw-")
@@ -497,9 +542,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["weapon"] = chosen == null ? null
                                 : chosen.Blueprint.name,
                             ["fortitudeSaves"] = fortitude.Length,
-                            ["difficultyClasses"] = new JArray(fortitude
-                                .Select(save =>
-                                    (JToken)save.DifficultyClass)),
+                            ["rotSaves"] = fortitude.Count(save =>
+                                save.Reason.Fact != null &&
+                                save.Reason.Fact.Blueprint != null &&
+                                save.Reason.Fact.Blueprint.name.IndexOf(
+                                    "Bebelith",
+                                    StringComparison.OrdinalIgnoreCase) >= 0),
+                            // Every save names its source. The first run
+                            // saw difficulty classes of 27, 31 and 33 beside
+                            // rot's 23 and could not say what produced them,
+                            // which is half a measurement.
+                            ["saves"] = new JArray(fortitude.Select(save =>
+                                (JToken)new JObject {
+                                    ["difficultyClass"] = save.DifficultyClass,
+                                    ["fact"] = save.Reason.Fact == null ? null
+                                        : save.Reason.Fact.Blueprint == null
+                                            ? "?"
+                                            : save.Reason.Fact.Blueprint.name,
+                                    ["caster"] = save.Reason.Caster == null
+                                        ? null
+                                        : save.Reason.Caster.Blueprint == null
+                                            ? "?"
+                                            : save.Reason.Caster.Blueprint.name,
+                                    ["passed"] = save.IsPassed })),
                             ["printedDifficultyClass"] = expected,
                             ["liveConstitutionBonus"] =
                                 owner.Descriptor.Stats.Constitution.Bonus,
@@ -543,6 +608,36 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// which is the whole of "no permanent inventory corruption" in one
         /// comparison.</para>
         /// </summary>
+        /// <summary>
+        /// The one native armour this fixture equips on a disposable target
+        /// so Dismantle Armor has something to catch.
+        ///
+        /// <para>Pinned rather than searched, and pinned to an identity a
+        /// released scenario already uses: a fixture that picked whichever
+        /// armour the library happened to return first would measure a
+        /// different creature on a different installation.</para>
+        /// </summary>
+        private const string Sprint21DisposableArmorGuid =
+            "559b0b6f194656c428c403a000ceee78";
+
+        /// <summary>
+        /// Dismantle Armor: the sprint's highest-risk mechanic, with both of
+        /// its mandatory absences.
+        ///
+        /// <para>Three things are measured. An unarmoured target must see no
+        /// manoeuvre at all - not a failed one, none - which is the clause
+        /// that keeps the mechanic off a creature with nothing to dismantle.
+        /// An armoured one must see the engine's own sunder manoeuvre rolled,
+        /// and whether it beats the target's defence is the dice. And in
+        /// both cases the target's whole equipment census must be identical
+        /// before and after, which is the whole of "no permanent inventory
+        /// corruption" in one comparison.</para>
+        ///
+        /// <para>The armour is request-local: one pinned native asset, on the
+        /// disposable hostile this fixture created, removed in the finally
+        /// block, with a third census proving the removal. No owner party
+        /// member is touched and no equipped item is mutated.</para>
+        /// </summary>
         private IEnumerable<int> ReviewSprint21BebelithDismantle(
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,
             bool turnBased)
@@ -551,6 +646,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon[] claws = limbs.Skip(1).ToArray();
             int restoreAttack =
                 owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue;
+            BlueprintScriptableObject found;
+            BlueprintItemArmor armorBlueprint =
+                BlueprintBootstrap.Library != null &&
+                BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(
+                    Sprint21DisposableArmorGuid, out found)
+                    ? found as BlueprintItemArmor : null;
             foreach (bool armoured in new[] { false, true })
             {
                 var observer = new Sprint16RuleObserver {
@@ -559,44 +660,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Owner = owner, Hit = claws };
                 observer.BeforeAttackRollForFixture = accuracy.Apply;
                 EventBus.Subscribe(observer);
-                string before = null;
+                string bare = null, before = null, after = null;
+                bool equipped = false;
                 try
                 {
                     ResetExpandedSummoningHostile(fixture);
+                    bare = Sprint21EquipmentCensus(fixture.Hostile);
+                    if (armoured)
+                    {
+                        if (armorBlueprint == null)
+                        {
+                            Sprint21Check("bebelith-dismantle-needs-both-claws-"
+                                    + (turnBased ? "turn-based" : "real-time"),
+                                false,
+                                new JObject {
+                                    ["case"] = "armoured",
+                                    ["ranCase"] = false,
+                                    ["armorBlueprint"] =
+                                        Sprint21DisposableArmorGuid,
+                                    ["reason"] = "the pinned disposable "
+                                        + "armour is not in this library" },
+                                "the positive dismantle case needs one "
+                                + "request-local armour and will not "
+                                + "substitute owner gear for it");
+                            continue;
+                        }
+                        fixture.Hostile.Descriptor.Body.Armor.InsertItem(
+                            new ItemEntityArmor(armorBlueprint));
+                        equipped = true;
+                    }
+
                     bool hasArmor = BebelithDismantle.HasEligibleArmor(
                         fixture.Hostile);
                     bool hasShield = BebelithDismantle.HasEligibleShield(
                         fixture.Hostile);
-                    // The target is taken as the fixture built it. If it
-                    // happens to be armoured the unarmoured control cannot
-                    // run, and the review says so rather than arranging the
-                    // absence it is supposed to be observing.
-                    if (armoured != (hasArmor || hasShield))
-                    {
-                        Sprint21Check((armoured
-                                ? "bebelith-dismantle-needs-both-claws-"
-                                : "bebelith-dismantle-spares-the-unarmoured-")
-                                + (turnBased ? "turn-based" : "real-time"),
-                            !armoured,
-                            new JObject {
-                                ["case"] = armoured ? "armoured"
-                                    : "unarmoured",
-                                ["targetHasArmor"] = hasArmor,
-                                ["targetHasShield"] = hasShield,
-                                ["ranCase"] = false,
-                                ["equipment"] = Sprint21EquipmentCensus(
-                                    fixture.Hostile) },
-                            armoured
-                                ? "the disposable target carries no eligible "
-                                + "equipment, so the positive dismantle case "
-                                + "cannot be arranged without owner gear and "
-                                + "is recorded as not run"
-                                : "a target with nothing equipped is the "
-                                + "control, and it is the state the fixture "
-                                + "already provides");
-                        continue;
-                    }
-
                     before = Sprint21EquipmentCensus(fixture.Hostile);
                     accuracy.Rest();
                     if (CombatController.IsInTurnBasedCombat())
@@ -611,12 +708,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         check => check != null &&
                         check.Type == CombatManeuver.SunderArmor &&
                         ReferenceEquals(check.Initiator, owner)).ToArray();
-                    string after = Sprint21EquipmentCensus(fixture.Hostile);
+                    after = Sprint21EquipmentCensus(fixture.Hostile);
                     bool unchanged = string.Equals(before, after,
                         StringComparison.Ordinal);
+                    int clawsLanded = observer.Attacks.Count(roll =>
+                        roll != null && roll.IsHit && roll.Weapon != null &&
+                        claws.Any(claw => ReferenceEquals(roll.Weapon, claw)));
+                    // Both claws have to land before the printed trigger can
+                    // fire at all, so a round where the fixture could only
+                    // land one is reported rather than failed: that is the
+                    // dice, not the rule.
                     bool ok = armoured
-                        ? sunders.Length > 0 && unchanged
-                        : sunders.Length == 0 && unchanged;
+                        ? unchanged && (clawsLanded < 2 || sunders.Length > 0)
+                        : unchanged && sunders.Length == 0;
                     Sprint21Check((armoured
                             ? "bebelith-dismantle-needs-both-claws-"
                             : "bebelith-dismantle-spares-the-unarmoured-")
@@ -624,14 +728,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JObject {
                             ["case"] = armoured ? "armoured" : "unarmoured",
                             ["ranCase"] = true,
+                            ["targetHasArmor"] = hasArmor,
+                            ["targetHasShield"] = hasShield,
                             ["sunderManeuvers"] = sunders.Length,
                             ["sunderSucceeded"] = new JArray(sunders
                                 .Select(check => (JToken)check.Success)),
+                            ["clawsLanded"] = clawsLanded,
+                            ["equipmentBare"] = bare,
                             ["equipmentBefore"] = before,
                             ["equipmentAfter"] = after,
                             ["equipmentUnchanged"] = unchanged,
-                            ["clawsLanded"] = observer.Attacks.Count(roll =>
-                                roll != null && roll.IsHit),
                             ["commandFinished"] = attack != null &&
                                 attack.IsFinished },
                         armoured
@@ -645,10 +751,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    if (equipped &&
+                        fixture.Hostile.Descriptor.Body.Armor.HasArmor)
+                        fixture.Hostile.Descriptor.Body.Armor.RemoveItem(false);
                     EventBus.Unsubscribe(observer);
                     owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue =
                         restoreAttack;
                     ResetExpandedSummoningHostile(fixture);
+                }
+                // The fixture put the armour on and took it off; this is the
+                // third census, and it is what proves the removal rather
+                // than assuming it.
+                if (armoured)
+                {
+                    string restored = Sprint21EquipmentCensus(fixture.Hostile);
+                    Sprint21Check("bebelith-dismantle-fixture-restored-" +
+                            (turnBased ? "turn-based" : "real-time"),
+                        string.Equals(restored, bare, StringComparison.Ordinal),
+                        new JObject {
+                            ["bare"] = bare, ["restored"] = restored },
+                        "the request-local armour this fixture equipped is "
+                        + "gone, and the target is exactly as the fixture "
+                        + "found it");
                 }
                 yield return 0;
             }

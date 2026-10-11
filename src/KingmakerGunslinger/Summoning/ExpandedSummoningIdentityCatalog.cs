@@ -61,7 +61,7 @@ namespace KingmakerGunslinger.Summoning
         // its printed racial +4 Perception, and the grab carrier its two claws
         // need. It owns no weapon, because a Medium creature takes the shared
         // native 1d4 claw unscaled.
-        internal const int SpecialIdentityCount = 242;
+        internal const int SpecialIdentityCount = 243;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -423,6 +423,11 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.PenetratingStrike", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.TripDefense", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.RacialSkills", "BlueprintFeature"));
+            // Measured on a live creature in the first guarded run: the
+            // native outsider chassis assigns this creature's Fortitude and
+            // Will to each other's slots and gives it one hit point per die
+            // more than its block prints.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.ChassisCorrection", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Web", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebResource", "BlueprintAbilityResource"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebAi", "BlueprintAiCastSpell"));

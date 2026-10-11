@@ -141,6 +141,7 @@ SPRINT21_NEW = (
     # own save. Neither existed while this sprint owned only its body.
     "src/KingmakerGunslinger/Summoning/BebelithRulesPolicy.cs",
     "src/KingmakerGunslinger/Summoning/BebelithRot.cs",
+    "src/KingmakerGunslinger/Summoning/BebelithChassisCorrection.cs",
     "assets-source/original-icons/expanded-summoning/sources/giant-crab.png",
     "assets/game/icons/expanded-summoning/giant-crab.png",
     # The two original bodies and the authoring that produced them. The
@@ -193,6 +194,10 @@ BEBELITH_IDENTITY_TAIL = {
     "KMG.Summoning.Special.Bebelith.TripDefense": "BlueprintFeature",
     # The printed racial +8 Stealth, which existed nowhere.
     "KMG.Summoning.Special.Bebelith.RacialSkills": "BlueprintFeature",
+    # Measured in the first guarded run: the native outsider chassis assigns
+    # this creature's Fortitude and Will to each other's slots and gives it
+    # one hit point per die more than its block prints.
+    "KMG.Summoning.Special.Bebelith.ChassisCorrection": "BlueprintFeature",
     # The web: an ability, the resource that limits it, the AI action that
     # chooses it and a brain that can cast at all. The released creature takes
     # the native brain that casts nothing.
