@@ -872,6 +872,86 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// The Bebelith half of the guarded review exists, is reached, and
+        /// is mostly negative controls.
+        ///
+        /// <para>The crab's half is covered above. This one matters more,
+        /// because the Bebelith is released: a review that quietly stopped
+        /// running against it would let an overhaul ship unmeasured on a
+        /// creature a player can already summon today.</para>
+        ///
+        /// <para>What it checks beyond existence is the shape of the case
+        /// list. This creature's two hardest mechanics - penetrating strike
+        /// and Dismantle Armor - are both defined by what they must NOT
+        /// touch, and an absence cannot be proved by a positive case. So the
+        /// review has to be more than half controls, and the policy refuses
+        /// to validate if it stops being.</para>
+        /// </summary>
+        internal static void TheBebelithReviewIsReachedAndIsMostlyControls()
+        {
+            KingmakerGunslinger.RuntimeTesting.Sprint21BebelithReviewPolicy
+                .Validate();
+            var policy = typeof(KingmakerGunslinger.RuntimeTesting
+                .Sprint21BebelithReviewPolicy);
+            Assertions.Equal("bebelith", KingmakerGunslinger.RuntimeTesting
+                    .Sprint21BebelithReviewPolicy.BebelithKey,
+                "The review measures the released key, not a renamed one.");
+            Assertions.Equal(7, KingmakerGunslinger.RuntimeTesting
+                    .Sprint21BebelithReviewPolicy.OwnTier,
+                "It is cast from its own tier, Summon Monster VII.");
+            string[][] cases = KingmakerGunslinger.RuntimeTesting
+                .Sprint21BebelithReviewPolicy.Cases;
+            int controls = cases.Count(row => row[1] == "negative-control");
+            Assertions.True(controls > cases.Length - controls,
+                "An overhaul of a released creature is mostly negative "
+                + "controls, or it is not measuring what changed: "
+                + controls + " of " + cases.Length);
+            foreach (string required in new[] { "non-demon", "unarmoured",
+                "inventory" })
+                Assertions.True(cases.Any(row => row[0].Contains(required)),
+                    "The review is missing the only case that can see an "
+                    + "absence: " + required);
+            // Rot on the bite and NOT on the claw; the dismantle on the claws
+            // and NOT on the bite. Both halves, because "bite only" is a
+            // claim about the claws.
+            string[][] riders = KingmakerGunslinger.RuntimeTesting
+                .Sprint21BebelithReviewPolicy.LimbRiders;
+            foreach (string[] expected in new[] {
+                new[] { "bite", "rot", "yes" },
+                new[] { "claw", "rot", "no" },
+                new[] { "claw", "dismantle", "yes" },
+                new[] { "bite", "dismantle", "no" } })
+                Assertions.True(riders.Any(row => row.SequenceEqual(expected)),
+                    "The rider table must state both halves of "
+                    + expected[1] + " on the " + expected[0]);
+            // And the review is actually reached from the driver, which is
+            // the thing a policy alone cannot prove.
+            string root = RepositoryRoot();
+            string driver = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningSprint21Review.cs"));
+            Assertions.True(driver.Contains("ReviewSprint21Bebelith("),
+                "The Sprint 21 review driver must run the Bebelith half.");
+            string review = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningSprint21Bebelith.cs"));
+            foreach (string measured in new[] {
+                "Sprint21EquipmentCensus", "CombatManeuver.SunderArmor",
+                "SavingThrowType.Fortitude", "DamageAlignment.Chaotic",
+                "PhysicalDamageMaterial.ColdIron",
+                "fourthChainEmpty" })
+                Assertions.True(review.Contains(measured),
+                    "The Bebelith review no longer measures: " + measured);
+            // The equipment census is the whole of "no permanent inventory
+            // corruption", so it must be taken on both sides of the case.
+            Assertions.True(review.Contains("equipmentBefore") &&
+                    review.Contains("equipmentAfter") &&
+                    review.Contains("equipmentUnchanged"),
+                "The dismantle case must compare the target's equipment "
+                + "before and after, which is how an absence is proved.");
+        }
+
+        /// <summary>
         /// The two-family donor census is admitted by every gate that can
         /// refuse it, and it really is two families.
         ///
