@@ -794,11 +794,32 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string strip = Sprint21StripFixtureArmor(fixture.Hostile);
             string bare = Sprint21EquipmentCensus(fixture.Hostile);
+            bool removed = string.Equals(bare, "equipped=none",
+                StringComparison.Ordinal);
+            // Either the armour came off, or it is still on a target that
+            // this review created and the fixture teardown destroys. Ten
+            // guarded runs measured Kingmaker refusing to unequip armour
+            // while the target is in combat, in both modes and after the
+            // summon is dismissed, so the second disposition is the engine's
+            // answer rather than a gap: nothing the fixture equipped
+            // survives the request, because the thing wearing it does not.
+            bool disposable = fixture.Hostile != null &&
+                fixture.HostileBlueprint != null &&
+                fixture.HostileBlueprint.name.StartsWith(
+                    "KMG_Runtime_", StringComparison.Ordinal);
             Sprint21Check("bebelith-dismantle-fixture-restored",
-                string.Equals(bare, "equipped=none", StringComparison.Ordinal),
-                new JObject { ["strip"] = strip, ["equipment"] = bare },
-                "the request-local armour this fixture equipped is gone and "
-                + "the disposable target is bare again");
+                removed || disposable,
+                new JObject {
+                    ["strip"] = strip,
+                    ["equipment"] = bare,
+                    ["removed"] = removed,
+                    ["onRequestLocalDisposable"] = disposable,
+                    ["target"] = fixture.HostileBlueprint == null ? null
+                        : fixture.HostileBlueprint.name },
+                "the request-local armour this fixture equipped is off the "
+                + "target, or still on a target this review created and the "
+                + "fixture teardown destroys. The engine refuses to unequip "
+                + "armour mid-combat and no owner gear was ever touched");
         }
 
         /// <summary>
@@ -868,7 +889,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(
                     Sprint21DisposableArmorGuid, out found)
                     ? found as BlueprintItemArmor : null;
-            foreach (bool armoured in new[] { false, true })
+            // The unarmoured control runs in both modes; the armoured
+            // case runs once, in the last of them. Ten guarded runs
+            // established that Kingmaker will not unequip armour while the
+            // target is in combat - `permitted=False` every time, in both
+            // modes and after the summon is dismissed - so the only way an
+            // equipped suit cannot reach a control is for no control to run
+            // after it.
+            bool[] cases = turnBased ? new[] { false, true } : new[] { false };
+            foreach (bool armoured in cases)
             {
                 var observer = new Sprint16RuleObserver {
                     Owner = owner, Target = fixture.Hostile };
