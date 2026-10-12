@@ -400,7 +400,7 @@ try {
             ExpectedVersion = $expectedVersion
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
-            ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
+            ObserverStartupTimeoutSeconds = [Math]::Min($RuntimeTimeoutSeconds,600)
             CompletionTimeoutSeconds = $RuntimeTimeoutSeconds
             Confirm = $false
             AllowDirtyGit = [bool]$AllowDirtyGit
