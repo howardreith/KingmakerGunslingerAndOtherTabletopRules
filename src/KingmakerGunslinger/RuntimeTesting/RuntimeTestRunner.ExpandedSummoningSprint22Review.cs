@@ -58,6 +58,109 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal void Clear() { Rolls.Clear();Applications.Clear(); }
         }
 
+        /// <summary>Read-only sampling of the exact issued command while its
+        /// native tail clip is live. RuleAttackWithWeapon is delivered after
+        /// this donor has already cleared ActiveAnimation, so an event-time
+        /// pose is the rest pose rather than the rendered strike.</summary>
+        private sealed class Sprint22TailContactProbe
+        {
+            private readonly UnitEntityData _owner,_target;
+            private readonly SkinnedMeshRenderer _skin,_victim;
+            private readonly int[] _clubVertices;
+            internal int ActiveClipFrames,BestFrame=-1,RuleFrame=-1;
+            internal bool RuleHandleActed;
+            internal float MinimumGap=float.MaxValue;
+            internal Vector3 BestClub,BestTargetBounds;
+            internal JObject BestAnimation;
+            internal string Failure;
+
+            internal Sprint22TailContactProbe(UnitEntityData owner,
+                UnitEntityData target)
+            {
+                _owner=owner;_target=target;
+                _skin=owner?.View==null ? null : owner.View
+                    .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .SingleOrDefault(value=>value.sharedMesh!=null &&
+                        value.sharedMesh.name=="KMG_ankylosaurus_Original");
+                _victim=target?.View==null ? null : target.View
+                    .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .Where(value=>value.enabled && value.sharedMesh!=null)
+                    .OrderByDescending(value=>value.bones.Length).FirstOrDefault();
+                if(_skin==null || _victim==null)
+                { Failure="missing exact original body or native victim skin";_clubVertices=new int[0];return; }
+                int club=Array.FindIndex(_skin.bones,value=>value.name=="Tail5_M");
+                var weights=_skin.sharedMesh.boneWeights;
+                var original=_skin.sharedMesh.vertices;
+                _clubVertices=Enumerable.Range(0,weights.Length).Where(index=>
+                    weights[index].boneIndex0==club && weights[index].weight0>.9f &&
+                    Math.Abs(original[index].x)>.12).ToArray();
+                if(_clubVertices.Length==0) Failure="no terminal club surface";
+            }
+
+            internal bool Sample(UnitAttack command)
+            {
+                if(Failure!=null || command==null) return false;
+                JObject animation=Sprint17IssuedAnimationObservation(command);
+                string action=(string)animation["actionName"];
+                string clip=(string)animation["clip"]?["name"];
+                if(action!="HodagAnimset_Tail" || clip!="Hodag_attack_tail" ||
+                    (bool?)animation["handleStarted"]!=true ||
+                    (bool?)animation["activeAnimationPresent"]!=true) return false;
+                ActiveClipFrames++;
+                Vector3[] world=Sprint17OriginalWorldVertices(_skin);
+                Vector3 nearest=world[_clubVertices[0]];
+                float gap=Vector3.Distance(nearest,
+                    _victim.bounds.ClosestPoint(nearest));
+                for(int position=1;position<_clubVertices.Length;position++)
+                {
+                    Vector3 candidate=world[_clubVertices[position]];
+                    float candidateGap=Vector3.Distance(candidate,
+                        _victim.bounds.ClosestPoint(candidate));
+                    if(candidateGap<gap) { gap=candidateGap;nearest=candidate; }
+                }
+                if(gap>=MinimumGap) return false;
+                MinimumGap=gap;BestFrame=Time.frameCount;BestClub=nearest;
+                BestTargetBounds=_victim.bounds.size;BestAnimation=animation;
+                return gap<=.5f;
+            }
+
+            internal JObject Result(RuleAttackWithWeapon rule,
+                UnitAttack command,string supportingFrame)
+            {
+                var handle=command==null ? null : command.Animation;
+                bool exact=Failure==null && ActiveClipFrames>0 &&
+                    BestAnimation!=null && handle!=null &&
+                    (bool?)BestAnimation["handleStarted"]==true &&
+                    RuleHandleActed && command.IsFinished && rule!=null &&
+                    ReferenceEquals(rule.Initiator,_owner) &&
+                    ReferenceEquals(rule.Target,_target) &&
+                    rule.AttackRoll!=null && rule.AttackRoll.IsHit &&
+                    RuleFrame>=0;
+                var row=new JObject { ["event"]="correlated-native-tail-command",
+                    ["ruleFrame"]=RuleFrame,["bestFrame"]=BestFrame,
+                    ["unit"]=_owner?.UniqueId,["target"]=_target?.UniqueId,
+                    ["weapon"]=rule?.Weapon?.Blueprint?.AssetGuid,
+                    ["hit"]=rule?.AttackRoll!=null && rule.AttackRoll.IsHit,
+                    ["nativeTailAction"]=exact,["activeClipFrames"]=ActiveClipFrames,
+                    ["commandFinished"]=command!=null && command.IsFinished,
+                    ["handleActedAtRule"]=RuleHandleActed,
+                    ["handleActedAfterCommand"]=handle!=null && handle.IsActed,
+                    ["minimumGapMeters"]=float.IsInfinity(MinimumGap) ||
+                        MinimumGap==float.MaxValue ? (JToken)JValue.CreateNull() : MinimumGap,
+                    ["clubPoints"]=_clubVertices.Length,
+                    ["clubSurface"]=SurveyVector(BestClub),
+                    ["targetBounds"]=SurveyVector(BestTargetBounds),
+                    ["bestAnimation"]=BestAnimation,
+                    ["ruleCorrelatedToCommand"]=RuleFrame>=0,
+                    ["bestFrameMinusRuleFrame"]=BestFrame-RuleFrame,
+                    ["originalVertexOwnership"]=_skin==null ||
+                        _skin.sharedMesh==null ? 0 : _skin.sharedMesh.GetInstanceID(),
+                    ["supportingFrame"]=supportingFrame };
+                if(Failure!=null) row["failure"]=Failure;
+                return row;
+            }
+        }
+
         private void Sprint22Check(string predicate, bool passed, JObject row, string expected)
         {
             row["predicate"]=predicate; row["passed"]=passed; row["runId"]=_request.RunId;
@@ -129,6 +232,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 CreateExpandedSummoningCorrectionHostile(fixture);
                 foreach(int frame in Sprint22VisualLifecycle(fixture)) yield return frame;
+                // The disposable fixture can inherit the owner's persisted
+                // turn-based preference.  Crowd movement and native summon
+                // timers need an explicitly activated, unpaused RTWP clock.
+                Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.IsPaused=false;
+                for(int frame=0;frame<8;frame++) yield return 0;
                 foreach(int frame in Sprint22CrowdNavigation(fixture)) yield return frame;
                 foreach (bool turnBased in new[] { false,true })
                 {
@@ -137,8 +247,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var owner=CastExpandedSummoningOwnTier(fixture,"ankylosaurus");
                     SetExpandedSummoningBrainActive(owner,false);
                     for (int frame=0;frame<16;frame++) yield return 0;
+                    foreach (int frame in Sprint22SetPowerAttack(owner,false))
+                        yield return frame;
                     Sprint22ReadProfile(fixture,owner,turnBased);
-                    Sprint22PowerAttack(fixture,owner,turnBased);
+                    foreach (int frame in Sprint22PowerAttack(fixture,owner,turnBased))
+                        yield return frame;
                     Sprint22NegativeWeapons(fixture,owner,turnBased);
                     DisposeExpandedSummoningUnits(fixture.Created,new[] {owner});
                     foreach (string name in new[] { "ordinary-failure","ordinary-success","critical-failure","critical-success",
@@ -162,24 +275,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private void Sprint22PowerAttack(ExpandedSummoningCorrectionFixture fixture,UnitEntityData unit,bool mode)
+        private IEnumerable<int> Sprint22SetPowerAttack(UnitEntityData unit,
+            bool enabled)
         {
             var toggle=unit.Descriptor.ActivatableAbilities.Enumerable.Single(value=>value.Blueprint.AssetGuid=="a7b339e4f6ff93a4697df5d7a87ff619");
-            bool was=toggle.IsOn;var weapon=Sprint19Limbs(unit).Single();
-            try
+            if(!enabled)
             {
-                toggle.IsOn=false;toggle.Stop(true);
-                int offAttack=ProbeEntityAttackBonus(unit,fixture.Hostile,weapon);
-                int offDamage=Rulebook.Trigger(new RuleCalculateWeaponStats(unit,weapon,null)).DamageDescription[0].CreateDamage().Bonus;
-                toggle.IsOn=true;
-                int onAttack=ProbeEntityAttackBonus(unit,fixture.Hostile,weapon);
-                int onDamage=Rulebook.Trigger(new RuleCalculateWeaponStats(unit,weapon,null)).DamageDescription[0].CreateDamage().Bonus;
-                Sprint22Check("power-attack-"+(mode?"turn-based":"rtwp"),toggle.IsOn && offAttack==14 && offDamage==12 && onAttack==12 && onDamage==18,
-                    new JObject { ["unit"]=unit.UniqueId,["event"]="native-power-attack-toggle-and-weapon-rules",["owner"]=toggle.Blueprint.AssetGuid,
-                        ["offAttack"]=offAttack,["onAttack"]=onAttack,["offDamage"]=offDamage,["onDamage"]=onDamage,["running"]=toggle.IsRunning },
-                    "BAB7 Power Attack contributes -2 attack/+6 to the single primary 1.5x-Strength tail; printed line is measured with it off.");
+                if(toggle.IsRunning) toggle.Stop(true);
+                toggle.IsOn=false;
             }
-            finally { toggle.IsOn=false;toggle.Stop(true);toggle.IsOn=was; }
+            else toggle.IsOn=true;
+            for(int frame=0;frame<16;frame++)
+            {
+                bool buff=toggle.Blueprint.Buff!=null &&
+                    unit.Descriptor.Buffs.GetBuff(toggle.Blueprint.Buff)!=null;
+                if(enabled ? toggle.IsOn && toggle.IsRunning && buff :
+                    !toggle.IsOn && !toggle.IsRunning && !buff) yield break;
+                yield return 0;
+            }
+        }
+
+        private IEnumerable<int> Sprint22PowerAttack(
+            ExpandedSummoningCorrectionFixture fixture,UnitEntityData unit,bool mode)
+        {
+            var toggle=unit.Descriptor.ActivatableAbilities.Enumerable.Single(value=>value.Blueprint.AssetGuid=="a7b339e4f6ff93a4697df5d7a87ff619");
+            var weapon=Sprint19Limbs(unit).Single();
+            foreach(int frame in Sprint22SetPowerAttack(unit,false)) yield return frame;
+            int offAttack=ProbeEntityAttackBonus(unit,fixture.Hostile,weapon);
+            int offDamage=Rulebook.Trigger(new RuleCalculateWeaponStats(unit,weapon,null)).DamageDescription[0].CreateDamage().Bonus;
+            foreach(int frame in Sprint22SetPowerAttack(unit,true)) yield return frame;
+            int onAttack=ProbeEntityAttackBonus(unit,fixture.Hostile,weapon);
+            int onDamage=Rulebook.Trigger(new RuleCalculateWeaponStats(unit,weapon,null)).DamageDescription[0].CreateDamage().Bonus;
+            bool running=toggle.IsOn && toggle.IsRunning && toggle.Blueprint.Buff!=null &&
+                unit.Descriptor.Buffs.GetBuff(toggle.Blueprint.Buff)!=null;
+            Sprint22Check("power-attack-"+(mode?"turn-based":"rtwp"),running && offAttack==14 && offDamage==12 && onAttack==12 && onDamage==18,
+                new JObject { ["unit"]=unit.UniqueId,["event"]="native-power-attack-toggle-and-weapon-rules",["owner"]=toggle.Blueprint.AssetGuid,
+                    ["offAttack"]=offAttack,["onAttack"]=onAttack,["offDamage"]=offDamage,["onDamage"]=onDamage,["running"]=running },
+                "BAB7 native Power Attack contributes -2 attack and its native +4 plus the exact Anky-only +2 correction; printed line is measured after native stop with it off.");
+            foreach(int frame in Sprint22SetPowerAttack(unit,false)) yield return frame;
         }
 
         private void Sprint22NegativeWeapons(ExpandedSummoningCorrectionFixture fixture,UnitEntityData unit,bool mode)
@@ -295,10 +428,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             var owned=units.SelectMany(value=>ExpandedSummoningPteranodonViewPatch
                 .CaptureOriginalFlightOwnedResources(value.View)).ToArray();
             var ends=markers.Select(value=>value.EndTime.TotalSeconds).ToArray();
+            bool crowdCombat=false,hostileJoined=false;
             try
             {
-                Game.Instance.UI.SelectionManagerPC.MultiSelect(units.Select(value=>value.View).ToArray(),false);
-                bool selection=units.All(value=>Game.Instance.UI.SelectionManagerPC.SelectedUnits.Contains(value));
+                var selectionRows=new JArray(units.Select(Sprint22SelectionSurface));
+                bool selection=selectionRows.All(value=>(bool)value["selectionSurface"]);
                 var anchor=AstarPath.active.GetNearest(fixture.Caster.Position);
                 if(anchor.node==null || !anchor.node.Walkable)
                     throw new InvalidOperationException("No walkable party floor for the Ankylosaurus crowd review.");
@@ -348,8 +482,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(!routeFound) throw new InvalidOperationException("No connected direct floor route for the Ankylosaurus crowd: area="+
                     anchor.node.Area+";graph="+anchor.node.GraphIndex+";centers="+centers+";routes="+routes);
                 // The native first-level scene is a real, irregular floor rather
-                // than an invented arena. Keep all five summons alive and jointly
-                // selected, move each Huge body over the same surveyed route, then
+                // than an invented arena. Keep all five summons alive with their
+                // native click/target surfaces, move each Huge body over the same surveyed route, then
                 // use two members head-on for native contact/avoidance evidence.
                 Game.Instance.IsPaused=false;int frames=0;bool navigated=true;var rows=new JArray();
                 for(int i=0;i<units.Length;i++)
@@ -381,17 +515,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Commands.InterruptAll();PlaceExpandedSummoningUnit(unit,parking[i]);
                 }
                 Sprint22Check("huge-crowd-navigation-selection",selection && navigated,new JObject { ["unit"]="ankylosaurus",["event"]="native-five-member-move-and-selection",
-                    ["owner"]="request-owned-quantity-group",["quantityTrials"]=quantities,["selection"]=selection,["members"]=rows,["frames"]=frames,
+                    ["owner"]="request-owned-quantity-group",["quantityTrials"]=quantities,["selectionSurfaces"]=selectionRows,["selection"]=selection,["members"]=rows,["frames"]=frames,
                     ["floorSearch"]=new JObject { ["anchor"]=SurveyVector(anchor.clampedPosition),
                         ["center"]=SurveyVector(chosenCenter),["heading"]=SurveyVector(chosenHeading),["halfLength"]=chosenHalfLength,
                         ["centers"]=centers,["routes"]=routes } },
-                    "Five Huge summons remain jointly selectable and every member completes a surveyed native route with its legal footprint.");
+                    "All five Huge summons retain live native click/target selection colliders and every member completes a surveyed native route; base-game summons remain AI-controlled.");
 
                 var pair=new[] {units[0],units[1]};var pairStarts=new[] {chosenOrigin.clampedPosition,chosenDestination.clampedPosition};
                 var pairEnds=new[] {chosenDestination.clampedPosition,chosenOrigin.clampedPosition};var pairMoves=new UnitMoveTo[2];
                 var pairContacts=new int[2];float minimumCenterDistance=float.MaxValue;
+                foreach(var unit in pair)
+                {
+                    unit.Memory.Add(fixture.Hostile);
+                    if(!unit.IsInCombat) unit.JoinCombat();
+                }
+                fixture.Hostile.Memory.Add(pair[0]);
+                hostileJoined=!fixture.Hostile.IsInCombat;
+                if(hostileJoined) fixture.Hostile.JoinCombat();
+                Game.Instance.Player.UpdateIsInCombat();crowdCombat=true;
                 for(int i=0;i<2;i++) { pair[i].Commands.InterruptAll();PlaceExpandedSummoningUnit(pair[i],pairStarts[i]); }
-                for(int settle=0;settle<2;settle++) yield return 0;
+                for(int settle=0;settle<4;settle++) yield return 0;
                 bool pairCanStart=true;
                 for(int i=0;i<2;i++) { pairMoves[i]=new UnitMoveTo(pairEnds[i],.5f);pairMoves[i].Init(pair[i]);
                     pairCanStart&=pairMoves[i].CanStart;if(pairMoves[i].CanStart) pair[i].Commands.Run(pairMoves[i]); }
@@ -410,11 +553,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint22Check("huge-collision-contact",collision,new JObject { ["unit"]="ankylosaurus",["event"]="head-on-native-movement-contacts",
                     ["owner"]="request-owned-quantity-group-members-0-1",["members"]=new JArray(pair.Select((value,i)=>new JObject {
                         ["unit"]=value.UniqueId,["contacts"]=pairContacts[i],["commandFinished"]=pairMoves[i].IsFinished,
-                        ["travel"]=Vector3.Distance(pairStarts[i],value.Position),["agentCorpulence"]=value.View.MovementAgent.Corpulence })),
+                        ["travel"]=Vector3.Distance(pairStarts[i],value.Position),["unitCorpulence"]=value.Corpulence,
+                        ["agentCorpulence"]=value.View.MovementAgent.Corpulence,["inCombat"]=value.IsInCombat })),
                     ["canStart"]=pairCanStart,["initialCenterDistance"]=initialCenterDistance,["minimumCenterDistance"]=minimumCenterDistance,
                     ["finalCenterDistance"]=Vector3.Distance(pair[0].Position,pair[1].Position),["frames"]=collisionFrames,
                     ["wallSeconds"]=collisionClock.Elapsed.TotalSeconds },
                     "Two Huge members approach head-on on the surveyed route, produce native contacts and retain avoidance/corpulence.");
+                foreach(var unit in pair) if(unit.IsInCombat) unit.LeaveCombat();
+                if(hostileJoined && fixture.Hostile.IsInCombat) fixture.Hostile.LeaveCombat();
+                Game.Instance.Player.UpdateIsInCombat();crowdCombat=false;
                 for(int i=0;i<units.Length;i++) { units[i].Commands.InterruptAll();PlaceExpandedSummoningUnit(units[i],parking[i]); }
                 var expiry=System.Diagnostics.Stopwatch.StartNew();
                 while(units.Any(value=>!value.Destroyed || value.View!=null || value.HoldingState!=null) && expiry.Elapsed.TotalSeconds<150)
@@ -426,10 +573,57 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if(crowdCombat)
+                {
+                    foreach(var unit in units) if(unit.IsInCombat) unit.LeaveCombat();
+                    if(hostileJoined && fixture.Hostile.IsInCombat) fixture.Hostile.LeaveCombat();
+                    Game.Instance.Player.UpdateIsInCombat();
+                }
                 foreach(var unit in units) { if(!awake.Contains(unit)) Game.Instance.State.AwakeUnits.Remove(unit);unit.Commands.InterruptAll(); }
                 Game.Instance.UI.SelectionManagerPC.MultiSelect(selected.Where(value=>value.View!=null).Select(value=>value.View).ToArray(),false);
                 Game.Instance.IsPaused=paused;DisposeExpandedSummoningUnits(fixture.Created,units);
             }
+        }
+
+        private static JObject Sprint22SelectionSurface(UnitEntityData unit)
+        {
+            var view=unit==null ? null : unit.View;
+            var soft=view==null ? null : ReadExpandedSummoningOptionalMember(
+                view,"m_SoftCollider") as CapsuleCollider;
+            var core=view==null ? null : ReadExpandedSummoningOptionalMember(
+                view,"m_CoreCollider") as MeshCollider;
+            Component clickable=view==null ? null : view.GetComponent(
+                "Kingmaker.UI.Selection.ClickableObject");
+            Vector2 bounds=Vector2.zero,coreBounds=Vector2.zero;
+            bool derived=false;
+            try
+            {
+                if(view!=null)
+                {
+                    bounds=view.CameraOrientedBoundsSize;
+                    coreBounds=view.CameraOrientedCoreBoundsSize;
+                    derived=bounds.x>0 && bounds.y>0 && coreBounds.x>0 &&
+                        coreBounds.y>0;
+                }
+            }
+            catch { derived=false; }
+            bool valid=view!=null && soft!=null && core!=null && clickable!=null &&
+                soft.enabled && soft.gameObject.activeInHierarchy &&
+                soft.radius>0 && soft.height>0 && core.enabled &&
+                core.gameObject.activeInHierarchy &&
+                derived && unit.Corpulence>0;
+            return new JObject { ["unit"]=unit?.UniqueId,
+                ["selectionSurface"]=valid,["directlyControllable"]=unit!=null && unit.IsDirectlyControllable,
+                ["softCollider"]=soft==null ? null : soft.GetType().FullName,
+                ["softEnabled"]=soft!=null && soft.enabled,
+                ["softRadius"]=soft==null ? 0 : soft.radius,
+                ["softHeight"]=soft==null ? 0 : soft.height,
+                ["coreCollider"]=core==null ? null : core.GetType().FullName,
+                ["coreEnabled"]=core!=null && core.enabled,
+                ["clickable"]=clickable==null ? null : clickable.GetType().FullName,
+                ["cameraBounds"]=SurveyVector(new Vector3(bounds.x,bounds.y,0)),
+                ["cameraCoreBounds"]=SurveyVector(new Vector3(coreBounds.x,coreBounds.y,0)),
+                ["corpulence"]=unit==null ? 0 : unit.Corpulence };
         }
 
         private static JObject Sprint22UnitReadback(UnitEntityData unit)
@@ -503,22 +697,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             var cmd=ProbeCombatManeuverDefenceParts(fixture.Hostile,owner,CombatManeuver.Grapple);
             var trip=ProbeCombatManeuverDefenceParts(fixture.Hostile,owner,CombatManeuver.Trip);
             int cmb=Rulebook.Trigger(new RuleCalculateCMB(owner,fixture.Hostile,CombatManeuver.Trip)).Result;
+            const string tailType="7243c9cd0f654b9080e7b31112ddbf18";
             var weaponRows=new JArray(); bool weaponExact=limbs.Length==1;
             foreach (var weapon in limbs)
             {
                 var rule=Rulebook.Trigger(new RuleCalculateWeaponStats(owner,weapon,null));
                 BaseDamage damage=rule.DamageDescription[0].CreateDamage(); int attack=ProbeEntityAttackBonus(owner,fixture.Hostile,weapon);
-                weaponExact &= damage.Dice.Rolls==3 && (int)damage.Dice.Dice==6 && damage.Bonus==12 && attack==14 && !rule.SecondaryWeapon;
+                weaponExact &= damage.Dice.Rolls==3 && (int)damage.Dice.Dice==6 &&
+                    damage.Bonus==12 && attack==14 && !rule.SecondaryWeapon &&
+                    weapon.Blueprint.Type.AssetGuid==tailType;
                 weaponRows.Add(new JObject { ["guid"]=weapon.Blueprint.AssetGuid,["type"]=weapon.Blueprint.Type.AssetGuid,
                     ["attack"]=attack,["damage"]=Sprint16DamageLine(damage),["secondary"]=rule.SecondaryWeapon });
             }
             int deniedDex=cmd.DexterityDenied || cmd.FlatFooted ? stats.Dexterity.Bonus : 0;
+            string[] facts=owner.Descriptor.Progression.Features.Enumerable
+                .Select(value=>value.Blueprint.name).ToArray();
             bool profile=scores.SequenceEqual(new[] {27,10,17,2,13,8}) && owner.Descriptor.State.Size==Size.Huge &&
                 owner.Descriptor.Progression.CharacterLevel==10 && stats.HitPoints.ModifiedValue==75 &&
                 stats.AC.ModifiedValue-difficulty==22 && stats.AC.Touch-difficulty==8 && stats.AC.FlatFooted-difficulty==22 &&
                 stats.GetStat(StatType.SaveFortitude).ModifiedValue==12 && stats.GetStat(StatType.SaveReflex).ModifiedValue==7 &&
                 stats.GetStat(StatType.SaveWill).ModifiedValue==4 && stats.GetStat(StatType.SkillPerception).ModifiedValue==14 &&
-                stats.BaseAttackBonus.ModifiedValue==7 && cmb==17 && cmd.Result+deniedDex-difficulty==27 && trip.Result-cmd.Result==4 && weaponExact;
+                stats.BaseAttackBonus.ModifiedValue==7 && cmb==17 &&
+                cmd.Result+deniedDex-difficulty==27 && trip.Result-cmd.Result==4 &&
+                facts.Count(value=>value=="KMG_Summoning_Natural_Ankylosaurus_Chassis")==1 &&
+                weaponExact;
             profile &= stats.Reach.ModifiedValue==15 && stats.Speed.ModifiedValue==30 &&
                 Math.Abs(limbs.Single().AttackRange.Meters-4.572f)<.002f;
             Sprint22Check("profile-"+(turnBased ? "turn-based":"rtwp"),profile,new JObject {
@@ -552,14 +754,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var saves=new Sprint19SaveObserver { Target=target }; var strikes=new List<RuleAttackWithWeapon>();
             var duration=new Sprint22DurationObserver { Owner=owner,Target=target };
             var contacts=new JArray();UnitAttack contactCommand=null;
+            Sprint22TailContactProbe contactProbe=null;
+            RuleAttackWithWeapon contactRule=null;string contactFrame=null;
             observer.ObserveWeaponContact=value=>{
-                strikes.Add(value);var row=Sprint22TailContact(owner,target,value,contactCommand);
-                if(name=="ordinary-failure")
+                strikes.Add(value);contactRule=value;
+                if(contactProbe!=null)
                 {
-                    var skin=owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).SingleOrDefault(v=>v.sharedMesh!=null && v.sharedMesh.name=="KMG_ankylosaurus_Original");
-                    if(skin!=null) row["supportingFrame"]=CaptureSprint17OriginalBodyFrame(owner,skin,"sprint22-tail-contact-"+(turnBased?"turn-based":"rtwp"));
+                    contactProbe.RuleFrame=Time.frameCount;
+                    contactProbe.RuleHandleActed=contactCommand!=null &&
+                        contactCommand.Animation!=null &&
+                        contactCommand.Animation.IsActed;
                 }
-                contacts.Add(row);
             };
             int oldAttack=owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue;
             int oldFort=target.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue;
@@ -601,9 +806,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PlaceExpandedSummoningUnit(owner,fixture.Caster.Position+Vector3.right*4f);
                     PlaceExpandedSummoningUnit(target,owner.Position+Vector3.forward*3f);
                     observer.Clear(); saves.Saves.Clear();strikes.Clear();contacts.Clear();duration.Clear();
+                    contactCommand=null;contactRule=null;contactFrame=null;
+                    contactProbe=name=="ordinary-failure" ?
+                        new Sprint22TailContactProbe(owner,target) : null;
                     if (CombatController.IsInTurnBasedCombat())
                         foreach (int frame in Sprint18AdvanceRound(owner)) yield return frame;
-                    foreach (int frame in Sprint18RunFullAttack(fixture,owner,result=>{ command=result;contactCommand=result; })) yield return frame;
+                    foreach (int frame in Sprint18RunFullAttack(fixture,owner,
+                        result=>{ command=result;contactCommand=result; },null,
+                        result=>
+                        {
+                            if(contactProbe==null || contactFrame!=null ||
+                                !contactProbe.Sample(result)) return;
+                            var skin=owner.View.GetComponentsInChildren<
+                                SkinnedMeshRenderer>(true).SingleOrDefault(value=>
+                                    value.sharedMesh!=null &&
+                                    value.sharedMesh.name=="KMG_ankylosaurus_Original");
+                            if(skin!=null) contactFrame=
+                                CaptureSprint17OriginalBodyFrame(owner,skin,
+                                    "sprint22-tail-contact-"+
+                                    (turnBased?"turn-based":"rtwp"));
+                        })) yield return frame;
+                    if(contactProbe!=null)
+                        contacts.Add(contactProbe.Result(contactRule,
+                            contactCommand,contactFrame));
                     roll=observer.Attacks.SingleOrDefault();
                     effects=target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value=>value.Blueprint.name=="KMG_Summoning_Special_Ankylosaurus_Dazed" ||
                         value.Blueprint.name=="KMG_Summoning_Special_Ankylosaurus_Stunned").ToArray();
@@ -668,9 +893,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["canApply"]=value.CanApply,["immune"]=value.Immunity,["storyImmune"]=value.StoryModeImmunity })) },"One native Fortitude save per legal tail hit; mutually exclusive finite condition, separate native immunity and no positive-damage prerequisite.");
                 if (name=="ordinary-failure")
                     Sprint22Check("tail-contact-"+(turnBased ? "turn-based":"rtwp"),contacts.Count==1 &&
-                        (bool?)contacts[0]["nativeTailAction"]==true && (double?)contacts[0]["gapMeters"]<=.5,
+                        (bool?)contacts[0]["nativeTailAction"]==true &&
+                        (double?)contacts[0]["minimumGapMeters"]<=.5,
                         new JObject { ["unit"]=owner.UniqueId,["target"]=target.UniqueId,["event"]="real-tail-strike-contact",
-                            ["owner"]=owner.Blueprint.AssetGuid,["contacts"]=contacts },"Acted native tail animation puts terminal-club surface within 0.5 m of native target bounds at its real rule event.");
+                            ["owner"]=owner.Blueprint.AssetGuid,["contacts"]=contacts },"The exact issued native tail command resolves a real hit and puts terminal-club surface within 0.5 m of native target bounds while its clip is active.");
                 if (!satisfied) throw new InvalidOperationException("unit="+owner.UniqueId+";predicate="+name+";event=dice-preconditions;owner="+owner.Blueprint.AssetGuid);
                 if (!exact) throw new InvalidOperationException("unit="+owner.UniqueId+";predicate="+name+";event=postcondition;owner="+owner.Blueprint.AssetGuid);
                 if (name=="critical-failure")
@@ -705,28 +931,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (shieldBlueprint!=null) UnityEngine.Object.Destroy(shieldBlueprint);
                 DisposeExpandedSummoningUnits(fixture.Created,new[] {owner});
             }
-        }
-
-        private static JObject Sprint22TailContact(UnitEntityData owner,UnitEntityData target,RuleAttackWithWeapon rule,UnitAttack command)
-        {
-            var animation=Sprint17IssuedAnimationObservation(command);
-            var row=new JObject { ["event"]="RuleAttackWithWeapon.OnEventDidTrigger",["frame"]=Time.frameCount,
-                ["unit"]=owner.UniqueId,["target"]=target.UniqueId,["weapon"]=rule.Weapon.Blueprint.AssetGuid,
-                ["hit"]=rule.AttackRoll!=null && rule.AttackRoll.IsHit,["issuedAnimation"]=animation,
-                ["nativeTailAction"]=(string)animation["actionName"]=="HodagAnimset_Tail" && (string)animation["clip"]?["name"]=="Hodag_attack_tail" && (bool?)animation["handleActed"]==true };
-            var skin=owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).SingleOrDefault(value=>value.sharedMesh!=null && value.sharedMesh.name=="KMG_ankylosaurus_Original");
-            var victim=target.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(value=>value.enabled && value.sharedMesh!=null)
-                .OrderByDescending(value=>value.bones.Length).FirstOrDefault();
-            if (skin==null || victim==null) { row["failure"]="missing exact original body or native victim skin";return row; }
-            int club=Array.FindIndex(skin.bones,value=>value.name=="Tail5_M");
-            var world=Sprint17OriginalWorldVertices(skin);var weights=skin.sharedMesh.boneWeights;var original=skin.sharedMesh.vertices;
-            var points=world.Where((value,index)=>weights[index].boneIndex0==club && weights[index].weight0>.9f && Math.Abs(original[index].x)>.12).ToArray();
-            if (points.Length==0) { row["failure"]="no terminal club surface";return row; }
-            Vector3 nearest=points.OrderBy(value=>Vector3.Distance(value,victim.bounds.ClosestPoint(value))).First();
-            row["gapMeters"]=Vector3.Distance(nearest,victim.bounds.ClosestPoint(nearest));row["clubPoints"]=points.Length;
-            row["clubSurface"]=SurveyVector(nearest);row["targetBounds"]=SurveyVector(victim.bounds.size);
-            row["nativeAnimationOnly"]=true;row["originalVertexOwnership"]=skin.sharedMesh.GetInstanceID();
-            return row;
         }
 
         private IEnumerable<int> Sprint22Lifetime(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,bool turnBased)

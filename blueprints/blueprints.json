@@ -24535,6 +24535,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Sprint 22 private Ankylosaurus carrier; existing released unit and routes unchanged."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Ankylosaurus.Chassis",
+      "guid": "e5f977fc42c943a88902b9c3a170a7ea",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Sprint 22 append after live readback: private 15-foot reach, private-tail Weapon Focus and exact Power Attack correction; released unit, weapon and routes unchanged."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Ankylosaurus.TailType",
+      "guid": "7243c9cd0f654b9080e7b31112ddbf18",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Sprint 22 append after live readback: private range input for the existing released Tail3d6 weapon; no native shared Tail type mutation."
     }
   ]
 }
