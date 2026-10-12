@@ -4,7 +4,7 @@
   "status": "IN_PROGRESS_NOT_QUALIFIED",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint22-ankylosaurus",
-  "pr": null,
+  "pr": 39,
   "masterBase": "aa09788e6ba109c3db7bd0ec28f0138506f678a8",
   "stableBaseline": {
     "version": "0.0.150",
@@ -228,5 +228,20 @@
   ],
   "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
   "release": "NOT_QUALIFIED_NOT_RELEASED",
-  "nextAction": "Complete exact native contracts and reusable donor audit, implement scoped rider/profile/body and focused tests."
+  "nextAction": "Complete exact native contracts and reusable donor audit, implement scoped rider/profile/body and focused tests.",
+  "researchBoundary": {
+    "purpose": "Missing Hodag/monitor detached rig and native condition/feat facts",
+    "scenario": "observe-expanded-summoning-sprint22-contracts",
+    "profile": "gunslinger-only",
+    "saveAccess": false,
+    "donorCap": 3,
+    "build": "One selected Build-Local research package; unchanged 0.0.150 gameplay",
+    "focused": {
+      "selected": 2,
+      "failures": 0,
+      "productionCompileSeconds": 17.2,
+      "testSeconds": 4.2
+    },
+    "status": "READY_TO_PACKAGE"
+  }
 }
