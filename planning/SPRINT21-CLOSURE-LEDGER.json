@@ -42,7 +42,8 @@
     "75eb64f7 native-profile setup FAIL before mechanics: native startup completion passed and BaseMechanics was valid before LoadNewGame; captured scene became invalid inside area loading; startup race hypothesis ruled out; native empty world and zero save attempts PASS, transaction exact968 restored",
     "3bc7ba70 native-profile setup FAIL before mechanics: request-local trace shows Runner.Tick stack-empty reset immediately after entry callback; native reset unloads BaseMechanics before area loader uses its captured scene; guard0, scene observer removed, exact transaction Restored and actual968 intake matched",
     "f0a83116 native mechanics FAIL 59/62: obsolete two-bite dismantle expectation, native AutoFailure Success getter 0>=0, and old family-sum visual event accounting; exact transaction restored; original failed rows retained",
-    "Native contract focused reproduction 35/36 PASS, one stale source-text lifecycle expectation FAIL; corrected registered-patch accounting then 70/70 PASS, production compilation PASS"
+    "Native contract focused reproduction 35/36 PASS, one stale source-text lifecycle expectation FAIL; corrected registered-patch accounting then 70/70 PASS, production compilation PASS",
+    "6ba541b7 candidate preparation FAIL2570/2571, obsolete Stirge source-text lifecycle sum expectation; no exact build/package/deployment/native occurred. Registered patch accounting expectation repaired with renderer checks retained; focused10/10 PASS."
   ],
   "candidate": {
     "source": "f0a83116ac544f72fc977e8bcea14fef36de87a8",
@@ -773,5 +774,17 @@
     "registered": 2571,
     "failures": 0,
     "nativeStatus": "PENDING on new compiled correction bytes"
+  },
+  "preparationContractRepair": {
+    "failedSource": "6ba541b787fcbea56642e3e57615b084d4e8595c",
+    "fullExecuted": 2571,
+    "fullFailures": 1,
+    "failedAssertion": "expanded-summoning.sprint10-stirge-native-attack-visual",
+    "pipelineSeconds": 216.6897464,
+    "packageCreated": false,
+    "nativeStarted": false,
+    "focusedExecuted": 10,
+    "focusedFailures": 0,
+    "rawLogs": "candidate-native-contract.stdout.log;candidate-native-contract.stderr.log;native-contract-stirge-focus.stdout.log"
   }
 }
