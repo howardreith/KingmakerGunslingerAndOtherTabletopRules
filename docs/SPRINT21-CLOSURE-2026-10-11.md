@@ -1,12 +1,13 @@
-# Sprint 21 closure: qualified for stable promotion
+# Sprint 21 closure: RELEASED stable v0.0.150
 
 Owner mission issued October 11; qualification completed October 12, 2026 UTC
 on **HOWARD-LAPTOP**, in
 `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger`, branch
 `codex/expanded-summoning-sprint21-bebelith-giant-crab`, PR #36.
-Status: **QUALIFIED**. No inherited baseline exceptions and no unexplained
-mandatory not-run coverage remain. Merge/publication verification is recorded
-separately after it occurs. No Sprint 22 is authorized.
+Status: **RELEASED**; qualification **QUALIFIED**. No inherited baseline exceptions
+or unexplained mandatory not-run coverage. Publication is verified below; this
+final reporting update postdates the tested source and merged release record.
+No Sprint 22 is authorized.
 
 Current [AGENTS.md](../AGENTS.md), [validation policy](VALIDATION-POLICY.md) and
 [owner mission](SPRINT21-CLOSURE-OWNER-MISSION-2026-10-11.md) govern this campaign.
@@ -159,9 +160,41 @@ diagnosis; the native batch completed safely within the revised finite plan.
 No process was stopped to meet a budget. Owner aesthetic review remains
 NOT_PERFORMED_NONBLOCKING; mechanical/rig evidence is not visual approval.
 
-Next is the explicitly authorized normal PR #36 merge and exact stable promotion,
-then downloaded asset/tag/Latest/alpha and final restoration verification. Preserve
+At qualification checkpoint49d9ac0b, the selected next boundary was the authorized
+normal PR #36 merge and exact stable promotion, followed by download/tag/Latest/alpha
+and final restoration verification. Publication is now verified below. Preserve
 `v0.0.150-alpha.1`, source `adddef438c9bc5798d462d95f6667671ca852344`, ZIP
 SHA-256 `e18244e100b7598ccf8c348b7c413da727f63073fad11834fafbd6053feebc06`.
 After verified publication and final pushed records, stop. No permanent deployment,
 Sprint 22, DATA work or other-repository work follows.
+
+## Verified stable publication
+
+[PR #36](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/36)
+merged normally at `3d8e51ee653d598c1ac7e9a6fd452c4d99767ffb` on
+`2026-10-12T06:23:21Z`. [Stable v0.0.150](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.150)
+is public, draft=false, prerelease=false and **Latest**. The peeled tag resolves
+exactly to that merge. The qualified source remains `b3d9436f`; qualification
+reporting commit is `49d9ac0b7802c3b66327eec801611015dd9a2659`. Final reporting
+postdates publication and does not change the tag, manifest or tested ZIP.
+
+`Publish-Release.ps1 -ReuseQualifiedCandidate -Publish -ConfirmReleaseReady`
+completed in24.45 seconds. All three assets were downloaded and matched their
+exact promotion outputs. ZIP/DLL/MVID match the identities above. Published
+`release-manifest.json` SHA-256:
+`d298d314c1be79b1b5efd0a72408985124cfcbbbdb459992111ba3490e07d4ae`;
+`SHA256SUMS.txt` SHA-256:
+`01c0d3198437fe7d404355df00816aa49978e7f8232f25036b135f18a838bf57`.
+Manifest provenance distinguishes every fresh/reused source and records1,063
+roots+29 wrappers=1,092 choices, zero exceptions and no publication rebuild.
+
+The post-publication exact matcher again verified all968 actual intake entries
+and settings, with no game or live lock. All36 named transactions and their
+staging remain closed. The working fixture is clean; zero mission save writes.
+Alpha's annotated object27259af3, peeled sourceadddef438 and downloaded ZIPe18244e1
+were independently verified unchanged; it remains a prerelease.
+
+Final evidence: `published-release-and-final-restoration-verification.json` in
+the external evidence root, with its proof hash in the ledger. The campaign's
+measured total duration and revised finite plan are recorded there. The owner
+mission is complete. **STOP: no Sprint22 or additional phase.**
