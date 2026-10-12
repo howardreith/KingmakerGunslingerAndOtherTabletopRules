@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "workflow repair; no release or native closure campaign",
+    "activeTask": "Sprint21 QUALIFIED on HOWARD-LAPTOP; exact candidate promotion and owner-authorized PR36 merge/stable release verification remain selected. No Sprint22.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-PROGRAM-STATE-before-workflow-reset-2026-10-11.json"
   },
@@ -724,7 +724,7 @@
       "runtimeAssertionsExecuted": 17,
       "unity2018AuthoringProbe": "Invalid license, self-exited before2026-10-06T16:00:26Z;no activation;not a phase-wide blocker",
       "newRuntimeTransaction": false,
-      "lastRuntimeResult": "Exact22be:17/17 bounded native view checks PASS; normal/fallback intact63–64 frames, exact scale/once/native teardown and donor seed isolation. Full movement/contact/crowd/persistence visual matrix still open."
+      "lastRuntimeResult": "Exact22be:17/17 bounded native view checks PASS; normal/fallback intact63\u201364 frames, exact scale/once/native teardown and donor seed isolation. Full movement/contact/crowd/persistence visual matrix still open."
     },
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged; exact two-snake production hook now implemented but not runtime qualified; Salamander remains research-only",
@@ -1216,7 +1216,7 @@
     "automaticContinuationAllowed": false
   },
   "mission": {
-    "name": "Expanded Summoning Phase 0 — Sprints 0-2",
+    "name": "Expanded Summoning Phase 0 \u2014 Sprints 0-2",
     "authorizedSprints": [
       0,
       1,
@@ -1666,5 +1666,17 @@
       "evidence": "20261005T1254571775971Z-disposable-expanded-summoning-crocodilians",
       "censusSha256": "9A20AC89EA8F2B330FD050525C84786B94CE07998888D2EB4FA63E06ED9A120C"
     }
-  ]
+  ],
+  "seriesClosure": {
+    "status": "QUALIFIED",
+    "record": "docs/SPRINT21-CLOSURE-2026-10-11.md",
+    "ledger": "planning/SPRINT21-CLOSURE-LEDGER.json",
+    "testedSource": "b3d9436fc09736530b5b5962d40982165454ea0b",
+    "zipSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+    "freshUnfilteredDomainSuite": "2571/2571 PASS",
+    "mandatoryNotRun": [],
+    "baselineExceptions": [],
+    "evidenceSourcesRetained": true,
+    "noSprint22": true
+  }
 }

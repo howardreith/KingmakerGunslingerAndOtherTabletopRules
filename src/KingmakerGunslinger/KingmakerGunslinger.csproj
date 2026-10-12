@@ -193,6 +193,10 @@
     <Compile Include="Summoning\GirallonRulesPolicy.cs" />
     <Compile Include="Summoning\XillRulesPolicy.cs" />
     <Compile Include="Summoning\GiantScorpionRulesPolicy.cs" />
+    <Compile Include="Summoning\GiantCrabRulesPolicy.cs" />
+    <Compile Include="Summoning\BebelithRulesPolicy.cs" />
+    <Compile Include="Summoning\BebelithRot.cs" />
+    <Compile Include="Summoning\BebelithChassisCorrection.cs" />
     <Compile Include="Summoning\GiantScorpionPoison.cs" />
     <Compile Include="Summoning\XillCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
@@ -1207,6 +1211,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRequest.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
+    <Compile Include="RuntimeTesting\BoundaryObservationPolicy.cs" />
+    <Compile Include="RuntimeTesting\ExpandedSummoningNativeProfilePolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeProfile.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.BoundaryDiagnostics.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonViewObservation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningBoundary.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonMembrane.cs" />
@@ -1219,6 +1227,8 @@
     <Compile Include="RuntimeTesting\PrimateRigSurveyPolicy.cs" />
     <Compile Include="RuntimeTesting\ArachnidRigSurveyPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Survey.cs" />
+    <Compile Include="RuntimeTesting\Sprint21DonorSurveyPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Survey.cs" />
     <Compile Include="RuntimeTesting\PrimateReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\Sprint19ReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Review.cs" />
@@ -1226,6 +1236,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Surface.cs" />
     <Compile Include="RuntimeTesting\Sprint20ReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Review.cs" />
+    <Compile Include="RuntimeTesting\Sprint21ReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Review.cs" />
+    <Compile Include="RuntimeTesting\Sprint21BebelithReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Bebelith.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Routine.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint18Surface.cs" />
@@ -1642,6 +1656,14 @@
     </Content>
     <Content Include="..\..\assets\sprint18-primates\*-albedo.png">
       <Link>assets\sprint18-primates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint21-arthropods\*-mesh.json">
+      <Link>assets\sprint21-arthropods\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint21-arthropods\*-albedo.png">
+      <Link>assets\sprint21-arthropods\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\sprint19-fourarmed\*-mesh.json">

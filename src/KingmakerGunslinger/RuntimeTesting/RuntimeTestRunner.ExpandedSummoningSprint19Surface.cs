@@ -79,10 +79,19 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 int withheldElsewhere = all.Count(value =>
                     !SummonVisibilityCatalog.IsPublished(value));
+                // The invariant rather than the 1044 v0.0.148 happened to
+                // show: a later sprint publishing its own creature moves that
+                // number and moves nothing of these two.
                 Sprint19Check(_sprint19Assertions, _sprint19Rows,
                     "no-other-root-withheld",
-                    withheldElsewhere == 0 && SummonVisibilityCatalog
-                        .PublishedLogicalPlacementCount == 1044,
+                    withheldElsewhere == 0 &&
+                    SummonVisibilityCatalog
+                        .SuppressedLogicalPlacementCount == 0 &&
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount ==
+                        SummonVisibilityCatalog
+                            .RegisteredLogicalPlacementCount &&
+                    SummonVisibilityCatalog
+                        .PublishedLogicalPlacementCount >= 1044,
                     new JObject {
                         ["registered"] = SummonVisibilityCatalog
                             .RegisteredLogicalPlacementCount,
@@ -90,9 +99,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .SuppressedLogicalPlacementCount,
                         ["published"] = SummonVisibilityCatalog
                             .PublishedLogicalPlacementCount,
+                        ["publishedAtThisRelease"] = 1044,
                         ["otherWithheld"] = withheldElsewhere },
-                    "nothing is withheld and no previously published root "
-                    + "moved");
+                    "nothing is withheld, the published surface is the whole "
+                    + "registered one, and it never fell below the 1044 roots "
+                    + "v0.0.148 published");
 
                 // The module switch. With Expanded Summoning off, neither new
                 // creature may be rebodied at all, whatever its identity, and

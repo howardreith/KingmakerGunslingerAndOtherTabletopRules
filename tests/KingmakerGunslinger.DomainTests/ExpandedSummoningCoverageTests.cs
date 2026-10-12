@@ -69,15 +69,16 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(102, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(103, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(113,
+            Assertions.Equal(114,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 101 project-owned plus 11 native wrappers.");
-            Assertions.Equal(113,
+                "Represented creatures must be 102 project-owned plus 11 native wrappers, and the Giant Crab Sprint 21 registered.");
+            // Represented is now published, for every one of them: the
+            // Giant Crab was the last creature in the series still withheld.
+            Assertions.Equal(114,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "Every represented creature is published: Sprint 20's scorpion "
-                + "was the last one withheld.");
+                "Every represented creature is published after Sprint 21.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
                 .Contains("stirge"),
                 "The requalified Stirge must count as published coverage.");
@@ -88,10 +89,10 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(32, notRepresented,
-                "32 ideal-roster creatures remain unregistered after the "
-                + "Sprint 20 Giant Scorpion joins the two Sprint 19 "
-                + "identities.");
+            Assertions.Equal(31, notRepresented,
+                "31 ideal-roster creatures remain unregistered after the "
+                + "Sprint 21 Giant Crab joins the Sprint 20 Giant Scorpion "
+                + "and the two Sprint 19 identities.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");
@@ -220,7 +221,7 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 13 adds Shadow Mastiff's four; Sprints 14-15 publish all
             // insects under the accepted passive-sense limitation. Sprint 16
             // adds six Dire roots after its complete hidden qualification.
-            Assertions.Equal(1085,
+            Assertions.Equal(1092,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");

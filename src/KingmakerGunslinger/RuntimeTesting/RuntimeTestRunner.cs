@@ -704,8 +704,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_manualElapsed == null &&
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile &&
+                    _summoningProfileStage > 0)
+                {
+                    PollExpandedSummoningNativeProfile();
+                    return;
+                }
+                if (_manualElapsed == null &&
                     _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
                 {
+                    if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile)
+                    {
+                        _summoningProfileFailure = "Native startup completion/input/menu readiness was not proven before the startup deadline.";
+                        FinishSummoningNativeProfile(false);
+                        return;
+                    }
                     _trace.Record("startup-timeout",
                         "stage=" + _workingStartupStage + "; observer was not ready");
                     RuntimeTestResult startupTimeout = CreateResult("TIMEOUT", null, null);
@@ -872,6 +885,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (!_context.IsReady) return;
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile)
+                {
+                    if (BlueprintBootstrap.IsInitialized && !ResourcesLibrary.Preloading)
+                        PollExpandedSummoningNativeProfile();
+                    return;
+                }
                 if (RuntimeTestScenarioCatalog
                     .IsSummonSameTurnCompatibilityScenario(
                         _request.Scenario))
@@ -1306,6 +1325,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveExpandedSummoningArachnidCensus)
                 {
                     Complete(RunExpandedSummoningArachnidCensus());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveExpandedSummoningSprint21Census)
+                {
+                    Complete(RunExpandedSummoningSprint21DonorCensus());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -2872,6 +2897,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningSprint20Review)
                 {
                     PollSprint20Review();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint21Review)
+                {
+                    PollSprint21Review();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSerpentineSurvey)
@@ -14817,6 +14847,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BrownFurOptionalExtensionCoordinator.Blueprints;
             BrownFurFeatureStatus brownFurStatus =
                 BrownFurFeatureStatusRegistry.Current;
+            bool brownFurProviderAbsent = AppDomain.CurrentDomain.GetAssemblies().All(
+                value => value.GetName().Name != "CallOfTheWild");
+            int brownFurRegisteredIdentities = BrownFurIdentityCatalog.All.Count(spec =>
+                BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(spec.Guid));
+            int brownFurGlobalSelectorReferences = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintCharacterClass>().Sum(value =>
+                    (value.Archetypes ?? Array.Empty<BlueprintArchetype>()).Count(archetype =>
+                        archetype != null && BrownFurIdentityCatalog.All.Any(spec => spec.Guid == archetype.AssetGuid)));
             bool brownFurContractCompatible = brownFurResolution != null &&
                 brownFurResolution.Decision.IsCompatible &&
                 brownFurResolution.Contract != null &&
@@ -14964,6 +15002,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsFirearmParameter(item.Param)));
             BlueprintItem[] gunslingerStock = ModuleGunslingerStockItems();
             int capitalGunslingerRows = CountFixedRows(smith, gunslingerStock);
+            VendorBoundaryRows[] boundaryVendorRows = ObserveBoundaryVendorRows(
+                expectedGunslinger, expectedEasternWeapons, expectedElvenBranchedSpears);
             var retiredMaintenanceStock = new BlueprintItem[] { BlueprintBootstrap.FirearmRepairKit,
                 BlueprintBootstrap.GunsmithingSupplies.OverhaulKit };
             int retiredMaintenanceRows = CountFixedRows(smith, retiredMaintenanceStock);
@@ -15357,7 +15397,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fighterFirearmFeatures == (expectedGunslinger ? 1 : 0) &&
                         fighterFirearmAll == (expectedGunslinger ? 1 : 0) &&
                         firearmParameterCount == (expectedGunslinger ? 15 : 0) &&
-                        capitalGunslingerRows == (expectedGunslinger ? 10 : 0) && retiredMaintenanceRows == 0 &&
+                        boundaryVendorRows[0].Passed && retiredMaintenanceRows == 0 &&
                         btslGunslingerRows == (expectedGunslinger ?
                             expectedBtslGunslingerRows : 0) &&
                         rareLootRows == (expectedGunslinger ? 5 : 0),
@@ -15453,7 +15493,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "live AbilityVariants census across the eighteen canonical native summon parents"),
                 Assertion("feature-module-elven-branched-spears-publication-gate",
                     expectedElvenBranchedSpears ?
-                        "12 identities;7 parameter options;3 static references;22 campaign vendor rows plus six rows per installed BTSL table;6 loot rows" :
+                        "12 identities;7 parameter options;3 static references;exact campaign/BTSL VendorSpecs rows and quantities;6 loot rows" :
                         "12 identities;0 parameter options;0 static references;0 vendor rows;0 loot rows",
                     observed,
                     activeElvenBranchedSpears ==
@@ -15464,15 +15504,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spearStaticOptions ==
                         (expectedElvenBranchedSpears ? 3 : 0) &&
                     spearFamiliarityCategories == 1 &&
-                    spearVendorRows ==
-                        (expectedElvenBranchedSpears ?
-                            22 + installedSpearHonestGuyTables * 6 : 0) &&
+                    boundaryVendorRows.Where(row => row.Group == "spear").All(row => row.Passed) &&
                     spearLootRows ==
                         (expectedElvenBranchedSpears ? 6 : 0),
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("feature-module-eastern-weapons-publication-gate",
                     expectedEasternWeapons ?
-                        "44 identities;21 parameter options;4 static references;merged proficiency order;42 campaign vendor rows plus BTSL;18 fixed-loot rows;presentation enabled" :
+                        "44 identities;21 parameter options;4 static references;merged proficiency order;exact campaign/BTSL VendorSpecs rows and quantities;18 fixed-loot rows;presentation enabled" :
                         "44 identities;0 parameter options;0 static references;0 vendor rows;0 fixed-loot rows;presentation disabled",
                     observed,
                     activeEasternWeapons == expectedEasternWeapons &&
@@ -15497,8 +15535,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Weapon Proficiency (Wakizashi)",
                         StringComparison.Ordinal) &&
                     nodachiMartialCategories == 1 &&
-                    easternVendorRows == (expectedEasternWeapons ?
-                        42 + installedEasternHonestGuyTables * 12 : 0) &&
+                    boundaryVendorRows.Where(row => row.Group == "eastern").All(row => row.Passed) &&
                     easternNamedVendorRows == 0 &&
                     easternBtslRows == (expectedEasternWeapons ?
                         installedEasternHonestGuyTables * 12 : 0) &&
@@ -15517,13 +15554,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal)),
                     "always-registered identities, exact merged selectors, broad martial integration, campaign/BTSL publication, fixed loot, and module-gated presentation"),
                 Assertion("feature-module-brown-fur-publication-gate",
-                    expectedBrownFurTransmuter ?
+                    brownFurProviderAbsent ?
+                        "provider absent; unavailable contract; zero provider identities and selector/publication references" : expectedBrownFurTransmuter ?
                         BrownFurIdentityCatalog.IdentityCount +
                         " identities; available and published exactly once before the installed combined archetypes; all foreign archetypes preserved" :
                         BrownFurIdentityCatalog.IdentityCount +
                         " identities; available and not published; zero CotW selector references; all foreign archetypes preserved",
                     observed,
-                    brownFurContractCompatible &&
+                    brownFurProviderAbsent ? BoundaryObservationPolicy.BrownFurAbsent(
+                        brownFurProviderAbsent,
+                        brownFurStatus.Availability == BrownFurDependencyAvailability.Unavailable,
+                        brownFurResolution == null && brownFurBlueprints == null,
+                        brownFurRegisteredIdentities, brownFurStatus.Published,
+                        brownFurGlobalSelectorReferences, brownFurGuidReferences,
+                        brownFurPublicationEvidence.Count) : brownFurContractCompatible &&
                     brownFurStatus.Availability ==
                         BrownFurDependencyAvailability.Available &&
                     brownFurStatus.Published == expectedBrownFurTransmuter &&
@@ -16195,32 +16239,77 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "KMG_Summoning_Special_Bebelith_DismantledArmor");
             BebelithCombatComponent bebelithCombat = bebelithTraits
                 .ComponentsArray.OfType<BebelithCombatComponent>().Single();
-            bool bebelithExact = bebelith.ComponentsArray
-                    .OfType<AddClassLevels>().Single().Levels == 12 &&
-                bebelith.Size == Size.Huge &&
-                bebelith.Alignment == Alignment.ChaoticEvil &&
+            // Sprint 21 overhauled this creature, so this census describes
+            // what it is now - and reports its PARTS rather than one word. A
+            // conjunction this long answering only "exact" or "mismatch"
+            // tells a reader nothing about which clause failed: the series
+            // closure had to read the builder to work out that the stale
+            // clause was the retired flat -2.
+            var bebelithParts = new System.Collections.Generic.List<string>();
+            Action<string, bool> bebelithPart = (name, ok) => {
+                bebelithParts.Add(name + "=" + (ok ? "ok" : "MISMATCH")); };
+            bebelithPart("hitDice", bebelith.ComponentsArray
+                .OfType<AddClassLevels>().Single().Levels == 12);
+            bebelithPart("huge", bebelith.Size == Size.Huge);
+            bebelithPart("chaoticEvil",
+                bebelith.Alignment == Alignment.ChaoticEvil);
+            bebelithPart("abilityScores",
                 bebelith.Strength == 28 && bebelith.Dexterity == 12 &&
                 bebelith.Constitution == 24 && bebelith.Intelligence == 11 &&
-                bebelith.Wisdom == 13 && bebelith.Charisma == 13 &&
+                bebelith.Wisdom == 13 && bebelith.Charisma == 13);
+            // The limb layout this sprint built, and the builder says why:
+            // the bite is primary because rot rides it and the released order
+            // put a claw there, and both claws are additional limbs 0 and 1,
+            // which is what makes "both claws hit the same target" a readable
+            // dismantle gate.
+            BlueprintItemWeapon bebelithBite = bebelith.Body.PrimaryHand
+                as BlueprintItemWeapon;
+            bebelithPart("bitePrimary2d6",
+                bebelithBite != null &&
+                ExpandedSummoningInventoryObservationPolicy.BebelithPrimaryBite(
+                    bebelithBite.AssetGuid,
+                    bebelithBite.Damage.Rolls,
+                    bebelithBite.Damage.Dice == DiceType.D6 ? 6 : 0));
+            bebelithPart("twoClaws2d4",
                 bebelithClaw.Damage.Rolls == 2 &&
                 bebelithClaw.Damage.Dice == DiceType.D4 &&
-                bebelith.Body.PrimaryHand == bebelithClaw &&
                 bebelith.Body.AdditionalLimbs.SequenceEqual(new[] {
-                    bebelithClaw }) &&
-                bebelith.Body.AdditionalSecondaryLimbs.Length == 1 &&
-                bebelith.Body.AdditionalSecondaryLimbs[0].AssetGuid ==
-                    "d2f99947db522e24293a7ec4eded453f" &&
+                    bebelithClaw, bebelithClaw }));
+            // And nothing secondary, which the old census never checked. The
+            // printed block gives the bite and both claws +19 apiece; a
+            // secondary limb would take -5 and half the Strength bonus, which
+            // is the error three equal attack lines make easy to ship.
+            bebelithPart("noSecondaryLimbs",
+                bebelith.Body.AdditionalSecondaryLimbs.Length == 0);
+            // The two native facts this creature must never carry. Rot clones
+            // the native poison GRAPH, which is a different thing from
+            // carrying a native fact, and the released pair stays forbidden.
+            bebelithPart("noForbiddenNativeFacts",
                 bebelith.AddFacts.All(value => value == null ||
                     (value.AssetGuid != "ef60cd888b834a549898824e6b684918" &&
-                     value.AssetGuid != "3051e7002c803fc47a11bcfa381b9fbd")) &&
-                ReferenceEquals(bebelithCombat.Claw, bebelithClaw) &&
+                     value.AssetGuid != "3051e7002c803fc47a11bcfa381b9fbd")));
+            bebelithPart("combatOwnsClaw",
+                ReferenceEquals(bebelithCombat.Claw, bebelithClaw));
+            bebelithPart("combatOwnsDismantledArmor",
                 ReferenceEquals(bebelithCombat.DismantledArmor,
-                    dismantledArmor) &&
+                    dismantledArmor));
+            bebelithPart("damageResistanceGood",
                 bebelithTraits.ComponentsArray.OfType<
-                    AddDamageResistancePhysical>().Single().Alignment ==
-                        DamageAlignment.Good &&
-                dismantledArmor.ComponentsArray.OfType<AddStatBonus>()
-                    .Single().Value == -2;
+                    AddDamageResistancePhysical>().Any(value =>
+                        value.Alignment == DamageAlignment.Good));
+            // The overhaul, in the one place a flat number used to be. The
+            // released build applied an invented -2 to armour class; Kingmaker
+            // exposes no item-durability component to a mod, so the piece now
+            // survives and loses its WHOLE contribution through a component
+            // that reads the live equipment. A flat bonus here again would be
+            // the invented number coming back.
+            bebelithPart("dismantleIsAWearerState",
+                dismantledArmor.ComponentsArray
+                    .OfType<BebelithDismantledArmorComponent>().Count() == 1 &&
+                !dismantledArmor.ComponentsArray.OfType<AddStatBonus>().Any());
+            string bebelithEvidence = string.Join(";", bebelithParts.ToArray());
+            bool bebelithExact = bebelithParts.All(value =>
+                value.EndsWith("=ok", StringComparison.Ordinal));
             BlueprintUnit pixie = all.OfType<BlueprintUnit>().Single(value =>
                 value.name == "KMG_Summoning_Unit_Pixie");
             BlueprintItemWeapon pixieSleepBow = all.OfType<BlueprintItemWeapon>()
@@ -16507,8 +16596,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     succubusExact ? "exact" : "mismatch", succubusExact,
                     "8-HD demon with bounded domination, first-hit temporary drain, and demonic defenses"),
                 Assertion("expanded-summoning-bebelith", "exact",
-                    bebelithExact ? "exact" : "mismatch", bebelithExact,
-                    "12-HD Huge outsider, poison/web-free 2d4 claws and 2d6 bite, DR/good, bounded dismantle, and demon hunting"),
+                    bebelithEvidence, bebelithExact,
+                    "12-HD Huge outsider, 2d4 claws and 2d6 bite, DR/good, a dismantle that is a wearer state rather than an invented flat penalty, and demon hunting"),
                 Assertion("expanded-summoning-pixie", "exact",
                     pixieExact ? "exact" : "mismatch", pixieExact,
                     "4-HD Small fey with native arrow rig, sixteen sleep arrows, one dance use, native invisibility, DR, and SR"),
@@ -17715,6 +17804,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int patchOutcomesBefore =
                 ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
             int patchOutcomesAfterCoverage = -1;
+            int eligiblePatchViews = 0;
+            int attachedPatchViews = 0;
+            var patchViewsByCreature = new Dictionary<string, int>(StringComparer.Ordinal);
             int ungulateVisualChecked = 0;
             int ungulateVisualAttached = 0;
             int sprint12VisualChecked = 0;
@@ -18055,6 +18147,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(
                             "Spawn result mismatch: count=" + count + ";kind=" +
                             exactKind + ";expected=" + expectedUnit.name + ".");
+                    // Count the actual patch contract, including newer families.
+                    // Family-specific rendering and donor controls below remain.
+                    if (ExpandedSummoningPteranodonViewPatch.HandlesBlueprintName(expectedUnit.name))
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            eligiblePatchViews++;
+                            if (!patchViewsByCreature.ContainsKey(variant.Creature.Key))
+                                patchViewsByCreature[variant.Creature.Key] = 0;
+                            patchViewsByCreature[variant.Creature.Key]++;
+                            if (unit != null && unit.View != null &&
+                                ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View)
+                                    .StartsWith("visual:attached;", StringComparison.Ordinal))
+                                attachedPatchViews++;
+                        }
+                    }
                     if (variant.Creature.Key == "dire-bat")
                     {
                         foreach (UnitEntityData unit in spawned)
@@ -18816,16 +18924,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";sprint14Views=" + sprint14VisualChecked +
                         ";sprint14Attached=" + sprint14VisualAttached +
                         ";crocodilianViews=" + crocodilianVisualChecked +
-                        ";crocodilianAttached=" + crocodilianVisualAttached,
+                        ";crocodilianAttached=" + crocodilianVisualAttached +
+                        ";eligiblePatchViews=" + eligiblePatchViews + ";attachedPatchViews=" + attachedPatchViews +
+                        ";patchViewsByCreature=" + string.Join(",", patchViewsByCreature.OrderBy(value => value.Key)
+                            .Select(value => value.Key + "=" + value.Value).ToArray()),
                     _pteranodonCastsSeen >= 4 &&
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
-                        patchOutcomesAfterCoverage - patchOutcomesBefore ==
-                            _pteranodonVisualOutcomes.Count +
-                                _direBatVisualChecked + _eagleVisualChecked +
-                                _giantWaspVisualChecked + _stirgeVisualChecked +
-                                ungulateVisualChecked + sprint12VisualChecked +
-                                sprint13VisualChecked +
-                                sprint14VisualChecked + crocodilianVisualChecked &&
+                        ExpandedSummoningNativeProfilePolicy.OneOutcomePerEligibleView(
+                            patchOutcomesAfterCoverage - patchOutcomesBefore,
+                            eligiblePatchViews, attachedPatchViews, patchOutcomesBefore, patchOutcomesAfterCoverage) &&
                         sprint12VisualAttached == sprint12VisualChecked &&
                         sprint13VisualAttached == sprint13VisualChecked &&
                         sprint14VisualAttached == sprint14VisualChecked &&
@@ -19166,6 +19273,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Single(value => value.name ==
                         "KMG_Summoning_Special_Bebelith_DismantledArmor");
                 bool dismantledApplied = hostile.Descriptor.HasFact(dismantled);
+                bool bebelithBiteWeapon = bebelith.Body.PrimaryHand.MaybeWeapon != null &&
+                    bebelith.Body.PrimaryHand.MaybeWeapon.Blueprint.Category == WeaponCategory.Bite;
                 bool armorUnchanged = ReferenceEquals(exactArmor,
                     hostile.Body.Armor.Armor) && ReferenceEquals(
                         exactArmorBlueprint, hostile.Body.Armor.Armor.Blueprint);
@@ -19337,8 +19446,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.SpecialAdaptations = dominationApplied && breathUsed &&
                     danceBefore == 1 && danceAfter == 0 && danceApplied &&
                     sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
-                    bebelithFirst && bebelithSecond && dismantledApplied &&
-                    armorUnchanged && cyclopsFlash && grappleLifecycle && mephitPack &&
+                    ExpandedSummoningNativeProfilePolicy.BiteArmorControl(bebelithBiteWeapon,
+                        bebelithFirst, bebelithSecond, dismantledApplied, armorUnchanged) &&
+                    cyclopsFlash && grappleLifecycle && mephitPack &&
                     sprintSixPack && rakeCadence && sprintEightPack && waspPoison;
                 result.Diagnostics.Add("grapple[" + grappleDetail + "]");
                 result.Diagnostics.Add("mephits[" + mephitDetail + "]");
@@ -19391,7 +19501,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "->" + sleepAfter + ";sleepApplied=" + sleepApplied +
                     "];bebelith[first=" + bebelithFirstDetail + ";second=" +
                     bebelithSecondDetail + ";dismantled=" + dismantledApplied +
-                    ";armorUnchanged=" + armorUnchanged + "]");
+                    ";biteWeapon=" + bebelithBiteWeapon + ";expectedDismantled=False;armorUnchanged=" + armorUnchanged + "]");
             }
             finally
             {
@@ -36076,6 +36186,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopSprint18Review(result);
             StopSprint19Review(result);
             StopSprint20Review(result);
+            StopSprint21Review(result);
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

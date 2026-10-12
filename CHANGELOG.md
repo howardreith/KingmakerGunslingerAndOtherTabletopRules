@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.0.150-expanded-summoning-sprint21
+
+- Publishes the Expanded Summoning Sprint 21 Giant Crab. Seven new roots on
+  Summon Nature's Ally III take registered generated placements from 1056 to
+  1063, and all seven are published, so the visible surface rises from 1085
+  choices to 1092: 1063 generated plus 29 retained native wrappers. It is the
+  first creature in the roster with a Nature's Ally tier and no Summon Monster
+  one, so it owns no execution children at all. Publication was the removal of
+  one suppression key and nothing else; nothing v0.0.149 published moved.
+- Rebuilds the released Bebelith against its printed block without moving its
+  identity. The unit and all three Summon Monster roots keep the exact GUIDs
+  they shipped with, at the same tiers and quantities, published as they
+  already were, so a save made against v0.0.149 resolves every one of them.
+  The released spelling is kept: renaming the shipped key would retire a GUID
+  and migrate every save that holds one. Its three roots were already on the
+  menu, which is why ten roots changed and the visible surface rose by seven.
+- Appends exactly 23 append-only identities to the released v0.0.149 ledger,
+  taking it from 3039 to 3062 entries without moving a historical GUID: one
+  unit, seven placements and five facts for the crab, and ten for the
+  Bebelith.
+- Gives the crab two primary claws at the plain Strength modifier, grab on
+  both pincers, constrict on the claw that holds, its own +12 anti-trip
+  carrier because the shared native eight-leg fact delivers +8, its own
+  printed racial +4 Perception, and the printed immunity to mind-affecting
+  effects. No bite, no sting, no poison and no skill ranks: a creature with no
+  Intelligence score buys none.
+- Replaces the Bebelith's invented +2 against chaotic evil outsiders with the
+  printed Penetrating Strike descriptors - chaotic and magic on every natural
+  attack, cold iron and good against demons only - and adds rot as a bite-only
+  injury effect on the engine's own poison lifecycle, with two Constitution a
+  failed save, five exposures and two consecutive successes to cure.
+- Implements Dismantle Armor as the engine's own sunder manoeuvre followed by
+  a Reflex save at the printed difficulty class, where the released build had
+  neither and used an invented 25. Kingmaker declares no broken condition, no
+  durability value and no item-damage component a mod can reach, so the piece
+  survives and loses its whole armour-class contribution permanently rather
+  than being destroyed; the gap is recorded as ITEM_DESTRUCTION_UNMODELED. No
+  inventory is written to at any point.
+- Corrects three numbers the native outsider chassis cannot produce, measured
+  on a live creature: a Fortitude and a Will assigned to each other's slots,
+  and one hit point per die more than the block prints. One creature-owned
+  carrier, every value a difference from what the engine applied, and the
+  shared native outsider class untouched.
+- Generalises the Sprint 6 web into one parameterized seam the Bebelith's web
+  also uses, with the Giant Spider's five released values proved to arrive at
+  it by name.
+- Ships two original project-owned bodies on the measured Giant Spider rig.
+  The Bebelith walks on six, with the fourth leg chain carrying no geometry at
+  all, two elevated barbed foreclaws, a real jaw and spinnerets; the crab is
+  wider than it is long, stands laterally on eight legs, carries two unequal
+  pincers and reaches no abdomen chain. Both generators refuse to build a body
+  that breaks those rules.
+- Qualified by a guarded review that returned 44 of 44 in both real time and
+  turn-based combat, covering both creatures and both original bodies, across
+  eleven guarded transactions that each restored the installation exactly. Two
+  engine behaviours it measured are recorded rather than worked around:
+  Kingmaker stacks poison, so rot's per-round saves run above its application
+  save because each bite is another dose, and Kingmaker refuses to unequip
+  armour while a unit is in combat.
+
 ## 0.0.149-expanded-summoning-sprint20
 
 - Publishes the Expanded Summoning Sprint 20 Giant Scorpion. Twelve new roots
