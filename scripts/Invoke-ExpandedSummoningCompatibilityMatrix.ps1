@@ -136,7 +136,7 @@ $steps = @(
         Parameters = $modulesSummoningOff }
     [pscustomobject]@{ Name = 'profile-gunslinger-only'
         ProfileId = 'gunslinger-only'
-        Scenario = $profileScenarios + @('disposable-expanded-summoning')
+        Scenario = $profileScenarios + @('disposable-expanded-summoning-native-profile')
         Parameters = @{} }
     [pscustomobject]@{ Name = 'profile-call-of-the-wild'
         ProfileId = 'gunslinger-call-of-the-wild'
@@ -152,7 +152,7 @@ $steps = @(
         Parameters = @{} }
     [pscustomobject]@{ Name = 'profile-high-risk-combined'
         ProfileId = 'gunslinger-high-risk-combined'
-        Scenario = $profileScenarios + @('disposable-expanded-summoning')
+        Scenario = $profileScenarios + @('disposable-expanded-summoning-native-profile')
         Parameters = @{} }
 )
 

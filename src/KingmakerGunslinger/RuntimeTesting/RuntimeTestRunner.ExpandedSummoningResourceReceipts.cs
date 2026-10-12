@@ -203,8 +203,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                             () => pair.Key != null && pair.Key.sharedMaterials.Any(m => ReferenceEquals(m, material)));
                 }
             }
+            // Sprints 18 and 19 attach through this seam - both apes, the
+            // Girallon and the Xill - and it has exposed CaptureOwnedResources
+            // since the day it shipped. This observer simply never asked it,
+            // so all four of each creature's owned resources arrived
+            // UNRESOLVED and the whole-roster gate failed closed on ownership
+            // it could not resolve. The resources themselves were always
+            // correct: every one of the sixteen was Unity-null after cleanup
+            // with its global count back to zero. The series closure is the
+            // first thing to run this gate since those two sprints added their
+            // bodies, which is why nothing caught it earlier.
+            var primate = view.GetComponent<PrimateVisualAttachment>();
             var snake = view.GetComponent<SerpentineVisualAttachment>();
             var human = view.GetComponent<SalamanderHumanVisualAttachment>();
+            if (primate != null)
+            {
+                foreach (var value in primate.CaptureOwnedResources()
+                    .Concat(new UObject[] { primate }))
+                    add(value, "primate ownership seam",
+                        primate.GetType().FullName, true, false, true,
+                        () => primate != null && primate.CaptureOwnedResources()
+                            .Any(o => ReferenceEquals(o, value)));
+            }
             if (snake != null)
             {
                 foreach (var value in snake.CaptureOwnedResources().Concat(new UObject[] { snake }))

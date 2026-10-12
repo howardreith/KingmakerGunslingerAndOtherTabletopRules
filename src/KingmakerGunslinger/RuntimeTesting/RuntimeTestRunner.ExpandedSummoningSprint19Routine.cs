@@ -201,6 +201,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int trials = 0;
                 bool clean = false;
                 int firstRendFrom = 0, secondRendFrom = 0;
+                int secondTargetDamage = 0;
+                string secondReset = "second=none";
                 try
                 {
                     // One case is one atomic trial. A natural one always
@@ -220,8 +222,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // and across sequences, and a discarded trial is neither.
                     while (!clean && ++trials <= 6)
                     {
+                        // A trial begins where the last one's final
+                        // sequence ended, so its live command has to go the
+                        // same way it does between sequences: the engine
+                        // merges a second attack into a live one, and the
+                        // series closure recorded what that costs when the
+                        // live command's target is gone - a
+                        // NullReferenceException from
+                        // UnitAttack.GetApproachRadius, inside the engine's
+                        // own merge path. No roll, result or damage is forced.
+                        foreach (int step in Sprint19EndLiveCommand(owner))
+                            yield return step;
                         DireApeRendGate.ForgetObserved(owner);
                         ResetExpandedSummoningHostile(fixture);
+                        // The second target too. Without this it accumulated
+                        // damage across trials, died, and the engine threw
+                        // from its own command-merge path on the next attempt.
+                        secondReset = Sprint18ResetSecondTarget(
+                            secondTarget, secondTargetDamage);
                         firstRendFrom = observer.Damage.Count;
                         secondRendFrom = secondObserver == null ? 0 :
                             secondObserver.Damage.Count;
@@ -251,9 +269,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     yield return step;
                             }
                             UnitAttack ignored = null;
-                            int before = observer.Attacks.Count +
-                                (secondObserver == null ? 0 :
-                                    secondObserver.Attacks.Count);
+                            // A cursor each: the first list grows in the
+                            // middle of the concatenation, so one combined
+                            // count reads the wrong window.
+                            int before = observer.Attacks.Count;
+                            int secondBefore = secondObserver == null ? 0 :
+                                secondObserver.Attacks.Count;
                             if (name == "four-claws-split-targets" && sequence == 0)
                             {
                                 if (secondTarget == null)
@@ -270,6 +291,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         accuracy.Apply;
                                     EventBus.Subscribe(secondObserver);
                                     secondRendFrom = secondObserver.Damage.Count;
+                                    secondTargetDamage =
+                                        secondTarget.Descriptor.Damage;
                                 }
                                 foreach (int step in Sprint18RunFullAttack(fixture,
                                     owner, result => ignored = result, secondTarget))
@@ -279,14 +302,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 foreach (int step in Sprint18RunFullAttack(fixture,
                                     owner, result => ignored = result))
                                     yield return step;
-                            bool landed = !Sprint18ChosenLimbMissed(
-                                observer, secondObserver, before, accuracy);
+                            bool landed = !Sprint18ChosenSequenceMissed(
+                                observer, secondObserver, before, accuracy,
+                                secondBefore);
                             emissions.Add(new JObject {
                                 ["sequence"] = sequence,
                                 ["chosenClaws"] = accuracy.Hit.Length,
-                                ["everyChosenLimbLanded"] = landed,
+                                ["exactlyTheChosenLimbsLanded"] = landed,
                                 ["rolls"] = new JArray(Sprint18Rolls(
-                                    observer, secondObserver, before)),
+                                    observer, secondObserver, before,
+                                    secondBefore)),
                                 ["commandFinished"] = ignored != null &&
                                     ignored.IsFinished });
                             if (!landed) { clean = false; break; }
@@ -317,6 +342,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["observedRends"] = rends.Length,
                             ["trials"] = trials,
                             ["everyChosenLimbLandedInTheMeasuredTrial"] = clean,
+                            ["secondTargetReset"] = secondReset,
                             ["rendDamage"] = new JArray(rends.Select(rend =>
                                 Sprint16DamageLine(rend.DamageBundle.First()))),
                             ["sequences"] = emissions,
@@ -403,6 +429,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // their own outcome. Request-local, on the disposable
                     // hostile only, and asserted rather than assumed.
                     Sprint19ClearParalysis(fixture.Hostile);
+                    // Reassigned by the bounded re-attempt below, which
+                    // has to free a target a spoiled attempt paralyzed.
                     bool startedFree = !fixture.Hostile.Descriptor.State
                         .HasCondition(Kingmaker.UnitLogic.UnitCondition.Paralyzed);
                     // Only the disposable target's own save moves, and only to
@@ -416,14 +444,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                     UnitAttack ignored = null;
                     int before = observer.Attacks.Count;
+                    int savesBefore = saves.Saves.Count;
                     foreach (int step in Sprint18RunFullAttack(fixture, owner,
                         result => ignored = result)) yield return step;
+                    // The save side as well as the limbs. A natural one always
+                    // fails, so this case's +100 does not guarantee the made
+                    // save it chose, and the series closure measured exactly
+                    // that: a failed Fortitude at the printed difficulty class
+                    // with the target's own save at +100. The claw-only case
+                    // asks nothing of the save side, because a claw forcing no
+                    // save is its requirement rather than its precondition.
                     int attempts = 1;
-                    while (attempts < 8 && Sprint18ChosenLimbMissed(
-                        observer, null, before, accuracy))
+                    while (attempts < 8 && (Sprint18ChosenSequenceMissed(
+                            observer, null, before, accuracy) ||
+                        (name != "claw-only" && Sprint18ChosenSaveSideMissed(
+                            saves, savesBefore, name == "bite-save-made"))))
                     {
                         attempts++;
                         before = observer.Attacks.Count;
+                        savesBefore = saves.Saves.Count;
+                        // A spoiled attempt may have paralyzed the target, and
+                        // paralysis bounded to the summon's lifetime outlives
+                        // the attempt that caused it. The retry has to begin
+                        // from a free target exactly as the first attempt did,
+                        // and that claim is carried forward rather than
+                        // dropped.
+                        Sprint19ClearParalysis(fixture.Hostile);
+                        startedFree = startedFree &&
+                            !fixture.Hostile.Descriptor.State.HasCondition(
+                                Kingmaker.UnitLogic.UnitCondition.Paralyzed);
                         if (CombatController.IsInTurnBasedCombat())
                             foreach (int step in Sprint18AdvanceRound(owner)) yield return step;
                         accuracy.Rest();

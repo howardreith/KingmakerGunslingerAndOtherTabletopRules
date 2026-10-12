@@ -12,7 +12,7 @@ try {
     New-Item -ItemType Directory -Path $fixtureScripts,(Join-Path $boundary 'artifacts\tests\Release\KingmakerGunslinger.DomainTests') -Force | Out-Null
     foreach ($name in @('Invoke-KmgGate.ps1','build.ps1','test-domain.ps1','common.ps1','KmgGate.Common.ps1')) { Copy-Item (Join-Path $PSScriptRoot $name) $fixtureScripts }
     '<Project />' | Set-Content (Join-Path $boundary 'GamePath.props')
-    '{"Id":"KingmakerGunslinger","Version":"0.0.149"}' | Set-Content (Join-Path $boundary 'Info.json')
+    '{"Id":"KingmakerGunslinger","Version":"0.0.150"}' | Set-Content (Join-Path $boundary 'Info.json')
     $env:KMG_GATE_FIXTURE_TRACE = Join-Path $boundary 'trace.jsonl'
     $env:KMG_TEST_FILTER = 'prior'
     $compiler = Join-Path $fixtureScripts 'msbuild-fixture.ps1'
@@ -71,7 +71,7 @@ param($ReferenceBundleDir,$MSBuildPath,$KingmakerInstallDir,[switch]$SkipDomainT
 @{event='candidate';skipDomainTests=[bool]$SkipDomainTests;filter=$env:KMG_TEST_FILTER} | ConvertTo-Json -Compress | Add-Content $env:KMG_GATE_FIXTURE_TRACE
 $root = Split-Path -Parent $PSScriptRoot
 $output = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
-$package = Join-Path $root 'artifacts\local-runtime\0.0.149\KingmakerGunslinger-0.0.149-local-runtime.zip'
+$package = Join-Path $root 'artifacts\local-runtime\0.0.150\KingmakerGunslinger-0.0.150-local-runtime.zip'
 New-Item -ItemType Directory -Path $output,(Split-Path $package) -Force | Out-Null
 'fixture DLL' | Set-Content (Join-Path $output 'KingmakerGunslinger.dll')
 'fixture package' | Set-Content $package
@@ -89,7 +89,7 @@ function Assert-FileExists($Path,$Label) { if (-not (Test-Path $Path -PathType L
 $root = Split-Path -Parent $PSScriptRoot
 $first = Invoke-QualifiedBuildAndPackage -RepositoryRoot $root -ConfiguredReferenceBundleDir 'fixture-references'
 $second = Invoke-QualifiedBuildAndPackage -RepositoryRoot $root -ConfiguredReferenceBundleDir 'fixture-references' -SkipDomainTests
-if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.149-expanded-summoning-sprint20.zip' -or
+if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.150-expanded-summoning-sprint21.zip' -or
     $first.PackageSha256 -cne $second.PackageSha256) { throw 'Publisher changed the asset name or candidate bytes.' }
 '@
     $publisherPath = Join-Path $fixtureScripts 'publisher-build-fixture.ps1'

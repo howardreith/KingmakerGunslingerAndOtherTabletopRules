@@ -70,11 +70,21 @@ namespace KingmakerGunslinger.Summoning
         // removing this key is the whole of publication, every identity having
         // been allocated at registration. The visible surface goes from the
         // 1073 choices v0.0.148 shows to 1085.
+        // Sprint 21 registers the Giant Crab and withholds all seven of its
+        // roots. Unlike the Sprint 20 scorpion it is not templated and is not
+        // on the Summon Monster table at all, so seven suppressed placements
+        // hold back seven roots and no execution children. Nothing published
+        // before this branch moves: the visible surface stays at the 1085
+        // choices v0.0.149 shows.
+        // Empty again. Sprint 21's Giant Crab published once its own
+        // guarded review passed, which is what every creature in this series
+        // has had to do, and publication was the removal of this one key and
+        // nothing else.
         private static readonly HashSet<string> SuppressedCreatureKeys =
             new HashSet<string>(Array.Empty<string>(),
                 StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1056;
+        internal const int RegisteredLogicalPlacementCount = 1063;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;

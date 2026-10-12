@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint20.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint21.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -71,7 +71,7 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'validation\weapon-findability-runtime-qualification.json',
     'docs\RELEASE-NOTES-0.0.145.md',
     'docs\RELEASE-NOTES-0.0.146.md',
-    'docs\RELEASE-NOTES-0.0.149.md')) {
+    'docs\RELEASE-NOTES-0.0.150.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -204,6 +204,16 @@ foreach ($kind in @('giant-scorpion')) {
     Copy-Item -LiteralPath (Join-Path $arachnidSource "$kind-mesh.json") -Destination $arachnidDestination
     Copy-Item -LiteralPath (Join-Path $arachnidSource "$kind-albedo.png") -Destination $arachnidDestination
 }
+# Sprint 21's two original bodies, staged by name on the same terms: a
+# missing export fails the package rather than shipping a crab that never
+# arrives and a bebelith that still looks like the Doomspider it replaces.
+$arthropodSource = Join-Path $outputDirectory 'assets\sprint21-arthropods'
+$arthropodDestination = Join-Path $modDirectory 'assets\sprint21-arthropods'
+New-Item -ItemType Directory -Path $arthropodDestination -Force | Out-Null
+foreach ($kind in @('giant-crab','bebelith')) {
+    Copy-Item -LiteralPath (Join-Path $arthropodSource "$kind-mesh.json") -Destination $arthropodDestination
+    Copy-Item -LiteralPath (Join-Path $arthropodSource "$kind-albedo.png") -Destination $arthropodDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -224,7 +234,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 349 } else { 347 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 354 } else { 352 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

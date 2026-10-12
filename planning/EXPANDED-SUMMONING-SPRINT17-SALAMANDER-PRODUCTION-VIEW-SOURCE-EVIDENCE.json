@@ -289,12 +289,12 @@
     "newRoots": 32,
     "preservedSalamanderRoots": 5,
     "surface": {
-      "registered": 1056,
-      "published": 1056,
+      "registered": 1063,
+      "published": 1063,
       "withheld": 0,
       "nativeWrappers": 29,
-      "visibleChoices": 1085,
-      "note": "Sprint 19 published the Girallon and the Xill on 2026-10-10 and Sprint 20 published the Giant Scorpion the same day, which adds their ten and twelve roots to this surface. Nothing Sprint 17 published moved: the snakes' and Salamander's roots are untouched, and neither are Sprint 18's apes. Nothing is withheld now."
+      "visibleChoices": 1092,
+      "note": "Sprint 19 published the Girallon and the Xill on 2026-10-10, Sprint 20 the Giant Scorpion the same day, and Sprint 21 the Giant Crab on 2026-10-11, which adds their ten, twelve and seven roots to this surface. Nothing Sprint 17 published moved: the snakes' and Salamander's roots are untouched, and neither are Sprint 18's apes. Sprint 21 also overhauled the released Bebelith, whose three roots were already published and stay exactly where they were - which is why this total rises by the crab's seven and not by ten. Nothing is withheld now, and the series ends here."
     },
     "gates": {
       "focused": "PASS321/321 of2123 after six stale publication count/record expectations were updated;artifacts/sprint17-independent-publication-focused.log. Current state/evidence candidate equation is checked without rewriting immutable historical checkpoint counts.",
