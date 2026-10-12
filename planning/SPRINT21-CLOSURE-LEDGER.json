@@ -4,7 +4,7 @@
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint21-bebelith-giant-crab",
   "pr": 36,
-  "status": "NATIVE_PROFILE_FIXTURE_REPAIR",
+  "status": "REMAINING_NATIVE_QUALIFICATION",
   "startedUtc": "2026-10-11T23:43:03Z",
   "planningHours": 4,
   "allocationMinutes": {
@@ -46,24 +46,24 @@
     "6ba541b7 candidate preparation FAIL2570/2571, obsolete Stirge source-text lifecycle sum expectation; no exact build/package/deployment/native occurred. Registered patch accounting expectation repaired with renderer checks retained; focused10/10 PASS."
   ],
   "candidate": {
-    "source": "f0a83116ac544f72fc977e8bcea14fef36de87a8",
-    "zipSha256": "cc44d32ad2b8f4597cc7e52068321a76496c65763710845e85c8ae11959d4fef",
-    "dllSha256": "0792327117a37a3e45776315631454f66a39cb2d59544e34e0b6f72886ff0266",
-    "dllMvid": "ef4fa54a-e7fc-432b-a94e-6eacc617e3ba",
-    "sourceFingerprint": "2e6c2d16994df5fe671b499c436aabab324f5f0d468e305d19fbeb3a8bc933c6",
-    "manifestSha256": "9e350a992152363474d7650ad2813c4691a2d99f46f4b497723de0803e36be4c",
-    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-loading\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+    "zipSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+    "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+    "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8",
+    "sourceFingerprint": "ee9cccf87af6826592a29b5e8cbe97a85a8e289741a54a883001451ee167d19e",
+    "manifestSha256": "032743710b711ea46075a59067de32e2ae1055b3a066d020c6ad85d0620e55f6",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
     "pipelineExitCode": 0,
-    "pipelineSeconds": 268.1964263,
+    "pipelineSeconds": 273.87498819999996,
     "fullSuite": {
-      "executed": 2568,
-      "registered": 2568,
+      "executed": 2571,
+      "registered": 2571,
       "failures": 0,
       "exitCode": 0,
       "unfiltered": true,
-      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-loading\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
-      "executableSha256": "997e8af93585873a23ef37587d9b269ffdb1a59072ec1120136eab30f8d26be0",
-      "executableModifiedUtc": "2026-10-12T03:23:10.2778760Z",
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "cb79d10691cd75743dd3dd64d703d7677a6607776da7c384c84ea6c5d174fec4",
+      "executableModifiedUtc": "2026-10-12T03:51:47.1531275Z",
       "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
     }
   },
@@ -128,7 +128,7 @@
   "coverage": [
     {
       "id": "boundary-on",
-      "result": "PASS",
+      "result": "REUSED_PASS",
       "action": "Affected native rerun",
       "proofs": [
         {
@@ -138,11 +138,13 @@
       ],
       "transaction": "compat-20261012T002145Z-4f2b95a64e80",
       "assertions": 47,
-      "restorationVerified": true
+      "restorationVerified": true,
+      "priorSource": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+      "reuseJustification": "Exact47/47 startup boundary and matched149 controls passed on3ee4f9a4. Subsequent request-local native entry/catalog and generic mechanics observers do not change boundary observers, module coordinator, vendor/scroll contracts, product/assets or settings. Fourteen other module states scheduled on final b3d9436f."
     },
     {
       "id": "boundary-off",
-      "result": "PASS",
+      "result": "REUSED_PASS",
       "action": "Affected native rerun",
       "proofs": [
         {
@@ -152,7 +154,9 @@
       ],
       "transaction": "compat-20261012T002453Z-f9ba6581a00c",
       "assertions": 47,
-      "restorationVerified": true
+      "restorationVerified": true,
+      "priorSource": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+      "reuseJustification": "Exact47/47 startup boundary and matched149 controls passed on3ee4f9a4. Subsequent request-local native entry/catalog and generic mechanics observers do not change boundary observers, module coordinator, vendor/scroll contracts, product/assets or settings. Fourteen other module states scheduled on final b3d9436f."
     },
     {
       "id": "matched149-control",
@@ -227,7 +231,7 @@
     },
     {
       "id": "gunslinger-only",
-      "result": "SETUP_FAILURE_MECHANICS_NOT_RUN",
+      "result": "PENDING_REQUIRED_REPEAT",
       "action": "Account for prior load/optional/inventory; run missing mechanics",
       "currentEvidence": {
         "source": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
@@ -244,6 +248,23 @@
         "saveWritingApi": "none",
         "restoration": "EXACT_INTAKE_VERIFIED",
         "elapsedSeconds": 1081.814846
+      },
+      "nativeMechanicalFirstPass": {
+        "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+        "transaction": "compat-20261012T035434Z-5d9b7367a075",
+        "runtimeResult": "20261012T0356082928499Z-disposable-expanded-summoning-native-profile",
+        "status": "PASS",
+        "executed": 62,
+        "failures": 0,
+        "durationMilliseconds": 137285,
+        "nativeEmptyWorldRestored": true,
+        "saveOrLoadAttempts": 0,
+        "restoration": "native-contract-seventh-restoration.json",
+        "verifiedCorrections": [
+          "two primary2d6 bites: no dismantle, exact armor unchanged",
+          "grapple attempt: autoFailureTrue, sourceTrue, DC12, reaction present; manufactured/trip/goblinoid controls safe",
+          "147 observed events =147 actual registered eligible views =147 attached views; no ring saturation"
+        ]
       }
     },
     {
@@ -349,7 +370,7 @@
       "id": "sprint18-21-regressions",
       "result": "REUSED_PASS",
       "priorSource": "7b37df94453eaff934d6ec443e04c9c973dc031f",
-      "reuseJustification": "Exact29/39/22/44 raw native PASS; review implementations and their gameplay, templates, attachments, lifecycle and assets unchanged. Shared runner edits are confined to inventory and feature-module observations; roster resource ownership reader only affects persistence scope.",
+      "reuseJustification": "Exact29/39/22/44 raw native PASS at7b37df94. Review partials and actual gameplay/builders/templates/assets unchanged through3ee and b3; generic mechanical observer changes are separate predicates and rerun62/62 onb3. Request-local unsaved-world alias is isolated; old review/scenario entry preserved. Dependency audits retain original candidate provenance.",
       "proofs": [
         {
           "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0850160737552Z-disposable-expanded-summoning-sprint18-review\\runtime-result.json",
@@ -427,11 +448,11 @@
     "intakeManifest": "actual-mods-intake-manifest.json",
     "current": "EXACT_INTAKE_VERIFIED",
     "workingSave": "CLEAN; whole-roster fresh absence6/6 under exact actual intake; all three transactions restored; no mission save writes or manual save access",
-    "lastVerifiedRecord": "native-loading-sixth-restoration.json",
+    "lastVerifiedRecord": "native-contract-seventh-restoration.json",
     "workingFixtureClean": true,
     "lockPath": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compatibility.lock"
   },
-  "nextAction": "Freeze the coherent observer correction in one new Tranche candidate; affected gunslinger-only native mechanics reproduction; then remaining profiles/module states and exact qualified release promotion",
+  "nextAction": "One supervised remaining profile/repetition and fourteen missing module-state batch from frozen candidate-native-qualified; then actual closure ledger review and conditional exact release promotion",
   "repairValidation": {
     "filter": "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
     "selected": 15,
@@ -499,13 +520,12 @@
     "publicationWrites": 0
   },
   "planningUpdate": {
-    "measuredUtc": "2026-10-12T03:43:51.267858+00:00",
-    "elapsedMinutes": 240.8,
+    "measuredUtc": "2026-10-12T04:00:29.114023+00:00",
+    "elapsedMinutes": 257.4,
     "campaignPlanningMinutes": 240,
-    "remainingEstimateMinutes": 145,
-    "revisedFinitePlanMinutes": 386,
-    "overrunReason": "Native save-free fixture required actual engine loading/scene trace; now real mechanics executed and three exact observer predicates corrected",
-    "remainingScope": "One complete correction candidate and affected native reproduction (8m); remaining profile/module-state rows (105m); provenance, conditional merge, exact promotion and download/restoration verification (32m)"
+    "remainingEstimateMinutes": 130,
+    "revisedFinitePlanMinutes": 387,
+    "remainingScope": "Required fresh profile repetitions and fourteen module states105m; closure provenance/merge/exact promotion/download/restoration25m; actual durations will revise estimate"
   },
   "fixtureDiagnosis": {
     "classification": "SAVE_FIXTURE_INCOMPATIBLE_WITH_REDUCED_STACK",
@@ -597,6 +617,23 @@
           "classification": "INCOMPLETE_FAMILY_ACCOUNTING",
           "contract": "Use HandlesBlueprintName for every spawned eligible view, including Giant Crab/Bebelith; exact recorded events=eligible views=attached views; preserve donor controls and reject bounded-ring saturation"
         }
+      ]
+    },
+    "seventhNativeProfile": {
+      "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+      "transaction": "compat-20261012T035434Z-5d9b7367a075",
+      "runtimeResult": "20261012T0356082928499Z-disposable-expanded-summoning-native-profile",
+      "status": "PASS",
+      "executed": 62,
+      "failures": 0,
+      "durationMilliseconds": 137285,
+      "nativeEmptyWorldRestored": true,
+      "saveOrLoadAttempts": 0,
+      "restoration": "native-contract-seventh-restoration.json",
+      "verifiedCorrections": [
+        "two primary2d6 bites: no dismantle, exact armor unchanged",
+        "grapple attempt: autoFailureTrue, sourceTrue, DC12, reaction present; manufactured/trip/goblinoid controls safe",
+        "147 observed events =147 actual registered eligible views =147 attached views; no ring saturation"
       ]
     }
   },
@@ -773,7 +810,7 @@
     "executed": 70,
     "registered": 2571,
     "failures": 0,
-    "nativeStatus": "PENDING on new compiled correction bytes"
+    "nativeStatus": "VERIFIED 62/62 on b3d9436f"
   },
   "preparationContractRepair": {
     "failedSource": "6ba541b787fcbea56642e3e57615b084d4e8595c",
@@ -786,5 +823,92 @@
     "focusedExecuted": 10,
     "focusedFailures": 0,
     "rawLogs": "candidate-native-contract.stdout.log;candidate-native-contract.stderr.log;native-contract-stirge-focus.stdout.log"
+  },
+  "priorNativeLoadingCandidate": {
+    "source": "f0a83116ac544f72fc977e8bcea14fef36de87a8",
+    "zipSha256": "cc44d32ad2b8f4597cc7e52068321a76496c65763710845e85c8ae11959d4fef",
+    "dllSha256": "0792327117a37a3e45776315631454f66a39cb2d59544e34e0b6f72886ff0266",
+    "dllMvid": "ef4fa54a-e7fc-432b-a94e-6eacc617e3ba",
+    "sourceFingerprint": "2e6c2d16994df5fe671b499c436aabab324f5f0d468e305d19fbeb3a8bc933c6",
+    "manifestSha256": "9e350a992152363474d7650ad2813c4691a2d99f46f4b497723de0803e36be4c",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-loading\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 268.1964263,
+    "fullSuite": {
+      "executed": 2568,
+      "registered": 2568,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-loading\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "997e8af93585873a23ef37587d9b269ffdb1a59072ec1120136eab30f8d26be0",
+      "executableModifiedUtc": "2026-10-12T03:23:10.2778760Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "harness": {
+    "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+    "compiledObserverDllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+    "compiledObserverMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8",
+    "files": [
+      {
+        "path": "scripts/Invoke-KingmakerRuntimeTest.ps1",
+        "sha256": "1407c11698f5f15139c5472a16c94ee46f7508e5509ff6d4231b777b2cf4cf07"
+      },
+      {
+        "path": "scripts/RuntimeAutomation.Common.ps1",
+        "sha256": "56567ae118713e590e50ce56d7a69cd9106d3229cd969267dd4a935c3aa9e743"
+      },
+      {
+        "path": "scripts/RuntimeHarness.Common.ps1",
+        "sha256": "5bc4d66dc7175c8866a535032e22e6ebf0af8c812abf4a3ad7fb813d5267a7ef"
+      },
+      {
+        "path": "scripts/RuntimeCoordination.Common.ps1",
+        "sha256": "118e7d540116fe0f81070498905ca96a78892b2ac9eef273681894baa64dad7a"
+      },
+      {
+        "path": "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1",
+        "sha256": "49b61c88dac134d7427d5d52caec7c9170c0b531699d044bb1f29274a60787d8"
+      },
+      {
+        "path": "scripts/compatibility/CompatibilityProfile.Common.ps1",
+        "sha256": "5be951a059e302108fe81bfb22c35df92d665d1d3dbe38989c881be6d97f01d7"
+      },
+      {
+        "path": "scripts/compatibility/Restore-KingmakerCompatibilityProfile.ps1",
+        "sha256": "d1201a8730ce69fb3dfcad3b15e0b07aabbc095a3db8d887d7c60f694cc33999"
+      },
+      {
+        "path": "scripts/Invoke-ExpandedSummoningCompatibilityMatrix.ps1",
+        "sha256": "ced227e034b29637d0af1a0b87be70661d22c2ea1181aab2eae154bb3d16cf50"
+      },
+      {
+        "path": "scripts/validate-package.ps1",
+        "sha256": "a990ce4c43092bb104d6462e3b9b9feff7a5b5a6f344e216aad42631bb8d487e"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
+        "sha256": "78219471117eb9e1842e4c8767a3ed02fddee16d7bc47d7130eed6c674183a8e"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningNativeProfile.cs",
+        "sha256": "aaf02558145fcca3476967d7368a14cd807e17ed3014d1e5ea6bd2ffb47b904d"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs",
+        "sha256": "88f30a24eb73ee653cd0715d65f022e65c2b525ffaa8c6246f2d281e79ecc6f1"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs",
+        "sha256": "da4fbd64fdedc76519ed74dfdb1483b57ff03b6574a29b7d4456ab124415325a"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
+        "sha256": "f72c75d2e6e08941e4d09932d662f7c567937051dc22ca665cdbca0c53b4bd24"
+      }
+    ],
+    "remainingDriver": "external supervised registered profile invocations; all game launch/deploy/restore operations use these repository-owned guards",
+    "evidenceReuseReader": "native-contract-dependency-audit.json; reuse-source-and-raw-evidence-audit.json; original readers retained"
   }
 }
