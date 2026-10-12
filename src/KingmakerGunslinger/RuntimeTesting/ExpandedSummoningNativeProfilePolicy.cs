@@ -4,6 +4,10 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        public static bool ReadyForWorldLoad(bool entryCallback, bool registeredBaseScene, bool nativeLoadingOwnsEntry)
+        {
+            return entryCallback && registeredBaseScene && nativeLoadingOwnsEntry;
+        }
         public static bool StartupComplete(int nativeStarters, bool progressPresent, bool progressActive)
         {
             // Native GameStarter hides this object only at its startup epilogue.

@@ -47,16 +47,17 @@ automatic exit, guards every save/load/delete call, and calls the original
 mechanical case only after exact scene/area/party readiness. No product mechanics,
 assets or save-backed persistence code changed.
 
-Four fixture trials failed before summon mechanics and restored their exact
-transactions and all968 intake manifest entries. The latest75eb64f7 candidate
-passed2566/2566 fresh unfiltered tests and strict packaging, but its native
-startup predicate passed and the area loader still invalidated its captured
-BaseMechanics scene. The startup race hypothesis is ruled out. A request-local
-read-only scene/caller observer now reports that transition and its hook removal;
-production compilation and nine focused checks passed. Next: freeze these bytes,
-run one candidate pipeline and one affected standalone reproduction, inspect the
-actual lifecycle cause, then continue remaining profile and module-state rows.
-All failed trials and candidate identities remain in the closure ledger.
+Five fixture trials failed before summon mechanics and restored their exact
+transactions and all968 intake manifest entries. The latest3bc7ba70 candidate
+passed2567/2567 fresh unfiltered tests and strict packaging. Its read-only trace
+established the cause: Runner.Update invokes the entry callback and then Tick;
+an idle callback leaves the game-mode stack empty, so native recovery unloads
+BaseMechanics before the area loader uses its captured handle. The fixture now
+queues native LoadingProcess ownership inside that callback, waits for the exact
+base scene, then loads the owned unsaved world. Production compilation and ten
+focused checks passed. Next: freeze these bytes, run one candidate pipeline and
+one affected standalone reproduction, then continue remaining profiles/states.
+Every failed trial and candidate identity remains in the closure ledger.
 
 The planning reporter mixed local and UTC DateTime values, overstating elapsed
 time by240 minutes. Its old/new verdicts are preserved. Raw supervised operation
