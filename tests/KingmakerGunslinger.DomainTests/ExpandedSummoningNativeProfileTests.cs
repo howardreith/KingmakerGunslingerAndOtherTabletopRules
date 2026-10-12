@@ -5,6 +5,32 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningNativeProfileTests
     {
+        internal static void BitesCannotSatisfyClawDismantle()
+        {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.BiteArmorControl(true,true,true,false,true), "Two bites leave exact armor unchanged.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.BiteArmorControl(true,true,true,true,true), "Unexpected bite dismantle is a regression.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.BiteArmorControl(true,true,true,false,false), "Item mutation remains a failure.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.BiteArmorControl(false,true,true,false,true), "Wrong weapon cannot satisfy bite control.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.BiteArmorControl(true,false,true,false,true), "Unexecuted attack cannot satisfy control.");
+        }
+        internal static void AttemptExposureRetainsSourceAndDc()
+        {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.ContactAttemptExposed(true,true,true,true,true), "Exact grapple attempt exposure admitted regardless of native Success getter.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ContactAttemptExposed(false,true,true,true,true), "Trip cannot substitute for contact.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ContactAttemptExposed(true,false,true,true,true), "Uncontrolled native hold is not this isolated fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ContactAttemptExposed(true,true,false,true,true), "Missing buff remains failure.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ContactAttemptExposed(true,true,true,false,true), "Wrong DC remains failure.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ContactAttemptExposed(true,true,true,true,false), "Wrong caster remains failure.");
+        }
+        internal static void VisualAccountingRejectsMissingDuplicateAndSaturatedEvents()
+        {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.OneOutcomePerEligibleView(12,12,12,3,15), "Every eligible family counted once.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.OneOutcomePerEligibleView(13,12,12,3,16), "Duplicate event rejected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.OneOutcomePerEligibleView(11,12,12,3,14), "Missing event rejected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.OneOutcomePerEligibleView(12,12,11,3,15), "Failed attachment rejected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.OneOutcomePerEligibleView(12,12,12,244,256), "Bounded ring saturation cannot prove event count.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.OneOutcomePerEligibleView(0,0,0,0,0), "Empty visual selection refused.");
+        }
         internal static void EntryCannotReturnToUnownedTick()
         {
             Assertions.True(ExpandedSummoningNativeProfilePolicy.ReadyForWorldLoad(true,true,true), "Native loading owns transition to a registered real scene.");

@@ -17804,6 +17804,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int patchOutcomesBefore =
                 ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
             int patchOutcomesAfterCoverage = -1;
+            int eligiblePatchViews = 0;
+            int attachedPatchViews = 0;
+            var patchViewsByCreature = new Dictionary<string, int>(StringComparer.Ordinal);
             int ungulateVisualChecked = 0;
             int ungulateVisualAttached = 0;
             int sprint12VisualChecked = 0;
@@ -18144,6 +18147,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(
                             "Spawn result mismatch: count=" + count + ";kind=" +
                             exactKind + ";expected=" + expectedUnit.name + ".");
+                    // Count the actual patch contract, including newer families.
+                    // Family-specific rendering and donor controls below remain.
+                    if (ExpandedSummoningPteranodonViewPatch.HandlesBlueprintName(expectedUnit.name))
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            eligiblePatchViews++;
+                            if (!patchViewsByCreature.ContainsKey(variant.Creature.Key))
+                                patchViewsByCreature[variant.Creature.Key] = 0;
+                            patchViewsByCreature[variant.Creature.Key]++;
+                            if (unit != null && unit.View != null &&
+                                ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View)
+                                    .StartsWith("visual:attached;", StringComparison.Ordinal))
+                                attachedPatchViews++;
+                        }
+                    }
                     if (variant.Creature.Key == "dire-bat")
                     {
                         foreach (UnitEntityData unit in spawned)
@@ -18905,16 +18924,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";sprint14Views=" + sprint14VisualChecked +
                         ";sprint14Attached=" + sprint14VisualAttached +
                         ";crocodilianViews=" + crocodilianVisualChecked +
-                        ";crocodilianAttached=" + crocodilianVisualAttached,
+                        ";crocodilianAttached=" + crocodilianVisualAttached +
+                        ";eligiblePatchViews=" + eligiblePatchViews + ";attachedPatchViews=" + attachedPatchViews +
+                        ";patchViewsByCreature=" + string.Join(",", patchViewsByCreature.OrderBy(value => value.Key)
+                            .Select(value => value.Key + "=" + value.Value).ToArray()),
                     _pteranodonCastsSeen >= 4 &&
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
-                        patchOutcomesAfterCoverage - patchOutcomesBefore ==
-                            _pteranodonVisualOutcomes.Count +
-                                _direBatVisualChecked + _eagleVisualChecked +
-                                _giantWaspVisualChecked + _stirgeVisualChecked +
-                                ungulateVisualChecked + sprint12VisualChecked +
-                                sprint13VisualChecked +
-                                sprint14VisualChecked + crocodilianVisualChecked &&
+                        ExpandedSummoningNativeProfilePolicy.OneOutcomePerEligibleView(
+                            patchOutcomesAfterCoverage - patchOutcomesBefore,
+                            eligiblePatchViews, attachedPatchViews, patchOutcomesBefore, patchOutcomesAfterCoverage) &&
                         sprint12VisualAttached == sprint12VisualChecked &&
                         sprint13VisualAttached == sprint13VisualChecked &&
                         sprint14VisualAttached == sprint14VisualChecked &&
@@ -19255,6 +19273,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Single(value => value.name ==
                         "KMG_Summoning_Special_Bebelith_DismantledArmor");
                 bool dismantledApplied = hostile.Descriptor.HasFact(dismantled);
+                bool bebelithBiteWeapon = bebelith.Body.PrimaryHand.MaybeWeapon != null &&
+                    bebelith.Body.PrimaryHand.MaybeWeapon.Blueprint.Category == WeaponCategory.Bite;
                 bool armorUnchanged = ReferenceEquals(exactArmor,
                     hostile.Body.Armor.Armor) && ReferenceEquals(
                         exactArmorBlueprint, hostile.Body.Armor.Armor.Blueprint);
@@ -19426,8 +19446,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.SpecialAdaptations = dominationApplied && breathUsed &&
                     danceBefore == 1 && danceAfter == 0 && danceApplied &&
                     sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
-                    bebelithFirst && bebelithSecond && dismantledApplied &&
-                    armorUnchanged && cyclopsFlash && grappleLifecycle && mephitPack &&
+                    ExpandedSummoningNativeProfilePolicy.BiteArmorControl(bebelithBiteWeapon,
+                        bebelithFirst, bebelithSecond, dismantledApplied, armorUnchanged) &&
+                    cyclopsFlash && grappleLifecycle && mephitPack &&
                     sprintSixPack && rakeCadence && sprintEightPack && waspPoison;
                 result.Diagnostics.Add("grapple[" + grappleDetail + "]");
                 result.Diagnostics.Add("mephits[" + mephitDetail + "]");
@@ -19480,7 +19501,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "->" + sleepAfter + ";sleepApplied=" + sleepApplied +
                     "];bebelith[first=" + bebelithFirstDetail + ";second=" +
                     bebelithSecondDetail + ";dismantled=" + dismantledApplied +
-                    ";armorUnchanged=" + armorUnchanged + "]");
+                    ";biteWeapon=" + bebelithBiteWeapon + ";expectedDismantled=False;armorUnchanged=" + armorUnchanged + "]");
             }
             finally
             {
