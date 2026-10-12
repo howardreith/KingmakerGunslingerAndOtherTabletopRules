@@ -35,6 +35,7 @@ using System.Reflection;
 using Harmony12;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using TurnBased.Controllers;
@@ -482,24 +483,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 foreach (bool turnBased in combatModes)
                 {
-                    Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=turnBased;
+                    // Enroll every request-owned combatant under RTWP before
+                    // asking the native controller to construct a turn order.
+                    // UnitCombatJoinController deliberately skips its scan
+                    // while a turn is active, so enabling turn-based mode
+                    // before a newly spawned trial owner joins can leave
+                    // IsInCombat true while SortedUnits omits that owner.
+                    Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;
                     Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused=false;
                     var owner=CastExpandedSummoningOwnTier(fixture,"ankylosaurus");
                     SetExpandedSummoningBrainActive(owner,false);
                     for (int frame=0;frame<16;frame++) yield return 0;
                     if(turnBased)
                     {
-                        JObject combat=Sprint22EnterTurnBasedCombat(owner,
-                            fixture.Hostile);
-                        for(int frame=0;frame<8;frame++) yield return 0;
+                        var combat=new JObject();
+                        foreach(int frame in Sprint22EnrollTurnBasedOwners(
+                            new[] { owner },fixture.Hostile,combat))
+                            yield return frame;
                         combat["ownerInCombatAfterSettle"]=owner.IsInCombat;
                         combat["targetInCombatAfterSettle"]=fixture.Hostile.IsInCombat;
                         combat["turnBasedAfterSettle"]=CombatController
                             .IsInTurnBasedCombat();
                         Sprint22Check("turn-based-combat-entry",
                             owner.IsInCombat && fixture.Hostile.IsInCombat &&
-                                CombatController.IsInTurnBasedCombat(),combat,
+                                CombatController.IsInTurnBasedCombat() &&
+                                (bool)combat["admitted"],combat,
                             "The request-owned summon and hostile enter the native turn order before command trials.");
+                        if(!(bool)combat["admitted"])
+                            throw new InvalidOperationException("unit="+
+                                owner.UniqueId+
+                                ";predicate=turn-based-combat-entry"+
+                                ";event=native-turn-order-admission;owner="+
+                                owner.Blueprint.AssetGuid+";state="+
+                                combat.ToString(Formatting.None));
                     }
                     foreach (int frame in Sprint22SetPowerAttack(owner,false))
                         yield return frame;
@@ -1137,6 +1153,96 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .IsInTurnBasedCombat() };
         }
 
+        /// <summary>
+        /// Enroll request-owned actors while the native game is in RTWP, then
+        /// let the turn-based controller rebuild its order from those combat
+        /// states. This follows the engine's supported mode-toggle path and
+        /// proves membership before any command is issued; it does not write
+        /// initiative, the current turn, cooldowns or command state.
+        /// </summary>
+        private IEnumerable<int> Sprint22EnrollTurnBasedOwners(
+            IEnumerable<UnitEntityData> owners,UnitEntityData target,
+            JObject evidence)
+        {
+            UnitEntityData[] exactOwners=owners.Where(value=>value!=null)
+                .Distinct().ToArray();
+            var controller=Game.Instance.TurnBasedCombatController;
+            evidence["unit"]=exactOwners.Length==0 ? null :
+                exactOwners[0].UniqueId;
+            evidence["event"]="native-rtwp-enrollment-and-turn-order-toggle";
+            evidence["owner"]=exactOwners.Length==0 ? null :
+                exactOwners[0].Blueprint.AssetGuid;
+            evidence["owners"]=new JArray(exactOwners.Select(value=>
+                value.UniqueId));
+            evidence["resourceOwners"]=new JArray(exactOwners.Select(value=>
+                value.Blueprint.AssetGuid));
+            evidence["target"]=target?.UniqueId;
+            evidence["turnBasedBefore"]=CombatController
+                .IsInTurnBasedCombat();
+            evidence["roundBefore"]=controller.RoundNumber;
+            Kingmaker.UI.SettingsUI.SettingsRoot.Instance
+                .EnableTurnBasedMode.CurrentValue=false;
+            controller.Activate();
+            Game.Instance.IsPaused=false;
+            evidence["turnBasedDisabled"]=!CombatController
+                .IsInTurnBasedCombat();
+            var joins=new JArray();
+            foreach(UnitEntityData owner in exactOwners)
+                joins.Add(Sprint22EnterTurnBasedCombat(owner,target));
+            evidence["joins"]=joins;
+            for(int frame=0;frame<8;frame++) yield return 0;
+            evidence["rtwpOwnerCombat"]=exactOwners.All(value=>
+                value.IsInCombat);
+            evidence["rtwpTargetCombat"]=target!=null && target.IsInCombat;
+            Kingmaker.UI.SettingsUI.SettingsRoot.Instance
+                .EnableTurnBasedMode.CurrentValue=true;
+            controller.Activate();
+            for(int frame=0;frame<8;frame++) yield return 0;
+            UnitEntityData[] sorted=controller.SortedUnits.ToArray();
+            TurnController turn=controller.CurrentTurn;
+            bool ownersSorted=exactOwners.All(owner=>sorted.Any(value=>
+                ReferenceEquals(value,owner)));
+            bool targetSorted=target!=null && sorted.Any(value=>
+                ReferenceEquals(value,target));
+            evidence["roundAfter"]=controller.RoundNumber;
+            evidence["sortedUnits"]=new JArray(sorted.Select(value=>
+                value==null ? "<null>" : value.UniqueId));
+            evidence["ownersSorted"]=ownersSorted;
+            evidence["targetSorted"]=targetSorted;
+            evidence["currentTurn"]=turn?.Unit?.UniqueId;
+            evidence["currentStatus"]=turn==null ? null :
+                turn.Status.ToString();
+            evidence["turnBasedAfter"]=CombatController
+                .IsInTurnBasedCombat();
+            evidence["admitted"]=CombatController.IsInTurnBasedCombat() &&
+                exactOwners.Length>0 && ownersSorted && targetSorted &&
+                exactOwners.All(value=>value.IsInCombat) && target!=null &&
+                target.IsInCombat;
+        }
+
+        private static JObject Sprint22TurnState(UnitEntityData owner,
+            UnitEntityData target)
+        {
+            var controller=Game.Instance.TurnBasedCombatController;
+            TurnController turn=controller.CurrentTurn;
+            UnitEntityData[] sorted=controller.SortedUnits.ToArray();
+            return new JObject {
+                ["round"]=controller.RoundNumber,
+                ["currentTurn"]=turn?.Unit?.UniqueId,
+                ["currentStatus"]=turn==null ? null :
+                    turn.Status.ToString(),
+                ["ownerSorted"]=sorted.Any(value=>ReferenceEquals(
+                    value,owner)),
+                ["targetSorted"]=sorted.Any(value=>ReferenceEquals(
+                    value,target)),
+                ["sortedUnits"]=new JArray(sorted.Select(value=>
+                    value==null ? "<null>" : value.UniqueId)),
+                ["ownerInCombat"]=owner!=null && owner.IsInCombat,
+                ["targetInCombat"]=target!=null && target.IsInCombat,
+                ["turnBased"]=CombatController.IsInTurnBasedCombat()
+            };
+        }
+
         private IEnumerable<int> Sprint22RiderTrial(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,string name,bool turnBased)
         {
             var target=fixture.Hostile; var weapon=Sprint19Limbs(owner).Single();
@@ -1202,11 +1308,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     contactCommand=null;contactRule=null;contactFrame=null;
                     contactProbe=name=="ordinary-failure" ?
                         new Sprint22TailContactProbe(owner,target) : null;
+                    JObject turnOrder=null;
                     if (turnBased)
                     {
-                        Sprint22EnterTurnBasedCombat(owner,target);
-                        for(int frame=0;frame<8;frame++) yield return 0;
-                        foreach (int frame in Sprint18AdvanceRound(owner)) yield return frame;
+                        turnOrder=new JObject();
+                        foreach(int frame in Sprint22EnrollTurnBasedOwners(
+                            new[] { owner },target,turnOrder))
+                            yield return frame;
+                        if(!(bool)turnOrder["admitted"])
+                            throw new InvalidOperationException("unit="+
+                                owner.UniqueId+";predicate="+name+
+                                ";event=native-turn-order-admission;owner="+
+                                owner.Blueprint.AssetGuid+";state="+
+                                turnOrder.ToString(Formatting.None));
                     }
                     foreach (int frame in Sprint18RunFullAttack(fixture,owner,
                         result=>{ command=result;contactCommand=result; },null,
@@ -1269,13 +1383,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ";ownerInCombat="+owner.IsInCombat+
                             ";targetInCombat="+target.IsInCombat+
                             ";turnBased="+CombatController
-                                .IsInTurnBasedCombat());
+                                .IsInTurnBasedCombat()+";turnState="+
+                            Sprint22TurnState(owner,target)
+                                .ToString(Formatting.None));
                     bool expectedHit=name!="miss";
                     satisfied=command!=null && command.IsFinished && roll!=null && roll.IsHit==expectedHit &&
                         roll.IsCriticalConfirmed==critical && (name!="unconfirmed-threat" || roll.IsCriticalRoll) &&
                         (name!="critical-immunity" || roll.Roll.Value==20 && roll.ImmuneToCriticalHit) &&
                         (name=="miss" || saves.Saves.Count!=1 || saves.Saves[0].IsPassed==success);
                     trials.Add(new JObject { ["trial"]=trial,["preconditionsSatisfied"]=satisfied,["commandFinished"]=command?.IsFinished,
+                        ["turnOrder"]=turnOrder,
                         ["rolls"]=new JArray(observer.Attacks.Select(value=>new JObject { ["d20"]=value.Roll.Value,["hit"]=value.IsHit,
                             ["threat"]=value.IsCriticalRoll,["confirmed"]=value.IsCriticalConfirmed,["criticalImmune"]=value.ImmuneToCriticalHit })),
                         ["saves"]=new JArray(saves.Saves.Select(value=>new JObject { ["d20"]=value.D20.Value,["dc"]=value.DifficultyClass,
@@ -1412,6 +1529,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint22ClearOwnedControl(target);
             UnitEntityData second=CastExpandedSummoningOwnTier(fixture,"ankylosaurus");
             SetExpandedSummoningBrainActive(second,false);
+            JObject lifetimeTurnOrder=null;
+            if(turnBased)
+            {
+                lifetimeTurnOrder=new JObject();
+                foreach(int frame in Sprint22EnrollTurnBasedOwners(
+                    new[] { owner,second },target,lifetimeTurnOrder))
+                    yield return frame;
+                if(!(bool)lifetimeTurnOrder["admitted"])
+                    throw new InvalidOperationException("unit="+
+                        owner.UniqueId+
+                        ";predicate=multi-source-lifetime-turn-order"+
+                        ";event=native-turn-order-admission;owner="+
+                        owner.Blueprint.AssetGuid+";state="+
+                        lifetimeTurnOrder.ToString(Formatting.None));
+            }
             int oldFort=target.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue;
             var original=target.Descriptor.Buffs.RawFacts.OfType<Buff>().ToArray();
             Buff unrelated=null;
@@ -1514,6 +1646,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["lethalRequested"]=lethal,["lethalApplied"]=deathDamage.Damage,
                         ["hpAfterDamage"]=owner.HPLeft,["maxHp"]=owner.MaxHP,
                         ["constitution"]=constitution,["immortality"]=immortality,
+                        ["turnOrder"]=lifetimeTurnOrder,
                         ["unrelatedPreserved"]=target.Descriptor.Buffs.RawFacts.Contains(unrelated),
                         ["endTimes"]=new JArray(ends.Select(value=>new JObject { ["buff"]=value.Key.Blueprint.AssetGuid,
                             ["referenceId"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value.Key),["endSeconds"]=value.Value.TotalSeconds })) },
