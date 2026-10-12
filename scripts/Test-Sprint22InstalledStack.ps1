@@ -70,6 +70,27 @@ Assert-Stack ((Get-KmgExactRuntimeLaunchReceipt -Output @('unrelated output',$ex
 Assert-StackThrows { Get-KmgExactRuntimeLaunchReceipt -Output @() } 'missing or duplicated'
 Assert-StackThrows { Get-KmgExactRuntimeLaunchReceipt -Output @($exact,$exact) } 'missing or duplicated'
 Assert-StackThrows { Get-KmgExactRuntimeLaunchReceipt -Output @([pscustomobject]@{kind='KmgRuntimeLaunchReceipt';runId='wrong-run';evidenceDirectory='C:/fixture-evidence/exact-run'}) } 'exact RunId directory'
+$fakeKey=[pscustomobject]@{values=@{binary=[byte[]]@(1,2,3);text='original';number=7};
+    kinds=@{binary=[Microsoft.Win32.RegistryValueKind]::Binary;text=[Microsoft.Win32.RegistryValueKind]::String;number=[Microsoft.Win32.RegistryValueKind]::DWord};subkeys=[string[]]@()}
+$fakeKey | Add-Member ScriptMethod GetSubKeyNames { return ,$this.subkeys }
+$fakeKey | Add-Member ScriptMethod GetValueNames { return ,([string[]]@($this.values.Keys)) }
+$fakeKey | Add-Member ScriptMethod GetValueKind { param($name);return $this.kinds[$name] }
+$fakeKey | Add-Member ScriptMethod GetValue { param($name,$default,$options);return $this.values[$name] }
+$fakeKey | Add-Member ScriptMethod SetValue { param($name,$value,$kind);$this.values[$name]=$value;$this.kinds[$name]=$kind }
+$fakeKey | Add-Member ScriptMethod DeleteValue { param($name,$required);$this.values.Remove($name);$this.kinds.Remove($name) }
+$settings=@(Get-KmgFlatGameSettingsValues -Key $fakeKey)
+Assert-Stack ($settings.Count -eq 3 -and ($settings | Where-Object name -ceq 'binary').kind -ceq 'Binary') 'typed flat settings snapshot'
+$fakeKey.SetValue('text','changed',[Microsoft.Win32.RegistryValueKind]::String)
+$fakeKey.SetValue('new','staged-only',[Microsoft.Win32.RegistryValueKind]::String)
+Restore-KmgFlatGameSettingsValues -Key $fakeKey -Snapshot $settings
+Assert-Stack ($fakeKey.values.text -ceq 'original' -and -not $fakeKey.values.ContainsKey('new') -and $fakeKey.kinds.number -eq [Microsoft.Win32.RegistryValueKind]::DWord -and [Convert]::ToBase64String($fakeKey.values.binary) -ceq 'AQID') 'original kinds/values restored and only new flat values removed'
+$fakeKey.subkeys=[string[]]@('unexpected')
+Assert-StackThrows { Get-KmgFlatGameSettingsValues -Key $fakeKey } 'Unexpected game-settings subkeys'
+Assert-StackThrows { Restore-KmgFlatGameSettingsValues -Key $fakeKey -Snapshot $settings } 'Unexpected game-settings subkeys'
+Assert-Stack ($fakeKey.values.Count -eq 3 -and $fakeKey.values.text -ceq 'original') 'unexpected hierarchy refusal leaves values unchanged'
+$fakeKey.subkeys=[string[]]@()
+Restore-KmgFlatGameSettingsValues -Key $fakeKey -Snapshot @()
+Assert-Stack ($fakeKey.values.Count -eq 0) 'original flat value absence restored'
 Assert-StackThrows {
     & (Join-Path $PSScriptRoot 'Invoke-Sprint22InstalledStack.ps1') -Scenario working-save-expanded-summoning-prepare -SaveName KMG_AUTOMATION_BASELINE -PackagePath missing -ExpectedVersion 0.0.151 -Confirm:$false
 } 'ValidateSet'
