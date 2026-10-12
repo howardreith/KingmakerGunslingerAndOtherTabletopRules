@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -60,6 +61,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_summoningProfileMenu == null || !_summoningProfileMenu.isActiveAndEnabled ||
                         UnityEngine.EventSystems.EventSystem.current == null ||
                         UnityEngine.EventSystems.EventSystem.current.currentInputModule == null) return;
+                    if (Runner.LastError != null) throw new InvalidOperationException("Native runner already failed: " + Runner.LastError);
                     var entered = typeof(MainMenu).GetField("m_EnterGameStarted",
                         BindingFlags.Instance | BindingFlags.NonPublic);
                     bool idleMenu = _summoningProfileMenu != null && entered != null &&
@@ -98,9 +100,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfileEvidence["scope"] = "real native first-level scene/navigation; unchanged summon mechanics; no saved-world load/write";
                     _summoningProfileClock = Stopwatch.StartNew();
                     _summoningProfileStage = 3;
-                    // EnterGame queues native scene loading. Its callback is not
-                    // proof that the additive base scene is registered yet.
-                    _summoningProfileMenu.EnterGame(() => _summoningProfileEntryCallback = true);
+                    // Runner invokes this callback immediately before Game.Tick.
+                    // Keep native LoadingProcess ownership while waiting for the
+                    // additive scene; an idle callback lets Tick see no game mode
+                    // after EnterGame has disposed the menu and resets the world.
+                    _summoningProfileMenu.EnterGame(() => {
+                        _summoningProfileEntryCallback = true;
+                        LoadingProcess.Instance.StartLoadingProcess(AwaitSummoningProfileBaseScene(), () => {
+                            _summoningProfileStage = 1;
+                            _summoningProfileClock.Restart();
+                            game.LoadNewGame(_summoningProfilePreset, null);
+                            WriteLifecycleStage("summoning-profile-native-area-load-start");
+                        }, LoadingProcessTag.None, 0f);
+                    });
                     WriteLifecycleStage("summoning-profile-native-base-entry-start");
                     return;
                 }
@@ -122,10 +134,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                             throw new TimeoutException("Native base scene did not register after menu entry.");
                         return;
                     }
-                    _summoningProfileStage = 1;
-                    _summoningProfileClock.Restart();
-                    game.LoadNewGame(_summoningProfilePreset, null);
-                    WriteLifecycleStage("summoning-profile-native-area-load-start");
                     return;
                 }
                 if (_summoningProfileStage == 1)
@@ -180,6 +188,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     catch (Exception resetFailure) { _summoningProfileFailure += "\nreset: " + resetFailure; }
                 }
                 FinishSummoningNativeProfile(false);
+            }
+        }
+
+        private IEnumerator<object> AwaitSummoningProfileBaseScene()
+        {
+            while (true)
+            {
+                var scene = SceneManager.GetSceneByName(SceneName.BaseMechanics);
+                bool ready = ExpandedSummoningNativeProfilePolicy.ReadyForWorldLoad(
+                    _summoningProfileEntryCallback, scene.IsValid() && scene.isLoaded,
+                    LoadingProcess.Instance.IsLoadingInProcess);
+                _summoningProfileEvidence["baseRegisteredBeforeWorldLoad"] = scene.IsValid() && scene.isLoaded;
+                _summoningProfileEvidence["baseSceneHandleBeforeWorldLoad"] = scene.handle;
+                _summoningProfileEvidence["nativeLoadingOwnsEntry"] = LoadingProcess.Instance.IsLoadingInProcess;
+                if (ready) yield break;
+                if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
+                    throw new TimeoutException("Native base scene/entry loader ownership was not established.");
+                yield return null;
             }
         }
 
@@ -275,7 +301,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Events.Add(new JObject {
                     ["event"] = name, ["target"] = target, ["handle"] = handle,
-                    ["frame"] = Time.frameCount, ["caller"] = caller,
+                    ["frame"] = Time.frameCount, ["caller"] = caller, ["nativeError"] = Runner.LastError?.ToString(),
                     ["scenes"] = new JArray(Enumerable.Range(0, SceneManager.sceneCount).Select(index => {
                         var scene = SceneManager.GetSceneAt(index);
                         return new JObject { ["name"] = scene.name, ["handle"] = scene.handle,
