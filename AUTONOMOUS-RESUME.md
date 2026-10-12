@@ -55,6 +55,15 @@ run one new Tranche candidate pipeline, then qualify standalone native mechanics
 before proceeding through the remaining profiles. Preserve the failed run at
 20261012T0210576819811Z and transaction compat-20261012T020925Z-cfb5c1cca905.
 
+Thea7e05944 candidate passed2565/2565 and packaging; its native setup again found
+an invalid base scene before mechanics. Exact transaction
+compat-20261012T022403Z-b66c7d12a91e restored968 entries, native empty world and
+save/load guard release passed with zero attempts. After these two failures the
+strategy is staged: wait for initialized native menu/input, native entry callback
+and a valid loaded BaseMechanics scene before LoadNewGame. Record loaded scene
+names and every world/party predicate. Readiness repair focus passed7/7; freeze
+and qualify its new artifact before another affected native observation.
+
 Remaining profile mechanics, module states and release gates stay pending until
 qualified. Retain audited unaffected prior native PASS with
 its original source/artifact identity; no blanket current-candidate claim.
