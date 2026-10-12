@@ -1,28 +1,24 @@
-﻿# Kingmaker Gunslinger
+# Kingmaker Gunslinger
 
-Version **0.0.150-expanded-summoning-sprint21**
-is the Expanded Summoning Sprint 18 candidate: the Ape and the Dire Ape. It is
-built on released v0.0.146 and changes nothing that release qualified, so it
-still retains v0.0.145 Nodachi art, v0.0.144 weapon findability/recovery, and
-v0.0.142 Elemental character traits and content polish with qualified Expanded
-Summoning Sprints 12–17 including Salamander. Both new apes are registered and
-withheld, so the source still exposes 1008 published generated placements plus
-29 retained native wrappers: 1037 choices. Sprint 18 is NOT runtime qualified
-and its original creature bodies are not authored.
+Version **0.0.150-expanded-summoning-sprint21** completes the Expanded Summoning
+series with Giant Crab and the Bebelith overhaul. The roster exposes **1,092
+choices: 1,063 generated roots and 29 native wrappers**. Released identities,
+Sprint18?20 mechanics/assets and the qualified firearm sound bank are retained.
 
-The preceding v0.0.146 line retained v0.0.145 Nodachi art, v0.0.144 weapon
-findability/recovery, and v0.0.142 Elemental character traits and content polish
-with qualified Expanded Summoning Sprints 12–17. Salamander is included after
-the owner-authorized observation-only reach correction passed; production
-behavior was not changed by that correction.
-This is a numbered stable-release line, not an alpha or prerelease. Publication
-requires exact integration, closure, compatibility and regression qualification.
-See [the checkpoint notes](docs/RELEASE-NOTES-0.0.146.md) and
-[integration ledger](planning/RELEASE-0.0.146-INTEGRATION-LEDGER.md).
+Sprint21 closure is qualified on HOWARD-LAPTOP under the October11 validation
+policy and owner release mission. The final candidate passed a fresh unfiltered
+2571/2571 domain suite, exact-reference build and strict package validation.
+Required compatibility profiles, repetitions and module combinations are covered;
+unchanged exhaustive-roster, regression and persistence evidence retains its
+original source/artifact provenance. All seven boundary findings were fixture
+defects, corrected and verified; no inherited production exception was accepted.
 
-After this checkpoint, Expanded Summoning proceeds one charter sprint per
-branch, PR and release from released master, with a new owner mission required.
-Sprint 18 has not been started and is not authorized by this release mission.
+See [release notes](docs/RELEASE-NOTES-0.0.150.md),
+[closure record](docs/SPRINT21-CLOSURE-2026-10-11.md) and
+[machine-readable ledger](planning/SPRINT21-CLOSURE-LEDGER.json).
+The ZIP is promoted from the exact tested candidate without rebuilding for a
+reporting or merge commit. Owner aesthetic review remains separate and nonblocking.
+No Sprint22 or other project is selected.
 
 ### Earlier release history
 
