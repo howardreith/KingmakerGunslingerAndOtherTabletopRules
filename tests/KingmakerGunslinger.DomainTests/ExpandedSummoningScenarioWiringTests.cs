@@ -184,7 +184,7 @@ namespace KingmakerGunslinger.DomainTests
                 // legitimate wiring, so the predicate stands in for the chains.
                 // The predicate may live in either file.
                 string predicate =
-                    @"bool Is\w+\([^)]*\)\s*\{[\s\S]{0,2000}?" +
+                    @"bool Is\w+\([^)]*\)\s*\{[^{}]{0,2000}?" +
                     Regex.Escape(symbol) + @"\b";
                 if (Regex.IsMatch(catalog, predicate) ||
                     Regex.IsMatch(runner, predicate))
