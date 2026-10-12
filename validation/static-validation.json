@@ -2414,7 +2414,7 @@
     "ownerInstallationRestoredTo": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
     "publicationGate": "PASS, confirmed in game. 44 of 44 on the published candidate at commit 15b56e9c, in both real time and turn-based combat. The surface: registered 1063 = published 1063, suppressed 0, and no root outside this sprint withheld anywhere. All seven Giant Crab roots live, each resolved by symbol out of the live blueprint manifest to the ability GUID registration allocated it, all on the Nature's Ally side at tiers 3 through 9 with the charter quantities. All three released Bebelith roots resolved the same way to the GUIDs v0.0.147 shipped - 5dee1a17 at tier 7 single, 1626468c at tier 8 for 1d3, e08d19b1 at tier 9 for 1d4+1 - all three still published Summon Monster roots at three distinct quantities, which is what proves an overhaul of everything behind them moved none of them. Every printed number of both creatures read back unchanged by publication, the authorized disposable armour fixture was restored with the piece still equipped, and the installation went back to 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3. Evidence 20261011T0607210899913Z-disposable-expanded-summoning-sprint21-review.",
     "seriesClosure": {
-      "status": "QUALIFIED",
+      "status": "RELEASED",
       "record": "docs/SPRINT21-CLOSURE-2026-10-11.md",
       "ledger": "planning/SPRINT21-CLOSURE-LEDGER.json",
       "testedSource": "b3d9436fc09736530b5b5962d40982165454ea0b",
@@ -2423,7 +2423,11 @@
       "mandatoryNotRun": [],
       "baselineExceptions": [],
       "evidenceSourcesRetained": true,
-      "noSprint22": true
+      "noSprint22": true,
+      "tag": "v0.0.150",
+      "latest": true,
+      "mergeCommit": "3d8e51ee653d598c1ac7e9a6fd452c4d99767ffb",
+      "finalReportingSeparate": true
     }
   }
 }

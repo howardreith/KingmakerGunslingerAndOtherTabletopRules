@@ -2303,9 +2303,10 @@
     "allNamedTransactionsProof": {
       "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\remaining-qualification-all-named-transactions.json",
       "sha256": "beb9a8a273c480087e75c961cfba7f9fec34bdc07a12d364e05d52e1f09ce02d"
-    }
+    },
+    "postPublicationVerification": "published-release-and-final-restoration-verification.json"
   },
-  "nextAction": "Publish coherent closure; verify current lineage/version, mark PR36 ready and merge, promote exact qualified artifact, download/hash/tag/Latest/alpha/restoration verification, push final records, stop. No Sprint22.",
+  "nextAction": "STOP. Owner Sprint21 closure/release mission completed. No Sprint22, DATA, other repository work or permanent deployment.",
   "repairValidation": {
     "filter": "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
     "selected": 15,
@@ -2378,10 +2379,13 @@
     "measuredUtc": "2026-10-12T04:00:29.114023+00:00",
     "elapsedMinutes": 387.38,
     "campaignPlanningMinutes": 240,
-    "remainingEstimateMinutes": 20,
+    "remainingEstimateMinutes": 0,
     "revisedFinitePlanMinutes": 387,
-    "remainingScope": "Closure commit/PR merge, exact artifact publication and download/tag/Latest/alpha/final restoration verification; then stop",
-    "finalQualificationUtc": "2026-10-12T06:10:25.966350+00:00"
+    "remainingScope": "None; final reporting push then stop",
+    "finalQualificationUtc": "2026-10-12T06:10:25.966350+00:00",
+    "completedUtc": "2026-10-12T06:32:41.283107+00:00",
+    "actualElapsedMinutes": 409.64,
+    "planningAllocationOverrunDisposition": "Four-hour allocation was revised using measured operations and a finite safe plan; completed without interrupting required restoration."
   },
   "fixtureDiagnosis": {
     "classification": "SAVE_FIXTURE_INCOMPATIBLE_WITH_REDUCED_STACK",
@@ -2812,5 +2816,35 @@
     "baselineExceptions": [],
     "conditionalInactiveAssertionAccounted": true,
     "priorFailedResultsPreserved": true
+  },
+  "publication": {
+    "status": "RELEASED",
+    "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.150",
+    "tag": "v0.0.150",
+    "latest": true,
+    "draft": false,
+    "prerelease": false,
+    "mergeCommit": "3d8e51ee653d598c1ac7e9a6fd452c4d99767ffb",
+    "qualificationReportingCommit": "49d9ac0b7802c3b66327eec801611015dd9a2659",
+    "testedSource": "b3d9436fc09736530b5b5962d40982165454ea0b",
+    "qualifiedLedgerAtReportingCommit": "49d9ac0b7802c3b66327eec801611015dd9a2659",
+    "publishedManifestSha256": "d298d314c1be79b1b5efd0a72408985124cfcbbbdb459992111ba3490e07d4ae",
+    "publishedChecksumsSha256": "01c0d3198437fe7d404355df00816aa49978e7f8232f25036b135f18a838bf57",
+    "allThreeDownloadedAssetsMatch": true,
+    "exactArtifactPromotion": true,
+    "rebuiltForPublication": false,
+    "rosterChoices": 1092,
+    "baselineExceptions": [],
+    "verificationProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\published-release-and-final-restoration-verification.json",
+      "sha256": "c31b8479cb19526864649f8b9ad02c3068f1e0d81d7265862020adaa78168eea"
+    },
+    "postPublicationReporting": "This final ledger postdates the immutable published manifest and its qualification ledger at49d9ac0b; it does not restamp or rebuild the tested artifact.",
+    "remoteAnnotatedTag": "5171aa4f05165b9573ee384540181c0ceb511771",
+    "remotePeeledTagVerified": true,
+    "remoteTagProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\published-remote-tag-verification.json",
+      "sha256": "e8629fb999f692efeb5b0ca9c5f39c06566c0ccb4f8f7568ff9b1b3331099f77"
+    }
   }
 }
