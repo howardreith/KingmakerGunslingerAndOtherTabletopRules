@@ -1480,8 +1480,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string sourceBlueprint=owner.Blueprint.AssetGuid;
                 // The exact source dies after its strike. Already applied
                 // victim buffs retain their absolute native expiry times.
-                Rulebook.Trigger(new RuleDealDamage(target,owner,new DamageBundle(Sprint19Limbs(owner).Single(),Size.Huge,
-                    new DirectDamage(new DiceFormula(0,DiceType.D6),owner.Descriptor.Stats.HitPoints.ModifiedValue+owner.Descriptor.Stats.Constitution.ModifiedValue+1))));
+                int constitution=Math.Max(1,owner.Descriptor.Stats.Constitution.ModifiedValue);
+                int lethal=owner.MaxHP+constitution+10;
+                int immortality=owner.Descriptor.State.Immortality.Count;
+                string lifeBefore=owner.Descriptor.State.LifeState.ToString();
+                var deathDamage=Rulebook.Trigger(new RuleDealDamage(owner,owner,
+                    new DamageBundle(new DirectDamage(new DiceFormula(0,DiceType.D6),lethal)))
+                    { DisablePrecisionDamage=true,IgnoreDamageReduction=true });
+                if(immortality!=0 || deathDamage.Damage<lethal || owner.HPLeft>-constitution)
+                    throw new InvalidOperationException("unit="+sourceId+
+                        ";predicate=native-lethal-threshold;event=self-attributed-rule-deal-damage;owner="+
+                        sourceBlueprint+";immortality="+immortality+";requested="+lethal+
+                        ";actual="+deathDamage.Damage+";hp="+owner.HPLeft+";maxHp="+
+                        owner.MaxHP+";constitution="+constitution);
                 MethodInfo lifeTick=typeof(UnitLifeController).GetMethod(
                     "TickOnUnit",BindingFlags.Instance|BindingFlags.Public|
                         BindingFlags.NonPublic,null,
@@ -1499,6 +1510,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["owner"]=sourceBlueprint,["legalHits"]=legal,["payloadCount"]=effects.Length,["sources"]=new JArray(sources),
                         ["preserved"]=preserved,["finite"]=finite,["sourceDead"]=sourceDead,
                         ["sourceDestroyedAfterDeferredTick"]=sourceDestroyed,
+                        ["lifeBefore"]=lifeBefore,["lifeAfter"]=owner.Descriptor.State.LifeState.ToString(),
+                        ["lethalRequested"]=lethal,["lethalApplied"]=deathDamage.Damage,
+                        ["hpAfterDamage"]=owner.HPLeft,["maxHp"]=owner.MaxHP,
+                        ["constitution"]=constitution,["immortality"]=immortality,
                         ["unrelatedPreserved"]=target.Descriptor.Buffs.RawFacts.Contains(unrelated),
                         ["endTimes"]=new JArray(ends.Select(value=>new JObject { ["buff"]=value.Key.Blueprint.AssetGuid,
                             ["referenceId"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value.Key),["endSeconds"]=value.Value.TotalSeconds })) },
