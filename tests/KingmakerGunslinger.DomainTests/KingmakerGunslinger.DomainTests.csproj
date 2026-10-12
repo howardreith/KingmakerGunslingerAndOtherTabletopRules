@@ -383,6 +383,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\UrbanBarbarianIdentityCatalog.cs"><Link>UrbanBarbarian\UrbanBarbarianIdentityCatalog.cs</Link></Compile>
     <Compile Include="BrownFurContractTests.cs" />
     <Compile Include="BoundaryObservationTests.cs" />
+    <Compile Include="ExpandedSummoningNativeProfileTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ExpandedSummoningNativeProfilePolicy.cs"><Link>RuntimeTesting\ExpandedSummoningNativeProfilePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\BoundaryObservationPolicy.cs"><Link>RuntimeTesting\BoundaryObservationPolicy.cs</Link></Compile>
     <Compile Include="BrownFurInventoryClassificationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurInventoryClassification.cs"><Link>BrownFur\BrownFurInventoryClassification.cs</Link></Compile>

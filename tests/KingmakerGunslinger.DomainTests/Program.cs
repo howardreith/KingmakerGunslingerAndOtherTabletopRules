@@ -808,6 +808,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.progression-balance", BrownFurContractTests.BalanceProgressionIsExact),
             Case("brown-fur.progression-unknown", BrownFurContractTests.UnknownProgressionsFailClosed),
             Case("boundary-observation.provider-isolation", BoundaryObservationTests.AbsentProviderRequiresCompleteIsolation),
+            Case("expanded-summoning.native-profile-existing-world", ExpandedSummoningNativeProfileTests.ExistingWorldNeverAdmitted),
+            Case("expanded-summoning.native-profile-save-isolation", ExpandedSummoningNativeProfileTests.SaveAndHumanEntryNeverAdmitted),
             Case("boundary-observation.exact-stock", BoundaryObservationTests.StockComparisonPreservesMultiplicityAndCounts),
             Case("boundary-observation.clause-json", BoundaryObservationTests.ClauseSerializationRetainsExpectedActualAndOwner),
             Case("brown-fur.contract-absent", BrownFurContractTests.AbsentCotwIsUnavailable),

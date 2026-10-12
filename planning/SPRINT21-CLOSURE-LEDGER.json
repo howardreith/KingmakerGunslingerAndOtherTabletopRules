@@ -4,7 +4,7 @@
     "host":  "HOWARD-LAPTOP",
     "branch":  "codex/expanded-summoning-sprint21-bebelith-giant-crab",
     "pr":  36,
-    "status":  "WORKING_FIXTURE_DIAGNOSIS",
+    "status":  "NATIVE_PROFILE_FIXTURE_REPAIR",
     "startedUtc":  "2026-10-11T23:43:03Z",
     "planningHours":  4,
     "allocationMinutes":  {
@@ -290,8 +290,24 @@
                      },
                      {
                          "id":  "native-cleanup-save-and-fresh-absence",
-                         "result":  "PENDING",
-                         "action":  "Use valid existing prepared fixture receipt; no manual save access"
+                         "result":  "REUSED_PASS",
+                         "action":  "Use valid existing prepared fixture receipt; no manual save access",
+                         "priorSource":  "cf4bbc4aef48e8bfc65498a24dd55126679f96d2;3ee4f9a4040f9295d125369ee99a879d80d51a57",
+                         "reuseJustification":  "Native cleanup/save125/125 atcf4bbc4a plus fresh whole-roster absence6/6 at3ee4f9a4 under exact eleven-mod intake, with matching runtime receipts and no mission writes. Save/roster backend unchanged by the request-local native profile fixture; reduced-profile load failures retained as setup evidence and do not qualify mechanics.",
+                         "proofs":  [
+                                        {
+                                            "path":  "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json",
+                                            "sha256":  "c72aee5eae681fce586bd7a6ec34002c84d0d8c8798f31ff41680cde49c8b37d"
+                                        },
+                                        {
+                                            "path":  "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261012T0137290351629Z-working-save-expanded-summoning-verify-absent/runtime-result.json",
+                                            "sha256":  "8ae935fad84e32e076b18066774b61af36681e3c76a26ce79339b357456e0e77"
+                                        },
+                                        {
+                                            "path":  "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint21-closure-20261011T235000Z/actual-intake-fixture-receipt.json",
+                                            "sha256":  "1c5ebafdef1fc87b0f82dd5f8e050bd79d7990dea5016baf13b9085696cc5e93"
+                                        }
+                                    ]
                      },
                      {
                          "id":  "module-disabled-deserialization-cleanup",
@@ -403,11 +419,12 @@
     "releaseEligible":  false,
     "restoration":  {
                         "intakeManifest":  "actual-mods-intake-manifest.json",
-                        "current":  "FIVE_MOD_FIXTURE_CONTROL_ACTIVE; standalone exact968-entry restoration verified",
-                        "workingSave":  "One readonly native working-save load attempt failed at load completion; no save-writing API observed. Current five-mod control active. No manual save access or mutation.",
-                        "lastVerifiedRecord":  "matched-control-restoration.json"
+                        "current":  "EXACT_INTAKE_VERIFIED",
+                        "workingSave":  "CLEAN; whole-roster fresh absence6/6 under exact actual intake; all three transactions restored; no mission save writes or manual save access",
+                        "lastVerifiedRecord":  "actual-intake-fixture-receipt.json",
+                        "workingFixtureClean":  true
                     },
-    "nextAction":  "Complete/restore the active five-mod fixture check, then one exact-intake mod/settings control. Keep mechanical and fresh-absence gates failed/pending until native evidence qualifies; preserve startup PASS and all historical failures.",
+    "nextAction":  "Freeze the coherent native-profile fixture correction, one new Tranche candidate, qualify standalone native mechanics before remaining profiles/states and release gates",
     "repairValidation":  {
                              "filter":  "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
                              "selected":  15,
@@ -475,15 +492,16 @@
                                    "publicationWrites":  0
                                },
     "planningUpdate":  {
-                           "measuredUtc":  "2026-10-12T00:52:14.4660507Z",
-                           "elapsedMinutes":  68,
+                           "measuredUtc":  "2026-10-12T01:59:01.8533745Z",
+                           "elapsedMinutes":  376,
                            "diagnosisCompleted":  true,
-                           "remainingEstimateMinutes":  145,
-                           "remainingScope":  "31 selected profile scenario calls,14 remaining original-four-module configurations,one native fresh absence,closure/merge/exact promotion/download/restoration",
-                           "campaignPlanningMinutes":  240
+                           "remainingEstimateMinutes":  155,
+                           "remainingScope":  "Native fixture candidate/reproduction, remaining profile coverage and14 module states, closure/merge/exact promotion and download/restoration verification",
+                           "campaignPlanningMinutes":  240,
+                           "revisedFinitePlanMinutes":  285
                        },
     "fixtureDiagnosis":  {
-                             "classification":  "UNRESOLVED_SETUP",
+                             "classification":  "SAVE_FIXTURE_INCOMPATIBLE_WITH_REDUCED_STACK",
                              "nativeFailure":  "Player.PostLoad native Single predicate cannot find cross-scene entity with MainCharacter.UniqueId",
                              "referenceMvid":  "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
                              "historicalContext":  "docs/ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION-HANDOFF.md records the same reduced-stack failure and an earlier full-stack success; this is context, not current attribution",
@@ -494,6 +512,20 @@
                              "actualIntakeMods":  11,
                              "selectedActualIntakeControl":  "invoke-actual-intake-fixture.ps1",
                              "releaseWaiver":  false,
-                             "manualSaveAccess":  false
-                         }
+                             "manualSaveAccess":  false,
+                             "actualIntakeControl":  "6/6 whole-roster fresh absence PASS; exact eleven-mod intake; no save write",
+                             "actualIntakeTransaction":  "compat-20261012T013554Z-8b7169658f01",
+                             "repair":  "Save-free native first-level fixture with real navigation calls unchanged mechanics; new artifact and affected native qualification required",
+                             "individualMissingProviderIdentified":  false
+                         },
+    "nativeProfileFocusedChecks":  {
+                                       "filter":  "expanded-summoning.native-profile;expanded-summoning.compatibility-",
+                                       "selected":  6,
+                                       "registered":  2564,
+                                       "failures":  0,
+                                       "productionCompilation":  "PASS",
+                                       "freshness":  "native-profile-focused-freshness.json",
+                                       "native":  "NOT_YET_RUN",
+                                       "noGameplayChanges":  true
+                                   }
 }
