@@ -810,6 +810,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("boundary-observation.provider-isolation", BoundaryObservationTests.AbsentProviderRequiresCompleteIsolation),
             Case("expanded-summoning.native-profile-existing-world", ExpandedSummoningNativeProfileTests.ExistingWorldNeverAdmitted),
             Case("expanded-summoning.native-profile-save-isolation", ExpandedSummoningNativeProfileTests.SaveAndHumanEntryNeverAdmitted),
+            Case("expanded-summoning.native-profile-scene-services", ExpandedSummoningNativeProfileTests.RealSceneServicesRequired),
             Case("boundary-observation.exact-stock", BoundaryObservationTests.StockComparisonPreservesMultiplicityAndCounts),
             Case("boundary-observation.clause-json", BoundaryObservationTests.ClauseSerializationRetainsExpectedActualAndOwner),
             Case("brown-fur.contract-absent", BrownFurContractTests.AbsentCotwIsUnavailable),

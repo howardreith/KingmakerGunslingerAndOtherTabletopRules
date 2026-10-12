@@ -4,6 +4,11 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        public static bool ReadyForMechanics(bool baseMechanicsLoaded, bool exactArea,
+            bool loadedAreaState, bool mainCharacter, bool partyWithHoldingState)
+        {
+            return baseMechanicsLoaded && exactArea && loadedAreaState && mainCharacter && partyWithHoldingState;
+        }
         public static bool CanStart(bool automaticExit, int parameters,
             int worldUnits, int partyCharacters, int crossSceneEntities,
             bool loadedArea, bool mainCharacter, bool importSave,
