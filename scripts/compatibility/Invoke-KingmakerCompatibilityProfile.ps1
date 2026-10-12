@@ -416,6 +416,9 @@ try {
                 expandedSummoning = [bool]$Parameters.expandedSummoning
             }
         }
+        if ($name -ceq 'disposable-expanded-summoning-sprint22-native-review') {
+            $arguments.Parameters = $Parameters
+        }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
             $arguments.Parameters = $Parameters
         }
@@ -473,6 +476,9 @@ try {
             throw "Kingmaker did not complete guarded automatic exit after scenario: $name"
         }
         $configurationId = $ProfileId + '-' + $name
+        if ($name -ceq 'disposable-expanded-summoning-sprint22-native-review') {
+            $configurationId += '-' + [string]$Parameters.reviewPhase
+        }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
             $configurationId += '-' + [string]$Parameters.assetConfiguration
         }

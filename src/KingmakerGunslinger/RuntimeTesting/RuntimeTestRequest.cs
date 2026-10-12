@@ -101,6 +101,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (string)request.Parameters["qualificationOperation"] == "scene-roundtrip";
         }
 
+        internal static string Sprint22ReviewPhase(RuntimeTestRequest request)
+        {
+            if (request == null || request.Scenario != RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint22NativeReview ||
+                request.Parameters == null || request.Parameters.Count != 1 ||
+                request.Parameters["reviewPhase"]?.Type != JTokenType.String)
+                return null;
+            string phase = (string)request.Parameters["reviewPhase"];
+            return phase == "rtwp-foundation" ||
+                phase == "turn-based-control" ? phase : null;
+        }
+
         private static readonly string[] AllowedMembers =
         {
             "schemaVersion", "enabled", "runId", "scenario",
@@ -239,9 +251,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             if ((request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain) && !request.ExitAfterCompletion)
                 return "magic-circle-profile-exit-required";
-            if (RuntimeTestScenarioCatalog.IsSummoningNativeProfile(request.Scenario) &&
+            if (request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningNativeProfile &&
                 (!request.ExitAfterCompletion || (request.Parameters?.Count ?? 0) != 0))
                 return "summoning-native-profile-empty-parameters-and-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint22NativeReview &&
+                (!request.ExitAfterCompletion || Sprint22ReviewPhase(request) == null))
+                return "sprint22-native-review-phase-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather && !request.ExitAfterCompletion)
                 return "whiteout-observation-exit-required";
             if ((request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
@@ -571,6 +588,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !new[] { "Fighter", "Gunslinger" }.Contains((string)request.Parameters["class"]) ||
                     !new[] { "point-buy", "roll" }.Contains((string)request.Parameters["allocation"]))
                     return "character-creation-case-not-allowed";
+            }
+            else if (request.Scenario == RuntimeTestScenarioCatalog
+                .DisposableExpandedSummoningSprint22NativeReview)
+            {
+                if (request.MainMenuTimeoutSeconds != 0 ||
+                    request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 ||
+                    request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 ||
+                    request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (Sprint22ReviewPhase(request) == null)
+                    return "sprint22-native-review-phase-invalid";
             }
             else if (request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)
