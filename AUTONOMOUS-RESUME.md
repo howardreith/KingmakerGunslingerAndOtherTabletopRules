@@ -45,9 +45,15 @@ case with real scene/navigation services. It refuses any existing world/import,
 requires automatic exit and empty parameters, guards save/load/delete APIs,
 uses request-owned preset/anchor clones and native ResetToMainMenu teardown.
 Focused admission/compatibility checks passed6/6 with production compilation.
-The fixture remains native-unqualified. Freeze the coherent correction, run one
-new Tranche candidate pipeline, then first qualify the gunslinger-only native
-mechanics reproduction before proceeding through the remaining profiles.
+The5429d7bd candidate passed2564/2564 and strict packaging, but its first native
+fixture failed before mechanics: direct LoadNewGame skipped BaseMechanics.
+Native empty-world restoration, zero save/load/delete attempts and exact intake
+restoration passed. The fixture now uses native MainMenu.EnterGame to load that
+scene before the new-world callback; every setup predicate is reported. The
+bounded correction compiled and passed7/7 focused checks. Freeze this correction,
+run one new Tranche candidate pipeline, then qualify standalone native mechanics
+before proceeding through the remaining profiles. Preserve the failed run at
+20261012T0210576819811Z and transaction compat-20261012T020925Z-cfb5c1cca905.
 
 Remaining profile mechanics, module states and release gates stay pending until
 qualified. Retain audited unaffected prior native PASS with

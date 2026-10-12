@@ -4,6 +4,15 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningNativeProfileTests
     {
+        internal static void RealSceneServicesRequired()
+        {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.ReadyForMechanics(true,true,true,true,true), "Real registered native world admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ReadyForMechanics(false,true,true,true,true), "No mechanics without BaseMechanics scene.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ReadyForMechanics(true,false,true,true,true), "Wrong area refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ReadyForMechanics(true,true,false,true,true), "Missing loaded-state refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ReadyForMechanics(true,true,true,false,true), "Missing main character refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ReadyForMechanics(true,true,true,true,false), "Missing registered party anchor refused.");
+        }
         internal static void ExistingWorldNeverAdmitted()
         {
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,0,0,false,false,false,false,true), "Idle fresh native world admitted.");
