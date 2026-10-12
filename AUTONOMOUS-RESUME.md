@@ -5,18 +5,19 @@ merge and stable release after its gates. It supersedes the older stop/no-releas
 text below. Read docs/SPRINT21-CLOSURE-OWNER-MISSION-2026-10-11.md and the current
 planning/SPRINT21-CLOSURE-LEDGER.json. Work only on HOWARD-LAPTOP; no Sprint 22.
 
-Current source has a bounded observer correction after f0a83116 reached the real native area.
-Its fresh 2568/2568 suite and strict package passed, but native mechanics remain FAIL
-59/62. Two primary Bebelith bites must not dismantle armor; grapple attempt exposure
-does not depend on the native AutoFailure Success getter; view accounting must use
-the registered patch families, including Sprint 21. Production compilation and the
-registered affected selection passed 70/70 after preserving the earlier 35/36 failure.
-Transaction compat-20261012T032553Z-3b3584547c1b is Restored; actual968 manifest/settings
-match, guards removed, no save attempts. Working fixture remains clean. Next: one
-new Tranche candidate and affected native reproduction, then bind the remaining
-profile/module-state batches to that package. The four-hour planning allocation
-is being revised to a finite additional145m; continue the explicitly authorized
-closure mission while a safe path remains. No release eligibility yet.
+Frozen final candidate b3d9436f passed a freshly built unfiltered2571/2571 suite,
+exact build and strict package validation. ZIP7ea2630f, DLL3fb5741f,
+MVIDbac5fbd3-9a8b-42c2-876d-d2d54a2560c8. Its affected gunslinger-only
+mechanics now PASS62/62: exact bite negative control, native grapple-attempt
+DC/source and full registered visual accounting. Run
+compat-20261012T035434Z-5d9b7367a075 is Restored; actual968 manifest/settings
+match, no save attempts, unsaved world and guards removed. Old59/62FAIL and
+failed2570/2571 preparation remain unchanged. Working fixture is clean.
+Next run the externally supervised remaining profile repetitions and fourteen
+module states using candidate-native-qualified unchanged. The original mission
+requires two standalone/CotW/high-risk executions after freeze. No mandatory
+coverage may be left unaccounted before conditional merge/release. The finite
+remaining estimate is130m; continue under the owner release mission.
 
 Intake 2573fa21 is clean, current master a756a498 is already integrated, PR #36
 is draft/mergeable, stable v0.0.150 unused. Actual Mods snapshot and 14 installed
