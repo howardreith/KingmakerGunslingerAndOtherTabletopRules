@@ -104,11 +104,7 @@ try {
         buildLocalManifestSha256=Get-KmgSha256 -Path ($candidate.packagePath+'.build-local.json');
         fullSuite=$ledger.candidate.fullSuite; harness=$ledger.harness; qualificationStatus=$ledger.status;
         closureLedgerSha256=Get-KmgSha256 -Path $ledgerPath;
-        coverage=@($ledger.coverage | ForEach-Object {
-            [ordered]@{id=$_.id;result=$_.result;proofs=@($_.proofs | ForEach-Object {
-                [ordered]@{evidenceFile=[IO.Path]::GetFileName($_.path);evidenceRun=[IO.Path]::GetFileName((Split-Path $_.path -Parent));sha256=$_.sha256}
-            })}
-        }); baselineExceptions=@($ledger.baselineExceptions);
+        coverage=@(Get-KmgClosurePublicCoverage -Ledger $ledger); baselineExceptions=@($ledger.baselineExceptions);
         roster=$ledger.roster; restoration=$ledger.restoration; ownerVisualReview=$ledger.ownerVisualReview;
         packageValidated=$true; exactArtifactPromotion=$true; rebuiltForPublication=$false; publicationRequested=[bool]$Publish
     }

@@ -512,12 +512,14 @@
   },
   "releasePromotionChecks": {
     "script": "scripts/Test-QualifiedRelease.ps1",
-    "passed": 19,
+    "passed": 22,
     "failed": 0,
     "parsedScripts": 4,
     "builds": 0,
     "nativeRuns": 0,
-    "publicationWrites": 0
+    "publicationWrites": 0,
+    "record": "release-provenance-reporting-checks.json",
+    "publicExecutionProvenance": true
   },
   "planningUpdate": {
     "measuredUtc": "2026-10-12T04:00:29.114023+00:00",
