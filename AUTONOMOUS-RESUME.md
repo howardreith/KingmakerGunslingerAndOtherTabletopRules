@@ -26,7 +26,7 @@ returns its exact run/deployment receipt. Reduced profiles never load the
 eleven-mod working fixture. See the ledger and coverage map for carriers and limits.
 Its current-stack path uses Invoke-Sprint22InstalledStack.ps1 and existing guarded
 compatibility transactions, including independent exact game-settings restoration.
-Twenty-four offline safety predicates passed before live use.
+Thirty offline safety predicates passed before live use.
 
 Next: freeze the internally reviewed candidate, run the selected Sprint gate,
 then reuse its package for standalone/high-risk native scenarios and compatible

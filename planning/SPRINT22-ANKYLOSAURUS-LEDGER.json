@@ -285,9 +285,10 @@
   },
   "installedStackSafety": {
     "status": "PASS_OFFLINE",
-    "predicates": 24,
+    "predicates": 30,
     "command": "scripts/Test-Sprint22InstalledStack.ps1",
-    "nativeRestoration": "NOT_PERFORMED"
+    "nativeRestoration": "NOT_PERFORMED",
+    "scope": "Future-backup current-mod copies, independent restoration on failure, exact RunId evidence, typed flat native game settings restoration and hierarchy refusal, protected-save/OFF-stage refusal; filesystem and in-memory fixtures only"
   },
   "candidateReview": {
     "status": "REVIEWED_READY_FOR_SELECTED_GATE_NATIVE_UNQUALIFIED",
@@ -299,6 +300,7 @@
     "registered": 2580,
     "sourceGate": "PASS",
     "runtimePlanMinutes": 300,
-    "runtimePlan": "Standalone and highest-risk combined isolated unsaved native review, then current-compatible eleven-mod targeted enabled and disabled cold-load/cleanup/fresh absence. Each transaction snapshots/restores its own intake and has a fresh exact deployment/RunId receipt. Native changes require new affected evidence; no full-roster replay without a named invalidated dependency."
+    "runtimePlan": "Standalone and highest-risk combined isolated unsaved native review, then current-compatible eleven-mod targeted enabled and disabled cold-load/cleanup/fresh absence. Each transaction snapshots/restores its own intake and has a fresh exact deployment/RunId receipt. Native changes require new affected evidence; no full-roster replay without a named invalidated dependency.",
+    "candidateBoundaryFinding": "The initial source wrapper rejected the stale icon catalog registry pin after the four private appends. The current registry metadata and exact extension authorization were corrected; original pixels, consumers and released hashes are preserved. No product DLL/package was produced by that failed attempt."
   }
 }

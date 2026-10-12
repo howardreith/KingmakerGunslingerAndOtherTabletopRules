@@ -59,7 +59,7 @@ are retained in private artifacts; neither was converted to native PASS.
 The current-stack launcher reuses the guarded compatibility transaction to stage
 copies of today's ten other installed mods with the candidate, then restores
 the complete original mod tree, managed bank and native game-settings values.
-Its 24 offline safety predicates cover the future-backup source path, all ten
+Its 30 offline safety predicates cover the future-backup source path, all ten
 copied mod manifests, independent restoration after a settings failure, exact
 RunId receipts and protected-save/OFF-stage refusal. The standalone and combined
 Sprint 22 wrapper also selects evidence by that exact receipt. These tests touch
