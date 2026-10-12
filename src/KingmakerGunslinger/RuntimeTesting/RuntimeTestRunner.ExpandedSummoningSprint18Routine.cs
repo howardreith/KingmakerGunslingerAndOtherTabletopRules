@@ -505,7 +505,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private IEnumerable<int> Sprint18RunFullAttack(
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,
-            Action<UnitAttack> record, UnitEntityData target = null)
+            Action<UnitAttack> record, UnitEntityData target = null,
+            Action<UnitAttack> observeFrame = null)
         {
             UnitEntityData victim = target ?? fixture.Hostile;
             owner.Memory.Add(victim);
@@ -531,6 +532,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (CombatController.IsInTurnBasedCombat())
                     Sprint18OwnerIsActing(owner);
                 yield return 0;
+                if (observeFrame != null) observeFrame(attack);
                 if (attack.IsFinished) break;
             }
         }

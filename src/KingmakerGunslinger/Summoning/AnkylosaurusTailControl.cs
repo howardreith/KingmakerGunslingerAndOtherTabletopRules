@@ -2,6 +2,7 @@ using System;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -68,10 +69,47 @@ namespace KingmakerGunslinger.Summoning
                 nativeD4 = context.TriggerRule(durationRoll).Result;
             }
             int rounds = AnkylosaurusRulesPolicy.Rounds(control, nativeD4);
-            var apply = new RuleApplyBuff(victim, payload, context,
-                TimeSpan.FromSeconds(rounds * 6d),
-                (buff, source, duration) => victim.Descriptor.Buffs.AddBuff(buff, source, duration));
-            context.TriggerRule(apply);
+            // BuffCollection.AddBuff is itself the native RuleApplyBuff entry
+            // point.  Wrapping it in another RuleApplyBuff nests two events
+            // around one decision and can leave duplicate Stack instances.
+            victim.Descriptor.Buffs.AddBuff(payload, context,
+                TimeSpan.FromSeconds(rounds * 6d));
         }
+    }
+
+    /// <summary>
+    /// Kingmaker gives a primary natural weapon the correct 1.5x positive
+    /// Strength contribution, but its native Power Attack buff treats the
+    /// same lone tail as one-handed.  The adult Ankylosaurus at BAB +7 is owed
+    /// two more damage while that exact native buff is present.  The native
+    /// attack penalty and first four damage remain entirely native.
+    /// </summary>
+    [Serializable]
+    public sealed class AnkylosaurusPowerAttackCorrection :
+        RuleInitiatorLogicComponent<RuleCalculateWeaponStats>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon Tail;
+        public BlueprintBuff PowerAttackBuff;
+        public int AdditionalDamage;
+
+        public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || OwningBlueprint == null ||
+                Tail == null || PowerAttackBuff == null ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, owner) || evt.Weapon == null ||
+                !ReferenceEquals(evt.Weapon.Blueprint, Tail) ||
+                evt.SecondaryWeapon || evt.Weapon.IsSecondary ||
+                owner.Descriptor.Buffs.GetBuff(PowerAttackBuff) == null ||
+                owner.Body == null || owner.Body.PrimaryHand == null ||
+                !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon, evt.Weapon) ||
+                AdditionalDamage != AnkylosaurusRulesPolicy.PowerAttackAdditionalDamage)
+                return;
+            evt.AddBonusDamage(AdditionalDamage);
+        }
+
+        public override void OnEventDidTrigger(RuleCalculateWeaponStats evt) { }
     }
 }

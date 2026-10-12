@@ -564,8 +564,10 @@ def planned():
         ("KMG.Summoning.Special.Ankylosaurus.Stun", "BlueprintFeature"),
         ("KMG.Summoning.Special.Ankylosaurus.Dazed", "BlueprintBuff"),
         ("KMG.Summoning.Special.Ankylosaurus.Stunned", "BlueprintBuff"),
+        ("KMG.Summoning.Natural.Ankylosaurus.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Ankylosaurus.TailType", "BlueprintWeaponType"),
     ))
-    if len(rows) != 2067 or len({symbol for symbol, _ in rows}) != 2067:
+    if len(rows) != 2069 or len({symbol for symbol, _ in rows}) != 2069:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

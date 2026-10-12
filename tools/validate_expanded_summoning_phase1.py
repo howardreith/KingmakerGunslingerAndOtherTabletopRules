@@ -348,12 +348,15 @@ SPRINT3 = PHASE1  # the pins below read the current figures
 # ".Wolverine" substring, because the creature itself is a Phase 1 roster
 # member and all of its ability placements belong to the Phase 1 append.
 PHASE2_ADDITIONS = {
-    # Sprint 22 appends only these four private carriers. The released unit
-    # and route symbols already belong to the preserved prefix.
+    # Sprint 22 appends these private carriers. The last two were allocated
+    # only after live readback proved shared native reach/range insufficient.
+    # The released unit, weapon and route symbols remain in the prefix.
     "KMG.Summoning.Natural.Ankylosaurus.UnitType",
     "KMG.Summoning.Special.Ankylosaurus.Stun",
     "KMG.Summoning.Special.Ankylosaurus.Dazed",
     "KMG.Summoning.Special.Ankylosaurus.Stunned",
+    "KMG.Summoning.Natural.Ankylosaurus.Chassis",
+    "KMG.Summoning.Natural.Ankylosaurus.TailType",
     "KMG.Summoning.Natural.DireBat.Blindsense",
     "KMG.Summoning.Natural.Bite1",
     "KMG.Summoning.Natural.Wolverine.Rage",

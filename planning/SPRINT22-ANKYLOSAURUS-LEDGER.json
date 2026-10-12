@@ -225,7 +225,9 @@
       "ff4df4fe2f594c37ac1c836a519efddf",
       "e8a085864606409ba25dc123f14d27a2",
       "74654177d90e4d1d8fd512c0dabe3966",
-      "1f95fa2f17b042df8065a28823e09fc3"
+      "1f95fa2f17b042df8065a28823e09fc3",
+      "e5f977fc42c943a88902b9c3a170a7ea",
+      "7243c9cd0f654b9080e7b31112ddbf18"
     ]
   },
   "freshEvidence": [],
@@ -241,6 +243,18 @@
       "classification": "OUTDATED_CURRENT_LEDGER_VERSION_PACKAGE_PINS_AND_OVERBROAD_SOURCE_READER",
       "disposition": "CORRECTED_FOCUSED_65_PASS_NEW_CANDIDATE_REQUIRED",
       "rawEvidence": "Private artifacts/sprint22-candidate-e1c4eaf4 stdout/stderr/timing retained; no product package produced."
+    },
+    {
+      "source": "c254a66ac26e9223f713a84111b27e74495cd96e",
+      "stage": "standalone-native-review",
+      "transaction": "compat-20261012T144502Z-60d7b8c83b4f",
+      "runId": "20261012T1446360695074Z-de8cfed0d2124fbd9a1b9a7fdb2c2069",
+      "evidence": "20261012T1446360382756Z-disposable-expanded-summoning-sprint22-native-review",
+      "durationSeconds": 373.638,
+      "classification": "MEASURED_PRODUCT_CARRIERS_PLUS_FIXTURE_AND_OBSERVER_DEFECTS",
+      "findings": "Native profile measured Reach 12/range 9 feet, Power Attack +4, and duplicate RuleApplyBuff nesting; inherited pause/TB froze movement and expiry; post-rule pose could not witness active tail contact.",
+      "disposition": "CORRECTED_FOCUSED_PASS_NEW_CANDIDATE_REQUIRED",
+      "restored": true
     }
   ],
   "acceptedLimitations": [
@@ -278,6 +292,14 @@
     "filter": "27 exact failed candidate case names plus expanded-summoning.sprint22,native-profile,sprint21",
     "limits": "All 27 current ledger/version/package/source-reader corrections and affected neighbors pass; no native qualification yet."
   },
+  "liveFindingCorrectionFocused": {
+    "selected": 11,
+    "registered": 2580,
+    "failures": 0,
+    "sourceValidator": "PASS: 22 protected identities, 6 private additions, foundation 2069, active 3066, reserved 2",
+    "productionCompile": "PASS",
+    "scope": "Sprint 22 rules/profile/art plus exact identity and affected Salamander route neighbor; changed native fixture requires fresh execution."
+  },
   "offlineArt": {
     "meshSha256": "f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626",
     "albedoSha256": "f9255a77008fbcd001350bdeeb408af6f34adb39f55869337c224f8899602050",
@@ -307,12 +329,12 @@
     "master": "aa09788e6ba109c3db7bd0ec28f0138506f678a8",
     "latestStable": "v0.0.150",
     "protectedIdentityCount": 22,
-    "privateIdentityCount": 4,
-    "focusedExecuted": 38,
+    "privateIdentityCount": 6,
+    "focusedExecuted": 11,
     "registered": 2580,
     "sourceGate": "PASS",
     "runtimePlanMinutes": 300,
     "runtimePlan": "Standalone and highest-risk combined isolated unsaved native review, then current-compatible eleven-mod targeted enabled and disabled cold-load/cleanup/fresh absence. Each transaction snapshots/restores its own intake and has a fresh exact deployment/RunId receipt. Native changes require new affected evidence; no full-roster replay without a named invalidated dependency.",
-    "candidateBoundaryFinding": "The initial source wrapper rejected the stale icon catalog registry pin after the four private appends. The current registry metadata and exact extension authorization were corrected; original pixels, consumers and released hashes are preserved. No product DLL/package was produced by that failed attempt."
+    "candidateBoundaryFinding": "The initial source wrapper rejected the stale icon catalog registry pin after the first four private appends. The first native profile then justified two more private carriers for exact range/reach, Weapon Focus continuity and Power Attack damage. Registry metadata now names all six; original pixels, consumers and released hashes remain preserved."
   }
 }
