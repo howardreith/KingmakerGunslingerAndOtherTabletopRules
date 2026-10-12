@@ -61,7 +61,7 @@ namespace KingmakerGunslinger.Summoning
         // its printed racial +4 Perception, and the grab carrier its two claws
         // need. It owns no weapon, because a Medium creature takes the shared
         // native 1d4 claw unscaled.
-        internal const int SpecialIdentityCount = 243;
+        internal const int SpecialIdentityCount = 247;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -432,6 +432,11 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebResource", "BlueprintAbilityResource"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Brain", "BlueprintBrain"));
+            // Sprint 22 replaces the released proxy behind unchanged routes.
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.UnitTypeSymbol, "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.StunFeatureSymbol, "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.DazedSymbol, "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.StunnedSymbol, "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

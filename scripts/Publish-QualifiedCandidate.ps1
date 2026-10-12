@@ -6,6 +6,7 @@ param(
     [Parameter(Mandatory=$true)][string]$MergedReleaseCommit,
     [Parameter(Mandatory=$true)][string]$ReleaseNotesPath,
     [switch]$Publish,
+    [switch]$Sprint22,
     [switch]$ConfirmReleaseReady
 )
 Set-StrictMode -Version Latest
@@ -25,8 +26,11 @@ function Resolve-KmgReleaseInput([string]$Path) {
 Push-Location $root
 try {
     $git = Get-KmgGitState -RepositoryRoot $root
-    if ($git.Status.Count -ne 0 -or $git.Branch -cne 'codex/expanded-summoning-sprint21-bebelith-giant-crab') {
-        throw 'Sprint 21 promotion requires its clean reporting branch.'
+    $selectedBranch=if($Sprint22){'codex/expanded-summoning-sprint22-ankylosaurus'}else{'codex/expanded-summoning-sprint21-bebelith-giant-crab'}
+    $selectedPr=if($Sprint22){'39'}else{'36'}
+    $selectedSuffix=if($Sprint22){'expanded-summoning-sprint22'}else{'expanded-summoning-sprint21'}
+    if ($git.Status.Count -ne 0 -or $git.Branch -cne $selectedBranch) {
+        throw 'Promotion requires the selected clean reporting branch.'
     }
     $repository = 'howardreith/KingmakerGunslingerAndOtherTabletopRules'
     $origin = Get-KmgReleaseCommandText git @('remote','get-url','origin')
@@ -39,9 +43,9 @@ try {
         (Get-KmgReleaseCommandText git @('rev-parse','origin/master')) -cne $MergedReleaseCommit) {
         throw 'Reporting or merged release head has moved; review the current lineage.'
     }
-    $pr = Get-KmgReleaseCommandText gh @('pr','view','36','--json','state,mergeCommit') | ConvertFrom-Json
+    $pr = Get-KmgReleaseCommandText gh @('pr','view',$selectedPr,'--json','state,mergeCommit') | ConvertFrom-Json
     if ($pr.state -cne 'MERGED' -or $pr.mergeCommit.oid -cne $MergedReleaseCommit) {
-        throw 'PR #36 has not merged at the selected release commit.'
+        throw 'The selected sprint PR has not merged at the selected release commit.'
     }
     $candidateRoot = (Resolve-Path -LiteralPath $CandidateRepositoryRoot).Path
     $candidate = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $candidateRoot
@@ -62,13 +66,15 @@ try {
         $candidate.version -cnotmatch '^\d+\.\d+\.\d+$') { throw 'Stable version identity differs from the tested artifact.' }
     $ledgerPath = Resolve-KmgReleaseInput $QualificationLedgerPath
     $ledger = Get-Content -LiteralPath $ledgerPath -Raw | ConvertFrom-Json
-    Assert-KmgClosureReleaseDecision -Ledger $ledger -Candidate $candidate
+    if($Sprint22) { Assert-KmgSprint22ReleaseDecision -Ledger $ledger -Candidate $candidate }
+    else { Assert-KmgClosureReleaseDecision -Ledger $ledger -Candidate $candidate }
     Assert-KmgClosureProofFiles -Ledger $ledger
     Assert-KmgNotRunning
     if (Test-Path -LiteralPath 'C:/Dev/KingmakerGunslingerLab/compatibility-state/compatibility.lock') {
         throw 'A runtime transaction is still active; publication is refused.'
     }
     $intake = Get-Content -LiteralPath (Join-Path $ledger.evidenceRoot $ledger.restoration.intakeManifest) -Raw | ConvertFrom-Json
+    if($Sprint22) { $intake=@($intake.modsManifest) }
     $currentMods = Get-KmgCompatibilityDirectoryManifest 'C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker/Mods'
     if (-not (Test-KmgCompatibilityManifestEqual $intake $currentMods)) { throw 'Actual human installation has not been restored.' }
     $notesPath = Resolve-KmgReleaseInput $ReleaseNotesPath
@@ -90,7 +96,7 @@ try {
     $releaseRoot = Join-Path $root ('artifacts/release-promotion/'+$candidate.version+'/'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ'))
     if (Test-Path -LiteralPath $releaseRoot) { throw 'Promotion output already exists.' }
     New-Item -ItemType Directory -Path $releaseRoot | Out-Null
-    $assetName = 'KingmakerGunslinger-'+$candidate.version+'-expanded-summoning-sprint21.zip'
+    $assetName = 'KingmakerGunslinger-'+$candidate.version+'-'+$selectedSuffix+'.zip'
     $asset = Join-Path $releaseRoot $assetName
     Copy-Item -LiteralPath $candidate.packagePath -Destination $asset
     if ((Get-KmgSha256 -Path $asset) -cne $candidate.packageSha256) { throw 'Promotion copy differs from qualified bytes.' }

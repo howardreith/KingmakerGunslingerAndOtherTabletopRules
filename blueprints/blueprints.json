@@ -24503,6 +24503,38 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Ankylosaurus.UnitType",
+      "guid": "ff4df4fe2f594c37ac1c836a519efddf",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Sprint 22 private Ankylosaurus carrier; existing released unit and routes unchanged."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Ankylosaurus.Stun",
+      "guid": "e8a085864606409ba25dc123f14d27a2",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Sprint 22 private Ankylosaurus carrier; existing released unit and routes unchanged."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Ankylosaurus.Dazed",
+      "guid": "74654177d90e4d1d8fd512c0dabe3966",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Sprint 22 private Ankylosaurus carrier; existing released unit and routes unchanged."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Ankylosaurus.Stunned",
+      "guid": "1f95fa2f17b042df8065a28823e09fc3",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Sprint 22 private Ankylosaurus carrier; existing released unit and routes unchanged."
     }
   ]
 }

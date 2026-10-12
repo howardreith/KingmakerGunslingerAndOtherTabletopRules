@@ -17,13 +17,22 @@ actual human installation/settings/save preservation boundary with no active
 game/lease/transaction; installed and build references match. Raw evidence is
 outside source. Preserve Sprint 21 frozen worktrees/artifacts and other work.
 
-Next: complete exact native rider/profile carriers and reusable donor audit;
-implement only Ankylosaurus's rules/body/contact, preserving its unit, Tail3d6,
-ten roots and SM template children. Fortitude is the explicit interpretation;
-one save per strike, ordinary daze or critical stun instead, current Strength
-DC and finite victim-side effects. Use focused named tests/production compilation
-while editing, then one reviewed Sprint candidate and targeted native acceptance.
-No release of a partial overhaul.
+The rider/profile/body and targeted observers are implemented, with native
+qualification pending. The original mesh/albedo repeat deterministically and
+all seven offline views were reviewed. The final affected focused pass compiled
+production and ran 38/38 tests (2,580 registered); this is development evidence.
+The guarded full-installation wrapper now accepts an exact candidate package and
+returns its exact run/deployment receipt. Reduced profiles never load the
+eleven-mod working fixture. See the ledger and coverage map for carriers and limits.
+Its current-stack path uses Invoke-Sprint22InstalledStack.ps1 and existing guarded
+compatibility transactions, including independent exact game-settings restoration.
+Twenty-four offline safety predicates passed before live use.
+
+Next: freeze the internally reviewed candidate, run the selected Sprint gate,
+then reuse its package for standalone/high-risk native scenarios and compatible
+full-stack targeted cold-load/module/cleanup/absence. Follow actual failures with
+bounded changes and affected evidence. Continue to qualified merge/publication,
+verification and exact restoration; no partial creature release.
 
 Expected next unused patch: 0.0.151, to be verified before publishing. Owner
 visual approval: NOT_PERFORMED_NONBLOCKING. No permanent deployment, protected

@@ -239,7 +239,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if ((request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain) && !request.ExitAfterCompletion)
                 return "magic-circle-profile-exit-required";
-            if (request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile &&
+            if (RuntimeTestScenarioCatalog.IsSummoningNativeProfile(request.Scenario) &&
                 (!request.ExitAfterCompletion || (request.Parameters?.Count ?? 0) != 0))
                 return "summoning-native-profile-empty-parameters-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather && !request.ExitAfterCompletion)
@@ -457,6 +457,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters["persistenceScope"].Type != JTokenType.String ||
                     ((string)request.Parameters["persistenceScope"] != "crocodilians" &&
                      (string)request.Parameters["persistenceScope"] != SerpentinePersistenceReviewPolicy.Scope &&
+                     (string)request.Parameters["persistenceScope"] != "ankylosaurus" &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
                     return "summoning-persistence-scope-invalid";
                 // The ordinary native-control case joins the two same-turn

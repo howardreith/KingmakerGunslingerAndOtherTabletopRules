@@ -129,6 +129,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             PteranodonAssetRuntime.TryGetEagleVisual(out mesh, out bones, out paint); add(mesh, "Eagle.Mesh"); add(paint, "Eagle.Albedo");
             PteranodonAssetRuntime.TryGetGiantWaspVisual(out mesh, out bones, out paint); add(mesh, "GiantWasp.Mesh"); add(paint, "GiantWasp.Albedo");
             PteranodonAssetRuntime.TryGetStirgeVisual(out mesh, out bones, out paint); add(mesh, "Stirge.Mesh"); add(paint, "Stirge.Albedo");
+            PteranodonAssetRuntime.TryGetAnkylosaurusVisual(out mesh, out bones, out paint, out status); add(mesh, "Ankylosaurus.Mesh"); add(paint, "Ankylosaurus.Albedo");
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||
