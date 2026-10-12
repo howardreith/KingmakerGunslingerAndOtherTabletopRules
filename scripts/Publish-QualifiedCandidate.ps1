@@ -30,8 +30,7 @@ try {
     }
     $repository = 'howardreith/KingmakerGunslingerAndOtherTabletopRules'
     $origin = Get-KmgReleaseCommandText git @('remote','get-url','origin')
-    if ($origin -cnotin @('git@github.com:'+$repository+'.git','https://github.com/'+$repository+'.git',
-            'https://github.com/'+$repository)) { throw 'Unexpected release repository origin.' }
+    Assert-KmgReleaseOrigin -Origin $origin
     $repositoryInfo = Get-KmgReleaseCommandText gh @('repo','view','--json','nameWithOwner,defaultBranchRef,isPrivate') | ConvertFrom-Json
     if ($repositoryInfo.nameWithOwner -cne $repository -or $repositoryInfo.isPrivate -or
         $repositoryInfo.defaultBranchRef.name -cne 'master') { throw 'Unexpected release repository metadata.' }
