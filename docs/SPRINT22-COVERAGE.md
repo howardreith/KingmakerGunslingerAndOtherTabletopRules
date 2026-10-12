@@ -119,5 +119,41 @@ native `IsOn=false; Stop(true)` / `IsOn=true; TryStart()` toggle contract, and
 counts only newly created private control instances. The contact observer now
 continues through the hit-owned follow-through described above. The affected
 focused gate compiled production and passed 39/39 selected tests out of 2,581
-registered (16.6 s compilation, 1.1 s selected-domain step). A new full Sprint
-candidate and all affected native evidence remain required.
+registered (16.6 s compilation, 1.1 s selected-domain step).
+
+Candidate `87c4eecdbe909df193e02918b4ed84c06144f78d` passed its one
+substantive Sprint pipeline: 2,581/2,581 tests in 86.9 s and 206.8 s overall.
+Its source-state hash was
+`4752656520eaa1a66bb9f9351c206983e207cb3831dfeb76bbabfbd4a97cba31`;
+ZIP `79c188653fd184691cd64febe7afda37ab2e3a201e40c2d30ca921cf42e2daa4`;
+DLL `1f307c9791d12159562fee00451228c43d638dc14bd9c97c78921a95b25309e4`;
+MVID `dcb41d3b-b688-42e2-b936-393e19887859`. Two earlier invocations ended
+before this pipeline: context rollover stopped the first during source-state
+preflight, and merging native stderr made Python's ordinary progress terminate
+the second inside the repository wrapper. Neither reached the complete domain
+suite, exact build or package. Both failed timing records remain preserved.
+
+Standalone transaction `compat-20261012T164345Z-16a41a7de594`, deployment
+receipt `20261012T1645178894864Z`, and RunId
+`20261012T1645190283689Z-34c7a9af9cb24648a4791381a69a51f0` ran for
+114.6 s. It passed 29 of 30 assertions: all twenty route executions, three
+fault/recovery and teardown cycles, Hodag isolation, and exact fixture/clock
+restoration. The native clock advanced 175.75 s over 703 pulses. The sole
+failure was an observer exception during crowd movement. Exact IL offset
+`0x0b15` dereferenced `unit.View.MovementAgent` after the summon naturally
+expired: the Dialog-hosted fixture advanced command and buff controllers but
+did not supply the native view-movement step, so `UnitMoveTo` remained active
+past its 126-second remaining lifetime. The transaction restored at
+2026-10-12T16:47:34Z with restoration verified, the human 0.0.117 DLL/tree
+back in place, no Kingmaker process and no live compatibility/runtime/
+deployment/save lock.
+
+The changed strategy invokes the same native
+`MovementAgent.TickMovement(0.25)` seam already used by the qualified creature
+motion fixtures after each request-owned `UnitActionController` tick, then
+copies the resulting native view transform to the unit exactly as those
+fixtures do. `UnitMoveTo` still owns pathing, speed, contacts and completion;
+the observer now records a disappeared view as a named member failure rather
+than throwing. Production compiled and the dependency filter again passed
+39/39 of 2,581 registered tests (16.8 s compilation, 1.1 s domain step).
+A changed coherent candidate and its affected native evidence remain required.
