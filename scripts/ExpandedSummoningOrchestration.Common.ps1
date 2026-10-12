@@ -39,7 +39,23 @@ function Get-KmgExactRuntimeLaunchReceipt {
     if($receipts.Count -ne 1) { throw 'Exact current-run launcher receipt is missing or duplicated.' }
     $receipt=$receipts[0]
     if([string]::IsNullOrWhiteSpace($receipt.runId) -or [string]::IsNullOrWhiteSpace($receipt.evidenceDirectory) -or
-        (Split-Path -Leaf $receipt.evidenceDirectory) -cne $receipt.runId) { throw 'Launcher receipt does not bind the exact RunId directory.' }
+        -not [IO.Path]::IsPathRooted($receipt.evidenceDirectory)) { throw 'Launcher receipt does not identify an exact absolute evidence directory.' }
+    $evidence=[IO.Path]::GetFullPath($receipt.evidenceDirectory).TrimEnd('\','/')
+    $requestPath=Join-Path $evidence 'runtime-request.json'
+    $resultPath=Join-Path $evidence 'runtime-result.json'
+    if(-not(Test-Path -LiteralPath $requestPath -PathType Leaf) -or -not(Test-Path -LiteralPath $resultPath -PathType Leaf)) {
+        throw 'Launcher receipt evidence is missing its exact request or result.'
+    }
+    try { $request=Get-Content -LiteralPath $requestPath -Raw | ConvertFrom-Json -ErrorAction Stop
+        $result=Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json -ErrorAction Stop }
+    catch { throw 'Launcher receipt request or result is not valid JSON.' }
+    $requestEvidence=if($null -ne $request.PSObject.Properties['evidenceDirectory']) {[IO.Path]::GetFullPath([string]$request.evidenceDirectory).TrimEnd('\','/')}else{''}
+    $resultEvidence=if($null -ne $result.PSObject.Properties['evidenceDirectory']) {[IO.Path]::GetFullPath([string]$result.evidenceDirectory).TrimEnd('\','/')}else{''}
+    if($request.runId -cne $receipt.runId -or $result.runId -cne $receipt.runId -or
+        -not $requestEvidence.Equals($evidence,[StringComparison]::OrdinalIgnoreCase) -or
+        -not $resultEvidence.Equals($evidence,[StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Launcher receipt does not bind the exact RunId request and result.'
+    }
     return $receipt
 }
 
