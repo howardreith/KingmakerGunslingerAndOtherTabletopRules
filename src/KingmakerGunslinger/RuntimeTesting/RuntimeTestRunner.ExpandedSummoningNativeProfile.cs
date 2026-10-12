@@ -42,6 +42,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     var startup = LoadingProcess.Instance;
                     if (startup.IsLoadingInProcess || startup.IsLoadingScreenActive || startup.IsManualLoadingScreenActive) return;
+                    var starters = Resources.FindObjectsOfTypeAll<GameStarter>().Where(value => value != null &&
+                        value.gameObject.scene.IsValid() && value.gameObject.scene.isLoaded).ToArray();
+                    var progress = starters.Length == 1 ? starters[0].ProgressBar : null;
+                    _summoningProfileEvidence["nativeStartupInstances"] = starters.Length;
+                    _summoningProfileEvidence["nativeStartupProgressPresent"] = progress != null;
+                    _summoningProfileEvidence["nativeStartupProgressActive"] = progress != null && progress.activeSelf;
+                    if (!ExpandedSummoningNativeProfilePolicy.StartupComplete(starters.Length,
+                        progress != null, progress != null && progress.activeSelf)) return;
                     _summoningProfileMenu = game.UI.MainMenu;
                     // GameStarter's initial scene/input coroutine is independent
                     // of blueprint bootstrap and LoadingProcess readiness.

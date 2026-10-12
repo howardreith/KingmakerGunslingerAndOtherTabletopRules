@@ -4,6 +4,14 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningNativeProfileTests
     {
+        internal static void NativeStartupOverlayMustFinish()
+        {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.StartupComplete(1,true,false), "Native startup epilogue proven.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.StartupComplete(1,true,true), "Scene/input availability cannot admit an active startup overlay.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.StartupComplete(0,true,false), "Absent starter cannot prove readiness.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.StartupComplete(2,true,false), "Ambiguous starter refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.StartupComplete(1,false,false), "Missing startup completion predicate refused.");
+        }
         internal static void RealSceneServicesRequired()
         {
             Assertions.True(ExpandedSummoningNativeProfilePolicy.ReadyForMechanics(true,true,true,true,true), "Real registered native world admitted.");

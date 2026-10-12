@@ -37,27 +37,28 @@
                                "Matched149 complete suite FAIL: 2533/2538; five copied Sprint21-version fixture expectations",
                                "Matched149 focused reproduction4/5 FAIL: remaining hardcoded output path; subsequently5/5 PASS",
                                "5429d7bd native-profile setup FAIL before mechanics: missing BaseMechanics because direct LoadNewGame skipped native MainMenu.EnterGame; native empty-world restoration/no save API attempts PASS; transaction restored exact968 entries",
-                               "a7e05944 native-profile setup FAIL before mechanics: EnterGame callback preceded valid base-scene registration; all setup predicates reported absent after native load failure; empty-world/no-save guard PASS and transaction exact968 restored"
+                               "a7e05944 native-profile setup FAIL before mechanics: EnterGame callback preceded valid base-scene registration; all setup predicates reported absent after native load failure; empty-world/no-save guard PASS and transaction exact968 restored",
+                               "3da96044 native-profile setup FAIL before mechanics: base scene was valid before LoadNewGame but invalidated during native area load; exact clauses retained; zero save/load attempts, native empty-world reset and exact968 restoration PASS"
                            ],
     "candidate":  {
-                      "source":  "a7e05944a13b3eca7e66c90d8a599d51a2831d9b",
-                      "zipSha256":  "599e811e1f6d69604b9c60f57f55f4b6f910a4c6fa1279ef7f65ab62db0f81da",
-                      "dllSha256":  "ffe92e7ea5d5deaef36cfed8d923346b1b13a7f517c6a4846a57c848eac238a4",
-                      "dllMvid":  "f1846752-c6f1-42e4-8365-cb965d324027",
-                      "sourceFingerprint":  "152e6fe3601dfce08019baad2284dc6574361e94c60964c65671478ef6b89b6c",
-                      "manifestSha256":  "f8707e0df70660ba47388115e8840cb4f16570c487ea4b9e3089ce9a7a082027",
-                      "packagePath":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-entry\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+                      "source":  "3da960443991051c0b65830dd0b6fb50113dcd79",
+                      "zipSha256":  "fcd7af6d75f0ecd0ff5502e259c47485ae432682efc87be94d91238b7452e452",
+                      "dllSha256":  "a8a6d02b797ee8bc10488682f5feede3f54b608d86238354f088fd148016ca76",
+                      "dllMvid":  "9146ead4-949f-47fb-9019-6a6f4168e110",
+                      "sourceFingerprint":  "30de8a21c18c978bf8e4b6027c597ea6a4f1ddee92b93aa2a9259a1b0bf5876c",
+                      "manifestSha256":  "324042085f9392869c329a822e3194dd8474cfeaae539ae180e7490dc33f7f89",
+                      "packagePath":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-ready\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
                       "pipelineExitCode":  0,
-                      "pipelineSeconds":  269.6024384,
+                      "pipelineSeconds":  271.06728929999997,
                       "fullSuite":  {
                                         "executed":  2565,
                                         "registered":  2565,
                                         "failures":  0,
                                         "exitCode":  0,
                                         "unfiltered":  true,
-                                        "executable":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-entry\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
-                                        "executableSha256":  "f734b4803f32d8f0588cf48bea19df8dc41750c263f48bcbb6fdd717e4636ea3",
-                                        "executableModifiedUtc":  "2026-10-12T02:21:18.9166799Z",
+                                        "executable":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-ready\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+                                        "executableSha256":  "95f51ef337161ce835d076f99d127374cd2c43d514f363fbe0bf52a7d1666325",
+                                        "executableModifiedUtc":  "2026-10-12T02:35:17.2316611Z",
                                         "buildCommand":  "Invoke-KmgGate.ps1 -Level Tranche -\u003e Build-Local -\u003e test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
                                     }
                   },
@@ -423,10 +424,10 @@
                         "intakeManifest":  "actual-mods-intake-manifest.json",
                         "current":  "EXACT_INTAKE_VERIFIED",
                         "workingSave":  "CLEAN; whole-roster fresh absence6/6 under exact actual intake; all three transactions restored; no mission save writes or manual save access",
-                        "lastVerifiedRecord":  "native-entry-second-restoration.json",
+                        "lastVerifiedRecord":  "native-ready-third-restoration.json",
                         "workingFixtureClean":  true
                     },
-    "nextAction":  "Freeze staged scene-readiness correction, one new candidate, selected native reproduction; remaining coverage only after it qualifies",
+    "nextAction":  "Qualify native startup completion correction; then remaining profiles/states, closure, conditional merge and exact artifact promotion",
     "repairValidation":  {
                              "filter":  "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
                              "selected":  15,
@@ -494,13 +495,13 @@
                                    "publicationWrites":  0
                                },
     "planningUpdate":  {
-                           "measuredUtc":  "2026-10-12T01:59:01.8533745Z",
-                           "elapsedMinutes":  376,
+                           "measuredUtc":  "2026-10-12T02:49:58.0742583Z",
+                           "elapsedMinutes":  426.9,
                            "diagnosisCompleted":  true,
-                           "remainingEstimateMinutes":  155,
+                           "remainingEstimateMinutes":  145,
                            "remainingScope":  "Native fixture candidate/reproduction, remaining profile coverage and14 module states, closure/merge/exact promotion and download/restoration verification",
                            "campaignPlanningMinutes":  240,
-                           "revisedFinitePlanMinutes":  285
+                           "revisedFinitePlanMinutes":  572
                        },
     "fixtureDiagnosis":  {
                              "classification":  "SAVE_FIXTURE_INCOMPATIBLE_WITH_REDUCED_STACK",
@@ -517,7 +518,7 @@
                              "manualSaveAccess":  false,
                              "actualIntakeControl":  "6/6 whole-roster fresh absence PASS; exact eleven-mod intake; no save write",
                              "actualIntakeTransaction":  "compat-20261012T013554Z-8b7169658f01",
-                             "repair":  "Stage native menu/input readiness and actual BaseMechanics scene registration separately from EnterGame callback and LoadNewGame; inspect concrete predicates before mechanics; do not repeat unchanged entry",
+                             "repair":  "Await native GameStarter progress object deactivation at the startup epilogue, then existing staged native scene entry/world load; record readiness fields on failure. No mechanics waiver.",
                              "individualMissingProviderIdentified":  false,
                              "firstNativeProfile":  {
                                                         "source":  "5429d7bd12fbc4f694a3812649eb7ea75b4b2c72",
@@ -537,7 +538,15 @@
                                                          "status":  "FAIL",
                                                          "attribution":  "Native base-scene registration/readiness; no product mechanics executed",
                                                          "restoration":  "native-entry-second-restoration.json"
-                                                     }
+                                                     },
+                             "thirdNativeProfile":  {
+                                                        "source":  "3da960443991051c0b65830dd0b6fb50113dcd79",
+                                                        "transaction":  "compat-20261012T023802Z-73d1ecccb396",
+                                                        "runtimeResult":  "20261012T0239360173602Z-disposable-expanded-summoning-native-profile",
+                                                        "status":  "FAIL",
+                                                        "attribution":  "Scene-loader setup; base valid before load then invalidated; initial GameStarter coroutine hypothesis not yet proven",
+                                                        "restoration":  "native-ready-third-restoration.json"
+                                                    }
                          },
     "nativeProfileFocusedChecks":  {
                                        "filter":  "expanded-summoning.native-profile;expanded-summoning.compatibility-",
@@ -593,5 +602,27 @@
                                                           "executableModifiedUtc":  "2026-10-12T02:06:13.4993813Z",
                                                           "buildCommand":  "Invoke-KmgGate.ps1 -Level Tranche -\u003e Build-Local -\u003e test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
                                                       }
-                                    }
+                                    },
+    "priorNativeEntryCandidate":  {
+                                      "source":  "a7e05944a13b3eca7e66c90d8a599d51a2831d9b",
+                                      "zipSha256":  "599e811e1f6d69604b9c60f57f55f4b6f910a4c6fa1279ef7f65ab62db0f81da",
+                                      "dllSha256":  "ffe92e7ea5d5deaef36cfed8d923346b1b13a7f517c6a4846a57c848eac238a4",
+                                      "dllMvid":  "f1846752-c6f1-42e4-8365-cb965d324027",
+                                      "sourceFingerprint":  "152e6fe3601dfce08019baad2284dc6574361e94c60964c65671478ef6b89b6c",
+                                      "manifestSha256":  "f8707e0df70660ba47388115e8840cb4f16570c487ea4b9e3089ce9a7a082027",
+                                      "packagePath":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-entry\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+                                      "pipelineExitCode":  0,
+                                      "pipelineSeconds":  269.6024384,
+                                      "fullSuite":  {
+                                                        "executed":  2565,
+                                                        "registered":  2565,
+                                                        "failures":  0,
+                                                        "exitCode":  0,
+                                                        "unfiltered":  true,
+                                                        "executable":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-entry\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+                                                        "executableSha256":  "f734b4803f32d8f0588cf48bea19df8dc41750c263f48bcbb6fdd717e4636ea3",
+                                                        "executableModifiedUtc":  "2026-10-12T02:21:18.9166799Z",
+                                                        "buildCommand":  "Invoke-KmgGate.ps1 -Level Tranche -\u003e Build-Local -\u003e test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+                                                    }
+                                  }
 }
