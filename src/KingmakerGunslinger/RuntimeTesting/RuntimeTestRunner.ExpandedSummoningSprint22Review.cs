@@ -77,6 +77,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly MethodInfo _tickAction;
             private bool _disposed;
             internal int Pulses { get; private set; }
+            internal int MovementTicks { get; private set; }
             internal double AdvancedSeconds { get; private set; }
             internal bool Restored { get; private set; }
 
@@ -132,7 +133,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         _cooldowns.TickExact(unit);
                         _buffs.TickExact(unit);
+                        if (unit.Destroyed || !unit.IsInState ||
+                            unit.Descriptor == null) continue;
                         _tickAction.Invoke(_actions, new object[] { unit });
+                        // Unity's ordinary Default-mode view update supplies
+                        // this native movement step in play.  The guarded
+                        // profile is hosted beneath Dialog mode, so its
+                        // ephemeral controller scope must drive the same
+                        // UnitMovementAgent seam used by the established
+                        // creature-motion fixtures.  UnitMoveTo still owns
+                        // pathing, speed, contacts and command completion.
+                        var view = unit.View;
+                        var agent = view == null ? null : view.MovementAgent;
+                        if (!unit.Destroyed && agent != null)
+                        {
+                            agent.TickMovement(.25f);
+                            if (!unit.Destroyed && ReferenceEquals(unit.View,
+                                view)) unit.Position = view.transform.position;
+                            MovementTicks++;
+                        }
                     }
                     Pulses++;
                     AdvancedSeconds += Game.Instance.Player.GameTime
@@ -369,6 +388,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             bool cleaned=false,clockRestored=false;
             int pulses=_sprint22Clock==null ? 0 : _sprint22Clock.Pulses;
+            int movementTicks=_sprint22Clock==null ? 0 :
+                _sprint22Clock.MovementTicks;
             double advanced=_sprint22Clock==null ? 0d :
                 _sprint22Clock.AdvancedSeconds;
             try
@@ -392,6 +413,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["referencesRestored"]=cleaned,
                     ["clockRestored"]=clockRestored,
                     ["nativePulses"]=pulses,
+                    ["nativeMovementTicks"]=movementTicks,
                     ["nativeAdvancedSeconds"]=advanced },
                 "Exact original unit/party/area references and request-local GameTime restored.");
             _sprint22Fixture=null;
@@ -701,7 +723,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var move=new UnitMoveTo(destination.clampedPosition,.5f);move.Init(unit);bool canStart=move.CanStart;
                     float maximumSpeed=0f;int maximumContacts=0;var movement=System.Diagnostics.Stopwatch.StartNew();
                     if(canStart) unit.Commands.Run(move);
-                    while(canStart && !move.IsFinished && movement.Elapsed.TotalSeconds<20)
+                    while(canStart && !move.IsFinished && !unit.Destroyed &&
+                        unit.View!=null && unit.View.MovementAgent!=null &&
+                        movement.Elapsed.TotalSeconds<20)
                     {
                         var agent=unit.View.MovementAgent;maximumSpeed=Math.Max(maximumSpeed,agent.Velocity.magnitude);
                         maximumContacts=Math.Max(maximumContacts,agent.UnitContacts==null ? 0 : agent.UnitContacts.Count);
@@ -709,14 +733,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     float travel=Vector3.Distance(movementOrigin,unit.Position);
                     float gap=Vector3.Distance(destination.clampedPosition,unit.Position);
-                    bool member=canStart && move.IsFinished && unit.Descriptor.State.Size==Size.Huge && travel>=1f && gap<=1.5f && maximumSpeed>.01f;
+                    var finalView=unit.View;var finalAgent=finalView==null ? null : finalView.MovementAgent;
+                    bool member=canStart && move.IsFinished && !unit.Destroyed &&
+                        finalAgent!=null && unit.Descriptor.State.Size==Size.Huge &&
+                        travel>=1f && gap<=1.5f && maximumSpeed>.01f;
                     navigated&=member;
                     rows.Add(new JObject { ["unit"]=unit.UniqueId,["size"]=unit.Descriptor.State.Size.ToString(),
                         ["corpulence"]=unit.Corpulence,["origin"]=SurveyVector(movementOrigin),["destination"]=SurveyVector(destination.clampedPosition),
                         ["travel"]=travel,["gap"]=gap,["maxVelocity"]=maximumSpeed,["maximumNativeContacts"]=maximumContacts,
-                        ["agentCorpulence"]=unit.View.MovementAgent.Corpulence,["avoidanceDisabled"]=unit.View.MovementAgent.AvoidanceDisabled,
+                        ["agentCorpulence"]=finalAgent==null ? (JToken)JValue.CreateNull() : finalAgent.Corpulence,
+                        ["avoidanceDisabled"]=finalAgent==null ? (JToken)JValue.CreateNull() : finalAgent.AvoidanceDisabled,
+                        ["destroyed"]=unit.Destroyed,["viewPresent"]=finalView!=null,
                         ["canStart"]=canStart,["commandFinished"]=move.IsFinished,["wallSeconds"]=movement.Elapsed.TotalSeconds });
-                    unit.Commands.InterruptAll();PlaceExpandedSummoningUnit(unit,parking[i]);
+                    if(!unit.Destroyed && unit.View!=null)
+                    { unit.Commands.InterruptAll();PlaceExpandedSummoningUnit(unit,parking[i]); }
                 }
                 Sprint22Check("huge-crowd-navigation-selection",selection && navigated,new JObject { ["unit"]="ankylosaurus",["event"]="native-five-member-move-and-selection",
                     ["owner"]="request-owned-quantity-group",["quantityTrials"]=quantities,["selectionSurfaces"]=selectionRows,["selection"]=selection,["members"]=rows,["frames"]=frames,
