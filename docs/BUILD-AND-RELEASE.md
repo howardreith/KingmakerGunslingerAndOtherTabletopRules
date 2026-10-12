@@ -1,5 +1,31 @@
 # Build, package, and publish
 
+## Qualified Sprint 21 artifact promotion
+
+The October 11 owner closure mission authorizes PR #36 merge and stable release
+only after its complete closure ledger qualifies. The policy requires one frozen
+candidate pipeline and exact artifact promotion. Use the tested package from its
+unchanged candidate checkout; reporting and merge commits have separate provenance.
+The explicit promotion path does not compile or replace the tested ZIP:
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReuseQualifiedCandidate `
+  -CandidateRepositoryRoot '<actual frozen candidate checkout>' `
+  -PackagePath '<actual validated Build-Local ZIP>' `
+  -QualificationLedgerPath 'planning/SPRINT21-CLOSURE-LEDGER.json' `
+  -MergedReleaseCommit '<verified PR36 merge SHA>' `
+  -Publish -ConfirmReleaseReady
+```
+
+Run from the clean, pushed Sprint 21 reporting branch. The publisher requires the
+merged master lineage, unchanged product inputs, exact candidate/source/package
+identity, immutable proof hashes, every mandatory coverage row, native fixture
+cleanup and exact actual human-installation restoration. It refuses an existing
+stable tag/release. Any narrowly authorized inherited failed exception remains
+failed and must meet the owner mission's matched-baseline conditions and appear
+in the notes/manifest. Earlier release procedures below retain their historical
+authorization and original build cadence.
+
 ## Supported release baseline
 
 Kingmaker Gunslinger `0.0.120-elemental-races-completion` targets:
