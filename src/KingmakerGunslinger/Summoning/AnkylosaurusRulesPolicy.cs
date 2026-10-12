@@ -10,7 +10,15 @@ namespace KingmakerGunslinger.Summoning
         internal const int HitDice = 10;
         internal const int BaseRacialHitPoints = 45;
         internal const int PerceptionRanks = 10;
+        internal const int ReachBonusFeet = 3;
+        // BlueprintWeaponType subtracts four feet from melee values at or
+        // below ten.  Nine therefore contributes five feet; the corrected
+        // 15-foot body contributes another ten through ReachRange.
+        internal const int TailTypeStoredRangeFeet = 9;
+        internal const int PowerAttackAdditionalDamage = 2;
         internal const string UnitTypeSymbol = "KMG.Summoning.Natural.Ankylosaurus.UnitType";
+        internal const string ChassisFeatureSymbol = "KMG.Summoning.Natural.Ankylosaurus.Chassis";
+        internal const string TailTypeSymbol = "KMG.Summoning.Natural.Ankylosaurus.TailType";
         internal const string StunFeatureSymbol = "KMG.Summoning.Special.Ankylosaurus.Stun";
         internal const string DazedSymbol = "KMG.Summoning.Special.Ankylosaurus.Dazed";
         internal const string StunnedSymbol = "KMG.Summoning.Special.Ankylosaurus.Stunned";

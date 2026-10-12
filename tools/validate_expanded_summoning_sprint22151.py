@@ -19,6 +19,8 @@ ADDED = {
     "KMG.Summoning.Special.Ankylosaurus.Stun": "e8a085864606409ba25dc123f14d27a2",
     "KMG.Summoning.Special.Ankylosaurus.Dazed": "74654177d90e4d1d8fd512c0dabe3966",
     "KMG.Summoning.Special.Ankylosaurus.Stunned": "1f95fa2f17b042df8065a28823e09fc3",
+    "KMG.Summoning.Natural.Ankylosaurus.Chassis": "e5f977fc42c943a88902b9c3a170a7ea",
+    "KMG.Summoning.Natural.Ankylosaurus.TailType": "7243c9cd0f654b9080e7b31112ddbf18",
 }
 CHANGED = (
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
@@ -32,7 +34,7 @@ def validate_append(accepted, current):
         raise AssertionError("A released ledger identity or entry changed")
     tail = current[len(accepted):]
     if {row["symbol"]: row["guid"] for row in tail} != ADDED or len(tail) != len(ADDED):
-        raise AssertionError("Only four private Ankylosaurus identities may append")
+        raise AssertionError("Only six private Ankylosaurus identities may append")
     if len({row["guid"] for row in current}) != len(current):
         raise AssertionError("Duplicate GUID")
     return sum("Ankylosaurus" in row["symbol"] for row in accepted) + int(any(row["symbol"] == "KMG.Summoning.Natural.Tail3d6" for row in accepted))
@@ -79,7 +81,7 @@ def validate(root: Path):
     inherited.PACKAGE_SUFFIX = "expanded-summoning-sprint22"
     inherited.DETERMINISTIC_TEST_COUNT = count
     inherited.validate(root)
-    print(f"Sprint22 source PASS: {protected} protected Ankylosaurus identities; 4 private additions; {count} registered tests (execution separately required).")
+    print(f"Sprint22 source PASS: {protected} protected Ankylosaurus identities; 6 private additions; {count} registered tests (execution separately required).")
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument("--root",type=Path,default=Path(__file__).resolve().parents[1]);args=parser.parse_args()

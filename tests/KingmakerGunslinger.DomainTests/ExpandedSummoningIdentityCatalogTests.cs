@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(2067, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(2069, first.Count, "Foundation identity count changed.");
             Assertions.Equal(103, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1739, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
@@ -23,10 +23,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1, first.Count(value => value.PlannedType == "IsEngagedConsideration"),
                 "Only the bounded crocodilian engagement scorer is registered.");
             Assertions.Equal(27, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
-            Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
+            Assertions.Equal(4, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
             Assertions.Equal(14, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
             Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(34, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(35, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             // The alignment-mode toggle, plus the Shadow Mastiff's shadow
             // blend, whose printed text makes suspending and resuming it a

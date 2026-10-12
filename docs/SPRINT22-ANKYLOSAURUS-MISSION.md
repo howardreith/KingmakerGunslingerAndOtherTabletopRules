@@ -75,7 +75,7 @@ Owner aesthetic approval remains NOT_PERFORMED_NONBLOCKING.
 | --- | --- | --- |
 | Stable ten routes/templates/quantities | Catalog, identity ledger, existing ability builder | Exact identity sets, authoritative global invariants; ten real route casts |
 | Printed unit/HP/ranks/trip/feats | Natural profiles/builder, native animal class/facts; existing creation-only exact-rank carrier where required | Live spawned carrier/derived-stat readback and native weapon/maneuver rolls |
-| Single tail 3d6+1.5×Str | Existing private Tail3d6 and native weapon stats | Huge dice scaling, native damage stats, separate Power Attack |
+| Single tail 3d6+1.5×Str | Existing private Tail3d6 keeps its GUID; private type and hidden chassis carry exact range/focus/Power Attack corrections after live readback | Huge dice scaling, native damage stats, exact type/reach, separate Power Attack |
 | Stun (Ex) | Native condition facts and narrow Ankylosaurus-owned attack handler if needed | Hit/save/crit/miss/immunity/absorbed damage/live Str, event uniqueness, two sources, expiration/actions |
 | Original body/club | Existing per-view mesh/attachment and original deterministic asset pair | Offline anatomy/contact; native movement/selection/crowding/death/fade/fallback/resource ownership |
 | Persistence/module lifecycle | Existing registered identity/module/save/visual mechanisms | Targeted fresh cold loads, remaining finite control, cleanup/absence, OFF/ON idempotence |

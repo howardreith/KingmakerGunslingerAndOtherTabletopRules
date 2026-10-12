@@ -548,7 +548,7 @@ namespace KingmakerGunslinger.Summoning
                 PK("ankylosaurus", "Ankylosaurus", "Animal", 10, "Huge",
                     27, 10, 17, 2, 13, 8, 30, 14, "Tail3d6",
                     Array.Empty<string>(), A("GreatFortitude", "PowerAttack", "ImprovedBullRush",
-                        "WeaponFocusTail", "TripDefenseFourLegs", "AnkylosaurusStun"),
+                        "WeaponFocusTail", "TripDefenseFourLegs", "AnkylosaurusChassis", "AnkylosaurusStun"),
                     A("Perception"),
                     "Stun (Ex) uses one Fortitude save, with DC based on current Strength and racial HD; an ordinary failed save dazes for one round, and a confirmed critical failed save stuns for 1d4 rounds instead. Fortitude is this mission's explicit save-type interpretation.",
                     "Improved Overrun remains omitted: no concrete native feat was found in the standalone 2.1.7b library and no summon command consumer was qualified. The native Overrun maneuver enum exists; no general overrun system is substituted.",
