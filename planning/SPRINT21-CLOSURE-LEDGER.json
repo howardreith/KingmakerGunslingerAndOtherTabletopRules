@@ -1,0 +1,179 @@
+﻿{
+    "schemaVersion":  1,
+    "mission":  "docs/SPRINT21-CLOSURE-OWNER-MISSION-2026-10-11.md",
+    "host":  "HOWARD-LAPTOP",
+    "branch":  "codex/expanded-summoning-sprint21-bebelith-giant-crab",
+    "pr":  36,
+    "status":  "DIAGNOSIS_AND_OBSERVER_CORRECTION",
+    "startedUtc":  "2026-10-11T23:43:03Z",
+    "planningHours":  4,
+    "allocationMinutes":  {
+                              "diagnosisAndCorrections":  65,
+                              "candidate":  10,
+                              "nativeQualification":  140,
+                              "releaseAndRestoration":  25
+                          },
+    "evidenceRoot":  "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint21-closure-20261011T235000Z",
+    "intakeHead":  "2573fa212ad5e96a02319d3c46878f8acf206d59",
+    "masterAtIntake":  "a756a498028313e3c95f93882580212080953b0d",
+    "priorCandidate":  {
+                           "source":  "f2fe16ca4fc2c8a8068b07b159f1c97efeb92108",
+                           "zipSha256":  "c43ca89596bad1d837e34886ef0c7d8193c6532d2426480273bbf50182fd142d",
+                           "dllSha256":  "60019b72dca27956c418f7195e6809b4b1e59179831094c5a886978a1e575bf7",
+                           "dllMvid":  "43a5bf9e-92f1-4ca4-b4c8-2eda1a186456",
+                           "manifestSha256":  "c59d5cbfb949b1172e1644ed2c581693b8183abbd5a3321f5fdfac2098210bcc",
+                           "fullSuite":  "2559/2559 PASS",
+                           "inventory":  "50/50 PASS; gunslinger-only",
+                           "transaction":  "compat-20261011T174333Z-e7d434e8ec85",
+                           "restoration":  "VERIFIED; 968 actual intake manifest entries; no save load/write",
+                           "impact":  "Preserved original qualification; compiled boundary-observer changes require new bytes for affected observations; inventory anatomy dependencies unchanged"
+                       },
+    "historicalFailures":  [
+                               "2554/2559 complete suite FAIL",
+                               "40/47 ON and OFF boundaries FAIL",
+                               "49/50 alpha inventory FAIL"
+                           ],
+    "candidate":  null,
+    "findings":  [
+                     {
+                         "id":  "feature-module-brown-fur-publication-gate",
+                         "historical":  "Absent CotW required available 25-identity contract",
+                         "classification":  "FIXTURE_DEFECT",
+                         "correction":  "Unavailable and zero actual identities/selector/publication when provider absent; retain supported presence contract",
+                         "native":  "PENDING"
+                     },
+                     {
+                         "id":  "teleportation-scroll-template-2c283c993b233df53b487fc7eeac2ba3",
+                         "classification":  "PENDING_NATIVE_SUBCLAUSE_AND_MATCHED_CONTROL"
+                     },
+                     {
+                         "id":  "teleportation-scroll-template-2a2b0185be1d2dba5aa1b5a24774e17d",
+                         "classification":  "PENDING_NATIVE_SUBCLAUSE_AND_MATCHED_CONTROL"
+                     },
+                     {
+                         "id":  "teleportation-scroll-template-42d3daeb7d503687df8953b47727372b",
+                         "classification":  "PENDING_NATIVE_SUBCLAUSE_AND_MATCHED_CONTROL"
+                     },
+                     {
+                         "id":  "feature-module-gunslinger-publication",
+                         "historical":  "10 expected / 7 observed",
+                         "classification":  "PENDING_NATIVE_EXACT_ROWS_AND_MATCHED_CONTROL",
+                         "contract":  "Capital publisher specifies 7 rows and excludes mundane firearms and retired maintenance items"
+                     },
+                     {
+                         "id":  "feature-module-eastern-weapons-publication-gate",
+                         "historical":  "66 expected / 54 observed",
+                         "classification":  "PENDING_NATIVE_EXACT_ROWS_AND_MATCHED_CONTROL",
+                         "contract":  "Capital VendorSpec intentionally empty; others from GenericKinds/NamedKinds"
+                     },
+                     {
+                         "id":  "feature-module-elven-branched-spears-publication-gate",
+                         "historical":  "34 expected / 28 observed",
+                         "classification":  "PENDING_NATIVE_EXACT_ROWS_AND_MATCHED_CONTROL",
+                         "contract":  "Capital VendorSpec intentionally empty; others from FoundationKinds/NamedKind"
+                     }
+                 ],
+    "coverage":  [
+                     {
+                         "id":  "boundary-on",
+                         "result":  "PENDING",
+                         "action":  "Affected native rerun"
+                     },
+                     {
+                         "id":  "boundary-off",
+                         "result":  "PENDING",
+                         "action":  "Affected native rerun"
+                     },
+                     {
+                         "id":  "matched149-control",
+                         "result":  "PENDING",
+                         "action":  "Same read-only diagnostics, released product behavior, startup-only ON/OFF"
+                     },
+                     {
+                         "id":  "gunslinger-only",
+                         "result":  "PENDING",
+                         "action":  "Account for prior load/optional/inventory; run missing mechanics"
+                     },
+                     {
+                         "id":  "call-of-the-wild",
+                         "result":  "PENDING",
+                         "action":  "Load, optional, inventory and provider-present contract"
+                     },
+                     {
+                         "id":  "arms-armor",
+                         "result":  "PENDING"
+                     },
+                     {
+                         "id":  "toggle-custom-soundpacks",
+                         "result":  "PENDING"
+                     },
+                     {
+                         "id":  "high-risk-combined",
+                         "result":  "PENDING",
+                         "action":  "Load, optional, inventory and missing mechanics"
+                     },
+                     {
+                         "id":  "required-module-states",
+                         "result":  "PENDING_DEPENDENCY_REVIEW"
+                     },
+                     {
+                         "id":  "whole-roster-enabled-persistence",
+                         "result":  "PENDING_DEPENDENCY_REVIEW",
+                         "priorSource":  "cf4bbc4a",
+                         "priorEvidence":  "20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup",
+                         "priorResult":  "125/125 PASS"
+                     },
+                     {
+                         "id":  "native-cleanup-save-and-fresh-absence",
+                         "result":  "PENDING",
+                         "action":  "Use valid existing prepared fixture receipt; no manual save access"
+                     },
+                     {
+                         "id":  "module-disabled-deserialization-cleanup",
+                         "result":  "PENDING_DEPENDENCY_REVIEW",
+                         "priorSource":  "6b1ef853",
+                         "priorEvidence":  "20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup",
+                         "priorResult":  "11/11 PASS"
+                     },
+                     {
+                         "id":  "sprint18-21-regressions",
+                         "result":  "PENDING_DEPENDENCY_REVIEW",
+                         "priorSource":  "7b37df94"
+                     },
+                     {
+                         "id":  "1063-roots-and-29-wrappers",
+                         "result":  "PENDING_DEPENDENCY_REVIEW",
+                         "priorSource":  "7b37df94",
+                         "priorEvidence":  "20261011T0832337615067Z-disposable-expanded-summoning-player-path"
+                     },
+                     {
+                         "id":  "resource-lifecycle-template-initialization",
+                         "result":  "PENDING_DEPENDENCY_REVIEW"
+                     },
+                     {
+                         "id":  "exact-package-release-qualification",
+                         "result":  "PENDING"
+                     }
+                 ],
+    "baselineExceptions":  [
+
+                           ],
+    "releaseEligible":  false,
+    "restoration":  {
+                        "intakeManifest":  "actual-mods-intake-manifest.json",
+                        "current":  "NO_TRANSACTION_STARTED",
+                        "workingSave":  "No campaign load/write yet; inspect authoritative native receipts before selecting persistence stage"
+                    },
+    "nextAction":  "Finish focused repair checks and freeze the observer bundle; one Tranche pipeline and coordinated startup comparison",
+    "repairValidation":  {
+                             "filter":  "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
+                             "selected":  15,
+                             "registered":  2562,
+                             "failed":  0,
+                             "exitCode":  0,
+                             "seconds":  21.7939451,
+                             "freshnessRecord":  "repair-binary-freshness.json",
+                             "compiledProductChanged":  false,
+                             "compiledObserverChanged":  true
+                         }
+}

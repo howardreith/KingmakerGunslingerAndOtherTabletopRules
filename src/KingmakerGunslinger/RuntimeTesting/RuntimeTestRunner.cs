@@ -14828,6 +14828,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BrownFurOptionalExtensionCoordinator.Blueprints;
             BrownFurFeatureStatus brownFurStatus =
                 BrownFurFeatureStatusRegistry.Current;
+            bool brownFurProviderAbsent = AppDomain.CurrentDomain.GetAssemblies().All(
+                value => value.GetName().Name != "CallOfTheWild");
+            int brownFurRegisteredIdentities = BrownFurIdentityCatalog.All.Count(spec =>
+                BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(spec.Guid));
+            int brownFurGlobalSelectorReferences = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintCharacterClass>().Sum(value =>
+                    (value.Archetypes ?? Array.Empty<BlueprintArchetype>()).Count(archetype =>
+                        archetype != null && BrownFurIdentityCatalog.All.Any(spec => spec.Guid == archetype.AssetGuid)));
             bool brownFurContractCompatible = brownFurResolution != null &&
                 brownFurResolution.Decision.IsCompatible &&
                 brownFurResolution.Contract != null &&
@@ -14975,6 +14983,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsFirearmParameter(item.Param)));
             BlueprintItem[] gunslingerStock = ModuleGunslingerStockItems();
             int capitalGunslingerRows = CountFixedRows(smith, gunslingerStock);
+            VendorBoundaryRows[] boundaryVendorRows = ObserveBoundaryVendorRows(
+                expectedGunslinger, expectedEasternWeapons, expectedElvenBranchedSpears);
             var retiredMaintenanceStock = new BlueprintItem[] { BlueprintBootstrap.FirearmRepairKit,
                 BlueprintBootstrap.GunsmithingSupplies.OverhaulKit };
             int retiredMaintenanceRows = CountFixedRows(smith, retiredMaintenanceStock);
@@ -15368,7 +15378,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fighterFirearmFeatures == (expectedGunslinger ? 1 : 0) &&
                         fighterFirearmAll == (expectedGunslinger ? 1 : 0) &&
                         firearmParameterCount == (expectedGunslinger ? 15 : 0) &&
-                        capitalGunslingerRows == (expectedGunslinger ? 10 : 0) && retiredMaintenanceRows == 0 &&
+                        boundaryVendorRows[0].Passed && retiredMaintenanceRows == 0 &&
                         btslGunslingerRows == (expectedGunslinger ?
                             expectedBtslGunslingerRows : 0) &&
                         rareLootRows == (expectedGunslinger ? 5 : 0),
@@ -15464,7 +15474,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "live AbilityVariants census across the eighteen canonical native summon parents"),
                 Assertion("feature-module-elven-branched-spears-publication-gate",
                     expectedElvenBranchedSpears ?
-                        "12 identities;7 parameter options;3 static references;22 campaign vendor rows plus six rows per installed BTSL table;6 loot rows" :
+                        "12 identities;7 parameter options;3 static references;exact campaign/BTSL VendorSpecs rows and quantities;6 loot rows" :
                         "12 identities;0 parameter options;0 static references;0 vendor rows;0 loot rows",
                     observed,
                     activeElvenBranchedSpears ==
@@ -15475,15 +15485,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spearStaticOptions ==
                         (expectedElvenBranchedSpears ? 3 : 0) &&
                     spearFamiliarityCategories == 1 &&
-                    spearVendorRows ==
-                        (expectedElvenBranchedSpears ?
-                            22 + installedSpearHonestGuyTables * 6 : 0) &&
+                    boundaryVendorRows.Where(row => row.Group == "spear").All(row => row.Passed) &&
                     spearLootRows ==
                         (expectedElvenBranchedSpears ? 6 : 0),
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("feature-module-eastern-weapons-publication-gate",
                     expectedEasternWeapons ?
-                        "44 identities;21 parameter options;4 static references;merged proficiency order;42 campaign vendor rows plus BTSL;18 fixed-loot rows;presentation enabled" :
+                        "44 identities;21 parameter options;4 static references;merged proficiency order;exact campaign/BTSL VendorSpecs rows and quantities;18 fixed-loot rows;presentation enabled" :
                         "44 identities;0 parameter options;0 static references;0 vendor rows;0 fixed-loot rows;presentation disabled",
                     observed,
                     activeEasternWeapons == expectedEasternWeapons &&
@@ -15508,8 +15516,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Weapon Proficiency (Wakizashi)",
                         StringComparison.Ordinal) &&
                     nodachiMartialCategories == 1 &&
-                    easternVendorRows == (expectedEasternWeapons ?
-                        42 + installedEasternHonestGuyTables * 12 : 0) &&
+                    boundaryVendorRows.Where(row => row.Group == "eastern").All(row => row.Passed) &&
                     easternNamedVendorRows == 0 &&
                     easternBtslRows == (expectedEasternWeapons ?
                         installedEasternHonestGuyTables * 12 : 0) &&
@@ -15528,13 +15535,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal)),
                     "always-registered identities, exact merged selectors, broad martial integration, campaign/BTSL publication, fixed loot, and module-gated presentation"),
                 Assertion("feature-module-brown-fur-publication-gate",
-                    expectedBrownFurTransmuter ?
+                    brownFurProviderAbsent ?
+                        "provider absent; unavailable contract; zero provider identities and selector/publication references" : expectedBrownFurTransmuter ?
                         BrownFurIdentityCatalog.IdentityCount +
                         " identities; available and published exactly once before the installed combined archetypes; all foreign archetypes preserved" :
                         BrownFurIdentityCatalog.IdentityCount +
                         " identities; available and not published; zero CotW selector references; all foreign archetypes preserved",
                     observed,
-                    brownFurContractCompatible &&
+                    brownFurProviderAbsent ? BoundaryObservationPolicy.BrownFurAbsent(
+                        brownFurProviderAbsent,
+                        brownFurStatus.Availability == BrownFurDependencyAvailability.Unavailable,
+                        brownFurResolution == null && brownFurBlueprints == null,
+                        brownFurRegisteredIdentities, brownFurStatus.Published,
+                        brownFurGlobalSelectorReferences, brownFurGuidReferences,
+                        brownFurPublicationEvidence.Count) : brownFurContractCompatible &&
                     brownFurStatus.Availability ==
                         BrownFurDependencyAvailability.Available &&
                     brownFurStatus.Published == expectedBrownFurTransmuter &&

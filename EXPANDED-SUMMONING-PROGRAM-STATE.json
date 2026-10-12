@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "Sprint 21 focused verification on HOWARD-LAPTOP; integrate merged workflow, verify Bebelith inventory correction, classify boundary failures, push reviewable checkpoint; no release or Sprint 22",
+    "activeTask": "Owner-selected Sprint 21 closure and stable release on HOWARD-LAPTOP; docs/SPRINT21-CLOSURE-OWNER-MISSION-2026-10-11.md and planning/SPRINT21-CLOSURE-LEDGER.json govern. Workflow already integrated. No Sprint 22.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-PROGRAM-STATE-before-workflow-reset-2026-10-11.json"
   },

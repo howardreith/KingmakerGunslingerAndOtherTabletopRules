@@ -1,3 +1,39 @@
+# Sprint 21 closure and stable release campaign
+
+The October 11 owner mission explicitly selects full Sprint 21 closure, PR #36
+merge and stable release after its gates. It supersedes the older stop/no-release
+text below. Read docs/SPRINT21-CLOSURE-OWNER-MISSION-2026-10-11.md and the current
+planning/SPRINT21-CLOSURE-LEDGER.json. Work only on HOWARD-LAPTOP; no Sprint 22.
+
+Intake 2573fa21 is clean, current master a756a498 is already integrated, PR #36
+is draft/mergeable, stable v0.0.150 unused. Actual Mods snapshot and 14 installed
+reference hashes are in the ledger's external evidence root. No live game or
+compatibility transaction. Preserve the f2fe16ca candidate's full 2559/2559 and
+inventory 50/50 PASS; its ZIP/manifest were copied before a new build. Earlier
+2554/2559 remains FAIL and alpha remains immutable.
+
+Current work is an observer-only correction bundle. Absent CotW requires no
+Brown-Fur contract, identities or publication; presence retains the supported
+contract checks. Vendor rows now follow the actual publication specs with exact
+identities/quantities and retired exclusions. Strategic scrolls retain economic,
+teaching/isolation/consumption checks, verify their assigned owned art and report
+each clause, including the historical donor-icon comparison. No gameplay or art
+changed. Initial focused compilation and 15/15 tests passed; the later DLC/mod
+diagnostic addition needs compilation. Raw failures remain preserved.
+
+Next: finish focused checks, commit/push this bundle, freeze one Tranche candidate,
+then both startup boundaries and a coordinated matched released149 diagnostic
+control before remaining profiles. Review dependencies to reuse prior evidence
+with its original provenance, run missing downstream mechanics and ensure native
+working-fixture cleanup save/fresh absence. Release requires every mandatory row
+accounted for and only narrowly proved exceptions under the mission, if any.
+
+Native batches freeze their candidate worktree. Logs stay outside it; recovery
+uses the exact transaction receipt RunId. Restore the actual intake, verify the
+stable download/tag/Latest and preserve alpha before stopping.
+
+## Historical completed inventory boundary (superseded next action)
+
 # Sprint 21 inventory boundary complete - October 11, 2026
 
 Active host: HOWARD-LAPTOP. Active worktree:
