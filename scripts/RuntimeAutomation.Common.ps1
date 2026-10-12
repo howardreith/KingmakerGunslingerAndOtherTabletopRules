@@ -2063,6 +2063,15 @@ function Test-KmgCompletionSceneScope {
         $Parameters.qualificationOperation -ceq 'scene-roundtrip'
 }
 
+function Test-KmgSprint22ReviewPhaseScope {
+    param([string]$Scenario, [hashtable]$Parameters)
+    return $Scenario -ceq 'disposable-expanded-summoning-sprint22-native-review' -and
+        $null -ne $Parameters -and $Parameters.Count -eq 1 -and
+        $Parameters.ContainsKey('reviewPhase') -and
+        $Parameters.reviewPhase -is [string] -and
+        $Parameters.reviewPhase -cin @('rtwp-foundation', 'turn-based-control')
+}
+
 function Assert-KmgRuntimeScenarioPreflight {
     param(
         [Parameter(Mandatory = $true)][string]$Scenario,
@@ -2088,9 +2097,13 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -cin @('disposable-magic-circle-profile', 'disposable-magic-circle-terrain') -and -not $ExitAfterCompletion) {
         throw 'The native Magic Circle profile fixture requires automatic exit.'
     }
-    if ($Scenario -cin @('disposable-expanded-summoning-native-profile','disposable-expanded-summoning-sprint22-native-review') -and
+    if ($Scenario -ceq 'disposable-expanded-summoning-native-profile' -and
         (-not $ExitAfterCompletion -or $Parameters.Count -ne 0)) {
         throw 'Native summoning profile requires automatic exit and no save/import parameters.'
+    }
+    if ($Scenario -ceq 'disposable-expanded-summoning-sprint22-native-review' -and
+        (-not $ExitAfterCompletion -or -not (Test-KmgSprint22ReviewPhaseScope $Scenario $Parameters))) {
+        throw 'Sprint22 native review requires automatic exit and exactly one allowlisted reviewPhase.'
     }
     if ($Scenario -ceq 'observe-whiteout-disposable-weather-fixture' -and -not $ExitAfterCompletion) {
         throw 'Disposable Whiteout weather fixture requires automatic exit.'
@@ -2388,6 +2401,11 @@ function Assert-KmgRuntimeScenarioPreflight {
             -not $Parameters.ContainsKey('expandedSummoning') -or
             $Parameters.expandedSummoning -isnot [bool]) {
             throw "$Scenario requires exactly one Boolean expandedSummoning parameter."
+        }
+    }
+    elseif ($Scenario -ceq 'disposable-expanded-summoning-sprint22-native-review') {
+        if (-not (Test-KmgSprint22ReviewPhaseScope $Scenario $Parameters)) {
+            throw "$Scenario requires exactly one allowlisted reviewPhase."
         }
     }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
