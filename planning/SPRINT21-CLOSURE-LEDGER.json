@@ -4,7 +4,7 @@
     "host":  "HOWARD-LAPTOP",
     "branch":  "codex/expanded-summoning-sprint21-bebelith-giant-crab",
     "pr":  36,
-    "status":  "NATIVE_PROFILE_QUALIFICATION",
+    "status":  "WORKING_FIXTURE_DIAGNOSIS",
     "startedUtc":  "2026-10-11T23:43:03Z",
     "planningHours":  4,
     "allocationMinutes":  {
@@ -219,8 +219,24 @@
                      },
                      {
                          "id":  "gunslinger-only",
-                         "result":  "PENDING",
-                         "action":  "Account for prior load/optional/inventory; run missing mechanics"
+                         "result":  "SETUP_FAILURE_MECHANICS_NOT_RUN",
+                         "action":  "Account for prior load/optional/inventory; run missing mechanics",
+                         "currentEvidence":  {
+                                                 "source":  "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+                                                 "transaction":  "compat-20261012T005104Z-3487031c225d",
+                                                 "load":  "PASS",
+                                                 "optionalCompatibility":  "PASS",
+                                                 "inventory":  "50/50 PASS",
+                                                 "mechanics":  "TIMEOUT before execution",
+                                                 "nativeResult":  "20261012T0057388659564Z-disposable-expanded-summoning",
+                                                 "failedPredicates":  [
+                                                                          "load-completion-and-fingerprint",
+                                                                          "strict-receiver-bound-order"
+                                                                      ],
+                                                 "saveWritingApi":  "none",
+                                                 "restoration":  "EXACT_INTAKE_VERIFIED",
+                                                 "elapsedSeconds":  1081.814846
+                                             }
                      },
                      {
                          "id":  "call-of-the-wild",
@@ -387,11 +403,11 @@
     "releaseEligible":  false,
     "restoration":  {
                         "intakeManifest":  "actual-mods-intake-manifest.json",
-                        "current":  "PROFILE_CAMPAIGN_ACTIVE; LAST_COMPLETED_TRANSACTIONS_RESTORED",
-                        "workingSave":  "No campaign load/write yet; inspect authoritative native receipts before selecting persistence stage",
+                        "current":  "FIVE_MOD_FIXTURE_CONTROL_ACTIVE; standalone exact968-entry restoration verified",
+                        "workingSave":  "One readonly native working-save load attempt failed at load completion; no save-writing API observed. Current five-mod control active. No manual save access or mutation.",
                         "lastVerifiedRecord":  "matched-control-restoration.json"
                     },
-    "nextAction":  "Complete selected final-candidate profiles,14 remaining original-four-module states and guarded fresh absence; finalize ledger and conditional merge/promotion only after all mandatory rows qualify.",
+    "nextAction":  "Complete/restore the active five-mod fixture check, then one exact-intake mod/settings control. Keep mechanical and fresh-absence gates failed/pending until native evidence qualifies; preserve startup PASS and all historical failures.",
     "repairValidation":  {
                              "filter":  "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
                              "selected":  15,
@@ -465,5 +481,19 @@
                            "remainingEstimateMinutes":  145,
                            "remainingScope":  "31 selected profile scenario calls,14 remaining original-four-module configurations,one native fresh absence,closure/merge/exact promotion/download/restoration",
                            "campaignPlanningMinutes":  240
-                       }
+                       },
+    "fixtureDiagnosis":  {
+                             "classification":  "UNRESOLVED_SETUP",
+                             "nativeFailure":  "Player.PostLoad native Single predicate cannot find cross-scene entity with MainCharacter.UniqueId",
+                             "referenceMvid":  "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+                             "historicalContext":  "docs/ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION-HANDOFF.md records the same reduced-stack failure and an earlier full-stack success; this is context, not current attribution",
+                             "standaloneResult":  "20261012T0057388659564Z-disposable-expanded-summoning",
+                             "standaloneGameLog":  "standalone-load-failure-output_log.txt",
+                             "restoration":  "mechanical-failure-restoration.json",
+                             "fiveModControlIsActualIntakeMatch":  false,
+                             "actualIntakeMods":  11,
+                             "selectedActualIntakeControl":  "invoke-actual-intake-fixture.ps1",
+                             "releaseWaiver":  false,
+                             "manualSaveAccess":  false
+                         }
 }

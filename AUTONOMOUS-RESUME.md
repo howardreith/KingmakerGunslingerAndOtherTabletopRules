@@ -27,12 +27,24 @@ compat-20261012T002145Z-4f2b95a64e80 and compat-20261012T002453Z-f9ba6581a00c.
 The actual 968-entry intake manifest/settings matched afterward. Raw failures
 remain preserved, including the failed 2537/2562 preparation attempt.
 
-Next: complete the one coordinated matched released149 diagnostic control
-(baseline source safety ref refs/safety/sprint21-baseline-diagnostic-20261011)
-before remaining profiles and all 16 original-four-module configurations. Review dependencies to reuse prior evidence
-with its original provenance, run missing downstream mechanics and ensure native
-working-fixture cleanup save/fresh absence. Release requires every mandatory row
-accounted for and only narrowly proved exceptions under the mission, if any.
+The matched149 diagnostic ON/OFF control is complete: both47/47 PASS, unchanged
+released product/assets, matched exact scroll clauses and stock rows. All seven
+old boundary findings are fixture defects; Brown-Fur provider presence still
+needs its CotW profile. Preserve the local baseline safety ref and comparison.
+
+The standalone load/optional/inventory observations passed on3ee4f9a4, but its
+mechanical scenario timed out before execution: native Player.PostLoad could not
+find the cross-scene main-character UniqueId. Its exact transaction restored all
+968 intake entries/settings with no save-writing API observed. The current
+five-mod fixture check does not match the actual11-mod intake. After it safely
+restores, run the prepared single actual-intake fixture control from the external
+campaign root. Inspect its exact receipt, not the newest run directory. No manual
+save access, assertion waiver or unchanged reduced-stack retry is authorized by
+this diagnosis. The owner mission authorizes safe evidence-driven fixture repair.
+
+Remaining profile mechanics, module states, fresh absence and release gates stay
+pending/failed until qualified. Retain audited unaffected prior native PASS with
+its original source/artifact identity; no blanket current-candidate claim.
 
 Native batches freeze their candidate worktree. Logs stay outside it; recovery
 uses the exact transaction receipt RunId. Restore the actual intake, verify the
