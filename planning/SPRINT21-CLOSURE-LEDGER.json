@@ -31,7 +31,8 @@
     "historicalFailures":  [
                                "2554/2559 complete suite FAIL",
                                "40/47 ON and OFF boundaries FAIL",
-                               "49/50 alpha inventory FAIL"
+                               "49/50 alpha inventory FAIL",
+                               "b17a0121 candidate complete suite: 2537/2562 PASS, 25 FAIL; 23 missing private inspection input and 2 stale observer source-text expectations; no package/deployment"
                            ],
     "candidate":  null,
     "findings":  [
@@ -180,5 +181,16 @@
                                "checks":  "frozen-source-reader-checks.json",
                                "reason":  "Detached frozen checkout refused before candidate pipeline",
                                "fix":  "Normalize empty branch stdout; no guard relaxed"
-                           }
+                           },
+    "preparationRepair":  {
+                              "selected":  71,
+                              "registered":  2562,
+                              "failed":  0,
+                              "exitCode":  0,
+                              "seconds":  9.5038023,
+                              "record":  "preparation-repair-supervision.json",
+                              "input":  "inspection-input-provenance.json",
+                              "inputMvid":  "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+                              "productChanged":  false
+                          }
 }
