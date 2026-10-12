@@ -1,0 +1,2816 @@
+{
+  "schemaVersion": 1,
+  "mission": "docs/SPRINT21-CLOSURE-OWNER-MISSION-2026-10-11.md",
+  "host": "HOWARD-LAPTOP",
+  "branch": "codex/expanded-summoning-sprint21-bebelith-giant-crab",
+  "pr": 36,
+  "status": "QUALIFIED",
+  "startedUtc": "2026-10-11T23:43:03Z",
+  "planningHours": 4,
+  "allocationMinutes": {
+    "diagnosisAndCorrections": 65,
+    "candidate": 10,
+    "nativeQualification": 140,
+    "releaseAndRestoration": 25
+  },
+  "evidenceRoot": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint21-closure-20261011T235000Z",
+  "intakeHead": "2573fa212ad5e96a02319d3c46878f8acf206d59",
+  "masterAtIntake": "a756a498028313e3c95f93882580212080953b0d",
+  "priorCandidate": {
+    "source": "f2fe16ca4fc2c8a8068b07b159f1c97efeb92108",
+    "zipSha256": "c43ca89596bad1d837e34886ef0c7d8193c6532d2426480273bbf50182fd142d",
+    "dllSha256": "60019b72dca27956c418f7195e6809b4b1e59179831094c5a886978a1e575bf7",
+    "dllMvid": "43a5bf9e-92f1-4ca4-b4c8-2eda1a186456",
+    "manifestSha256": "c59d5cbfb949b1172e1644ed2c581693b8183abbd5a3321f5fdfac2098210bcc",
+    "fullSuite": "2559/2559 PASS",
+    "inventory": "50/50 PASS; gunslinger-only",
+    "transaction": "compat-20261011T174333Z-e7d434e8ec85",
+    "restoration": "VERIFIED; 968 actual intake manifest entries; no save load/write",
+    "impact": "Preserved original qualification; compiled boundary-observer changes require new bytes for affected observations; inventory anatomy dependencies unchanged"
+  },
+  "historicalFailures": [
+    "2554/2559 complete suite FAIL",
+    "40/47 ON and OFF boundaries FAIL",
+    "49/50 alpha inventory FAIL",
+    "b17a0121 candidate complete suite: 2537/2562 PASS, 25 FAIL; 23 missing private inspection input and 2 stale observer source-text expectations; no package/deployment",
+    "Matched149 precompile setup FAIL: duplicated package-count token moved to package.ps1",
+    "Matched149 complete suite FAIL: 2533/2538; five copied Sprint21-version fixture expectations",
+    "Matched149 focused reproduction4/5 FAIL: remaining hardcoded output path; subsequently5/5 PASS",
+    "5429d7bd native-profile setup FAIL before mechanics: missing BaseMechanics because direct LoadNewGame skipped native MainMenu.EnterGame; native empty-world restoration/no save API attempts PASS; transaction restored exact968 entries",
+    "a7e05944 native-profile setup FAIL before mechanics: EnterGame callback preceded valid base-scene registration; all setup predicates reported absent after native load failure; empty-world/no-save guard PASS and transaction exact968 restored",
+    "3da96044 native-profile setup FAIL before mechanics: base scene was valid before LoadNewGame but invalidated during native area load; exact clauses retained; zero save/load attempts, native empty-world reset and exact968 restoration PASS",
+    "75eb64f7 native-profile setup FAIL before mechanics: native startup completion passed and BaseMechanics was valid before LoadNewGame; captured scene became invalid inside area loading; startup race hypothesis ruled out; native empty world and zero save attempts PASS, transaction exact968 restored",
+    "3bc7ba70 native-profile setup FAIL before mechanics: request-local trace shows Runner.Tick stack-empty reset immediately after entry callback; native reset unloads BaseMechanics before area loader uses its captured scene; guard0, scene observer removed, exact transaction Restored and actual968 intake matched",
+    "f0a83116 native mechanics FAIL 59/62: obsolete two-bite dismantle expectation, native AutoFailure Success getter 0>=0, and old family-sum visual event accounting; exact transaction restored; original failed rows retained",
+    "Native contract focused reproduction 35/36 PASS, one stale source-text lifecycle expectation FAIL; corrected registered-patch accounting then 70/70 PASS, production compilation PASS",
+    "6ba541b7 candidate preparation FAIL2570/2571, obsolete Stirge source-text lifecycle sum expectation; no exact build/package/deployment/native occurred. Registered patch accounting expectation repaired with renderer checks retained; focused10/10 PASS."
+  ],
+  "candidate": {
+    "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+    "zipSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+    "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+    "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8",
+    "sourceFingerprint": "ee9cccf87af6826592a29b5e8cbe97a85a8e289741a54a883001451ee167d19e",
+    "manifestSha256": "032743710b711ea46075a59067de32e2ae1055b3a066d020c6ad85d0620e55f6",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 273.87498819999996,
+    "fullSuite": {
+      "executed": 2571,
+      "registered": 2571,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "cb79d10691cd75743dd3dd64d703d7677a6607776da7c384c84ea6c5d174fec4",
+      "executableModifiedUtc": "2026-10-12T03:51:47.1531275Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "findings": [
+    {
+      "id": "feature-module-brown-fur-publication-gate",
+      "historical": "Absent CotW required available 25-identity contract",
+      "classification": "FIXTURE_DEFECT",
+      "correction": "Unavailable and zero actual identities/selector/publication when provider absent; retain supported presence contract",
+      "native": "VERIFIED",
+      "matchedControl": "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+      "providerPresence": "CotW first47/47 module boundary plus dedicated provider contract; repeat47/47 module boundary. Supported25 identities, one selector, unique publication; absence has unavailable contract and zero owned publication."
+    },
+    {
+      "id": "teleportation-scroll-template-2c283c993b233df53b487fc7eeac2ba3",
+      "classification": "FIXTURE_DEFECT",
+      "native": "VERIFIED",
+      "matchedControl": "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+      "correction": "Assigned owned scroll art replaces the stale donor-art expectation; all13 required economics/teaching/isolation/consumption/art clauses PASS; historical donor-icon=False retained for both candidates."
+    },
+    {
+      "id": "teleportation-scroll-template-2a2b0185be1d2dba5aa1b5a24774e17d",
+      "classification": "FIXTURE_DEFECT",
+      "native": "VERIFIED",
+      "matchedControl": "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+      "correction": "Assigned owned scroll art replaces the stale donor-art expectation; all13 required economics/teaching/isolation/consumption/art clauses PASS; historical donor-icon=False retained for both candidates."
+    },
+    {
+      "id": "teleportation-scroll-template-42d3daeb7d503687df8953b47727372b",
+      "classification": "FIXTURE_DEFECT",
+      "native": "VERIFIED",
+      "matchedControl": "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+      "correction": "Assigned owned scroll art replaces the stale donor-art expectation; all13 required economics/teaching/isolation/consumption/art clauses PASS; historical donor-icon=False retained for both candidates."
+    },
+    {
+      "id": "feature-module-gunslinger-publication",
+      "historical": "10 expected / 7 observed",
+      "classification": "FIXTURE_DEFECT",
+      "contract": "Capital publisher specifies 7 rows and excludes mundane firearms and retired maintenance items",
+      "native": "VERIFIED",
+      "matchedControl": "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+      "correction": "Exact required identities/quantities and retired-row exclusion from the actual VendorSpecs. Historical10/66/34 includes intentionally retired capital3/12/6 rows; current7/54/28 and baseline exact rows match. All three DLC entitlements true and four BTSL tables loaded."
+    },
+    {
+      "id": "feature-module-eastern-weapons-publication-gate",
+      "historical": "66 expected / 54 observed",
+      "classification": "FIXTURE_DEFECT",
+      "contract": "Capital VendorSpec intentionally empty; others from GenericKinds/NamedKinds",
+      "native": "VERIFIED",
+      "matchedControl": "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+      "correction": "Exact required identities/quantities and retired-row exclusion from the actual VendorSpecs. Historical10/66/34 includes intentionally retired capital3/12/6 rows; current7/54/28 and baseline exact rows match. All three DLC entitlements true and four BTSL tables loaded."
+    },
+    {
+      "id": "feature-module-elven-branched-spears-publication-gate",
+      "historical": "34 expected / 28 observed",
+      "classification": "FIXTURE_DEFECT",
+      "contract": "Capital VendorSpec intentionally empty; others from FoundationKinds/NamedKind",
+      "native": "VERIFIED",
+      "matchedControl": "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+      "correction": "Exact required identities/quantities and retired-row exclusion from the actual VendorSpecs. Historical10/66/34 includes intentionally retired capital3/12/6 rows; current7/54/28 and baseline exact rows match. All three DLC entitlements true and four BTSL tables loaded."
+    }
+  ],
+  "coverage": [
+    {
+      "id": "boundary-on",
+      "result": "REUSED_PASS",
+      "action": "Reuse exact verified original boundary; unchanged dependencies",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "bbb8f0bd547ccb21b07e983f5e9153063f53166616dc96bb4a05f3f94fe5d12e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "transaction": "compat-20261012T002145Z-4f2b95a64e80",
+      "assertions": 47,
+      "restorationVerified": true,
+      "priorSource": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+      "reuseJustification": "Exact47/47 startup boundary and matched149 controls passed on3ee4f9a4. Subsequent request-local native entry/catalog and generic mechanics observers do not change boundary observers, module coordinator, vendor/scroll contracts, product/assets or settings. Fourteen other module states scheduled on final b3d9436f.",
+      "evidenceSources": [
+        {
+          "source": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+          "packageSha256": "dd1facb5554d322eae223d591a0e29c67b940c1a313c367c609228c6ddbc8034",
+          "dllSha256": "8edb753c72b52a6cde82a15cfa2be68f664f2ccaf93dfe3d49f6b14b52b00a9e",
+          "dllMvid": "21d0319e-eb2f-4d5e-a3d6-ecf4c9fd46a5"
+        }
+      ]
+    },
+    {
+      "id": "boundary-off",
+      "result": "REUSED_PASS",
+      "action": "Reuse exact verified original boundary; unchanged dependencies",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "a9476b7420218d697991c6dd4af26d515da02f30def50bce1a9bed868874c2ef"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "transaction": "compat-20261012T002453Z-f9ba6581a00c",
+      "assertions": 47,
+      "restorationVerified": true,
+      "priorSource": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+      "reuseJustification": "Exact47/47 startup boundary and matched149 controls passed on3ee4f9a4. Subsequent request-local native entry/catalog and generic mechanics observers do not change boundary observers, module coordinator, vendor/scroll contracts, product/assets or settings. Fourteen other module states scheduled on final b3d9436f.",
+      "evidenceSources": [
+        {
+          "source": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+          "packageSha256": "dd1facb5554d322eae223d591a0e29c67b940c1a313c367c609228c6ddbc8034",
+          "dllSha256": "8edb753c72b52a6cde82a15cfa2be68f664f2ccaf93dfe3d49f6b14b52b00a9e",
+          "dllMvid": "21d0319e-eb2f-4d5e-a3d6-ecf4c9fd46a5"
+        }
+      ]
+    },
+    {
+      "id": "matched149-control",
+      "result": "REUSED_PASS",
+      "action": "Same read-only diagnostics, released product behavior, startup-only ON/OFF",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "bbb8f0bd547ccb21b07e983f5e9153063f53166616dc96bb4a05f3f94fe5d12e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\boundary-vendor-rows.json",
+          "sha256": "428353278266a97585a56c837e0096177ab864624b3d0ccac78b3c3495dbcc44"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\boundary-scroll-clauses.json",
+          "sha256": "29d7c1627781b21086f9ce3d709d8338cf9229d6363da5f067b92d5a4c9790df"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-boundary-on-receipt.json",
+          "sha256": "d86dc88323a5747d9b09b28166529c40a028688a64c324a720bba65d8f391c36"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0045213749054Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "2ba55cb8e32d067af26456b1625304f6b0d3bbcf1c1700f37b0b2019f11aedd6"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0045213749054Z-observe-feature-module-settings\\boundary-vendor-rows.json",
+          "sha256": "2f1b5017a9ccf53bdfe37a8a278addc2eab718c42ac2e5764b688350a26ece78"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0045213749054Z-observe-feature-module-settings\\boundary-scroll-clauses.json",
+          "sha256": "0f7487c16eaa60c714f6fff375fbf3e796a1661397575c559c8009ef7e5d7018"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\baseline149-boundary-on-receipt.json",
+          "sha256": "cd4079f63fdfa72f2169dba752cc97137ec1c2993c4cc5655d749a47b31aa5ae"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "a9476b7420218d697991c6dd4af26d515da02f30def50bce1a9bed868874c2ef"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\boundary-vendor-rows.json",
+          "sha256": "711692771858a26dda342f78de66f5518719de707a8f52ee090d90563f8aab10"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\boundary-scroll-clauses.json",
+          "sha256": "05973aebd1d1f2a3d4d799d35e906a0f513bf6e032635d86eefe35064340a70d"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-boundary-off-receipt.json",
+          "sha256": "d97d09dc345843133a46564889eb71b14ababca3c1341c8a06a1a0abd7e229c9"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0048207373681Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "1acc70bf281f30239d5a019df1ec7f58d373592645e4bba6e7e4d016fdf4e28f"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0048207373681Z-observe-feature-module-settings\\boundary-vendor-rows.json",
+          "sha256": "c6a279cee68dd50d2c4c93b4101b0cf206a95ad092f86feb07c6112ffd707672"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0048207373681Z-observe-feature-module-settings\\boundary-scroll-clauses.json",
+          "sha256": "100bade379092c57d28866b93c58663474548f36bc764024922b815dd1c4390b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\baseline149-boundary-off-receipt.json",
+          "sha256": "c6f3c63fc350ed12aa1c0696afd549ea351d314c58f0d1611430732887184a68"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "priorSource": "99d9c4644307341c2cd1b006fe67d58f8f3b2d38;3ee4f9a4040f9295d125369ee99a879d80d51a57",
+      "reuseJustification": "One matched startup-only149 diagnostic ON/OFF comparison with identical game references, provider/module/DLC states, scroll subclauses and vendor identities. Boundary observers and actual production contracts remain unchanged on the final candidate; original diagnostic artifact identity retained.",
+      "evidenceSources": [
+        {
+          "source": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+          "packageSha256": "dd1facb5554d322eae223d591a0e29c67b940c1a313c367c609228c6ddbc8034",
+          "dllSha256": "8edb753c72b52a6cde82a15cfa2be68f664f2ccaf93dfe3d49f6b14b52b00a9e",
+          "dllMvid": "21d0319e-eb2f-4d5e-a3d6-ecf4c9fd46a5"
+        },
+        {
+          "source": "99d9c4644307341c2cd1b006fe67d58f8f3b2d38",
+          "packageSha256": "b635da256671afcbe28384075e7f5532d0e3dfc6b9754f4f9ad15dd078818e7a",
+          "dllSha256": "192048c365bfd95f7403f44a20ebcaf5a2ce0a6ae3976adf833e39a1aa106871",
+          "dllMvid": "2fa1d8cf-3c35-45e9-8049-ff4ce731f17f"
+        }
+      ]
+    },
+    {
+      "id": "gunslinger-only",
+      "result": "PASS",
+      "action": "Fresh matching final-candidate native observations",
+      "currentEvidence": {
+        "source": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+        "transaction": "compat-20261012T005104Z-3487031c225d",
+        "load": "PASS",
+        "optionalCompatibility": "PASS",
+        "inventory": "50/50 PASS",
+        "mechanics": "TIMEOUT before execution",
+        "nativeResult": "20261012T0057388659564Z-disposable-expanded-summoning",
+        "failedPredicates": [
+          "load-completion-and-fingerprint",
+          "strict-receiver-bound-order"
+        ],
+        "saveWritingApi": "none",
+        "restoration": "EXACT_INTAKE_VERIFIED",
+        "elapsedSeconds": 1081.814846
+      },
+      "nativeMechanicalFirstPass": {
+        "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+        "transaction": "compat-20261012T035434Z-5d9b7367a075",
+        "runtimeResult": "20261012T0356082928499Z-disposable-expanded-summoning-native-profile",
+        "status": "PASS",
+        "executed": 62,
+        "failures": 0,
+        "durationMilliseconds": 137285,
+        "nativeEmptyWorldRestored": true,
+        "saveOrLoadAttempts": 0,
+        "restoration": "native-contract-seventh-restoration.json",
+        "verifiedCorrections": [
+          "two primary2d6 bites: no dismantle, exact armor unchanged",
+          "grapple attempt: autoFailureTrue, sourceTrue, DC12, reaction present; manufactured/trip/goblinoid controls safe",
+          "147 observed events =147 actual registered eligible views =147 attached views; no ring saturation"
+        ]
+      },
+      "transactions": [
+        "compat-20261012T035434Z-5d9b7367a075",
+        "compat-20261012T040058Z-dc8d6e4c2d55",
+        "compat-20261012T044759Z-b4848848d741"
+      ],
+      "nativeCases": [
+        {
+          "step": "candidate-native-qualified-reproduction",
+          "scenario": "disposable-expanded-summoning-native-profile",
+          "runId": "20261012T0356083256813Z-0ce23b10d08b48dd838ccf344b490cd3",
+          "result": "PASS",
+          "assertions": 62,
+          "durationMilliseconds": 137285,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0356082928499Z-disposable-expanded-summoning-native-profile\\runtime-result.json",
+          "resultSha256": "07b904aa20e06961c7458e0ac962cd746ebb62b7433583475f7ea4df46828660",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0356082928499Z-disposable-expanded-summoning-native-profile\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "b286791d3cf8e6564c0c46bcec02abc7f72db6b9050c2f1d7527d6d9d97c2b18"
+        },
+        {
+          "step": "standalone-native-first",
+          "scenario": "mod-load-smoke",
+          "runId": "20261012T0402299647591Z-739e97a2e6954a95b51d0da567820844",
+          "result": "PASS",
+          "assertions": 3,
+          "durationMilliseconds": 65817,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0402299334943Z-mod-load-smoke\\runtime-result.json",
+          "resultSha256": "1bc75f45bd82c135aa1745eed9be58918db0484a9e84a131c6604e1bacc54da7",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0402299334943Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "4083ca5b25eba6e7f4b8629146d0fb41e1ae806310f12fa5bd96e02e703c6680"
+        },
+        {
+          "step": "standalone-native-first",
+          "scenario": "observe-optional-mod-compatibility",
+          "runId": "20261012T0403537886089Z-b4e9d9f64f2a4f668ab083b19e1f8e08",
+          "result": "PASS",
+          "assertions": 16,
+          "durationMilliseconds": 64788,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0403537886089Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "resultSha256": "c195e0f10b56b8a36aebe44b448c89daec0e8e5edbbc17f135e4a3c2fbfb90ba",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0403537886089Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "8f338bc629c39e6d2fdd7e90d2ae7aa21767f6138b6feaf64bd5b1f3c5179c14"
+        },
+        {
+          "step": "standalone-native-first",
+          "scenario": "observe-expanded-summoning-inventory",
+          "runId": "20261012T0405151550069Z-5fd7bec3a1584c44bc289ede4850c91a",
+          "result": "PASS",
+          "assertions": 50,
+          "durationMilliseconds": 121321,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0405151550069Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "resultSha256": "36c400b58900ec84966df24ca5b191f9643d7688782909fe0cf85a918e5eebaa",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0405151550069Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "4adf676a840d18f235e1c9a49104e8b591e9d2ce5af62f7fbf90201e2cecf87d"
+        },
+        {
+          "step": "standalone-repeat-native",
+          "scenario": "mod-load-smoke",
+          "runId": "20261012T0449318199129Z-b7063b410b9e44709b37e1d6d227201e",
+          "result": "PASS",
+          "assertions": 3,
+          "durationMilliseconds": 65561,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0449318199129Z-mod-load-smoke\\runtime-result.json",
+          "resultSha256": "a2543f9c1bf05fd95a82d8417ed12a9b83b58d84ba06a599dba0c481771b97c7",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0449318199129Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "67eb2262da7e471aa31ff4b912a7364322f11fc026ba0f1d0cbbdddca301db33"
+        },
+        {
+          "step": "standalone-repeat-native",
+          "scenario": "observe-optional-mod-compatibility",
+          "runId": "20261012T0450548718421Z-fd91ad77a45b4415bdd671e3af84df57",
+          "result": "PASS",
+          "assertions": 16,
+          "durationMilliseconds": 64391,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0450548718421Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "resultSha256": "d4ac5b3d01b2668629167085af210536046c36651c7fb234c9e9be518b8e02b2",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0450548718421Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "4a28e7455dc7db6b4aec865659043e762b677d230d24c19506c5633ef92af285"
+        },
+        {
+          "step": "standalone-repeat-native",
+          "scenario": "observe-expanded-summoning-inventory",
+          "runId": "20261012T0452157798860Z-b18f277b36e843e09c6ac0d1325f5a96",
+          "result": "PASS",
+          "assertions": 50,
+          "durationMilliseconds": 119240,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0452157798860Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "resultSha256": "f1ed80c5c4841a590f0a1b0a47ac0b0249177acce5c1d55c1d419cc441e69f37",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0452157798860Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "975de556935b3889536494733c0ce761b87f6d5ab23147e71a2a1c398bfbc339"
+        },
+        {
+          "step": "standalone-repeat-native",
+          "scenario": "disposable-expanded-summoning-native-profile",
+          "runId": "20261012T0454327372258Z-e42e4be7ba054af5966e2e01e1fa4cd6",
+          "result": "PASS",
+          "assertions": 62,
+          "durationMilliseconds": 132810,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0454327372258Z-disposable-expanded-summoning-native-profile\\runtime-result.json",
+          "resultSha256": "8718511f37e4c171c437973edb193042c8d545487f1eda6bf03b229839f44f25",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0454327372258Z-disposable-expanded-summoning-native-profile\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "ef5f57dc6893eb3e2da686adfbae5b6f914c9313d9408685e0fedfb62473af41"
+        }
+      ],
+      "restorationVerified": true,
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified-reproduction-receipt.json",
+          "sha256": "b64232537b26f272fc6c4f2ebbb84cb09a0e2ffca6792a0546d7e817681a37d5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\standalone-native-first-receipt.json",
+          "sha256": "70c603d06cd4c50fad640ecffb13e187ab6d6d76349ac9bf2cf937b7fb072565"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\standalone-repeat-native-receipt.json",
+          "sha256": "b55b380fb84cc52142df9f212e65dfe8012f15938e2eb139df536da869dbb326"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0356082928499Z-disposable-expanded-summoning-native-profile\\runtime-result.json",
+          "sha256": "07b904aa20e06961c7458e0ac962cd746ebb62b7433583475f7ea4df46828660"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0356082928499Z-disposable-expanded-summoning-native-profile\\runtime-loaded-build-identity.json",
+          "sha256": "b286791d3cf8e6564c0c46bcec02abc7f72db6b9050c2f1d7527d6d9d97c2b18"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0356082928499Z-disposable-expanded-summoning-native-profile\\expanded-summoning-native-profile.json",
+          "sha256": "7df11849ebe9e503e0fa9a6136014e49af7b7cbd92213e9021f712407732ef3b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0402299334943Z-mod-load-smoke\\runtime-result.json",
+          "sha256": "1bc75f45bd82c135aa1745eed9be58918db0484a9e84a131c6604e1bacc54da7"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0402299334943Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "sha256": "4083ca5b25eba6e7f4b8629146d0fb41e1ae806310f12fa5bd96e02e703c6680"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0403537886089Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "sha256": "c195e0f10b56b8a36aebe44b448c89daec0e8e5edbbc17f135e4a3c2fbfb90ba"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0403537886089Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "sha256": "8f338bc629c39e6d2fdd7e90d2ae7aa21767f6138b6feaf64bd5b1f3c5179c14"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0405151550069Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "sha256": "36c400b58900ec84966df24ca5b191f9643d7688782909fe0cf85a918e5eebaa"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0405151550069Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "sha256": "4adf676a840d18f235e1c9a49104e8b591e9d2ce5af62f7fbf90201e2cecf87d"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0449318199129Z-mod-load-smoke\\runtime-result.json",
+          "sha256": "a2543f9c1bf05fd95a82d8417ed12a9b83b58d84ba06a599dba0c481771b97c7"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0449318199129Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "sha256": "67eb2262da7e471aa31ff4b912a7364322f11fc026ba0f1d0cbbdddca301db33"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0450548718421Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "sha256": "d4ac5b3d01b2668629167085af210536046c36651c7fb234c9e9be518b8e02b2"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0450548718421Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "sha256": "4a28e7455dc7db6b4aec865659043e762b677d230d24c19506c5633ef92af285"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0452157798860Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "sha256": "f1ed80c5c4841a590f0a1b0a47ac0b0249177acce5c1d55c1d419cc441e69f37"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0452157798860Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "sha256": "975de556935b3889536494733c0ce761b87f6d5ab23147e71a2a1c398bfbc339"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0454327372258Z-disposable-expanded-summoning-native-profile\\runtime-result.json",
+          "sha256": "8718511f37e4c171c437973edb193042c8d545487f1eda6bf03b229839f44f25"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0454327372258Z-disposable-expanded-summoning-native-profile\\runtime-loaded-build-identity.json",
+          "sha256": "ef5f57dc6893eb3e2da686adfbae5b6f914c9313d9408685e0fedfb62473af41"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0454327372258Z-disposable-expanded-summoning-native-profile\\expanded-summoning-native-profile.json",
+          "sha256": "e9eb9b6aa021f31c3bf18f6dad22c026f011897ebe0e942511fbcc92ca0dda55"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\remaining-native-qualification-summary.json",
+          "sha256": "4e1d744b72c05a87090eccac9723f75a35acd2f5033bac7e273245c8a2cc4c4b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\Collect-RemainingNativeQualification.py",
+          "sha256": "e31e65d494c2123535de27cd039dd9787f042ded1e10d703b067c2a8afc7fabf"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "packageSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+          "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+          "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8"
+        }
+      ]
+    },
+    {
+      "id": "call-of-the-wild",
+      "result": "PASS",
+      "action": "Fresh matching final-candidate native observations",
+      "transactions": [
+        "compat-20261012T040737Z-e6f890bbdf5e",
+        "compat-20261012T045705Z-2f9516ea0bbc"
+      ],
+      "nativeCases": [
+        {
+          "step": "cotw-first-native",
+          "scenario": "mod-load-smoke",
+          "runId": "20261012T0409108568207Z-f9f13b4a002540ea92e4b3bfdcbbe5bf",
+          "result": "PASS",
+          "assertions": 3,
+          "durationMilliseconds": 99106,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0409108568207Z-mod-load-smoke\\runtime-result.json",
+          "resultSha256": "5db61064939dcbfbf64639bf47218df2e5d96b648c77079f5d766fefa69c2788",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0409108568207Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "09a71cd7ec17ca6ea60df8b987cb870182144576921cb6129d39b15cf5c598d2"
+        },
+        {
+          "step": "cotw-first-native",
+          "scenario": "observe-optional-mod-compatibility",
+          "runId": "20261012T0411122457665Z-cc3098fc081e4b499203ea1fbad49d15",
+          "result": "PASS",
+          "assertions": 23,
+          "durationMilliseconds": 97529,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0411122375759Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "resultSha256": "58e0e0635e09caafcd8bf454af14ada07cdc3b4473fa538b5be18a0f0413a8fa",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0411122375759Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "e53cea2f8091dd1efb653e1871e6711fb637fd799a20320ac768ca7bca874518"
+        },
+        {
+          "step": "cotw-first-native",
+          "scenario": "observe-expanded-summoning-inventory",
+          "runId": "20261012T0413079583429Z-a278dce230b24382ae84e8cb0f80a51e",
+          "result": "PASS",
+          "assertions": 50,
+          "durationMilliseconds": 240206,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0413079583429Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "resultSha256": "65f9ce83e1fb09847d21a12d575c65f05a50d70393fe255080ce1e77059965f8",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0413079583429Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "c424cf824ccc5aea726e1e279873b81b2bc05a289c212d301f9e10c6053aeb36"
+        },
+        {
+          "step": "cotw-first-native",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0417282910133Z-f8a48a1a4aae4dd3b9699b53269efa53",
+          "result": "PASS",
+          "assertions": 47,
+          "durationMilliseconds": 98342,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0417282910133Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "5e6cecf6e828d90c14ed24a83b35a58ace88e513229f2a2199ca470000ff9060",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0417282910133Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "61f9bedfe28e837e1f55d0629bb15d1fcca0363bf9b8b71599720bd08b7fd235"
+        },
+        {
+          "step": "cotw-first-native",
+          "scenario": "observe-brown-fur-cotw-contract",
+          "runId": "20261012T0419248315708Z-7a5bd369b1034646b6be788442c7ded1",
+          "result": "PASS",
+          "assertions": 14,
+          "durationMilliseconds": 98771,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0419248315708Z-observe-brown-fur-cotw-contract\\runtime-result.json",
+          "resultSha256": "b9159deb8e947bcecacf5930efe1cf84289b843e8d8518aff69a725de3e2d49c",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0419248315708Z-observe-brown-fur-cotw-contract\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "fa15e82a3907bc508990e018d10c8e290508b9ca782bb4cc333726e0216d247a"
+        },
+        {
+          "step": "cotw-repeat-native",
+          "scenario": "mod-load-smoke",
+          "runId": "20261012T0458442617026Z-9aec2815cb664df787b482ab01e49a7a",
+          "result": "PASS",
+          "assertions": 3,
+          "durationMilliseconds": 100085,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0458442617026Z-mod-load-smoke\\runtime-result.json",
+          "resultSha256": "b839225a611005f7d096b4ca668542aae8e2f6c414e0f75a467931fe0daa11ca",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0458442617026Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "e37bc3862f77cdbf5fa2b853a46d00b468b9f7516821f020da7ba4c53e3ac1b1"
+        },
+        {
+          "step": "cotw-repeat-native",
+          "scenario": "observe-optional-mod-compatibility",
+          "runId": "20261012T0500458290813Z-551fad345358448f8a154a07945caff8",
+          "result": "PASS",
+          "assertions": 23,
+          "durationMilliseconds": 100049,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0500458290813Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "resultSha256": "a5452eafcc64e8b058932dfe317055634fa6e6a7b01bfc16384b2126767af59d",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0500458290813Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "45d21a70b3058edc6dc2b680030bece34a01ca1a788acf93a243e126b2dae3c3"
+        },
+        {
+          "step": "cotw-repeat-native",
+          "scenario": "observe-expanded-summoning-inventory",
+          "runId": "20261012T0502441381913Z-b24472b8be3b42e08d6a8a37af453547",
+          "result": "PASS",
+          "assertions": 50,
+          "durationMilliseconds": 240284,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0502441225725Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "resultSha256": "bad203ba8b2754ede0a42c26c95d91eec6e04a347b63a75e7a25b1d132ddeb04",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0502441225725Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "f17b990803b68b6db48287abe24bf8df57e411ab10bb2d62df029604172173fa"
+        },
+        {
+          "step": "cotw-repeat-native",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0507043710994Z-c7da61408d5141c3aa8bcddd8612c97d",
+          "result": "PASS",
+          "assertions": 47,
+          "durationMilliseconds": 97887,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0507043554500Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "48679b4b0dd55353262a65154699936e3dca3f57b6efbb68232aae0cab01bccc",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0507043554500Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "4607fda0a78ae3a29ed023b6e6f9e6dddeaf50506728d0a4bd4f63a00df21394"
+        }
+      ],
+      "restorationVerified": true,
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\cotw-first-native-receipt.json",
+          "sha256": "9f478e8d7a55f7bbe3c5e62e3a48550810b861d6e3e73f1d5068a0eb4107b6d4"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\cotw-repeat-native-receipt.json",
+          "sha256": "5247b99b93c2b81ea96673096fd7e8c5b8680361a0b920cf3d85359c4ba41a4a"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0409108568207Z-mod-load-smoke\\runtime-result.json",
+          "sha256": "5db61064939dcbfbf64639bf47218df2e5d96b648c77079f5d766fefa69c2788"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0409108568207Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "sha256": "09a71cd7ec17ca6ea60df8b987cb870182144576921cb6129d39b15cf5c598d2"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0411122375759Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "sha256": "58e0e0635e09caafcd8bf454af14ada07cdc3b4473fa538b5be18a0f0413a8fa"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0411122375759Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "sha256": "e53cea2f8091dd1efb653e1871e6711fb637fd799a20320ac768ca7bca874518"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0413079583429Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "sha256": "65f9ce83e1fb09847d21a12d575c65f05a50d70393fe255080ce1e77059965f8"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0413079583429Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "sha256": "c424cf824ccc5aea726e1e279873b81b2bc05a289c212d301f9e10c6053aeb36"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0417282910133Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "5e6cecf6e828d90c14ed24a83b35a58ace88e513229f2a2199ca470000ff9060"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0417282910133Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "61f9bedfe28e837e1f55d0629bb15d1fcca0363bf9b8b71599720bd08b7fd235"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0419248315708Z-observe-brown-fur-cotw-contract\\runtime-result.json",
+          "sha256": "b9159deb8e947bcecacf5930efe1cf84289b843e8d8518aff69a725de3e2d49c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0419248315708Z-observe-brown-fur-cotw-contract\\runtime-loaded-build-identity.json",
+          "sha256": "fa15e82a3907bc508990e018d10c8e290508b9ca782bb4cc333726e0216d247a"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0458442617026Z-mod-load-smoke\\runtime-result.json",
+          "sha256": "b839225a611005f7d096b4ca668542aae8e2f6c414e0f75a467931fe0daa11ca"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0458442617026Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "sha256": "e37bc3862f77cdbf5fa2b853a46d00b468b9f7516821f020da7ba4c53e3ac1b1"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0500458290813Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "sha256": "a5452eafcc64e8b058932dfe317055634fa6e6a7b01bfc16384b2126767af59d"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0500458290813Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "sha256": "45d21a70b3058edc6dc2b680030bece34a01ca1a788acf93a243e126b2dae3c3"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0502441225725Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "sha256": "bad203ba8b2754ede0a42c26c95d91eec6e04a347b63a75e7a25b1d132ddeb04"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0502441225725Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "sha256": "f17b990803b68b6db48287abe24bf8df57e411ab10bb2d62df029604172173fa"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0507043554500Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "48679b4b0dd55353262a65154699936e3dca3f57b6efbb68232aae0cab01bccc"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0507043554500Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "4607fda0a78ae3a29ed023b6e6f9e6dddeaf50506728d0a4bd4f63a00df21394"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\remaining-native-qualification-summary.json",
+          "sha256": "4e1d744b72c05a87090eccac9723f75a35acd2f5033bac7e273245c8a2cc4c4b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\Collect-RemainingNativeQualification.py",
+          "sha256": "e31e65d494c2123535de27cd039dd9787f042ded1e10d703b067c2a8afc7fabf"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "packageSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+          "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+          "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8"
+        }
+      ]
+    },
+    {
+      "id": "arms-armor",
+      "result": "PASS",
+      "action": "Fresh matching final-candidate native observations",
+      "transactions": [
+        "compat-20261012T042125Z-67bb5d3ca028"
+      ],
+      "nativeCases": [
+        {
+          "step": "arms-armor-native",
+          "scenario": "mod-load-smoke",
+          "runId": "20261012T0422591524579Z-8dd82a18ab984c988773e78986a1cbd7",
+          "result": "PASS",
+          "assertions": 3,
+          "durationMilliseconds": 66501,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0422591524579Z-mod-load-smoke\\runtime-result.json",
+          "resultSha256": "6e6066999b55909f01295c2f33a8f73a68b5307d822d1a749f155137ad69c9cd",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0422591524579Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "8cd507636d97e049dabc199881f4cfa51fa20757354afa37cd5d543cf0c8c157"
+        },
+        {
+          "step": "arms-armor-native",
+          "scenario": "observe-optional-mod-compatibility",
+          "runId": "20261012T0424237766147Z-8d91f1e55992488aa6c102bcd6083426",
+          "result": "PASS",
+          "assertions": 16,
+          "durationMilliseconds": 64865,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0424237766147Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "resultSha256": "2ecbb86c781551bdbfef4550436e868bf74e3ee922929ad4441e755d199547b7",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0424237766147Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "6f3574dba823ecdb6d0021d73229cb366b0634c51b4f64ca27c11dcffa06150f"
+        },
+        {
+          "step": "arms-armor-native",
+          "scenario": "observe-expanded-summoning-inventory",
+          "runId": "20261012T0425457012538Z-4e066e5a5ca440e586ab6d70fe9ecde2",
+          "result": "PASS",
+          "assertions": 50,
+          "durationMilliseconds": 119942,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0425457012538Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "resultSha256": "94792144cfe558c6767301b4c90895a68110444f19c8487c8e7a78f5f280d84e",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0425457012538Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "a94ae615a272def3baf70e9aa356afdb079a8d6fcac0615c832967e008f08774"
+        }
+      ],
+      "restorationVerified": true,
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\arms-armor-native-receipt.json",
+          "sha256": "10780f948929876d3f81fba0f8f8ea796e3dddd6e5c32651d0015e1363875ab5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0422591524579Z-mod-load-smoke\\runtime-result.json",
+          "sha256": "6e6066999b55909f01295c2f33a8f73a68b5307d822d1a749f155137ad69c9cd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0422591524579Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "sha256": "8cd507636d97e049dabc199881f4cfa51fa20757354afa37cd5d543cf0c8c157"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0424237766147Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "sha256": "2ecbb86c781551bdbfef4550436e868bf74e3ee922929ad4441e755d199547b7"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0424237766147Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "sha256": "6f3574dba823ecdb6d0021d73229cb366b0634c51b4f64ca27c11dcffa06150f"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0425457012538Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "sha256": "94792144cfe558c6767301b4c90895a68110444f19c8487c8e7a78f5f280d84e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0425457012538Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "sha256": "a94ae615a272def3baf70e9aa356afdb079a8d6fcac0615c832967e008f08774"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\remaining-native-qualification-summary.json",
+          "sha256": "4e1d744b72c05a87090eccac9723f75a35acd2f5033bac7e273245c8a2cc4c4b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\Collect-RemainingNativeQualification.py",
+          "sha256": "e31e65d494c2123535de27cd039dd9787f042ded1e10d703b067c2a8afc7fabf"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "packageSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+          "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+          "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8"
+        }
+      ]
+    },
+    {
+      "id": "toggle-custom-soundpacks",
+      "result": "PASS",
+      "action": "Fresh matching final-candidate native observations",
+      "transactions": [
+        "compat-20261012T042806Z-22a5fa4f5fc5"
+      ],
+      "nativeCases": [
+        {
+          "step": "soundpacks-native",
+          "scenario": "mod-load-smoke",
+          "runId": "20261012T0429352778238Z-eef7e82191274f54aba7f522873efb6a",
+          "result": "PASS",
+          "assertions": 3,
+          "durationMilliseconds": 67478,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0429352778238Z-mod-load-smoke\\runtime-result.json",
+          "resultSha256": "a6a7dce15d3386b963e85ac9b6f20af30f538fddf820f6975573bdae163a9547",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0429352778238Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "90a67dc96b77a579d2e391d4548b47c2cc5b206a6b8fd2be205fc57a83cbe403"
+        },
+        {
+          "step": "soundpacks-native",
+          "scenario": "observe-optional-mod-compatibility",
+          "runId": "20261012T0431009094971Z-0bcd14d693844f498a0dcaa71eacdca8",
+          "result": "PASS",
+          "assertions": 16,
+          "durationMilliseconds": 65147,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0431009094971Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "resultSha256": "6c1b6d3ef9e3663bc43bf9cde0edda1ba7e5e788ca9c3d75fc3a9c80539ed861",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0431009094971Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "8a16a0009b38b487abc45550596f73b88e7e78c0552b8c6db81bd04f39d68e19"
+        },
+        {
+          "step": "soundpacks-native",
+          "scenario": "observe-expanded-summoning-inventory",
+          "runId": "20261012T0432226845903Z-2c8206a7bf1240f6a91af588b9c66c37",
+          "result": "PASS",
+          "assertions": 50,
+          "durationMilliseconds": 120360,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0432226845903Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "resultSha256": "043ca1c9f0144e2d8fa2eb98a1cea8906f1418b00e1181a4c1bd9cd62cc17d06",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0432226845903Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "c5df05965deb7a092658ee907a955dc7ffa0f316634d71863d67849af99b1aaf"
+        }
+      ],
+      "restorationVerified": true,
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\soundpacks-native-receipt.json",
+          "sha256": "2df855274453a5b38dbd2ef8849dcbad6eedb832321d3eb1e8bc3b772d5793d0"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0429352778238Z-mod-load-smoke\\runtime-result.json",
+          "sha256": "a6a7dce15d3386b963e85ac9b6f20af30f538fddf820f6975573bdae163a9547"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0429352778238Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "sha256": "90a67dc96b77a579d2e391d4548b47c2cc5b206a6b8fd2be205fc57a83cbe403"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0431009094971Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "sha256": "6c1b6d3ef9e3663bc43bf9cde0edda1ba7e5e788ca9c3d75fc3a9c80539ed861"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0431009094971Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "sha256": "8a16a0009b38b487abc45550596f73b88e7e78c0552b8c6db81bd04f39d68e19"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0432226845903Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "sha256": "043ca1c9f0144e2d8fa2eb98a1cea8906f1418b00e1181a4c1bd9cd62cc17d06"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0432226845903Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "sha256": "c5df05965deb7a092658ee907a955dc7ffa0f316634d71863d67849af99b1aaf"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\remaining-native-qualification-summary.json",
+          "sha256": "4e1d744b72c05a87090eccac9723f75a35acd2f5033bac7e273245c8a2cc4c4b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\Collect-RemainingNativeQualification.py",
+          "sha256": "e31e65d494c2123535de27cd039dd9787f042ded1e10d703b067c2a8afc7fabf"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "packageSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+          "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+          "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8"
+        }
+      ]
+    },
+    {
+      "id": "high-risk-combined",
+      "result": "PASS",
+      "action": "Fresh matching final-candidate native observations",
+      "transactions": [
+        "compat-20261012T043443Z-dfcd49945fc0",
+        "compat-20261012T050904Z-51f9760423cd"
+      ],
+      "nativeCases": [
+        {
+          "step": "combined-first-native",
+          "scenario": "mod-load-smoke",
+          "runId": "20261012T0436154638370Z-178450747432415c880874feefe240c6",
+          "result": "PASS",
+          "assertions": 3,
+          "durationMilliseconds": 102650,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0436154557647Z-mod-load-smoke\\runtime-result.json",
+          "resultSha256": "4a2d718472ac63d3c81d1da21c95856473b02abeb5c9d1240cf35d1de6bf7911",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0436154557647Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "9ab77a4c2dd29685319c5bea8935255215fa0579d38c144cb34c8b8dd4fa0231"
+        },
+        {
+          "step": "combined-first-native",
+          "scenario": "observe-optional-mod-compatibility",
+          "runId": "20261012T0438192838231Z-f7925b6b1f554b4f8b3a486da2de2915",
+          "result": "PASS",
+          "assertions": 23,
+          "durationMilliseconds": 98983,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0438192738105Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "resultSha256": "bbfd1ed0b7f89be91ff9c803010158d2b7972b1d802498a39027878f9ba5825d",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0438192738105Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "c689740cdef90cec4fcdd54743f807a834487d15935e9a28f4e6441b13dce953"
+        },
+        {
+          "step": "combined-first-native",
+          "scenario": "observe-expanded-summoning-inventory",
+          "runId": "20261012T0440169874752Z-be65ee3b12a24ed4aca9260f99311de8",
+          "result": "PASS",
+          "assertions": 50,
+          "durationMilliseconds": 238456,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0440169824799Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "resultSha256": "2d360b9c3767b4483cb8271fee1c8ff7cc1ec814279ba9b1a87086a1e2552438",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0440169824799Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "d31700437b376232c513cef9da043eaf59805dbada719389a6f136819459b4b5"
+        },
+        {
+          "step": "combined-first-native",
+          "scenario": "disposable-expanded-summoning-native-profile",
+          "runId": "20261012T0444352418546Z-591c0b9fe3ed42358b0282a9fa316b10",
+          "result": "PASS",
+          "assertions": 62,
+          "durationMilliseconds": 181081,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0444352261984Z-disposable-expanded-summoning-native-profile\\runtime-result.json",
+          "resultSha256": "a3a98bfa1b4b8badd0979988af0423d698df9986696929e8adfef6826af46f6c",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0444352261984Z-disposable-expanded-summoning-native-profile\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "2951d8c2a100b0158668fcccf3090db07364b66375e9546fbc1ab77566cad5de"
+        },
+        {
+          "step": "combined-repeat-native",
+          "scenario": "mod-load-smoke",
+          "runId": "20261012T0510444354408Z-7b5ea383019c4a05b98684f0e36147e5",
+          "result": "PASS",
+          "assertions": 3,
+          "durationMilliseconds": 102188,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0510444354408Z-mod-load-smoke\\runtime-result.json",
+          "resultSha256": "14bffa781ad827d2b5526ad56d1a6cbda7ec89102f76eba5412f877e3adb06fa",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0510444354408Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "eeaf9560b8e4b3b3d27221837cf46fc8087ca6f33daecfea083581e27b493f64"
+        },
+        {
+          "step": "combined-repeat-native",
+          "scenario": "observe-optional-mod-compatibility",
+          "runId": "20261012T0512499155384Z-b36238bc685046508e1cb17e20cbdce4",
+          "result": "PASS",
+          "assertions": 23,
+          "durationMilliseconds": 98960,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0512499155384Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "resultSha256": "e0bc720884117b3728f3251e14ad55016b839a2b8f1f1773c6ca83b9b1173246",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0512499155384Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "5752f6fb66ab27dc087258e64b019c19d8113eb789ec80b2ca40ba68d1a7ba03"
+        },
+        {
+          "step": "combined-repeat-native",
+          "scenario": "observe-expanded-summoning-inventory",
+          "runId": "20261012T0514477277178Z-24492c63087749fda6c4b7de264c2d31",
+          "result": "PASS",
+          "assertions": 50,
+          "durationMilliseconds": 242141,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0514477120999Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "resultSha256": "460168d6d0e8d646afdccd907a90dc4757ddf8c261264d3640cc50fcc2fe8cf6",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0514477120999Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "e0d2416e34f7aa262c84a4b417bcb10d6e22453c09e7bb934328e1f121ae1cda"
+        },
+        {
+          "step": "combined-repeat-native",
+          "scenario": "disposable-expanded-summoning-native-profile",
+          "runId": "20261012T0519095808089Z-cc38819a82f646ff84dbcfa955131e41",
+          "result": "PASS",
+          "assertions": 62,
+          "durationMilliseconds": 180197,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0519095808089Z-disposable-expanded-summoning-native-profile\\runtime-result.json",
+          "resultSha256": "3bc30d6a9c835598e1f6bd1d052c7ba59991aea217efc9ce7eabf4c846e9654f",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0519095808089Z-disposable-expanded-summoning-native-profile\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "78d21ce1eb6ca72643d80b72454b62a7fe9b9503ff092be0d14287dcd3b3bdde"
+        }
+      ],
+      "restorationVerified": true,
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\combined-first-native-receipt.json",
+          "sha256": "b0617bf5435fd1068ae2cf250734a8c5590f48869d343ab7807379f8e467794a"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\combined-repeat-native-receipt.json",
+          "sha256": "f29dbe3b6f7c5555e4659ef95d6cd8af619e575ec0d0abd9196ad6caf5a7075e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0436154557647Z-mod-load-smoke\\runtime-result.json",
+          "sha256": "4a2d718472ac63d3c81d1da21c95856473b02abeb5c9d1240cf35d1de6bf7911"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0436154557647Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "sha256": "9ab77a4c2dd29685319c5bea8935255215fa0579d38c144cb34c8b8dd4fa0231"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0438192738105Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "sha256": "bbfd1ed0b7f89be91ff9c803010158d2b7972b1d802498a39027878f9ba5825d"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0438192738105Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "sha256": "c689740cdef90cec4fcdd54743f807a834487d15935e9a28f4e6441b13dce953"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0440169824799Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "sha256": "2d360b9c3767b4483cb8271fee1c8ff7cc1ec814279ba9b1a87086a1e2552438"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0440169824799Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "sha256": "d31700437b376232c513cef9da043eaf59805dbada719389a6f136819459b4b5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0444352261984Z-disposable-expanded-summoning-native-profile\\runtime-result.json",
+          "sha256": "a3a98bfa1b4b8badd0979988af0423d698df9986696929e8adfef6826af46f6c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0444352261984Z-disposable-expanded-summoning-native-profile\\runtime-loaded-build-identity.json",
+          "sha256": "2951d8c2a100b0158668fcccf3090db07364b66375e9546fbc1ab77566cad5de"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0444352261984Z-disposable-expanded-summoning-native-profile\\expanded-summoning-native-profile.json",
+          "sha256": "3054f8c20faf2ef565929bea35e34c6f4ad929431e5b2029dd5fc5ee84036d4e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0510444354408Z-mod-load-smoke\\runtime-result.json",
+          "sha256": "14bffa781ad827d2b5526ad56d1a6cbda7ec89102f76eba5412f877e3adb06fa"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0510444354408Z-mod-load-smoke\\runtime-loaded-build-identity.json",
+          "sha256": "eeaf9560b8e4b3b3d27221837cf46fc8087ca6f33daecfea083581e27b493f64"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0512499155384Z-observe-optional-mod-compatibility\\runtime-result.json",
+          "sha256": "e0bc720884117b3728f3251e14ad55016b839a2b8f1f1773c6ca83b9b1173246"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0512499155384Z-observe-optional-mod-compatibility\\runtime-loaded-build-identity.json",
+          "sha256": "5752f6fb66ab27dc087258e64b019c19d8113eb789ec80b2ca40ba68d1a7ba03"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0514477120999Z-observe-expanded-summoning-inventory\\runtime-result.json",
+          "sha256": "460168d6d0e8d646afdccd907a90dc4757ddf8c261264d3640cc50fcc2fe8cf6"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0514477120999Z-observe-expanded-summoning-inventory\\runtime-loaded-build-identity.json",
+          "sha256": "e0d2416e34f7aa262c84a4b417bcb10d6e22453c09e7bb934328e1f121ae1cda"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0519095808089Z-disposable-expanded-summoning-native-profile\\runtime-result.json",
+          "sha256": "3bc30d6a9c835598e1f6bd1d052c7ba59991aea217efc9ce7eabf4c846e9654f"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0519095808089Z-disposable-expanded-summoning-native-profile\\runtime-loaded-build-identity.json",
+          "sha256": "78d21ce1eb6ca72643d80b72454b62a7fe9b9503ff092be0d14287dcd3b3bdde"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0519095808089Z-disposable-expanded-summoning-native-profile\\expanded-summoning-native-profile.json",
+          "sha256": "6eae50ed3f75651b9d10b0faf9f0df3625c687545eb2b49a5ce34df56759b44e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\remaining-native-qualification-summary.json",
+          "sha256": "4e1d744b72c05a87090eccac9723f75a35acd2f5033bac7e273245c8a2cc4c4b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\Collect-RemainingNativeQualification.py",
+          "sha256": "e31e65d494c2123535de27cd039dd9787f042ded1e10d703b067c2a8afc7fabf"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "packageSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+          "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+          "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8"
+        }
+      ]
+    },
+    {
+      "id": "required-module-states",
+      "result": "PASS",
+      "action": "Fresh matching final-candidate native observations",
+      "transactions": [
+        "compat-20261012T052234Z-8c2539512f7c",
+        "compat-20261012T052538Z-ec3acc5bee61",
+        "compat-20261012T052854Z-827dcaa2252e",
+        "compat-20261012T053206Z-35f7f8be2ace",
+        "compat-20261012T053519Z-fe905777c8d6",
+        "compat-20261012T053833Z-9a0210c0e850",
+        "compat-20261012T054146Z-757b1f6542f4",
+        "compat-20261012T054504Z-296600faafcd",
+        "compat-20261012T054817Z-99f42fcbb948",
+        "compat-20261012T055133Z-24eb2430c8ad",
+        "compat-20261012T055446Z-6c98f2cc943d",
+        "compat-20261012T055802Z-76d51f3f7b3b",
+        "compat-20261012T060117Z-e3e1391c8271",
+        "compat-20261012T060432Z-5065241e8c21"
+      ],
+      "nativeCases": [
+        {
+          "step": "module-state-13",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0524108198986Z-58af9899315b4daba04238c90a42baae",
+          "result": "PASS",
+          "assertions": 47,
+          "durationMilliseconds": 66320,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0524107664949Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "f1fba0ea87dbb71b425fd53eff8477a902ac05edcaf634d53703259045e08ab0",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0524107664949Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "d4c3e710183162dd754692fae98295b84f41a532d80e73c32cfc7d67e9b9a46f"
+        },
+        {
+          "step": "module-state-12",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0527283863869Z-4848eb6242eb4d5aba08e1c34cf120e6",
+          "result": "PASS",
+          "assertions": 47,
+          "durationMilliseconds": 66015,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0527283803381Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "2f9fbd7d13fe5c19926d3e46ad003fcb4ed8896e366315e883bd35edf017bfdc",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0527283803381Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "a4bd5b8c38b49a0bf44b056efbc342ef70fb798ea1c0e811e68f45a0075fc1c2"
+        },
+        {
+          "step": "module-state-11",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0530398394541Z-0e487e8916c447eba23e03e25c1fafa7",
+          "result": "PASS",
+          "assertions": 47,
+          "durationMilliseconds": 66435,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0530398394541Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "dd746b441b21c8a66358faf6534f224fddd90bef13c5654c472718c8e48463eb",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0530398394541Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "7ab1bc98bdde9f8522b5f8150600d83f0359fe59831da130267ba98c8873c70e"
+        },
+        {
+          "step": "module-state-10",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0533535438536Z-9b3dbb620f9b44c0a32c2d048a0dbc76",
+          "result": "PASS",
+          "assertions": 47,
+          "durationMilliseconds": 66243,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0533535282898Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "6d28b68d04f5cc3fb0e75b1ddb4c48ce4d1e6cd6bc95c7a9ea56f410c256e702",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0533535282898Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "f40fe5bbfe61eea1c4a1e4197513a43b095ada522548bc2b600b5a3e1be16d6c"
+        },
+        {
+          "step": "module-state-9",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0537062054798Z-68d239620d72423089b5298515acb9ae",
+          "result": "PASS",
+          "assertions": 47,
+          "durationMilliseconds": 66680,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0537061993949Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "d464f37a9bca2daa04c40c9c482180af000395e0579db36ef344533d7a6ff5f8",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0537061993949Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "8ff758e6d37cfd4586b8b057322a2dc6635493c17325df0b7a24e88268ba868f"
+        },
+        {
+          "step": "module-state-8",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0540202061150Z-87c6d3a7460a43969c379152bed4895f",
+          "result": "PASS",
+          "assertions": 47,
+          "durationMilliseconds": 66836,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0540202061150Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "73e2fd0d77140b95b1a31c357a41e0f8093274322f89b06193659e6d935cf527",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0540202061150Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "7b9b164401010c9df98ba451ab3669e03385353a66ecf8a5cd53d508b14f2539"
+        },
+        {
+          "step": "module-state-7",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0543362475802Z-7d98fb5b093e41dc8b06074160a83a10",
+          "result": "PASS",
+          "assertions": 46,
+          "durationMilliseconds": 66713,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0543362320586Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "1de870924d88ef1fd617c86e14e92ea7a8db3503960d62f00841881f04a98dc7",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0543362320586Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "143523734918fd867e190d7dba27f579c8c18dd2966071fbed907f5754d25205"
+        },
+        {
+          "step": "module-state-6",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0546507220521Z-b50a4fd49cf747d4a7649705d429b6dd",
+          "result": "PASS",
+          "assertions": 46,
+          "durationMilliseconds": 66349,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0546507064609Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "34494383a39323d309d112f029f068ebc811577a85b54c2b0afd4e9357478575",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0546507064609Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "f748e6146c5b30837202813f7e919b9a13a7380f0403c2cb752e30d86472fb44"
+        },
+        {
+          "step": "module-state-5",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0550066278053Z-c9c9b8d633b74550865f57286e21736b",
+          "result": "PASS",
+          "assertions": 46,
+          "durationMilliseconds": 66091,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0550066121750Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "f4dc2fd627d1c8256907892d787ba588c03794c6463204e990bbd890ae53594b",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0550066121750Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "6b095f58adda3c2c09114bc734a8e65709ca098781fe9025f625d69981f8821a"
+        },
+        {
+          "step": "module-state-4",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0553204858845Z-428d75a79a864bbc982030504bd2cb22",
+          "result": "PASS",
+          "assertions": 46,
+          "durationMilliseconds": 66586,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0553204758168Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "1289866ae2b8a3d345185da5f4d88f9a9b8b745ba9c6285fd32861f4eb5afab8",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0553204758168Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "f12a2c9279128dbfcf12e19504c24486135bd552ce16e9e36a853444addf83b5"
+        },
+        {
+          "step": "module-state-3",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0556353871574Z-1fc7f49dc00b4797b1dba58f1727d85b",
+          "result": "PASS",
+          "assertions": 46,
+          "durationMilliseconds": 66019,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0556353715332Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "0659670d6140bdcab283657b230f8ea57b32180f470acbfc6b6133271b016082",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0556353715332Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "5426b45b18a80783bdb3ffae49d4dcacbace9213505e857180d26dcae905618a"
+        },
+        {
+          "step": "module-state-2",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0559500961454Z-a8f30f42c3ea487e98b42a8fd85b29ec",
+          "result": "PASS",
+          "assertions": 46,
+          "durationMilliseconds": 67727,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0559500961454Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "bbf60aaa5f95f211ad7fbfffb26038eec15e7ae5fb225e87ffbcc0a7caa41ca6",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0559500961454Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "f6e731ed284238b812c7e27a27107a0ab5d1d1e376db5935f6bab1e6dc8168be"
+        },
+        {
+          "step": "module-state-1",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0603057654998Z-dc5829f6b46d4fdaa79681b53a7813ec",
+          "result": "PASS",
+          "assertions": 46,
+          "durationMilliseconds": 66471,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0603057497981Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "e686ee3e68dca81bd64b61d5e719669c58c119a118943ab5395d1cdece06f83e",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0603057497981Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "62203340b7d4f8347d86309fa65e0d2cbf767bcac0ae59eec0b5f09e7e35d81e"
+        },
+        {
+          "step": "module-state-0",
+          "scenario": "observe-feature-module-settings",
+          "runId": "20261012T0606216256331Z-89721d941265490a9976505bd2e5cea8",
+          "result": "PASS",
+          "assertions": 46,
+          "durationMilliseconds": 66092,
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "resultPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0606216116158Z-observe-feature-module-settings\\runtime-result.json",
+          "resultSha256": "fc0d9a48ae96918b21e29f3a024c2dff066b3aeef516c2f51abe2f19f3ab4013",
+          "loadedIdentityPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0606216116158Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "loadedIdentitySha256": "59228094f6e7097f24e96628afe643c65626d39929f79b93c41ba9af2a24a3a7"
+        }
+      ],
+      "restorationVerified": true,
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-13-receipt.json",
+          "sha256": "f47d01e379560bd2fc114bdc318b1bcb7c09d550afa059e65b9f1ff6fc2b4224"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-12-receipt.json",
+          "sha256": "3fe30d2d0ea4375d5c103f84eefed591c3014e423ba290eef8e65a42591237d6"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-11-receipt.json",
+          "sha256": "9f3080983b653c860fb3b8141630360034b8626da7c096ece8ba4afb9004c29f"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-10-receipt.json",
+          "sha256": "73c059eac9aabc441c6c7066a9ea823806d5d80d03b957ade2a2576b211089ac"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-9-receipt.json",
+          "sha256": "331b62b90601a746443bcf1245a7d5f7e8e68fbd2e018c863a1fbd07af19db7d"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-8-receipt.json",
+          "sha256": "1f16af6f4c99da6d4ad5ebfaf479c5569cb1fe1bd1f42b7787ccaa7a3ac247dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-7-receipt.json",
+          "sha256": "cf1648858c79a01dafa362e862fe3b0b98639ee687c0f64d054aa1e7c2d6cff9"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-6-receipt.json",
+          "sha256": "c4344c56a199768f71064187b5a4a9f623d1d968fe7e2f155593855a9599882e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-5-receipt.json",
+          "sha256": "ccaf4aac528769df35eb4223aedddeda1fd5aa8999d0bc79d47e85d5c11e0248"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-4-receipt.json",
+          "sha256": "bbcad93fad56f35abf9074e08eb7df6e49b1d73c7bf63859594400531c5eebd2"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-3-receipt.json",
+          "sha256": "4ef9fca5eaf23123664691254f9a9495a69c1b5913b60f147f3d60d56270a4b7"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-2-receipt.json",
+          "sha256": "a1a10dba8114958e9fe5482675cedc9075b8bf0ee7b496f14c0c5913977742c6"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-1-receipt.json",
+          "sha256": "fa1e857d79333183add0000989fdae13406d3e934b22c8f8dc87006fb1bf5808"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\module-state-0-receipt.json",
+          "sha256": "3d4845dd3a33f7344768f0e619bc3009ba8202175b4889e7a4819c6d53b4c84c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0524107664949Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "f1fba0ea87dbb71b425fd53eff8477a902ac05edcaf634d53703259045e08ab0"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0524107664949Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "d4c3e710183162dd754692fae98295b84f41a532d80e73c32cfc7d67e9b9a46f"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0527283803381Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "2f9fbd7d13fe5c19926d3e46ad003fcb4ed8896e366315e883bd35edf017bfdc"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0527283803381Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "a4bd5b8c38b49a0bf44b056efbc342ef70fb798ea1c0e811e68f45a0075fc1c2"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0530398394541Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "dd746b441b21c8a66358faf6534f224fddd90bef13c5654c472718c8e48463eb"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0530398394541Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "7ab1bc98bdde9f8522b5f8150600d83f0359fe59831da130267ba98c8873c70e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0533535282898Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "6d28b68d04f5cc3fb0e75b1ddb4c48ce4d1e6cd6bc95c7a9ea56f410c256e702"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0533535282898Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "f40fe5bbfe61eea1c4a1e4197513a43b095ada522548bc2b600b5a3e1be16d6c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0537061993949Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "d464f37a9bca2daa04c40c9c482180af000395e0579db36ef344533d7a6ff5f8"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0537061993949Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "8ff758e6d37cfd4586b8b057322a2dc6635493c17325df0b7a24e88268ba868f"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0540202061150Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "73e2fd0d77140b95b1a31c357a41e0f8093274322f89b06193659e6d935cf527"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0540202061150Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "7b9b164401010c9df98ba451ab3669e03385353a66ecf8a5cd53d508b14f2539"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0543362320586Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "1de870924d88ef1fd617c86e14e92ea7a8db3503960d62f00841881f04a98dc7"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0543362320586Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "143523734918fd867e190d7dba27f579c8c18dd2966071fbed907f5754d25205"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0546507064609Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "34494383a39323d309d112f029f068ebc811577a85b54c2b0afd4e9357478575"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0546507064609Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "f748e6146c5b30837202813f7e919b9a13a7380f0403c2cb752e30d86472fb44"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0550066121750Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "f4dc2fd627d1c8256907892d787ba588c03794c6463204e990bbd890ae53594b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0550066121750Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "6b095f58adda3c2c09114bc734a8e65709ca098781fe9025f625d69981f8821a"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0553204758168Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "1289866ae2b8a3d345185da5f4d88f9a9b8b745ba9c6285fd32861f4eb5afab8"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0553204758168Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "f12a2c9279128dbfcf12e19504c24486135bd552ce16e9e36a853444addf83b5"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0556353715332Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "0659670d6140bdcab283657b230f8ea57b32180f470acbfc6b6133271b016082"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0556353715332Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "5426b45b18a80783bdb3ffae49d4dcacbace9213505e857180d26dcae905618a"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0559500961454Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "bbf60aaa5f95f211ad7fbfffb26038eec15e7ae5fb225e87ffbcc0a7caa41ca6"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0559500961454Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "f6e731ed284238b812c7e27a27107a0ab5d1d1e376db5935f6bab1e6dc8168be"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0603057497981Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "e686ee3e68dca81bd64b61d5e719669c58c119a118943ab5395d1cdece06f83e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0603057497981Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "62203340b7d4f8347d86309fa65e0d2cbf767bcac0ae59eec0b5f09e7e35d81e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0606216116158Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "fc0d9a48ae96918b21e29f3a024c2dff066b3aeef516c2f51abe2f19f3ab4013"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0606216116158Z-observe-feature-module-settings\\runtime-loaded-build-identity.json",
+          "sha256": "59228094f6e7097f24e96628afe643c65626d39929f79b93c41ba9af2a24a3a7"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\remaining-native-qualification-summary.json",
+          "sha256": "4e1d744b72c05a87090eccac9723f75a35acd2f5033bac7e273245c8a2cc4c4b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\Collect-RemainingNativeQualification.py",
+          "sha256": "e31e65d494c2123535de27cd039dd9787f042ded1e10d703b067c2a8afc7fabf"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "bbb8f0bd547ccb21b07e983f5e9153063f53166616dc96bb4a05f3f94fe5d12e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\runtime-result.json",
+          "sha256": "a9476b7420218d697991c6dd4af26d515da02f30def50bce1a9bed868874c2ef"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "freshConfigurations": 14,
+      "reusedConfigurations": 2,
+      "priorSource": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+      "reuseJustification": "Exact47/47 startup boundary and matched149 controls passed on3ee4f9a4. Subsequent request-local native entry/catalog and generic mechanics observers do not change boundary observers, module coordinator, vendor/scroll contracts, product/assets or settings. Fourteen other module states scheduled on final b3d9436f.",
+      "configurations": [
+        {
+          "mask": 13,
+          "catalogName": "on-on-off-on-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": true,
+            "brownFurTransmuter": false,
+            "shieldOther": false,
+            "acadamaeGraduate": true,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": true
+          }
+        },
+        {
+          "mask": 12,
+          "catalogName": "on-on-off-off-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": true,
+            "brownFurTransmuter": false,
+            "shieldOther": false,
+            "acadamaeGraduate": true,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": false
+          }
+        },
+        {
+          "mask": 11,
+          "catalogName": "on-off-on-on-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": true,
+            "brownFurTransmuter": false,
+            "shieldOther": true,
+            "acadamaeGraduate": false,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": true
+          }
+        },
+        {
+          "mask": 10,
+          "catalogName": "on-off-on-off-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": true,
+            "brownFurTransmuter": false,
+            "shieldOther": true,
+            "acadamaeGraduate": false,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": false
+          }
+        },
+        {
+          "mask": 9,
+          "catalogName": "on-off-off-on-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": true,
+            "brownFurTransmuter": false,
+            "shieldOther": false,
+            "acadamaeGraduate": false,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": true
+          }
+        },
+        {
+          "mask": 8,
+          "catalogName": "on-off-off-off-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": true,
+            "brownFurTransmuter": false,
+            "shieldOther": false,
+            "acadamaeGraduate": false,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": false
+          }
+        },
+        {
+          "mask": 7,
+          "catalogName": "off-on-on-on-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": false,
+            "brownFurTransmuter": false,
+            "shieldOther": true,
+            "acadamaeGraduate": true,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": true
+          }
+        },
+        {
+          "mask": 6,
+          "catalogName": "off-on-on-off-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": false,
+            "brownFurTransmuter": false,
+            "shieldOther": true,
+            "acadamaeGraduate": true,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": false
+          }
+        },
+        {
+          "mask": 5,
+          "catalogName": "off-on-off-on-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": false,
+            "brownFurTransmuter": false,
+            "shieldOther": false,
+            "acadamaeGraduate": true,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": true
+          }
+        },
+        {
+          "mask": 4,
+          "catalogName": "off-on-off-off-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": false,
+            "brownFurTransmuter": false,
+            "shieldOther": false,
+            "acadamaeGraduate": true,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": false
+          }
+        },
+        {
+          "mask": 3,
+          "catalogName": "off-off-on-on-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": false,
+            "brownFurTransmuter": false,
+            "shieldOther": true,
+            "acadamaeGraduate": false,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": true
+          }
+        },
+        {
+          "mask": 2,
+          "catalogName": "off-off-on-off-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": false,
+            "brownFurTransmuter": false,
+            "shieldOther": true,
+            "acadamaeGraduate": false,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": false
+          }
+        },
+        {
+          "mask": 1,
+          "catalogName": "off-off-off-on-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": false,
+            "brownFurTransmuter": false,
+            "shieldOther": false,
+            "acadamaeGraduate": false,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": true
+          }
+        },
+        {
+          "mask": 0,
+          "catalogName": "off-off-off-off-on-on-off-on-on-on-on-on-on",
+          "parameters": {
+            "magicCircleSpells": true,
+            "gunslinger": false,
+            "brownFurTransmuter": false,
+            "shieldOther": false,
+            "acadamaeGraduate": false,
+            "elementalRaces": true,
+            "urbanBarbarian": true,
+            "elvenBranchedSpears": true,
+            "easternWeapons": true,
+            "bodyguardFeats": true,
+            "protectionFromAlignmentControlImmunity": true,
+            "teleportationSpells": true,
+            "expandedSummoning": false
+          }
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "packageSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+          "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+          "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8"
+        },
+        {
+          "source": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+          "packageSha256": "dd1facb5554d322eae223d591a0e29c67b940c1a313c367c609228c6ddbc8034",
+          "dllSha256": "8edb753c72b52a6cde82a15cfa2be68f664f2ccaf93dfe3d49f6b14b52b00a9e",
+          "dllMvid": "21d0319e-eb2f-4d5e-a3d6-ecf4c9fd46a5"
+        }
+      ],
+      "conditionalAssertions": [
+        {
+          "name": "salesman-repeat-publication",
+          "notApplicableMasks": [
+            7,
+            6,
+            5,
+            4,
+            3,
+            2,
+            1,
+            0
+          ],
+          "reason": "Existing MidgameFirearms observer runs repeated publication only if Gunslinger is enabled; invoking publication in OFF states would enable forbidden stock. Disabled-state stock absence assertions execute.",
+          "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.MidgameFirearms.cs:135"
+        }
+      ],
+      "actualAssertionCounts": [
+        {
+          "mask": 13,
+          "executed": 47,
+          "result": "PASS"
+        },
+        {
+          "mask": 12,
+          "executed": 47,
+          "result": "PASS"
+        },
+        {
+          "mask": 11,
+          "executed": 47,
+          "result": "PASS"
+        },
+        {
+          "mask": 10,
+          "executed": 47,
+          "result": "PASS"
+        },
+        {
+          "mask": 9,
+          "executed": 47,
+          "result": "PASS"
+        },
+        {
+          "mask": 8,
+          "executed": 47,
+          "result": "PASS"
+        },
+        {
+          "mask": 7,
+          "executed": 46,
+          "result": "PASS"
+        },
+        {
+          "mask": 6,
+          "executed": 46,
+          "result": "PASS"
+        },
+        {
+          "mask": 5,
+          "executed": 46,
+          "result": "PASS"
+        },
+        {
+          "mask": 4,
+          "executed": 46,
+          "result": "PASS"
+        },
+        {
+          "mask": 3,
+          "executed": 46,
+          "result": "PASS"
+        },
+        {
+          "mask": 2,
+          "executed": 46,
+          "result": "PASS"
+        },
+        {
+          "mask": 1,
+          "executed": 46,
+          "result": "PASS"
+        },
+        {
+          "mask": 0,
+          "executed": 46,
+          "result": "PASS"
+        }
+      ]
+    },
+    {
+      "id": "whole-roster-enabled-persistence",
+      "result": "REUSED_PASS",
+      "priorEvidence": "20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup",
+      "priorResult": "125/125 PASS",
+      "priorSource": "cf4bbc4aef48e8bfc65498a24dd55126679f96d2",
+      "reuseJustification": "Exact114-unit and113-private-resource native cleanup125/125 on cf4bbc4a. Subsequent module conditional retains the same ON identity/context/duration predicates; its affected OFF branch was separately executed on6b1ef853. Ownership, readiness, save loader/writer and product/assets unchanged afterward.",
+      "originalArtifact": {
+        "packageSha256": "be875bbbd1c354d8366ae41ccd630fa2c1a73a4eaf1fa188fedeecac6e07225e",
+        "dllSha256": "155f164925fb8d1aa58c56ca2f85d31b33103d378c50482f464243b64915f058",
+        "dllMvid": "3db5c40a-57ca-436c-8007-f5855a41abb7",
+        "assertions": 125
+      },
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+          "sha256": "c72aee5eae681fce586bd7a6ec34002c84d0d8c8798f31ff41680cde49c8b37d"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup\\runtime-evidence.json",
+          "sha256": "cdf26c4a0f68ca74f60aa127016d7ec8a4884fe7e6e3bb251d8bd2d6fbdb836e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup\\runtime-loaded-build-identity.json",
+          "sha256": "7e06c2589596e626aa3b2d3838df84c5ce7c146646ad5a9cfb1993a02e8a95bc"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "cf4bbc4aef48e8bfc65498a24dd55126679f96d2",
+          "packageSha256": "be875bbbd1c354d8366ae41ccd630fa2c1a73a4eaf1fa188fedeecac6e07225e",
+          "dllSha256": "155f164925fb8d1aa58c56ca2f85d31b33103d378c50482f464243b64915f058",
+          "dllMvid": "3db5c40a-57ca-436c-8007-f5855a41abb7"
+        }
+      ]
+    },
+    {
+      "id": "native-cleanup-save-and-fresh-absence",
+      "result": "REUSED_PASS",
+      "action": "Use valid existing prepared fixture receipt; no manual save access",
+      "priorSource": "cf4bbc4aef48e8bfc65498a24dd55126679f96d2;3ee4f9a4040f9295d125369ee99a879d80d51a57",
+      "reuseJustification": "Native cleanup/save125/125 atcf4bbc4a plus fresh whole-roster absence6/6 at3ee4f9a4 under exact eleven-mod intake, with matching runtime receipts and no mission writes. Save/roster backend unchanged by the request-local native profile fixture; reduced-profile load failures retained as setup evidence and do not qualify mechanics.",
+      "proofs": [
+        {
+          "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json",
+          "sha256": "c72aee5eae681fce586bd7a6ec34002c84d0d8c8798f31ff41680cde49c8b37d"
+        },
+        {
+          "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261012T0137290351629Z-working-save-expanded-summoning-verify-absent/runtime-result.json",
+          "sha256": "8ae935fad84e32e076b18066774b61af36681e3c76a26ce79339b357456e0e77"
+        },
+        {
+          "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint21-closure-20261011T235000Z/actual-intake-fixture-receipt.json",
+          "sha256": "1c5ebafdef1fc87b0f82dd5f8e050bd79d7990dea5016baf13b9085696cc5e93"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "cf4bbc4aef48e8bfc65498a24dd55126679f96d2",
+          "packageSha256": "be875bbbd1c354d8366ae41ccd630fa2c1a73a4eaf1fa188fedeecac6e07225e",
+          "dllSha256": "155f164925fb8d1aa58c56ca2f85d31b33103d378c50482f464243b64915f058",
+          "dllMvid": "3db5c40a-57ca-436c-8007-f5855a41abb7"
+        },
+        {
+          "source": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+          "packageSha256": "dd1facb5554d322eae223d591a0e29c67b940c1a313c367c609228c6ddbc8034",
+          "dllSha256": "8edb753c72b52a6cde82a15cfa2be68f664f2ccaf93dfe3d49f6b14b52b00a9e",
+          "dllMvid": "21d0319e-eb2f-4d5e-a3d6-ecf4c9fd46a5"
+        }
+      ]
+    },
+    {
+      "id": "module-disabled-deserialization-cleanup",
+      "result": "REUSED_PASS",
+      "priorEvidence": "20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup",
+      "priorResult": "11/11 PASS",
+      "priorSource": "6b1ef853949c521c64ac52882b898bed80665666",
+      "reuseJustification": "Corrected OFF fixture11/11 on6b1ef853; no changes to roster-persistence/resource receipt/save behavior since that source. Current native fresh absence remains separately required.",
+      "originalArtifact": {
+        "packageSha256": "f89c813a6c2d8addced52420de0283db883eb41a40e03adf6bdcc17f4fe4f908",
+        "dllSha256": "8fd1f53698adfc8d547119ac9363416fc269d91e0a8f987741f634feb3d1ac7d",
+        "dllMvid": "d3e265d1-cdf7-4a67-bf97-33692b3fd1f4",
+        "assertions": 11
+      },
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+          "sha256": "02c5375a9151f232dee96ea44ba730c6429699978eeb375ba1947aad6c0bfead"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup\\runtime-evidence.json",
+          "sha256": "2510630672d2dfbf37aa752b75ed47870988dd1007372ef63fa9d7fc557c4c55"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup\\runtime-loaded-build-identity.json",
+          "sha256": "93c74fb4ba074b3f11970da351e13a616ad7d17ffb2b65b0772e8845d10fad78"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "6b1ef853949c521c64ac52882b898bed80665666",
+          "packageSha256": "f89c813a6c2d8addced52420de0283db883eb41a40e03adf6bdcc17f4fe4f908",
+          "dllSha256": "8fd1f53698adfc8d547119ac9363416fc269d91e0a8f987741f634feb3d1ac7d",
+          "dllMvid": "d3e265d1-cdf7-4a67-bf97-33692b3fd1f4"
+        }
+      ]
+    },
+    {
+      "id": "sprint18-21-regressions",
+      "result": "REUSED_PASS",
+      "priorSource": "7b37df94453eaff934d6ec443e04c9c973dc031f",
+      "reuseJustification": "Exact29/39/22/44 raw native PASS at7b37df94. Review partials and actual gameplay/builders/templates/assets unchanged through3ee and b3; generic mechanical observer changes are separate predicates and rerun62/62 onb3. Request-local unsaved-world alias is isolated; old review/scenario entry preserved. Dependency audits retain original candidate provenance.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0850160737552Z-disposable-expanded-summoning-sprint18-review\\runtime-result.json",
+          "sha256": "d6696b41a0666e7a57f1cde5df0853d1bbb0a990ad8799106ec18e5140885dda"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0857438162151Z-disposable-expanded-summoning-sprint19-review\\runtime-result.json",
+          "sha256": "4c9c5b4fa9e47f87e95b056bc85815f4bbe40f0aebe81d024d199d087c262066"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0907487777628Z-disposable-expanded-summoning-sprint20-review\\runtime-result.json",
+          "sha256": "2bed86c4c9bd59981689e7dd56b3499b18b6e8c106d630be5e3c66375c102b23"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0912175221409Z-disposable-expanded-summoning-sprint21-review\\runtime-result.json",
+          "sha256": "2f168e9eddf2f6e0cad44d3aa73a43b549b9bd00457e3a225400f7dd9575d131"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "7b37df94453eaff934d6ec443e04c9c973dc031f",
+          "packageSha256": "e3dfca1e3afc5fd756d24ab783e57122ef8e0c07144d3d29e66d80d82dc01cc4",
+          "dllSha256": "1495a3147f2d9dc5aa648e9be9ad11d846203b101fc6d5e4e0af291568595248",
+          "dllMvid": "6f76046e-dd12-4e1f-89dd-170785c328c5"
+        }
+      ]
+    },
+    {
+      "id": "1063-roots-and-29-wrappers",
+      "result": "REUSED_PASS",
+      "priorEvidence": "20261011T0832337615067Z-disposable-expanded-summoning-player-path",
+      "priorSource": "7b37df94453eaff934d6ec443e04c9c973dc031f",
+      "reuseJustification": "Player-path implementation, spawning, template logic, publication, gameplay and assets unchanged. Inventory/boundary diagnostics are different scenarios. Later primate resource-reader correction is confined to roster-persistence receipt capture.",
+      "originalArtifact": {
+        "packageSha256": "e3dfca1e3afc5fd756d24ab783e57122ef8e0c07144d3d29e66d80d82dc01cc4",
+        "dllSha256": "1495a3147f2d9dc5aa648e9be9ad11d846203b101fc6d5e4e0af291568595248",
+        "dllMvid": "6f76046e-dd12-4e1f-89dd-170785c328c5",
+        "assertions": 10
+      },
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0832337615067Z-disposable-expanded-summoning-player-path\\runtime-result.json",
+          "sha256": "3b05606bb7813189187f35bb0bdaeafd7f7fc10ec7aa83518a3f3bff43c76b1b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0832337615067Z-disposable-expanded-summoning-player-path\\runtime-evidence.json",
+          "sha256": "0697ed1fdc4e5d39354ae27f111de189ba9c54fd866c0c9e2ab3670dddddfd4f"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0832337615067Z-disposable-expanded-summoning-player-path\\runtime-loaded-build-identity.json",
+          "sha256": "8566e6fa35807a9fdc9bd5795be3c25dd4507c6c74fd78d0207a7354d48be62d"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "7b37df94453eaff934d6ec443e04c9c973dc031f",
+          "packageSha256": "e3dfca1e3afc5fd756d24ab783e57122ef8e0c07144d3d29e66d80d82dc01cc4",
+          "dllSha256": "1495a3147f2d9dc5aa648e9be9ad11d846203b101fc6d5e4e0af291568595248",
+          "dllMvid": "6f76046e-dd12-4e1f-89dd-170785c328c5"
+        }
+      ]
+    },
+    {
+      "id": "resource-lifecycle-template-initialization",
+      "result": "REUSED_PASS",
+      "priorSource": "cf4bbc4aef48e8bfc65498a24dd55126679f96d2",
+      "reuseJustification": "Capture/release ownership corrected and native verified atcf4bbc4a: private113 resources and114 units retired, borrowed/cache counts stable, hooks cleared, unrelated state preserved;6b1ef853 verifies OFF zero allocation. Generic publication/builders/templates/init/product unchanged after these sources. Current module/profile checks remain separate mandatory rows.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0832337615067Z-disposable-expanded-summoning-player-path\\runtime-result.json",
+          "sha256": "3b05606bb7813189187f35bb0bdaeafd7f7fc10ec7aa83518a3f3bff43c76b1b"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+          "sha256": "c72aee5eae681fce586bd7a6ec34002c84d0d8c8798f31ff41680cde49c8b37d"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+          "sha256": "02c5375a9151f232dee96ea44ba730c6429699978eeb375ba1947aad6c0bfead"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\reuse-source-and-raw-evidence-audit.json",
+          "sha256": "e128374ebe695615c0867625900daf7877f0400cf9a6f6a4905327b283fac3dd"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-contract-dependency-audit.json",
+          "sha256": "fd8e197ae6efbde4b148c8a19a1f1850107d90b0e3e344c741c90bbce5bf7c29"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\native-qualified-source-reuse-audit.json",
+          "sha256": "1a7bc5e99a64384c74c7cc28a0f25976f61ecb5ba8bc7a229232e4f10f0b3b32"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "7b37df94453eaff934d6ec443e04c9c973dc031f",
+          "packageSha256": "e3dfca1e3afc5fd756d24ab783e57122ef8e0c07144d3d29e66d80d82dc01cc4",
+          "dllSha256": "1495a3147f2d9dc5aa648e9be9ad11d846203b101fc6d5e4e0af291568595248",
+          "dllMvid": "6f76046e-dd12-4e1f-89dd-170785c328c5"
+        },
+        {
+          "source": "cf4bbc4aef48e8bfc65498a24dd55126679f96d2",
+          "packageSha256": "be875bbbd1c354d8366ae41ccd630fa2c1a73a4eaf1fa188fedeecac6e07225e",
+          "dllSha256": "155f164925fb8d1aa58c56ca2f85d31b33103d378c50482f464243b64915f058",
+          "dllMvid": "3db5c40a-57ca-436c-8007-f5855a41abb7"
+        },
+        {
+          "source": "6b1ef853949c521c64ac52882b898bed80665666",
+          "packageSha256": "f89c813a6c2d8addced52420de0283db883eb41a40e03adf6bdcc17f4fe4f908",
+          "dllSha256": "8fd1f53698adfc8d547119ac9363416fc269d91e0a8f987741f634feb3d1ac7d",
+          "dllMvid": "d3e265d1-cdf7-4a67-bf97-33692b3fd1f4"
+        }
+      ]
+    },
+    {
+      "id": "exact-package-release-qualification",
+      "result": "PASS",
+      "action": "One Tranche pipeline; fresh complete suite, exact-reference build and strict package validation; immutable promotion",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified-identity.json",
+          "sha256": "780511adcc83a4e141d4679058aededab77d0e30cc50b25a53122344dd1c2f01"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified-supervision.json",
+          "sha256": "791b4bd92d54e059c027e2d8026b66c415e3bf6275514b84f4d6f08a319ebc78"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified.stdout.log",
+          "sha256": "0de0cc0066b0a6a0172e6465100a88c9e89b81c7a177a1fff371bd5a0adc7de4"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified.stderr.log",
+          "sha256": "acf3093ffd63acf1eab3ef44821da66d9aa8362124814b86417f7ec56ce3078e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-qualified\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip.build-local.json",
+          "sha256": "032743710b711ea46075a59067de32e2ae1055b3a066d020c6ad85d0620e55f6"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\release-provenance-reporting-checks.json",
+          "sha256": "af3dce67b55354a6b3d5bdc727ff811f3b9d7d65e5737c8bcdffc6412ab92748"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+          "packageSha256": "7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec",
+          "dllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+          "dllMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8"
+        }
+      ]
+    }
+  ],
+  "baselineExceptions": [],
+  "releaseEligible": true,
+  "restoration": {
+    "intakeManifest": "actual-mods-intake-manifest.json",
+    "current": "EXACT_INTAKE_VERIFIED",
+    "workingSave": "CLEAN; whole-roster fresh absence6/6 under exact actual intake; all three transactions restored; no mission save writes or manual save access",
+    "lastVerifiedRecord": "remaining-qualification-restoration.json",
+    "workingFixtureClean": true,
+    "lockPath": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compatibility.lock",
+    "finalRunId": "compat-20261012T060432Z-5065241e8c21",
+    "allNamedCampaignTransactions": 36,
+    "allNamedTransactionsRecord": "remaining-qualification-all-named-transactions.json",
+    "allNamedTransactionsProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\remaining-qualification-all-named-transactions.json",
+      "sha256": "beb9a8a273c480087e75c961cfba7f9fec34bdc07a12d364e05d52e1f09ce02d"
+    }
+  },
+  "nextAction": "Publish coherent closure; verify current lineage/version, mark PR36 ready and merge, promote exact qualified artifact, download/hash/tag/Latest/alpha/restoration verification, push final records, stop. No Sprint22.",
+  "repairValidation": {
+    "filter": "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
+    "selected": 15,
+    "registered": 2562,
+    "failed": 0,
+    "exitCode": 0,
+    "seconds": 21.7939451,
+    "freshnessRecord": "repair-binary-freshness.json",
+    "compiledProductChanged": false,
+    "compiledObserverChanged": true
+  },
+  "frozenSourceReader": {
+    "checks": "frozen-source-reader-checks.json",
+    "reason": "Detached frozen checkout refused before candidate pipeline",
+    "fix": "Normalize empty branch stdout; no guard relaxed"
+  },
+  "preparationRepair": {
+    "selected": 71,
+    "registered": 2562,
+    "failed": 0,
+    "exitCode": 0,
+    "seconds": 9.5038023,
+    "record": "preparation-repair-supervision.json",
+    "input": "inspection-input-provenance.json",
+    "inputMvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+    "productChanged": false
+  },
+  "roster": {
+    "generatedRoots": 1063,
+    "nativeWrappers": 29,
+    "choices": 1092,
+    "source": "7b37df94453eaff934d6ec443e04c9c973dc031f",
+    "evidence": "20261011T0832337615067Z-disposable-expanded-summoning-player-path",
+    "sourceAndAssetDiff": "No gameplay, assets or manifest differences from final candidate; raw exact census1063/1063 and29/29"
+  },
+  "evidenceReuseAudit": "reuse-source-and-raw-evidence-audit.json",
+  "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING; retained owner-facing aesthetic review status from Sprint21 contract/release record. Technical native body/rig evidence is not owner visual approval.",
+  "matchedBaseline": {
+    "releasedProductSource": "d0ceafae75c1d74a1e0d4fa318193ef002240da1",
+    "diagnosticSource": "99d9c4644307341c2cd1b006fe67d58f8f3b2d38",
+    "diagnosticBuild": true,
+    "gameplayAndAssetsUnchanged": true,
+    "startupOnly": true,
+    "saveLoad": false,
+    "saveWrite": false,
+    "zipSha256": "b635da256671afcbe28384075e7f5532d0e3dfc6b9754f4f9ad15dd078818e7a",
+    "dllSha256": "192048c365bfd95f7403f44a20ebcaf5a2ce0a6ae3976adf833e39a1aa106871",
+    "dllMvid": "2fa1d8cf-3c35-45e9-8049-ff4ce731f17f",
+    "fullSuite": "2538/2538 PASS",
+    "preparationSeconds": 237.71906109999998,
+    "comparison": "matched-boundary-comparison.json",
+    "transactions": [
+      "compat-20261012T004351Z-03c437123a97",
+      "compat-20261012T004649Z-5b98f4a1b3f4"
+    ],
+    "restoration": "EXACT_INTAKE_VERIFIED"
+  },
+  "releasePromotionChecks": {
+    "script": "scripts/Test-QualifiedRelease.ps1",
+    "passed": 22,
+    "failed": 0,
+    "parsedScripts": 4,
+    "builds": 0,
+    "nativeRuns": 0,
+    "publicationWrites": 0,
+    "record": "release-provenance-reporting-checks.json",
+    "publicExecutionProvenance": true
+  },
+  "planningUpdate": {
+    "measuredUtc": "2026-10-12T04:00:29.114023+00:00",
+    "elapsedMinutes": 387.38,
+    "campaignPlanningMinutes": 240,
+    "remainingEstimateMinutes": 20,
+    "revisedFinitePlanMinutes": 387,
+    "remainingScope": "Closure commit/PR merge, exact artifact publication and download/tag/Latest/alpha/final restoration verification; then stop",
+    "finalQualificationUtc": "2026-10-12T06:10:25.966350+00:00"
+  },
+  "fixtureDiagnosis": {
+    "classification": "SAVE_FIXTURE_INCOMPATIBLE_WITH_REDUCED_STACK",
+    "nativeFailure": "Player.PostLoad native Single predicate cannot find cross-scene entity with MainCharacter.UniqueId",
+    "referenceMvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+    "historicalContext": "docs/ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION-HANDOFF.md records the same reduced-stack failure and an earlier full-stack success; this is context, not current attribution",
+    "standaloneResult": "20261012T0057388659564Z-disposable-expanded-summoning",
+    "standaloneGameLog": "standalone-load-failure-output_log.txt",
+    "restoration": "mechanical-failure-restoration.json",
+    "fiveModControlIsActualIntakeMatch": false,
+    "actualIntakeMods": 11,
+    "selectedActualIntakeControl": "invoke-actual-intake-fixture.ps1",
+    "releaseWaiver": false,
+    "manualSaveAccess": false,
+    "actualIntakeControl": "6/6 whole-roster fresh absence PASS; exact eleven-mod intake; no save write",
+    "actualIntakeTransaction": "compat-20261012T013554Z-8b7169658f01",
+    "repair": "Entry callback immediately queues native LoadingProcess ownership while awaiting exact additive base-scene registration; new-world load runs as its callback. No idle game-mode gap, production or mechanical assertion change.",
+    "individualMissingProviderIdentified": false,
+    "firstNativeProfile": {
+      "source": "5429d7bd12fbc4f694a3812649eb7ea75b4b2c72",
+      "transaction": "compat-20261012T020925Z-cfb5c1cca905",
+      "runtimeResult": "20261012T0210576819811Z-disposable-expanded-summoning-native-profile",
+      "status": "FAIL",
+      "attribution": "Native fixture skipped MainMenu.EnterGame, which loads BaseMechanics before the new-world callback",
+      "productMechanicsExecuted": false,
+      "nativeEmptyWorldRestored": true,
+      "saveOrLoadAttempts": 0,
+      "restoration": "native-profile-first-restoration.json"
+    },
+    "secondNativeProfile": {
+      "source": "a7e05944a13b3eca7e66c90d8a599d51a2831d9b",
+      "transaction": "compat-20261012T022403Z-b66c7d12a91e",
+      "runtimeResult": "20261012T0225339972802Z-disposable-expanded-summoning-native-profile",
+      "status": "FAIL",
+      "attribution": "Native base-scene registration/readiness; no product mechanics executed",
+      "restoration": "native-entry-second-restoration.json"
+    },
+    "thirdNativeProfile": {
+      "source": "3da960443991051c0b65830dd0b6fb50113dcd79",
+      "transaction": "compat-20261012T023802Z-73d1ecccb396",
+      "runtimeResult": "20261012T0239360173602Z-disposable-expanded-summoning-native-profile",
+      "status": "FAIL",
+      "attribution": "Scene-loader setup; base valid before load then invalidated; initial GameStarter coroutine hypothesis not yet proven",
+      "restoration": "native-ready-third-restoration.json"
+    },
+    "fourthNativeProfile": {
+      "source": "75eb64f7948de2d5ebbda8d5d920bc8207283cbb",
+      "transaction": "compat-20261012T025605Z-92ee60684764",
+      "runtimeResult": "20261012T0257361949575Z-disposable-expanded-summoning-native-profile",
+      "status": "FAIL",
+      "productMechanicsExecuted": false,
+      "startupComplete": true,
+      "attribution": "Scene lifecycle still unresolved; startup completion hypothesis ruled out",
+      "restoration": "native-startup-fourth-restoration.json"
+    },
+    "fifthNativeProfile": {
+      "source": "3bc7ba7045783f187723c4c269b3aa2b8312b9c1",
+      "transaction": "compat-20261012T031229Z-7fca9ca222af",
+      "runtimeResult": "20261012T0314019835447Z-disposable-expanded-summoning-native-profile",
+      "status": "FAIL",
+      "productMechanicsExecuted": false,
+      "attribution": "Native Runner.Update invokes menu entry callback then Game.Tick; idle callback leaves no loading process/game mode and triggers stack-empty native reset; trace proves reset precedes base unload and destination error",
+      "restoration": "native-trace-fifth-restoration.json"
+    },
+    "sixthNativeProfile": {
+      "source": "f0a83116ac544f72fc977e8bcea14fef36de87a8",
+      "transaction": "compat-20261012T032553Z-3b3584547c1b",
+      "runtimeResult": "20261012T0327256883751Z-disposable-expanded-summoning-native-profile",
+      "status": "FAIL",
+      "passed": 59,
+      "executed": 62,
+      "productMechanicsExecuted": true,
+      "nativeEmptyWorldRestored": true,
+      "saveOrLoadAttempts": 0,
+      "restoration": "native-loading-sixth-restoration.json",
+      "failures": [
+        {
+          "assertion": "expanded-summoning-representative-combat",
+          "classification": "OBSOLETE_FIXTURE_EXPECTATION",
+          "contract": "Sprint21 dismantle requires both claws; actual two primary bite attacks are negative control, exact armor unchanged"
+        },
+        {
+          "assertion": "expanded-summoning-sprint12-contact-allergy",
+          "classification": "NATIVE_GETTER_OBSERVER_DEFECT",
+          "contract": "Actual 2.1.7b AutoFailure exits OnTrigger before setting CMB/CMD; Success getter compares untouched zero fields. Reaction is present, attempt triggers regardless of hold; retain DC/source and native hold prevention"
+        },
+        {
+          "assertion": "expanded-summoning-pteranodon-repeated-lifecycle",
+          "classification": "INCOMPLETE_FAMILY_ACCOUNTING",
+          "contract": "Use HandlesBlueprintName for every spawned eligible view, including Giant Crab/Bebelith; exact recorded events=eligible views=attached views; preserve donor controls and reject bounded-ring saturation"
+        }
+      ]
+    },
+    "seventhNativeProfile": {
+      "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+      "transaction": "compat-20261012T035434Z-5d9b7367a075",
+      "runtimeResult": "20261012T0356082928499Z-disposable-expanded-summoning-native-profile",
+      "status": "PASS",
+      "executed": 62,
+      "failures": 0,
+      "durationMilliseconds": 137285,
+      "nativeEmptyWorldRestored": true,
+      "saveOrLoadAttempts": 0,
+      "restoration": "native-contract-seventh-restoration.json",
+      "verifiedCorrections": [
+        "two primary2d6 bites: no dismantle, exact armor unchanged",
+        "grapple attempt: autoFailureTrue, sourceTrue, DC12, reaction present; manufactured/trip/goblinoid controls safe",
+        "147 observed events =147 actual registered eligible views =147 attached views; no ring saturation"
+      ]
+    }
+  },
+  "nativeProfileFocusedChecks": {
+    "filter": "expanded-summoning.native-profile;expanded-summoning.compatibility-",
+    "selected": 6,
+    "registered": 2564,
+    "failures": 0,
+    "productionCompilation": "PASS",
+    "freshness": "native-profile-focused-freshness.json",
+    "native": "VERIFIED on final candidate; all selected mechanical observations62/62",
+    "noGameplayChanges": true,
+    "preflightChecks550": "PASS; exact catalog reader includes separately declared owned-save scenario plus all current registered observations"
+  },
+  "priorObserverCandidate": {
+    "source": "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+    "zipSha256": "dd1facb5554d322eae223d591a0e29c67b940c1a313c367c609228c6ddbc8034",
+    "dllSha256": "8edb753c72b52a6cde82a15cfa2be68f664f2ccaf93dfe3d49f6b14b52b00a9e",
+    "dllMvid": "21d0319e-eb2f-4d5e-a3d6-ecf4c9fd46a5",
+    "sourceFingerprint": "6c69a049ac8e9f2610a96f6f74bb5ca7cdf75e09d546d77deba2359485e102a8",
+    "manifestSha256": "1e9586af343575b866705a3b350fbd182d1dc39d8f6359d31bbae179ca3d8d7d",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 237.2949665,
+    "fullSuite": {
+      "executed": 2562,
+      "registered": 2562,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "adb6f92f1d16b20b4796c459f7d90041e8ae90cf86d944d87481d831816be8ab",
+      "executableModifiedUtc": "2026-10-12T00:17:54.5106086Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "priorNativeProfileCandidate": {
+    "source": "5429d7bd12fbc4f694a3812649eb7ea75b4b2c72",
+    "zipSha256": "7106016873258a1d537c4e0218349d5f313aa765cbf0f451196746549469d2ae",
+    "dllSha256": "941ea6a891a65913a5699e5f204ff6ead6f3578307a2bd02e6a1b7f944485d48",
+    "dllMvid": "9fe1fa3f-c428-451d-b12e-c3256737faf6",
+    "sourceFingerprint": "ebe20753fc48f20be8bc1821437bc095bf7516a61cddc94ef0b39c14c27dd219",
+    "manifestSha256": "f7ec7161ffb0d1307e6c1ccfe5bca0672e59a040eeb564db0aba614d74e82677",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 272.2365643,
+    "fullSuite": {
+      "executed": 2564,
+      "registered": 2564,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "97322b41e5cf40133e9e550feaa28516a42deb58aed127108c1ee818a69dee69",
+      "executableModifiedUtc": "2026-10-12T02:06:13.4993813Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "priorNativeEntryCandidate": {
+    "source": "a7e05944a13b3eca7e66c90d8a599d51a2831d9b",
+    "zipSha256": "599e811e1f6d69604b9c60f57f55f4b6f910a4c6fa1279ef7f65ab62db0f81da",
+    "dllSha256": "ffe92e7ea5d5deaef36cfed8d923346b1b13a7f517c6a4846a57c848eac238a4",
+    "dllMvid": "f1846752-c6f1-42e4-8365-cb965d324027",
+    "sourceFingerprint": "152e6fe3601dfce08019baad2284dc6574361e94c60964c65671478ef6b89b6c",
+    "manifestSha256": "f8707e0df70660ba47388115e8840cb4f16570c487ea4b9e3089ce9a7a082027",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-entry\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 269.6024384,
+    "fullSuite": {
+      "executed": 2565,
+      "registered": 2565,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-entry\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "f734b4803f32d8f0588cf48bea19df8dc41750c263f48bcbb6fdd717e4636ea3",
+      "executableModifiedUtc": "2026-10-12T02:21:18.9166799Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "planningReaderCorrection": {
+    "oldVerdict": {
+      "measuredUtc": "2026-10-12T02:49:58.0742583Z",
+      "elapsedMinutes": 426.9,
+      "diagnosisCompleted": true,
+      "remainingEstimateMinutes": 145,
+      "remainingScope": "Native fixture candidate/reproduction, remaining profile coverage and14 module states, closure/merge/exact promotion and download/restoration verification",
+      "campaignPlanningMinutes": 240,
+      "revisedFinitePlanMinutes": 572
+    },
+    "correctElapsedAtOldMeasurementMinutes": 186.9,
+    "cause": "PowerShell DateTime Z parsed to local then subtracted from UTC; reporter added 240 minutes. Raw stopwatch/supervised durations unaffected.",
+    "reader": "timezone-aware datetime.fromisoformat; equivalent DateTimeOffset.UtcDateTime",
+    "rebuildRequired": false
+  },
+  "priorNativeReadyCandidate": {
+    "source": "3da960443991051c0b65830dd0b6fb50113dcd79",
+    "zipSha256": "fcd7af6d75f0ecd0ff5502e259c47485ae432682efc87be94d91238b7452e452",
+    "dllSha256": "a8a6d02b797ee8bc10488682f5feede3f54b608d86238354f088fd148016ca76",
+    "dllMvid": "9146ead4-949f-47fb-9019-6a6f4168e110",
+    "sourceFingerprint": "30de8a21c18c978bf8e4b6027c597ea6a4f1ddee92b93aa2a9259a1b0bf5876c",
+    "manifestSha256": "324042085f9392869c329a822e3194dd8474cfeaae539ae180e7490dc33f7f89",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-ready\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 271.06728929999997,
+    "fullSuite": {
+      "executed": 2565,
+      "registered": 2565,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-ready\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "95f51ef337161ce835d076f99d127374cd2c43d514f363fbe0bf52a7d1666325",
+      "executableModifiedUtc": "2026-10-12T02:35:17.2316611Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "priorNativeStartupCandidate": {
+    "source": "75eb64f7948de2d5ebbda8d5d920bc8207283cbb",
+    "zipSha256": "c51db3972acc03d3c3388d9c9c1d183cd3f30376e8c7eb82d17704b3004b8260",
+    "dllSha256": "1b778a5a57ccbc3fa88bd9993a2b25d23eaf9dde4e570c4c0320f7c6f5f8722d",
+    "dllMvid": "9752d3c4-8ac7-438d-94bf-28b62d7c161a",
+    "sourceFingerprint": "25bb28be91b3d86062702a2da3d4e2af2e2f81e28dd10fbab72d116a4ada44a9",
+    "manifestSha256": "3ba9bf2b17a49948c86c8fa9eb497d55bd4e8ae6573db1499b263d67574ce618",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-startup\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 270.04953789999996,
+    "fullSuite": {
+      "executed": 2566,
+      "registered": 2566,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-startup\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "a623acf0a771c4a492a2ef0c316c78f0aafda8152d9cde17c3104fcfb9b95354",
+      "executableModifiedUtc": "2026-10-12T02:53:18.7145585Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "restorationReaderCorrection": {
+    "olderAdditionalHelperLockPath": "C:/Dev/KingmakerGunslingerLab/compatibility/compatibility-profile.lock",
+    "contractLockPath": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compatibility.lock",
+    "correctedVerdict": "Actual contract lock absent after fifth transaction; public wrapper restoration verdicts and historical exact manifest verdicts unchanged",
+    "evidence": "native-trace-fifth-restoration.json"
+  },
+  "priorNativeTraceCandidate": {
+    "source": "3bc7ba7045783f187723c4c269b3aa2b8312b9c1",
+    "zipSha256": "4e050c5ac5799c00c16136bd2c070416b988c71458a84d360459189d4b68c784",
+    "dllSha256": "49c7e0929be6c43d99b9b60df780da815a0d3267336134d267a32346f7140d09",
+    "dllMvid": "fa906451-10be-4632-9ea1-85e37a55dfd3",
+    "sourceFingerprint": "df450388e6d6ce46b1fb5da7373e630b2792fad9baa3c0fdc67b970b25ab50e0",
+    "manifestSha256": "8ec3d04d6e179a227dd5d01f7ba042882c9f6240faa6820f8aa6308f5203c27c",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-trace\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 274.038691,
+    "fullSuite": {
+      "executed": 2567,
+      "registered": 2567,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-trace\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "8ece66e16bd9d0c1610cb0bcbd20aeb89cb4f97f48ff32e73852cb1e6f1f994b",
+      "executableModifiedUtc": "2026-10-12T03:09:41.1951297Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "nativeContractFocusedChecks": {
+    "command": "Invoke-KmgGate.ps1 -Filter expanded-summoning.native-profile;expanded-summoning.sprint12;expanded-summoning.sprint13;expanded-summoning.sprint14;expanded-summoning.sprint21",
+    "startUtc": "2026-10-12T03:42:33.4478038Z",
+    "endUtc": "2026-10-12T03:42:39.5501441Z",
+    "seconds": 6.1023403,
+    "exitCode": 0,
+    "executed": 70,
+    "registered": 2571,
+    "failures": 0,
+    "nativeStatus": "VERIFIED 62/62 on b3d9436f"
+  },
+  "preparationContractRepair": {
+    "failedSource": "6ba541b787fcbea56642e3e57615b084d4e8595c",
+    "fullExecuted": 2571,
+    "fullFailures": 1,
+    "failedAssertion": "expanded-summoning.sprint10-stirge-native-attack-visual",
+    "pipelineSeconds": 216.6897464,
+    "packageCreated": false,
+    "nativeStarted": false,
+    "focusedExecuted": 10,
+    "focusedFailures": 0,
+    "rawLogs": "candidate-native-contract.stdout.log;candidate-native-contract.stderr.log;native-contract-stirge-focus.stdout.log"
+  },
+  "priorNativeLoadingCandidate": {
+    "source": "f0a83116ac544f72fc977e8bcea14fef36de87a8",
+    "zipSha256": "cc44d32ad2b8f4597cc7e52068321a76496c65763710845e85c8ae11959d4fef",
+    "dllSha256": "0792327117a37a3e45776315631454f66a39cb2d59544e34e0b6f72886ff0266",
+    "dllMvid": "ef4fa54a-e7fc-432b-a94e-6eacc617e3ba",
+    "sourceFingerprint": "2e6c2d16994df5fe671b499c436aabab324f5f0d468e305d19fbeb3a8bc933c6",
+    "manifestSha256": "9e350a992152363474d7650ad2813c4691a2d99f46f4b497723de0803e36be4c",
+    "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-loading\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 268.1964263,
+    "fullSuite": {
+      "executed": 2568,
+      "registered": 2568,
+      "failures": 0,
+      "exitCode": 0,
+      "unfiltered": true,
+      "executable": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-native-loading\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+      "executableSha256": "997e8af93585873a23ef37587d9b269ffdb1a59072ec1120136eab30f8d26be0",
+      "executableModifiedUtc": "2026-10-12T03:23:10.2778760Z",
+      "buildCommand": "Invoke-KmgGate.ps1 -Level Tranche -> Build-Local -> test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+    }
+  },
+  "harness": {
+    "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+    "compiledObserverDllSha256": "3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161",
+    "compiledObserverMvid": "bac5fbd3-9a8b-42c2-876d-d2d54a2560c8",
+    "files": [
+      {
+        "path": "scripts/Invoke-KingmakerRuntimeTest.ps1",
+        "sha256": "1407c11698f5f15139c5472a16c94ee46f7508e5509ff6d4231b777b2cf4cf07"
+      },
+      {
+        "path": "scripts/RuntimeAutomation.Common.ps1",
+        "sha256": "56567ae118713e590e50ce56d7a69cd9106d3229cd969267dd4a935c3aa9e743"
+      },
+      {
+        "path": "scripts/RuntimeHarness.Common.ps1",
+        "sha256": "5bc4d66dc7175c8866a535032e22e6ebf0af8c812abf4a3ad7fb813d5267a7ef"
+      },
+      {
+        "path": "scripts/RuntimeCoordination.Common.ps1",
+        "sha256": "118e7d540116fe0f81070498905ca96a78892b2ac9eef273681894baa64dad7a"
+      },
+      {
+        "path": "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1",
+        "sha256": "49b61c88dac134d7427d5d52caec7c9170c0b531699d044bb1f29274a60787d8"
+      },
+      {
+        "path": "scripts/compatibility/CompatibilityProfile.Common.ps1",
+        "sha256": "5be951a059e302108fe81bfb22c35df92d665d1d3dbe38989c881be6d97f01d7"
+      },
+      {
+        "path": "scripts/compatibility/Restore-KingmakerCompatibilityProfile.ps1",
+        "sha256": "d1201a8730ce69fb3dfcad3b15e0b07aabbc095a3db8d887d7c60f694cc33999"
+      },
+      {
+        "path": "scripts/Invoke-ExpandedSummoningCompatibilityMatrix.ps1",
+        "sha256": "ced227e034b29637d0af1a0b87be70661d22c2ea1181aab2eae154bb3d16cf50"
+      },
+      {
+        "path": "scripts/validate-package.ps1",
+        "sha256": "a990ce4c43092bb104d6462e3b9b9feff7a5b5a6f344e216aad42631bb8d487e"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
+        "sha256": "78219471117eb9e1842e4c8767a3ed02fddee16d7bc47d7130eed6c674183a8e"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningNativeProfile.cs",
+        "sha256": "aaf02558145fcca3476967d7368a14cd807e17ed3014d1e5ea6bd2ffb47b904d"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs",
+        "sha256": "88f30a24eb73ee653cd0715d65f022e65c2b525ffaa8c6246f2d281e79ecc6f1"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs",
+        "sha256": "da4fbd64fdedc76519ed74dfdb1483b57ff03b6574a29b7d4456ab124415325a"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
+        "sha256": "f72c75d2e6e08941e4d09932d662f7c567937051dc22ca665cdbca0c53b4bd24"
+      }
+    ],
+    "remainingDriver": "external supervised registered profile invocations; all game launch/deploy/restore operations use these repository-owned guards",
+    "evidenceReuseReader": "native-contract-dependency-audit.json; reuse-source-and-raw-evidence-audit.json; original readers retained",
+    "promotionReporting": {
+      "source": "f42b5de202ac197b8930f3762b4febb565c7d701",
+      "files": [
+        {
+          "path": "scripts/Publish-QualifiedCandidate.ps1",
+          "sha256": "9eb5f3616889f8e046ed7ca309af2e7799c4fff2449b85a30c0190656548d7f2"
+        },
+        {
+          "path": "scripts/QualifiedRelease.Common.ps1",
+          "sha256": "aaa9603f208a321b66856414feb9c82d4b4877570b6bb64000c199b4d0b64737"
+        },
+        {
+          "path": "scripts/Test-QualifiedRelease.ps1",
+          "sha256": "cc6afc914ba31530b601b76079d244dd99045b1a4282061264e30e2549426cd8"
+        }
+      ],
+      "focusedChecks": 22,
+      "compiledProductUnchanged": true
+    },
+    "closureReaders": [
+      {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\Collect-RemainingNativeQualification.py",
+        "sha256": "e31e65d494c2123535de27cd039dd9787f042ded1e10d703b067c2a8afc7fabf"
+      },
+      {
+        "path": "artifacts\\closure-tools\\Finalize-Sprint21Qualification.py",
+        "sha256": "2b78ae32fa2d92028782820fed654709ec3739db7c3f7be86d04651723ef1247"
+      }
+    ]
+  },
+  "nativeQualification": {
+    "source": "b3d9436fc09736530b5b5962d40982165454ea0b",
+    "freshNativeCases": 45,
+    "summary": "remaining-native-qualification-summary.json",
+    "allScheduledRowsExecuted": true,
+    "profiles": "All five profiles; standalone/CotW/high-risk twice after final freeze",
+    "moduleStates": "14 fresh on final candidate plus2 justified prior ON/OFF runs"
+  },
+  "qualificationSummary": {
+    "status": "QUALIFIED",
+    "freshDomainSuite": "2571/2571 PASS",
+    "freshNativeCases": 45,
+    "mandatoryNotRun": [],
+    "baselineExceptions": [],
+    "conditionalInactiveAssertionAccounted": true,
+    "priorFailedResultsPreserved": true
+  }
+}

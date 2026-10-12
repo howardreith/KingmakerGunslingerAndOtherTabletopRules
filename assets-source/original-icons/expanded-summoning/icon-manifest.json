@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  114,
+    "count":  115,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3410,6 +3410,29 @@
                                                "KMG.Summoning.Ability.SNA.Tier9.GiantScorpion.OneD4PlusOne",
                                                "KMG.Summoning.Natural.GiantScorpion.UnitType",
                                                "KMG.Summoning.Unit.GiantScorpion"
+                                           ]
+                  },
+                  {
+                      "key":  "giant-crab",
+                      "displayName":  "Giant Crab",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/giant-crab.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/giant-crab.png",
+                      "sourceSha256":  "dc98229c13d06fc62889f935799521f72cd16b84334dc179181094e588dc8cea",
+                      "outputSha256":  "f5d2496f8b9bb100ffd628ee0eb41f3796898b5cf0025fde57fb200839ca9147",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier3.GiantCrab.One",
+                                               "KMG.Summoning.Ability.SNA.Tier4.GiantCrab.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier5.GiantCrab.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier6.GiantCrab.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier7.GiantCrab.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.GiantCrab.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.GiantCrab.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.GiantCrab.UnitType",
+                                               "KMG.Summoning.Unit.GiantCrab"
                                            ]
                   }
               ]

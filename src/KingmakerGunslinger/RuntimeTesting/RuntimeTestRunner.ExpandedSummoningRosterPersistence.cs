@@ -331,13 +331,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new JObject { ["units"] = units.Length, ["ready"] = ready },
                 "every owned live view naturally clears native appearance lock and has valid view/control/finite dissolve; current camera/fog/invisibility is not a save prerequisite");
             var keys = units.Select(u => u.Get<UnitPartRelease143RosterReceipt>()?.Key).OrderBy(k => k, StringComparer.Ordinal).ToArray();
-            bool exact = keys.SequenceEqual(ExpandedSummoningRosterPersistencePolicy.Keys) && units.All(u => RosterPersistenceOwns(u,caster,blueprints));
-            RosterPersistenceCheck("all-identities-context-duration", exact && units.All(u => u.View != null && ReferenceEquals(u.View.Data,u) && u.Commands != null &&
-                !u.Descriptor.State.IsDead && u.Descriptor.Buffs.Enumerable.Any(b => ReferenceEquals(b.Blueprint,BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) &&
-                    !b.IsPermanent && b.TimeLeft > TimeSpan.Zero && b.TimeLeft.TotalSeconds <= 127d)),
-                new JObject { ["count"] = units.Length, ["expected"] = ExpandedSummoningRosterPersistencePolicy.Keys.Length,
-                    ["keys"] = new JArray(keys), ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning },
-                "every KMG creature and every distinct retained native unit, exact saved receipt/caster/blueprint and finite duration");
+            // What this asserts depends on the module, exactly as the
+            // publication check above it already does. With Expanded Summoning
+            // ON every creature and every distinct retained native unit must
+            // be live with a finite duration. With it OFF none of them may
+            // instantiate at all - which is the whole point of the module-off
+            // pass, and which the zero-variant-allocation check beside this
+            // one states positively.
+            //
+            // This demanded all 114 whatever the module said, while recording
+            // `moduleEnabled` in its own evidence and not reading it, so the
+            // series closure failed it on behaviour that is correct and that
+            // three other assertions in the same run confirm: no variant
+            // material or texture allocated, nothing published, and no unit to
+            // clean up.
+            bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
+            bool exact = moduleOn
+                ? keys.SequenceEqual(ExpandedSummoningRosterPersistencePolicy.Keys) &&
+                    units.All(u => RosterPersistenceOwns(u,caster,blueprints)) &&
+                    units.All(u => u.View != null && ReferenceEquals(u.View.Data,u) && u.Commands != null &&
+                        !u.Descriptor.State.IsDead && u.Descriptor.Buffs.Enumerable.Any(b => ReferenceEquals(b.Blueprint,BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) &&
+                            !b.IsPermanent && b.TimeLeft > TimeSpan.Zero && b.TimeLeft.TotalSeconds <= 127d))
+                : units.Length == 0;
+            RosterPersistenceCheck("all-identities-context-duration", exact,
+                new JObject { ["count"] = units.Length,
+                    ["expected"] = moduleOn ? ExpandedSummoningRosterPersistencePolicy.Keys.Length : 0,
+                    ["keys"] = new JArray(keys), ["moduleEnabled"] = moduleOn },
+                moduleOn
+                    ? "every KMG creature and every distinct retained native unit, exact saved receipt/caster/blueprint and finite duration"
+                    : "with the module off not one of this mod's creatures may instantiate at all");
             foreach (var unit in units)
             {
                 var receipt = unit.Get<UnitPartRelease143RosterReceipt>();

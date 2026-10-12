@@ -239,6 +239,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if ((request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain) && !request.ExitAfterCompletion)
                 return "magic-circle-profile-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile &&
+                (!request.ExitAfterCompletion || (request.Parameters?.Count ?? 0) != 0))
+                return "summoning-native-profile-empty-parameters-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather && !request.ExitAfterCompletion)
                 return "whiteout-observation-exit-required";
             if ((request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||

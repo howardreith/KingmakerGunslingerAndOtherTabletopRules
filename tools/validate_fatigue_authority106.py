@@ -134,7 +134,7 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "'disposable-native-fatigue-refresh'",
         "'disposable-acadamae-fatigue-escalation'",
-        ("if ($ExpectedVersion -cne $activeVersion" if VERSION in {"0.0.142", "0.0.143", "0.0.144", "0.0.145", "0.0.146", "0.0.147", "0.0.148", "0.0.149"} else f"active version {VERSION}"))
+        ("if ($ExpectedVersion -cne $activeVersion" if VERSION in {"0.0.142", "0.0.143", "0.0.144", "0.0.145", "0.0.146", "0.0.147", "0.0.148", "0.0.149", "0.0.150"} else f"active version {VERSION}"))
     require_tokens(root / "scripts/Invoke-FatigueWorkingSavePersistence.ps1",
         "[ValidateSet('KMG_AUTOMATION_WORKING')]",
         "working-save-fatigue-prepare",

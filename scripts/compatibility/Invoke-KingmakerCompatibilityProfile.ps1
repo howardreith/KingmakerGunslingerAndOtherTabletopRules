@@ -93,6 +93,7 @@ param(
         'observe-expanded-summoning-module-boundary',
         'observe-expanded-summoning-variant-menu',
         'disposable-expanded-summoning',
+        'disposable-expanded-summoning-native-profile',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
         'summon-same-turn-multiple',

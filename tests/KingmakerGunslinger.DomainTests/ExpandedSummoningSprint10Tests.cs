@@ -584,7 +584,8 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparison.Ordinal);
             int stirgeAudit = viewAudit.IndexOf("private static bool IsStirgeAttached",
                 StringComparison.Ordinal);
-            Assertions.True(disposable.Contains("_giantWaspVisualChecked + _stirgeVisualChecked") &&
+            Assertions.True(disposable.Contains("HandlesBlueprintName(expectedUnit.name)") &&
+                disposable.Contains("OneOutcomePerEligibleView(") &&
                 disposable.Contains("expanded-summoning-stirge-visual-attached") &&
                 disposable.Contains("IsStirgeAttached(renderers)") &&
                 waspAudit >= 0 && stirgeAudit > waspAudit &&

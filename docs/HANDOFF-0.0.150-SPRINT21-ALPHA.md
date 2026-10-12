@@ -1,6 +1,7 @@
-> Branch history: this handoff describes the unmerged Sprint 21 0.0.150 alpha.
-> Master retains 0.0.149 product source. The workflow-only integration does not
-> merge Sprint 21 gameplay or claim fresh acceptance of either binary.
+> Branch history: this handoff describes the Sprint 21 0.0.150 alpha.
+> Master retains 0.0.149 product source. The October 11 takeover integrates
+> master's merged workflow into the Sprint 21 feature branch; historical runs
+> retain their original source and binary identities.
 
 > October 11, 2026 owner amendment: this is historical release evidence and
 > remaining release coverage. docs/VALIDATION-POLICY.md governs ordinary work.
@@ -129,7 +130,8 @@ powershell -File scripts/compatibility/Restore-KingmakerCompatibilityProfile.ps1
     -RunId '<compat-...-id>' -Confirm:$false
 ```
 
-The run id is the newest directory in `C:\Dev\KingmakerGunslingerLab\compatibility-state`.
+Use the exact RunId from the transaction receipt in
+`C:\Dev\KingmakerGunslingerLab\compatibility-state`; never substitute the newest directory.
 Afterwards verify the transaction's actual original intake. This historical run
 used 0.0.117 / 136 files / DLL `FD2FC61C…F35F`; that pin is not a current
 restoration target. Verify no
