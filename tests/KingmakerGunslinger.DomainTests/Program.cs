@@ -1168,6 +1168,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint22-control-negative-cases", Sprint22RulesTests.NegativeControlsCannotManufactureControl),
             Case("expanded-summoning.sprint22-live-strength-dc", Sprint22RulesTests.LiveStrengthAndRacialDiceDriveTheSave),
             Case("expanded-summoning.sprint22-event-identity", Sprint22RulesTests.ReplaysAndDistinctStrikesAreDiscriminated),
+            Case("expanded-summoning.sprint22-tail-impact-bound", Sprint22RulesTests.TailImpactPoseIsFiniteAndBounded),
             Case("expanded-summoning.sprint22-profile-carriers", Sprint22RulesTests.TheProfileHasItsPrintedCarriers),
             Case("expanded-summoning.sprint22-original-asset", Sprint22RulesTests.OriginalAssetHasValidGeometryAndReviewedDrivers),
             Case("expanded-summoning.sprint22-diagnostic-values", Sprint22RulesTests.DiagnosticValuesSurviveSerialization),
