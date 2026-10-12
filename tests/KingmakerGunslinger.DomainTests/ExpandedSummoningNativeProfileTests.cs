@@ -71,20 +71,31 @@ namespace KingmakerGunslinger.DomainTests
         }
         internal static void ExistingWorldNeverAdmitted()
         {
-            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,0,0,false,false,false,false,true), "Idle fresh native world admitted.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,1,0,0,false,false,false,false,true), "Existing world unit protected.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,1,0,false,false,false,false,true), "Existing party protected.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,0,1,false,false,false,false,true), "Cross-scene entity protected.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,0,0,true,false,false,false,true), "Loaded area protected.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,0,0,false,true,false,false,true), "Main character protected.");
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile;
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true,scenario,0,null,0,0,0,false,false,false,false,true), "Idle fresh native world admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,scenario,0,null,1,0,0,false,false,false,false,true), "Existing world unit protected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,scenario,0,null,0,1,0,false,false,false,false,true), "Existing party protected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,scenario,0,null,0,0,1,false,false,false,false,true), "Cross-scene entity protected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,scenario,0,null,0,0,0,true,false,false,false,true), "Loaded area protected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,scenario,0,null,0,0,0,false,true,false,false,true), "Main character protected.");
         }
         internal static void SaveAndHumanEntryNeverAdmitted()
         {
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false,0,0,0,0,false,false,false,false,true), "Cannot leave fixture game open.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,1,0,0,0,false,false,false,false,true), "No save/import parameter allowed.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,0,0,false,false,true,false,true), "Import descriptor protected.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,0,0,false,false,false,true,true), "Pending human creation protected.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,0,0,0,0,false,false,false,false,false), "Menu ownership must be proven.");
+            string basic = RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile;
+            string sprint22 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint22NativeReview;
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(basic,0,null), "Original profile remains parameter-free.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,1,"rtwp-foundation"), "RTWP phase is one save-free fixture parameter.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,1,"turn-based-control"), "Turn-based phase is one save-free fixture parameter.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(basic,1,"rtwp-foundation"), "Original profile cannot borrow Sprint 22 scope.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,0,null), "Sprint 22 requires its exact phase.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,2,"rtwp-foundation"), "Extra Sprint 22 parameters remain forbidden.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,1,"all"), "Broad Sprint 22 phase remains forbidden.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope("foreign",0,null), "Unrelated scenario cannot enter the fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false,basic,0,null,0,0,0,false,false,false,false,true), "Cannot leave fixture game open.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,basic,1,null,0,0,0,false,false,false,false,true), "No save/import parameter allowed.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,basic,0,null,0,0,0,false,false,true,false,true), "Import descriptor protected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,basic,0,null,0,0,0,false,false,false,true,true), "Pending human creation protected.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,basic,0,null,0,0,0,false,false,false,false,false), "Menu ownership must be proven.");
         }
     }
 }
