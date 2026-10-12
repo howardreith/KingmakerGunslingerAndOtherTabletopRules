@@ -16,6 +16,41 @@ Sprint 19's Girallon and Xill and Sprint 20's Giant Scorpion stay exactly as
 v0.0.149 published them: their roots, their identities, their rules and their
 ten shipped body files are all inside this sprint's protected boundary.
 
+## Series closure qualification ? October12, 2026
+
+The exact final candidate is source `b3d9436fc09736530b5b5962d40982165454ea0b`,
+DLL SHA-256 `3fb5741f8e2f16cbac7aec8e626a0289c378657a8b483516bfb57c789fa28161`,
+MVID `bac5fbd3-9a8b-42c2-876d-d2d54a2560c8`, ZIP SHA-256
+`7ea2630f25ce05d4eb03a1972a6ba56ce6d3bdf58e7cd9f31e3f4a77e5c328ec`.
+Fresh unfiltered domain tests passed **2571/2571**, with exact-reference build
+and strict package validation. Forty-five fresh native cases covered all five
+compatibility profiles, required standalone/CotW/combined repeats, and fourteen
+missing original module combinations. The other two combinations reuse their
+exact verified ON/OFF boundary evidence. Bebelith inventory is50/50, observing
+its real primary2d6 bite, two additional2d4 claws and zero secondary limbs;
+selected disposable mechanics are62/62 on every selected final-candidate run.
+
+Unchanged native Sprint18/19/20/21 reviews29/39/22/44, all1,063 generated roots
+and29 wrappers, whole-roster persistence125/125 and disabled cleanup11/11 retain
+their earlier tested source/artifact identities. Clean-save fresh absence6/6 is
+recorded under the actual eleven-mod human intake. This is qualification using
+fresh and justified reused evidence, not a claim that all prior runs used the
+final candidate. The [closure record](SPRINT21-CLOSURE-2026-10-11.md) and public
+release manifest enumerate provenance and the exact merged release lineage.
+
+All seven recorded boundary findings were **fixture defects**, repaired and
+native verified. The matched released149 diagnostic comparison identified the
+exact obsolete donor-icon clauses and retired capital stock identities. Provider
+absence/presence is verified for Brown-Fur. **No inherited production failures
+or baseline exceptions were waived.** Historical failed trials remain failed.
+
+All36 exact named campaign transactions restored; all968 intake entries/settings
+and the managed bank match, with no live game, lock or staging. The working
+fixture is clean and this campaign wrote no gameplay save. The stable ZIP is the
+exact validated candidate, with no rebuild for reporting/merge provenance.
+`v0.0.150-alpha.1` remains immutable historical prerelease evidence. Owner visual
+review remains NOT_PERFORMED_NONBLOCKING. This closes the series; no Sprint22.
+
 ## Two creatures at different stages of life
 
 | | Summon Monster | Summon Nature's Ally | Roots | State |
