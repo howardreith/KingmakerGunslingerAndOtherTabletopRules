@@ -14,13 +14,32 @@ param(
 
     [switch]$ConfirmReleaseReady,
 
-    [switch]$AllowNonDefaultReleaseBranch
+    [switch]$AllowNonDefaultReleaseBranch,
+    # Exact promotion of an already qualified immutable candidate. This path
+    # performs no build and requires the closure ledger and merged lineage.
+    [switch]$ReuseQualifiedCandidate,
+    [string]$PackagePath,
+    [string]$CandidateRepositoryRoot,
+    [string]$QualificationLedgerPath = 'planning\SPRINT21-CLOSURE-LEDGER.json',
+    [string]$MergedReleaseCommit
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'common.ps1')
 . (Join-Path $PSScriptRoot 'KmgGate.Common.ps1')
+
+if ($ReuseQualifiedCandidate) {
+    & (Join-Path $PSScriptRoot 'Publish-QualifiedCandidate.ps1') `
+        -PackagePath $PackagePath -CandidateRepositoryRoot $CandidateRepositoryRoot `
+        -QualificationLedgerPath $QualificationLedgerPath `
+        -MergedReleaseCommit $MergedReleaseCommit -ReleaseNotesPath $ReleaseNotesPath `
+        -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady
+    return
+}
+if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit) {
+    throw 'Qualified-candidate arguments require -ReuseQualifiedCandidate.'
+}
 
 function Assert-CommandAvailable {
     param([Parameter(Mandatory = $true)][string]$Name)

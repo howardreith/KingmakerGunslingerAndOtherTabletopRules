@@ -4,7 +4,7 @@
     "host":  "HOWARD-LAPTOP",
     "branch":  "codex/expanded-summoning-sprint21-bebelith-giant-crab",
     "pr":  36,
-    "status":  "DIAGNOSIS_AND_OBSERVER_CORRECTION",
+    "status":  "MATCHED_BASELINE_DIAGNOSIS",
     "startedUtc":  "2026-10-11T23:43:03Z",
     "planningHours":  4,
     "allocationMinutes":  {
@@ -34,7 +34,28 @@
                                "49/50 alpha inventory FAIL",
                                "b17a0121 candidate complete suite: 2537/2562 PASS, 25 FAIL; 23 missing private inspection input and 2 stale observer source-text expectations; no package/deployment"
                            ],
-    "candidate":  null,
+    "candidate":  {
+                      "source":  "3ee4f9a4040f9295d125369ee99a879d80d51a57",
+                      "zipSha256":  "dd1facb5554d322eae223d591a0e29c67b940c1a313c367c609228c6ddbc8034",
+                      "dllSha256":  "8edb753c72b52a6cde82a15cfa2be68f664f2ccaf93dfe3d49f6b14b52b00a9e",
+                      "dllMvid":  "21d0319e-eb2f-4d5e-a3d6-ecf4c9fd46a5",
+                      "sourceFingerprint":  "6c69a049ac8e9f2610a96f6f74bb5ca7cdf75e09d546d77deba2359485e102a8",
+                      "manifestSha256":  "1e9586af343575b866705a3b350fbd182d1dc39d8f6359d31bbae179ca3d8d7d",
+                      "packagePath":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate\\artifacts\\local-runtime\\0.0.150\\KingmakerGunslinger-0.0.150-local-runtime.zip",
+                      "pipelineExitCode":  0,
+                      "pipelineSeconds":  237.2949665,
+                      "fullSuite":  {
+                                        "executed":  2562,
+                                        "registered":  2562,
+                                        "failures":  0,
+                                        "exitCode":  0,
+                                        "unfiltered":  true,
+                                        "executable":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate\\artifacts\\tests\\Release\\KingmakerGunslinger.DomainTests\\KingmakerGunslinger.DomainTests.exe",
+                                        "executableSha256":  "adb6f92f1d16b20b4796c459f7d90041e8ae90cf86d944d87481d831816be8ab",
+                                        "executableModifiedUtc":  "2026-10-12T00:17:54.5106086Z",
+                                        "buildCommand":  "Invoke-KmgGate.ps1 -Level Tranche -\u003e Build-Local -\u003e test-domain.ps1 -Configuration Release -Clean -SkipRepositoryValidation"
+                                    }
+                  },
     "findings":  [
                      {
                          "id":  "feature-module-brown-fur-publication-gate",
@@ -77,13 +98,31 @@
     "coverage":  [
                      {
                          "id":  "boundary-on",
-                         "result":  "PENDING",
-                         "action":  "Affected native rerun"
+                         "result":  "PASS",
+                         "action":  "Affected native rerun",
+                         "proofs":  [
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\runtime-result.json",
+                                            "sha256":  "bbb8f0bd547ccb21b07e983f5e9153063f53166616dc96bb4a05f3f94fe5d12e"
+                                        }
+                                    ],
+                         "transaction":  "compat-20261012T002145Z-4f2b95a64e80",
+                         "assertions":  47,
+                         "restorationVerified":  true
                      },
                      {
                          "id":  "boundary-off",
-                         "result":  "PENDING",
-                         "action":  "Affected native rerun"
+                         "result":  "PASS",
+                         "action":  "Affected native rerun",
+                         "proofs":  [
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\runtime-result.json",
+                                            "sha256":  "a9476b7420218d697991c6dd4af26d515da02f30def50bce1a9bed868874c2ef"
+                                        }
+                                    ],
+                         "transaction":  "compat-20261012T002453Z-f9ba6581a00c",
+                         "assertions":  47,
+                         "restorationVerified":  true
                      },
                      {
                          "id":  "matched149-control",
@@ -162,10 +201,10 @@
     "releaseEligible":  false,
     "restoration":  {
                         "intakeManifest":  "actual-mods-intake-manifest.json",
-                        "current":  "NO_TRANSACTION_STARTED",
+                        "current":  "EXACT_INTAKE_VERIFIED",
                         "workingSave":  "No campaign load/write yet; inspect authoritative native receipts before selecting persistence stage"
                     },
-    "nextAction":  "Finish focused repair checks and freeze the observer bundle; one Tranche pipeline and coordinated startup comparison",
+    "nextAction":  "One coordinated matched149 diagnostic ON/OFF control, then remaining final-candidate profiles and required original-four-module states; reuse unchanged mechanics/persistence provenance and prove fresh fixture absence.",
     "repairValidation":  {
                              "filter":  "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
                              "selected":  15,
