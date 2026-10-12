@@ -1678,6 +1678,8 @@ namespace KingmakerGunslinger.Blueprints
                         GiantCrabRacialSkillsSymbol)
                     : fact == "AnkylosaurusStun"
                     ? Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.StunFeatureSymbol)
+                    : fact == "AnkylosaurusChassis"
+                    ? Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.ChassisFeatureSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)

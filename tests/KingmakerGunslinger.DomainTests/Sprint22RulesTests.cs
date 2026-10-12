@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class Sprint22RulesTests
     {
-        internal const int AppendedLedgerIdentities = 4;
+        internal const int AppendedLedgerIdentities = 6;
         internal static void OriginalAssetHasValidGeometryAndReviewedDrivers()
         {
             var data=JObject.Parse(File.ReadAllText("assets/ankylosaurus/ankylosaurus-mesh.json"));
@@ -80,6 +80,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(25, AnkylosaurusRulesPolicy.DifficultyClass(10,10), "Strength increase reaches the same production policy.");
             Assertions.Equal(19, AnkylosaurusRulesPolicy.DifficultyClass(10,4), "Strength loss lowers the DC.");
             Assertions.Equal(21, AnkylosaurusRulesPolicy.DifficultyClass(6,8), "Only racial HD contribute.");
+            Assertions.Equal(3, AnkylosaurusRulesPolicy.ReachBonusFeet,
+                "Measured native twelve-foot reach gets only the missing three feet.");
+            Assertions.Equal(9, AnkylosaurusRulesPolicy.TailTypeStoredRangeFeet,
+                "Native weapon-range transform exposes five feet from the private tail type.");
+            Assertions.Equal(2, AnkylosaurusRulesPolicy.PowerAttackAdditionalDamage,
+                "Native lone-tail Power Attack gets only its missing 1.5x increment.");
         }
 
         internal static void ReplaysAndDistinctStrikesAreDiscriminated()
@@ -100,7 +106,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("Huge", profile.Size, "Published size.");
             Assertions.Equal("Tail3d6", profile.PrimaryWeapon, "Published private tail.");
             Assertions.Equal(0, profile.AdditionalWeapons.Count + profile.AdditionalSecondaryWeapons.Count, "One natural weapon.");
-            Assertions.True(profile.Facts.OrderBy(value => value).SequenceEqual(new[] {"GreatFortitude","PowerAttack","ImprovedBullRush","WeaponFocusTail","TripDefenseFourLegs","AnkylosaurusStun"}.OrderBy(value => value)), "All supported printed carriers and mandatory rider.");
+            Assertions.True(profile.Facts.OrderBy(value => value).SequenceEqual(new[] {"GreatFortitude","PowerAttack","ImprovedBullRush","WeaponFocusTail","TripDefenseFourLegs","AnkylosaurusChassis","AnkylosaurusStun"}.OrderBy(value => value)), "All supported printed carriers, private reach chassis and mandatory rider.");
             Assertions.True(profile.Skills.SequenceEqual(new[] { "Perception" }), "Exact printed skill allocation.");
         }
         internal static void PublishedRoutesRemainAtFiveThroughNine()
@@ -110,7 +116,8 @@ namespace KingmakerGunslinger.DomainTests
             var tail=identities.Skip(identities.Count-AppendedLedgerIdentities).Select(value=>value.Symbol).ToArray();
             Assertions.True(tail.SequenceEqual(new[] { AnkylosaurusRulesPolicy.UnitTypeSymbol,
                 AnkylosaurusRulesPolicy.StunFeatureSymbol,AnkylosaurusRulesPolicy.DazedSymbol,
-                AnkylosaurusRulesPolicy.StunnedSymbol }),"Exactly four private carrier identities append in order; no new unit, route or weapon.");
+                AnkylosaurusRulesPolicy.StunnedSymbol,AnkylosaurusRulesPolicy.ChassisFeatureSymbol,
+                AnkylosaurusRulesPolicy.TailTypeSymbol }),"Exactly six private carrier identities append in order; live-readback corrections add no unit, route or weapon.");
             foreach (var family in new[] { SummonFamily.Monster, SummonFamily.NaturesAlly })
             {
                 var routes = ExpandedSummoningCatalog.GenerateVariants(family).Where(value => value.Creature.Key == "ankylosaurus").OrderBy(value => value.ParentTier).ToArray();

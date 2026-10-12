@@ -6,11 +6,15 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -29,6 +33,15 @@ namespace KingmakerGunslinger.Blueprints
             type.Image = null;
             var feature = Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.StunFeatureSymbol);
             type.SignatureAbilities = new BlueprintUnitFact[] { feature };
+            BlueprintUnit owner = Require<BlueprintUnit>(bySymbol,
+                "KMG.Summoning.Unit.Ankylosaurus");
+            BlueprintItemWeapon tail = Require<BlueprintItemWeapon>(bySymbol,
+                Tail3d6Symbol);
+            ConfigureAnkylosaurusTailType(tail, Require<BlueprintWeaponType>(
+                bySymbol, AnkylosaurusRulesPolicy.TailTypeSymbol));
+            ConfigureAnkylosaurusChassis(library, owner, tail,
+                Require<BlueprintFeature>(bySymbol,
+                    AnkylosaurusRulesPolicy.ChassisFeatureSymbol));
             var dazed = Require<BlueprintBuff>(bySymbol, AnkylosaurusRulesPolicy.DazedSymbol);
             var stunned = Require<BlueprintBuff>(bySymbol, AnkylosaurusRulesPolicy.StunnedSymbol);
             ConfigureAnkylosaurusCondition(library, dazed, "d2e35b870e4ac574d9873b36402487e5",
@@ -39,9 +52,9 @@ namespace KingmakerGunslinger.Blueprints
                 "Stunned", "Stunned for 1d4 rounds by a confirmed critical ankylosaurus tail strike.");
             var handler = ScriptableObject.CreateInstance<AnkylosaurusTailControl>();
             handler.name = "$KMG_Ankylosaurus_Stun";
-            handler.OwningBlueprint = Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit.Ankylosaurus");
+            handler.OwningBlueprint = owner;
             handler.AnimalClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library, AnimalClassGuid, "animal racial HD");
-            handler.Tail = Require<BlueprintItemWeapon>(bySymbol, Tail3d6Symbol);
+            handler.Tail = tail;
             handler.Dazed = dazed; handler.Stunned = stunned;
             feature.name = InternalName(AnkylosaurusRulesPolicy.StunFeatureSymbol);
             feature.IsClassFeature = false; feature.HideInUI = false;
@@ -50,6 +63,68 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.ExpandedSummoning.Ankylosaurus.Stun.Name", "Stun (Ex)"),
                 LocalizationService.Create("KMG.ExpandedSummoning.Ankylosaurus.Stun.Description",
                     "A creature struck by this ankylosaurus's tail must make a Fortitude save (DC 10 + half its animal hit dice + its current Strength modifier). Failure dazes the creature for one round. On a confirmed critical hit, failure stuns it for 1d4 rounds instead. A hit absorbed by damage reduction still qualifies."), null);
+        }
+
+        private static void ConfigureAnkylosaurusTailType(BlueprintItemWeapon tail,
+            BlueprintWeaponType target)
+        {
+            if (tail == null || tail.Type == null || target == null)
+                throw new InvalidOperationException(
+                    "Ankylosaurus tail type inputs are incomplete.");
+            BlueprintWeaponType native = tail.Type;
+            CopyFields(native, target);
+            target.name = InternalName(AnkylosaurusRulesPolicy.TailTypeSymbol);
+            SetField(target, "m_AttackRange", new Feet(
+                AnkylosaurusRulesPolicy.TailTypeStoredRangeFeet));
+            SetField(tail, "m_Type", target);
+            if (target.AttackRange.Value != 5 || !ReferenceEquals(tail.Type, target))
+                throw new InvalidOperationException(
+                    "Ankylosaurus private tail type did not expose five feet before body reach.");
+        }
+
+        private static void ConfigureAnkylosaurusChassis(
+            LibraryScriptableObject library, BlueprintUnit owner,
+            BlueprintItemWeapon tail, BlueprintFeature feature)
+        {
+            var reach = ScriptableObject.CreateInstance<AddStatBonus>();
+            reach.Stat = StatType.Reach;
+            reach.Value = AnkylosaurusRulesPolicy.ReachBonusFeet;
+            reach.Descriptor = ModifierDescriptor.UntypedStackable;
+
+            var focus = ScriptableObject.CreateInstance<WeaponFocus>();
+            focus.WeaponType = tail.Type;
+            focus.AttackBonus = 1;
+
+            BlueprintActivatableAbility powerAttack = BlueprintLibraryLookup
+                .RequireExact<BlueprintActivatableAbility>(library,
+                    "a7b339e4f6ff93a4697df5d7a87ff619",
+                    "native Power Attack toggle");
+            if (powerAttack.Buff == null)
+                throw new InvalidOperationException(
+                    "Native Power Attack toggle has no buff.");
+            var correction = ScriptableObject.CreateInstance<
+                AnkylosaurusPowerAttackCorrection>();
+            correction.OwningBlueprint = owner;
+            correction.Tail = tail;
+            correction.PowerAttackBuff = powerAttack.Buff;
+            correction.AdditionalDamage =
+                AnkylosaurusRulesPolicy.PowerAttackAdditionalDamage;
+
+            feature.name = InternalName(
+                AnkylosaurusRulesPolicy.ChassisFeatureSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] {
+                reach, focus, correction
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Ankylosaurus.Chassis.Name",
+                    "Ankylosaurus Chassis"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Ankylosaurus.Chassis.Description",
+                    "Carries the adult ankylosaurus's fifteen-foot reach and exact single-tail combat adjustments."),
+                null);
         }
 
         private static void ConfigureAnkylosaurusCondition(LibraryScriptableObject library,

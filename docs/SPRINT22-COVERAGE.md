@@ -8,7 +8,7 @@ and [the ledger](../planning/SPRINT22-ANKYLOSAURUS-LEDGER.json).
 | --- | --- | --- |
 | Ten published routes, quantities, templates, slots and duration | Unchanged catalog/publisher/ability builder and ledger | Exact old identity-set comparison; ten native selected-parent spellbook casts and ten direct registered casts |
 | Printed profile, HP and Perception | Exact-rank/HP carrier, animal racial class, Anky-only profile and native facts | Spawned facts, class levels and native stat/weapon/maneuver rules in both modes |
-| Huge single tail, 3d6+12, reach | Existing Tail3d6 with native size/range/1.5x Strength | Actual damage dice, bonus, attack and reach readback; separate native Power Attack toggle |
+| Huge single tail, 3d6+12, reach | Existing Tail3d6 keeps its GUID; private tail type supplies five feet, hidden chassis adds the measured missing three feet of body reach, native single-primary handling retains 1.5x Strength | Exact private type and carrier readback, actual damage dice/bonus/attack and 15-foot range; native Power Attack plus the Anky-only missing +2 damage |
 | Fortitude DC from current Strength and racial HD | AnkylosaurusTailControl exact owner/weapon guard | Live Strength increase/decrease, native saving-throw DC and raw rolls |
 | Daze/critical-stun alternatives, native immunity, absorbed hits | Private native AddCondition buffs, only Daze/Stun descriptors, finite Stack instances | Genuine native commands in RTWP/TB, resolved hit/confirmation/immunity, one save, native d4/application duration and negative controls |
 | Event/lifetime/source ownership | Weak reference-event gate and victim-owned absolute native buff expiry | Duplicate callbacks, distinct repeated strikes, two sources, source death, unrelated effect preservation, natural expiry and returned commands |
@@ -20,7 +20,7 @@ and [the ledger](../planning/SPRINT22-ANKYLOSAURUS-LEDGER.json).
 Internal review found no publisher, template, catalog, module coordinator, stock
 condition, unrelated natural profile, icon, native donor or general serialization
 change. Only the Ankylosaurus row gains exact skills, native feats/trip defense and
-its four private type/feature/buff identities. Its existing unit, tail, ten roots
+its six private type/feature/buff identities. Its existing unit, tail, ten roots
 and ten Monster children are preserved. Existing primary-natural damage behavior
 remains in force; the apes/scorpion multi-primary correction is not attached.
 
@@ -74,9 +74,15 @@ started.
 Candidate-boundary correction: the e1c4eaf4 full suite executed 2,580 cases
 in 97.6 s and retained 27 failures from current ledger/version/package pins,
 the prior mandatory-rider omission and an overbroad source-reader regex.
-Historical GUID blocks and asset presence assertions remain intact. The four
+Historical GUID blocks and asset presence assertions remain intact. The first four
 private appends now enter the existing shared offset calculations; the package
 producer admits the new 356-member inventory. All 27 exact failed case names
 and affected Sprint 22/native-profile/Sprint 21 neighbors passed a 65-case
 focused selection (production step 0.9 s, domain step 5.7 s). A new clean full
-candidate is required; these corrections are not native evidence.
+candidate is required; these corrections are not native evidence. The first
+native candidate then proved that shared Huge reach and tail range expose only
+nine feet, the native toggle supplies only +4 damage to the single tail, and a
+wrapped public buff add duplicates native rule events. Two further append-only
+carriers supply the missing reach/range and exact +2 Power Attack damage, while
+the rider now enters through the native public buff API once. The changed native
+observer samples the issued tail command while its real clip is active.
