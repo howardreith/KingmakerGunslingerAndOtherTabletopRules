@@ -128,7 +128,8 @@ namespace KingmakerGunslinger.Summoning
                 // wearing a Giant Spider.
                 { BebelithBlueprintName, Sprint14BonePolicy.BebelithKey },
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
-                { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" }
+                { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" },
+                { AnkylosaurusVisualPolicy.BlueprintName, AnkylosaurusRulesPolicy.Key }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -204,6 +205,7 @@ namespace KingmakerGunslinger.Summoning
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal CrocodilianAttackVisualPose CrocodilianPose;
+            internal AnkylosaurusTailImpactVisual AnkylosaurusImpact;
             internal StirgeVisualTouch StirgeTouch;
             internal FireBeetleVisualGlow BeetleGlow;
         }
@@ -321,6 +323,12 @@ namespace KingmakerGunslinger.Summoning
                     out boneNames, out albedo))
                     return Fallback(PteranodonAssetRuntime.StirgeStatus);
             }
+            else if (attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetAnkylosaurusVisual(out source, out boneNames, out albedo, out status))
+                    return Fallback(status);
+            }
             else if (UngulateKeys.Contains(attachment.VisualKey))
             {
                 string status;
@@ -422,7 +430,8 @@ namespace KingmakerGunslinger.Summoning
                                         attachment.VisualKey) ||
                                     Sprint14InsectKeys.Contains(
                                         attachment.VisualKey) ||
-                                    IsCrocodilian(attachment.VisualKey))
+                                    IsCrocodilian(attachment.VisualKey) ||
+                                    attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
                 mesh.name = visualName;
@@ -457,6 +466,11 @@ namespace KingmakerGunslinger.Summoning
 
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
+                if (attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
+                {
+                    attachment.AnkylosaurusImpact=view.gameObject.AddComponent<AnkylosaurusTailImpactVisual>();
+                    attachment.AnkylosaurusImpact.Configure(bones.Single(value=>value.name=="Tail5_M"));
+                }
                 if (attachment.VisualKey == "eagle")
                 {
                     attachment.EagleLunge = view.gameObject
@@ -663,6 +677,12 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.AnkylosaurusImpact != null)
+            {
+                attachment.AnkylosaurusImpact.enabled=false;
+                UnityEngine.Object.DestroyImmediate(attachment.AnkylosaurusImpact);
+                attachment.AnkylosaurusImpact=null;
+            }
             if (attachment.CrocodilianPose != null)
             {
                 attachment.CrocodilianPose.enabled = false;
@@ -684,7 +704,7 @@ namespace KingmakerGunslinger.Summoning
         {
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
-                !OriginalFlightCleanupPolicy.Handles(attachment.VisualKey)) return new UnityEngine.Object[0];
+                (!OriginalFlightCleanupPolicy.Handles(attachment.VisualKey) && attachment.VisualKey != "ankylosaurus")) return new UnityEngine.Object[0];
             // The exact swapped renderer belongs to this attachment. Its native
             // controller instance is private too; original donor references are
             // excluded by reference, never by a KMG_ prefix or a global search.
@@ -693,14 +713,14 @@ namespace KingmakerGunslinger.Summoning
                     ? attachment.Donor.sharedMaterials : new Material[0];
             return OriginalFlightCleanupPolicy.PrivateMaterials(attachment.Material,
                 installed, attachment.OriginalMaterials).Cast<UnityEngine.Object>()
-                .Concat(new UnityEngine.Object[] { attachment.Mesh }).Where(o => o != null).ToArray();
+                .Concat(new UnityEngine.Object[] { attachment.Mesh, attachment.AnkylosaurusImpact }).Where(o => o != null).ToArray();
         }
 
         internal static void ReleaseOriginalFlightView(UnitEntityView view)
         {
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
-                !OriginalFlightCleanupPolicy.Handles(attachment.VisualKey)) return;
+                (!OriginalFlightCleanupPolicy.Handles(attachment.VisualKey) && attachment.VisualKey != "ankylosaurus")) return;
             var owned = CaptureOriginalFlightOwnedResources(view);
             try
             {

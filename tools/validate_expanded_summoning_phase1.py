@@ -348,6 +348,12 @@ SPRINT3 = PHASE1  # the pins below read the current figures
 # ".Wolverine" substring, because the creature itself is a Phase 1 roster
 # member and all of its ability placements belong to the Phase 1 append.
 PHASE2_ADDITIONS = {
+    # Sprint 22 appends only these four private carriers. The released unit
+    # and route symbols already belong to the preserved prefix.
+    "KMG.Summoning.Natural.Ankylosaurus.UnitType",
+    "KMG.Summoning.Special.Ankylosaurus.Stun",
+    "KMG.Summoning.Special.Ankylosaurus.Dazed",
+    "KMG.Summoning.Special.Ankylosaurus.Stunned",
     "KMG.Summoning.Natural.DireBat.Blindsense",
     "KMG.Summoning.Natural.Bite1",
     "KMG.Summoning.Natural.Wolverine.Rage",
@@ -628,7 +634,7 @@ def validate(root: Path) -> None:
     # Four unchanged master v0.0.142 trait exports join the qualified Phase2B tree.
     if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.146":
         package_count += 4 + 7 + 1  # traits, unchanged master145 documents, release146 notes
-    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in {"0.0.147", "0.0.148", "0.0.149", "0.0.150"}:
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] in {"0.0.147", "0.0.148", "0.0.149", "0.0.150", "0.0.151"}:
         # Everything v0.0.146 shipped, plus the current release's notes, the
         # two new project-owned ape icons, and the four original Sprint 18
         # body files: one mesh and one painting for each ape. The package
@@ -638,12 +644,12 @@ def validate(root: Path) -> None:
         # icon and body are not authored yet and add nothing here.
         package_count += 4 + 7 + 1 + 1 + 2 + 4
     if json.loads((root / "Info.json").read_text(
-            encoding="utf-8"))["Version"] in ("0.0.149", "0.0.150"):
+            encoding="utf-8"))["Version"] in ("0.0.149", "0.0.150", "0.0.151"):
         # Three more: the Giant Scorpion's icon, its original mesh and its
         # painting.
         package_count += 3
     if json.loads((root / "Info.json").read_text(
-            encoding="utf-8"))["Version"] == "0.0.150":
+            encoding="utf-8"))["Version"] in ("0.0.150", "0.0.151"):
         # Sprint 21's five: the Giant Crab's icon, and a mesh and a painting
         # for each of the two original bodies. The Bebelith's is the first
         # body in the series authored for a creature that already ships
@@ -653,6 +659,8 @@ def validate(root: Path) -> None:
         # Seven player instructions and curated qualification files accompany
         # the findability repair. Historical summoning asset counts are fixed.
         package_count += 7
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.151":
+        package_count += 2  # Original Ankylosaurus mesh/albedo; existing icon retained.
     validate_package_count_owners(root, package_count)
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,

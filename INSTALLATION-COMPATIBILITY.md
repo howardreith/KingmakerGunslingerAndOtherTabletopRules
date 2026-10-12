@@ -1,24 +1,21 @@
 # Installation, updates, removal, and compatibility
 
-Candidate version: `0.0.150-expanded-summoning-sprint21` (UMM
-version `0.0.149`), archive
-`KingmakerGunslinger-0.0.150-expanded-summoning-sprint21.zip`.
-It is built on released v0.0.148 and changes nothing that release qualified, so
-it retains v0.0.142 traits/content and the qualified summoning Sprints 12–19
-including Salamander, both apes, the Girallon and the Xill, plus released
-v0.0.144 weapon recovery and v0.0.145 Nodachi icon behavior. Its own Sprint 20
-Giant Scorpion is registered and withheld and is NOT runtime qualified. Install
+Candidate version: `0.0.151-expanded-summoning-sprint22` (UMM
+version `0.0.151`), intended archive
+`KingmakerGunslinger-0.0.151-expanded-summoning-sprint22.zip`.
+It is built on released v0.0.150 and overhauls only the already-published
+Ankylosaurus. Native qualification and publication remain pending. Install
 only the final standalone UMM ZIP after publication, not source archives or
 private reference bundles.
-See [Sprint 20 scope and limitations](docs/RELEASE-NOTES-0.0.149.md) and the
-preceding [Sprint 19 scope](docs/RELEASE-NOTES-0.0.148.md).
+See [Sprint 22 coverage](docs/SPRINT22-COVERAGE.md) and
+[candidate scope and limitations](docs/RELEASE-NOTES-0.0.151.md).
 
 ### Latest public release
 
-UMM `0.0.148`, archive
-`KingmakerGunslinger-0.0.148-expanded-summoning-sprint19.zip`. It published the
-Girallon and the Xill after 39/39 mechanics and 12/12 body review; both are
-selectable.
+UMM `0.0.150`, archive
+`KingmakerGunslinger-0.0.150-expanded-summoning-sprint21.zip`. Its qualified
+Giant Crab and Bebelith release and restoration are recorded in
+[the Sprint 21 closure](docs/SPRINT21-CLOSURE-2026-10-11.md).
 
 ### Previously released versions
 
