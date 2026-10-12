@@ -792,6 +792,15 @@ $sprint22ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint22-nati
 foreach ($phase in @('rtwp-foundation','turn-based-control')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint22ReviewArgs `
         -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint22-review-allows-$phase"
+    $reviewRequest = New-KmgRuntimeRequest @sprint22ReviewArgs `
+        -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
+            'sprint22-review-request-test')
+    $reviewRoundTrip = $reviewRequest | ConvertTo-Json -Depth 8 |
+        ConvertFrom-Json
+    Assert-True (@($reviewRoundTrip.parameters.PSObject.Properties).Count -eq 1 -and
+        $reviewRoundTrip.parameters.reviewPhase -ceq $phase) `
+        "sprint22-review-serializes-$phase"
 }
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint22ReviewArgs `
     -ExitAfterCompletion $true } `
