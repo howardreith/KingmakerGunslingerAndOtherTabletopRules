@@ -1212,6 +1212,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\BoundaryObservationPolicy.cs" />
+    <Compile Include="RuntimeTesting\ExpandedSummoningNativeProfilePolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeProfile.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.BoundaryDiagnostics.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonViewObservation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningBoundary.cs" />

@@ -32,18 +32,25 @@ released product/assets, matched exact scroll clauses and stock rows. All seven
 old boundary findings are fixture defects; Brown-Fur provider presence still
 needs its CotW profile. Preserve the local baseline safety ref and comparison.
 
-The standalone load/optional/inventory observations passed on3ee4f9a4, but its
-mechanical scenario timed out before execution: native Player.PostLoad could not
-find the cross-scene main-character UniqueId. Its exact transaction restored all
-968 intake entries/settings with no save-writing API observed. The current
-five-mod fixture check does not match the actual11-mod intake. After it safely
-restores, run the prepared single actual-intake fixture control from the external
-campaign root. Inspect its exact receipt, not the newest run directory. No manual
-save access, assertion waiver or unchanged reduced-stack retry is authorized by
-this diagnosis. The owner mission authorizes safe evidence-driven fixture repair.
+The reduced-stack mechanical load and five-mod control failed before mechanics:
+native Player.PostLoad could not find the cross-scene main-character UniqueId.
+The exact eleven-mod intake control then passed whole-roster fresh absence 6/6
+on3ee4f9a4, with no save write. Transaction compat-20261012T013554Z-8b7169658f01
+and both failed controls restored all968 intake entries/settings. The working
+fixture is valid and clean under its actual intake stack. This does not qualify
+reduced-profile mechanics or establish which absent dependency prevents loading.
 
-Remaining profile mechanics, module states, fresh absence and release gates stay
-pending/failed until qualified. Retain audited unaffected prior native PASS with
+A save-free native first-level fixture now calls the unchanged full mechanical
+case with real scene/navigation services. It refuses any existing world/import,
+requires automatic exit and empty parameters, guards save/load/delete APIs,
+uses request-owned preset/anchor clones and native ResetToMainMenu teardown.
+Focused admission/compatibility checks passed6/6 with production compilation.
+The fixture remains native-unqualified. Freeze the coherent correction, run one
+new Tranche candidate pipeline, then first qualify the gunslinger-only native
+mechanics reproduction before proceeding through the remaining profiles.
+
+Remaining profile mechanics, module states and release gates stay pending until
+qualified. Retain audited unaffected prior native PASS with
 its original source/artifact identity; no blanket current-candidate claim.
 
 Native batches freeze their candidate worktree. Logs stay outside it; recovery

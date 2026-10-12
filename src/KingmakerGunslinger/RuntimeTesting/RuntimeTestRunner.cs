@@ -704,6 +704,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_manualElapsed == null &&
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile &&
+                    _summoningProfileStage > 0)
+                {
+                    PollExpandedSummoningNativeProfile();
+                    return;
+                }
+                if (_manualElapsed == null &&
                     _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
                 {
                     _trace.Record("startup-timeout",
@@ -872,6 +879,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (!_context.IsReady) return;
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile)
+                {
+                    if (BlueprintBootstrap.IsInitialized && !ResourcesLibrary.Preloading)
+                        PollExpandedSummoningNativeProfile();
+                    return;
+                }
                 if (RuntimeTestScenarioCatalog
                     .IsSummonSameTurnCompatibilityScenario(
                         _request.Scenario))

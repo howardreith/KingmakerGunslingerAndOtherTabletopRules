@@ -7,6 +7,17 @@ introduced for Kingmaker Gunslinger 0.0.30 and retained by current candidates.
 It does not qualify any scenario in game. Source qualification and an actual
 Kingmaker run are separate gates.
 
+The `disposable-expanded-summoning-native-profile` compatibility fixture requires
+automatic exit, empty parameters and a fresh empty main-menu process. It loads
+the native first-level area and its navigation graph using request-owned preset
+and actor clones, with autosave disabled and independent save/load/delete guards.
+It calls the existing full disposable summon mechanics case, then uses native
+`ResetToMainMenu` and verifies empty-world restoration and removal of its guards.
+It does not import, select, load or write a saved world. Its result cannot qualify
+saved-world hydration, persistence, terrain travel or manual camera review; those
+retain their separate evidence. The older working-save mechanics scenario remains
+available where its fixture dependencies are valid.
+
 The autonomous save-backed route is `working-save-smoke`, documented in
 `WORKING-SAVE-SMOKE.md`. It uses the guarded request, Steam App ID 640820, the
 observed normal Unity Load Game action, and the exact captured catalog object.
