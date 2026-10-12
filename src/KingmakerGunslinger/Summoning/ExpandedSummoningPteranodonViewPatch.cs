@@ -469,7 +469,7 @@ namespace KingmakerGunslinger.Summoning
                 if (attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
                 {
                     attachment.AnkylosaurusImpact=view.gameObject.AddComponent<AnkylosaurusTailImpactVisual>();
-                    attachment.AnkylosaurusImpact.Configure(bones.Single(value=>value.name=="Tail5_M"));
+                    attachment.AnkylosaurusImpact.Configure(view,donor);
                 }
                 if (attachment.VisualKey == "eagle")
                 {
