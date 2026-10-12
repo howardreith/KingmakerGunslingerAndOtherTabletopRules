@@ -1018,11 +1018,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["bones"]=new JArray(value.bones.Select(bone=>bone?.name)) })) },"One private original body on 24 exact actor-owned drivers with borrowed cached albedo.");
         }
 
+        private const string Sprint22DazedBuffGuid =
+            "74654177d90e4d1d8fd512c0dabe3966";
+        private const string Sprint22StunnedBuffGuid =
+            "1f95fa2f17b042df8065a28823e09fc3";
+
         private static bool Sprint22OwnedControl(BlueprintBuff value)
         {
-            string name=value?.name;
-            return name=="KMG_Summoning_Special_Ankylosaurus_Dazed" ||
-                name=="KMG_Summoning_Special_Ankylosaurus_Stunned";
+            // Unity's null-conditional operator does not use the overloaded
+            // Object null check. A deferredly destroyed fixture blueprint can
+            // therefore throw from its native name getter. Stable ledger GUIDs
+            // identify only the two private Sprint 22 carriers and safely
+            // ignore such dead fixture objects.
+            if (value == null) return false;
+            string guid=value.AssetGuid;
+            return guid==Sprint22DazedBuffGuid ||
+                guid==Sprint22StunnedBuffGuid;
         }
 
         private static bool Sprint22OwnedControl(Buff value)
@@ -1255,19 +1266,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     double nativeStarted=Game.Instance.TimeController.GameTime.TotalSeconds;
                     var clock=System.Diagnostics.Stopwatch.StartNew();
-                    while (target.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(value=>effects.Contains(value)) && clock.Elapsed.TotalSeconds<45)
+                    while ((target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                            .Any(value=>effects.Contains(value)) ||
+                            target.Descriptor.State.HasCondition(
+                                UnitCondition.Stunned) ||
+                            !target.Descriptor.State.CanAct) &&
+                        clock.Elapsed.TotalSeconds<45)
                     {
                         Game.Instance.IsPaused=false;
                         if (CombatController.IsInTurnBasedCombat())
                         { var turn=Game.Instance.TurnBasedCombatController.CurrentTurn;if (turn!=null) Sprint18EndTurn(turn); }
                         yield return 0;
                     }
-                    bool expired=effects.All(value=>!target.Descriptor.Buffs.RawFacts.Contains(value)) && !target.Descriptor.State.HasCondition(UnitCondition.Stunned) && target.Descriptor.State.CanAct;
+                    bool privateEffectsGone=effects.All(value=>
+                        !target.Descriptor.Buffs.RawFacts.Contains(value));
+                    bool hasStunnedCondition=target.Descriptor.State
+                        .HasCondition(UnitCondition.Stunned);
+                    bool canAct=target.Descriptor.State.CanAct;
+                    bool expired=privateEffectsGone && !hasStunnedCondition &&
+                        canAct;
                     UnitAttack returned=null;
-                    foreach(int frame in Sprint18RunFullAttack(fixture,target,value=>returned=value,fixture.Caster)) yield return frame;
-                    Sprint22Check("critical-natural-expiry-"+(turnBased ? "turn-based":"rtwp"),expired && returned!=null && returned.IsFinished,
+                    var returnedRules=new Sprint16RuleObserver {
+                        Owner=target,Target=fixture.Caster };
+                    EventBus.Subscribe(returnedRules);
+                    try
+                    {
+                        foreach(int frame in Sprint18RunFullAttack(fixture,
+                            target,value=>returned=value,fixture.Caster))
+                            yield return frame;
+                    }
+                    finally { EventBus.Unsubscribe(returnedRules); }
+                    bool actionReturned=returned!=null &&
+                        returned.IsFinished && returnedRules.Attacks.Count>0;
+                    Sprint22Check("critical-natural-expiry-"+(turnBased ? "turn-based":"rtwp"),expired && actionReturned,
                         new JObject { ["unit"]=target.UniqueId,["event"]="native-stun-expiration-and-action",["owner"]="finite-victim-condition",
-                            ["expired"]=expired,["actionFinished"]=returned?.IsFinished,["nativeElapsedSeconds"]=Game.Instance.TimeController.GameTime.TotalSeconds-nativeStarted,
+                            ["privateEffectsGone"]=privateEffectsGone,
+                            ["hasStunnedCondition"]=hasStunnedCondition,
+                            ["canAct"]=canAct,["expired"]=expired,
+                            ["actionFinished"]=returned?.IsFinished,
+                            ["nativeAttackRules"]=returnedRules.Attacks.Count,
+                            ["actionReturned"]=actionReturned,
+                            ["nativeElapsedSeconds"]=Game.Instance.TimeController.GameTime.TotalSeconds-nativeStarted,
                             ["wallSeconds"]=clock.Elapsed.TotalSeconds },"Critical stun expires naturally and native victim actions return.");
                 }
             }
