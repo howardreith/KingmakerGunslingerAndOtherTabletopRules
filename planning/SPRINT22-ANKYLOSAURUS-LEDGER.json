@@ -255,6 +255,16 @@
       "findings": "Native profile measured Reach 12/range 9 feet, Power Attack +4, and duplicate RuleApplyBuff nesting; inherited pause/TB froze movement and expiry; post-rule pose could not witness active tail contact.",
       "disposition": "CORRECTED_FOCUSED_PASS_NEW_CANDIDATE_REQUIRED",
       "restored": true
+    },
+    {
+      "source": "5f54d1aecfb71c962be9de83ddb207d2868eaa18",
+      "stage": "sprint-candidate-repository-wrapper",
+      "durationSeconds": 42.2,
+      "classification": "STALE_CURRENT_REGISTRY_HASH_AFTER_TWO_APPEND_ONLY_IDENTITIES",
+      "disposition": "CORRECTED_ICON_CATALOG_HASH_NEW_CANDIDATE_REQUIRED",
+      "buildStarted": false,
+      "packageProduced": false,
+      "rawEvidence": "artifacts/sprint22-candidate-5f54d1ae.transcript.log and timing JSONL retained; the separate 1.4-second capture-layer invocation failure is also retained."
     }
   ],
   "acceptedLimitations": [
