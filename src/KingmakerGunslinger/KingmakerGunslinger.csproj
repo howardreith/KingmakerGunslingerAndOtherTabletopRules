@@ -1228,6 +1228,8 @@
     <Compile Include="RuntimeTesting\ArachnidRigSurveyPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Survey.cs" />
     <Compile Include="RuntimeTesting\Sprint21DonorSurveyPolicy.cs" />
+    <Compile Include="RuntimeTesting\Sprint22DonorSurveyPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Survey.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Survey.cs" />
     <Compile Include="RuntimeTesting\PrimateReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\Sprint19ReviewPolicy.cs" />
