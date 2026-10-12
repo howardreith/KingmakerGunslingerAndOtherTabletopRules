@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "mission": "docs/SPRINT22-ANKYLOSAURUS-MISSION.md",
+  "status": "IN_PROGRESS_NOT_QUALIFIED",
+  "host": "HOWARD-LAPTOP",
+  "branch": "codex/expanded-summoning-sprint22-ankylosaurus",
+  "pr": null,
+  "masterBase": "aa09788e6ba109c3db7bd0ec28f0138506f678a8",
+  "stableBaseline": {
+    "version": "0.0.150",
+    "merge": "3d8e51ee653d598c1ac7e9a6fd452c4d99767ffb"
+  },
+  "sprint21RecordSync": {
+    "original": "d3c442ae11862ad61650206959d41c4343890337",
+    "commit": "f75683a343848c26161f9e8e6770fa74206dd019",
+    "pr": 38,
+    "merge": "aa09788e6ba109c3db7bd0ec28f0138506f678a8",
+    "status": "MERGED_DOCUMENTATION_ONLY",
+    "checks": {
+      "files": 6,
+      "jsonFiles": 4,
+      "localMarkdownLinks": 4,
+      "exactOriginalContent": true,
+      "diffCheck": "PASS",
+      "seconds": 0.243
+    },
+    "buildLaunchPackageVersionReleaseChanges": false
+  },
+  "charter": {
+    "authority": "Owner-supplied September 3 2026 charter page 21 excerpt",
+    "coreFinalSprint": 41,
+    "optionalSprints": [
+      42,
+      43,
+      44,
+      45
+    ],
+    "authorizedSprint": 22,
+    "sprint21Meaning": "Natural-creature rig tranche and previous release mission complete",
+    "sprint23Started": false
+  },
+  "intake": {
+    "startedUtc": "2026-10-12T10:00:32.1690332Z",
+    "completedUtc": "2026-10-12T10:01:14.2804287Z",
+    "evidenceRoot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint22-ankylosaurus-20261012T100032Z",
+    "snapshotSha256": "d1ca61030b7986a60227bfb096bb69953b223ef0ddd40e442afb6ca225478136",
+    "modsManifestEntries": 968,
+    "saveManifestEntries": 119,
+    "actualInstalledKmgVersion": "0.0.117",
+    "restorationTarget": "Actual October 12 intake; never substituted historical pins",
+    "installedBuildReferencesMatch": true,
+    "activeTransactions": 0,
+    "liveLockAbsent": true,
+    "gameAbsent": true,
+    "sourceOwner": "Sprint22 sole writer in isolated codex/expanded-summoning-sprint22-ankylosaurus worktree",
+    "otherWorktreesPreserved": true
+  },
+  "pushPolicyChange": {
+    "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "beforeSha256": "4336caa9cf815195e316974fb699547e93962a7771ba20d94f1794d2403fded3",
+    "afterSha256": "aa763ebaf6d55d9fd268627ec96cfe0f484717b840dff234643493682e7b49d5",
+    "addedBranches": [
+      "codex/sprint21-release-record-sync",
+      "codex/expanded-summoning-sprint22-ankylosaurus"
+    ],
+    "otherEdits": false
+  },
+  "rulesInterpretation": {
+    "sourceUrls": [
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Ankylosaurus",
+      "https://legacy.aonprd.com/bestiary/dinosaur.html"
+    ],
+    "adultPf1e": true,
+    "saveType": "Fortitude",
+    "saveTypeAuthority": "Explicit owner mission interpretation; primary paragraph names no save type",
+    "dc": "10 + half racial HD + current Strength modifier",
+    "unbuffedDc": 23,
+    "ordinaryFailure": "Dazed 1 round",
+    "effectiveConfirmedCriticalFailure": "Stunned 1d4 rounds instead",
+    "absorbedDamageHit": "Qualifies: struck-by-attack rule, no injury precondition"
+  },
+  "preservedIdentities": [
+    {
+      "symbol": "KMG.Summoning.Unit.Ankylosaurus",
+      "guid": "10c80d5cfa594332bd3e5127799e426f",
+      "plannedType": "BlueprintUnit"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Ankylosaurus.One",
+      "guid": "a7bd677a7c8848f88e4a6e265bd5ed88",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Ankylosaurus.One.Celestial",
+      "guid": "b7536edef0ab47ab9eb872470f75225b",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Ankylosaurus.One.Fiendish",
+      "guid": "cfeea367ed5e4e8ea0c7a442e42a9bb9",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Ankylosaurus.OneD3",
+      "guid": "bd607b83fa9f4664b7c352eec97afb0d",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Ankylosaurus.OneD3.Celestial",
+      "guid": "bee44ca6822e48b38bbbf2268eb4a23d",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Ankylosaurus.OneD3.Fiendish",
+      "guid": "b2dc4835004c4590aa303c83a9eb246e",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Ankylosaurus.OneD4PlusOne",
+      "guid": "d33c1619aa7548ee948375b53b826311",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Ankylosaurus.OneD4PlusOne.Celestial",
+      "guid": "9b8ff63b85da4990abb856e720515685",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Ankylosaurus.OneD4PlusOne.Fiendish",
+      "guid": "e093fa3ff561488f97cae0c826b4a5f2",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Ankylosaurus.OneD4PlusOne",
+      "guid": "fc1091e0af724ede9858cfb2bd474e2d",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Ankylosaurus.OneD4PlusOne.Celestial",
+      "guid": "387126b658bd4c9797615bf02270cacb",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Ankylosaurus.OneD4PlusOne.Fiendish",
+      "guid": "4e4247e793954724ab1d8d34f00188be",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Ankylosaurus.OneD4PlusOne",
+      "guid": "9b3f3f1c195e4cb1a980e757c0e6cfca",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Ankylosaurus.OneD4PlusOne.Celestial",
+      "guid": "6c5da706182244c5ab72752ad365a26c",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Ankylosaurus.OneD4PlusOne.Fiendish",
+      "guid": "66346b80c058473ba1cbfac8ebb27578",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Ankylosaurus.One",
+      "guid": "408e787a8e684fe6aaf3a66509a1eaac",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Ankylosaurus.OneD3",
+      "guid": "da534c9632b94790b2efd45aabb78444",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Ankylosaurus.OneD4PlusOne",
+      "guid": "53fb646c7c4541adbdde45da81c8ea7c",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Ankylosaurus.OneD4PlusOne",
+      "guid": "7dd638cae1a449508e43e29d250f0d30",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Ankylosaurus.OneD4PlusOne",
+      "guid": "ffef2783493943a2b4eb0cbc81cc1051",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Tail3d6",
+      "guid": "15394605e1664a51bce4b50f38a7603a",
+      "plannedType": "BlueprintItemWeapon"
+    }
+  ],
+  "baselineSurface": {
+    "SM": 530,
+    "SNA": 533,
+    "generatedRoots": 1063,
+    "nativeWrappers": 29,
+    "visibleChoices": 1092,
+    "authority": "Catalog generation and registered native-option set"
+  },
+  "plan": {
+    "ordinaryTargetMinutes": 15,
+    "ordinaryCeilingMinutes": 30,
+    "nativeReleaseBudgetMinutes": 300,
+    "allocationMinutes": {
+      "donorFacts": 15,
+      "mechanicsArtRoutesProfiles": 120,
+      "coldLoadLifetimeModuleAbsence": 75,
+      "dependencyComparisons": 30,
+      "releaseRestoration": 60
+    },
+    "candidateGate": "One Invoke-KmgGate.ps1 -Level Sprint after internal review",
+    "focusedFilter": "expanded-summoning.sprint22; actual affected dependency filters",
+    "baselineEvidenceAuthority": "v0.0.150; named unchanged-dependency comparison per reused obligation"
+  },
+  "implementation": {
+    "profileAndCarrierAudit": "IN_PROGRESS",
+    "rider": "NOT_IMPLEMENTED",
+    "originalBody": "NOT_IMPLEMENTED",
+    "existingIcon": "Original armored dinosaur with terminal club inspected; retained pending body review"
+  },
+  "freshEvidence": [],
+  "reusedEvidence": [],
+  "failures": [],
+  "acceptedLimitations": [
+    "PASSIVE_CREATURE_SENSES_UNMODELED"
+  ],
+  "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
+  "release": "NOT_QUALIFIED_NOT_RELEASED",
+  "nextAction": "Complete exact native contracts and reusable donor audit, implement scoped rider/profile/body and focused tests."
+}
