@@ -18,12 +18,18 @@ contract checks. Vendor rows now follow the actual publication specs with exact
 identities/quantities and retired exclusions. Strategic scrolls retain economic,
 teaching/isolation/consumption checks, verify their assigned owned art and report
 each clause, including the historical donor-icon comparison. No gameplay or art
-changed. Initial focused compilation and 15/15 tests passed; the later DLC/mod
-diagnostic addition needs compilation. Raw failures remain preserved.
+changed. Focused observer checks passed 15/15; preparation-input and expectation
+repairs passed 71/71. The frozen 3ee4f9a4 candidate then passed its fresh unfiltered
+2562/2562 suite, exact build and strict package validation in 237.3 seconds.
+ZIP dd1facb5, DLL 8edb753c, MVID 21d0319e-eb2f-4d5e-a3d6-ecf4c9fd46a5.
+Both startup boundaries passed and restored their exact transactions:
+compat-20261012T002145Z-4f2b95a64e80 and compat-20261012T002453Z-f9ba6581a00c.
+The actual 968-entry intake manifest/settings matched afterward. Raw failures
+remain preserved, including the failed 2537/2562 preparation attempt.
 
-Next: finish focused checks, commit/push this bundle, freeze one Tranche candidate,
-then both startup boundaries and a coordinated matched released149 diagnostic
-control before remaining profiles. Review dependencies to reuse prior evidence
+Next: complete the one coordinated matched released149 diagnostic control
+(baseline source safety ref refs/safety/sprint21-baseline-diagnostic-20261011)
+before remaining profiles and all 16 original-four-module configurations. Review dependencies to reuse prior evidence
 with its original provenance, run missing downstream mechanics and ensure native
 working-fixture cleanup save/fresh absence. Release requires every mandatory row
 accounted for and only narrowly proved exceptions under the mission, if any.
