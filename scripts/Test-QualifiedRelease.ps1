@@ -22,6 +22,16 @@ function New-QualifiedFixture {
         baselineExceptions=@()}
 }
 $checks=0
+foreach ($origin in @('git@github.com:howardreith/KingmakerGunslingerAndOtherTabletopRules.git',
+        'https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules.git',
+        'https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules')) {
+    Assert-KmgReleaseOrigin $origin
+    $checks++
+}
+$refused=$false
+try {Assert-KmgReleaseOrigin 'git@github.com:howardreith/KingmakerBuffPlanner.git'} catch {$refused=$true}
+if(-not $refused){throw 'An unrelated repository origin was accepted.'}
+$checks++
 function Assert-Refused([scriptblock]$Change) {
     $ledger=New-QualifiedFixture
     & $Change $ledger
