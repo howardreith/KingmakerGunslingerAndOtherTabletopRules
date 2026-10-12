@@ -396,8 +396,11 @@ function Get-KmgGitState {
     param([Parameter(Mandatory = $true)][string]$RepositoryRoot)
     $commit = (& git -C $RepositoryRoot rev-parse HEAD).Trim()
     if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git commit.' }
-    $branch = (& git -C $RepositoryRoot branch --show-current).Trim()
+    # Git emits no stdout for a detached frozen checkout. Preserve that valid
+    # empty branch identity; commit, status and fingerprints still bind reuse.
+    $branchOutput = @(& git -C $RepositoryRoot branch --show-current)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git branch.' }
+    $branch = ($branchOutput -join "`n").Trim()
     $status = @(& git -C $RepositoryRoot status --porcelain)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git status.' }
     return [ordered]@{ Commit = $commit; Branch = $branch; Status = @($status) }

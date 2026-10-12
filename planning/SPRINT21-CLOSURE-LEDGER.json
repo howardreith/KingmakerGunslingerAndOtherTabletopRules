@@ -175,5 +175,10 @@
                              "freshnessRecord":  "repair-binary-freshness.json",
                              "compiledProductChanged":  false,
                              "compiledObserverChanged":  true
-                         }
+                         },
+    "frozenSourceReader":  {
+                               "checks":  "frozen-source-reader-checks.json",
+                               "reason":  "Detached frozen checkout refused before candidate pipeline",
+                               "fix":  "Normalize empty branch stdout; no guard relaxed"
+                           }
 }
