@@ -45,6 +45,7 @@ namespace KingmakerGunslinger.DomainTests
             Sprint19RulesTests.AppendedLedgerIdentities +
             Sprint20RulesTests.AppendedLedgerIdentities +
             Sprint21RulesTests.AppendedLedgerIdentities +
+                Sprint22RulesTests.AppendedLedgerIdentities +
             KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length;
 
         private static readonly string[] AppendedSymbols = {
