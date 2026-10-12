@@ -4,7 +4,7 @@
     "host":  "HOWARD-LAPTOP",
     "branch":  "codex/expanded-summoning-sprint21-bebelith-giant-crab",
     "pr":  36,
-    "status":  "MATCHED_BASELINE_DIAGNOSIS",
+    "status":  "NATIVE_PROFILE_QUALIFICATION",
     "startedUtc":  "2026-10-11T23:43:03Z",
     "planningHours":  4,
     "allocationMinutes":  {
@@ -32,7 +32,10 @@
                                "2554/2559 complete suite FAIL",
                                "40/47 ON and OFF boundaries FAIL",
                                "49/50 alpha inventory FAIL",
-                               "b17a0121 candidate complete suite: 2537/2562 PASS, 25 FAIL; 23 missing private inspection input and 2 stale observer source-text expectations; no package/deployment"
+                               "b17a0121 candidate complete suite: 2537/2562 PASS, 25 FAIL; 23 missing private inspection input and 2 stale observer source-text expectations; no package/deployment",
+                               "Matched149 precompile setup FAIL: duplicated package-count token moved to package.ps1",
+                               "Matched149 complete suite FAIL: 2533/2538; five copied Sprint21-version fixture expectations",
+                               "Matched149 focused reproduction4/5 FAIL: remaining hardcoded output path; subsequently5/5 PASS"
                            ],
     "candidate":  {
                       "source":  "3ee4f9a4040f9295d125369ee99a879d80d51a57",
@@ -62,37 +65,56 @@
                          "historical":  "Absent CotW required available 25-identity contract",
                          "classification":  "FIXTURE_DEFECT",
                          "correction":  "Unavailable and zero actual identities/selector/publication when provider absent; retain supported presence contract",
-                         "native":  "PENDING"
+                         "native":  "ABSENCE_VERIFIED; PROVIDER_PRESENCE_PENDING",
+                         "matchedControl":  "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts"
                      },
                      {
                          "id":  "teleportation-scroll-template-2c283c993b233df53b487fc7eeac2ba3",
-                         "classification":  "PENDING_NATIVE_SUBCLAUSE_AND_MATCHED_CONTROL"
+                         "classification":  "FIXTURE_DEFECT",
+                         "native":  "VERIFIED",
+                         "matchedControl":  "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+                         "correction":  "Assigned owned scroll art replaces the stale donor-art expectation; all13 required economics/teaching/isolation/consumption/art clauses PASS; historical donor-icon=False retained for both candidates."
                      },
                      {
                          "id":  "teleportation-scroll-template-2a2b0185be1d2dba5aa1b5a24774e17d",
-                         "classification":  "PENDING_NATIVE_SUBCLAUSE_AND_MATCHED_CONTROL"
+                         "classification":  "FIXTURE_DEFECT",
+                         "native":  "VERIFIED",
+                         "matchedControl":  "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+                         "correction":  "Assigned owned scroll art replaces the stale donor-art expectation; all13 required economics/teaching/isolation/consumption/art clauses PASS; historical donor-icon=False retained for both candidates."
                      },
                      {
                          "id":  "teleportation-scroll-template-42d3daeb7d503687df8953b47727372b",
-                         "classification":  "PENDING_NATIVE_SUBCLAUSE_AND_MATCHED_CONTROL"
+                         "classification":  "FIXTURE_DEFECT",
+                         "native":  "VERIFIED",
+                         "matchedControl":  "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+                         "correction":  "Assigned owned scroll art replaces the stale donor-art expectation; all13 required economics/teaching/isolation/consumption/art clauses PASS; historical donor-icon=False retained for both candidates."
                      },
                      {
                          "id":  "feature-module-gunslinger-publication",
                          "historical":  "10 expected / 7 observed",
-                         "classification":  "PENDING_NATIVE_EXACT_ROWS_AND_MATCHED_CONTROL",
-                         "contract":  "Capital publisher specifies 7 rows and excludes mundane firearms and retired maintenance items"
+                         "classification":  "FIXTURE_DEFECT",
+                         "contract":  "Capital publisher specifies 7 rows and excludes mundane firearms and retired maintenance items",
+                         "native":  "VERIFIED",
+                         "matchedControl":  "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+                         "correction":  "Exact required identities/quantities and retired-row exclusion from the actual VendorSpecs. Historical10/66/34 includes intentionally retired capital3/12/6 rows; current7/54/28 and baseline exact rows match. All three DLC entitlements true and four BTSL tables loaded."
                      },
                      {
                          "id":  "feature-module-eastern-weapons-publication-gate",
                          "historical":  "66 expected / 54 observed",
-                         "classification":  "PENDING_NATIVE_EXACT_ROWS_AND_MATCHED_CONTROL",
-                         "contract":  "Capital VendorSpec intentionally empty; others from GenericKinds/NamedKinds"
+                         "classification":  "FIXTURE_DEFECT",
+                         "contract":  "Capital VendorSpec intentionally empty; others from GenericKinds/NamedKinds",
+                         "native":  "VERIFIED",
+                         "matchedControl":  "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+                         "correction":  "Exact required identities/quantities and retired-row exclusion from the actual VendorSpecs. Historical10/66/34 includes intentionally retired capital3/12/6 rows; current7/54/28 and baseline exact rows match. All three DLC entitlements true and four BTSL tables loaded."
                      },
                      {
                          "id":  "feature-module-elven-branched-spears-publication-gate",
                          "historical":  "34 expected / 28 observed",
-                         "classification":  "PENDING_NATIVE_EXACT_ROWS_AND_MATCHED_CONTROL",
-                         "contract":  "Capital VendorSpec intentionally empty; others from FoundationKinds/NamedKind"
+                         "classification":  "FIXTURE_DEFECT",
+                         "contract":  "Capital VendorSpec intentionally empty; others from FoundationKinds/NamedKind",
+                         "native":  "VERIFIED",
+                         "matchedControl":  "Same exact reported clause/stock identities in matched149 diagnostic ON/OFF; no Sprint21 product change to these contracts",
+                         "correction":  "Exact required identities/quantities and retired-row exclusion from the actual VendorSpecs. Historical10/66/34 includes intentionally retired capital3/12/6 rows; current7/54/28 and baseline exact rows match. All three DLC entitlements true and four BTSL tables loaded."
                      }
                  ],
     "coverage":  [
@@ -126,8 +148,74 @@
                      },
                      {
                          "id":  "matched149-control",
-                         "result":  "PENDING",
-                         "action":  "Same read-only diagnostics, released product behavior, startup-only ON/OFF"
+                         "result":  "PASS",
+                         "action":  "Same read-only diagnostics, released product behavior, startup-only ON/OFF",
+                         "proofs":  [
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\runtime-result.json",
+                                            "sha256":  "bbb8f0bd547ccb21b07e983f5e9153063f53166616dc96bb4a05f3f94fe5d12e"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\boundary-vendor-rows.json",
+                                            "sha256":  "428353278266a97585a56c837e0096177ab864624b3d0ccac78b3c3495dbcc44"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0023164169249Z-observe-feature-module-settings\\boundary-scroll-clauses.json",
+                                            "sha256":  "29d7c1627781b21086f9ce3d709d8338cf9229d6363da5f067b92d5a4c9790df"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-boundary-on-receipt.json",
+                                            "sha256":  "d86dc88323a5747d9b09b28166529c40a028688a64c324a720bba65d8f391c36"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0045213749054Z-observe-feature-module-settings\\runtime-result.json",
+                                            "sha256":  "2ba55cb8e32d067af26456b1625304f6b0d3bbcf1c1700f37b0b2019f11aedd6"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0045213749054Z-observe-feature-module-settings\\boundary-vendor-rows.json",
+                                            "sha256":  "2f1b5017a9ccf53bdfe37a8a278addc2eab718c42ac2e5764b688350a26ece78"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0045213749054Z-observe-feature-module-settings\\boundary-scroll-clauses.json",
+                                            "sha256":  "0f7487c16eaa60c714f6fff375fbf3e796a1661397575c559c8009ef7e5d7018"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\baseline149-boundary-on-receipt.json",
+                                            "sha256":  "cd4079f63fdfa72f2169dba752cc97137ec1c2993c4cc5655d749a47b31aa5ae"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\runtime-result.json",
+                                            "sha256":  "a9476b7420218d697991c6dd4af26d515da02f30def50bce1a9bed868874c2ef"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\boundary-vendor-rows.json",
+                                            "sha256":  "711692771858a26dda342f78de66f5518719de707a8f52ee090d90563f8aab10"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0026254264431Z-observe-feature-module-settings\\boundary-scroll-clauses.json",
+                                            "sha256":  "05973aebd1d1f2a3d4d799d35e906a0f513bf6e032635d86eefe35064340a70d"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\candidate-boundary-off-receipt.json",
+                                            "sha256":  "d97d09dc345843133a46564889eb71b14ababca3c1341c8a06a1a0abd7e229c9"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0048207373681Z-observe-feature-module-settings\\runtime-result.json",
+                                            "sha256":  "1acc70bf281f30239d5a019df1ec7f58d373592645e4bba6e7e4d016fdf4e28f"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0048207373681Z-observe-feature-module-settings\\boundary-vendor-rows.json",
+                                            "sha256":  "c6a279cee68dd50d2c4c93b4101b0cf206a95ad092f86feb07c6112ffd707672"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261012T0048207373681Z-observe-feature-module-settings\\boundary-scroll-clauses.json",
+                                            "sha256":  "100bade379092c57d28866b93c58663474548f36bc764024922b815dd1c4390b"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint21-closure-20261011T235000Z\\baseline149-boundary-off-receipt.json",
+                                            "sha256":  "c6f3c63fc350ed12aa1c0696afd549ea351d314c58f0d1611430732887184a68"
+                                        }
+                                    ]
                      },
                      {
                          "id":  "gunslinger-only",
@@ -158,10 +246,31 @@
                      },
                      {
                          "id":  "whole-roster-enabled-persistence",
-                         "result":  "PENDING_DEPENDENCY_REVIEW",
-                         "priorSource":  "cf4bbc4a",
+                         "result":  "REUSED_PASS",
                          "priorEvidence":  "20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup",
-                         "priorResult":  "125/125 PASS"
+                         "priorResult":  "125/125 PASS",
+                         "priorSource":  "cf4bbc4aef48e8bfc65498a24dd55126679f96d2",
+                         "reuseJustification":  "Exact114-unit and113-private-resource native cleanup125/125 on cf4bbc4a. Subsequent module conditional retains the same ON identity/context/duration predicates; its affected OFF branch was separately executed on6b1ef853. Ownership, readiness, save loader/writer and product/assets unchanged afterward.",
+                         "originalArtifact":  {
+                                                  "packageSha256":  "be875bbbd1c354d8366ae41ccd630fa2c1a73a4eaf1fa188fedeecac6e07225e",
+                                                  "dllSha256":  "155f164925fb8d1aa58c56ca2f85d31b33103d378c50482f464243b64915f058",
+                                                  "dllMvid":  "3db5c40a-57ca-436c-8007-f5855a41abb7",
+                                                  "assertions":  125
+                                              },
+                         "proofs":  [
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+                                            "sha256":  "c72aee5eae681fce586bd7a6ec34002c84d0d8c8798f31ff41680cde49c8b37d"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup\\runtime-evidence.json",
+                                            "sha256":  "cdf26c4a0f68ca74f60aa127016d7ec8a4884fe7e6e3bb251d8bd2d6fbdb836e"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup\\runtime-loaded-build-identity.json",
+                                            "sha256":  "7e06c2589596e626aa3b2d3838df84c5ce7c146646ad5a9cfb1993a02e8a95bc"
+                                        }
+                                    ]
                      },
                      {
                          "id":  "native-cleanup-save-and-fresh-absence",
@@ -170,25 +279,102 @@
                      },
                      {
                          "id":  "module-disabled-deserialization-cleanup",
-                         "result":  "PENDING_DEPENDENCY_REVIEW",
-                         "priorSource":  "6b1ef853",
+                         "result":  "REUSED_PASS",
                          "priorEvidence":  "20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup",
-                         "priorResult":  "11/11 PASS"
+                         "priorResult":  "11/11 PASS",
+                         "priorSource":  "6b1ef853949c521c64ac52882b898bed80665666",
+                         "reuseJustification":  "Corrected OFF fixture11/11 on6b1ef853; no changes to roster-persistence/resource receipt/save behavior since that source. Current native fresh absence remains separately required.",
+                         "originalArtifact":  {
+                                                  "packageSha256":  "f89c813a6c2d8addced52420de0283db883eb41a40e03adf6bdcc17f4fe4f908",
+                                                  "dllSha256":  "8fd1f53698adfc8d547119ac9363416fc269d91e0a8f987741f634feb3d1ac7d",
+                                                  "dllMvid":  "d3e265d1-cdf7-4a67-bf97-33692b3fd1f4",
+                                                  "assertions":  11
+                                              },
+                         "proofs":  [
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+                                            "sha256":  "02c5375a9151f232dee96ea44ba730c6429699978eeb375ba1947aad6c0bfead"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup\\runtime-evidence.json",
+                                            "sha256":  "2510630672d2dfbf37aa752b75ed47870988dd1007372ef63fa9d7fc557c4c55"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup\\runtime-loaded-build-identity.json",
+                                            "sha256":  "93c74fb4ba074b3f11970da351e13a616ad7d17ffb2b65b0772e8845d10fad78"
+                                        }
+                                    ]
                      },
                      {
                          "id":  "sprint18-21-regressions",
-                         "result":  "PENDING_DEPENDENCY_REVIEW",
-                         "priorSource":  "7b37df94"
+                         "result":  "REUSED_PASS",
+                         "priorSource":  "7b37df94453eaff934d6ec443e04c9c973dc031f",
+                         "reuseJustification":  "Exact29/39/22/44 raw native PASS; review implementations and their gameplay, templates, attachments, lifecycle and assets unchanged. Shared runner edits are confined to inventory and feature-module observations; roster resource ownership reader only affects persistence scope.",
+                         "proofs":  [
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0850160737552Z-disposable-expanded-summoning-sprint18-review\\runtime-result.json",
+                                            "sha256":  "d6696b41a0666e7a57f1cde5df0853d1bbb0a990ad8799106ec18e5140885dda"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0857438162151Z-disposable-expanded-summoning-sprint19-review\\runtime-result.json",
+                                            "sha256":  "4c9c5b4fa9e47f87e95b056bc85815f4bbe40f0aebe81d024d199d087c262066"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0907487777628Z-disposable-expanded-summoning-sprint20-review\\runtime-result.json",
+                                            "sha256":  "2bed86c4c9bd59981689e7dd56b3499b18b6e8c106d630be5e3c66375c102b23"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0912175221409Z-disposable-expanded-summoning-sprint21-review\\runtime-result.json",
+                                            "sha256":  "2f168e9eddf2f6e0cad44d3aa73a43b549b9bd00457e3a225400f7dd9575d131"
+                                        }
+                                    ]
                      },
                      {
                          "id":  "1063-roots-and-29-wrappers",
-                         "result":  "PENDING_DEPENDENCY_REVIEW",
-                         "priorSource":  "7b37df94",
-                         "priorEvidence":  "20261011T0832337615067Z-disposable-expanded-summoning-player-path"
+                         "result":  "REUSED_PASS",
+                         "priorEvidence":  "20261011T0832337615067Z-disposable-expanded-summoning-player-path",
+                         "priorSource":  "7b37df94453eaff934d6ec443e04c9c973dc031f",
+                         "reuseJustification":  "Player-path implementation, spawning, template logic, publication, gameplay and assets unchanged. Inventory/boundary diagnostics are different scenarios. Later primate resource-reader correction is confined to roster-persistence receipt capture.",
+                         "originalArtifact":  {
+                                                  "packageSha256":  "e3dfca1e3afc5fd756d24ab783e57122ef8e0c07144d3d29e66d80d82dc01cc4",
+                                                  "dllSha256":  "1495a3147f2d9dc5aa648e9be9ad11d846203b101fc6d5e4e0af291568595248",
+                                                  "dllMvid":  "6f76046e-dd12-4e1f-89dd-170785c328c5",
+                                                  "assertions":  10
+                                              },
+                         "proofs":  [
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0832337615067Z-disposable-expanded-summoning-player-path\\runtime-result.json",
+                                            "sha256":  "3b05606bb7813189187f35bb0bdaeafd7f7fc10ec7aa83518a3f3bff43c76b1b"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0832337615067Z-disposable-expanded-summoning-player-path\\runtime-evidence.json",
+                                            "sha256":  "0697ed1fdc4e5d39354ae27f111de189ba9c54fd866c0c9e2ab3670dddddfd4f"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0832337615067Z-disposable-expanded-summoning-player-path\\runtime-loaded-build-identity.json",
+                                            "sha256":  "8566e6fa35807a9fdc9bd5795be3c25dd4507c6c74fd78d0207a7354d48be62d"
+                                        }
+                                    ]
                      },
                      {
                          "id":  "resource-lifecycle-template-initialization",
-                         "result":  "PENDING_DEPENDENCY_REVIEW"
+                         "result":  "REUSED_PASS",
+                         "priorSource":  "cf4bbc4aef48e8bfc65498a24dd55126679f96d2",
+                         "reuseJustification":  "Capture/release ownership corrected and native verified atcf4bbc4a: private113 resources and114 units retired, borrowed/cache counts stable, hooks cleared, unrelated state preserved;6b1ef853 verifies OFF zero allocation. Generic publication/builders/templates/init/product unchanged after these sources. Current module/profile checks remain separate mandatory rows.",
+                         "proofs":  [
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0832337615067Z-disposable-expanded-summoning-player-path\\runtime-result.json",
+                                            "sha256":  "3b05606bb7813189187f35bb0bdaeafd7f7fc10ec7aa83518a3f3bff43c76b1b"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T0945163763144Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+                                            "sha256":  "c72aee5eae681fce586bd7a6ec34002c84d0d8c8798f31ff41680cde49c8b37d"
+                                        },
+                                        {
+                                            "path":  "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261011T1005587823919Z-working-save-expanded-summoning-verify-cleanup\\runtime-result.json",
+                                            "sha256":  "02c5375a9151f232dee96ea44ba730c6429699978eeb375ba1947aad6c0bfead"
+                                        }
+                                    ]
                      },
                      {
                          "id":  "exact-package-release-qualification",
@@ -201,10 +387,11 @@
     "releaseEligible":  false,
     "restoration":  {
                         "intakeManifest":  "actual-mods-intake-manifest.json",
-                        "current":  "EXACT_INTAKE_VERIFIED",
-                        "workingSave":  "No campaign load/write yet; inspect authoritative native receipts before selecting persistence stage"
+                        "current":  "PROFILE_CAMPAIGN_ACTIVE; LAST_COMPLETED_TRANSACTIONS_RESTORED",
+                        "workingSave":  "No campaign load/write yet; inspect authoritative native receipts before selecting persistence stage",
+                        "lastVerifiedRecord":  "matched-control-restoration.json"
                     },
-    "nextAction":  "One coordinated matched149 diagnostic ON/OFF control, then remaining final-candidate profiles and required original-four-module states; reuse unchanged mechanics/persistence provenance and prove fresh fixture absence.",
+    "nextAction":  "Complete selected final-candidate profiles,14 remaining original-four-module states and guarded fresh absence; finalize ledger and conditional merge/promotion only after all mandatory rows qualify.",
     "repairValidation":  {
                              "filter":  "boundary-observation;brown-fur.contract;teleportation.scrolls;vendor-publication",
                              "selected":  15,
@@ -231,5 +418,52 @@
                               "input":  "inspection-input-provenance.json",
                               "inputMvid":  "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
                               "productChanged":  false
-                          }
+                          },
+    "roster":  {
+                   "generatedRoots":  1063,
+                   "nativeWrappers":  29,
+                   "choices":  1092,
+                   "source":  "7b37df94453eaff934d6ec443e04c9c973dc031f",
+                   "evidence":  "20261011T0832337615067Z-disposable-expanded-summoning-player-path",
+                   "sourceAndAssetDiff":  "No gameplay, assets or manifest differences from final candidate; raw exact census1063/1063 and29/29"
+               },
+    "evidenceReuseAudit":  "reuse-source-and-raw-evidence-audit.json",
+    "ownerVisualReview":  "NOT_PERFORMED_NONBLOCKING; retained owner-facing aesthetic review status from Sprint21 contract/release record. Technical native body/rig evidence is not owner visual approval.",
+    "matchedBaseline":  {
+                            "releasedProductSource":  "d0ceafae75c1d74a1e0d4fa318193ef002240da1",
+                            "diagnosticSource":  "99d9c4644307341c2cd1b006fe67d58f8f3b2d38",
+                            "diagnosticBuild":  true,
+                            "gameplayAndAssetsUnchanged":  true,
+                            "startupOnly":  true,
+                            "saveLoad":  false,
+                            "saveWrite":  false,
+                            "zipSha256":  "b635da256671afcbe28384075e7f5532d0e3dfc6b9754f4f9ad15dd078818e7a",
+                            "dllSha256":  "192048c365bfd95f7403f44a20ebcaf5a2ce0a6ae3976adf833e39a1aa106871",
+                            "dllMvid":  "2fa1d8cf-3c35-45e9-8049-ff4ce731f17f",
+                            "fullSuite":  "2538/2538 PASS",
+                            "preparationSeconds":  237.71906109999998,
+                            "comparison":  "matched-boundary-comparison.json",
+                            "transactions":  [
+                                                 "compat-20261012T004351Z-03c437123a97",
+                                                 "compat-20261012T004649Z-5b98f4a1b3f4"
+                                             ],
+                            "restoration":  "EXACT_INTAKE_VERIFIED"
+                        },
+    "releasePromotionChecks":  {
+                                   "script":  "scripts/Test-QualifiedRelease.ps1",
+                                   "passed":  19,
+                                   "failed":  0,
+                                   "parsedScripts":  4,
+                                   "builds":  0,
+                                   "nativeRuns":  0,
+                                   "publicationWrites":  0
+                               },
+    "planningUpdate":  {
+                           "measuredUtc":  "2026-10-12T00:52:14.4660507Z",
+                           "elapsedMinutes":  68,
+                           "diagnosisCompleted":  true,
+                           "remainingEstimateMinutes":  145,
+                           "remainingScope":  "31 selected profile scenario calls,14 remaining original-four-module configurations,one native fresh absence,closure/merge/exact promotion/download/restoration",
+                           "campaignPlanningMinutes":  240
+                       }
 }

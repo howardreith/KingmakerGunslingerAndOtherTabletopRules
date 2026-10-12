@@ -1,5 +1,13 @@
 Set-StrictMode -Version Latest
 
+function Assert-KmgReleaseOrigin {
+    param([Parameter(Mandatory=$true)][string]$Origin)
+    $allowed = @('git@github.com:howardreith/KingmakerGunslingerAndOtherTabletopRules.git',
+        'https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules.git',
+        'https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules')
+    if ($Origin -cnotin $allowed) { throw 'Unexpected release repository origin.' }
+}
+
 function Assert-KmgClosureReleaseDecision {
     param([Parameter(Mandatory=$true)]$Ledger, [Parameter(Mandatory=$true)]$Candidate)
     $required = @('boundary-on','boundary-off','matched149-control','gunslinger-only',
