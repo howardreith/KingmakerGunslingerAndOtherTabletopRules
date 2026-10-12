@@ -813,6 +813,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.native-profile-scene-services", ExpandedSummoningNativeProfileTests.RealSceneServicesRequired),
             Case("expanded-summoning.native-profile-startup-overlay", ExpandedSummoningNativeProfileTests.NativeStartupOverlayMustFinish),
             Case("expanded-summoning.native-profile-scene-history", ExpandedSummoningNativeProfileTests.FailedSceneHistoryRetainsActualHandles),
+            Case("expanded-summoning.native-profile-entry-loading", ExpandedSummoningNativeProfileTests.EntryCannotReturnToUnownedTick),
             Case("boundary-observation.exact-stock", BoundaryObservationTests.StockComparisonPreservesMultiplicityAndCounts),
             Case("boundary-observation.clause-json", BoundaryObservationTests.ClauseSerializationRetainsExpectedActualAndOwner),
             Case("brown-fur.contract-absent", BrownFurContractTests.AbsentCotwIsUnavailable),

@@ -5,6 +5,13 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningNativeProfileTests
     {
+        internal static void EntryCannotReturnToUnownedTick()
+        {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.ReadyForWorldLoad(true,true,true), "Native loading owns transition to a registered real scene.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ReadyForWorldLoad(true,true,false), "Valid scene alone cannot admit an idle callback before native Tick.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ReadyForWorldLoad(true,false,true), "Queued loader cannot admit an unregistered scene.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.ReadyForWorldLoad(false,true,true), "Entry callback must actually execute.");
+        }
         internal static void FailedSceneHistoryRetainsActualHandles()
         {
             var evidence = new JObject { ["sceneObserverRemoved"] = true, ["sceneHistory"] = new JArray(
