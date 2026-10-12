@@ -201,3 +201,45 @@ other target buff event with event, blueprint and applied-instance identity.
 Production compiled in 17.6 s and the named Sprint 22/identity/preserved-route
 filter selected and passed 12/12 tests out of 2,581 registered in 1.1 s. A
 changed coherent candidate and its affected native evidence remain required.
+
+Candidate `6783f475d70d4ccc46880717da7b110cb565b731` passed its single
+Sprint pipeline: 2,581/2,581 tests in 93.3 s and 217.7 s overall. Its
+source-state hash was
+`17d18566f4264f5dc0dd1ff131d4c6e65ca9463f8b5e32a82e407c770399a1be`;
+ZIP `e8f98281eb31387635aa8d567534658a685c445760d20da7e7fd92fb69bcfb97`;
+DLL `a7ff437a7ed18f60a2e1f3f2c24d09352bf9e61a3a1e08b05050e059e0f8414a`;
+MVID `e0dd3fad-4580-49f4-89a2-0b0fee4b1840`.
+
+Standalone transaction `compat-20261012T172346Z-7125f07403b9`, deployment
+receipt `20261012T1725489542100Z`, and RunId
+`20261012T1725503899759Z-a19ecc743e7649e7970ac2c3da8d1b66` ran for
+240.697 s and passed 50 of 52 assertions. The exact Power Attack carrier now
+passed: OFF was +14/3d6+12 with no native toggle buff and ON was +12/3d6+18
+with exactly one active native toggle buff. The confirmed critical produced
+one Fortitude save at DC 23, one private Stunned application, native d4 result
+2 and an exact 12-second private lifetime. It also serialized a separate
+target-side `StunnedBuff` event (`4397f91671007c5488e9787f5c0e6541`), with
+the victim as context caster and no explicit duration, so that traffic is no
+longer miscounted as an Ankylosaurus application.
+
+The two failures are observer/lifecycle failures and remain FAIL. The expiry
+observer stopped on the first frame after the private effect left the victim,
+before the native Stunned state and action gate finished their deferred
+settlement; it sampled `expired=false`, although the following command reached
+its finished state. It also proved only command completion, not an actual
+returned attack rule. Later cleanup called Unity's native `name` getter through
+a null-conditional reference to a deferredly destroyed temporary fixture
+blueprint and threw. The transaction restored at
+2026-10-12T17:30:20.4529945Z with `restorationVerified=true` and no Kingmaker
+process.
+
+The changed strategy waits, within the same 45-second bound, for the exact
+private effect, native Stunned state and `CanAct` gate to clear before issuing
+the victim command. A separately subscribed native rule observer must then see
+at least one attack rule, so a merely rejected/finished command cannot pass.
+Private cleanup uses the two stable ledger GUIDs and Unity's overloaded null
+check, avoiding a destroyed object's native name getter and excluding all
+unrelated conditions. Production compiled in 18.3 s and the named Sprint 22
+filter passed 10/10 selected tests out of 2,581 registered in 1.2 s. Because
+the compiled observer changed, a new coherent candidate and all affected
+native evidence are required.
