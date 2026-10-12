@@ -1,9 +1,24 @@
 using KingmakerGunslinger.RuntimeTesting;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningNativeProfileTests
     {
+        internal static void FailedSceneHistoryRetainsActualHandles()
+        {
+            var evidence = new JObject { ["sceneObserverRemoved"] = true, ["sceneHistory"] = new JArray(
+                new JObject { ["event"] = "scene-loaded:Additive", ["target"] = "BaseMechanics", ["handle"] = 17,
+                    ["scenes"] = new JArray(new JObject { ["name"] = "BaseMechanics", ["handle"] = 17, ["valid"] = true, ["loaded"] = true }) },
+                new JObject { ["event"] = "UnloadSceneAsync", ["target"] = "BaseMechanics", ["caller"] = "native caller" },
+                new JObject { ["event"] = "scene-unloaded", ["target"] = "BaseMechanics", ["handle"] = 17 }) };
+            var parsed = JObject.Parse(BoundaryObservationPolicy.Serialize(evidence));
+            Assertions.Equal(3, ((JArray)parsed["sceneHistory"]).Count, "Loaded, unload call and completed unload remain distinct.");
+            Assertions.Equal(17, (int)parsed["sceneHistory"][0]["scenes"][0]["handle"], "Exact scene handle retained.");
+            Assertions.Equal("native caller", (string)parsed["sceneHistory"][1]["caller"], "Owning native caller retained.");
+            Assertions.Equal("scene-unloaded", (string)parsed["sceneHistory"][2]["event"], "Adverse transition retained.");
+            Assertions.True((bool)parsed["sceneObserverRemoved"], "Observer cleanup remains a separate fact.");
+        }
         internal static void NativeStartupOverlayMustFinish()
         {
             Assertions.True(ExpandedSummoningNativeProfilePolicy.StartupComplete(1,true,false), "Native startup epilogue proven.");

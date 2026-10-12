@@ -3,15 +3,18 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Persistence;
+using Kingmaker.EntitySystem.Persistence.Scenes;
 using Kingmaker.PubSubSystem;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -20,6 +23,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _summoningProfileStage;
         private Stopwatch _summoningProfileClock;
         private CircleProfileSaveGuard _summoningProfileSaveGuard;
+        private SummoningProfileSceneObservation _summoningProfileScenes;
         private BlueprintAreaPreset _summoningProfilePreset, _summoningProfileOriginal;
         private BlueprintUnit _summoningProfileActor;
         private MainMenu _summoningProfileMenu;
@@ -74,6 +78,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _summoningProfileOriginal.EnterPoint == null)
                         throw new InvalidOperationException("Native first-level preset/area/entry is unavailable.");
                     _summoningProfileSaveGuard = new CircleProfileSaveGuard(_request.RunId);
+                    _summoningProfileScenes = new SummoningProfileSceneObservation(_request.RunId);
                     _summoningProfilePreset = UnityEngine.Object.Instantiate(_summoningProfileOriginal);
                     _summoningProfilePreset.name = "KMG_Runtime_Summoning_Native_Profile";
                     _summoningProfilePreset.MakeAutosave = false;
@@ -200,20 +205,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_summoningProfileActor != null) UnityEngine.Object.Destroy(_summoningProfileActor);
                 if (_summoningProfilePreset != null) UnityEngine.Object.Destroy(_summoningProfilePreset);
             }
-            finally { _summoningProfileSaveGuard?.Dispose(); }
+            finally
+            {
+                _summoningProfileScenes?.Dispose();
+                _summoningProfileSaveGuard?.Dispose();
+            }
             bool guarded = _summoningProfileSaveGuard != null && _summoningProfileSaveGuard.Removed &&
                 _summoningProfileSaveGuard.Blocked == 0;
+            bool sceneObserverRemoved = _summoningProfileScenes != null && _summoningProfileScenes.Removed;
             _summoningProfileResult.Assertions.Add(Assertion("expanded-summoning-native-profile-restored",
                 "native empty world restored; no save load/write/delete attempted; guards released",
                 "emptyWorld=" + emptyWorldRestored + ";blocked=" + _summoningProfileSaveGuard?.Blocked +
                     ";guardRemoved=" + _summoningProfileSaveGuard?.Removed,
-                emptyWorldRestored && guarded, "native LoadNewGame/ResetToMainMenu with request-owned preset and independent save/load guard"));
+                emptyWorldRestored && guarded && sceneObserverRemoved, "native LoadNewGame/ResetToMainMenu with request-owned preset and independent save/load guard"));
             if (_summoningProfileFailure != null)
                 _summoningProfileResult.Assertions.Add(Assertion("expanded-summoning-native-profile-execution",
                     "no fixture exception", "failure", false, _summoningProfileFailure));
             _summoningProfileEvidence["emptyWorldRestored"] = emptyWorldRestored;
             _summoningProfileEvidence["blockedSaveOrLoadAttempts"] = _summoningProfileSaveGuard?.Blocked;
             _summoningProfileEvidence["guardRemoved"] = _summoningProfileSaveGuard?.Removed;
+            _summoningProfileEvidence["sceneObserverRemoved"] = sceneObserverRemoved;
+            _summoningProfileEvidence["sceneHistory"] = _summoningProfileScenes?.Events;
             _summoningProfileEvidence["exception"] = _summoningProfileFailure;
             string report = Path.Combine(_request.EvidenceDirectory, "expanded-summoning-native-profile.json");
             File.WriteAllText(report, BoundaryObservationPolicy.Serialize(_summoningProfileEvidence));
@@ -221,6 +233,65 @@ namespace KingmakerGunslinger.RuntimeTesting
             _summoningProfileResult.Status = _summoningProfileResult.Assertions.All(row => row.Status == RuntimeTestStatuses.Pass)
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail;
             Complete(_summoningProfileResult);
+        }
+
+        // Read-only, request-local diagnostics. Record the native caller and
+        // actual scene handles without changing any load/unload decision.
+        private sealed class SummoningProfileSceneObservation : IDisposable
+        {
+            private static SummoningProfileSceneObservation _active;
+            private readonly HarmonyInstance _harmony;
+            internal readonly JArray Events = new JArray();
+            internal bool Removed;
+            internal SummoningProfileSceneObservation(string runId)
+            {
+                if (_active != null) throw new InvalidOperationException("Native scene observer already owned.");
+                _harmony = HarmonyInstance.Create("kmg.summoning.profile.scene." + runId);
+                _active = this;
+                try
+                {
+                    foreach (string method in new[] { "LoadScene", "LoadSceneAsync", "UnloadSceneAsync" })
+                        _harmony.Patch(typeof(BundledSceneLoader).GetMethod(method, BindingFlags.Public | BindingFlags.Static),
+                            new HarmonyMethod(typeof(SummoningProfileSceneObservation).GetMethod(nameof(LoaderCall), BindingFlags.NonPublic | BindingFlags.Static)), null, null);
+                    _harmony.Patch(typeof(Game).GetMethod("ResetToMainMenu", BindingFlags.Public | BindingFlags.Instance),
+                        new HarmonyMethod(typeof(SummoningProfileSceneObservation).GetMethod(nameof(ResetCall), BindingFlags.NonPublic | BindingFlags.Static)), null, null);
+                    SceneManager.sceneLoaded += Loaded;
+                    SceneManager.sceneUnloaded += Unloaded;
+                    Record("observer-start", null, null);
+                }
+                catch { Dispose(); throw; }
+            }
+            private static void LoaderCall(string sceneName, MethodBase __originalMethod)
+            {
+                _active?.Record(__originalMethod.Name, sceneName, Environment.StackTrace);
+            }
+            private static void ResetCall(string message)
+            {
+                _active?.Record("ResetToMainMenu", message, Environment.StackTrace);
+            }
+            private void Loaded(Scene scene, LoadSceneMode mode) { Record("scene-loaded:" + mode, scene.name, null, scene.handle); }
+            private void Unloaded(Scene scene) { Record("scene-unloaded", scene.name, null, scene.handle); }
+            private void Record(string name, string target, string caller, int? handle = null)
+            {
+                Events.Add(new JObject {
+                    ["event"] = name, ["target"] = target, ["handle"] = handle,
+                    ["frame"] = Time.frameCount, ["caller"] = caller,
+                    ["scenes"] = new JArray(Enumerable.Range(0, SceneManager.sceneCount).Select(index => {
+                        var scene = SceneManager.GetSceneAt(index);
+                        return new JObject { ["name"] = scene.name, ["handle"] = scene.handle,
+                            ["valid"] = scene.IsValid(), ["loaded"] = scene.isLoaded };
+                    }))
+                });
+            }
+            public void Dispose()
+            {
+                if (Removed) return;
+                SceneManager.sceneLoaded -= Loaded;
+                SceneManager.sceneUnloaded -= Unloaded;
+                _harmony.UnpatchAll(_harmony.Id);
+                if (ReferenceEquals(_active, this)) _active = null;
+                Removed = true;
+            }
         }
     }
 }
