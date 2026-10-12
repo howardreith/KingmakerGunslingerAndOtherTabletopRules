@@ -84,7 +84,11 @@ $requiredFiles = @(
     'assets\sprint19-fourarmed\xill-mesh.json',
     'assets\sprint19-fourarmed\xill-albedo.png',
     'assets\sprint20-arachnids\giant-scorpion-mesh.json',
-    'assets\sprint20-arachnids\giant-scorpion-albedo.png'
+    'assets\sprint20-arachnids\giant-scorpion-albedo.png',
+    'assets\sprint21-arthropods\giant-crab-mesh.json',
+    'assets\sprint21-arthropods\giant-crab-albedo.png',
+    'assets\sprint21-arthropods\bebelith-mesh.json',
+    'assets\sprint21-arthropods\bebelith-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -109,7 +113,7 @@ foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
 }
 $summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
     'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
-if ($summonManifest.count -ne 114 -or @($summonManifest.icons).Count -ne 114) {
+if ($summonManifest.count -ne 115 -or @($summonManifest.icons).Count -ne 115) {
     throw 'Expanded Summoning runtime icon manifest is malformed.'
 }
 $requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
@@ -194,6 +198,10 @@ $allowedRelativePaths = @{
     'assets\sprint19-fourarmed\xill-albedo.png' = $true
     'assets\sprint20-arachnids\giant-scorpion-mesh.json' = $true
     'assets\sprint20-arachnids\giant-scorpion-albedo.png' = $true
+    'assets\sprint21-arthropods\giant-crab-mesh.json' = $true
+    'assets\sprint21-arthropods\giant-crab-albedo.png' = $true
+    'assets\sprint21-arthropods\bebelith-mesh.json' = $true
+    'assets\sprint21-arthropods\bebelith-albedo.png' = $true
 }
 
 $unexpected = @()

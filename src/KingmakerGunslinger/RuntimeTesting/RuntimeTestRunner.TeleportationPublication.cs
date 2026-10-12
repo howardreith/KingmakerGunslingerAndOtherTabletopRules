@@ -35,6 +35,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new { primary = TeleportationScrollBlueprints.GreaterTeleportDonorId, fallback = TeleportationScrollBlueprints.GreaterTeleportNativeDonorId, scroll = scrolls.GreaterTeleport, spell = spells.GreaterTeleport },
                 new { primary = TeleportationScrollBlueprints.WordOfRecallDonorId, fallback = TeleportationScrollBlueprints.WordOfRecallNativeDonorId, scroll = scrolls.WordOfRecall, spell = spells.WordOfRecall }
             };
+            var templateReports = new List<object>();
             foreach (var template in templates)
             {
                 bool primaryPresent = BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(template.primary);
@@ -42,17 +43,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.Library, primaryPresent ? template.primary : template.fallback, "observed strategic scroll template");
                 var originalCopy = donor.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
                 var actualCopy = template.scroll.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
+                var binding = OwnedIconAssignments.Bindings.Single(value =>
+                    value.Symbol == (template.scroll == scrolls.Teleport ? TeleportationScrollBlueprints.TeleportSymbol :
+                    template.scroll == scrolls.GreaterTeleport ? TeleportationScrollBlueprints.GreaterTeleportSymbol : TeleportationScrollBlueprints.WordOfRecallSymbol));
+                var expectedIcon = ProjectAssetIcons.RequireIcon(binding.Key);
+                Func<string, object, object, BoundaryClause> clause = (name, expected, actual) =>
+                    new BoundaryClause(name, template.scroll.AssetGuid,
+                        Convert.ToString(expected, System.Globalization.CultureInfo.InvariantCulture),
+                        Convert.ToString(actual, System.Globalization.CultureInfo.InvariantCulture));
+                var clauses = new[] {
+                    clause("donor-ability-independent", true, donor.Ability != template.spell),
+                    clause("donor-teaching-independent", true, originalCopy.CustomSpell != template.spell),
+                    clause("teaching-component-isolated", false, ReferenceEquals(actualCopy, originalCopy)),
+                    clause("canonical-teaching", template.spell.AssetGuid, actualCopy.CustomSpell == null ? null : actualCopy.CustomSpell.AssetGuid),
+                    clause("canonical-ability", template.spell.AssetGuid, template.scroll.Ability == null ? null : template.scroll.Ability.AssetGuid),
+                    clause("cost", donor.Cost, template.scroll.Cost),
+                    clause("caster-level", donor.CasterLevel, template.scroll.CasterLevel),
+                    clause("weight", donor.Weight, template.scroll.Weight),
+                    clause("owned-scroll-icon", expectedIcon.GetInstanceID(), template.scroll.Icon == null ? 0 : template.scroll.Icon.GetInstanceID()),
+                    clause("spend-charges", true, template.scroll.SpendCharges),
+                    clause("charges", 1, template.scroll.Charges),
+                    clause("restore-on-rest", false, template.scroll.RestoreChargesOnRest),
+                    clause("umd-outside-class-list", true, template.scroll.RequireUMDIfCasterHasNoSpellInSpellList),
+                    clause("historical-donor-icon", true, ReferenceEquals(template.scroll.Icon, donor.Icon))
+                };
+                templateReports.Add(new { scroll = template.scroll.AssetGuid, donor = donor.AssetGuid, primaryPresent,
+                    provider = primaryPresent && template.primary != template.fallback ? "CotW template" : "native template",
+                    moduleEnabled = _context.FeatureModules.Active.TeleportationSpells,
+                    ownedIconKey = binding.Key, clauses });
                 assertions.Add(Assertion("teleportation-scroll-template-" + template.scroll.AssetGuid,
                     "real canonical scroll keeps native economics/consumption, isolated teaching and independent present or fallback template teaching",
                     "template=" + donor.AssetGuid + ";primaryPresent=" + primaryPresent + ";scroll=" + template.scroll.AssetGuid + ";donorAbility=" + donor.Ability.AssetGuid +
                         ";donorTeaching=" + (originalCopy.CustomSpell == null ? "<item ability>" : originalCopy.CustomSpell.AssetGuid),
-                    donor.Ability != template.spell && originalCopy.CustomSpell != template.spell &&
-                    !ReferenceEquals(actualCopy, originalCopy) && actualCopy.CustomSpell == template.spell && template.scroll.Ability == template.spell &&
-                    template.scroll.Cost == donor.Cost && template.scroll.CasterLevel == donor.CasterLevel && template.scroll.Weight == donor.Weight &&
-                    ReferenceEquals(template.scroll.Icon, donor.Icon) && template.scroll.SpendCharges && template.scroll.Charges == 1 &&
-                    !template.scroll.RestoreChargesOnRest && template.scroll.RequireUMDIfCasterHasNoSpellInSpellList,
+                    clauses.Where(value => value.Name != "historical-donor-icon").All(value => value.Passed),
                     "Real startup publication, observed without creating a fixture scroll or injecting list membership."));
             }
+            RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, "boundary-scroll-clauses.json"),
+                BoundaryObservationPolicy.Serialize(new { schemaVersion = 1, runId = _request.RunId,
+                    phase = "guarded-unloaded-startup", templates = templateReports.ToArray() }));
             bool enabled = _context.FeatureModules.Active.TeleportationSpells;
             MethodInfo[] familiarityTargets = { typeof(MapMovementController).GetMethod("MoveAlongEdge", BindingFlags.Static | BindingFlags.NonPublic),
                 typeof(Player).GetMethod("OnAreaLoaded", Type.EmptyTypes) };

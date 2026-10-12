@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 2,
+  "sprint": 21,
+  "title": "Expanded Summoning Sprint 21: the Bebelith overhaul and the Giant Crab",
+  "status": "FROZEN AT INTAKE",
+  "frozenAtUtc": "2026-10-10T18:05:00Z",
+  "releasedBaseline": "v0.0.149",
+  "masterBase": "d0ceafae",
+  "supersedes": "The schemaVersion 1 contract frozen earlier on this branch, which scoped the Bebelith to its body alone and transcribed three Giant Crab numbers wrongly. Both are corrected here against the official creature entries: the Bebelith is a full mechanical overhaul, and the crab's Dexterity is 13 rather than 12, its natural armour +5 rather than +4 - so its armour class is 16/11/15 rather than 15/11/14 - and it constricts, which the earlier transcription omitted entirely. The earlier contract also asserted a printed racial +8 Swim and a +10 Swim total that the authority for this sprint does not state; both are removed rather than carried on an unsourced recollection.",
+  "scope": "Two creatures with deliberately different shapes. The GIANT CRAB is new in every respect: seven Summon Nature's Ally III roots, its own rules, its own icon and its own original project-owned body. The BEBELITH is already released at Summon Monster VII and keeps its public identity exactly - the same unit identity, the same three generated roots, the same ordering and the same save compatibility - while this sprint replaces its implementation and its visuals. It currently wears the native Doomspider and carries an invented demon-hunting bonus in place of the printed Penetrating Strike, has no Rot, no Web and no racial Stealth, and represents Dismantle Armor as a bounded armour-class penalty rather than the printed item effect.",
+  "authority": "Official Pathfinder creature entries and the official summon tables. Expanded Summoning Sprint 21 Completion Mission. One sprint, one branch, one pull request, one release. The series ends here: there is no Sprint 22.",
+  "spelling": {
+    "key": "bebelith",
+    "display": "Bebelith",
+    "decision": "The released spelling is preserved. Some sources spell the creature Bebilith; renaming the released key or display name would be a save and user-interface migration rather than a creature correction, and this sprint does not perform one."
+  },
+  "bebelith": {
+    "releasedIdentity": {
+      "preserved": "Unit identity, all three generated roots, alignment and subtype behaviour, player-facing ordering and save compatibility.",
+      "roots": [
+        {
+          "family": "Monster",
+          "parentTier": 7,
+          "quantity": "One"
+        },
+        {
+          "family": "Monster",
+          "parentTier": 8,
+          "quantity": "OneD3"
+        },
+        {
+          "family": "Monster",
+          "parentTier": 9,
+          "quantity": "OneD4PlusOne"
+        }
+      ],
+      "notSuppressed": "No root is suppressed, removed, reallocated or replaced. The branch changes implementation and visuals only; the public identity stays stable until this sprint's release passes."
+    },
+    "printedProfile": {
+      "alignmentTypeSize": "CE Huge outsider (chaotic, evil, extraplanar)",
+      "hitDice": 12,
+      "hitDieClass": "Outsider",
+      "hitPoints": 150,
+      "armorClass": {
+        "total": 22,
+        "touch": 9,
+        "flatFooted": 21
+      },
+      "naturalArmor": 13,
+      "saves": {
+        "fortitude": 15,
+        "reflex": 11,
+        "will": 7
+      },
+      "damageReduction": "10/good",
+      "speedFeet": 40,
+      "climbSpeedFeet": 20,
+      "melee": "bite +19 (2d6+9 plus rot) and 2 claws +19 (2d4+9, critical 19-20)",
+      "spaceFeet": 15,
+      "reachFeet": 15,
+      "abilityScores": {
+        "strength": 28,
+        "dexterity": 12,
+        "constitution": 24,
+        "intelligence": 11,
+        "wisdom": 13,
+        "charisma": 13
+      },
+      "baseAttackBonus": 12,
+      "combatManeuverBonus": 23,
+      "combatManeuverDefense": {
+        "base": 34,
+        "versusTrip": 46
+      },
+      "web": {
+        "rangedAttack": 11,
+        "difficultyClass": 23,
+        "hitPoints": 12
+      },
+      "racialModifiers": {
+        "Stealth": 8
+      },
+      "specialAttacks": [
+        "rot",
+        "web",
+        "dismantle armor"
+      ],
+      "specialQualities": [
+        "penetrating strike"
+      ]
+    },
+    "derivations": [
+      "Hit points: 12d10 at the monster convention averages 66, plus 84 from Constitution 24 across twelve dice, giving the printed 150.",
+      "Armour class: 10 + 1 Dexterity + 13 natural - 2 for Huge size = 22; touch 10 + 1 - 2 = 9; flat-footed 10 + 13 - 2 = 21. These three pin Dexterity 12 and the natural armour at +13.",
+      "Saves: the printed numbers are a GOOD Fortitude, a GOOD Reflex and a POOR Will. Twelve hit dice give +8 on a good save and +4 on a poor one. Fortitude 8 + 7 = 15. Reflex 8 + 1 + 2 from Lightning Reflexes = 11. Will 4 + 1 + 2 from Iron Will = 7. A three-good-save chassis would read Will 9 or 11 and is therefore wrong for this creature; the live review must confirm which the engine produces.",
+      "Attack bonus: 12 base attack + 9 Strength - 2 for Huge size = +19 on the bite and on both claws, so all three share one bonus.",
+      "Damage: 2d6+9 on the bite and 2d4+9 on each claw. Nine is the whole Strength modifier, not one and a half times it, so this creature carries the released full-Strength limb carrier for the same reason the Sprint 18, 19 and 20 creatures do.",
+      "Manoeuvre bonus: 12 base attack + 9 Strength + 2 for Huge size = +23.",
+      "Manoeuvre defence: 10 + 12 + 9 + 1 + 2 = 34.",
+      "Anti-trip defence: the printed 46 is twelve above the ordinary 34. A bebelith walks on eight legs, and the stat-block convention is four per pair of legs beyond the first - three extra pairs, +12. This is the third creature in the series to print that figure and the third to need a creature-owned carrier for it, because the shared native eight-leg fact delivers +8.",
+      "Web: ranged attack 12 base attack + 1 Dexterity - 2 size = +11. Its difficulty class and Rot's are both 10 + half the hit dice + Constitution = 10 + 6 + 7 = 23, which is why neither is stored and both are computed from live Constitution.",
+      "Every one of these sixteen identities closes on the transcription. Nothing in this block is recorded as a question against the source."
+    ],
+    "rot": {
+      "delivery": "bite only, injury",
+      "save": "Fortitude, difficulty class 23 at printed Constitution, computed live from Constitution rather than stored",
+      "cadence": "begins on the bite round and continues for four later rounds - five total exposures",
+      "effect": "2 Constitution damage on each failed save",
+      "cure": "two consecutive successful saves",
+      "prohibitions": [
+        "No rot from a claw, from the web, or from armour dismantle.",
+        "A victim-owned effect already applied is not corrupted by the source's death or dismissal."
+      ]
+    },
+    "penetratingStrike": {
+      "generally": "natural weapons count as chaotic and magic",
+      "versusDemons": "natural weapons additionally count as cold iron and good",
+      "prohibitions": [
+        "Cold iron and good are never granted against a non-demon.",
+        "This replaces the released invented +2 attack and damage against chaotic-evil outsiders, which is not a printed ability."
+      ],
+      "seam": "Exact native descriptor and damage-reduction seams where available."
+    },
+    "web": {
+      "rangedAttack": 11,
+      "difficultyClass": 23,
+      "hitPoints": 12,
+      "requirements": [
+        "One bounded target and effect path.",
+        "Printed web hit points where the engine exposes them.",
+        "Correct expiry, destruction and cleanup.",
+        "No cross-use of another creature's poison or special web payload."
+      ]
+    },
+    "dismantleArmor": {
+      "trigger": "Both claws hit the exact same target in one qualifying attack sequence, the target has eligible equipped armour and/or a shield, and the combat manoeuvre check succeeds.",
+      "effect": "The printed Reflex-save, item-damage and broken behaviour, through the narrowest existing item and broken-condition seams.",
+      "mandatorySafety": [
+        "Request-local disposable equipment only, never owner party gear.",
+        "No effect on a natural-armour target.",
+        "No effect on an unarmoured target.",
+        "No effect on an unrelated inventory item.",
+        "No duplicate application from replay.",
+        "No cross-target or cross-command state.",
+        "No permanent inventory corruption.",
+        "Save and load and cleanup preserve the exact intended item state.",
+        "A failed or aborted test restores the authorized fixture."
+      ],
+      "engineGapPolicy": "If Kingmaker cannot represent one part faithfully, preserve the rest and document the precise gap. No global item-durability system is invented. Stopping is warranted only if a part that the frozen contract makes mandatory cannot be done safely.",
+      "modelledAs": "A trigger of five conjoined conditions, the engine's own SunderArmor combat manoeuvre for the check, a Reflex save at the printed difficulty class derived live from Constitution, and a permanent wearer-side state that cancels the dismantled piece's whole armour-class contribution. Eligibility is armour first and a shield second; a natural-armoured or unarmoured target is ineligible and sees nothing. Every equipment question the mechanic asks is a read."
+    },
+    "acceptedLimitations": [
+      {
+        "id": "PASSIVE_CREATURE_SENSES_UNMODELED",
+        "detail": "Darkvision and scent, omitted under the owner's accepted limitation with nothing substituted."
+      },
+      {
+        "id": "ORDINARY_MAP_LAND_USE_SCOPE",
+        "detail": "The 20-foot climb speed and the Climb skill. Kingmaker has no Climb skill and no climbing movement, and neither is folded into the 40-foot ground speed."
+      },
+      {
+        "id": "SUMMONED_PLANAR_TRAVEL_FORBIDDEN",
+        "detail": "Plane shift is unavailable to a summoned monster under the summon spell's own restriction on teleportation and planar travel. No other mobility or concealment ability is substituted for it."
+      },
+      {
+        "id": "ITEM_DESTRUCTION_UNMODELED",
+        "detail": "Dismantle Armor's literal destruction of the piece. Kingmaker declares no broken condition, no durability value and no item-damage component a mod can reach, so the piece survives as an object and loses its whole armour-class contribution permanently instead. The wearer therefore keeps its armour check penalty, maximum Dexterity limit, arcane spell failure chance and any non-armour-class enchantment. No global item-durability system is invented and no inventory is written to.",
+        "measuredBy": "The guarded review's armoured disposable target: armour class before and after a successful dismantle, the exact loss compared against the equipped piece's own bonus and enchantment, and the item still present and unchanged in the fixture afterwards."
+      }
+    ]
+  },
+  "giantCrab": {
+    "printedProfile": {
+      "alignmentTypeSize": "N Medium vermin (aquatic)",
+      "hitDice": 3,
+      "hitDieClass": "Vermin",
+      "hitPoints": {
+        "dice": "3d8+6",
+        "total": 19
+      },
+      "armorClass": {
+        "total": 16,
+        "touch": 11,
+        "flatFooted": 15
+      },
+      "naturalArmor": 5,
+      "saves": {
+        "fortitude": 5,
+        "reflex": 2,
+        "will": 1
+      },
+      "speedFeet": 30,
+      "swimSpeedFeet": 20,
+      "melee": "2 claws +4 (1d4+2 plus grab)",
+      "spaceFeet": 5,
+      "reachFeet": 5,
+      "constrict": "1d4+2",
+      "abilityScores": {
+        "strength": 15,
+        "dexterity": 13,
+        "constitution": 14,
+        "intelligence": null,
+        "wisdom": 10,
+        "charisma": 2
+      },
+      "baseAttackBonus": 2,
+      "combatManeuverBonus": 4,
+      "grappleBonus": 8,
+      "combatManeuverDefense": {
+        "base": 15,
+        "versusTrip": 27
+      },
+      "skills": {
+        "Perception": 4
+      },
+      "racialModifiers": {
+        "Perception": 4
+      },
+      "immunities": "mind-affecting effects",
+      "specialQualities": [
+        "water dependency"
+      ]
+    },
+    "derivations": [
+      "Armour class: 10 + 1 Dexterity + 5 natural = 16; touch 10 + 1 = 11; flat-footed 10 + 5 = 15. Medium, so no size term. These three pin Dexterity 13 and the natural armour at +5.",
+      "Hit points: 3d8 at the monster convention averages 13, plus 6 from Constitution 14 across three dice, giving the printed 19. No third term: vermin have no feats and so no Toughness.",
+      "Saves: vermin take the good Fortitude with two poor saves. Three hit dice give +3 on the good one and +1 on each poor one. Fortitude 3 + 2 = 5; Reflex 1 + 1 = 2, which is the third place Dexterity 13 is pinned; Will 1 + 0 = 1.",
+      "Base attack: vermin use the three-quarter progression, so three hit dice give +2.",
+      "Attack bonus: 2 base attack + 2 Strength + 0 size = +4 on both claws, and both are primary at the whole Strength modifier, so each is 1d4+2 rather than one at 1d4+3.",
+      "Constrict: 1d4+2 is the claw's own damage, so it also adds the whole Strength modifier and is computed from live Strength rather than stored.",
+      "Manoeuvre bonus: 2 base attack + 2 Strength = +4. The printed grapple +8 is that plus the grab bonus of 4, which is the whole of the difference.",
+      "Manoeuvre defence: 10 + 2 + 2 + 1 = 15.",
+      "Anti-trip defence: the printed 27 is twelve above the ordinary 15. A crab walks on eight legs, so it prints the same figure as the Sprint 20 scorpion and this sprint's Bebelith, and needs its own carrier for the same measured reason.",
+      "Perception: no Intelligence score means no ranks, so the printed +4 is Wisdom 0 plus the racial +4 and nothing else.",
+      "Every one of these sixteen identities closes on the transcription. Nothing in this block is recorded as a question against the source."
+    ],
+    "implementationConsequences": [
+      "Two independent primary claws.",
+      "Each claw may establish its own legal hold under the qualified multi-limb grapple lifecycle.",
+      "Constrict applies only to the exact target held by the maintaining claw.",
+      "No bite, no sting and no poison.",
+      "A creature-owned +12 anti-trip carrier.",
+      "A creature-owned racial +4 Perception carrier.",
+      "No skill ranks at all: a mindless creature buys none."
+    ],
+    "placement": {
+      "family": "Summon Nature's Ally only",
+      "ownTier": 3,
+      "templated": false,
+      "templatedReason": "Summon Nature's Ally never templates, and this creature is not on the Summon Monster table at all, so it owns no celestial or fiendish execution children.",
+      "roots": 7,
+      "rootsDerivation": "Parents 3 through 9: One at its own tier 3, OneD3 at tier 4, OneD4PlusOne at tiers 5 through 9. It is the first creature in the roster to sit at Summon Nature's Ally III with no Summon Monster tier."
+    },
+    "acceptedLimitations": [
+      {
+        "id": "ORDINARY_MAP_LAND_USE_SCOPE",
+        "detail": "The printed 20-foot swim speed and the water dependency. The creature ships at its printed 30-foot ground speed; the swim speed is not folded into it, no skill is raised to stand in for Swim, and no breathing or drowning state is invented. Kingmaker models neither swimming nor drowning, and this mission's hard boundaries forbid building an aquatic subsystem. Water dependency has no practical trigger within an ordinary summon duration and no drowning consumer within ordinary-map scope, so it is recorded honestly rather than implemented."
+      },
+      {
+        "id": "PASSIVE_CREATURE_SENSES_UNMODELED",
+        "detail": "Darkvision, omitted under the owner's accepted limitation with nothing substituted."
+      },
+      {
+        "id": "VERMIN_HAVE_NO_FEATS",
+        "detail": "No feat is dropped and none is invented. Recorded so the absence is not mistaken for an omission."
+      }
+    ]
+  },
+  "surface": {
+    "uniqueCreaturesBefore": 102,
+    "uniqueCreaturesAfter": 103,
+    "monsterRosterUnchanged": 92,
+    "monsterPlacementsUnchanged": 530,
+    "naturesAllyRosterBefore": 90,
+    "naturesAllyRosterAfter": 91,
+    "naturesAllyPlacementsBefore": 526,
+    "naturesAllyPlacementsAfter": 533,
+    "registeredPlacementsBefore": 1056,
+    "registeredPlacementsAfter": 1063,
+    "retainedNativeWrappers": 29,
+    "visibleChoicesBeforePublication": 1085,
+    "visibleChoicesAfterPublication": 1092,
+    "affectedRoots": "Ten: the Giant Crab's seven new Nature's Ally roots and the Bebelith's three existing Summon Monster roots, whose identities do not move."
+  },
+  "guardedRuntimeRequirements": {
+    "census": "One guarded request-local census treating the two creatures as separate visual families. The Bebelith side audits the released Doomspider proxy, the Giant Spider, the Giant Scorpion and other large or huge arthropod and outsider candidates; the Giant Crab side audits the Giant Spider, the Giant Scorpion and other compact arthropod candidates independently. Neither donor is forced onto the other creature merely because both are arthropods. Only structural evidence is committed; no game mesh, texture or animation clip is ever redistributed.",
+    "mechanicsReview": "One batched guarded review covering both creatures in real time and in turn-based combat, with the negative controls this mission names.",
+    "bodyReview": "Party-camera review of both original bodies.",
+    "publicationGate": "One publication gate exercising all seven new Giant Crab roots and all three changed Bebelith roots, with source-derived totals.",
+    "seriesClosure": "The complete Expanded Summoning series closure, once, on one immutable release candidate.",
+    "launchMechanism": "Every launch uses the repository's guarded Steam App ID 640820 mechanism. Kingmaker.exe is never launched directly, KMG_AUTOMATION_BASELINE is never loaded or written, saves are never edited or copied by hand, and no development build is left deployed."
+  },
+  "hardBoundaries": [
+    "No Sprint 22 and no new creature.",
+    "No multi-sprint branch, stacked pull request, or unreleased carryover.",
+    "No expanded summon feats.",
+    "No aquatic movement or combat subsystem. This is the boundary the Giant Crab tests, and the answer is a recorded omission rather than a subsystem.",
+    "No global item-durability subsystem. This is the boundary Dismantle Armor tests, and the answer is the narrowest existing item and broken-condition seams.",
+    "No general arbitrary-limb system, general creature editor, or global AI rewrite.",
+    "No proprietary asset redistribution.",
+    "No force-push, history rewrite, destructive reset, or direct commit to master.",
+    "No unguarded Kingmaker launch.",
+    "No rename of the released bebelith key or Bebelith display name.",
+    "No suppression, removal, reallocation or replacement of the Bebelith's three released roots."
+  ]
+}

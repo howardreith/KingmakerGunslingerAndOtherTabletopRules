@@ -37,7 +37,7 @@ to new owned descriptor,then descriptor removed;118preexisting saves byte-exact.
 All reused results retain original candidate/request/result provenance.
 
 Sprints9-20 technically complete,Salamander INCLUDED;Phase2B closure PASS.
-Surface: 1056 published generated placements + 29 native wrappers = 1085 visible choices.
+Surface: 1063 published generated placements + 29 native wrappers = 1092 visible choices.
 Sprint18 published the Ape and Dire Ape on 2026-10-09 after a complete hidden
 candidate: 29/29 batched review and 12/12 party-camera art review at 1d4+1 on one
 candidate, with the owner installation restored exactly after every run.

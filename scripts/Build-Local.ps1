@@ -33,7 +33,7 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.149') { throw "Build-Local supports only active version 0.0.149, observed $($info.Version)." }
+if ($info.Version -ne '0.0.150') { throw "Build-Local supports only active version 0.0.150, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -78,7 +78,7 @@ if (-not $SkipDomainTests) {
         -MSBuildPath $msbuild -SkipRepositoryValidation
 }
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.149'
+$localRoot = Join-Path $root "artifacts\local-runtime\$($info.Version)"
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -162,6 +162,14 @@ New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint20-arac
 foreach ($kind in @('giant-scorpion')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint20-arachnids\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint20-arachnids') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint20-arachnids\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint20-arachnids') -Force
+}
+# Sprint 21's two original bodies. The Bebelith's is the first in this
+# series authored for a creature that already ships wearing something, so a
+# release that omitted it would quietly put the Doomspider back.
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint21-arthropods') -Force | Out-Null
+foreach ($kind in @('giant-crab','bebelith')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint21-arthropods\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint21-arthropods') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint21-arthropods\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint21-arthropods') -Force
 }
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'

@@ -6,7 +6,7 @@ param(
 
     [string]$ReferenceBundleDir,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.149.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.150.md',
 
     [string]$ReleaseBranch = 'master',
 
@@ -14,13 +14,32 @@ param(
 
     [switch]$ConfirmReleaseReady,
 
-    [switch]$AllowNonDefaultReleaseBranch
+    [switch]$AllowNonDefaultReleaseBranch,
+    # Exact promotion of an already qualified immutable candidate. This path
+    # performs no build and requires the closure ledger and merged lineage.
+    [switch]$ReuseQualifiedCandidate,
+    [string]$PackagePath,
+    [string]$CandidateRepositoryRoot,
+    [string]$QualificationLedgerPath = 'planning\SPRINT21-CLOSURE-LEDGER.json',
+    [string]$MergedReleaseCommit
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'common.ps1')
 . (Join-Path $PSScriptRoot 'KmgGate.Common.ps1')
+
+if ($ReuseQualifiedCandidate) {
+    & (Join-Path $PSScriptRoot 'Publish-QualifiedCandidate.ps1') `
+        -PackagePath $PackagePath -CandidateRepositoryRoot $CandidateRepositoryRoot `
+        -QualificationLedgerPath $QualificationLedgerPath `
+        -MergedReleaseCommit $MergedReleaseCommit -ReleaseNotesPath $ReleaseNotesPath `
+        -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady
+    return
+}
+if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit) {
+    throw 'Qualified-candidate arguments require -ReuseQualifiedCandidate.'
+}
 
 function Assert-CommandAvailable {
     param([Parameter(Mandatory = $true)][string]$Name)
@@ -145,7 +164,7 @@ function Invoke-QualifiedBuildAndPackage {
         $packageVersion = $packageInfo.Version
         $candidatePath = Join-Path $RepositoryRoot "artifacts\local-runtime\$packageVersion\KingmakerGunslinger-$packageVersion-local-runtime.zip"
         # Preserve the existing public asset name using the same verified bytes.
-        $packagePath = Join-Path $RepositoryRoot "artifacts\packages\$($packageInfo.Id)-$packageVersion-expanded-summoning-sprint20.zip"
+        $packagePath = Join-Path $RepositoryRoot "artifacts\packages\$($packageInfo.Id)-$packageVersion-expanded-summoning-sprint21.zip"
         New-Item -ItemType Directory -Path (Split-Path -Parent $packagePath) -Force | Out-Null
         Copy-Item -LiteralPath $candidatePath -Destination $packagePath -Force
         if ((Get-KmgSha256 -Path $candidatePath) -cne (Get-KmgSha256 -Path $packagePath)) {

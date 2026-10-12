@@ -168,6 +168,14 @@ $expected = @(
     'observe-expanded-summoning-inventory',
     'observe-expanded-summoning-variant-menu',
     'disposable-expanded-summoning',
+    'disposable-expanded-summoning-native-profile',
+    'observe-expanded-summoning-primate-census',
+    'observe-expanded-summoning-arachnid-census',
+    'observe-expanded-summoning-sprint21-census',
+    'disposable-expanded-summoning-sprint18-review',
+    'disposable-expanded-summoning-sprint19-review',
+    'disposable-expanded-summoning-sprint20-review',
+    'disposable-expanded-summoning-sprint21-review',
     'disposable-expanded-summoning-player-path',
     'summon-same-turn-activation',
     'summon-same-turn-acadamae',
@@ -345,11 +353,19 @@ $expected = @(
     'observe-working-save-entry-action',
     'observe-working-save-selection-load-action',
     'observe-working-save-receiver-bound-action',
-        'working-save-unified-repair-alias'
+        'working-save-unified-repair-alias',
+    'weapon-findability-owned-save'
+    'working-save-weapon-route',
+    'working-save-weapon-recovery',
+    'weapon-findability-blueprints',
+    'working-save-weapon-findability-scenes'
 )
 $catalog = Get-Content -LiteralPath $catalogPath -Raw
-$csharpNames = @([regex]::Matches($catalog, '"([a-z][a-z0-9-]+)"') |
-    ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique)
+$ownedSaveContract = Get-Content (Join-Path $root 'src/KingmakerGunslinger/RuntimeTesting/WeaponFindabilitySaveContract.cs') -Raw
+$ownedScenario = [regex]::Match($ownedSaveContract, 'const string Scenario\s*=\s*"([a-z][a-z0-9-]+)"').Groups[1].Value
+if ([string]::IsNullOrEmpty($ownedScenario) -or -not $catalog.Contains('WeaponFindabilitySaveContract.Scenario')) { throw 'Owned save scenario contract is not wired into the C# catalog.' }
+$csharpNames = @(@([regex]::Matches($catalog, '"([a-z][a-z0-9-]+)"') |
+    ForEach-Object { $_.Groups[1].Value }) + @($ownedScenario) | Sort-Object -Unique)
 $powershellNames = @($script:KmgRuntimeScenarios | Sort-Object)
 Assert-True (($csharpNames -join "`n") -ceq ($powershellNames -join "`n")) `
     'csharp-powershell-catalog-sync'
@@ -759,6 +775,17 @@ Assert-True (-not $fatiguePersistence.RequiresManualInteraction -and
     'fatigue-persistence-is-guarded-working-save-only'
 $expandedSummoningPlayerPath = Get-KmgRuntimeScenarioMetadata `
     'disposable-expanded-summoning-player-path'
+$nativeSummoning = Get-KmgRuntimeScenarioMetadata 'disposable-expanded-summoning-native-profile'
+Assert-True (-not $nativeSummoning.RequiresSaveName -and
+    -not $nativeSummoning.RequiresManualInteraction -and
+    $nativeSummoning.ReadinessBehavior -ceq 'mod-load') 'native-summoning-has-no-save-or-human-dependency'
+$nativeSummoningArgs = @{ Scenario = 'disposable-expanded-summoning-native-profile'; ExpectedVersion = $activeVersion; TimeoutSeconds = 600; StartupTimeoutSeconds = 180 }
+Assert-KmgRuntimeScenarioPreflight @nativeSummoningArgs -ExitAfterCompletion $true
+$nativeSummoningRequest = New-KmgRuntimeRequest @nativeSummoningArgs -ExitAfterCompletion $true `
+    -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'native-summoning-request-test')
+Assert-True ($nativeSummoningRequest.parameters.Count -eq 0 -and $nativeSummoningRequest.exitAfterCompletion) 'native-summoning-request-is-save-free'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @nativeSummoningArgs -ExitAfterCompletion $false } 'native-summoning-rejects-no-exit'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @nativeSummoningArgs -ExitAfterCompletion $true -Parameters @{saveName='KMG_AUTOMATION_WORKING'} } 'native-summoning-rejects-save-name'
 Assert-True (-not $expandedSummoningPlayerPath.RequiresManualInteraction) `
     'expanded-summoning-player-path-is-autonomous'
 Assert-True $expandedSummoningPlayerPath.RequiresSaveName `

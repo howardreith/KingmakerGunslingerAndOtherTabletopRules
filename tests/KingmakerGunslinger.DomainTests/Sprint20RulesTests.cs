@@ -116,13 +116,17 @@ namespace KingmakerGunslinger.DomainTests
             // the one registration allocated and nothing moved to make room.
             Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All twelve are published.");
-            Assertions.Equal(1056,
+                "All twelve of this creature's are published, and so is "
+                + "everything else.");
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
-                "Registered placements rose from 1044 to 1056.");
-            Assertions.Equal(1056,
+                "Registered placements rose from 1044 to 1056, and Sprint 21 "
+                + "registered seven more.");
+            Assertions.Equal(1063,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The published surface is every registered placement.");
+                "The published surface is every registered placement, which "
+                + "is this test's real subject: a later sprint must not reach "
+                + "back and suppress a published creature.");
             foreach (SummonVariantSpec variant in all)
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
@@ -374,11 +378,18 @@ namespace KingmakerGunslinger.DomainTests
                 System.Text.RegularExpressions.Regex.Matches(ledger,
                     @"""symbol""\s*:\s*""([^""]+)"""))
                 symbols.Add(match.Groups[1].Value);
-            if (symbols.Count < AppendedLedgerIdentities)
+            // Sprint 21 appends after this block, so this is no longer the
+            // tail of the ledger and cannot be read as one. The window is
+            // this sprint's own, measured back from whatever has been
+            // appended since - which is the only reading that keeps meaning
+            // what it meant when it was written.
+            int later = Sprint21RulesTests.AppendedLedgerIdentities;
+            if (symbols.Count < AppendedLedgerIdentities + later)
                 throw new InvalidOperationException(
                     "The ledger parsed to " + symbols.Count + " symbols.");
-            return symbols.Skip(symbols.Count - AppendedLedgerIdentities)
-                .ToArray();
+            return symbols
+                .Skip(symbols.Count - later - AppendedLedgerIdentities)
+                .Take(AppendedLedgerIdentities).ToArray();
         }
 
         private static string RepositoryRoot()

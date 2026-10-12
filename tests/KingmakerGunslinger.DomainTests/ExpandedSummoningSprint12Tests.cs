@@ -198,7 +198,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Contains("int sprint12VisualChecked = 0;") &&
                 runtime.Contains("variant.Creature.Key == \"dire-rat\"") &&
                 runtime.Contains("sprint12VisualAttached == sprint12VisualChecked") &&
-                runtime.Contains("ungulateVisualChecked + sprint12VisualChecked"),
+                runtime.Contains("HandlesBlueprintName(expectedUnit.name)") &&
+                runtime.Contains("OneOutcomePerEligibleView("),
                 "The shared visual-patch lifecycle assertion must account for every hidden Sprint 12 coverage view.");
 
             string build = File.ReadAllText(Path.Combine(root, "scripts",
@@ -207,8 +208,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\sprint12-quadrupeds") &&
                 package.Contains("assets\\sprint12-quadrupeds") &&
-                build.Contains("{ 349 } else { 347 }") &&
-                package.Contains("{ 349 } else { 347 }"),
+                build.Contains("'package.ps1') -Configuration Release -PackagePath $packagePath") &&
+                package.Contains("{ 354 } else { 352 }"),
                 "All six quadruped asset files enter the strict standalone package.");
         }
 
