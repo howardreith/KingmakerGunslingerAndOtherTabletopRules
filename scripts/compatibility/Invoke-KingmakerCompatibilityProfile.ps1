@@ -209,6 +209,8 @@ $moduleScenario = @($Scenario | Where-Object { $_ -in @(
         $Parameters.Count -gt 0)
 $assetAttributionScenario = @($Scenario | Where-Object { $_ -ceq
     'observe-kmg-compatibility-asset-attribution' }).Count -gt 0
+$sprint22ReviewScenario = @($Scenario | Where-Object { $_ -ceq
+    'disposable-expanded-summoning-sprint22-native-review' }).Count -gt 0
 if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
 }
@@ -239,6 +241,15 @@ if ($moduleScenario) {
         $Parameters.elementalRaces -isnot [bool] -or
         $Parameters.teleportationSpells -isnot [bool]) {
         throw 'Feature-module profile observation requires exactly thirteen Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, and magicCircleSpells.'
+    }
+} elseif ($sprint22ReviewScenario) {
+    $keys = @($Parameters.Keys)
+    if ($Scenario.Count -ne 1 -or $keys.Count -ne 1 -or
+        $keys[0] -cne 'reviewPhase' -or
+        $Parameters.reviewPhase -isnot [string] -or
+        $Parameters.reviewPhase -cnotin @('rtwp-foundation',
+            'turn-based-control')) {
+        throw 'Sprint 22 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.'
     }
 } elseif ($assetAttributionScenario) {
     $keys = @($Parameters.Keys)
