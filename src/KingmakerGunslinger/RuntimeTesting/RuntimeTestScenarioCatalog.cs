@@ -197,6 +197,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-expanded-summoning-variant-menu";
         internal const string DisposableExpandedSummoning =
             "disposable-expanded-summoning";
+        internal const string DisposableExpandedSummoningNativeProfile =
+            "disposable-expanded-summoning-native-profile";
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
         /// <summary>
@@ -802,6 +804,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
+                DisposableExpandedSummoningNativeProfile,
                 DisposableExpandedSummoningPlayerPath,
                 DisposableExpandedSummoningProjectedMenu,
                 DisposableExpandedSummoningPteranodonFaultDrill,
