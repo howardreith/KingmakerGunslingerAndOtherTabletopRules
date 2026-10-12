@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "Sprint21 QUALIFIED on HOWARD-LAPTOP; exact candidate promotion and owner-authorized PR36 merge/stable release verification remain selected. No Sprint22.",
+    "activeTask": "Sprint21 RELEASED stablev0.0.150 and verified on HOWARD-LAPTOP. Owner mission complete; STOP. No Sprint22.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-STATE-before-workflow-reset-2026-10-11.json"
   },
@@ -197,7 +197,7 @@
   "draftPrUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/2",
   "draftPrReason": null,
   "seriesClosure": {
-    "status": "QUALIFIED",
+    "status": "RELEASED",
     "record": "docs/SPRINT21-CLOSURE-2026-10-11.md",
     "ledger": "planning/SPRINT21-CLOSURE-LEDGER.json",
     "testedSource": "b3d9436fc09736530b5b5962d40982165454ea0b",
@@ -206,6 +206,11 @@
     "mandatoryNotRun": [],
     "baselineExceptions": [],
     "evidenceSourcesRetained": true,
-    "noSprint22": true
+    "noSprint22": true,
+    "tag": "v0.0.150",
+    "latest": true,
+    "mergeCommit": "3d8e51ee653d598c1ac7e9a6fd452c4d99767ffb",
+    "finalReportingSeparate": true,
+    "nextAction": "STOP; no Sprint22"
   }
 }
