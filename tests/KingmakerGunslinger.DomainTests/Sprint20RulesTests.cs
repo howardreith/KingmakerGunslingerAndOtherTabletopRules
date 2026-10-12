@@ -383,7 +383,7 @@ namespace KingmakerGunslinger.DomainTests
             // this sprint's own, measured back from whatever has been
             // appended since - which is the only reading that keeps meaning
             // what it meant when it was written.
-            int later = Sprint21RulesTests.AppendedLedgerIdentities;
+            int later = Sprint21RulesTests.AppendedLedgerIdentities + Sprint22RulesTests.AppendedLedgerIdentities;
             if (symbols.Count < AppendedLedgerIdentities + later)
                 throw new InvalidOperationException(
                     "The ledger parsed to " + symbols.Count + " symbols.");

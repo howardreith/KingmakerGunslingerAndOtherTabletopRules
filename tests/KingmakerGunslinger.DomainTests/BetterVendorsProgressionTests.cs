@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -154,6 +154,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sprint19RulesTests.AppendedLedgerIdentities +
                 Sprint20RulesTests.AppendedLedgerIdentities +
                 Sprint21RulesTests.AppendedLedgerIdentities +
+                Sprint22RulesTests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 entries.Length,
                 "Manifest preserves accepted blocks and appends only approved Phase 2 identities.");

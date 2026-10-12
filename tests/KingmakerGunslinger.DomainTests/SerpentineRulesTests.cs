@@ -742,7 +742,8 @@ namespace KingmakerGunslinger.DomainTests
                 PrimateRulesTests.AppendedLedgerIdentities +
                 Sprint19RulesTests.AppendedLedgerIdentities +
                 Sprint20RulesTests.AppendedLedgerIdentities +
-                Sprint21RulesTests.AppendedLedgerIdentities + masterTraits.Count,
+                Sprint21RulesTests.AppendedLedgerIdentities +
+                Sprint22RulesTests.AppendedLedgerIdentities + masterTraits.Count,
                 entries.Count,
                 "Qualified Phase2B identities, the Sprint 18 appends and all eleven released master trait identities coexist.");
             // The current release preserves master's entire prefix. Project

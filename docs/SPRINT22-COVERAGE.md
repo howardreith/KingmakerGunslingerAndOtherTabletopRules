@@ -70,3 +70,13 @@ Improved Overrun has no concrete standalone feat or qualified summon-command
 consumer; no general overrun system is introduced. Hodag has no native Hit
 animation. Owner visual approval is NOT_PERFORMED_NONBLOCKING. Sprint 23 is not
 started.
+
+Candidate-boundary correction: the e1c4eaf4 full suite executed 2,580 cases
+in 97.6 s and retained 27 failures from current ledger/version/package pins,
+the prior mandatory-rider omission and an overbroad source-reader regex.
+Historical GUID blocks and asset presence assertions remain intact. The four
+private appends now enter the existing shared offset calculations; the package
+producer admits the new 356-member inventory. All 27 exact failed case names
+and affected Sprint 22/native-profile/Sprint 21 neighbors passed a 65-case
+focused selection (production step 0.9 s, domain step 5.7 s). A new clean full
+candidate is required; these corrections are not native evidence.
