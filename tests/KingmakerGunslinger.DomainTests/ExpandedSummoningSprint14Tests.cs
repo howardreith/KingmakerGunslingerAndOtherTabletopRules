@@ -1004,6 +1004,8 @@ namespace KingmakerGunslinger.DomainTests
                     // the scorpion: no Intelligence score, so no ranks, so an
                     // empty list rather than the default three.
                     value.Key != GiantCrabRulesPolicy.GiantCrabKey &&
+                    // Sprint 22 assigns the printed Perception-only ranks.
+                    value.Key != AnkylosaurusRulesPolicy.Key &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

@@ -1,4 +1,4 @@
-# Sprint 22: Ankylosaurus Completion — in progress, not qualified
+# Sprint 22: Ankylosaurus Completion â€” in progress, not qualified
 
 Current owner mission: [Sprint 22 contract](docs/SPRINT22-ANKYLOSAURUS-MISSION.md).
 Read AGENTS.md and docs/VALIDATION-POLICY.md. HOWARD-LAPTOP only; branch
@@ -10,7 +10,7 @@ Sprint 21 final reporting is synchronized through documentation-only PR #38,
 master aa09788e6ba109c3db7bd0ec28f0138506f678a8. Stable v0.0.150 and its alpha,
 tags/assets/failed evidence remain unchanged. Historical closure records retain
 their provenance. The original charter continues through Sprint 41, optional
-42–45. This mission authorizes only Sprint 22; Sprint 23 is not started.
+42â€“45. This mission authorizes only Sprint 22; Sprint 23 is not started.
 
 Current ledger: planning/SPRINT22-ANKYLOSAURUS-LEDGER.json. Intake captured today's
 actual human installation/settings/save preservation boundary with no active
@@ -19,8 +19,9 @@ outside source. Preserve Sprint 21 frozen worktrees/artifacts and other work.
 
 The rider/profile/body and targeted observers are implemented, with native
 qualification pending. The original mesh/albedo repeat deterministically and
-all seven offline views were reviewed. The final affected focused pass compiled
-production and ran 38/38 tests (2,580 registered); this is development evidence.
+all seven offline views were reviewed. The initial focused pass ran 38/38 tests. After the first full suite exposed
+27 current metadata/reader assumptions, all 65 affected cases passed with
+2,580 registered; production compiled. Native qualification remains pending.
 The guarded full-installation wrapper now accepts an exact candidate package and
 returns its exact run/deployment receipt. Reduced profiles never load the
 eleven-mod working fixture. See the ledger and coverage map for carriers and limits.

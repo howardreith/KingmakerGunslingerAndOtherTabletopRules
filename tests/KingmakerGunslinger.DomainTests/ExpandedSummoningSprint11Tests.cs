@@ -582,7 +582,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(build.Contains("assets\\ungulates") &&
                 package.Contains("assets\\ungulates") &&
                 build.Contains("'package.ps1') -Configuration Release -PackagePath $packagePath") &&
-                package.Contains("{ 354 } else { 352 }"),
+                package.Contains("{ 356 } else { 354 }"),
                 "All eight ungulate asset files enter the strict standalone package.");
         }
 

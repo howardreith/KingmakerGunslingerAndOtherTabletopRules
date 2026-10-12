@@ -230,7 +230,19 @@
   },
   "freshEvidence": [],
   "reusedEvidence": [],
-  "failures": [],
+  "failures": [
+    {
+      "source": "e1c4eaf4d52fad0d8c50ee1ceea01f6f833eb0d8",
+      "stage": "complete-domain-suite",
+      "executed": 2580,
+      "failures": 27,
+      "suiteSeconds": 97.6,
+      "pipelineSeconds": 164.835726,
+      "classification": "OUTDATED_CURRENT_LEDGER_VERSION_PACKAGE_PINS_AND_OVERBROAD_SOURCE_READER",
+      "disposition": "CORRECTED_FOCUSED_65_PASS_NEW_CANDIDATE_REQUIRED",
+      "rawEvidence": "Private artifacts/sprint22-candidate-e1c4eaf4 stdout/stderr/timing retained; no product package produced."
+    }
+  ],
   "acceptedLimitations": [
     "PASSIVE_CREATURE_SENSES_UNMODELED",
     "IMPROVED_OVERRUN_NO_CONCRETE_NATIVE_FEAT_OR_QUALIFIED_SUMMON_COMMAND_CONSUMER",
@@ -258,13 +270,13 @@
     "nativeWallSeconds": 67.608
   },
   "focusedValidation": {
-    "selected": 38,
+    "selected": 65,
     "registered": 2580,
     "failures": 0,
-    "productionSeconds": 21.7,
-    "domainSeconds": 1.4,
-    "filter": "expanded-summoning.sprint22,expanded-summoning.native-profile,expanded-summoning.sprint21",
-    "limits": "Final product/profile/rider/body/impact, native observers and cold-load module checks compiled; native qualification pending"
+    "productionSeconds": 0.9,
+    "domainSeconds": 5.7,
+    "filter": "27 exact failed candidate case names plus expanded-summoning.sprint22,native-profile,sprint21",
+    "limits": "All 27 current ledger/version/package/source-reader corrections and affected neighbors pass; no native qualification yet."
   },
   "offlineArt": {
     "meshSha256": "f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626",

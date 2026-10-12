@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,6 +54,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sprint19RulesTests.AppendedLedgerIdentities +
                 Sprint20RulesTests.AppendedLedgerIdentities +
                 Sprint21RulesTests.AppendedLedgerIdentities +
+                Sprint22RulesTests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 entries.Length,
                 "Current blueprint ledger count changed.");
@@ -81,6 +82,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sprint19RulesTests.AppendedLedgerIdentities +
                 Sprint20RulesTests.AppendedLedgerIdentities +
                 Sprint21RulesTests.AppendedLedgerIdentities +
+                Sprint22RulesTests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),

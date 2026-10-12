@@ -11,6 +11,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class Sprint22RulesTests
     {
+        internal const int AppendedLedgerIdentities = 4;
         internal static void OriginalAssetHasValidGeometryAndReviewedDrivers()
         {
             var data=JObject.Parse(File.ReadAllText("assets/ankylosaurus/ankylosaurus-mesh.json"));
@@ -105,6 +106,11 @@ namespace KingmakerGunslinger.DomainTests
         internal static void PublishedRoutesRemainAtFiveThroughNine()
         {
             ExpandedSummoningCatalog.Validate();
+            var identities=ExpandedSummoningIdentityCatalog.Build();
+            var tail=identities.Skip(identities.Count-AppendedLedgerIdentities).Select(value=>value.Symbol).ToArray();
+            Assertions.True(tail.SequenceEqual(new[] { AnkylosaurusRulesPolicy.UnitTypeSymbol,
+                AnkylosaurusRulesPolicy.StunFeatureSymbol,AnkylosaurusRulesPolicy.DazedSymbol,
+                AnkylosaurusRulesPolicy.StunnedSymbol }),"Exactly four private carrier identities append in order; no new unit, route or weapon.");
             foreach (var family in new[] { SummonFamily.Monster, SummonFamily.NaturesAlly })
             {
                 var routes = ExpandedSummoningCatalog.GenerateVariants(family).Where(value => value.Creature.Key == "ankylosaurus").OrderBy(value => value.ParentTier).ToArray();
