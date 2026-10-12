@@ -17,7 +17,10 @@ function New-QualifiedFixture {
             pipelineExitCode=0;fullSuite=[pscustomobject]@{exitCode=0;failures=0;executed=2562;registered=2562;unfiltered=$true}};
         roster=[pscustomobject]@{generatedRoots=1063;nativeWrappers=29;choices=1092};
         restoration=[pscustomobject]@{current='EXACT_INTAKE_VERIFIED';workingFixtureClean=$true};
-        coverage=@($ids|ForEach-Object{[pscustomobject]@{id=$_;result='PASS';proofs=@([pscustomobject]@{path='fixture';sha256=('e'*64)})}});
+        coverage=@($ids|ForEach-Object{[pscustomobject]@{id=$_;result='PASS';
+            evidenceSources=@([pscustomobject]@{source=$candidate.commit;packageSha256=$candidate.packageSha256;
+                dllSha256=$candidate.dllSha256;dllMvid=$candidate.dllMvid});
+            proofs=@([pscustomobject]@{path='C:/local-evidence/run/fixture.json';sha256=('e'*64)})}});
         findings=@([pscustomobject]@{id='feature-module-brown-fur-publication-gate';classification='FIXTURE_DEFECT';native='VERIFIED'});
         baselineExceptions=@()}
 }
@@ -78,6 +81,27 @@ try {
     if (-not $refused) {throw 'Changed immutable proof was accepted.'}
     $checks+=2
 } finally {if(Test-Path -LiteralPath $temporary){Remove-Item -LiteralPath $temporary}}
+$ledger=New-QualifiedFixture
+$public=@(Get-KmgClosurePublicCoverage -Ledger $ledger) | ConvertTo-Json -Depth 12 | ConvertFrom-Json
+if ($public[0].evidenceSources[0].source -cne $candidate.commit -or
+    $public[0].proofs[0].evidenceRun -cne 'run' -or
+    $public[0].proofs[0].PSObject.Properties['path']) { throw 'Fresh public provenance or local-path removal failed.' }
+$checks++
+$ledger.coverage[0] | Add-Member NoteProperty reuseJustification 'Unchanged behavior; prior bytes retained.'
+$ledger.coverage[0].result='REUSED_PASS'
+$ledger.coverage[0].evidenceSources=@([pscustomobject]@{source=('f'*40);packageSha256=('1'*64);
+    dllSha256=('2'*64);dllMvid='43a5bf9e-92f1-4ca4-b4c8-2eda1a186456'},$ledger.coverage[0].evidenceSources[0])
+$public=@(Get-KmgClosurePublicCoverage -Ledger $ledger) | ConvertTo-Json -Depth 12 | ConvertFrom-Json
+if ($public[0].evidenceSources.Count -ne 2 -or $public[0].evidenceSources[0].source -cne ('f'*40) -or
+    $public[0].evidenceSources[0].dllSha256 -cne ('2'*64) -or
+    $public[0].evidenceSources[0].dllMvid -cne '43a5bf9e-92f1-4ca4-b4c8-2eda1a186456' -or
+    $public[0].reuseJustification -cne 'Unchanged behavior; prior bytes retained.') { throw 'Reused evidence was relabeled as current execution.' }
+$checks++
+$ledger.coverage[0].evidenceSources=@()
+$refused=$false
+try { $null=@(Get-KmgClosurePublicCoverage -Ledger $ledger) } catch { $refused=$true }
+if(-not $refused){throw 'Public coverage accepted absent execution provenance.'}
+$checks++
 foreach ($file in @('Publish-Release.ps1','Publish-QualifiedCandidate.ps1','QualifiedRelease.Common.ps1','Test-QualifiedRelease.ps1')) {
     $tokens=$null;$errors=$null
     $null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $file),[ref]$tokens,[ref]$errors)
