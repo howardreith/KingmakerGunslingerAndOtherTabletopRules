@@ -243,3 +243,46 @@ unrelated conditions. Production compiled in 18.3 s and the named Sprint 22
 filter passed 10/10 selected tests out of 2,581 registered in 1.2 s. Because
 the compiled observer changed, a new coherent candidate and all affected
 native evidence are required.
+
+Candidate `268a812e5020d1eed64fdcfa4114b56d43e5e04a` passed its single
+Sprint pipeline: 2,581/2,581 tests in 93.8 s and 244.2 s overall. Its
+source-state hash was
+`35141da087148834a5aa7fc3204c421a70a353a1cff363311e8bb6f45377e328`;
+ZIP `af240616c18d3d1ea85a6fff8251e9e240524ec829f34897169559586c180dfb`;
+DLL `ca7c9ba0a20267c73061a6b3d4a0e2d32fb170e91d44eac5cf5246f5bf15efb7`;
+MVID `67933f27-8018-4a14-800f-10e7eaef515d`.
+
+Standalone transaction `compat-20261012T173931Z-956425681b5b`, deployment
+receipt `20261012T1741047429198Z`, and RunId
+`20261012T1741059228926Z-2384dab5812a469ea6db10c15601d2d7` retained 60
+detailed rows over 975.588 s before the declared scenario deadline. Fifty-nine
+rows passed. The corrected critical-stun expiry passed after 25.25 native
+seconds and 3.290 s wall time: the private effect and native Stunned state were
+gone, `CanAct` was true, and the victim returned one actual attack rule. The
+only detailed failure was the RTWP multi-source lifetime row. It had three
+independent finite private Dazed instances from two summons, unchanged absolute
+end times and an unrelated buff preserved; `sourceDead=false` showed that the
+request-local controller scope had not ticked the native life controller after
+lethal damage. The run then passed turn-based profile, body, Power Attack and
+both unrelated-weapon controls, but its first turn-based rider command never
+produced a result before the deadline. The automatic process exit completed;
+exact restoration was independently verified at
+2026-10-12T17:58:40.0585874Z, with the human 0.0.117 installation restored and
+no game process or owned lock.
+
+The revised strategy ticks `UnitLifeController.TickOnUnit` for only the lethally
+damaged request-owned source, then observes source death and victim-side
+lifetime preservation across deferred destruction. The turn-based phase now
+enters the summon and hostile through their native combat state before asking
+the turn controller for the summon's turn, and a command that returns no attack
+rule is a named setup failure rather than twelve unchanged retries. The same
+scenario family is divided by a required allowlisted `reviewPhase`: the RTWP
+foundation phase owns routes, art, crowding and RTWP control, while the
+turn-based control phase owns its profile and rider/lifetime matrix. This keeps
+each fresh transaction within the finite 900-second boundary without weakening
+any mechanical postcondition. The runtime preflight suite passed all 557 safety
+checks, including both allowed phases and rejected empty, broad, save-bearing
+and non-exiting requests. Production compiled in 28.1 s and the named Sprint
+22/native-profile/Sprint 21 dependency filter passed 39/39 selected tests out
+of 2,581 registered in 3.2 s. A changed coherent candidate and both affected
+native phases remain required.

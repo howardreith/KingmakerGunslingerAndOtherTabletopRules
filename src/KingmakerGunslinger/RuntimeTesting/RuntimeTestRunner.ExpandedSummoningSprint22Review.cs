@@ -429,42 +429,78 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool originalMode=Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool originalPause=Game.Instance.IsPaused;
+            string reviewPhase=RuntimeTestRequestParser.Sprint22ReviewPhase(
+                _request);
+            if(reviewPhase==null)
+                throw new InvalidOperationException(
+                    "Sprint 22 native review phase was not validated.");
+            bool foundation=reviewPhase=="rtwp-foundation";
+            bool[] combatModes=foundation ? new[] { false } :
+                new[] { true };
             try
             {
+                Sprint22Check("review-phase-"+reviewPhase,true,
+                    new JObject { ["unit"]="ankylosaurus",
+                        ["event"]="bounded-native-review-selection",
+                        ["owner"]=_request.RunId,
+                        ["reviewPhase"]=reviewPhase,
+                        ["combatModes"]=new JArray(combatModes),
+                        ["foundation"]=foundation },
+                    "The exact allowlisted bounded review phase is recorded.");
                 Game.Instance.IsPaused=true;
-                Sprint22PlayerRoutes(fixture);
-                foreach (var family in new[] { SummonFamily.Monster,SummonFamily.NaturesAlly })
-                    foreach (var route in ExpandedSummoningCatalog.GenerateVariants(family).Where(value=>value.Creature.Key=="ankylosaurus"))
-                    {
-                        UnitEntityData[] units=CastExpandedSummoningVariant(fixture.Blueprints,fixture.Caster,route,null,fixture.Evidence);
-                        fixture.Created.AddRange(units);
-                        int low=route.Multiplicity==SummonMultiplicity.One ? 1 : route.Multiplicity==SummonMultiplicity.OneD3 ? 1 : 2;
-                        int high=route.Multiplicity==SummonMultiplicity.One ? 1 : route.Multiplicity==SummonMultiplicity.OneD3 ? 3 : 5;
-                        Sprint22Check("route-"+route.StableKey,units.Length>=low && units.Length<=high &&
-                            units.All(value=>value.Blueprint.AssetGuid=="10c80d5cfa594332bd3e5127799e426f"),new JObject {
-                                ["unit"]="ankylosaurus",["event"]="registered-ability-execution",["route"]=route.StableKey,
-                                ["execution"]=_expandedSummoningLastAbilityExecution,["quantity"]=units.Length,
-                                ["units"]=new JArray(units.Select(Sprint22UnitReadback)) },"Existing route produces only its unchanged unit identity and legal quantity.");
-                        DisposeExpandedSummoningUnits(fixture.Created,units);
-                        for (int frame=0;frame<8;frame++) yield return 0;
-                    }
+                if(foundation)
+                {
+                    Sprint22PlayerRoutes(fixture);
+                    foreach (var family in new[] { SummonFamily.Monster,SummonFamily.NaturesAlly })
+                        foreach (var route in ExpandedSummoningCatalog.GenerateVariants(family).Where(value=>value.Creature.Key=="ankylosaurus"))
+                        {
+                            UnitEntityData[] units=CastExpandedSummoningVariant(fixture.Blueprints,fixture.Caster,route,null,fixture.Evidence);
+                            fixture.Created.AddRange(units);
+                            int low=route.Multiplicity==SummonMultiplicity.One ? 1 : route.Multiplicity==SummonMultiplicity.OneD3 ? 1 : 2;
+                            int high=route.Multiplicity==SummonMultiplicity.One ? 1 : route.Multiplicity==SummonMultiplicity.OneD3 ? 3 : 5;
+                            Sprint22Check("route-"+route.StableKey,units.Length>=low && units.Length<=high &&
+                                units.All(value=>value.Blueprint.AssetGuid=="10c80d5cfa594332bd3e5127799e426f"),new JObject {
+                                    ["unit"]="ankylosaurus",["event"]="registered-ability-execution",["route"]=route.StableKey,
+                                    ["execution"]=_expandedSummoningLastAbilityExecution,["quantity"]=units.Length,
+                                    ["units"]=new JArray(units.Select(Sprint22UnitReadback)) },"Existing route produces only its unchanged unit identity and legal quantity.");
+                            DisposeExpandedSummoningUnits(fixture.Created,units);
+                            for (int frame=0;frame<8;frame++) yield return 0;
+                        }
+                }
                 CreateExpandedSummoningCorrectionHostile(fixture);
-                foreach(int frame in Sprint22VisualLifecycle(fixture)) yield return frame;
-                // The disposable fixture can inherit the owner's persisted
-                // turn-based preference.  Crowd movement and native summon
-                // timers need an explicitly activated, unpaused RTWP clock.
-                Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;
-                Game.Instance.TurnBasedCombatController.Activate();
-                Game.Instance.IsPaused=false;
-                for(int frame=0;frame<8;frame++) yield return 0;
-                foreach(int frame in Sprint22CrowdNavigation(fixture)) yield return frame;
-                foreach (bool turnBased in new[] { false,true })
+                if(foundation)
+                {
+                    foreach(int frame in Sprint22VisualLifecycle(fixture)) yield return frame;
+                    // The disposable fixture can inherit the owner's persisted
+                    // turn-based preference. Crowd movement and native summon
+                    // timers need an explicitly activated, unpaused RTWP clock.
+                    Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;
+                    Game.Instance.TurnBasedCombatController.Activate();
+                    Game.Instance.IsPaused=false;
+                    for(int frame=0;frame<8;frame++) yield return 0;
+                    foreach(int frame in Sprint22CrowdNavigation(fixture)) yield return frame;
+                }
+                foreach (bool turnBased in combatModes)
                 {
                     Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=turnBased;
                     Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused=false;
                     var owner=CastExpandedSummoningOwnTier(fixture,"ankylosaurus");
                     SetExpandedSummoningBrainActive(owner,false);
                     for (int frame=0;frame<16;frame++) yield return 0;
+                    if(turnBased)
+                    {
+                        JObject combat=Sprint22EnterTurnBasedCombat(owner,
+                            fixture.Hostile);
+                        for(int frame=0;frame<8;frame++) yield return 0;
+                        combat["ownerInCombatAfterSettle"]=owner.IsInCombat;
+                        combat["targetInCombatAfterSettle"]=fixture.Hostile.IsInCombat;
+                        combat["turnBasedAfterSettle"]=CombatController
+                            .IsInTurnBasedCombat();
+                        Sprint22Check("turn-based-combat-entry",
+                            owner.IsInCombat && fixture.Hostile.IsInCombat &&
+                                CombatController.IsInTurnBasedCombat(),combat,
+                            "The request-owned summon and hostile enter the native turn order before command trials.");
+                    }
                     foreach (int frame in Sprint22SetPowerAttack(owner,false))
                         yield return frame;
                     Sprint22ReadProfile(fixture,owner,turnBased);
@@ -1075,6 +1111,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             return owned.Length;
         }
 
+        private static JObject Sprint22EnterTurnBasedCombat(
+            UnitEntityData owner, UnitEntityData target)
+        {
+            bool ownerBefore=owner.IsInCombat;
+            bool targetBefore=target.IsInCombat;
+            owner.Memory.Add(target);
+            target.Memory.Add(owner);
+            if(!Game.Instance.State.AwakeUnits.Contains(owner))
+                Game.Instance.State.AwakeUnits.Add(owner);
+            if(!Game.Instance.State.AwakeUnits.Contains(target))
+                Game.Instance.State.AwakeUnits.Add(target);
+            if(!owner.IsInCombat) owner.JoinCombat();
+            if(!target.IsInCombat) target.JoinCombat();
+            Game.Instance.Player.UpdateIsInCombat();
+            return new JObject { ["unit"]=owner.UniqueId,
+                ["target"]=target.UniqueId,
+                ["event"]="native-turn-order-entry",
+                ["owner"]=owner.Blueprint.AssetGuid,
+                ["ownerInCombatBefore"]=ownerBefore,
+                ["targetInCombatBefore"]=targetBefore,
+                ["ownerInCombatAfterJoin"]=owner.IsInCombat,
+                ["targetInCombatAfterJoin"]=target.IsInCombat,
+                ["turnBasedAfterJoin"]=CombatController
+                    .IsInTurnBasedCombat() };
+        }
+
         private IEnumerable<int> Sprint22RiderTrial(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,string name,bool turnBased)
         {
             var target=fixture.Hostile; var weapon=Sprint19Limbs(owner).Single();
@@ -1140,8 +1202,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     contactCommand=null;contactRule=null;contactFrame=null;
                     contactProbe=name=="ordinary-failure" ?
                         new Sprint22TailContactProbe(owner,target) : null;
-                    if (CombatController.IsInTurnBasedCombat())
+                    if (turnBased)
+                    {
+                        Sprint22EnterTurnBasedCombat(owner,target);
+                        for(int frame=0;frame<8;frame++) yield return 0;
                         foreach (int frame in Sprint18AdvanceRound(owner)) yield return frame;
+                    }
                     foreach (int frame in Sprint18RunFullAttack(fixture,owner,
                         result=>{ command=result;contactCommand=result; },null,
                         result=>
@@ -1192,6 +1258,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     effects=target.Descriptor.Buffs.RawFacts.OfType<Buff>()
                         .Where(value=>!beforeBuffs.Contains(value) &&
                             Sprint22OwnedControl(value)).ToArray();
+                    if(command==null || !command.IsFinished ||
+                        observer.Attacks.Count==0)
+                        throw new InvalidOperationException("unit="+
+                            owner.UniqueId+";predicate="+name+
+                            ";event=native-command-setup;owner="+
+                            owner.Blueprint.AssetGuid+";commandFinished="+
+                            (command!=null && command.IsFinished)+
+                            ";attackRules="+observer.Attacks.Count+
+                            ";ownerInCombat="+owner.IsInCombat+
+                            ";targetInCombat="+target.IsInCombat+
+                            ";turnBased="+CombatController
+                                .IsInTurnBasedCombat());
                     bool expectedHit=name!="miss";
                     satisfied=command!=null && command.IsFinished && roll!=null && roll.IsHit==expectedHit &&
                         roll.IsCriticalConfirmed==critical && (name!="unconfirmed-threat" || roll.IsCriticalRoll) &&
@@ -1398,17 +1476,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var sources=effects.Select(value=>value.Context?.MaybeCaster?.UniqueId).Distinct().ToArray();
                 var ends=effects.ToDictionary(value=>value,value=>value.EndTime);
                 bool finite=effects.All(value=>value.TimeLeft.TotalSeconds>0 && value.TimeLeft.TotalSeconds<=6.01);
+                string sourceId=owner.UniqueId;
+                string sourceBlueprint=owner.Blueprint.AssetGuid;
                 // The exact source dies after its strike. Already applied
                 // victim buffs retain their absolute native expiry times.
                 Rulebook.Trigger(new RuleDealDamage(target,owner,new DamageBundle(Sprint19Limbs(owner).Single(),Size.Huge,
                     new DirectDamage(new DiceFormula(0,DiceType.D6),owner.Descriptor.Stats.HitPoints.ModifiedValue+owner.Descriptor.Stats.Constitution.ModifiedValue+1))));
+                MethodInfo lifeTick=typeof(UnitLifeController).GetMethod(
+                    "TickOnUnit",BindingFlags.Instance|BindingFlags.Public|
+                        BindingFlags.NonPublic,null,
+                    new[] { typeof(UnitEntityData) },null);
+                if(lifeTick==null) throw new MissingMethodException(
+                    "Native UnitLifeController.TickOnUnit");
+                lifeTick.Invoke(new UnitLifeController(),new object[] { owner });
+                bool sourceDead=owner.Descriptor.State.IsDead;
                 Game.Instance.EntityDestroyer.Tick();
+                bool sourceDestroyed=owner.Destroyed;
                 bool preserved=effects.All(value=>target.Descriptor.Buffs.RawFacts.Contains(value) && value.EndTime==ends[value]) &&
                     target.Descriptor.Buffs.RawFacts.Contains(unrelated);
-                Sprint22Check("multi-source-lifetime-"+(turnBased ? "turn-based":"rtwp"),owner.Descriptor.State.IsDead && effects.Length==3 && sources.Length==2 && finite && preserved,
-                    new JObject { ["unit"]=owner.UniqueId,["secondSource"]=second.UniqueId,["target"]=target.UniqueId,["event"]="distinct-hits-source-death",
-                        ["owner"]=owner.Blueprint.AssetGuid,["legalHits"]=legal,["payloadCount"]=effects.Length,["sources"]=new JArray(sources),
-                        ["preserved"]=preserved,["finite"]=finite,["sourceDead"]=owner.Descriptor.State.IsDead,["unrelatedPreserved"]=target.Descriptor.Buffs.RawFacts.Contains(unrelated),
+                Sprint22Check("multi-source-lifetime-"+(turnBased ? "turn-based":"rtwp"),sourceDead && effects.Length==3 && sources.Length==2 && finite && preserved,
+                    new JObject { ["unit"]=sourceId,["secondSource"]=second.UniqueId,["target"]=target.UniqueId,["event"]="distinct-hits-source-death",
+                        ["owner"]=sourceBlueprint,["legalHits"]=legal,["payloadCount"]=effects.Length,["sources"]=new JArray(sources),
+                        ["preserved"]=preserved,["finite"]=finite,["sourceDead"]=sourceDead,
+                        ["sourceDestroyedAfterDeferredTick"]=sourceDestroyed,
+                        ["unrelatedPreserved"]=target.Descriptor.Buffs.RawFacts.Contains(unrelated),
                         ["endTimes"]=new JArray(ends.Select(value=>new JObject { ["buff"]=value.Key.Blueprint.AssetGuid,
                             ["referenceId"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value.Key),["endSeconds"]=value.Value.TotalSeconds })) },
                     "Distinct legal hits have independent finite victim buffs; source death leaves both owners and unrelated conditions intact.");
