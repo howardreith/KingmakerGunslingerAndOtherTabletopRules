@@ -40,42 +40,28 @@ and both failed controls restored all968 intake entries/settings. The working
 fixture is valid and clean under its actual intake stack. This does not qualify
 reduced-profile mechanics or establish which absent dependency prevents loading.
 
-A save-free native first-level fixture now calls the unchanged full mechanical
-case with real scene/navigation services. It refuses any existing world/import,
-requires automatic exit and empty parameters, guards save/load/delete APIs,
-uses request-owned preset/anchor clones and native ResetToMainMenu teardown.
-Focused admission/compatibility checks passed6/6 with production compilation.
-The5429d7bd candidate passed2564/2564 and strict packaging, but its first native
-fixture failed before mechanics: direct LoadNewGame skipped BaseMechanics.
-Native empty-world restoration, zero save/load/delete attempts and exact intake
-restoration passed. The fixture now uses native MainMenu.EnterGame to load that
-scene before the new-world callback; every setup predicate is reported. The
-bounded correction compiled and passed7/7 focused checks. Freeze this correction,
-run one new Tranche candidate pipeline, then qualify standalone native mechanics
-before proceeding through the remaining profiles. Preserve the failed run at
-20261012T0210576819811Z and transaction compat-20261012T020925Z-cfb5c1cca905.
+Current scope is a save-free native first-level fixture for reduced-profile
+mechanics. The existing eleven-mod working save is clean, but cannot be hydrated
+under the reduced stacks. The fixture protects existing worlds/imports, requires
+automatic exit, guards every save/load/delete call, and calls the original
+mechanical case only after exact scene/area/party readiness. No product mechanics,
+assets or save-backed persistence code changed.
 
-Thea7e05944 candidate passed2565/2565 and packaging; its native setup again found
-an invalid base scene before mechanics. Exact transaction
-compat-20261012T022403Z-b66c7d12a91e restored968 entries, native empty world and
-save/load guard release passed with zero attempts. After these two failures the
-strategy is staged: wait for initialized native menu/input, native entry callback
-and a valid loaded BaseMechanics scene before LoadNewGame. Record loaded scene
-names and every world/party predicate. Readiness repair focus passed7/7; freeze
-and qualify its new artifact before another affected native observation.
+Four fixture trials failed before summon mechanics and restored their exact
+transactions and all968 intake manifest entries. The latest75eb64f7 candidate
+passed2566/2566 fresh unfiltered tests and strict packaging, but its native
+startup predicate passed and the area loader still invalidated its captured
+BaseMechanics scene. The startup race hypothesis is ruled out. A request-local
+read-only scene/caller observer now reports that transition and its hook removal;
+production compilation and nine focused checks passed. Next: freeze these bytes,
+run one candidate pipeline and one affected standalone reproduction, inspect the
+actual lifecycle cause, then continue remaining profile and module-state rows.
+All failed trials and candidate identities remain in the closure ledger.
 
-Remaining profile mechanics, module states and release gates stay pending until
-qualified. Retain audited unaffected prior native PASS with
-its original source/artifact identity; no blanket current-candidate claim.
-
-Current next action: qualify the native GameStarter completion predicate before
-another affected observation. The latest3da96044 pipeline passed2565/2565, but
-its base scene was valid before world load and then invalidated during native
-area loading. Native mechanics remain unexecuted. The startup-epilogue hypothesis
-is not yet proved. The bounded completion-predicate repair compiled and passed
-8/8 focused checks. All attempted transactions restored the actual968-entry
-intake; the working fixture remains clean. Exact trials, identities and the
-revised finite campaign plan are in the closure ledger and external evidence.
+The planning reporter mixed local and UTC DateTime values, overstating elapsed
+time by240 minutes. Its old/new verdicts are preserved. Raw supervised operation
+durations were unaffected. The corrected finite plan is in the ledger; remaining
+qualification and release remain selected by the owner mission.
 
 Native batches freeze their candidate worktree. Logs stay outside it; recovery
 uses the exact transaction receipt RunId. Restore the actual intake, verify the
