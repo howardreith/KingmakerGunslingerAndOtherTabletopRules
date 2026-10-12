@@ -525,8 +525,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SummonInjuryDiseasePolicy.GoblinDogFortitudeDc &&
                     naturalSource;
 
-                // (c) an attempt to grapple the Goblin Dog. AutoFailure keeps
-                // the printed "attempt" exact and leaves no hold behind. This
+                // (c) an attempt to grapple the Goblin Dog. AutoFailure skips
+                // native hold execution; the native Success getter still
+                // compares its untouched 0/0 fields. Observe the attempt and
+                // its exposure, rather than requiring that misleading getter
+                // to be false. This
                 // runs immediately after the natural attack: an earlier
                 // ordering put the manufactured-weapon control in between and
                 // the grapple then stopped exposing its initiator, so the
@@ -541,13 +544,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(grapple);
                 Buff grappleReaction =
                     hostile.Descriptor.Buffs.GetBuff(reaction);
-                bool grappleExposed = !grapple.Success &&
-                    grappleReaction != null &&
-                    grappleReaction.Context != null &&
-                    grappleReaction.Context.Params.DC ==
-                        SummonInjuryDiseasePolicy.GoblinDogFortitudeDc &&
-                    ReferenceEquals(grappleReaction.Context.MaybeCaster,
-                        goblinDog);
+                bool grappleExposed = ExpandedSummoningNativeProfilePolicy.ContactAttemptExposed(
+                    grapple.Type == CombatManeuver.Grapple, grapple.AutoFailure,
+                    grappleReaction != null && grappleReaction.Context != null,
+                    grappleReaction != null && grappleReaction.Context != null &&
+                        grappleReaction.Context.Params.DC == SummonInjuryDiseasePolicy.GoblinDogFortitudeDc,
+                    grappleReaction != null && grappleReaction.Context != null &&
+                        ReferenceEquals(grappleReaction.Context.MaybeCaster, goblinDog));
 
                 // Negative control: a manufactured weapon never exposes its
                 // wielder, so the trigger is the natural contact and not any
@@ -628,6 +631,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";exposed=" + naturalExposed + "];manufactured[" +
                     manufacturedDetail + ";safe=" + manufacturedSafe +
                     "];grappleAttempt[success=" + grapple.Success +
+                    ";autoFailure=" + grapple.AutoFailure + ";dc=" +
+                    (grappleReaction == null || grappleReaction.Context == null ? -1 : grappleReaction.Context.Params.DC) +
+                    ";source=" + (grappleReaction != null && grappleReaction.Context != null &&
+                        ReferenceEquals(grappleReaction.Context.MaybeCaster, goblinDog)) +
                     ";fort=" + hostileFortitudeAtGrapple + ";dogAvailable=" +
                     dogAvailableAtGrapple + ";buff=" +
                     (grappleReaction == null ? "none" : "applied") +
