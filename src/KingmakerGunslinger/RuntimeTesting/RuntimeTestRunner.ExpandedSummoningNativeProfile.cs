@@ -39,6 +39,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var game = Game.Instance;
                 if (_summoningProfileStage == 0)
                 {
+                    var startup = LoadingProcess.Instance;
+                    if (startup.IsLoadingInProcess || startup.IsLoadingScreenActive || startup.IsManualLoadingScreenActive) return;
                     _summoningProfileMenu = game.UI.MainMenu;
                     var entered = typeof(MainMenu).GetField("m_EnterGameStarted",
                         BindingFlags.Instance | BindingFlags.NonPublic);
@@ -77,7 +79,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfileEvidence["scope"] = "real native first-level scene/navigation; unchanged summon mechanics; no saved-world load/write";
                     _summoningProfileClock = Stopwatch.StartNew();
                     _summoningProfileStage = 1;
-                    game.LoadNewGame(_summoningProfilePreset, null);
+                    // Native EnterGame owns menu disposal and loads BaseMechanics
+                    // before invoking the new-world callback. Direct LoadNewGame
+                    // from MainMenu leaves the required scene invalid.
+                    _summoningProfileMenu.EnterGame(() => game.LoadNewGame(_summoningProfilePreset, null));
                     WriteLifecycleStage("summoning-profile-native-area-load-start");
                     return;
                 }
@@ -90,9 +95,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             throw new TimeoutException("Native first-level load did not complete.");
                         return;
                     }
-                    if (game.CurrentlyLoadedArea != _summoningProfileOriginal.Area ||
-                        game.State.LoadedAreaState == null || game.Player.MainCharacter.Value == null ||
-                        !game.Player.Party.Any(unit => unit != null && unit.HoldingState != null))
+                    var baseScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(SceneName.BaseMechanics);
+                    bool baseLoaded = baseScene.IsValid() && baseScene.isLoaded;
+                    bool exactArea = game.CurrentlyLoadedArea == _summoningProfileOriginal.Area;
+                    bool loadedState = game.State.LoadedAreaState != null;
+                    bool mainPresent = game.Player.MainCharacter.Value != null;
+                    bool partyState = game.Player.Party.Any(unit => unit != null && unit.HoldingState != null);
+                    _summoningProfileEvidence["baseMechanicsLoaded"] = baseLoaded;
+                    _summoningProfileEvidence["expectedArea"] = _summoningProfileOriginal.Area.AssetGuid;
+                    _summoningProfileEvidence["actualArea"] = game.CurrentlyLoadedArea?.AssetGuid;
+                    _summoningProfileEvidence["loadedAreaState"] = loadedState;
+                    _summoningProfileEvidence["mainCharacterUid"] = game.Player.MainCharacter.Value?.UniqueId;
+                    _summoningProfileEvidence["partyWithHoldingState"] = partyState;
+                    if (!ExpandedSummoningNativeProfilePolicy.ReadyForMechanics(baseLoaded, exactArea, loadedState, mainPresent, partyState))
                         throw new InvalidOperationException("Native first-level world/party was not registered exactly.");
                     _summoningProfileEvidence["nativeAreaLoaded"] = true;
                     _summoningProfileEvidence["nativeMode"] = game.CurrentMode.ToString();
