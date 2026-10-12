@@ -43,6 +43,31 @@ function Get-KmgExactRuntimeLaunchReceipt {
     return $receipt
 }
 
+function Get-KmgFlatGameSettingsValues {
+    param([Parameter(Mandatory=$true)]$Key)
+    if($Key.GetSubKeyNames().Count -ne 0) { throw 'Unexpected game-settings subkeys; no settings mutation is authorized.' }
+    return @($Key.GetValueNames() | Sort-Object | ForEach-Object {
+        [pscustomobject]@{name=$_;kind=$Key.GetValueKind($_).ToString();
+            value=$Key.GetValue($_,$null,[Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)}
+    })
+}
+
+function Restore-KmgFlatGameSettingsValues {
+    param([Parameter(Mandatory=$true)]$Key,
+        [Parameter(Mandatory=$true)][AllowEmptyCollection()][object[]]$Snapshot)
+    if($Key.GetSubKeyNames().Count -ne 0) { throw 'Unexpected game-settings subkeys; restoration requires review.' }
+    $originalNames=@($Snapshot | ForEach-Object {$_.name})
+    foreach($name in $Key.GetValueNames()) { if($originalNames -cnotcontains $name) { $Key.DeleteValue($name,$true) } }
+    foreach($item in $Snapshot) {
+        $kind=[Microsoft.Win32.RegistryValueKind][Enum]::Parse([Microsoft.Win32.RegistryValueKind],$item.kind)
+        $Key.SetValue($item.name,$item.value,$kind)
+    }
+    $after=@(Get-KmgFlatGameSettingsValues -Key $Key)
+    if(($Snapshot | ConvertTo-Json -Depth 12 -Compress) -cne ($after | ConvertTo-Json -Depth 12 -Compress)) {
+        throw 'Exact native game-settings restoration differs.'
+    }
+}
+
 function ConvertFrom-KmgSerpentineBodyReviewJson {
     param([Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json)
     # Windows PowerShell emits a parsed top-level JSON array as one pipeline

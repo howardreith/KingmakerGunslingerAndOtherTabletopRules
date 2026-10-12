@@ -38,10 +38,7 @@ $settingsKey='Software\Owlcat Games\Pathfinder Kingmaker'
 $gameSettings=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($settingsKey,$false)
 if($null -eq $gameSettings) { throw 'Current game settings key is missing; no transaction entered.' }
 try {
-    if($gameSettings.GetSubKeyNames().Count -ne 0) { throw 'Unexpected game-settings subkeys; no transaction entered.' }
-    $settingsSnapshot=@($gameSettings.GetValueNames() | Sort-Object | ForEach-Object {
-        [pscustomobject]@{name=$_;kind=$gameSettings.GetValueKind($_).ToString();value=$gameSettings.GetValue($_,$null,[Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)}
-    })
+    $settingsSnapshot=@(Get-KmgFlatGameSettingsValues -Key $gameSettings)
 } finally { $gameSettings.Dispose() }
 try {
     $transaction=Enter-KmgCompatibilityTransaction -Resolution $resolution -KingmakerInstallDir $install -StateRoot $stateRoot -RunId $runId
@@ -78,16 +75,7 @@ finally {
             $gameSettings=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($settingsKey,$true)
             try {
             if($null -eq $gameSettings) { throw 'Native game-settings key disappeared during the owned transaction.' }
-            if($gameSettings.GetSubKeyNames().Count -ne 0) { throw 'Unexpected game-settings subkeys; restoration requires review.' }
-            foreach($name in $gameSettings.GetValueNames()) { if($settingsSnapshot.name -cnotcontains $name) { $gameSettings.DeleteValue($name,$true) } }
-            foreach($item in $settingsSnapshot) {
-                $kind=[Microsoft.Win32.RegistryValueKind][Enum]::Parse([Microsoft.Win32.RegistryValueKind],$item.kind)
-                $gameSettings.SetValue($item.name,$item.value,$kind)
-            }
-            $settingsAfter=@($gameSettings.GetValueNames() | Sort-Object | ForEach-Object {
-                [pscustomobject]@{name=$_;kind=$gameSettings.GetValueKind($_).ToString();value=$gameSettings.GetValue($_,$null,[Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)}
-            })
-            if(($settingsSnapshot | ConvertTo-Json -Depth 12 -Compress) -cne ($settingsAfter | ConvertTo-Json -Depth 12 -Compress)) { throw 'Exact native game-settings restoration differs.' }
+            Restore-KmgFlatGameSettingsValues -Key $gameSettings -Snapshot $settingsSnapshot
             } finally { if($gameSettings){$gameSettings.Dispose()} }
         } -RestoreInstallation { Restore-KmgCompatibilityTransaction -RunId $runId -StateRoot $stateRoot }
         $settingsFailure=$boundary.settingsError

@@ -269,11 +269,23 @@ if ($profileCandidate.commit -cne $candidateGit.Commit -or
 $compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
+$sprint22Boundary=$Scenario -contains 'disposable-expanded-summoning-sprint22-native-review'
+if($sprint22Boundary) {
+    . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
+    $sprint22SettingsKey='Software\Owlcat Games\Pathfinder Kingmaker'
+    $nativeKey=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($sprint22SettingsKey,$false)
+    if($null -eq $nativeKey) { throw 'Current game settings are missing; no profile entered.' }
+    try { $sprint22SettingsSnapshot=@(Get-KmgFlatGameSettingsValues -Key $nativeKey) }
+    finally { $nativeKey.Dispose() }
+}
 try {
     & (Join-Path $PSScriptRoot 'Enter-KingmakerCompatibilityProfile.ps1') `
         -ProfileId $ProfileId -RunId $runId -KingmakerInstallDir $KingmakerInstallDir `
         -StateRoot $StateRoot -ReferenceRoot $ReferenceRoot -PackagePath $PackagePath -Confirm:$false | Out-Host
     $entered = $true
+    if($sprint22Boundary) {
+        Write-KmgCompatibilityJsonAtomic (Join-Path $StateRoot "$runId\game-settings-intake.json") $sprint22SettingsSnapshot
+    }
     $compatRuntimeLease = Open-KmgCompatibilityRuntimeLease $runId $StateRoot
     if ($CotwProgressionMode -cne 'unchanged') {
         if (-not (Test-Path -LiteralPath $cotwSettingsPath -PathType Leaf)) {
@@ -488,8 +500,24 @@ finally {
         while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
             [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 500 }
         try {
-            & (Join-Path $PSScriptRoot 'Restore-KingmakerCompatibilityProfile.ps1') `
-                -RunId $runId -StateRoot $StateRoot -Confirm:$false | Out-Host
+            if($sprint22Boundary) {
+                Assert-KmgNotRunning
+                $boundary=Invoke-KmgIndependentBoundaryRestoration -RestoreSettings {
+                    $nativeKey=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($sprint22SettingsKey,$true)
+                    if($null -eq $nativeKey) { throw 'Native settings key disappeared during the owned profile.' }
+                    try { Restore-KmgFlatGameSettingsValues -Key $nativeKey -Snapshot $sprint22SettingsSnapshot }
+                    finally { $nativeKey.Dispose() }
+                } -RestoreInstallation { Restore-KmgCompatibilityTransaction -RunId $runId -StateRoot $StateRoot }
+                Write-KmgCompatibilityJsonAtomic (Join-Path $StateRoot "$runId\game-settings-restoration.json") ([ordered]@{
+                    exact=($null -eq $boundary.settingsError);installationVerified=($null -ne $boundary.transaction -and $boundary.transaction.restorationVerified);
+                    settingsError=if($boundary.settingsError){$boundary.settingsError.Exception.Message}else{$null};
+                    installationError=if($boundary.installationError){$boundary.installationError.Exception.Message}else{$null}})
+                if($boundary.installationError) { throw $boundary.installationError }
+                if($boundary.settingsError) { throw $boundary.settingsError }
+            } else {
+                & (Join-Path $PSScriptRoot 'Restore-KingmakerCompatibilityProfile.ps1') `
+                    -RunId $runId -StateRoot $StateRoot -Confirm:$false | Out-Host
+            }
         }
         catch {
             if ($null -ne $primaryError) {
