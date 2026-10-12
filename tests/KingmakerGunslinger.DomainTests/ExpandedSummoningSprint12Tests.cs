@@ -198,7 +198,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Contains("int sprint12VisualChecked = 0;") &&
                 runtime.Contains("variant.Creature.Key == \"dire-rat\"") &&
                 runtime.Contains("sprint12VisualAttached == sprint12VisualChecked") &&
-                runtime.Contains("ungulateVisualChecked + sprint12VisualChecked"),
+                runtime.Contains("HandlesBlueprintName(expectedUnit.name)") &&
+                runtime.Contains("OneOutcomePerEligibleView("),
                 "The shared visual-patch lifecycle assertion must account for every hidden Sprint 12 coverage view.");
 
             string build = File.ReadAllText(Path.Combine(root, "scripts",

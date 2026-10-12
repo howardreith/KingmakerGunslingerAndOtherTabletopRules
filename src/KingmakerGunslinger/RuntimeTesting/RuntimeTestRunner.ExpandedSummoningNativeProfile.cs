@@ -106,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // after EnterGame has disposed the menu and resets the world.
                     _summoningProfileMenu.EnterGame(() => {
                         _summoningProfileEntryCallback = true;
+                        _summoningProfileEvidence["baseEntryCallback"] = true;
                         LoadingProcess.Instance.StartLoadingProcess(AwaitSummoningProfileBaseScene(), () => {
                             _summoningProfileStage = 1;
                             _summoningProfileClock.Restart();
