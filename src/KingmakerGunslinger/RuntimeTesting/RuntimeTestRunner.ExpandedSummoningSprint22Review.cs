@@ -4,10 +4,14 @@ using System.IO;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Controllers;
 using Kingmaker.Controllers.Combat;
+using Kingmaker.Controllers.Rest;
+using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
+using Kingmaker.GameModes;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -41,8 +45,149 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private ExpandedSummoningCorrectionFixture _sprint22Fixture;
         private IEnumerator<int> _sprint22Steps;
+        private Sprint22NativeClock _sprint22Clock;
         private readonly List<RuntimeTestAssertion> _sprint22Assertions = new List<RuntimeTestAssertion>();
         private readonly JArray _sprint22Rows = new JArray();
+
+        /// <summary>
+        /// The guarded native-profile load intentionally remains under the
+        /// main-menu Dialog mode, whose default gameplay controllers do not
+        /// advance commands or GameTime. Drive the same narrow native
+        /// controllers used by the repository's save-free combat fixtures,
+        /// through an ephemeral Default-mode token, and restore the loaded
+        /// fixture's clock exactly after its owned actors are gone.
+        /// </summary>
+        private sealed class Sprint22NativeClock : IDisposable
+        {
+            private const BindingFlags Members = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            private readonly ExpandedSummoningCorrectionFixture _fixture;
+            private readonly TimeSpan _timeBefore;
+            private readonly GameMode _tickMode = new GameMode(
+                GameModeType.Default, new IController[0]);
+            private readonly UnitActionController _actions =
+                new UnitActionController();
+            private readonly UnitCombatJoinController _join =
+                new UnitCombatJoinController();
+            private readonly UnitCombatPrepareController _prepare =
+                new UnitCombatPrepareController();
+            private readonly Sprint22Cooldowns _cooldowns =
+                new Sprint22Cooldowns();
+            private readonly Sprint22Buffs _buffs = new Sprint22Buffs();
+            private readonly MethodInfo _tickAction;
+            private bool _disposed;
+            internal int Pulses { get; private set; }
+            internal double AdvancedSeconds { get; private set; }
+            internal bool Restored { get; private set; }
+
+            internal Sprint22NativeClock(
+                ExpandedSummoningCorrectionFixture fixture)
+            {
+                _fixture = fixture ?? throw new ArgumentNullException("fixture");
+                _timeBefore = Game.Instance.Player.GameTime;
+                _tickAction = typeof(UnitActionController).GetMethod(
+                    "TickOnUnit", Members);
+                if (_tickAction == null)
+                    throw new MissingMethodException(
+                        "Sprint 22 native command tick surface");
+            }
+
+            internal void Pulse()
+            {
+                if (_disposed || Game.Instance.IsPaused) return;
+                FieldInfo field = typeof(Game).GetField("m_GameModes", Members);
+                var modes = field == null ? null : field.GetValue(
+                    Game.Instance) as Stack<GameMode>;
+                if (modes == null || modes.Contains(_tickMode))
+                    throw new InvalidOperationException(
+                        "Sprint 22 native Default-mode scope is ambiguous.");
+                GameMode[] before = modes.ToArray();
+                bool pause = Game.Instance.IsPaused;
+                TimeController time = Game.Instance.TimeController;
+                float delta = time.DeltaTime;
+                float gameDelta = time.GameDeltaTime;
+                double started = Game.Instance.Player.GameTime.TotalSeconds;
+                modes.Push(_tickMode);
+                try
+                {
+                    Game.Instance.IsPaused = false;
+                    time.SetDeltaTime(.25f);
+                    time.SetGameDeltaTime(.25f);
+                    new SleepingUnitsController().Tick();
+                    _join.Tick();
+                    _prepare.Tick();
+                    CombatController combat = Game.Instance
+                        .TurnBasedCombatController;
+                    if (CombatController.IsInTurnBasedCombat())
+                    {
+                        combat.Tick();
+                        combat.TickTime();
+                    }
+                    else
+                    {
+                        Game.Instance.Player.GameTime +=
+                            TimeSpan.FromSeconds(.25d);
+                    }
+                    foreach (UnitEntityData unit in OwnedUnits())
+                    {
+                        _cooldowns.TickExact(unit);
+                        _buffs.TickExact(unit);
+                        _tickAction.Invoke(_actions, new object[] { unit });
+                    }
+                    Pulses++;
+                    AdvancedSeconds += Game.Instance.Player.GameTime
+                        .TotalSeconds - started;
+                }
+                finally
+                {
+                    time.SetDeltaTime(delta);
+                    time.SetGameDeltaTime(gameDelta);
+                    Game.Instance.IsPaused = pause;
+                    if (modes.Count != before.Length + 1 ||
+                        !ReferenceEquals(modes.Peek(), _tickMode))
+                        throw new InvalidOperationException(
+                            "A native controller changed the Sprint 22 " +
+                            "request-local mode stack.");
+                    modes.Pop();
+                    if (!before.SequenceEqual(modes.ToArray()))
+                        throw new InvalidOperationException(
+                            "Sprint 22 native mode restoration was not exact.");
+                }
+            }
+
+            private IEnumerable<UnitEntityData> OwnedUnits()
+            {
+                return _fixture.Created.Concat(new[] {
+                    _fixture.Caster, _fixture.Hostile })
+                    .Where(value => value != null && !value.Destroyed &&
+                        value.IsInState && value.Descriptor != null)
+                    .Distinct().ToArray();
+            }
+
+            public void Dispose()
+            {
+                if (_disposed) return;
+                _disposed = true;
+                Game.Instance.Player.GameTime = _timeBefore;
+                Restored = Game.Instance.Player.GameTime == _timeBefore;
+                if (!Restored)
+                    throw new InvalidOperationException(
+                        "Sprint 22 request-local GameTime did not restore.");
+            }
+
+            private sealed class Sprint22Cooldowns :
+                UnitCombatCooldownsController
+            {
+                internal void TickExact(UnitEntityData unit)
+                { base.TickOnUnit(unit); }
+            }
+
+            private sealed class Sprint22Buffs : UnitBuffsController
+            {
+                internal void TickExact(UnitEntityData unit)
+                { base.TickOnUnit(unit); }
+            }
+        }
 
         private sealed class Sprint22DurationObserver : IGlobalRulebookHandler<RuleRollDice>, IGlobalRulebookHandler<RuleApplyBuff>
         {
@@ -58,16 +203,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal void Clear() { Rolls.Clear();Applications.Clear(); }
         }
 
-        /// <summary>Read-only sampling of the exact issued command while its
-        /// native tail clip is live. RuleAttackWithWeapon is delivered after
-        /// this donor has already cleared ActiveAnimation, so an event-time
-        /// pose is the rest pose rather than the rendered strike.</summary>
+        /// <summary>Read-only sampling of the exact issued command, its native
+        /// tail clip and the bounded hit-owned follow-through. The attack
+        /// command reports finished at its act cue, before the remaining
+        /// presentation has necessarily returned to rest.</summary>
         private sealed class Sprint22TailContactProbe
         {
             private readonly UnitEntityData _owner,_target;
             private readonly SkinnedMeshRenderer _skin,_victim;
             private readonly int[] _clubVertices;
-            internal int ActiveClipFrames,BestFrame=-1,RuleFrame=-1;
+            internal int ActiveClipFrames,ImpactPoseFrames,BestFrame=-1,
+                RuleFrame=-1;
             internal bool RuleHandleActed;
             internal float MinimumGap=float.MaxValue;
             internal Vector3 BestClub,BestTargetBounds;
@@ -103,10 +249,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject animation=Sprint17IssuedAnimationObservation(command);
                 string action=(string)animation["actionName"];
                 string clip=(string)animation["clip"]?["name"];
-                if(action!="HodagAnimset_Tail" || clip!="Hodag_attack_tail" ||
-                    (bool?)animation["handleStarted"]!=true ||
-                    (bool?)animation["activeAnimationPresent"]!=true) return false;
-                ActiveClipFrames++;
+                bool native=action=="HodagAnimset_Tail" &&
+                    clip=="Hodag_attack_tail" &&
+                    (bool?)animation["handleStarted"]==true &&
+                    (bool?)animation["activeAnimationPresent"]==true;
+                if(native) ActiveClipFrames++;
+                var impact=_owner.View==null ? null : _owner.View
+                    .GetComponent<AnkylosaurusTailImpactVisual>();
+                bool presenting=RuleFrame>=0 && impact!=null &&
+                    impact.IsPresenting && impact.LastTarget==_target.UniqueId;
+                if(presenting) ImpactPoseFrames++;
+                if(!native && !presenting) return false;
                 Vector3[] world=Sprint17OriginalWorldVertices(_skin);
                 Vector3 nearest=world[_clubVertices[0]];
                 float gap=Vector3.Distance(nearest,
@@ -142,6 +295,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["weapon"]=rule?.Weapon?.Blueprint?.AssetGuid,
                     ["hit"]=rule?.AttackRoll!=null && rule.AttackRoll.IsHit,
                     ["nativeTailAction"]=exact,["activeClipFrames"]=ActiveClipFrames,
+                    ["impactPoseFrames"]=ImpactPoseFrames,
                     ["commandFinished"]=command!=null && command.IsFinished,
                     ["handleActedAtRule"]=RuleHandleActed,
                     ["handleActedAfterCommand"]=handle!=null && handle.IsActed,
@@ -150,6 +304,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["clubPoints"]=_clubVertices.Length,
                     ["clubSurface"]=SurveyVector(BestClub),
                     ["targetBounds"]=SurveyVector(BestTargetBounds),
+                    ["impactGapBefore"]=_owner?.View==null ? -1f :
+                        _owner.View.GetComponent<AnkylosaurusTailImpactVisual>()
+                            ?.GapBefore ?? -1f,
+                    ["impactGapAfter"]=_owner?.View==null ? -1f :
+                        _owner.View.GetComponent<AnkylosaurusTailImpactVisual>()
+                            ?.GapAfter ?? -1f,
                     ["bestAnimation"]=BestAnimation,
                     ["ruleCorrelatedToCommand"]=RuleFrame>=0,
                     ["bestFrameMinusRuleFrame"]=BestFrame-RuleFrame,
@@ -178,8 +338,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_sprint22Steps == null)
                 {
                     _sprint22Fixture=BeginExpandedSummoningCorrectionFixture("KMG_Runtime_Sprint22_Caster");
+                    _sprint22Clock=new Sprint22NativeClock(_sprint22Fixture);
                     _sprint22Steps=ReviewSprint22(_sprint22Fixture).GetEnumerator();
                 }
+                _sprint22Clock.Pulse();
                 if (_sprint22Steps.MoveNext()) return false;
             }
             catch (Exception error)
@@ -199,11 +361,39 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void CleanupSprint22NativeReview()
         {
             if (_sprint22Steps != null) { _sprint22Steps.Dispose(); _sprint22Steps=null; }
-            if (_sprint22Fixture == null) return;
-            bool cleaned;
-            EndExpandedSummoningCorrectionFixture(_sprint22Fixture,out cleaned);
-            Sprint22Check("fixture-restored",cleaned,new JObject { ["unit"]="ankylosaurus",
-                ["owner"]=_sprint22Fixture.Caster?.UniqueId,["event"]="exact-owned-teardown" },"Exact original unit/party/area references restored.");
+            if (_sprint22Fixture == null)
+            {
+                if (_sprint22Clock != null)
+                { _sprint22Clock.Dispose();_sprint22Clock=null; }
+                return;
+            }
+            bool cleaned=false,clockRestored=false;
+            int pulses=_sprint22Clock==null ? 0 : _sprint22Clock.Pulses;
+            double advanced=_sprint22Clock==null ? 0d :
+                _sprint22Clock.AdvancedSeconds;
+            try
+            {
+                EndExpandedSummoningCorrectionFixture(_sprint22Fixture,
+                    out cleaned);
+            }
+            finally
+            {
+                if (_sprint22Clock != null)
+                {
+                    _sprint22Clock.Dispose();
+                    clockRestored=_sprint22Clock.Restored;
+                    _sprint22Clock=null;
+                }
+            }
+            Sprint22Check("fixture-restored",cleaned && clockRestored,
+                new JObject { ["unit"]="ankylosaurus",
+                    ["owner"]=_sprint22Fixture.Caster?.UniqueId,
+                    ["event"]="exact-owned-teardown-and-clock-restore",
+                    ["referencesRestored"]=cleaned,
+                    ["clockRestored"]=clockRestored,
+                    ["nativePulses"]=pulses,
+                    ["nativeAdvancedSeconds"]=advanced },
+                "Exact original unit/party/area references and request-local GameTime restored.");
             _sprint22Fixture=null;
         }
 
@@ -281,10 +471,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var toggle=unit.Descriptor.ActivatableAbilities.Enumerable.Single(value=>value.Blueprint.AssetGuid=="a7b339e4f6ff93a4697df5d7a87ff619");
             if(!enabled)
             {
-                if(toggle.IsRunning) toggle.Stop(true);
                 toggle.IsOn=false;
+                toggle.Stop(true);
             }
-            else toggle.IsOn=true;
+            else
+            {
+                toggle.IsOn=true;
+                if(!toggle.IsRunning) toggle.TryStart();
+            }
             for(int frame=0;frame<16;frame++)
             {
                 bool buff=toggle.Blueprint.Buff!=null &&
@@ -416,6 +610,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             for(int trial=1;trial<=12;trial++)
             {
                 units=CastExpandedSummoningVariant(fixture.Blueprints,fixture.Caster,route,null,fixture.Evidence);fixture.Created.AddRange(units);
+                foreach(var unit in units)
+                {
+                    SetExpandedSummoningBrainActive(unit,false);
+                    unit.View.SetVisible(true,true);
+                }
                 quantities.Add(units.Length);if(units.Length==5) break;
                 DisposeExpandedSummoningUnits(fixture.Created,units);for(int frame=0;frame<8;frame++) yield return 0;
             }
@@ -431,6 +630,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool crowdCombat=false,hostileJoined=false;
             try
             {
+                // The native profile is hosted under a Dialog-mode loader.
+                // Explicit native visibility gives these real spawned views
+                // the same live click/target surfaces they have in gameplay;
+                // it does not make an AI-controlled summon controllable.
+                for(int frame=0;frame<4;frame++) yield return 0;
                 var selectionRows=new JArray(units.Select(Sprint22SelectionSurface));
                 bool selection=selectionRows.All(value=>(bool)value["selectionSurface"]);
                 var anchor=AstarPath.active.GetNearest(fixture.Caster.Position);
@@ -488,7 +692,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.IsPaused=false;int frames=0;bool navigated=true;var rows=new JArray();
                 for(int i=0;i<units.Length;i++)
                 {
-                    var unit=units[i];SetExpandedSummoningBrainActive(unit,false);
+                    var unit=units[i];
                     var origin=i%2==0 ? chosenOrigin : chosenDestination;
                     var destination=i%2==0 ? chosenDestination : chosenOrigin;
                     PlaceExpandedSummoningUnit(unit,origin.clampedPosition);Vector3 movementOrigin=unit.Position;
@@ -747,6 +951,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["bones"]=new JArray(value.bones.Select(bone=>bone?.name)) })) },"One private original body on 24 exact actor-owned drivers with borrowed cached albedo.");
         }
 
+        private static bool Sprint22OwnedControl(Buff value)
+        {
+            string name=value?.Blueprint?.name;
+            return name=="KMG_Summoning_Special_Ankylosaurus_Dazed" ||
+                name=="KMG_Summoning_Special_Ankylosaurus_Stunned";
+        }
+
+        private static int Sprint22ClearOwnedControl(UnitEntityData target)
+        {
+            Buff[] owned=target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(Sprint22OwnedControl).ToArray();
+            foreach(Buff buff in owned) buff.Remove();
+            if(target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Any(Sprint22OwnedControl))
+                throw new InvalidOperationException(
+                    "The request-owned victim retained an exact Sprint 22 control buff.");
+            return owned.Length;
+        }
+
         private IEnumerable<int> Sprint22RiderTrial(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,string name,bool turnBased)
         {
             var target=fixture.Hostile; var weapon=Sprint19Limbs(owner).Single();
@@ -773,6 +996,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool success=name=="ordinary-success" || name=="critical-success";
             bool dazeImmune=name=="daze-immunity" || name=="daze-immunity-critical";
             bool stunImmune=name=="stun-immunity-ordinary" || name=="stun-immunity-critical";
+            int staleOwnedEffects=Sprint22ClearOwnedControl(target);
             var beforeBuffs=target.Descriptor.Buffs.RawFacts.OfType<Buff>().ToArray();
             BlueprintBuff shieldBlueprint=null; Buff shield=null;
             EventBus.Subscribe(observer);EventBus.Subscribe(saves);EventBus.Subscribe(duration);
@@ -800,7 +1024,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuleAttackRoll roll=null; UnitAttack command=null; Buff[] effects=new Buff[0];
                 for (int trial=1;trial<=bound;trial++)
                 {
-                    foreach (Buff buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value=>!beforeBuffs.Contains(value) && value!=shield).ToArray()) buff.Remove();
+                    foreach (Buff buff in target.Descriptor.Buffs.RawFacts
+                        .OfType<Buff>().Where(value=>!beforeBuffs.Contains(value) &&
+                            Sprint22OwnedControl(value)).ToArray()) buff.Remove();
                     target.Descriptor.Damage=fixture.HostileDamage;
                     target.Commands.InterruptAll(); owner.Commands.InterruptAll();
                     PlaceExpandedSummoningUnit(owner,fixture.Caster.Position+Vector3.right*4f);
@@ -826,12 +1052,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     "sprint22-tail-contact-"+
                                     (turnBased?"turn-based":"rtwp"));
                         })) yield return frame;
+                    // UnitAttack finishes at the native act cue while the
+                    // donor clip and the exact hit-owned club follow-through
+                    // continue. Observe that bounded presentation instead of
+                    // treating the rule frame's pre-impact pose as final.
+                    if(contactProbe!=null && command!=null)
+                        for(int post=0;post<30;post++)
+                        {
+                            bool touched=contactProbe.Sample(command);
+                            if(touched && contactFrame==null)
+                            {
+                                var skin=owner.View
+                                    .GetComponentsInChildren<
+                                        SkinnedMeshRenderer>(true)
+                                    .SingleOrDefault(value=>
+                                        value.sharedMesh!=null &&
+                                        value.sharedMesh.name==
+                                            "KMG_ankylosaurus_Original");
+                                if(skin!=null) contactFrame=
+                                    CaptureSprint17OriginalBodyFrame(owner,
+                                        skin,"sprint22-tail-contact-"+
+                                        (turnBased?"turn-based":"rtwp"));
+                            }
+                            var postImpact=owner.View
+                                .GetComponent<AnkylosaurusTailImpactVisual>();
+                            if(post>1 && (postImpact==null ||
+                                !postImpact.IsPresenting)) break;
+                            yield return 0;
+                        }
                     if(contactProbe!=null)
                         contacts.Add(contactProbe.Result(contactRule,
                             contactCommand,contactFrame));
                     roll=observer.Attacks.SingleOrDefault();
-                    effects=target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value=>value.Blueprint.name=="KMG_Summoning_Special_Ankylosaurus_Dazed" ||
-                        value.Blueprint.name=="KMG_Summoning_Special_Ankylosaurus_Stunned").ToArray();
+                    effects=target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                        .Where(value=>!beforeBuffs.Contains(value) &&
+                            Sprint22OwnedControl(value)).ToArray();
                     bool expectedHit=name!="miss";
                     satisfied=command!=null && command.IsFinished && roll!=null && roll.IsHit==expectedHit &&
                         roll.IsCriticalConfirmed==critical && (name!="unconfirmed-threat" || roll.IsCriticalRoll) &&
@@ -885,6 +1140,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint22Check("rider-"+name+"-"+(turnBased ? "turn-based":"rtwp"),exact,new JObject {
                     ["unit"]=owner.UniqueId,["target"]=target.UniqueId,["owner"]=owner.Blueprint.AssetGuid,["event"]=name,
                     ["mode"]=turnBased ? "turn-based":"rtwp",["trials"]=trials,["precondition"]=satisfied ? "SATISFIED":"UNSATISFIED",
+                    ["staleOwnedEffectsCleared"]=staleOwnedEffects,
                     ["dc"]=dc,["expectedCondition"]=expectedCondition,["condition"]=condition,["otherCondition"]=other,["effects"]=lifetimes,
                     ["dazeImmune"]=dazeImmune,["stunImmune"]=stunImmune,["contacts"]=contacts,
                     ["impactCues"]=impact?.Strikes,["impactTarget"]=impact?.LastTarget,
@@ -894,9 +1150,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (name=="ordinary-failure")
                     Sprint22Check("tail-contact-"+(turnBased ? "turn-based":"rtwp"),contacts.Count==1 &&
                         (bool?)contacts[0]["nativeTailAction"]==true &&
+                        (int?)contacts[0]["impactPoseFrames"]>0 &&
                         (double?)contacts[0]["minimumGapMeters"]<=.5,
                         new JObject { ["unit"]=owner.UniqueId,["target"]=target.UniqueId,["event"]="real-tail-strike-contact",
-                            ["owner"]=owner.Blueprint.AssetGuid,["contacts"]=contacts },"The exact issued native tail command resolves a real hit and puts terminal-club surface within 0.5 m of native target bounds while its clip is active.");
+                            ["owner"]=owner.Blueprint.AssetGuid,["contacts"]=contacts },"The exact issued native tail command resolves a real hit and its bounded hit-owned club follow-through puts terminal-club surface within 0.5 m of native target bounds.");
                 if (!satisfied) throw new InvalidOperationException("unit="+owner.UniqueId+";predicate="+name+";event=dice-preconditions;owner="+owner.Blueprint.AssetGuid);
                 if (!exact) throw new InvalidOperationException("unit="+owner.UniqueId+";predicate="+name+";event=postcondition;owner="+owner.Blueprint.AssetGuid);
                 if (name=="critical-failure")
@@ -927,7 +1184,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue=oldFort;
                 if (dazeImmune) target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Dazed);
                 if (stunImmune) target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Stunned);
-                foreach (Buff buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value=>!beforeBuffs.Contains(value)).ToArray()) buff.Remove();
+                foreach (Buff buff in target.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Where(value=>!beforeBuffs.Contains(value) &&
+                        Sprint22OwnedControl(value)).ToArray()) buff.Remove();
+                if(shield!=null && target.Descriptor.Buffs.RawFacts.Contains(shield))
+                    shield.Remove();
                 if (shieldBlueprint!=null) UnityEngine.Object.Destroy(shieldBlueprint);
                 DisposeExpandedSummoningUnits(fixture.Created,new[] {owner});
             }
@@ -936,6 +1197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Sprint22Lifetime(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,bool turnBased)
         {
             UnitEntityData target=fixture.Hostile;
+            Sprint22ClearOwnedControl(target);
             UnitEntityData second=CastExpandedSummoningOwnTier(fixture,"ankylosaurus");
             SetExpandedSummoningBrainActive(second,false);
             int oldFort=target.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue;
@@ -962,7 +1224,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int trial=1;trial<=12;trial++)
                     {
                         foreach (Buff buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value=>
-                            !original.Contains(value) && value!=unrelated).ToArray()) buff.Remove();
+                            !original.Contains(value) && value!=unrelated &&
+                            Sprint22OwnedControl(value)).ToArray()) buff.Remove();
                         target.Descriptor.Damage=fixture.HostileDamage;
                         allLegal=true;
                         foreach (UnitEntityData source in new[] {owner,owner,second})
@@ -993,7 +1256,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     second.Descriptor.Stats.AdditionalAttackBonus.BaseValue=attack2;
                 }
                 if (!allLegal) throw new InvalidOperationException("unit="+owner.UniqueId+";predicate=overlapping-lifetime-setup;event=native-strike-rule;owner="+owner.Blueprint.AssetGuid+";trials="+legal);
-                var effects=target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value=>value.Blueprint.name=="KMG_Summoning_Special_Ankylosaurus_Dazed").ToArray();
+                var effects=target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value=>!original.Contains(value) &&
+                        value.Blueprint.name==
+                            "KMG_Summoning_Special_Ankylosaurus_Dazed")
+                    .ToArray();
                 var sources=effects.Select(value=>value.Context?.MaybeCaster?.UniqueId).Distinct().ToArray();
                 var ends=effects.ToDictionary(value=>value,value=>value.EndTime);
                 bool finite=effects.All(value=>value.TimeLeft.TotalSeconds>0 && value.TimeLeft.TotalSeconds<=6.01);
@@ -1037,7 +1304,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 target.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue=oldFort;
-                foreach (Buff buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value=>!original.Contains(value)).ToArray()) buff.Remove();
+                foreach (Buff buff in target.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Where(value=>!original.Contains(value) &&
+                        (ReferenceEquals(value,unrelated) ||
+                            Sprint22OwnedControl(value))).ToArray()) buff.Remove();
                 DisposeExpandedSummoningUnits(fixture.Created,new[] {second});
             }
         }
