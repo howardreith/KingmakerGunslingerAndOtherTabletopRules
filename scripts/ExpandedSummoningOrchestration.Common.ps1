@@ -21,6 +21,28 @@ branch without a runtime lease, a deployment, or a launch.
 
 Set-StrictMode -Version Latest
 
+# The two owned boundaries must each get a restoration attempt. Callers first
+# establish that the native process is gone; this helper never bypasses that
+# guard or suppresses either failure.
+function Invoke-KmgIndependentBoundaryRestoration {
+    param([Parameter(Mandatory=$true)][scriptblock]$RestoreSettings,
+        [Parameter(Mandatory=$true)][scriptblock]$RestoreInstallation)
+    $settingsError=$null;$installationError=$null;$transaction=$null
+    try { & $RestoreSettings | Out-Null } catch { $settingsError=$_ }
+    try { $transaction=& $RestoreInstallation } catch { $installationError=$_ }
+    return [pscustomobject]@{settingsError=$settingsError;installationError=$installationError;transaction=$transaction}
+}
+
+function Get-KmgExactRuntimeLaunchReceipt {
+    param([Parameter(Mandatory=$true)][AllowEmptyCollection()][object[]]$Output)
+    $receipts=@($Output | Where-Object { $null -ne $_.PSObject.Properties['kind'] -and $_.kind -ceq 'KmgRuntimeLaunchReceipt' })
+    if($receipts.Count -ne 1) { throw 'Exact current-run launcher receipt is missing or duplicated.' }
+    $receipt=$receipts[0]
+    if([string]::IsNullOrWhiteSpace($receipt.runId) -or [string]::IsNullOrWhiteSpace($receipt.evidenceDirectory) -or
+        (Split-Path -Leaf $receipt.evidenceDirectory) -cne $receipt.runId) { throw 'Launcher receipt does not bind the exact RunId directory.' }
+    return $receipt
+}
+
 function ConvertFrom-KmgSerpentineBodyReviewJson {
     param([Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json)
     # Windows PowerShell emits a parsed top-level JSON array as one pipeline

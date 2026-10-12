@@ -95,6 +95,7 @@ param(
         'observe-expanded-summoning-variant-menu',
         'disposable-expanded-summoning',
         'disposable-expanded-summoning-native-profile',
+        'disposable-expanded-summoning-sprint22-native-review',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
         'summon-same-turn-multiple',
@@ -113,6 +114,7 @@ param(
     [string]$CotwProgressionMode = 'unchanged',
     [switch]$AllowDirtyGit,
     [switch]$ReuseInstalledArtifact,
+    [switch]$ExpandedSummoningDisabled,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
     [string]$ReferenceRoot = 'C:\Dev\KingmakerGunslingerLab\examples',
@@ -126,6 +128,12 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeHarness.Common.ps1')
+. (Join-Path (Split-Path $PSScriptRoot) 'ExpandedSummoningOrchestration.Common.ps1')
+if ($ExpandedSummoningDisabled -and
+    ($Scenario.Count -ne 1 -or $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
+        $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or $Parameters.persistenceScope -cne 'ankylosaurus')) {
+    throw 'Sprint 22 module OFF requires the exact Ankylosaurus working-save verify/cleanup request.'
+}
 if (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath)) {
     throw 'A profile transaction requires a fresh deployment record; an external -DeploymentManifestPath cannot survive restoration/profile changes.'
 }
@@ -336,6 +344,12 @@ try {
         $favoredSettingsStagedAfterSha = (Get-FileHash -LiteralPath `
             $favoredSettingsPath -Algorithm SHA256).Hash
     }
+    if ($ExpandedSummoningDisabled) {
+        $settingsPath = Join-Path $KingmakerInstallDir 'Mods\KingmakerGunslinger\FeatureModules.json'
+        $settingsBefore = [IO.File]::ReadAllBytes($settingsPath)
+        $settingsOff = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes -OriginalBytes $settingsBefore
+        [IO.File]::WriteAllBytes($settingsPath, $settingsOff)
+    }
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
@@ -417,17 +431,27 @@ try {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         $arguments.RuntimeLease = $compatRuntimeLease
-        & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments
-        $evidence = Get-ChildItem -LiteralPath 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' `
+        $exactSprint22=$name -ceq 'disposable-expanded-summoning-sprint22-native-review'
+        if($exactSprint22) {
+            . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
+            $arguments.PassThru=$true
+            $launchOutput=@(& (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments)
+            $launchReceipt=Get-KmgExactRuntimeLaunchReceipt -Output $launchOutput
+            $evidence=Get-Item -LiteralPath $launchReceipt.evidenceDirectory
+        } else {
+            & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments
+            $evidence = Get-ChildItem -LiteralPath 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' `
             -Directory | Where-Object { $_.LastWriteTimeUtc -ge $before.AddSeconds(-2) } |
             Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+        }
         if ($null -eq $evidence -or -not (Test-Path -LiteralPath `
             (Join-Path $evidence.FullName 'runtime-result.json') -PathType Leaf)) {
             throw "Runtime scenario result directory was not resolved: $name"
         }
         $result = Get-Content -LiteralPath (Join-Path $evidence.FullName `
             'runtime-result.json') -Raw | ConvertFrom-Json
-        if ($result.scenario -cne $name -or $result.status -cne 'PASS') {
+        if ($result.scenario -cne $name -or $result.status -cne 'PASS' -or
+            ($exactSprint22 -and $result.runId -cne $launchReceipt.runId)) {
             throw "Runtime scenario result mismatch: expected $name PASS."
         }
         $exitDeadline = [DateTime]::UtcNow.AddSeconds(60)

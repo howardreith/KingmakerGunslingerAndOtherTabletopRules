@@ -212,23 +212,33 @@
     },
     "candidateGate": "One Invoke-KmgGate.ps1 -Level Sprint after internal review",
     "focusedFilter": "expanded-summoning.sprint22; actual affected dependency filters",
-    "baselineEvidenceAuthority": "v0.0.150; named unchanged-dependency comparison per reused obligation"
+    "baselineEvidenceAuthority": "v0.0.150; named unchanged-dependency comparison per reused obligation",
+    "persistenceProfile": "Actual current eleven-mod installed stack through Invoke-Sprint22InstalledStack.ps1 and existing guarded compatibility transaction; exact native settings, full mod-tree and sound-bank restoration. Explicit tested PackagePath and fresh exact receipt. Reduced profiles never load the human-stack fixture."
   },
   "implementation": {
-    "profileAndCarrierAudit": "IN_PROGRESS",
-    "rider": "NOT_IMPLEMENTED",
-    "originalBody": "NOT_IMPLEMENTED",
-    "existingIcon": "Original armored dinosaur with terminal club inspected; retained pending body review"
+    "profileAndCarrierAudit": "IMPLEMENTED_NATIVE_UNQUALIFIED",
+    "rider": "IMPLEMENTED_NATIVE_UNQUALIFIED",
+    "originalBody": "DETERMINISTIC_EXPORT_OFFLINE_REVIEW_PASS_NATIVE_UNQUALIFIED",
+    "existingIcon": "Approved original armored dinosaur and terminal club retained; source/export bytes unchanged",
+    "tailImpact": "Native tail motion plus private terminal-club compression after one resolved strike; no rule generated",
+    "newPrivateIdentities": [
+      "ff4df4fe2f594c37ac1c836a519efddf",
+      "e8a085864606409ba25dc123f14d27a2",
+      "74654177d90e4d1d8fd512c0dabe3966",
+      "1f95fa2f17b042df8065a28823e09fc3"
+    ]
   },
   "freshEvidence": [],
   "reusedEvidence": [],
   "failures": [],
   "acceptedLimitations": [
-    "PASSIVE_CREATURE_SENSES_UNMODELED"
+    "PASSIVE_CREATURE_SENSES_UNMODELED",
+    "IMPROVED_OVERRUN_NO_CONCRETE_NATIVE_FEAT_OR_QUALIFIED_SUMMON_COMMAND_CONSUMER",
+    "HODAG_DONOR_NO_NATIVE_HIT_ANIMATION"
   ],
   "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
   "release": "NOT_QUALIFIED_NOT_RELEASED",
-  "nextAction": "Complete exact native contracts and reusable donor audit, implement scoped rider/profile/body and focused tests.",
+  "nextAction": "Freeze reviewed coherent candidate, run selected Sprint gate once, then targeted standalone/high-risk native and compatible eleven-mod working-save cold-load/module/absence transactions.",
   "researchBoundary": {
     "purpose": "Missing Hodag/monitor detached rig and native condition/feat facts",
     "scenario": "observe-expanded-summoning-sprint22-contracts",
@@ -242,6 +252,53 @@
       "productionCompileSeconds": 17.2,
       "testSeconds": 4.2
     },
-    "status": "READY_TO_PACKAGE"
+    "status": "PASS_RESTORED",
+    "runId": "20261012T1037196397495Z-observe-expanded-summoning-sprint22-contracts",
+    "nativeAssertions": 5,
+    "nativeWallSeconds": 67.608
+  },
+  "focusedValidation": {
+    "selected": 38,
+    "registered": 2580,
+    "failures": 0,
+    "productionSeconds": 21.7,
+    "domainSeconds": 1.4,
+    "filter": "expanded-summoning.sprint22,expanded-summoning.native-profile,expanded-summoning.sprint21",
+    "limits": "Final product/profile/rider/body/impact, native observers and cold-load module checks compiled; native qualification pending"
+  },
+  "offlineArt": {
+    "meshSha256": "f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626",
+    "albedoSha256": "f9255a77008fbcd001350bdeeb408af6f34adb39f55869337c224f8899602050",
+    "deterministicRepeat": "PASS",
+    "views": [
+      "clay-quarter",
+      "silhouette-side",
+      "textured-quarter",
+      "unlit-top",
+      "party-camera",
+      "tail-extreme",
+      "tail-contact"
+    ],
+    "review": "PASS_OFFLINE_ORIGINAL_GEOMETRY_ONLY",
+    "nativeContact": "NOT_PERFORMED",
+    "editableBlendSha256": "33c9c964704233dab4c4cd69fe9bcdfda30ea93500ee26627c327af86c94e2ef"
+  },
+  "installedStackSafety": {
+    "status": "PASS_OFFLINE",
+    "predicates": 24,
+    "command": "scripts/Test-Sprint22InstalledStack.ps1",
+    "nativeRestoration": "NOT_PERFORMED"
+  },
+  "candidateReview": {
+    "status": "REVIEWED_READY_FOR_SELECTED_GATE_NATIVE_UNQUALIFIED",
+    "master": "aa09788e6ba109c3db7bd0ec28f0138506f678a8",
+    "latestStable": "v0.0.150",
+    "protectedIdentityCount": 22,
+    "privateIdentityCount": 4,
+    "focusedExecuted": 38,
+    "registered": 2580,
+    "sourceGate": "PASS",
+    "runtimePlanMinutes": 300,
+    "runtimePlan": "Standalone and highest-risk combined isolated unsaved native review, then current-compatible eleven-mod targeted enabled and disabled cold-load/cleanup/fresh absence. Each transaction snapshots/restores its own intake and has a fresh exact deployment/RunId receipt. Native changes require new affected evidence; no full-roster replay without a named invalidated dependency."
   }
 }
