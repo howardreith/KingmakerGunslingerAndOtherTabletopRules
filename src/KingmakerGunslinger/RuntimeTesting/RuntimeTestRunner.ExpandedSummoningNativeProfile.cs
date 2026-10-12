@@ -24,6 +24,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private BlueprintUnit _summoningProfileActor;
         private MainMenu _summoningProfileMenu;
         private bool _summoningProfileMenuDetached;
+        private bool _summoningProfileEntryCallback;
         private RuntimeTestResult _summoningProfileResult;
         private string _summoningProfileFailure;
         private readonly JObject _summoningProfileEvidence = new JObject();
@@ -42,6 +43,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var startup = LoadingProcess.Instance;
                     if (startup.IsLoadingInProcess || startup.IsLoadingScreenActive || startup.IsManualLoadingScreenActive) return;
                     _summoningProfileMenu = game.UI.MainMenu;
+                    // GameStarter's initial scene/input coroutine is independent
+                    // of blueprint bootstrap and LoadingProcess readiness.
+                    if (_summoningProfileMenu == null || !_summoningProfileMenu.isActiveAndEnabled ||
+                        UnityEngine.EventSystems.EventSystem.current == null ||
+                        UnityEngine.EventSystems.EventSystem.current.currentInputModule == null) return;
                     var entered = typeof(MainMenu).GetField("m_EnterGameStarted",
                         BindingFlags.Instance | BindingFlags.NonPublic);
                     bool idleMenu = _summoningProfileMenu != null && entered != null &&
@@ -78,11 +84,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfileEvidence["entryGuid"] = _summoningProfileOriginal.EnterPoint.AssetGuid;
                     _summoningProfileEvidence["scope"] = "real native first-level scene/navigation; unchanged summon mechanics; no saved-world load/write";
                     _summoningProfileClock = Stopwatch.StartNew();
+                    _summoningProfileStage = 3;
+                    // EnterGame queues native scene loading. Its callback is not
+                    // proof that the additive base scene is registered yet.
+                    _summoningProfileMenu.EnterGame(() => _summoningProfileEntryCallback = true);
+                    WriteLifecycleStage("summoning-profile-native-base-entry-start");
+                    return;
+                }
+                if (_summoningProfileStage == 3)
+                {
+                    var baseScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(SceneName.BaseMechanics);
+                    bool registered = baseScene.IsValid() && baseScene.isLoaded;
+                    _summoningProfileEvidence["baseEntryCallback"] = _summoningProfileEntryCallback;
+                    _summoningProfileEvidence["baseRegisteredBeforeWorldLoad"] = registered;
+                    _summoningProfileEvidence["baseSceneName"] = SceneName.BaseMechanics;
+                    _summoningProfileEvidence["loadedScenes"] = new JArray(Enumerable.Range(0,
+                        UnityEngine.SceneManagement.SceneManager.sceneCount).Select(index => {
+                            var scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(index);
+                            return scene.name + ":" + scene.isLoaded;
+                        }));
+                    if (!_summoningProfileEntryCallback || !registered)
+                    {
+                        if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
+                            throw new TimeoutException("Native base scene did not register after menu entry.");
+                        return;
+                    }
                     _summoningProfileStage = 1;
-                    // Native EnterGame owns menu disposal and loads BaseMechanics
-                    // before invoking the new-world callback. Direct LoadNewGame
-                    // from MainMenu leaves the required scene invalid.
-                    _summoningProfileMenu.EnterGame(() => game.LoadNewGame(_summoningProfilePreset, null));
+                    _summoningProfileClock.Restart();
+                    game.LoadNewGame(_summoningProfilePreset, null);
                     WriteLifecycleStage("summoning-profile-native-area-load-start");
                     return;
                 }
@@ -132,7 +161,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 _summoningProfileFailure = (_summoningProfileFailure ?? "") + "\n" + exception;
-                if (_summoningProfileStage == 1)
+                if (_summoningProfileStage == 1 || _summoningProfileStage == 3)
                 {
                     try { BeginSummoningProfileReset(); return; }
                     catch (Exception resetFailure) { _summoningProfileFailure += "\nreset: " + resetFailure; }
