@@ -53,6 +53,10 @@ if ($activeVersion -eq '0.0.150') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint21150.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 21 corruption fixtures failed.' }
 }
+if ($activeVersion -eq '0.0.151') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint22151.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint 22 corruption fixtures failed.' }
+}
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
     -RepositoryRoot $repositoryRoot
@@ -82,12 +86,16 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # installation, so it belongs in the gate that runs every build rather
 # than in a script nobody executes.
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
+& (Join-Path $PSScriptRoot 'Test-ExplicitCandidateReuse.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint22Release.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint22InstalledStack.ps1')
 
 # Parse the guarded entry points with the installed PowerShell parser. This
 # catches encoding and parameter-block faults before deployment or save access.
 foreach ($scriptName in @('Invoke-KingmakerRuntimeTest.ps1',
     'RuntimeAutomation.Common.ps1', 'WeaponFindabilityPersistence.Common.ps1',
-    'Invoke-WeaponFindabilityPersistenceQualification.ps1')) {
+    'Invoke-WeaponFindabilityPersistenceQualification.ps1',
+    'Invoke-Sprint22InstalledStack.ps1', 'Invoke-ExpandedSummoningRuntimeScenario.ps1')) {
     $tokens = $null
     $parseErrors = $null
     [void][Management.Automation.Language.Parser]::ParseFile(

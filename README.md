@@ -1,7 +1,20 @@
 # Kingmaker Gunslinger
 
-Version **0.0.150-expanded-summoning-sprint21** completes the Expanded Summoning
-series with Giant Crab and the Bebelith overhaul. The roster exposes **1,092
+The **0.0.151-expanded-summoning-sprint22** development candidate implements
+Ankylosaurus Completion behind its ten existing routes: an original armored
+body and club tail, exact profile carriers, and the Fortitude daze/critical-stun
+rider. It is **not yet natively qualified or released**. The public stable
+release remains v0.0.150. See [Sprint 22 coverage](docs/SPRINT22-COVERAGE.md)
+and [candidate release notes](docs/RELEASE-NOTES-0.0.151.md).
+
+Sprint 21 completed the natural-creature rig tranche. The original charter
+continues through Sprint 41, with optional Sprints 42–45. Only Sprint 22 is
+selected; Sprint 23 has not started.
+
+### Released baseline
+
+Version **0.0.150-expanded-summoning-sprint21** completed its natural-creature
+rig tranche with Giant Crab and the Bebelith overhaul. The roster exposes **1,092
 choices: 1,063 generated roots and 29 native wrappers**. Released identities,
 Sprint18?20 mechanics/assets and the qualified firearm sound bank are retained.
 
@@ -18,7 +31,7 @@ See [release notes](docs/RELEASE-NOTES-0.0.150.md),
 [machine-readable ledger](planning/SPRINT21-CLOSURE-LEDGER.json).
 The ZIP is promoted from the exact tested candidate without rebuilding for a
 reporting or merge commit. Owner aesthetic review remains separate and nonblocking.
-No Sprint22 or other project is selected.
+That release's STOP record remains historical evidence.
 
 ### Earlier release history
 

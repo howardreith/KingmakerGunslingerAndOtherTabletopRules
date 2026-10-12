@@ -704,7 +704,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_manualElapsed == null &&
-                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile &&
+                    RuntimeTestScenarioCatalog.IsSummoningNativeProfile(_request.Scenario) &&
                     _summoningProfileStage > 0)
                 {
                     PollExpandedSummoningNativeProfile();
@@ -713,7 +713,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_manualElapsed == null &&
                     _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
                 {
-                    if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile)
+                    if (RuntimeTestScenarioCatalog.IsSummoningNativeProfile(_request.Scenario))
                     {
                         _summoningProfileFailure = "Native startup completion/input/menu readiness was not proven before the startup deadline.";
                         FinishSummoningNativeProfile(false);
@@ -885,7 +885,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (!_context.IsReady) return;
-                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile)
+                if (RuntimeTestScenarioCatalog.IsSummoningNativeProfile(_request.Scenario))
                 {
                     if (BlueprintBootstrap.IsInitialized && !ResourcesLibrary.Preloading)
                         PollExpandedSummoningNativeProfile();
@@ -36192,6 +36192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopSprint19Review(result);
             StopSprint20Review(result);
             StopSprint21Review(result);
+            if (_sprint22Steps != null || _sprint22Fixture != null) CleanupSprint22NativeReview();
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

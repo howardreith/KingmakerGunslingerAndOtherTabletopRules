@@ -228,6 +228,8 @@
     "status": "IN_PROGRESS_NOT_QUALIFIED",
     "record": "docs/SPRINT22-ANKYLOSAURUS-MISSION.md",
     "ledger": "planning/SPRINT22-ANKYLOSAURUS-LEDGER.json",
-    "sprint23Started": false
+    "sprint23Started": false,
+    "nextAction": "Freeze reviewed Sprint22 candidate; one Sprint gate and targeted native package reuse, then qualified PR39 merge/stable release and exact restoration. No Sprint23.",
+    "coverage": "docs/SPRINT22-COVERAGE.md"
   }
 }

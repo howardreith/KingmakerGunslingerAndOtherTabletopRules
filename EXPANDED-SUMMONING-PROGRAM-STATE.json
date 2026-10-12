@@ -724,7 +724,7 @@
       "runtimeAssertionsExecuted": 17,
       "unity2018AuthoringProbe": "Invalid license, self-exited before2026-10-06T16:00:26Z;no activation;not a phase-wide blocker",
       "newRuntimeTransaction": false,
-      "lastRuntimeResult": "Exact22be:17/17 bounded native view checks PASS; normal/fallback intact63\u201364 frames, exact scale/once/native teardown and donor seed isolation. Full movement/contact/crowd/persistence visual matrix still open."
+      "lastRuntimeResult": "Exact22be:17/17 bounded native view checks PASS; normal/fallback intact63–64 frames, exact scale/once/native teardown and donor seed isolation. Full movement/contact/crowd/persistence visual matrix still open."
     },
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged; exact two-snake production hook now implemented but not runtime qualified; Salamander remains research-only",
@@ -1216,7 +1216,7 @@
     "automaticContinuationAllowed": false
   },
   "mission": {
-    "name": "Expanded Summoning Phase 0 \u2014 Sprints 0-2",
+    "name": "Expanded Summoning Phase 0 — Sprints 0-2",
     "authorizedSprints": [
       0,
       1,
@@ -1699,6 +1699,8 @@
     "status": "IN_PROGRESS_NOT_QUALIFIED",
     "record": "docs/SPRINT22-ANKYLOSAURUS-MISSION.md",
     "ledger": "planning/SPRINT22-ANKYLOSAURUS-LEDGER.json",
-    "sprint23Started": false
+    "sprint23Started": false,
+    "nextAction": "Freeze reviewed Sprint22 candidate; one Sprint gate and targeted native package reuse, then qualified PR39 merge/stable release and exact restoration. No Sprint23.",
+    "coverage": "docs/SPRINT22-COVERAGE.md"
   }
 }

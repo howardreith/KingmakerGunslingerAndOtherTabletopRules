@@ -165,8 +165,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfileEvidence["partyCount"] = game.Player.Party.Count;
                     game.IsPaused = true;
                     WriteLifecycleStage("summoning-profile-native-mechanics-start");
+                    if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint22NativeReview)
+                    { _summoningProfileStage=4; return; }
                     _summoningProfileResult = RunDisposableExpandedSummoning(false);
                     BeginSummoningProfileReset();
+                    return;
+                }
+                if (_summoningProfileStage == 4)
+                {
+                    if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
+                        throw new TimeoutException("Sprint 22 native review exceeded its declared scenario deadline.");
+                    if (PollSprint22NativeReview()) BeginSummoningProfileReset();
                     return;
                 }
                 if (_summoningProfileStage == 2)
@@ -183,9 +192,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 _summoningProfileFailure = (_summoningProfileFailure ?? "") + "\n" + exception;
-                if (_summoningProfileStage == 1 || _summoningProfileStage == 3)
+                if (_summoningProfileStage == 1 || _summoningProfileStage == 3 || _summoningProfileStage == 4)
                 {
-                    try { BeginSummoningProfileReset(); return; }
+                    try { CleanupSprint22NativeReview(); BeginSummoningProfileReset(); return; }
                     catch (Exception resetFailure) { _summoningProfileFailure += "\nreset: " + resetFailure; }
                 }
                 FinishSummoningNativeProfile(false);
