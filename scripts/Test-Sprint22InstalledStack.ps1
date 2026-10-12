@@ -65,11 +65,15 @@ $boundary=Invoke-KmgIndependentBoundaryRestoration -RestoreSettings { throw 'set
 Assert-Stack ($boundary.settingsError.Exception.Message -ceq 'settings failed' -and $boundary.installationError.Exception.Message -ceq 'installation failed') 'both independent errors retained'
 $boundary=Invoke-KmgIndependentBoundaryRestoration -RestoreSettings {} -RestoreInstallation { [pscustomobject]@{restorationVerified=$true} }
 Assert-Stack ($null -eq $boundary.settingsError -and $null -eq $boundary.installationError -and $boundary.transaction.restorationVerified) 'successful restoration result retained'
-$exact=[pscustomobject]@{kind='KmgRuntimeLaunchReceipt';runId='exact-run';evidenceDirectory='C:/fixture-evidence/exact-run'}
+$receiptEvidence=Join-Path $fixture 'exact-receipt'
+[void][IO.Directory]::CreateDirectory($receiptEvidence)
+@{runId='exact-run';evidenceDirectory=$receiptEvidence}|ConvertTo-Json|Set-Content -LiteralPath (Join-Path $receiptEvidence 'runtime-request.json') -Encoding UTF8
+@{runId='exact-run';evidenceDirectory=$receiptEvidence}|ConvertTo-Json|Set-Content -LiteralPath (Join-Path $receiptEvidence 'runtime-result.json') -Encoding UTF8
+$exact=[pscustomobject]@{kind='KmgRuntimeLaunchReceipt';runId='exact-run';evidenceDirectory=$receiptEvidence}
 Assert-Stack ((Get-KmgExactRuntimeLaunchReceipt -Output @('unrelated output',$exact)).runId -ceq 'exact-run') 'exact receipt selected independently of timestamps'
 Assert-StackThrows { Get-KmgExactRuntimeLaunchReceipt -Output @() } 'missing or duplicated'
 Assert-StackThrows { Get-KmgExactRuntimeLaunchReceipt -Output @($exact,$exact) } 'missing or duplicated'
-Assert-StackThrows { Get-KmgExactRuntimeLaunchReceipt -Output @([pscustomobject]@{kind='KmgRuntimeLaunchReceipt';runId='wrong-run';evidenceDirectory='C:/fixture-evidence/exact-run'}) } 'exact RunId directory'
+Assert-StackThrows { Get-KmgExactRuntimeLaunchReceipt -Output @([pscustomobject]@{kind='KmgRuntimeLaunchReceipt';runId='wrong-run';evidenceDirectory=$receiptEvidence}) } 'exact RunId request and result'
 $fakeKey=[pscustomobject]@{values=@{binary=[byte[]]@(1,2,3);text='original';number=7};
     kinds=@{binary=[Microsoft.Win32.RegistryValueKind]::Binary;text=[Microsoft.Win32.RegistryValueKind]::String;number=[Microsoft.Win32.RegistryValueKind]::DWord};subkeys=[string[]]@()}
 $fakeKey | Add-Member ScriptMethod GetSubKeyNames { return ,$this.subkeys }
