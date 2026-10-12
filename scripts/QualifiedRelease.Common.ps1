@@ -86,3 +86,24 @@ function Assert-KmgClosureProofFiles {
         }
     }
 }
+
+function Get-KmgClosurePublicCoverage {
+    param([Parameter(Mandatory=$true)]$Ledger)
+    foreach ($row in $Ledger.coverage) {
+        if ($null -eq $row.PSObject.Properties['evidenceSources'] -or
+            @($row.evidenceSources).Count -eq 0) {
+            throw "Public release coverage lacks execution provenance: $($row.id)."
+        }
+        [ordered]@{
+            id=$row.id; result=$row.result; evidenceSources=@($row.evidenceSources)
+            reuseJustification=if ($row.PSObject.Properties['reuseJustification']) { $row.reuseJustification } else { $null }
+            proofs=@($row.proofs | ForEach-Object {
+                [ordered]@{
+                    evidenceFile=[IO.Path]::GetFileName($_.path)
+                    evidenceRun=[IO.Path]::GetFileName((Split-Path $_.path -Parent))
+                    sha256=$_.sha256
+                }
+            })
+        }
+    }
+}
