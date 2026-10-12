@@ -713,6 +713,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_manualElapsed == null &&
                     _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
                 {
+                    if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile)
+                    {
+                        _summoningProfileFailure = "Native startup completion/input/menu readiness was not proven before the startup deadline.";
+                        FinishSummoningNativeProfile(false);
+                        return;
+                    }
                     _trace.Record("startup-timeout",
                         "stage=" + _workingStartupStage + "; observer was not ready");
                     RuntimeTestResult startupTimeout = CreateResult("TIMEOUT", null, null);

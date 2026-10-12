@@ -68,6 +68,15 @@ Remaining profile mechanics, module states and release gates stay pending until
 qualified. Retain audited unaffected prior native PASS with
 its original source/artifact identity; no blanket current-candidate claim.
 
+Current next action: qualify the native GameStarter completion predicate before
+another affected observation. The latest3da96044 pipeline passed2565/2565, but
+its base scene was valid before world load and then invalidated during native
+area loading. Native mechanics remain unexecuted. The startup-epilogue hypothesis
+is not yet proved. The bounded completion-predicate repair compiled and passed
+8/8 focused checks. All attempted transactions restored the actual968-entry
+intake; the working fixture remains clean. Exact trials, identities and the
+revised finite campaign plan are in the closure ledger and external evidence.
+
 Native batches freeze their candidate worktree. Logs stay outside it; recovery
 uses the exact transaction receipt RunId. Restore the actual intake, verify the
 stable download/tag/Latest and preserve alpha before stopping.
