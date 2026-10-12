@@ -112,14 +112,15 @@ daze instances, and the contact observer ended at the attack rule frame before
 the remaining 1.3-second tail presentation. These failures are preserved as
 failures; none was retried unchanged.
 
-The revised strategy drives exact request-owned native command, cooldown, buff
+The revised strategy drove exact request-owned native command, cooldown, buff
 and turn controllers inside an ephemeral Default-mode token, restores the exact
 loaded GameTime, disables all five brains before their first frame, uses the
-native `IsOn=false; Stop(true)` / `IsOn=true; TryStart()` toggle contract, and
-counts only newly created private control instances. The contact observer now
+then-attempted `IsOn=false; Stop(true)` / `IsOn=true; TryStart()` sequence, and
+counts only newly created private control instances. The contact observer
 continues through the hit-owned follow-through described above. The affected
 focused gate compiled production and passed 39/39 selected tests out of 2,581
-registered (16.6 s compilation, 1.1 s selected-domain step).
+registered (16.6 s compilation, 1.1 s selected-domain step). Native evidence
+below supersedes the attempted toggle sequence rather than rewriting it as PASS.
 
 Candidate `87c4eecdbe909df193e02918b4ed84c06144f78d` passed its one
 substantive Sprint pipeline: 2,581/2,581 tests in 86.9 s and 206.8 s overall.
@@ -156,4 +157,47 @@ fixtures do. `UnitMoveTo` still owns pathing, speed, contacts and completion;
 the observer now records a disappeared view as a named member failure rather
 than throwing. Production compiled and the dependency filter again passed
 39/39 of 2,581 registered tests (16.8 s compilation, 1.1 s domain step).
-A changed coherent candidate and its affected native evidence remain required.
+
+Candidate `2590172a8b178a2cc10567b38514f2df560d2690` then passed its
+single Sprint pipeline: 2,581/2,581 tests in 91.7 s and 253.5 s overall. Its
+source-state hash was
+`ae52f4ce629cd79b43fe7f178682438c2282dc443899805fcded5d58240f0491`;
+ZIP `433c2b72da6bbbddd2004ea5bfaef4a1dd0ab4b55d267cc4b041768d0561431d`;
+DLL `1c20e2b2d13ab97cd4e3064f17a7ef9c42d455a12f9ec600a16d1d0899147a18`;
+MVID `67d3287c-f074-4b67-a4cd-30498a025768`.
+
+Standalone transaction `compat-20261012T170307Z-8951a4478839`, deployment
+receipt `20261012T1705010620496Z`, and RunId
+`20261012T1705022014649Z-8dacf319796740bb94c7e001e109eccb` ran for
+133.755 s and passed 38 of 42 assertions. The new native movement step passed
+both Huge crowd navigation/contact and five-summon natural expiry: both move
+commands finished, minimum centre distance was 0.623 m, and all five summons,
+views, holdings and private resources were gone after 12.17 s. All twenty
+routes, original body, donor isolation, fault recovery, teardown, ordinary
+rider/contact and fixture restoration also passed. The installation restored
+to the exact human 0.0.117 tree/settings with no game process or owned lock.
+
+The run retained two substantive failures. First, profile and Power Attack
+readback remained at +12/3d6+18 because `IsOn=false` entered native
+`Stop(false)` before the later forced stop. Native IL shows that this can set
+`IsRunning=false` while deliberately retaining the attack-activated buff, so
+the later `Stop(true)` returns before removing it. Second, the confirmed
+critical produced exactly one Fortitude save, one d4 result, one private
+Stunned instance and the correct 18-second duration, but the observer counted
+another target-initiated indefinite buff event as a second rider application
+without serializing its blueprint. One live private instance makes unrelated
+native traffic the leading explanation, but the retained record did not prove
+that identity. These are preserved as FAIL, and this is the second Power
+Attack failure, so another unchanged launch is prohibited.
+
+The next strategy calls native `Stop(true)` while the toggle still owns its
+running buff, then synchronizes `IsOn=false`; enabling uses the public toggle
+path and its native command. Printed and toggled attack readback now uses
+`RuleCalculateAttackBonusWithoutTarget`, avoiding a manufactured strike,
+victim contamination and global RNG seeding. The duration observer partitions
+events by the exact private Dazed/Stunned blueprint, requires its returned
+`AppliedBuff` to be the one live owned effect, and separately serializes every
+other target buff event with event, blueprint and applied-instance identity.
+Production compiled in 17.6 s and the named Sprint 22/identity/preserved-route
+filter selected and passed 12/12 tests out of 2,581 registered in 1.1 s. A
+changed coherent candidate and its affected native evidence remain required.
