@@ -605,7 +605,7 @@ namespace KingmakerGunslinger.DomainTests
                 "spearStaticOptions ==",
                 "(expectedElvenBranchedSpears ? 3 : 0)",
                 "spearFamiliarityCategories == 1",
-                "22 + installedSpearHonestGuyTables * 6 : 0",
+                "boundaryVendorRows.Where(row => row.Group == \"spear\").All(row => row.Passed)",
                 "(expectedElvenBranchedSpears ? 6 : 0)",
                 "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces" })
                 Assertions.True(runner.Contains(token),

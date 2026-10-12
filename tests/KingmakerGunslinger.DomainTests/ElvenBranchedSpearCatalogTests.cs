@@ -473,9 +473,14 @@ namespace KingmakerGunslinger.DomainTests
                 "invalidBtslSpearCounts == 0",
                 "btslEntries == 20",
                 "btslRetiredKitRows == 0",
-                "22 + installedSpearHonestGuyTables * 6" })
+                "boundaryVendorRows.Where(row => row.Group == \"spear\").All(row => row.Passed)" })
                 Assertions.True(runtime.Contains(token),
                     "BTSL runtime/module regression coverage lacks: " + token);
+            string boundary = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.BoundaryDiagnostics.cs"));
+            foreach (string token in new[] { "ElvenBranchedSpearCampaignBlueprints.VendorSpecs",
+                "spec.FoundationKinds", "spec.NamedKind", "CapitalVendorBlueprints.ReadCount(row)" })
+                Assertions.True(boundary.Contains(token), "Exact spear stock observer lacks: " + token);
         }
 
         internal static void OriginalAssetPipelineContractsAreExact()
