@@ -67,14 +67,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool idleMenu = _summoningProfileMenu != null && entered != null &&
                         !(bool)entered.GetValue(_summoningProfileMenu) &&
                         EventBus.IsGloballySubscribed(_summoningProfileMenu);
+                    string sprint22ReviewPhase = RuntimeTestRequestParser
+                        .Sprint22ReviewPhase(_request);
                     if (!ExpandedSummoningNativeProfilePolicy.CanStart(
-                        _request.ExitAfterCompletion, _request.Parameters?.Count ?? 0,
+                        _request.ExitAfterCompletion, _request.Scenario,
+                        _request.Parameters?.Count ?? 0, sprint22ReviewPhase,
                         game.State.Units.All.Count(), game.Player.PartyCharacters.Count,
                         game.Player.CrossSceneState.AllEntityData.Count,
                         game.CurrentlyLoadedArea != null || game.State.LoadedAreaState != null,
                         game.Player.MainCharacter.Value != null, Game.ImportSave != null,
                         Game.NewGameUnit != null, idleMenu))
-                        throw new InvalidOperationException("Native summoning profile requires a fresh empty main-menu process and no save/import parameters.");
+                        throw new InvalidOperationException("Native summoning profile requires a fresh empty main-menu process and only its exact save-free fixture parameters.");
                     _summoningProfileOriginal = BlueprintRoot.Instance.NewGamePreset;
                     if (_summoningProfileOriginal == null || _summoningProfileOriginal.Area == null ||
                         _summoningProfileOriginal.EnterPoint == null)
