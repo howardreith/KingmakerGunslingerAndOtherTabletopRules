@@ -110,6 +110,15 @@ complete reset before bounded setup retries. Raw evidence stays outside source.
 Reuse adequate v0.0.150 unaffected census/roster/module/profile evidence only with
 named unchanged-dependency comparisons; no whole-series replay by default.
 
+The missing Hodag/monitor rig facts require a separate research package before
+the body can be authored. This explicitly selected research boundary packages
+the read-only three-donor observer on unchanged v0.0.150 gameplay; it is not the
+overhaul candidate or release qualification. Its focused production compile and
+two selected tests passed in 21.4 seconds after correcting an atomic-writer API
+name. Build it once, then run the bounded save-free observer under a fresh
+standalone profile transaction (15-minute donor budget). Preserve its source,
+package and raw evidence separately from the later coherent Sprint candidate.
+
 Only after acceptance: refetch master/releases, integrate legitimate movement,
 select next unused patch (expected 0.0.151), exact-candidate promotion, normal
 merge/publication and download/hash/tag/Latest verification. Reporting commits

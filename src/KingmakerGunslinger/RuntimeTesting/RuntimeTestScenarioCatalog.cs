@@ -146,6 +146,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string ObserveExpandedSummoningSprint21Census =
             "observe-expanded-summoning-sprint21-census";
+        internal const string ObserveExpandedSummoningSprint22Contracts =
+            "observe-expanded-summoning-sprint22-contracts";
         /// <summary>
         /// The Sprint 18 hidden-candidate review: the two apes as they are in
         /// a running game. Live profiles, the printed routines, every rend
@@ -797,6 +799,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningPrimateCensus,
                 ObserveExpandedSummoningArachnidCensus,
                 ObserveExpandedSummoningSprint21Census,
+                ObserveExpandedSummoningSprint22Contracts,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,

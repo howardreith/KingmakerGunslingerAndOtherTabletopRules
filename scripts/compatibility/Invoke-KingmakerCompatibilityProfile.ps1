@@ -19,6 +19,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet(
         'mod-load-smoke',
+        'observe-expanded-summoning-sprint22-contracts',
         'observe-favored-class-host-state',
         'observe-optional-mod-compatibility',
         'observe-class-blueprint-contracts',
