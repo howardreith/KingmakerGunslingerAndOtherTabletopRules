@@ -213,13 +213,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal UnitEntityData Owner, Target;
             internal readonly List<RuleRollDice> Rolls=new List<RuleRollDice>();
             internal readonly List<RuleApplyBuff> Applications=new List<RuleApplyBuff>();
+            internal readonly List<RuleApplyBuff> OtherTargetApplications=new List<RuleApplyBuff>();
             public void OnEventAboutToTrigger(RuleRollDice evt) { }
             public void OnEventDidTrigger(RuleRollDice evt)
             { if (ReferenceEquals(evt.Initiator,Owner) && evt.DiceFormula.Rolls==1 && evt.DiceFormula.Dice==DiceType.D4) Rolls.Add(evt); }
             public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
             public void OnEventDidTrigger(RuleApplyBuff evt)
-            { if (ReferenceEquals(evt.Initiator,Target)) Applications.Add(evt); }
-            internal void Clear() { Rolls.Clear();Applications.Clear(); }
+            {
+                if (!ReferenceEquals(evt.Initiator,Target)) return;
+                if (Sprint22OwnedControl(evt.Blueprint)) Applications.Add(evt);
+                else OtherTargetApplications.Add(evt);
+            }
+            internal void Clear()
+            { Rolls.Clear();Applications.Clear();OtherTargetApplications.Clear(); }
         }
 
         /// <summary>Read-only sampling of the exact issued command, its native
@@ -493,15 +499,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var toggle=unit.Descriptor.ActivatableAbilities.Enumerable.Single(value=>value.Blueprint.AssetGuid=="a7b339e4f6ff93a4697df5d7a87ff619");
             if(!enabled)
             {
-                toggle.IsOn=false;
-                toggle.Stop(true);
+                // Kingmaker's IsOn=false path may first Stop(false), which
+                // deliberately leaves an attack-activated buff until its
+                // native round boundary.  A later Stop(true) then returns
+                // immediately because IsRunning is already false.  Use the
+                // engine's forced-stop entry while it still owns the applied
+                // buff, then synchronize the public toggle state.
+                if(toggle.IsRunning) toggle.Stop(true);
+                if(toggle.IsOn) toggle.IsOn=false;
             }
-            else
-            {
-                toggle.IsOn=true;
-                if(!toggle.IsRunning) toggle.TryStart();
-            }
-            for(int frame=0;frame<16;frame++)
+            else if(!toggle.IsOn) toggle.IsOn=true;
+            for(int frame=0;frame<32;frame++)
             {
                 bool buff=toggle.Blueprint.Buff!=null &&
                     unit.Descriptor.Buffs.GetBuff(toggle.Blueprint.Buff)!=null;
@@ -516,19 +524,40 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var toggle=unit.Descriptor.ActivatableAbilities.Enumerable.Single(value=>value.Blueprint.AssetGuid=="a7b339e4f6ff93a4697df5d7a87ff619");
             var weapon=Sprint19Limbs(unit).Single();
+            JObject initial=Sprint22PowerAttackState(unit,toggle);
             foreach(int frame in Sprint22SetPowerAttack(unit,false)) yield return frame;
-            int offAttack=ProbeEntityAttackBonus(unit,fixture.Hostile,weapon);
+            JObject offBeforeRules=Sprint22PowerAttackState(unit,toggle);
+            int offAttack=Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit,weapon,0)).Result;
             int offDamage=Rulebook.Trigger(new RuleCalculateWeaponStats(unit,weapon,null)).DamageDescription[0].CreateDamage().Bonus;
+            JObject offAfterRules=Sprint22PowerAttackState(unit,toggle);
             foreach(int frame in Sprint22SetPowerAttack(unit,true)) yield return frame;
-            int onAttack=ProbeEntityAttackBonus(unit,fixture.Hostile,weapon);
+            JObject onBeforeRules=Sprint22PowerAttackState(unit,toggle);
+            int onAttack=Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit,weapon,0)).Result;
             int onDamage=Rulebook.Trigger(new RuleCalculateWeaponStats(unit,weapon,null)).DamageDescription[0].CreateDamage().Bonus;
+            JObject onAfterRules=Sprint22PowerAttackState(unit,toggle);
             bool running=toggle.IsOn && toggle.IsRunning && toggle.Blueprint.Buff!=null &&
                 unit.Descriptor.Buffs.GetBuff(toggle.Blueprint.Buff)!=null;
             Sprint22Check("power-attack-"+(mode?"turn-based":"rtwp"),running && offAttack==14 && offDamage==12 && onAttack==12 && onDamage==18,
                 new JObject { ["unit"]=unit.UniqueId,["event"]="native-power-attack-toggle-and-weapon-rules",["owner"]=toggle.Blueprint.AssetGuid,
-                    ["offAttack"]=offAttack,["onAttack"]=onAttack,["offDamage"]=offDamage,["onDamage"]=onDamage,["running"]=running },
+                    ["initial"]=initial,["offBeforeRules"]=offBeforeRules,
+                    ["offAfterRules"]=offAfterRules,["onBeforeRules"]=onBeforeRules,
+                    ["onAfterRules"]=onAfterRules,["offAttack"]=offAttack,
+                    ["onAttack"]=onAttack,["offDamage"]=offDamage,
+                    ["onDamage"]=onDamage,["running"]=running },
                 "BAB7 native Power Attack contributes -2 attack and its native +4 plus the exact Anky-only +2 correction; printed line is measured after native stop with it off.");
             foreach(int frame in Sprint22SetPowerAttack(unit,false)) yield return frame;
+        }
+
+        private static JObject Sprint22PowerAttackState(UnitEntityData unit,
+            Kingmaker.UnitLogic.ActivatableAbilities.ActivatableAbility toggle)
+        {
+            Buff[] buffs=toggle.Blueprint.Buff==null ? new Buff[0] :
+                unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value=>
+                    ReferenceEquals(value.Blueprint,toggle.Blueprint.Buff)).ToArray();
+            return new JObject { ["isOn"]=toggle.IsOn,
+                ["isRunning"]=toggle.IsRunning,["buffCount"]=buffs.Length,
+                ["activeBuffCount"]=buffs.Count(value=>value.Active),
+                ["buff"]=toggle.Blueprint.Buff?.AssetGuid };
         }
 
         private void Sprint22NegativeWeapons(ExpandedSummoningCorrectionFixture fixture,UnitEntityData unit,bool mode)
@@ -932,11 +961,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             var trip=ProbeCombatManeuverDefenceParts(fixture.Hostile,owner,CombatManeuver.Trip);
             int cmb=Rulebook.Trigger(new RuleCalculateCMB(owner,fixture.Hostile,CombatManeuver.Trip)).Result;
             const string tailType="7243c9cd0f654b9080e7b31112ddbf18";
+            var powerAttack=owner.Descriptor.ActivatableAbilities.Enumerable
+                .Single(value=>value.Blueprint.AssetGuid==
+                    "a7b339e4f6ff93a4697df5d7a87ff619");
+            JObject powerAttackState=Sprint22PowerAttackState(owner,powerAttack);
+            bool powerAttackOff=!powerAttack.IsOn && !powerAttack.IsRunning &&
+                (int)powerAttackState["buffCount"]==0;
             var weaponRows=new JArray(); bool weaponExact=limbs.Length==1;
             foreach (var weapon in limbs)
             {
                 var rule=Rulebook.Trigger(new RuleCalculateWeaponStats(owner,weapon,null));
-                BaseDamage damage=rule.DamageDescription[0].CreateDamage(); int attack=ProbeEntityAttackBonus(owner,fixture.Hostile,weapon);
+                BaseDamage damage=rule.DamageDescription[0].CreateDamage();
+                int attack=Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(owner,weapon,0)).Result;
                 weaponExact &= damage.Dice.Rolls==3 && (int)damage.Dice.Dice==6 &&
                     damage.Bonus==12 && attack==14 && !rule.SecondaryWeapon &&
                     weapon.Blueprint.Type.AssetGuid==tailType;
@@ -954,7 +990,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stats.BaseAttackBonus.ModifiedValue==7 && cmb==17 &&
                 cmd.Result+deniedDex-difficulty==27 && trip.Result-cmd.Result==4 &&
                 facts.Count(value=>value=="KMG_Summoning_Natural_Ankylosaurus_Chassis")==1 &&
-                weaponExact;
+                powerAttackOff && weaponExact;
             profile &= stats.Reach.ModifiedValue==15 && stats.Speed.ModifiedValue==30 &&
                 Math.Abs(limbs.Single().AttackRange.Meters-4.572f)<.002f;
             Sprint22Check("profile-"+(turnBased ? "turn-based":"rtwp"),profile,new JObject {
@@ -966,7 +1002,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["bab"]=stats.BaseAttackBonus.ModifiedValue,["cmb"]=cmb,["cmd"]=cmd.Describe("CMD"),["tripCmd"]=trip.Describe("trip"),
                 ["reachFeet"]=stats.Reach.ModifiedValue,["speedFeet"]=stats.Speed.ModifiedValue,
                 ["weaponRangeMeters"]=limbs.Single().AttackRange.Meters,["nativeCorpulenceMeters"]=owner.Corpulence,
-                ["limbs"]=weaponRows,["carrierFacts"]=Sprint22UnitReadback(owner) },"Adult Huge profile and one 3d6+12 tail +14, native feats and exact Perception ranks.");
+                ["powerAttackState"]=powerAttackState,["limbs"]=weaponRows,
+                ["carrierFacts"]=Sprint22UnitReadback(owner) },"Adult Huge profile and one 3d6+12 tail +14, native feats and exact Perception ranks.");
             Mesh mesh;string[] names;Texture2D albedo;string status;
             bool loaded=PteranodonAssetRuntime.TryGetAnkylosaurusVisual(out mesh,out names,out albedo,out status);
             var skins=owner.View==null ? new SkinnedMeshRenderer[0] : owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true);
@@ -981,11 +1018,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["bones"]=new JArray(value.bones.Select(bone=>bone?.name)) })) },"One private original body on 24 exact actor-owned drivers with borrowed cached albedo.");
         }
 
-        private static bool Sprint22OwnedControl(Buff value)
+        private static bool Sprint22OwnedControl(BlueprintBuff value)
         {
-            string name=value?.Blueprint?.name;
+            string name=value?.name;
             return name=="KMG_Summoning_Special_Ankylosaurus_Dazed" ||
                 name=="KMG_Summoning_Special_Ankylosaurus_Stunned";
+        }
+
+        private static bool Sprint22OwnedControl(Buff value)
+        {
+            return Sprint22OwnedControl(value?.Blueprint);
+        }
+
+        private static JObject Sprint22BuffApplication(RuleApplyBuff value,
+            IEnumerable<Buff> ownedEffects)
+        {
+            Buff applied=value?.AppliedBuff;
+            return new JObject {
+                ["eventIdentity"]=value==null ? 0 :
+                    System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value),
+                ["blueprint"]=value?.Blueprint?.AssetGuid,
+                ["blueprintName"]=value?.Blueprint?.name,
+                ["durationSeconds"]=value?.Duration?.TotalSeconds,
+                ["canApply"]=value!=null && value.CanApply,
+                ["immune"]=value!=null && value.Immunity,
+                ["storyImmune"]=value!=null && value.StoryModeImmunity,
+                ["appliedBuffIdentity"]=applied==null ? 0 :
+                    System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(applied),
+                ["appliedBuffBlueprint"]=applied?.Blueprint?.AssetGuid,
+                ["appliedBuffActive"]=applied!=null && applied.Active,
+                ["appliedInstanceIsOwnedEffect"]=applied!=null &&
+                    ownedEffects.Contains(applied),
+                ["contextCaster"]=value?.Context?.MaybeCaster?.UniqueId };
         }
 
         private static int Sprint22ClearOwnedControl(UnitEntityData target)
@@ -1155,7 +1219,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int expectedApplications=name!="miss" && !success ? 1 : 0;
                 var impact=owner.View.GetComponent<AnkylosaurusTailImpactVisual>();
                 exact &= impact!=null && impact.Strikes==(name=="miss" ? 0 : 1);
-                exact &= duration.Applications.Count==expectedApplications && duration.Applications.All(value=>value.Duration.HasValue &&
+                exact &= duration.Applications.Count==expectedApplications && duration.Applications.All(value=>
+                    value.Duration.HasValue && value.AppliedBuff!=null && effects.Contains(value.AppliedBuff) &&
                     Math.Abs(value.Duration.Value.TotalSeconds-(critical ? duration.Rolls.Single().Result.Value*6d : 6d))<.001);
                 var lifetimes=new JArray(effects.Select(value=>new JObject { ["buff"]=value.Blueprint.AssetGuid,
                     ["source"]=value.Context?.MaybeCaster?.UniqueId,["endSeconds"]=value.EndTime.TotalSeconds,["leftSeconds"]=value.TimeLeft.TotalSeconds }));
@@ -1175,8 +1240,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["dazeImmune"]=dazeImmune,["stunImmune"]=stunImmune,["contacts"]=contacts,
                     ["impactCues"]=impact?.Strikes,["impactTarget"]=impact?.LastTarget,
                     ["nativeDurationD4"]=new JArray(duration.Rolls.Select(value=>value.Result.Value)),
-                    ["buffApplications"]=new JArray(duration.Applications.Select(value=>new JObject { ["durationSeconds"]=value.Duration?.TotalSeconds,
-                        ["canApply"]=value.CanApply,["immune"]=value.Immunity,["storyImmune"]=value.StoryModeImmunity })) },"One native Fortitude save per legal tail hit; mutually exclusive finite condition, separate native immunity and no positive-damage prerequisite.");
+                    ["buffApplications"]=new JArray(duration.Applications.Select(value=>Sprint22BuffApplication(value,effects))),
+                    ["otherTargetBuffApplications"]=new JArray(duration.OtherTargetApplications.Select(value=>Sprint22BuffApplication(value,effects))) },"One native Fortitude save per legal tail hit; mutually exclusive finite condition, separate native immunity and no positive-damage prerequisite.");
                 if (name=="ordinary-failure")
                     Sprint22Check("tail-contact-"+(turnBased ? "turn-based":"rtwp"),contacts.Count==1 &&
                         (bool?)contacts[0]["nativeTailAction"]==true &&
