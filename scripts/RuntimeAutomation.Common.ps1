@@ -2613,6 +2613,9 @@ function New-KmgRuntimeRequest {
         } elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
             [ordered]@{ expandedSummoning = [bool]$Parameters.expandedSummoning }
         } elseif ($Scenario -ceq
+            'disposable-expanded-summoning-sprint22-native-review') {
+            [ordered]@{ reviewPhase = [string]$Parameters.reviewPhase }
+        } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {
             [ordered]@{
                 assetConfiguration = [string]$Parameters.assetConfiguration
