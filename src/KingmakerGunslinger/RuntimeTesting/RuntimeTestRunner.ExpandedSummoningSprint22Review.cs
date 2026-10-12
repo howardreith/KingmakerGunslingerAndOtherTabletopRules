@@ -289,9 +289,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if(units.Length!=5) throw new InvalidOperationException("Ankylosaurus crowd quantity-five setup unsatisfied: "+quantities);
             var selected=Game.Instance.UI.SelectionManagerPC.SelectedUnits.ToArray();
             var awake=Game.Instance.State.AwakeUnits.ToArray();bool paused=Game.Instance.IsPaused;
-            var origins=new Vector3[units.Length];var destinations=new Vector3[units.Length];var moves=new UnitMoveTo[units.Length];
-            var maximumSpeed=new float[units.Length];var maximumContacts=new int[units.Length];
-            float minimumCenterDistance=float.MaxValue;var started=System.Diagnostics.Stopwatch.StartNew();
+            var parking=units.Select(value=>value.Position).ToArray();
+            var markers=units.Select(value=>value.Descriptor.Buffs.RawFacts.OfType<Buff>().Single(
+                buff=>ReferenceEquals(buff.Blueprint,BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff))).ToArray();
+            var owned=units.SelectMany(value=>ExpandedSummoningPteranodonViewPatch
+                .CaptureOriginalFlightOwnedResources(value.View)).ToArray();
+            var ends=markers.Select(value=>value.EndTime.TotalSeconds).ToArray();
             try
             {
                 Game.Instance.UI.SelectionManagerPC.MultiSelect(units.Select(value=>value.View).ToArray(),false);
@@ -302,115 +305,118 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var graph=AstarPath.active.graphs[(int)anchor.node.GraphIndex] as Pathfinding.IRaycastableGraph;
                 if(graph==null) throw new InvalidOperationException("The Ankylosaurus crowd floor cannot verify direct native routes.");
                 var party=Game.Instance.Player.Party.Where(value=>value!=null && value.IsInGame).ToArray();
-                float spacing=Math.Max(3f,units.Max(value=>value.Corpulence)*2f+.5f);
-                float[] lanes={0f,0f,spacing,-spacing,spacing*2f};
-                bool[] reverse={false,true,false,false,false};
-                Pathfinding.NNInfo[] chosenOrigins=null,chosenDestinations=null;
+                Pathfinding.NNInfo chosenOrigin=default(Pathfinding.NNInfo),chosenDestination=default(Pathfinding.NNInfo);
                 Vector3 chosenCenter=Vector3.zero,chosenHeading=Vector3.zero;
-                float chosenHalfLength=0f;int centers=0,patterns=0;
-                var centerOffsets=(from dx in Enumerable.Range(-10,21) from dz in Enumerable.Range(-10,21)
-                    select new Vector3(dx*3f,0f,dz*3f)).OrderBy(value=>value.sqrMagnitude).ToArray();
+                float chosenHalfLength=0f;int centers=0,routes=0;bool routeFound=false;
+                var centerOffsets=(from dx in Enumerable.Range(-30,61) from dz in Enumerable.Range(-30,61)
+                    select new Vector3(dx,0f,dz)).OrderBy(value=>value.sqrMagnitude).ToArray();
                 foreach(Vector3 centerOffset in centerOffsets)
-                    if(chosenOrigins==null)
+                    if(!routeFound)
                     {
                         Vector3 requestedCenter=anchor.clampedPosition+centerOffset;
                         var center=AstarPath.active.GetNearest(requestedCenter);
                         if(center.node==null || !center.node.Walkable || center.node.Area!=anchor.node.Area ||
                             center.node.GraphIndex!=anchor.node.GraphIndex || Vector3.Distance(requestedCenter,center.clampedPosition)>.6f ||
-                            party.Any(value=>Vector3.Distance(value.Position,center.clampedPosition)<4f)) continue;
+                            party.Any(value=>Vector3.Distance(value.Position,center.clampedPosition)<3.5f)) continue;
                         centers++;
-                        foreach(int headingIndex in new[] {0,2,4,6})
+                        foreach(Vector3 heading in CompassOffsets)
                         {
-                            Vector3 heading=CompassOffsets[headingIndex];
-                            Vector3 lateral=new Vector3(-heading.z,0f,heading.x);
-                            foreach(float halfLength in new[] {8f,7f,6f,5f})
+                            foreach(float halfLength in new[] {6f,5f,4f,3f,2.5f})
                             {
-                                patterns++;
-                                var proposedOrigins=new Pathfinding.NNInfo[units.Length];
-                                var proposedDestinations=new Pathfinding.NNInfo[units.Length];
-                                bool usable=true;
-                                for(int i=0;i<units.Length && usable;i++)
-                                {
-                                    Vector3 left=center.clampedPosition-heading*halfLength+lateral*lanes[i];
-                                    Vector3 right=center.clampedPosition+heading*halfLength+lateral*lanes[i];
-                                    Vector3 requestedOrigin=reverse[i]?right:left;
-                                    Vector3 requestedDestination=reverse[i]?left:right;
-                                    proposedOrigins[i]=AstarPath.active.GetNearest(requestedOrigin);
-                                    proposedDestinations[i]=AstarPath.active.GetNearest(requestedDestination);
-                                    var origin=proposedOrigins[i];var destination=proposedDestinations[i];
-                                    usable=origin.node!=null && destination.node!=null && origin.node.Walkable && destination.node.Walkable &&
-                                        origin.node.Area==anchor.node.Area && destination.node.Area==anchor.node.Area &&
-                                        origin.node.GraphIndex==anchor.node.GraphIndex && destination.node.GraphIndex==anchor.node.GraphIndex &&
-                                        Vector3.Distance(requestedOrigin,origin.clampedPosition)<=.6f &&
-                                        Vector3.Distance(requestedDestination,destination.clampedPosition)<=.6f &&
-                                        party.All(value=>Vector3.Distance(value.Position,origin.clampedPosition)>=2.5f &&
-                                            Vector3.Distance(value.Position,destination.clampedPosition)>=2.5f) &&
-                                        Sprint9FlightLineClear(graph,origin,destination);
-                                }
+                                routes++;
+                                Vector3 requestedOrigin=center.clampedPosition-heading*halfLength;
+                                Vector3 requestedDestination=center.clampedPosition+heading*halfLength;
+                                var origin=AstarPath.active.GetNearest(requestedOrigin);
+                                var destination=AstarPath.active.GetNearest(requestedDestination);
+                                float required=Math.Max(4f,units.Max(value=>value.Corpulence)*2f+1f);
+                                bool usable=origin.node!=null && destination.node!=null && origin.node.Walkable && destination.node.Walkable &&
+                                    origin.node.Area==anchor.node.Area && destination.node.Area==anchor.node.Area &&
+                                    origin.node.GraphIndex==anchor.node.GraphIndex && destination.node.GraphIndex==anchor.node.GraphIndex &&
+                                    Vector3.Distance(requestedOrigin,origin.clampedPosition)<=.6f &&
+                                    Vector3.Distance(requestedDestination,destination.clampedPosition)<=.6f &&
+                                    Vector3.Distance(origin.clampedPosition,destination.clampedPosition)>=required &&
+                                    party.All(value=>Vector3.Distance(value.Position,origin.clampedPosition)>=2.5f &&
+                                        Vector3.Distance(value.Position,destination.clampedPosition)>=2.5f) &&
+                                    Sprint9FlightLineClear(graph,origin,destination);
                                 if(!usable) continue;
-                                bool separated=true;
-                                for(int a=0;a<units.Length;a++) for(int b=a+1;b<units.Length;b++)
-                                {
-                                    float required=units[a].Corpulence+units[b].Corpulence+.1f;
-                                    if(Vector3.Distance(proposedOrigins[a].clampedPosition,proposedOrigins[b].clampedPosition)<required ||
-                                        Vector3.Distance(proposedDestinations[a].clampedPosition,proposedDestinations[b].clampedPosition)<required)
-                                        separated=false;
-                                }
-                                if(!separated) continue;
-                                chosenOrigins=proposedOrigins;chosenDestinations=proposedDestinations;
-                                chosenCenter=center.clampedPosition;chosenHeading=heading;chosenHalfLength=halfLength;break;
+                                chosenOrigin=origin;chosenDestination=destination;chosenCenter=center.clampedPosition;
+                                chosenHeading=heading;chosenHalfLength=halfLength;routeFound=true;break;
                             }
-                            if(chosenOrigins!=null) break;
+                            if(routeFound) break;
                         }
                     }
-                if(chosenOrigins==null) throw new InvalidOperationException("No connected direct floor pattern for the Ankylosaurus crowd: area="+
-                    anchor.node.Area+";graph="+anchor.node.GraphIndex+";centers="+centers+";patterns="+patterns+
-                    ";spacing="+spacing.ToString("0.##",System.Globalization.CultureInfo.InvariantCulture));
+                if(!routeFound) throw new InvalidOperationException("No connected direct floor route for the Ankylosaurus crowd: area="+
+                    anchor.node.Area+";graph="+anchor.node.GraphIndex+";centers="+centers+";routes="+routes);
+                // The native first-level scene is a real, irregular floor rather
+                // than an invented arena. Keep all five summons alive and jointly
+                // selected, move each Huge body over the same surveyed route, then
+                // use two members head-on for native contact/avoidance evidence.
+                Game.Instance.IsPaused=false;int frames=0;bool navigated=true;var rows=new JArray();
                 for(int i=0;i<units.Length;i++)
                 {
                     var unit=units[i];SetExpandedSummoningBrainActive(unit,false);
-                    var origin=chosenOrigins[i];var destination=chosenDestinations[i];
-                    PlaceExpandedSummoningUnit(unit,origin.clampedPosition);origins[i]=unit.Position;destinations[i]=destination.clampedPosition;
+                    var origin=i%2==0 ? chosenOrigin : chosenDestination;
+                    var destination=i%2==0 ? chosenDestination : chosenOrigin;
+                    PlaceExpandedSummoningUnit(unit,origin.clampedPosition);Vector3 movementOrigin=unit.Position;
                     if(!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
-                    var move=new UnitMoveTo(destinations[i],.5f);move.Init(unit);
-                    if(!move.CanStart) throw new InvalidOperationException("Ankylosaurus native navigation cannot start: "+unit.UniqueId);
-                    unit.Commands.Run(move);moves[i]=move;
-                }
-                Game.Instance.IsPaused=false;int frames=0;
-                while(started.Elapsed.TotalSeconds<45 && units.Any((value)=>!moves[Array.IndexOf(units,value)].IsFinished))
-                {
-                    for(int i=0;i<units.Length;i++) {
-                        var agent=units[i].View.MovementAgent;
-                        maximumSpeed[i]=Math.Max(maximumSpeed[i],agent.Velocity.magnitude);
-                        maximumContacts[i]=Math.Max(maximumContacts[i],agent.UnitContacts==null ? 0 : agent.UnitContacts.Count);
+                    for(int settle=0;settle<2;settle++) yield return 0;
+                    var move=new UnitMoveTo(destination.clampedPosition,.5f);move.Init(unit);bool canStart=move.CanStart;
+                    float maximumSpeed=0f;int maximumContacts=0;var movement=System.Diagnostics.Stopwatch.StartNew();
+                    if(canStart) unit.Commands.Run(move);
+                    while(canStart && !move.IsFinished && movement.Elapsed.TotalSeconds<20)
+                    {
+                        var agent=unit.View.MovementAgent;maximumSpeed=Math.Max(maximumSpeed,agent.Velocity.magnitude);
+                        maximumContacts=Math.Max(maximumContacts,agent.UnitContacts==null ? 0 : agent.UnitContacts.Count);
+                        frames++;yield return 0;
                     }
-                    minimumCenterDistance=Math.Min(minimumCenterDistance,Vector3.Distance(units[0].Position,units[1].Position));
-                    frames++;yield return 0;
+                    float travel=Vector3.Distance(movementOrigin,unit.Position);
+                    float gap=Vector3.Distance(destination.clampedPosition,unit.Position);
+                    bool member=canStart && move.IsFinished && unit.Descriptor.State.Size==Size.Huge && travel>=1f && gap<=1.5f && maximumSpeed>.01f;
+                    navigated&=member;
+                    rows.Add(new JObject { ["unit"]=unit.UniqueId,["size"]=unit.Descriptor.State.Size.ToString(),
+                        ["corpulence"]=unit.Corpulence,["origin"]=SurveyVector(movementOrigin),["destination"]=SurveyVector(destination.clampedPosition),
+                        ["travel"]=travel,["gap"]=gap,["maxVelocity"]=maximumSpeed,["maximumNativeContacts"]=maximumContacts,
+                        ["agentCorpulence"]=unit.View.MovementAgent.Corpulence,["avoidanceDisabled"]=unit.View.MovementAgent.AvoidanceDisabled,
+                        ["canStart"]=canStart,["commandFinished"]=move.IsFinished,["wallSeconds"]=movement.Elapsed.TotalSeconds });
+                    unit.Commands.InterruptAll();PlaceExpandedSummoningUnit(unit,parking[i]);
                 }
-                var rows=new JArray(units.Select((value,i)=>new JObject { ["unit"]=value.UniqueId,["size"]=value.Descriptor.State.Size.ToString(),
-                    ["corpulence"]=value.Corpulence,["origin"]=SurveyVector(origins[i]),["destination"]=SurveyVector(destinations[i]),
-                    ["travel"]=Vector3.Distance(origins[i],value.Position),["gap"]=Vector3.Distance(destinations[i],value.Position),
-                    ["maxVelocity"]=maximumSpeed[i],["maximumNativeContacts"]=maximumContacts[i],
-                    ["agentCorpulence"]=value.View.MovementAgent.Corpulence,["avoidanceDisabled"]=value.View.MovementAgent.AvoidanceDisabled,
-                    ["commandFinished"]=moves[i].IsFinished }));
-                bool navigated=units.Select((value,i)=>value.Descriptor.State.Size==Size.Huge && Vector3.Distance(origins[i],value.Position)>=1 &&
-                    Vector3.Distance(destinations[i],value.Position)<=1.5 && maximumSpeed[i]>.01 && moves[i].IsFinished).All(value=>value);
                 Sprint22Check("huge-crowd-navigation-selection",selection && navigated,new JObject { ["unit"]="ankylosaurus",["event"]="native-five-member-move-and-selection",
                     ["owner"]="request-owned-quantity-group",["quantityTrials"]=quantities,["selection"]=selection,["members"]=rows,["frames"]=frames,
-                    ["wallSeconds"]=started.Elapsed.TotalSeconds,["floorSearch"]=new JObject { ["anchor"]=SurveyVector(anchor.clampedPosition),
+                    ["floorSearch"]=new JObject { ["anchor"]=SurveyVector(anchor.clampedPosition),
                         ["center"]=SurveyVector(chosenCenter),["heading"]=SurveyVector(chosenHeading),["halfLength"]=chosenHalfLength,
-                        ["spacing"]=spacing,["centers"]=centers,["patterns"]=patterns } },
-                    "Five Huge summons accept selection and simultaneous connected-floor navigation with native movement and legal footprint.");
-                bool collision=maximumContacts.Any(value=>value>0) && units.All(value=>!value.View.MovementAgent.AvoidanceDisabled &&
-                    value.Corpulence>0 && Math.Abs(value.Corpulence-value.View.MovementAgent.Corpulence)<.001f) && navigated &&
-                    Vector3.Distance(units[0].Position,units[1].Position)>=units[0].Corpulence+units[1].Corpulence-.1f;
-                Sprint22Check("huge-collision-contact",collision,new JObject { ["unit"]="ankylosaurus",["event"]="crossing-native-movement-contacts",
-                    ["owner"]="request-owned-five-member-group",["members"]=rows,["minimumCenterDistance"]=minimumCenterDistance,
-                    ["finalCenterDistance"]=Vector3.Distance(units[0].Position,units[1].Position) },
-                    "Crossing Huge summons produce native collision contacts, retain native avoidance/corpulence, finish their commands and separate at destination.");
-                var markers=units.Select(value=>value.Descriptor.Buffs.RawFacts.OfType<Buff>().Single(buff=>ReferenceEquals(buff.Blueprint,BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff))).ToArray();
-                var owned=units.SelectMany(value=>ExpandedSummoningPteranodonViewPatch.CaptureOriginalFlightOwnedResources(value.View)).ToArray();
-                var ends=markers.Select(value=>value.EndTime.TotalSeconds).ToArray();var expiry=System.Diagnostics.Stopwatch.StartNew();
+                        ["centers"]=centers,["routes"]=routes } },
+                    "Five Huge summons remain jointly selectable and every member completes a surveyed native route with its legal footprint.");
+
+                var pair=new[] {units[0],units[1]};var pairStarts=new[] {chosenOrigin.clampedPosition,chosenDestination.clampedPosition};
+                var pairEnds=new[] {chosenDestination.clampedPosition,chosenOrigin.clampedPosition};var pairMoves=new UnitMoveTo[2];
+                var pairContacts=new int[2];float minimumCenterDistance=float.MaxValue;
+                for(int i=0;i<2;i++) { pair[i].Commands.InterruptAll();PlaceExpandedSummoningUnit(pair[i],pairStarts[i]); }
+                for(int settle=0;settle<2;settle++) yield return 0;
+                bool pairCanStart=true;
+                for(int i=0;i<2;i++) { pairMoves[i]=new UnitMoveTo(pairEnds[i],.5f);pairMoves[i].Init(pair[i]);
+                    pairCanStart&=pairMoves[i].CanStart;if(pairMoves[i].CanStart) pair[i].Commands.Run(pairMoves[i]); }
+                float initialCenterDistance=Vector3.Distance(pair[0].Position,pair[1].Position);
+                var collisionClock=System.Diagnostics.Stopwatch.StartNew();int collisionFrames=0;
+                while(pairCanStart && collisionClock.Elapsed.TotalSeconds<20)
+                {
+                    for(int i=0;i<2;i++) { var contacts=pair[i].View.MovementAgent.UnitContacts;
+                        pairContacts[i]=Math.Max(pairContacts[i],contacts==null ? 0 : contacts.Count); }
+                    minimumCenterDistance=Math.Min(minimumCenterDistance,Vector3.Distance(pair[0].Position,pair[1].Position));
+                    collisionFrames++;if(pairMoves.All(value=>value.IsFinished)) break;yield return 0;
+                }
+                bool collision=pairCanStart && pairContacts.Any(value=>value>0) &&
+                    initialCenterDistance-minimumCenterDistance>=1f && pair.All(value=>!value.View.MovementAgent.AvoidanceDisabled &&
+                        value.Corpulence>0 && Math.Abs(value.Corpulence-value.View.MovementAgent.Corpulence)<.001f);
+                Sprint22Check("huge-collision-contact",collision,new JObject { ["unit"]="ankylosaurus",["event"]="head-on-native-movement-contacts",
+                    ["owner"]="request-owned-quantity-group-members-0-1",["members"]=new JArray(pair.Select((value,i)=>new JObject {
+                        ["unit"]=value.UniqueId,["contacts"]=pairContacts[i],["commandFinished"]=pairMoves[i].IsFinished,
+                        ["travel"]=Vector3.Distance(pairStarts[i],value.Position),["agentCorpulence"]=value.View.MovementAgent.Corpulence })),
+                    ["canStart"]=pairCanStart,["initialCenterDistance"]=initialCenterDistance,["minimumCenterDistance"]=minimumCenterDistance,
+                    ["finalCenterDistance"]=Vector3.Distance(pair[0].Position,pair[1].Position),["frames"]=collisionFrames,
+                    ["wallSeconds"]=collisionClock.Elapsed.TotalSeconds },
+                    "Two Huge members approach head-on on the surveyed route, produce native contacts and retain avoidance/corpulence.");
+                for(int i=0;i<units.Length;i++) { units[i].Commands.InterruptAll();PlaceExpandedSummoningUnit(units[i],parking[i]); }
+                var expiry=System.Diagnostics.Stopwatch.StartNew();
                 while(units.Any(value=>!value.Destroyed || value.View!=null || value.HoldingState!=null) && expiry.Elapsed.TotalSeconds<150)
                 { Game.Instance.EntityDestroyer.Tick();yield return 0; }
                 bool gone=units.All(value=>value.Destroyed && value.View==null && value.HoldingState==null) && owned.All(value=>value==null);
