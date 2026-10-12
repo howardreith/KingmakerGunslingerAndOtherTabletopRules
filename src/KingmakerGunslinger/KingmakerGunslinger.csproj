@@ -1230,6 +1230,7 @@
     <Compile Include="RuntimeTesting\Sprint21DonorSurveyPolicy.cs" />
     <Compile Include="RuntimeTesting\Sprint22DonorSurveyPolicy.cs" />
     <Compile Include="Summoning\AnkylosaurusRulesPolicy.cs" />
+    <Compile Include="Summoning\AnkylosaurusTailImpactPolicy.cs" />
     <Compile Include="Summoning\AnkylosaurusTailControl.cs" />
     <Compile Include="Summoning\AnkylosaurusTailImpactVisual.cs" />
     <Compile Include="Summoning\AnkylosaurusVisualPolicy.cs" />

@@ -98,6 +98,32 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(events.TryMark(new object()), "Another source's strike remains legal.");
         }
 
+        internal static void TailImpactPoseIsFiniteAndBounded()
+        {
+            Assertions.Equal(0f,
+                AnkylosaurusTailImpactPolicy.Weight(-1f),
+                "No pre-strike pose.");
+            Assertions.True(Math.Abs(
+                AnkylosaurusTailImpactPolicy.Weight(
+                    AnkylosaurusTailImpactPolicy.DurationSeconds/2f)-1f)<
+                .0001f,"One finite midpoint peak.");
+            Assertions.Equal(0f,
+                AnkylosaurusTailImpactPolicy.Weight(
+                    AnkylosaurusTailImpactPolicy.DurationSeconds),
+                "Pose ends at its exact bound.");
+            Assertions.Equal(0f,
+                AnkylosaurusTailImpactPolicy.Approach(float.NaN,1f),
+                "Invalid geometry cannot move the skeleton.");
+            Assertions.Equal(0f,
+                AnkylosaurusTailImpactPolicy.Approach(
+                    AnkylosaurusTailImpactPolicy.SurfaceClearanceMeters,1f),
+                "Surface clearance is preserved.");
+            Assertions.Equal(
+                AnkylosaurusTailImpactPolicy.MaximumApproachMeters,
+                AnkylosaurusTailImpactPolicy.Approach(99f,1f),
+                "Cosmetic approach cannot exceed half the Huge footprint.");
+        }
+
         internal static void TheProfileHasItsPrintedCarriers()
         {
             var profile = ExpandedSummoningNaturalProfiles.All.Single(value => value.Key == AnkylosaurusRulesPolicy.Key);
