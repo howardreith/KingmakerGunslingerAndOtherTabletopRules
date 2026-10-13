@@ -815,6 +815,29 @@ foreach ($parameters in @(
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint22ReviewArgs `
     -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } `
     'sprint22-review-requires-automatic-exit'
+$sprint23ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint23-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+foreach ($phase in @('rtwp-foundation','turn-based-control')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
+        -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint23-review-allows-$phase"
+    $reviewRequest = New-KmgRuntimeRequest @sprint23ReviewArgs `
+        -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
+            'sprint23-review-request-test')
+    $reviewRoundTrip = $reviewRequest | ConvertTo-Json -Depth 8 |
+        ConvertFrom-Json
+    Assert-True (@($reviewRoundTrip.parameters.PSObject.Properties).Count -eq 1 -and
+        $reviewRoundTrip.parameters.reviewPhase -ceq $phase) `
+        "sprint23-review-serializes-$phase"
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
+    -ExitAfterCompletion $true } `
+    'sprint23-review-requires-bounded-phase'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
+    -ExitAfterCompletion $true -Parameters @{reviewPhase='all'} } `
+    'sprint23-review-rejects-broad-phase'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
+    -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } `
+    'sprint23-review-requires-automatic-exit'
 Assert-True (-not $expandedSummoningPlayerPath.RequiresManualInteraction) `
     'expanded-summoning-player-path-is-autonomous'
 Assert-True $expandedSummoningPlayerPath.RequiresSaveName `

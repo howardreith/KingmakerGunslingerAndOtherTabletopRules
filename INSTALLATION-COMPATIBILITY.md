@@ -1,21 +1,20 @@
 # Installation, updates, removal, and compatibility
 
-Candidate version: `0.0.151-expanded-summoning-sprint22` (UMM
-version `0.0.151`), intended archive
-`KingmakerGunslinger-0.0.151-expanded-summoning-sprint22.zip`.
-It is built on released v0.0.150 and overhauls only the already-published
-Ankylosaurus. Native qualification and publication remain pending. Install
+Candidate version: `0.0.152-expanded-summoning-sprint23` (UMM
+version `0.0.152`), intended archive
+`KingmakerGunslinger-0.0.152-expanded-summoning-sprint23.zip`.
+It is built on released v0.0.151 and adds only Triceratops and Stegosaurus.
+Native qualification and publication remain pending. Install
 only the final standalone UMM ZIP after publication, not source archives or
 private reference bundles.
-See [Sprint 22 coverage](docs/SPRINT22-COVERAGE.md) and
-[candidate scope and limitations](docs/RELEASE-NOTES-0.0.151.md).
+See [candidate scope and limitations](docs/RELEASE-NOTES-0.0.152.md).
 
 ### Latest public release
 
-UMM `0.0.150`, archive
-`KingmakerGunslinger-0.0.150-expanded-summoning-sprint21.zip`. Its qualified
-Giant Crab and Bebelith release and restoration are recorded in
-[the Sprint 21 closure](docs/SPRINT21-CLOSURE-2026-10-11.md).
+UMM `0.0.151`, archive
+`KingmakerGunslinger-0.0.151-expanded-summoning-sprint22.zip`. Its qualified
+Ankylosaurus release is recorded in
+[the v0.0.151 release notes](docs/RELEASE-NOTES-0.0.151.md).
 
 ### Previously released versions
 

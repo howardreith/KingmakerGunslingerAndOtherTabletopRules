@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.152-expanded-summoning-sprint23
+
+- Adds Triceratops to Summon Monster VI and Summon Nature's Ally VI and
+  Stegosaurus to Summon Nature's Ally VI, with twelve append-only roots and
+  the established higher-tier quantity bands.
+- Implements Triceratops gore, real-charge-only powerful charge and live d8
+  trample arithmetic, plus Stegosaurus's one-hit/one-native-trip tail contract.
+- Ships distinct project-owned bodies, paintings and icons while preserving
+  immutable native donor rigs and all released Ankylosaurus behavior.
+- Takes the registered catalog to 105 creatures and 1,075 generated placements;
+  publication exposes 1,104 choices including 29 retained native wrappers.
+
 ## 0.0.150-expanded-summoning-sprint21
 
 - Publishes the Expanded Summoning Sprint 21 Giant Crab. Seven new roots on
