@@ -333,6 +333,15 @@ namespace KingmakerGunslinger.DomainTests
                 "Released d6 trampler stays d6.");
             Assertions.Equal(13, woolly.TrampleBonusFor(99),
                 "Released trample ignores the new live input.");
+            string build = File.ReadAllText("scripts/Build-Local.ps1");
+            string packageValidator = File.ReadAllText(
+                "scripts/validate-package.ps1");
+            const string releasedAnkylosaurusMesh =
+                "f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626";
+            Assertions.True(build.Contains("ankylosaurusMeshText.Replace") &&
+                build.Contains(releasedAnkylosaurusMesh) &&
+                packageValidator.Contains(releasedAnkylosaurusMesh),
+                "A fresh checkout must reproduce the exact released Ankylosaurus mesh bytes.");
         }
 
         internal static void NativeReviewScenarioIsExactAndBounded()

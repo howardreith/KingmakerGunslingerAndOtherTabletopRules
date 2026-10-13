@@ -172,7 +172,19 @@ foreach ($kind in @('giant-crab','bebelith')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint21-arthropods\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint21-arthropods') -Force
 }
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\ankylosaurus') -Force | Out-Null
-Copy-Item -LiteralPath (Join-Path $root 'assets\ankylosaurus\ankylosaurus-mesh.json') -Destination (Join-Path $buildOutput 'assets\ankylosaurus') -Force
+$ankylosaurusMeshSource = Join-Path $root 'assets\ankylosaurus\ankylosaurus-mesh.json'
+$ankylosaurusMeshDestination = Join-Path $buildOutput 'assets\ankylosaurus\ankylosaurus-mesh.json'
+# The v0.0.151 artifact shipped this generated JSON with CRLF bytes before
+# Git's exact-path LF normalization took effect on a fresh checkout. Preserve
+# the released asset byte-for-byte without rewriting the repository source.
+$ankylosaurusMeshText = [IO.File]::ReadAllText($ankylosaurusMeshSource)
+$ankylosaurusMeshText = $ankylosaurusMeshText.Replace("`r`n", "`n").Replace("`n", "`r`n")
+$utf8NoBom = New-Object Text.UTF8Encoding($false)
+[IO.File]::WriteAllText($ankylosaurusMeshDestination, $ankylosaurusMeshText, $utf8NoBom)
+if ((Get-KmgSha256 -Path $ankylosaurusMeshDestination) -cne
+    'f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626') {
+    throw 'The released v0.0.151 Ankylosaurus mesh bytes were not reproduced.'
+}
 Copy-Item -LiteralPath (Join-Path $root 'assets\ankylosaurus\ankylosaurus-albedo.png') -Destination (Join-Path $buildOutput 'assets\ankylosaurus') -Force
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force | Out-Null
 foreach ($kind in @('triceratops','stegosaurus')) {
