@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -393,6 +394,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(policy.Contains("SaveFreeParameterScope") &&
                 policy.Contains("Sprint23NativeReview"),
                 "Sprint 23 inherits the qualified save-free parameter boundary.");
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                    .ArmoredDinosaurKeys.SequenceEqual(new[] {
+                        ArmoredDinosaurRulesPolicy.TriceratopsKey,
+                        ArmoredDinosaurRulesPolicy.StegosaurusKey }) &&
+                ExpandedSummoningRosterPersistencePolicy.ObserveLoad(
+                    RuntimeTestScenarioCatalog
+                        .WorkingSaveExpandedSummoningPrepare,
+                    ExpandedSummoningRosterPersistencePolicy
+                        .ArmoredDinosaursScope),
+                "The existing persistence trilogy has one exact two-creature Sprint 23 scope.");
         }
 
         internal static void NativeReviewObservesRealCommandsAndControls()

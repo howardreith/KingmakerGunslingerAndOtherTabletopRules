@@ -213,7 +213,15 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal const string Scope = "whole-roster";
         internal const string AnkylosaurusScope = "ankylosaurus";
+        internal const string ArmoredDinosaursScope = "armored-dinosaurs";
         internal const string ReceiptScope = "KMG_Release143_WholeRoster_v1";
+        internal static string[] ArmoredDinosaurKeys
+        {
+            get { return new[] {
+                ArmoredDinosaurRulesPolicy.TriceratopsKey,
+                ArmoredDinosaurRulesPolicy.StegosaurusKey };
+            }
+        }
         // Request-local fixture choices mirror the qualified player-path
         // harness. Select for EACH cast: a native Evil row must not leave the
         // following Celestial execution unavailable. Integers are the native
@@ -248,7 +256,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         internal static bool ObserveLoad(string scenario, string scope)
         {
-            return (scope == Scope || scope == AnkylosaurusScope) &&
+            return (scope == Scope || scope == AnkylosaurusScope ||
+                scope == ArmoredDinosaursScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);
