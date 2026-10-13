@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint23TriceratopsStegosaurus",
-  "status": "HIDDEN_CANDIDATE_QUALIFIED",
+  "status": "PUBLICATION_SOURCE_READY",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
   "pr": 41,
@@ -112,7 +112,8 @@
     "quantityBands": {"VI": "one", "VII": "1d3", "VIII": "1d4+1", "IX": "1d4+1"},
     "triceratops": {"summonMonsterRoots": 4, "summonNatureAllyRoots": 4, "monsterTemplateChildren": true},
     "stegosaurus": {"summonMonsterRoots": 0, "summonNatureAllyRoots": 4, "monsterTemplateChildren": false},
-    "suppressedUntilQualified": ["Triceratops", "Stegosaurus"]
+    "suppressedUntilQualified": [],
+    "publishedAfterQualification": ["Triceratops", "Stegosaurus"]
   },
   "reuseAudit": {
     "sprint22FinalEvidenceRead": true,
@@ -210,7 +211,15 @@
       "persistenceAssertions": 67,
       "failures": 0
     },
-    "publicArtifact": "PENDING",
+    "publicArtifact": {
+      "status": "SOURCE_READY",
+      "suppressionKeysRemoved": ["Triceratops", "Stegosaurus"],
+      "identityReallocation": false,
+      "focusedSprint23": {"executed": 12, "failures": 0, "productionCompilation": "PASS"},
+      "focusedExpandedSummoning": {"executed": 443, "failures": 0, "productionCompilation": "PASS"},
+      "sprintGate": "PENDING",
+      "nativePublicRouteGate": "PENDING"
+    },
     "release": "PENDING",
     "restoration": "PER_TRANSACTION_PASS_FINAL_POST_PUBLICATION_AUDIT_PENDING"
   },

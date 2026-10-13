@@ -2449,15 +2449,15 @@
     "newTemplateExecutionChildren": 8,
     "newPrivateIdentities": 11,
     "registeredLogicalPlacements": 1075,
-    "suppressedLogicalPlacements": 12,
-    "publishedLogicalPlacements": 1063,
+    "suppressedLogicalPlacements": 0,
+    "publishedLogicalPlacements": 1075,
     "retainedNativeWrappers": 29,
-    "visibleChoiceTotal": 1092,
+    "visibleChoiceTotal": 1104,
     "projectIconConcepts": 117,
     "originalBodyFiles": 4,
-    "nativeRuntimeQualified": false,
+    "nativeRuntimeQualified": true,
     "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
-    "compatibilityRuntimeQualificationPending": true,
+    "compatibilityRuntimeQualificationPending": false,
     "sprint24Started": false
   }
 }

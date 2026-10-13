@@ -181,7 +181,7 @@ namespace KingmakerGunslinger.DomainTests
                 "29 ideal-roster creatures remain unregistered after Sprint 23 registers Triceratops and Stegosaurus.");
             Assertions.Equal(116,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "116 creatures own or retain a unit identity; registration is distinct from publication for the two withheld Sprint 23 creatures.");
+                "116 creatures own or retain a unit identity after Sprint 23 publication.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
@@ -194,10 +194,10 @@ namespace KingmakerGunslinger.DomainTests
             // followed it under the accepted passive-sense limitation, and 999
             // with Sprint 15's Drone and Giant Stag Beetle; 1005 when Sprint 16
             // publishes Dire Crocodile's six preserved placements.
-            Assertions.Equal(1092,
+            Assertions.Equal(1104,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
-                "The plan must not change the shipped visible choice count.");
+                "The published roster must expose the complete Sprint 23 surface.");
         }
 
         /// <summary>
