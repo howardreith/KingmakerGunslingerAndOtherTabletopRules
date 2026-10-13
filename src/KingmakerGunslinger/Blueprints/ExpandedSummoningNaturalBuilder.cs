@@ -267,6 +267,8 @@ namespace KingmakerGunslinger.Blueprints
                 { "FireResistance10", "24700a71dd3dc844ea585345f6dd18f6" },
                 { "ElectricityImmunity", "cd1e5ab641a833c49994aff99db98952" },
                 { "WeaponFocusSlam", "8c046dfa8d1c64247af0e830a5909510" },
+                { "WeaponFocusTail", "77680337beba8df439793669390cd638" },
+                { "ImprovedBullRush", "b3614622866fe7046b787a548bbd7f59" },
                 { "AcidResistance20", "416386972c8de2e42953533c4946599a" },
                 { "Blindsight", "236ec7f226d3d784884f066aa4be1570" },
                 { "PurpleWormPoison", "728446b9d0bf47144a1b621169299c2a" },
@@ -494,6 +496,7 @@ namespace KingmakerGunslinger.Blueprints
                     BlueprintLibraryLookup.RequireExact<BlueprintUnitType>(
                         library, guid,
                         "exact native goblinoid unit type")).ToArray());
+            ConfigureAnkylosaurus(library, bySymbol);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -1472,7 +1475,8 @@ namespace KingmakerGunslinger.Blueprints
             bool exactRanks = PrimateRulesPolicy.IsPrimate(profile.Key) ||
                 profile.Key == GirallonRulesPolicy.GirallonKey ||
                 profile.Key == GiantScorpionRulesPolicy.GiantScorpionKey ||
-                profile.Key == GiantCrabRulesPolicy.GiantCrabKey;
+                profile.Key == GiantCrabRulesPolicy.GiantCrabKey ||
+                profile.Key == AnkylosaurusRulesPolicy.Key;
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
@@ -1496,7 +1500,13 @@ namespace KingmakerGunslinger.Blueprints
                     SummonExactSkillRanks>();
                 ranks.CreatureKey = profile.Key;
                 ranks.OwningBlueprint = unit;
-                if (profile.Key == GirallonRulesPolicy.GirallonKey)
+                if (profile.Key == AnkylosaurusRulesPolicy.Key)
+                {
+                    ranks.MobilityRanks = ranks.StealthRanks = 0;
+                    ranks.PerceptionRanks = AnkylosaurusRulesPolicy.PerceptionRanks;
+                    ranks.BaseHitPoints = AnkylosaurusRulesPolicy.BaseRacialHitPoints;
+                }
+                else if (profile.Key == GirallonRulesPolicy.GirallonKey)
                 {
                     ranks.MobilityRanks = 0;
                     ranks.PerceptionRanks = GirallonRulesPolicy.PerceptionRanks;
@@ -1596,6 +1606,8 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == GiantCrabRulesPolicy.GiantCrabKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     GiantCrabUnitTypeSymbol);
+            else if (profile.Key == AnkylosaurusRulesPolicy.Key)
+                unit.Type = Require<BlueprintUnitType>(bySymbol, AnkylosaurusRulesPolicy.UnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
@@ -1664,6 +1676,10 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "GiantCrabRacialSkills"
                     ? Require<BlueprintFeature>(bySymbol,
                         GiantCrabRacialSkillsSymbol)
+                    : fact == "AnkylosaurusStun"
+                    ? Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.StunFeatureSymbol)
+                    : fact == "AnkylosaurusChassis"
+                    ? Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.ChassisFeatureSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)

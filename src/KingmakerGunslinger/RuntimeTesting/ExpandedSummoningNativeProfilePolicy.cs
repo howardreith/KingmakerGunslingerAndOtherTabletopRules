@@ -39,12 +39,27 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return baseMechanicsLoaded && exactArea && loadedAreaState && mainCharacter && partyWithHoldingState;
         }
-        public static bool CanStart(bool automaticExit, int parameters,
+        public static bool SaveFreeParameterScope(string scenario,
+            int parameters, string sprint22ReviewPhase)
+        {
+            if (scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningNativeProfile)
+                return parameters == 0 && sprint22ReviewPhase == null;
+            if (scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint22NativeReview)
+                return parameters == 1 && (sprint22ReviewPhase ==
+                    "rtwp-foundation" || sprint22ReviewPhase ==
+                    "turn-based-control");
+            return false;
+        }
+        public static bool CanStart(bool automaticExit, string scenario,
+            int parameters, string sprint22ReviewPhase,
             int worldUnits, int partyCharacters, int crossSceneEntities,
             bool loadedArea, bool mainCharacter, bool importSave,
             bool pendingNewGameUnit, bool idleSubscribedMenu)
         {
-            return automaticExit && parameters == 0 && worldUnits == 0 &&
+            return automaticExit && SaveFreeParameterScope(scenario,
+                parameters, sprint22ReviewPhase) && worldUnits == 0 &&
                 partyCharacters == 0 && crossSceneEntities == 0 && !loadedArea &&
                 !mainCharacter && !importSave && !pendingNewGameUnit && idleSubscribedMenu;
         }

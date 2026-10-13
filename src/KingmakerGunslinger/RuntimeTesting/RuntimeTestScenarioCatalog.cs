@@ -146,6 +146,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string ObserveExpandedSummoningSprint21Census =
             "observe-expanded-summoning-sprint21-census";
+        internal const string ObserveExpandedSummoningSprint22Contracts =
+            "observe-expanded-summoning-sprint22-contracts";
         /// <summary>
         /// The Sprint 18 hidden-candidate review: the two apes as they are in
         /// a running game. Live profiles, the printed routines, every rend
@@ -199,6 +201,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning";
         internal const string DisposableExpandedSummoningNativeProfile =
             "disposable-expanded-summoning-native-profile";
+        internal const string DisposableExpandedSummoningSprint22NativeReview =
+            "disposable-expanded-summoning-sprint22-native-review";
+        internal static bool IsSummoningNativeProfile(string scenario)
+        { return scenario == DisposableExpandedSummoningNativeProfile || scenario == DisposableExpandedSummoningSprint22NativeReview; }
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
         /// <summary>
@@ -797,6 +803,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningPrimateCensus,
                 ObserveExpandedSummoningArachnidCensus,
                 ObserveExpandedSummoningSprint21Census,
+                ObserveExpandedSummoningSprint22Contracts,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
@@ -805,6 +812,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningNativeProfile,
+                DisposableExpandedSummoningSprint22NativeReview,
                 DisposableExpandedSummoningPlayerPath,
                 DisposableExpandedSummoningProjectedMenu,
                 DisposableExpandedSummoningPteranodonFaultDrill,

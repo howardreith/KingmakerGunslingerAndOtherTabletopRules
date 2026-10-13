@@ -61,7 +61,9 @@ namespace KingmakerGunslinger.Summoning
         // its printed racial +4 Perception, and the grab carrier its two claws
         // need. It owns no weapon, because a Medium creature takes the shared
         // native 1d4 claw unscaled.
-        internal const int SpecialIdentityCount = 243;
+        // Sprint 22's first live profile readback required two more private
+        // carriers: one hidden chassis feature and one tail weapon type.
+        internal const int SpecialIdentityCount = 249;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -432,6 +434,17 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebResource", "BlueprintAbilityResource"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.WebAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bebelith.Brain", "BlueprintBrain"));
+            // Sprint 22 replaces the released proxy behind unchanged routes.
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.UnitTypeSymbol, "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.StunFeatureSymbol, "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.DazedSymbol, "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.StunnedSymbol, "BlueprintBuff"));
+            // The first live profile readback proved the native Huge body has
+            // 12-foot Reach and the shared tail type yields only nine feet.
+            // These append-only private carriers correct that one creature
+            // without mutating the native Tail type or its other consumers.
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.ChassisFeatureSymbol, "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.TailTypeSymbol, "BlueprintWeaponType"));
             Validate(result);
             return result.AsReadOnly();
         }
