@@ -1243,6 +1243,7 @@
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.ArmoredDinosaurs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Survey.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint23Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Persistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Survey.cs" />
     <Compile Include="RuntimeTesting\PrimateReviewPolicy.cs" />

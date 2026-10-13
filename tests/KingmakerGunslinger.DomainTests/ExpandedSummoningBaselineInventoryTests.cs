@@ -13,19 +13,19 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(103, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(105, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(92, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(93, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(91, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(93, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(530, ExpandedSummoningBaselineInventory
+            Assertions.Equal(534, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
             // Sprint 21's Giant Crab is a Nature's Ally creature alone and
             // puts all seven of its placements on that side. Registered, not
             // visible: it ships withheld.
-            Assertions.Equal(533, ExpandedSummoningBaselineInventory
+            Assertions.Equal(541, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -122,11 +122,15 @@ namespace KingmakerGunslinger.DomainTests
             // is its end, and its Giant Crab published once its own guarded
             // review passed 44 of 44 in both combat modes. An arrival here
             // now would be a creature registered and then forgotten.
-            Assertions.Equal(0, ExpandedSummoningBaselineInventory
+            Assertions.Equal(2, ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.Count,
-                "Nothing is registered and withheld: "
+                "Exactly the two Sprint 23 creatures are registered and withheld: "
                 + string.Join(", ", ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures));
+            Assertions.True(ExpandedSummoningBaselineInventory
+                    .RegisteredButHiddenCreatures.OrderBy(value => value)
+                    .SequenceEqual(new[] { "stegosaurus", "triceratops" }),
+                "No creature outside Sprint 23 may become hidden.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
