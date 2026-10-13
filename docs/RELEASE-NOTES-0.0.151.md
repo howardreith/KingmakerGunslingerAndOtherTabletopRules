@@ -44,3 +44,14 @@ Install the standalone UMM ZIP using the established installation procedure.
 Optional compatibility mods remain optional. This patch does not change
 Triceratops, Stegosaurus, animal companions or mounted combat. Sprint 23 has
 not started.
+
+The qualified artifact was built from
+`d42e33ccc5b282daad594836b1defd4f680990e5`. ZIP SHA-256 is
+`5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67`;
+DLL SHA-256 is
+`97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f`;
+DLL MVID is `abfbf93f-60e4-44ac-9ac8-e21568962b05`. The complete suite passed
+2,582/2,582, followed by fresh exact-package turn-based, RTWP standalone,
+high-risk combined, and enabled/disabled persistence qualification. The human
+installation, original registry settings and unrelated saves were restored
+exactly after testing.
