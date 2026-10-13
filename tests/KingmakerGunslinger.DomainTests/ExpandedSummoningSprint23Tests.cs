@@ -410,6 +410,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Math.Max(0, owner.Stats.Dexterity.Bonus)",
                 "PlaceExpandedSummoningUnit(owner, floor)",
                 "damageEvents",
+                "Sprint23LeaveTurnBasedBeforeDisposal",
                 "KMG_Summoning_Special_Triceratops_Trample",
                 "queued-native-charge",
                 "queued-native-trample-path-contact",
