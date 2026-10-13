@@ -579,11 +579,8 @@ def planned():
         ("KMG.Summoning.Special.Triceratops.Trample", "BlueprintAbility"),
         ("KMG.Summoning.Special.Stegosaurus.Trip", "BlueprintFeature"),
         ("KMG.Summoning.Natural.Stegosaurus.TailType", "BlueprintWeaponType"),
-        # Appended after the first live profile proved the native Mastodon
-        # gore stops at twelve feet on the project Huge chassis.
-        ("KMG.Summoning.Natural.Triceratops.GoreType", "BlueprintWeaponType"),
     ))
-    if len(rows) != 2102 or len({symbol for symbol, _ in rows}) != 2102:
+    if len(rows) != 2101 or len({symbol for symbol, _ in rows}) != 2101:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

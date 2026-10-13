@@ -22,8 +22,7 @@ namespace KingmakerGunslinger.DomainTests
             ArmoredDinosaurRulesPolicy.TriceratopsPowerfulChargeSymbol,
             ArmoredDinosaurRulesPolicy.TriceratopsTrampleSymbol,
             ArmoredDinosaurRulesPolicy.StegosaurusTripSymbol,
-            ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol,
-            ArmoredDinosaurRulesPolicy.TriceratopsGoreTypeSymbol
+            ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol
         };
 
         internal static void RoutesAreExactlyTheCharteredTwelve()
@@ -99,6 +98,19 @@ namespace KingmakerGunslinger.DomainTests
                 tri.Facts.Contains("WeaponFocusGore") &&
                 tri.Facts.Contains("TriceratopsChassis"),
                 "Triceratops feat and chassis carriers.");
+            Assertions.Equal(15,
+                ArmoredDinosaurRulesPolicy.CorrectTriceratopsGoreRange(
+                    true, true, true, 12),
+                "The exact enabled Triceratops gore closes the measured three-foot gap.");
+            Assertions.True(new[] {
+                ArmoredDinosaurRulesPolicy.CorrectTriceratopsGoreRange(
+                    false, true, true, 12),
+                ArmoredDinosaurRulesPolicy.CorrectTriceratopsGoreRange(
+                    true, false, true, 12),
+                ArmoredDinosaurRulesPolicy.CorrectTriceratopsGoreRange(
+                    true, true, false, 12)
+            }.All(value => value == 12),
+                "Module-off, other-owner and other-weapon ranges remain native.");
             Assertions.Equal(24,
                 ArmoredDinosaurRulesPolicy.TriceratopsPerceptionRanks + 3 +
                     1 + 3 + ArmoredDinosaurRulesPolicy
@@ -224,11 +236,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<SummoningIdentitySpec> planned =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(2102, planned.Count,
-                "Foundation gains exactly thirty-three identities.");
+            Assertions.Equal(2101, planned.Count,
+                "Foundation gains exactly thirty-two active identities.");
             Assertions.True(planned.Skip(planned.Count - PrivateTail.Length)
                 .Select(value => value.Symbol).SequenceEqual(PrivateTail),
-                "Eleven private carriers append in frozen order.");
+                "Ten active private carriers append in frozen order.");
             JObject manifest = JObject.Parse(File.ReadAllText(
                 "blueprints/blueprints.json"));
             JToken[] entries = manifest["entries"].ToArray();
@@ -236,7 +248,11 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["symbol"], value => (string)value["guid"],
                 StringComparer.Ordinal);
             Assertions.Equal(3101, entries.Length,
-                "Manifest total includes two reserved identities.");
+                "Manifest total includes the rejected gore type as a third reserved identity.");
+            JToken retired = entries.Single(value => (string)value["symbol"] ==
+                "KMG.Summoning.Natural.Triceratops.GoreType");
+            Assertions.Equal("reserved", (string)retired["status"],
+                "The rejected private gore type remains append-only and unavailable.");
             foreach (string symbol in planned.Select(value => value.Symbol))
                 Assertions.True(bySymbol.ContainsKey(symbol),
                     "Allocated identity exists: " + symbol);

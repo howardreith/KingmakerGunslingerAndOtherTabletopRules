@@ -111,6 +111,11 @@ def validate_append(accepted, current):
     observed = {row["symbol"]: (row["guid"], row["plannedType"]) for row in tail}
     if observed != ADDED or len(tail) != len(ADDED):
         raise AssertionError("Sprint 23 must append exactly its 33 pinned identities")
+    retired = next(row for row in tail if row["symbol"] ==
+                   "KMG.Summoning.Natural.Triceratops.GoreType")
+    if retired.get("status") != "reserved" or any(
+            row.get("status") != "active" for row in tail if row is not retired):
+        raise AssertionError("Sprint 23 must retain 32 active identities and one rejected reserved carrier")
     if len({row["guid"] for row in current}) != len(current):
         raise AssertionError("Duplicate blueprint GUID")
 
@@ -204,7 +209,7 @@ def validate(root: Path):
         .read_text(encoding="utf-8-sig")))
     if count < 2590:
         raise AssertionError("Current deterministic test registration count regressed")
-    print("Sprint23 source PASS: 33 append-only identities; 6 pinned art exports; "
+    print("Sprint23 source PASS: 33 append-only identities (32 active, 1 reserved); 6 pinned art exports; "
           f"{count} registered tests (execution separately required).")
 
 

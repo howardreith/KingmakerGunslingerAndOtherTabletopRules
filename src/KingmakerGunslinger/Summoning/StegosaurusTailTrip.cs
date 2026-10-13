@@ -1,15 +1,56 @@
 using System;
+using Harmony12;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.Utility;
+using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firing;
 
 namespace KingmakerGunslinger.Summoning
 {
+    /// <summary>
+    /// Kingmaker's native Mastodon gore preserves its feat and animation
+    /// contracts but exposes twelve feet on the reconstructed Huge chassis.
+    /// Correct only the exact project gore in the exact Triceratops while the
+    /// module is active. The native type and every donor consumer remain
+    /// untouched.
+    /// </summary>
+    [HarmonyPatch(typeof(ItemEntityWeapon), "get_AttackRange")]
+    internal static class TriceratopsGoreReachPatch
+    {
+        private static void Postfix(ItemEntityWeapon __instance,
+            ref Feet __result)
+        {
+            UnitEntityData owner = __instance == null ||
+                __instance.Wielder == null ? null :
+                __instance.Wielder.Unit;
+            ModContext context;
+            bool enabled = ModContext.TryGet(out context) &&
+                context.FeatureModules != null &&
+                context.FeatureModules.Active != null &&
+                context.FeatureModules.Active.ExpandedSummoning;
+            bool exactOwner = owner != null && owner.Blueprint != null &&
+                string.Equals(owner.Blueprint.AssetGuid,
+                    ArmoredDinosaurRulesPolicy.TriceratopsUnitGuid,
+                    StringComparison.Ordinal);
+            bool exactWeapon = __instance != null &&
+                __instance.Blueprint != null && string.Equals(
+                    __instance.Blueprint.AssetGuid,
+                    ArmoredDinosaurRulesPolicy.TriceratopsGoreGuid,
+                    StringComparison.Ordinal);
+            int corrected = ArmoredDinosaurRulesPolicy
+                .CorrectTriceratopsGoreRange(enabled, exactOwner,
+                    exactWeapon, __result.Value);
+            if (corrected != __result.Value) __result = new Feet(corrected);
+        }
+    }
+
     /// <summary>
     /// The adult Stegosaurus's printed tail rider. A resolved exact tail hit
     /// starts one ordinary native Trip maneuver. The engine rolls against CMD;
