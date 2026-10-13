@@ -212,6 +212,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class ExpandedSummoningRosterPersistencePolicy
     {
         internal const string Scope = "whole-roster";
+        internal const string AnkylosaurusScope = "ankylosaurus";
         internal const string ReceiptScope = "KMG_Release143_WholeRoster_v1";
         // Request-local fixture choices mirror the qualified player-path
         // harness. Select for EACH cast: a native Evil row must not leave the
@@ -247,7 +248,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         internal static bool ObserveLoad(string scenario, string scope)
         {
-            return scope == Scope && (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
+            return (scope == Scope || scope == AnkylosaurusScope) &&
+                (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);
         }

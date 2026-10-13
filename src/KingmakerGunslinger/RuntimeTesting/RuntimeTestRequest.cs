@@ -474,7 +474,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters["persistenceScope"].Type != JTokenType.String ||
                     ((string)request.Parameters["persistenceScope"] != "crocodilians" &&
                      (string)request.Parameters["persistenceScope"] != SerpentinePersistenceReviewPolicy.Scope &&
-                     (string)request.Parameters["persistenceScope"] != "ankylosaurus" &&
+                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
                     return "summoning-persistence-scope-invalid";
                 // The ordinary native-control case joins the two same-turn
