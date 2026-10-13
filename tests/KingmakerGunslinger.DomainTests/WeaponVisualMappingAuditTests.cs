@@ -30,7 +30,7 @@ namespace KingmakerGunslinger.DomainTests
             // which it owns because a shared native 1d6 scales up a step for
             // a Large wielder and because its poison gates on the sting's own
             // weapon type, plus 43 Better Vendors variants.
-            Assertions.Equal(87 + KingmakerGunslinger.Acquisition
+            Assertions.Equal(89 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
