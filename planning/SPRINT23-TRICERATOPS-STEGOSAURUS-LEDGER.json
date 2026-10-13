@@ -212,12 +212,20 @@
       "failures": 0
     },
     "publicArtifact": {
-      "status": "SOURCE_READY",
+      "status": "SOURCE_REPAIR_READY",
       "suppressionKeysRemoved": ["Triceratops", "Stegosaurus"],
       "identityReallocation": false,
       "focusedSprint23": {"executed": 12, "failures": 0, "productionCompilation": "PASS"},
       "focusedExpandedSummoning": {"executed": 443, "failures": 0, "productionCompilation": "PASS"},
-      "sprintGate": "PENDING",
+      "sprintGate": "PENDING_AFTER_REPAIR",
+      "failedSprintGate": {
+        "source": "01238de87aeb1cf67a6766481374eda5ba2eef41",
+        "executed": 2594,
+        "failures": 1,
+        "failure": "expanded-summoning.published-records-match-derivation",
+        "classification": "ACTIVE_RESUME_PUBLIC_COUNT_LINE_BREAK_DID_NOT_MATCH_EXACT_TEXT_ASSERTION",
+        "disposition": "RESUME_LINE_WRAP_REPAIRED; NEW_CANDIDATE_GATE_REQUIRED"
+      },
       "nativePublicRouteGate": "PENDING"
     },
     "release": "PENDING",
