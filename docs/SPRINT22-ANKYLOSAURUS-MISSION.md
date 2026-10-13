@@ -126,3 +126,23 @@ remain separate from tested source/DLL/MVID/ZIP. Synchronize postpublication
 RELEASED/STOP documentation through a small authorized follow-up PR, restore
 today's actual installation/settings and clean owned fixtures/processes/leases.
 No permanent deployment, no Sprint 23, no unrelated repository work.
+
+## Qualification disposition
+
+Sprint 22 is **QUALIFIED** for exact-candidate promotion. Tested source is
+`d42e33ccc5b282daad594836b1defd4f680990e5`; source fingerprint
+`a9b7755671993ea386886ec512222d59402e42d13838c5c8e07a06ebafadecc0`;
+ZIP `5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67`;
+DLL `97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f`;
+MVID `abfbf93f-60e4-44ac-9ac8-e21568962b05`. The single Sprint pipeline
+passed 2,582/2,582 tests, and the fresh final-byte native set passed turn-based,
+RTWP standalone, high-risk combined, and the three-stage ON/OFF/ON persistence
+cycle. The [coverage record](SPRINT22-COVERAGE.md) names every transaction,
+RunId and measured duration.
+
+The qualified ledger has nine mandatory PASS rows, no baseline exception and no
+unresolved finding. All ten published Ankylosaurus routes and the 1,063 + 29 =
+1,092 choice surface remain unchanged. Final restoration matched the October 12
+human Mods, registry and unrelated-save intake, and the owned fixture is clean.
+Owner aesthetic approval remains `NOT_PERFORMED_NONBLOCKING`. Sprint 23 has not
+started.

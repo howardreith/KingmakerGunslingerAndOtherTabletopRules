@@ -1,8 +1,9 @@
 # Sprint 22 coverage and candidate review
 
-Development checkpoint; native qualification remains pending. The current
-mission and exact identities are in [the mission](SPRINT22-ANKYLOSAURUS-MISSION.md)
-and [the ledger](../planning/SPRINT22-ANKYLOSAURUS-LEDGER.json).
+Qualified exact release candidate. The current mission and exact identities are
+in [the mission](SPRINT22-ANKYLOSAURUS-MISSION.md) and [the qualified
+ledger](../planning/SPRINT22-ANKYLOSAURUS-LEDGER.json). Publication is a separate
+exact-artifact promotion step.
 
 | Requirement | Production carrier | Selected proof |
 | --- | --- | --- |
@@ -286,3 +287,65 @@ and non-exiting requests. Production compiled in 28.1 s and the named Sprint
 22/native-profile/Sprint 21 dependency filter passed 39/39 selected tests out
 of 2,581 registered in 3.2 s. A changed coherent candidate and both affected
 native phases remain required.
+
+## Qualified final candidate
+
+Candidate `d42e33ccc5b282daad594836b1defd4f680990e5` passed its single
+Sprint pipeline in 213.6 seconds. The complete suite passed 2,582/2,582 in
+90.2 seconds. Its source fingerprint is
+`a9b7755671993ea386886ec512222d59402e42d13838c5c8e07a06ebafadecc0`;
+ZIP `5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67`;
+DLL `97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f`;
+MVID `abfbf93f-60e4-44ac-9ac8-e21568962b05`. The asset bundle, firearm
+manifest and sound bank retained hashes `b3cffb49...`, `bf57981a...` and
+`0e9f88c...` respectively.
+
+Fresh native evidence on those exact bytes passed:
+
+- turn-based standalone transaction `compat-20261013T053547Z-a6cf60e1b945`,
+  RunId `20261013T0537231081612Z-1b05243726fb4b448444a768ec5b84f9`:
+  28/28 assertions in 383.891 seconds;
+- RTWP standalone transaction `compat-20261013T054421Z-e671801eacb6`,
+  RunId `20261013T0545546764877Z-4eac6c8ea47647cc848b308f009adedd`:
+  57/57 in 240.203 seconds;
+- high-risk combined transaction `compat-20261013T055734Z-5ecd249ec5b3`,
+  RunId `20261013T0559142075980Z-d6b41b4f20994cd0b3824e80ede6ec19`:
+  57/57 in 256.042 seconds; and
+- final-byte persistence prepare/cleanup/absence RunIds
+  `20261013T0520405601787Z-c0a103387b354cd286b1352e4343ef65`,
+  `20261013T0526249544115Z-b882ad29f01441639afc613e2090a33b` and
+  `20261013T0532234490267Z-1289c4d7a6c2444d823c55ccf3293d1f`:
+  14/14 in 195.136 seconds, 17/17 in 214.554 seconds and 6/6 in
+  162.692 seconds. The module-off cold load retained the same absolute native
+  expiry; after 22.818 native seconds the private buff and Stunned state were
+  absent and `CanAct` was true. The following enabled load found zero receipts
+  and performed no save write.
+
+The first final-byte high-risk transaction is retained as a setup failure. Its
+120 genuine tail commands produced no natural 20, so the critical-immunity row
+recorded `precondition=UNSATISFIED`; no tested postcondition failed. The mission's
+dice protocol authorized one fresh-process bounded retry, which is the 57/57
+PASS above. An earlier cold-load failure sampled `CanAct` in the same frame that
+the saved Stunned buff disappeared. The repaired observer waits within its
+existing bound for the exact buff, native condition and action gate to settle;
+the complete final-byte persistence cycle then passed. Both failures and their
+raw rolls remain preserved.
+
+Every final transaction independently restored its intake. The mission-level
+audit then matched all 968 human Mods entries at KMG 0.0.117, restored the
+original registry export SHA-256
+`ecca9d04b0a7a664306c90760618f4f160923829e13a2153f0f822ded5f247f2`,
+matched all unrelated saves, left one clean owned working save, and found no
+Kingmaker process or compatibility lock. Successful final native scenarios total
+1,452.518 seconds; the full candidate pipeline adds 213.6 seconds.
+
+Fresh evidence covers the exact Ankylosaurus profile and ten routes, rider in
+both combat modes, original body/contact/crowding, private teardown/fallback,
+standalone and high-risk profiles, and targeted enabled/disabled cold-load
+cleanup and absence. v0.0.150 supplies only the unchanged whole-menu census,
+unaffected creature/profile/module combinations and general serializer baseline;
+that reuse is not described as execution on v0.0.151. There are no baseline
+exceptions or unresolved findings. Passive low-light vision/scent, unsupported
+Improved Overrun, and the donor's absent Hit animation remain the accepted
+limitations. Owner aesthetic approval is `NOT_PERFORMED_NONBLOCKING`. Sprint 23
+has not started.
