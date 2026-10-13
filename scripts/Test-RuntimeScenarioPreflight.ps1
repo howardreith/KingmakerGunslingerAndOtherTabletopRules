@@ -170,6 +170,7 @@ $expected = @(
     'disposable-expanded-summoning',
     'disposable-expanded-summoning-native-profile',
     'disposable-expanded-summoning-sprint22-native-review',
+    'disposable-expanded-summoning-sprint23-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
