@@ -67,14 +67,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool idleMenu = _summoningProfileMenu != null && entered != null &&
                         !(bool)entered.GetValue(_summoningProfileMenu) &&
                         EventBus.IsGloballySubscribed(_summoningProfileMenu);
+                    string sprint22ReviewPhase = RuntimeTestRequestParser
+                        .Sprint22ReviewPhase(_request);
                     if (!ExpandedSummoningNativeProfilePolicy.CanStart(
-                        _request.ExitAfterCompletion, _request.Parameters?.Count ?? 0,
+                        _request.ExitAfterCompletion, _request.Scenario,
+                        _request.Parameters?.Count ?? 0, sprint22ReviewPhase,
                         game.State.Units.All.Count(), game.Player.PartyCharacters.Count,
                         game.Player.CrossSceneState.AllEntityData.Count,
                         game.CurrentlyLoadedArea != null || game.State.LoadedAreaState != null,
                         game.Player.MainCharacter.Value != null, Game.ImportSave != null,
                         Game.NewGameUnit != null, idleMenu))
-                        throw new InvalidOperationException("Native summoning profile requires a fresh empty main-menu process and no save/import parameters.");
+                        throw new InvalidOperationException("Native summoning profile requires a fresh empty main-menu process and only its exact save-free fixture parameters.");
                     _summoningProfileOriginal = BlueprintRoot.Instance.NewGamePreset;
                     if (_summoningProfileOriginal == null || _summoningProfileOriginal.Area == null ||
                         _summoningProfileOriginal.EnterPoint == null)
@@ -165,8 +168,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfileEvidence["partyCount"] = game.Player.Party.Count;
                     game.IsPaused = true;
                     WriteLifecycleStage("summoning-profile-native-mechanics-start");
+                    if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint22NativeReview)
+                    { _summoningProfileStage=4; return; }
                     _summoningProfileResult = RunDisposableExpandedSummoning(false);
                     BeginSummoningProfileReset();
+                    return;
+                }
+                if (_summoningProfileStage == 4)
+                {
+                    if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
+                        throw new TimeoutException("Sprint 22 native review exceeded its declared scenario deadline.");
+                    if (PollSprint22NativeReview()) BeginSummoningProfileReset();
                     return;
                 }
                 if (_summoningProfileStage == 2)
@@ -183,9 +195,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 _summoningProfileFailure = (_summoningProfileFailure ?? "") + "\n" + exception;
-                if (_summoningProfileStage == 1 || _summoningProfileStage == 3)
+                if (_summoningProfileStage == 1 || _summoningProfileStage == 3 || _summoningProfileStage == 4)
                 {
-                    try { BeginSummoningProfileReset(); return; }
+                    try { CleanupSprint22NativeReview(); BeginSummoningProfileReset(); return; }
                     catch (Exception resetFailure) { _summoningProfileFailure += "\nreset: " + resetFailure; }
                 }
                 FinishSummoningNativeProfile(false);

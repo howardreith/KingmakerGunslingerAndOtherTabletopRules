@@ -1074,7 +1074,11 @@ namespace KingmakerGunslinger.DomainTests
             if (symbols.Count < AppendedLedgerIdentities)
                 throw new InvalidOperationException(
                     "The ledger parsed to " + symbols.Count + " symbols.");
-            return symbols.Skip(symbols.Count - AppendedLedgerIdentities)
+            // This released append remains the same slice when a later
+            // sprint adds its own private identities after it.
+            int start = symbols.IndexOf("KMG.Summoning.Unit.GiantCrab");
+            if (start < 0) throw new InvalidOperationException("Released Giant Crab append is absent.");
+            return symbols.Skip(start).Take(AppendedLedgerIdentities)
                 .ToArray();
         }
 

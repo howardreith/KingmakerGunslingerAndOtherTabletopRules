@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.150-expanded-summoning-sprint21",
+  "milestone": "0.0.151-expanded-summoning-sprint22",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.150",
+  "version": "0.0.151",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2405,7 +2405,7 @@
     "originalBodyFiles": 4,
     "donorCensusEvidence": "20261011T0100003563905Z-observe-expanded-summoning-sprint21-census",
     "donorRig": "9e120b5e0ad3c794491c049aa24b9fde Giant Spider",
-    "donorRigNote": "Two families surveyed independently, because sharing one rig merely because both creatures are arthropods is the mistake this sprint was forbidden to make. Both landed on the same 51-bone arachnid skeleton, for different measured reasons. The census 20261011T0100003563905Z-observe-expanded-summoning-sprint21-census read 14 detached view prefabs out of a 3137-unit library, captured 12 and found 2 unreadable, and reports rather than chooses. For the Bebelith: its released donor CR7_GiantSpiderDoombringing measures 51 distinct bones, four complete walking-leg pairs, a seven-bone pedipalp chain each side and a two-bone abdomen chain (Tail1_M, Tail3_M); GiantSpiderMiniboss and GiantSpider_Cutscene agree bone for bone; and the only other demonic candidate the library offers, DemonEidolonUnit, is a 38-bone biped with one leg pair. For the crab: every centipede in the library reports zero leg pairs because that family names its chains differently, so this is the only rig in the installation with eight real leg chains and two forward articulated ones. One honest discrepancy: the census's jaw term reports nothing on the arachnid rig, because the chelicer\u00e6 are named chelicera_L and chelicera_R in lower case and the term looked for Jaw. The bones are there and both authored bodies bind them; the census under-reported its own find.",
+    "donorRigNote": "Two families surveyed independently, because sharing one rig merely because both creatures are arthropods is the mistake this sprint was forbidden to make. Both landed on the same 51-bone arachnid skeleton, for different measured reasons. The census 20261011T0100003563905Z-observe-expanded-summoning-sprint21-census read 14 detached view prefabs out of a 3137-unit library, captured 12 and found 2 unreadable, and reports rather than chooses. For the Bebelith: its released donor CR7_GiantSpiderDoombringing measures 51 distinct bones, four complete walking-leg pairs, a seven-bone pedipalp chain each side and a two-bone abdomen chain (Tail1_M, Tail3_M); GiantSpiderMiniboss and GiantSpider_Cutscene agree bone for bone; and the only other demonic candidate the library offers, DemonEidolonUnit, is a 38-bone biped with one leg pair. For the crab: every centipede in the library reports zero leg pairs because that family names its chains differently, so this is the only rig in the installation with eight real leg chains and two forward articulated ones. One honest discrepancy: the census's jaw term reports nothing on the arachnid rig, because the cheliceræ are named chelicera_L and chelicera_R in lower case and the term looked for Jaw. The bones are there and both authored bodies bind them; the census under-reported its own find.",
     "runtimeEvidenceNote": "Eleven guarded transactions, each restoring the owner installation to 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3. Two on the census: 20261011T0041044362572Z failed on an initialization defect and 20261011T0100003563905Z-observe-expanded-summoning-sprint21-census passed 9 of 9. Nine on the review, and what the failing ones measured is the reason this record can be trusted. 20261011T0226274670371Z did not reach a single assertion: the rot graph's two native asset ids had been written from memory and were swapped, so 2432 registrations rolled back on a type mismatch; the fix is an equality between two files rather than a third transcription. The middle runs measured the three chassis numbers, the leftover rot that blocked a fresh application save, the flat-footed manoeuvre-defence reading, and a bite that simply never landed. 20261011T0504086225030Z returned 39 of 44 and every one of the five was an observer defect rather than the creature. 20261011T0519575295937Z-disposable-expanded-summoning-sprint21-review returned 44 of 44 in both combat modes with both bodies attached.",
     "chassisCorrectionNote": "Measured, not assumed. The live Bebelith on the shared native outsider class read Fortitude +11 against a printed +15, Will +11 against a printed +7, and 162 hit points against a printed 150. The class swaps which save is good and is one point per die tougher than this creature's block. The correction is one creature-owned carrier of the DIFFERENCES - +4 Fortitude, -4 Will, -12 hit points, each derived from the printed numbers rather than written down - so the shared native class is untouched and no other creature that uses it moves.",
     "rotStackingNote": "A diagnosis corrected in the record as well as in the code. Rot's per-round saves read 27, 31 and 33 against a printed 23, with the victim sometimes named as the caster, which looked like a difficulty class recomputed from whatever the context resolved to. An instrumented pin answered it: contextDcBefore=23, wrote=True, contextDcAfter=23 - the context already held the printed number, and the higher saves are Kingmaker's own poison stacking, about +4 per extra dose, because the creature lands a bite every round and each bite is another dose. That is correct Pathfinder and correct engine behaviour, so the review asserts the printed 23 on rot's APPLICATION save and records the stacking rather than demanding it away. The pin is kept for the half that was real: the context's caster does sometimes resolve to the victim, and capturing the base from the applier keeps an already-applied victim-owned effect at the number the bite that caused it produced, whatever becomes of its source.",
@@ -2429,5 +2429,15 @@
       "mergeCommit": "3d8e51ee653d598c1ac7e9a6fd452c4d99767ffb",
       "finalReportingSeparate": true
     }
+  },
+  "expandedSummoningSprint22151": {
+    "releaseVersion": "0.0.151",
+    "releaseInformationalVersion": "0.0.151-expanded-summoning-sprint22",
+    "protectedAnkylosaurusIdentities": 22,
+    "newPrivateIdentities": 6,
+    "registeredLogicalPlacements": 1063,
+    "nativeRuntimeQualified": false,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "compatibilityRuntimeQualificationPending": true
   }
 }

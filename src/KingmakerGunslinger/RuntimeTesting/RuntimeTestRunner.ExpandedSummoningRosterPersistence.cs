@@ -26,7 +26,11 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         private bool RosterPersistenceScope
-        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope; } }
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope || Sprint22PersistenceScope; } }
+        private bool Sprint22PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope; } }
+        private string[] RosterSelectedKeys
+        { get { return Sprint22PersistenceScope ? new[] { "ankylosaurus" } : ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
         private readonly List<RuntimeTestAssertion> _rosterPersistenceChecks = new List<RuntimeTestAssertion>();
@@ -250,7 +254,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (existing.Any(u => !RosterPersistenceOwns(u, caster, blueprints)) ||
                 ExpandedSummoningPersistentUnits(Game.Instance.State, party).Any(u => !existing.Contains(u)))
                 throw new InvalidOperationException("Unowned/malformed summon present;no broad retirement permitted.");
-            var unrelated = sceneBefore.Where(u => !existing.Contains(u)).Select(u => new { Unit=u, u.Destroyed, u.HoldingState, u.Blueprint }).ToArray();
+            var unrelated = sceneBefore.Where(u => !existing.Contains(u) && (!Sprint22PersistenceScope || u.Get<UnitPartSprint22ControlReceipt>()==null))
+                .Select(u => new { Unit=u, u.Destroyed, u.HoldingState, u.Blueprint }).ToArray();
             int published;
             bool publication = ExpandedSummoningPublisher.RequiredBasePublicationIsExact(BlueprintBootstrap.Library,
                 _context.FeatureModules.Active.ExpandedSummoning, out published);
@@ -273,7 +278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var originalAlignment = caster.Descriptor.Alignment.Value;
                 try
                 {
-                    foreach (string key in ExpandedSummoningRosterPersistencePolicy.Keys)
+                    foreach (string key in RosterSelectedKeys)
                     {
                         UnitEntityData unit;
                         if (!key.StartsWith("native:", StringComparison.Ordinal))
@@ -346,8 +351,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             // material or texture allocated, nothing published, and no unit to
             // clean up.
             bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
-            bool exact = moduleOn
-                ? keys.SequenceEqual(ExpandedSummoningRosterPersistencePolicy.Keys) &&
+            bool savedAnkylosaurus = Sprint22PersistenceScope && verify;
+            bool exact = moduleOn || savedAnkylosaurus
+                ? keys.SequenceEqual(RosterSelectedKeys) &&
                     units.All(u => RosterPersistenceOwns(u,caster,blueprints)) &&
                     units.All(u => u.View != null && ReferenceEquals(u.View.Data,u) && u.Commands != null &&
                         !u.Descriptor.State.IsDead && u.Descriptor.Buffs.Enumerable.Any(b => ReferenceEquals(b.Blueprint,BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) &&
@@ -355,7 +361,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 : units.Length == 0;
             RosterPersistenceCheck("all-identities-context-duration", exact,
                 new JObject { ["count"] = units.Length,
-                    ["expected"] = moduleOn ? ExpandedSummoningRosterPersistencePolicy.Keys.Length : 0,
+                    ["expected"] = moduleOn || savedAnkylosaurus ? RosterSelectedKeys.Length : 0,
                     ["keys"] = new JArray(keys), ["moduleEnabled"] = moduleOn },
                 moduleOn
                     ? "every KMG creature and every distinct retained native unit, exact saved receipt/caster/blueprint and finite duration"
@@ -394,6 +400,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["counts"] = counts, ["registeredVariants"] = ExpandedSummoningVisualVariantPatch.RegisteredBlueprintNames.Count },
                     "save-compatible registration remains; disabled views allocate no variant ownership, material or coat texture; no cached rim recolouring");
             }
+            if (Sprint22PersistenceScope)
+                foreach (int step in Sprint22PersistentControl(caster,units,prepare,verify)) yield return step;
             if (verify) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,

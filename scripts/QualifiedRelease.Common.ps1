@@ -87,6 +87,45 @@ function Assert-KmgClosureProofFiles {
     }
 }
 
+function Assert-KmgSprint22ReleaseDecision {
+    param([Parameter(Mandatory=$true)]$Ledger,[Parameter(Mandatory=$true)]$Candidate)
+    if($Ledger.schemaVersion -ne 1 -or $Ledger.mission -cne 'Sprint22Ankylosaurus' -or
+        $Ledger.status -cne 'QUALIFIED' -or -not $Ledger.releaseEligible -or $Ledger.sprint23Started -or
+        @($Ledger.baselineExceptions).Count -ne 0 -or @($Ledger.unresolvedFindings).Count -ne 0) {
+        throw 'Sprint22 is not fully qualified; no new exception or unfinished requirement is authorized.'
+    }
+    foreach($pair in @(@('source','commit'),@('zipSha256','packageSha256'),@('dllSha256','dllSha256'),
+        @('dllMvid','dllMvid'),@('sourceFingerprint','sourceStateSha256'))) {
+        if([string]$Ledger.candidate.($pair[0]) -cne [string]$Candidate.($pair[1])) { throw 'Sprint22 tested artifact identity differs.' }
+    }
+    $suite=$Ledger.candidate.fullSuite
+    if($Ledger.candidate.pipelineExitCode -ne 0 -or $suite.exitCode -ne 0 -or $suite.failures -ne 0 -or
+        $suite.executed -le 0 -or $suite.executed -ne $suite.registered -or -not $suite.unfiltered) { throw 'Sprint22 candidate gate did not execute and pass its full suite.' }
+    if($Ledger.roster.generatedRoots -ne 1063 -or $Ledger.roster.nativeWrappers -ne 29 -or $Ledger.roster.choices -ne 1092 -or
+        $Ledger.roster.preservedAnkylosaurusRoots -ne 10 -or $Ledger.roster.protectedIdentitySetsEqual -ne $true) { throw 'Sprint22 published identities or menu surface changed.' }
+    if($Ledger.restoration.current -cne 'EXACT_INTAKE_VERIFIED' -or -not $Ledger.restoration.workingFixtureClean) { throw 'Sprint22 restoration and clean fixture are required.' }
+    $mandatory=@('ankylosaurus-profile-carriers-and-ten-routes','tail-rider-rtwp-and-turn-based','original-body-contact-huge-crowd',
+        'private-resource-teardown-and-fallback','targeted-enabled-cold-load-cleanup-absence','module-disabled-cold-load-reenable',
+        'gunslinger-only','high-risk-combined','exact-package-release-qualification')
+    $ids=@($Ledger.coverage | ForEach-Object {$_.id})
+    if(@($ids | Sort-Object -Unique).Count -ne $ids.Count) { throw 'Sprint22 duplicate coverage identity.' }
+    foreach($id in $mandatory) {
+        $row=@($Ledger.coverage | Where-Object {$_.id -ceq $id})
+        if($row.Count -ne 1 -or $row[0].result -cne 'PASS') { throw "Sprint22 fresh mandatory coverage missing: $id" }
+    }
+    foreach($row in $Ledger.coverage) {
+        if($row.result -cnotin @('PASS','REUSED_PASS') -or @($row.proofs).Count -eq 0 -or @($row.evidenceSources).Count -eq 0) { throw 'Sprint22 coverage lacks evidence.' }
+        if($row.result -ceq 'REUSED_PASS' -and ([string]::IsNullOrWhiteSpace([string]$row.reuseJustification) -or
+            [string]::IsNullOrWhiteSpace([string]$row.priorSource))) { throw 'Sprint22 inherited proof lacks dependency comparison/provenance.' }
+        if($row.result -ceq 'PASS') {
+            foreach($source in $row.evidenceSources) {
+                if($source.source -cne $Candidate.commit -or $source.packageSha256 -cne $Candidate.packageSha256 -or
+                    $source.dllSha256 -cne $Candidate.dllSha256 -or $source.dllMvid -cne $Candidate.dllMvid) { throw 'Sprint22 native coverage is bound to other candidate bytes.' }
+            }
+        }
+    }
+}
+
 function Get-KmgClosurePublicCoverage {
     param([Parameter(Mandatory=$true)]$Ledger)
     foreach ($row in $Ledger.coverage) {
