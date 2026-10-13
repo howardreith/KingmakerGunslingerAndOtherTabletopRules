@@ -154,7 +154,7 @@ try {
     foreach ($entry in $primateBodies.GetEnumerator()) {
         $path = Join-Path $modDirectory $entry.Key
         if ((Get-KmgSha256 -Path $path) -cne $entry.Value) {
-            throw "A packaged Sprint 18 original ape body differs from its reviewed export: $($entry.Key)"
+            throw "A packaged protected original body differs from its reviewed export: $($entry.Key)"
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
