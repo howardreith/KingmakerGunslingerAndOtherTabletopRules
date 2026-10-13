@@ -1461,16 +1461,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     double nativeStarted=Game.Instance.TimeController.GameTime.TotalSeconds;
                     var clock=System.Diagnostics.Stopwatch.StartNew();
+                    CombatController turnController=Game.Instance
+                        .TurnBasedCombatController;
+                    int roundBefore=turnController.RoundNumber;
+                    int endedTurns=0;
+                    string lastTurnState=null;
+                    var turnTransitions=new JArray();
                     while ((target.Descriptor.Buffs.RawFacts.OfType<Buff>()
                             .Any(value=>effects.Contains(value)) ||
                             target.Descriptor.State.HasCondition(
                                 UnitCondition.Stunned) ||
                             !target.Descriptor.State.CanAct) &&
-                        clock.Elapsed.TotalSeconds<45)
+                        clock.Elapsed.TotalSeconds<30)
                     {
                         Game.Instance.IsPaused=false;
                         if (CombatController.IsInTurnBasedCombat())
-                        { var turn=Game.Instance.TurnBasedCombatController.CurrentTurn;if (turn!=null) Sprint18EndTurn(turn); }
+                        {
+                            TurnController turn=turnController.CurrentTurn;
+                            string state="round="+turnController.RoundNumber+
+                                ";unit="+(turn?.Unit?.UniqueId ?? "<none>")+
+                                ";status="+(turn==null ? "<none>" :
+                                    turn.Status.ToString());
+                            if (state!=lastTurnState)
+                            {
+                                turnTransitions.Add(state);
+                                lastTurnState=state;
+                            }
+                            // End an active native turn once. Repeating End()
+                            // against the same already-ended TurnController
+                            // prevents CombatController.Tick from owning the
+                            // transition to the next actor/round.
+                            if (turn!=null && (turn.Status==
+                                    TurnController.TurnStatus.Preparing ||
+                                turn.Status==
+                                    TurnController.TurnStatus.Acting))
+                            {
+                                Sprint18EndTurn(turn);
+                                endedTurns++;
+                            }
+                        }
                         yield return 0;
                     }
                     bool privateEffectsGone=effects.All(value=>
@@ -1501,6 +1530,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["actionFinished"]=returned?.IsFinished,
                             ["nativeAttackRules"]=returnedRules.Attacks.Count,
                             ["actionReturned"]=actionReturned,
+                            ["roundBefore"]=roundBefore,
+                            ["roundAfter"]=turnController.RoundNumber,
+                            ["endedTurns"]=endedTurns,
+                            ["turnTransitions"]=turnTransitions,
                             ["nativeElapsedSeconds"]=Game.Instance.TimeController.GameTime.TotalSeconds-nativeStarted,
                             ["wallSeconds"]=clock.Elapsed.TotalSeconds },"Critical stun expires naturally and native victim actions return.");
                 }
