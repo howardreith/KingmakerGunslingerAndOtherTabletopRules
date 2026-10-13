@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint23TriceratopsStegosaurus",
-  "status": "PUBLICATION_SOURCE_READY",
+  "status": "PUBLIC_INVENTORY_OBSERVER_REPAIR_READY",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
   "pr": 41,
@@ -22,8 +22,8 @@
     "otherWorktreesPreserved": true,
     "gameProcessAbsent": true,
     "steamPreserved": true,
-    "activeRuntimeTransaction": "NONE_AFTER_SIX_FINAL_PERSISTENCE_TRANSACTIONS",
-    "currentHumanStateSnapshot": "EXACT_PER_TRANSACTION_RESTORATION_VERIFIED; final post-publication audit pending",
+    "activeRuntimeTransaction": "NONE_AFTER_PUBLIC_INVENTORY_FAILURE_RESTORATION",
+    "currentHumanStateSnapshot": "PUBLIC INVENTORY TRANSACTION compat-20261013T195637Z-99f7209df96a RESTORED EXACTLY; final post-publication audit pending",
     "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
     "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
     "referencesByteMatched": true
@@ -212,12 +212,21 @@
       "failures": 0
     },
     "publicArtifact": {
-      "status": "SOURCE_REPAIR_READY",
+      "status": "INVENTORY_OBSERVER_REPAIR_READY",
       "suppressionKeysRemoved": ["Triceratops", "Stegosaurus"],
       "identityReallocation": false,
       "focusedSprint23": {"executed": 12, "failures": 0, "productionCompilation": "PASS"},
       "focusedExpandedSummoning": {"executed": 443, "failures": 0, "productionCompilation": "PASS"},
-      "sprintGate": "PENDING_AFTER_REPAIR",
+      "candidateBeforeInventoryObserverRepair": {
+        "source": "e18938085f16403db43e0ae0c3b17ab1f5fc7059",
+        "sourceStateSha256": "567bd8f04d7688599aca2c425f78d1c14561242ac26d902c66f35c04a8a7e482",
+        "packageSha256": "c751a95784928c0097691debfbb0c2cabe30964719fde25e08148cb49e20b43d",
+        "dllSha256": "b8ce1f7d8f9144e7ea9776d3a0463c0ffa157a9d8c52666b60b817a9851bd5b6",
+        "dllMvid": "2e46ce77-8a4b-4658-9414-175c2ee34cbc",
+        "buildManifestSha256": "20ee0991496d28dfd9bd44eb6663001373393138becd86e6d9a39eba8b2392e6",
+        "gate": {"executed": 2594, "failures": 0, "seconds": 181.6, "strictPackageValidation": "PASS"}
+      },
+      "sprintGate": "PENDING_AFTER_COMPILED_OBSERVER_REPAIR",
       "failedSprintGate": {
         "source": "01238de87aeb1cf67a6766481374eda5ba2eef41",
         "executed": 2594,
@@ -226,7 +235,19 @@
         "classification": "ACTIVE_RESUME_PUBLIC_COUNT_LINE_BREAK_DID_NOT_MATCH_EXACT_TEXT_ASSERTION",
         "disposition": "RESUME_LINE_WRAP_REPAIRED; NEW_CANDIDATE_GATE_REQUIRED"
       },
-      "nativePublicRouteGate": "PENDING"
+      "failedInventoryObservation": {
+        "source": "e18938085f16403db43e0ae0c3b17ab1f5fc7059",
+        "profile": "gunslinger-high-risk-combined",
+        "transaction": "compat-20261013T195637Z-99f7209df96a",
+        "runId": "20261013T1958199736958Z-1865c61ad46f4c2cacbef9ec858629e1",
+        "evidence": "20261013T1958199423968Z-observe-expanded-summoning-inventory",
+        "assertions": 50,
+        "failures": 2,
+        "classification": "EXACT_OWNED_FACT_CENSUS_AND_PROFILE_SPECIAL_FILTER_STALE_SINCE_SPRINT22",
+        "disposition": "FOUR EXACT OWNER_FACT_ROWS_AND_PROFILE_DECLARED_SPECIAL_COMPARISON_REPAIRED; NEW CANDIDATE_AND_AFFECTED_NATIVE_RERUN_REQUIRED",
+        "restored": true
+      },
+      "nativePublicRouteGate": "PENDING_AFTER_OBSERVER_REPAIR"
     },
     "release": "PENDING",
     "restoration": "PER_TRANSACTION_PASS_FINAL_POST_PUBLICATION_AUDIT_PENDING"
@@ -461,6 +482,15 @@
       "evidence": "20261013T1843130405878Z-working-save-expanded-summoning-verify-cleanup",
       "classification": "MODULE_OFF_OBSERVER_EXPECTED_NOT_ATTEMPTED_INSTEAD_OF_EXPLICIT_REFUSAL",
       "disposition": "REQUIRE_DONOR_VISUAL_MODULE_DISABLED_AND_ZERO_PRIVATE_RESOURCES; FINAL_AFFECTED_CYCLE_PASS",
+      "restored": true
+    },
+    {
+      "source": "e18938085f16403db43e0ae0c3b17ab1f5fc7059",
+      "transaction": "compat-20261013T195637Z-99f7209df96a",
+      "runId": "20261013T1958199736958Z-1865c61ad46f4c2cacbef9ec858629e1",
+      "evidence": "20261013T1958199423968Z-observe-expanded-summoning-inventory",
+      "classification": "EXACT_OWNED_FACT_CENSUS_AND_PROFILE_SPECIAL_FILTER_STALE_SINCE_SPRINT22",
+      "disposition": "FOUR EXACT OWNER_FACT_ROWS_AND_PROFILE_DECLARED_SPECIAL_COMPARISON_REPAIRED; AFFECTED PUBLIC INVENTORY RERUN_REQUIRED",
       "restored": true
     }
   ],
