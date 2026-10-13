@@ -56,6 +56,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal Action<RuleAttackWithWeapon> ObserveWeaponContact;
             internal Action<RuleDealDamage> ObserveRiderContact;
             internal Action<RuleAttackRoll> BeforeAttackRollForFixture;
+            internal Action<RuleCombatManeuver>
+                BeforeCombatManeuverForFixture;
 
             public void OnEventAboutToTrigger(RuleCalculateWeaponStats evt) { }
             public void OnEventDidTrigger(RuleCalculateWeaponStats evt)
@@ -94,7 +96,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void OnEventAboutToTrigger(RuleCastSpell evt) { }
             public void OnEventDidTrigger(RuleCastSpell evt)
             { if (ReferenceEquals(evt.Initiator, Owner)) Casts.Add(evt); }
-            public void OnEventAboutToTrigger(RuleCombatManeuver evt) { }
+            public void OnEventAboutToTrigger(RuleCombatManeuver evt)
+            {
+                if (BeforeCombatManeuverForFixture != null &&
+                    ReferenceEquals(evt.Initiator, Owner) &&
+                    ReferenceEquals(evt.Target, Target))
+                    BeforeCombatManeuverForFixture(evt);
+            }
             public void OnEventDidTrigger(RuleCombatManeuver evt)
             {
                 if (ReferenceEquals(evt.Initiator, Owner) ||

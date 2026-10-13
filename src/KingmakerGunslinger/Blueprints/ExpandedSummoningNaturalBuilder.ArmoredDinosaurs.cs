@@ -70,12 +70,12 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintFeature>(bySymbol,
                     ArmoredDinosaurRulesPolicy.TriceratopsChassisSymbol),
                 ArmoredDinosaurRulesPolicy.TriceratopsChassisSymbol,
-                "Triceratops Chassis", false);
+                "Triceratops Chassis", false, true);
             ConfigureArmoredDinosaurChassis(library, stegosaurus, tail,
                 Require<BlueprintFeature>(bySymbol,
                     ArmoredDinosaurRulesPolicy.StegosaurusChassisSymbol),
                 ArmoredDinosaurRulesPolicy.StegosaurusChassisSymbol,
-                "Stegosaurus Chassis", true);
+                "Stegosaurus Chassis", true, false);
             ConfigureStegosaurusTrip(stegosaurus, tail, trip);
         }
 
@@ -118,7 +118,8 @@ namespace KingmakerGunslinger.Blueprints
         private static void ConfigureArmoredDinosaurChassis(
             LibraryScriptableObject library, BlueprintUnit owner,
             BlueprintItemWeapon weapon, BlueprintFeature feature,
-            string symbol, string displayName, bool needsPrivateWeaponFocus)
+            string symbol, string displayName, bool needsPrivateWeaponFocus,
+            bool completesSkillFocus)
         {
             var components = new List<BlueprintComponent>();
             var reach = ScriptableObject.CreateInstance<AddStatBonus>();
@@ -126,6 +127,19 @@ namespace KingmakerGunslinger.Blueprints
             reach.Value = ArmoredDinosaurRulesPolicy.ReachBonusFeet;
             reach.Descriptor = ModifierDescriptor.UntypedStackable;
             components.Add(reach);
+
+            if (completesSkillFocus)
+            {
+                var perception = ScriptableObject.CreateInstance<AddStatBonus>();
+                perception.Stat = StatType.SkillPerception;
+                perception.Value = ArmoredDinosaurRulesPolicy
+                    .TriceratopsSkillFocusCompletionBonus;
+                // This is the second half of one feat, not a second feat
+                // bonus.  UntypedStackable lets it coexist with Kingmaker's
+                // fixed +3 native Skill Focus component.
+                perception.Descriptor = ModifierDescriptor.UntypedStackable;
+                components.Add(perception);
+            }
 
             if (needsPrivateWeaponFocus)
             {

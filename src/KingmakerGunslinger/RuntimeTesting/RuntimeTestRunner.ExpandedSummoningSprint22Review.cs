@@ -956,8 +956,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 view,"m_SoftCollider") as CapsuleCollider;
             var core=view==null ? null : ReadExpandedSummoningOptionalMember(
                 view,"m_CoreCollider") as MeshCollider;
-            Component clickable=view==null ? null : view.GetComponent(
-                "Kingmaker.UI.Selection.ClickableObject");
+            // Native donors do not all keep ClickableObject on the view root
+            // (Mastodon places it below UnitEntityView).  Selection raycasts
+            // the hierarchy, so inspect that same hierarchy rather than
+            // rejecting an otherwise native selection surface by root shape.
+            Component clickable=view==null ? null : view
+                .GetComponentsInChildren<Component>(true).FirstOrDefault(
+                    value=>value!=null && value.GetType().FullName==
+                        "Kingmaker.UI.Selection.ClickableObject");
             Vector2 bounds=Vector2.zero,coreBounds=Vector2.zero;
             bool derived=false;
             try
