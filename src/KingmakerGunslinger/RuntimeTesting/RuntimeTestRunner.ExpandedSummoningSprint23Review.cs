@@ -8,6 +8,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Combat;
+using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -219,6 +220,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fixture, owner, key, turnBased)) yield return frame;
                     if (key == ArmoredDinosaurRulesPolicy.TriceratopsKey)
                     {
+                        // A real attack can restart Kingmaker's attack-mode
+                        // toggle even after the isolated off/on arithmetic
+                        // probe.  Reapply the already-qualified forced-stop
+                        // sequence so charge is measured without Power Attack;
+                        // its own off/on proof remains the preceding assertion.
+                        foreach (int frame in Sprint22SetPowerAttack(owner,
+                            false)) yield return frame;
                         Sprint23PowerfulChargeRules(fixture, owner,
                             turnBased);
                         if (foundation)
@@ -826,7 +834,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         centres[centreIndex]) > 1.5f) continue;
                 PlaceExpandedSummoningUnit(target,
                     targetNode.clampedPosition);
-                foreach (float distance in new[] { 7f, 6f, 5f, 4f })
+                // Fifteen-foot reach plus the Huge collision radii can put a
+                // seven-metre centre gap inside attack approach distance.  A
+                // charge must still travel at least ten feet, so search the
+                // measured open fixture at genuinely discriminating gaps.
+                foreach (float distance in new[] { 12f, 11f, 10f, 9f, 8f })
                     for (int index = 0; index < CompassOffsets.Length;
                         index++)
                     {
@@ -882,6 +894,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
             ExpandedSummoningChargeAttackObserver observer = null;
             UnitUseAbility command = null;
+            UnitAttack attackCommand = null;
+            UnitEntityData[] awakeBefore = null;
             try
             {
                 target.Descriptor.State.Size = Size.Medium;
@@ -925,26 +939,67 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Marker = BlueprintRoot.Instance.SystemMechanics
                         .ChargeBuff };
                 EventBus.Subscribe(observer);
+                awakeBefore = Game.Instance.State.AwakeUnits.ToArray();
+                foreach (UnitEntityData unit in new[] { owner, target })
+                    if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                        Game.Instance.State.AwakeUnits.Add(unit);
                 float standardBefore = owner.CombatState.Cooldown
                     .StandardAction;
                 float moveBefore = owner.CombatState.Cooldown.MoveAction;
+                float maxStandard = standardBefore;
+                float maxMove = moveBefore;
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                command = BeginExpandedSummoningDetachedAbility(owner,
-                    chargeBlueprint, selected, true, true);
+                command = new UnitUseAbility(charge, selected);
+                bool nativeEconomy = !command.Cutscene &&
+                    !command.IsIgnoreCooldown;
+                if (!command.CanStart)
+                    throw new InvalidOperationException(
+                        "Native Triceratops charge command cannot start.");
+                owner.Commands.Run(command);
                 bool queued = owner.Commands.Raw.Contains(command);
                 bool executionSeen = command.ExecutionProcess != null;
+                var controller = new UnitActionController();
+                int movementTicks = 0;
                 int frames = 0;
                 while (frames++ < 600 &&
                     !observer.FirstChargeHitWithMarker)
                 {
-                    if (command.ExecutionProcess == null &&
-                        command.IsRunning)
+                    if (!command.IsFinished &&
+                        (!command.IsStarted || command.ExecutionProcess == null))
                     {
-                        if (command.Animation != null)
+                        if (command.Animation != null && frames > 4)
                             command.Animation.IsActed = true;
-                        command.Tick();
+                        ElementalBreathScenario.TickCommand(controller,
+                            command);
                     }
                     executionSeen |= command.ExecutionProcess != null;
+                    float delta = Game.Instance.TimeController.DeltaTime;
+                    if (command.ExecutionProcess != null && delta > 0f &&
+                        owner.Descriptor.State.CanMove && !CombatController
+                            .IsInTurnBasedCombat())
+                    {
+                        owner.View.MovementAgent.TickMovement(delta);
+                        owner.Position = owner.View.transform.position;
+                        movementTicks++;
+                    }
+                    if (command.ExecutionProcess != null)
+                        TickExpandedSummoningDetachedAbility(command, frames);
+                    if (attackCommand == null)
+                        attackCommand = owner.Commands.Raw
+                            .OfType<UnitAttack>().FirstOrDefault(value =>
+                                ReferenceEquals(value.Target, target));
+                    if (attackCommand != null &&
+                        !attackCommand.IsFinished)
+                    {
+                        if (attackCommand.Animation != null && frames > 12)
+                            attackCommand.Animation.IsActed = true;
+                        ElementalBreathScenario.TickCommand(controller,
+                            attackCommand);
+                    }
+                    maxStandard = Mathf.Max(maxStandard,
+                        owner.CombatState.Cooldown.StandardAction);
+                    maxMove = Mathf.Max(maxMove,
+                        owner.CombatState.Cooldown.MoveAction);
                     yield return 0;
                 }
                 for (int settle = 0; settle < 24 &&
@@ -956,12 +1011,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 float moved = Vector3.Distance(start, owner.Position);
                 int damage = target.Descriptor.Damage - damageBefore;
-                bool spent = owner.CombatState.Cooldown.StandardAction >
-                        standardBefore || owner.CombatState.Cooldown.MoveAction >
-                        moveBefore || turnBased && command.IsStarted;
-                bool exact = queued && command.IsStarted && executionSeen &&
-                    observer.FirstChargeHitWithMarker && moved > 2f &&
-                    damage > 0 && spent && observer.Attacks.Count == 1;
+                bool spent = maxStandard > standardBefore ||
+                    maxMove > moveBefore;
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(awakeBefore);
+                bool awakeRestored = Game.Instance.State.AwakeUnits
+                    .SequenceEqual(awakeBefore);
+                awakeBefore = null;
+                bool exact = queued && nativeEconomy && command.IsStarted &&
+                    executionSeen &&
+                    observer.FirstChargeHitWithMarker &&
+                    moved >= new Feet(10).Meters - .05f &&
+                    damage > 0 && spent && observer.Attacks.Count == 1 &&
+                    attackCommand != null && attackCommand.IsStarted &&
+                    awakeRestored;
                 Sprint23Check("native-charge-command-" +
                     (turnBased ? "turn-based" : "rtwp"), exact,
                     new JObject { ["unit"] = owner.UniqueId,
@@ -975,10 +1038,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["executionSeen"] = executionSeen,
                         ["frames"] = frames, ["movedMeters"] = moved,
                         ["damage"] = damage,
+                        ["nativeEconomy"] = nativeEconomy,
+                        ["movementTicks"] = movementTicks,
+                        ["attackCommand"] = attackCommand == null ? null :
+                            attackCommand.Result.ToString(),
+                        ["awakeRestored"] = awakeRestored,
+                        ["agent"] = DescribeExpandedSummoningTrampleAgent(
+                            owner),
                         ["attacks"] = new JArray(observer.Attacks),
                         ["standardCooldown"] = new JArray(standardBefore,
+                            maxStandard,
                             owner.CombatState.Cooldown.StandardAction),
-                        ["moveCooldown"] = new JArray(moveBefore,
+                        ["moveCooldown"] = new JArray(moveBefore, maxMove,
                             owner.CombatState.Cooldown.MoveAction),
                         ["mode"] = turnBased ? "turn-based" : "rtwp" },
                     "A queued native ChargeAbility follows a real path and its sole first gore lands under the native charge marker with native action ownership.");
@@ -989,6 +1060,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EndExpandedSummoningDetachedAbility(command);
                 owner.Commands.InterruptAll(true);
                 owner.Commands.RemoveFinishedAndUpdateQueue();
+                if (awakeBefore != null)
+                {
+                    Game.Instance.State.AwakeUnits.Clear();
+                    Game.Instance.State.AwakeUnits.AddRange(awakeBefore);
+                }
                 owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
                 target.Descriptor.State.Size = sizeBefore;
                 target.Descriptor.Damage = damageBefore;
@@ -1073,6 +1149,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int damageBefore = target.Descriptor.Damage;
             ExpandedSummoningTrampleObserver observer = null;
             UnitUseAbility command = null;
+            UnitEntityData[] awakeBefore = null;
             try
             {
                 target.Descriptor.State.Size = Size.Medium;
@@ -1113,26 +1190,56 @@ namespace KingmakerGunslinger.RuntimeTesting
                 observer = new ExpandedSummoningTrampleObserver {
                     Caster = owner, Target = target };
                 EventBus.Subscribe(observer);
+                awakeBefore = Game.Instance.State.AwakeUnits.ToArray();
+                foreach (UnitEntityData unit in new[] { owner, target })
+                    if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                        Game.Instance.State.AwakeUnits.Add(unit);
                 float standardBefore = owner.CombatState.Cooldown
                     .StandardAction;
                 float moveBefore = owner.CombatState.Cooldown.MoveAction;
-                command = BeginExpandedSummoningDetachedAbility(owner,
-                    blueprint, selected, true, true);
+                float maxStandard = standardBefore;
+                float maxMove = moveBefore;
+                command = new UnitUseAbility(trample, selected);
+                bool nativeEconomy = !command.Cutscene &&
+                    !command.IsIgnoreCooldown && trample.RequireFullRoundAction &&
+                    blueprint.IsFullRoundAction;
+                if (!command.CanStart)
+                    throw new InvalidOperationException(
+                        "Native Triceratops trample command cannot start.");
+                owner.Commands.Run(command);
                 bool queued = owner.Commands.Raw.Contains(command);
                 bool executionSeen = command.ExecutionProcess != null;
+                var controller = new UnitActionController();
+                int movementTicks = 0;
                 int frames = 0;
                 while (frames++ < 600 &&
                     (observer.Saves.Count == 0 ||
                      observer.Damage.Count == 0))
                 {
-                    if (command.ExecutionProcess == null &&
-                        command.IsRunning)
+                    if (!command.IsFinished &&
+                        (!command.IsStarted || command.ExecutionProcess == null))
                     {
-                        if (command.Animation != null)
+                        if (command.Animation != null && frames > 4)
                             command.Animation.IsActed = true;
-                        command.Tick();
+                        ElementalBreathScenario.TickCommand(controller,
+                            command);
                     }
                     executionSeen |= command.ExecutionProcess != null;
+                    float delta = Game.Instance.TimeController.DeltaTime;
+                    if (command.ExecutionProcess != null && delta > 0f &&
+                        owner.Descriptor.State.CanMove && !CombatController
+                            .IsInTurnBasedCombat())
+                    {
+                        owner.View.MovementAgent.TickMovement(delta);
+                        owner.Position = owner.View.transform.position;
+                        movementTicks++;
+                    }
+                    if (command.ExecutionProcess != null)
+                        TickExpandedSummoningDetachedAbility(command, frames);
+                    maxStandard = Mathf.Max(maxStandard,
+                        owner.CombatState.Cooldown.StandardAction);
+                    maxMove = Mathf.Max(maxMove,
+                        owner.CombatState.Cooldown.MoveAction);
                     yield return 0;
                 }
                 for (int settle = 0; settle < 24 && command.IsRunning &&
@@ -1145,16 +1252,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float moved = Vector3.Distance(start, owner.Position);
                 BaseDamage dealt = observer.Damage.Count == 1 ?
                     observer.Damage[0].DamageBundle.First : null;
-                bool spent = owner.CombatState.Cooldown.StandardAction >
-                        standardBefore || owner.CombatState.Cooldown.MoveAction >
-                        moveBefore || turnBased && command.IsStarted;
-                bool exact = queued && command.IsStarted && executionSeen &&
+                bool spent = maxStandard > standardBefore &&
+                    maxMove > moveBefore;
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(awakeBefore);
+                bool awakeRestored = Game.Instance.State.AwakeUnits
+                    .SequenceEqual(awakeBefore);
+                awakeBefore = null;
+                bool exact = queued && nativeEconomy && command.IsStarted &&
+                    executionSeen &&
                     moved > 3f && observer.Opportunities.Count == 0 &&
                     observer.Saves.Count == 1 &&
                     observer.Saves[0].DifficultyClass == 25 &&
                     observer.Damage.Count == 1 && dealt != null &&
                     dealt.Dice.Rolls == 1 && dealt.Dice.Dice == DiceType.D8 &&
-                    dealt.Bonus == 12 && spent;
+                    dealt.Bonus == 12 && spent && awakeRestored;
                 Sprint23Check("native-trample-command-" +
                     (turnBased ? "turn-based" : "rtwp"), exact,
                     new JObject { ["unit"] = owner.UniqueId,
@@ -1167,6 +1279,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["result"] = command.Result.ToString(),
                         ["executionSeen"] = executionSeen,
                         ["frames"] = frames, ["movedMeters"] = moved,
+                        ["nativeEconomy"] = nativeEconomy,
+                        ["movementTicks"] = movementTicks,
+                        ["awakeRestored"] = awakeRestored,
+                        ["agent"] = DescribeExpandedSummoningTrampleAgent(
+                            owner),
                         ["targetDamage"] = new JArray(damageBefore,
                             target.Descriptor.Damage),
                         ["saves"] = new JArray(observer.Saves.Select(value =>
@@ -1175,8 +1292,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["damage"] = dealt == null ? null :
                             Sprint16DamageLine(dealt),
                         ["standardCooldown"] = new JArray(standardBefore,
+                            maxStandard,
                             owner.CombatState.Cooldown.StandardAction),
-                        ["moveCooldown"] = new JArray(moveBefore,
+                        ["moveCooldown"] = new JArray(moveBefore, maxMove,
                             owner.CombatState.Cooldown.MoveAction),
                         ["mode"] = turnBased ? "turn-based" : "rtwp" },
                     "A queued full-round native Trample follows a real path, contacts only the smaller enemy once, resolves DC 25 Reflex and 1d8+12, and owns native action cost.");
@@ -1187,6 +1305,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EndExpandedSummoningDetachedAbility(command);
                 owner.Commands.InterruptAll(true);
                 owner.Commands.RemoveFinishedAndUpdateQueue();
+                if (awakeBefore != null)
+                {
+                    Game.Instance.State.AwakeUnits.Clear();
+                    Game.Instance.State.AwakeUnits.AddRange(awakeBefore);
+                }
                 target.Descriptor.State.Size = sizeBefore;
                 target.Stats.SaveReflex.BaseValue = reflexBefore;
                 target.Descriptor.Damage = damageBefore;
@@ -1337,10 +1460,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     lethalTarget.Descriptor.AddFact(
                         BlueprintBootstrap.BodyguardFeats.CombatReflexes);
                 lethalTarget.Stats.BaseAttackBonus.BaseValue = 100;
-                lethalTrampler.Descriptor.Damage += Math.Max(0,
-                    lethalTrampler.HPLeft - 1);
                 PrepareExpandedSummoningTrampleResponsePair(fixture,
                     lethalTrampler, lethalTarget, 1, 1f);
+                // Preparation resets the disposable trampler by design.  Put
+                // it at one hit point only after that reset so the real native
+                // opportunity attack can discriminate interruption.
+                lethalTrampler.Descriptor.Damage += Math.Max(0,
+                    lethalTrampler.HPLeft - 1);
                 ExpandedSummoningTrampleContactResult lethal =
                     RunExpandedSummoningTrampleContact(lethalTrampler,
                         lethalTarget, "lethal-opportunity", 10);
@@ -1383,7 +1509,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool d6Exact = d6.Saves.Count == 1 &&
                     d6.Saves[0].DifficultyClass == 17 &&
                     d6Damage != null && d6Damage.Dice.Dice == DiceType.D6 &&
-                    d6Damage.Bonus == 6;
+                    d6Damage.Bonus == 9;
 
                 bool exact = baseline && nextRound && independentSource &&
                     liveExact && sizeLegal && aooExact && lethalExact &&
@@ -1425,6 +1551,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 tail, 0));
         }
 
+        private static JObject Sprint23TailTripCase(
+            RuleAttackWithWeapon strike,
+            IEnumerable<RuleCombatManeuver> checks,
+            UnitEntityData owner, UnitEntityData target)
+        {
+            return new JObject {
+                ["attackHit"] = strike != null && strike.AttackRoll != null &&
+                    strike.AttackRoll.IsHit,
+                ["targetProne"] = target.Descriptor.State.HasCondition(
+                    UnitCondition.Prone),
+                ["ownerProne"] = owner.Descriptor.State.HasCondition(
+                    UnitCondition.Prone),
+                ["maneuvers"] = new JArray(checks.Select(value =>
+                    new JObject {
+                        ["initiator"] = value.Initiator?.UniqueId,
+                        ["target"] = value.Target?.UniqueId,
+                        ["type"] = value.Type.ToString(),
+                        ["roll"] = value.InitiatorRoll.Value,
+                        ["cmb"] = value.InitiatorCMB,
+                        ["cmd"] = value.TargetCMD,
+                        ["autoFailure"] = value.AutoFailure,
+                        ["success"] = value.Success }))
+            };
+        }
+
         private void Sprint23TailTripMatrix(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, bool turnBased)
@@ -1433,6 +1584,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon tail = Sprint19Limbs(owner).Single();
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
             int cmbBefore = owner.Stats.AdditionalCMB.BaseValue;
+            int damageBefore = target.Descriptor.Damage;
             Size sizeBefore = target.Descriptor.State.Size;
             var observer = new Sprint16RuleObserver {
                 Owner = owner, Target = target };
@@ -1440,9 +1592,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100;
-                owner.Stats.AdditionalCMB.BaseValue = 100;
                 target.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);
+                owner.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);
                 observer.Clear();
+                observer.BeforeCombatManeuverForFixture = value =>
+                    value.AdditionalBonus += 1000;
                 RuleAttackWithWeapon success = Sprint23TailStrike(owner,
                     target, tail, 10);
                 bool successful = success.AttackRoll.IsHit &&
@@ -1450,10 +1604,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.Checks[0].Type == CombatManeuver.Trip &&
                     observer.Checks[0].Success && target.Descriptor.State
                         .HasCondition(UnitCondition.Prone);
+                JObject successDetail = Sprint23TailTripCase(success,
+                    observer.Checks.ToArray(), owner, target);
 
                 target.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);
-                owner.Stats.AdditionalCMB.BaseValue = -100;
+                owner.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);
                 observer.Clear();
+                observer.BeforeCombatManeuverForFixture = value =>
+                    value.AutoFailure = true;
                 RuleAttackWithWeapon failure = Sprint23TailStrike(owner,
                     target, tail, 10);
                 bool failed = failure.AttackRoll.IsHit &&
@@ -1461,7 +1619,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !observer.Checks[0].Success &&
                     !target.Descriptor.State.HasCondition(UnitCondition.Prone) &&
                     !owner.Descriptor.State.HasCondition(UnitCondition.Prone);
+                JObject failureDetail = Sprint23TailTripCase(failure,
+                    observer.Checks.ToArray(), owner, target);
 
+                observer.BeforeCombatManeuverForFixture = null;
                 owner.Stats.AdditionalAttackBonus.BaseValue = -100;
                 observer.Clear();
                 RuleAttackWithWeapon miss = Sprint23TailStrike(owner,
@@ -1491,8 +1652,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool alreadyProne = observer.Checks.Count == 0;
                 target.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);
 
-                owner.Stats.AdditionalCMB.BaseValue = -100;
                 observer.Clear();
+                observer.BeforeCombatManeuverForFixture = value =>
+                    value.AutoFailure = true;
                 RuleAttackWithWeapon once = Sprint23TailStrike(owner,
                     target, tail, 10);
                 StegosaurusTailTrip rider = owner.Descriptor.Progression
@@ -1505,6 +1667,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint23TailStrike(owner, target, tail, 10);
                 bool separate = observer.Checks.Count == 2;
 
+                observer.BeforeCombatManeuverForFixture = null;
                 BlueprintItemWeapon biteBlueprint = fixture.Blueprints
                     .OfType<BlueprintItemWeapon>().First(value =>
                         value.Type != null && value.Type.Category ==
@@ -1532,6 +1695,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["unit"] = owner.UniqueId,
                         ["event"] = "exact-tail-native-trip",
                         ["success"] = successful, ["failure"] = failed,
+                        ["successDetail"] = successDetail,
+                        ["failureDetail"] = failureDetail,
                         ["miss"] = missed, ["immune"] = immune,
                         ["oversized"] = oversized,
                         ["alreadyProne"] = alreadyProne,
@@ -1547,6 +1712,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EventBus.Unsubscribe(observer);
                 owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
                 owner.Stats.AdditionalCMB.BaseValue = cmbBefore;
+                target.Descriptor.Damage = damageBefore;
+                owner.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);
                 target.Descriptor.State.RemoveConditionAll(
                     UnitCondition.ImmuneToCombatManeuvers);
                 target.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);

@@ -98,6 +98,11 @@ namespace KingmakerGunslinger.DomainTests
                 tri.Facts.Contains("WeaponFocusGore") &&
                 tri.Facts.Contains("TriceratopsChassis"),
                 "Triceratops feat and chassis carriers.");
+            Assertions.Equal(24,
+                ArmoredDinosaurRulesPolicy.TriceratopsPerceptionRanks + 3 +
+                    1 + 3 + ArmoredDinosaurRulesPolicy
+                        .TriceratopsSkillFocusCompletionBonus,
+                "Triceratops completes Skill Focus's +6 at ten ranks.");
             Assertions.True(stego.Facts.Contains("Cleave") &&
                 stego.Facts.Contains("StegosaurusTrip") &&
                 stego.Facts.Contains("StegosaurusChassis"),
@@ -207,6 +212,9 @@ namespace KingmakerGunslinger.DomainTests
                 carrier.Contains("Damage > 0") ||
                 carrier.Contains("DamageDealt"),
                 "Trip eligibility is not gated on positive HP damage.");
+            Assertions.True(carrier.Contains("ownerWasProne") &&
+                carrier.Contains("RemoveConditionAll(UnitCondition.Prone)"),
+                "A failed special trip removes only its own native backlash.");
         }
 
         internal static void LedgerAppendIsExactAndAllocatedOnce()
@@ -375,7 +383,10 @@ namespace KingmakerGunslinger.DomainTests
                 "Sprint18RunFullAttack",
                 "Sprint23NativeChargeCommand",
                 "Sprint23NativeTrampleCommand",
-                "BeginExpandedSummoningDetachedAbility",
+                "new UnitUseAbility",
+                "UnitActionController",
+                "nativeEconomy",
+                "AwakeUnits",
                 "KMG_Summoning_Special_Triceratops_Trample",
                 "queued-native-charge",
                 "queued-native-trample-path-contact",
