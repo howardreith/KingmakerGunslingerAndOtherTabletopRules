@@ -406,6 +406,48 @@ namespace KingmakerGunslinger.DomainTests
                 "The existing persistence trilogy has one exact two-creature Sprint 23 scope.");
         }
 
+        internal static void HiddenPersistenceSelectsRegisteredCreatureRoutes()
+        {
+            foreach (string key in ExpandedSummoningRosterPersistencePolicy
+                .ArmoredDinosaurKeys)
+            {
+                Assertions.True(ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.Monster).Concat(ExpandedSummoningCatalog
+                        .GenerateVariants(SummonFamily.NaturesAlly)).Where(value =>
+                            value.Creature.Key == key && value.Multiplicity ==
+                            SummonMultiplicity.One).All(value =>
+                                !SummonVisibilityCatalog.IsPublished(value)),
+                    "Sprint 23 persistence starts while every new route is still hidden: " + key);
+                SummonVariantSpec selected = ExpandedSummoningRosterPersistencePolicy
+                    .SelectCreatureVariant(ExpandedSummoningRosterPersistencePolicy
+                        .ArmoredDinosaursScope, key);
+                Assertions.Equal(key, selected.Creature.Key,
+                    "The named hidden scope selects its registered creature identity.");
+                Assertions.Equal(SummonMultiplicity.One, selected.Multiplicity,
+                    "Persistence never creates a quantity-band group.");
+            }
+            bool broadRejected = false;
+            try
+            {
+                ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(
+                    ExpandedSummoningRosterPersistencePolicy.Scope,
+                    ArmoredDinosaurRulesPolicy.TriceratopsKey);
+            }
+            catch (InvalidOperationException) { broadRejected = true; }
+            Assertions.True(broadRejected,
+                "The broad released-roster fixture cannot bypass suppression.");
+            bool crossScopeRejected = false;
+            try
+            {
+                ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(
+                    ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope,
+                    ArmoredDinosaurRulesPolicy.StegosaurusKey);
+            }
+            catch (InvalidOperationException) { crossScopeRejected = true; }
+            Assertions.True(crossScopeRejected,
+                "A targeted scope cannot select another sprint's identity.");
+        }
+
         internal static void NativeReviewObservesRealCommandsAndControls()
         {
             string review = File.ReadAllText(
