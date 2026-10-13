@@ -143,9 +143,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(41,
+            Assertions.Equal(43,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against, why both Sprint 19 four-armed creatures join them on that same Troll rig, why Sprint 20's Giant Scorpion joins them on the Giant Spider, and why Sprint 21's Giant Crab does too while its own body is unauthored.");
+                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, including both Sprint 23 dinosaurs whose project-owned bodies bind to their measured native animation donors.");
         }
 
         /// <summary>

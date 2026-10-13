@@ -593,9 +593,9 @@ namespace KingmakerGunslinger.DomainTests
             string packager = File.ReadAllText(Path.Combine(root, "tools",
                 "create_deterministic_package.py"));
             Assertions.True(localBuild.Contains("'package.ps1') -Configuration Release -PackagePath $packagePath") &&
-                package.Contains("{ 356 } else { 354 }") &&
+                package.Contains("{ 363 } else { 361 }") &&
                 packager.Contains("133, 135, 222, 224, 225, 227, 229, 231, 233, 234, 235,") &&
-                packager.Contains("236, 237, 239, 241, 242, 244, 248, 249, 250, 251, 253, 254, 255, 256, 258, 259, 260, 261, 262, 264, 266, 272, 273, 274, 275, 276, 280, 281, 282, 284, 286, 287, 289, 291, 293, 295, 296, 298, 300, 302, 303, 304, 305, 307, 309, 310, 312, 316, 318, 319, 320, 321, 323, 325, 331, 333, 334, 336, 338, 340, 342, 344, 345, 346, 347, 348, 349, 350, 352, 354, 356))"),
+                packager.Contains("236, 237, 239, 241, 242, 244, 248, 249, 250, 251, 253, 254, 255, 256, 258, 259, 260, 261, 262, 264, 266, 272, 273, 274, 275, 276, 280, 281, 282, 284, 286, 287, 289, 291, 293, 295, 296, 298, 300, 302, 303, 304, 305, 307, 309, 310, 312, 316, 318, 319, 320, 321, 323, 325, 331, 333, 334, 336, 338, 340, 342, 344, 345, 346, 347, 348, 349, 350, 352, 354, 356, 361, 363))"),
                 "deterministic package counts preserve released assets, crocodilian models/action icons and four master trait exports");
             Assertions.True(package.Contains("create_deterministic_package.py") &&
                 package.Contains("expectedPackageFileCount") &&

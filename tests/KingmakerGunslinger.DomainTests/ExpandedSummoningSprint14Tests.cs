@@ -1006,6 +1006,9 @@ namespace KingmakerGunslinger.DomainTests
                     value.Key != GiantCrabRulesPolicy.GiantCrabKey &&
                     // Sprint 22 assigns the printed Perception-only ranks.
                     value.Key != AnkylosaurusRulesPolicy.Key &&
+                    // Sprint 23 derives each adult dinosaur's printed
+                    // Perception-only allocation independently.
+                    !ArmoredDinosaurRulesPolicy.UsesExactRanks(value.Key) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

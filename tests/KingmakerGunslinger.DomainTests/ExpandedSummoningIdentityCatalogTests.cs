@@ -333,7 +333,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();
-            Assertions.Equal(54, ExpandedSummoningNaturalProfiles.All.Count,
+            Assertions.Equal(56, ExpandedSummoningNaturalProfiles.All.Count,
                 "Natural reconstruction count changed.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
             Assertions.Equal("Small", dog.Size, "Dog size changed.");

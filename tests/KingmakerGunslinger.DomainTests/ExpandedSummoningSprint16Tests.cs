@@ -393,6 +393,8 @@ namespace KingmakerGunslinger.DomainTests
                     .IsSprint19Creature(value.Creature.Key) &&
                 value.Creature.Key !=
                     GiantScorpionRulesPolicy.GiantScorpionKey &&
+                !ArmoredDinosaurRulesPolicy.UsesExactRanks(
+                    value.Creature.Key) &&
                 !SummonVisibilityCatalog.IsPublished(value)),
                 "No creature qualified through Sprint 16 may become withheld.");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -

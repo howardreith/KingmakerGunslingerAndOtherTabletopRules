@@ -63,6 +63,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "9d7d36e71ea141258509b8a32557577e", "KMG_Summoning_Unit_Bebelith", "adf498a88b3c4fd1a5c40f9d2c537f0f", "KMG_Summoning_Special_Bebelith_RacialSkills", "AddFacts" },
             new[] { "9d7d36e71ea141258509b8a32557577e", "KMG_Summoning_Unit_Bebelith", "d749d5a287dacef12983e7f3ea9205fd", "KMG_Summoning_Special_Bebelith_ChassisCorrection", "AddFacts" },
             new[] { "9d7d36e71ea141258509b8a32557577e", "KMG_Summoning_Unit_Bebelith", "9206c7293c114d92b2ec731c906c02df", "KMG_Summoning_Special_Bebelith_Web", "AddFacts" },
+            // Sprint 23. These are the only project-owned facts referenced
+            // directly from the two units' AddFacts arrays. Triceratops charge
+            // and trample are owned signature abilities on its private unit
+            // type; they are not AddFacts and cannot be disguised as such.
+            new[] { "ce540cd4b3b74861a4a91458d742a692", "KMG_Summoning_Unit_Triceratops", "5e08305bfe3b4ab2bd65c74dd472c65c", "KMG_Summoning_Natural_Triceratops_Chassis", "AddFacts" },
+            new[] { "39cab5be4dc148339f4ce8b0157bd716", "KMG_Summoning_Unit_Stegosaurus", "95278500c12647adbf53f8b77b7d3955", "KMG_Summoning_Natural_Stegosaurus_Chassis", "AddFacts" },
+            new[] { "39cab5be4dc148339f4ce8b0157bd716", "KMG_Summoning_Unit_Stegosaurus", "ce0af5b47a1a462095e9f308a5d1bba1", "KMG_Summoning_Special_Stegosaurus_Trip", "AddFacts" },
         };
 
         internal static string[][] QualifiedReferenceRows
