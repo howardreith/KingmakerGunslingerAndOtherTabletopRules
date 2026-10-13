@@ -27,8 +27,8 @@ Failures and exact evidence identities are preserved in
 The publication source removes only the Triceratops and Stegosaurus
 suppression keys and regenerates the controlled roster. Its derived surface is
 105 project creatures, 534 Summon Monster placements, 541 Summon Nature's Ally
-placements, 1,075 generated placements, 29 retained native wrappers and 1,104
-visible choices. The named Sprint 23 focus passed 12/12 and the affected
+placements, 1,075 generated placements, 29 retained native wrappers and
+1,104 visible choices. The named Sprint 23 focus passed 12/12 and the affected
 Expanded Summoning focus passed 443/443 with production compilation.
 
 Next action: run one Sprint gate for this exact public artifact, record its
