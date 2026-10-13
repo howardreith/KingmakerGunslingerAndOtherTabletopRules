@@ -962,8 +962,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // rejecting an otherwise native selection surface by root shape.
             Component clickable=view==null ? null : view
                 .GetComponentsInChildren<Component>(true).FirstOrDefault(
-                    value=>value!=null && value.GetType().FullName==
-                        "Kingmaker.UI.Selection.ClickableObject");
+                    value=>Sprint22IsClickableComponent(value));
             Vector2 bounds=Vector2.zero,coreBounds=Vector2.zero;
             bool derived=false;
             try
@@ -994,6 +993,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["cameraBounds"]=SurveyVector(new Vector3(bounds.x,bounds.y,0)),
                 ["cameraCoreBounds"]=SurveyVector(new Vector3(coreBounds.x,coreBounds.y,0)),
                 ["corpulence"]=unit==null ? 0 : unit.Corpulence };
+        }
+
+        private static bool Sprint22IsClickableComponent(Component value)
+        {
+            // UnitEntityView implementations may derive from ClickableObject
+            // instead of installing one as an exact leaf component.
+            for(Type type=value==null ? null : value.GetType();type!=null;
+                type=type.BaseType)
+                if(type.FullName=="Kingmaker.UI.Selection.ClickableObject")
+                    return true;
+            return false;
         }
 
         private static JObject Sprint22UnitReadback(UnitEntityData unit)
