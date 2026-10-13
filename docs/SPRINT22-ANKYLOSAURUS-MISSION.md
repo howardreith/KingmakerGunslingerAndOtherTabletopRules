@@ -127,9 +127,11 @@ RELEASED/STOP documentation through a small authorized follow-up PR, restore
 today's actual installation/settings and clean owned fixtures/processes/leases.
 No permanent deployment, no Sprint 23, no unrelated repository work.
 
-## Qualification disposition
+## Release disposition
 
-Sprint 22 is **QUALIFIED** for exact-candidate promotion. Tested source is
+Sprint 22 is **RELEASED** as stable
+[v0.0.151](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.151).
+The qualified tested source is
 `d42e33ccc5b282daad594836b1defd4f680990e5`; source fingerprint
 `a9b7755671993ea386886ec512222d59402e42d13838c5c8e07a06ebafadecc0`;
 ZIP `5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67`;
@@ -146,3 +148,19 @@ unresolved finding. All ten published Ankylosaurus routes and the 1,063 + 29 =
 human Mods, registry and unrelated-save intake, and the owned fixture is clean.
 Owner aesthetic approval remains `NOT_PERFORMED_NONBLOCKING`. Sprint 23 has not
 started.
+
+PR #39 merged normally at
+`30f41dfb76a8264fdfd3238c9cba05a4c131f3bf`. The annotated `v0.0.151`
+tag object is `1facf4e563132c6f5d89be074f02c14e2a35b9a6` and peels to that merge.
+GitHub published the release at 2026-10-13 06:19:26Z as stable Latest with
+the ZIP, `SHA256SUMS.txt`, and `release-manifest.json`. The downloaded ZIP
+passed strict standalone validation and retained the qualified SHA-256 above.
+The manifest records qualification reporting commit
+`67080d025012e47e5e779866ec143ca4e76d260b`, exact-artifact promotion, and
+`rebuiltForPublication=false`. The independent release-verification record is
+SHA-256 `ba7c4bf67f059e4dac7bf90f2c09aea773e7fb392fbf35f496264b7ad60ba001`.
+The post-publication restoration audit passed with SHA-256
+`c9b7fa5f20eb86a62b589da48aad5c1af14da29b3a33c7260d5e2102d8343d1e`.
+
+The next action is **STOP**. Sprint 22 is complete; no permanent deployment is
+left behind, and Sprint 23 is not started.
