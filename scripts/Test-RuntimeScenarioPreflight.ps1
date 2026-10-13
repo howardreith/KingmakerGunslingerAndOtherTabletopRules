@@ -169,9 +169,11 @@ $expected = @(
     'observe-expanded-summoning-variant-menu',
     'disposable-expanded-summoning',
     'disposable-expanded-summoning-native-profile',
+    'disposable-expanded-summoning-sprint22-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
+    'observe-expanded-summoning-sprint22-contracts',
     'disposable-expanded-summoning-sprint18-review',
     'disposable-expanded-summoning-sprint19-review',
     'disposable-expanded-summoning-sprint20-review',
@@ -786,6 +788,33 @@ $nativeSummoningRequest = New-KmgRuntimeRequest @nativeSummoningArgs -ExitAfterC
 Assert-True ($nativeSummoningRequest.parameters.Count -eq 0 -and $nativeSummoningRequest.exitAfterCompletion) 'native-summoning-request-is-save-free'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @nativeSummoningArgs -ExitAfterCompletion $false } 'native-summoning-rejects-no-exit'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @nativeSummoningArgs -ExitAfterCompletion $true -Parameters @{saveName='KMG_AUTOMATION_WORKING'} } 'native-summoning-rejects-save-name'
+$sprint22ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint22-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+foreach ($phase in @('rtwp-foundation','turn-based-control')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint22ReviewArgs `
+        -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint22-review-allows-$phase"
+    $reviewRequest = New-KmgRuntimeRequest @sprint22ReviewArgs `
+        -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
+            'sprint22-review-request-test')
+    $reviewRoundTrip = $reviewRequest | ConvertTo-Json -Depth 8 |
+        ConvertFrom-Json
+    Assert-True (@($reviewRoundTrip.parameters.PSObject.Properties).Count -eq 1 -and
+        $reviewRoundTrip.parameters.reviewPhase -ceq $phase) `
+        "sprint22-review-serializes-$phase"
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint22ReviewArgs `
+    -ExitAfterCompletion $true } `
+    'sprint22-review-requires-bounded-phase'
+foreach ($parameters in @(
+    @{reviewPhase='all'},
+    @{reviewPhase='rtwp-foundation';saveName='KMG_AUTOMATION_WORKING'},
+    @{saveName='KMG_AUTOMATION_WORKING'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint22ReviewArgs `
+        -ExitAfterCompletion $true -Parameters $parameters } 'sprint22-review-rejects-unscoped-parameters'
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint22ReviewArgs `
+    -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } `
+    'sprint22-review-requires-automatic-exit'
 Assert-True (-not $expandedSummoningPlayerPath.RequiresManualInteraction) `
     'expanded-summoning-player-path-is-autonomous'
 Assert-True $expandedSummoningPlayerPath.RequiresSaveName `

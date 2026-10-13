@@ -21,6 +21,69 @@ branch without a runtime lease, a deployment, or a launch.
 
 Set-StrictMode -Version Latest
 
+# The two owned boundaries must each get a restoration attempt. Callers first
+# establish that the native process is gone; this helper never bypasses that
+# guard or suppresses either failure.
+function Invoke-KmgIndependentBoundaryRestoration {
+    param([Parameter(Mandatory=$true)][scriptblock]$RestoreSettings,
+        [Parameter(Mandatory=$true)][scriptblock]$RestoreInstallation)
+    $settingsError=$null;$installationError=$null;$transaction=$null
+    try { & $RestoreSettings | Out-Null } catch { $settingsError=$_ }
+    try { $transaction=& $RestoreInstallation } catch { $installationError=$_ }
+    return [pscustomobject]@{settingsError=$settingsError;installationError=$installationError;transaction=$transaction}
+}
+
+function Get-KmgExactRuntimeLaunchReceipt {
+    param([Parameter(Mandatory=$true)][AllowEmptyCollection()][object[]]$Output)
+    $receipts=@($Output | Where-Object { $null -ne $_.PSObject.Properties['kind'] -and $_.kind -ceq 'KmgRuntimeLaunchReceipt' })
+    if($receipts.Count -ne 1) { throw 'Exact current-run launcher receipt is missing or duplicated.' }
+    $receipt=$receipts[0]
+    if([string]::IsNullOrWhiteSpace($receipt.runId) -or [string]::IsNullOrWhiteSpace($receipt.evidenceDirectory) -or
+        -not [IO.Path]::IsPathRooted($receipt.evidenceDirectory)) { throw 'Launcher receipt does not identify an exact absolute evidence directory.' }
+    $evidence=[IO.Path]::GetFullPath($receipt.evidenceDirectory).TrimEnd('\','/')
+    $requestPath=Join-Path $evidence 'runtime-request.json'
+    $resultPath=Join-Path $evidence 'runtime-result.json'
+    if(-not(Test-Path -LiteralPath $requestPath -PathType Leaf) -or -not(Test-Path -LiteralPath $resultPath -PathType Leaf)) {
+        throw 'Launcher receipt evidence is missing its exact request or result.'
+    }
+    try { $request=Get-Content -LiteralPath $requestPath -Raw | ConvertFrom-Json -ErrorAction Stop
+        $result=Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json -ErrorAction Stop }
+    catch { throw 'Launcher receipt request or result is not valid JSON.' }
+    $requestEvidence=if($null -ne $request.PSObject.Properties['evidenceDirectory']) {[IO.Path]::GetFullPath([string]$request.evidenceDirectory).TrimEnd('\','/')}else{''}
+    $resultEvidence=if($null -ne $result.PSObject.Properties['evidenceDirectory']) {[IO.Path]::GetFullPath([string]$result.evidenceDirectory).TrimEnd('\','/')}else{''}
+    if($request.runId -cne $receipt.runId -or $result.runId -cne $receipt.runId -or
+        -not $requestEvidence.Equals($evidence,[StringComparison]::OrdinalIgnoreCase) -or
+        -not $resultEvidence.Equals($evidence,[StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Launcher receipt does not bind the exact RunId request and result.'
+    }
+    return $receipt
+}
+
+function Get-KmgFlatGameSettingsValues {
+    param([Parameter(Mandatory=$true)]$Key)
+    if($Key.GetSubKeyNames().Count -ne 0) { throw 'Unexpected game-settings subkeys; no settings mutation is authorized.' }
+    return @($Key.GetValueNames() | Sort-Object | ForEach-Object {
+        [pscustomobject]@{name=$_;kind=$Key.GetValueKind($_).ToString();
+            value=$Key.GetValue($_,$null,[Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)}
+    })
+}
+
+function Restore-KmgFlatGameSettingsValues {
+    param([Parameter(Mandatory=$true)]$Key,
+        [Parameter(Mandatory=$true)][AllowEmptyCollection()][object[]]$Snapshot)
+    if($Key.GetSubKeyNames().Count -ne 0) { throw 'Unexpected game-settings subkeys; restoration requires review.' }
+    $originalNames=@($Snapshot | ForEach-Object {$_.name})
+    foreach($name in $Key.GetValueNames()) { if($originalNames -cnotcontains $name) { $Key.DeleteValue($name,$true) } }
+    foreach($item in $Snapshot) {
+        $kind=[Microsoft.Win32.RegistryValueKind][Enum]::Parse([Microsoft.Win32.RegistryValueKind],$item.kind)
+        $Key.SetValue($item.name,$item.value,$kind)
+    }
+    $after=@(Get-KmgFlatGameSettingsValues -Key $Key)
+    if(($Snapshot | ConvertTo-Json -Depth 12 -Compress) -cne ($after | ConvertTo-Json -Depth 12 -Compress)) {
+        throw 'Exact native game-settings restoration differs.'
+    }
+}
+
 function ConvertFrom-KmgSerpentineBodyReviewJson {
     param([Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json)
     # Windows PowerShell emits a parsed top-level JSON array as one pipeline

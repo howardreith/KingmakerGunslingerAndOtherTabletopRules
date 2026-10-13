@@ -392,6 +392,16 @@ function Read-KmgBuildLocalManifest {
     return $manifest
 }
 
+function Assert-KmgExplicitCandidateIdentity {
+    param($Manifest, $Git, [string]$SourceStateSha256, [string]$ExpectedVersion, [switch]$AllowDirtyGit)
+    if ($Manifest.version -cne $ExpectedVersion -or
+        ($Git.Status.Count -ne 0 -and -not $AllowDirtyGit) -or
+        $Manifest.commit -cne $Git.Commit -or
+        $Manifest.sourceStateSha256 -cne $SourceStateSha256) {
+        throw 'Explicit candidate requires its exact version, current source state and commit before deployment.'
+    }
+}
+
 function Get-KmgGitState {
     param([Parameter(Mandatory = $true)][string]$RepositoryRoot)
     $commit = (& git -C $RepositoryRoot rev-parse HEAD).Trim()

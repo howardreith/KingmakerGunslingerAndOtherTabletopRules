@@ -53,7 +53,7 @@ namespace KingmakerGunslinger.Assets
     /// approved fallback: a Pteranodon that looks like a giant eagle is a
     /// cosmetic shortfall, an invisible or half-bound one is a defect.
     /// </summary>
-    internal static class PteranodonAssetRuntime
+    internal static partial class PteranodonAssetRuntime
     {
         internal const string MeshDataRelativePath =
             "assets/pteranodon/pteranodon-mesh.json";
@@ -597,6 +597,7 @@ namespace KingmakerGunslinger.Assets
             ConfigureSprint13Creatures(context);
             ConfigureSprint14Insects(context);
             ConfigureCrocodilians(context);
+            ConfigureAnkylosaurusVisual(context);
         }
 
         private static void ConfigureCrocodilians(ModContext context)

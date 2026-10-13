@@ -560,8 +560,14 @@ def planned():
         # Fortitude and a Will assigned to each other's slots, and one hit
         # point per die more than the block prints.
         ("KMG.Summoning.Special.Bebelith.ChassisCorrection", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Ankylosaurus.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Special.Ankylosaurus.Stun", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Ankylosaurus.Dazed", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Ankylosaurus.Stunned", "BlueprintBuff"),
+        ("KMG.Summoning.Natural.Ankylosaurus.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Ankylosaurus.TailType", "BlueprintWeaponType"),
     ))
-    if len(rows) != 2063 or len({symbol for symbol, _ in rows}) != 2063:
+    if len(rows) != 2069 or len({symbol for symbol, _ in rows}) != 2069:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

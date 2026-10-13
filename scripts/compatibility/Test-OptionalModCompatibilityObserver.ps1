@@ -3,7 +3,9 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
+. (Join-Path $root 'scripts\RuntimeHarness.Common.ps1')
 . (Join-Path $root 'scripts\RuntimeAutomation.Common.ps1')
+$activeVersion = [string](Get-Content -LiteralPath (Join-Path $root 'Info.json') -Raw | ConvertFrom-Json).Version
 
 $runtimeProfiles = @(
     'gunslinger-only', 'gunslinger-call-of-the-wild', 'gunslinger-arms-armor',
@@ -14,7 +16,7 @@ $runtimeProfiles = @(
 )
 foreach ($profile in $runtimeProfiles) {
     [void](Assert-KmgRuntimeScenarioPreflight `
-        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.120' `
+        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion $activeVersion `
         -TimeoutSeconds 120 -Parameters @{ profileId = $profile })
 }
 
@@ -28,7 +30,7 @@ foreach ($parameters in $rejected) {
     $failedClosed = $false
     try {
         [void](Assert-KmgRuntimeScenarioPreflight `
-            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.120' `
+            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion $activeVersion `
             -TimeoutSeconds 120 -Parameters $parameters)
     }
     catch { $failedClosed = $true }
@@ -71,7 +73,7 @@ $wrapper = Get-Content -LiteralPath (Join-Path $root `
 foreach ($contract in @('[ValidateRange(120, 900)]',
     '[int]$RuntimeTimeoutSeconds = 300',
     'TimeoutSeconds = $RuntimeTimeoutSeconds',
-    'ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds',
+    'ObserverStartupTimeoutSeconds = [Math]::Min($RuntimeTimeoutSeconds,600)',
     "'observe-feature-module-settings'", '[hashtable]$Parameters = @{}',
     "'Mods\KingmakerGunslinger\FeatureModules.json'",
     '$arguments.Parameters = $Parameters')) {
