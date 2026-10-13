@@ -398,8 +398,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ? originalBodyOutcome.StartsWith("visual:attached;",
                             StringComparison.Ordinal) &&
                             armoredOwned.Length == 3
-                        : originalBodyOutcome == "not-attempted" &&
-                            armoredOwned.Length == 0;
+                        : ExpandedSummoningRosterPersistencePolicy
+                            .ModuleOffArmoredBodyIsClean(originalBodyOutcome,
+                                armoredOwned.Length);
                 visual &= armoredBodyExact;
                 if (!_context.FeatureModules.Active.ExpandedSummoning)
                     visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
