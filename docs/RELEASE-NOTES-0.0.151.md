@@ -55,3 +55,19 @@ DLL MVID is `abfbf93f-60e4-44ac-9ac8-e21568962b05`. The complete suite passed
 high-risk combined, and enabled/disabled persistence qualification. The human
 installation, original registry settings and unrelated saves were restored
 exactly after testing.
+
+## Release verification
+
+[v0.0.151](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.151)
+was published as stable Latest at 2026-10-13 06:19:26Z. PR #39 merged at
+`30f41dfb76a8264fdfd3238c9cba05a4c131f3bf`; the annotated tag peels to
+that commit. The published ZIP was downloaded again, retained SHA-256
+`5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67`,
+and passed strict standalone UMM package validation. The published manifest
+records tested source `d42e33cc...`, qualification reporting commit
+`67080d02...`, exact-artifact promotion and no publication rebuild.
+The post-publication audit again matched the original human installation,
+registry and unrelated saves exactly.
+
+Owner aesthetic approval remains `NOT_PERFORMED_NONBLOCKING`. Sprint 22 is
+RELEASED/STOP; Sprint 23 has not started.
