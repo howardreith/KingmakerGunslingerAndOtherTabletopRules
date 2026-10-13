@@ -1,4 +1,4 @@
-# Sprint 23: Triceratops and Stegosaurus — public inventory observer repair ready
+# Sprint 23: Triceratops and Stegosaurus — public candidate qualified
 
 Current owner mission: [Sprint 23 contract](docs/SPRINT23-TRICERATOPS-STEGOSAURUS-MISSION.md).
 Read `AGENTS.md` and `docs/VALIDATION-POLICY.md`. Work only on HOWARD-LAPTOP.
@@ -31,12 +31,14 @@ placements, 1,075 generated placements, 29 retained native wrappers and
 1,104 visible choices. The named Sprint 23 focus passed 12/12 and the affected
 Expanded Summoning focus passed 443/443 with production compilation.
 
-Public source `e18938085f16403db43e0ae0c3b17ab1f5fc7059` passed its Sprint
-gate 2,594/2,594 and strict package validation. Its package SHA-256 was
-`c751a95784928c0097691debfbb0c2cabe30964719fde25e08148cb49e20b43d`,
-DLL SHA-256 was
-`b8ce1f7d8f9144e7ea9776d3a0463c0ffa157a9d8c52666b60b817a9851bd5b6`,
-and MVID was `2e46ce77-8a4b-4658-9414-175c2ee34cbc`.
+Final public candidate source `e0d7cb863b23925cfbf1721e3965c05e811a0bd7`
+passed its Sprint gate 2,594/2,594 and strict package validation. Source-state
+SHA-256 is `04ef0ced7549e7f1bcc9bceb91ae04380a1e2c8bcebb9d1b34edd95404f48c7b`;
+package SHA-256 is
+`e417ad95e796bac7c312ed60e859b888b1dd2f83818ef211027e35d2c1c663db`;
+DLL SHA-256 is
+`594113de52c514702b6999fd4e3d3abfd9823e12d003e63d7953f622feaa6c05`;
+MVID is `5afdfc38-4657-48e2-a0fa-942098189a4b`.
 
 The first public high-risk inventory observation correctly failed 2 of 50
 assertions: the exact-reference census lacked Sprint 22's two owned
@@ -49,11 +51,23 @@ profile identities, and keeps profile-declared special facts in equality.
 Focused inventory tests passed 4/4 and Sprint 23 tests passed 12/12 with
 production compilation.
 
-Next action: commit and push this coherent observer repair, run one Sprint gate
-for the resulting exact public artifact, then rerun the affected public
-inventory observation and the Sprint 23 RTWP publication-route case under
-separate fresh guarded transactions. Do not repeat the already qualified
-hidden mechanics pipeline unless new evidence invalidates it.
+The repaired public high-risk inventory passed 50/50 assertions in run
+`20261013T2015478087914Z-8346e9b4bedb4d50a019508e64c73cf9`; proof SHA-256 is
+`cc66691d94b1f7fdb66d976d8bb3dcc7bd575c66c6187f6ea30225ca4fca22ea`.
+The public high-risk RTWP route case passed 45/45 assertions, including all
+twelve published roots, in run
+`20261013T2022330281385Z-652aaac6028d40ce818d710fd1310289`; proof SHA-256 is
+`dfa5aa58a33fff8665c86e88cd4911310b38f5b8d636a697c17c1aabfa632c46`.
+Transactions `compat-20261013T201406Z-3bd12dc032ed` and
+`compat-20261013T202049Z-fa07db3e4b9a` both restored exact settings bytes. No
+transaction remains active.
+
+Next action: commit and push these qualification records, refetch master and
+stable releases, update PR #41 to its current qualified header, mark it ready
+and merge normally. Promote the exact tested package without rebuilding,
+publish the next unused stable patch, download and verify every release asset,
+perform the final restoration audit, then synchronize RELEASED/STOP records on
+master through the authorized documentation-only branch.
 
 Baseline master remains `bda157c6c402b329f47fb0531d96b52e01514114` and stable
 v0.0.151 remains frozen. Refetch before merge/publication and select the next
