@@ -75,6 +75,7 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
     "src/KingmakerGunslinger/Development/DevelopmentUi.cs",
     "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+    "src/KingmakerGunslinger/Properties/AssemblyInfo.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs",
     "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningInventoryObservationPolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs",
@@ -139,10 +140,16 @@ def validate(root: Path):
 
     info = common.document(root, "Info.json")
     props = (root / "Directory.Build.props").read_text(encoding="utf-8-sig")
+    assembly = (root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs").read_text(
+        encoding="utf-8-sig")
     if info.get("Version") != VERSION or \
             "<KmgVersion>" + VERSION + "</KmgVersion>" not in props or \
             "<KmgInformationalVersion>" + INFORMATIONAL_VERSION + \
-            "</KmgInformationalVersion>" not in props:
+            "</KmgInformationalVersion>" not in props or \
+            'AssemblyVersion("' + VERSION + '")' not in assembly or \
+            'AssemblyFileVersion("' + VERSION + '")' not in assembly or \
+            'AssemblyInformationalVersion("' + INFORMATIONAL_VERSION + '")' \
+            not in assembly:
         raise AssertionError("Active version metadata mismatch")
 
     static = common.document(root, "validation/static-validation.json")
