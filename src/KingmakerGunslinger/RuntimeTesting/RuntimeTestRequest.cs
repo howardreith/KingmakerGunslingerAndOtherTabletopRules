@@ -113,6 +113,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "turn-based-control" ? phase : null;
         }
 
+        internal static string Sprint23ReviewPhase(RuntimeTestRequest request)
+        {
+            if (request == null || request.Scenario != RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint23NativeReview ||
+                request.Parameters == null || request.Parameters.Count != 1 ||
+                request.Parameters["reviewPhase"]?.Type != JTokenType.String)
+                return null;
+            string phase = (string)request.Parameters["reviewPhase"];
+            return phase == "rtwp-foundation" ||
+                phase == "turn-based-control" ? phase : null;
+        }
+
         private static readonly string[] AllowedMembers =
         {
             "schemaVersion", "enabled", "runId", "scenario",
@@ -259,6 +271,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningSprint22NativeReview &&
                 (!request.ExitAfterCompletion || Sprint22ReviewPhase(request) == null))
                 return "sprint22-native-review-phase-and-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint23NativeReview &&
+                (!request.ExitAfterCompletion || Sprint23ReviewPhase(request) == null))
+                return "sprint23-native-review-phase-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather && !request.ExitAfterCompletion)
                 return "whiteout-observation-exit-required";
             if ((request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
@@ -601,6 +617,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return "scenario-timeouts-not-allowed";
                 if (Sprint22ReviewPhase(request) == null)
                     return "sprint22-native-review-phase-invalid";
+            }
+            else if (request.Scenario == RuntimeTestScenarioCatalog
+                .DisposableExpandedSummoningSprint23NativeReview)
+            {
+                if (request.MainMenuTimeoutSeconds != 0 ||
+                    request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 ||
+                    request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 ||
+                    request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (Sprint23ReviewPhase(request) == null)
+                    return "sprint23-native-review-phase-invalid";
             }
             else if (request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)

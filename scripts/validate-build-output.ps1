@@ -206,6 +206,10 @@ $allowedRelativePaths = @{
     'assets\sprint21-arthropods\bebelith-albedo.png' = $true
     'assets\ankylosaurus\ankylosaurus-mesh.json' = $true
     'assets\ankylosaurus\ankylosaurus-albedo.png' = $true
+    'assets\sprint23-armored-dinosaurs\triceratops-mesh.json' = $true
+    'assets\sprint23-armored-dinosaurs\triceratops-albedo.png' = $true
+    'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json' = $true
+    'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = $true
 }
 
 $unexpected = @()

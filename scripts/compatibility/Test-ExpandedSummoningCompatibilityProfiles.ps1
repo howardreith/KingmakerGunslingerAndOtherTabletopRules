@@ -58,13 +58,17 @@ $phaseClause = @($phaseGuards[0].Clauses | Where-Object {
 })[0]
 $validatePhase = [scriptblock]::Create(($phaseClause.Item2.Statements |
     ForEach-Object { $_.Extent.Text }) -join "`n")
-foreach ($phase in @('rtwp-foundation', 'turn-based-control')) {
-    $Scenario = @('disposable-expanded-summoning-sprint22-native-review')
-    $Parameters = @{ reviewPhase = $phase }
-    if (-not (& $classifyPhase)) {
-        throw "Sprint 22 compatibility classifier rejected $phase."
+foreach ($reviewScenario in @(
+    'disposable-expanded-summoning-sprint22-native-review',
+    'disposable-expanded-summoning-sprint23-native-review')) {
+    foreach ($phase in @('rtwp-foundation', 'turn-based-control')) {
+        $Scenario = @($reviewScenario)
+        $Parameters = @{ reviewPhase = $phase }
+        if (-not (& $classifyPhase)) {
+            throw "Expanded Summoning compatibility classifier rejected $reviewScenario/$phase."
+        }
+        & $validatePhase
     }
-    & $validatePhase
 }
 $invalidPhaseCases = @(
     @{ Scenario = @('mod-load-smoke'); Parameters = @{}; Classified = $false },
@@ -73,6 +77,9 @@ $invalidPhaseCases = @(
     @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review'); Parameters = @{ reviewPhase = 'RTWP-foundation' }; Classified = $true },
     @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review'); Parameters = @{ reviewPhase = 'rtwp-foundation'; saveName = 'KMG_AUTOMATION_WORKING' }; Classified = $true },
     @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review', 'mod-load-smoke'); Parameters = @{ reviewPhase = 'rtwp-foundation' }; Classified = $true }
+    @{ Scenario = @('disposable-expanded-summoning-sprint23-native-review'); Parameters = @{}; Classified = $true },
+    @{ Scenario = @('disposable-expanded-summoning-sprint23-native-review'); Parameters = @{ reviewPhase = 'all' }; Classified = $true },
+    @{ Scenario = @('disposable-expanded-summoning-sprint23-native-review', 'mod-load-smoke'); Parameters = @{ reviewPhase = 'rtwp-foundation' }; Classified = $true }
 )
 foreach ($case in $invalidPhaseCases) {
     $Scenario = $case.Scenario
@@ -90,4 +97,4 @@ foreach ($case in $invalidPhaseCases) {
     }
 }
 
-Write-Host "Expanded Summoning compatibility profile tests passed: $($required.Count) profiles; Sprint 22 phase boundary passed."
+Write-Host "Expanded Summoning compatibility profile tests passed: $($required.Count) profiles; Sprint 22/23 phase boundary passed."

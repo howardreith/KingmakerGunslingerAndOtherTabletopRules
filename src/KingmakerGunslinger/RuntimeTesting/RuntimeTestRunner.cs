@@ -36193,6 +36193,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopSprint20Review(result);
             StopSprint21Review(result);
             if (_sprint22Steps != null || _sprint22Fixture != null) CleanupSprint22NativeReview();
+            if (_sprint23Steps != null || _sprint23Fixture != null) CleanupSprint23NativeReview();
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

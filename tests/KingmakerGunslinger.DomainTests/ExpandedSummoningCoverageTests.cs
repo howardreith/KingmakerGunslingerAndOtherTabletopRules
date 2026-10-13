@@ -69,16 +69,16 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(103, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(105, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(114,
+            Assertions.Equal(116,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 102 project-owned plus 11 native wrappers, and the Giant Crab Sprint 21 registered.");
-            // Represented is now published, for every one of them: the
-            // Giant Crab was the last creature in the series still withheld.
+                "Represented creatures include the two registered Sprint 23 identities plus retained native wrappers.");
+            // The two Sprint 23 creatures are represented but remain hidden
+            // until their current native qualification is complete.
             Assertions.Equal(114,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "Every represented creature is published after Sprint 21.");
+                "Only the two Sprint 23 creatures are represented but unpublished.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
                 .Contains("stirge"),
                 "The requalified Stirge must count as published coverage.");
@@ -89,10 +89,9 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(31, notRepresented,
-                "31 ideal-roster creatures remain unregistered after the "
-                + "Sprint 21 Giant Crab joins the Sprint 20 Giant Scorpion "
-                + "and the two Sprint 19 identities.");
+            Assertions.Equal(29, notRepresented,
+                "29 ideal-roster creatures remain unregistered after both "
+                + "Sprint 23 armored dinosaurs receive identities.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");

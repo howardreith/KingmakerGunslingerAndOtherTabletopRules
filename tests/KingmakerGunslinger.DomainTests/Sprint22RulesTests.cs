@@ -139,7 +139,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             ExpandedSummoningCatalog.Validate();
             var identities=ExpandedSummoningIdentityCatalog.Build();
-            var tail=identities.Skip(identities.Count-AppendedLedgerIdentities).Select(value=>value.Symbol).ToArray();
+            int start=identities.ToList().FindIndex(value=>
+                value.Symbol==AnkylosaurusRulesPolicy.UnitTypeSymbol);
+            var tail=identities.Skip(start).Take(AppendedLedgerIdentities)
+                .Select(value=>value.Symbol).ToArray();
             Assertions.True(tail.SequenceEqual(new[] { AnkylosaurusRulesPolicy.UnitTypeSymbol,
                 AnkylosaurusRulesPolicy.StunFeatureSymbol,AnkylosaurusRulesPolicy.DazedSymbol,
                 AnkylosaurusRulesPolicy.StunnedSymbol,AnkylosaurusRulesPolicy.ChassisFeatureSymbol,
