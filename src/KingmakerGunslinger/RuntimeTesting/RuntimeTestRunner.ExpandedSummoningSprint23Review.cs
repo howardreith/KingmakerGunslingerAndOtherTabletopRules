@@ -218,6 +218,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                         turnBased)) yield return frame;
                     foreach (int frame in Sprint23NativeOrdinaryAttack(
                         fixture, owner, key, turnBased)) yield return frame;
+                    bool ownerAvailable = owner != null &&
+                        !owner.Destroyed && owner.IsInState &&
+                        owner.Descriptor != null &&
+                        owner.Descriptor.State != null &&
+                        !owner.Descriptor.State.IsDead &&
+                        owner.Descriptor.ActivatableAbilities.Enumerable.Any(
+                            value => value.Blueprint.AssetGuid ==
+                                "a7b339e4f6ff93a4697df5d7a87ff619");
+                    if (!ownerAvailable)
+                    {
+                        Sprint23Check("ordinary-source-lifecycle-" + key +
+                            "-" + (turnBased ? "turn-based" : "rtwp"),
+                            false, new JObject {
+                                ["unit"] = owner?.UniqueId,
+                                ["event"] =
+                                    "source-unavailable-after-native-command",
+                                ["destroyed"] = owner == null ||
+                                    owner.Destroyed,
+                                ["inState"] = owner != null &&
+                                    owner.IsInState,
+                                ["dead"] = owner == null ||
+                                    owner.Descriptor == null ||
+                                    owner.Descriptor.State == null ||
+                                    owner.Descriptor.State.IsDead,
+                                ["abilityCount"] = owner == null ||
+                                    owner.Descriptor == null ? -1 :
+                                    owner.Descriptor.Abilities.Enumerable.Count()
+                            },
+                            "The request-owned summon remains live after its bounded native ordinary command.");
+                        DisposeExpandedSummoningUnits(fixture.Created,
+                            new[] { owner });
+                        continue;
+                    }
                     if (key == ArmoredDinosaurRulesPolicy.TriceratopsKey)
                     {
                         // A real attack can restart Kingmaker's attack-mode
@@ -681,6 +714,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
             int cmbBefore = owner.Stats.AdditionalCMB.BaseValue;
             int damageBefore = target.Descriptor.Damage;
+            ItemEntityWeapon weapon = Sprint19Limbs(owner).Single();
+            Vector3 ownerStart = owner.Position;
+            Vector3 targetStart = target.Position;
+            float distanceBefore = owner.DistanceTo(target);
             var observer = new Sprint16RuleObserver {
                 Owner = owner, Target = target };
             UnitAttack command = null;
@@ -691,7 +728,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.Stats.AdditionalCMB.BaseValue = 100;
                 foreach (int frame in Sprint18RunFullAttack(fixture,
                     owner, value => command = value)) yield return frame;
-                ItemEntityWeapon weapon = Sprint19Limbs(owner).Single();
                 RuleAttackRoll[] exactRolls = observer.Attacks.Where(value =>
                     value.Weapon != null && ReferenceEquals(
                         value.Weapon.Blueprint, weapon.Blueprint)).ToArray();
@@ -713,10 +749,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["event"] = "real-native-full-attack-command",
                         ["commandFinished"] = command?.IsFinished,
                         ["commandResult"] = command?.Result.ToString(),
+                        ["commandShouldInterrupt"] = command == null ?
+                            (JToken)JValue.CreateNull() :
+                            command.ShouldBeInterrupted,
+                        ["plannedAttacks"] = command == null ? -1 :
+                            command.AllAttacks.Count,
+                        ["plannedAttackPresent"] = command != null &&
+                            command.PlannedAttack != null,
+                        ["executedAttackPresent"] = command != null &&
+                            command.LastExecutedAttack != null,
                         ["attackRules"] = observer.Attacks.Count,
                         ["exactWeaponRolls"] = exactRolls.Length,
                         ["tripRules"] = trips.Length,
                         ["damage"] = target.Descriptor.Damage - damageBefore,
+                        ["ownerStart"] = SurveyVector(ownerStart),
+                        ["ownerEnd"] = SurveyVector(owner.Position),
+                        ["targetStart"] = SurveyVector(targetStart),
+                        ["targetEnd"] = SurveyVector(target.Position),
+                        ["distanceBefore"] = distanceBefore,
+                        ["distanceAfter"] = owner.DistanceTo(target),
+                        ["weapon"] = weapon.Blueprint?.AssetGuid,
+                        ["weaponType"] = weapon.Blueprint?.Type?.AssetGuid,
+                        ["weaponRangeMeters"] = weapon.AttackRange.Meters,
+                        ["weaponStyle"] = weapon.GetAnimationStyle()
+                            .ToString(),
+                        ["ownerDestroyed"] = owner.Destroyed,
+                        ["ownerInState"] = owner.IsInState,
+                        ["ownerDead"] = owner.Descriptor.State.IsDead,
                         ["standardCooldown"] = owner.CombatState.Cooldown
                             .StandardAction,
                         ["moveCooldown"] = owner.CombatState.Cooldown

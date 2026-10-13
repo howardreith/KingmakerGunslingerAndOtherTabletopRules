@@ -36,12 +36,6 @@ namespace KingmakerGunslinger.Blueprints
                         "native animated tail weapon"), tail,
                 ArmoredDinosaurRulesPolicy.StegosaurusTailSymbol, 4,
                 Kingmaker.RuleSystem.DiceType.D6);
-            ConfigureArmoredDinosaurWeaponType(gore,
-                Require<BlueprintWeaponType>(bySymbol,
-                    ArmoredDinosaurRulesPolicy.TriceratopsGoreTypeSymbol),
-                ArmoredDinosaurRulesPolicy.TriceratopsGoreTypeSymbol,
-                ArmoredDinosaurRulesPolicy.
-                    TriceratopsGoreTypeStoredRangeFeet);
             ConfigureArmoredDinosaurWeaponType(tail,
                 Require<BlueprintWeaponType>(bySymbol,
                     ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol),
