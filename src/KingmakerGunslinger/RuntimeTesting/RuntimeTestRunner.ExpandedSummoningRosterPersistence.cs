@@ -358,7 +358,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool savedTargetedSubset = (Sprint22PersistenceScope ||
                 Sprint23PersistenceScope) && verify;
             bool exact = moduleOn || savedTargetedSubset
-                ? keys.SequenceEqual(RosterSelectedKeys) &&
+                ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
+                    (string)_request.Parameters["persistenceScope"], keys) &&
                     units.All(u => RosterPersistenceOwns(u,caster,blueprints)) &&
                     units.All(u => u.View != null && ReferenceEquals(u.View.Data,u) && u.Commands != null &&
                         !u.Descriptor.State.IsDead && u.Descriptor.Buffs.Enumerable.Any(b => ReferenceEquals(b.Blueprint,BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) &&
