@@ -136,7 +136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PteranodonAssetRuntime.TryGetSprint12QuadrupedVisual(key, out mesh, out bones, out paint, out status) ||
                     PteranodonAssetRuntime.TryGetSprint13CreatureVisual(key, out mesh, out bones, out paint, out status) ||
                     PteranodonAssetRuntime.TryGetSprint14InsectVisual(key, out mesh, out bones, out paint, out status) ||
-                    PteranodonAssetRuntime.TryGetCrocodilianVisual(key, out mesh, out bones, out paint, out status))
+                    PteranodonAssetRuntime.TryGetCrocodilianVisual(key, out mesh, out bones, out paint, out status) ||
+                    PteranodonAssetRuntime.TryGetArmoredDinosaurVisual(key, out mesh, out bones, out paint, out status))
                 { add(mesh, key + ".Mesh"); add(paint, key + ".Albedo"); }
             }
             return result;
