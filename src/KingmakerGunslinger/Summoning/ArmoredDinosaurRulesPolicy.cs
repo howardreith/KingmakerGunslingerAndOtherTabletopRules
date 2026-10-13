@@ -30,6 +30,8 @@ namespace KingmakerGunslinger.Summoning
             "KMG.Summoning.Special.Triceratops.Trample";
         internal const string StegosaurusTripSymbol =
             "KMG.Summoning.Special.Stegosaurus.Trip";
+        internal const string TriceratopsGoreTypeSymbol =
+            "KMG.Summoning.Natural.Triceratops.GoreType";
         internal const string StegosaurusTailTypeSymbol =
             "KMG.Summoning.Natural.Stegosaurus.TailType";
 
@@ -49,10 +51,12 @@ namespace KingmakerGunslinger.Summoning
         // reconstructed-animal chassis at twelve feet. Both Sprint 23 animals
         // use that same size construction, so the independently derived gap
         // to their printed fifteen feet is three. The Stegosaurus also rides
-        // the exact captured Hodag/tail transform: its native tail exposes
-        // nine feet until a private type stores nine (which the engine's
-        // four-foot melee allowance exposes as five). No native type changes.
+        // the exact captured Hodag/tail transform. The first Triceratops live
+        // readback then proved the Mastodon gore also exposes only twelve
+        // feet. Each private type stores nine (which the engine's four-foot
+        // melee allowance exposes as five) and leaves native types unchanged.
         internal const int ReachBonusFeet = 3;
+        internal const int TriceratopsGoreTypeStoredRangeFeet = 9;
         internal const int StegosaurusTailTypeStoredRangeFeet = 9;
 
         // At BAB +9/+10 native Power Attack supplies +6 to a lone primary
@@ -89,6 +93,8 @@ namespace KingmakerGunslinger.Summoning
                 PowerfulChargeLiveBonus(10) != 5 ||
                 PowerfulChargeLiveBonus(6) != 3 ||
                 ReachBonusFeet != 3 ||
+                TriceratopsGoreTypeStoredRangeFeet != 9 ||
+                StegosaurusTailTypeStoredRangeFeet != 9 ||
                 PowerAttackAdditionalDamage != 3 ||
                 TriceratopsPerceptionRanks + 3 + 1 + 3 +
                     TriceratopsSkillFocusCompletionBonus != 24 ||

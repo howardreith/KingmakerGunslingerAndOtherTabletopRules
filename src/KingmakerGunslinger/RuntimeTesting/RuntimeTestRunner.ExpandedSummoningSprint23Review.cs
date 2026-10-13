@@ -1011,8 +1011,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 float moved = Vector3.Distance(start, owner.Position);
                 int damage = target.Descriptor.Damage - damageBefore;
-                bool spent = maxStandard > standardBefore ||
-                    maxMove > moveBefore;
+                // RTWP outside combat owns actions through an ordinary queued
+                // command but does not accrue turn cooldown. Turn-based must
+                // prove the numeric action debit separately.
+                bool spent = turnBased ? maxStandard > standardBefore ||
+                    maxMove > moveBefore : nativeEconomy &&
+                    command.IsStarted;
                 Game.Instance.State.AwakeUnits.Clear();
                 Game.Instance.State.AwakeUnits.AddRange(awakeBefore);
                 bool awakeRestored = Game.Instance.State.AwakeUnits
@@ -1252,8 +1256,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float moved = Vector3.Distance(start, owner.Position);
                 BaseDamage dealt = observer.Damage.Count == 1 ?
                     observer.Damage[0].DamageBundle.First : null;
-                bool spent = maxStandard > standardBefore &&
-                    maxMove > moveBefore;
+                // RTWP outside combat owns this full-round action through the
+                // normal command contract; only turn-based accrues both
+                // numeric cooldowns in this save-free world.
+                bool spent = turnBased ? maxStandard > standardBefore &&
+                    maxMove > moveBefore : nativeEconomy &&
+                    command.IsStarted;
                 Game.Instance.State.AwakeUnits.Clear();
                 Game.Instance.State.AwakeUnits.AddRange(awakeBefore);
                 bool awakeRestored = Game.Instance.State.AwakeUnits
@@ -1572,7 +1580,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["cmb"] = value.InitiatorCMB,
                         ["cmd"] = value.TargetCMD,
                         ["autoFailure"] = value.AutoFailure,
-                        ["success"] = value.Success }))
+                        ["engineSuccess"] = value.Success,
+                        ["success"] = SummonManeuverChecks.Succeeded(value) }))
             };
         }
 
@@ -1602,7 +1611,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool successful = success.AttackRoll.IsHit &&
                     observer.Checks.Count == 1 &&
                     observer.Checks[0].Type == CombatManeuver.Trip &&
-                    observer.Checks[0].Success && target.Descriptor.State
+                    SummonManeuverChecks.Succeeded(observer.Checks[0]) &&
+                    target.Descriptor.State
                         .HasCondition(UnitCondition.Prone);
                 JObject successDetail = Sprint23TailTripCase(success,
                     observer.Checks.ToArray(), owner, target);
@@ -1616,7 +1626,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target, tail, 10);
                 bool failed = failure.AttackRoll.IsHit &&
                     observer.Checks.Count == 1 &&
-                    !observer.Checks[0].Success &&
+                    !SummonManeuverChecks.Succeeded(observer.Checks[0]) &&
                     !target.Descriptor.State.HasCondition(UnitCondition.Prone) &&
                     !owner.Descriptor.State.HasCondition(UnitCondition.Prone);
                 JObject failureDetail = Sprint23TailTripCase(failure,
