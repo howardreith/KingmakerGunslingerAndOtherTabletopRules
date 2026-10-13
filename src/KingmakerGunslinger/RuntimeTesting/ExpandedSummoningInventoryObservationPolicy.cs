@@ -63,11 +63,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "9d7d36e71ea141258509b8a32557577e", "KMG_Summoning_Unit_Bebelith", "adf498a88b3c4fd1a5c40f9d2c537f0f", "KMG_Summoning_Special_Bebelith_RacialSkills", "AddFacts" },
             new[] { "9d7d36e71ea141258509b8a32557577e", "KMG_Summoning_Unit_Bebelith", "d749d5a287dacef12983e7f3ea9205fd", "KMG_Summoning_Special_Bebelith_ChassisCorrection", "AddFacts" },
             new[] { "9d7d36e71ea141258509b8a32557577e", "KMG_Summoning_Unit_Bebelith", "9206c7293c114d92b2ec731c906c02df", "KMG_Summoning_Special_Bebelith_Web", "AddFacts" },
-            // Sprint 23. These are the only project-owned facts referenced
-            // directly from the two units' AddFacts arrays. Triceratops charge
-            // and trample are owned signature abilities on its private unit
-            // type; they are not AddFacts and cannot be disguised as such.
+            // Sprint 22. The inventory gate did not run during the
+            // Ankylosaurus sprint, so its two exact project-owned AddFacts
+            // reached the next public census without ownership rows.
+            new[] { "10c80d5cfa594332bd3e5127799e426f", "KMG_Summoning_Unit_Ankylosaurus", "e5f977fc42c943a88902b9c3a170a7ea", "KMG_Summoning_Natural_Ankylosaurus_Chassis", "AddFacts" },
+            new[] { "10c80d5cfa594332bd3e5127799e426f", "KMG_Summoning_Unit_Ankylosaurus", "e8a085864606409ba25dc123f14d27a2", "KMG_Summoning_Special_Ankylosaurus_Stun", "AddFacts" },
+            // Sprint 23. These are all five project-owned facts referenced
+            // directly from the two units' AddFacts arrays. The public native
+            // census measured charge and trample there as well as the chassis
+            // and trip carriers; every row remains exact owner/fact/carrier.
             new[] { "ce540cd4b3b74861a4a91458d742a692", "KMG_Summoning_Unit_Triceratops", "5e08305bfe3b4ab2bd65c74dd472c65c", "KMG_Summoning_Natural_Triceratops_Chassis", "AddFacts" },
+            new[] { "ce540cd4b3b74861a4a91458d742a692", "KMG_Summoning_Unit_Triceratops", "7168413e07084ac086f3eb409b1199fc", "KMG_Summoning_Special_Triceratops_PowerfulCharge", "AddFacts" },
+            new[] { "ce540cd4b3b74861a4a91458d742a692", "KMG_Summoning_Unit_Triceratops", "20c83d35a8234c9fb35e8f174d19e6ba", "KMG_Summoning_Special_Triceratops_Trample", "AddFacts" },
             new[] { "39cab5be4dc148339f4ce8b0157bd716", "KMG_Summoning_Unit_Stegosaurus", "95278500c12647adbf53f8b77b7d3955", "KMG_Summoning_Natural_Stegosaurus_Chassis", "AddFacts" },
             new[] { "39cab5be4dc148339f4ce8b0157bd716", "KMG_Summoning_Unit_Stegosaurus", "ce0af5b47a1a462095e9f308a5d1bba1", "KMG_Summoning_Special_Stegosaurus_Trip", "AddFacts" },
         };
@@ -80,6 +87,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return References.Any(r => r[0] == unitGuid && r[1] == unitName &&
                 r[2] == referenceGuid && r[3] == referenceName && r[4] == carrier);
+        }
+
+        internal static bool NaturalProfileFactComparable(string referenceName,
+            bool expectedProfileFact)
+        {
+            // Special builders prove supplemental facts elsewhere, but a
+            // Special_* fact explicitly named by the frozen natural profile
+            // remains part of chassis equality. A prefix cannot discard it.
+            return expectedProfileFact ||
+                (!string.IsNullOrEmpty(referenceName) &&
+                 !referenceName.StartsWith("KMG_Summoning_Special_",
+                    StringComparison.Ordinal));
         }
 
         internal static bool BebelithPrimaryBite(string guid, int dice, int sides)
