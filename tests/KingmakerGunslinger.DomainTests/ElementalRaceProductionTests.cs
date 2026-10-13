@@ -181,7 +181,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sprint20RulesTests.AppendedLedgerIdentities +
                 Sprint21RulesTests.AppendedLedgerIdentities +
                 Sprint22RulesTests.AppendedLedgerIdentities +
-                ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint23Tests.ActiveLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
