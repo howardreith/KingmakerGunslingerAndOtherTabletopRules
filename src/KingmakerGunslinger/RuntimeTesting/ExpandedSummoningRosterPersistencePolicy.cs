@@ -286,6 +286,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value => value, StringComparer.Ordinal),
                     StringComparer.Ordinal);
         }
+        internal static bool ModuleOffArmoredBodyIsClean(string outcome,
+            int ownedResourceCount)
+        {
+            // The view patch deliberately records the asset loader's explicit
+            // module-disabled refusal. "not-attempted" would not prove that
+            // this registered save-compatible identity reached that gate.
+            return outcome == "donor-visual:module-disabled" &&
+                ownedResourceCount == 0;
+        }
         internal static bool ObserveLoad(string scenario, string scope)
         {
             return (scope == Scope || scope == AnkylosaurusScope ||
