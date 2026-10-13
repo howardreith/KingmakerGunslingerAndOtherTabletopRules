@@ -1,12 +1,22 @@
 # Blueprint manifest and registration contract
 
-Active v0.0.151 Sprint 22 contract: 3068 stable identifiers: 3066 active and 2 reserved.
-Sprint 22 preserves every released entry and appends six private Ankylosaurus
-identities: unit type, Stun feature, dazed buff, stunned buff, chassis feature
-and tail weapon type. Its unit, weapon, ten roots and ten Monster template
-children keep their published GUIDs.
-The following Sprint 20 description is retained as historical contract context.
-The active bootstrap validates and rolls back the complete 3066-blueprint transaction.
+Active v0.0.152 Sprint 23 contract: 3101 stable identifiers: 3098 active and 3 reserved.
+Sprint 23 preserves every released entry and appends 33 identities: two units,
+twelve logical placements, eight Triceratops Monster template execution children,
+two natural weapons, two unit types, two chassis features, three signature
+mechanic carriers, the Stegosaurus tail type and one reserved Triceratops gore
+type. Native qualification showed that the private gore type interrupted the
+Mastodon donor's real attack command, so that append-only identity remains
+reserved while the exact project weapon uses the native type with a scoped
+range correction. No existing GUID moved. The active bootstrap validates and
+rolls back the complete 3098-blueprint transaction.
+
+The preceding v0.0.151 Sprint 22 contract contains 3068 stable identifiers:
+3066 active and 2 reserved. Sprint 22 preserves every earlier entry and appends
+six private Ankylosaurus identities: unit type, Stun feature, dazed buff,
+stunned buff, chassis feature and tail weapon type. Its unit, weapon, ten roots
+and ten Monster template children keep their published GUIDs. The following
+Sprint 20 description is retained as historical contract context.
 
 Every released v0.0.148 entry remains in place; Sprint 20 appends exactly 31
 Giant Scorpion identities - one unit, 12 logical placements, the 12 celestial

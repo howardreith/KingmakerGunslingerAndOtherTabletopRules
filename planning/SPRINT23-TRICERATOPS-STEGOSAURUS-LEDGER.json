@@ -1,11 +1,14 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint23TriceratopsStegosaurus",
-  "status": "PUBLIC_CANDIDATE_QUALIFIED_READY_TO_MERGE",
+  "status": "RELEASED_STOP",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
   "pr": 41,
   "startedUtc": "2026-10-13T12:40:40.0761196Z",
+  "completedUtc": "2026-10-13T20:47:05.1532197Z",
+  "productMerge": "1d41388adb6aaa6e4e102e744abb392104cedbba",
+  "releaseRecordsBranch": "codex/expanded-summoning-sprint23-release-records",
   "masterBase": "bda157c6c402b329f47fb0531d96b52e01514114",
   "stableBaseline": {
     "version": "0.0.151",
@@ -22,10 +25,10 @@
     "otherWorktreesPreserved": true,
     "gameProcessAbsent": true,
     "steamPreserved": true,
-    "activeRuntimeTransaction": "NONE_AFTER_PUBLIC_CANDIDATE_QUALIFICATION",
-    "currentHumanStateSnapshot": "PUBLIC INVENTORY TRANSACTION compat-20261013T201406Z-3bd12dc032ed AND PUBLIC ROUTE TRANSACTION compat-20261013T202049Z-fa07db3e4b9a RESTORED EXACTLY; final post-publication audit pending",
-    "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
-    "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
+    "activeRuntimeTransaction": "NONE_AFTER_POSTRELEASE_AUDIT",
+    "currentHumanStateSnapshot": "POSTRELEASE RESTORATION PASS: 968 MODS ENTRIES, INSTALLED KMG 0.0.117, 83 SETTINGS AND BOTH AUTHORIZED SAVE HASHES EXACT; NO PROCESS, LEASE, LOCK OR GAME STAGING",
+    "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
     "referencesByteMatched": true
   },
   "pushPolicyChange": {
@@ -291,8 +294,55 @@
         "restored": true
       }
     },
-    "release": "PENDING",
-    "restoration": "PER_TRANSACTION_PASS_FINAL_POST_PUBLICATION_AUDIT_PENDING"
+    "release": {
+      "status": "RELEASED",
+      "version": "0.0.152",
+      "tag": "v0.0.152",
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.152",
+      "publishedUtc": "2026-10-13T20:40:28Z",
+      "latest": true,
+      "draft": false,
+      "prerelease": false,
+      "productPr": 41,
+      "productMerge": "1d41388adb6aaa6e4e102e744abb392104cedbba",
+      "tagObject": "a64b95587b3be774e73b0d6a7ec0054ae21604b2",
+      "peeledCommit": "1d41388adb6aaa6e4e102e744abb392104cedbba",
+      "testedSource": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+      "qualificationReportCommit": "9b117860632ff56e9709cb1650adee991f78e5a5",
+      "exactArtifactPromotion": true,
+      "rebuiltForPublication": false,
+      "package": "KingmakerGunslinger-0.0.152-expanded-summoning-sprint23.zip",
+      "packageSha256": "e417ad95e796bac7c312ed60e859b888b1dd2f83818ef211027e35d2c1c663db",
+      "releaseManifestSha256": "e2813ea7a4c21ed2c829655aab7e0291c3ddb5b9964b1aff8ae13465c730a0cc",
+      "checksumsSha256": "a845854a8ef98aed16b08cd8a3312c17369362498f36761902e0a37c9080e409",
+      "dllSha256": "594113de52c514702b6999fd4e3d3abfd9823e12d003e63d7953f622feaa6c05",
+      "dllMvid": "5afdfc38-4657-48e2-a0fa-942098189a4b",
+      "downloadedStrictValidation": "PASS",
+      "releaseVerificationReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint23-release-verification-20261013T204159Z/release-verification.json",
+      "releaseVerificationReceiptSha256": "21d806f20a7e3c0ffae7c36e194a21b2700c6896cbea7868afa6d097129ad9b0"
+    },
+    "restoration": {
+      "status": "PASS",
+      "preReleaseAudit": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint23-final-restoration-20261013T203653Z/final-restoration-audit.json",
+      "preReleaseAuditSha256": "481ac829eb6c1320c3ed8f7207643fce77746f798c60b8d4c86617d492e26a77",
+      "postReleaseAudit": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint23-postrelease-restoration-20261013T204332Z/postrelease-restoration-audit.json",
+      "postReleaseAuditSha256": "450ff0d58bd829129744ae1c9bcbddf47a1bec4421b808d676b3a66512a031c4",
+      "modsEntries": 968,
+      "installedKmgVersion": "0.0.117",
+      "guardedSettings": 83,
+      "baselineSaveSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+      "workingSaveSha256": "795d59ff448173c6631518676b655d3bd03b31dc31e418f578f9e9488cb10ada",
+      "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "settingsExact": true,
+      "savesExact": true,
+      "referencesExact": true,
+      "soundBankExact": true,
+      "ownedProcessAbsent": true,
+      "activeLeaseAbsent": true,
+      "compatibilityLockAbsent": true,
+      "gameStagingAbsent": true
+    }
   },
   "freshEvidence": [
     {
@@ -568,6 +618,15 @@
     "RUN_NATIVE_SUMMON_AI_DISPOSITION",
     "HODAG_DONOR_NO_NATIVE_HIT_ANIMATION"
   ],
+  "recordCorrections": [
+    {
+      "field": "intake installedAssemblyCSharpSha256/privateAssemblyCSharpSha256",
+      "previousValue": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
+      "correctedValue": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "reason": "The original ledger transcription omitted two hexadecimal characters; direct SHA-256 hashing of both 7,262,208-byte files matched the corrected value.",
+      "runtimeFileChanged": false
+    }
+  ],
   "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
-  "stopCondition": "RELEASED record on master, exact restoration verified, Sprint 24 not started"
+  "stopCondition": "ACHIEVED: RELEASED record synchronized, exact restoration verified, Sprint 24 not started"
 }

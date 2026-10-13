@@ -3,7 +3,9 @@
 The **0.0.152-expanded-summoning-sprint23** release adds Triceratops and
 Stegosaurus with their distinct charge/trample and tail-trip roles, original
 bodies and original icons. See the
-[release notes](docs/RELEASE-NOTES-0.0.152.md).
+[release notes](docs/RELEASE-NOTES-0.0.152.md), the
+[qualification and restoration record](docs/SPRINT23-COVERAGE.md), and the
+[stable release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.152).
 
 Sprint 22 remains released and unchanged. This mission stops after Sprint 23;
 Sprint 24 is not started.
