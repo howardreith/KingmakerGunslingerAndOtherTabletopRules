@@ -1,40 +1,35 @@
-# Sprint 22: Ankylosaurus Completion â€” in progress, not qualified
+# Sprint 23: Triceratops and Stegosaurus — in progress, not qualified
 
-Current owner mission: [Sprint 22 contract](docs/SPRINT22-ANKYLOSAURUS-MISSION.md).
-Read AGENTS.md and docs/VALIDATION-POLICY.md. HOWARD-LAPTOP only; branch
-codex/expanded-summoning-sprint22-ankylosaurus. Continue implementation through
-affected qualification, authorized normal merge/stable publication, verification,
-exact restoration and STOP. An intermediate checkpoint is not the endpoint.
+Current owner mission: [Sprint 23 contract](docs/SPRINT23-TRICERATOPS-STEGOSAURUS-MISSION.md).
+Read `AGENTS.md` and `docs/VALIDATION-POLICY.md`. Work only on HOWARD-LAPTOP and
+branch `codex/expanded-summoning-sprint23-triceratops-stegosaurus`. Continue
+through qualified product merge, next stable publication, downloaded-artifact
+verification, exact restoration, released-state synchronization and STOP.
 
-Sprint 21 final reporting is synchronized through documentation-only PR #38,
-master aa09788e6ba109c3db7bd0ec28f0138506f678a8. Stable v0.0.150 and its alpha,
-tags/assets/failed evidence remain unchanged. Historical closure records retain
-their provenance. The original charter continues through Sprint 41, optional
-42â€“45. This mission authorizes only Sprint 22; Sprint 23 is not started.
+Baseline master is `bda157c6c402b329f47fb0531d96b52e01514114`; stable v0.0.151
+and Sprint 22 product merge `30f41dfb76a8264fdfd3238c9cba05a4c131f3bf`
+remain frozen. Sprint 22 tested source is
+`d42e33ccc5b282daad594836b1defd4f680990e5`; its ZIP SHA-256 is
+`5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67`.
+Do not rebuild, retag, or republish it.
 
-Current ledger: planning/SPRINT22-ANKYLOSAURUS-LEDGER.json. Intake captured today's
-actual human installation/settings/save preservation boundary with no active
-game/lease/transaction; installed and build references match. Raw evidence is
-outside source. Preserve Sprint 21 frozen worktrees/artifacts and other work.
+The local ledger is
+`planning/SPRINT23-TRICERATOPS-STEGOSAURUS-LEDGER.json`. Source facts and their
+ambiguities, expected twelve-root surface, reuse traps, initial icon provenance,
+finite campaign phases and push-policy hashes are frozen there. Both new keys
+remain hidden until candidate qualification. Current status is implementation,
+not qualification.
 
-The rider/profile/body and targeted observers are implemented, with native
-qualification pending. The original mesh/albedo repeat deterministically and
-all seven offline views were reviewed. The initial focused pass ran 38/38 tests. After the first full suite exposed
-27 current metadata/reader assumptions, all 65 affected cases passed with
-2,580 registered; production compiled. Native qualification remains pending.
-The guarded full-installation wrapper now accepts an exact candidate package and
-returns its exact run/deployment receipt. Reduced profiles never load the
-eleven-mod working fixture. See the ledger and coverage map for carriers and limits.
-Its current-stack path uses Invoke-Sprint22InstalledStack.ps1 and existing guarded
-compatibility transactions, including independent exact game-settings restoration.
-Thirty offline safety predicates passed before live use.
+The two original icon source paintings have been captured and hashed. The next
+work is append-only identity allocation, catalog/registration and focused tests,
+followed by deterministic Triceratops and Stegosaurus bodies, exact attack/rider
+mechanics, and the named focused development gate. Open one draft product PR
+directly against master after the intake checkpoint is pushed.
 
-Next: freeze the internally reviewed candidate, run the selected Sprint gate,
-then reuse its package for standalone/high-risk native scenarios and compatible
-full-stack targeted cold-load/module/cleanup/absence. Follow actual failures with
-bounded changes and affected evidence. Continue to qualified merge/publication,
-verification and exact restoration; no partial creature release.
+Use one coherent Sprint candidate pipeline after review. Native work must use
+fresh guarded Steam 640820 transactions, the actual current intake, compatible
+disposable fixtures and exact receipts. No protected or human save is mutable.
+Owner aesthetic approval remains `NOT_PERFORMED_NONBLOCKING` unless supplied.
 
-Expected next unused patch: 0.0.151, to be verified before publishing. Owner
-visual approval: NOT_PERFORMED_NONBLOCKING. No permanent deployment, protected
-save loading, DATA, unrelated repository or Sprint 23 work.
+Expected next unused stable is v0.0.152, subject to refetch immediately before
+publication. No permanent deployment, unrelated repository work, or Sprint 24.
