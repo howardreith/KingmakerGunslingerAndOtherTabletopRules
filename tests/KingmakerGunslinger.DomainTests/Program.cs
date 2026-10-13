@@ -1164,6 +1164,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint21-eighth-foot-is-named", Sprint21RulesTests.OnlyTheEightLeggedCreaturesWalkOnTheFourthChain),
             Case("expanded-summoning.sprint22-published-routes", Sprint22RulesTests.PublishedRoutesRemainAtFiveThroughNine),
             Case("expanded-summoning.sprint22-closed-donor-probe", Sprint22RulesTests.DonorProbeHasAClosedSelection),
+            Case("expanded-summoning.sprint22-persistence-native-load-boundary", Sprint22RulesTests.PersistenceScopeArmsTheNativeLoadBoundary),
             Case("expanded-summoning.sprint22-control-alternatives", Sprint22RulesTests.HitsAndCriticalsAreAlternatives),
             Case("expanded-summoning.sprint22-control-negative-cases", Sprint22RulesTests.NegativeControlsCannotManufactureControl),
             Case("expanded-summoning.sprint22-live-strength-dc", Sprint22RulesTests.LiveStrengthAndRacialDiceDriveTheSave),
