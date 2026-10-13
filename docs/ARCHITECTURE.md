@@ -142,7 +142,16 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
-Active v0.0.151 Sprint 22 candidate: 3068 stable IDs: 3066 active and 2 reserved.
+Active v0.0.152 Sprint 23 release: 3101 stable IDs: 3098 active and 3 reserved.
+The released v0.0.151 3068-entry prefix is exact. Sprint 23 appends 33 identities:
+two units, twelve logical placements, eight Triceratops celestial/fiendish
+execution children, two natural weapons, two unit types, two chassis carriers,
+three signature-mechanic carriers, the Stegosaurus tail type and one reserved
+Triceratops gore type. The private gore type proved incompatible with the native
+Mastodon attack command, so it remains reserved; the project gore weapon keeps
+the native type and uses a narrowly owned range adapter. No prior GUID moved.
+
+Preceding v0.0.151 Sprint 22 release: 3068 stable IDs: 3066 active and 2 reserved.
 The released v0.0.148 master3005-entry prefix is exact;Sprint20 appends exactly31
 Giant Scorpion identities - one unit,12 logical placements,12 celestial and
 fiendish execution children,the scorpion's own1d6 claw and1d6 sting, an
