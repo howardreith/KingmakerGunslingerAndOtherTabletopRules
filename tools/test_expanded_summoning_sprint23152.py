@@ -12,7 +12,9 @@ class Sprint23GateTests(unittest.TestCase):
         self.old = [dict(symbol="Released", guid="a" * 32,
                          plannedType="BlueprintUnit")]
         self.current = self.old + [dict(symbol=symbol, guid=value[0],
-            plannedType=value[1]) for symbol, value in gate.ADDED.items()]
+            plannedType=value[1], status=("reserved" if symbol ==
+                "KMG.Summoning.Natural.Triceratops.GoreType" else "active"))
+            for symbol, value in gate.ADDED.items()]
 
     def test_exact_append_passes(self):
         gate.validate_append(self.old, self.current)
@@ -38,6 +40,12 @@ class Sprint23GateTests(unittest.TestCase):
     def test_duplicate_guid_fails(self):
         changed = copy.deepcopy(self.current)
         changed[-1]["guid"] = changed[0]["guid"]
+        with self.assertRaises(AssertionError):
+            gate.validate_append(self.old, changed)
+
+    def test_rejected_gore_type_cannot_be_reactivated(self):
+        changed = copy.deepcopy(self.current)
+        changed[-1]["status"] = "active"
         with self.assertRaises(AssertionError):
             gate.validate_append(self.old, changed)
 
