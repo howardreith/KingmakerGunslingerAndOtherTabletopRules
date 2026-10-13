@@ -13,19 +13,19 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(103, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(105, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(92, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(93, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(91, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(93, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(530, ExpandedSummoningBaselineInventory
+            Assertions.Equal(534, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            // Sprint 21's Giant Crab is a Nature's Ally creature alone and
-            // puts all seven of its placements on that side. Registered, not
-            // visible: it ships withheld.
-            Assertions.Equal(533, ExpandedSummoningBaselineInventory
+            // Sprint 21's Giant Crab and Sprint 23's Stegosaurus are Nature's
+            // Ally-only creatures. Their placements remain on that side after
+            // publication.
+            Assertions.Equal(541, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -44,13 +44,15 @@ namespace KingmakerGunslinger.DomainTests
             // and five Summon Nature's Ally roots for the Girallon. Sprint 20
             // publishes the Giant Scorpion on both tables: six Summon Monster
             // roots and six Summon Nature's Ally roots.
-            Assertions.Equal(547, ExpandedSummoningBaselineInventory
+            Assertions.Equal(551, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
             // Sprint 21 publishes the Giant Crab's seven roots, every
             // one of them a Nature's Ally choice: it is not on the Summon
             // Monster table, which is why that side does not move.
-            Assertions.Equal(545, ExpandedSummoningBaselineInventory
+            // Sprint 23 adds four Triceratops and four Stegosaurus choices to
+            // the Nature's Ally side; Triceratops adds four to Monster.
+            Assertions.Equal(553, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
@@ -64,11 +66,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(1063, generated, "Published generated placements changed.");
+            Assertions.Equal(1075, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(1092, generated + wrappers,
+            Assertions.Equal(1104, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(1092,
+            Assertions.Equal(1104,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -124,7 +126,7 @@ namespace KingmakerGunslinger.DomainTests
             // now would be a creature registered and then forgotten.
             Assertions.Equal(0, ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.Count,
-                "Nothing is registered and withheld: "
+                "No qualified creature remains registered but withheld: "
                 + string.Join(", ", ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures));
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
@@ -139,9 +141,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(41,
+            Assertions.Equal(43,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, why Sprint 16's Dire Crocodile joins them on the Monitor Lizard, why both Sprint 18 apes join them on the Troll whose bind pose their own geometry is authored against, why both Sprint 19 four-armed creatures join them on that same Troll rig, why Sprint 20's Giant Scorpion joins them on the Giant Spider, and why Sprint 21's Giant Crab does too while its own body is unauthored.");
+                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, including both Sprint 23 dinosaurs whose project-owned bodies bind to their measured native animation donors.");
         }
 
         /// <summary>
@@ -177,7 +179,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 1092"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 1104"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 
@@ -195,26 +197,28 @@ namespace KingmakerGunslinger.DomainTests
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
             int visible = generated + wrappers;
-            string generatedText = generated.ToString(
+            string generatedText = generated.ToString("N0",
                 System.Globalization.CultureInfo.InvariantCulture);
-            string visibleText = visible.ToString(
+            string visibleText = visible.ToString("N0",
                 System.Globalization.CultureInfo.InvariantCulture);
 
-            string state = System.IO.File.ReadAllText(System.IO.Path.Combine(
-                System.Environment.CurrentDirectory, "EXPANDED-SUMMONING-PHASE2-AUTONOMOUS-STATE.md"));
-            int historicalBoundary = state.IndexOf("\n## Preserved earlier checkpoint", System.StringComparison.Ordinal);
-            Assertions.True(historicalBoundary > 0, "The current header must explicitly separate preserved historical checkpoints.");
-            string current = state.Substring(0, historicalBoundary);
-            Assertions.True(current.Contains(generatedText + " published") &&
-                current.Contains(visibleText + " visible"),
-                "The short controlling header must state the source-derived candidate equation.");
-            var evidence = Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(
-                System.Environment.CurrentDirectory, "planning",
-                "EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json")));
-            var surface = evidence["independentPublication"]["surface"];
-            Assertions.Equal(generated, (int)surface["published"], "Machine-readable candidate publication count.");
-            Assertions.Equal(wrappers, (int)surface["nativeWrappers"], "Machine-readable retained wrapper count.");
-            Assertions.Equal(visible, (int)surface["visibleChoices"], "Machine-readable candidate visible equation.");
+            string current = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                System.Environment.CurrentDirectory, "AUTONOMOUS-RESUME.md"));
+            Assertions.True(current.Contains(generatedText +
+                    " generated placements") && current.Contains(visibleText +
+                    " visible choices"),
+                "The active resume must state the source-derived public equation.");
+            var sprint23 = Newtonsoft.Json.Linq.JObject.Parse(
+                System.IO.File.ReadAllText(System.IO.Path.Combine(
+                    System.Environment.CurrentDirectory, "planning",
+                    "SPRINT23-TRICERATOPS-STEGOSAURUS-LEDGER.json")));
+            var surface = sprint23["surface"]["expectedPublic"];
+            Assertions.Equal(generated, (int)surface["generatedPlacements"],
+                "Machine-readable public placement count.");
+            Assertions.Equal(wrappers, (int)surface["retainedNativeWrappers"],
+                "Machine-readable retained wrapper count.");
+            Assertions.Equal(visible, (int)surface["visibleChoices"],
+                "Machine-readable public visible equation.");
 
             string[] records = {
                 "EXPANDED-SUMMONING-PHASE2-IMPLEMENTATION-REPORT.md",

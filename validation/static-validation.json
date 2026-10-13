@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.151-expanded-summoning-sprint22",
+  "milestone": "0.0.152-expanded-summoning-sprint23",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.151",
+  "version": "0.0.152",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2439,5 +2439,25 @@
     "nativeRuntimeQualified": false,
     "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
     "compatibilityRuntimeQualificationPending": true
+  },
+  "expandedSummoningSprint23152": {
+    "releaseVersion": "0.0.152",
+    "releaseInformationalVersion": "0.0.152-expanded-summoning-sprint23",
+    "masterBase": "bda157c6c402b329f47fb0531d96b52e01514114",
+    "newCreatures": 2,
+    "newLogicalRoots": 12,
+    "newTemplateExecutionChildren": 8,
+    "newPrivateIdentities": 11,
+    "registeredLogicalPlacements": 1075,
+    "suppressedLogicalPlacements": 0,
+    "publishedLogicalPlacements": 1075,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1104,
+    "projectIconConcepts": 117,
+    "originalBodyFiles": 4,
+    "nativeRuntimeQualified": true,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "compatibilityRuntimeQualificationPending": false,
+    "sprint24Started": false
   }
 }

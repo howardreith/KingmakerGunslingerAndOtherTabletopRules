@@ -302,11 +302,12 @@ namespace KingmakerGunslinger.DomainTests
             {
                 Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,"whole-roster"),"Whole-roster scope retains the closed trio.");
                 Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,"ankylosaurus"),"Sprint 22 subset arms the same native load boundary.");
-                foreach(string invalid in new[] { null,"","Whole-Roster","whole-roster-extra","snakes","Ankylosaurus" })
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,"armored-dinosaurs"),"Sprint 23 subset arms the same native load boundary.");
+                foreach(string invalid in new[] { null,"","Whole-Roster","whole-roster-extra","snakes","Ankylosaurus","Armored-Dinosaurs" })
                     Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,invalid),"No alias or cross-scope authority.");
             }
             foreach(string s in new[] {null,"working-save-smoke","mod-load-smoke","observe-expanded-summoning-inventory"})
-                foreach(string scope in new[] { "whole-roster", "ankylosaurus" })
+                foreach(string scope in new[] { "whole-roster", "ankylosaurus", "armored-dinosaurs" })
                     Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,scope),"No new scenario family or broad hook.");
         }
     }

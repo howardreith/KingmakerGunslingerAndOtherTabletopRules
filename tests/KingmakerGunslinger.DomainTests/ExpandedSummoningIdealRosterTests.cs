@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(103, reused,
+            Assertions.Equal(105, reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,10 +133,10 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(31, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(29, ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
-                "The remaining ideal roster needs 31 new creature identities: the Girallon and the Xill came off it in Sprint 19, the Giant Scorpion in Sprint 20 and the Giant Crab in Sprint 21.");
+                "The remaining ideal roster needs 29 new creature identities after Sprint 23 registers both armored dinosaurs.");
         }
 
         /// <summary>
@@ -175,13 +175,13 @@ namespace KingmakerGunslinger.DomainTests
 
             // The Shadow Mastiff moved from this set into the represented
             // one when Sprint 13 registered it.
-            Assertions.Equal(31, ExpandedSummoningIdealRosterCatalog.All.Count(
+            Assertions.Equal(29, ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "31 ideal-roster creatures remain unregistered now that Sprint 21 has registered the Giant Crab. Registration, not publication: it is withheld until its own review passes, and this count tracks whether a creature exists at all.");
-            Assertions.Equal(114,
+                "29 ideal-roster creatures remain unregistered after Sprint 23 registers Triceratops and Stegosaurus.");
+            Assertions.Equal(116,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "114 creatures own or retain a unit identity; registration is not publication, which is exactly what the withheld Giant Crab demonstrates.");
+                "116 creatures own or retain a unit identity after Sprint 23 publication.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
@@ -194,10 +194,10 @@ namespace KingmakerGunslinger.DomainTests
             // followed it under the accepted passive-sense limitation, and 999
             // with Sprint 15's Drone and Giant Stag Beetle; 1005 when Sprint 16
             // publishes Dire Crocodile's six preserved placements.
-            Assertions.Equal(1092,
+            Assertions.Equal(1104,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
-                "The plan must not change the shipped visible choice count.");
+                "The published roster must expose the complete Sprint 23 surface.");
         }
 
         /// <summary>

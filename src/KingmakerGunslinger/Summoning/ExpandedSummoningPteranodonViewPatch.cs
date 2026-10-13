@@ -129,7 +129,11 @@ namespace KingmakerGunslinger.Summoning
                 { BebelithBlueprintName, Sprint14BonePolicy.BebelithKey },
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
                 { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" },
-                { AnkylosaurusVisualPolicy.BlueprintName, AnkylosaurusRulesPolicy.Key }
+                { AnkylosaurusVisualPolicy.BlueprintName, AnkylosaurusRulesPolicy.Key },
+                { ArmoredDinosaurVisualPolicy.TriceratopsBlueprintName,
+                    ArmoredDinosaurRulesPolicy.TriceratopsKey },
+                { ArmoredDinosaurVisualPolicy.StegosaurusBlueprintName,
+                    ArmoredDinosaurRulesPolicy.StegosaurusKey }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -329,6 +333,15 @@ namespace KingmakerGunslinger.Summoning
                 if (!PteranodonAssetRuntime.TryGetAnkylosaurusVisual(out source, out boneNames, out albedo, out status))
                     return Fallback(status);
             }
+            else if (ArmoredDinosaurVisualPolicy.Handles(
+                attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetArmoredDinosaurVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
             else if (UngulateKeys.Contains(attachment.VisualKey))
             {
                 string status;
@@ -431,7 +444,9 @@ namespace KingmakerGunslinger.Summoning
                                     Sprint14InsectKeys.Contains(
                                         attachment.VisualKey) ||
                                     IsCrocodilian(attachment.VisualKey) ||
-                                    attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
+                                    attachment.VisualKey == AnkylosaurusRulesPolicy.Key ||
+                                    ArmoredDinosaurVisualPolicy.Handles(
+                                        attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
                 mesh.name = visualName;
@@ -716,6 +731,34 @@ namespace KingmakerGunslinger.Summoning
                 .Concat(new UnityEngine.Object[] { attachment.Mesh, attachment.AnkylosaurusImpact }).Where(o => o != null).ToArray();
         }
 
+        /// <summary>
+        /// Exact per-view resource receipt for the two armored-dinosaur bodies.
+        /// Donor mesh/material references and immutable source caches are
+        /// excluded by identity; only the private installed mesh and material
+        /// family returned to <see cref="ReleasePhase2View"/> are reported.
+        /// </summary>
+        internal static UnityEngine.Object[] CaptureArmoredDinosaurOwnedResources(
+            UnitEntityView view)
+        {
+            Attachment attachment;
+            if (view == null || !Applied.TryGetValue(view, out attachment) ||
+                !ArmoredDinosaurVisualPolicy.Handles(attachment.VisualKey))
+                return new UnityEngine.Object[0];
+            Material[] installed = attachment.Donor == null
+                ? new Material[0] : attachment.Donor.sharedMaterials;
+            IList<Material> driven = attachment.Donor == null ? null :
+                ControllerMaterials(attachment.Donor.GetComponentInParent<
+                    StandardMaterialController>());
+            IEnumerable<Material> privateMaterials =
+                OriginalFlightCleanupPolicy.PrivateMaterials(
+                    attachment.Material,
+                    installed.Concat(driven ?? new Material[0]),
+                    attachment.OriginalMaterials);
+            return privateMaterials.Cast<UnityEngine.Object>()
+                .Concat(new UnityEngine.Object[] { attachment.Mesh })
+                .Where(value => value != null).Distinct().ToArray();
+        }
+
         internal static void ReleaseOriginalFlightView(UnitEntityView view)
         {
             Attachment attachment;
@@ -754,7 +797,9 @@ namespace KingmakerGunslinger.Summoning
                  !Sprint13CreatureKeys.Contains(attachment.VisualKey) &&
                  !Sprint14InsectKeys.Contains(
                     attachment.VisualKey) &&
-                 !IsCrocodilian(attachment.VisualKey))) return;
+                 !IsCrocodilian(attachment.VisualKey) &&
+                 !ArmoredDinosaurVisualPolicy.Handles(
+                    attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
                     ? GiantWaspVisualName

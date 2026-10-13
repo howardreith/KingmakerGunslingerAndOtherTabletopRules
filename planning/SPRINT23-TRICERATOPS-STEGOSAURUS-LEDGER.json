@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint23TriceratopsStegosaurus",
+  "status": "PUBLIC_CANDIDATE_QUALIFIED_READY_TO_MERGE",
+  "host": "HOWARD-LAPTOP",
+  "branch": "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
+  "pr": 41,
+  "startedUtc": "2026-10-13T12:40:40.0761196Z",
+  "masterBase": "bda157c6c402b329f47fb0531d96b52e01514114",
+  "stableBaseline": {
+    "version": "0.0.151",
+    "productMerge": "30f41dfb76a8264fdfd3238c9cba05a4c131f3bf",
+    "testedSource": "d42e33ccc5b282daad594836b1defd4f680990e5",
+    "zipSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67"
+  },
+  "intake": {
+    "hostnameVerified": true,
+    "hostnameObserved": "Howard-Laptop",
+    "originMasterVerified": true,
+    "newerSprint23BranchFound": false,
+    "primaryCheckoutWasClean": true,
+    "otherWorktreesPreserved": true,
+    "gameProcessAbsent": true,
+    "steamPreserved": true,
+    "activeRuntimeTransaction": "NONE_AFTER_PUBLIC_CANDIDATE_QUALIFICATION",
+    "currentHumanStateSnapshot": "PUBLIC INVENTORY TRANSACTION compat-20261013T201406Z-3bd12dc032ed AND PUBLIC ROUTE TRANSACTION compat-20261013T202049Z-fa07db3e4b9a RESTORED EXACTLY; final post-publication audit pending",
+    "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
+    "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
+    "referencesByteMatched": true
+  },
+  "pushPolicyChange": {
+    "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "beforeSha256": "aa763ebaf6d55d9fd268627ec96cfe0f484717b840dff234643493682e7b49d5",
+    "afterSha256": "1aae261a6af151c8c065027ac692f793c4920395ed4dd3f19cabc48f89705ee2",
+    "addedBranches": [
+      "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
+      "codex/expanded-summoning-sprint23-release-records"
+    ],
+    "otherEdits": false
+  },
+  "charter": {
+    "authority": "Owner-supplied Sprint 23 charter excerpt; local document was unavailable and reproduced scope is sufficient",
+    "authorizedSprint": 23,
+    "title": "Armored Dinosaurs — Triceratops and Stegosaurus",
+    "dependency": "Sprint 22",
+    "sprint24Started": false,
+    "excluded": ["Deinonychus", "Tyrannosaurus", "sauropods", "animal companions", "mounted combat", "new phase"]
+  },
+  "sourceContract": {
+    "edition": "Pathfinder First Edition adult monster entries",
+    "sourceUrls": [
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Triceratops",
+      "https://legacy.aonprd.com/bestiary/dinosaur.html#dinosaur-stegosaurus",
+      "https://aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Monster%206",
+      "https://aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Nature%27s%20Ally%206",
+      "https://legacy.aonprd.com/bestiary/universalMonsterRules.html",
+      "https://www.aonprd.com/FeatDisplay.aspx?ItemName=Improved%20Critical"
+    ],
+    "triceratops": {
+      "alignment": "N", "type": "animal", "size": "Huge",
+      "hitDice": "14d8+56", "hitPoints": 119,
+      "armorClass": [21, 7, 21], "saves": [15, 8, 5],
+      "abilities": [26, 9, 19, 2, 12, 7],
+      "bab": 10, "cmb": 20, "cmd": 29, "cmdVsTrip": 33,
+      "speedFeet": 30, "spaceFeet": 15, "reachFeet": 15,
+      "attack": "gore +17, 2d10+12",
+      "powerfulCharge": "gore 4d10+16",
+      "trample": "1d8+12, Reflex DC 25",
+      "perception": 24,
+      "feats": ["Great Fortitude", "Improved Bull Rush", "Improved Critical (gore inferred)", "Power Attack", "Run", "Skill Focus (Perception)", "Weapon Focus (gore)"],
+      "senses": ["low-light vision", "scent"]
+    },
+    "stegosaurus": {
+      "alignment": "N", "type": "animal", "size": "Huge",
+      "hitDice": "12d8+36", "hitPoints": 90,
+      "armorClass": [22, 10, 20], "saves": [13, 10, 5],
+      "abilities": [27, 14, 17, 2, 13, 10],
+      "bab": 9, "cmb": 19, "cmd": 31, "cmdVsTrip": 35,
+      "speedFeet": 30, "spaceFeet": 15, "reachFeet": 15,
+      "attack": "spiked tail +16, 4d6+12 plus trip",
+      "perception": 16,
+      "feats": ["Cleave", "Great Fortitude", "Improved Initiative", "Improved Overrun", "Power Attack", "Weapon Focus (tail)"],
+      "senses": ["low-light vision", "scent"]
+    },
+    "ambiguities": [{
+      "subject": "Triceratops Improved Critical",
+      "sourcePresentation": "Feat list gives Improved Critical without a weapon while the compact gore line omits a threat range",
+      "resolution": "Apply the feat rule to the creature's sole printed attack, gore; use 19–20/x2 unless primary errata contradicts it",
+      "inventedMultiplierOrDamage": false,
+      "primaryErrataReview": "Official Paizo Bestiary FAQ/errata search on 2026-10-13 found no Triceratops or Improved Critical correction; sole-attack gore inference retained"
+    }],
+    "adaptations": [
+      "Enemy-aware trample contact policy inherited from released CRPG adaptation",
+      "Automatic legal-AoO-else-Reflex response inherited from released CRPG adaptation",
+      "Passive low-light vision and scent remain explicitly unmodeled; no substitute senses",
+      "Improved Overrun may retain the verified Sprint 22 missing-native-consumer limitation"
+    ],
+    "forbiddenAbilities": ["bite", "separate horn attacks", "Stampede", "poison", "fear", "pounce", "Stegosaurus trample", "Stegosaurus daze or stun", "automatic Stegosaurus knockdown"]
+  },
+  "surface": {
+    "baseline": {
+      "uniqueProjectCreatures": 103, "monsterCreatures": 92, "monsterPlacements": 530,
+      "natureAllyCreatures": 91, "natureAllyPlacements": 533,
+      "generatedPlacements": 1063, "retainedNativeWrappers": 29, "visibleChoices": 1092
+    },
+    "expectedPublic": {
+      "uniqueProjectCreatures": 105, "monsterCreatures": 93, "monsterPlacements": 534,
+      "natureAllyCreatures": 93, "natureAllyPlacements": 541,
+      "generatedPlacements": 1075, "retainedNativeWrappers": 29,
+      "visibleChoices": 1104, "newLogicalRoots": 12
+    },
+    "quantityBands": {"VI": "one", "VII": "1d3", "VIII": "1d4+1", "IX": "1d4+1"},
+    "triceratops": {"summonMonsterRoots": 4, "summonNatureAllyRoots": 4, "monsterTemplateChildren": true},
+    "stegosaurus": {"summonMonsterRoots": 0, "summonNatureAllyRoots": 4, "monsterTemplateChildren": false},
+    "suppressedUntilQualified": [],
+    "publishedAfterQualification": ["Triceratops", "Stegosaurus"]
+  },
+  "reuseAudit": {
+    "sprint22FinalEvidenceRead": true,
+    "ankylosaurusTailControlRead": true,
+    "ungulateTrampleRead": true,
+    "ungulatePowerfulChargeRead": true,
+    "originalBodyLifecycleRead": true,
+    "knownTrampleTrap": "Exact command list and d6-only die dispatch require narrow extension",
+    "knownLiveMathTrap": "Fixed charge/trample fields cannot freeze Triceratops under live Strength/size/HD changes",
+    "powerAttackTrap": "BAB +10/+9 must not copy Ankylosaurus BAB +7 correction"
+  },
+  "art": {
+    "iconGuideRead": true, "iconReferenceIndexRead": true, "catalogAuthorityRead": true,
+    "sourceFamily": "assets-source/original-icons/expanded-summoning/sources",
+    "triceratops": {
+      "source": "triceratops.png",
+      "sourceSha256": "ea9cf4092ed5bd96e00138e1a471eec0aa136d78e7c3a8b81ea3a07fa4695e40",
+      "promptIntent": "Forward three-quarter horn-led charge, full frill, not a rhinoceros",
+      "iconExportSha256": "b261aa99e47d40e55fd794799906ca53a92b17c37736f52da1a017eb0201dc66",
+      "bodyMeshSha256": "ec2e38eae2cb3279a003ec2cf507f4eb30e4e3153905a60a697940833cd8c914",
+      "bodyAlbedoSha256": "15be7f5c733e770572513dc735cb85fa303ddaa8205de6edc722b558eb5e58e3",
+      "nativeDonor": "Mastodon",
+      "offlineViews": ["clay", "silhouette", "textured", "unlit", "party-camera", "walk", "turn", "horn-contact"],
+      "offlineReview": "PASS"
+    },
+    "stegosaurus": {
+      "source": "stegosaurus.png",
+      "sourceSha256": "da97b11601d76fdbb5456ec413ebf32cfd3fd6d0432db46f2f0bef5526978d7f",
+      "promptIntent": "Side three-quarter plate silhouette and long four-spiked tail, no club",
+      "iconExportSha256": "dfa37b0bdff97f5bda5a2772a64096ad9c39f283d7618fb99c9b8e34f15890e4",
+      "bodyMeshSha256": "02a37218c41c09ed9962ac39a8e01ad0e9d99d8f07d718e1e27d9b9b7573582f",
+      "bodyAlbedoSha256": "2305063faf8ad033c412bb5aaf1b749eb496a854b3b5c43b6e427b488a875a3f",
+      "nativeDonor": "Hodag",
+      "offlineViews": ["clay", "silhouette", "textured", "unlit", "party-camera", "walk", "turn", "tail-sweep", "tail-contact"],
+      "offlineReview": "PASS"
+    },
+    "iconManifestCount": 117,
+    "iconManifestSha256": "de9aa510250881e34a507463eaadda2ca079280c50a738f0db607b7a02686365",
+    "resourcePolicy": "Private project-owned mesh/material/texture instances; donor rigs and animations remain immutable native caches",
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING"
+  },
+  "plan": {
+    "ordinaryTargetMinutes": 15,
+    "ordinaryCeilingMinutes": 30,
+    "phases": [
+      {"name": "contract-reuse", "targetMinutes": 30, "exit": "Frozen source contract, identity plan, event/lifecycle reuse map and nonzero focused selection"},
+      {"name": "art", "targetMinutes": 75, "exit": "Deterministic editable bodies/albedos/icons and offline anatomy/contact/camera reviews"},
+      {"name": "focused-implementation", "targetMinutes": 120, "exit": "Hidden profiles/routes/mechanics/assets with focused production compile and corruption controls"},
+      {"name": "candidate-native-qualification", "targetMinutes": 240, "exit": "One frozen Sprint gate plus mandatory RTWP/TB/profile/route/art/load/module/compatibility coverage"},
+      {"name": "publication-release-restoration", "targetMinutes": 120, "exit": "Public artifact qualified, PR merged, next stable verified from download, machine restored, records synchronized"}
+    ],
+    "focusedFilter": "expanded-summoning.sprint23",
+    "candidateGate": "One Invoke-KmgGate.ps1 -Level Sprint per coherent changed candidate",
+    "publicArtifact": "Separate exact identity and affected checks after suppression removal",
+    "noUnchangedCampaignReplay": true,
+    "safeCompletionAndRestorationExcludedFromTimingCeilings": true
+  },
+  "qualification": {
+    "focusedImplementation": {
+      "status": "PASS",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint23'",
+      "matchedTests": 12,
+      "productionCompilation": "PASS"
+    },
+    "hiddenCandidate": {
+      "status": "PASS",
+      "finalObserverSource": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "sourceStateSha256": "5491b1ca69371914b8872d0aebca5c2d1efde7bfa69ce18e6cdb4c11b1f9b7c0",
+      "packageSha256": "3c708ae149df7a9f76506a930a609650e2fd3a96059571e2455d78b36331f331",
+      "dllSha256": "20fe593fdd4ec633eed86e19e3eaea47bff33be81a6b32661e52065319cd2a1d",
+      "dllMvid": "6c5e026e-abcc-41ab-8806-6aa07f3a0663",
+      "bundleSha256": "b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb",
+      "buildManifestSha256": "e9c16f92590018cbd5a3a87034f88f9137769b989e341840973e6f31c54cda47",
+      "gate": {
+        "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+        "seconds": 184.9,
+        "executed": 2594,
+        "failures": 0,
+        "strictPackageValidation": "PASS"
+      }
+    },
+    "native": {
+      "status": "PASS",
+      "gameplayArtifact": {
+        "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+        "sourceStateSha256": "dde3ed25ad17008573db5eddfb2bb50d7bff3955df8f5cf3f6f5d535095bb3a2",
+        "packageSha256": "7b70747889d899db7bcdee1d138667798af982726a518c6b951b9e0532e7d972",
+        "dllSha256": "c3082586499bc12fe8771fcede13e3d57302804476cb0338c7417b35c381d248",
+        "dllMvid": "20ecfae2-6f7e-45ee-87bf-f854145bc60b"
+      },
+      "finalObserverArtifact": "qualification.hiddenCandidate",
+      "compiledChangesAfterGameplay": "Persistence selection, exact-key comparison and module-off observation only; affected persistence cases rerun on final observer bytes",
+      "rtwpAssertions": 45,
+      "turnBasedAssertions": 17,
+      "persistenceAssertions": 67,
+      "failures": 0
+    },
+    "publicArtifact": {
+      "status": "PASS",
+      "suppressionKeysRemoved": ["Triceratops", "Stegosaurus"],
+      "identityReallocation": false,
+      "focusedSprint23": {"executed": 12, "failures": 0, "productionCompilation": "PASS"},
+      "focusedExpandedSummoning": {"executed": 443, "failures": 0, "productionCompilation": "PASS"},
+      "candidateBeforeInventoryObserverRepair": {
+        "source": "e18938085f16403db43e0ae0c3b17ab1f5fc7059",
+        "sourceStateSha256": "567bd8f04d7688599aca2c425f78d1c14561242ac26d902c66f35c04a8a7e482",
+        "packageSha256": "c751a95784928c0097691debfbb0c2cabe30964719fde25e08148cb49e20b43d",
+        "dllSha256": "b8ce1f7d8f9144e7ea9776d3a0463c0ffa157a9d8c52666b60b817a9851bd5b6",
+        "dllMvid": "2e46ce77-8a4b-4658-9414-175c2ee34cbc",
+        "buildManifestSha256": "20ee0991496d28dfd9bd44eb6663001373393138becd86e6d9a39eba8b2392e6",
+        "gate": {"executed": 2594, "failures": 0, "seconds": 181.6, "strictPackageValidation": "PASS"}
+      },
+      "finalCandidate": {
+        "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+        "sourceStateSha256": "04ef0ced7549e7f1bcc9bceb91ae04380a1e2c8bcebb9d1b34edd95404f48c7b",
+        "packageSha256": "e417ad95e796bac7c312ed60e859b888b1dd2f83818ef211027e35d2c1c663db",
+        "dllSha256": "594113de52c514702b6999fd4e3d3abfd9823e12d003e63d7953f622feaa6c05",
+        "dllMvid": "5afdfc38-4657-48e2-a0fa-942098189a4b",
+        "bundleSha256": "b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb",
+        "buildManifestSha256": "1f338de9c4f03ac774a38ba3f998bbd19bdc9606f7c7ea73afc373ecff114108",
+        "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+        "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+        "gate": {
+          "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+          "seconds": 178.6,
+          "executed": 2594,
+          "failures": 0,
+          "strictPackageValidation": "PASS"
+        }
+      },
+      "failedSprintGate": {
+        "source": "01238de87aeb1cf67a6766481374eda5ba2eef41",
+        "executed": 2594,
+        "failures": 1,
+        "failure": "expanded-summoning.published-records-match-derivation",
+        "classification": "ACTIVE_RESUME_PUBLIC_COUNT_LINE_BREAK_DID_NOT_MATCH_EXACT_TEXT_ASSERTION",
+        "disposition": "RESUME_LINE_WRAP_REPAIRED; FINAL E0D7CB8 CANDIDATE GATE PASSED"
+      },
+      "failedInventoryObservation": {
+        "source": "e18938085f16403db43e0ae0c3b17ab1f5fc7059",
+        "profile": "gunslinger-high-risk-combined",
+        "transaction": "compat-20261013T195637Z-99f7209df96a",
+        "runId": "20261013T1958199736958Z-1865c61ad46f4c2cacbef9ec858629e1",
+        "evidence": "20261013T1958199423968Z-observe-expanded-summoning-inventory",
+        "assertions": 50,
+        "failures": 2,
+        "classification": "EXACT_OWNED_FACT_CENSUS_AND_PROFILE_SPECIAL_FILTER_STALE_SINCE_SPRINT22",
+        "disposition": "FOUR EXACT OWNER_FACT_ROWS_AND_PROFILE_DECLARED_SPECIAL_COMPARISON REPAIRED; FINAL E0D7CB8 CANDIDATE AND AFFECTED NATIVE RERUN PASSED",
+        "restored": true
+      },
+      "inventoryObservation": {
+        "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+        "profile": "gunslinger-high-risk-combined",
+        "transaction": "compat-20261013T201406Z-3bd12dc032ed",
+        "runId": "20261013T2015478087914Z-8346e9b4bedb4d50a019508e64c73cf9",
+        "evidence": "20261013T2015477782718Z-observe-expanded-summoning-inventory",
+        "proofSha256": "cc66691d94b1f7fdb66d976d8bb3dcc7bd575c66c6187f6ea30225ca4fca22ea",
+        "seconds": 257.153,
+        "assertions": 50,
+        "failures": 0,
+        "restored": true
+      },
+      "nativePublicRouteGate": {
+        "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+        "profile": "gunslinger-high-risk-combined",
+        "phase": "rtwp-foundation",
+        "transaction": "compat-20261013T202049Z-fa07db3e4b9a",
+        "runId": "20261013T2022330281385Z-652aaac6028d40ce818d710fd1310289",
+        "evidence": "20261013T2022329277645Z-disposable-expanded-summoning-sprint23-native-review",
+        "proofSha256": "dfa5aa58a33fff8665c86e88cd4911310b38f5b8d636a697c17c1aabfa632c46",
+        "seconds": 143.874,
+        "assertions": 45,
+        "failures": 0,
+        "publishedRoutes": 12,
+        "restored": true
+      }
+    },
+    "release": "PENDING",
+    "restoration": "PER_TRANSACTION_PASS_FINAL_POST_PUBLICATION_AUDIT_PENDING"
+  },
+  "freshEvidence": [
+    {
+      "phase": "standalone-rtwp-foundation",
+      "source": "b66faafc6531e4a4103e98394d30f104ebed3f44",
+      "profile": "gunslinger-only",
+      "transaction": "compat-20261013T164305Z-7f99dc5b500d",
+      "runId": "20261013T1644411429980Z-a86ce2d9ca63466ba0a3f6745e77f8b2",
+      "evidence": "20261013T1644410950886Z-disposable-expanded-summoning-sprint23-native-review",
+      "seconds": 106.252,
+      "assertions": 45,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "standalone-turn-based-control",
+      "source": "3856b1369658f0f6f2c4a2106f28bfc725da21a3",
+      "profile": "gunslinger-only",
+      "transaction": "compat-20261013T165656Z-73ebf146264e",
+      "runId": "20261013T1658316037204Z-6b14642108c547c6907034ac51b56ec2",
+      "evidence": "20261013T1658315568140Z-disposable-expanded-summoning-sprint23-native-review",
+      "seconds": 103.506,
+      "assertions": 17,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "high-risk-combined-rtwp-foundation",
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T171321Z-f51d144a5d44",
+      "runId": "20261013T1715035994067Z-1ed9ec3c760348f0ae7d4b80396999d5",
+      "evidence": "20261013T1715035615788Z-disposable-expanded-summoning-sprint23-native-review",
+      "proofSha256": "4a0d865836b4cec7a9db9b7e46d15ad6795e81b116c30ce21d561092e40eec10",
+      "seconds": 143.516,
+      "assertions": 45,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "high-risk-combined-turn-based-control",
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T171809Z-4fb57804660e",
+      "runId": "20261013T1719509819193Z-39f35bf7af614a058249a8d1b25245e1",
+      "evidence": "20261013T1719509506239Z-disposable-expanded-summoning-sprint23-native-review",
+      "proofSha256": "6b67bad3c7d4db77b3ef7339290fde8ffc1ee7338cff21075e4b790e1a5e68c2",
+      "seconds": 139.169,
+      "assertions": 17,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-a-prepare-enabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T185257Z-ee4ac526d12a",
+      "runId": "20261013T1854396411032Z-f598521f3e2a4366b4b6eddc5187b9fc",
+      "evidence": "20261013T1854396026650Z-working-save-expanded-summoning-prepare",
+      "proofSha256": "e6246cd20159f33a36f7c87ecca9baafcdf895124e617654ec1a2c4bc304b4e2",
+      "seconds": 200.898,
+      "assertions": 14,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-a-cleanup-disabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T185904Z-2989f861fb30",
+      "runId": "20261013T1900430260086Z-6167f889cb6f4052856f5c1a651fbf53",
+      "evidence": "20261013T1900429948051Z-working-save-expanded-summoning-verify-cleanup",
+      "proofSha256": "b3b2cc03da3e4ea41d41763ac7540f82635a8e98f75ff4bbeedf739c711b94f0",
+      "seconds": 193.749,
+      "assertions": 14,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-a-absence-reenabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T190449Z-33010059fd72",
+      "runId": "20261013T1906299913198Z-ae76269d417f4a12be2976215ef2d90a",
+      "evidence": "20261013T1906299444896Z-working-save-expanded-summoning-verify-absent",
+      "proofSha256": "9b28a5c3645faaf538f32c960c34b7ccca02165b6f2b95ff7939fbb590ee3ae4",
+      "seconds": 167.710,
+      "assertions": 6,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-b-prepare-enabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T191012Z-d6bfe6b6d9a1",
+      "runId": "20261013T1911532893463Z-2191c9a9e47e4c4c893ccb880ed30a57",
+      "evidence": "20261013T1911532580876Z-working-save-expanded-summoning-prepare",
+      "proofSha256": "89d2178440a4bf698fd9a961f5a1d44eed7a7a0bffb7e32b40a45d864e63dab1",
+      "seconds": 198.492,
+      "assertions": 14,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-b-cleanup-enabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T191611Z-d0a4e0f064a2",
+      "runId": "20261013T1917508882726Z-f163feab8f824adabb9c36ca9bb4ef0f",
+      "evidence": "20261013T1917508504527Z-working-save-expanded-summoning-verify-cleanup",
+      "proofSha256": "32e403f34ac02461763cfe2e7420b7789b89bea446bcc5a1ecdd8bd6fd807541",
+      "seconds": 193.713,
+      "assertions": 13,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-b-absence-enabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T192158Z-b9798fcf76e3",
+      "runId": "20261013T1923369096947Z-45be503a1225409b8947b4f6a0e87a16",
+      "evidence": "20261013T1923368784449Z-working-save-expanded-summoning-verify-absent",
+      "proofSha256": "25d094ed8de9c9528ca7c58d1822d0741412469edfee640eec3faece29377247",
+      "seconds": 166.928,
+      "assertions": 6,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "public-high-risk-inventory",
+      "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T201406Z-3bd12dc032ed",
+      "runId": "20261013T2015478087914Z-8346e9b4bedb4d50a019508e64c73cf9",
+      "evidence": "20261013T2015477782718Z-observe-expanded-summoning-inventory",
+      "proofSha256": "cc66691d94b1f7fdb66d976d8bb3dcc7bd575c66c6187f6ea30225ca4fca22ea",
+      "seconds": 257.153,
+      "assertions": 50,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "public-high-risk-rtwp-routes",
+      "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T202049Z-fa07db3e4b9a",
+      "runId": "20261013T2022330281385Z-652aaac6028d40ce818d710fd1310289",
+      "evidence": "20261013T2022329277645Z-disposable-expanded-summoning-sprint23-native-review",
+      "proofSha256": "dfa5aa58a33fff8665c86e88cd4911310b38f5b8d636a697c17c1aabfa632c46",
+      "seconds": 143.874,
+      "assertions": 45,
+      "failures": 0,
+      "restored": true
+    }
+  ],
+  "reusedEvidence": [
+    {
+      "source": "v0.0.151",
+      "result": "REUSED_PASS",
+      "scope": "Unchanged old roots, other creature reviews, broad profile/module matrix and whole-roster persistence baseline.",
+      "justification": "Sprint 23 adds two identities and narrowly extends charge/trample/tail/view seams; fresh old-rhino, d6-trampler and Ankylosaurus controls cover touched dependencies.",
+      "freshExecutionClaimed": false
+    },
+    {
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "result": "REUSED_PASS_FOR_BF2A2DF7_GAMEPLAY",
+      "scope": "RTWP and turn-based mechanics, profiles, routes and presentation.",
+      "justification": "Later compiled changes are confined to targeted persistence selection/comparison/observation; all affected persistence cases were rerun on bf2a2df7.",
+      "freshExecutionClaimed": false
+    }
+  ],
+  "failures": [
+    {
+      "source": "6ae8e301d0da5cdf2e3f840d3f7bb4554f420369",
+      "runId": "20261013T1508289187453Z-64fb2b171b02468f90e1f4c11dbe38d6",
+      "evidence": "20261013T1508288864712Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "MEASURED_PROFILE_SELECTION_CHARGE_TRAMPLE_AND_TRIP_DEFECTS",
+      "disposition": "ENGINEERING_AND_OBSERVER_CORRECTED; FINAL_NATIVE_PHASES_PASS",
+      "restored": true
+    },
+    {
+      "source": "40141b4d5e8f71551e548e5c8c2affe255b1bd88",
+      "runId": "20261013T1536019408549Z-1119efc3956e49f5a8b6a58467373652",
+      "evidence": "20261013T1536019101094Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "MEASURED_TRICERATOPS_RANGE_TAIL_MANEUVER_AND_COMMAND_OBSERVER_DEFECTS",
+      "disposition": "NARROWLY_CORRECTED; FINAL_NATIVE_PHASES_PASS",
+      "restored": true
+    },
+    {
+      "source": "ab48e782adab4222305b2753d166fe32c1ad725f",
+      "runId": "20261013T1552354219421Z-2ba0039adb8f473c949d042023b49719",
+      "evidence": "20261013T1552353962943Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "WRONG_NATIVE_GORE_TYPE_AND_STALE_POWER_ATTACK_TOGGLE_SEQUENCE",
+      "disposition": "MASTODON_GORE_CONTRACT_AND_FINAL_TOGGLE_SEQUENCE_QUALIFIED",
+      "restored": true
+    },
+    {
+      "source": "c6e3f5e1c0ca72c0047da1c130dd3945969ff421",
+      "runId": "20261013T1624386867162Z-35e6333531e748c091a518b3ea89df74",
+      "evidence": "20261013T1624386554536Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "ORDINARY_ATTACK_PLANNING_AND_EXPECTED_RANGE_OBSERVER_MISMATCH",
+      "disposition": "NATIVE_EXECUTED_ATTACK_AND_EXACT_15_FOOT_RANGE_QUALIFIED",
+      "restored": true
+    },
+    {
+      "source": "d0051463f836a97fd8ce15334f53e5ae0ee3355e",
+      "runId": "20261013T1636286386187Z-213d65d196964d2799b1b49c67551ece",
+      "evidence": "20261013T1636286077479Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "FIXTURE_OPEN_FLOOR_SELECTION_EXHAUSTED",
+      "disposition": "QUALIFIED_COMBAT_PLACEMENT_REUSED; FINAL_RTWP_PASS",
+      "restored": true
+    },
+    {
+      "source": "b66faafc6531e4a4103e98394d30f104ebed3f44",
+      "runId": "20261013T1649016887966Z-6750e70c3a5a4efbb3af88a1adcade0b",
+      "evidence": "20261013T1649016563716Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "TURN_BASED_CONTROLLER_TEARDOWN_NULL_REFERENCE",
+      "disposition": "TEARDOWN_ORDER_STABILIZED; FINAL_TURN_BASED_PASS",
+      "restored": true
+    },
+    {
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "transaction": "sprint23-stack-20261013T172306Z-648ffb6db62d",
+      "classification": "OBSERVER_PARAMETER_MAXIMUM_600_SECONDS_REJECTED_900_SECONDS",
+      "disposition": "NO_GAME_LAUNCH; CORRECTED_TO_120_SECONDS; RESTORED",
+      "restored": true
+    },
+    {
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "transaction": "sprint23-stack-20261013T172547Z-9af8bbe1ea0c",
+      "runId": "20261013T1727254315040Z-5e80469b29354732ab9a5ab37e45e6fe",
+      "evidence": "20261013T1727254002495Z-working-save-expanded-summoning-prepare",
+      "classification": "PRE_MAIN_MENU_STALL_WITHOUT_SAVE_INTERACTION",
+      "disposition": "EXACT_OWNED_PROCESS_TERMINATED_AFTER_APPROVAL; SANCTIONED_TRANSACTION_AND_83_REGISTRY_VALUES_RESTORED_EXACTLY",
+      "restored": true
+    },
+    {
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "transaction": "sprint23-stack-20261013T181109Z-91c62efab82a",
+      "runId": "20261013T1812561186042Z-9858022d7f2641b2b3a225fe94561695",
+      "evidence": "20261013T1812560346845Z-working-save-expanded-summoning-prepare",
+      "classification": "TARGETED_PERSISTENCE_COULD_NOT_SELECT_SUPPRESSED_REGISTERED_ROUTES",
+      "disposition": "NAMED_HIDDEN_SCOPE_SELECTION_ADDED; BROAD_AND_CROSS_SCOPE_BYPASSES_REJECTED",
+      "restored": true
+    },
+    {
+      "source": "4a38e50fd0bfd3d3b4ac5103e33ee3bfcae7c075",
+      "transaction": "sprint23-stack-20261013T182452Z-5fcf2edceec9",
+      "runId": "20261013T1826322588323Z-1204dd93301c44508cd5cd442e817841",
+      "evidence": "20261013T1826322280571Z-working-save-expanded-summoning-prepare",
+      "classification": "ORDER_SENSITIVE_EXACT_KEY_OBSERVER_REJECTED_CORRECT_TWO_IDENTITY_SET",
+      "disposition": "SET_EXACT_COMPARISON_ADDED_WITH_MISSING_DUPLICATE_AND_FOREIGN_NEGATIVE_TESTS",
+      "restored": true
+    },
+    {
+      "source": "fd71ca952358a664eadb4db9af53f55bea590dfa",
+      "transaction": "sprint23-stack-20261013T184131Z-a5a8aa22b130",
+      "runId": "20261013T1843130718414Z-d21ff6e1ae934e4ebb7390a03343cf35",
+      "evidence": "20261013T1843130405878Z-working-save-expanded-summoning-verify-cleanup",
+      "classification": "MODULE_OFF_OBSERVER_EXPECTED_NOT_ATTEMPTED_INSTEAD_OF_EXPLICIT_REFUSAL",
+      "disposition": "REQUIRE_DONOR_VISUAL_MODULE_DISABLED_AND_ZERO_PRIVATE_RESOURCES; FINAL_AFFECTED_CYCLE_PASS",
+      "restored": true
+    },
+    {
+      "source": "e18938085f16403db43e0ae0c3b17ab1f5fc7059",
+      "transaction": "compat-20261013T195637Z-99f7209df96a",
+      "runId": "20261013T1958199736958Z-1865c61ad46f4c2cacbef9ec858629e1",
+      "evidence": "20261013T1958199423968Z-observe-expanded-summoning-inventory",
+      "classification": "EXACT_OWNED_FACT_CENSUS_AND_PROFILE_SPECIAL_FILTER_STALE_SINCE_SPRINT22",
+      "disposition": "FOUR EXACT OWNER_FACT_ROWS_AND PROFILE_DECLARED_SPECIAL_COMPARISON REPAIRED; FINAL E0D7CB8 PUBLIC INVENTORY RERUN PASSED",
+      "restored": true
+    }
+  ],
+  "acceptedLimitations": [
+    "PASSIVE_CREATURE_SENSES_UNMODELED",
+    "IMPROVED_OVERRUN_NATIVE_CONSUMER_UNAVAILABLE",
+    "RUN_NATIVE_SUMMON_AI_DISPOSITION",
+    "HODAG_DONOR_NO_NATIVE_HIT_ANIMATION"
+  ],
+  "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
+  "stopCondition": "RELEASED record on master, exact restoration verified, Sprint 24 not started"
+}
