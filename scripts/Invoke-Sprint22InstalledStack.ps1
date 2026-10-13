@@ -4,6 +4,8 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('KMG_AUTOMATION_WORKING')][string]$SaveName,
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$ExpectedVersion,
+    [ValidateSet('ankylosaurus','armored-dinosaurs')]
+    [string]$PersistenceScope='ankylosaurus',
     [switch]$ExpandedSummoningDisabled,
     [ValidateRange(30,900)][int]$TimeoutSeconds=600
 )
@@ -20,7 +22,8 @@ Assert-KmgExplicitCandidateIdentity -Manifest $candidate -Git (Get-KmgGitState -
 $install='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 $mods=Join-Path $install 'Mods'
 $stateRoot='C:/Dev/KingmakerGunslingerLab/compatibility-state'
-$runId='sprint22-stack-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N').Substring(0,12)
+$runPrefix=if($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
+$runId=$runPrefix+'-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N').Substring(0,12)
 $backup=Join-Path $install ("Mods.kmg-compat-$runId.original")
 $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Name -cne 'KingmakerGunslinger'} | ForEach-Object {
     $infoPath=Join-Path $_.FullName 'Info.json'
@@ -53,18 +56,18 @@ try {
     [void][IO.Directory]::CreateDirectory($evidenceRoot)
     $record=[ordered]@{schemaVersion=1;transactionRunId=$runId;scenario=$Scenario;startedUtc=[DateTime]::UtcNow.ToString('o');
         actualInstalledMods=@($runtimeMods | ForEach-Object { [ordered]@{id=$_.id;version=$_.version;directory=$_.destinationName} });
-        moduleDisabled=[bool]$ExpandedSummoningDisabled;candidate=$candidate;originalManifest=$transaction.originalManifest;gameSettings=$settingsSnapshot;restoration=$null}
+        moduleDisabled=[bool]$ExpandedSummoningDisabled;persistenceScope=$PersistenceScope;candidate=$candidate;originalManifest=$transaction.originalManifest;gameSettings=$settingsSnapshot;restoration=$null}
     Write-KmgCompatibilityJsonAtomic (Join-Path $evidenceRoot 'installed-stack.json') $record
     $deployment=& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $candidate.packagePath -RuntimeLease $lease -PassThru -Confirm:$false
     $output=@(& (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
-        -SaveName $SaveName -Parameters @{persistenceScope='ankylosaurus'} -TimeoutSeconds $TimeoutSeconds `
+        -SaveName $SaveName -Parameters @{persistenceScope=$PersistenceScope} -TimeoutSeconds $TimeoutSeconds `
         -ObserverStartupTimeoutSeconds $TimeoutSeconds -CompletionTimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -FingerprintTimeoutSeconds $TimeoutSeconds `
         -RuntimeLease $lease -ReuseInstalledArtifact -PackagePath $candidate.packagePath -DeploymentManifestPath $deployment -PassThru -Confirm:$false)
     $receipt=Get-KmgExactRuntimeLaunchReceipt -Output $output
     $record.launchReceipt=$receipt
     $result=Read-KmgCompatibilityJson (Join-Path $receipt.evidenceDirectory 'runtime-result.json')
-    if($result.runId -cne $receipt.runId -or $result.scenario -cne $Scenario -or $result.status -cne 'PASS') { throw 'Sprint22 native installed-stack result is not PASS for this exact run.' }
+    if($result.runId -cne $receipt.runId -or $result.scenario -cne $Scenario -or $result.status -cne 'PASS') { throw 'Targeted native installed-stack result is not PASS for this exact run.' }
 } catch { $failure=$_;if(Test-Path variable:record){$record.error=$_.Exception.Message} }
 finally {
     $exitDeadline=[DateTime]::UtcNow.AddSeconds(180)

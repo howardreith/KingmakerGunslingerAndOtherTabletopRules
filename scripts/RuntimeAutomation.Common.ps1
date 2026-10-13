@@ -2278,8 +2278,8 @@ function Assert-KmgRuntimeScenarioPreflight {
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
         if ($targetedSummonPersistence -and ($Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus') -or -not $ExitAfterCompletion)) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster or ankylosaurus and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs') -or -not $ExitAfterCompletion)) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus or armored-dinosaurs and automatic exit.'
         }
         $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
