@@ -581,7 +581,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     owner=CastExpandedSummoningOwnTier(fixture,"ankylosaurus");SetExpandedSummoningBrainActive(owner,false);
                     foreach (int frame in Sprint22Lifetime(fixture,owner,turnBased)) yield return frame;
-                    DisposeExpandedSummoningUnits(fixture.Created,new[] { owner });
+                    if (!owner.Destroyed)
+                        DisposeExpandedSummoningUnits(fixture.Created,
+                            new[] { owner });
                     for (int frame=0;frame<16;frame++) yield return 0;
                 }
             }
@@ -1716,17 +1718,55 @@ namespace KingmakerGunslinger.RuntimeTesting
                 lifeTick.Invoke(new UnitLifeController(),new object[] { owner });
                 bool sourceDead=owner.Descriptor.State.IsDead;
                 Game.Instance.EntityDestroyer.Tick();
-                bool sourceDestroyed=owner.Destroyed;
-                bool preserved=effects.All(value=>target.Descriptor.Buffs.RawFacts.Contains(value) && value.EndTime==ends[value]) &&
+                bool sourceDestroyedBeforeTeardown=owner.Destroyed;
+                bool preservedAfterDeath=effects.All(value=>
+                    target.Descriptor.Buffs.RawFacts.Contains(value) &&
+                    value.EndTime==ends[value]) &&
                     target.Descriptor.Buffs.RawFacts.Contains(unrelated);
-                Sprint22Check("multi-source-lifetime-"+(turnBased ? "turn-based":"rtwp"),sourceDead && effects.Length==3 && sources.Length==2 && finite && preserved,
+                string lifeAfter=owner.Descriptor.State.LifeState.ToString();
+                int hpAfterDamage=owner.HPLeft;
+                int maxHp=owner.MaxHP;
+                // The native turn controller must not be asked to advance a
+                // dead request-owned summon. Finish that source's ordinary
+                // fixture teardown only after observing that its victim-side
+                // effects survived death, then prove teardown did not erase
+                // either owner's effects or the unrelated condition.
+                DisposeExpandedSummoningUnits(fixture.Created,
+                    new[] { owner });
+                bool sourceDestroyed=owner.Destroyed;
+                JObject postDeathTurnOrder=null;
+                if(turnBased)
+                {
+                    postDeathTurnOrder=new JObject();
+                    foreach(int frame in Sprint22EnrollTurnBasedOwners(
+                        new[] { second },target,postDeathTurnOrder))
+                        yield return frame;
+                    if(!(bool)postDeathTurnOrder["admitted"])
+                        throw new InvalidOperationException("unit="+
+                            second.UniqueId+
+                            ";predicate=post-death-lifetime-turn-order"+
+                            ";event=native-turn-order-admission;owner="+
+                            second.Blueprint.AssetGuid+";state="+
+                            postDeathTurnOrder.ToString(Formatting.None));
+                }
+                bool preservedAfterTeardown=effects.All(value=>
+                    target.Descriptor.Buffs.RawFacts.Contains(value) &&
+                    value.EndTime==ends[value]) &&
+                    target.Descriptor.Buffs.RawFacts.Contains(unrelated);
+                bool preserved=preservedAfterDeath &&
+                    preservedAfterTeardown;
+                Sprint22Check("multi-source-lifetime-"+(turnBased ? "turn-based":"rtwp"),sourceDead && sourceDestroyed && effects.Length==3 && sources.Length==2 && finite && preserved,
                     new JObject { ["unit"]=sourceId,["secondSource"]=second.UniqueId,["target"]=target.UniqueId,["event"]="distinct-hits-source-death",
                         ["owner"]=sourceBlueprint,["legalHits"]=legal,["payloadCount"]=effects.Length,["sources"]=new JArray(sources),
                         ["preserved"]=preserved,["finite"]=finite,["sourceDead"]=sourceDead,
-                        ["sourceDestroyedAfterDeferredTick"]=sourceDestroyed,
-                        ["lifeBefore"]=lifeBefore,["lifeAfter"]=owner.Descriptor.State.LifeState.ToString(),
+                        ["preservedAfterDeath"]=preservedAfterDeath,
+                        ["preservedAfterTeardown"]=preservedAfterTeardown,
+                        ["sourceDestroyedBeforeTeardown"]=sourceDestroyedBeforeTeardown,
+                        ["sourceDestroyedAfterTeardown"]=sourceDestroyed,
+                        ["postDeathTurnOrder"]=postDeathTurnOrder,
+                        ["lifeBefore"]=lifeBefore,["lifeAfter"]=lifeAfter,
                         ["lethalRequested"]=lethal,["lethalApplied"]=deathDamage.Damage,
-                        ["hpAfterDamage"]=owner.HPLeft,["maxHp"]=owner.MaxHP,
+                        ["hpAfterDamage"]=hpAfterDamage,["maxHp"]=maxHp,
                         ["constitution"]=constitution,["immortality"]=immortality,
                         ["turnOrder"]=lifetimeTurnOrder,
                         ["unrelatedPreserved"]=target.Descriptor.Buffs.RawFacts.Contains(unrelated),
