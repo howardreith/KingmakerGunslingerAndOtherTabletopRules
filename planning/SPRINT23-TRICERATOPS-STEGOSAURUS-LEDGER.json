@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint23TriceratopsStegosaurus",
-  "status": "IN_PROGRESS",
+  "status": "HIDDEN_CANDIDATE_QUALIFIED",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
   "pr": 41,
@@ -22,8 +22,8 @@
     "otherWorktreesPreserved": true,
     "gameProcessAbsent": true,
     "steamPreserved": true,
-    "activeRuntimeTransaction": "PENDING_PRELAUNCH_EXACT_AUDIT",
-    "currentHumanStateSnapshot": "PENDING_FIRST_NATIVE_TRANSACTION",
+    "activeRuntimeTransaction": "NONE_AFTER_SIX_FINAL_PERSISTENCE_TRANSACTIONS",
+    "currentHumanStateSnapshot": "EXACT_PER_TRANSACTION_RESTORATION_VERIFIED; final post-publication audit pending",
     "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
     "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
     "referencesByteMatched": true
@@ -174,11 +174,285 @@
     "focusedImplementation": {
       "status": "PASS",
       "command": ".\\scripts\\Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint23'",
-      "matchedTests": 8,
+      "matchedTests": 12,
       "productionCompilation": "PASS"
     },
-    "hiddenCandidate": "PENDING", "publicArtifact": "PENDING", "native": "PENDING",
-    "release": "PENDING", "restoration": "PENDING"
+    "hiddenCandidate": {
+      "status": "PASS",
+      "finalObserverSource": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "sourceStateSha256": "5491b1ca69371914b8872d0aebca5c2d1efde7bfa69ce18e6cdb4c11b1f9b7c0",
+      "packageSha256": "3c708ae149df7a9f76506a930a609650e2fd3a96059571e2455d78b36331f331",
+      "dllSha256": "20fe593fdd4ec633eed86e19e3eaea47bff33be81a6b32661e52065319cd2a1d",
+      "dllMvid": "6c5e026e-abcc-41ab-8806-6aa07f3a0663",
+      "bundleSha256": "b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb",
+      "buildManifestSha256": "e9c16f92590018cbd5a3a87034f88f9137769b989e341840973e6f31c54cda47",
+      "gate": {
+        "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+        "seconds": 184.9,
+        "executed": 2594,
+        "failures": 0,
+        "strictPackageValidation": "PASS"
+      }
+    },
+    "native": {
+      "status": "PASS",
+      "gameplayArtifact": {
+        "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+        "sourceStateSha256": "dde3ed25ad17008573db5eddfb2bb50d7bff3955df8f5cf3f6f5d535095bb3a2",
+        "packageSha256": "7b70747889d899db7bcdee1d138667798af982726a518c6b951b9e0532e7d972",
+        "dllSha256": "c3082586499bc12fe8771fcede13e3d57302804476cb0338c7417b35c381d248",
+        "dllMvid": "20ecfae2-6f7e-45ee-87bf-f854145bc60b"
+      },
+      "finalObserverArtifact": "qualification.hiddenCandidate",
+      "compiledChangesAfterGameplay": "Persistence selection, exact-key comparison and module-off observation only; affected persistence cases rerun on final observer bytes",
+      "rtwpAssertions": 45,
+      "turnBasedAssertions": 17,
+      "persistenceAssertions": 67,
+      "failures": 0
+    },
+    "publicArtifact": "PENDING",
+    "release": "PENDING",
+    "restoration": "PER_TRANSACTION_PASS_FINAL_POST_PUBLICATION_AUDIT_PENDING"
   },
+  "freshEvidence": [
+    {
+      "phase": "standalone-rtwp-foundation",
+      "source": "b66faafc6531e4a4103e98394d30f104ebed3f44",
+      "profile": "gunslinger-only",
+      "transaction": "compat-20261013T164305Z-7f99dc5b500d",
+      "runId": "20261013T1644411429980Z-a86ce2d9ca63466ba0a3f6745e77f8b2",
+      "evidence": "20261013T1644410950886Z-disposable-expanded-summoning-sprint23-native-review",
+      "seconds": 106.252,
+      "assertions": 45,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "standalone-turn-based-control",
+      "source": "3856b1369658f0f6f2c4a2106f28bfc725da21a3",
+      "profile": "gunslinger-only",
+      "transaction": "compat-20261013T165656Z-73ebf146264e",
+      "runId": "20261013T1658316037204Z-6b14642108c547c6907034ac51b56ec2",
+      "evidence": "20261013T1658315568140Z-disposable-expanded-summoning-sprint23-native-review",
+      "seconds": 103.506,
+      "assertions": 17,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "high-risk-combined-rtwp-foundation",
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T171321Z-f51d144a5d44",
+      "runId": "20261013T1715035994067Z-1ed9ec3c760348f0ae7d4b80396999d5",
+      "evidence": "20261013T1715035615788Z-disposable-expanded-summoning-sprint23-native-review",
+      "proofSha256": "4a0d865836b4cec7a9db9b7e46d15ad6795e81b116c30ce21d561092e40eec10",
+      "seconds": 143.516,
+      "assertions": 45,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "high-risk-combined-turn-based-control",
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T171809Z-4fb57804660e",
+      "runId": "20261013T1719509819193Z-39f35bf7af614a058249a8d1b25245e1",
+      "evidence": "20261013T1719509506239Z-disposable-expanded-summoning-sprint23-native-review",
+      "proofSha256": "6b67bad3c7d4db77b3ef7339290fde8ffc1ee7338cff21075e4b790e1a5e68c2",
+      "seconds": 139.169,
+      "assertions": 17,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-a-prepare-enabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T185257Z-ee4ac526d12a",
+      "runId": "20261013T1854396411032Z-f598521f3e2a4366b4b6eddc5187b9fc",
+      "evidence": "20261013T1854396026650Z-working-save-expanded-summoning-prepare",
+      "proofSha256": "e6246cd20159f33a36f7c87ecca9baafcdf895124e617654ec1a2c4bc304b4e2",
+      "seconds": 200.898,
+      "assertions": 14,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-a-cleanup-disabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T185904Z-2989f861fb30",
+      "runId": "20261013T1900430260086Z-6167f889cb6f4052856f5c1a651fbf53",
+      "evidence": "20261013T1900429948051Z-working-save-expanded-summoning-verify-cleanup",
+      "proofSha256": "b3b2cc03da3e4ea41d41763ac7540f82635a8e98f75ff4bbeedf739c711b94f0",
+      "seconds": 193.749,
+      "assertions": 14,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-a-absence-reenabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T190449Z-33010059fd72",
+      "runId": "20261013T1906299913198Z-ae76269d417f4a12be2976215ef2d90a",
+      "evidence": "20261013T1906299444896Z-working-save-expanded-summoning-verify-absent",
+      "proofSha256": "9b28a5c3645faaf538f32c960c34b7ccca02165b6f2b95ff7939fbb590ee3ae4",
+      "seconds": 167.710,
+      "assertions": 6,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-b-prepare-enabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T191012Z-d6bfe6b6d9a1",
+      "runId": "20261013T1911532893463Z-2191c9a9e47e4c4c893ccb880ed30a57",
+      "evidence": "20261013T1911532580876Z-working-save-expanded-summoning-prepare",
+      "proofSha256": "89d2178440a4bf698fd9a961f5a1d44eed7a7a0bffb7e32b40a45d864e63dab1",
+      "seconds": 198.492,
+      "assertions": 14,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-b-cleanup-enabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T191611Z-d0a4e0f064a2",
+      "runId": "20261013T1917508882726Z-f163feab8f824adabb9c36ca9bb4ef0f",
+      "evidence": "20261013T1917508504527Z-working-save-expanded-summoning-verify-cleanup",
+      "proofSha256": "32e403f34ac02461763cfe2e7420b7789b89bea446bcc5a1ecdd8bd6fd807541",
+      "seconds": 193.713,
+      "assertions": 13,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cycle-b-absence-enabled",
+      "source": "bf2a2df78a9279aed0b3e178bdefd99c7ea3ed96",
+      "transaction": "sprint23-stack-20261013T192158Z-b9798fcf76e3",
+      "runId": "20261013T1923369096947Z-45be503a1225409b8947b4f6a0e87a16",
+      "evidence": "20261013T1923368784449Z-working-save-expanded-summoning-verify-absent",
+      "proofSha256": "25d094ed8de9c9528ca7c58d1822d0741412469edfee640eec3faece29377247",
+      "seconds": 166.928,
+      "assertions": 6,
+      "failures": 0,
+      "restored": true
+    }
+  ],
+  "reusedEvidence": [
+    {
+      "source": "v0.0.151",
+      "result": "REUSED_PASS",
+      "scope": "Unchanged old roots, other creature reviews, broad profile/module matrix and whole-roster persistence baseline.",
+      "justification": "Sprint 23 adds two identities and narrowly extends charge/trample/tail/view seams; fresh old-rhino, d6-trampler and Ankylosaurus controls cover touched dependencies.",
+      "freshExecutionClaimed": false
+    },
+    {
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "result": "REUSED_PASS_FOR_BF2A2DF7_GAMEPLAY",
+      "scope": "RTWP and turn-based mechanics, profiles, routes and presentation.",
+      "justification": "Later compiled changes are confined to targeted persistence selection/comparison/observation; all affected persistence cases were rerun on bf2a2df7.",
+      "freshExecutionClaimed": false
+    }
+  ],
+  "failures": [
+    {
+      "source": "6ae8e301d0da5cdf2e3f840d3f7bb4554f420369",
+      "runId": "20261013T1508289187453Z-64fb2b171b02468f90e1f4c11dbe38d6",
+      "evidence": "20261013T1508288864712Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "MEASURED_PROFILE_SELECTION_CHARGE_TRAMPLE_AND_TRIP_DEFECTS",
+      "disposition": "ENGINEERING_AND_OBSERVER_CORRECTED; FINAL_NATIVE_PHASES_PASS",
+      "restored": true
+    },
+    {
+      "source": "40141b4d5e8f71551e548e5c8c2affe255b1bd88",
+      "runId": "20261013T1536019408549Z-1119efc3956e49f5a8b6a58467373652",
+      "evidence": "20261013T1536019101094Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "MEASURED_TRICERATOPS_RANGE_TAIL_MANEUVER_AND_COMMAND_OBSERVER_DEFECTS",
+      "disposition": "NARROWLY_CORRECTED; FINAL_NATIVE_PHASES_PASS",
+      "restored": true
+    },
+    {
+      "source": "ab48e782adab4222305b2753d166fe32c1ad725f",
+      "runId": "20261013T1552354219421Z-2ba0039adb8f473c949d042023b49719",
+      "evidence": "20261013T1552353962943Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "WRONG_NATIVE_GORE_TYPE_AND_STALE_POWER_ATTACK_TOGGLE_SEQUENCE",
+      "disposition": "MASTODON_GORE_CONTRACT_AND_FINAL_TOGGLE_SEQUENCE_QUALIFIED",
+      "restored": true
+    },
+    {
+      "source": "c6e3f5e1c0ca72c0047da1c130dd3945969ff421",
+      "runId": "20261013T1624386867162Z-35e6333531e748c091a518b3ea89df74",
+      "evidence": "20261013T1624386554536Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "ORDINARY_ATTACK_PLANNING_AND_EXPECTED_RANGE_OBSERVER_MISMATCH",
+      "disposition": "NATIVE_EXECUTED_ATTACK_AND_EXACT_15_FOOT_RANGE_QUALIFIED",
+      "restored": true
+    },
+    {
+      "source": "d0051463f836a97fd8ce15334f53e5ae0ee3355e",
+      "runId": "20261013T1636286386187Z-213d65d196964d2799b1b49c67551ece",
+      "evidence": "20261013T1636286077479Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "FIXTURE_OPEN_FLOOR_SELECTION_EXHAUSTED",
+      "disposition": "QUALIFIED_COMBAT_PLACEMENT_REUSED; FINAL_RTWP_PASS",
+      "restored": true
+    },
+    {
+      "source": "b66faafc6531e4a4103e98394d30f104ebed3f44",
+      "runId": "20261013T1649016887966Z-6750e70c3a5a4efbb3af88a1adcade0b",
+      "evidence": "20261013T1649016563716Z-disposable-expanded-summoning-sprint23-native-review",
+      "classification": "TURN_BASED_CONTROLLER_TEARDOWN_NULL_REFERENCE",
+      "disposition": "TEARDOWN_ORDER_STABILIZED; FINAL_TURN_BASED_PASS",
+      "restored": true
+    },
+    {
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "transaction": "sprint23-stack-20261013T172306Z-648ffb6db62d",
+      "classification": "OBSERVER_PARAMETER_MAXIMUM_600_SECONDS_REJECTED_900_SECONDS",
+      "disposition": "NO_GAME_LAUNCH; CORRECTED_TO_120_SECONDS; RESTORED",
+      "restored": true
+    },
+    {
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "transaction": "sprint23-stack-20261013T172547Z-9af8bbe1ea0c",
+      "runId": "20261013T1727254315040Z-5e80469b29354732ab9a5ab37e45e6fe",
+      "evidence": "20261013T1727254002495Z-working-save-expanded-summoning-prepare",
+      "classification": "PRE_MAIN_MENU_STALL_WITHOUT_SAVE_INTERACTION",
+      "disposition": "EXACT_OWNED_PROCESS_TERMINATED_AFTER_APPROVAL; SANCTIONED_TRANSACTION_AND_83_REGISTRY_VALUES_RESTORED_EXACTLY",
+      "restored": true
+    },
+    {
+      "source": "2dd71a89510431b2e9f14a751e72ce533c5b34bf",
+      "transaction": "sprint23-stack-20261013T181109Z-91c62efab82a",
+      "runId": "20261013T1812561186042Z-9858022d7f2641b2b3a225fe94561695",
+      "evidence": "20261013T1812560346845Z-working-save-expanded-summoning-prepare",
+      "classification": "TARGETED_PERSISTENCE_COULD_NOT_SELECT_SUPPRESSED_REGISTERED_ROUTES",
+      "disposition": "NAMED_HIDDEN_SCOPE_SELECTION_ADDED; BROAD_AND_CROSS_SCOPE_BYPASSES_REJECTED",
+      "restored": true
+    },
+    {
+      "source": "4a38e50fd0bfd3d3b4ac5103e33ee3bfcae7c075",
+      "transaction": "sprint23-stack-20261013T182452Z-5fcf2edceec9",
+      "runId": "20261013T1826322588323Z-1204dd93301c44508cd5cd442e817841",
+      "evidence": "20261013T1826322280571Z-working-save-expanded-summoning-prepare",
+      "classification": "ORDER_SENSITIVE_EXACT_KEY_OBSERVER_REJECTED_CORRECT_TWO_IDENTITY_SET",
+      "disposition": "SET_EXACT_COMPARISON_ADDED_WITH_MISSING_DUPLICATE_AND_FOREIGN_NEGATIVE_TESTS",
+      "restored": true
+    },
+    {
+      "source": "fd71ca952358a664eadb4db9af53f55bea590dfa",
+      "transaction": "sprint23-stack-20261013T184131Z-a5a8aa22b130",
+      "runId": "20261013T1843130718414Z-d21ff6e1ae934e4ebb7390a03343cf35",
+      "evidence": "20261013T1843130405878Z-working-save-expanded-summoning-verify-cleanup",
+      "classification": "MODULE_OFF_OBSERVER_EXPECTED_NOT_ATTEMPTED_INSTEAD_OF_EXPLICIT_REFUSAL",
+      "disposition": "REQUIRE_DONOR_VISUAL_MODULE_DISABLED_AND_ZERO_PRIVATE_RESOURCES; FINAL_AFFECTED_CYCLE_PASS",
+      "restored": true
+    }
+  ],
+  "acceptedLimitations": [
+    "PASSIVE_CREATURE_SENSES_UNMODELED",
+    "IMPROVED_OVERRUN_NATIVE_CONSUMER_UNAVAILABLE",
+    "RUN_NATIVE_SUMMON_AI_DISPOSITION",
+    "HODAG_DONOR_NO_NATIVE_HIT_ANIMATION"
+  ],
+  "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
   "stopCondition": "RELEASED record on master, exact restoration verified, Sprint 24 not started"
 }
