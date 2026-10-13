@@ -1,0 +1,718 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint22Ankylosaurus",
+  "status": "QUALIFIED",
+  "host": "HOWARD-LAPTOP",
+  "branch": "codex/expanded-summoning-sprint22-ankylosaurus",
+  "pr": 39,
+  "masterBase": "aa09788e6ba109c3db7bd0ec28f0138506f678a8",
+  "stableBaseline": {
+    "version": "0.0.150",
+    "merge": "3d8e51ee653d598c1ac7e9a6fd452c4d99767ffb"
+  },
+  "sprint21RecordSync": {
+    "original": "d3c442ae11862ad61650206959d41c4343890337",
+    "commit": "f75683a343848c26161f9e8e6770fa74206dd019",
+    "pr": 38,
+    "merge": "aa09788e6ba109c3db7bd0ec28f0138506f678a8",
+    "status": "MERGED_DOCUMENTATION_ONLY",
+    "checks": {
+      "files": 6,
+      "jsonFiles": 4,
+      "localMarkdownLinks": 4,
+      "exactOriginalContent": true,
+      "diffCheck": "PASS",
+      "seconds": 0.243
+    },
+    "buildLaunchPackageVersionReleaseChanges": false
+  },
+  "charter": {
+    "authority": "Owner-supplied September 3 2026 charter page 21 excerpt",
+    "coreFinalSprint": 41,
+    "optionalSprints": [
+      42,
+      43,
+      44,
+      45
+    ],
+    "authorizedSprint": 22,
+    "sprint21Meaning": "Natural-creature rig tranche and previous release mission complete",
+    "sprint23Started": false
+  },
+  "intake": {
+    "startedUtc": "2026-10-12T10:00:32.1690332Z",
+    "completedUtc": "2026-10-12T10:01:14.2804287Z",
+    "evidenceRoot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint22-ankylosaurus-20261012T100032Z",
+    "snapshotSha256": "d1ca61030b7986a60227bfb096bb69953b223ef0ddd40e442afb6ca225478136",
+    "modsManifestEntries": 968,
+    "saveManifestEntries": 119,
+    "actualInstalledKmgVersion": "0.0.117",
+    "restorationTarget": "Actual October 12 intake; never substituted historical pins",
+    "installedBuildReferencesMatch": true,
+    "activeTransactions": 0,
+    "liveLockAbsent": true,
+    "gameAbsent": true,
+    "sourceOwner": "Sprint22 sole writer in isolated codex/expanded-summoning-sprint22-ankylosaurus worktree",
+    "otherWorktreesPreserved": true
+  },
+  "pushPolicyChange": {
+    "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "beforeSha256": "4336caa9cf815195e316974fb699547e93962a7771ba20d94f1794d2403fded3",
+    "afterSha256": "aa763ebaf6d55d9fd268627ec96cfe0f484717b840dff234643493682e7b49d5",
+    "addedBranches": [
+      "codex/sprint21-release-record-sync",
+      "codex/expanded-summoning-sprint22-ankylosaurus"
+    ],
+    "otherEdits": false
+  },
+  "rulesInterpretation": {
+    "sourceUrls": [
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Ankylosaurus",
+      "https://legacy.aonprd.com/bestiary/dinosaur.html"
+    ],
+    "adultPf1e": true,
+    "saveType": "Fortitude",
+    "saveTypeAuthority": "Explicit owner mission interpretation; primary paragraph names no save type",
+    "dc": "10 + half racial HD + current Strength modifier",
+    "unbuffedDc": 23,
+    "ordinaryFailure": "Dazed 1 round",
+    "effectiveConfirmedCriticalFailure": "Stunned 1d4 rounds instead",
+    "absorbedDamageHit": "Qualifies: struck-by-attack rule, no injury precondition"
+  },
+  "preservedIdentities": [
+    {
+      "symbol": "KMG.Summoning.Unit.Ankylosaurus",
+      "guid": "10c80d5cfa594332bd3e5127799e426f",
+      "plannedType": "BlueprintUnit"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Ankylosaurus.One",
+      "guid": "a7bd677a7c8848f88e4a6e265bd5ed88",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Ankylosaurus.One.Celestial",
+      "guid": "b7536edef0ab47ab9eb872470f75225b",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Ankylosaurus.One.Fiendish",
+      "guid": "cfeea367ed5e4e8ea0c7a442e42a9bb9",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Ankylosaurus.OneD3",
+      "guid": "bd607b83fa9f4664b7c352eec97afb0d",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Ankylosaurus.OneD3.Celestial",
+      "guid": "bee44ca6822e48b38bbbf2268eb4a23d",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Ankylosaurus.OneD3.Fiendish",
+      "guid": "b2dc4835004c4590aa303c83a9eb246e",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Ankylosaurus.OneD4PlusOne",
+      "guid": "d33c1619aa7548ee948375b53b826311",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Ankylosaurus.OneD4PlusOne.Celestial",
+      "guid": "9b8ff63b85da4990abb856e720515685",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Ankylosaurus.OneD4PlusOne.Fiendish",
+      "guid": "e093fa3ff561488f97cae0c826b4a5f2",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Ankylosaurus.OneD4PlusOne",
+      "guid": "fc1091e0af724ede9858cfb2bd474e2d",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Ankylosaurus.OneD4PlusOne.Celestial",
+      "guid": "387126b658bd4c9797615bf02270cacb",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Ankylosaurus.OneD4PlusOne.Fiendish",
+      "guid": "4e4247e793954724ab1d8d34f00188be",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Ankylosaurus.OneD4PlusOne",
+      "guid": "9b3f3f1c195e4cb1a980e757c0e6cfca",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Ankylosaurus.OneD4PlusOne.Celestial",
+      "guid": "6c5da706182244c5ab72752ad365a26c",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Ankylosaurus.OneD4PlusOne.Fiendish",
+      "guid": "66346b80c058473ba1cbfac8ebb27578",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Ankylosaurus.One",
+      "guid": "408e787a8e684fe6aaf3a66509a1eaac",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Ankylosaurus.OneD3",
+      "guid": "da534c9632b94790b2efd45aabb78444",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Ankylosaurus.OneD4PlusOne",
+      "guid": "53fb646c7c4541adbdde45da81c8ea7c",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Ankylosaurus.OneD4PlusOne",
+      "guid": "7dd638cae1a449508e43e29d250f0d30",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Ankylosaurus.OneD4PlusOne",
+      "guid": "ffef2783493943a2b4eb0cbc81cc1051",
+      "plannedType": "BlueprintAbility"
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Tail3d6",
+      "guid": "15394605e1664a51bce4b50f38a7603a",
+      "plannedType": "BlueprintItemWeapon"
+    }
+  ],
+  "baselineSurface": {
+    "SM": 530,
+    "SNA": 533,
+    "generatedRoots": 1063,
+    "nativeWrappers": 29,
+    "visibleChoices": 1092,
+    "authority": "Catalog generation and registered native-option set"
+  },
+  "plan": {
+    "ordinaryTargetMinutes": 15,
+    "ordinaryCeilingMinutes": 30,
+    "nativeReleaseBudgetMinutes": 300,
+    "allocationMinutes": {
+      "donorFacts": 15,
+      "mechanicsArtRoutesProfiles": 120,
+      "coldLoadLifetimeModuleAbsence": 75,
+      "dependencyComparisons": 30,
+      "releaseRestoration": 60
+    },
+    "candidateGate": "One Invoke-KmgGate.ps1 -Level Sprint after internal review",
+    "focusedFilter": "expanded-summoning.sprint22; actual affected dependency filters",
+    "baselineEvidenceAuthority": "v0.0.150; named unchanged-dependency comparison per reused obligation",
+    "persistenceProfile": "Actual current eleven-mod installed stack through Invoke-Sprint22InstalledStack.ps1 and existing guarded compatibility transaction; exact native settings, full mod-tree and sound-bank restoration. Explicit tested PackagePath and fresh exact receipt. Reduced profiles never load the human-stack fixture."
+  },
+  "implementation": {
+    "profileAndCarrierAudit": "QUALIFIED",
+    "rider": "QUALIFIED",
+    "originalBody": "QUALIFIED_OFFLINE_AND_NATIVE_OWNER_VISUAL_REVIEW_NOT_PERFORMED",
+    "existingIcon": "Approved original armored dinosaur and terminal club retained; source/export bytes unchanged",
+    "tailImpact": "Native tail motion plus private terminal-club compression after one resolved strike; no rule generated",
+    "newPrivateIdentities": [
+      "ff4df4fe2f594c37ac1c836a519efddf",
+      "e8a085864606409ba25dc123f14d27a2",
+      "74654177d90e4d1d8fd512c0dabe3966",
+      "1f95fa2f17b042df8065a28823e09fc3",
+      "e5f977fc42c943a88902b9c3a170a7ea",
+      "7243c9cd0f654b9080e7b31112ddbf18"
+    ]
+  },
+  "freshEvidence": [
+    {
+      "phase": "sprint-pipeline",
+      "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+      "seconds": 213.6,
+      "executed": 2582,
+      "failures": 0
+    },
+    {
+      "phase": "turn-based-control",
+      "profile": "gunslinger-only",
+      "transaction": "compat-20261013T053547Z-a6cf60e1b945",
+      "runId": "20261013T0537231081612Z-1b05243726fb4b448444a768ec5b84f9",
+      "seconds": 383.891,
+      "assertions": 28,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "rtwp-foundation",
+      "profile": "gunslinger-only",
+      "transaction": "compat-20261013T054421Z-e671801eacb6",
+      "runId": "20261013T0545546764877Z-4eac6c8ea47647cc848b308f009adedd",
+      "seconds": 240.203,
+      "assertions": 57,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "rtwp-foundation",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T055734Z-5ecd249ec5b3",
+      "runId": "20261013T0559142075980Z-d6b41b4f20994cd0b3824e80ede6ec19",
+      "seconds": 256.042,
+      "assertions": 57,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-prepare",
+      "transaction": "sprint22-stack-20261013T051907Z-bafffed40302",
+      "runId": "20261013T0520405601787Z-c0a103387b354cd286b1352e4343ef65",
+      "seconds": 195.136,
+      "assertions": 14,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-cleanup-module-off",
+      "transaction": "sprint22-stack-20261013T052448Z-afb6175c6124",
+      "runId": "20261013T0526249544115Z-b882ad29f01441639afc613e2090a33b",
+      "seconds": 214.554,
+      "assertions": 17,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "persistence-absence-module-on",
+      "transaction": "sprint22-stack-20261013T053046Z-0d726508f1e6",
+      "runId": "20261013T0532234490267Z-1289c4d7a6c2444d823c55ccf3293d1f",
+      "seconds": 162.692,
+      "assertions": 6,
+      "failures": 0,
+      "restored": true
+    }
+  ],
+  "reusedEvidence": [
+    {
+      "source": "v0.0.150",
+      "result": "REUSED_PASS",
+      "scope": "Unaffected 1,063-root census, other creature reviews, other supported profiles/module combinations and whole-roster serialization baseline.",
+      "justification": "Catalog publisher, templates, protected non-Ankylosaurus identities/assets, module coordinator and general serializer are unchanged; final Sprint 22 runs freshly cover the touched routes, profiles and persistence seam.",
+      "freshExecutionClaimed": false
+    }
+  ],
+  "failures": [
+    {
+      "source": "e1c4eaf4d52fad0d8c50ee1ceea01f6f833eb0d8",
+      "stage": "complete-domain-suite",
+      "executed": 2580,
+      "failures": 27,
+      "suiteSeconds": 97.6,
+      "pipelineSeconds": 164.835726,
+      "classification": "OUTDATED_CURRENT_LEDGER_VERSION_PACKAGE_PINS_AND_OVERBROAD_SOURCE_READER",
+      "disposition": "CORRECTED_FOCUSED_65_PASS_NEW_CANDIDATE_REQUIRED",
+      "rawEvidence": "Private artifacts/sprint22-candidate-e1c4eaf4 stdout/stderr/timing retained; no product package produced."
+    },
+    {
+      "source": "c254a66ac26e9223f713a84111b27e74495cd96e",
+      "stage": "standalone-native-review",
+      "transaction": "compat-20261012T144502Z-60d7b8c83b4f",
+      "runId": "20261012T1446360695074Z-de8cfed0d2124fbd9a1b9a7fdb2c2069",
+      "evidence": "20261012T1446360382756Z-disposable-expanded-summoning-sprint22-native-review",
+      "durationSeconds": 373.638,
+      "classification": "MEASURED_PRODUCT_CARRIERS_PLUS_FIXTURE_AND_OBSERVER_DEFECTS",
+      "findings": "Native profile measured Reach 12/range 9 feet, Power Attack +4, and duplicate RuleApplyBuff nesting; inherited pause/TB froze movement and expiry; post-rule pose could not witness active tail contact.",
+      "disposition": "CORRECTED_FOCUSED_PASS_NEW_CANDIDATE_REQUIRED",
+      "restored": true
+    },
+    {
+      "source": "5f54d1aecfb71c962be9de83ddb207d2868eaa18",
+      "stage": "sprint-candidate-repository-wrapper",
+      "durationSeconds": 42.2,
+      "classification": "STALE_CURRENT_REGISTRY_HASH_AFTER_TWO_APPEND_ONLY_IDENTITIES",
+      "disposition": "CORRECTED_ICON_CATALOG_HASH_NEW_CANDIDATE_REQUIRED",
+      "buildStarted": false,
+      "packageProduced": false,
+      "rawEvidence": "artifacts/sprint22-candidate-5f54d1ae.transcript.log and timing JSONL retained; the separate 1.4-second capture-layer invocation failure is also retained."
+    },
+    {
+      "source": "b85634af8a329e5655436966f285977623b67286",
+      "stage": "working-save-prepare",
+      "runId": "20261013T0334348057498Z-8c47bf358fe74efcb83984dad7305fac",
+      "classification": "FINGERPRINT_TIMEOUT_BEFORE_MUTATION",
+      "disposition": "CANONICAL_WRAPPER_NOW_PASSES_TIMEOUT_TO_FINGERPRINT",
+      "restored": true
+    },
+    {
+      "source": "b85634af8a329e5655436966f285977623b67286",
+      "stage": "working-save-prepare",
+      "runId": "20261013T0354204089834Z-fd42a9c5d19c4c54a618b0cf05570d82",
+      "classification": "SPRINT22_SCOPE_DID_NOT_ARM_NATIVE_LOAD_TRACE",
+      "disposition": "OBSERVER_REPAIRED_AND_FINAL_BYTE_TRIO_PASS",
+      "restored": true
+    },
+    {
+      "source": "b85634af8a329e5655436966f285977623b67286",
+      "stage": "working-save-cleanup-module-off",
+      "runId": "20261013T0453069146173Z-d87d9c0f04ea43be9d6adbbc67e0caf2",
+      "classification": "OBSERVER_SAMPLED_CANACT_IN_BUFF_REMOVAL_FRAME",
+      "disposition": "BOUNDED_NATIVE_STATE_SETTLEMENT_REPAIRED_FINAL_BYTE_17_OF_17_PASS",
+      "restored": true
+    },
+    {
+      "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+      "stage": "high-risk-combined",
+      "runId": "20261013T0552115668710Z-56053f6b311542ca9624df005df046d4",
+      "classification": "UNSATISFIED_DICE_PRECONDITION_NO_NATURAL_20_IN_120_TRIALS",
+      "disposition": "MISSION_PROTOCOL_FRESH_PROCESS_BOUNDED_RETRY_57_OF_57_PASS",
+      "restored": true
+    }
+  ],
+  "acceptedLimitations": [
+    "PASSIVE_CREATURE_SENSES_UNMODELED",
+    "IMPROVED_OVERRUN_NO_CONCRETE_NATIVE_FEAT_OR_QUALIFIED_SUMMON_COMMAND_CONSUMER",
+    "HODAG_DONOR_NO_NATIVE_HIT_ANIMATION"
+  ],
+  "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
+  "release": "QUALIFIED_NOT_RELEASED",
+  "nextAction": "Push qualification reporting commit, update PR #39, fetch master and release list, merge normally, promote exact candidate as the next unused stable patch, verify download/tag/Latest, then synchronize RELEASED/STOP documentation and restore once more.",
+  "researchBoundary": {
+    "purpose": "Missing Hodag/monitor detached rig and native condition/feat facts",
+    "scenario": "observe-expanded-summoning-sprint22-contracts",
+    "profile": "gunslinger-only",
+    "saveAccess": false,
+    "donorCap": 3,
+    "build": "One selected Build-Local research package; unchanged 0.0.150 gameplay",
+    "focused": {
+      "selected": 2,
+      "failures": 0,
+      "productionCompileSeconds": 17.2,
+      "testSeconds": 4.2
+    },
+    "status": "PASS_RESTORED",
+    "runId": "20261012T1037196397495Z-observe-expanded-summoning-sprint22-contracts",
+    "nativeAssertions": 5,
+    "nativeWallSeconds": 67.608
+  },
+  "focusedValidation": {
+    "selected": 65,
+    "registered": 2580,
+    "failures": 0,
+    "productionSeconds": 0.9,
+    "domainSeconds": 5.7,
+    "filter": "27 exact failed candidate case names plus expanded-summoning.sprint22,native-profile,sprint21",
+    "limits": "All 27 current ledger/version/package/source-reader corrections and affected neighbors pass; no native qualification yet."
+  },
+  "liveFindingCorrectionFocused": {
+    "selected": 11,
+    "registered": 2580,
+    "failures": 0,
+    "sourceValidator": "PASS: 22 protected identities, 6 private additions, foundation 2069, active 3066, reserved 2",
+    "productionCompile": "PASS",
+    "scope": "Sprint 22 rules/profile/art plus exact identity and affected Salamander route neighbor; changed native fixture requires fresh execution."
+  },
+  "offlineArt": {
+    "meshSha256": "f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626",
+    "albedoSha256": "f9255a77008fbcd001350bdeeb408af6f34adb39f55869337c224f8899602050",
+    "deterministicRepeat": "PASS",
+    "views": [
+      "clay-quarter",
+      "silhouette-side",
+      "textured-quarter",
+      "unlit-top",
+      "party-camera",
+      "tail-extreme",
+      "tail-contact"
+    ],
+    "review": "PASS_OFFLINE_ORIGINAL_GEOMETRY_ONLY",
+    "nativeContact": "PASS_FINAL_BYTE_RTWP",
+    "editableBlendSha256": "33c9c964704233dab4c4cd69fe9bcdfda30ea93500ee26627c327af86c94e2ef"
+  },
+  "installedStackSafety": {
+    "status": "PASS_OFFLINE_AND_NATIVE",
+    "predicates": 30,
+    "command": "scripts/Test-Sprint22InstalledStack.ps1",
+    "nativeRestoration": "PASS_EXACT_FINAL_BYTE_TRIO",
+    "scope": "Future-backup current-mod copies, independent restoration on failure, exact RunId evidence, typed flat native game settings restoration and hierarchy refusal, protected-save/OFF-stage refusal; filesystem and in-memory fixtures only"
+  },
+  "candidateReview": {
+    "status": "QUALIFIED_FOR_EXACT_CANDIDATE_PROMOTION",
+    "master": "aa09788e6ba109c3db7bd0ec28f0138506f678a8",
+    "latestStable": "v0.0.150",
+    "protectedIdentityCount": 22,
+    "privateIdentityCount": 6,
+    "focusedExecuted": 11,
+    "registered": 2582,
+    "sourceGate": "PASS",
+    "runtimePlanMinutes": 300,
+    "runtimePlan": "Standalone and highest-risk combined isolated unsaved native review, then current-compatible eleven-mod targeted enabled and disabled cold-load/cleanup/fresh absence. Each transaction snapshots/restores its own intake and has a fresh exact deployment/RunId receipt. Native changes require new affected evidence; no full-roster replay without a named invalidated dependency.",
+    "candidateBoundaryFinding": "The initial source wrapper rejected the stale icon catalog registry pin after the first four private appends. The first native profile then justified two more private carriers for exact range/reach, Weapon Focus continuity and Power Attack damage. Registry metadata now names all six; original pixels, consumers and released hashes remain preserved."
+  },
+  "missionDocument": "docs/SPRINT22-ANKYLOSAURUS-MISSION.md",
+  "releaseEligible": true,
+  "sprint23Started": false,
+  "baselineExceptions": [],
+  "unresolvedFindings": [],
+  "evidenceRoot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint22-ankylosaurus-20261012T100032Z",
+  "candidate": {
+    "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+    "sourceFingerprint": "a9b7755671993ea386886ec512222d59402e42d13838c5c8e07a06ebafadecc0",
+    "version": "0.0.151",
+    "zipSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+    "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+    "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05",
+    "assetBundleSha256": "b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb",
+    "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+    "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 213.6,
+    "fullSuite": {
+      "exitCode": 0,
+      "failures": 0,
+      "executed": 2582,
+      "registered": 2582,
+      "unfiltered": true,
+      "seconds": 90.2
+    }
+  },
+  "roster": {
+    "generatedRoots": 1063,
+    "nativeWrappers": 29,
+    "choices": 1092,
+    "preservedAnkylosaurusRoots": 10,
+    "protectedIdentitySetsEqual": true,
+    "smRoots": 530,
+    "snaRoots": 533
+  },
+  "restoration": {
+    "current": "EXACT_INTAKE_VERIFIED",
+    "workingFixtureClean": true,
+    "intakeManifest": "intake.json",
+    "auditPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint22-final-restoration-20261013T060657Z\\final-restoration-audit-complete.json",
+    "auditSha256": "349c2054cd958d9c173e1157af3889375d33ed7991a486ac36ded459f8a145c5",
+    "modsManifestEntries": 968,
+    "saveManifestEntries": 119,
+    "unrelatedSavesExact": true,
+    "registrySha256": "ecca9d04b0a7a664306c90760618f4f160923829e13a2153f0f822ded5f247f2",
+    "installedKmgVersion": "0.0.117",
+    "gameProcessAbsent": true,
+    "compatibilityLockAbsent": true
+  },
+  "coverage": [
+    {
+      "id": "ankylosaurus-profile-carriers-and-ten-routes",
+      "result": "PASS",
+      "details": "Fresh RTWP spawned profile, all ten preserved logical routes, quantities, templates, slots and duration.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0545546543324Z-disposable-expanded-summoning-sprint22-native-review\\sprint22-review.json",
+          "sha256": "f07c6284ab30553466092971dd8bc53765f1c636cd1af06220f914285a31b98e"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    },
+    {
+      "id": "tail-rider-rtwp-and-turn-based",
+      "result": "PASS",
+      "details": "Fresh final-byte RTWP and turn-based rider discrimination, immunities, live Strength, absorbed damage, repeated events and natural action return.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0537230768428Z-disposable-expanded-summoning-sprint22-native-review\\sprint22-review.json",
+          "sha256": "ec9f9908215c8d90c921653f847c8169ec3d1806acba2aec1a72c9b348706ce3"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0545546543324Z-disposable-expanded-summoning-sprint22-native-review\\sprint22-review.json",
+          "sha256": "f07c6284ab30553466092971dd8bc53765f1c636cd1af06220f914285a31b98e"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    },
+    {
+      "id": "original-body-contact-huge-crowd",
+      "result": "PASS",
+      "details": "Fresh original body, terminal club contact, Huge navigation/selection/crowding/death and captured party-camera frames.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0545546543324Z-disposable-expanded-summoning-sprint22-native-review\\sprint22-review.json",
+          "sha256": "f07c6284ab30553466092971dd8bc53765f1c636cd1af06220f914285a31b98e"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0545546543324Z-disposable-expanded-summoning-sprint22-native-review\\sprint17-sprint22-ankylosaurus-rtwp-owned-body.png",
+          "sha256": "652f5397efcebc79980d48b44b4df7ae5f132b6e0288c3678557257421bb9802"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0545546543324Z-disposable-expanded-summoning-sprint22-native-review\\sprint17-sprint22-tail-contact-rtwp-owned-body.png",
+          "sha256": "fd69e45c2ff5d9350ee58ad38cab9cfde0c51a7e5e96045f256f9e4b39820288"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    },
+    {
+      "id": "private-resource-teardown-and-fallback",
+      "result": "PASS",
+      "details": "Fresh fault rollback, donor isolation, per-instance private resource release and borrowed/cache preservation.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0545546543324Z-disposable-expanded-summoning-sprint22-native-review\\sprint22-review.json",
+          "sha256": "f07c6284ab30553466092971dd8bc53765f1c636cd1af06220f914285a31b98e"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    },
+    {
+      "id": "targeted-enabled-cold-load-cleanup-absence",
+      "result": "PASS",
+      "details": "Fresh final-byte prepare, native finite-control cold load, exact cleanup save and fresh enabled absence.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0520405390383Z-working-save-expanded-summoning-prepare\\expanded-summoning-whole-roster-persistence.json",
+          "sha256": "9e915c3bf21632ddc83a431fb96ee96a3e602f5a1dc1247ed99046eecf774ac0"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0526249321647Z-working-save-expanded-summoning-verify-cleanup\\expanded-summoning-whole-roster-persistence.json",
+          "sha256": "694efbc8a6db263b6be9b6ff72adb4676b132db5b10519d6a8249a491dee759c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0532234178110Z-working-save-expanded-summoning-verify-absent\\expanded-summoning-whole-roster-persistence.json",
+          "sha256": "4c7d2200fd9026bcfdb6598de5c06bda9d9dbb64679f026da3cfbfe26f5a7446"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    },
+    {
+      "id": "module-disabled-cold-load-reenable",
+      "result": "PASS",
+      "details": "Fresh final-byte module-off load/cleanup followed by module-on publication and zero-receipt absence.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0526249321647Z-working-save-expanded-summoning-verify-cleanup\\expanded-summoning-whole-roster-persistence.json",
+          "sha256": "694efbc8a6db263b6be9b6ff72adb4676b132db5b10519d6a8249a491dee759c"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0532234178110Z-working-save-expanded-summoning-verify-absent\\expanded-summoning-whole-roster-persistence.json",
+          "sha256": "4c7d2200fd9026bcfdb6598de5c06bda9d9dbb64679f026da3cfbfe26f5a7446"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    },
+    {
+      "id": "gunslinger-only",
+      "result": "PASS",
+      "details": "Fresh final-byte standalone turn-based and RTWP profiles.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0537230768428Z-disposable-expanded-summoning-sprint22-native-review\\sprint22-review.json",
+          "sha256": "ec9f9908215c8d90c921653f847c8169ec3d1806acba2aec1a72c9b348706ce3"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0545546543324Z-disposable-expanded-summoning-sprint22-native-review\\sprint22-review.json",
+          "sha256": "f07c6284ab30553466092971dd8bc53765f1c636cd1af06220f914285a31b98e"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    },
+    {
+      "id": "high-risk-combined",
+      "result": "PASS",
+      "details": "Fresh final-byte highest-risk combined RTWP profile after one recorded unsatisfied dice prerequisite.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261013T0559141698622Z-disposable-expanded-summoning-sprint22-native-review\\sprint22-review.json",
+          "sha256": "ced9eab8e6915b425f516ba0e25221a62fca9a602b395089009944ee54212a9f"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    },
+    {
+      "id": "exact-package-release-qualification",
+      "result": "PASS",
+      "details": "One full Sprint pipeline, exact candidate manifest, native evidence on those bytes and exact final machine restoration.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-sprint22\\artifacts\\local-runtime\\0.0.151\\KingmakerGunslinger-0.0.151-local-runtime.zip.build-local.json",
+          "sha256": "2d8f887094ec7c38dbe758318675a0ecabd04e0c3ba44e879327737af1045ffc"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint22-final-restoration-20261013T060657Z\\final-restoration-audit-complete.json",
+          "sha256": "349c2054cd958d9c173e1157af3889375d33ed7991a486ac36ded459f8a145c5"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "d42e33ccc5b282daad594836b1defd4f680990e5",
+          "packageSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+          "dllSha256": "97fe266abbe23d4527eac4804efb3c3e48a692528e859adcf8cde137fe87bc0f",
+          "dllMvid": "abfbf93f-60e4-44ac-9ac8-e21568962b05"
+        }
+      ]
+    }
+  ],
+  "harness": {
+    "candidateCommit": "d42e33ccc5b282daad594836b1defd4f680990e5",
+    "validationPolicy": "2026-10-11 focused workflow",
+    "launcher": "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1",
+    "persistenceLauncher": "scripts/Invoke-Sprint22InstalledStack.ps1",
+    "runtimeEvidenceOutsideSource": true
+  },
+  "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING"
+}

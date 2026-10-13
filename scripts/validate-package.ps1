@@ -46,7 +46,7 @@ try {
         'validation\weapon-findability-runtime-qualification.json',
         'docs\RELEASE-NOTES-0.0.145.md',
         'docs\RELEASE-NOTES-0.0.146.md',
-        'docs\RELEASE-NOTES-0.0.150.md',
+        'docs\RELEASE-NOTES-0.0.151.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -120,6 +120,8 @@ try {
         'assets\sprint21-arthropods\giant-crab-albedo.png',
         'assets\sprint21-arthropods\bebelith-mesh.json',
         'assets\sprint21-arthropods\bebelith-albedo.png',
+        'assets\ankylosaurus\ankylosaurus-mesh.json',
+        'assets\ankylosaurus\ankylosaurus-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -137,6 +139,8 @@ try {
         'assets\sprint21-arthropods\giant-crab-albedo.png' = '42be10115e53644da45f66f5e1d9beb989a310eeee061756d1fe842d78c07781'
         'assets\sprint21-arthropods\bebelith-mesh.json' = '7ff4e4dd8fc8edf4beb9dd983f245c329f40d94c751111888e8c5c658d1ab68e'
         'assets\sprint21-arthropods\bebelith-albedo.png' = 'afd98003bcc96ae32db4c3da63fdf3377d84f07141148ef7742cf8d3742fd554'
+        'assets\ankylosaurus\ankylosaurus-mesh.json' = 'f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626'
+        'assets\ankylosaurus\ankylosaurus-albedo.png' = 'f9255a77008fbcd001350bdeeb408af6f34adb39f55869337c224f8899602050'
         'assets\sprint18-primates\ape-albedo.png' = 'f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc'
         'assets\sprint18-primates\ape-mesh.json' = '751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0'
         'assets\sprint18-primates\dire-ape-albedo.png' = 'e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7'

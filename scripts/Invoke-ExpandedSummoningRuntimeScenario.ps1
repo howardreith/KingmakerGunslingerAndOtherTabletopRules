@@ -25,6 +25,7 @@ param(
     # restore, so a baseline suite does not rebuild and redeploy per scenario.
     [Parameter(Mandatory = $true)][string[]]$Scenario,
     [Parameter(Mandatory = $true)][string]$ExpectedVersion,
+    [string]$PackagePath,
     # Save name for scenarios that require one. AGENTS permits only
     # KMG_AUTOMATION_WORKING for automated runs.
     [string]$SaveName,
@@ -54,6 +55,15 @@ $ErrorActionPreference = 'Stop'
 # belongs to this batch - live in one dot-sourced file so the bounded test
 # suite exercises the shipped rules rather than a second copy of them.
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
+
+if ($PackagePath -and $SaveName -ceq 'KMG_AUTOMATION_WORKING' -and $ScenarioParameters.ContainsKey('persistenceScope') -and $ScenarioParameters.persistenceScope -ceq 'ankylosaurus') {
+    foreach($name in $Scenario) {
+        & (Join-Path $PSScriptRoot 'Invoke-Sprint22InstalledStack.ps1') -Scenario $name -SaveName $SaveName `
+            -PackagePath $PackagePath -ExpectedVersion $ExpectedVersion -ExpandedSummoningDisabled:$ExpandedSummoningDisabled `
+            -TimeoutSeconds $TimeoutSeconds -Confirm:$false
+    }
+    return
+}
 
 if ($ExpandedSummoningDisabled -and
     ($Scenario.Count -ne 1 -or
@@ -168,6 +178,7 @@ try {
             }
             if ($AllowDirtyGit) { $arguments.AllowDirtyGit = $true }
             if ($SaveName) { $arguments.SaveName = $SaveName }
+            if ($PackagePath) { $arguments.PackagePath = $PackagePath; $arguments.PassThru = $true }
             # Only the first scenario needs to build and deploy; the rest run
             # against the artifact it installed. Reuse is refused unless the
             # exact deployment manifest and package are named, so resolve both
@@ -177,12 +188,23 @@ try {
                 $arguments.DeploymentManifestPath = $reuseManifest
                 $arguments.PackagePath = $reusePackage
             }
-            & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @arguments
+            $launchOutput = @(& (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @arguments)
             $run.exitCode = $LASTEXITCODE
             # How the launcher exited and what the scenario recorded are two
             # separate facts; this is only the first of them.
             $launcher = if ($LASTEXITCODE -eq 0) { 'Clean' } else { 'Unclean' }
-            if ($first) {
+            if ($PackagePath) {
+                $receipts = @($launchOutput | Where-Object { $null -ne $_.PSObject.Properties['kind'] -and $_.kind -ceq 'KmgRuntimeLaunchReceipt' })
+                if ($receipts.Count -ne 1) { throw 'Explicit-candidate launch did not return exactly one current-run receipt.' }
+                $receipt = $receipts[0]
+                $reusePackage = $receipt.packagePath
+                $reuseManifest = $receipt.deploymentManifestPath
+                $run.runId = $receipt.runId
+                $run.exactEvidenceDirectory = $receipt.evidenceDirectory
+                $run.deploymentManifest = $reuseManifest
+                $run.package = $reusePackage
+            }
+            elseif ($first) {
                 # Capture what the deploying run produced so later scenarios can
                 # name it exactly; the harness refuses a vague reuse.
                 $candidate = Join-Path $repositoryRoot (
@@ -217,8 +239,12 @@ try {
         # directories are named with a UTC stamp, so require that stamp to be at
         # or after the moment this scenario started.
         $startedStamp = ([DateTime]$run.startedAtUtc).ToUniversalTime()
+        if ($PackagePath) {
+            $evidenceNames = if ($run.Contains('exactEvidenceDirectory')) { @((Split-Path -Leaf $run.exactEvidenceDirectory)) } else { @() }
+        } else {
         $evidenceNames = @(Get-ChildItem 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' -Directory -ErrorAction SilentlyContinue |
             ForEach-Object Name)
+        }
         $evidenceName = Select-KmgScenarioEvidence -DirectoryNames $evidenceNames `
             -Scenario $name -StartedUtc $startedStamp
         $evidence = if ($evidenceName) {

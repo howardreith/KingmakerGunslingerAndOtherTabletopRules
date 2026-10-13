@@ -45,6 +45,7 @@ param(
     [switch]$ReuseQualifiedElementalRaces117Release,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
+    [switch]$PassThru,
     [string]$SteamPath = 'C:\Program Files (x86)\Steam\steam.exe',
     [ValidateRange(1, 300)]
     [int]$SteamStartupTimeoutSeconds = 60,
@@ -122,8 +123,8 @@ if ($scenarioMetadata.RequiresSaveName) {
             'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')) {
         if ($Parameters.Count -ne 1 -or $Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster') -or -not $ExitAfterCompletion) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes or whole-roster and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus') -or -not $ExitAfterCompletion) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster or ankylosaurus and automatic exit.'
         }
         $Parameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
     } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and
@@ -317,6 +318,15 @@ elseif ($ReuseInstalledArtifact) {
         -ExpectedVersion $ExpectedVersion -AllowDirtyGit:$AllowDirtyGit
     $package = $reuse.PackagePath
     $deploymentManifestPath = $reuse.DeploymentManifestPath
+} elseif (-not [string]::IsNullOrWhiteSpace($PackagePath)) {
+    $candidateManifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
+    $candidateGit = Get-KmgGitState -RepositoryRoot $root
+    Assert-KmgExplicitCandidateIdentity -Manifest $candidateManifest -Git $candidateGit -ExpectedVersion $ExpectedVersion `
+        -SourceStateSha256 (Get-KmgSourceStateFingerprint -RepositoryRoot $root) -AllowDirtyGit:$AllowDirtyGit
+    $package = $candidateManifest.packagePath
+    & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -RuntimeLease $runtimeScope.Lease -WhatIf -Confirm:$false
+    $deploymentManifestPath = & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -Confirm:$false -PassThru -RuntimeLease $runtimeScope.Lease
+    $null = Assert-KmgReusableDeployment -DeploymentManifestPath $deploymentManifestPath -PackagePath $package -RepositoryRoot $root -ExpectedVersion $ExpectedVersion -AllowDirtyGit:$AllowDirtyGit
 } else {
     & (Join-Path $PSScriptRoot 'Build-Local.ps1')
     $package = Join-Path $root "artifacts\local-runtime\$ExpectedVersion\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip"
@@ -902,6 +912,10 @@ finally {
 }
 
 } finally {
+    if ($PassThru -and (Test-Path variable:request) -and (Test-Path variable:evidence)) {
+        [pscustomobject]@{ kind='KmgRuntimeLaunchReceipt'; runId=$request.RunId; evidenceDirectory=$evidence
+            deploymentManifestPath=$deploymentManifestPath; packagePath=$package }
+    }
     if ($runtimeScope.Acquired -and $ExitAfterCompletion) {
         # The game's own exit after a long scenario can outlast a fixed 45
         # seconds; the player-path run left its lease behind twice that

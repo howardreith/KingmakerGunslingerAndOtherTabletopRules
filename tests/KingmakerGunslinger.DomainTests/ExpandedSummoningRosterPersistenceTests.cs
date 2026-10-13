@@ -300,12 +300,14 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string s in new[] { RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare,
                 RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup,RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent })
             {
-                Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,"whole-roster"),"Only existing closed trio.");
-                foreach(string invalid in new[] { null,"","Whole-Roster","whole-roster-extra","snakes" })
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,"whole-roster"),"Whole-roster scope retains the closed trio.");
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,"ankylosaurus"),"Sprint 22 subset arms the same native load boundary.");
+                foreach(string invalid in new[] { null,"","Whole-Roster","whole-roster-extra","snakes","Ankylosaurus" })
                     Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,invalid),"No alias or cross-scope authority.");
             }
             foreach(string s in new[] {null,"working-save-smoke","mod-load-smoke","observe-expanded-summoning-inventory"})
-                Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,"whole-roster"),"No new scenario family or broad hook.");
+                foreach(string scope in new[] { "whole-roster", "ankylosaurus" })
+                    Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(s,scope),"No new scenario family or broad hook.");
         }
     }
 }

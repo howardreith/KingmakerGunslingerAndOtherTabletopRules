@@ -19,6 +19,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet(
         'mod-load-smoke',
+        'observe-expanded-summoning-sprint22-contracts',
         'observe-favored-class-host-state',
         'observe-optional-mod-compatibility',
         'observe-class-blueprint-contracts',
@@ -94,6 +95,7 @@ param(
         'observe-expanded-summoning-variant-menu',
         'disposable-expanded-summoning',
         'disposable-expanded-summoning-native-profile',
+        'disposable-expanded-summoning-sprint22-native-review',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
         'summon-same-turn-multiple',
@@ -112,6 +114,7 @@ param(
     [string]$CotwProgressionMode = 'unchanged',
     [switch]$AllowDirtyGit,
     [switch]$ReuseInstalledArtifact,
+    [switch]$ExpandedSummoningDisabled,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
     [string]$ReferenceRoot = 'C:\Dev\KingmakerGunslingerLab\examples',
@@ -125,6 +128,12 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeHarness.Common.ps1')
+. (Join-Path (Split-Path $PSScriptRoot) 'ExpandedSummoningOrchestration.Common.ps1')
+if ($ExpandedSummoningDisabled -and
+    ($Scenario.Count -ne 1 -or $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
+        $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or $Parameters.persistenceScope -cne 'ankylosaurus')) {
+    throw 'Sprint 22 module OFF requires the exact Ankylosaurus working-save verify/cleanup request.'
+}
 if (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath)) {
     throw 'A profile transaction requires a fresh deployment record; an external -DeploymentManifestPath cannot survive restoration/profile changes.'
 }
@@ -200,6 +209,8 @@ $moduleScenario = @($Scenario | Where-Object { $_ -in @(
         $Parameters.Count -gt 0)
 $assetAttributionScenario = @($Scenario | Where-Object { $_ -ceq
     'observe-kmg-compatibility-asset-attribution' }).Count -gt 0
+$sprint22ReviewScenario = @($Scenario | Where-Object { $_ -ceq
+    'disposable-expanded-summoning-sprint22-native-review' }).Count -gt 0
 if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
 }
@@ -231,6 +242,15 @@ if ($moduleScenario) {
         $Parameters.teleportationSpells -isnot [bool]) {
         throw 'Feature-module profile observation requires exactly thirteen Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, and magicCircleSpells.'
     }
+} elseif ($sprint22ReviewScenario) {
+    $keys = @($Parameters.Keys)
+    if ($Scenario.Count -ne 1 -or $keys.Count -ne 1 -or
+        $keys[0] -cne 'reviewPhase' -or
+        $Parameters.reviewPhase -isnot [string] -or
+        $Parameters.reviewPhase -cnotin @('rtwp-foundation',
+            'turn-based-control')) {
+        throw 'Sprint 22 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.'
+    }
 } elseif ($assetAttributionScenario) {
     $keys = @($Parameters.Keys)
     if ($keys.Count -ne 1 -or $keys[0] -cne 'assetConfiguration' -or
@@ -260,11 +280,23 @@ if ($profileCandidate.commit -cne $candidateGit.Commit -or
 $compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
+$sprint22Boundary=$Scenario -contains 'disposable-expanded-summoning-sprint22-native-review'
+if($sprint22Boundary) {
+    . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
+    $sprint22SettingsKey='Software\Owlcat Games\Pathfinder Kingmaker'
+    $nativeKey=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($sprint22SettingsKey,$false)
+    if($null -eq $nativeKey) { throw 'Current game settings are missing; no profile entered.' }
+    try { $sprint22SettingsSnapshot=@(Get-KmgFlatGameSettingsValues -Key $nativeKey) }
+    finally { $nativeKey.Dispose() }
+}
 try {
     & (Join-Path $PSScriptRoot 'Enter-KingmakerCompatibilityProfile.ps1') `
         -ProfileId $ProfileId -RunId $runId -KingmakerInstallDir $KingmakerInstallDir `
         -StateRoot $StateRoot -ReferenceRoot $ReferenceRoot -PackagePath $PackagePath -Confirm:$false | Out-Host
     $entered = $true
+    if($sprint22Boundary) {
+        Write-KmgCompatibilityJsonAtomic (Join-Path $StateRoot "$runId\game-settings-intake.json") $sprint22SettingsSnapshot
+    }
     $compatRuntimeLease = Open-KmgCompatibilityRuntimeLease $runId $StateRoot
     if ($CotwProgressionMode -cne 'unchanged') {
         if (-not (Test-Path -LiteralPath $cotwSettingsPath -PathType Leaf)) {
@@ -335,6 +367,12 @@ try {
         $favoredSettingsStagedAfterSha = (Get-FileHash -LiteralPath `
             $favoredSettingsPath -Algorithm SHA256).Hash
     }
+    if ($ExpandedSummoningDisabled) {
+        $settingsPath = Join-Path $KingmakerInstallDir 'Mods\KingmakerGunslinger\FeatureModules.json'
+        $settingsBefore = [IO.File]::ReadAllBytes($settingsPath)
+        $settingsOff = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes -OriginalBytes $settingsBefore
+        [IO.File]::WriteAllBytes($settingsPath, $settingsOff)
+    }
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
@@ -373,7 +411,7 @@ try {
             ExpectedVersion = $expectedVersion
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
-            ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
+            ObserverStartupTimeoutSeconds = [Math]::Min($RuntimeTimeoutSeconds,600)
             CompletionTimeoutSeconds = $RuntimeTimeoutSeconds
             Confirm = $false
             AllowDirtyGit = [bool]$AllowDirtyGit
@@ -388,6 +426,9 @@ try {
             $arguments.Parameters = @{
                 expandedSummoning = [bool]$Parameters.expandedSummoning
             }
+        }
+        if ($name -ceq 'disposable-expanded-summoning-sprint22-native-review') {
+            $arguments.Parameters = $Parameters
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
             $arguments.Parameters = $Parameters
@@ -416,17 +457,27 @@ try {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         $arguments.RuntimeLease = $compatRuntimeLease
-        & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments
-        $evidence = Get-ChildItem -LiteralPath 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' `
+        $exactSprint22=$name -ceq 'disposable-expanded-summoning-sprint22-native-review'
+        if($exactSprint22) {
+            . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
+            $arguments.PassThru=$true
+            $launchOutput=@(& (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments)
+            $launchReceipt=Get-KmgExactRuntimeLaunchReceipt -Output $launchOutput
+            $evidence=Get-Item -LiteralPath $launchReceipt.evidenceDirectory
+        } else {
+            & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments
+            $evidence = Get-ChildItem -LiteralPath 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' `
             -Directory | Where-Object { $_.LastWriteTimeUtc -ge $before.AddSeconds(-2) } |
             Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+        }
         if ($null -eq $evidence -or -not (Test-Path -LiteralPath `
             (Join-Path $evidence.FullName 'runtime-result.json') -PathType Leaf)) {
             throw "Runtime scenario result directory was not resolved: $name"
         }
         $result = Get-Content -LiteralPath (Join-Path $evidence.FullName `
             'runtime-result.json') -Raw | ConvertFrom-Json
-        if ($result.scenario -cne $name -or $result.status -cne 'PASS') {
+        if ($result.scenario -cne $name -or $result.status -cne 'PASS' -or
+            ($exactSprint22 -and $result.runId -cne $launchReceipt.runId)) {
             throw "Runtime scenario result mismatch: expected $name PASS."
         }
         $exitDeadline = [DateTime]::UtcNow.AddSeconds(60)
@@ -436,6 +487,9 @@ try {
             throw "Kingmaker did not complete guarded automatic exit after scenario: $name"
         }
         $configurationId = $ProfileId + '-' + $name
+        if ($name -ceq 'disposable-expanded-summoning-sprint22-native-review') {
+            $configurationId += '-' + [string]$Parameters.reviewPhase
+        }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
             $configurationId += '-' + [string]$Parameters.assetConfiguration
         }
@@ -463,8 +517,24 @@ finally {
         while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
             [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 500 }
         try {
-            & (Join-Path $PSScriptRoot 'Restore-KingmakerCompatibilityProfile.ps1') `
-                -RunId $runId -StateRoot $StateRoot -Confirm:$false | Out-Host
+            if($sprint22Boundary) {
+                Assert-KmgNotRunning
+                $boundary=Invoke-KmgIndependentBoundaryRestoration -RestoreSettings {
+                    $nativeKey=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($sprint22SettingsKey,$true)
+                    if($null -eq $nativeKey) { throw 'Native settings key disappeared during the owned profile.' }
+                    try { Restore-KmgFlatGameSettingsValues -Key $nativeKey -Snapshot $sprint22SettingsSnapshot }
+                    finally { $nativeKey.Dispose() }
+                } -RestoreInstallation { Restore-KmgCompatibilityTransaction -RunId $runId -StateRoot $StateRoot }
+                Write-KmgCompatibilityJsonAtomic (Join-Path $StateRoot "$runId\game-settings-restoration.json") ([ordered]@{
+                    exact=($null -eq $boundary.settingsError);installationVerified=($null -ne $boundary.transaction -and $boundary.transaction.restorationVerified);
+                    settingsError=if($boundary.settingsError){$boundary.settingsError.Exception.Message}else{$null};
+                    installationError=if($boundary.installationError){$boundary.installationError.Exception.Message}else{$null}})
+                if($boundary.installationError) { throw $boundary.installationError }
+                if($boundary.settingsError) { throw $boundary.settingsError }
+            } else {
+                & (Join-Path $PSScriptRoot 'Restore-KingmakerCompatibilityProfile.ps1') `
+                    -RunId $runId -StateRoot $StateRoot -Confirm:$false | Out-Host
+            }
         }
         catch {
             if ($null -ne $primaryError) {

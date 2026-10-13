@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "Sprint21 RELEASED stablev0.0.150 and verified on HOWARD-LAPTOP. Owner mission complete; STOP. No Sprint22.",
+    "activeTask": "Owner 2026-10-12: Sprint22 Ankylosaurus Completion on HOWARD-LAPTOP through qualified release/restoration. Only Sprint22; Sprint23 not started. See docs/SPRINT22-ANKYLOSAURUS-MISSION.md and planning/SPRINT22-ANKYLOSAURUS-LEDGER.json.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-PROGRAM-STATE-before-workflow-reset-2026-10-11.json"
   },
@@ -724,7 +724,7 @@
       "runtimeAssertionsExecuted": 17,
       "unity2018AuthoringProbe": "Invalid license, self-exited before2026-10-06T16:00:26Z;no activation;not a phase-wide blocker",
       "newRuntimeTransaction": false,
-      "lastRuntimeResult": "Exact22be:17/17 bounded native view checks PASS; normal/fallback intact63\u201364 frames, exact scale/once/native teardown and donor seed isolation. Full movement/contact/crowd/persistence visual matrix still open."
+      "lastRuntimeResult": "Exact22be:17/17 bounded native view checks PASS; normal/fallback intact63–64 frames, exact scale/once/native teardown and donor seed isolation. Full movement/contact/crowd/persistence visual matrix still open."
     },
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged; exact two-snake production hook now implemented but not runtime qualified; Salamander remains research-only",
@@ -1216,7 +1216,7 @@
     "automaticContinuationAllowed": false
   },
   "mission": {
-    "name": "Expanded Summoning Phase 0 \u2014 Sprints 0-2",
+    "name": "Expanded Summoning Phase 0 — Sprints 0-2",
     "authorizedSprints": [
       0,
       1,
@@ -1683,5 +1683,24 @@
     "mergeCommit": "3d8e51ee653d598c1ac7e9a6fd452c4d99767ffb",
     "finalReportingSeparate": true,
     "nextAction": "STOP; no Sprint22"
+  },
+  "currentCharterMission": {
+    "authority": "Owner 2026-10-12 original charter page 21 excerpt",
+    "coreRosterThroughSprint": 41,
+    "optionalSprints": [
+      42,
+      43,
+      44,
+      45
+    ],
+    "sprint21CompletedScope": "Natural-creature rig tranche and v0.0.150 release mission",
+    "historicalNoSprint22Meaning": "Previous mission endpoint only; historical fields do not cancel later charter",
+    "activeSprint": 22,
+    "status": "IN_PROGRESS_NOT_QUALIFIED",
+    "record": "docs/SPRINT22-ANKYLOSAURUS-MISSION.md",
+    "ledger": "planning/SPRINT22-ANKYLOSAURUS-LEDGER.json",
+    "sprint23Started": false,
+    "nextAction": "Freeze reviewed Sprint22 candidate; one Sprint gate and targeted native package reuse, then qualified PR39 merge/stable release and exact restoration. No Sprint23.",
+    "coverage": "docs/SPRINT22-COVERAGE.md"
   }
 }
