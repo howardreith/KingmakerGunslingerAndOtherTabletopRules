@@ -24807,6 +24807,14 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Triceratops.GoreType",
+      "guid": "e75bda6b00614d849c47f8a24671e181",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Append-only after the first live profile proved the native Mastodon gore stopped at twelve feet; this private type supplies the Triceratops's printed fifteen-foot reach without mutating the donor."
     }
   ]
 }

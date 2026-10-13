@@ -10,7 +10,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint23Tests
     {
-        internal const int AppendedLedgerIdentities = 32;
+        internal const int AppendedLedgerIdentities = 33;
 
         private static readonly string[] PrivateTail = {
             ArmoredDinosaurRulesPolicy.TriceratopsGoreSymbol,
@@ -22,7 +22,8 @@ namespace KingmakerGunslinger.DomainTests
             ArmoredDinosaurRulesPolicy.TriceratopsPowerfulChargeSymbol,
             ArmoredDinosaurRulesPolicy.TriceratopsTrampleSymbol,
             ArmoredDinosaurRulesPolicy.StegosaurusTripSymbol,
-            ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol
+            ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol,
+            ArmoredDinosaurRulesPolicy.TriceratopsGoreTypeSymbol
         };
 
         internal static void RoutesAreExactlyTheCharteredTwelve()
@@ -213,26 +214,28 @@ namespace KingmakerGunslinger.DomainTests
                 carrier.Contains("DamageDealt"),
                 "Trip eligibility is not gated on positive HP damage.");
             Assertions.True(carrier.Contains("ownerWasProne") &&
+                carrier.Contains("SummonManeuverChecks.Succeeded") &&
+                carrier.Contains("AddCondition(UnitCondition.Prone") &&
                 carrier.Contains("RemoveConditionAll(UnitCondition.Prone)"),
-                "A failed special trip removes only its own native backlash.");
+                "Native success applies prone; failure removes only its own backlash.");
         }
 
         internal static void LedgerAppendIsExactAndAllocatedOnce()
         {
             IReadOnlyList<SummoningIdentitySpec> planned =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(2101, planned.Count,
-                "Foundation gains exactly thirty-two identities.");
+            Assertions.Equal(2102, planned.Count,
+                "Foundation gains exactly thirty-three identities.");
             Assertions.True(planned.Skip(planned.Count - PrivateTail.Length)
                 .Select(value => value.Symbol).SequenceEqual(PrivateTail),
-                "Ten private carriers append in frozen order.");
+                "Eleven private carriers append in frozen order.");
             JObject manifest = JObject.Parse(File.ReadAllText(
                 "blueprints/blueprints.json"));
             JToken[] entries = manifest["entries"].ToArray();
             var bySymbol = entries.ToDictionary(value =>
                 (string)value["symbol"], value => (string)value["guid"],
                 StringComparer.Ordinal);
-            Assertions.Equal(3100, entries.Length,
+            Assertions.Equal(3101, entries.Length,
                 "Manifest total includes two reserved identities.");
             foreach (string symbol in planned.Select(value => value.Symbol))
                 Assertions.True(bySymbol.ContainsKey(symbol),
