@@ -288,9 +288,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnitEntityData unit;
                         if (!key.StartsWith("native:", StringComparison.Ordinal))
                         {
-                            var variant = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
-                                .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
-                                .First(v => v.Creature.Key == key && v.Multiplicity == SummonMultiplicity.One && SummonVisibilityCatalog.IsPublished(v));
+                            var variant = ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(
+                                (string)_request.Parameters["persistenceScope"], key);
                             caster.Descriptor.Alignment.Set((Kingmaker.Enums.Alignment)
                                 ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(variant));
                             unit = SpawnExpandedSummoningVariants(blueprints, caster, new[] { variant }, "marked whole-roster persistence").Single();

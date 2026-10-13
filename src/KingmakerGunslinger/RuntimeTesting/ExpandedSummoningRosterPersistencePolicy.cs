@@ -254,6 +254,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(SummonNativeExpansionCatalog.All.Select(n => "native:" + n.UnitGuid))
                 .Distinct(StringComparer.Ordinal).OrderBy(k => k, StringComparer.Ordinal).ToArray(); }
         }
+        internal static SummonVariantSpec SelectCreatureVariant(string scope, string key)
+        {
+            string[] permitted = scope == AnkylosaurusScope ? new[] { "ankylosaurus" } :
+                scope == ArmoredDinosaursScope ? ArmoredDinosaurKeys :
+                scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
+                new string[0];
+            if (!permitted.Contains(key, StringComparer.Ordinal))
+                throw new InvalidOperationException("Persistence scope does not own the requested creature key.");
+            IEnumerable<SummonVariantSpec> variants = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
+                .Where(value => value.Creature.Key == key &&
+                    value.Multiplicity == SummonMultiplicity.One);
+            // A named one-creature qualification scope must be able to create
+            // its already-registered identity while its public roots remain
+            // deliberately suppressed. The broad released-roster fixture must
+            // still refuse unpublished routes.
+            if (scope == Scope) variants = variants.Where(SummonVisibilityCatalog.IsPublished);
+            return variants.First();
+        }
         internal static bool ObserveLoad(string scenario, string scope)
         {
             return (scope == Scope || scope == AnkylosaurusScope ||
