@@ -373,8 +373,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fixture.Hostile, owner, CombatManeuver.Grapple);
             Sprint14CmdBreakdown trip = ProbeCombatManeuverDefenceParts(
                 fixture.Hostile, owner, CombatManeuver.Trip);
+            // CMD loses only a positive Dexterity contribution while denied
+            // Dexterity.  A negative Dexterity modifier remains part of the
+            // native result; adding it again made the Triceratops readback
+            // report a false mismatch even though native CMD was exactly 29.
             int deniedDex = cmd.DexterityDenied || cmd.FlatFooted ?
-                owner.Stats.Dexterity.Bonus : 0;
+                Math.Max(0, owner.Stats.Dexterity.Bonus) : 0;
             int cmb = Rulebook.Trigger(new RuleCalculateCMB(owner,
                 fixture.Hostile, CombatManeuver.Trip)).Result;
             ItemEntityWeapon[] limbs = Sprint19Limbs(owner);
@@ -449,7 +453,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["bab"] = owner.Stats.BaseAttackBonus.ModifiedValue,
                     ["cmb"] = cmb, ["cmd"] = cmd.Describe("CMD"),
                     ["tripCmd"] = trip.Describe("trip"),
+                    ["deniedPositiveDexRestoration"] = deniedDex,
                     ["reachFeet"] = owner.Stats.Reach.ModifiedValue,
+                    ["speedFeet"] = owner.Stats.Speed.ModifiedValue,
                     ["weaponRangeMeters"] = limbs.Length == 1 ?
                         limbs[0].AttackRange.Meters : -1f,
                     ["attack"] = attack,
@@ -715,6 +721,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             int cmbBefore = owner.Stats.AdditionalCMB.BaseValue;
             int damageBefore = target.Descriptor.Damage;
             ItemEntityWeapon weapon = Sprint19Limbs(owner).Single();
+            // Summon placement can begin above the first-area terrain while
+            // the view settles.  The released Sprint 22 command fixture pins
+            // both request-owned actors to the measured ground before issuing
+            // its native command; reuse that qualified setup so a fall cannot
+            // interrupt the damage cue after a successful attack roll.
+            string floorDetail;
+            Vector3 floor = FindExpandedSummoningArtPoint(fixture.Caster,
+                out floorDetail);
+            string targetPlacement;
+            Vector3 targetPoint = ExpandedSummoningOpenPoint(floor, 3f,
+                new List<int>(), out targetPlacement);
+            PlaceExpandedSummoningUnit(owner, floor);
+            PlaceExpandedSummoningUnit(target, targetPoint);
             Vector3 ownerStart = owner.Position;
             Vector3 targetStart = target.Position;
             float distanceBefore = owner.DistanceTo(target);
@@ -760,8 +779,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             command.LastExecutedAttack != null,
                         ["attackRules"] = observer.Attacks.Count,
                         ["exactWeaponRolls"] = exactRolls.Length,
+                        ["exactRollTargets"] = new JArray(exactRolls.Select(
+                            value => value.Target?.UniqueId)),
+                        ["weaponAttackRules"] = observer.WeaponAttacks,
+                        ["damageRules"] = observer.Damage.Count,
+                        ["damageEvents"] = new JArray(observer.Damage.Select(
+                            Sprint16DamageEvent)),
                         ["tripRules"] = trips.Length,
                         ["damage"] = target.Descriptor.Damage - damageBefore,
+                        ["groundProbe"] = floorDetail,
+                        ["targetPlacement"] = targetPlacement,
                         ["ownerStart"] = SurveyVector(ownerStart),
                         ["ownerEnd"] = SurveyVector(owner.Position),
                         ["targetStart"] = SurveyVector(targetStart),
