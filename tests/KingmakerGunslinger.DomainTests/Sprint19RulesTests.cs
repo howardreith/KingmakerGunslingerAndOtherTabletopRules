@@ -191,15 +191,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1075,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(12,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only Sprint 23 is withheld.");
-            Assertions.Equal(1063,
+                "Sprint 23 publication leaves no withheld roots.");
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
-            foreach (SummonVariantSpec variant in all.Where(value =>
-                value.Creature.Key != ArmoredDinosaurRulesPolicy.TriceratopsKey &&
-                value.Creature.Key != ArmoredDinosaurRulesPolicy.StegosaurusKey))
+            foreach (SummonVariantSpec variant in all)
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
                     "Every placement is published: " + variant.StableKey);

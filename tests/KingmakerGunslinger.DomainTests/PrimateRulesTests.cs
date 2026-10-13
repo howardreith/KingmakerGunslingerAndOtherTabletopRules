@@ -116,28 +116,25 @@ namespace KingmakerGunslinger.DomainTests
                 "Registered placement count changed.");
             // The apes published on 2026-10-09 after their complete
             // hidden candidate passed, and nothing has withheld them since -
-            // which is this test's real subject: a later sprint's hidden
-            // candidate must not reach back and suppress a published
-            // creature, and now that Sprint 21 has published its own there is
-            // nothing withheld at all.
-            Assertions.Equal(12,
+            // which is this test's real subject: a later sprint must not reach
+            // back and suppress a published creature. Sprint 23 has now
+            // published too, so nothing is withheld at all.
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only the twelve Sprint 23 roots are withheld.");
-            Assertions.Equal(1063,
+                "No qualified route remains withheld.");
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "The apes stay published, and every registered placement is "
                 + "visible.");
-            foreach (SummonVariantSpec variant in all.Where(value =>
-                value.Creature.Key != ArmoredDinosaurRulesPolicy.TriceratopsKey &&
-                value.Creature.Key != ArmoredDinosaurRulesPolicy.StegosaurusKey))
+            foreach (SummonVariantSpec variant in all)
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
                     "Every placement is published: " + variant.StableKey);
             SummonVisibilityCatalog.Validate();
 
-            // Identities are allocated once at registration, so a withheld
-            // creature already owns its unit, every root and both template
-            // children, and already owns its icon.
+            // Identities were allocated once at registration, before
+            // publication, so the unit, roots, template children and icon did
+            // not move when the suppression keys came out.
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
             foreach (var row in new[] {

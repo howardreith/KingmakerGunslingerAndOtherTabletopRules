@@ -348,12 +348,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ArmoredDinosaurRulesPolicy.StegosaurusKey) == 4 &&
                 !routes.Any(value => value.Creature.Key ==
                     ArmoredDinosaurRulesPolicy.StegosaurusKey &&
-                    value.Family == SummonFamily.Monster),
+                    value.Family == SummonFamily.Monster) &&
+                routes.All(SummonVisibilityCatalog.IsPublished),
                 new JObject { ["unit"] = "armored-dinosaurs",
-                    ["event"] = "hidden-route-census",
+                    ["event"] = "public-route-census",
+                    ["publishedRoutes"] = routes.Count(
+                        SummonVisibilityCatalog.IsPublished),
                     ["routes"] = new JArray(routes.Select(value =>
                         value.StableKey)) },
-                "Exactly eight Triceratops and four Stegosaurus roots are registered, with no Stegosaurus Monster route.");
+                "Exactly eight Triceratops and four Stegosaurus roots are published, with no Stegosaurus Monster route.");
             foreach (SummonVariantSpec route in routes)
             {
                 UnitEntityData[] units = CastExpandedSummoningVariant(
@@ -375,13 +378,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         expected));
                 Sprint23Check("route-" + route.StableKey, exact,
                     new JObject { ["unit"] = route.Creature.Key,
-                        ["event"] = "registered-hidden-ability-execution",
+                        ["event"] = "published-ability-execution",
                         ["route"] = route.StableKey,
                         ["execution"] = _expandedSummoningLastAbilityExecution,
                         ["quantity"] = units.Length,
                         ["unitReadback"] = new JArray(units.Select(
                             Sprint22UnitReadback)) },
-                    "The registered hidden root executes only its exact unit identity in the legal quantity band.");
+                    "The published root executes only its exact unit identity in the legal quantity band.");
                 DisposeExpandedSummoningUnits(fixture.Created, units);
             }
         }
