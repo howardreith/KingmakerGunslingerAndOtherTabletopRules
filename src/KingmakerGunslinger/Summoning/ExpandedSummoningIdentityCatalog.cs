@@ -63,13 +63,13 @@ namespace KingmakerGunslinger.Summoning
         // native 1d4 claw unscaled.
         // Sprint 22's first live profile readback required two more private
         // carriers: one hidden chassis feature and one tail weapon type.
-        // Sprint 23 appends eleven: two printed natural weapons, two private
+        // Sprint 23 appends ten active identities: two printed natural weapons, two private
         // species types, two exact chassis carriers, Triceratops charge and
-        // trample, Stegosaurus trip, and one private type for each weapon. The
-        // Triceratops type was appended after its first live readback proved
-        // the native Mastodon gore stopped at twelve feet. The new unit, root
+        // trample, Stegosaurus trip and the Stegosaurus tail type. The
+        // append-only Triceratops gore-type experiment is reserved in the
+        // manifest after native qualification rejected it. The new unit, root
         // and template execution identities are counted above.
-        internal const int SpecialIdentityCount = 260;
+        internal const int SpecialIdentityCount = 259;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -482,9 +482,6 @@ namespace KingmakerGunslinger.Summoning
                 "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec(
                 ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol,
-                "BlueprintWeaponType"));
-            result.Add(new SummoningIdentitySpec(
-                ArmoredDinosaurRulesPolicy.TriceratopsGoreTypeSymbol,
                 "BlueprintWeaponType"));
             Validate(result);
             return result.AsReadOnly();

@@ -30,10 +30,13 @@ namespace KingmakerGunslinger.Summoning
             "KMG.Summoning.Special.Triceratops.Trample";
         internal const string StegosaurusTripSymbol =
             "KMG.Summoning.Special.Stegosaurus.Trip";
-        internal const string TriceratopsGoreTypeSymbol =
-            "KMG.Summoning.Natural.Triceratops.GoreType";
         internal const string StegosaurusTailTypeSymbol =
             "KMG.Summoning.Natural.Stegosaurus.TailType";
+
+        internal const string TriceratopsUnitGuid =
+            "ce540cd4b3b74861a4a91458d742a692";
+        internal const string TriceratopsGoreGuid =
+            "ffe6a2d9dbe4451abf1855addda1af15";
 
         internal const int TriceratopsHitDice = 14;
         internal const int StegosaurusHitDice = 12;
@@ -53,10 +56,12 @@ namespace KingmakerGunslinger.Summoning
         // to their printed fifteen feet is three. The Stegosaurus also rides
         // the exact captured Hodag/tail transform. The first Triceratops live
         // readback then proved the Mastodon gore also exposes only twelve
-        // feet. Each private type stores nine (which the engine's four-foot
-        // melee allowance exposes as five) and leaves native types unchanged.
+        // feet. The Stegosaurus keeps its private tail type. Triceratops keeps
+        // the native Mastodon gore type because a private clone interrupted
+        // the donor's real attack command; an exact owner-and-weapon getter
+        // correction supplies only the measured three-foot gap.
         internal const int ReachBonusFeet = 3;
-        internal const int TriceratopsGoreTypeStoredRangeFeet = 9;
+        internal const int TriceratopsGoreRangeCorrectionFeet = 3;
         internal const int StegosaurusTailTypeStoredRangeFeet = 9;
 
         // At BAB +9/+10 native Power Attack supplies +6 to a lone primary
@@ -69,6 +74,17 @@ namespace KingmakerGunslinger.Summoning
             // 2x. Pathfinder rounds fractional bonuses down, including when a
             // temporary penalty makes the modifier odd or negative.
             return (int)Math.Floor(strengthModifier / 2d);
+        }
+
+        internal static int CorrectTriceratopsGoreRange(
+            bool expandedSummoningEnabled, bool exactOwner,
+            bool exactWeapon, int nativeFeet)
+        {
+            if (nativeFeet < 0)
+                throw new ArgumentOutOfRangeException("nativeFeet");
+            return expandedSummoningEnabled && exactOwner && exactWeapon
+                ? checked(nativeFeet + TriceratopsGoreRangeCorrectionFeet)
+                : nativeFeet;
         }
 
         internal static bool CanAttemptTailTrip(bool exactOwner,
@@ -93,7 +109,7 @@ namespace KingmakerGunslinger.Summoning
                 PowerfulChargeLiveBonus(10) != 5 ||
                 PowerfulChargeLiveBonus(6) != 3 ||
                 ReachBonusFeet != 3 ||
-                TriceratopsGoreTypeStoredRangeFeet != 9 ||
+                TriceratopsGoreRangeCorrectionFeet != 3 ||
                 StegosaurusTailTypeStoredRangeFeet != 9 ||
                 PowerAttackAdditionalDamage != 3 ||
                 TriceratopsPerceptionRanks + 3 + 1 + 3 +
