@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint23TriceratopsStegosaurus",
-  "status": "PUBLIC_INVENTORY_OBSERVER_REPAIR_READY",
+  "status": "PUBLIC_CANDIDATE_QUALIFIED_READY_TO_MERGE",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
   "pr": 41,
@@ -22,8 +22,8 @@
     "otherWorktreesPreserved": true,
     "gameProcessAbsent": true,
     "steamPreserved": true,
-    "activeRuntimeTransaction": "NONE_AFTER_PUBLIC_INVENTORY_FAILURE_RESTORATION",
-    "currentHumanStateSnapshot": "PUBLIC INVENTORY TRANSACTION compat-20261013T195637Z-99f7209df96a RESTORED EXACTLY; final post-publication audit pending",
+    "activeRuntimeTransaction": "NONE_AFTER_PUBLIC_CANDIDATE_QUALIFICATION",
+    "currentHumanStateSnapshot": "PUBLIC INVENTORY TRANSACTION compat-20261013T201406Z-3bd12dc032ed AND PUBLIC ROUTE TRANSACTION compat-20261013T202049Z-fa07db3e4b9a RESTORED EXACTLY; final post-publication audit pending",
     "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
     "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
     "referencesByteMatched": true
@@ -212,7 +212,7 @@
       "failures": 0
     },
     "publicArtifact": {
-      "status": "INVENTORY_OBSERVER_REPAIR_READY",
+      "status": "PASS",
       "suppressionKeysRemoved": ["Triceratops", "Stegosaurus"],
       "identityReallocation": false,
       "focusedSprint23": {"executed": 12, "failures": 0, "productionCompilation": "PASS"},
@@ -226,14 +226,31 @@
         "buildManifestSha256": "20ee0991496d28dfd9bd44eb6663001373393138becd86e6d9a39eba8b2392e6",
         "gate": {"executed": 2594, "failures": 0, "seconds": 181.6, "strictPackageValidation": "PASS"}
       },
-      "sprintGate": "PENDING_AFTER_COMPILED_OBSERVER_REPAIR",
+      "finalCandidate": {
+        "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+        "sourceStateSha256": "04ef0ced7549e7f1bcc9bceb91ae04380a1e2c8bcebb9d1b34edd95404f48c7b",
+        "packageSha256": "e417ad95e796bac7c312ed60e859b888b1dd2f83818ef211027e35d2c1c663db",
+        "dllSha256": "594113de52c514702b6999fd4e3d3abfd9823e12d003e63d7953f622feaa6c05",
+        "dllMvid": "5afdfc38-4657-48e2-a0fa-942098189a4b",
+        "bundleSha256": "b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb",
+        "buildManifestSha256": "1f338de9c4f03ac774a38ba3f998bbd19bdc9606f7c7ea73afc373ecff114108",
+        "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+        "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+        "gate": {
+          "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+          "seconds": 178.6,
+          "executed": 2594,
+          "failures": 0,
+          "strictPackageValidation": "PASS"
+        }
+      },
       "failedSprintGate": {
         "source": "01238de87aeb1cf67a6766481374eda5ba2eef41",
         "executed": 2594,
         "failures": 1,
         "failure": "expanded-summoning.published-records-match-derivation",
         "classification": "ACTIVE_RESUME_PUBLIC_COUNT_LINE_BREAK_DID_NOT_MATCH_EXACT_TEXT_ASSERTION",
-        "disposition": "RESUME_LINE_WRAP_REPAIRED; NEW_CANDIDATE_GATE_REQUIRED"
+        "disposition": "RESUME_LINE_WRAP_REPAIRED; FINAL E0D7CB8 CANDIDATE GATE PASSED"
       },
       "failedInventoryObservation": {
         "source": "e18938085f16403db43e0ae0c3b17ab1f5fc7059",
@@ -244,10 +261,35 @@
         "assertions": 50,
         "failures": 2,
         "classification": "EXACT_OWNED_FACT_CENSUS_AND_PROFILE_SPECIAL_FILTER_STALE_SINCE_SPRINT22",
-        "disposition": "FOUR EXACT OWNER_FACT_ROWS_AND_PROFILE_DECLARED_SPECIAL_COMPARISON_REPAIRED; NEW CANDIDATE_AND_AFFECTED_NATIVE_RERUN_REQUIRED",
+        "disposition": "FOUR EXACT OWNER_FACT_ROWS_AND_PROFILE_DECLARED_SPECIAL_COMPARISON REPAIRED; FINAL E0D7CB8 CANDIDATE AND AFFECTED NATIVE RERUN PASSED",
         "restored": true
       },
-      "nativePublicRouteGate": "PENDING_AFTER_OBSERVER_REPAIR"
+      "inventoryObservation": {
+        "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+        "profile": "gunslinger-high-risk-combined",
+        "transaction": "compat-20261013T201406Z-3bd12dc032ed",
+        "runId": "20261013T2015478087914Z-8346e9b4bedb4d50a019508e64c73cf9",
+        "evidence": "20261013T2015477782718Z-observe-expanded-summoning-inventory",
+        "proofSha256": "cc66691d94b1f7fdb66d976d8bb3dcc7bd575c66c6187f6ea30225ca4fca22ea",
+        "seconds": 257.153,
+        "assertions": 50,
+        "failures": 0,
+        "restored": true
+      },
+      "nativePublicRouteGate": {
+        "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+        "profile": "gunslinger-high-risk-combined",
+        "phase": "rtwp-foundation",
+        "transaction": "compat-20261013T202049Z-fa07db3e4b9a",
+        "runId": "20261013T2022330281385Z-652aaac6028d40ce818d710fd1310289",
+        "evidence": "20261013T2022329277645Z-disposable-expanded-summoning-sprint23-native-review",
+        "proofSha256": "dfa5aa58a33fff8665c86e88cd4911310b38f5b8d636a697c17c1aabfa632c46",
+        "seconds": 143.874,
+        "assertions": 45,
+        "failures": 0,
+        "publishedRoutes": 12,
+        "restored": true
+      }
     },
     "release": "PENDING",
     "restoration": "PER_TRANSACTION_PASS_FINAL_POST_PUBLICATION_AUDIT_PENDING"
@@ -374,6 +416,32 @@
       "assertions": 6,
       "failures": 0,
       "restored": true
+    },
+    {
+      "phase": "public-high-risk-inventory",
+      "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T201406Z-3bd12dc032ed",
+      "runId": "20261013T2015478087914Z-8346e9b4bedb4d50a019508e64c73cf9",
+      "evidence": "20261013T2015477782718Z-observe-expanded-summoning-inventory",
+      "proofSha256": "cc66691d94b1f7fdb66d976d8bb3dcc7bd575c66c6187f6ea30225ca4fca22ea",
+      "seconds": 257.153,
+      "assertions": 50,
+      "failures": 0,
+      "restored": true
+    },
+    {
+      "phase": "public-high-risk-rtwp-routes",
+      "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+      "profile": "gunslinger-high-risk-combined",
+      "transaction": "compat-20261013T202049Z-fa07db3e4b9a",
+      "runId": "20261013T2022330281385Z-652aaac6028d40ce818d710fd1310289",
+      "evidence": "20261013T2022329277645Z-disposable-expanded-summoning-sprint23-native-review",
+      "proofSha256": "dfa5aa58a33fff8665c86e88cd4911310b38f5b8d636a697c17c1aabfa632c46",
+      "seconds": 143.874,
+      "assertions": 45,
+      "failures": 0,
+      "restored": true
     }
   ],
   "reusedEvidence": [
@@ -490,7 +558,7 @@
       "runId": "20261013T1958199736958Z-1865c61ad46f4c2cacbef9ec858629e1",
       "evidence": "20261013T1958199423968Z-observe-expanded-summoning-inventory",
       "classification": "EXACT_OWNED_FACT_CENSUS_AND_PROFILE_SPECIAL_FILTER_STALE_SINCE_SPRINT22",
-      "disposition": "FOUR EXACT OWNER_FACT_ROWS_AND_PROFILE_DECLARED_SPECIAL_COMPARISON_REPAIRED; AFFECTED PUBLIC INVENTORY RERUN_REQUIRED",
+      "disposition": "FOUR EXACT OWNER_FACT_ROWS_AND PROFILE_DECLARED_SPECIAL_COMPARISON REPAIRED; FINAL E0D7CB8 PUBLIC INVENTORY RERUN PASSED",
       "restored": true
     }
   ],
