@@ -167,5 +167,24 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(RuntimeTestScenarioCatalog.IsAllowed(RuntimeTestScenarioCatalog.ObserveExpandedSummoningSprint22Contracts), "Production request allowlist resolves.");
             Assertions.True(!RuntimeTestScenarioCatalog.IsAllowed("observe-expanded-summoning-sprint22-census-all"), "Unselected broad census rejected.");
         }
+
+        internal static void PersistenceScopeArmsTheNativeLoadBoundary()
+        {
+            foreach (string scenario in new[] {
+                RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare,
+                RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup,
+                RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent })
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(
+                    scenario, ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope),
+                    "Each exact Sprint 22 persistence stage installs the native load-complete trace.");
+            foreach (string scenario in new[] { null, "", "working-save-smoke",
+                "working-save-expanded-summoning-creature-review" })
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(
+                    scenario, ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope),
+                    "The Sprint 22 scope cannot arm a different scenario family.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(
+                RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare,
+                "Ankylosaurus"), "Scope matching remains exact and case-sensitive.");
+        }
     }
 }

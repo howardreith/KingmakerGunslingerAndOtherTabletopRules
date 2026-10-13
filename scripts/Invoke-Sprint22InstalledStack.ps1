@@ -59,6 +59,7 @@ try {
     $output=@(& (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
         -SaveName $SaveName -Parameters @{persistenceScope='ankylosaurus'} -TimeoutSeconds $TimeoutSeconds `
         -ObserverStartupTimeoutSeconds $TimeoutSeconds -CompletionTimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
+        -FingerprintTimeoutSeconds $TimeoutSeconds `
         -RuntimeLease $lease -ReuseInstalledArtifact -PackagePath $candidate.packagePath -DeploymentManifestPath $deployment -PassThru -Confirm:$false)
     $receipt=Get-KmgExactRuntimeLaunchReceipt -Output $output
     $record.launchReceipt=$receipt
