@@ -462,6 +462,17 @@ namespace KingmakerGunslinger.DomainTests
                         .ExactSelectedKeys(ExpandedSummoningRosterPersistencePolicy
                             .ArmoredDinosaursScope, corrupt),
                     "Missing, duplicate or foreign targeted identities fail closed.");
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                    .ModuleOffArmoredBodyIsClean(
+                        "donor-visual:module-disabled", 0),
+                "Module OFF requires the registered view's explicit refusal and no private resources.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy
+                    .ModuleOffArmoredBodyIsClean("not-attempted", 0),
+                "A missing attachment attempt cannot masquerade as an observed module gate.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy
+                    .ModuleOffArmoredBodyIsClean(
+                        "donor-visual:module-disabled", 1),
+                "An explicit refusal still fails if any private resource was allocated.");
         }
 
         internal static void NativeReviewObservesRealCommandsAndControls()
