@@ -36,9 +36,18 @@ namespace KingmakerGunslinger.Blueprints
                         "native animated tail weapon"), tail,
                 ArmoredDinosaurRulesPolicy.StegosaurusTailSymbol, 4,
                 Kingmaker.RuleSystem.DiceType.D6);
-            ConfigureStegosaurusTailType(tail,
+            ConfigureArmoredDinosaurWeaponType(gore,
                 Require<BlueprintWeaponType>(bySymbol,
-                    ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol));
+                    ArmoredDinosaurRulesPolicy.TriceratopsGoreTypeSymbol),
+                ArmoredDinosaurRulesPolicy.TriceratopsGoreTypeSymbol,
+                ArmoredDinosaurRulesPolicy.
+                    TriceratopsGoreTypeStoredRangeFeet);
+            ConfigureArmoredDinosaurWeaponType(tail,
+                Require<BlueprintWeaponType>(bySymbol,
+                    ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol),
+                ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol,
+                ArmoredDinosaurRulesPolicy.
+                    StegosaurusTailTypeStoredRangeFeet);
 
             BlueprintUnit triceratops = Require<BlueprintUnit>(bySymbol,
                 "KMG.Summoning.Unit.Triceratops");
@@ -96,23 +105,21 @@ namespace KingmakerGunslinger.Blueprints
                 Array.Empty<BlueprintUnitFact>();
         }
 
-        private static void ConfigureStegosaurusTailType(
-            BlueprintItemWeapon tail, BlueprintWeaponType target)
+        private static void ConfigureArmoredDinosaurWeaponType(
+            BlueprintItemWeapon weapon, BlueprintWeaponType target,
+            string symbol, int storedRangeFeet)
         {
-            if (tail == null || tail.Type == null || target == null)
+            if (weapon == null || weapon.Type == null || target == null)
                 throw new InvalidOperationException(
-                    "Stegosaurus tail type inputs are incomplete.");
-            CopyFields(tail.Type, target);
-            target.name = InternalName(
-                ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol);
-            SetField(target, "m_AttackRange", new Feet(
-                ArmoredDinosaurRulesPolicy.
-                    StegosaurusTailTypeStoredRangeFeet));
-            SetField(tail, "m_Type", target);
+                    "Armored-dinosaur weapon type inputs are incomplete.");
+            CopyFields(weapon.Type, target);
+            target.name = InternalName(symbol);
+            SetField(target, "m_AttackRange", new Feet(storedRangeFeet));
+            SetField(weapon, "m_Type", target);
             if (target.AttackRange.Value != 5 ||
-                !ReferenceEquals(tail.Type, target))
+                !ReferenceEquals(weapon.Type, target))
                 throw new InvalidOperationException(
-                    "Stegosaurus private tail type did not expose five feet before body reach.");
+                    "Armored-dinosaur private weapon type did not expose five feet before body reach.");
         }
 
         private static void ConfigureArmoredDinosaurChassis(

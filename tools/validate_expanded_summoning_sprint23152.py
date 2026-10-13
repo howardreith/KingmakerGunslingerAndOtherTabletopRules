@@ -56,6 +56,7 @@ ADDED = {
     "KMG.Summoning.Special.Triceratops.Trample": ("20c83d35a8234c9fb35e8f174d19e6ba", "BlueprintAbility"),
     "KMG.Summoning.Special.Stegosaurus.Trip": ("ce0af5b47a1a462095e9f308a5d1bba1", "BlueprintFeature"),
     "KMG.Summoning.Natural.Stegosaurus.TailType": ("deb29b6a26c049a39daf3ec6cb3f77f1", "BlueprintWeaponType"),
+    "KMG.Summoning.Natural.Triceratops.GoreType": ("e75bda6b00614d849c47f8a24671e181", "BlueprintWeaponType"),
 }
 
 ART = {
@@ -109,7 +110,7 @@ def validate_append(accepted, current):
     tail = current[len(accepted):]
     observed = {row["symbol"]: (row["guid"], row["plannedType"]) for row in tail}
     if observed != ADDED or len(tail) != len(ADDED):
-        raise AssertionError("Sprint 23 must append exactly its 32 pinned identities")
+        raise AssertionError("Sprint 23 must append exactly its 33 pinned identities")
     if len({row["guid"] for row in current}) != len(current):
         raise AssertionError("Duplicate blueprint GUID")
 
@@ -165,7 +166,7 @@ def validate(root: Path):
     record = static.get(KEY, {})
     expected = {
         "newCreatures": 2, "newLogicalRoots": 12,
-        "newTemplateExecutionChildren": 8, "newPrivateIdentities": 10,
+        "newTemplateExecutionChildren": 8, "newPrivateIdentities": 11,
         "registeredLogicalPlacements": 1075, "retainedNativeWrappers": 29,
         "projectIconConcepts": 117, "originalBodyFiles": 4,
         "sprint24Started": False,
@@ -203,7 +204,7 @@ def validate(root: Path):
         .read_text(encoding="utf-8-sig")))
     if count < 2590:
         raise AssertionError("Current deterministic test registration count regressed")
-    print("Sprint23 source PASS: 32 append-only identities; 6 pinned art exports; "
+    print("Sprint23 source PASS: 33 append-only identities; 6 pinned art exports; "
           f"{count} registered tests (execution separately required).")
 
 

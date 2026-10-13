@@ -12,9 +12,10 @@ namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
     /// The adult Stegosaurus's printed tail rider. A resolved exact tail hit
-    /// starts one ordinary native Trip maneuver; the engine rolls against CMD
-    /// and applies prone on success. This carrier neither deals another hit
-    /// nor turns failure into a trip against the attacker.
+    /// starts one ordinary native Trip maneuver. The engine rolls against CMD;
+    /// this carrier applies the engine's ordinary Prone condition only after
+    /// that native result succeeds. It neither deals another hit nor turns
+    /// failure into a trip against the attacker.
     /// </summary>
     [Serializable]
     public sealed class StegosaurusTailTrip :
@@ -70,11 +71,16 @@ namespace KingmakerGunslinger.Summoning
                 Fact.MaybeContext.TriggerRule(trip);
             }
             else Rulebook.Trigger(trip);
+            bool succeeded = SummonManeuverChecks.Succeeded(trip);
+            if (succeeded && !target.Descriptor.State.HasConditionImmunity(
+                    UnitCondition.Prone))
+                target.Descriptor.State.AddCondition(UnitCondition.Prone,
+                    null);
             // Native Trip implements the ordinary combat-maneuver backlash
             // when an attempt fails badly.  The monster universal rule says a
             // failed trip rider never trips its attacker, so unwind only the
             // prone state created synchronously by this exact failed rider.
-            if (!trip.Success && !ownerWasProne &&
+            if (!succeeded && !ownerWasProne &&
                 owner.Descriptor.State.HasCondition(UnitCondition.Prone))
                 owner.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);
         }
