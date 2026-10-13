@@ -247,6 +247,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     owner.Descriptor.Abilities.Enumerable.Count()
                             },
                             "The request-owned summon remains live after its bounded native ordinary command.");
+                        foreach (int frame in
+                            Sprint23LeaveTurnBasedBeforeDisposal(turnBased))
+                            yield return frame;
                         DisposeExpandedSummoningUnits(fixture.Created,
                             new[] { owner });
                         continue;
@@ -267,6 +270,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     else Sprint23TailTripMatrix(fixture, owner,
                         turnBased);
+                    foreach (int frame in
+                        Sprint23LeaveTurnBasedBeforeDisposal(turnBased))
+                        yield return frame;
                     DisposeExpandedSummoningUnits(fixture.Created,
                         new[] { owner });
                     for (int frame = 0; frame < 12; frame++) yield return 0;
@@ -297,6 +303,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = originalPause;
             }
+        }
+
+        /// <summary>
+        /// A completed native command can leave its summon as the active
+        /// turn owner.  Retire turn-based mode through the same supported
+        /// setting/controller toggle used by Sprint 22 before destroying
+        /// that request-owned actor.  The following RTWP pulse proves the
+        /// controller is no longer advancing a stale TurnController.Unit.
+        /// The next trial independently rebuilds turn order through
+        /// Sprint22EnrollTurnBasedOwners.
+        /// </summary>
+        private IEnumerable<int> Sprint23LeaveTurnBasedBeforeDisposal(
+            bool turnBased)
+        {
+            if (!turnBased) yield break;
+            Kingmaker.UI.SettingsUI.SettingsRoot.Instance
+                .EnableTurnBasedMode.CurrentValue = false;
+            Game.Instance.TurnBasedCombatController.Activate();
+            if (CombatController.IsInTurnBasedCombat())
+                throw new InvalidOperationException(
+                    "Sprint 23 could not retire the active native turn " +
+                    "before owned summon disposal.");
+            yield return 0;
+            if (CombatController.IsInTurnBasedCombat())
+                throw new InvalidOperationException(
+                    "Sprint 23 turn-based retirement did not remain stable " +
+                    "through its native settle pulse.");
         }
 
         private void Sprint23RegisteredRoutes(
