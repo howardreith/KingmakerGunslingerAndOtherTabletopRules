@@ -213,7 +213,15 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal const string Scope = "whole-roster";
         internal const string AnkylosaurusScope = "ankylosaurus";
+        internal const string ArmoredDinosaursScope = "armored-dinosaurs";
         internal const string ReceiptScope = "KMG_Release143_WholeRoster_v1";
+        internal static string[] ArmoredDinosaurKeys
+        {
+            get { return new[] {
+                ArmoredDinosaurRulesPolicy.TriceratopsKey,
+                ArmoredDinosaurRulesPolicy.StegosaurusKey };
+            }
+        }
         // Request-local fixture choices mirror the qualified player-path
         // harness. Select for EACH cast: a native Evil row must not leave the
         // following Celestial execution unavailable. Integers are the native
@@ -246,9 +254,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(SummonNativeExpansionCatalog.All.Select(n => "native:" + n.UnitGuid))
                 .Distinct(StringComparer.Ordinal).OrderBy(k => k, StringComparer.Ordinal).ToArray(); }
         }
+        internal static SummonVariantSpec SelectCreatureVariant(string scope, string key)
+        {
+            string[] permitted = scope == AnkylosaurusScope ? new[] { "ankylosaurus" } :
+                scope == ArmoredDinosaursScope ? ArmoredDinosaurKeys :
+                scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
+                new string[0];
+            if (!permitted.Contains(key, StringComparer.Ordinal))
+                throw new InvalidOperationException("Persistence scope does not own the requested creature key.");
+            IEnumerable<SummonVariantSpec> variants = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
+                .Where(value => value.Creature.Key == key &&
+                    value.Multiplicity == SummonMultiplicity.One);
+            // A named one-creature qualification scope must be able to create
+            // its already-registered identity while its public roots remain
+            // deliberately suppressed. The broad released-roster fixture must
+            // still refuse unpublished routes.
+            if (scope == Scope) variants = variants.Where(SummonVisibilityCatalog.IsPublished);
+            return variants.First();
+        }
+        internal static bool ExactSelectedKeys(string scope,
+            IEnumerable<string> observed)
+        {
+            if (observed == null) return false;
+            string[] expected = scope == AnkylosaurusScope ?
+                new[] { "ankylosaurus" } : scope == ArmoredDinosaursScope ?
+                ArmoredDinosaurKeys : scope == Scope ? Keys : new string[0];
+            return expected.Length != 0 && observed.OrderBy(value => value,
+                    StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
+                    value => value, StringComparer.Ordinal),
+                    StringComparer.Ordinal);
+        }
+        internal static bool ModuleOffArmoredBodyIsClean(string outcome,
+            int ownedResourceCount)
+        {
+            // The view patch deliberately records the asset loader's explicit
+            // module-disabled refusal. "not-attempted" would not prove that
+            // this registered save-compatible identity reached that gate.
+            return outcome == "donor-visual:module-disabled" &&
+                ownedResourceCount == 0;
+        }
         internal static bool ObserveLoad(string scenario, string scope)
         {
-            return (scope == Scope || scope == AnkylosaurusScope) &&
+            return (scope == Scope || scope == AnkylosaurusScope ||
+                scope == ArmoredDinosaursScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);

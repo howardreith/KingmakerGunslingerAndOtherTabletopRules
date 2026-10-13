@@ -26,11 +26,16 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         private bool RosterPersistenceScope
-        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope || Sprint22PersistenceScope; } }
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope ||
+            Sprint22PersistenceScope || Sprint23PersistenceScope; } }
         private bool Sprint22PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope; } }
+        private bool Sprint23PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaursScope; } }
         private string[] RosterSelectedKeys
-        { get { return Sprint22PersistenceScope ? new[] { "ankylosaurus" } : ExpandedSummoningRosterPersistencePolicy.Keys; } }
+        { get { return Sprint22PersistenceScope ? new[] { "ankylosaurus" } :
+            Sprint23PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaurKeys :
+            ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
         private readonly List<RuntimeTestAssertion> _rosterPersistenceChecks = new List<RuntimeTestAssertion>();
@@ -283,9 +288,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnitEntityData unit;
                         if (!key.StartsWith("native:", StringComparison.Ordinal))
                         {
-                            var variant = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
-                                .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
-                                .First(v => v.Creature.Key == key && v.Multiplicity == SummonMultiplicity.One && SummonVisibilityCatalog.IsPublished(v));
+                            var variant = ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(
+                                (string)_request.Parameters["persistenceScope"], key);
                             caster.Descriptor.Alignment.Set((Kingmaker.Enums.Alignment)
                                 ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(variant));
                             unit = SpawnExpandedSummoningVariants(blueprints, caster, new[] { variant }, "marked whole-roster persistence").Single();
@@ -351,9 +355,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             // material or texture allocated, nothing published, and no unit to
             // clean up.
             bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
-            bool savedAnkylosaurus = Sprint22PersistenceScope && verify;
-            bool exact = moduleOn || savedAnkylosaurus
-                ? keys.SequenceEqual(RosterSelectedKeys) &&
+            bool savedTargetedSubset = (Sprint22PersistenceScope ||
+                Sprint23PersistenceScope) && verify;
+            bool exact = moduleOn || savedTargetedSubset
+                ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
+                    (string)_request.Parameters["persistenceScope"], keys) &&
                     units.All(u => RosterPersistenceOwns(u,caster,blueprints)) &&
                     units.All(u => u.View != null && ReferenceEquals(u.View.Data,u) && u.Commands != null &&
                         !u.Descriptor.State.IsDead && u.Descriptor.Buffs.Enumerable.Any(b => ReferenceEquals(b.Blueprint,BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) &&
@@ -361,7 +367,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 : units.Length == 0;
             RosterPersistenceCheck("all-identities-context-duration", exact,
                 new JObject { ["count"] = units.Length,
-                    ["expected"] = moduleOn || savedAnkylosaurus ? RosterSelectedKeys.Length : 0,
+                    ["expected"] = moduleOn || savedTargetedSubset ? RosterSelectedKeys.Length : 0,
                     ["keys"] = new JArray(keys), ["moduleEnabled"] = moduleOn },
                 moduleOn
                     ? "every KMG creature and every distinct retained native unit, exact saved receipt/caster/blueprint and finite duration"
@@ -379,6 +385,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string rimState = ExpandedSummoningRimAnimationPatch.Describe(unit.View);
                 bool rimAbsent = !ExpandedSummoningVisualVariantPatch.RimFor(unit.View).HasValue;
                 bool registeredVariant = ExpandedSummoningVisualVariantPatch.RegisteredBlueprintNames.Contains(unit.Blueprint.name);
+                string originalBodyOutcome = unit.View == null ? "no-view" :
+                    ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View);
+                UnityEngine.Object[] armoredOwned = unit.View == null ?
+                    new UnityEngine.Object[0] :
+                    ExpandedSummoningPteranodonViewPatch
+                        .CaptureArmoredDinosaurOwnedResources(unit.View);
+                bool armoredBodyExact = true;
+                if (Sprint23PersistenceScope &&
+                    ArmoredDinosaurVisualPolicy.Handles(receipt.Key))
+                    armoredBodyExact = moduleOn
+                        ? originalBodyOutcome.StartsWith("visual:attached;",
+                            StringComparison.Ordinal) &&
+                            armoredOwned.Length == 3
+                        : ExpandedSummoningRosterPersistencePolicy
+                            .ModuleOffArmoredBodyIsClean(originalBodyOutcome,
+                                armoredOwned.Length);
+                visual &= armoredBodyExact;
                 if (!_context.FeatureModules.Active.ExpandedSummoning)
                     visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
@@ -387,10 +410,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["projectResourceCount"] = project.Length, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning,
                         ["variantRegisteredForSaveCompatibility"] = registeredVariant, ["variantOutcome"] = variantOutcome,
                         ["variantOwnership"] = variantOwner, ["rimLookupAbsent"] = rimAbsent, ["rimControllerState"] = rimState,
+                        ["originalBodyOutcome"] = originalBodyOutcome,
+                        ["armoredBodyPrivateResourceCount"] = armoredOwned.Length,
+                        ["armoredBodyExact"] = armoredBodyExact,
                         ["rendererMaterials"] = new JArray(unit.View == null ? new string[0] :
                             unit.View.GetComponentsInChildren<Renderer>(true).Where(r => r != null)
                                 .SelectMany(r => r.sharedMaterials).Select(m => m == null ? "<null>" : m.name)) },
-                    "saved racial/profile/weapon identities retained exactly; module OFF deserializes natively without original-view attachment");
+                    "saved racial/profile/weapon identities retained exactly; each enabled armored dinosaur has one original-body receipt and module OFF deserializes natively without attachment");
             }
             if (!_context.FeatureModules.Active.ExpandedSummoning)
             {

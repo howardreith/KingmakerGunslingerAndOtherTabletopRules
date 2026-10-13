@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  115,
+    "count":  117,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -63,6 +63,7 @@
                                                "KMG.Summoning.Ability.SNA.Tier7.Ankylosaurus.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier8.Ankylosaurus.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.Ankylosaurus.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.Ankylosaurus.UnitType",
                                                "KMG.Summoning.Unit.Ankylosaurus"
                                            ]
                   },
@@ -3433,6 +3434,58 @@
                                                "KMG.Summoning.Ability.SNA.Tier9.GiantCrab.OneD4PlusOne",
                                                "KMG.Summoning.Natural.GiantCrab.UnitType",
                                                "KMG.Summoning.Unit.GiantCrab"
+                                           ]
+                  },
+                  {
+                      "key":  "triceratops",
+                      "displayName":  "Triceratops",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/triceratops.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/triceratops.png",
+                      "sourceSha256":  "ea9cf4092ed5bd96e00138e1a471eec0aa136d78e7c3a8b81ea3a07fa4695e40",
+                      "outputSha256":  "b261aa99e47d40e55fd794799906ca53a92b17c37736f52da1a017eb0201dc66",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier6.Triceratops.One",
+                                               "KMG.Summoning.Ability.SM.Tier6.Triceratops.One.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier6.Triceratops.One.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier7.Triceratops.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier7.Triceratops.OneD3.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier7.Triceratops.OneD3.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier8.Triceratops.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier8.Triceratops.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier8.Triceratops.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier9.Triceratops.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.Triceratops.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier9.Triceratops.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SNA.Tier6.Triceratops.One",
+                                               "KMG.Summoning.Ability.SNA.Tier7.Triceratops.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Triceratops.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Triceratops.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.Triceratops.UnitType",
+                                               "KMG.Summoning.Unit.Triceratops"
+                                           ]
+                  },
+                  {
+                      "key":  "stegosaurus",
+                      "displayName":  "Stegosaurus",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/stegosaurus.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/stegosaurus.png",
+                      "sourceSha256":  "da97b11601d76fdbb5456ec413ebf32cfd3fd6d0432db46f2f0bef5526978d7f",
+                      "outputSha256":  "dfa37b0bdff97f5bda5a2772a64096ad9c39f283d7618fb99c9b8e34f15890e4",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier6.Stegosaurus.One",
+                                               "KMG.Summoning.Ability.SNA.Tier7.Stegosaurus.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Stegosaurus.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Stegosaurus.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.Stegosaurus.UnitType",
+                                               "KMG.Summoning.Unit.Stegosaurus"
                                            ]
                   }
               ]

@@ -78,7 +78,11 @@ namespace KingmakerGunslinger.Summoning
                 // borrowed rather than dedicated because they ride a rig whose
                 // own animation clips they do not replace.
                 "girallon|b98735a1737ae494dbe5cbeca1c7c083|0",
-                "xill|b98735a1737ae494dbe5cbeca1c7c083|0"
+                "xill|b98735a1737ae494dbe5cbeca1c7c083|0",
+                // Sprint 23 reuses only the measured animation rigs. Both
+                // visible bodies remain deterministic project-owned geometry.
+                "triceratops|028cc6f46e7998f46855a33ffde89567|0",
+                "stegosaurus|c3524f96954a1d94f8525b86e7626633|0"
             });
         }
 

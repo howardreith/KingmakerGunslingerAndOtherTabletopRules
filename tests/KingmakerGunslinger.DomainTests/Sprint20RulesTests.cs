@@ -116,13 +116,12 @@ namespace KingmakerGunslinger.DomainTests
             // the one registration allocated and nothing moved to make room.
             Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All twelve of this creature's are published, and so is "
-                + "everything else.");
-            Assertions.Equal(1063,
+                "All twelve Giant Scorpion roots and all Sprint 23 roots are published.");
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placements rose from 1044 to 1056, and Sprint 21 "
                 + "registered seven more.");
-            Assertions.Equal(1063,
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "The published surface is every registered placement, which "
                 + "is this test's real subject: a later sprint must not reach "
@@ -383,7 +382,9 @@ namespace KingmakerGunslinger.DomainTests
             // this sprint's own, measured back from whatever has been
             // appended since - which is the only reading that keeps meaning
             // what it meant when it was written.
-            int later = Sprint21RulesTests.AppendedLedgerIdentities + Sprint22RulesTests.AppendedLedgerIdentities;
+            int later = Sprint21RulesTests.AppendedLedgerIdentities +
+                Sprint22RulesTests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint23Tests.AppendedLedgerIdentities;
             if (symbols.Count < AppendedLedgerIdentities + later)
                 throw new InvalidOperationException(
                     "The ledger parsed to " + symbols.Count + " symbols.");

@@ -862,9 +862,10 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Every Expanded Summoning identity in the ledger is also in the
-        /// catalog the game builds its blueprints from, and with the same
-        /// planned type.
+        /// Every active Expanded Summoning identity in the ledger is also in
+        /// the catalog the game builds its blueprints from, and with the same
+        /// planned type. Append-only reserved identities must stay out of that
+        /// runtime catalog.
         ///
         /// <para>This is the guard that was missing. A symbol can be allocated
         /// in the ledger, referenced by a builder and validated by every
@@ -884,7 +885,8 @@ namespace KingmakerGunslinger.DomainTests
                 File.ReadAllText(path))["entries"]).ToArray();
             var ledger = entries
                 .Where(value => ((string)value["symbol"]).StartsWith(
-                    "KMG.Summoning.", StringComparison.Ordinal))
+                    "KMG.Summoning.", StringComparison.Ordinal) &&
+                    (string)value["status"] == "active")
                 .ToDictionary(value => (string)value["symbol"],
                     value => (string)value["plannedType"],
                     StringComparer.Ordinal);
@@ -913,6 +915,17 @@ namespace KingmakerGunslinger.DomainTests
                 throw new InvalidOperationException(
                     "The catalog and the ledger disagree about a planned type: " +
                     string.Join(", ", mistyped));
+            string[] builtReserved = entries.Where(value =>
+                    ((string)value["symbol"]).StartsWith(
+                        "KMG.Summoning.", StringComparison.Ordinal) &&
+                    (string)value["status"] == "reserved" &&
+                    catalog.ContainsKey((string)value["symbol"]))
+                .Select(value => (string)value["symbol"])
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            if (builtReserved.Length != 0)
+                throw new InvalidOperationException(
+                    "The runtime catalog creates reserved identities: " +
+                    string.Join(", ", builtReserved));
             // And specifically: every Sprint 14 symbol a builder resolves.
             foreach (string symbol in new[] {
                 "KMG.Summoning.Natural.AntSting1d4",
@@ -1006,6 +1019,9 @@ namespace KingmakerGunslinger.DomainTests
                     value.Key != GiantCrabRulesPolicy.GiantCrabKey &&
                     // Sprint 22 assigns the printed Perception-only ranks.
                     value.Key != AnkylosaurusRulesPolicy.Key &&
+                    // Sprint 23 derives each adult dinosaur's printed
+                    // Perception-only allocation independently.
+                    !ArmoredDinosaurRulesPolicy.UsesExactRanks(value.Key) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

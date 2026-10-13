@@ -56,19 +56,19 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.151\"") &&
-                props.Contains("<KmgVersion>0.0.151</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.151-expanded-summoning-sprint22</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.151\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.151\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.151-expanded-summoning-sprint22\")"),
-                "Release and assembly identity are not transactionally pinned to the current Sprint 22 candidate.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.152\"") &&
+                props.Contains("<KmgVersion>0.0.152</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.152-expanded-summoning-sprint23</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.152\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.152\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.152-expanded-summoning-sprint23\")"),
+                "Release and assembly identity are not transactionally pinned to the current Sprint 23 candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-expanded-summoning-sprint22.zip") &&
+                "$($info.Id)-$($info.Version)-expanded-summoning-sprint23.zip") &&
                 !package.Contains("expanded-summoning.zip"),
                 "Package identity is not pinned to the Favored Class integration archive.");
             Assertions.True(runtime.Contains("if ($ExpectedVersion -cne $activeVersion") && runtime.Contains("ExpectedVersion must be exactly the active version $activeVersion.") &&
-                localBuild.Contains("active version 0.0.151") &&
+                localBuild.Contains("active version 0.0.152") &&
                 localBuild.Contains("artifacts\\local-runtime\\$($info.Version)"),
                 "Build or guarded-runtime version enforcement is stale.");
         }

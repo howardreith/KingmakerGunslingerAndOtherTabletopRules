@@ -188,13 +188,13 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(1063,
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
             Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Nothing is withheld once Sprint 21 publishes.");
-            Assertions.Equal(1063,
+                "Sprint 23 publication leaves no withheld roots.");
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
             foreach (SummonVariantSpec variant in all)

@@ -382,6 +382,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.Bison.Trample";
         private const string WoollyRhinocerosTrampleSymbol =
             "KMG.Summoning.Special.WoollyRhinoceros.Trample";
+        private const string AnimalClassGuid =
+            "4cd1757a0eea7694ba5c933729a53920";
         private const string NativeOverrunAbilityGuid =
             "1a3b471ecea51f7439a946b23577fd70";
         internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
@@ -679,6 +681,14 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureUngulateTrample(library, bySymbol,
                 WoollyRhinocerosUnitSymbol, WoollyRhinocerosTrampleSymbol,
                 "woolly-rhinoceros");
+            ConfigureUngulatePowerfulCharge(bySymbol,
+                "KMG.Summoning.Unit.Triceratops",
+                ArmoredDinosaurRulesPolicy.TriceratopsPowerfulChargeSymbol,
+                ArmoredDinosaurRulesPolicy.TriceratopsKey);
+            ConfigureUngulateTrample(library, bySymbol,
+                "KMG.Summoning.Unit.Triceratops",
+                ArmoredDinosaurRulesPolicy.TriceratopsTrampleSymbol,
+                ArmoredDinosaurRulesPolicy.TriceratopsKey);
             ConfigureMephitVariants(library, bySymbol);
         }
 
@@ -718,6 +728,10 @@ namespace KingmakerGunslinger.Blueprints
                 ContextActionUngulateTrample>();
             contact.SourceUnit = unit;
             contact.CreatureKey = creatureKey;
+            if (rules.LiveTrampleMath)
+                contact.HitDieClass = BlueprintLibraryLookup.RequireExact<
+                    BlueprintCharacterClass>(library, AnimalClassGuid,
+                        creatureKey + " animal racial HD");
             var overrun = ScriptableObject.CreateInstance<AbilityCustomOverrun>();
             overrun.AutoSuccess = true;
             overrun.FirstTargetOnly = false;
@@ -786,6 +800,10 @@ namespace KingmakerGunslinger.Blueprints
             charge.Gore = gore;
             charge.AdditionalDiceRolls = rules.ChargeDiceIncrement;
             charge.AdditionalDamageBonus = rules.ChargeBonusIncrement;
+            charge.DuplicateLiveDamageDice =
+                rules.LivePowerfulChargeMath;
+            charge.AddHalfLiveStrengthBonus =
+                rules.LivePowerfulChargeMath;
             feature.name = InternalName(featureSymbol);
             feature.IsClassFeature = true;
             feature.HideInUI = true;
