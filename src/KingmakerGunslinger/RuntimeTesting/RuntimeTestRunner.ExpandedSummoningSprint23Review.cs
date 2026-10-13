@@ -726,12 +726,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             // both request-owned actors to the measured ground before issuing
             // its native command; reuse that qualified setup so a fall cannot
             // interrupt the damage cue after a successful attack roll.
-            string floorDetail;
-            Vector3 floor = FindExpandedSummoningArtPoint(fixture.Caster,
-                out floorDetail);
-            string targetPlacement;
-            Vector3 targetPoint = ExpandedSummoningOpenPoint(floor, 3f,
-                new List<int>(), out targetPlacement);
+            // The art survey requires a broad empty presentation stage and can
+            // legitimately reject the crowded post-route fixture.  The Sprint
+            // 22 combat cells instead use this bounded caster-relative ground
+            // pair, which remains available after route and visual review.
+            Vector3 floor = fixture.Caster.Position + Vector3.right * 4f;
+            Vector3 targetPoint = floor + Vector3.forward * 3f;
             PlaceExpandedSummoningUnit(owner, floor);
             PlaceExpandedSummoningUnit(target, targetPoint);
             Vector3 ownerStart = owner.Position;
@@ -787,8 +787,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Sprint16DamageEvent)),
                         ["tripRules"] = trips.Length,
                         ["damage"] = target.Descriptor.Damage - damageBefore,
-                        ["groundProbe"] = floorDetail,
-                        ["targetPlacement"] = targetPlacement,
+                        ["groundProbe"] =
+                            "released-sprint22-caster-relative-combat-pair",
                         ["ownerStart"] = SurveyVector(ownerStart),
                         ["ownerEnd"] = SurveyVector(owner.Position),
                         ["targetStart"] = SurveyVector(targetStart),
