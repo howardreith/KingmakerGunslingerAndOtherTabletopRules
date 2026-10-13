@@ -49,6 +49,17 @@ class Sprint23GateTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             gate.validate_append(self.old, changed)
 
+    def test_targeted_persistence_files_are_explicitly_scoped(self):
+        self.assertIn(
+            "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningRosterPersistencePolicy.cs",
+            gate.ALLOWED_PRODUCTION)
+        self.assertIn(
+            "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs",
+            gate.ALLOWED_PRODUCTION)
+        self.assertNotIn(
+            "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs",
+            gate.ALLOWED_PRODUCTION)
+
 
 if __name__ == "__main__":
     unittest.main()
