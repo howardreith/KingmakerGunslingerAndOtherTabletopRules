@@ -67,11 +67,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool idleMenu = _summoningProfileMenu != null && entered != null &&
                         !(bool)entered.GetValue(_summoningProfileMenu) &&
                         EventBus.IsGloballySubscribed(_summoningProfileMenu);
-                    string sprint22ReviewPhase = RuntimeTestRequestParser
-                        .Sprint22ReviewPhase(_request);
+                    string nativeReviewPhase = _request.Scenario ==
+                            RuntimeTestScenarioCatalog
+                                .DisposableExpandedSummoningSprint23NativeReview
+                        ? RuntimeTestRequestParser.Sprint23ReviewPhase(_request)
+                        : RuntimeTestRequestParser.Sprint22ReviewPhase(_request);
                     if (!ExpandedSummoningNativeProfilePolicy.CanStart(
                         _request.ExitAfterCompletion, _request.Scenario,
-                        _request.Parameters?.Count ?? 0, sprint22ReviewPhase,
+                        _request.Parameters?.Count ?? 0, nativeReviewPhase,
                         game.State.Units.All.Count(), game.Player.PartyCharacters.Count,
                         game.Player.CrossSceneState.AllEntityData.Count,
                         game.CurrentlyLoadedArea != null || game.State.LoadedAreaState != null,
@@ -168,7 +171,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfileEvidence["partyCount"] = game.Player.Party.Count;
                     game.IsPaused = true;
                     WriteLifecycleStage("summoning-profile-native-mechanics-start");
-                    if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint22NativeReview)
+                    if (_request.Scenario == RuntimeTestScenarioCatalog
+                            .DisposableExpandedSummoningSprint22NativeReview ||
+                        _request.Scenario == RuntimeTestScenarioCatalog
+                            .DisposableExpandedSummoningSprint23NativeReview)
                     { _summoningProfileStage=4; return; }
                     _summoningProfileResult = RunDisposableExpandedSummoning(false);
                     BeginSummoningProfileReset();
@@ -177,8 +183,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_summoningProfileStage == 4)
                 {
                     if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
-                        throw new TimeoutException("Sprint 22 native review exceeded its declared scenario deadline.");
-                    if (PollSprint22NativeReview()) BeginSummoningProfileReset();
+                        throw new TimeoutException("Expanded Summoning native review exceeded its declared scenario deadline.");
+                    bool complete = _request.Scenario == RuntimeTestScenarioCatalog
+                            .DisposableExpandedSummoningSprint23NativeReview
+                        ? PollSprint23NativeReview()
+                        : PollSprint22NativeReview();
+                    if (complete) BeginSummoningProfileReset();
                     return;
                 }
                 if (_summoningProfileStage == 2)
@@ -197,7 +207,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _summoningProfileFailure = (_summoningProfileFailure ?? "") + "\n" + exception;
                 if (_summoningProfileStage == 1 || _summoningProfileStage == 3 || _summoningProfileStage == 4)
                 {
-                    try { CleanupSprint22NativeReview(); BeginSummoningProfileReset(); return; }
+                    try
+                    {
+                        if (_request.Scenario == RuntimeTestScenarioCatalog
+                                .DisposableExpandedSummoningSprint23NativeReview)
+                            CleanupSprint23NativeReview();
+                        else CleanupSprint22NativeReview();
+                        BeginSummoningProfileReset();
+                        return;
+                    }
                     catch (Exception resetFailure) { _summoningProfileFailure += "\nreset: " + resetFailure; }
                 }
                 FinishSummoningNativeProfile(false);

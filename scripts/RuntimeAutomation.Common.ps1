@@ -1020,6 +1020,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'disposable-expanded-summoning-sprint23-native-review' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-magic-circle-native-contracts' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -2072,6 +2078,15 @@ function Test-KmgSprint22ReviewPhaseScope {
         $Parameters.reviewPhase -cin @('rtwp-foundation', 'turn-based-control')
 }
 
+function Test-KmgSprint23ReviewPhaseScope {
+    param([string]$Scenario, [hashtable]$Parameters)
+    return $Scenario -ceq 'disposable-expanded-summoning-sprint23-native-review' -and
+        $null -ne $Parameters -and $Parameters.Count -eq 1 -and
+        $Parameters.ContainsKey('reviewPhase') -and
+        $Parameters.reviewPhase -is [string] -and
+        $Parameters.reviewPhase -cin @('rtwp-foundation', 'turn-based-control')
+}
+
 function Assert-KmgRuntimeScenarioPreflight {
     param(
         [Parameter(Mandatory = $true)][string]$Scenario,
@@ -2104,6 +2119,10 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint22-native-review' -and
         (-not $ExitAfterCompletion -or -not (Test-KmgSprint22ReviewPhaseScope $Scenario $Parameters))) {
         throw 'Sprint22 native review requires automatic exit and exactly one allowlisted reviewPhase.'
+    }
+    if ($Scenario -ceq 'disposable-expanded-summoning-sprint23-native-review' -and
+        (-not $ExitAfterCompletion -or -not (Test-KmgSprint23ReviewPhaseScope $Scenario $Parameters))) {
+        throw 'Sprint23 native review requires automatic exit and exactly one allowlisted reviewPhase.'
     }
     if ($Scenario -ceq 'observe-whiteout-disposable-weather-fixture' -and -not $ExitAfterCompletion) {
         throw 'Disposable Whiteout weather fixture requires automatic exit.'
@@ -2408,6 +2427,11 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exactly one allowlisted reviewPhase."
         }
     }
+    elseif ($Scenario -ceq 'disposable-expanded-summoning-sprint23-native-review') {
+        if (-not (Test-KmgSprint23ReviewPhaseScope $Scenario $Parameters)) {
+            throw "$Scenario requires exactly one allowlisted reviewPhase."
+        }
+    }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
         $allowedConfigurations = @('all-suppressed', 'firearms-only',
             'spears-only', 'eastern-only', 'all-enabled')
@@ -2612,8 +2636,9 @@ function New-KmgRuntimeRequest {
             }
         } elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
             [ordered]@{ expandedSummoning = [bool]$Parameters.expandedSummoning }
-        } elseif ($Scenario -ceq
-            'disposable-expanded-summoning-sprint22-native-review') {
+        } elseif ($Scenario -cin @(
+            'disposable-expanded-summoning-sprint22-native-review',
+            'disposable-expanded-summoning-sprint23-native-review')) {
             [ordered]@{ reviewPhase = [string]$Parameters.reviewPhase }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {

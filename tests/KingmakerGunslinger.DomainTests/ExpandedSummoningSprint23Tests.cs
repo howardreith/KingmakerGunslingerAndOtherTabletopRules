@@ -111,6 +111,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(0, stego.AdditionalWeapons.Count +
                 stego.AdditionalSecondaryWeapons.Count,
                 "Stegosaurus has no follow-up attack.");
+            string triDisposition = string.Join(" ", tri.Deviations);
+            string stegoDisposition = string.Join(" ", stego.Deviations);
+            Assertions.True(triDisposition.Contains("Run remains omitted") &&
+                stegoDisposition.Contains("Improved Overrun retains") &&
+                stegoDisposition.Contains("Cleave is the native feat/action"),
+                "Unsupported Run/overrun consumers and native Cleave have bounded dispositions.");
         }
 
         internal static void TrampleUsesD8AndLiveArithmetic()
@@ -190,6 +196,15 @@ namespace KingmakerGunslinger.DomainTests
                 false, 5, 7), "Target more than one size larger.");
             Assertions.True(decide(true, true, true, true, true, false,
                 false, 5, 5), "A separate genuine hit remains eligible.");
+            string carrier = File.ReadAllText(
+                "src/KingmakerGunslinger/Summoning/StegosaurusTailTrip.cs");
+            Assertions.True(carrier.Contains("!target.Destroyed") &&
+                carrier.Contains("!owner.Destroyed"),
+                "Destroyed source and target identities fail closed.");
+            Assertions.False(carrier.Contains("RuleDealDamage") ||
+                carrier.Contains("Damage > 0") ||
+                carrier.Contains("DamageDealt"),
+                "Trip eligibility is not gated on positive HP damage.");
         }
 
         internal static void LedgerAppendIsExactAndAllocatedOnce()
@@ -316,6 +331,74 @@ namespace KingmakerGunslinger.DomainTests
                 "Released d6 trampler stays d6.");
             Assertions.Equal(13, woolly.TrampleBonusFor(99),
                 "Released trample ignores the new live input.");
+        }
+
+        internal static void NativeReviewScenarioIsExactAndBounded()
+        {
+            string catalog = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs");
+            string request = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs");
+            string policy = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs");
+            const string scenario =
+                "disposable-expanded-summoning-sprint23-native-review";
+            Assertions.True(catalog.Contains(scenario) &&
+                catalog.Contains("IsSummoningNativeProfile"),
+                "The Sprint 23 review is an allowlisted native-profile scenario.");
+            Assertions.True(request.Contains("Sprint23ReviewPhase") &&
+                request.Contains("rtwp-foundation") &&
+                request.Contains("turn-based-control") &&
+                request.Contains("ExitAfterCompletion"),
+                "Only the two exact automatically exiting review phases are accepted.");
+            Assertions.True(policy.Contains("SaveFreeParameterScope") &&
+                policy.Contains("Sprint23NativeReview"),
+                "Sprint 23 inherits the qualified save-free parameter boundary.");
+        }
+
+        internal static void NativeReviewObservesRealCommandsAndControls()
+        {
+            string review = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint23Review.cs");
+            foreach (string required in new[] {
+                "Sprint18RunFullAttack",
+                "Sprint23NativeChargeCommand",
+                "Sprint23NativeTrampleCommand",
+                "BeginExpandedSummoningDetachedAbility",
+                "KMG_Summoning_Special_Triceratops_Trample",
+                "queued-native-charge",
+                "queued-native-trample-path-contact",
+                "released-rhino-charge-control",
+                "Sprint23AnkylosaurusControl",
+                "CleanupSprint23NativeReview"
+            })
+                Assertions.True(review.Contains(required),
+                    "Native review owns required discriminator: " + required);
+            Assertions.False(review.Contains(
+                "new ExpandedSummoningTrampleContactResult {\r\n                                Label = \"native-path\""),
+                "Native-path evidence cannot serialize an unpopulated synthetic contact.");
+        }
+
+        internal static void NativeReviewScriptsRejectLooseAdmission()
+        {
+            string common = File.ReadAllText(
+                "scripts/RuntimeAutomation.Common.ps1");
+            string profile = File.ReadAllText(
+                "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1");
+            string preflight = File.ReadAllText(
+                "scripts/Test-RuntimeScenarioPreflight.ps1");
+            const string scenario =
+                "disposable-expanded-summoning-sprint23-native-review";
+            Assertions.True(common.Contains(scenario) &&
+                common.Contains("Test-KmgSprint23ReviewPhaseScope"),
+                "The common runtime boundary validates the exact Sprint 23 phase.");
+            Assertions.True(profile.Contains(scenario) &&
+                profile.Contains("ReuseInstalledArtifact"),
+                "The profile wrapper recognizes the scenario without conflating artifact reuse interfaces.");
+            Assertions.True(preflight.Contains(scenario) &&
+                preflight.Contains("turn-based-control") &&
+                preflight.Contains("rtwp-foundation"),
+                "Offline preflight exercises both exact review phases.");
         }
     }
 }

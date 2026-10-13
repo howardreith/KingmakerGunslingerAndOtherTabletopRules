@@ -47,6 +47,7 @@ try {
         'docs\RELEASE-NOTES-0.0.145.md',
         'docs\RELEASE-NOTES-0.0.146.md',
         'docs\RELEASE-NOTES-0.0.151.md',
+        'docs\RELEASE-NOTES-0.0.152.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -122,6 +123,10 @@ try {
         'assets\sprint21-arthropods\bebelith-albedo.png',
         'assets\ankylosaurus\ankylosaurus-mesh.json',
         'assets\ankylosaurus\ankylosaurus-albedo.png',
+        'assets\sprint23-armored-dinosaurs\triceratops-mesh.json',
+        'assets\sprint23-armored-dinosaurs\triceratops-albedo.png',
+        'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json',
+        'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )

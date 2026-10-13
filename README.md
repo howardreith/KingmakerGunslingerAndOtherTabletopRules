@@ -1,23 +1,19 @@
 # Kingmaker Gunslinger
 
-The **0.0.151-expanded-summoning-sprint22** stable release completes the
-Ankylosaurus behind its ten existing routes: an original armored body and club
-tail, exact profile carriers, and the Fortitude daze/critical-stun rider. The
-exact qualified artifact is published as [v0.0.151](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.151).
-See [Sprint 22 coverage](docs/SPRINT22-COVERAGE.md) and
-[release notes](docs/RELEASE-NOTES-0.0.151.md).
+The **0.0.152-expanded-summoning-sprint23** release adds Triceratops and
+Stegosaurus with their distinct charge/trample and tail-trip roles, original
+bodies and original icons. See the
+[release notes](docs/RELEASE-NOTES-0.0.152.md).
 
-Sprint 21 completed the natural-creature rig tranche. Sprint 22 is RELEASED
-and stopped. The original charter continues through Sprint 41, with optional
-Sprints 42–45; Sprint 23 has not started.
+Sprint 22 remains released and unchanged. This mission stops after Sprint 23;
+Sprint 24 is not started.
 
 ### Current release
 
-Version **0.0.151-expanded-summoning-sprint22** retains the 1,092-choice
-surface: 1,063 generated roots and 29 native wrappers. All ten existing
-Ankylosaurus routes, their levels, quantities, templates and stable identities
-remain unchanged. The release was promoted from the exact tested ZIP without a
-reporting rebuild; owner aesthetic review remains separate and nonblocking.
+Version **0.0.152-expanded-summoning-sprint23** exposes 1,104 choices after
+publication: 1,075 generated roots and 29 native wrappers. All prior routes,
+levels, quantities, templates and stable identities remain unchanged. Owner
+aesthetic review remains separate and nonblocking.
 
 ### Previous release
 

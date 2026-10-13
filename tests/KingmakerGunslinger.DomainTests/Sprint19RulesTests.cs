@@ -188,16 +188,18 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(1063,
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(0,
+            Assertions.Equal(12,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Nothing is withheld once Sprint 21 publishes.");
+                "Only Sprint 23 is withheld.");
             Assertions.Equal(1063,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
-            foreach (SummonVariantSpec variant in all)
+            foreach (SummonVariantSpec variant in all.Where(value =>
+                value.Creature.Key != ArmoredDinosaurRulesPolicy.TriceratopsKey &&
+                value.Creature.Key != ArmoredDinosaurRulesPolicy.StegosaurusKey))
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
                     "Every placement is published: " + variant.StableKey);

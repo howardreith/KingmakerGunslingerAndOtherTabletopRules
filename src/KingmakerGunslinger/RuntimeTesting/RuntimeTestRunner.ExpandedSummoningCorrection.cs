@@ -4195,7 +4195,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintAbility ability = _rulesFixture.Blueprints
                 .OfType<BlueprintAbility>().Single(value =>
-                    RulesTrampleAbilityNames.Contains(value.name) &&
+                    (RulesTrampleAbilityNames.Contains(value.name) ||
+                     value.name ==
+                        "KMG_Summoning_Special_Triceratops_Trample") &&
                     trampler.Descriptor.Abilities.GetAbility(value) != null);
             var overrun = ability.ComponentsArray.OfType<
                 Kingmaker.UnitLogic.Abilities.Components
