@@ -16616,7 +16616,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tierThreeFourNaturalsExact,
                     "twelve exact animal-HD chassis with native pounce, ferocity, trip, poison, armor, natural attacks, and bounded documented deviations"),
                 Assertion("expanded-summoning-tier-five-seven-naturals", "exact",
-                    tierFiveSevenNaturalsExact ? "exact" : "mismatch",
+                    tierFiveSevenNaturalsExact ? "exact" : "mismatch;" +
+                        ExpandedSummoningNaturalDiagnosticsText(),
                     tierFiveSevenNaturalsExact,
                     "seven exact animal-HD chassis with proxy-only views, frozen large-die weapons, native pounce and feats, and bounded documented deviations"),
                 Assertion("expanded-summoning-sprint-three-naturals", "exact",
@@ -23359,6 +23360,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "ImprovedCriticalBite", "8388e2e50bb779840adc8129b3d63bf1" },
                     { "ImprovedCriticalClaw", "76a335b7d69691c4e8376f9379338778" },
                     { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
+                    { "ImprovedBullRush", "b3614622866fe7046b787a548bbd7f59" },
+                    { "WeaponFocusTail", "77680337beba8df439793669390cd638" },
                     { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
                     { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" },
                     { "Cleave", "d809b6c4ff2aaff4fa70d712a70f7d7b" },
@@ -23379,10 +23382,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             // A project-owned fact has no native GUID to write down here - its
             // identity is allocated in the append-only ledger - so it is
             // resolved by its own blueprint name out of the same live set the
-            // census is already reading. Sprint 13's Wolverine rage is the
-            // first profile fact of that kind.
+            // census is already reading. Sprint 13's Wolverine rage and
+            // Sprint 22's exact chassis/rider are profile facts of that kind.
             foreach (var owned in new[] {
-                new[] { "WolverineRage", "KMG_Summoning_Natural_Wolverine_Rage" } })
+                new[] { "WolverineRage", "KMG_Summoning_Natural_Wolverine_Rage" },
+                new[] { "AnkylosaurusChassis", "KMG_Summoning_Natural_Ankylosaurus_Chassis" },
+                new[] { "AnkylosaurusStun", "KMG_Summoning_Special_Ankylosaurus_Stun" } })
             {
                 BlueprintUnitFact granted = all.OfType<BlueprintUnitFact>()
                     .SingleOrDefault(value => value.name == owned[1]);
@@ -23410,8 +23415,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             // about the chassis and the special builder proves its own work.
             string[] actualFacts = (unit.AddFacts ??
                 Array.Empty<BlueprintUnitFact>()).Where(value => value != null &&
-                    !value.name.StartsWith("KMG_Summoning_Special_",
-                        StringComparison.Ordinal))
+                    ExpandedSummoningInventoryObservationPolicy
+                        .NaturalProfileFactComparable(value.name,
+                            expectedFacts.Contains(value.AssetGuid)))
                 .Select(value => value.AssetGuid).OrderBy(value => value,
                     StringComparer.Ordinal).ToArray();
             // Each field is named in the diagnostics when it disagrees, so a
@@ -36193,6 +36199,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopSprint20Review(result);
             StopSprint21Review(result);
             if (_sprint22Steps != null || _sprint22Fixture != null) CleanupSprint22NativeReview();
+            if (_sprint23Steps != null || _sprint23Fixture != null) CleanupSprint23NativeReview();
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

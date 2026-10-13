@@ -136,7 +136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PteranodonAssetRuntime.TryGetSprint12QuadrupedVisual(key, out mesh, out bones, out paint, out status) ||
                     PteranodonAssetRuntime.TryGetSprint13CreatureVisual(key, out mesh, out bones, out paint, out status) ||
                     PteranodonAssetRuntime.TryGetSprint14InsectVisual(key, out mesh, out bones, out paint, out status) ||
-                    PteranodonAssetRuntime.TryGetCrocodilianVisual(key, out mesh, out bones, out paint, out status))
+                    PteranodonAssetRuntime.TryGetCrocodilianVisual(key, out mesh, out bones, out paint, out status) ||
+                    PteranodonAssetRuntime.TryGetArmoredDinosaurVisual(key, out mesh, out bones, out paint, out status))
                 { add(mesh, key + ".Mesh"); add(paint, key + ".Albedo"); }
             }
             return result;
@@ -164,11 +165,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (attachment != null)
             {
                 const string owner = "ExpandedSummoningPteranodonViewPatch.Applied.Attachment";
+                UObject[] armoredOwned = ExpandedSummoningPteranodonViewPatch
+                    .CaptureArmoredDinosaurOwnedResources(view);
                 foreach (string field in new[] { "Mesh", "Material" })
                 {
                     var value = ResourceField(attachment, field) as UObject;
                     string capturedField = field;
-                    add(value, "attachment private " + field, owner, true, false, false,
+                    bool captured = armoredOwned.Any(item =>
+                        ReferenceEquals(item, value));
+                    add(value, "attachment private " + field, owner, true,
+                        false, captured,
                         () => ReferenceEquals(ResourceOwnership(typeof(ExpandedSummoningPteranodonViewPatch), "Applied", view), attachment) &&
                             ReferenceEquals(ResourceField(attachment, capturedField), value));
                 }
@@ -185,7 +191,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var donor = ResourceField(attachment, "Donor") as SkinnedMeshRenderer;
                 if (donor != null && ReferenceEquals(donor.sharedMesh, ResourceField(attachment, "Mesh")))
                     foreach (var driven in donor.sharedMaterials.Where(m => m != null && !originals.Any(o => ReferenceEquals(o, m))))
-                        add(driven, "swapped donor renderer material (native controller instance)", owner, true, false, false,
+                        add(driven, "swapped donor renderer material (native controller instance)", owner, true, false,
+                            armoredOwned.Any(item => ReferenceEquals(item,
+                                driven)),
                             () => donor != null && donor.sharedMaterials.Any(m => ReferenceEquals(m, driven)));
             }
             var variant = ResourceOwnership(typeof(ExpandedSummoningVisualVariantPatch), "Ownerships", view) as SummonVisualOwnership;

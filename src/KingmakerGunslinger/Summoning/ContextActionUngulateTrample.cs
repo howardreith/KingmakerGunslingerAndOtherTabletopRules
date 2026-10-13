@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
@@ -29,8 +30,8 @@ namespace KingmakerGunslinger.Summoning
     /// A contact action for the native overrun delivery. The delivery moves
     /// the unit and invokes its Actions for every contacted creature; this
     /// action replaces the native CMB result with the printed trample rule.
-    /// It is installed only on the three printed Sprint 11 tramplers after the
-    /// movement, response policy and round cadence qualified in both modes.
+    /// It is installed only on exact registered tramplers after the movement,
+    /// response policy and round cadence qualified in both modes.
     /// </summary>
     [Serializable]
     public sealed class ContextActionUngulateTrample : ContextAction
@@ -38,7 +39,8 @@ namespace KingmakerGunslinger.Summoning
         private static readonly string[] ExactTrampleAbilityNames = {
             "KMG_Summoning_Special_Aurochs_Trample",
             "KMG_Summoning_Special_Bison_Trample",
-            "KMG_Summoning_Special_WoollyRhinoceros_Trample"
+            "KMG_Summoning_Special_WoollyRhinoceros_Trample",
+            "KMG_Summoning_Special_Triceratops_Trample"
         };
 
         private static readonly ConditionalWeakTable<UnitEntityData,
@@ -46,6 +48,7 @@ namespace KingmakerGunslinger.Summoning
                 UnitEntityData, TrampleRoundLedger>();
 
         public BlueprintUnit SourceUnit;
+        public BlueprintCharacterClass HitDieClass;
         public string CreatureKey;
 
         public override string GetCaption()
@@ -65,6 +68,15 @@ namespace KingmakerGunslinger.Summoning
                 string.IsNullOrEmpty(target.UniqueId)) return;
 
             UngulateRulesProfile rules = UngulateRulesPolicy.For(CreatureKey);
+            int liveStrengthModifier = caster.Stats.Strength.Bonus;
+            int liveHitDice = rules.HitDice;
+            if (rules.LiveTrampleMath)
+            {
+                if (HitDieClass == null) return;
+                liveHitDice = caster.Descriptor.Progression.GetClassLevel(
+                    HitDieClass);
+                if (liveHitDice <= 0) return;
+            }
             int activeStampedeGroup = rules.Stampede ?
                 UngulateStampedeRuntime.ActiveGroupSize(caster) : 0;
             if (!rules.CanTrample((int)caster.Descriptor.State.Size,
@@ -94,18 +106,20 @@ namespace KingmakerGunslinger.Summoning
             {
                 var save = new RuleSavingThrow(target,
                     SavingThrowType.Reflex, rules.TrampleSaveDc(
-                        activeStampedeGroup));
+                        activeStampedeGroup, liveHitDice,
+                        liveStrengthModifier));
                 Context.TriggerRule(save);
                 half = save.IsPassed;
             }
 
             DiceType die = rules.TrampleDieSides == 6 ? DiceType.D6 :
+                rules.TrampleDieSides == 8 ? DiceType.D8 :
                 throw new InvalidOperationException(
                     "Unexpected ungulate trample die: " + CreatureKey);
             var damage = new PhysicalDamage(new DiceFormula(
                 rules.TrampleDiceCount, die),
                 PhysicalDamageForm.Bludgeoning);
-            damage.AddBonus(rules.TrampleBonus);
+            damage.AddBonus(rules.TrampleBonusFor(liveStrengthModifier));
             damage.Half = half;
             var dealt = new RuleDealDamage(caster, target, damage) {
                 HalfBecauseSavingThrow = half

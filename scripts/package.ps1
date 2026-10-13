@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint22.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint23.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -71,7 +71,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'validation\weapon-findability-runtime-qualification.json',
     'docs\RELEASE-NOTES-0.0.145.md',
     'docs\RELEASE-NOTES-0.0.146.md',
-    'docs\RELEASE-NOTES-0.0.151.md')) {
+    'docs\RELEASE-NOTES-0.0.151.md',
+    'docs\RELEASE-NOTES-0.0.152.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -219,6 +220,13 @@ New-Item -ItemType Directory -Path $ankylosaurusDestination -Force | Out-Null
 foreach ($member in @('ankylosaurus-mesh.json','ankylosaurus-albedo.png')) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory "assets\ankylosaurus\$member") -Destination $ankylosaurusDestination
 }
+$armoredDinosaurSource = Join-Path $outputDirectory 'assets\sprint23-armored-dinosaurs'
+$armoredDinosaurDestination = Join-Path $modDirectory 'assets\sprint23-armored-dinosaurs'
+New-Item -ItemType Directory -Path $armoredDinosaurDestination -Force | Out-Null
+foreach ($kind in @('triceratops','stegosaurus')) {
+    Copy-Item -LiteralPath (Join-Path $armoredDinosaurSource "$kind-mesh.json") -Destination $armoredDinosaurDestination
+    Copy-Item -LiteralPath (Join-Path $armoredDinosaurSource "$kind-albedo.png") -Destination $armoredDinosaurDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -239,7 +247,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 356 } else { 354 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 363 } else { 361 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

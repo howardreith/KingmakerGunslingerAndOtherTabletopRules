@@ -621,6 +621,20 @@
       "displayName": "Giant Crab",
       "subjectPrompt": "A giant crab seen from slightly above and square to the front, a broad low blue-grey carapace half again as wide as it is long with anterolateral teeth along its front edge and two short eyestalks on it, two unequal pincers held forward and below the shell line with open two-fingered chelae, and eight thin legs leaving the flanks sideways and bending down outside the shell's outline; warm sand radial backdrop against the wet grey shell, the inverse dressing to the Giant Scorpion's warm chitin on cold ground because those two are the arthropods a Nature's Ally caster chooses between. No tail, no sting, no spider abdomen. Procedural Blender render: tools/render_creature_icon.py --creature giant-crab.",
       "generator": "blender-procedural"
+    },
+    {
+      "key": "triceratops",
+      "displayName": "Triceratops",
+      "subjectPrompt": "A massive adult triceratops charging almost head-on in a low three-quarter view, all three facial horns distinct, a broad scalloped bony frill, beaked mouth, thick elephantine legs and heavy pebbled hide; sunlit rocky badlands and kicked-up dust, warm bronze-gold summon portrait frame, with no rhinoceros traits, saddle, rider or other dinosaur.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/SPRINT23-SOURCES.md"
+    },
+    {
+      "key": "stegosaurus",
+      "displayName": "Stegosaurus",
+      "subjectPrompt": "A massive adult stegosaurus in full side three-quarter view, tiny low head, arched back with two readable rows of tall rust-red dorsal plates, raised hindquarters and a long curved tail ending in four unmistakable spikes sweeping toward the viewer; sunlit rocky badlands and warm bronze-gold summon portrait frame, no club tail, horns, saddle, rider or other dinosaur.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/SPRINT23-SOURCES.md"
     }
   ]
 }

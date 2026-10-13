@@ -169,11 +169,11 @@ namespace KingmakerGunslinger.DomainTests
             // registration allocated, so nothing moved to make room.
             Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All seven are published; nothing is withheld.");
-            Assertions.Equal(1063,
+                "All seven Giant Crab roots and all Sprint 23 roots are published.");
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placements rise from 1056 to 1063.");
-            Assertions.Equal(1063,
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "And every one of them is visible.");
             foreach (SummonVariantSpec variant in all)

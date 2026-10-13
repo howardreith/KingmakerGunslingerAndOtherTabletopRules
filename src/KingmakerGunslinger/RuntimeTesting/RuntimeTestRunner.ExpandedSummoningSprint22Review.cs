@@ -956,8 +956,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 view,"m_SoftCollider") as CapsuleCollider;
             var core=view==null ? null : ReadExpandedSummoningOptionalMember(
                 view,"m_CoreCollider") as MeshCollider;
-            Component clickable=view==null ? null : view.GetComponent(
-                "Kingmaker.UI.Selection.ClickableObject");
+            // Native donors do not all keep ClickableObject in the view
+            // hierarchy. UnitEntityView itself implements the engine's
+            // IDetectHover selection contract, with its soft/core colliders as
+            // the raycast surface, so record both valid native routes.
+            Component clickable=view==null ? null : view
+                .GetComponentsInChildren<Component>(true).FirstOrDefault(
+                    value=>Sprint22IsClickableComponent(value));
+            bool hover=view is Kingmaker.Controllers.Clicks.IDetectHover;
             Vector2 bounds=Vector2.zero,coreBounds=Vector2.zero;
             bool derived=false;
             try
@@ -971,7 +977,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             catch { derived=false; }
-            bool valid=view!=null && soft!=null && core!=null && clickable!=null &&
+            bool valid=view!=null && hover && soft!=null && core!=null &&
                 soft.enabled && soft.gameObject.activeInHierarchy &&
                 soft.radius>0 && soft.height>0 && core.enabled &&
                 core.gameObject.activeInHierarchy &&
@@ -985,9 +991,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["coreCollider"]=core==null ? null : core.GetType().FullName,
                 ["coreEnabled"]=core!=null && core.enabled,
                 ["clickable"]=clickable==null ? null : clickable.GetType().FullName,
+                ["selectionRoute"]=clickable!=null ? "clickable-hierarchy" :
+                    (hover ? "unit-view-idetecthover" : "none"),
                 ["cameraBounds"]=SurveyVector(new Vector3(bounds.x,bounds.y,0)),
                 ["cameraCoreBounds"]=SurveyVector(new Vector3(coreBounds.x,coreBounds.y,0)),
                 ["corpulence"]=unit==null ? 0 : unit.Corpulence };
+        }
+
+        private static bool Sprint22IsClickableComponent(Component value)
+        {
+            // UnitEntityView implementations may derive from ClickableObject
+            // instead of installing one as an exact leaf component.
+            for(Type type=value==null ? null : value.GetType();type!=null;
+                type=type.BaseType)
+                if(type.FullName=="Kingmaker.UI.Selection.ClickableObject")
+                    return true;
+            return false;
         }
 
         private static JObject Sprint22UnitReadback(UnitEntityData unit)

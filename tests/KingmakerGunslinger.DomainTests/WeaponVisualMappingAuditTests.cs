@@ -30,7 +30,7 @@ namespace KingmakerGunslinger.DomainTests
             // which it owns because a shared native 1d6 scales up a step for
             // a Large wielder and because its poison gates on the sting's own
             // weapon type, plus 43 Better Vendors variants.
-            Assertions.Equal(87 + KingmakerGunslinger.Acquisition
+            Assertions.Equal(89 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -89,8 +89,9 @@ namespace KingmakerGunslinger.DomainTests
             // ones scale up a step for a Large wielder; and Sprint 19 adds
             // the Girallon's own 1d6 bite and 1d4 claw for that same reason
             // and the Xill's own 1d4 claw and 1d3 bite, which it owns because
-            // its claws carry grab and its bite carries paralysis.
-            Assertions.Equal(27, audit["items"].Count(value =>
+            // its claws carry grab and its bite carries paralysis. Sprint 23
+            // adds the Triceratops gore and Stegosaurus spiked tail.
+            Assertions.Equal(29, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>
