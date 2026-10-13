@@ -1,4 +1,4 @@
-# Sprint 23: Triceratops and Stegosaurus — hidden candidate qualified
+# Sprint 23: Triceratops and Stegosaurus — public source ready
 
 Current owner mission: [Sprint 23 contract](docs/SPRINT23-TRICERATOPS-STEGOSAURUS-MISSION.md).
 Read `AGENTS.md` and `docs/VALIDATION-POLICY.md`. Work only on HOWARD-LAPTOP.
@@ -24,14 +24,17 @@ registry settings exactly; no Kingmaker process or compatibility lock remains.
 Failures and exact evidence identities are preserved in
 `planning/SPRINT23-TRICERATOPS-STEGOSAURUS-LEDGER.json`.
 
-Next action: remove only the Triceratops and Stegosaurus suppression keys,
-regenerate their controlled publication artifacts, and verify the derived public
-surface: 105 project creatures, 534 Summon Monster placements, 541 Summon
-Nature's Ally placements, 1,075 generated placements, 29 retained native
-wrappers and 1,104 visible choices. Run the named focused gate, checkpoint and
-push, then run one Sprint gate for the exact public artifact and its affected
-public route/menu/runtime checks. Do not repeat the already-qualified hidden
-mechanics pipeline unless publication invalidates it.
+The publication source removes only the Triceratops and Stegosaurus
+suppression keys and regenerates the controlled roster. Its derived surface is
+105 project creatures, 534 Summon Monster placements, 541 Summon Nature's Ally
+placements, 1,075 generated placements, 29 retained native wrappers and 1,104
+visible choices. The named Sprint 23 focus passed 12/12 and the affected
+Expanded Summoning focus passed 443/443 with production compilation.
+
+Next action: run one Sprint gate for this exact public artifact, record its
+source/build/package identity, then run the affected public route/menu native
+qualification under a fresh guarded transaction. Do not repeat the already
+qualified hidden mechanics pipeline unless publication evidence invalidates it.
 
 Baseline master remains `bda157c6c402b329f47fb0531d96b52e01514114` and stable
 v0.0.151 remains frozen. Refetch before merge/publication and select the next

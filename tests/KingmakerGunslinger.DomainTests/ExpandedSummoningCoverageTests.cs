@@ -74,11 +74,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(116,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures include the two registered Sprint 23 identities plus retained native wrappers.");
-            // The two Sprint 23 creatures are represented but remain hidden
-            // until their current native qualification is complete.
-            Assertions.Equal(114,
+            // Sprint 23 publication makes both registered identities visible.
+            Assertions.Equal(116,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "Only the two Sprint 23 creatures are represented but unpublished.");
+                "Every represented creature is now published somewhere.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
                 .Contains("stirge"),
                 "The requalified Stirge must count as published coverage.");
@@ -220,7 +219,7 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 13 adds Shadow Mastiff's four; Sprints 14-15 publish all
             // insects under the accepted passive-sense limitation. Sprint 16
             // adds six Dire roots after its complete hidden qualification.
-            Assertions.Equal(1092,
+            Assertions.Equal(1104,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");

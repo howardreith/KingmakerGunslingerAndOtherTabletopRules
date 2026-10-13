@@ -69,12 +69,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1075,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Twelve placements append.");
-            Assertions.Equal(12,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Both creatures remain hidden for candidate qualification.");
-            Assertions.Equal(1063,
+                "Publication removes exactly the two qualified creature keys.");
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "No released menu choice moves while hidden.");
+                "All twelve new roots publish without moving an identity.");
         }
 
         internal static void ProfilesDeriveThePrintedLines()
@@ -406,7 +406,7 @@ namespace KingmakerGunslinger.DomainTests
                 "The existing persistence trilogy has one exact two-creature Sprint 23 scope.");
         }
 
-        internal static void HiddenPersistenceSelectsRegisteredCreatureRoutes()
+        internal static void PublishedPersistenceSelectsCreatureRoutes()
         {
             foreach (string key in ExpandedSummoningRosterPersistencePolicy
                 .ArmoredDinosaurKeys)
@@ -415,27 +415,24 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.Monster).Concat(ExpandedSummoningCatalog
                         .GenerateVariants(SummonFamily.NaturesAlly)).Where(value =>
                             value.Creature.Key == key && value.Multiplicity ==
-                            SummonMultiplicity.One).All(value =>
-                                !SummonVisibilityCatalog.IsPublished(value)),
-                    "Sprint 23 persistence starts while every new route is still hidden: " + key);
+                            SummonMultiplicity.One).All(
+                                SummonVisibilityCatalog.IsPublished),
+                    "Every Sprint 23 single-creature persistence route is published: " + key);
                 SummonVariantSpec selected = ExpandedSummoningRosterPersistencePolicy
                     .SelectCreatureVariant(ExpandedSummoningRosterPersistencePolicy
                         .ArmoredDinosaursScope, key);
                 Assertions.Equal(key, selected.Creature.Key,
-                    "The named hidden scope selects its registered creature identity.");
+                    "The named scope selects its published creature identity.");
                 Assertions.Equal(SummonMultiplicity.One, selected.Multiplicity,
                     "Persistence never creates a quantity-band group.");
             }
-            bool broadRejected = false;
-            try
-            {
-                ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(
+            SummonVariantSpec broad = ExpandedSummoningRosterPersistencePolicy
+                .SelectCreatureVariant(
                     ExpandedSummoningRosterPersistencePolicy.Scope,
                     ArmoredDinosaurRulesPolicy.TriceratopsKey);
-            }
-            catch (InvalidOperationException) { broadRejected = true; }
-            Assertions.True(broadRejected,
-                "The broad released-roster fixture cannot bypass suppression.");
+            Assertions.Equal(ArmoredDinosaurRulesPolicy.TriceratopsKey,
+                broad.Creature.Key,
+                "The broad released-roster fixture now selects the published route.");
             bool crossScopeRejected = false;
             try
             {
@@ -483,6 +480,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Sprint18RunFullAttack",
                 "Sprint23NativeChargeCommand",
                 "Sprint23NativeTrampleCommand",
+                "SummonVisibilityCatalog.IsPublished",
                 "new UnitUseAbility",
                 "UnitActionController",
                 "nativeEconomy",

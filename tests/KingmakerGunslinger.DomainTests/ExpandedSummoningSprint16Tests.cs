@@ -354,13 +354,16 @@ namespace KingmakerGunslinger.DomainTests
             if (mine.Any(value => !SummonVisibilityCatalog.IsPublished(value)))
                 throw new InvalidOperationException(
                     "Every qualified Dire Crocodile placement must publish.");
-            Assertions.Equal(1025, all.Count(value =>
-                    value.Creature.Key != DireKey && !SerpentineRulesPolicy.IsSnake(value.Creature.Key) &&
+            Assertions.Equal(
+                SummonVisibilityCatalog.PublishedLogicalPlacementCount -
+                    mine.Length,
+                all.Count(value => value.Creature.Key != DireKey &&
                     SummonVisibilityCatalog.IsPublished(value)),
-                "Dire publication must preserve all 970 previously published roots.");
-            Assertions.Equal(1031, all.Count(value => !SerpentineRulesPolicy.IsSnake(value.Creature.Key) &&
-                    SummonVisibilityCatalog.IsPublished(value)),
-                "Later snake, ape and four-armed publications preserve the exact completed Sprint16 surface.");
+                "Dire Crocodile's six roots coexist with every other published route.");
+            Assertions.Equal(
+                SummonVisibilityCatalog.PublishedLogicalPlacementCount,
+                all.Count(SummonVisibilityCatalog.IsPublished),
+                "Later qualified publications preserve the completed Sprint 16 surface.");
             // Its own tier is a single creature, the next is 1d3, the rest
             // 1d4+1 - the same quantity rule every creature follows.
             foreach (SummonFamily family in new[] { SummonFamily.Monster,
