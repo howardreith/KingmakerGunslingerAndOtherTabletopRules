@@ -11,6 +11,7 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprint23Tests
     {
         internal const int AppendedLedgerIdentities = 33;
+        internal const int ActiveLedgerIdentities = 32;
 
         private static readonly string[] PrivateTail = {
             ArmoredDinosaurRulesPolicy.TriceratopsGoreSymbol,
