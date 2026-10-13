@@ -2,6 +2,7 @@ using System;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Enums;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
@@ -20,6 +21,8 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintItemWeapon Gore;
         public int AdditionalDiceRolls;
         public int AdditionalDamageBonus;
+        public bool DuplicateLiveDamageDice;
+        public bool AddHalfLiveStrengthBonus;
 
         public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt)
         {
@@ -32,16 +35,24 @@ namespace KingmakerGunslinger.Summoning
                 !evt.AttackWithWeapon.IsFirstAttack ||
                 evt.AttackWithWeapon.IsAttackOfOpportunity ||
                 !Owner.HasFact(BlueprintRoot.Instance.SystemMechanics.ChargeBuff) ||
-                AdditionalDiceRolls <= 0 || AdditionalDamageBonus < 0) return;
+                (!DuplicateLiveDamageDice && AdditionalDiceRolls <= 0) ||
+                (!AddHalfLiveStrengthBonus && AdditionalDamageBonus < 0))
+                return;
 
             DiceFormula baseDice = evt.WeaponDamageDiceOverride ?? evt.Weapon.Damage;
             if (baseDice.Rolls <= 0) return;
+            if (DuplicateLiveDamageDice)
+                baseDice = WeaponDamageScaleTable.Scale(baseDice, Size.Huge,
+                    evt.WeaponSize, evt.Weapon.Blueprint);
             evt.WeaponDamageDiceOverride = new DiceFormula(
-                baseDice.Rolls + AdditionalDiceRolls, baseDice.Dice);
-            // These are printed final dice for this exact Large summon.
+                DuplicateLiveDamageDice ? baseDice.Rolls * 2 :
+                    baseDice.Rolls + AdditionalDiceRolls, baseDice.Dice);
+            // These are the printed final dice for this exact configured summon.
             // Kingmaker otherwise scales an override again after fact logic.
             evt.DoNotScaleDamage = true;
-            evt.AddBonusDamage(AdditionalDamageBonus);
+            evt.AddBonusDamage(AddHalfLiveStrengthBonus ?
+                ArmoredDinosaurRulesPolicy.PowerfulChargeLiveBonus(
+                    Owner.Stats.Strength.Bonus) : AdditionalDamageBonus);
         }
 
         public override void OnEventDidTrigger(RuleCalculateWeaponStats evt) { }

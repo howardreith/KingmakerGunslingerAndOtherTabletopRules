@@ -259,6 +259,7 @@ namespace KingmakerGunslinger.Blueprints
                 { "WeaponFocusClaw", "153937f44fcd42a429a286a10babd82d" },
                 { "ImprovedCriticalBite", "8388e2e50bb779840adc8129b3d63bf1" },
                 { "ImprovedCriticalClaw", "76a335b7d69691c4e8376f9379338778" },
+                { "ImprovedCriticalGore", "ece108dcfeedc7a4bade86b238fa7659" },
                 { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
                 { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
                 { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" },
@@ -268,6 +269,7 @@ namespace KingmakerGunslinger.Blueprints
                 { "ElectricityImmunity", "cd1e5ab641a833c49994aff99db98952" },
                 { "WeaponFocusSlam", "8c046dfa8d1c64247af0e830a5909510" },
                 { "WeaponFocusTail", "77680337beba8df439793669390cd638" },
+                { "WeaponFocusGore", "1ee54cb77a9dbdb49891c2c2f31d6c1c" },
                 { "ImprovedBullRush", "b3614622866fe7046b787a548bbd7f59" },
                 { "AcidResistance20", "416386972c8de2e42953533c4946599a" },
                 { "Blindsight", "236ec7f226d3d784884f066aa4be1570" },
@@ -497,6 +499,7 @@ namespace KingmakerGunslinger.Blueprints
                         library, guid,
                         "exact native goblinoid unit type")).ToArray());
             ConfigureAnkylosaurus(library, bySymbol);
+            ConfigureArmoredDinosaurs(library, bySymbol);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -1476,7 +1479,8 @@ namespace KingmakerGunslinger.Blueprints
                 profile.Key == GirallonRulesPolicy.GirallonKey ||
                 profile.Key == GiantScorpionRulesPolicy.GiantScorpionKey ||
                 profile.Key == GiantCrabRulesPolicy.GiantCrabKey ||
-                profile.Key == AnkylosaurusRulesPolicy.Key;
+                profile.Key == AnkylosaurusRulesPolicy.Key ||
+                ArmoredDinosaurRulesPolicy.UsesExactRanks(profile.Key);
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
@@ -1505,6 +1509,24 @@ namespace KingmakerGunslinger.Blueprints
                     ranks.MobilityRanks = ranks.StealthRanks = 0;
                     ranks.PerceptionRanks = AnkylosaurusRulesPolicy.PerceptionRanks;
                     ranks.BaseHitPoints = AnkylosaurusRulesPolicy.BaseRacialHitPoints;
+                }
+                else if (profile.Key ==
+                    ArmoredDinosaurRulesPolicy.TriceratopsKey)
+                {
+                    ranks.MobilityRanks = ranks.StealthRanks = 0;
+                    ranks.PerceptionRanks = ArmoredDinosaurRulesPolicy
+                        .TriceratopsPerceptionRanks;
+                    ranks.BaseHitPoints = ArmoredDinosaurRulesPolicy
+                        .TriceratopsBaseRacialHitPoints;
+                }
+                else if (profile.Key ==
+                    ArmoredDinosaurRulesPolicy.StegosaurusKey)
+                {
+                    ranks.MobilityRanks = ranks.StealthRanks = 0;
+                    ranks.PerceptionRanks = ArmoredDinosaurRulesPolicy
+                        .StegosaurusPerceptionRanks;
+                    ranks.BaseHitPoints = ArmoredDinosaurRulesPolicy
+                        .StegosaurusBaseRacialHitPoints;
                 }
                 else if (profile.Key == GirallonRulesPolicy.GirallonKey)
                 {
@@ -1608,6 +1630,14 @@ namespace KingmakerGunslinger.Blueprints
                     GiantCrabUnitTypeSymbol);
             else if (profile.Key == AnkylosaurusRulesPolicy.Key)
                 unit.Type = Require<BlueprintUnitType>(bySymbol, AnkylosaurusRulesPolicy.UnitTypeSymbol);
+            else if (profile.Key ==
+                ArmoredDinosaurRulesPolicy.TriceratopsKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    ArmoredDinosaurRulesPolicy.TriceratopsUnitTypeSymbol);
+            else if (profile.Key ==
+                ArmoredDinosaurRulesPolicy.StegosaurusKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    ArmoredDinosaurRulesPolicy.StegosaurusUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
@@ -1680,6 +1710,15 @@ namespace KingmakerGunslinger.Blueprints
                     ? Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.StunFeatureSymbol)
                     : fact == "AnkylosaurusChassis"
                     ? Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.ChassisFeatureSymbol)
+                    : fact == "TriceratopsChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        ArmoredDinosaurRulesPolicy.TriceratopsChassisSymbol)
+                    : fact == "StegosaurusChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        ArmoredDinosaurRulesPolicy.StegosaurusChassisSymbol)
+                    : fact == "StegosaurusTrip"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        ArmoredDinosaurRulesPolicy.StegosaurusTripSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
@@ -1814,6 +1853,10 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, GiantScorpionClaw1d6Symbol);
             if (key == "GiantScorpionSting1d6") return Require<BlueprintItemWeapon>(
                 bySymbol, GiantScorpionSting1d6Symbol);
+            if (key == "TriceratopsGore2d10") return Require<BlueprintItemWeapon>(
+                bySymbol, ArmoredDinosaurRulesPolicy.TriceratopsGoreSymbol);
+            if (key == "StegosaurusTail4d6") return Require<BlueprintItemWeapon>(
+                bySymbol, ArmoredDinosaurRulesPolicy.StegosaurusTailSymbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }

@@ -80,12 +80,14 @@ namespace KingmakerGunslinger.Summoning
         // guarded review passed, which is what every creature in this series
         // has had to do, and publication was the removal of this one key and
         // nothing else.
+        // Sprint 23 registers both armored dinosaurs once and withholds all
+        // twelve roots until the complete hidden candidate qualifies.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(Array.Empty<string>(),
+            new HashSet<string>(new[] { "triceratops", "stegosaurus" },
                 StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1063;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 1075;
+        internal const int SuppressedLogicalPlacementCount = 12;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

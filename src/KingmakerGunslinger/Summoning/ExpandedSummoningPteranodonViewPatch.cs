@@ -129,7 +129,11 @@ namespace KingmakerGunslinger.Summoning
                 { BebelithBlueprintName, Sprint14BonePolicy.BebelithKey },
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
                 { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" },
-                { AnkylosaurusVisualPolicy.BlueprintName, AnkylosaurusRulesPolicy.Key }
+                { AnkylosaurusVisualPolicy.BlueprintName, AnkylosaurusRulesPolicy.Key },
+                { ArmoredDinosaurVisualPolicy.TriceratopsBlueprintName,
+                    ArmoredDinosaurRulesPolicy.TriceratopsKey },
+                { ArmoredDinosaurVisualPolicy.StegosaurusBlueprintName,
+                    ArmoredDinosaurRulesPolicy.StegosaurusKey }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -329,6 +333,15 @@ namespace KingmakerGunslinger.Summoning
                 if (!PteranodonAssetRuntime.TryGetAnkylosaurusVisual(out source, out boneNames, out albedo, out status))
                     return Fallback(status);
             }
+            else if (ArmoredDinosaurVisualPolicy.Handles(
+                attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetArmoredDinosaurVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
             else if (UngulateKeys.Contains(attachment.VisualKey))
             {
                 string status;
@@ -431,7 +444,9 @@ namespace KingmakerGunslinger.Summoning
                                     Sprint14InsectKeys.Contains(
                                         attachment.VisualKey) ||
                                     IsCrocodilian(attachment.VisualKey) ||
-                                    attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
+                                    attachment.VisualKey == AnkylosaurusRulesPolicy.Key ||
+                                    ArmoredDinosaurVisualPolicy.Handles(
+                                        attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
                 mesh.name = visualName;
@@ -754,7 +769,9 @@ namespace KingmakerGunslinger.Summoning
                  !Sprint13CreatureKeys.Contains(attachment.VisualKey) &&
                  !Sprint14InsectKeys.Contains(
                     attachment.VisualKey) &&
-                 !IsCrocodilian(attachment.VisualKey))) return;
+                 !IsCrocodilian(attachment.VisualKey) &&
+                 !ArmoredDinosaurVisualPolicy.Handles(
+                    attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
                     ? GiantWaspVisualName

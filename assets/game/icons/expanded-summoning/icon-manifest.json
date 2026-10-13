@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  115,
+    "count":  117,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1032,6 +1032,24 @@
                       "key":  "giant-crab",
                       "file":  "giant-crab.png",
                       "sha256":  "f5d2496f8b9bb100ffd628ee0eb41f3796898b5cf0025fde57fb200839ca9147",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "triceratops",
+                      "file":  "triceratops.png",
+                      "sha256":  "b261aa99e47d40e55fd794799906ca53a92b17c37736f52da1a017eb0201dc66",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "stegosaurus",
+                      "file":  "stegosaurus.png",
+                      "sha256":  "dfa37b0bdff97f5bda5a2772a64096ad9c39f283d7618fb99c9b8e34f15890e4",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
