@@ -2,6 +2,8 @@
 
 `0.0.152-expanded-summoning-sprint23`
 
+[Stable release and downloads](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.152)
+
 This patch adds Triceratops and Stegosaurus to Expanded Summoning while
 preserving every previously released creature, route, template child, GUID and
 save identity. Triceratops appears on Summon Monster VI and Summon Nature's
@@ -31,11 +33,19 @@ retained native wrappers, publication exposes 1,104 visible choices.
 
 Accepted engine limitations are `PASSIVE_CREATURE_SENSES_UNMODELED` for
 low-light vision and scent, `IMPROVED_OVERRUN_NATIVE_CONSUMER_UNAVAILABLE` for
-Stegosaurus, and `RUN_NATIVE_SUMMON_AI_DISPOSITION` for Triceratops. No
-substitute senses, general overrun framework or invented Run action is added.
+Stegosaurus, `RUN_NATIVE_SUMMON_AI_DISPOSITION` for Triceratops, and
+`HODAG_DONOR_NO_NATIVE_HIT_ANIMATION` for the Stegosaurus donor. No substitute
+senses, general overrun framework, invented Run action or synthetic Hit clip is
+added.
 The inherited trample targeting policy is enemy-aware and automatically uses
 one legal native opportunity attack at the established penalty, otherwise a
 Reflex save for half; it never applies both responses to one contact.
 
 Owner aesthetic approval remains `NOT_PERFORMED_NONBLOCKING`. Sprint 24 is not
 part of this release.
+
+The release ZIP is the exact package qualified from source
+`e0d7cb863b23925cfbf1721e3965c05e811a0bd7`, with SHA-256
+`e417ad95e796bac7c312ed60e859b888b1dd2f83818ef211027e35d2c1c663db`.
+This repository copy gained only post-publication links and evidence wording;
+the package was not rebuilt. See the [full coverage record](SPRINT23-COVERAGE.md).
