@@ -1,4 +1,4 @@
-# Sprint 23: Triceratops and Stegosaurus — public source ready
+# Sprint 23: Triceratops and Stegosaurus — public inventory observer repair ready
 
 Current owner mission: [Sprint 23 contract](docs/SPRINT23-TRICERATOPS-STEGOSAURUS-MISSION.md).
 Read `AGENTS.md` and `docs/VALIDATION-POLICY.md`. Work only on HOWARD-LAPTOP.
@@ -31,10 +31,29 @@ placements, 1,075 generated placements, 29 retained native wrappers and
 1,104 visible choices. The named Sprint 23 focus passed 12/12 and the affected
 Expanded Summoning focus passed 443/443 with production compilation.
 
-Next action: run one Sprint gate for this exact public artifact, record its
-source/build/package identity, then run the affected public route/menu native
-qualification under a fresh guarded transaction. Do not repeat the already
-qualified hidden mechanics pipeline unless publication evidence invalidates it.
+Public source `e18938085f16403db43e0ae0c3b17ab1f5fc7059` passed its Sprint
+gate 2,594/2,594 and strict package validation. Its package SHA-256 was
+`c751a95784928c0097691debfbb0c2cabe30964719fde25e08148cb49e20b43d`,
+DLL SHA-256 was
+`b8ce1f7d8f9144e7ea9776d3a0463c0ffa157a9d8c52666b60b817a9851bd5b6`,
+and MVID was `2e46ce77-8a4b-4658-9414-175c2ee34cbc`.
+
+The first public high-risk inventory observation correctly failed 2 of 50
+assertions: the exact-reference census lacked Sprint 22's two owned
+Ankylosaurus AddFacts and Triceratops's two owned signature AddFacts, while
+the old chassis comparer discarded the profile-declared Ankylosaurus Stun
+fact by name prefix. Transaction
+`compat-20261013T195637Z-99f7209df96a` restored exactly. The repair adds only
+the four measured owner/fact/carrier rows, synchronizes the exact Sprint 22
+profile identities, and keeps profile-declared special facts in equality.
+Focused inventory tests passed 4/4 and Sprint 23 tests passed 12/12 with
+production compilation.
+
+Next action: commit and push this coherent observer repair, run one Sprint gate
+for the resulting exact public artifact, then rerun the affected public
+inventory observation and the Sprint 23 RTWP publication-route case under
+separate fresh guarded transactions. Do not repeat the already qualified
+hidden mechanics pipeline unless new evidence invalidates it.
 
 Baseline master remains `bda157c6c402b329f47fb0531d96b52e01514114` and stable
 v0.0.151 remains frozen. Refetch before merge/publication and select the next

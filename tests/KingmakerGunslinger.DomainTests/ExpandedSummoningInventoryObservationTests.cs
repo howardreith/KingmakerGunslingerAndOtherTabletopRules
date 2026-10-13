@@ -14,8 +14,9 @@ namespace KingmakerGunslinger.DomainTests
             // Seventeen through Sprint 17, and twenty-four more for Sprints 18
             // through 21: three for the apes, four for the Girallon and Xill,
             // six for the Giant Scorpion and eleven for this sprint's Giant
-            // Crab and overhauled Bebelith, then three exact Sprint 23 rows:
-            // one Triceratops chassis and the Stegosaurus chassis/trip facts.
+            // Crab and overhauled Bebelith, two exact Sprint 22 Ankylosaurus
+            // rows, then five exact Sprint 23 rows: Triceratops chassis,
+            // charge and trample plus the Stegosaurus chassis/trip facts.
             // The table went four sprints stale
             // because the only thing that reads it is the inventory observer,
             // and the only thing that runs the inventory observer is the
@@ -26,8 +27,8 @@ namespace KingmakerGunslinger.DomainTests
             // resolve to exactly one ledger symbol, so a row cannot qualify a
             // reference that does not exist or name one thing while pointing
             // at another.
-            Assertions.Equal(44, rows.Length, "All observed qualified project references, including Sprint 23, with no blanket prefix exception.");
-            Assertions.Equal(44, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
+            Assertions.Equal(48, rows.Length, "All observed qualified project references through Sprint 23, with no blanket prefix exception.");
+            Assertions.Equal(48, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
             var entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
             foreach (var r in rows)
             {
@@ -38,6 +39,15 @@ namespace KingmakerGunslinger.DomainTests
             }
             rows[0][2] = "foreign";
             Assertions.False(ExpandedSummoningInventoryObservationPolicy.QualifiedReferenceRows[0][2] == "foreign", "Caller cannot rewrite authority.");
+            Assertions.True(ExpandedSummoningInventoryObservationPolicy.NaturalProfileFactComparable(
+                "KMG_Summoning_Special_Ankylosaurus_Stun", true),
+                "A profile-declared special fact remains in exact chassis comparison.");
+            Assertions.False(ExpandedSummoningInventoryObservationPolicy.NaturalProfileFactComparable(
+                "KMG_Summoning_Special_Foreign", false),
+                "An unrelated special stays outside the chassis comparison for its dedicated observer.");
+            Assertions.True(ExpandedSummoningInventoryObservationPolicy.NaturalProfileFactComparable(
+                "KMG_Summoning_Natural_Ankylosaurus_Chassis", false),
+                "Ordinary natural facts remain comparable even when not expected.");
         }
 
         internal static void QualifiedReferencesRejectSpoofingAndOtherCarriers()
