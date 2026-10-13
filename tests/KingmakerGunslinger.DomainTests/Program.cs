@@ -1182,6 +1182,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint23-original-art", ExpandedSummoningSprint23Tests.OriginalBodiesAndIconsOwnExactSilhouettes),
             Case("expanded-summoning.sprint23-released-controls", ExpandedSummoningSprint23Tests.ReleasedControlsStayDistinct),
             Case("expanded-summoning.sprint23-native-scenario", ExpandedSummoningSprint23Tests.NativeReviewScenarioIsExactAndBounded),
+            Case("expanded-summoning.sprint23-persistence-hidden-selection", ExpandedSummoningSprint23Tests.HiddenPersistenceSelectsRegisteredCreatureRoutes),
             Case("expanded-summoning.sprint23-native-observer", ExpandedSummoningSprint23Tests.NativeReviewObservesRealCommandsAndControls),
             Case("expanded-summoning.sprint23-native-scripts", ExpandedSummoningSprint23Tests.NativeReviewScriptsRejectLooseAdmission),
             Case("expanded-summoning.sprint19-four-claw-rend", Sprint19RulesTests.FourClawRendNeedsAllFourClawsOnOneTarget),
