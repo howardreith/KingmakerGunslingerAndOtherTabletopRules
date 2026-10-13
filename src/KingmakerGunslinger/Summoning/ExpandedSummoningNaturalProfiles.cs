@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 54 || Values.Select(value => value.Key)
+            if (Values.Length != 56 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -331,6 +331,24 @@ namespace KingmakerGunslinger.Summoning
             PrimateRulesPolicy.Validate();
             PrimateVisualPolicy.Validate();
             GirallonRulesPolicy.Validate();
+            NaturalSummonProfile triceratops = For(
+                ArmoredDinosaurRulesPolicy.TriceratopsKey);
+            NaturalSummonProfile stegosaurus = For(
+                ArmoredDinosaurRulesPolicy.StegosaurusKey);
+            if (triceratops.HitDieClass != "Animal" ||
+                triceratops.HitDice != 14 || triceratops.Size != "Huge" ||
+                triceratops.PrimaryWeapon != "TriceratopsGore2d10" ||
+                triceratops.AdditionalWeapons.Count != 0 ||
+                !triceratops.Skills.SequenceEqual(new[] { "Perception" }) ||
+                stegosaurus.HitDieClass != "Animal" ||
+                stegosaurus.HitDice != 12 || stegosaurus.Size != "Huge" ||
+                stegosaurus.PrimaryWeapon != "StegosaurusTail4d6" ||
+                stegosaurus.AdditionalWeapons.Count != 0 ||
+                !stegosaurus.Skills.SequenceEqual(new[] { "Perception" }) ||
+                stegosaurus.Facts.Contains("AnkylosaurusStun"))
+                throw new InvalidOperationException(
+                    "Sprint 23 armored-dinosaur profile changed.");
+            ArmoredDinosaurRulesPolicy.Validate();
         }
 
         private static NaturalSummonProfile[] Build()
@@ -552,6 +570,29 @@ namespace KingmakerGunslinger.Summoning
                     A("Perception"),
                     "Stun (Ex) uses one Fortitude save, with DC based on current Strength and racial HD; an ordinary failed save dazes for one round, and a confirmed critical failed save stuns for 1d4 rounds instead. Fortitude is this mission's explicit save-type interpretation.",
                     "Improved Overrun remains omitted: no concrete native feat was found in the standalone 2.1.7b library and no summon command consumer was qualified. The native Overrun maneuver enum exists; no general overrun system is substituted.",
+                    "Low-light vision and scent retain OwnerAcceptedEngineLimitation PASSIVE_CREATURE_SENSES_UNMODELED; no substitute senses are granted."),
+                PK("triceratops", "Triceratops", "Animal", 14, "Huge",
+                    26, 9, 19, 2, 12, 7, 30, 14,
+                    "TriceratopsGore2d10", Array.Empty<string>(),
+                    A("GreatFortitude", "ImprovedBullRush",
+                        "ImprovedCriticalGore", "PowerAttack",
+                        "SkillFocusPerception", "WeaponFocusGore",
+                        "TripDefenseFourLegs", "TriceratopsChassis"),
+                    A("Perception"),
+                    "Sprint 23 frozen adult profile: one primary gore at 2d10+12; powerful charge uses the eligible first native charge strike at 4d10+16; Trample is a separate full-round path action at 1d8+12 and live DC 25.",
+                    "The printed Improved Critical feat omits its weapon while the compact gore line omits a threat range. The feat is applied to the sole printed attack, gore, through the native exact feat; no multiplier or damage is invented.",
+                    "Run remains omitted because the installed 2.1.7b library and released summon carriers expose no bounded concrete feat/consumer that can be qualified without inventing movement behavior.",
+                    "Low-light vision and scent retain OwnerAcceptedEngineLimitation PASSIVE_CREATURE_SENSES_UNMODELED; no substitute senses are granted."),
+                PK("stegosaurus", "Stegosaurus", "Animal", 12, "Huge",
+                    27, 14, 17, 2, 13, 10, 30, 12,
+                    "StegosaurusTail4d6", Array.Empty<string>(),
+                    A("Cleave", "GreatFortitude", "ImprovedInitiative",
+                        "PowerAttack", "WeaponFocusTail",
+                        "TripDefenseFourLegs", "StegosaurusChassis",
+                        "StegosaurusTrip"), A("Perception"),
+                    "Sprint 23 frozen adult profile: one primary spiked-tail attack at 4d6+12. Every exact resolved hit may make at most one native Trip combat maneuver against that target; miss, immunity, illegal size, an already-prone target and duplicate callbacks make none.",
+                    "Improved Overrun retains Sprint 22's verified engine limitation: the native feat identity carries prerequisites but no mechanical consumer, and no general overrun system is substituted. Cleave is the native feat/action, never a passive tail burst.",
+                    "No Ankylosaurus daze, stun, critical rider, trample, injury poison or automatic knockdown is present.",
                     "Low-light vision and scent retain OwnerAcceptedEngineLimitation PASSIVE_CREATURE_SENSES_UNMODELED; no substitute senses are granted."),
                 P("dire-bear", "Dire Bear", "Animal", 10, "Large",
                     25, 13, 21, 2, 12, 10, 40, 8, "Bite1d8",

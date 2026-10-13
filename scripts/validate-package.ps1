@@ -47,6 +47,7 @@ try {
         'docs\RELEASE-NOTES-0.0.145.md',
         'docs\RELEASE-NOTES-0.0.146.md',
         'docs\RELEASE-NOTES-0.0.151.md',
+        'docs\RELEASE-NOTES-0.0.152.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -122,6 +123,10 @@ try {
         'assets\sprint21-arthropods\bebelith-albedo.png',
         'assets\ankylosaurus\ankylosaurus-mesh.json',
         'assets\ankylosaurus\ankylosaurus-albedo.png',
+        'assets\sprint23-armored-dinosaurs\triceratops-mesh.json',
+        'assets\sprint23-armored-dinosaurs\triceratops-albedo.png',
+        'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json',
+        'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -149,7 +154,7 @@ try {
     foreach ($entry in $primateBodies.GetEnumerator()) {
         $path = Join-Path $modDirectory $entry.Key
         if ((Get-KmgSha256 -Path $path) -cne $entry.Value) {
-            throw "A packaged Sprint 18 original ape body differs from its reviewed export: $($entry.Key)"
+            throw "A packaged protected original body differs from its reviewed export: $($entry.Key)"
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
@@ -180,7 +185,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 115 -or @($summonManifest.icons).Count -ne 115) {
+    if ($summonManifest.count -ne 117 -or @($summonManifest.icons).Count -ne 117) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'

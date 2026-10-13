@@ -291,7 +291,10 @@
     <Compile Include="Sprint20RulesTests.cs" />
     <Compile Include="Sprint21RulesTests.cs" />
     <Compile Include="Sprint22RulesTests.cs" />
+    <Compile Include="ExpandedSummoningSprint23Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AnkylosaurusRulesPolicy.cs"><Link>Summoning\AnkylosaurusRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ArmoredDinosaurRulesPolicy.cs"><Link>Summoning\ArmoredDinosaurRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ArmoredDinosaurVisualPolicy.cs"><Link>Summoning\ArmoredDinosaurVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AnkylosaurusTailImpactPolicy.cs"><Link>Summoning\AnkylosaurusTailImpactPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AnkylosaurusVisualPolicy.cs"><Link>Summoning\AnkylosaurusVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint22DonorSurveyPolicy.cs"><Link>RuntimeTesting\Sprint22DonorSurveyPolicy.cs</Link></Compile>

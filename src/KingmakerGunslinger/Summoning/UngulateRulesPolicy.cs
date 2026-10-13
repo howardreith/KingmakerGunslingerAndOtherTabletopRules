@@ -79,7 +79,8 @@ namespace KingmakerGunslinger.Summoning
         internal UngulateRulesProfile(string key, int hitDice, int strength,
             int goreDiceCount, int goreDieSides, int trampleDiceCount,
             int trampleDieSides, int chargeDiceCount, int chargeDieSides,
-            int chargeBonus, bool stampede)
+            int chargeBonus, bool stampede, bool liveTrampleMath = false,
+            bool livePowerfulChargeMath = false)
         {
             Key = key;
             HitDice = hitDice;
@@ -92,6 +93,8 @@ namespace KingmakerGunslinger.Summoning
             ChargeDieSides = chargeDieSides;
             ChargeBonus = chargeBonus;
             Stampede = stampede;
+            LiveTrampleMath = liveTrampleMath;
+            LivePowerfulChargeMath = livePowerfulChargeMath;
         }
 
         internal string Key { get; private set; }
@@ -115,6 +118,8 @@ namespace KingmakerGunslinger.Summoning
         internal int ChargeDiceIncrement
         { get { return HasPowerfulCharge ? ChargeDiceCount - GoreDiceCount : 0; } }
         internal bool Stampede { get; private set; }
+        internal bool LiveTrampleMath { get; private set; }
+        internal bool LivePowerfulChargeMath { get; private set; }
 
         internal bool StampedeActive(int adjacentStampedingCreatures)
         { return Stampede && adjacentStampedingCreatures >= 3; }
@@ -129,6 +134,21 @@ namespace KingmakerGunslinger.Summoning
 
         internal int TrampleSaveDc(int adjacentStampedingCreatures)
         { return TrampleDc + (StampedeActive(adjacentStampedingCreatures) ? 2 : 0); }
+
+        internal int TrampleBonusFor(int liveStrengthModifier)
+        {
+            return LiveTrampleMath ? liveStrengthModifier * 3 / 2 :
+                TrampleBonus;
+        }
+
+        internal int TrampleSaveDc(int adjacentStampedingCreatures,
+            int liveHitDice, int liveStrengthModifier)
+        {
+            int baseline = LiveTrampleMath ?
+                10 + liveHitDice / 2 + liveStrengthModifier : TrampleDc;
+            return baseline +
+                (StampedeActive(adjacentStampedingCreatures) ? 2 : 0);
+        }
 
         internal bool AppliesPowerfulCharge(bool isCharge, bool isFirstAttack,
             bool isGore, bool isAttackOfOpportunity)
@@ -163,7 +183,13 @@ namespace KingmakerGunslinger.Summoning
             // beetle has no powerful charge and no Stampede, which belongs to
             // the herd ungulates alone.
             new UngulateRulesProfile("giant-stag-beetle", 7, 19, 2, 8,
-                1, 6, 0, 0, 0, false)
+                1, 6, 0, 0, 0, false),
+            // Sprint 23. This reuses the qualified path/contact/response
+            // carrier, not ungulate taxonomy. Triceratops has no Stampede.
+            // Its Strength and racial-HD contributions are read live; the
+            // older five rows retain their frozen released arithmetic.
+            new UngulateRulesProfile("triceratops", 14, 26, 2, 10,
+                1, 8, 4, 10, 16, false, true, true)
         };
 
         internal static IReadOnlyList<UngulateRulesProfile> All
@@ -174,8 +200,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 5 || Values.Select(value => value.Key)
-                    .Distinct(StringComparer.Ordinal).Count() != 5 ||
+            if (Values.Length != 6 || Values.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count() != 6 ||
                 Values.Any(value => value.HitDice < 1 || value.Strength < 1 ||
                     value.GoreDiceCount < 1 || value.GoreDieSides < 1 ||
                     !value.HasTrample && !value.HasPowerfulCharge))
