@@ -120,8 +120,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _prepare.Tick();
                     CombatController combat = Game.Instance
                         .TurnBasedCombatController;
+                    UnitEntityData[] tickUnits = NativeProfileUnits();
                     if (CombatController.IsInTurnBasedCombat())
                     {
+                        UnitEntityData[] uncovered = combat.SortedUnits
+                            .Where(value => value != null &&
+                                !value.Destroyed && value.IsInState &&
+                                value.Descriptor != null &&
+                                !tickUnits.Any(owned =>
+                                    ReferenceEquals(owned, value)))
+                            .ToArray();
+                        if (uncovered.Length != 0)
+                            throw new InvalidOperationException(
+                                "unit=" + string.Join(",", uncovered
+                                    .Select(value => value.UniqueId)
+                                    .ToArray()) +
+                                ";predicate=native-clock-turn-order-coverage" +
+                                ";event=turn-based-controller-tick" +
+                                ";owner=request-local-native-profile");
                         combat.Tick();
                         combat.TickTime();
                     }
@@ -130,7 +146,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Game.Instance.Player.GameTime +=
                             TimeSpan.FromSeconds(.25d);
                     }
-                    foreach (UnitEntityData unit in OwnedUnits())
+                    foreach (UnitEntityData unit in tickUnits)
                     {
                         _cooldowns.TickExact(unit);
                         _buffs.TickExact(unit);
@@ -175,13 +191,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
 
-            private IEnumerable<UnitEntityData> OwnedUnits()
+            /// <summary>
+            /// Every actor advanced by the request-local native clock. The
+            /// save-free profile's real party anchor remains in native turn
+            /// order alongside fixture-created actors, so omitting it leaves
+            /// its combat cooldown frozen and prevents the round from ending.
+            /// PartyBefore is an exact intake snapshot, not a world census.
+            /// </summary>
+            private UnitEntityData[] NativeProfileUnits()
             {
                 return _fixture.Created.Concat(new[] {
-                    _fixture.Caster, _fixture.Hostile })
+                    _fixture.Caster, _fixture.Hostile }).Concat(
+                        _fixture.PartyBefore.OfType<UnitEntityData>())
                     .Where(value => value != null && !value.Destroyed &&
                         value.IsInState && value.Descriptor != null)
                     .Distinct().ToArray();
+            }
+
+            internal JObject DescribeTurnCoverage()
+            {
+                UnitEntityData[] tickUnits = NativeProfileUnits();
+                UnitEntityData[] sorted = Game.Instance
+                    .TurnBasedCombatController.SortedUnits
+                    .Where(value => value != null && !value.Destroyed &&
+                        value.IsInState && value.Descriptor != null)
+                    .ToArray();
+                return new JObject {
+                    ["profileParty"] = new JArray(_fixture.PartyBefore
+                        .OfType<UnitEntityData>().Select(value =>
+                            value.UniqueId)),
+                    ["tickUnits"] = new JArray(tickUnits.Select(value =>
+                        value.UniqueId)),
+                    ["liveSortedUnits"] = new JArray(sorted.Select(value =>
+                        value.UniqueId)),
+                    ["uncoveredLiveTurnUnits"] = new JArray(sorted
+                        .Where(value => !tickUnits.Any(owned =>
+                            ReferenceEquals(owned, value)))
+                        .Select(value => value.UniqueId))
+                };
             }
 
             public void Dispose()
@@ -1534,6 +1581,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["roundAfter"]=turnController.RoundNumber,
                             ["endedTurns"]=endedTurns,
                             ["turnTransitions"]=turnTransitions,
+                            ["clockCoverage"]=_sprint22Clock?
+                                .DescribeTurnCoverage(),
                             ["nativeElapsedSeconds"]=Game.Instance.TimeController.GameTime.TotalSeconds-nativeStarted,
                             ["wallSeconds"]=clock.Elapsed.TotalSeconds },"Critical stun expires naturally and native victim actions return.");
                 }
@@ -1687,13 +1736,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unrelated.Remove();unrelated=null;
                 double started=Game.Instance.TimeController.GameTime.TotalSeconds;
                 var clock=System.Diagnostics.Stopwatch.StartNew();
+                CombatController turnController=Game.Instance
+                    .TurnBasedCombatController;
+                int roundBefore=turnController.RoundNumber;
+                int endedTurns=0;
+                string lastTurnState=null;
+                var turnTransitions=new JArray();
                 while (target.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(value=>effects.Contains(value)) && clock.Elapsed.TotalSeconds<45)
                 {
                     Game.Instance.IsPaused=false;
                     if (CombatController.IsInTurnBasedCombat())
                     {
-                        var turn=Game.Instance.TurnBasedCombatController.CurrentTurn;
-                        if (turn!=null) Sprint18EndTurn(turn);
+                        TurnController turn=turnController.CurrentTurn;
+                        string state="round="+turnController.RoundNumber+
+                            ";unit="+(turn?.Unit?.UniqueId ?? "<none>")+
+                            ";status="+(turn==null ? "<none>" :
+                                turn.Status.ToString());
+                        if(state!=lastTurnState)
+                        {
+                            turnTransitions.Add(state);
+                            lastTurnState=state;
+                        }
+                        if(turn!=null && (turn.Status==
+                                TurnController.TurnStatus.Preparing ||
+                            turn.Status==
+                                TurnController.TurnStatus.Acting))
+                        {
+                            Sprint18EndTurn(turn);
+                            endedTurns++;
+                        }
                     }
                     yield return 0;
                 }
@@ -1704,6 +1775,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint22Check("natural-expiry-actions-"+(turnBased ? "turn-based":"rtwp"),expired && action!=null && action.IsFinished,
                     new JObject { ["unit"]=target.UniqueId,["event"]="native-time-expiration-and-command",["owner"]="victim-side-native-buffs",
                         ["expired"]=expired,["canAct"]=target.Descriptor.State.CanAct,["commandFinished"]=action?.IsFinished,
+                        ["roundBefore"]=roundBefore,
+                        ["roundAfter"]=turnController.RoundNumber,
+                        ["endedTurns"]=endedTurns,
+                        ["turnTransitions"]=turnTransitions,
+                        ["clockCoverage"]=_sprint22Clock?
+                            .DescribeTurnCoverage(),
                         ["nativeElapsedSeconds"]=Game.Instance.TimeController.GameTime.TotalSeconds-started,
                         ["wallSeconds"]=clock.Elapsed.TotalSeconds },"Native finite effects expire and victim commands return in this combat mode.");
             }
