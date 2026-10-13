@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint23TriceratopsStegosaurus",
+  "status": "IN_PROGRESS",
+  "host": "HOWARD-LAPTOP",
+  "branch": "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
+  "pr": null,
+  "startedUtc": "2026-10-13T12:40:40.0761196Z",
+  "masterBase": "bda157c6c402b329f47fb0531d96b52e01514114",
+  "stableBaseline": {
+    "version": "0.0.151",
+    "productMerge": "30f41dfb76a8264fdfd3238c9cba05a4c131f3bf",
+    "testedSource": "d42e33ccc5b282daad594836b1defd4f680990e5",
+    "zipSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67"
+  },
+  "intake": {
+    "hostnameVerified": true,
+    "hostnameObserved": "Howard-Laptop",
+    "originMasterVerified": true,
+    "newerSprint23BranchFound": false,
+    "primaryCheckoutWasClean": true,
+    "otherWorktreesPreserved": true,
+    "gameProcessAbsent": true,
+    "steamPreserved": true,
+    "activeRuntimeTransaction": "PENDING_PRELAUNCH_EXACT_AUDIT",
+    "currentHumanStateSnapshot": "PENDING_FIRST_NATIVE_TRANSACTION",
+    "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
+    "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18f5afb",
+    "referencesByteMatched": true
+  },
+  "pushPolicyChange": {
+    "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "beforeSha256": "aa763ebaf6d55d9fd268627ec96cfe0f484717b840dff234643493682e7b49d5",
+    "afterSha256": "1aae261a6af151c8c065027ac692f793c4920395ed4dd3f19cabc48f89705ee2",
+    "addedBranches": [
+      "codex/expanded-summoning-sprint23-triceratops-stegosaurus",
+      "codex/expanded-summoning-sprint23-release-records"
+    ],
+    "otherEdits": false
+  },
+  "charter": {
+    "authority": "Owner-supplied Sprint 23 charter excerpt; local document was unavailable and reproduced scope is sufficient",
+    "authorizedSprint": 23,
+    "title": "Armored Dinosaurs — Triceratops and Stegosaurus",
+    "dependency": "Sprint 22",
+    "sprint24Started": false,
+    "excluded": ["Deinonychus", "Tyrannosaurus", "sauropods", "animal companions", "mounted combat", "new phase"]
+  },
+  "sourceContract": {
+    "edition": "Pathfinder First Edition adult monster entries",
+    "sourceUrls": [
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Triceratops",
+      "https://legacy.aonprd.com/bestiary/dinosaur.html#dinosaur-stegosaurus",
+      "https://aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Monster%206",
+      "https://aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Nature%27s%20Ally%206",
+      "https://legacy.aonprd.com/bestiary/universalMonsterRules.html",
+      "https://www.aonprd.com/FeatDisplay.aspx?ItemName=Improved%20Critical"
+    ],
+    "triceratops": {
+      "alignment": "N", "type": "animal", "size": "Huge",
+      "hitDice": "14d8+56", "hitPoints": 119,
+      "armorClass": [21, 7, 21], "saves": [15, 8, 5],
+      "abilities": [26, 9, 19, 2, 12, 7],
+      "bab": 10, "cmb": 20, "cmd": 29, "cmdVsTrip": 33,
+      "speedFeet": 30, "spaceFeet": 15, "reachFeet": 15,
+      "attack": "gore +17, 2d10+12",
+      "powerfulCharge": "gore 4d10+16",
+      "trample": "1d8+12, Reflex DC 25",
+      "perception": 24,
+      "feats": ["Great Fortitude", "Improved Bull Rush", "Improved Critical (gore inferred)", "Power Attack", "Run", "Skill Focus (Perception)", "Weapon Focus (gore)"],
+      "senses": ["low-light vision", "scent"]
+    },
+    "stegosaurus": {
+      "alignment": "N", "type": "animal", "size": "Huge",
+      "hitDice": "12d8+36", "hitPoints": 90,
+      "armorClass": [22, 10, 20], "saves": [13, 10, 5],
+      "abilities": [27, 14, 17, 2, 13, 10],
+      "bab": 9, "cmb": 19, "cmd": 31, "cmdVsTrip": 35,
+      "speedFeet": 30, "spaceFeet": 15, "reachFeet": 15,
+      "attack": "spiked tail +16, 4d6+12 plus trip",
+      "perception": 16,
+      "feats": ["Cleave", "Great Fortitude", "Improved Initiative", "Improved Overrun", "Power Attack", "Weapon Focus (tail)"],
+      "senses": ["low-light vision", "scent"]
+    },
+    "ambiguities": [{
+      "subject": "Triceratops Improved Critical",
+      "sourcePresentation": "Feat list gives Improved Critical without a weapon while the compact gore line omits a threat range",
+      "resolution": "Apply the feat rule to the creature's sole printed attack, gore; use 19–20/x2 unless primary errata contradicts it",
+      "inventedMultiplierOrDamage": false,
+      "primaryErrataReview": "Official Paizo Bestiary FAQ/errata search on 2026-10-13 found no Triceratops or Improved Critical correction; sole-attack gore inference retained"
+    }],
+    "adaptations": [
+      "Enemy-aware trample contact policy inherited from released CRPG adaptation",
+      "Automatic legal-AoO-else-Reflex response inherited from released CRPG adaptation",
+      "Passive low-light vision and scent remain explicitly unmodeled; no substitute senses",
+      "Improved Overrun may retain the verified Sprint 22 missing-native-consumer limitation"
+    ],
+    "forbiddenAbilities": ["bite", "separate horn attacks", "Stampede", "poison", "fear", "pounce", "Stegosaurus trample", "Stegosaurus daze or stun", "automatic Stegosaurus knockdown"]
+  },
+  "surface": {
+    "baseline": {
+      "uniqueProjectCreatures": 103, "monsterCreatures": 92, "monsterPlacements": 530,
+      "natureAllyCreatures": 91, "natureAllyPlacements": 533,
+      "generatedPlacements": 1063, "retainedNativeWrappers": 29, "visibleChoices": 1092
+    },
+    "expectedPublic": {
+      "uniqueProjectCreatures": 105, "monsterCreatures": 93, "monsterPlacements": 534,
+      "natureAllyCreatures": 93, "natureAllyPlacements": 541,
+      "generatedPlacements": 1075, "retainedNativeWrappers": 29,
+      "visibleChoices": 1104, "newLogicalRoots": 12
+    },
+    "quantityBands": {"VI": "one", "VII": "1d3", "VIII": "1d4+1", "IX": "1d4+1"},
+    "triceratops": {"summonMonsterRoots": 4, "summonNatureAllyRoots": 4, "monsterTemplateChildren": true},
+    "stegosaurus": {"summonMonsterRoots": 0, "summonNatureAllyRoots": 4, "monsterTemplateChildren": false},
+    "suppressedUntilQualified": ["Triceratops", "Stegosaurus"]
+  },
+  "reuseAudit": {
+    "sprint22FinalEvidenceRead": true,
+    "ankylosaurusTailControlRead": true,
+    "ungulateTrampleRead": true,
+    "ungulatePowerfulChargeRead": true,
+    "originalBodyLifecycleRead": true,
+    "knownTrampleTrap": "Exact command list and d6-only die dispatch require narrow extension",
+    "knownLiveMathTrap": "Fixed charge/trample fields cannot freeze Triceratops under live Strength/size/HD changes",
+    "powerAttackTrap": "BAB +10/+9 must not copy Ankylosaurus BAB +7 correction"
+  },
+  "art": {
+    "iconGuideRead": true, "iconReferenceIndexRead": true, "catalogAuthorityRead": true,
+    "sourceFamily": "assets-source/original-icons/expanded-summoning/sources",
+    "triceratops": {
+      "source": "triceratops.png",
+      "sourceSha256": "ea9cf4092ed5bd96e00138e1a471eec0aa136d78e7c3a8b81ea3a07fa4695e40",
+      "promptIntent": "Forward three-quarter horn-led charge, full frill, not a rhinoceros",
+      "export": "PENDING"
+    },
+    "stegosaurus": {
+      "source": "stegosaurus.png",
+      "sourceSha256": "da97b11601d76fdbb5456ec413ebf32cfd3fd6d0432db46f2f0bef5526978d7f",
+      "promptIntent": "Side three-quarter plate silhouette and long four-spiked tail, no club",
+      "export": "PENDING"
+    },
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING"
+  },
+  "plan": {
+    "ordinaryTargetMinutes": 15,
+    "ordinaryCeilingMinutes": 30,
+    "phases": [
+      {"name": "contract-reuse", "targetMinutes": 30, "exit": "Frozen source contract, identity plan, event/lifecycle reuse map and nonzero focused selection"},
+      {"name": "art", "targetMinutes": 75, "exit": "Deterministic editable bodies/albedos/icons and offline anatomy/contact/camera reviews"},
+      {"name": "focused-implementation", "targetMinutes": 120, "exit": "Hidden profiles/routes/mechanics/assets with focused production compile and corruption controls"},
+      {"name": "candidate-native-qualification", "targetMinutes": 240, "exit": "One frozen Sprint gate plus mandatory RTWP/TB/profile/route/art/load/module/compatibility coverage"},
+      {"name": "publication-release-restoration", "targetMinutes": 120, "exit": "Public artifact qualified, PR merged, next stable verified from download, machine restored, records synchronized"}
+    ],
+    "focusedFilter": "expanded-summoning.sprint23",
+    "candidateGate": "One Invoke-KmgGate.ps1 -Level Sprint per coherent changed candidate",
+    "publicArtifact": "Separate exact identity and affected checks after suppression removal",
+    "noUnchangedCampaignReplay": true,
+    "safeCompletionAndRestorationExcludedFromTimingCeilings": true
+  },
+  "qualification": {
+    "hiddenCandidate": "PENDING", "publicArtifact": "PENDING", "native": "PENDING",
+    "release": "PENDING", "restoration": "PENDING"
+  },
+  "stopCondition": "RELEASED record on master, exact restoration verified, Sprint 24 not started"
+}
