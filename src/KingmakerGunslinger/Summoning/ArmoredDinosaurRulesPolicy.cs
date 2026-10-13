@@ -37,6 +37,11 @@ namespace KingmakerGunslinger.Summoning
         internal const int StegosaurusHitDice = 12;
         internal const int TriceratopsPerceptionRanks = 14;
         internal const int StegosaurusPerceptionRanks = 12;
+        // Kingmaker's native Skill Focus carrier remains +3 after ten ranks,
+        // while the tabletop feat becomes +6.  The Triceratops has fourteen
+        // real Perception ranks and owns that printed feat, so its private
+        // chassis supplies only the missing half of the feat progression.
+        internal const int TriceratopsSkillFocusCompletionBonus = 3;
         internal const int TriceratopsBaseRacialHitPoints = 63;
         internal const int StegosaurusBaseRacialHitPoints = 54;
 
@@ -85,6 +90,8 @@ namespace KingmakerGunslinger.Summoning
                 PowerfulChargeLiveBonus(6) != 3 ||
                 ReachBonusFeet != 3 ||
                 PowerAttackAdditionalDamage != 3 ||
+                TriceratopsPerceptionRanks + 3 + 1 + 3 +
+                    TriceratopsSkillFocusCompletionBonus != 24 ||
                 TriceratopsBaseRacialHitPoints + 14 * 4 != 119 ||
                 StegosaurusBaseRacialHitPoints + 12 * 3 != 90)
                 throw new InvalidOperationException(

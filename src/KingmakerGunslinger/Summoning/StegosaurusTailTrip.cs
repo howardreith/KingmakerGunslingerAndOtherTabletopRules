@@ -60,6 +60,8 @@ namespace KingmakerGunslinger.Summoning
                     targetAvailable, first, alreadyProne, immune,
                     ownerSize, targetSize)) return;
 
+            bool ownerWasProne = owner.Descriptor.State.HasCondition(
+                UnitCondition.Prone);
             var trip = new RuleCombatManeuver(owner, target,
                 CombatManeuver.Trip);
             if (Fact != null && Fact.MaybeContext != null)
@@ -68,6 +70,13 @@ namespace KingmakerGunslinger.Summoning
                 Fact.MaybeContext.TriggerRule(trip);
             }
             else Rulebook.Trigger(trip);
+            // Native Trip implements the ordinary combat-maneuver backlash
+            // when an attempt fails badly.  The monster universal rule says a
+            // failed trip rider never trips its attacker, so unwind only the
+            // prone state created synchronously by this exact failed rider.
+            if (!trip.Success && !ownerWasProne &&
+                owner.Descriptor.State.HasCondition(UnitCondition.Prone))
+                owner.Descriptor.State.RemoveConditionAll(UnitCondition.Prone);
         }
     }
 
