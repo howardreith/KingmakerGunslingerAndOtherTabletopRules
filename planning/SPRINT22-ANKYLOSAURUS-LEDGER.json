@@ -370,6 +370,15 @@
       "classification": "UNSATISFIED_DICE_PRECONDITION_NO_NATURAL_20_IN_120_TRIALS",
       "disposition": "MISSION_PROTOCOL_FRESH_PROCESS_BOUNDED_RETRY_57_OF_57_PASS",
       "restored": true
+    },
+    {
+      "source": "67080d025012e47e5e779866ec143ca4e76d260b",
+      "stage": "exact-candidate-publication",
+      "classification": "NEW_REPORTING_WORKTREE_MISSING_IGNORED_PRODUCTION_MANIFEST_VALIDATOR",
+      "disposition": "STAGED_VALIDATOR_FROM_QUALIFIED_BUILD_OUTPUT_WITHOUT_REBUILD; CLEAN_CHANGED_RETRY_PUBLISHED",
+      "tagCreated": false,
+      "releaseCreated": false,
+      "productBytesChanged": false
     }
   ],
   "acceptedLimitations": [
@@ -378,8 +387,35 @@
     "HODAG_DONOR_NO_NATIVE_HIT_ANIMATION"
   ],
   "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
-  "release": "QUALIFIED_NOT_RELEASED",
-  "nextAction": "Push qualification reporting commit, update PR #39, fetch master and release list, merge normally, promote exact candidate as the next unused stable patch, verify download/tag/Latest, then synchronize RELEASED/STOP documentation and restore once more.",
+  "release": "RELEASED",
+  "publication": {
+    "status": "RELEASED",
+    "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.151",
+    "tag": "v0.0.151",
+    "publishedAtUtc": "2026-10-13T06:19:26Z",
+    "latest": true,
+    "draft": false,
+    "prerelease": false,
+    "mergeCommit": "30f41dfb76a8264fdfd3238c9cba05a4c131f3bf",
+    "qualificationReportingCommit": "67080d025012e47e5e779866ec143ca4e76d260b",
+    "testedSource": "d42e33ccc5b282daad594836b1defd4f680990e5",
+    "publishedZipSha256": "5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67",
+    "publishedManifestSha256": "b6bcc8c3887f6104640f1b26943d26cec602329d8d14a63db6985b9b33519f3e",
+    "publishedChecksumsSha256": "196c27a1b7dece45448948f0519cbc117daff5e8e6266dab71baff96c2b390f8",
+    "remoteAnnotatedTag": "1facf4e563132c6f5d89be074f02c14e2a35b9a6",
+    "remotePeeledTag": "30f41dfb76a8264fdfd3238c9cba05a4c131f3bf",
+    "remotePeeledTagVerified": true,
+    "allThreeDownloadedAssetsMatch": true,
+    "downloadedPackageStrictValidation": "PASS",
+    "exactArtifactPromotion": true,
+    "rebuiltForPublication": false,
+    "verificationProof": {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint22-release-verification-20261013T062100Z\\release-verification.json",
+      "sha256": "ba7c4bf67f059e4dac7bf90f2c09aea773e7fb392fbf35f496264b7ad60ba001"
+    },
+    "postPublicationReporting": "This final ledger postdates the immutable published manifest and qualification reporting commit; it does not restamp or rebuild the tested artifact."
+  },
+  "nextAction": "STOP. Sprint 22 Ankylosaurus Completion is qualified, merged, released and restored. Do not start Sprint 23 from this mission.",
   "researchBoundary": {
     "purpose": "Missing Hodag/monitor detached rig and native condition/feat facts",
     "scenario": "observe-expanded-summoning-sprint22-contracts",
@@ -494,6 +530,8 @@
     "intakeManifest": "intake.json",
     "auditPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint22-final-restoration-20261013T060657Z\\final-restoration-audit-complete.json",
     "auditSha256": "349c2054cd958d9c173e1157af3889375d33ed7991a486ac36ded459f8a145c5",
+    "postPublicationAuditPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint22-postrelease-restoration-20261013T062523Z\\postrelease-restoration-audit.json",
+    "postPublicationAuditSha256": "c9b7fa5f20eb86a62b589da48aad5c1af14da29b3a33c7260d5e2102d8343d1e",
     "modsManifestEntries": 968,
     "saveManifestEntries": 119,
     "unrelatedSavesExact": true,

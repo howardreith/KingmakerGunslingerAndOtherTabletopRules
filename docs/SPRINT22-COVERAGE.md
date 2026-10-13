@@ -1,9 +1,9 @@
-# Sprint 22 coverage and candidate review
+# Sprint 22 coverage, qualification and release
 
-Qualified exact release candidate. The current mission and exact identities are
-in [the mission](SPRINT22-ANKYLOSAURUS-MISSION.md) and [the qualified
-ledger](../planning/SPRINT22-ANKYLOSAURUS-LEDGER.json). Publication is a separate
-exact-artifact promotion step.
+RELEASED as stable v0.0.151 from the exact qualified artifact. The current
+mission, identities, publication record and STOP state are in
+[the mission](SPRINT22-ANKYLOSAURUS-MISSION.md) and [the release
+ledger](../planning/SPRINT22-ANKYLOSAURUS-LEDGER.json).
 
 | Requirement | Production carrier | Selected proof |
 | --- | --- | --- |
@@ -349,3 +349,48 @@ exceptions or unresolved findings. Passive low-light vision/scent, unsupported
 Improved Overrun, and the donor's absent Hit animation remain the accepted
 limitations. Owner aesthetic approval is `NOT_PERFORMED_NONBLOCKING`. Sprint 23
 has not started.
+
+## Verified publication and STOP
+
+PR #39 merged normally at
+`30f41dfb76a8264fdfd3238c9cba05a4c131f3bf`. Exact-candidate promotion ran
+from qualification reporting commit
+`67080d025012e47e5e779866ec143ca4e76d260b` while the artifact-bearing
+checkout remained clean and detached at tested source
+`d42e33ccc5b282daad594836b1defd4f680990e5`. The publisher copied the
+qualified ZIP; it did not rebuild or restamp it.
+
+The first publication invocation stopped before tag creation because the new
+reporting worktree lacked the ignored production manifest-validator executable.
+The validator and its runtime files were copied from the already qualified
+build output; the reporting Git state remained clean. The changed retry passed
+strict package and firearm SoundBank validation, pushed annotated tag
+`v0.0.151`, and created the stable release. No failed tag, release or asset was
+created by the first invocation.
+
+GitHub reports [v0.0.151](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.151)
+as Latest, non-draft and non-prerelease, published at 2026-10-13 06:19:26Z.
+The tag object `1facf4e563132c6f5d89be074f02c14e2a35b9a6` peels to the product
+merge. The three downloaded assets verify as follows:
+
+- `KingmakerGunslinger-0.0.151-expanded-summoning-sprint22.zip` —
+  `5d4efe07770fba24fecb8d7dda6933e483ccef31f1ef0d0e35849b6d5c27bf67`;
+- `release-manifest.json` —
+  `b6bcc8c3887f6104640f1b26943d26cec602329d8d14a63db6985b9b33519f3e`;
+- `SHA256SUMS.txt` —
+  `196c27a1b7dece45448948f0519cbc117daff5e8e6266dab71baff96c2b390f8`.
+
+The downloaded ZIP passed the strict standalone UMM validator. The manifest
+names merge `30f41dfb...`, tested source `d42e33cc...`, qualification reporting
+`67080d02...`, the exact DLL/MVID and `rebuiltForPublication=false`. The
+external verification record is
+`C:\Dev\KingmakerGunslingerLab\runtime-evidence\sprint22-release-verification-20261013T062100Z\release-verification.json`,
+SHA-256 `ba7c4bf67f059e4dac7bf90f2c09aea773e7fb392fbf35f496264b7ad60ba001`.
+
+The human installation remains at its mission intake, KMG 0.0.117 with 968
+manifest entries; the original registry export and all unrelated saves match,
+the owned working fixture is clean, and no game process or compatibility lock
+remains. The post-publication audit record is
+`C:\Dev\KingmakerGunslingerLab\runtime-evidence\sprint22-postrelease-restoration-20261013T062523Z\postrelease-restoration-audit.json`,
+SHA-256 `c9b7fa5f20eb86a62b589da48aad5c1af14da29b3a33c7260d5e2102d8343d1e`.
+Sprint 22 is RELEASED/STOP. Sprint 23 is not started.
