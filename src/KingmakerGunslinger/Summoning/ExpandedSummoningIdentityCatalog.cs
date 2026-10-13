@@ -20,9 +20,9 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 103;
-        internal const int LogicalAbilityCount = 1063;
-        internal const int TemplatedPlacementCount = 306;
+        internal const int UnitCount = 105;
+        internal const int LogicalAbilityCount = 1075;
+        internal const int TemplatedPlacementCount = 310;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         // Sprint 14 adds eight: the soldier's sting, its poison and venom,
@@ -63,7 +63,11 @@ namespace KingmakerGunslinger.Summoning
         // native 1d4 claw unscaled.
         // Sprint 22's first live profile readback required two more private
         // carriers: one hidden chassis feature and one tail weapon type.
-        internal const int SpecialIdentityCount = 249;
+        // Sprint 23 appends ten: two printed natural weapons, two private
+        // species types, two exact chassis carriers, Triceratops charge and
+        // trample, Stegosaurus trip, and its private tail type. The new unit,
+        // root and template execution identities are counted above.
+        internal const int SpecialIdentityCount = 259;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -445,6 +449,38 @@ namespace KingmakerGunslinger.Summoning
             // without mutating the native Tail type or its other consumers.
             result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.ChassisFeatureSymbol, "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec(AnkylosaurusRulesPolicy.TailTypeSymbol, "BlueprintWeaponType"));
+            // Sprint 23 append-only armored-dinosaur identities. Nothing
+            // aliases the released Ankylosaurus stun graph or a native donor.
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.TriceratopsGoreSymbol,
+                "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.StegosaurusTailSymbol,
+                "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.TriceratopsUnitTypeSymbol,
+                "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.StegosaurusUnitTypeSymbol,
+                "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.TriceratopsChassisSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.StegosaurusChassisSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.TriceratopsPowerfulChargeSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.TriceratopsTrampleSymbol,
+                "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.StegosaurusTripSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol,
+                "BlueprintWeaponType"));
             Validate(result);
             return result.AsReadOnly();
         }

@@ -210,8 +210,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 103:
-        raise SystemExit(f"Expected 103 parsed creatures; observed {len(values)}")
+    if len(values) != 105:
+        raise SystemExit(f"Expected 105 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -566,8 +566,21 @@ def planned():
         ("KMG.Summoning.Special.Ankylosaurus.Stunned", "BlueprintBuff"),
         ("KMG.Summoning.Natural.Ankylosaurus.Chassis", "BlueprintFeature"),
         ("KMG.Summoning.Natural.Ankylosaurus.TailType", "BlueprintWeaponType"),
+        # Sprint 23: the two armored dinosaurs own their printed weapons,
+        # species/chassis carriers and exact mechanics. These append after
+        # every released Sprint 22 identity.
+        ("KMG.Summoning.Natural.Triceratops.Gore2d10", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Stegosaurus.Tail4d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Triceratops.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Stegosaurus.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Triceratops.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Stegosaurus.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Triceratops.PowerfulCharge", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Triceratops.Trample", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Stegosaurus.Trip", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Stegosaurus.TailType", "BlueprintWeaponType"),
     ))
-    if len(rows) != 2069 or len({symbol for symbol, _ in rows}) != 2069:
+    if len(rows) != 2101 or len({symbol for symbol, _ in rows}) != 2101:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
