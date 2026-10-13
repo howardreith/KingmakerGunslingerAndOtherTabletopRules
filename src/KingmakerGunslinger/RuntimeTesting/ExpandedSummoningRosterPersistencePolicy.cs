@@ -274,6 +274,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (scope == Scope) variants = variants.Where(SummonVisibilityCatalog.IsPublished);
             return variants.First();
         }
+        internal static bool ExactSelectedKeys(string scope,
+            IEnumerable<string> observed)
+        {
+            if (observed == null) return false;
+            string[] expected = scope == AnkylosaurusScope ?
+                new[] { "ankylosaurus" } : scope == ArmoredDinosaursScope ?
+                ArmoredDinosaurKeys : scope == Scope ? Keys : new string[0];
+            return expected.Length != 0 && observed.OrderBy(value => value,
+                    StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
+                    value => value, StringComparer.Ordinal),
+                    StringComparer.Ordinal);
+        }
         internal static bool ObserveLoad(string scenario, string scope)
         {
             return (scope == Scope || scope == AnkylosaurusScope ||
