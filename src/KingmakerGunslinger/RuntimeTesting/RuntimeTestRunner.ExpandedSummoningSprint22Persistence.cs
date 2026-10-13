@@ -98,12 +98,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!same) yield break;
                 double started=Game.Instance.Player.GameTime.TotalSeconds;var clock=System.Diagnostics.Stopwatch.StartNew();
                 Game.Instance.IsPaused=false;
-                while (victim.Descriptor.Buffs.RawFacts.Contains(control) && clock.Elapsed.TotalSeconds<45) yield return 0;
+                while ((victim.Descriptor.Buffs.RawFacts.Contains(control) ||
+                    victim.Descriptor.State.HasCondition(UnitCondition.Stunned) ||
+                    !victim.Descriptor.State.CanAct) && clock.Elapsed.TotalSeconds<45) yield return 0;
                 Game.Instance.IsPaused=true;
-                bool expired=!victim.Descriptor.Buffs.RawFacts.Contains(control) && !victim.Descriptor.State.HasCondition(UnitCondition.Stunned) && victim.Descriptor.State.CanAct;
+                bool controlPresent=victim.Descriptor.Buffs.RawFacts.Contains(control);
+                bool stunned=victim.Descriptor.State.HasCondition(UnitCondition.Stunned);
+                bool canAct=victim.Descriptor.State.CanAct;
+                bool expired=!controlPresent && !stunned && canAct;
                 RosterPersistenceCheck("sprint22-cold-natural-expiry",expired,new JObject { ["unit"]=victim.UniqueId,["event"]="finite-native-expiration-after-load",
-                    ["owner"]=scope,["canAct"]=victim.Descriptor.State.CanAct,["nativeElapsedSeconds"]=Game.Instance.Player.GameTime.TotalSeconds-started,
-                    ["wallSeconds"]=clock.Elapsed.TotalSeconds },"Saved finite control naturally expires; loading or module state creates no fresh full duration.");
+                    ["owner"]=scope,["controlPresent"]=controlPresent,["stunned"]=stunned,["canAct"]=canAct,
+                    ["nativeElapsedSeconds"]=Game.Instance.Player.GameTime.TotalSeconds-started,["wallSeconds"]=clock.Elapsed.TotalSeconds,
+                    ["timedOut"]=clock.Elapsed.TotalSeconds>=45 },"Saved finite control naturally expires; loading or module state creates no fresh full duration.");
                 if (!expired) yield break;
                 var source=sources.Single();
                 var skins=source.View.GetComponentsInChildren<SkinnedMeshRenderer>(true);
