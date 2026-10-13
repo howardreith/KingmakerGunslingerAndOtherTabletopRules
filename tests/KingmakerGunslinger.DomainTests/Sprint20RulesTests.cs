@@ -114,21 +114,19 @@ namespace KingmakerGunslinger.DomainTests
             // modes and 4 of 4 on the party-camera art review. Publication was
             // the removal of one suppression key, so the registered count is
             // the one registration allocated and nothing moved to make room.
-            Assertions.Equal(12,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All twelve Giant Scorpion roots remain published; only Sprint 23 is withheld.");
+                "All twelve Giant Scorpion roots and all Sprint 23 roots are published.");
             Assertions.Equal(1075,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placements rose from 1044 to 1056, and Sprint 21 "
                 + "registered seven more.");
-            Assertions.Equal(1063,
+            Assertions.Equal(1075,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "The published surface is every registered placement, which "
                 + "is this test's real subject: a later sprint must not reach "
                 + "back and suppress a published creature.");
-            foreach (SummonVariantSpec variant in all.Where(value =>
-                value.Creature.Key != ArmoredDinosaurRulesPolicy.TriceratopsKey &&
-                value.Creature.Key != ArmoredDinosaurRulesPolicy.StegosaurusKey))
+            foreach (SummonVariantSpec variant in all)
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
                     "Every placement is published, this creature's included: "

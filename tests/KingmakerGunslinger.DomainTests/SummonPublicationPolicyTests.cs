@@ -86,18 +86,14 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(1063,
+            Assertions.Equal(1075,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            // Sprint 14's two Giant Ant castes are withheld, and not for want
-            // of qualification: their mechanics passed and their printed scent
-            // has no representation in this engine at all. A creature
-            // appearing here for any other reason would be a sprint
-            // registering ahead of its own qualification, which is allowed,
-            // but it has to be deliberate rather than a leftover.
+            // A future creature may register ahead of qualification, but any
+            // hidden placement must remain deliberate and exactly reconciled.
             Assertions.Equal(
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
