@@ -28,7 +28,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool RosterPersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope || Sprint22PersistenceScope; } }
         private bool Sprint22PersistenceScope
-        { get { return (string)_request.Parameters?["persistenceScope"] == "ankylosaurus"; } }
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope; } }
         private string[] RosterSelectedKeys
         { get { return Sprint22PersistenceScope ? new[] { "ankylosaurus" } : ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
