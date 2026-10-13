@@ -446,6 +446,22 @@ namespace KingmakerGunslinger.DomainTests
             catch (InvalidOperationException) { crossScopeRejected = true; }
             Assertions.True(crossScopeRejected,
                 "A targeted scope cannot select another sprint's identity.");
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                    .ExactSelectedKeys(ExpandedSummoningRosterPersistencePolicy
+                        .ArmoredDinosaursScope, new[] {
+                            ArmoredDinosaurRulesPolicy.StegosaurusKey,
+                            ArmoredDinosaurRulesPolicy.TriceratopsKey }),
+                "Exact targeted identity comparison is independent of observation order.");
+            foreach (string[] corrupt in new[] {
+                new[] { ArmoredDinosaurRulesPolicy.TriceratopsKey },
+                new[] { ArmoredDinosaurRulesPolicy.TriceratopsKey,
+                    ArmoredDinosaurRulesPolicy.TriceratopsKey },
+                new[] { ArmoredDinosaurRulesPolicy.TriceratopsKey, "foreign" }
+            })
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy
+                        .ExactSelectedKeys(ExpandedSummoningRosterPersistencePolicy
+                            .ArmoredDinosaursScope, corrupt),
+                    "Missing, duplicate or foreign targeted identities fail closed.");
         }
 
         internal static void NativeReviewObservesRealCommandsAndControls()
