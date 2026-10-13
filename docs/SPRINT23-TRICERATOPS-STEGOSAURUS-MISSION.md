@@ -12,6 +12,20 @@ selected implementation-to-release sprint rather than a request to stop at the
 first development checkpoint. Coherent intermediate checkpoints are committed
 and pushed, and then the mission continues.
 
+## Final status — RELEASED / STOP
+
+The mission completed on October 13, 2026. Product PR
+[#41](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/41)
+merged as `1d41388adb6aaa6e4e102e744abb392104cedbba`, and stable
+[v0.0.152](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.152)
+promotes the exact tested source `e0d7cb863b23925cfbf1721e3965c05e811a0bd7`.
+The downloaded assets, strict package contents, DLL/MVID, annotated tag and
+Latest status were independently verified. The post-release machine audit
+passed with no owned process, active lease, compatibility lock or game staging.
+See [the final coverage record](SPRINT23-COVERAGE.md) and the
+[machine-readable ledger](../planning/SPRINT23-TRICERATOPS-STEGOSAURUS-LEDGER.json).
+Sprint 24 was not started.
+
 ## Baseline, branch, and publication boundary
 
 - Repository: `howardreith/KingmakerGunslingerAndOtherTabletopRules`.
