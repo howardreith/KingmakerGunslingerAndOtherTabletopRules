@@ -1341,16 +1341,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             int damageBefore = target.Descriptor.Damage;
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
             int strengthBefore = owner.Stats.Strength.BaseValue;
+            BlueprintFaction factionBefore = owner.Descriptor.Faction;
             UnityEngine.Random.State randomBefore = UnityEngine.Random.state;
             ExpandedSummoningChargeAttackObserver observer = null;
             UnitUseAbility command = null;
             UnitAttack attackCommand = null;
             UnitEntityData[] awakeBefore = null;
+            bool playerFactionDuring = false;
+            bool enemyDuring = false;
+            bool factionRestored = false;
             try
             {
                 target.Descriptor.State.Size = Size.Medium;
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100;
                 owner.Stats.Strength.BaseValue = requestedStrength;
+                // The save-free fixture's disposable caster is deliberately
+                // not a party member, so its summon otherwise inherits a
+                // non-player faction. Kingmaker's PowerAttackWatcher makes
+                // its own AI choice for such units at RuleAttackRoll and can
+                // restart an explicitly stopped toggle. Exercise the actual
+                // player-summon contract for this PA-off row, then restore the
+                // request-owned unit's original faction exactly.
+                owner.Descriptor.Faction = BlueprintRoot.Instance.PlayerFaction;
+                playerFactionDuring = owner.IsPlayerFaction;
+                enemyDuring = owner.IsEnemy(target);
                 foreach (int frame in Sprint22SetPowerAttack(owner, false))
                     yield return frame;
                 BlueprintAbility chargeBlueprint = fixture.Blueprints
@@ -1495,6 +1509,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var powerAttack = owner.Descriptor.ActivatableAbilities
                     .Enumerable.Single(value => value.Blueprint.AssetGuid ==
                         "a7b339e4f6ff93a4697df5d7a87ff619");
+                owner.Descriptor.Faction = factionBefore;
+                factionRestored = ReferenceEquals(owner.Descriptor.Faction,
+                    factionBefore);
                 int modifier = owner.Stats.Strength.Bonus;
                 int nativeStrength = modifier > 0 ?
                     modifier + modifier / 2 : modifier;
@@ -1529,6 +1546,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         gore.Blueprint);
                 bool exact = queued && nativeEconomy && command.IsStarted &&
                     executionSeen &&
+                    playerFactionDuring && enemyDuring && factionRestored &&
                     observer.FirstChargeHitWithMarker &&
                     moved >= new Feet(10).Meters - .05f &&
                     damage > 0 && spent && observer.Attacks.Count == 1 &&
@@ -1562,6 +1580,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["strength"] = owner.Stats.Strength.ModifiedValue,
                         ["modifier"] = owner.Stats.Strength.Bonus,
                         ["ordinaryAttackBonus"] = ordinaryAttackBonus,
+                        ["factionBefore"] = factionBefore?.AssetGuid,
+                        ["playerFactionDuring"] = playerFactionDuring,
+                        ["enemyDuring"] = enemyDuring,
+                        ["factionRestored"] = factionRestored,
                         ["powerAttack"] = Sprint22PowerAttackState(owner,
                             powerAttack),
                         ["powerAttackBeforeChargeAttack"] =
@@ -1617,6 +1639,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
                 owner.Stats.Strength.BaseValue = strengthBefore;
+                owner.Descriptor.Faction = factionBefore;
                 target.Descriptor.State.Size = sizeBefore;
                 target.Descriptor.Damage = damageBefore;
                 UnityEngine.Random.state = randomBefore;
