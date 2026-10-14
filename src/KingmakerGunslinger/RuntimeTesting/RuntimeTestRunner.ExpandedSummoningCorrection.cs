@@ -627,15 +627,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<RuleAttackWithWeapon> AttackRules =
                 new List<RuleAttackWithWeapon>();
             internal bool FirstChargeHitWithMarker;
-            internal bool ForcePowerAttackOff;
-            internal int PowerAttackStopCount;
-            internal bool PowerAttackOffAtAttack;
+            internal bool ObservePowerAttackChoice;
+            internal int PowerAttackDecisionCount;
+            internal bool PowerAttackOnBeforeRoll;
+            internal bool PowerAttackOffAfterAttack;
             internal JObject PowerAttackBeforeAttack;
-            internal JObject PowerAttackAfterStop;
+            internal JObject PowerAttackAfterAttack;
+            internal int NativeRollSeed;
 
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt)
             {
-                if (!ForcePowerAttackOff || evt == null ||
+                if (!ObservePowerAttackChoice || evt == null ||
                     !ReferenceEquals(evt.Initiator, Initiator) ||
                     !ReferenceEquals(evt.Target, Target) ||
                     evt.Weapon == null ||
@@ -647,19 +649,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "a7b339e4f6ff93a4697df5d7a87ff619");
                 PowerAttackBeforeAttack = Sprint22PowerAttackState(
                     Initiator, toggle);
-                // A queued ChargeAbility can restart this attack-mode toggle
-                // after the pre-command setup. Apply the already-qualified
-                // native forced-stop sequence at the exact attack rule
-                // boundary, before its attack-roll and weapon-stat children.
-                if (toggle.IsRunning) toggle.Stop(true);
-                if (toggle.IsOn) toggle.IsOn = false;
-                PowerAttackAfterStop = Sprint22PowerAttackState(
-                    Initiator, toggle);
-                PowerAttackStopCount++;
-                PowerAttackOffAtAttack = !toggle.IsOn &&
-                    !toggle.IsRunning && toggle.Blueprint.Buff != null &&
+                PowerAttackDecisionCount++;
+                PowerAttackOnBeforeRoll = toggle.IsOn &&
+                    toggle.IsRunning && toggle.Blueprint.Buff != null &&
                     Initiator.Descriptor.Buffs.GetBuff(
-                        toggle.Blueprint.Buff) == null;
+                        toggle.Blueprint.Buff) != null;
+                // The installed PowerAttackWatcher makes its native AI
+                // on/off choice in the child RuleAttackRoll. Fix only the
+                // genuine d20 precondition here, after movement has consumed
+                // its random values and before that child is constructed.
+                UnityEngine.Random.InitState(NativeRollSeed);
             }
 
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
@@ -680,6 +679,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirstChargeHitWithMarker |= gore && marker && hit &&
                     evt.IsCharge && evt.IsFirstAttack &&
                     !evt.IsAttackOfOpportunity;
+                if (ObservePowerAttackChoice && gore && evt.IsCharge &&
+                    evt.IsFirstAttack && !evt.IsAttackOfOpportunity)
+                {
+                    var toggle = Initiator.Descriptor.ActivatableAbilities
+                        .Enumerable.Single(value => value.Blueprint.AssetGuid ==
+                            "a7b339e4f6ff93a4697df5d7a87ff619");
+                    PowerAttackAfterAttack = Sprint22PowerAttackState(
+                        Initiator, toggle);
+                    PowerAttackOffAfterAttack = !toggle.IsOn &&
+                        !toggle.IsRunning && toggle.Blueprint.Buff != null &&
+                        Initiator.Descriptor.Buffs.GetBuff(
+                            toggle.Blueprint.Buff) == null;
+                }
             }
         }
 
