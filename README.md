@@ -1,21 +1,21 @@
 # Kingmaker Gunslinger
 
-The **0.0.152-expanded-summoning-sprint23** release adds Triceratops and
-Stegosaurus with their distinct charge/trample and tail-trip roles, original
-bodies and original icons. See the
-[release notes](docs/RELEASE-NOTES-0.0.152.md), the
-[qualification and restoration record](docs/SPRINT23-COVERAGE.md), and the
-[stable release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.152).
+The **0.0.153-expanded-summoning-sprint23-charge-rounding** patch corrects the
+released Triceratops Powerful Charge contribution at positive odd Strength
+modifiers while keeping the printed +8 baseline unchanged. See the
+[v0.0.153 release notes](docs/RELEASE-NOTES-0.0.153.md). The complete Sprint 23
+creature, route, art and historical qualification record remains in the
+[v0.0.152 coverage record](docs/SPRINT23-COVERAGE.md).
 
 Sprint 22 remains released and unchanged. This mission stops after Sprint 23;
 Sprint 24 is not started.
 
 ### Current release
 
-Version **0.0.152-expanded-summoning-sprint23** exposes 1,104 choices after
-publication: 1,075 generated roots and 29 native wrappers. All prior routes,
-levels, quantities, templates and stable identities remain unchanged. Owner
-aesthetic review remains separate and nonblocking.
+Version **0.0.153-expanded-summoning-sprint23-charge-rounding** retains 1,104
+choices: 1,075 generated roots and 29 native wrappers. It changes no route,
+level, quantity, template, stable identity, artwork or serialization state.
+The v0.0.152 original visuals and unaffected qualification remain authoritative.
 
 ### Previous release
 
