@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — DEINONYCHUS AND RTWP TYRANNOSAURUS PASS; TB CONTINUATION OBSERVER CORRECTION FOCUSED PASS** on
+Status: **IN PROGRESS — DEINONYCHUS AND RTWP TYRANNOSAURUS PASS; TB NATIVE-CLOCK CONTINUATION CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -334,17 +334,35 @@ later Huge-target swallow, three periodic rounds, escape, and one independent
 2d8+11 packet for each of two simultaneous predator/victim pairs passed.
 Releasing the first victim preserved the second victim's swallowed part and
 one-victim owner list, but the continuation probe emitted no second packet.
-That probe reused its pre-release Buff reference and due-time snapshot. The
-narrow correction reacquires the live second-victim Buff after release, uses
-the current native due boundary, and separately asserts that release neither
-ticks nor relinks the surviving pair. Product swallow mechanics remain
-unchanged. Production compilation and all 13 named Sprint 24 focused tests
-pass; a new exact Sprint candidate is required before rerunning only the failed
-TB Tyrannosaurus phase.
+That probe reused its pre-release Buff reference and due-time snapshot.
+
+The first continuation correction commit
+`ca80f133e538c9607f6795297e0b2f6bd67c6ad7` passed the next complete Sprint
+gate: 2,607/2,607 tests in 93.1 seconds and a strict 370-entry package in 188.9
+seconds total. ZIP SHA-256 is
+`4fe19f8d4b1129c4e8e88de9c1dd366436d68225983fec1b6e618c9151986215`;
+DLL SHA-256 is
+`333fcc2a81d7c8bbc0ec53128bdc4bc3cc68a314a7e2a17391f4befcb71baa4f`,
+MVID `d53c7878-0ff6-4839-8d26-3bcb0bdaa4da`, and source fingerprint
+`33e13b3989ee99b6768bffdd591f25c613c79bca14facc71067607dbf32b5d96`.
+The changed TB reproduction again passed 10/11 in 93.564 seconds. It proved
+the second Buff reference stable, its exact caster/victim ownership preserved,
+and release caused neither a tick nor relinking. Both before and after the
+manual collection call, however, its schedule remained at the already-
+processed current turn boundary (`0.0s` delay), so that call was not a later
+native round.
+
+The changed strategy enrolls the disposable second victim in the existing
+request-owned Sprint 22 clock, releases the first victim, and yields boundedly
+through native controller pulses. It requires exactly one later attributed
+2d8+11 packet for the surviving pair and zero packets for the released victim.
+Product swallow mechanics remain unchanged. Production compilation and all 13
+named Sprint 24 focused tests pass; a new exact Sprint candidate is required
+before rerunning only the failed TB Tyrannosaurus phase.
 
 Earlier failed development checks, the candidate/correction-suite failures,
 the guarded native foundation failure, both first Deinonychus attempts, the
-inter-turn reproduction and both first Tyrannosaurus phases remain recorded in
+inter-turn reproduction and all Tyrannosaurus observer failures remain recorded in
 the machine-readable ledger:
 the first stage allowlist omitted the new production seams, the first provenance
 check found the expected blueprint-ledger hash change, and the first production
