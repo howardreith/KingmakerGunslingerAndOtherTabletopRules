@@ -417,6 +417,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Sprint24EnrollTurnBasedOwner",
                 "Sprint22EnrollTurnBasedOwners",
                 "freshTurnReached", "chargeMarkerBeforeIllegal",
+                "desiredTargetArmorClass", "noGrabSideEffect",
+                "cleanStart",
                 "RuleAttackWithWeapon", "ChargeAbility",
                 "UnitPartSwallowWhole", "CriticalConfirmationRoll",
                 "PowerfulBite", "BleedingCritical",

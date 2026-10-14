@@ -185,16 +185,47 @@ creature-mechanics failure. Transaction
 exactly, with no process, lock or staging left. Runtime-result SHA-256 is
 `3995732f5bda934a030ac83ed778e8d0fbd25384a13eade57628213b78a1cf6e`.
 
-The narrow observer correction now waits through that transition until the
-owner's real next native turn and records the charge marker immediately after
-Pounce and before/after the illegal command. It does not clear the marker or
-weaken the requirement: the run still fails if native expiry has not occurred.
-Production compilation and the named Sprint 24 filter pass 13/13. Both keys
-remain suppressed.
+The exact fresh-turn correction commit
+`3ed00e74c5602b6a28609a063481e6cb81b100db` passed a complete Sprint gate:
+2,607/2,607 tests in 108.8 seconds and a strict 370-entry package in 214.2
+seconds total. ZIP SHA-256 is
+`923c2df33004b9fedcd2b23dcf514b7192b4ac407718d9ae54d5fae7f932b712`;
+DLL SHA-256 is
+`4d478541a126908e349121c6451f3a19fea9dc4468de143a63e51c7a0c8d7854`,
+MVID `e0ce5b26-0e79-4a59-a71b-f0726d45196e`, and source fingerprint
+`ba154235e334df4df69bbf1a2f65a062f3ab88bd186cd7d4f2e9c1706cccdcd6`.
 
-Next action: commit and push this fresh-turn observer correction through the
+The corrected `turn-based-deinonychus` phase then passed 11/11 assertions in
+111.715 seconds. Its native charge marker was present immediately after the
+four-roll Pounce, expired at the owner's actual fresh turn after 57 frames,
+stayed absent through the rejected charge, and the AoO remained exactly one
+non-charge talon. Transaction `compat-20261014T094217Z-8e09a731bba0`
+restored exactly; runtime-result SHA-256 is
+`da9c62855c9d2854e5c2bbc607f6bde642a4ae3bcde6ed6aa2964143026ed609`.
+
+The first `rtwp-tyrannosaurus` phase retained 8 PASS and 2 FAIL assertions in
+91.386 seconds. The adult profile, one 4d6+22 bite, all signed Powerful Bite
+cases (+9/+10/+11/+12/zero/penalties), independent simultaneous swallowers,
+three exact 2d8+11 periodic packets, native escape and cleanup passed. The
+critical row proved 19–20 threat, +4 Critical Focus, no auto-confirm carrier,
+confirmed critical multiplication, one native 2d6 bleed tick and healing
+removal, but its fixture +100 attack bonus let a natural-1 confirmation beat
+AC. Those real bite probes also established an unrelated mouth hold, so the
+following same-size Grab attempt correctly refused an already occupied mouth;
+the independent Huge-target Grab/later-Swallow path still passed. Transaction
+`compat-20261014T094705Z-c7e1b4e3f5b9` restored exactly; runtime-result SHA-256
+is `b3cfe78650c28cf814ed0c15e93b7dc6504bc81d6a4a0e041da1d956c4527291`.
+
+The narrow correction now tunes target AC between a natural-19 threat and a
+natural-1 confirmation, keeps the engine's auto-confirm flag false, suppresses
+only unrelated combat maneuvers during the critical fixture, and proves a clean
+mouth before the same-size Grab. It does not alter critical, Grab, or Swallow
+product rules. Production compilation and the named Sprint 24 filter pass
+13/13. Both keys remain suppressed.
+
+Next action: commit and push this critical/hold observer correction through the
 required wrapper, run one fresh complete Sprint gate on that exact commit, then
-rerun only `turn-based-deinonychus` with `-ReuseInstalledArtifact`. Continue the
+rerun only `rtwp-tyrannosaurus` with `-ReuseInstalledArtifact`. Continue the
 remaining native phases only after that reproduction passes. Do not begin
 Brachiosaurus, Elephant changes, companions, polymorph, mounts, feats, or any
 Sprint 25 work.
