@@ -166,7 +166,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "Sprint 23 native review phase was not validated.");
             bool foundation = reviewPhase == "rtwp-foundation";
-            bool turnBased = !foundation;
+            bool chargeRounding = reviewPhase == "charge-rounding-rtwp" ||
+                reviewPhase == "charge-rounding-turn-based";
+            bool turnBased = reviewPhase == "turn-based-control" ||
+                reviewPhase == "charge-rounding-turn-based";
             try
             {
                 Sprint23Check("review-phase-" + reviewPhase, true,
@@ -185,6 +188,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
+
+                if (chargeRounding)
+                {
+                    foreach (int frame in Sprint23ChargeRoundingReview(
+                        fixture, turnBased)) yield return frame;
+                    yield break;
+                }
 
                 if (foundation)
                     foreach (int frame in Sprint23VisualLifecycle(fixture))
@@ -302,6 +312,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .EnableTurnBasedMode.CurrentValue = originalMode;
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = originalPause;
+            }
+        }
+
+        /// <summary>
+        /// Bounded follow-up for the released Powerful Charge rounding defect.
+        /// It reuses the qualified Sprint 23 world, movement and command seams
+        /// but deliberately omits art, trample, trip, routes and persistence.
+        /// </summary>
+        private IEnumerable<int> Sprint23ChargeRoundingReview(
+            ExpandedSummoningCorrectionFixture fixture, bool turnBased)
+        {
+            UnitEntityData owner = CastExpandedSummoningOwnTier(fixture,
+                ArmoredDinosaurRulesPolicy.TriceratopsKey);
+            SetExpandedSummoningBrainActive(owner, false);
+            for (int frame = 0; frame < 12; frame++) yield return 0;
+            try
+            {
+                if (turnBased)
+                {
+                    var admission = new JObject();
+                    foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                        new[] { owner }, fixture.Hostile, admission))
+                        yield return frame;
+                    Sprint23Check("charge-rounding-turn-order",
+                        owner.IsInCombat && fixture.Hostile.IsInCombat &&
+                        CombatController.IsInTurnBasedCombat() &&
+                        (bool)admission["admitted"], admission,
+                        "The request-owned Triceratops and hostile enter native turn order.");
+                }
+                foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                    yield return frame;
+                foreach (int frame in Sprint23PowerAttack(owner,
+                    ArmoredDinosaurRulesPolicy.TriceratopsKey, turnBased))
+                    yield return frame;
+                foreach (int frame in Sprint23NativeOrdinaryAttack(fixture,
+                    owner, ArmoredDinosaurRulesPolicy.TriceratopsKey,
+                    turnBased)) yield return frame;
+                foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                    yield return frame;
+                Sprint23PowerfulChargeRules(fixture, owner, turnBased);
+                foreach (int frame in Sprint23PowerAttackChargeControl(
+                    fixture, owner, turnBased)) yield return frame;
+                foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                    yield return frame;
+                Sprint23CriticalChargeControl(fixture, owner, turnBased);
+                foreach (int frame in Sprint23LeaveTurnBasedBeforeDisposal(
+                    turnBased)) yield return frame;
+            }
+            finally
+            {
+                DisposeExpandedSummoningUnits(fixture.Created,
+                    new[] { owner });
+            }
+
+            foreach (int strength in new[] { 24, 26, 28, 30 })
+                foreach (int frame in Sprint23NativeChargeCommand(fixture,
+                    turnBased, strength)) yield return frame;
+            if (!turnBased)
+            {
+                string control;
+                bool rhino = ExerciseExpandedSummoningRegisteredRhinoCharge(
+                    fixture, out control);
+                Sprint23Check("charge-rounding-released-rhino-control", rhino,
+                    new JObject { ["unit"] = "rhinoceros-controls",
+                        ["event"] = "released-fixed-powerful-charge",
+                        ["detail"] = control },
+                    "Released Rhinoceros and Woolly Rhinoceros fixed charge increments remain unchanged.");
             }
         }
 
@@ -867,20 +944,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 JObject rows = new JObject();
-                foreach (int delta in new[] { 0, 4, -4 })
+                bool exact = true;
+                foreach (int strength in new[] { 24, 26, 28, 30, 10, 8 })
                 {
-                    owner.Stats.Strength.BaseValue = strengthBefore + delta;
-                    var first = new RuleAttackWithWeapon(owner,
+                    owner.Stats.Strength.BaseValue = strength;
+                    int modifier = owner.Stats.Strength.Bonus;
+                    int nativeStrength = modifier > 0
+                        ? modifier + modifier / 2 : modifier;
+                    int desiredStrength = modifier > 0
+                        ? checked(modifier * 2) : modifier;
+                    var ordinaryAttack = new RuleAttackWithWeapon(owner,
+                        fixture.Hostile, gore, 0) {
+                        IsCharge = false, IsFirstAttack = true };
+                    RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(owner, gore,
+                            ordinaryAttack));
+                    var abortedCharge = new RuleAttackWithWeapon(owner,
                         fixture.Hostile, gore, 0) {
                         IsCharge = true, IsFirstAttack = true };
-                    RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
-                        new RuleCalculateWeaponStats(owner, gore, first));
+                    RuleCalculateWeaponStats markerless = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(owner, gore,
+                            abortedCharge));
                     if (owner.Descriptor.AddFact(marker) == null &&
                         !owner.Descriptor.HasFact(marker))
                         throw new InvalidOperationException(
                             "Native charge marker was unavailable.");
                     RuleCalculateWeaponStats charged = Rulebook.Trigger(
-                        new RuleCalculateWeaponStats(owner, gore, first));
+                        new RuleCalculateWeaponStats(owner, gore,
+                            abortedCharge));
                     var later = new RuleAttackWithWeapon(owner,
                         fixture.Hostile, gore, 0) {
                         IsCharge = true, IsFirstAttack = false };
@@ -894,40 +985,274 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Trigger(new RuleCalculateWeaponStats(owner, gore,
                             opportunity));
                     owner.Descriptor.RemoveFact(marker);
-                    Func<RuleCalculateWeaponStats, string> line = value =>
-                        value.DamageDescription[0].Dice.Rolls + "d" +
-                        (int)value.DamageDescription[0].Dice.Dice + "+" +
-                        value.DamageDescription[0].Bonus;
-                    rows[delta.ToString()] = new JObject {
+                    int ordinaryBonus = ordinary.DamageDescription[0].Bonus;
+                    int chargedBonus = charged.DamageDescription[0].Bonus;
+                    int additionalCharge = chargedBonus - ordinaryBonus;
+                    int expectedCorrection = desiredStrength - nativeStrength;
+                    bool rowExact = owner.Stats.Strength.ModifiedValue ==
+                            strength && ordinary.DamageDescription.Count == 1 &&
+                        charged.DamageDescription.Count == 1 &&
+                        ordinary.DamageDescription[0].Dice.Rolls == 2 &&
+                        (int)ordinary.DamageDescription[0].Dice.Dice == 10 &&
+                        charged.DamageDescription[0].Dice.Rolls == 4 &&
+                        (int)charged.DamageDescription[0].Dice.Dice == 10 &&
+                        ordinaryBonus == nativeStrength &&
+                        chargedBonus == desiredStrength &&
+                        additionalCharge == expectedCorrection &&
+                        markerless.DamageDescription[0].Bonus == ordinaryBonus &&
+                        markerless.DamageDescription[0].Dice.Rolls == 2 &&
+                        laterStats.DamageDescription[0].Bonus == ordinaryBonus &&
+                        laterStats.DamageDescription[0].Dice.Rolls == 2 &&
+                        opportunityStats.DamageDescription[0].Bonus ==
+                            ordinaryBonus &&
+                        opportunityStats.DamageDescription[0].Dice.Rolls == 2 &&
+                        ordinary.DamageBonusStat == StatType.Strength &&
+                        ordinary.DamageBonusStatMultiplier == 1.5f &&
+                        ordinary.BonusDamage - nativeStrength == 0 &&
+                        charged.BonusDamage - desiredStrength == 0;
+                    exact &= rowExact;
+                    rows[strength.ToString()] = new JObject {
                         ["strength"] = owner.Stats.Strength.ModifiedValue,
-                        ["modifier"] = owner.Stats.Strength.Bonus,
-                        ["ordinary"] = line(ordinary),
-                        ["charge"] = line(charged),
-                        ["later"] = line(laterStats),
-                        ["opportunity"] = line(opportunityStats) };
+                        ["modifier"] = modifier,
+                        ["nativeStrengthContribution"] = nativeStrength,
+                        ["desiredStrengthContribution"] = desiredStrength,
+                        ["additionalChargeContribution"] = additionalCharge,
+                        ["expectedChargeCorrection"] = expectedCorrection,
+                        ["ordinary"] = Sprint23WeaponStatsRow(ordinary,
+                            nativeStrength),
+                        ["abortedChargeWithoutMarker"] =
+                            Sprint23WeaponStatsRow(markerless, nativeStrength),
+                        ["charged"] = Sprint23WeaponStatsRow(charged,
+                            desiredStrength),
+                        ["laterChargeStrike"] = Sprint23WeaponStatsRow(
+                            laterStats, nativeStrength),
+                        ["opportunityChargeStrike"] = Sprint23WeaponStatsRow(
+                            opportunityStats, nativeStrength),
+                        ["passed"] = rowExact };
                 }
-                bool exact = (string)rows["0"]["ordinary"] == "2d10+12" &&
-                    (string)rows["0"]["charge"] == "4d10+16" &&
-                    (string)rows["4"]["ordinary"] == "2d10+15" &&
-                    (string)rows["4"]["charge"] == "4d10+20" &&
-                    (string)rows["-4"]["ordinary"] == "2d10+9" &&
-                    (string)rows["-4"]["charge"] == "4d10+12" &&
-                    new[] { "0", "4", "-4" }.All(value =>
-                        (string)rows[value]["ordinary"] ==
-                            (string)rows[value]["later"] &&
-                        (string)rows[value]["ordinary"] ==
-                            (string)rows[value]["opportunity"]);
                 Sprint23Check("powerful-charge-live-" +
                     (turnBased ? "turn-based" : "rtwp"), exact,
                     new JObject { ["unit"] = owner.UniqueId,
+                        ["target"] = fixture.Hostile.UniqueId,
                         ["event"] = "charge-marker-and-live-strength",
                         ["owner"] = owner.Blueprint.AssetGuid,
+                        ["weapon"] = gore.Blueprint.AssetGuid,
+                        ["weaponInstance"] = gore.GetHashCode().ToString("X8"),
+                        ["command"] = JValue.CreateNull(),
+                        ["calculationOnly"] = true,
                         ["rows"] = rows },
-                    "Only the first eligible marker-owned charge gore doubles its live dice and raises live Strength from 1.5x to 2x; later and opportunity attacks remain ordinary.");
+                    "At Strength 24/26/28/30 the marker-owned first charge " +
+                    "gore raises the native truncated 1.5x contribution to " +
+                    "the documented positive 2x target; zero and penalties " +
+                    "remain once-applied, while ordinary, aborted, later and " +
+                    "opportunity attacks remain ordinary.");
             }
             finally
             {
                 owner.Stats.Strength.BaseValue = strengthBefore;
+                if (marker != null && owner.Descriptor.HasFact(marker))
+                    owner.Descriptor.RemoveFact(marker);
+            }
+        }
+
+        private static JObject Sprint23WeaponStatsRow(
+            RuleCalculateWeaponStats stats, int expectedStrengthContribution)
+        {
+            DamageDescription damage = stats.DamageDescription[0];
+            return new JObject {
+                ["diceRolls"] = damage.Dice.Rolls,
+                ["dieSides"] = (int)damage.Dice.Dice,
+                ["damageBonus"] = damage.Bonus,
+                ["bonusDamage"] = stats.BonusDamage,
+                ["damageBonusStat"] = stats.DamageBonusStat.HasValue ?
+                    stats.DamageBonusStat.Value.ToString() : null,
+                ["damageBonusStatMultiplier"] =
+                    stats.DamageBonusStatMultiplier,
+                ["strengthContribution"] = expectedStrengthContribution,
+                ["otherAdditiveDamage"] = stats.BonusDamage -
+                    expectedStrengthContribution,
+                ["enhancement"] = stats.Enhancement,
+                ["criticalEdge"] = stats.CriticalEdge,
+                ["doubleCriticalEdge"] = stats.DoubleCriticalEdge,
+                ["weaponSize"] = stats.WeaponSize.ToString(),
+                ["damageType"] = damage.TypeDescription.Type.ToString(),
+                ["physicalForm"] = damage.TypeDescription.Type ==
+                    DamageType.Physical ?
+                    damage.TypeDescription.Physical.Form.ToString() : null,
+                ["physicalEnhancementTotal"] = damage.TypeDescription.Type ==
+                    DamageType.Physical ? damage.TypeDescription.Physical
+                        .EnhancementTotal : 0
+            };
+        }
+
+        private IEnumerable<int> Sprint23PowerAttackChargeControl(
+            ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, bool turnBased)
+        {
+            ItemEntityWeapon gore = Sprint19Limbs(owner).Single();
+            BlueprintBuff marker = BlueprintRoot.Instance.SystemMechanics
+                .ChargeBuff;
+            int strengthBefore = owner.Stats.Strength.BaseValue;
+            RuleCalculateWeaponStats ordinaryOff = null, chargedOff = null,
+                ordinaryOn = null, chargedOn = null;
+            try
+            {
+                owner.Stats.Strength.BaseValue = 28;
+                foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                    yield return frame;
+                var ordinaryAttack = new RuleAttackWithWeapon(owner,
+                    fixture.Hostile, gore, 0) { IsFirstAttack = true };
+                var chargeAttack = new RuleAttackWithWeapon(owner,
+                    fixture.Hostile, gore, 0) {
+                    IsCharge = true, IsFirstAttack = true };
+                ordinaryOff = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                    owner, gore, ordinaryAttack));
+                owner.Descriptor.AddFact(marker);
+                chargedOff = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                    owner, gore, chargeAttack));
+                owner.Descriptor.RemoveFact(marker);
+
+                foreach (int frame in Sprint22SetPowerAttack(owner, true))
+                    yield return frame;
+                ordinaryOn = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                    owner, gore, ordinaryAttack));
+                owner.Descriptor.AddFact(marker);
+                chargedOn = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                    owner, gore, chargeAttack));
+                owner.Descriptor.RemoveFact(marker);
+
+                int offOrdinary = ordinaryOff.DamageDescription[0].Bonus;
+                int offCharged = chargedOff.DamageDescription[0].Bonus;
+                int onOrdinary = ordinaryOn.DamageDescription[0].Bonus;
+                int onCharged = chargedOn.DamageDescription[0].Bonus;
+                bool exact = owner.Stats.Strength.ModifiedValue == 28 &&
+                    owner.Stats.Strength.Bonus == 9 &&
+                    offOrdinary == 13 && offCharged == 18 &&
+                    onOrdinary == 22 && onCharged == 27 &&
+                    offCharged - offOrdinary == 5 &&
+                    onCharged - onOrdinary == 5 &&
+                    onOrdinary - offOrdinary == 9 &&
+                    onCharged - offCharged == 9;
+                Sprint23Check("powerful-charge-power-attack-" +
+                    (turnBased ? "turn-based" : "rtwp"), exact,
+                    new JObject { ["unit"] = owner.UniqueId,
+                        ["target"] = fixture.Hostile.UniqueId,
+                        ["event"] = "odd-strength-power-attack-comparison",
+                        ["strength"] = owner.Stats.Strength.ModifiedValue,
+                        ["modifier"] = owner.Stats.Strength.Bonus,
+                        ["weapon"] = gore.Blueprint.AssetGuid,
+                        ["powerAttackOff"] = new JObject {
+                            ["ordinary"] = Sprint23WeaponStatsRow(
+                                ordinaryOff, 13),
+                            ["charged"] = Sprint23WeaponStatsRow(
+                                chargedOff, 18) },
+                        ["powerAttackOn"] = new JObject {
+                            ["ordinary"] = Sprint23WeaponStatsRow(
+                                ordinaryOn, 13),
+                            ["charged"] = Sprint23WeaponStatsRow(
+                                chargedOn, 18) },
+                        ["ordinaryPowerAttackContribution"] =
+                            onOrdinary - offOrdinary,
+                        ["chargedPowerAttackContribution"] =
+                            onCharged - offCharged,
+                        ["chargeContributionPowerAttackOff"] =
+                            offCharged - offOrdinary,
+                        ["chargeContributionPowerAttackOn"] =
+                            onCharged - onOrdinary },
+                    "At odd modifier +9, native Power Attack contributes +9 " +
+                    "exactly once to both ordinary and charged gore while " +
+                    "the charge-only Strength correction remains +5.");
+            }
+            finally
+            {
+                owner.Stats.Strength.BaseValue = strengthBefore;
+                if (marker != null && owner.Descriptor.HasFact(marker))
+                    owner.Descriptor.RemoveFact(marker);
+            }
+            foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                yield return frame;
+        }
+
+        private void Sprint23CriticalChargeControl(
+            ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, bool turnBased)
+        {
+            UnitEntityData target = fixture.Hostile;
+            ItemEntityWeapon gore = Sprint19Limbs(owner).Single();
+            BlueprintBuff marker = BlueprintRoot.Instance.SystemMechanics
+                .ChargeBuff;
+            int strengthBefore = owner.Stats.Strength.BaseValue;
+            int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
+            int hitPointsBefore = target.Stats.HitPoints.BaseValue;
+            int damageBefore = target.Descriptor.Damage;
+            UnityEngine.Random.State randomBefore = UnityEngine.Random.state;
+            var observer = new Sprint16RuleObserver {
+                Owner = owner,
+                Target = target,
+                BeforeAttackRollForFixture = value => {
+                    value.AutoCriticalThreat = true;
+                    value.AutoCriticalConfirmation = true;
+                }
+            };
+            EventBus.Subscribe(observer);
+            try
+            {
+                owner.Stats.Strength.BaseValue = 28;
+                owner.Stats.AdditionalAttackBonus.BaseValue = 100;
+                target.Stats.HitPoints.BaseValue = 100000;
+                target.Descriptor.Damage = 0;
+                owner.Descriptor.AddFact(marker);
+                UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                RuleAttackWithWeapon attack = Rulebook.Trigger(
+                    new RuleAttackWithWeapon(owner, target, gore, 0) {
+                        IsCharge = true, IsFirstAttack = true });
+                PhysicalDamage physical = attack.MeleeDamage?.DamageBundle
+                    .OfType<PhysicalDamage>().SingleOrDefault();
+                bool exact = attack.AttackRoll != null &&
+                    attack.AttackRoll.IsHit &&
+                    attack.AttackRoll.IsCriticalConfirmed &&
+                    attack.WeaponStats != null &&
+                    attack.WeaponStats.DamageDescription.Count == 1 &&
+                    attack.WeaponStats.DamageDescription[0].Dice.Rolls == 4 &&
+                    (int)attack.WeaponStats.DamageDescription[0].Dice.Dice == 10 &&
+                    attack.WeaponStats.DamageDescription[0].Bonus == 18 &&
+                    physical != null && physical.CriticalModifier == 2 &&
+                    observer.WeaponAttacks == 1 && observer.Damage.Count == 1;
+                Sprint23Check("powerful-charge-critical-" +
+                    (turnBased ? "turn-based" : "rtwp"), exact,
+                    new JObject { ["unit"] = owner.UniqueId,
+                        ["target"] = target.UniqueId,
+                        ["event"] = "native-confirmed-critical-charge-rule",
+                        ["weapon"] = gore.Blueprint.AssetGuid,
+                        ["strength"] = owner.Stats.Strength.ModifiedValue,
+                        ["modifier"] = owner.Stats.Strength.Bonus,
+                        ["naturalRoll"] = attack.AttackRoll?.Roll.Value,
+                        ["attackBonus"] = attack.AttackRoll?.AttackBonus,
+                        ["targetArmorClass"] = attack.AttackRoll?.TargetAC,
+                        ["hit"] = attack.AttackRoll?.IsHit,
+                        ["criticalThreat"] = attack.AttackRoll?.IsCriticalRoll,
+                        ["criticalConfirmed"] = attack.AttackRoll?
+                            .IsCriticalConfirmed,
+                        ["criticalMultiplier"] = physical == null ? -1 :
+                            (int)physical.CriticalModifier,
+                        ["weaponStats"] = attack.WeaponStats == null ? null :
+                            Sprint23WeaponStatsRow(attack.WeaponStats, 18),
+                        ["damage"] = attack.MeleeDamage == null ? null :
+                            Sprint16DamageEvent(attack.MeleeDamage),
+                        ["weaponAttackRules"] = observer.WeaponAttacks,
+                        ["damageRules"] = observer.Damage.Count },
+                    "A confirmed native critical multiplies the one corrected " +
+                    "4d10+18 weapon packet exactly once; the charge component " +
+                    "does not replay damage or critical handling.");
+            }
+            finally
+            {
+                EventBus.Unsubscribe(observer);
+                owner.Stats.Strength.BaseValue = strengthBefore;
+                owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
+                target.Stats.HitPoints.BaseValue = hitPointsBefore;
+                target.Descriptor.Damage = damageBefore;
+                UnityEngine.Random.state = randomBefore;
                 if (marker != null && owner.Descriptor.HasFact(marker))
                     owner.Descriptor.RemoveFact(marker);
             }
@@ -1006,7 +1331,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Sprint23NativeChargeCommand(
-            ExpandedSummoningCorrectionFixture fixture, bool turnBased)
+            ExpandedSummoningCorrectionFixture fixture, bool turnBased,
+            int requestedStrength = 26)
         {
             UnitEntityData owner = CastExpandedSummoningQuietUnit(fixture,
                 ArmoredDinosaurRulesPolicy.TriceratopsKey);
@@ -1014,6 +1340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             Size sizeBefore = target.Descriptor.State.Size;
             int damageBefore = target.Descriptor.Damage;
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
+            int strengthBefore = owner.Stats.Strength.BaseValue;
+            UnityEngine.Random.State randomBefore = UnityEngine.Random.state;
             ExpandedSummoningChargeAttackObserver observer = null;
             UnitUseAbility command = null;
             UnitAttack attackCommand = null;
@@ -1022,6 +1350,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 target.Descriptor.State.Size = Size.Medium;
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100;
+                owner.Stats.Strength.BaseValue = requestedStrength;
+                foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                    yield return frame;
                 BlueprintAbility chargeBlueprint = fixture.Blueprints
                     .OfType<BlueprintAbility>().Single(value =>
                         value.AssetGuid ==
@@ -1055,6 +1386,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Triceratops charge owner never received its turn.");
                 }
                 ItemEntityWeapon gore = Sprint19Limbs(owner).Single();
+                var ordinaryAttack = new RuleAttackWithWeapon(owner, target,
+                    gore, 0) { IsFirstAttack = true };
+                RuleCalculateWeaponStats ordinaryStats = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(owner, gore,
+                        ordinaryAttack));
                 observer = new ExpandedSummoningChargeAttackObserver {
                     Initiator = owner, Target = target,
                     Gore = gore.Blueprint,
@@ -1070,7 +1406,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float moveBefore = owner.CombatState.Cooldown.MoveAction;
                 float maxStandard = standardBefore;
                 float maxMove = moveBefore;
-                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                UnityEngine.Random.InitState(FindNativeD20Seed(10));
                 command = new UnitUseAbility(charge, selected);
                 bool nativeEconomy = !command.Cutscene &&
                     !command.IsIgnoreCooldown;
@@ -1144,15 +1480,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool awakeRestored = Game.Instance.State.AwakeUnits
                     .SequenceEqual(awakeBefore);
                 awakeBefore = null;
+                RuleAttackWithWeapon resolved = observer.AttackRules.Count == 1
+                    ? observer.AttackRules[0] : null;
+                RuleCalculateWeaponStats chargedStats = resolved == null ?
+                    null : resolved.WeaponStats;
+                RuleAttackRoll roll = resolved == null ? null :
+                    resolved.AttackRoll;
+                RuleDealDamage damageRule = resolved == null ? null :
+                    resolved.MeleeDamage;
+                var powerAttack = owner.Descriptor.ActivatableAbilities
+                    .Enumerable.Single(value => value.Blueprint.AssetGuid ==
+                        "a7b339e4f6ff93a4697df5d7a87ff619");
+                int modifier = owner.Stats.Strength.Bonus;
+                int nativeStrength = modifier > 0 ?
+                    modifier + modifier / 2 : modifier;
+                int desiredStrength = modifier > 0 ?
+                    checked(modifier * 2) : modifier;
+                int chargeCorrection = desiredStrength - nativeStrength;
+                bool arithmetic = owner.Stats.Strength.ModifiedValue ==
+                        requestedStrength &&
+                    modifier == (requestedStrength - 10) / 2 &&
+                    !powerAttack.IsOn && !powerAttack.IsRunning &&
+                    ordinaryStats.DamageDescription[0].Dice.Rolls == 2 &&
+                    (int)ordinaryStats.DamageDescription[0].Dice.Dice == 10 &&
+                    ordinaryStats.DamageDescription[0].Bonus ==
+                        nativeStrength &&
+                    chargedStats != null &&
+                    chargedStats.DamageDescription.Count == 1 &&
+                    chargedStats.DamageDescription[0].Dice.Rolls == 4 &&
+                    (int)chargedStats.DamageDescription[0].Dice.Dice == 10 &&
+                    chargedStats.DamageDescription[0].Bonus ==
+                        desiredStrength &&
+                    chargedStats.DamageDescription[0].Bonus -
+                        ordinaryStats.DamageDescription[0].Bonus ==
+                            chargeCorrection &&
+                    chargedStats.BonusDamage - desiredStrength == 0 &&
+                    roll != null &&
+                    roll.IsHit && !roll.AutoMiss &&
+                    !roll.IsCriticalConfirmed && damageRule != null &&
+                    damageRule.DamageBundle.Weapon != null &&
+                    ReferenceEquals(damageRule.DamageBundle.Weapon.Blueprint,
+                        gore.Blueprint);
                 bool exact = queued && nativeEconomy && command.IsStarted &&
                     executionSeen &&
                     observer.FirstChargeHitWithMarker &&
                     moved >= new Feet(10).Meters - .05f &&
                     damage > 0 && spent && observer.Attacks.Count == 1 &&
                     attackCommand != null && attackCommand.IsStarted &&
-                    awakeRestored;
+                    awakeRestored && arithmetic;
                 Sprint23Check("native-charge-command-" +
-                    (turnBased ? "turn-based" : "rtwp"), exact,
+                    (turnBased ? "turn-based" : "rtwp") + "-strength-" +
+                    requestedStrength, exact,
                     new JObject { ["unit"] = owner.UniqueId,
                         ["target"] = target.UniqueId,
                         ["event"] = "queued-native-charge",
@@ -1161,6 +1539,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["running"] = command.IsRunning,
                         ["finished"] = command.IsFinished,
                         ["result"] = command.Result.ToString(),
+                        ["commandId"] = command.GetHashCode().ToString("X8"),
                         ["executionSeen"] = executionSeen,
                         ["frames"] = frames, ["movedMeters"] = moved,
                         ["damage"] = damage,
@@ -1168,17 +1547,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["movementTicks"] = movementTicks,
                         ["attackCommand"] = attackCommand == null ? null :
                             attackCommand.Result.ToString(),
+                        ["attackCommandId"] = attackCommand == null ? null :
+                            attackCommand.GetHashCode().ToString("X8"),
                         ["awakeRestored"] = awakeRestored,
                         ["agent"] = DescribeExpandedSummoningTrampleAgent(
                             owner),
                         ["attacks"] = new JArray(observer.Attacks),
+                        ["strength"] = owner.Stats.Strength.ModifiedValue,
+                        ["modifier"] = owner.Stats.Strength.Bonus,
+                        ["powerAttack"] = Sprint22PowerAttackState(owner,
+                            powerAttack),
+                        ["weapon"] = gore.Blueprint.AssetGuid,
+                        ["weaponInstance"] = gore.GetHashCode().ToString("X8"),
+                        ["ordinaryWeaponStats"] = Sprint23WeaponStatsRow(
+                            ordinaryStats, nativeStrength),
+                        ["chargedWeaponStats"] = chargedStats == null ? null :
+                            Sprint23WeaponStatsRow(chargedStats,
+                                desiredStrength),
+                        ["additionalChargeContribution"] = chargedStats ==
+                            null ? -999 : chargedStats.DamageDescription[0]
+                                .Bonus - ordinaryStats.DamageDescription[0]
+                                .Bonus,
+                        ["naturalRoll"] = roll?.Roll.Value,
+                        ["attackBonus"] = roll?.AttackBonus,
+                        ["targetArmorClass"] = roll?.TargetAC,
+                        ["hit"] = roll?.IsHit,
+                        ["criticalThreat"] = roll?.IsCriticalRoll,
+                        ["criticalConfirmed"] = roll?
+                            .IsCriticalConfirmed,
+                        ["damageRule"] = damageRule == null ? null :
+                            Sprint16DamageEvent(damageRule),
                         ["standardCooldown"] = new JArray(standardBefore,
                             maxStandard,
                             owner.CombatState.Cooldown.StandardAction),
                         ["moveCooldown"] = new JArray(moveBefore, maxMove,
                             owner.CombatState.Cooldown.MoveAction),
                         ["mode"] = turnBased ? "turn-based" : "rtwp" },
-                    "A queued native ChargeAbility follows a real path and its sole first gore lands under the native charge marker with native action ownership.");
+                    "At Strength " + requestedStrength + " (modifier " +
+                    modifier + "), a queued native ChargeAbility follows a " +
+                    "real path and its sole noncritical first gore lands with " +
+                    "the exact live Strength correction and native action " +
+                    "ownership.");
             }
             finally
             {
@@ -1192,8 +1601,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Game.Instance.State.AwakeUnits.AddRange(awakeBefore);
                 }
                 owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
+                owner.Stats.Strength.BaseValue = strengthBefore;
                 target.Descriptor.State.Size = sizeBefore;
                 target.Descriptor.Damage = damageBefore;
+                UnityEngine.Random.state = randomBefore;
                 DisposeExpandedSummoningUnits(fixture.Created,
                     new[] { owner });
             }

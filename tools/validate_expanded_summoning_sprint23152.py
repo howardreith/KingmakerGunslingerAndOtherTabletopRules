@@ -18,10 +18,14 @@ sys.dont_write_bytecode = True
 import validate_expanded_summoning_sprint21150 as common
 import validate_expanded_summoning_phase1 as phase1
 
-VERSION = "0.0.152"
-INFORMATIONAL_VERSION = VERSION + "-expanded-summoning-sprint23"
 BASELINE = "bda157c6c402b329f47fb0531d96b52e01514114"
-KEY = "expandedSummoningSprint23152"
+SPRINT23_KEY = "expandedSummoningSprint23152"
+PATCH_KEY = "expandedSummoningSprint23ChargeRounding153"
+SUPPORTED = {
+    "0.0.152": ("0.0.152-expanded-summoning-sprint23", 363),
+    "0.0.153": (
+        "0.0.153-expanded-summoning-sprint23-charge-rounding", 364),
+}
 
 ADDED = {
     "KMG.Summoning.Unit.Triceratops": ("ce540cd4b3b74861a4a91458d742a692", "BlueprintUnit"),
@@ -149,16 +153,20 @@ def validate(root: Path):
     validate_production_scope(root)
 
     info = common.document(root, "Info.json")
+    version = info.get("Version")
+    if version not in SUPPORTED:
+        raise AssertionError("Unsupported Sprint 23 lineage version: " +
+                             repr(version))
+    informational_version, package_owner_count = SUPPORTED[version]
     props = (root / "Directory.Build.props").read_text(encoding="utf-8-sig")
     assembly = (root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs").read_text(
         encoding="utf-8-sig")
-    if info.get("Version") != VERSION or \
-            "<KmgVersion>" + VERSION + "</KmgVersion>" not in props or \
-            "<KmgInformationalVersion>" + INFORMATIONAL_VERSION + \
+    if "<KmgVersion>" + version + "</KmgVersion>" not in props or \
+            "<KmgInformationalVersion>" + informational_version + \
             "</KmgInformationalVersion>" not in props or \
-            'AssemblyVersion("' + VERSION + '")' not in assembly or \
-            'AssemblyFileVersion("' + VERSION + '")' not in assembly or \
-            'AssemblyInformationalVersion("' + INFORMATIONAL_VERSION + '")' \
+            'AssemblyVersion("' + version + '")' not in assembly or \
+            'AssemblyFileVersion("' + version + '")' not in assembly or \
+            'AssemblyInformationalVersion("' + informational_version + '")' \
             not in assembly:
         raise AssertionError("Active version metadata mismatch")
 
@@ -168,9 +176,10 @@ def validate(root: Path):
     for key, value in historic.items():
         if key not in ("version", "milestone") and static.get(key) != value:
             raise AssertionError("Historical release evidence changed: " + key)
-    if static.get("version") != VERSION or static.get("milestone") != INFORMATIONAL_VERSION:
+    if static.get("version") != version or \
+            static.get("milestone") != informational_version:
         raise AssertionError("Static version metadata mismatch")
-    record = static.get(KEY, {})
+    record = static.get(SPRINT23_KEY, {})
     expected = {
         "newCreatures": 2, "newLogicalRoots": 12,
         "newTemplateExecutionChildren": 8, "newPrivateIdentities": 11,
@@ -198,7 +207,30 @@ def validate(root: Path):
     if manifest.returncode:
         raise AssertionError("Expanded Summoning manifest validation failed: " +
                              (manifest.stdout + manifest.stderr)[-1000:])
-    phase1.validate_package_count_owners(root, 363)
+    if version == "0.0.153":
+        patch_record = static.get(PATCH_KEY, {})
+        patch_expected = {
+            "releaseVersion": "0.0.153",
+            "baseStableVersion": "0.0.152",
+            "identityChanges": 0,
+            "routeChanges": 0,
+            "assetChanges": 0,
+            "serializationChanges": 0,
+            "sprint24Started": False,
+        }
+        for key, value in patch_expected.items():
+            if patch_record.get(key) != value:
+                raise AssertionError(
+                    "Charge-rounding patch metadata mismatch: " + key)
+        rules = (root / "src/KingmakerGunslinger/Summoning/"
+                 "ArmoredDinosaurRulesPolicy.cs").read_text(
+                     encoding="utf-8-sig")
+        if "checked(strengthModifier * 2)" not in rules or \
+                "strengthModifier + strengthModifier / 2" not in rules or \
+                "Math.Floor(strengthModifier / 2d)" in rules:
+            raise AssertionError(
+                "Triceratops charge-rounding correction is absent or stale")
+    phase1.validate_package_count_owners(root, package_owner_count)
     for token in ("sprint23-armored-dinosaurs", "triceratops", "stegosaurus"):
         for script in ("scripts/Build-Local.ps1", "scripts/package.ps1",
                        "scripts/validate-build-output.ps1",

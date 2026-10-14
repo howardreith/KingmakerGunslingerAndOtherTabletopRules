@@ -126,6 +126,81 @@ function Assert-KmgSprint22ReleaseDecision {
     }
 }
 
+function Assert-KmgSprint23ChargeRoundingReleaseDecision {
+    param([Parameter(Mandatory=$true)]$Ledger,[Parameter(Mandatory=$true)]$Candidate)
+    if($Ledger.schemaVersion -ne 1 -or
+        $Ledger.mission -cne 'Sprint23TriceratopsPowerfulChargeRounding' -or
+        $Ledger.status -cne 'QUALIFIED' -or -not $Ledger.releaseEligible -or
+        $Ledger.sprint24Started -or @($Ledger.baselineExceptions).Count -ne 0 -or
+        @($Ledger.unresolvedFindings).Count -ne 0) {
+        throw 'Sprint 23 charge-rounding patch is not fully qualified.'
+    }
+    foreach($pair in @(@('source','commit'),@('zipSha256','packageSha256'),
+        @('dllSha256','dllSha256'),@('dllMvid','dllMvid'),
+        @('sourceFingerprint','sourceStateSha256'))) {
+        if([string]$Ledger.candidate.($pair[0]) -cne
+            [string]$Candidate.($pair[1])) {
+            throw 'Charge-rounding tested artifact identity differs.'
+        }
+    }
+    $suite=$Ledger.candidate.fullSuite
+    if($Ledger.candidate.pipelineExitCode -ne 0 -or $suite.exitCode -ne 0 -or
+        $suite.failures -ne 0 -or $suite.executed -le 0 -or
+        $suite.executed -ne $suite.registered -or -not $suite.unfiltered) {
+        throw 'Charge-rounding candidate gate did not pass its full suite.'
+    }
+    if($Ledger.roster.generatedRoots -ne 1075 -or
+        $Ledger.roster.nativeWrappers -ne 29 -or
+        $Ledger.roster.choices -ne 1104 -or
+        $Ledger.roster.identityChanges -ne 0 -or
+        $Ledger.roster.routeChanges -ne 0 -or
+        $Ledger.roster.assetChanges -ne 0 -or
+        $Ledger.roster.serializationChanges -ne 0) {
+        throw 'The arithmetic patch changed the released content surface.'
+    }
+    if($Ledger.restoration.current -cne 'EXACT_INTAKE_VERIFIED' -or
+        -not $Ledger.restoration.workingFixtureClean) {
+        throw 'Charge-rounding restoration and fixture cleanup are incomplete.'
+    }
+    $mandatory=@('source-reproduction-and-focused-correction',
+        'complete-source-build-package-gate','triceratops-charge-rtwp',
+        'triceratops-charge-turn-based','high-risk-combined-charge',
+        'ordinary-power-attack-critical','released-rhino-fixed-increment',
+        'v0152-unchanged-sprint23-evidence','exact-package-release-qualification')
+    $ids=@($Ledger.coverage | ForEach-Object {$_.id})
+    if(@($ids | Sort-Object -Unique).Count -ne $ids.Count) {
+        throw 'Charge-rounding coverage contains duplicate identities.'
+    }
+    foreach($id in $mandatory) {
+        $row=@($Ledger.coverage | Where-Object {$_.id -ceq $id})
+        if($row.Count -ne 1 -or $row[0].result -cnotin @('PASS','REUSED_PASS')) {
+            throw "Charge-rounding mandatory coverage is incomplete: $id"
+        }
+    }
+    foreach($row in $Ledger.coverage) {
+        if($row.result -cnotin @('PASS','REUSED_PASS') -or
+            @($row.proofs).Count -eq 0 -or
+            @($row.evidenceSources).Count -eq 0) {
+            throw "Charge-rounding coverage lacks evidence: $($row.id)"
+        }
+        if($row.result -ceq 'REUSED_PASS') {
+            if([string]::IsNullOrWhiteSpace([string]$row.reuseJustification) -or
+                [string]::IsNullOrWhiteSpace([string]$row.priorSource)) {
+                throw 'Charge-rounding reused proof lacks provenance.'
+            }
+        } else {
+            foreach($source in $row.evidenceSources) {
+                if($source.source -cne $Candidate.commit -or
+                    $source.packageSha256 -cne $Candidate.packageSha256 -or
+                    $source.dllSha256 -cne $Candidate.dllSha256 -or
+                    $source.dllMvid -cne $Candidate.dllMvid) {
+                    throw 'Fresh charge-rounding proof is bound to other candidate bytes.'
+                }
+            }
+        }
+    }
+}
+
 function Get-KmgClosurePublicCoverage {
     param([Parameter(Mandatory=$true)]$Ledger)
     foreach ($row in $Ledger.coverage) {
