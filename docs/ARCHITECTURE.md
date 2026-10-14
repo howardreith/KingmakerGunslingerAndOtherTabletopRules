@@ -142,7 +142,7 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
-Active v0.0.152 Sprint 23 release: 3101 stable IDs: 3098 active and 3 reserved.
+Active v0.0.153 Sprint 23 charge-rounding patch: 3101 stable IDs: 3098 active and 3 reserved.
 The released v0.0.151 3068-entry prefix is exact. Sprint 23 appends 33 identities:
 two units, twelve logical placements, eight Triceratops celestial/fiendish
 execution children, two natural weapons, two unit types, two chassis carriers,

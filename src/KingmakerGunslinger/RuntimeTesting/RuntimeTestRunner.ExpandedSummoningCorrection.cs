@@ -617,16 +617,115 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private sealed class ExpandedSummoningChargeAttackObserver :
-            IGlobalRulebookHandler<RuleAttackWithWeapon>
+            IGlobalRulebookHandler<RuleAttackWithWeapon>,
+            IGlobalRulebookHandler<RuleCalculateWeaponStats>,
+            IGlobalRulebookHandler<RuleAttackRoll>
         {
             internal UnitEntityData Initiator;
             internal UnitEntityData Target;
             internal BlueprintItemWeapon Gore;
             internal BlueprintBuff Marker;
             internal readonly List<string> Attacks = new List<string>();
+            internal readonly List<RuleAttackWithWeapon> AttackRules =
+                new List<RuleAttackWithWeapon>();
             internal bool FirstChargeHitWithMarker;
+            internal bool ObservePowerAttackChoice;
+            internal int PowerAttackDecisionCount;
+            internal bool PowerAttackActiveBeforeRoll;
+            internal bool PowerAttackOffAfterAttack;
+            internal JObject PowerAttackBeforeAttack;
+            internal JObject PowerAttackAfterAttack;
+            internal int NativeRollSeed;
+            internal BlueprintFaction OriginalFaction;
+            internal BlueprintFaction PlayerFaction;
+            internal int PlayerFactionSwitchCount;
+            internal bool PlayerFactionAtAttackRoll;
+            internal bool FactionRestoredAfterAttack;
 
-            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+            private bool IsObservedCharge(RuleAttackWithWeapon evt)
+            {
+                return evt != null &&
+                    ReferenceEquals(evt.Initiator, Initiator) &&
+                    ReferenceEquals(evt.Target, Target) &&
+                    evt.Weapon != null &&
+                    ReferenceEquals(evt.Weapon.Blueprint, Gore) &&
+                    evt.IsCharge && evt.IsFirstAttack &&
+                    !evt.IsAttackOfOpportunity;
+            }
+
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt)
+            {
+                if (!ObservePowerAttackChoice ||
+                    !IsObservedCharge(evt)) return;
+                var toggle = Initiator.Descriptor.ActivatableAbilities
+                    .Enumerable.Single(value => value.Blueprint.AssetGuid ==
+                        "a7b339e4f6ff93a4697df5d7a87ff619");
+                PowerAttackBeforeAttack = Sprint22PowerAttackState(
+                    Initiator, toggle);
+                PowerAttackDecisionCount++;
+                PowerAttackActiveBeforeRoll = toggle.IsOn &&
+                    toggle.IsRunning && toggle.Blueprint.Buff != null &&
+                    Initiator.Descriptor.Buffs.GetBuff(
+                        toggle.Blueprint.Buff) != null;
+                // Movement has consumed random values, so fix only the
+                // genuine d20 precondition before the child is constructed.
+                UnityEngine.Random.InitState(NativeRollSeed);
+            }
+
+            public void OnEventAboutToTrigger(
+                RuleCalculateWeaponStats evt) { }
+
+            public void OnEventDidTrigger(RuleCalculateWeaponStats evt)
+            {
+                if (!ObservePowerAttackChoice || evt == null ||
+                    !IsObservedCharge(evt.AttackWithWeapon) ||
+                    PlayerFaction == null || OriginalFaction == null ||
+                    !ReferenceEquals(Initiator.Descriptor.Faction,
+                        OriginalFaction)) return;
+                // Keep the normal monster-faction 2d10 calculation intact.
+                // Once those stats are final, expose the real player-faction
+                // contract only to the child attack roll so the installed
+                // non-player PowerAttackWatcher honors the explicit off
+                // toggle. RuleAttackRoll teardown restores the faction before
+                // damage delivery, and the scenario finally block is a second
+                // exact-restoration guard.
+                Initiator.Descriptor.Faction = PlayerFaction;
+                PlayerFactionSwitchCount++;
+            }
+
+            public void OnEventAboutToTrigger(RuleAttackRoll evt)
+            {
+                if (!ObservePowerAttackChoice || evt == null ||
+                    PlayerFactionSwitchCount != 1 ||
+                    !ReferenceEquals(evt.Initiator, Initiator) ||
+                    !ReferenceEquals(evt.Target, Target) ||
+                    evt.Weapon == null ||
+                    !ReferenceEquals(evt.Weapon.Blueprint, Gore)) return;
+                PlayerFactionAtAttackRoll = Initiator.IsPlayerFaction;
+            }
+
+            public void OnEventDidTrigger(RuleAttackRoll evt)
+            {
+                if (!ObservePowerAttackChoice || evt == null ||
+                    PlayerFactionSwitchCount != 1 ||
+                    FactionRestoredAfterAttack ||
+                    !ReferenceEquals(evt.Initiator, Initiator) ||
+                    !ReferenceEquals(evt.Target, Target) ||
+                    evt.Weapon == null ||
+                    !ReferenceEquals(evt.Weapon.Blueprint, Gore)) return;
+                var toggle = Initiator.Descriptor.ActivatableAbilities
+                    .Enumerable.Single(value => value.Blueprint.AssetGuid ==
+                        "a7b339e4f6ff93a4697df5d7a87ff619");
+                PowerAttackAfterAttack = Sprint22PowerAttackState(
+                    Initiator, toggle);
+                PowerAttackOffAfterAttack = !toggle.IsOn &&
+                    !toggle.IsRunning && toggle.Blueprint.Buff != null &&
+                    Initiator.Descriptor.Buffs.GetBuff(
+                        toggle.Blueprint.Buff) == null;
+                Initiator.Descriptor.Faction = OriginalFaction;
+                FactionRestoredAfterAttack = ReferenceEquals(
+                    Initiator.Descriptor.Faction, OriginalFaction);
+            }
 
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
             {
@@ -638,6 +737,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Initiator.Descriptor.HasFact(Marker);
                 bool hit = evt.AttackRoll != null && evt.AttackRoll.IsHit &&
                     !evt.AttackRoll.AutoMiss;
+                AttackRules.Add(evt);
                 Attacks.Add("gore=" + gore + ",charge=" + evt.IsCharge +
                     ",first=" + evt.IsFirstAttack + ",opportunity=" +
                     evt.IsAttackOfOpportunity + ",marker=" + marker +

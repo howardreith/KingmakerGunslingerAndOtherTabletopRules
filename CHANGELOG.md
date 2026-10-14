@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.153-expanded-summoning-sprint23-charge-rounding
+
+- Corrects Triceratops Powerful Charge at positive odd Strength modifiers by
+  adding the difference between Kingmaker's already-applied truncated 1.5×
+  contribution and Sprint 23's documented 2× charge target.
+- Keeps the printed +8 baseline unchanged at ordinary +12 and charged +16;
+  +7 now resolves as +10 plus +4, and +9 as +13 plus +5.
+- Leaves zero and Strength penalties on the native once-applied convention and
+  preserves Power Attack, critical multiplication, ordinary gore, released
+  rhino paths, trample, tail trip, identities, routes, assets and save state.
+
 ## 0.0.152-expanded-summoning-sprint23
 
 - Adds Triceratops to Summon Monster VI and Summon Nature's Ally VI and

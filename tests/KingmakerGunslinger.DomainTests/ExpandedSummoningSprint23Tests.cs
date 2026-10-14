@@ -176,12 +176,58 @@ namespace KingmakerGunslinger.DomainTests
                 "Triceratops uses the live charge adapter.");
             Assertions.Equal(4, rules.ChargeDiceCount, "Printed 4d10.");
             Assertions.Equal(10, rules.ChargeDieSides, "Printed d10.");
-            Assertions.Equal(4,
-                ArmoredDinosaurRulesPolicy.PowerfulChargeLiveBonus(8),
-                "Printed +16 is ordinary +12 plus live +4.");
-            Assertions.Equal(5,
-                ArmoredDinosaurRulesPolicy.PowerfulChargeLiveBonus(10),
-                "Buffed Strength contribution remains live.");
+            foreach (int modifier in new[] { 7, 8, 9, 10 })
+            {
+                // This independently mirrors the installed engine contract:
+                // a positive single natural attack truncates its 1.5x
+                // contribution before the live charge adapter runs.
+                int ordinaryStrengthContribution = modifier + modifier / 2;
+                int chargedStrengthContribution = checked(
+                    ordinaryStrengthContribution +
+                    ArmoredDinosaurRulesPolicy.PowerfulChargeLiveBonus(
+                        modifier));
+                Assertions.Equal(checked(modifier * 2),
+                    chargedStrengthContribution,
+                    "The live adapter raises the already-applied ordinary " +
+                    "Strength contribution to the documented 2x target at " +
+                    "modifier " + modifier + ".");
+            }
+            foreach (int modifier in Enumerable.Range(1, 20))
+            {
+                int ordinaryStrengthContribution = modifier + modifier / 2;
+                Assertions.Equal(checked(modifier * 2), checked(
+                    ordinaryStrengthContribution +
+                    ArmoredDinosaurRulesPolicy.PowerfulChargeLiveBonus(
+                        modifier)),
+                    "Every bounded positive modifier reaches an independently " +
+                    "calculated 2x final contribution: " + modifier + ".");
+            }
+            foreach (int modifier in new[] { 0, -1, -2, -7, -8 })
+            {
+                // Kingmaker applies a single-natural-attack Strength penalty
+                // once rather than multiplying it. Powerful Charge therefore
+                // leaves that already-applied signed contribution unchanged.
+                int ordinaryStrengthContribution = modifier;
+                Assertions.Equal(modifier, checked(
+                    ordinaryStrengthContribution +
+                    ArmoredDinosaurRulesPolicy.PowerfulChargeLiveBonus(
+                        modifier)),
+                    "Zero and Strength penalties retain the native one-time " +
+                    "contribution: " + modifier + ".");
+            }
+            string adapter = File.ReadAllText(
+                "src/KingmakerGunslinger/Summoning/UngulatePowerfulCharge.cs");
+            Assertions.True(adapter.Contains(
+                    "evt.AddBonusDamage(AddHalfLiveStrengthBonus ?") &&
+                adapter.Contains("PowerfulChargeLiveBonus(") &&
+                adapter.Contains("Owner.Stats.Strength.Bonus) : " +
+                    "AdditionalDamageBonus);"),
+                "The caller adds only the Triceratops Strength correction; " +
+                "released fixed-increment consumers retain their own field.");
+            Assertions.False(adapter.Contains("Math.Ceiling") ||
+                adapter.Contains("DamageDescription[0].Bonus * 2"),
+                "The correction neither globally rounds signed inputs up nor " +
+                "doubles the complete ordinary damage bundle.");
             Assertions.True(rules.AppliesPowerfulCharge(true, true, true,
                 false), "First genuine charge gore qualifies.");
             Assertions.False(rules.AppliesPowerfulCharge(false, true, true,
@@ -356,8 +402,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(rhino.LivePowerfulChargeMath ||
                 rhino.LiveTrampleMath,
                 "Released Rhino stays on its frozen adapter path.");
+            Assertions.Equal(3, rhino.ChargeBonusIncrement,
+                "Released Rhinoceros retains its fixed +3 increment.");
             UngulateRulesProfile woolly = UngulateRulesPolicy.For(
                 "woolly-rhinoceros");
+            Assertions.Equal(5, woolly.ChargeBonusIncrement,
+                "Released Woolly Rhinoceros retains its fixed +5 increment.");
             Assertions.Equal(6, woolly.TrampleDieSides,
                 "Released d6 trampler stays d6.");
             Assertions.Equal(13, woolly.TrampleBonusFor(99),
@@ -389,8 +439,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(request.Contains("Sprint23ReviewPhase") &&
                 request.Contains("rtwp-foundation") &&
                 request.Contains("turn-based-control") &&
+                request.Contains("charge-rounding-rtwp") &&
+                request.Contains("charge-rounding-turn-based") &&
                 request.Contains("ExitAfterCompletion"),
-                "Only the two exact automatically exiting review phases are accepted.");
+                "Only the exact automatically exiting full and charge-only " +
+                "review phases are accepted.");
             Assertions.True(policy.Contains("SaveFreeParameterScope") &&
                 policy.Contains("Sprint23NativeReview"),
                 "Sprint 23 inherits the qualified save-free parameter boundary.");
@@ -491,6 +544,25 @@ namespace KingmakerGunslinger.DomainTests
                 "Sprint23LeaveTurnBasedBeforeDisposal",
                 "KMG_Summoning_Special_Triceratops_Trample",
                 "queued-native-charge",
+                "charge-rounding-rtwp",
+                "charge-rounding-turn-based",
+                "foreach (int strength in new[] { 24, 26, 28, 30 })",
+                "additionalChargeContribution",
+                "ordinaryWeaponStats",
+                "chargedWeaponStats",
+                "ObservePowerAttackChoice = true",
+                "PowerAttackActiveBeforeRoll",
+                "PowerAttackOffAfterAttack",
+                "PlayerFactionSwitchCount",
+                "PlayerFactionAtAttackRoll",
+                "FactionRestoredAfterAttack",
+                "desiredTargetArmorClass = ordinaryAttackBonus + 15",
+                "target.Stats.AC.BaseValue = armorClassBefore",
+                "nativeRollSeed = FindNativeD20Seed(18)",
+                "roll.Roll.Value == 18",
+                "roll.AttackBonus == ordinaryAttackBonus + 2",
+                "powerful-charge-power-attack-",
+                "powerful-charge-critical-",
                 "queued-native-trample-path-contact",
                 "released-rhino-charge-control",
                 "Sprint23AnkylosaurusControl",
@@ -511,6 +583,12 @@ namespace KingmakerGunslinger.DomainTests
                 "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1");
             string preflight = File.ReadAllText(
                 "scripts/Test-RuntimeScenarioPreflight.ps1");
+            string publisher = File.ReadAllText(
+                "scripts/Publish-QualifiedCandidate.ps1");
+            string release = File.ReadAllText(
+                "scripts/Publish-Release.ps1");
+            string releasePolicy = File.ReadAllText(
+                "scripts/QualifiedRelease.Common.ps1");
             const string scenario =
                 "disposable-expanded-summoning-sprint23-native-review";
             Assertions.True(common.Contains(scenario) &&
@@ -521,8 +599,20 @@ namespace KingmakerGunslinger.DomainTests
                 "The profile wrapper recognizes the scenario without conflating artifact reuse interfaces.");
             Assertions.True(preflight.Contains(scenario) &&
                 preflight.Contains("turn-based-control") &&
-                preflight.Contains("rtwp-foundation"),
-                "Offline preflight exercises both exact review phases.");
+                preflight.Contains("rtwp-foundation") &&
+                preflight.Contains("charge-rounding-rtwp") &&
+                preflight.Contains("charge-rounding-turn-based"),
+                "Offline preflight exercises every exact review phase.");
+            Assertions.True(publisher.Contains("Sprint23ChargeRounding") &&
+                publisher.Contains(
+                    "codex/expanded-summoning-sprint23-charge-rounding") &&
+                publisher.Contains(
+                    "expanded-summoning-sprint23-charge-rounding") &&
+                release.Contains("Sprint23ChargeRounding") &&
+                releasePolicy.Contains(
+                    "Assert-KmgSprint23ChargeRoundingReleaseDecision"),
+                "Exact-artifact promotion has a narrow branch, suffix and " +
+                "qualification-ledger contract for this patch.");
         }
     }
 }
