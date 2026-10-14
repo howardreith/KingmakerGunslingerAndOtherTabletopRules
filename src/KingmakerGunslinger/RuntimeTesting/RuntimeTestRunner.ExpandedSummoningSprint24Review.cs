@@ -3287,30 +3287,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal));
                 target.Stats.HitPoints.BaseValue = 100000;
                 owner.Stats.BaseAttackBonus.BaseValue = 100;
+                // Use the same surveyed floor/5m separation as the qualified
+                // Sprint 17 ordinary-AI cells.  A merely unobstructed point
+                // near the party can still be outside the usable path graph,
+                // while a three-metre separation gives the native dumb-brain
+                // distance scorer no approach to demonstrate.
+                string floorSurvey;
+                Vector3 origin = FindExpandedSummoningArtPoint(
+                    fixture.Caster, out floorSurvey);
                 var targetDirections = new List<int>();
                 string chosenTargetDirection;
-                Vector3 targetOrigin = ExpandedSummoningOpenPoint(
-                    fixture.Caster.Position, 5f, targetDirections,
-                    out chosenTargetDirection);
-                PlaceExpandedSummoningUnit(target, targetOrigin);
-                var ownerDirections = new List<int>();
-                string chosenOwnerDirection;
-                Vector3 origin = ExpandedSummoningOpenPoint(target.Position,
-                    3f, ownerDirections, out chosenOwnerDirection);
+                Vector3 targetOrigin = ExpandedSummoningOpenPoint(origin, 5f,
+                    targetDirections, out chosenTargetDirection);
                 PlaceExpandedSummoningUnit(owner, origin);
+                PlaceExpandedSummoningUnit(target, targetOrigin);
                 foreach (UnitEntityData unit in new[] { owner, target })
                     if (!Game.Instance.State.AwakeUnits.Contains(unit))
                         Game.Instance.State.AwakeUnits.Add(unit);
-                owner.Memory.Add(target).Visible = true;
-                target.Memory.Add(owner).Visible = true;
+                owner.Memory.Add(target);
+                target.Memory.Add(owner);
+                SetExpandedSummoningBrainActive(owner, true);
+                owner.Brain.RestoreAvailableActions();
+                owner.CombatState.AIData.NextCommandTime = float.MaxValue;
                 owner.JoinCombat();
                 target.JoinCombat();
                 Game.Instance.Player.UpdateIsInCombat();
                 join.Tick();
                 prepare.Tick();
-                SetExpandedSummoningBrainActive(owner, true);
-                owner.Brain.RestoreAvailableActions();
-                owner.CombatState.AIData.NextCommandTime = float.MaxValue;
                 Game.Instance.IsPaused = false;
 
                 int runtimeActions = owner.Brain.Actions == null ? 0 :
@@ -3319,11 +3322,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     0 : owner.Brain.AvailableActions.Count;
                 int settleFrames = 0;
                 while (settleFrames++ < 30) yield return 0;
+                bool ownerGroupAwake = Game.Instance.AwakeUnitGroups.Contains(
+                    owner.Group);
+                bool ownerGroupCombat = owner.Group != null &&
+                    owner.Group.IsInCombat;
+                string[] enemyIds = owner.Memory.Enemies.Select(value =>
+                    value.Unit == null ? null : value.Unit.UniqueId).ToArray();
                 bool nativeReady = owner.IsInGame && owner.View != null &&
                     owner.View.IsInGame && owner.Descriptor.State.CanAct &&
                     runtimeActions > 0 && availableActions > 0 &&
+                    owner.IsAIEnabled && owner.IsInCombat &&
+                    ownerGroupAwake && ownerGroupCombat &&
                     owner.IsEnemy(target) && target.IsEnemy(owner) &&
-                    owner.Memory.ContainsVisible(target);
+                    owner.Memory.ContainsVisible(target) &&
+                    enemyIds.Contains(target.UniqueId);
                 owner.CombatState.AIData.NextCommandTime = Time.time;
 
                 int frames = 0;
@@ -3353,7 +3365,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<UnitAttack>()) commands.Add(command);
                 bool exact = ordinaryFallback && nativeReady &&
                     owner.IsBrainActive &&
-                    commands.Count > 0 && observer.Rolls.Count > 0 &&
+                    commands.Any(value => value.AiAction != null) &&
+                    observer.Rolls.Count > 0 &&
                     observer.WeaponAttacks.Count > 0 && travel >= .25f &&
                     owner.Blueprint.Brain.Actions.Select(value =>
                         value.GetType().FullName + ":" + value.name)
@@ -3371,6 +3384,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["availableBrainActions"] = availableActions,
                         ["nativeReady"] = nativeReady,
                         ["settleFrames"] = settleFrames - 1,
+                        ["floorSurvey"] = floorSurvey,
+                        ["ownerAiEnabled"] = owner.IsAIEnabled,
+                        ["ownerDirectlyControllable"] =
+                            owner.IsDirectlyControllable,
+                        ["ownerInCombat"] = owner.IsInCombat,
+                        ["targetInCombat"] = target.IsInCombat,
+                        ["ownerGroupAwake"] = ownerGroupAwake,
+                        ["ownerGroupCombat"] = ownerGroupCombat,
+                        ["groupEnemyIds"] = new JArray(enemyIds),
                         ["ownerEnemy"] = owner.IsEnemy(target),
                         ["targetEnemy"] = target.IsEnemy(owner),
                         ["targetVisible"] =
@@ -3378,13 +3400,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["chosenTargetDirection"] = chosenTargetDirection,
                         ["targetDirectionCandidates"] =
                             new JArray(targetDirections),
-                        ["chosenOwnerDirection"] = chosenOwnerDirection,
-                        ["ownerDirectionCandidates"] =
-                            new JArray(ownerDirections),
                         ["ordinaryFallback"] = ordinaryFallback,
                         ["commandTypes"] = new JArray(commandTypes.OrderBy(
                             value => value, StringComparer.Ordinal)),
                         ["nativeCommands"] = commands.Count,
+                        ["nativeAiCommands"] = commands.Count(value =>
+                            value.AiAction != null),
                         ["rolls"] = observer.Rolls.Count,
                         ["weaponAttacks"] = observer.WeaponAttacks.Count,
                         ["allOwnerWeaponAttacks"] = new JArray(
