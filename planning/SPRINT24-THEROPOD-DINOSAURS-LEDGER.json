@@ -240,6 +240,15 @@
       "cause": "The frozen Sprint 23 production-source allowlist rejected the two exact Sprint 24 research observer files.",
       "correction": "Admit only RuntimeTestRunner.ExpandedSummoningSprint24Census.cs and Sprint24TheropodCensusPolicy.cs while continuing to reject all Sprint 24 gameplay/review sources.",
       "correctionChecks": "8 corruption fixtures PASS; Sprint 23 source validator PASS"
+    },
+    {
+      "timestampUtc": "2026-10-14T05:42:05Z",
+      "stage": "predeployment complete domain suite",
+      "scenario": "observe-expanded-summoning-sprint24-theropod-census",
+      "disposition": "PRESERVED_OFFLINE_RECORD_FORMAT_FAILURE",
+      "result": "2595 of 2596 domain tests passed; no deployment, process launch, save access or machine-state change occurred.",
+      "cause": "The concise active resume omitted the exact contiguous 1,075 generated placements and 1,104 visible choices phrases required by expanded-summoning.published-records-match-derivation.",
+      "correction": "Restore the released public equation in AUTONOMOUS-RESUME.md; no product or package input changed."
     }
   ],
   "acceptedLimitations": [

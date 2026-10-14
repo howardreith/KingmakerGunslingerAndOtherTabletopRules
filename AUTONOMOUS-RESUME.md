@@ -15,6 +15,9 @@ policy identities are in
 [the machine-readable ledger](planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json).
 Both new catalog keys must remain unpublished until qualification.
 Draft product PR #45 targets master directly.
+The released v0.0.153 surface remains 1,075 generated placements plus 29
+retained native wrappers, for 1,104 visible choices. The hidden Sprint 24
+candidate must keep that public equation until its 18 new roots qualify.
 
 Fresh intake evidence is local-only at
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint24-deinonychus-tyrannosaurus-intake-20261014T050745Z/intake.json`
@@ -48,6 +51,12 @@ admission defect, not native evidence. The correction adds only those exact
 research files to the historical allowed set; it still rejects every Sprint 24
 gameplay builder/review/policy file. All eight corruption fixtures and the
 Sprint 23 source validator pass after the correction.
+
+The next guarded request also stopped before deployment or launch: its complete
+domain pass found the active resume had omitted the exact released public-count
+phrases required by the source-derived record test. The line above restores
+those facts without changing product or package inputs; the failure remains in
+the machine-readable ledger.
 
 Next action: push this coherent observer checkpoint, build one current package,
 then execute the census exactly once through the guarded runtime wrapper. Use
