@@ -3189,20 +3189,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     triceratops.Descriptor.RemoveFact(marker);
                     int ordinaryBonus = ordinary.DamageDescription[0].Bonus;
                     int chargedBonus = charged.DamageDescription[0].Bonus;
+                    int nativeStrength = modifier + modifier / 2;
+                    int desiredStrength = modifier * 2;
+                    int ordinaryOther = ordinaryBonus - nativeStrength;
+                    int chargedOther = chargedBonus - desiredStrength;
                     bool exact = ordinary.DamageDescription[0].Dice.Rolls == 2 &&
                         ordinary.DamageDescription[0].Dice.Dice == DiceType.D10 &&
-                        ordinaryBonus == modifier + modifier / 2 &&
                         charged.DamageDescription[0].Dice.Rolls == 4 &&
                         charged.DamageDescription[0].Dice.Dice == DiceType.D10 &&
-                        chargedBonus == modifier * 2;
+                        chargedBonus - ordinaryBonus ==
+                            desiredStrength - nativeStrength &&
+                        ordinaryOther == chargedOther &&
+                        ordinary.DamageBonusStat == StatType.Strength &&
+                        ordinary.DamageBonusStatMultiplier == 1.5f;
                     strengthControl &= exact;
                     rows.Add(new JObject {
                         ["strength"] = score,
                         ["modifier"] = modifier,
+                        ["nativeStrengthContribution"] = nativeStrength,
+                        ["desiredStrengthContribution"] = desiredStrength,
+                        ["chargeCorrection"] = chargedBonus - ordinaryBonus,
+                        ["expectedChargeCorrection"] =
+                            desiredStrength - nativeStrength,
+                        ["ordinaryOtherAdditiveDamage"] = ordinaryOther,
+                        ["chargedOtherAdditiveDamage"] = chargedOther,
                         ["ordinary"] = Sprint23WeaponStatsRow(ordinary,
-                            modifier + modifier / 2),
+                            nativeStrength),
                         ["charged"] = Sprint23WeaponStatsRow(charged,
-                            modifier * 2),
+                            desiredStrength),
                         ["exact"] = exact
                     });
                 }
@@ -3229,9 +3243,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture)
         {
             ResetExpandedSummoningHostile(fixture);
-            UnitEntityData owner = CastExpandedSummoningQuietUnit(fixture,
+            // The quiet-unit helper intentionally clears the runtime brain's
+            // action lists and therefore cannot be used as evidence of the
+            // ordinary AI fallback. Keep the exact summoned brain intact,
+            // just as the already-qualified Sprint 16 AI cells do.
+            UnitEntityData owner = CastExpandedSummoningOwnTier(fixture,
                 TheropodRulesPolicy.DeinonychusKey);
             UnitEntityData target = fixture.Hostile;
+            owner.Descriptor.Stats.HitPoints.BaseValue = 100000;
             int targetHp = target.Stats.HitPoints.BaseValue;
             int targetDamage = target.Descriptor.Damage;
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
@@ -3259,11 +3278,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Kingmaker.Controllers.Brain.Blueprints.BlueprintAiAttack:",
                         StringComparison.Ordinal));
                 target.Stats.HitPoints.BaseValue = 100000;
-                Vector3 origin = fixture.Caster.Position +
-                    Vector3.right * 4f;
+                var directions = new List<int>();
+                string chosenDirection;
+                Vector3 origin = ExpandedSummoningOpenPoint(target.Position,
+                    8f, directions, out chosenDirection);
                 PlaceExpandedSummoningUnit(owner, origin);
-                PlaceExpandedSummoningUnit(target,
-                    origin + Vector3.forward * 7f);
                 foreach (UnitEntityData unit in new[] { owner, target })
                     if (!Game.Instance.State.AwakeUnits.Contains(unit))
                         Game.Instance.State.AwakeUnits.Add(unit);
@@ -3276,8 +3295,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 prepare.Tick();
                 SetExpandedSummoningBrainActive(owner, true);
                 owner.Brain.RestoreAvailableActions();
-                owner.CombatState.AIData.NextCommandTime = Time.time;
+                owner.CombatState.AIData.NextCommandTime = float.MaxValue;
                 Game.Instance.IsPaused = false;
+
+                int runtimeActions = owner.Brain.Actions == null ? 0 :
+                    owner.Brain.Actions.Count;
+                int availableActions = owner.Brain.AvailableActions == null ?
+                    0 : owner.Brain.AvailableActions.Count;
+                int settleFrames = 0;
+                while (settleFrames++ < 30) yield return 0;
+                bool nativeReady = owner.IsInGame && owner.View != null &&
+                    owner.View.IsInGame && owner.Descriptor.State.CanAct &&
+                    runtimeActions > 0 && availableActions > 0;
+                owner.CombatState.AIData.NextCommandTime = Time.time;
 
                 int frames = 0;
                 float travel = 0f;
@@ -3293,7 +3323,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 foreach (UnitAttack command in owner.Commands.Raw
                     .OfType<UnitAttack>()) commands.Add(command);
-                bool exact = ordinaryFallback && owner.IsBrainActive &&
+                bool exact = ordinaryFallback && nativeReady &&
+                    owner.IsBrainActive &&
                     commands.Count > 0 && observer.Rolls.Count > 0 &&
                     observer.WeaponAttacks.Count > 0 && travel >= .25f &&
                     owner.Blueprint.Brain.Actions.Select(value =>
@@ -3308,6 +3339,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["brain"] = owner.Blueprint.Brain?.name,
                         ["brainActive"] = owner.IsBrainActive,
                         ["brainActions"] = new JArray(actions),
+                        ["runtimeBrainActions"] = runtimeActions,
+                        ["availableBrainActions"] = availableActions,
+                        ["nativeReady"] = nativeReady,
+                        ["settleFrames"] = settleFrames - 1,
+                        ["chosenOpenDirection"] = chosenDirection,
+                        ["openDirectionCandidates"] = new JArray(directions),
                         ["ordinaryFallback"] = ordinaryFallback,
                         ["nativeCommands"] = commands.Count,
                         ["rolls"] = observer.Rolls.Count,
