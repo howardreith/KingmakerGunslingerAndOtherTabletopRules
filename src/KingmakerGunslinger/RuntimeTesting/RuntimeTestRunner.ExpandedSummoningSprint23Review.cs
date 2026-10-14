@@ -1391,11 +1391,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuleCalculateWeaponStats ordinaryStats = Rulebook.Trigger(
                     new RuleCalculateWeaponStats(owner, gore,
                         ordinaryAttack));
+                int ordinaryAttackBonus = Rulebook.Trigger(
+                    new RuleCalculateAttackBonusWithoutTarget(owner, gore,
+                        0)).Result;
                 observer = new ExpandedSummoningChargeAttackObserver {
                     Initiator = owner, Target = target,
                     Gore = gore.Blueprint,
                     Marker = BlueprintRoot.Instance.SystemMechanics
-                        .ChargeBuff };
+                        .ChargeBuff,
+                    ForcePowerAttackOff = true };
                 EventBus.Subscribe(observer);
                 awakeBefore = Game.Instance.State.AwakeUnits.ToArray();
                 foreach (UnitEntityData unit in new[] { owner, target })
@@ -1500,7 +1504,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool arithmetic = owner.Stats.Strength.ModifiedValue ==
                         requestedStrength &&
                     modifier == (requestedStrength - 10) / 2 &&
-                    !powerAttack.IsOn && !powerAttack.IsRunning &&
+                    observer.PowerAttackStopCount == 1 &&
+                    observer.PowerAttackOffAtAttack &&
                     ordinaryStats.DamageDescription[0].Dice.Rolls == 2 &&
                     (int)ordinaryStats.DamageDescription[0].Dice.Dice == 10 &&
                     ordinaryStats.DamageDescription[0].Bonus ==
@@ -1516,6 +1521,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             chargeCorrection &&
                     chargedStats.BonusDamage - desiredStrength == 0 &&
                     roll != null &&
+                    roll.AttackBonus == ordinaryAttackBonus + 2 &&
                     roll.IsHit && !roll.AutoMiss &&
                     !roll.IsCriticalConfirmed && damageRule != null &&
                     damageRule.DamageBundle.Weapon != null &&
@@ -1555,8 +1561,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["attacks"] = new JArray(observer.Attacks),
                         ["strength"] = owner.Stats.Strength.ModifiedValue,
                         ["modifier"] = owner.Stats.Strength.Bonus,
+                        ["ordinaryAttackBonus"] = ordinaryAttackBonus,
                         ["powerAttack"] = Sprint22PowerAttackState(owner,
                             powerAttack),
+                        ["powerAttackBeforeChargeAttack"] =
+                            observer.PowerAttackBeforeAttack,
+                        ["powerAttackAfterNativeStop"] =
+                            observer.PowerAttackAfterStop,
+                        ["powerAttackStopCount"] =
+                            observer.PowerAttackStopCount,
+                        ["powerAttackOffAtAttack"] =
+                            observer.PowerAttackOffAtAttack,
                         ["weapon"] = gore.Blueprint.AssetGuid,
                         ["weaponInstance"] = gore.GetHashCode().ToString("X8"),
                         ["ordinaryWeaponStats"] = Sprint23WeaponStatsRow(
