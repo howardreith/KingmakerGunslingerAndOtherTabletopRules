@@ -817,7 +817,11 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint22ReviewArgs `
     -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } `
     'sprint22-review-requires-automatic-exit'
 $sprint23ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint23-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
-foreach ($phase in @('rtwp-foundation','turn-based-control')) {
+foreach ($phase in @(
+    'rtwp-foundation',
+    'turn-based-control',
+    'charge-rounding-rtwp',
+    'charge-rounding-turn-based')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
         -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint23-review-allows-$phase"
     $reviewRequest = New-KmgRuntimeRequest @sprint23ReviewArgs `

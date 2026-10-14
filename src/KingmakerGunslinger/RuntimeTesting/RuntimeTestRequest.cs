@@ -122,7 +122,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return null;
             string phase = (string)request.Parameters["reviewPhase"];
             return phase == "rtwp-foundation" ||
-                phase == "turn-based-control" ? phase : null;
+                phase == "turn-based-control" ||
+                phase == "charge-rounding-rtwp" ||
+                phase == "charge-rounding-turn-based" ? phase : null;
         }
 
         private static readonly string[] AllowedMembers =

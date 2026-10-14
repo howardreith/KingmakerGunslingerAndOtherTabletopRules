@@ -2084,7 +2084,11 @@ function Test-KmgSprint23ReviewPhaseScope {
         $null -ne $Parameters -and $Parameters.Count -eq 1 -and
         $Parameters.ContainsKey('reviewPhase') -and
         $Parameters.reviewPhase -is [string] -and
-        $Parameters.reviewPhase -cin @('rtwp-foundation', 'turn-based-control')
+        $Parameters.reviewPhase -cin @(
+            'rtwp-foundation',
+            'turn-based-control',
+            'charge-rounding-rtwp',
+            'charge-rounding-turn-based')
 }
 
 function Assert-KmgRuntimeScenarioPreflight {
