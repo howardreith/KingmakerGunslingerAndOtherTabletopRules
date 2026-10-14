@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — DEINONYCHUS AND RTWP TYRANNOSAURUS PASS; TB SECOND-PAIR TURN-ENROLLMENT CORRECTION FOCUSED PASS** on
+Status: **IN PROGRESS — BOTH CREATURE MECHANICS PASS IN RTWP/TB; VISUAL RECEIPT/FORMATTER CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -76,17 +76,17 @@ celestial/fiendish policy; Nature's Ally routes remain untemplated.
 | Requirement | Intended carrier/seam | Required proof | State |
 | --- | --- | --- | --- |
 | Stable, save-compatible identities | Append-only identity catalog, blueprint ledger, normal registration | GUID/type/collision tests; module OFF load/refusal; ON attach once | 48 exact identities appended; offline validators PASS; native load proof pending |
-| Deinonychus four attacks | Primary talon plus talon and bite as additional primary limbs; one foreclaws secondary limb | Live ordinary full attack has exactly four rolls and +5/+5/+5/+0 with +2/+2/+2/+1 Strength | Implemented and domain-pinned; live proof pending |
-| Pounce only on a legal charge | Exact native Pounce fact; ordinary body routine; no project replay | RTWP/TB legal, illegal, aborted, AoO, ordinary single/full, death/interruption, next-command controls | Closed native observer implemented; live execution pending |
-| Deinonychus skills/CMD | Exact one-time 0/2/2 land ranks plus narrow racial modifiers; no four-leg fact | Live ranks, abilities, class bonuses, racial bonuses, ordinary Mobility versus jump-only distinction, CMD 17 | Implemented and derived offline; live proof pending |
-| Tyrannosaurus one bite | Owned 4d6 bite weapon with live signed Powerful Bite delta | Live +9/+10/+11/+12, zero/penalty, size, buff/debuff, enhancement, added damage, critical multiplication | Implemented; signed arithmetic tests PASS; native damage proof pending |
-| Critical suite | Exact native Improved Critical (bite) and Critical Focus facts; project-owned bite-only confirmed-critical trigger applying native `Bleed2d6Buff` | 19–20 threat, ordinary confirmation, confirmed piercing/slashing bleed, heal/end controls, negative attacks | Exact event gate and closed confirmation/cadence/healing observer implemented; live execution pending |
-| Bite-only Grab | Existing summon grapple lifecycle, exact primary-limb identity, +4 maneuver | Hit/miss, same-size legal, oversized illegal, immunity/natural 1/20, duplicate callback, independent owners | Implemented; released shared-domain controls PASS; native proof pending |
-| Later Swallow Whole | Existing held-since-round-start and maintain seam; separate -1 size delta | Same-size grab cannot swallow; later Huge target check succeeds; immediate/failed/wrong-limb controls | Implemented; distinct size-gate tests PASS; native proof pending |
-| Periodic stomach damage | Tyrannosaurus-owned 2d8+11 payload, not Powerful Bite or donor stomach | One application per intended round in RTWP/TB; attribution, escape, source loss, simultaneous predators/victims | Owned payload and independent-pair observer implemented; live cadence/attribution proof pending |
+| Deinonychus four attacks | Primary talon plus talon and bite as additional primary limbs; one foreclaws secondary limb | Live ordinary full attack has exactly four rolls and +5/+5/+5/+0 with +2/+2/+2/+1 Strength | RTWP 10/10 and TB 11/11 native phases PASS |
+| Pounce only on a legal charge | Exact native Pounce fact; ordinary body routine; no project replay | RTWP/TB legal, illegal, aborted, AoO, ordinary single/full, death/interruption, next-command controls | Legal four-roll Pounce and ordinary/negative controls PASS in RTWP/TB; lifecycle batch still pending |
+| Deinonychus skills/CMD | Exact one-time 0/2/2 land ranks plus narrow racial modifiers; no four-leg fact | Live ranks, abilities, class bonuses, racial bonuses, ordinary Mobility versus jump-only distinction, CMD 17 | Exact live adult profile PASS in RTWP/TB |
+| Tyrannosaurus one bite | Owned 4d6 bite weapon with live signed Powerful Bite delta | Live +9/+10/+11/+12, zero/penalty, size, buff/debuff, enhancement, added damage, critical multiplication | Exact one-bite and signed matrix PASS in RTWP/TB |
+| Critical suite | Exact native Improved Critical (bite) and Critical Focus facts; project-owned bite-only confirmed-critical trigger applying native `Bleed2d6Buff` | 19–20 threat, ordinary confirmation, confirmed piercing/slashing bleed, heal/end controls, negative attacks | Threat/non-confirm/confirm, ×2 damage, one 2d6 bleed tick and healing removal PASS in RTWP/TB |
+| Bite-only Grab | Existing summon grapple lifecycle, exact primary-limb identity, +4 maneuver | Hit/miss, same-size legal, oversized illegal, immunity/natural 1/20, duplicate callback, independent owners | Exact bite, +4, same-size/oversized and isolation controls PASS in RTWP/TB |
+| Later Swallow Whole | Existing held-since-round-start and maintain seam; separate -1 size delta | Same-size grab cannot swallow; later Huge target check succeeds; immediate/failed/wrong-limb controls | Distinct same-size Grab/Huge later-Swallow gates PASS in RTWP/TB |
+| Periodic stomach damage | Tyrannosaurus-owned 2d8+11 payload, not Powerful Bite or donor stomach | One application per intended round in RTWP/TB; attribution, escape, source loss, simultaneous predators/victims | Three-round cadence, escape and independent later packet PASS in RTWP/TB |
 | Hold/swallow lifecycle | Existing ownership parts with narrow reload distinction | Mouth holds reset safely; already-swallowed native state is not indiscriminately erased; dismissal/death/expiry/escape cleanup | Targeted prepare/load/cleanup/absence observer owns mouth-hold, swallowed and bleed receipts; live persistence proof pending |
 | Original theropod presentation | Existing original-asset/export/attach infrastructure on the qualified Free Hands Lizardfolk skeleton | Offline clay/silhouette/textured/unlit/camera/extreme poses; live contacts, speed, reach, navigation, crowding, fade/fallback/module lifecycle | Original icons, procedural bodies, paint, exact renderer selection, rollback and package owners implemented; 20-frame final offline review and focused checks PASS; live proof pending |
-| All 18 roots | Existing catalog generator and real parent spell paths | Every root, quantity, slot, duration, Monster templates, Nature's Ally untemplated behavior | Registered and suppressed; exact route/quantity/template tests PASS; native parent-path proof pending |
+| All 18 roots | Existing catalog generator and real parent spell paths | Every root, quantity, slot, duration, Monster templates, Nature's Ally untemplated behavior | All 18 hidden real parent paths PASS; publication remains suppressed pending remaining gates |
 | Affected old consumers | Existing pouncer, Dire Crocodile/Purple Worm, visual owner, Triceratops if shared Strength seam changes | Narrow fresh native regressions, with historical broad evidence reused only after dependency audit | Observer includes Leopard, released swallowers, donor isolation and Triceratops +7/+9; live execution pending |
 
 ## Bounded native census decision
@@ -381,14 +381,38 @@ The changed TB reproduction again passed 10/11 in 121.703 seconds. It advanced
 contract requires the Buff owner or caster to be the current TB unit, while
 neither member of the disposable second pair was in turn order.
 
-The changed strategy now enrolls the exact second predator/victim pair through
-the qualified RTWP-to-TB seam before creating either hold and waits for the
-first predator's native turn. It records exact enrollment and clock coverage,
-then requires pair two's one attributed 2d8+11 packet on its own later turn
-while pair one remains released. Product swallow mechanics remain unchanged.
-Production compilation and all 13 named Sprint 24 focused tests pass; a new
-exact Sprint candidate is required before rerunning only the failed TB
-Tyrannosaurus phase.
+The second-pair enrollment commit
+`55695b0913a35b9a3a5521c780814b35b55ed3dc` passed the next complete Sprint
+gate: 2,607/2,607 tests in 90.6 seconds and strict package validation in 185.2
+seconds total. ZIP SHA-256 is
+`44102a5c8833774a00ccc2b5a9f9a623561d35e1940dd7e5ce39ed7e5ca8865d`;
+DLL SHA-256 is
+`80e1dd837ed3ff7a02b491a705975288bd15b195c56d60e4167d38e930eda75e`,
+MVID `01329835-0f78-4d37-88e6-04c27c8d589c`, and source fingerprint
+`2e0cb8a932d2cd1edf0a3d7bad48a954cc3dd39d48e48fd631bf0fc23ee50ba3`.
+The changed TB Tyrannosaurus reproduction then passed 11/11 in 102.756 seconds:
+pair two entered native turn order and delivered one exact attributed 2d8+11
+packet after pair one was released, 200 native pulses, five ended turns and a
+round 1 -> 2 transition. Pair one stayed released and cleanup remained exact.
+
+The first `visual-lifecycle` batch retained 6 PASS and 5 FAIL assertions in
+98.290 seconds. Two recovered Deinonychus views bound the exact original body,
+suppressed only the accessory and faded in. Native carrier inventory, donor
+rollback, fixture restoration and guarded machine restoration passed. The
+receipt incorrectly counted a native per-view Lizardfolk material-controller
+clone which the exact release path does not own; that caused the injected-fault
+resource row and all three teardown rows to fail. The shared full-transform
+formatter then assumed a SerpentineVisualAttachment on the theropod and aborted
+the later lifecycle rows. This is retained at
+`runtime-evidence/20261014T1103586702473Z-disposable-expanded-summoning-sprint24-native-review`
+with runtime-result SHA-256
+`5cf24f7b0b3e217dc29345131052fa5571da7944bbcb38c84d141499c532212e`.
+The correction filters the receipt to the release path's exact
+`KMG_<key>_Original` material family, recognizes the qualified theropod driver
+set in the shared formatter and emits remaining-resource diagnostics. Product
+mechanics do not change. Production compilation and all 13 named Sprint 24
+focused tests pass; a new exact Sprint candidate is required before rerunning
+only `visual-lifecycle`.
 
 Earlier failed development checks, the candidate/correction-suite failures,
 the guarded native foundation failure, both first Deinonychus attempts, the
