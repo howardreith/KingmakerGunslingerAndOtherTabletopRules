@@ -1,5 +1,9 @@
 # Sprint 24 theropod dinosaurs — PAUSED AT OWNER REQUEST
 
+Claude takeover instructions are in
+`CLAUDE-SPRINT24-HANDOFF-2026-10-14.md`. Treat its ordered remaining-work map as
+the concise resume path and this file/coverage/ledger as the evidence record.
+
 The owner selected the complete Deinonychus and Tyrannosaurus engineering and
 release campaign on HOWARD-LAPTOP. Work is on
 `codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus`, based on current
