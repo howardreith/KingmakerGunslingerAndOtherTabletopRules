@@ -20,9 +20,9 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 105;
-        internal const int LogicalAbilityCount = 1075;
-        internal const int TemplatedPlacementCount = 310;
+        internal const int UnitCount = 107;
+        internal const int LogicalAbilityCount = 1093;
+        internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         // Sprint 14 adds eight: the soldier's sting, its poison and venom,
@@ -69,7 +69,9 @@ namespace KingmakerGunslinger.Summoning
         // append-only Triceratops gore-type experiment is reserved in the
         // manifest after native qualification rejected it. The new unit, root
         // and template execution identities are counted above.
-        internal const int SpecialIdentityCount = 259;
+        // Sprint 24 appends ten private identities: two weapons, two species
+        // types, two chassis carriers and four Tyrannosaurus-only mechanics.
+        internal const int SpecialIdentityCount = 269;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -483,6 +485,39 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec(
                 ArmoredDinosaurRulesPolicy.StegosaurusTailTypeSymbol,
                 "BlueprintWeaponType"));
+            // Sprint 24 append-only theropod identities. The units, logical
+            // routes and Monster execution children are generated above;
+            // these ten are the private blueprint surface.
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.DeinonychusTalonSymbol,
+                "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.DeinonychusUnitTypeSymbol,
+                "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.DeinonychusChassisSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.TyrannosaurusBiteSymbol,
+                "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.TyrannosaurusUnitTypeSymbol,
+                "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.TyrannosaurusChassisSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.TyrannosaurusPowerfulBiteSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.TyrannosaurusCombatTraitsSymbol,
+                "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.TyrannosaurusSwallowedSymbol,
+                "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec(
+                TheropodRulesPolicy.TyrannosaurusBleedingCriticalSymbol,
+                "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }

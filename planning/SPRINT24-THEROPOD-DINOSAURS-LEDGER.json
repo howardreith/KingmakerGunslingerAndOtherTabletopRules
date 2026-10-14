@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_CENSUS_COMPLETE_HIDDEN_CANDIDATE_NEXT",
+  "status": "IN_PROGRESS_HIDDEN_MECHANICS_COMPILED_ART_AND_NATIVE_REVIEW_NEXT",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -200,7 +200,7 @@
   "reuseAudit": {
     "sprint22And23FinalRecordsRead": true,
     "nativePounceCarrierAudit": "EXACT_NATIVE_POUNCE_FACT_RESOLVED; BEHAVIOR_PROOF_PENDING",
-    "sharedGrappleSwallowAudit": "IN_PROGRESS",
+    "sharedGrappleSwallowAudit": "FOCUSED_DOMAIN_REGRESSIONS_PASS; NATIVE_REQUALIFICATION_PENDING",
     "strengthContributionAudit": "SPRINT23_INSTALLED_IL_PROVEN; TYRANNOSAURUS SIGNED POLICY FROZEN",
     "artAndRigAudit": "CENSUS_PASS; LIZARDFOLK_FREE_HANDS_SHARED_RIG_FROZEN; TROLL_TWO_JOINT_TAIL_NEGATIVE_CONTROL",
     "criticalCarrierAudit": "NO_NATIVE_BLEEDING_CRITICAL_FEAT; PROJECT_EXACT_BITE_CONFIRMED_CRITICAL_TRIGGER_REUSES_NATIVE_BLEED2D6BUFF"
@@ -244,6 +244,31 @@
       "donorDecision": "Lizardfolk Free Hands shared skeleton; Troll negative control",
       "bleedingCriticalDecision": "Project exact Tyrannosaurus bite confirmed-critical trigger applies native Bleed2d6Buff"
     },
+    "hiddenMechanicsFocused": {
+      "status": "PASS_DEVELOPMENT_CHECKPOINT_NOT_QUALIFICATION",
+      "sourceValidator": "PASS hidden stage; 3,149 ledger rows; exact pinned Sprint 24 identities",
+      "manifestValidator": "PASS foundation=2149 active=3146 reserved=3 total=3149",
+      "fixtureValidator": "10/10 PASS",
+      "releaseProductionCompile": "PASS",
+      "sprint24Filter": {
+        "filter": "expanded-summoning.sprint24",
+        "selectedTests": 10,
+        "failures": 0,
+        "productionCompileSeconds": 0.9,
+        "domainSeconds": 4.4
+      },
+      "sharedRegressionFilter": {
+        "filter": "expanded-summoning.sprint24;expanded-summoning.sprint4-grapple-lifecycle;expanded-summoning.correction-grab;expanded-summoning.crocodilian-swallow-numbers",
+        "selectedTests": 14,
+        "failures": 0,
+        "productionCompileSeconds": 0.9,
+        "domainSeconds": 1.0
+      },
+      "registeredDomainTests": 2604,
+      "candidateSuppressionStillPresent": true,
+      "nativeProofStillPending": true,
+      "artProofStillPending": true
+    },
     "candidateSprintGate": null,
     "nativeRuns": [],
     "artRuns": [],
@@ -278,6 +303,36 @@
       "result": "Two attempts failed closed before the sanctioned restore rehydrated binary and DWord values; final 83-entry settings hash and every other intake authority match exactly.",
       "cause": "ConvertFrom-Json represented registry Binary values as object arrays rather than byte arrays.",
       "correction": "Rehydrate Binary as non-enumerated byte[] and DWord as int, then invoke Restore-KmgFlatGameSettingsValues; no manual registry or save mutation."
+    },
+    {
+      "timestampUtc": null,
+      "observedUtcWindow": "2026-10-14T06:17:27Z/2026-10-14T06:25:36Z",
+      "stage": "hidden mechanics source validation",
+      "scenario": "Sprint 24 production seam admission",
+      "disposition": "PRESERVED_EXACT_ALLOWLIST_FAILURE_THEN_PASS",
+      "result": "No deployment, process launch or save access occurred.",
+      "cause": "The stage-aware validator initially admitted only the census files and rejected the exact new theropod production seams.",
+      "correction": "Append only the named policy, component and partial-builder seams; corruption fixtures and hidden-stage validation pass."
+    },
+    {
+      "timestampUtc": null,
+      "observedUtcWindow": "2026-10-14T06:17:27Z/2026-10-14T06:25:36Z",
+      "stage": "hidden mechanics repository validation",
+      "scenario": "icon provenance ledger pin",
+      "disposition": "PRESERVED_PROVENANCE_HASH_FAILURE_THEN_PASS",
+      "result": "No icon pixels or approved historical provenance rows changed.",
+      "cause": "Appending the exact Sprint 24 blueprint identities changed blueprints.json bytes while the icon catalog still pinned the released ledger hash.",
+      "correction": "Update the one current-ledger SHA-256 pin and add the exact Sprint 24 extension authorization; icon validation passes."
+    },
+    {
+      "timestampUtc": null,
+      "observedUtcWindow": "2026-10-14T06:17:27Z/2026-10-14T06:25:36Z",
+      "stage": "Release production compilation",
+      "scenario": "Tyrannosaurus-owned swallowed payload",
+      "disposition": "PRESERVED_COMPILE_FAILURE_THEN_PASS",
+      "result": "The first compilation failed before packaging or deployment; the corrected Release production compilation passes.",
+      "cause": "ExpandedSummoningSpecialBuilder.Theropods.cs omitted the Kingmaker.UnitLogic.Mechanics namespace required by ContextDiceValue.",
+      "correction": "Add the required using directive only; no behavior was relaxed."
     }
   ],
   "acceptedLimitations": [
