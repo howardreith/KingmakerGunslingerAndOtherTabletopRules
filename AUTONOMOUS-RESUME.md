@@ -1,97 +1,40 @@
-# Sprint 23 Powerful Charge rounding follow-up — RELEASED / STOP
+# Sprint 24 theropod dinosaurs — IN PROGRESS
 
-The owner selected and completed a bounded correction and patch-release
-campaign for the released Triceratops Powerful Charge live-Strength
-calculation. Product PR #43 merged normally as
-`e122013edce9ceb88bd9aa0b40c9762cc717ed8d`; stable v0.0.153 is published and
-Latest. Sprint 24 was not started.
+The owner selected the complete Deinonychus and Tyrannosaurus engineering and
+release campaign on HOWARD-LAPTOP. Work is on
+`codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus`, based on current
+released master `e825411a8f920fdb9447f7ad48d3f7d0267e6e32`. Stable v0.0.153
+is the verified baseline; v0.0.154 was free at intake but must be rechecked at
+publication. Sprint 25 has not been started.
 
-## Preserved released baseline
+The primary Pathfinder First Edition rules, original charter pages 21–22,
+current repository policy, Sprint 22/23 reuse seams, and actual machine state
+have been read. The compact source contract and requirement-to-proof map are in
+[the Sprint 24 coverage record](docs/SPRINT24-COVERAGE.md); exact intake and
+policy identities are in
+[the machine-readable ledger](planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json).
+Both new catalog keys must remain unpublished until qualification.
 
-Sprint 23 remains historically **RELEASED / STOP** at v0.0.152: product PR
-#41 merged as `1d41388adb6aaa6e4e102e744abb392104cedbba`, final-records
-PR #42 produced master `15d6c0d82bf14fa4fd66c72c0f780f86abf44794`, and the
-tested source was `e0d7cb863b23925cfbf1721e3965c05e811a0bd7`. Its exact
-ZIP SHA-256 is
-`e417ad95e796bac7c312ed60e859b888b1dd2f83818ef211027e35d2c1c663db`.
-The published surface remains 105 project creatures,
-**1,075 generated placements**, 29 retained native wrappers, and
-**1,104 visible choices**.
-That release's mechanics, art, route, lifecycle, persistence, compatibility
-and restoration results remain unchanged in
-[the Sprint 23 coverage record](docs/SPRINT23-COVERAGE.md) and
-[ledger](planning/SPRINT23-TRICERATOPS-STEGOSAURUS-LEDGER.json).
+Fresh intake evidence is local-only at
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint24-deinonychus-tyrannosaurus-intake-20261014T050745Z/intake.json`
+(SHA-256 `c54cfea1d5ee6577760ec710d37167951d2367a3e12088b8f823244c5f54a450`).
+It records 968 Mods entries, installed KMG 0.0.117 with 136 files, 83 settings,
+118 saves, the protected baseline SHA-256
+`cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`,
+and authorized working-save SHA-256
+`795d59ff448173c6631518676b655d3bd03b31dc31e418f578f9e9488cb10ada`.
+There was no Kingmaker process, runtime transaction, lock, game staging, or
+publisher checkout.
 
-The released helper separately truncated the additional half-Strength term.
-A fresh focused reproduction selected one test and failed at modifier +7:
-ordinary +10 plus the released +3 correction produced +13 instead of the
-documented +14 target. Installed Kingmaker 2.1.7b IL confirms that a positive
-single-natural-attack contribution is truncated after multiplication by 1.5,
-while a zero or negative modifier is applied once. The source correction now
-computes the difference between that already-applied native term and the
-Triceratops's existing positive 2x target; zero and penalties receive no extra
-correction. The full Sprint 23 focused selection passes 12/12 after this edit.
+The external push wrapper changed only by adding the two owner-authorized
+Sprint 24 branches. Its SHA-256 moved from
+`688b12798eac1b46b63a28205acbb647825e371cd3e9ae5e4db0ee13610d2fb2`
+to `9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542`;
+removing those exact two lines reproduces the original hash.
 
-The frozen candidate is
-`8f30cf72c916aaee840c18b373be82274729520e`, source fingerprint
-`5167ff01981bb3a6d4109ebc0dde5646db258902e4c8dea74f2d8414626046ef`.
-Its one full Sprint gate passed 2,594/2,594 tests plus strict package validation
-in 181.8 seconds. The exact ZIP SHA-256 is
-`cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b`;
-the DLL SHA-256 is
-`bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0`
-with MVID `dd3797aa-a482-4411-b3a5-f574204a320a`.
-
-Fresh guarded native qualification passed on those exact bytes:
-
-- standalone RTWP: profile `compat-20261014T025926Z-f7acd4897101`, runtime
-  `20261014T0301019306544Z-7c896449d20e4e3d9335f1e4dde928e9`;
-- standalone turn-based: profile `compat-20261014T030403Z-28aa83f5aa3f`, runtime
-  `20261014T0305412649861Z-3ce64fad9ff94f36a5fde7986fb999a5`;
-- highest-risk-combined RTWP: profile
-  `compat-20261014T030800Z-b3091a8a321a`, runtime
-  `20261014T0309454568154Z-c3d6c46905f1401c9d59ce7fb8f7d427`.
-
-Each profile passed 13/13 selected assertions and exact restoration. Real native
-charge hits at modifiers +7/+8/+9/+10 recorded 2d10 ordinary Strength
-contributions +10/+12/+13/+15 and 4d10 charge totals +14/+16/+18/+20, with
-Power Attack off, zero unrelated additive damage and no critical. Separate
-Power Attack-on and critical checks passed, as did ordinary, aborted, later,
-opportunity and released Rhinoceros/Woolly Rhinoceros controls. Zero and
-negative Strength retain the native once-applied convention.
-
-The post-native audit exactly matches the actual intake: 968 Mods manifest
-entries, installed KMG 0.0.117 with 136 files, 83 game-setting values, 118 save
-files and both protected fixture hashes. No Kingmaker process, compatibility
-lock, transaction staging or owned diagnostic temp remains. The observer-only
-faction handoff is request-local: it preserves the original monster weapon-stat
-path, uses the installed Power Attack watcher's player-faction exemption only
-at the attack-roll boundary, and restores the original faction before damage.
-
-The exact qualified ZIP was promoted without rebuilding as
-[stable v0.0.153](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.153).
-The annotated tag object is
-`586d42b70b30569f88266c73ea7afc3696e911be` and peels to product merge
-`e122013edce9ceb88bd9aa0b40c9762cc717ed8d`. The public release has exactly the
-ZIP, `SHA256SUMS.txt` and `release-manifest.json`; their SHA-256 values are
-respectively
-`cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b`,
-`c9e33dceafd4f125b58604bd62adb19001a71e673d3bce0a9348442d3e2febcd`
-and `690e3dbb597d586fc41d9ef8989fb4dc0f443b4b3305d72177c6d727791b0a39`.
-The downloaded ZIP passed strict validation and contained the exact candidate
-DLL/MVID. GitHub's asset digests match, the release is stable/non-draft/
-non-prerelease, and Latest points to v0.0.153.
-
-The post-release audit again matches the actual intake exactly: 968 Mods
-entries, installed KMG 0.0.117 with 136 files, 83 settings, 118 saves, both
-protected fixture hashes, the sound bank and installed/private references.
-There is no Kingmaker process, compatibility lock, game staging, publisher
-checkout or owned diagnostic temp. Documentation-only PR #44 synchronizes that
-verified released state to master. The endpoint is achieved: stop; do not begin
-Sprint 24.
-
-The authoritative active contract and evidence ledger are
-[the rounding mission](docs/SPRINT23-TRICERATOPS-POWERFUL-CHARGE-ROUNDING-MISSION.md)
-and [its machine-readable ledger](planning/SPRINT23-TRICERATOPS-POWERFUL-CHARGE-ROUNDING-LEDGER.json).
-Do not alter dinosaur art, identities, routes, trample/trip behavior or old
-release records. Do not begin Sprint 24.
+Next action: finish the exact builder/component/identity and asset seam audit,
+append stable identities once, implement both hidden profiles and focused
+tests, then make the first coherent pushed checkpoint and open one draft
+product PR against master. Do not run the broad Sprint gate yet. Do not begin
+Brachiosaurus, Elephant changes, companions, polymorph, mounts, feats, or any
+Sprint 25 work.
