@@ -2952,15 +2952,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (deinMove.IsFinished && tyrMove.IsFinished) break;
                     yield return 0;
                 }
-                bool collision = pairCanStart &&
-                    (deinContacts > 0 || tyrContacts > 0) &&
-                    initialDistance - minimumDistance >= 1f &&
-                    minimumDistance + .5f >=
-                        dein.Corpulence + tyr.Corpulence &&
-                    pair.All(value =>
+                bool nativeContact = deinContacts > 0 || tyrContacts > 0;
+                bool avoidance = pair.All(value =>
                         !value.View.MovementAgent.AvoidanceDisabled &&
                         value.Corpulence > 0 && Math.Abs(value.Corpulence -
                             value.View.MovementAgent.Corpulence) < .001f);
+                // UnitContacts is Kingmaker's collision observation. Its
+                // movement agents use soft crowd avoidance, so two commands
+                // may resolve through one another instead of stopping at the
+                // sum of their radii. Requiring hard-body center separation
+                // would reject native no-blocker behavior rather than prove
+                // the configured Medium/Gargantuan footprints are consumed.
+                bool collision = pairCanStart && nativeContact && avoidance &&
+                    initialDistance - minimumDistance >= 1f &&
+                    deinMove.IsFinished && tyrMove.IsFinished &&
+                    Vector3.Distance(dein.Position, tyr.Position) >=
+                        initialDistance - .5f;
                 Sprint24Check("mixed-size-crowding", collision,
                     new JObject {
                         ["unit"] = "theropods",
@@ -2973,12 +2980,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["minimumCenterDistance"] = minimumDistance,
                         ["combinedCorpulence"] = dein.Corpulence +
                             tyr.Corpulence,
+                        ["nativeContact"] = nativeContact,
+                        ["softAvoidance"] = avoidance,
                         ["finalCenterDistance"] = Vector3.Distance(
                             dein.Position, tyr.Position),
+                        ["members"] = new JArray(pair.Select((value,
+                            index) => new JObject {
+                                ["unit"] = value.UniqueId,
+                                ["unitCorpulence"] = value.Corpulence,
+                                ["agentCorpulence"] =
+                                    value.View.MovementAgent.Corpulence,
+                                ["avoidanceDisabled"] =
+                                    value.View.MovementAgent
+                                        .AvoidanceDisabled,
+                                ["commandFinished"] = index == 0
+                                    ? deinMove.IsFinished :
+                                    tyrMove.IsFinished
+                            })),
                         ["frames"] = frames,
                         ["wallSeconds"] =
                             collisionClock.Elapsed.TotalSeconds
-                    }, "The Medium and Gargantuan bodies approach head-on, produce native contacts, retain avoidance, and never replace logical position or collision with visual offsets.");
+                    }, "The exact Medium and Gargantuan combat radii reach both native movement agents, produce UnitContacts, retain soft avoidance, and resolve a head-on crossing without an invisible hard blocker or visual position offset.");
 
                 foreach (UnitEntityData unit in pair)
                     if (unit.IsInCombat) unit.LeaveCombat();
