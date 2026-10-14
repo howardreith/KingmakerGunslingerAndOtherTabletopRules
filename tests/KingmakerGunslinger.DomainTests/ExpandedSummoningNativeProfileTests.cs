@@ -89,10 +89,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,1,"turn-based-control"), "Turn-based phase is one save-free fixture parameter.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint23,1,"rtwp-foundation"), "Sprint 23 RTWP phase is one save-free fixture parameter.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint23,1,"turn-based-control"), "Sprint 23 turn-based phase is one save-free fixture parameter.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint23,1,"charge-rounding-rtwp"), "Sprint 23 charge-rounding RTWP phase is one save-free fixture parameter.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint23,1,"charge-rounding-turn-based"), "Sprint 23 charge-rounding turn-based phase is one save-free fixture parameter.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(basic,1,"rtwp-foundation"), "Original profile cannot borrow Sprint 22 scope.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,0,null), "Sprint 22 requires its exact phase.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,2,"rtwp-foundation"), "Extra Sprint 22 parameters remain forbidden.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,1,"all"), "Broad Sprint 22 phase remains forbidden.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,1,"charge-rounding-rtwp"), "Sprint 22 cannot borrow the Sprint 23 charge phase.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint23,0,null), "Sprint 23 requires its exact phase.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint23,2,"rtwp-foundation"), "Extra Sprint 23 parameters remain forbidden.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint23,1,"all"), "Broad Sprint 23 phase remains forbidden.");
