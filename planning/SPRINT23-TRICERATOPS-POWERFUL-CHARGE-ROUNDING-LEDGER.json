@@ -97,7 +97,8 @@
       "compatibilityProfileBoundary": "5/5 PASS",
       "profilePhaseAllowlistRepair": "The request/runtime layers already accepted both charge-rounding phases, but the outer compatibility transaction wrapper admitted only the two original Sprint 23 phases. Its scenario-specific allowlist now admits both charge phases for Sprint 23 while continuing to reject them for Sprint 22; the focused profile-boundary script and 12-test Sprint 23 gate passed.",
       "intermediateSourceAssertionCorrection": "One source-text assertion used the wrong formatting/field spelling; production behavior was unchanged and the corrected focused selection passed.",
-      "powerAttackOffSetupRepair": "The native watcher removed Power Attack's attack penalty after the watcher-choice setup, but its +9 damage had already entered the charge weapon-stat calculation. The corrected request starts with the native toggle off and retains the calibrated AC at which the installed watcher prefers it off; the focused production compile and 12/12 Sprint 23 selection passed in 24.6 seconds."
+      "powerAttackOffSetupRepair": "The native watcher removed Power Attack's attack penalty after the watcher-choice setup, but its +9 damage had already entered the charge weapon-stat calculation. A second attempt started off, and native evidence proved that non-player PowerAttackWatcher always activates an off toggle. The final request keeps the original faction through completed weapon-stat calculation, exposes the real player-faction exemption only to RuleAttackRoll, and restores the original faction before damage; the focused production compile and 12/12 Sprint 23 selection passed in 22.1 seconds.",
+      "powerAttackWatcherIl": "Installed Kingmaker 2.1.7b Assembly-CSharp.dll, MVID 07fa1e4d-8618-41b3-9b8d-faa17d3b26f7: PowerAttackWatcher.OnEventAboutToTrigger(RuleAttackRoll) returns for player-faction units; for non-player units it always activates an off toggle and performs its expected-damage comparison only when already on. This makes an AC-only off setup impossible."
     }
   },
   "plan": {
@@ -198,6 +199,22 @@
       "dllMvid": "4853e91a-0857-491d-8ac0-24febee6c902",
       "cause": "The native watcher selected Power Attack off for the attack roll, but the charge weapon-stat event retained the already-entered +9 Power Attack damage. The strict PA-off arithmetic rows therefore failed rather than accepting unrelated additive damage; the corrected +14/+16/+18/+20 Strength contributions and 2d10/4d10 dice were independently observed.",
       "repair": "Begin the real command with the native toggle off at the same calibrated AC so the watcher leaves it off throughout attack-roll and weapon-stat calculation. Preserve the original faction, exact attack bonus, 2d10/4d10 dice, deterministic noncritical hit and request-local AC restoration assertions."
+    },
+    {
+      "source": "7657fb2919f2c1d94754b01dd7fceea488ef0f2e",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+      "result": "SUPERSEDED_AFTER_NATIVE",
+      "stage": "complete source/build/package gate and affected RTWP native run",
+      "registered": 2594,
+      "executed": 2594,
+      "failures": 0,
+      "elapsedSeconds": 187.9,
+      "sourceFingerprint": "e532d53d71c1d57b445b279303df760a46e039c1eeaae9401df40e711b4ec975",
+      "packageSha256": "d98ad84c424194be25bdfaeaefe117fef96a6e6f2204f8ed25f0ae7422639519",
+      "dllSha256": "96f7d1b175ad5c8bb41434bdb59015fae68a174e656f4c1b5c8108c9b4bc9e66",
+      "dllMvid": "679ec24a-6b0a-4c3d-9e7d-d66bbdc81655",
+      "cause": "Starting Power Attack off produced clean native 2d10/4d10 charge rows with zero unrelated additive damage and exact +14/+16/+18/+20 Strength totals, but installed PowerAttackWatcher unconditionally activated the off toggle for a non-player unit. Every row therefore carried the native -3 attack penalty and correctly failed the PA-off attack-state assertion.",
+      "repair": "Use the installed watcher's real player-faction early return only after the original-faction weapon-stat event is complete, then restore the original faction at RuleAttackRoll completion before damage. Keep both event-order and exact-restoration assertions."
     }
   ],
   "nativeRuns": [],
@@ -275,6 +292,21 @@
       "restoration": "EXACT_VERIFIED",
       "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T023230Z-8dfc65d0a9d8/transaction.json",
       "repair": "Start with native Power Attack off and retain the calibrated target AC so the installed watcher keeps the toggle off before both attack-roll and weapon-stat calculation; no production combat component is disabled."
+    },
+    {
+      "profileRunId": "compat-20261014T024518Z-13e2c7f6850c",
+      "runtimeRunId": "20261014T0246563371589Z-3e030b9f074d4587944db7b2f41eff7c",
+      "profile": "gunslinger-only",
+      "phase": "charge-rounding-rtwp",
+      "source": "7657fb2919f2c1d94754b01dd7fceea488ef0f2e",
+      "result": "SETUP_CONTROL_FAIL",
+      "cause": "All four real commands retained original-faction 2d10 ordinary / 4d10 charge dice, zero unrelated additive damage, natural 18 noncritical hits and exact +14/+16/+18/+20 Strength totals. The installed non-player PowerAttackWatcher changed the initially off toggle to on at RuleAttackRoll, adding the native -3 attack penalty; the strict PA-off state and attack-bonus assertions rejected every row.",
+      "productPostconditionReached": true,
+      "productArithmeticObserved": "PASS for Strength modifiers +7/+8/+9/+10; zero and signed-penalty calculation controls also passed",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0246562646165Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T024518Z-13e2c7f6850c/transaction.json",
+      "repair": "Preserve original-faction stats, hand off to the real player-faction watcher exemption only after RuleCalculateWeaponStats completes, and restore at RuleAttackRoll completion before damage plus the outer finally guard."
     }
   ],
   "release": null,
