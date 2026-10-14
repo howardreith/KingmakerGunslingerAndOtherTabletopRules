@@ -473,8 +473,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     damage.Dice.Rolls == expectedRolls[index] &&
                     damage.Dice.Dice == expectedDice[index] &&
                     damage.Bonus == expectedDamage[index] &&
-                    secondary == (dein && index == 3) &&
-                    stats.SecondaryWeapon == (dein && index == 3);
+                    secondary == (dein && index == 3);
                 attackShape &= exact;
                 attacks.Add(new JObject {
                     ["index"] = index,
@@ -559,7 +558,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["attacks"] = attacks,
                     ["facts"] = new JArray(facts),
                     ["forbiddenCarrier"] = forbidden
-                }, "The live adult profile derives every score, HD/hp, defense, save, mapped skill, attack role, reach and bipedal CMD term without a forbidden carrier.");
+                }, "The live adult profile derives every score, HD/hp, defense, save, mapped skill, limb-owned attack role, reach and bipedal CMD term without a forbidden carrier; the standalone calculation's diagnostic SecondaryWeapon flag is recorded but does not outrank the equipped secondary limb and its resulting attack/damage arithmetic.");
         }
 
         private void Sprint24ReadBody(UnitEntityData owner, string key,

@@ -1670,6 +1670,13 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == TheropodRulesPolicy.TyrannosaurusKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     TheropodRulesPolicy.TyrannosaurusUnitTypeSymbol);
+            // Both theropods borrow only the Lizardfolk rig. Its playable
+            // Human race carrier otherwise adds a selected +2 Constitution
+            // and keeps Medium combat-size arithmetic on a unit whose native
+            // state is Medium/Gargantuan. Reconstructed monsters own no
+            // playable race: clearing this exact donor field lets the unit's
+            // declared monster size and printed scores remain authoritative.
+            if (TheropodRulesPolicy.IsTheropod(profile.Key)) unit.Race = null;
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;

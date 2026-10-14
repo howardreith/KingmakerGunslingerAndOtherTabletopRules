@@ -13,6 +13,53 @@ using KingmakerGunslinger.Firing;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
+    /// Kingmaker treats a natural weapon in the primary hand as the unit's
+    /// only natural attack and gives it one-and-a-half times a positive
+    /// Strength modifier. The Deinonychus has three primary attacks and one
+    /// secondary attack, so its first talon receives the ordinary full
+    /// modifier instead. This carrier removes only the engine's excess term
+    /// from that exact owner and exact talon; it does not change attack roles.
+    /// </summary>
+    [Serializable]
+    public sealed class DeinonychusPrimaryTalonStrength :
+        RuleInitiatorLogicComponent<RuleCalculateWeaponStats>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon Talon;
+
+        public override void OnEventAboutToTrigger(
+            RuleCalculateWeaponStats evt) { }
+
+        public override void OnEventDidTrigger(
+            RuleCalculateWeaponStats evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || OwningBlueprint == null ||
+                Talon == null || !ReferenceEquals(evt.Initiator, owner) ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
+                evt.Weapon == null ||
+                !ReferenceEquals(evt.Weapon.Blueprint, Talon) ||
+                !evt.Weapon.Blueprint.IsNatural || evt.Weapon.IsSecondary ||
+                evt.SecondaryWeapon || !evt.DamageBonusStat.HasValue ||
+                evt.DamageBonusStat.Value != StatType.Strength ||
+                evt.DamageBonusStatMultiplier <= 1f || owner.Body == null ||
+                owner.Body.PrimaryHand == null ||
+                !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon,
+                    evt.Weapon) || evt.DamageDescription == null ||
+                evt.DamageDescription.Count == 0) return;
+
+            int correction = TheropodRulesPolicy
+                .MultipleNaturalPrimaryExcessStrength(
+                    owner.Descriptor.Stats.Strength.Bonus);
+            if (correction == 0) return;
+            Kingmaker.RuleSystem.Rules.Damage.DamageDescription row =
+                evt.DamageDescription[0];
+            row.Bonus -= correction;
+            evt.DamageDescription[0] = row;
+        }
+    }
+
+    /// <summary>
     /// The Tyrannosaurus's always-applicable Powerful Bite. Kingmaker's lone
     /// primary natural weapon already contributes one-and-a-half times a
     /// positive Strength modifier, but only the plain modifier for zero or a

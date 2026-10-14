@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_HIDDEN_PACKAGE_INVENTORY_FOCUSED_PASS_SPRINT_GATE_NEXT",
+  "status": "IN_PROGRESS_NATIVE_FOUNDATION_CORRECTION_FOCUSED_PASS_FRESH_SPRINT_GATE_NEXT",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -304,8 +304,48 @@
       "domainSeconds": 4.4,
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
-    "candidateSprintGate": null,
-    "nativeRuns": [],
+    "candidateSprintGate": {
+      "status": "PASS_HIDDEN_CANDIDATE_SUPERSEDED_BY_NATIVE_CORRECTION",
+      "gitCommit": "ed25e0b56a4e4fc21f6bb39c05f43a5cff7fef4b",
+      "gateLevel": "Sprint",
+      "gateDurationSeconds": 189.4,
+      "completeDomainTests": 2607,
+      "completeDomainFailures": 0,
+      "completeDomainSeconds": 93.5,
+      "packageEntries": 370,
+      "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
+      "packageSha256": "a917ba3562ff39c44a0497271243bca12ba1e4b680c67b4a7f804112f58d7e13",
+      "dllSha256": "2b085cd688b584ac7e5fa9a652060d6ac19d4b2a2b17f5d178e1fd26d8d55fdf",
+      "dllMvid": "e0300b83-d05a-4b3a-a872-cdbdea4a37f8",
+      "sourceStateSha256": "22b4483a0367f63d87efac9135739ac10c9b0c5d18dface93713b9b6806328c6",
+      "disposition": "Complete hidden Sprint gate PASS; candidate executed once natively, then superseded by evidence-driven scoped corrections."
+    },
+    "nativeRuns": [
+      {
+        "phase": "rtwp-foundation",
+        "status": "FAIL_PRESERVED_THEN_SCOPED_CORRECTION",
+        "runId": "20261014T0832560710543Z-f246559fbf7f4109be472d1d19b943cc",
+        "gitCommit": "ed25e0b56a4e4fc21f6bb39c05f43a5cff7fef4b",
+        "compatibilityTransaction": "compat-20261014T082738Z-1b5d4864c61a",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0832549309542Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0832560629690Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "10f297b88443515fd76ace74da508c30b2eaf67a0f24be61c5a212025142d40f",
+        "durationSeconds": 103.583,
+        "assertions": 26,
+        "passed": 22,
+        "failed": 4,
+        "routeDisposition": "All 18 hidden roots executed through real parent paths with legal quantities and template policy.",
+        "failures": [
+          "Playable Human donor race added +2 Constitution and retained Medium combat-size arithmetic.",
+          "Native primary-hand sole-natural-weapon arithmetic added excess half Strength to the first talon.",
+          "Standalone RuleCalculateWeaponStats.SecondaryWeapon stayed false although the foreclaws occupied the secondary limb and produced exact secondary attack/damage.",
+          "Native fade/visibility updates re-enabled the exact _ammunition04 accessory after initial suppression."
+        ],
+        "correction": "Clear donor Race only for both theropods; exact-owner/weapon lead-talon correction; use equipped limb plus outcome as attack-role authority; per-view LateUpdate accessory suppression with exact receipt/release.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      }
+    ],
     "artRuns": [
       {
         "kind": "FINAL_OFFLINE_POSE_REVIEW",
@@ -449,6 +489,16 @@
       "cause": "Sprint 24 adds exactly six package files: four original theropod mesh/albedo files and two manifest-owned original icons. Package staging and strict allowlisting already named them, but the deterministic count pin and admitted-count parser had not advanced.",
       "correction": "Set the strict base inventory to 368 and the soundbank-present inventory to 370, admit those two counts in the deterministic packager, keep the current total in the Sprint 24 test, and make historical asset tests assert strict-inventory wiring without duplicating the current total.",
       "correctionChecks": "Production compilation PASS; 7/7 exact package/source assertions PASS; disposable strict package PASS with 370 entries, four theropod body/paint files and two theropod icons; ZIP SHA-256 697e6bcd5ba57f8dfaa7c8adeafe5849ebde34cf050f32aadfdbefd9298d1aa6; never deployed and not a qualified native candidate."
+    },
+    {
+      "timestampUtc": "2026-10-14T08:34:54.3186254Z",
+      "stage": "first guarded hidden-candidate native foundation phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / rtwp-foundation",
+      "disposition": "PRESERVED_NATIVE_PROFILE_AND_VIEW_FAILURE_THEN_SCOPED_CORRECTION",
+      "result": "22/26 assertions passed in 103.583 seconds. All 18 hidden roots passed real parent-path execution. Four exact profile/view assertions failed. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The visual-only Lizardfolk donor retained its Human race carrier; native primary-hand Strength inflated the lead talon; the standalone calculation flag did not mirror the equipped secondary limb; native fade updates re-enabled the donor accessory.",
+      "correction": "Clear Race only on the two theropods, subtract only the exact lead talon's excess half-Strength term, treat the equipped limb and resulting arithmetic as role authority, and continuously suppress/release the exact accessory per view.",
+      "correctionChecks": "Production compilation PASS; Sprint 24 13/13 PASS; shared resource authority 6/6 PASS; instance-owned resource control 1/1 PASS. Fresh complete Sprint gate and changed native foundation reproduction remain required."
     }
   ],
   "acceptedLimitations": [
