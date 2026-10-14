@@ -93,11 +93,23 @@ ADDED = {symbol: (guid, planned_type(symbol)) for symbol, guid in GUIDS.items()}
 # This is a source-ownership boundary, not a claim that listed files already
 # qualify. Additions must be exact Sprint 24 seams and remain reviewable here.
 ALLOWED_PRODUCTION = {
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.Theropods.cs",
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.cs",
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.Theropods.cs",
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
     "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Census.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
     "src/KingmakerGunslinger/RuntimeTesting/Sprint24TheropodCensusPolicy.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningDonorCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
+    "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/TheropodCombatComponents.cs",
+    "src/KingmakerGunslinger/Summoning/TheropodRulesPolicy.cs",
 }
 
 

@@ -275,6 +275,8 @@ namespace KingmakerGunslinger.Blueprints
                 { "Blindsight", "236ec7f226d3d784884f066aa4be1570" },
                 { "PurpleWormPoison", "728446b9d0bf47144a1b621169299c2a" },
                 { "CriticalFocus", "8ac59959b1b23c347a0361dc97cc786d" },
+                { "Diehard", "86669ce8759f9d7478565db69b8c19ad" },
+                { "Endurance", "54ee847996c25cd4ba8773d7b8555174" },
                 { "SpiderWebImmunity", "3051e7002c803fc47a11bcfa381b9fbd" }
             };
         private static readonly ISet<string> BaseUnitFactKeys =
@@ -500,6 +502,7 @@ namespace KingmakerGunslinger.Blueprints
                         "exact native goblinoid unit type")).ToArray());
             ConfigureAnkylosaurus(library, bySymbol);
             ConfigureArmoredDinosaurs(library, bySymbol);
+            ConfigureTheropods(library, bySymbol);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -1480,7 +1483,8 @@ namespace KingmakerGunslinger.Blueprints
                 profile.Key == GiantScorpionRulesPolicy.GiantScorpionKey ||
                 profile.Key == GiantCrabRulesPolicy.GiantCrabKey ||
                 profile.Key == AnkylosaurusRulesPolicy.Key ||
-                ArmoredDinosaurRulesPolicy.UsesExactRanks(profile.Key);
+                ArmoredDinosaurRulesPolicy.UsesExactRanks(profile.Key) ||
+                TheropodRulesPolicy.UsesExactRanks(profile.Key);
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
@@ -1527,6 +1531,28 @@ namespace KingmakerGunslinger.Blueprints
                         .StegosaurusPerceptionRanks;
                     ranks.BaseHitPoints = ArmoredDinosaurRulesPolicy
                         .StegosaurusBaseRacialHitPoints;
+                }
+                else if (profile.Key == TheropodRulesPolicy.DeinonychusKey)
+                {
+                    ranks.MobilityRanks = TheropodRulesPolicy
+                        .DeinonychusMobilityRanks;
+                    ranks.PerceptionRanks = TheropodRulesPolicy
+                        .DeinonychusPerceptionRanks;
+                    ranks.StealthRanks = TheropodRulesPolicy
+                        .DeinonychusStealthRanks;
+                    ranks.BaseHitPoints = TheropodRulesPolicy
+                        .DeinonychusBaseRacialHitPoints;
+                }
+                else if (profile.Key == TheropodRulesPolicy.TyrannosaurusKey)
+                {
+                    ranks.MobilityRanks = TheropodRulesPolicy
+                        .TyrannosaurusMobilityRanks;
+                    ranks.PerceptionRanks = TheropodRulesPolicy
+                        .TyrannosaurusPerceptionRanks;
+                    ranks.StealthRanks = TheropodRulesPolicy
+                        .TyrannosaurusStealthRanks;
+                    ranks.BaseHitPoints = TheropodRulesPolicy
+                        .TyrannosaurusBaseRacialHitPoints;
                 }
                 else if (profile.Key == GirallonRulesPolicy.GirallonKey)
                 {
@@ -1638,6 +1664,12 @@ namespace KingmakerGunslinger.Blueprints
                 ArmoredDinosaurRulesPolicy.StegosaurusKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     ArmoredDinosaurRulesPolicy.StegosaurusUnitTypeSymbol);
+            else if (profile.Key == TheropodRulesPolicy.DeinonychusKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    TheropodRulesPolicy.DeinonychusUnitTypeSymbol);
+            else if (profile.Key == TheropodRulesPolicy.TyrannosaurusKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    TheropodRulesPolicy.TyrannosaurusUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
@@ -1719,6 +1751,18 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "StegosaurusTrip"
                     ? Require<BlueprintFeature>(bySymbol,
                         ArmoredDinosaurRulesPolicy.StegosaurusTripSymbol)
+                    : fact == "DeinonychusChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        TheropodRulesPolicy.DeinonychusChassisSymbol)
+                    : fact == "TyrannosaurusChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        TheropodRulesPolicy.TyrannosaurusChassisSymbol)
+                    : fact == "TyrannosaurusPowerfulBite"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        TheropodRulesPolicy.TyrannosaurusPowerfulBiteSymbol)
+                    : fact == "TyrannosaurusBleedingCritical"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        TheropodRulesPolicy.TyrannosaurusBleedingCriticalSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
@@ -1857,6 +1901,10 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, ArmoredDinosaurRulesPolicy.TriceratopsGoreSymbol);
             if (key == "StegosaurusTail4d6") return Require<BlueprintItemWeapon>(
                 bySymbol, ArmoredDinosaurRulesPolicy.StegosaurusTailSymbol);
+            if (key == "DeinonychusTalon1d8") return Require<BlueprintItemWeapon>(
+                bySymbol, TheropodRulesPolicy.DeinonychusTalonSymbol);
+            if (key == "TyrannosaurusBite4d6") return Require<BlueprintItemWeapon>(
+                bySymbol, TheropodRulesPolicy.TyrannosaurusBiteSymbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }

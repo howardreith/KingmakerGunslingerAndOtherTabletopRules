@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 56 || Values.Select(value => value.Key)
+            if (Values.Length != 58 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -349,6 +349,50 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException(
                     "Sprint 23 armored-dinosaur profile changed.");
             ArmoredDinosaurRulesPolicy.Validate();
+            NaturalSummonProfile deinonychus = For(
+                TheropodRulesPolicy.DeinonychusKey);
+            NaturalSummonProfile tyrannosaurus = For(
+                TheropodRulesPolicy.TyrannosaurusKey);
+            if (deinonychus.HitDieClass != "Animal" ||
+                deinonychus.HitDice != 4 ||
+                deinonychus.Size != "Medium" ||
+                deinonychus.Strength != 15 ||
+                deinonychus.Dexterity != 15 ||
+                deinonychus.Constitution != 19 ||
+                deinonychus.SpeedFeet != 60 ||
+                deinonychus.NaturalArmor != 3 ||
+                deinonychus.PrimaryWeapon != "DeinonychusTalon1d8" ||
+                deinonychus.AdditionalWeapons.Count != 2 ||
+                deinonychus.AdditionalWeapons[0] !=
+                    "DeinonychusTalon1d8" ||
+                deinonychus.AdditionalWeapons[1] != "Bite1d6" ||
+                deinonychus.AdditionalSecondaryWeapons.Count != 1 ||
+                deinonychus.AdditionalSecondaryWeapons[0] != "Claw1d4" ||
+                !deinonychus.Facts.Contains("Pounce") ||
+                deinonychus.Facts.Contains("TripDefenseFourLegs") ||
+                !deinonychus.Skills.SequenceEqual(new[] {
+                    "Perception", "Stealth" }) ||
+                tyrannosaurus.HitDieClass != "Animal" ||
+                tyrannosaurus.HitDice != 18 ||
+                tyrannosaurus.Size != "Gargantuan" ||
+                tyrannosaurus.Strength != 32 ||
+                tyrannosaurus.Dexterity != 13 ||
+                tyrannosaurus.Constitution != 19 ||
+                tyrannosaurus.SpeedFeet != 40 ||
+                tyrannosaurus.NaturalArmor != 14 ||
+                tyrannosaurus.PrimaryWeapon != "TyrannosaurusBite4d6" ||
+                tyrannosaurus.AdditionalWeapons.Count != 0 ||
+                tyrannosaurus.AdditionalSecondaryWeapons.Count != 0 ||
+                !tyrannosaurus.Facts.Contains("CriticalFocus") ||
+                !tyrannosaurus.Facts.Contains("ImprovedCriticalBite") ||
+                !tyrannosaurus.Facts.Contains(
+                    "TyrannosaurusBleedingCritical") ||
+                tyrannosaurus.Facts.Contains("Pounce") ||
+                tyrannosaurus.Facts.Contains("PowerAttack") ||
+                !tyrannosaurus.Skills.SequenceEqual(new[] { "Perception" }))
+                throw new InvalidOperationException(
+                    "Sprint 24 theropod profile changed.");
+            TheropodRulesPolicy.Validate();
         }
 
         private static NaturalSummonProfile[] Build()
@@ -821,7 +865,34 @@ namespace KingmakerGunslinger.Summoning
                     "Exact land ranks retain native attribute, class-skill, size and Skill Focus contributions: one rank each in Mobility, Perception and Stealth. The fourth printed rank bought Climb and is not reallocated.",
                     "Kingmaker exposes one movement speed; the 30-foot ground speed is used and the 30-foot climb speed is omitted under the ordinary-map land-use scope. The printed Climb +16 is omitted rather than substituted.",
                     "Low-light vision and scent are omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED.",
-                    "REGISTERED AND WITHHELD. The original project-owned gigantopithecus body is NOT authored: this creature currently rides the Owlbear donor rig pending the bounded read-only primate donor census, and every visual and runtime gate remains open.")
+                    "REGISTERED AND WITHHELD. The original project-owned gigantopithecus body is NOT authored: this creature currently rides the Owlbear donor rig pending the bounded read-only primate donor census, and every visual and runtime gate remains open."),
+                PSK("deinonychus", "Deinonychus", "Animal", 4, "Medium",
+                    15, 15, 19, 2, 12, 14, 60, 3,
+                    "DeinonychusTalon1d8",
+                    A("DeinonychusTalon1d8", "Bite1d6"),
+                    A("Claw1d4"),
+                    A("Pounce", "ImprovedInitiative",
+                        "DeinonychusChassis"),
+                    A("Perception", "Stealth"),
+                    "Sprint 24 frozen adult routine: two primary talons at 1d8+2, one primary bite at 1d6+2, and one secondary foreclaws attack at 1d4+1. The plural label is one rolled attack, so the routine has exactly four attacks.",
+                    "Pounce is the exact native carrier and may expose this ordinary full routine only after a legal charge. No Rake, Rend, Grab, Swallow Whole, fear, poison or Powerful Charge is present.",
+                    "Exact land ranks are zero Mobility, two Perception and two Stealth. Narrow racial +8 carriers produce ordinary Mobility +10, Perception +14 and Stealth +15; the separate speed-derived jump adjustment is not generalized into movement skills.",
+                    "Run remains omitted under RUN_NATIVE_SUMMON_AI_DISPOSITION. Low-light vision and scent remain PASSIVE_CREATURE_SENSES_UNMODELED without substitute senses."),
+                PK("tyrannosaurus", "Tyrannosaurus", "Animal", 18,
+                    "Gargantuan", 32, 13, 19, 2, 15, 10, 40, 14,
+                    "TyrannosaurusBite4d6", Array.Empty<string>(),
+                    A("CriticalFocus", "Diehard", "Endurance",
+                        "ImprovedCriticalBite", "ImprovedInitiative",
+                        "IronWill", "SkillFocusPerception",
+                        "TyrannosaurusChassis",
+                        "TyrannosaurusPowerfulBite",
+                        "TyrannosaurusBleedingCritical"),
+                    A("Perception"),
+                    "Sprint 24 frozen adult routine: one primary bite at 4d6 with a 19-20 threat range. Powerful Bite makes the final signed Strength contribution exactly twice the live modifier; at Strength 32 that is +22, without multiplying any other damage.",
+                    "Only an exact bite hit may Grab, with +4 to the grapple check and a same-size-or-smaller gate. Swallow Whole is separate: a target one category smaller must already have been held in that mouth at the start of the later qualifying round and a new check must succeed.",
+                    "Periodic interior damage is the Tyrannosaurus-owned 2d8+11 payload, distinct from bite damage and its hit or critical riders. Printed interior AC 17 and hp 15 remain recorded under SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED.",
+                    "Bleeding Critical applies the native 2d6 bleed payload only after this Tyrannosaurus's bite confirms a critical; Critical Focus never confirms automatically. No claws, tail attack, Pounce, trample, roar/fear or Power Attack is present.",
+                    "Exact Perception is 18 ranks, +3 class, +2 Wisdom, +8 racial and +6 Skill Focus = +37. Run remains omitted under RUN_NATIVE_SUMMON_AI_DISPOSITION; passive senses remain PASSIVE_CREATURE_SENSES_UNMODELED.")
             };
         }
 

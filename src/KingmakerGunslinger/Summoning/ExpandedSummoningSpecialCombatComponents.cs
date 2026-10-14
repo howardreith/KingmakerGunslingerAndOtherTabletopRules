@@ -1987,24 +1987,31 @@ namespace KingmakerGunslinger.Summoning
     public sealed class SummonSwallowLifecycleComponent : BuffLogic,
         IUnitHandler, IGlobalSubscriber
     {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintBuff OwnedSwallowedBuff;
+        public bool ReleaseOnVictimDeath;
+
         public void HandleUnitSpawned(UnitEntityData unit) { }
         public void HandleUnitDestroyed(UnitEntityData unit) { HandleUnitDeath(unit); }
         public void HandleUnitDeath(UnitEntityData unit)
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             // Existing worm/flytrap graphs keep their qualified native paths.
-            // Native swallow only watches the source's death, so Dire also
-            // releases its exact swallowed victim at that victim's boundary.
-            if (owner == null || owner.Blueprint == null ||
-                owner.Blueprint.name != "KMG_Summoning_Unit_DireCrocodile" ||
-                unit == null) return;
+            // Native swallow only watches the source's death, so exact
+            // creature-owned payloads opt in to victim-boundary cleanup.
+            if (!ReleaseOnVictimDeath || owner == null || unit == null ||
+                unit.Descriptor == null || OwningBlueprint == null ||
+                OwnedSwallowedBuff == null ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint)) return;
             SummonGrabComponent grab = SummonGrabComponent.Find(owner);
             UnitPartSwallowWhole part = owner.Get<UnitPartSwallowWhole>();
-            if (grab == null || part == null || !part.SwallowedUnits.Any(value =>
+            if (grab == null ||
+                !ReferenceEquals(grab.SwallowedBuff, OwnedSwallowedBuff) ||
+                part == null || !part.SwallowedUnits.Any(value =>
                     ReferenceEquals(value.Value, unit))) return;
             part.Free(unit);
             SummonGrappleLinks.Release(owner, unit);
-            if (grab.SwallowedBuff != null) unit.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff);
+            unit.Descriptor.Buffs.RemoveFact(OwnedSwallowedBuff);
         }
 
         public override void OnTurnOff()
@@ -2052,9 +2059,12 @@ namespace KingmakerGunslinger.Summoning
             Sweep(false);
         }
 
-        // Native parts and their state buffs can survive deserialization even
-        // though the session link is not reconstructible. Reset only KMG-owned
-        // relationships, including nonparty summons/prey, at the load boundary.
+        // Native grapple parts and their state buffs can survive
+        // deserialization even though the session mouth-hold link is not
+        // reconstructible. Reset only active KMG-owned holds, including
+        // nonparty summons/prey. An already-swallowed native state is a
+        // different lifetime: UnitPartSwallowed and UnitPartSwallowWhole are
+        // authoritative and must survive while their exact owner survives.
         internal static void ResetLoadedGrapples(IEnumerable<UnitEntityData> units)
         {
             UnitEntityData[] all = (units ?? Enumerable.Empty<UnitEntityData>())
@@ -2062,15 +2072,6 @@ namespace KingmakerGunslinger.Summoning
             foreach (UnitEntityData owner in all.Where(IsKmgSummon))
             {
                 SummonGrabComponent grab = SummonGrabComponent.Find(owner);
-                UnitPartSwallowWhole swallower = owner.Get<UnitPartSwallowWhole>();
-                if (swallower != null)
-                    foreach (UnitReference reference in swallower.SwallowedUnits.ToArray())
-                    {
-                        UnitEntityData target = reference.Value;
-                        swallower.Free(reference);
-                        if (target != null && grab != null && grab.SwallowedBuff != null)
-                            target.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff);
-                    }
                 foreach (UnitEntityData target in all)
                 {
                     UnitPartGrappleTarget held = target.Get<UnitPartGrappleTarget>();
