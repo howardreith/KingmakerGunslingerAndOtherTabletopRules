@@ -133,11 +133,45 @@ The batched observer correction now samples a normal own-tier summon after the
 same 12-frame foundation settle, then applies fixture survivability; uses the
 native `IsSingleAttack` contract; records controlled actual d20s without making
 all hits a Pounce legality requirement; and treats native target refusal plus
-zero attacks/stale state as the illegal/aborted result. Production compilation
-and the named Sprint 24 filter pass 13/13. Both keys remain suppressed.
+zero attacks/stale state as the illegal/aborted result. The exact correction
+commit `aa048f1db9d279ea6185ec7ab1b3534eac93ff2a` passed a new complete
+Sprint gate: 2,607/2,607 in 91.5 seconds and strict package validation in 186.1
+seconds total. The 370-entry ZIP SHA-256 is
+`68ce7f2d0699cc07f61903ca460b78ffd34539784f2543eba7ab6f810988fbd1`;
+DLL SHA-256 is
+`e69ae58067b5f69a6b6b501a2cb8fbba3c7125f688c566b49520f419ebbcb3f8`,
+MVID `9228e5b3-1edd-44c7-9591-14520fe31c6f`, and source fingerprint
+`78ad09ba48adfaf2b902c8fbd12bd8f85aa793bbb2e37bfdf8cee3f03f98eda5`.
 
-Next action: commit and push this observer correction through the required
-wrapper, run one fresh complete Sprint gate on that exact commit, then rerun
-only `rtwp-deinonychus` with `-ReuseInstalledArtifact`. Continue the remaining
-native phases only after that reproduction passes. Do not begin Brachiosaurus,
-Elephant changes, companions, polymorph, mounts, feats, or any Sprint 25 work.
+The corrected `rtwp-deinonychus` reproduction passed 10/10 assertions in
+92.724 seconds. It proves the exact adult profile and body, an ordinary native
+four-roll routine, one native primary-talon single attack, a 11.703 m legal
+Pounce with exactly four charge rolls and ordinary economy, a rejected
+too-close charge with no follow-up/stale state, a one-strike AoO and exact
+teardown. Transaction `compat-20261014T090839Z-de4595196cfc` restored exactly;
+runtime-result SHA-256 is
+`e3f8c65e72faceabedc11041b1b48432f813e8d3408e99930e479fa2ee05a791`.
+
+The first `turn-based-deinonychus` phase retained 5 PASS and 3 FAIL assertions
+in 194.520 seconds. Profile, body and teardown passed, but the ordinary full and
+single commands emitted zero rolls because the summon had never entered native
+turn order. The subsequent route survey raised a native
+`AbilityCustomCharge.CanTarget` null dereference because it ran while TB mode
+had no valid current-turn path. This is the same harness ordering already solved
+by the qualified Sprint 22/23 controller, not a creature-mechanics result.
+Transaction `compat-20261014T091235Z-920f582e4222` restored exactly;
+runtime-result SHA-256 is
+`a4758447f28aea0df639bf0cadb73e5e68b00dfb99f63b601a2f584e1e1857cf`.
+
+The narrow correction now starts every phase in RTWP, enrolls the exact owner
+and target through `Sprint22EnrollTurnBasedOwners`, waits for the owner's real
+turn before ordinary commands, and surveys Charge in RTWP before re-enrolling
+for its actual TB execution. Production compilation and the named Sprint 24
+filter pass 13/13. Both keys remain suppressed.
+
+Next action: commit and push this turn-controller correction through the
+required wrapper, run one fresh complete Sprint gate on that exact commit, then
+rerun only `turn-based-deinonychus` with `-ReuseInstalledArtifact`. Continue the
+remaining native phases only after that reproduction passes. Do not begin
+Brachiosaurus, Elephant changes, companions, polymorph, mounts, feats, or any
+Sprint 25 work.

@@ -188,8 +188,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }, "The exact allowlisted bounded review phase is recorded.");
                 Game.Instance.IsPaused = true;
                 CreateExpandedSummoningCorrectionHostile(fixture);
-                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
-                    turnBased;
+                // The qualified Sprint 22/23 controller first admits exact
+                // request-owned actors in RTWP, then lets the supported mode
+                // toggle rebuild native turn order.  Enabling TB here before
+                // admission leaves later commands outside SortedUnits and can
+                // also make AbilityCustomCharge route probes dereference a
+                // missing current-turn path.
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
@@ -673,6 +678,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private IEnumerable<int> Sprint24EnrollTurnBasedOwner(
+            ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, string key)
+        {
+            var admission = new JObject();
+            foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                new[] { owner }, fixture.Hostile, admission))
+                yield return frame;
+            bool admitted = owner.IsInCombat && fixture.Hostile.IsInCombat &&
+                CombatController.IsInTurnBasedCombat() &&
+                (bool)admission["admitted"];
+            Sprint24Check("turn-order-" + key, admitted, admission,
+                "The exact request-owned theropod and hostile enter native turn order through the qualified RTWP-enrollment and supported-mode-toggle seam.");
+            if (!admitted)
+                throw new InvalidOperationException(
+                    key + " did not enter native turn order: " +
+                    admission.ToString(Formatting.None));
+            int waited = 0;
+            while (!Sprint18OwnerIsActing(owner) && waited++ < 320)
+                yield return 0;
+            if (!Sprint18OwnerIsActing(owner))
+                throw new InvalidOperationException(
+                    key + " never received its native turn after admission.");
+        }
+
         private IEnumerable<int> Sprint24ReviewDeinonychus(
             ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
@@ -690,6 +720,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TheropodRulesPolicy.DeinonychusKey, turnBased);
                 Sprint24ReadBody(owner,
                     TheropodRulesPolicy.DeinonychusKey, turnBased);
+                if (turnBased)
+                    foreach (int frame in Sprint24EnrollTurnBasedOwner(
+                        fixture, owner,
+                        TheropodRulesPolicy.DeinonychusKey))
+                        yield return frame;
                 owner.Stats.HitPoints.BaseValue = 100000;
                 target.Stats.HitPoints.BaseValue = 100000;
                 foreach (int frame in Sprint24DeinonychusOrdinaryCommands(
@@ -880,6 +915,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             EventBus.Subscribe(observer);
             try
             {
+                if (turnBased)
+                {
+                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                        false;
+                    Game.Instance.TurnBasedCombatController.Activate();
+                    Game.Instance.IsPaused = false;
+                    yield return 0;
+                    if (CombatController.IsInTurnBasedCombat())
+                        throw new InvalidOperationException(
+                            "Deinonychus charge route survey could not retire " +
+                            "the preceding native turn.");
+                }
                 Vector3 start;
                 string route;
                 TargetWrapper selected = Sprint23FindChargeRoute(fixture,
@@ -1154,6 +1201,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TheropodRulesPolicy.TyrannosaurusKey, turnBased);
                 Sprint24ReadBody(owner,
                     TheropodRulesPolicy.TyrannosaurusKey, turnBased);
+                if (turnBased)
+                    foreach (int frame in Sprint24EnrollTurnBasedOwner(
+                        fixture, owner,
+                        TheropodRulesPolicy.TyrannosaurusKey))
+                        yield return frame;
                 owner.Stats.HitPoints.BaseValue = 100000;
                 target.Stats.HitPoints.BaseValue = 100000;
                 foreach (int frame in Sprint24TyrannosaurusOrdinaryCommand(

@@ -414,6 +414,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Sprint24ReviewTyrannosaurus", "Sprint24VisualLifecycle",
                 "Sprint24MovementAndCrowding", "Sprint24SharedControls",
                 "Sprint24ContactPresentation", "Sprint24ReleaseHold",
+                "Sprint24EnrollTurnBasedOwner",
+                "Sprint22EnrollTurnBasedOwners",
                 "RuleAttackWithWeapon", "ChargeAbility",
                 "UnitPartSwallowWhole", "CriticalConfirmationRoll",
                 "PowerfulBite", "BleedingCritical",
