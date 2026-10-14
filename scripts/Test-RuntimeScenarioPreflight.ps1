@@ -175,6 +175,7 @@ $expected = @(
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
     'observe-expanded-summoning-sprint22-contracts',
+    'observe-expanded-summoning-sprint24-theropod-census',
     'disposable-expanded-summoning-sprint18-review',
     'disposable-expanded-summoning-sprint19-review',
     'disposable-expanded-summoning-sprint20-review',
