@@ -166,6 +166,21 @@
       "restoration": "EXACT_VERIFIED",
       "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T014029Z-1d24452a23e9/transaction.json",
       "repair": "Extend only the Sprint 23 SaveFreeParameterScope allowlist to the two already-qualified charge phases, retain the Sprint 22 refusal, and cover both boundaries in domain tests before rebuilding the compiled observer."
+    },
+    {
+      "profileRunId": "compat-20261014T014955Z-bbd1c332bd20",
+      "runtimeRunId": "20261014T0151315789266Z-d4ba56950e854d96beedf0a14bab63db",
+      "profile": "gunslinger-only",
+      "phase": "charge-rounding-rtwp",
+      "source": "a1641fd4bb4636a6ee4b7a514f34082e045ce1a6",
+      "result": "SETUP_CONTROL_FAIL",
+      "cause": "All four real charge hits produced the corrected exact charged Strength totals (+14, +16, +18 and +20), but the queued ChargeAbility restarted the native Power Attack attack-mode toggle after the pre-command stop. The end-state assertion therefore correctly refused the requested Power-Attack-off qualification setup.",
+      "productPostconditionReached": true,
+      "productArithmeticObserved": "PASS for Strength modifiers +7/+8/+9/+10",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0151315483817Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T014955Z-bbd1c332bd20/transaction.json",
+      "repair": "Apply the same qualified native forced-stop sequence at the exact first charge-gore RuleAttackWithWeapon boundary before its attack-roll and weapon-stat children; record pre/post toggle state and independently require the charge attack bonus to be exactly +2 over the PA-off ordinary attack bonus."
     }
   ],
   "release": null,
