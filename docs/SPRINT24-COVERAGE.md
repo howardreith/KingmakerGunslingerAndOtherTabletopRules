@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — DEINONYCHUS AND RTWP TYRANNOSAURUS PASS; TB NATIVE-CLOCK CONTINUATION CORRECTION FOCUSED PASS** on
+Status: **IN PROGRESS — DEINONYCHUS AND RTWP TYRANNOSAURUS PASS; TB NATIVE-TURN CONTINUATION CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -352,13 +352,28 @@ manual collection call, however, its schedule remained at the already-
 processed current turn boundary (`0.0s` delay), so that call was not a later
 native round.
 
-The changed strategy enrolls the disposable second victim in the existing
-request-owned Sprint 22 clock, releases the first victim, and yields boundedly
-through native controller pulses. It requires exactly one later attributed
-2d8+11 packet for the surviving pair and zero packets for the released victim.
-Product swallow mechanics remain unchanged. Production compilation and all 13
-named Sprint 24 focused tests pass; a new exact Sprint candidate is required
-before rerunning only the failed TB Tyrannosaurus phase.
+The native-clock correction commit
+`8aec80714cf8ca77f92d6ae72d065addf33161e1` passed the next complete Sprint
+gate: 2,607/2,607 tests in 95.3 seconds and strict package validation in 191.4
+seconds. ZIP SHA-256 is
+`738b15aca71d51d00c691f8b9c9da83cdb84a64b4dccfa34472c0159d3728d8e`;
+DLL SHA-256 is
+`4029dccf88ce60b9ae57a8aee11f21afb641bea29ac1a11cee8a43ba1391ce7e`,
+MVID `37420198-db58-4cbc-ba73-51685e56d840`, and source fingerprint
+`7160ad8324995115dbeefc64d2b4014bc0cdada21cc095025bc1464567665fb5`.
+The changed TB reproduction again passed 10/11 in 95.006 seconds. It retained
+exact Buff identity, release isolation and cleanup, but 32 passive controller
+pulses advanced only 1.666 native seconds while the current TB turn stayed
+open, so the second pair's naturally scheduled packet was not yet due.
+
+The changed strategy now deliberately makes only pair one's packet due,
+releases it, then uses the qualified native turn-ownership seam to end active
+turns and reach pair two's scheduled round. It records controller rounds, turn
+transitions, ended turns and elapsed native time and requires one exact 2d8+11
+packet for pair two while pair one stays released. Product swallow mechanics
+remain unchanged. Production compilation and all 13 named Sprint 24 focused
+tests pass; a new exact Sprint candidate is required before rerunning only the
+failed TB Tyrannosaurus phase.
 
 Earlier failed development checks, the candidate/correction-suite failures,
 the guarded native foundation failure, both first Deinonychus attempts, the
