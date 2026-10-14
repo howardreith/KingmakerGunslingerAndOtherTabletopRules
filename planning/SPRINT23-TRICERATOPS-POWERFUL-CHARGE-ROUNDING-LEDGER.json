@@ -627,7 +627,7 @@
     "verificationPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint23-charge-rounding-release-verification-20261014T0332Z\\release-verification.json",
     "verificationSha256": "59bf964616e60eec294e34b087b0f23a9653e271ecf657c220d2f173d4deca5b",
     "finalRecordsBranch": "codex/expanded-summoning-sprint23-charge-rounding-release-records",
-    "finalRecordsPr": null
+    "finalRecordsPr": 44
   },
   "restoration": {
     "current": "EXACT_INTAKE_VERIFIED",
