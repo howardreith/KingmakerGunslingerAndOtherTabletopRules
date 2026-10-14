@@ -629,7 +629,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool FirstChargeHitWithMarker;
             internal bool ObservePowerAttackChoice;
             internal int PowerAttackDecisionCount;
-            internal bool PowerAttackOnBeforeRoll;
+            internal bool PowerAttackActiveBeforeRoll;
             internal bool PowerAttackOffAfterAttack;
             internal JObject PowerAttackBeforeAttack;
             internal JObject PowerAttackAfterAttack;
@@ -650,7 +650,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PowerAttackBeforeAttack = Sprint22PowerAttackState(
                     Initiator, toggle);
                 PowerAttackDecisionCount++;
-                PowerAttackOnBeforeRoll = toggle.IsOn &&
+                PowerAttackActiveBeforeRoll = toggle.IsOn &&
                     toggle.IsRunning && toggle.Blueprint.Buff != null &&
                     Initiator.Descriptor.Buffs.GetBuff(
                         toggle.Blueprint.Buff) != null;
