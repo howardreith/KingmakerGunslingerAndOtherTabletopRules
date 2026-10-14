@@ -191,6 +191,11 @@ foreach ($kind in @('triceratops','stegosaurus')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint23-armored-dinosaurs\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint23-armored-dinosaurs\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force
 }
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint24-theropods') -Force | Out-Null
+foreach ($kind in @('deinonychus','tyrannosaurus')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint24-theropods\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint24-theropods') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint24-theropods\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint24-theropods') -Force
+}
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {

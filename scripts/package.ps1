@@ -228,6 +228,13 @@ foreach ($kind in @('triceratops','stegosaurus')) {
     Copy-Item -LiteralPath (Join-Path $armoredDinosaurSource "$kind-mesh.json") -Destination $armoredDinosaurDestination
     Copy-Item -LiteralPath (Join-Path $armoredDinosaurSource "$kind-albedo.png") -Destination $armoredDinosaurDestination
 }
+$theropodSource = Join-Path $outputDirectory 'assets\sprint24-theropods'
+$theropodDestination = Join-Path $modDirectory 'assets\sprint24-theropods'
+New-Item -ItemType Directory -Path $theropodDestination -Force | Out-Null
+foreach ($kind in @('deinonychus','tyrannosaurus')) {
+    Copy-Item -LiteralPath (Join-Path $theropodSource "$kind-mesh.json") -Destination $theropodDestination
+    Copy-Item -LiteralPath (Join-Path $theropodSource "$kind-albedo.png") -Destination $theropodDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
