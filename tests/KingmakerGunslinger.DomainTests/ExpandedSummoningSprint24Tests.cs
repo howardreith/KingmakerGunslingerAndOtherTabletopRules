@@ -352,7 +352,9 @@ namespace KingmakerGunslinger.DomainTests
                     "class TheropodAccessorySuppression") &&
                 attachment.Contains("private void LateUpdate()") &&
                 attachment.Contains("attachment.TheropodSuppression.Release()") &&
-                attachment.Contains("attachment.TheropodSuppression })"),
+                attachment.Contains("attachment.TheropodSuppression })") &&
+                attachment.Contains("string ownedMaterialName") &&
+                attachment.Contains("StartsWith(\n                    ownedMaterialName, StringComparison.Ordinal)"),
                 "Per-view suppression survives native fade updates, appears in the owned-resource receipt and releases before exact donor restoration.");
 
             JObject icons = JObject.Parse(File.ReadAllText(
@@ -439,6 +441,12 @@ namespace KingmakerGunslinger.DomainTests
                 "ExerciseExpandedSummoningGrappleLifecycle" })
                 Assertions.True(runner.Contains(token),
                     "The native observer must retain carrier: " + token);
+            string sprint17Body = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Bodies.cs");
+            Assertions.True(sprint17Body.Contains(
+                    "TheropodVisualPolicy.IsPermitted(") &&
+                sprint17Body.Contains("? TheropodVisualPolicy.Bones"),
+                "The shared full-transform formatter recognizes the qualified theropod driver set instead of dereferencing an unrelated serpentine attachment.");
             Assertions.False(runner.Contains("KMG_AUTOMATION_BASELINE"),
                 "The save-free observer never names the protected baseline.");
         }

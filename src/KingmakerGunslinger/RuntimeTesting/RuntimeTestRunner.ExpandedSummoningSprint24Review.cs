@@ -2376,6 +2376,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["owner"] = "exact-per-view-resources",
                                 ["waitedFrames"] = waited,
                                 ["released"] = released,
+                                ["destroyed"] = unit.Destroyed,
+                                ["viewGone"] = unit.View == null,
+                                ["holdingGone"] = unit.HoldingState == null,
+                                ["remainingOwnedResources"] = new JArray(
+                                    owned.Where(value => value != null)
+                                        .Select(value => new JObject {
+                                            ["id"] = value.GetInstanceID(),
+                                            ["name"] = value.name,
+                                            ["type"] = value.GetType()
+                                                .FullName
+                                        })),
                                 ["borrowedSurvive"] = borrowedSurvive,
                                 ["cacheStatus"] = cacheStatus,
                                 ["cacheMeshId"] = cachedMesh == null ? 0 :

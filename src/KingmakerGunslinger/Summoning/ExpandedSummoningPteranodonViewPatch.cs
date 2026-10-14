@@ -843,11 +843,19 @@ namespace KingmakerGunslinger.Summoning
             IList<Material> driven = attachment.Donor == null ? null :
                 ControllerMaterials(attachment.Donor.GetComponentInParent<
                     StandardMaterialController>());
-            IEnumerable<Material> privateMaterials =
-                OriginalFlightCleanupPolicy.PrivateMaterials(
-                    attachment.Material,
-                    installed.Concat(driven ?? new Material[0]),
-                    attachment.OriginalMaterials);
+            // ReinitMaterials also creates native per-view instances for the
+            // restored donor materials. They are not theropod-owned and the
+            // release path intentionally does not destroy them. Match that
+            // path's exact KMG material family instead of treating every
+            // instance unequal to the prefab material as project-owned.
+            string ownedMaterialName = "KMG_" + attachment.VisualKey +
+                "_Original";
+            IEnumerable<Material> privateMaterials = installed
+                .Concat(driven ?? new Material[0])
+                .Concat(new[] { attachment.Material })
+                .Where(value => value != null && value.name.StartsWith(
+                    ownedMaterialName, StringComparison.Ordinal))
+                .Distinct();
             return privateMaterials.Cast<UnityEngine.Object>()
                 .Concat(new UnityEngine.Object[] { attachment.Mesh,
                     attachment.TheropodSuppression })

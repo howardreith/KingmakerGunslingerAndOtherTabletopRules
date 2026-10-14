@@ -306,17 +306,46 @@ been admitted to turn order. Transaction
 SHA-256 is
 `931256a5b1fb7b5d960d1113f8dc8f4c774bf13b1bc2a5e4b887ffb994f04428`.
 
-The changed strategy now enrolls the exact second predator/victim pair through
-the qualified RTWP-to-TB admission seam before either hold is created, waits
-for the first predator's native turn, and records exact turn-order/clock
-coverage. Pair one is released after its exact 2d8+11 packet; pair two must
-then deliver exactly once on its own later native turn while pair one stays
-released. Product swallow mechanics remain unchanged. Production compilation
-and the named Sprint 24 filter pass 13/13. Both keys remain suppressed.
+The second-pair enrollment correction commit
+`55695b0913a35b9a3a5521c780814b35b55ed3dc` passed a fresh complete Sprint
+gate: 2,607/2,607 tests in 90.6 seconds and strict package validation in 185.2
+seconds. ZIP SHA-256 is
+`44102a5c8833774a00ccc2b5a9f9a623561d35e1940dd7e5ce39ed7e5ca8865d`;
+DLL SHA-256 is
+`80e1dd837ed3ff7a02b491a705975288bd15b195c56d60e4167d38e930eda75e`,
+MVID `01329835-0f78-4d37-88e6-04c27c8d589c`, and source fingerprint
+`2e0cb8a932d2cd1edf0a3d7bad48a954cc3dd39d48e48fd631bf0fc23ee50ba3`.
 
-Next action: commit and push this second-pair turn-enrollment observer correction
-through the required wrapper, run one fresh complete Sprint gate on that exact
-commit, then rerun only `turn-based-tyrannosaurus` with
-`-ReuseInstalledArtifact`. Continue the remaining native phases only after that
-reproduction passes. Do not begin Brachiosaurus, Elephant changes, companions,
-polymorph, mounts, feats, or any Sprint 25 work.
+The changed `turn-based-tyrannosaurus` reproduction then passed 11/11 in
+102.756 seconds. Pair two entered native turn order; pair one delivered one
+exact 2d8+11 packet and was released; after 200 native pulses, five ended turns
+and controller round 1 -> 2, pair two delivered exactly one second-owner
+2d8+11 packet while pair one stayed released. Transaction
+`compat-20261014T105815Z-6db7ea49dd7c` restored exactly. Runtime-result SHA-256
+is `508a70436a939677f6052fbf65c14aaaf83f87d057463383521b2ac0915a8f2d`.
+
+The first `visual-lifecycle` run retained 6 PASS and 5 FAIL assertions in
+98.290 seconds. Two recovered Deinonychus views bound the original body and
+suppressed only the accessory; carrier inventory, donor rollback, fixture
+cleanup and guarded machine restoration passed. The resource receipt counted
+one native Lizardfolk material-controller instance that the exact release path
+does not own, causing the injected-fault row and all three teardown rows to
+fail. The shared transform formatter then assumed an unrelated serpentine
+attachment and aborted on the theropod death sample. Evidence is
+`runtime-evidence/20261014T1103586702473Z-disposable-expanded-summoning-sprint24-native-review`;
+runtime-result SHA-256 is
+`5cf24f7b0b3e217dc29345131052fa5571da7944bbcb38c84d141499c532212e`.
+
+The batched correction now filters theropod receipts to the exact
+`KMG_<key>_Original` material family that the release path owns, recognizes the
+qualified theropod driver set in the full-transform formatter, and records any
+remaining teardown resource explicitly. Production compilation and the named
+Sprint 24 filter pass 13/13. Product mechanics remain unchanged and both keys
+remain suppressed.
+
+Next action: commit and push this visual receipt/formatter correction through
+the required wrapper, run one fresh complete Sprint gate on that exact commit,
+then rerun only `visual-lifecycle` with `-ReuseInstalledArtifact`. Continue
+`shared-controls` only after the changed visual reproduction passes. Do not
+begin Brachiosaurus, Elephant changes, companions, polymorph, mounts, feats, or
+any Sprint 25 work.
