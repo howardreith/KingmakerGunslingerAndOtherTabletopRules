@@ -33,6 +33,27 @@ namespace KingmakerGunslinger.Summoning
         internal const string TyrannosaurusBleedingCriticalSymbol =
             "KMG.Summoning.Special.Tyrannosaurus.BleedingCritical";
 
+        // One current authority for the append. Historical sprint tests use
+        // these deltas when proving their own immutable prefix; they do not
+        // acquire another copy of the current global totals.
+        internal const int AppendedIdentityCount = 48;
+        internal const int AppendedCreatureCount = 2;
+        internal const int AppendedAbilityIdentityCount = 36;
+        internal const int AppendedBuffIdentityCount = 2;
+        internal const int AppendedWeaponIdentityCount = 2;
+        internal const int AppendedUnitTypeIdentityCount = 2;
+        internal const int AppendedFeatureIdentityCount = 4;
+        internal const int AppendedPrivateIdentityCount =
+            AppendedBuffIdentityCount + AppendedWeaponIdentityCount +
+            AppendedUnitTypeIdentityCount + AppendedFeatureIdentityCount;
+        internal const int AppendedMonsterPlacements = 9;
+        internal const int AppendedNatureAllyPlacements = 9;
+        internal const int AppendedTemplateExecutionsPerAlignment = 9;
+        internal const int RegisteredCreatureCount = 107;
+        internal const int RegisteredMonsterCreatureCount = 95;
+        internal const int RegisteredNatureAllyCreatureCount = 95;
+        internal const int RegisteredMonsterPlacements = 543;
+        internal const int RegisteredNatureAllyPlacements = 550;
         internal const int RegisteredLogicalPlacements = 1093;
         internal const int HiddenLogicalPlacements = 18;
         internal const int HiddenPublishedLogicalPlacements = 1075;
@@ -68,6 +89,11 @@ namespace KingmakerGunslinger.Summoning
         internal const int TyrannosaurusReachBonusFeet = 5;
 
         internal static bool UsesExactRanks(string key)
+        {
+            return IsTheropod(key);
+        }
+
+        internal static bool IsTheropod(string key)
         {
             return key == DeinonychusKey || key == TyrannosaurusKey;
         }
@@ -134,6 +160,15 @@ namespace KingmakerGunslinger.Summoning
                     false, true, true) ||
                 ShouldApplyBleedingCritical(true, true, true, true,
                     true, true, true) ||
+                AppendedAbilityIdentityCount +
+                    AppendedPrivateIdentityCount +
+                    AppendedCreatureCount != AppendedIdentityCount ||
+                RegisteredMonsterPlacements +
+                    RegisteredNatureAllyPlacements !=
+                    RegisteredLogicalPlacements ||
+                AppendedMonsterPlacements +
+                    AppendedNatureAllyPlacements !=
+                    HiddenLogicalPlacements ||
                 HiddenLogicalPlacements != 18 ||
                 RegisteredLogicalPlacements - HiddenLogicalPlacements !=
                     HiddenPublishedLogicalPlacements ||
