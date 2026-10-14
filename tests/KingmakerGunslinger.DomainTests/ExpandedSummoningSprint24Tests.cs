@@ -441,12 +441,11 @@ namespace KingmakerGunslinger.DomainTests
                 "ExerciseExpandedSummoningGrappleLifecycle" })
                 Assertions.True(runner.Contains(token),
                     "The native observer must retain carrier: " + token);
-            string sprint17Body = File.ReadAllText(
-                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Bodies.cs");
-            Assertions.True(sprint17Body.Contains(
+            Assertions.True(runner.Contains("Sprint24OriginalBodySample") &&
+                runner.Contains("poseFormatError") && runner.Contains(
                     "TheropodVisualPolicy.IsPermitted(") &&
-                sprint17Body.Contains("? TheropodVisualPolicy.Bones"),
-                "The shared full-transform formatter recognizes the qualified theropod driver set instead of dereferencing an unrelated serpentine attachment.");
+                runner.Contains("exactTheropodDrivers"),
+                "The scoped full-transform formatter recognizes the qualified theropod driver set and contains one formatting failure to its own row.");
             Assertions.False(runner.Contains("KMG_AUTOMATION_BASELINE"),
                 "The save-free observer never names the protected baseline.");
         }
