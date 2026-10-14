@@ -230,7 +230,18 @@
     "persistenceRuns": [],
     "publicationRuns": []
   },
-  "failures": [],
+  "failures": [
+    {
+      "timestampUtc": "2026-10-14T05:38:47Z",
+      "stage": "predeployment repository validation",
+      "scenario": "observe-expanded-summoning-sprint24-theropod-census",
+      "disposition": "PRESERVED_OFFLINE_HARNESS_ADMISSION_FAILURE",
+      "result": "No deployment, process launch, save access or machine-state change occurred.",
+      "cause": "The frozen Sprint 23 production-source allowlist rejected the two exact Sprint 24 research observer files.",
+      "correction": "Admit only RuntimeTestRunner.ExpandedSummoningSprint24Census.cs and Sprint24TheropodCensusPolicy.cs while continuing to reject all Sprint 24 gameplay/review sources.",
+      "correctionChecks": "8 corruption fixtures PASS; Sprint 23 source validator PASS"
+    }
+  ],
   "acceptedLimitations": [
     "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
     "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
