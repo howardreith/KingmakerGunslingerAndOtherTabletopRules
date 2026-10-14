@@ -1019,6 +1019,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool spent = turnBased
                     ? maxStandard > standardBefore || maxMove > moveBefore
                     : nativeEconomy && command.IsStarted;
+                bool chargeMarkerAfterPounce = owner.Descriptor.HasFact(
+                    BlueprintRoot.Instance.SystemMechanics.ChargeBuff);
                 bool exact = queued && command.IsStarted && executionSeen &&
                     attackCommand != null && attackCommand.IsStarted &&
                     observer.Rolls.Count == 4 &&
@@ -1045,6 +1047,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeEconomy"] = nativeEconomy,
                         ["spent"] = spent,
                         ["attackCommand"] = attackCommand?.Result.ToString(),
+                        ["chargeMarkerAfterPounce"] =
+                            chargeMarkerAfterPounce,
                         ["rolls"] = new JArray(observer.Rolls.Select(value =>
                             new JObject {
                                 ["weapon"] = value.Weapon?.Blueprint?.AssetGuid,
@@ -1074,9 +1078,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EndExpandedSummoningDetachedAbility(command);
                 owner.Commands.InterruptAll(true);
                 owner.Commands.RemoveFinishedAndUpdateQueue();
+                int freshTurnFrames = 0;
+                bool freshTurnReached = !turnBased;
                 if (turnBased)
+                {
                     foreach (int frame in Sprint18AdvanceRound(owner))
                         yield return frame;
+                    while (++freshTurnFrames <= Sprint18AttackFrames)
+                    {
+                        if (Game.Instance.IsPaused)
+                            Game.Instance.IsPaused = false;
+                        if (Sprint18OwnerIsActing(owner))
+                        {
+                            freshTurnReached = true;
+                            break;
+                        }
+                        yield return 0;
+                    }
+                    if (!freshTurnReached)
+                        throw new InvalidOperationException(
+                            "Deinonychus never reached its fresh native turn " +
+                            "after the legal Pounce.");
+                }
+                bool chargeMarkerBeforeIllegal = owner.Descriptor.HasFact(
+                    BlueprintRoot.Instance.SystemMechanics.ChargeBuff);
 
                 observer.Clear();
                 ResetExpandedSummoningHostile(fixture);
@@ -1094,8 +1119,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EndExpandedSummoningDetachedAbility(aborted);
                 }
                 for (int settle = 0; settle < 8; settle++) yield return 0;
-                bool noStale = !owner.Descriptor.HasFact(
-                        BlueprintRoot.Instance.SystemMechanics.ChargeBuff) &&
+                bool chargeMarkerAfterIllegal = owner.Descriptor.HasFact(
+                    BlueprintRoot.Instance.SystemMechanics.ChargeBuff);
+                bool noStale = freshTurnReached &&
+                    !chargeMarkerBeforeIllegal && !chargeMarkerAfterIllegal &&
                     observer.Rolls.Count == 0 &&
                     observer.WeaponAttacks.Count == 0;
                 Sprint24Check("deinonychus-illegal-aborted-charge-" +
@@ -1107,10 +1134,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["event"] = "too-close-illegal-charge",
                         ["canTarget"] = illegalCanTarget,
                         ["canStart"] = abortedCanStart,
+                        ["freshTurnReached"] = freshTurnReached,
+                        ["freshTurnFrames"] = freshTurnFrames,
+                        ["chargeMarkerAfterPounce"] =
+                            chargeMarkerAfterPounce,
+                        ["chargeMarkerBeforeIllegal"] =
+                            chargeMarkerBeforeIllegal,
                         ["rolls"] = observer.Rolls.Count,
                         ["weaponAttacks"] = observer.WeaponAttacks.Count,
-                        ["chargeMarkerAfter"] = owner.Descriptor.HasFact(
-                            BlueprintRoot.Instance.SystemMechanics.ChargeBuff)
+                        ["chargeMarkerAfter"] = chargeMarkerAfterIllegal
                     }, "A too-close charge is rejected by the native target predicate; an immediately aborted generic command emits no follow-up attack and leaves no stale charge state for the next command.");
             }
             finally

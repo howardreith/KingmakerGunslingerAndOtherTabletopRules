@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — RTWP DEINONYCHUS PASS; TURN-CONTROLLER CORRECTION FOCUSED PASS** on
+Status: **IN PROGRESS — RTWP DEINONYCHUS PASS; TB FRESH-TURN OBSERVER CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -263,8 +263,31 @@ fix: begin in RTWP, enroll only request-owned actors through the supported mode
 toggle, wait for the owner turn, and perform route survey in RTWP before
 re-enrolling for the actual TB charge. That correction is now in the closed
 observer and its carrier name is domain-pinned; production compilation and all
-13 Sprint 24 focused tests pass. Compiled observer bytes changed, so a new exact
-Sprint candidate is required before rerunning only the failed TB phase.
+13 Sprint 24 focused tests pass.
+
+The exact turn-controller commit
+`eea076088c695ebb7cf48932f452f59c819e61e0` then passed its fresh complete
+Sprint gate: 2,607/2,607 tests in 90.4 seconds and a strict 370-entry package in
+186.2 seconds total. ZIP SHA-256 is
+`4156261f122646fd6ab952916c8358dbbecb150981b17be958ec3a6e3af6e4ab`;
+DLL SHA-256 is
+`e41019388e5af11bb11020bb4d681b082443b0d5e55eb4f371870fd93ff80549`,
+MVID `f70e80a8-1e81-4d0c-be9e-651422b156de`, and source fingerprint
+`5b5c3ae05e8f9e11a9b804231af4def80bf4e7723b1472d95895328a61795c20`.
+
+Its changed TB reproduction passed 9/11 assertions in 100.638 seconds. Native
+turn admission, adult profile/body, both ordinary routines and the 11.097 m
+four-roll Pounce passed. The rejected too-close command emitted zero attacks;
+the AoO remained one non-charge talon. Both negative rows failed solely because
+the preceding legal charge marker was still present. The shared observer helper
+can return while the native controller is transiently null between turns, so
+those checks had not actually reached the owner's next turn. The correction
+keeps the native expiry requirement, waits for the actual fresh owner turn, and
+records marker state immediately after Pounce and before/after the illegal
+command. It never removes the marker. Production compilation and all 13 named
+Sprint 24 focused tests pass; the failed evidence and exact restoration remain
+retained. Compiled observer bytes changed, so a new exact Sprint candidate is
+required before rerunning only the failed TB phase.
 
 Seven earlier failed development checks, the two candidate/correction-suite
 failures, the first guarded native foundation failure, and the first RTWP and TB

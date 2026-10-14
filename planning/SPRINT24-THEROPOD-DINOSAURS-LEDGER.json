@@ -305,20 +305,20 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": {
-      "status": "PASS_HIDDEN_OBSERVER_CORRECTED_CANDIDATE_SUPERSEDED_BY_TURN_CONTROLLER_CORRECTION",
-      "gitCommit": "aa048f1db9d279ea6185ec7ab1b3534eac93ff2a",
+      "status": "PASS_HIDDEN_TURN_CONTROLLER_CANDIDATE_SUPERSEDED_BY_FRESH_TURN_OBSERVER_CORRECTION",
+      "gitCommit": "eea076088c695ebb7cf48932f452f59c819e61e0",
       "gateLevel": "Sprint",
-      "gateDurationSeconds": 186.1,
+      "gateDurationSeconds": 186.2,
       "completeDomainTests": 2607,
       "completeDomainFailures": 0,
-      "completeDomainSeconds": 91.5,
+      "completeDomainSeconds": 90.4,
       "packageEntries": 370,
       "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
-      "packageSha256": "68ce7f2d0699cc07f61903ca460b78ffd34539784f2543eba7ab6f810988fbd1",
-      "dllSha256": "e69ae58067b5f69a6b6b501a2cb8fbba3c7125f688c566b49520f419ebbcb3f8",
-      "dllMvid": "9228e5b3-1edd-44c7-9591-14520fe31c6f",
-      "sourceStateSha256": "78ad09ba48adfaf2b902c8fbd12bd8f85aa793bbb2e37bfdf8cee3f03f98eda5",
-      "disposition": "Complete observer-corrected hidden Sprint gate PASS; RTWP Deinonychus passed, then compiled turn-controller observer bytes were superseded by evidence-driven correction."
+      "packageSha256": "4156261f122646fd6ab952916c8358dbbecb150981b17be958ec3a6e3af6e4ab",
+      "dllSha256": "e41019388e5af11bb11020bb4d681b082443b0d5e55eb4f371870fd93ff80549",
+      "dllMvid": "f70e80a8-1e81-4d0c-be9e-651422b156de",
+      "sourceStateSha256": "5b5c3ae05e8f9e11a9b804231af4def80bf4e7723b1472d95895328a61795c20",
+      "disposition": "Complete turn-controller-corrected hidden Sprint gate PASS; the changed TB run proved turn admission and all positive routines, then exposed an inter-turn observer boundary requiring one more compiled correction."
     },
     "nativeRuns": [
       {
@@ -423,7 +423,30 @@
           "Charge route probing in TB without a valid current-turn path reached native AbilityCustomCharge.CanTarget null state."
         ],
         "correction": "Start in RTWP, enroll request-owned owner/target through Sprint22EnrollTurnBasedOwners, wait for the owner's native turn, and survey Charge in RTWP before re-enrolling for actual TB execution.",
-        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; corrected carrier name domain-pinned. Fresh exact-candidate Sprint gate required before changed phase reproduction.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; corrected carrier name domain-pinned; fresh exact-candidate Sprint gate PASS; changed reproduction proved turn admission and all positive routines.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-deinonychus",
+        "status": "FAIL_PRESERVED_FRESH_TURN_BOUNDARY_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T0927350935045Z-6e1a5607d71340db9a9a63c189551a12",
+        "gitCommit": "eea076088c695ebb7cf48932f452f59c819e61e0",
+        "compatibilityTransaction": "compat-20261014T092558Z-43136354a7f7",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0927339219909Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0927350557211Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "3995732f5bda934a030ac83ed778e8d0fbd25384a13eade57628213b78a1cf6e",
+        "durationSeconds": 100.638,
+        "assertions": 11,
+        "passed": 9,
+        "failed": 2,
+        "proved": "Native turn admission, adult profile/body, ordinary four-roll full attack, one-roll single attack, 11.097 m legal four-roll Pounce, zero illegal-charge attacks, one non-charge AoO and exact cleanup all executed.",
+        "failures": [
+          "The illegal-charge row observed the preceding legal ChargeBuff because the shared advance helper returned during an inter-turn null-controller window.",
+          "The subsequent one-roll non-charge AoO row observed that same marker before the owner reached a fresh native turn."
+        ],
+        "correction": "After native round advancement, wait boundedly until the exact owner reaches its actual fresh turn; record ChargeBuff immediately after Pounce and before/after the illegal command; do not remove the marker or weaken native-expiry assertions.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh-turn and pre-illegal marker diagnostics domain-pinned. Fresh exact-candidate Sprint gate required before changed phase reproduction.",
         "restorationVerified": true,
         "permanentDeployment": false
       }
@@ -600,7 +623,17 @@
       "result": "5/8 assertions passed in 194.520 seconds. Profile, original body and both cleanup assertions passed. Ordinary full/single commands remained unstarted with zero rolls, then route probing raised a structured native null exception. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
       "cause": "The phase enabled TB before enrolling the request-owned summon, leaving commands outside turn order; AbilityCustomCharge route probing then ran in TB without a valid current-turn path.",
       "correction": "Reuse the qualified Sprint 22/23 sequence: start in RTWP, enroll exact request-owned actors through the supported mode toggle, wait for the owner turn, and survey Charge in RTWP before re-enrolling for actual TB execution.",
-      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; turn-enrollment carrier domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; turn-enrollment carrier domain-pinned; fresh exact-candidate Sprint gate PASS; changed reproduction proved admission and every positive routine."
+    },
+    {
+      "timestampUtc": "2026-10-14T09:29:23.9012865Z",
+      "stage": "second guarded dedicated Deinonychus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-deinonychus",
+      "disposition": "PRESERVED_INTERTURN_OBSERVER_BOUNDARY_FAILURE_THEN_FOCUSED_PASS",
+      "result": "9/11 assertions passed in 100.638 seconds. Turn admission, full/single commands and an 11.097 m four-roll legal Pounce passed. The rejected illegal command emitted zero attacks and the AoO remained one non-charge talon, but both rows observed the preceding legal ChargeBuff. Transaction restoration verified exactly; no process, lock, staging or permanent deployment remained.",
+      "cause": "Sprint18AdvanceRound can return during a transient native null-controller window between turns, so the negative rows ran before the exact owner reached its fresh turn and before native marker expiry could be evaluated.",
+      "correction": "After the shared round step, wait boundedly for the exact owner's real native turn; record the marker immediately after Pounce and before/after the illegal command; retain failure if native expiry does not occur and never remove the marker in the observer.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh-turn and marker-boundary diagnostics domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
     }
   ],
   "acceptedLimitations": [
