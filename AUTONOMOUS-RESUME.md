@@ -1,4 +1,4 @@
-# Sprint 23 Powerful Charge rounding follow-up — IN PROGRESS
+# Sprint 23 Powerful Charge rounding follow-up — QUALIFIED
 
 The owner selected a bounded correction and patch-release campaign for the
 released Triceratops Powerful Charge live-Strength calculation. Work is on
@@ -31,21 +31,47 @@ computes the difference between that already-applied native term and the
 Triceratops's existing positive 2x target; zero and penalties receive no extra
 correction. The full Sprint 23 focused selection passes 12/12 after this edit.
 
-The request-local charge observer now records engine weapon-stat rows and real
-issued charge commands at Strength 24/26/28/30, plus signed, Power Attack,
-critical, aborted/opportunity/later-attack and released-rhino controls. Offline
-request/profile preflight and the 12-test Sprint 23 focused selection pass.
-The first versioned candidate gate preserved a seven-failure domain result:
-the added release-note package member correctly advanced inventory to 364/362,
-but six historical delivery assertions and the deterministic ZIP builder still
-pinned 363/361. Their exact expectations/allowlist were repaired; the affected
-22-test selection and the package-focused selection pass. Next actions are to
-commit that repair, rerun the Sprint gate on the changed candidate, and qualify
-the affected RTWP, turn-based and high-risk-combined cases through guarded
-Steam App ID 640820 transactions. Every transaction must
-restore the actual intake:
-968 Mods entries, KMG 0.0.117, 83 settings, 118 saves, the protected baseline
-and authorized working-save hashes, and no compatibility lock or staging.
+The frozen candidate is
+`8f30cf72c916aaee840c18b373be82274729520e`, source fingerprint
+`5167ff01981bb3a6d4109ebc0dde5646db258902e4c8dea74f2d8414626046ef`.
+Its one full Sprint gate passed 2,594/2,594 tests plus strict package validation
+in 181.8 seconds. The exact ZIP SHA-256 is
+`cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b`;
+the DLL SHA-256 is
+`bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0`
+with MVID `dd3797aa-a482-4411-b3a5-f574204a320a`.
+
+Fresh guarded native qualification passed on those exact bytes:
+
+- standalone RTWP: profile `compat-20261014T025926Z-f7acd4897101`, runtime
+  `20261014T0301019306544Z-7c896449d20e4e3d9335f1e4dde928e9`;
+- standalone turn-based: profile `compat-20261014T030403Z-28aa83f5aa3f`, runtime
+  `20261014T0305412649861Z-3ce64fad9ff94f36a5fde7986fb999a5`;
+- highest-risk-combined RTWP: profile
+  `compat-20261014T030800Z-b3091a8a321a`, runtime
+  `20261014T0309454568154Z-c3d6c46905f1401c9d59ce7fb8f7d427`.
+
+Each profile passed 13/13 selected assertions and exact restoration. Real native
+charge hits at modifiers +7/+8/+9/+10 recorded 2d10 ordinary Strength
+contributions +10/+12/+13/+15 and 4d10 charge totals +14/+16/+18/+20, with
+Power Attack off, zero unrelated additive damage and no critical. Separate
+Power Attack-on and critical checks passed, as did ordinary, aborted, later,
+opportunity and released Rhinoceros/Woolly Rhinoceros controls. Zero and
+negative Strength retain the native once-applied convention.
+
+The post-native audit exactly matches the actual intake: 968 Mods manifest
+entries, installed KMG 0.0.117 with 136 files, 83 game-setting values, 118 save
+files and both protected fixture hashes. No Kingmaker process, compatibility
+lock, transaction staging or owned diagnostic temp remains. The observer-only
+faction handoff is request-local: it preserves the original monster weapon-stat
+path, uses the installed Power Attack watcher's player-faction exemption only
+at the attack-roll boundary, and restores the original faction before damage.
+
+Product PR #43 is the single publication path. Remaining work is to commit the
+qualification record, mark and merge that PR normally, promote this exact ZIP
+as the next available stable patch, verify the downloaded public assets, repeat
+the restoration audit, synchronize the final released-state records through
+the documentation-only branch and stop.
 
 The authoritative active contract and evidence ledger are
 [the rounding mission](docs/SPRINT23-TRICERATOPS-POWERFUL-CHARGE-ROUNDING-MISSION.md)
