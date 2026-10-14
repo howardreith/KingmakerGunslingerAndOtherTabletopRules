@@ -1970,25 +1970,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (Sprint16RuleObserver observer in observers)
                     observer.Clear();
                 TimeSpan gameTime = Game.Instance.TimeController.GameTime;
-                for (int index = 0; index < swallowed.Length; index++)
-                {
-                    nextTick.SetValue(swallowed[index], gameTime, null);
-                    targets[index].Descriptor.Buffs.UpdateNextEvent();
-                    targets[index].Descriptor.Buffs.Tick();
-                    targets[index].Descriptor.Buffs.Tick();
-                }
-                bool independentTicks = observers.Select(observer =>
-                    observer.Damage.SingleOrDefault()).Select((damage,
-                        index) => damage != null &&
-                        ReferenceEquals(damage.Initiator, owners[index]) &&
-                        ReferenceEquals(damage.Target, targets[index]) &&
-                        damage.AttackRoll == null &&
-                        damage.DamageBundle.Count() == 1 &&
-                        damage.DamageBundle.Single().Dice.Rolls == 2 &&
-                        damage.DamageBundle.Single().Dice.Dice ==
-                            DiceType.D8 &&
-                        damage.DamageBundle.Single().Bonus == 11)
-                    .All(value => value);
+                // Deliberately make only pair one due now. Pair two remains
+                // on its own native schedule so its later packet can prove
+                // both independence and real round continuation after pair
+                // one is released.
+                nextTick.SetValue(swallowed[0], gameTime, null);
+                targets[0].Descriptor.Buffs.UpdateNextEvent();
+                targets[0].Descriptor.Buffs.Tick();
+                targets[0].Descriptor.Buffs.Tick();
+                RuleDealDamage firstInitialDamage = observers[0].Damage
+                    .SingleOrDefault();
+                BaseDamage firstInitialChunk = firstInitialDamage == null ?
+                    null : firstInitialDamage.DamageBundle.SingleOrDefault();
+                bool firstInitialPayloadExact = firstInitialDamage != null &&
+                    ReferenceEquals(firstInitialDamage.Initiator,
+                        firstOwner) &&
+                    ReferenceEquals(firstInitialDamage.Target,
+                        firstTarget) &&
+                    firstInitialDamage.AttackRoll == null &&
+                    firstInitialDamage.DamageBundle.Count() == 1 &&
+                    firstInitialChunk != null &&
+                    firstInitialChunk.Dice.Rolls == 2 &&
+                    firstInitialChunk.Dice.Dice == DiceType.D8 &&
+                    firstInitialChunk.Bonus == 11 &&
+                    observers[1].Damage.Count == 0;
 
                 int firstInitialPeriodicEvents = observers[0].Damage.Count;
                 int secondInitialPeriodicEvents = observers[1].Damage.Count;
@@ -2019,11 +2024,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 observers[1].Clear();
                 int secondRound = secondLiveSwallowed == null ? -1 :
                     secondLiveSwallowed.RoundNumber;
+                CombatController continuationController = Game.Instance
+                    .TurnBasedCombatController;
+                int continuationControllerRoundBefore =
+                    continuationController.RoundNumber;
                 int continuationNativePulses = 0;
+                int continuationEndedTurns = 0;
+                string continuationLastTurnState = null;
+                var continuationTurnTransitions = new JArray();
                 while (secondBuffPreserved &&
                     observers[1].Damage.Count == 0 &&
-                    continuationNativePulses < 32)
+                    continuationNativePulses < Sprint18AttackFrames)
                 {
+                    if (turnBased && CombatController
+                        .IsInTurnBasedCombat())
+                    {
+                        TurnController turn = continuationController
+                            .CurrentTurn;
+                        string state = "round=" +
+                            continuationController.RoundNumber +
+                            ";unit=" + (turn?.Unit?.UniqueId ?? "<none>") +
+                            ";status=" + (turn == null ? "<none>" :
+                                turn.Status.ToString());
+                        if (state != continuationLastTurnState)
+                        {
+                            continuationTurnTransitions.Add(state);
+                            continuationLastTurnState = state;
+                        }
+                        if (turn != null && (turn.Status ==
+                                TurnController.TurnStatus.Preparing ||
+                            turn.Status ==
+                                TurnController.TurnStatus.Acting))
+                        {
+                            Sprint18EndTurn(turn);
+                            continuationEndedTurns++;
+                        }
+                    }
                     continuationNativePulses++;
                     yield return 0;
                 }
@@ -2042,6 +2078,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     null : continuationDamage.DamageBundle.SingleOrDefault();
                 bool firstStayedReleased = observers[0].Damage.Count == 0 &&
                     firstTarget.Get<UnitPartSwallowed>() == null;
+                bool continuationRoundAdvanced = !turnBased ||
+                    continuationController.RoundNumber >
+                        continuationControllerRoundBefore;
                 bool secondContinues = secondBuffPreserved &&
                     ReferenceEquals(secondAfterContinuation,
                         secondLiveSwallowed) &&
@@ -2057,7 +2096,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     continuationChunk.Dice.Dice == DiceType.D8 &&
                     continuationChunk.Bonus == 11 &&
                     secondAfterContinuation.RoundNumber == secondRound + 1 &&
-                    continuationDelayAfter > 0d && firstStayedReleased;
+                    continuationDelayAfter > 0d && firstStayedReleased &&
+                    continuationRoundAdvanced;
                 swallowers[1].Free(secondTarget);
                 bool cleanup = targets.All(value =>
                     value.Get<UnitPartSwallowed>() == null) &&
@@ -2065,7 +2105,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 Sprint24Check("tyrannosaurus-independent-swallowers-" +
                     (turnBased ? "turn-based" : "rtwp"),
-                    independentState && independentTicks &&
+                    independentState && firstInitialPayloadExact &&
                     firstReleaseDoesNotTouchSecond && secondContinues &&
                     cleanup, new JObject {
                         ["unit"] = firstOwner.UniqueId,
@@ -2090,8 +2130,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["releaseDidNotTickSecond"] =
                             releaseDidNotTickSecond,
                         ["firstStayedReleased"] = firstStayedReleased,
+                        ["firstInitialPayloadExact"] =
+                            firstInitialPayloadExact,
                         ["continuationNativePulses"] =
                             continuationNativePulses,
+                        ["continuationEndedTurns"] =
+                            continuationEndedTurns,
+                        ["continuationControllerRoundBefore"] =
+                            continuationControllerRoundBefore,
+                        ["continuationControllerRoundAfter"] =
+                            continuationController.RoundNumber,
+                        ["continuationRoundAdvanced"] =
+                            continuationRoundAdvanced,
+                        ["continuationTurnTransitions"] =
+                            continuationTurnTransitions,
                         ["continuationAdvancedSeconds"] =
                             (continuationGameTimeAfter -
                                 continuationGameTime).TotalSeconds,
