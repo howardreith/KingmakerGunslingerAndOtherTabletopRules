@@ -61,7 +61,13 @@ $validatePhase = [scriptblock]::Create(($phaseClause.Item2.Statements |
 foreach ($reviewScenario in @(
     'disposable-expanded-summoning-sprint22-native-review',
     'disposable-expanded-summoning-sprint23-native-review')) {
-    foreach ($phase in @('rtwp-foundation', 'turn-based-control')) {
+    $reviewPhases = @('rtwp-foundation', 'turn-based-control')
+    if ($reviewScenario -ceq
+        'disposable-expanded-summoning-sprint23-native-review') {
+        $reviewPhases += @('charge-rounding-rtwp',
+            'charge-rounding-turn-based')
+    }
+    foreach ($phase in $reviewPhases) {
         $Scenario = @($reviewScenario)
         $Parameters = @{ reviewPhase = $phase }
         if (-not (& $classifyPhase)) {
@@ -74,6 +80,7 @@ $invalidPhaseCases = @(
     @{ Scenario = @('mod-load-smoke'); Parameters = @{}; Classified = $false },
     @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review'); Parameters = @{}; Classified = $true },
     @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review'); Parameters = @{ reviewPhase = 'all' }; Classified = $true },
+    @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review'); Parameters = @{ reviewPhase = 'charge-rounding-rtwp' }; Classified = $true },
     @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review'); Parameters = @{ reviewPhase = 'RTWP-foundation' }; Classified = $true },
     @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review'); Parameters = @{ reviewPhase = 'rtwp-foundation'; saveName = 'KMG_AUTOMATION_WORKING' }; Classified = $true },
     @{ Scenario = @('disposable-expanded-summoning-sprint22-native-review', 'mod-load-smoke'); Parameters = @{ reviewPhase = 'rtwp-foundation' }; Classified = $true }

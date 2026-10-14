@@ -70,10 +70,20 @@ namespace KingmakerGunslinger.Summoning
 
         internal static int PowerfulChargeLiveBonus(int strengthModifier)
         {
-            // The charge raises the ordinary 1.5x Strength contribution to
-            // 2x. Pathfinder rounds fractional bonuses down, including when a
-            // temporary penalty makes the modifier odd or negative.
-            return (int)Math.Floor(strengthModifier / 2d);
+            // Kingmaker truncates the positive 1.5x single-natural-attack
+            // contribution before this component runs.  Compute only the
+            // remainder needed to reach this Triceratops's documented 2x
+            // target; separately truncating another 0.5x loses one point for
+            // every positive odd modifier.  The engine applies a Strength
+            // penalty once rather than multiplying it, so zero and penalties
+            // need no charge correction.
+            int ordinaryContribution = strengthModifier > 0
+                ? checked(strengthModifier + strengthModifier / 2)
+                : strengthModifier;
+            int desiredContribution = strengthModifier > 0
+                ? checked(strengthModifier * 2)
+                : strengthModifier;
+            return checked(desiredContribution - ordinaryContribution);
         }
 
         internal static int CorrectTriceratopsGoreRange(
@@ -105,9 +115,14 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (PowerfulChargeLiveBonus(8) != 4 ||
+            if (PowerfulChargeLiveBonus(7) != 4 ||
+                PowerfulChargeLiveBonus(8) != 4 ||
+                PowerfulChargeLiveBonus(9) != 5 ||
                 PowerfulChargeLiveBonus(10) != 5 ||
                 PowerfulChargeLiveBonus(6) != 3 ||
+                PowerfulChargeLiveBonus(0) != 0 ||
+                PowerfulChargeLiveBonus(-1) != 0 ||
+                PowerfulChargeLiveBonus(-8) != 0 ||
                 ReachBonusFeet != 3 ||
                 TriceratopsGoreRangeCorrectionFeet != 3 ||
                 StegosaurusTailTypeStoredRangeFeet != 9 ||

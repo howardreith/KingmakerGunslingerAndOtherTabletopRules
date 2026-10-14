@@ -1,20 +1,19 @@
 # Installation, updates, removal, and compatibility
 
-Candidate version: `0.0.152-expanded-summoning-sprint23` (UMM
-version `0.0.152`), intended archive
-`KingmakerGunslinger-0.0.152-expanded-summoning-sprint23.zip`.
-It is built on released v0.0.151 and adds only Triceratops and Stegosaurus.
-Native qualification and publication remain pending. Install
-only the final standalone UMM ZIP after publication, not source archives or
-private reference bundles.
-See [candidate scope and limitations](docs/RELEASE-NOTES-0.0.152.md).
+Patch version: `0.0.153-expanded-summoning-sprint23-charge-rounding` (UMM
+version `0.0.153`), archive
+`KingmakerGunslinger-0.0.153-expanded-summoning-sprint23-charge-rounding.zip`.
+It is built on released v0.0.152 and changes only Triceratops Powerful Charge's
+live odd-Strength rounding. Install only the final standalone UMM ZIP, not
+source archives or private reference bundles. See the
+[patch scope and limitations](docs/RELEASE-NOTES-0.0.153.md).
 
 ### Latest public release
 
-UMM `0.0.151`, archive
-`KingmakerGunslinger-0.0.151-expanded-summoning-sprint22.zip`. Its qualified
-Ankylosaurus release is recorded in
-[the v0.0.151 release notes](docs/RELEASE-NOTES-0.0.151.md).
+Before this patch, UMM `0.0.152`, archive
+`KingmakerGunslinger-0.0.152-expanded-summoning-sprint23.zip`, is the stable
+public release. Its Triceratops and Stegosaurus qualification is recorded in
+[the v0.0.152 release notes](docs/RELEASE-NOTES-0.0.152.md).
 
 ### Previously released versions
 
