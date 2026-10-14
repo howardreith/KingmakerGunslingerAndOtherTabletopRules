@@ -16,6 +16,7 @@ using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
+using Kingmaker.GameModes;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -3373,7 +3374,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Memory.ContainsVisible(target) &&
                     enemyIds.Contains(target.UniqueId);
                 owner.CombatState.AIData.NextCommandTime = Time.time - .01f;
-                string[] exactAiCandidates = _sprint24Clock.TickExactAi(owner);
+                string[] exactAiCandidates = Sprint24TickExactAi(owner);
                 foreach (UnitAttack command in owner.Commands.Raw
                     .OfType<UnitAttack>()) commands.Add(command);
                 foreach (var command in owner.Commands.Raw.Where(value =>
@@ -3429,7 +3430,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["exactAiCandidates"] =
                             new JArray(exactAiCandidates),
                         ["exactAiControllerTicks"] =
-                            _sprint24Clock.AiTicks,
+                            1,
                         ["floorSurvey"] = floorSurvey,
                         ["ambientOwnerCommands"] =
                             new JArray(ambientOwnerCommands),
@@ -3499,6 +3500,79 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new[] { owner });
                 ResetExpandedSummoningHostile(fixture);
             }
+        }
+
+        /// <summary>
+        /// The guarded profile is hosted below Dialog mode, so the ordinary
+        /// gameplay AI controller is not registered there. Run Owlcat's full
+        /// RTWP brain controller once through an ephemeral Default-mode token,
+        /// failing closed unless the exact theropod is its sole active AI
+        /// candidate. The controller selects and queues the blueprint action;
+        /// this observer never issues an attack command.
+        /// </summary>
+        private static string[] Sprint24TickExactAi(
+            UnitEntityData expectedOwner)
+        {
+            if (expectedOwner == null ||
+                CombatController.IsInTurnBasedCombat())
+                throw new InvalidOperationException(
+                    "Sprint 24 exact AI tick requires one RTWP owner.");
+            UnitEntityData[] candidates = Game.Instance.AwakeUnitGroups
+                .Where(group => group != null && group.IsInCombat)
+                .SelectMany(group => Enumerable.Range(0, group.Count)
+                    .Select(index => group[index]))
+                .Where(unit => unit != null && !unit.Destroyed &&
+                    unit.IsInState && unit.IsInCombat &&
+                    !unit.IsSleeping && unit.Brain != null &&
+                    unit.IsBrainActive)
+                .Distinct().ToArray();
+            if (candidates.Length != 1 ||
+                !ReferenceEquals(candidates[0], expectedOwner))
+                throw new InvalidOperationException(
+                    "Sprint 24 exact AI ownership changed: " +
+                    string.Join(",", candidates.Select(unit =>
+                        unit.UniqueId).ToArray()));
+
+            const BindingFlags members = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            FieldInfo field = typeof(Game).GetField("m_GameModes", members);
+            var modes = field == null ? null : field.GetValue(
+                Game.Instance) as Stack<GameMode>;
+            var tickMode = new GameMode(GameModeType.Default,
+                new Kingmaker.Controllers.IController[0]);
+            if (modes == null)
+                throw new InvalidOperationException(
+                    "Sprint 24 exact AI mode stack is unavailable.");
+            GameMode[] before = modes.ToArray();
+            bool pause = Game.Instance.IsPaused;
+            var time = Game.Instance.TimeController;
+            float delta = time.DeltaTime;
+            float gameDelta = time.GameDeltaTime;
+            modes.Push(tickMode);
+            try
+            {
+                Game.Instance.IsPaused = false;
+                time.SetDeltaTime(.25f);
+                time.SetGameDeltaTime(.25f);
+                new Kingmaker.Controllers.Brain.AiBrainController()
+                    .ForceTick();
+            }
+            finally
+            {
+                time.SetDeltaTime(delta);
+                time.SetGameDeltaTime(gameDelta);
+                Game.Instance.IsPaused = pause;
+                if (modes.Count != before.Length + 1 ||
+                    !ReferenceEquals(modes.Peek(), tickMode))
+                    throw new InvalidOperationException(
+                        "A native controller changed the Sprint 24 exact " +
+                        "AI mode stack.");
+                modes.Pop();
+                if (!before.SequenceEqual(modes.ToArray()))
+                    throw new InvalidOperationException(
+                        "Sprint 24 exact AI mode restoration was not exact.");
+            }
+            return candidates.Select(unit => unit.UniqueId).ToArray();
         }
 
         private static Vector3 Sprint24AiCombatLane(UnitEntityData anchorCaster,
