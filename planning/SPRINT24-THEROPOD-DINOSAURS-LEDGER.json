@@ -631,8 +631,8 @@
           "The exact owned-resource receipt misclassified one native Lizardfolk material-controller instance after rollback and on each successful view, failing the rollback and three teardown rows.",
           "The shared full-transform diagnostic formatter dereferenced a missing SerpentineVisualAttachment on the theropod death sample and aborted the remaining visual rows."
         ],
-        "correction": "Filter the theropod receipt to the exact KMG_<key>_Original material family that ReleasePhase2View actually owns, retain mesh/suppression ownership, recognize the qualified theropod driver set in the full-transform formatter, and add remaining-resource teardown diagnostics.",
-        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh exact-candidate Sprint gate and changed visual-lifecycle reproduction remain required; no unchanged relaunch was performed.",
+        "correction": "Filter the theropod receipt to the exact KMG_<key>_Original material family that ReleasePhase2View actually owns, retain mesh/suppression ownership, recognize the qualified theropod driver set in a Sprint 24-only full-transform formatter, contain formatter errors to one evidence row, and add remaining-resource teardown diagnostics.",
+        "correctionChecks": "The first candidate gate rejected an older Sprint 17 source edit before compilation. That file is restored exactly. The scoped observer initially missed the existing Kingmaker.View import; after correction, production compilation and the named Sprint 24 focused filter pass 13/13. Fresh exact-candidate Sprint gate and changed visual-lifecycle reproduction remain required; no unchanged relaunch was performed.",
         "restorationVerified": true,
         "permanentDeployment": false
       }
@@ -878,8 +878,26 @@
       "disposition": "PRESERVED_NATIVE_RESOURCE_RECEIPT_AND_FORMATTER_FAILURES_THEN_FOCUSED_PASS",
       "result": "6/11 assertions passed in 98.290 seconds. Two recovered Deinonychus attachments, exact accessory suppression, carrier inventory, fault rollback donor state, fixture teardown and machine restoration passed. Three teardown rows, the injected-fault resource row and later execution failed. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
       "cause": "CaptureTheropodOwnedResources counted a native per-view Lizardfolk material-controller clone that the exact release path intentionally does not own. The shared transform formatter then assumed every non-human body had a SerpentineVisualAttachment and dereferenced null on the theropod death sample.",
-      "correction": "Use the release path's exact KMG_<key>_Original material-name family for theropod receipts, retain exact mesh/suppression resources, recognize the qualified theropod driver set in the shared formatter, and record each remaining resource if teardown still fails.",
-      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh exact-candidate Sprint gate and changed visual-lifecycle reproduction remain required; no unchanged relaunch occurred."
+      "correction": "Use the release path's exact KMG_<key>_Original material-name family for theropod receipts, retain exact mesh/suppression resources, recognize the qualified theropod driver set in a Sprint 24-only formatter, contain formatting exceptions to their evidence row, and record each remaining resource if teardown still fails.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. The first correction candidate then failed the source boundary because it touched the older Sprint 17 formatter; the narrowed Sprint 24-only formatter initially missed one namespace import, then compiled and passed 13/13. Fresh exact-candidate Sprint gate and changed visual-lifecycle reproduction remain required; no unchanged relaunch occurred."
+    },
+    {
+      "timestampUtc": "2026-10-14T11:10:00Z",
+      "stage": "visual correction candidate source boundary",
+      "scenario": "Invoke-KmgGate.ps1 -Level Sprint",
+      "disposition": "PRESERVED_SCOPE_BOUNDARY_FAILURE_THEN_NARROWED",
+      "result": "Repository wrapper stopped after the three source-validator tests; no production compile, package, deployment, process launch or save access occurred.",
+      "cause": "The first formatter correction changed RuntimeTestRunner.ExpandedSummoningSprint17Bodies.cs, which is outside the exact Sprint 24 production-source allowlist.",
+      "correction": "Restore the Sprint 17 file exactly and place the theropod-only formatter plus row-local exception containment in RuntimeTestRunner.ExpandedSummoningSprint24Review.cs."
+    },
+    {
+      "timestampUtc": "2026-10-14T11:12:00Z",
+      "stage": "narrowed visual correction focused compile",
+      "scenario": "expanded-summoning.sprint24-",
+      "disposition": "PRESERVED_COMPILE_FAILURE_THEN_PASS",
+      "result": "The first scoped production compilation failed before domain execution, packaging, deployment, process launch or save access; the corrected production compilation and 13/13 named tests pass.",
+      "cause": "The Sprint 24-only formatter referenced UnitMovementAgentBase without importing its existing Kingmaker.View namespace.",
+      "correction": "Add the one required using directive to the already admitted Sprint 24 observer."
     }
   ],
   "acceptedLimitations": [
