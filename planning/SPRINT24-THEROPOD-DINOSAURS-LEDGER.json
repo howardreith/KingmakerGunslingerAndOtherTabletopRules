@@ -305,20 +305,20 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": {
-      "status": "PASS_HIDDEN_FRESH_TURN_CANDIDATE_SUPERSEDED_BY_TYRANNOSAURUS_OBSERVER_CORRECTION",
-      "gitCommit": "3ed00e74c5602b6a28609a063481e6cb81b100db",
+      "status": "PASS_HIDDEN_CRITICAL_HOLD_CANDIDATE_SUPERSEDED_BY_TB_CONTINUATION_OBSERVER_CORRECTION",
+      "gitCommit": "c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded",
       "gateLevel": "Sprint",
-      "gateDurationSeconds": 214.2,
+      "gateDurationSeconds": 190.4,
       "completeDomainTests": 2607,
       "completeDomainFailures": 0,
-      "completeDomainSeconds": 108.8,
+      "completeDomainSeconds": 94.4,
       "packageEntries": 370,
       "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
-      "packageSha256": "923c2df33004b9fedcd2b23dcf514b7192b4ac407718d9ae54d5fae7f932b712",
-      "dllSha256": "4d478541a126908e349121c6451f3a19fea9dc4468de143a63e51c7a0c8d7854",
-      "dllMvid": "e0ce5b26-0e79-4a59-a71b-f0726d45196e",
-      "sourceStateSha256": "ba154235e334df4df69bbf1a2f65a062f3ab88bd186cd7d4f2e9c1706cccdcd6",
-      "disposition": "Complete fresh-turn-corrected hidden Sprint gate PASS; TB Deinonychus then passed completely, while the first RTWP Tyrannosaurus run exposed two fixture-isolation defects requiring compiled observer correction."
+      "packageSha256": "e3c07a543796035e84f4d65a5783db72a42348683c931c442ba77742e104fc89",
+      "dllSha256": "d325dbae5437080e8efd3661e8ff1385b424dac70da66c1ba87a4765f1676b30",
+      "dllMvid": "5054599d-6a6d-442b-b323-38ca37dd7a26",
+      "sourceStateSha256": "665b32f6805cd8132d3bfccba307c47cd38903cb851703e418b4c66756b6bdab",
+      "disposition": "Complete critical/hold-isolated hidden Sprint gate PASS; corrected RTWP Tyrannosaurus passed completely, while the first TB Tyrannosaurus run exposed a post-release continuation probe that reused pre-release observer state."
     },
     "nativeRuns": [
       {
@@ -487,7 +487,46 @@
           "Those real critical-suite bite probes established an unrelated mouth hold, so the subsequent same-size Grab correctly refused an already occupied limb."
         ],
         "correction": "Tune target AC between the natural-19 threat and natural-1 confirmation totals while keeping AutoCriticalConfirmation false; make the critical-only fixture target maneuver-immune; assert no Grab side effect and a clean mouth before the dedicated Grab/Swallow sequence.",
-        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; target-AC, no-grab-side-effect and clean-start diagnostics domain-pinned. Fresh exact-candidate Sprint gate required before changed phase reproduction.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; target-AC, no-grab-side-effect and clean-start diagnostics domain-pinned; fresh exact-candidate Sprint gate PASS; changed RTWP reproduction 10/10 PASS.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-tyrannosaurus",
+        "status": "PASS_EXACT_HIDDEN_CANDIDATE",
+        "runId": "20261014T1002390021964Z-28dd196871c94d9d8dfbc9fd9d099bba",
+        "gitCommit": "c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded",
+        "compatibilityTransaction": "compat-20261014T100058Z-cf1d7b003d74",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1002377679853Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1002389709266Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "03a5c6ce33c163bd0838f21f101758b86b4a45396babf88111914db48e6dc11c",
+        "durationSeconds": 91.283,
+        "assertions": 10,
+        "passed": 10,
+        "failed": 0,
+        "disposition": "Adult profile/body, one 4d6+22 bite, signed Powerful Bite matrix, 19-20 threat with a real natural-1 non-confirm and natural-20 confirm, one native 2d6 bleed cadence/healing removal, same-size Grab boundary, Huge later-Swallow, three 2d8+11 rounds, escape, independent predators and exact cleanup all passed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "FAIL_PRESERVED_POST_RELEASE_CONTINUATION_OBSERVER_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T1006340014165Z-655b18d15e674115bbf6a4d6f24fbff8",
+        "gitCommit": "c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded",
+        "compatibilityTransaction": "compat-20261014T100454Z-b4ff58a2e19b",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1006328290269Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1006339791999Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "dcf214490735a54645f580caccd8bb801fbd457e85a264b7d51dd1d2bd5b54db",
+        "durationSeconds": 91.969,
+        "assertions": 11,
+        "passed": 10,
+        "failed": 1,
+        "proved": "Turn admission, adult profile/body, one bite, every signed Powerful Bite case, critical and bleed behavior, same-size/Huge Grab and later-Swallow, three periodic rounds, escape, independent swallowed state and one first 2d8+11 packet for each simultaneous pair all passed.",
+        "failures": [
+          "After releasing the first victim, the second victim retained native swallowed state and its predator retained exactly one victim, but the continuation probe emitted no second packet."
+        ],
+        "correction": "Reacquire the live second-victim swallowed Buff after release, derive its due boundary from current GameTime, assert release caused no extra tick or relink, and record the live-reference and before/after schedule diagnostics.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; live-state, release-side-effect and due-boundary diagnostics domain-pinned. Fresh exact-candidate Sprint gate required before changed phase reproduction.",
         "restorationVerified": true,
         "permanentDeployment": false
       }
@@ -684,7 +723,17 @@
       "result": "8/10 assertions passed in 91.386 seconds. The exact adult profile/body, one 4d6+22 bite, every signed Powerful Bite case, confirmed critical multiplication, native 2d6 bleed cadence/healing removal, Huge later-Swallow with three 2d8+11 rounds, escape, independent predators and cleanup executed. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
       "cause": "The critical fixture retained +100 attack, so a natural-1 confirmation still beat target AC; those exact bite probes also established an unrelated mouth hold before the dedicated same-size Grab case.",
       "correction": "Derive target AC between the natural-19 threat and natural-1 confirmation totals, make only the critical-fixture target maneuver-immune, assert no Grab side effect, and assert clean mouth state before the dedicated Grab/Swallow sequence.",
-      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; desired target AC, no-grab side effect and clean-start diagnostics domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; desired target AC, no-grab side effect and clean-start diagnostics domain-pinned; fresh exact-candidate Sprint gate PASS; changed RTWP reproduction 10/10 PASS."
+    },
+    {
+      "timestampUtc": "2026-10-14T10:08:13.9932768Z",
+      "stage": "first guarded dedicated Tyrannosaurus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-tyrannosaurus",
+      "disposition": "PRESERVED_POST_RELEASE_CONTINUATION_OBSERVER_FAILURE_THEN_FOCUSED_PASS",
+      "result": "10/11 assertions passed in 91.969 seconds. All profile, turn, bite, signed Strength, critical, Grab/Swallow, three-round cadence, escape and initial independent-pair assertions passed. Releasing the first victim preserved the second native swallowed part and one-victim predator list, but the continuation probe emitted no second packet. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The combined independence probe reused the second victim's pre-release Buff reference and pre-release due-time snapshot after freeing the first victim instead of reacquiring the surviving live state and its current native boundary.",
+      "correction": "Reacquire the live second-victim Buff after release, set its due boundary from current GameTime, separately assert release caused neither a tick nor relinking, and retain the live-reference and before/after delay diagnostics.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; live-state, release-side-effect and due-boundary diagnostics domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
     }
   ],
   "acceptedLimitations": [
