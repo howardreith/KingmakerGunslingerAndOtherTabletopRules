@@ -305,20 +305,20 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": {
-      "status": "PASS_HIDDEN_NATIVE_CLOCK_CANDIDATE_SUPERSEDED_BY_TURN_OWNERSHIP_OBSERVER_CORRECTION",
-      "gitCommit": "8aec80714cf8ca77f92d6ae72d065addf33161e1",
+      "status": "PASS_HIDDEN_NATIVE_TURN_CANDIDATE_SUPERSEDED_BY_SECOND_PAIR_ENROLLMENT_OBSERVER_CORRECTION",
+      "gitCommit": "8558144395bd65522a26ad59788d1dcbcacb30f4",
       "gateLevel": "Sprint",
-      "gateDurationSeconds": 191.4,
+      "gateDurationSeconds": 189.8,
       "completeDomainTests": 2607,
       "completeDomainFailures": 0,
-      "completeDomainSeconds": 95.3,
+      "completeDomainSeconds": 93.0,
       "packageEntries": 370,
       "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
-      "packageSha256": "738b15aca71d51d00c691f8b9c9da83cdb84a64b4dccfa34472c0159d3728d8e",
-      "dllSha256": "4029dccf88ce60b9ae57a8aee11f21afb641bea29ac1a11cee8a43ba1391ce7e",
-      "dllMvid": "37420198-db58-4cbc-ba73-51685e56d840",
-      "sourceStateSha256": "7160ad8324995115dbeefc64d2b4014bc0cdada21cc095025bc1464567665fb5",
-      "disposition": "Complete native-clock hidden Sprint gate PASS. The changed TB reproduction again retained 10/11 and proved 32 passive controller pulses advanced only 1.666 native seconds while the current turn remained open, requiring the qualified native turn-ownership seam to reach the surviving pair's later scheduled round."
+      "packageSha256": "c596cd82b8c75c07b3eed8a2a5e5722db696087cd0d3f0542d9ace7f741cc437",
+      "dllSha256": "62056224b8744a138a401900eaa41ae8d2feacb373cdc462d4dcb4ff320e1166",
+      "dllMvid": "24c973aa-73f6-49bd-aa2a-8136298b84b0",
+      "sourceStateSha256": "747c8723b63c71fec814dcd0651293cea0af9cdab2b6aa3fbd372e43966c5a43",
+      "disposition": "Complete native-turn hidden Sprint gate PASS. The changed TB reproduction again retained 10/11 after 900 pulses, 24 ended turns, rounds 1 through 7 and 35.333 native seconds. Frozen native IL proved a TB Buff ticks only when its owner or caster is current; the disposable second pair therefore requires supported turn-order admission."
     },
     "nativeRuns": [
       {
@@ -570,7 +570,29 @@
           "Thirty-two passive native-clock pulses advanced only 1.666 native seconds while the current TB turn remained open, so the second pair's naturally scheduled periodic packet was not yet due."
         ],
         "correction": "Deliberately make only pair one's packet due, release it, then use the qualified native turn-ownership seam to end active turns and reach pair two's scheduled round; require one exact second-owner 2d8+11 packet while pair one stays released.",
-        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; controller rounds, turn transitions, ended-turn count, native elapsed time, exact packet attribution and released-first-pair controls are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh 85581443 exact-candidate Sprint gate 2,607/2,607 PASS. Changed reproduction retained 10/11 after rounds 1 through 7 because neither second-pair actor could become the current TB unit; supported second-pair admission is required.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "FAIL_PRESERVED_SECOND_PAIR_OUTSIDE_TURN_ORDER_ENROLLMENT_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T1045328580408Z-fbcce7f6eeaf48908e4f2197144e2aaa",
+        "gitCommit": "8558144395bd65522a26ad59788d1dcbcacb30f4",
+        "compatibilityTransaction": "compat-20261014T104352Z-2fb0bc1662a8",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1045316568692Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1045328252481Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "931256a5b1fb7b5d960d1113f8dc8f4c774bf13b1bc2a5e4b887ffb994f04428",
+        "durationSeconds": 121.703,
+        "assertions": 11,
+        "passed": 10,
+        "failed": 1,
+        "proved": "All ten other rows remained PASS. Pair one delivered one exact initial 2d8+11 packet; the second Buff stayed reference-stable and owned, release caused no tick or relink, pair one stayed released, controller rounds advanced from 1 to 7, and cleanup was exact.",
+        "failures": [
+          "The controller advanced 900 pulses, 24 ended turns and 35.333 native seconds, but neither member of the disposable second pair was in turn order and the second Buff therefore never reached its owner-or-caster current-unit delivery gate."
+        ],
+        "correction": "Enroll the exact disposable second predator/victim pair through the qualified RTWP-to-TB admission seam before creating either hold, wait for the first predator's native turn, then require the second packet on the admitted pair's later native turn.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; exact enrollment receipt, initial owner-turn readiness, pair-turn pulses, native clock coverage and later packet attribution are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required.",
         "restorationVerified": true,
         "permanentDeployment": false
       }
@@ -797,7 +819,17 @@
       "result": "10/11 assertions passed in 95.006 seconds. All ten other rows remained PASS. Distinct swallowed ownership, stable surviving Buff identity, no release-triggered tick or relink, the first victim remaining released and exact cleanup were retained. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
       "cause": "Thirty-two passive controller pulses advanced only 1.666 native seconds while the current TB turn remained open, so the second pair's naturally scheduled periodic packet was not yet due.",
       "correction": "Deliberately make only pair one's packet due, release that pair, then end active turns through the qualified native turn-ownership seam until pair two reaches its scheduled round; require one exact second-owner 2d8+11 packet while pair one stays released.",
-      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; controller rounds, turn transitions, ended-turn count, native elapsed time, exact packet attribution and released-first-pair controls are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh 85581443 exact-candidate Sprint gate 2,607/2,607 PASS. Changed reproduction retained 10/11 after 900 pulses, 24 ended turns, rounds 1 through 7 and 35.333 native seconds; frozen native IL identified missing second-pair turn-order admission."
+    },
+    {
+      "timestampUtc": "2026-10-14T10:47:35.8580408Z",
+      "stage": "fourth guarded dedicated Tyrannosaurus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-tyrannosaurus",
+      "disposition": "PRESERVED_SECOND_PAIR_OUTSIDE_TURN_ORDER_THEN_ENROLLMENT_FOCUSED_PASS",
+      "result": "10/11 assertions passed in 121.703 seconds. Pair one delivered one exact initial 2d8+11 packet; distinct swallowed ownership, stable surviving Buff identity, no release-triggered tick or relink, pair one remaining released and exact cleanup were retained. The controller advanced 900 pulses, 24 ended turns, rounds 1 through 7 and 35.333 native seconds. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The frozen BuffCollection.Tick contract processes a TB Buff only while its owner or caster is current. Neither the disposable second predator nor its victim had been admitted to turn order, so elapsed GameTime alone could not deliver that Buff.",
+      "correction": "Enroll the exact disposable second predator/victim pair through the qualified RTWP-to-TB admission seam before creating either hold, wait for the first predator's native turn, and require pair two's packet on the admitted pair's later native turn.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; exact second-pair admission, initial owner-turn readiness, pair-turn pulses, clock coverage and later packet attribution are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
     }
   ],
   "acceptedLimitations": [

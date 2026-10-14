@@ -286,15 +286,35 @@ not due. Transaction `compat-20261014T103110Z-be8cc748cdf9` restored exactly;
 runtime-result SHA-256 is
 `d392f8f3c3ca892fff698bdbf42b088d9e050e33d937614f2c8ee15913a63e18`.
 
-The changed strategy now deliberately makes only pair one's packet due,
-releases that pair, then uses the qualified native turn-ownership seam to end
-active turns and reach pair two's scheduled round. It records turn transitions,
-controller rounds, ended turns and native elapsed time and requires one exact
-2d8+11 packet for pair two while pair one stays released. Product swallow
-mechanics remain unchanged. Production compilation and the named Sprint 24
-filter pass 13/13. Both keys remain suppressed.
+The native-turn correction commit
+`8558144395bd65522a26ad59788d1dcbcacb30f4` passed a complete Sprint gate:
+2,607/2,607 tests in 93.0 seconds and strict package validation in 189.8
+seconds. ZIP SHA-256 is
+`c596cd82b8c75c07b3eed8a2a5e5722db696087cd0d3f0542d9ace7f741cc437`;
+DLL SHA-256 is
+`62056224b8744a138a401900eaa41ae8d2feacb373cdc462d4dcb4ff320e1166`,
+MVID `24c973aa-73f6-49bd-aa2a-8136298b84b0`, and source fingerprint
+`747c8723b63c71fec814dcd0651293cea0af9cdab2b6aa3fbd372e43966c5a43`.
 
-Next action: commit and push this native-turn continuation observer correction
+Its changed TB reproduction again passed 10/11 assertions in 121.703 seconds.
+It advanced 900 native pulses, ended 24 turns, crossed rounds 1 through 7 and
+advanced 35.333 native seconds, but the second Buff did not tick. The frozen
+Kingmaker contract explains the result: in TB a Buff ticks only while the
+current unit is its owner or caster, and the disposable second pair had never
+been admitted to turn order. Transaction
+`compat-20261014T104352Z-2fb0bc1662a8` restored exactly; runtime-result
+SHA-256 is
+`931256a5b1fb7b5d960d1113f8dc8f4c774bf13b1bc2a5e4b887ffb994f04428`.
+
+The changed strategy now enrolls the exact second predator/victim pair through
+the qualified RTWP-to-TB admission seam before either hold is created, waits
+for the first predator's native turn, and records exact turn-order/clock
+coverage. Pair one is released after its exact 2d8+11 packet; pair two must
+then deliver exactly once on its own later native turn while pair one stays
+released. Product swallow mechanics remain unchanged. Production compilation
+and the named Sprint 24 filter pass 13/13. Both keys remain suppressed.
+
+Next action: commit and push this second-pair turn-enrollment observer correction
 through the required wrapper, run one fresh complete Sprint gate on that exact
 commit, then rerun only `turn-based-tyrannosaurus` with
 `-ReuseInstalledArtifact`. Continue the remaining native phases only after that
