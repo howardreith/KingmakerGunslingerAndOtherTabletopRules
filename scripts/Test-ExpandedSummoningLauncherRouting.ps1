@@ -32,7 +32,7 @@ foreach ($scenario in @('working-save-expanded-summoning-prepare',
     'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent')) {
     Invoke-SourceOnlyLauncher $scenario @{}
     $valid++
-    foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs')) {
+    foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods')) {
         Invoke-SourceOnlyLauncher $scenario @{ persistenceScope = $scope }
         $valid++
     }

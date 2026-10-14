@@ -79,16 +79,22 @@ lock, or game staging. Two initial registry restore attempts exposed JSON
 binary-value type hydration in the restoration helper; both failed closed, then
 the sanctioned settings restore succeeded with the exact intake hash.
 
-The hidden mechanics checkpoint and original-art pipeline are now implemented
-on draft PR #45. Release production compilation and the named Sprint 24 filter
-pass 11/11. Both keys remain suppressed. Original icons and deterministic
+The hidden mechanics checkpoint, original-art pipeline, closed native observer,
+and targeted persistence observer are now implemented on draft PR #45. Release
+production compilation and the named Sprint 24 filter pass 13/13. Guarded
+preflight passes 588 checks; source-only persistence, launcher-routing and
+installed-stack restoration fixtures also pass. Both keys remain suppressed.
+Original icons and deterministic
 biped bodies are packaged through the existing asset owners; the exact
 two-renderer Lizardfolk view is handled per instance with reversible accessory
 suppression. Offline review found and corrected a jaw-pivot defect and then a
-neck/tail transition defect; the failed local frames remain preserved.
+neck/tail transition defect; the failed local frames remain preserved. The
+complete corrected 20-frame offline review passes, with 181.63 seconds of
+Blender rendering and sorted hash-manifest SHA-256
+`504ea9cfaed5723e74b3b67b81ef43155baf71877510de80bbc9de3b950331ea`.
 
-Next action: finish the regenerated offline pose review, implement the bounded
-Sprint 24 native review/persistence observer on the qualified fixture seams,
-and push the coherent candidate before the single broad Sprint gate. Do not
-run that broad gate yet. Do not begin Brachiosaurus, Elephant changes,
+Next action: push this coherent hidden candidate through the required wrapper,
+then run the single broad Sprint gate and preserve its exact immutable candidate
+identity for guarded native review and targeted persistence. Do not begin
+Brachiosaurus, Elephant changes,
 companions, polymorph, mounts, feats, or any Sprint 25 work.
