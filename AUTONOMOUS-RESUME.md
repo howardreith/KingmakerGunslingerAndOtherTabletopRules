@@ -79,7 +79,16 @@ lock, or game staging. Two initial registry restore attempts exposed JSON
 binary-value type hydration in the restoration helper; both failed closed, then
 the sanctioned settings restore succeeded with the exact intake hash.
 
-Next action: implement the Sprint 24 stage-aware validator and append stable
-identities once, then build the hidden mechanics/art candidate. Do not run the
-broad Sprint gate yet. Do not begin Brachiosaurus, Elephant changes,
+The hidden mechanics checkpoint and original-art pipeline are now implemented
+on draft PR #45. Release production compilation and the named Sprint 24 filter
+pass 11/11. Both keys remain suppressed. Original icons and deterministic
+biped bodies are packaged through the existing asset owners; the exact
+two-renderer Lizardfolk view is handled per instance with reversible accessory
+suppression. Offline review found and corrected a jaw-pivot defect and then a
+neck/tail transition defect; the failed local frames remain preserved.
+
+Next action: finish the regenerated offline pose review, implement the bounded
+Sprint 24 native review/persistence observer on the qualified fixture seams,
+and push the coherent candidate before the single broad Sprint gate. Do not
+run that broad gate yet. Do not begin Brachiosaurus, Elephant changes,
 companions, polymorph, mounts, feats, or any Sprint 25 work.

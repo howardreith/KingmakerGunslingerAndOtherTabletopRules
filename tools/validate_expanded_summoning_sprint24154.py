@@ -8,6 +8,7 @@ once; publication may remove only the two suppression keys.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -98,6 +99,8 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.Theropods.cs",
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
     "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+    "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs",
+    "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.Theropods.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Census.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
@@ -106,10 +109,28 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningDonorCatalog.cs",
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs",
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
     "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/SummonViewScaleCatalog.cs",
     "src/KingmakerGunslinger/Summoning/TheropodCombatComponents.cs",
     "src/KingmakerGunslinger/Summoning/TheropodRulesPolicy.cs",
+    "src/KingmakerGunslinger/Summoning/TheropodVisualPolicy.cs",
+}
+
+ART = {
+    "assets/game/icons/expanded-summoning/deinonychus.png":
+        "d7c15ef813f4920efac88a5b1bcd194e1f872af98c5d619dd60758e96aa1dd36",
+    "assets/game/icons/expanded-summoning/tyrannosaurus.png":
+        "e80aeaa47e293e74fd6bd589670ff864f4c3375d01f1a8c6c7ca3eb25eb50698",
+    "assets/sprint24-theropods/deinonychus-mesh.json":
+        "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
+    "assets/sprint24-theropods/deinonychus-albedo.png":
+        "4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7",
+    "assets/sprint24-theropods/tyrannosaurus-mesh.json":
+        "308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87",
+    "assets/sprint24-theropods/tyrannosaurus-albedo.png":
+        "3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8",
 }
 
 
@@ -156,6 +177,9 @@ def validate_production_scope(root: Path):
     changed = subprocess.check_output(
         ["git", "diff", "--name-only", BASELINE, "--", "src/KingmakerGunslinger"],
         cwd=root, text=True).splitlines()
+    changed += subprocess.check_output(
+        ["git", "ls-files", "--others", "--exclude-standard", "--",
+         "src/KingmakerGunslinger"], cwd=root, text=True).splitlines()
     unexpected = sorted(set(changed) - ALLOWED_PRODUCTION)
     if unexpected:
         raise AssertionError("Unrelated production source changed: " +
@@ -195,6 +219,25 @@ def validate_static(root: Path, stage: str):
             raise AssertionError("Sprint 24 static metadata mismatch: " + key)
 
 
+def validate_art_and_package_owners(root: Path, stage: str):
+    if stage == "census":
+        return
+    for relative, expected in ART.items():
+        path = root / relative
+        if not path.is_file():
+            raise AssertionError("Missing Sprint 24 original asset: " + relative)
+        observed = hashlib.sha256(path.read_bytes()).hexdigest()
+        if observed != expected:
+            raise AssertionError("Sprint 24 original asset hash changed: " + relative)
+    for token in ("sprint24-theropods", "deinonychus", "tyrannosaurus"):
+        for script in ("scripts/Build-Local.ps1", "scripts/package.ps1",
+                       "scripts/validate-build-output.ps1",
+                       "scripts/validate-package.ps1"):
+            if token not in (root / script).read_text(encoding="utf-8-sig"):
+                raise AssertionError(script +
+                                     " lacks package owner token: " + token)
+
+
 def validate_version(root: Path):
     info = common.document(root, "Info.json")
     version = info.get("Version")
@@ -226,6 +269,7 @@ def validate(root: Path):
     stage = validate_visibility(visibility_source, identity_stage)
     validate_production_scope(root)
     validate_static(root, stage)
+    validate_art_and_package_owners(root, stage)
     version, informational = validate_version(root)
 
     if stage == "census":

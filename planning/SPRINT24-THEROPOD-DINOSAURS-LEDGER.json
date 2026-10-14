@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_HIDDEN_MECHANICS_COMPILED_ART_AND_NATIVE_REVIEW_NEXT",
+  "status": "IN_PROGRESS_HIDDEN_ART_PIPELINE_FOCUSED_PASS_NATIVE_REVIEW_NEXT",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -252,7 +252,7 @@
       "releaseProductionCompile": "PASS",
       "sprint24Filter": {
         "filter": "expanded-summoning.sprint24",
-        "selectedTests": 10,
+        "selectedTests": 11,
         "failures": 0,
         "productionCompileSeconds": 0.9,
         "domainSeconds": 4.4
@@ -264,10 +264,35 @@
         "productionCompileSeconds": 0.9,
         "domainSeconds": 1.0
       },
-      "registeredDomainTests": 2604,
+      "registeredDomainTests": 2605,
       "candidateSuppressionStillPresent": true,
       "nativeProofStillPending": true,
       "artProofStillPending": true
+    },
+    "originalArtFocused": {
+      "status": "PASS_DEVELOPMENT_CHECKPOINT_FINAL_OFFLINE_RERENDER_PENDING",
+      "imageWorkflow": "approved image generation plus established deterministic icon exporter",
+      "iconExportsSha256": {
+        "deinonychus": "d7c15ef813f4920efac88a5b1bcd194e1f872af98c5d619dd60758e96aa1dd36",
+        "tyrannosaurus": "e80aeaa47e293e74fd6bd589670ff864f4c3375d01f1a8c6c7ca3eb25eb50698"
+      },
+      "bodyMeshesSha256": {
+        "deinonychus": "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
+        "tyrannosaurus": "308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87"
+      },
+      "albedosSha256": {
+        "deinonychus": "4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7",
+        "tyrannosaurus": "3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8"
+      },
+      "rigCensusSha256": "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4",
+      "rendererOwnership": "_lizardman001 body swap; exact _ammunition04 per-instance accessory state restored",
+      "moduleOffFileReads": 0,
+      "focusedFilter": "expanded-summoning.sprint24",
+      "focusedSelectedTests": 11,
+      "focusedFailures": 0,
+      "productionCompileSeconds": 17.7,
+      "domainSeconds": 4.4,
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": null,
     "nativeRuns": [],
@@ -333,6 +358,24 @@
       "result": "The first compilation failed before packaging or deployment; the corrected Release production compilation passes.",
       "cause": "ExpandedSummoningSpecialBuilder.Theropods.cs omitted the Kingmaker.UnitLogic.Mechanics namespace required by ContextDiceValue.",
       "correction": "Add the required using directive only; no behavior was relaxed."
+    },
+    {
+      "timestampUtc": null,
+      "stage": "offline original-body pose review",
+      "scenario": "first theropod wide-bite deformation",
+      "disposition": "PRESERVED_LOCAL_PREDEPLOYMENT_ART_FAILURE_THEN_CORRECTED",
+      "result": "The lower jaw detached in the first private Blender extreme-pose frame; no package was deployed.",
+      "cause": "The first original jaw geometry was authored below the measured native jaw pivot and the review rotation treated a global axis as bone-local.",
+      "correction": "Move the original skull and jaw onto the captured rest frame and convert review axes through the bone rest quaternion; the revised bite opens beneath the skull."
+    },
+    {
+      "timestampUtc": null,
+      "stage": "offline original-body turn review",
+      "scenario": "neck and tail transition extremes",
+      "disposition": "PRESERVED_LOCAL_PREDEPLOYMENT_ART_FAILURE_CORRECTION_REGENERATED",
+      "result": "An exaggerated turn exposed a neck seam and radial tail-root triangles; no package was deployed.",
+      "cause": "Rigid head motion lacked overlap at the neck and the first tail ring could surface at an oblique camera angle.",
+      "correction": "Add an original neck collar, remove the tail start cap and embed the transition inside an elongated original rump; final full pose rerender remains pending."
     }
   ],
   "acceptedLimitations": [

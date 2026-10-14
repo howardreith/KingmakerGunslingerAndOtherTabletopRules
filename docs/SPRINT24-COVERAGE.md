@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — HIDDEN MECHANICS COMPILE AND FOCUSED TESTS PASS** on
+Status: **IN PROGRESS — HIDDEN MECHANICS AND ORIGINAL-ART FOCUSED CHECKS PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -85,7 +85,7 @@ celestial/fiendish policy; Nature's Ally routes remain untemplated.
 | Later Swallow Whole | Existing held-since-round-start and maintain seam; separate -1 size delta | Same-size grab cannot swallow; later Huge target check succeeds; immediate/failed/wrong-limb controls | Implemented; distinct size-gate tests PASS; native proof pending |
 | Periodic stomach damage | Tyrannosaurus-owned 2d8+11 payload, not Powerful Bite or donor stomach | One application per intended round in RTWP/TB; attribution, escape, source loss, simultaneous predators/victims | Owned payload implemented; live cadence/attribution proof pending |
 | Hold/swallow lifecycle | Existing ownership parts with narrow reload distinction | Mouth holds reset safely; already-swallowed native state is not indiscriminately erased; dismissal/death/expiry/escape cleanup | Load reset narrowed; shared focused regressions PASS; native persistence proof pending |
-| Original theropod presentation | Existing original-asset/export/attach infrastructure on the qualified Free Hands Lizardfolk skeleton | Offline clay/silhouette/textured/unlit/camera/extreme poses; live contacts, speed, reach, navigation, crowding, fade/fallback/module lifecycle | Shared rig frozen by bounded census |
+| Original theropod presentation | Existing original-asset/export/attach infrastructure on the qualified Free Hands Lizardfolk skeleton | Offline clay/silhouette/textured/unlit/camera/extreme poses; live contacts, speed, reach, navigation, crowding, fade/fallback/module lifecycle | Original icons, procedural bodies, paint, exact renderer selection, rollback and package owners implemented; focused checks pass; final offline rerender and live proof pending |
 | All 18 roots | Existing catalog generator and real parent spell paths | Every root, quantity, slot, duration, Monster templates, Nature's Ally untemplated behavior | Registered and suppressed; exact route/quantity/template tests PASS; native parent-path proof pending |
 | Affected old consumers | Existing pouncer, Dire Crocodile/Purple Worm, visual owner, Triceratops if shared Strength seam changes | Narrow fresh native regressions, with historical broad evidence reused only after dependency audit | Planned |
 
@@ -151,6 +151,40 @@ check found the expected blueprint-ledger hash change, and the first production
 compile lacked the `ContextDiceValue` namespace import. Each failed before any
 deployment and passed after a narrow correction; none was discarded or rerolled
 unchanged.
+
+## Original art and attachment checkpoint
+
+The two icon paintings were generated with the repository's approved image
+generation workflow, then exported through the established deterministic icon
+pipeline. Their runtime SHA-256 values are
+`d7c15ef813f4920efac88a5b1bcd194e1f872af98c5d619dd60758e96aa1dd36`
+(Deinonychus) and
+`e80aeaa47e293e74fd6bd589670ff864f4c3375d01f1a8c6c7ca3eb25eb50698`
+(Tyrannosaurus). Exact prompts and generated-source hashes are recorded in
+`assets-source/original-icons/expanded-summoning/SPRINT24-SOURCES.md`.
+
+The deterministic Blender/Python source creates original biped meshes and
+paintings from the geometry-free census frame. The current shipped body hashes
+are `eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab`
+and `308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87`;
+the albedo hashes are
+`4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7`
+and `3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8`.
+The loader admits only `_lizardman001` as the body renderer and the exact
+`_ammunition04` accessory beside it. It disables only that per-instance
+accessory after all validation, restores the prior enabled state during fault
+rollback and teardown, and never changes shared donor assets. Module OFF reads
+no theropod files and allocates no Unity art resources. Tyrannosaurus alone has
+the bounded 2.0 view-only scale step; mechanical size, reach, footprint and
+movement remain native-rule properties pending live measurement.
+
+Offline review retained two useful predeployment failures. The first wide-bite
+pose revealed that the original lower jaw was too far from the measured native
+pivot. The second turn pass exposed a neck seam and tail-root ring triangles.
+The authoring source now uses the actual jaw rest frame, a neck overlap and an
+uncapped body-embedded tail transition. No package was deployed for either
+failure. Final regenerated pose review is still required before the candidate
+Sprint gate; human aesthetic review remains `NOT_PERFORMED_NONBLOCKING`.
 
 ## Validation order
 

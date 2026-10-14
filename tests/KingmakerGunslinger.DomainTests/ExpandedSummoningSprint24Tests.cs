@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -242,6 +245,102 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("BlueprintBuff",
                 types[TheropodRulesPolicy.TyrannosaurusSwallowedSymbol],
                 "The Tyrannosaurus owns its distinct periodic payload.");
+        }
+
+        internal static void OriginalBodiesIconsAndRendererOwnershipAreExact()
+        {
+            foreach (string key in TheropodVisualPolicy.Keys)
+            {
+                JObject payload = JObject.Parse(File.ReadAllText(
+                    "assets/sprint24-theropods/" + key + "-mesh.json"));
+                Assertions.Equal(key, (string)payload["creature"],
+                    key + " asset identity.");
+                Assertions.True(TheropodVisualPolicy.IsPermitted(key,
+                        payload["bones"].Values<string>()),
+                    key + " owns the exact reviewed driver set.");
+                Assertions.True((bool)payload["biped"] &&
+                    (int)payload["visibleLegs"] == 2 &&
+                    (int)payload["visibleForelimbs"] == 2 &&
+                    (int)payload["jawJoints"] == 2 &&
+                    (int)payload["tailJoints"] == 4 &&
+                    (bool)payload["balancedCountertail"],
+                    key + " is the reviewed two-legged jaw/countertail body.");
+                Assertions.Equal(TheropodVisualPolicy.DonorGuid,
+                    (string)payload["nativeDonor"],
+                    key + " binds only the measured donor identity.");
+                Assertions.Equal(TheropodVisualPolicy.DonorPrefabGuid,
+                    (string)payload["nativePrefab"],
+                    key + " binds only the measured donor prefab.");
+                Assertions.Equal(TheropodVisualPolicy.BodyRendererName,
+                    (string)payload["bodyRenderer"],
+                    key + " swaps only the measured body renderer.");
+                Assertions.Equal(TheropodVisualPolicy.AccessoryRendererName,
+                    (string)payload["accessoryRenderer"],
+                    key + " names the exact reversible accessory.");
+            }
+            JObject dein = JObject.Parse(File.ReadAllText(
+                "assets/sprint24-theropods/deinonychus-mesh.json"));
+            JObject tyr = JObject.Parse(File.ReadAllText(
+                "assets/sprint24-theropods/tyrannosaurus-mesh.json"));
+            Assertions.True((int)dein["sickleFootClaws"] == 2 &&
+                    !(bool)dein["massiveSkull"] &&
+                    !(bool)dein["tinyForearms"],
+                "Deinonychus owns two visible sickle claws and agile anatomy.");
+            Assertions.True((int)tyr["sickleFootClaws"] == 0 &&
+                    (bool)tyr["massiveSkull"] &&
+                    (bool)tyr["tinyForearms"],
+                "Tyrannosaurus owns the large skull and tiny forearms.");
+            Assertions.Equal(
+                "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
+                Sha256("assets/sprint24-theropods/deinonychus-mesh.json"),
+                "Deterministic Deinonychus mesh bytes.");
+            Assertions.Equal(
+                "308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87",
+                Sha256("assets/sprint24-theropods/tyrannosaurus-mesh.json"),
+                "Deterministic Tyrannosaurus mesh bytes.");
+            Assertions.Equal(
+                "4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7",
+                Sha256("assets/sprint24-theropods/deinonychus-albedo.png"),
+                "Deterministic Deinonychus original paint bytes.");
+            Assertions.Equal(
+                "3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8",
+                Sha256("assets/sprint24-theropods/tyrannosaurus-albedo.png"),
+                "Deterministic Tyrannosaurus original paint bytes.");
+            Assertions.True(TheropodVisualPolicy.IsExactRendererSet(new[] {
+                    TheropodVisualPolicy.AccessoryRendererName,
+                    TheropodVisualPolicy.BodyRendererName }) &&
+                !TheropodVisualPolicy.IsExactRendererSet(new[] {
+                    TheropodVisualPolicy.BodyRendererName }) &&
+                !TheropodVisualPolicy.IsExactRendererSet(new[] {
+                    TheropodVisualPolicy.BodyRendererName,
+                    TheropodVisualPolicy.AccessoryRendererName, "foreign" }),
+                "Only the exact two-renderer donor view is eligible.");
+            float scale;
+            Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
+                    TheropodVisualPolicy.TyrannosaurusBlueprintName,
+                    out scale) && scale == 2.0f,
+                "Only Tyrannosaurus receives the reviewed Gargantuan view step.");
+            Assertions.False(SummonViewScaleCatalog.TryGetMultiplier(
+                    TheropodVisualPolicy.DeinonychusBlueprintName, out scale),
+                "Medium Deinonychus retains the measured donor scale.");
+
+            JObject icons = JObject.Parse(File.ReadAllText(
+                "assets-source/original-icons/expanded-summoning/icon-manifest.json"));
+            JToken[] rows = icons["icons"].Where(value =>
+                TheropodVisualPolicy.Handles((string)value["key"])).ToArray();
+            Assertions.Equal(2, rows.Length,
+                "Each theropod owns one original icon painting.");
+            Assertions.True(rows.Select(value => (string)value["outputSha256"])
+                    .Distinct(StringComparer.Ordinal).Count() == 2 &&
+                rows.All(value => value["blueprintSymbols"].Any()),
+                "Theropod paintings are distinct and own concrete consumers.");
+        }
+
+        private static string Sha256(string path)
+        {
+            using (SHA256 hash = SHA256.Create())
+                return string.Concat(hash.ComputeHash(File.ReadAllBytes(path))
+                    .Select(value => value.ToString("x2")));
         }
 
         private static SummonVariantSpec[] NewRoutes(SummonFamily family)
