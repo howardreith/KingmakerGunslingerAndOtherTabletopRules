@@ -3287,18 +3287,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal));
                 target.Stats.HitPoints.BaseValue = 100000;
                 owner.Stats.BaseAttackBonus.BaseValue = 100;
-                // Use the same surveyed floor/5m separation as the qualified
-                // Sprint 17 ordinary-AI cells.  A merely unobstructed point
-                // near the party can still be outside the usable path graph,
-                // while a three-metre separation gives the native dumb-brain
-                // distance scorer no approach to demonstrate.
+                // Use a purpose-built five-metre combat lane. The shared art
+                // survey requires six open three-metre spokes so Gargantuan
+                // presentation can turn safely; that is stricter than this
+                // Medium creature's AI proof and varied with otherwise valid
+                // first-area geometry. Both ends of this lane are instead
+                // required on the same connected native graph and in clear
+                // line of sight, while a three-metre separation still is not
+                // enough approach for the dumb-brain distance scorer to show.
                 string floorSurvey;
-                Vector3 origin = FindExpandedSummoningArtPoint(
-                    fixture.Caster, out floorSurvey);
-                var targetDirections = new List<int>();
                 string chosenTargetDirection;
-                Vector3 targetOrigin = ExpandedSummoningOpenPoint(origin, 5f,
-                    targetDirections, out chosenTargetDirection);
+                Vector3 targetOrigin;
+                Vector3 origin = Sprint24AiCombatLane(fixture.Caster, 5f,
+                    out targetOrigin, out floorSurvey,
+                    out chosenTargetDirection);
                 PlaceExpandedSummoningUnit(owner, origin);
                 PlaceExpandedSummoningUnit(target, targetOrigin);
                 foreach (UnitEntityData unit in new[] { owner, target })
@@ -3398,8 +3400,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["targetVisible"] =
                             owner.Memory.ContainsVisible(target),
                         ["chosenTargetDirection"] = chosenTargetDirection,
-                        ["targetDirectionCandidates"] =
-                            new JArray(targetDirections),
                         ["ordinaryFallback"] = ordinaryFallback,
                         ["commandTypes"] = new JArray(commandTypes.OrderBy(
                             value => value, StringComparer.Ordinal)),
@@ -3443,6 +3443,106 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new[] { owner });
                 ResetExpandedSummoningHostile(fixture);
             }
+        }
+
+        private static Vector3 Sprint24AiCombatLane(UnitEntityData anchorCaster,
+            float distance, out Vector3 target, out string survey,
+            out string direction)
+        {
+            if (anchorCaster == null)
+                throw new InvalidOperationException(
+                    "Sprint 24 AI review has no fixture anchor.");
+            if (AstarPath.active == null)
+                throw new InvalidOperationException(
+                    "Sprint 24 AI review has no native path graph.");
+            if (Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null)
+                throw new InvalidOperationException(
+                    "Sprint 24 AI review has no native sight survey.");
+            Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(
+                anchorCaster.Position);
+            if (anchor.node == null || !anchor.node.Walkable)
+                throw new InvalidOperationException(
+                    "Sprint 24 AI review has no walkable party anchor.");
+
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.IsInGame).ToArray();
+            Vector3 selectedOrigin = Vector3.zero;
+            Vector3 selectedTarget = Vector3.zero;
+            float selectedPartyGap = -1f;
+            float selectedAnchorGap = float.MaxValue;
+            int selectedDirection = -1;
+            int originCandidates = 0;
+            int laneCandidates = 0;
+            for (int dx = -15; dx <= 15; dx += 3)
+                for (int dz = -15; dz <= 15; dz += 3)
+                {
+                    Vector3 requestedOrigin = anchor.clampedPosition +
+                        new Vector3(dx, 0f, dz);
+                    Pathfinding.NNInfo origin = AstarPath.active.GetNearest(
+                        requestedOrigin);
+                    if (origin.node == null || !origin.node.Walkable ||
+                        origin.node.Area != anchor.node.Area ||
+                        origin.node.GraphIndex != anchor.node.GraphIndex ||
+                        Vector3.Distance(requestedOrigin,
+                            origin.clampedPosition) > .6f) continue;
+                    originCandidates++;
+                    for (int index = 0; index < CompassOffsets.Length; index++)
+                    {
+                        Vector3 requestedTarget = origin.clampedPosition +
+                            CompassOffsets[index] * distance;
+                        Pathfinding.NNInfo targetPoint =
+                            AstarPath.active.GetNearest(requestedTarget);
+                        if (targetPoint.node == null ||
+                            !targetPoint.node.Walkable ||
+                            targetPoint.node.Area != anchor.node.Area ||
+                            targetPoint.node.GraphIndex !=
+                                anchor.node.GraphIndex ||
+                            Vector3.Distance(requestedTarget,
+                                targetPoint.clampedPosition) > .6f ||
+                            Kingmaker.Visual.FogOfWar.LineOfSightGeometry
+                                .Instance.HasObstacle(
+                                    origin.clampedPosition + Vector3.up * 1.2f,
+                                    targetPoint.clampedPosition +
+                                        Vector3.up * 1.2f, 0)) continue;
+                        float partyGap = party.Length == 0 ? distance :
+                            party.Min(value => Math.Min(
+                                Vector3.Distance(value.Position,
+                                    origin.clampedPosition),
+                                Vector3.Distance(value.Position,
+                                    targetPoint.clampedPosition)));
+                        if (partyGap < 3.5f) continue;
+                        laneCandidates++;
+                        float anchorGap = Vector3.Distance(
+                            anchor.clampedPosition, origin.clampedPosition);
+                        if (anchorGap > selectedAnchorGap + .01f ||
+                            Math.Abs(anchorGap - selectedAnchorGap) <= .01f &&
+                            partyGap <= selectedPartyGap) continue;
+                        selectedOrigin = origin.clampedPosition;
+                        selectedTarget = targetPoint.clampedPosition;
+                        selectedPartyGap = partyGap;
+                        selectedAnchorGap = anchorGap;
+                        selectedDirection = index;
+                    }
+                }
+
+            direction = selectedDirection < 0 ? "none" : "dir" +
+                selectedDirection + "@" + distance.ToString("0.#",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                "m(graph-and-sight)";
+            survey = "originCandidates=" + originCandidates +
+                ";laneCandidates=" + laneCandidates + ";partyGap=" +
+                selectedPartyGap.ToString("0.##",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ";anchorGap=" + selectedAnchorGap.ToString("0.##",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ";direction=" + direction + ";origin=" + selectedOrigin +
+                ";target=" + selectedTarget;
+            if (selectedDirection < 0)
+                throw new InvalidOperationException(
+                    "No connected five-metre Sprint 24 AI combat lane: " +
+                    survey);
+            target = selectedTarget;
+            return selectedOrigin;
         }
     }
 }
