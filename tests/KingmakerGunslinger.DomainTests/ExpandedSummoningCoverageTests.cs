@@ -69,11 +69,12 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(105, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+                ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(116,
+            Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures include the two registered Sprint 23 identities plus retained native wrappers.");
+                "Represented creatures include the registered Sprint 24 identities plus retained native wrappers.");
             // Sprint 23 publication makes both registered identities visible.
             Assertions.Equal(116,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
@@ -88,9 +89,9 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(29, notRepresented,
-                "29 ideal-roster creatures remain unregistered after both "
-                + "Sprint 23 armored dinosaurs receive identities.");
+            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount,
+                notRepresented,
+                "Only the post-Sprint-24 ideal-roster creatures remain unregistered.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");

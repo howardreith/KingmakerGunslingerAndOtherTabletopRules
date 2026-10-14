@@ -160,9 +160,13 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG_Summoning_Unit_Eagle", out eagle) && eagle == 0.30f,
                 "Eagle view-only scale changed.");
             Assertions.True(SummonViewScaleCatalog.All.All(value =>
-                    value.Multiplier >= 0.20f && (value.CreatureKey == "dire-crocodile"
-                        ? value.Multiplier == 2.0f : value.Multiplier <= 1.25f)),
-                "Only the new Gargantuan crocodilian has the explicit 2x view step.");
+                    value.Multiplier >= 0.20f &&
+                    (value.CreatureKey == "dire-crocodile" ||
+                        value.CreatureKey ==
+                            TheropodRulesPolicy.TyrannosaurusKey
+                        ? value.Multiplier == 2.0f :
+                        value.Multiplier <= 1.25f)),
+                "Only the two reviewed Gargantuan original bodies have an explicit 2x view step.");
             string runtime = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
