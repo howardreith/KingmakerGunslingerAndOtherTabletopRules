@@ -122,6 +122,17 @@
       "failures": 7,
       "cause": "The intentionally added v0.0.153 release-note package member advanced the strict sound-bank/no-sound-bank counts to 364/362, while six historical asset-delivery source tests and the deterministic packager count allowlist still pinned 363/361.",
       "repair": "Updated only the exact package-count expectations and the deterministic packager's explicit 362/364 allowlist. A 22-test affected selection and the four-test package selection both passed before the next candidate."
+    },
+    {
+      "source": "34598ea6d81a1c98671eef9e5a5f766792061acc",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+      "result": "FAIL",
+      "stage": "complete domain suite",
+      "registered": 2594,
+      "executed": 2594,
+      "failures": 1,
+      "cause": "The active follow-up resume replaced the prior terminal resume without restating the current source-derived public equation required by expanded-summoning.published-records-match-derivation.",
+      "repair": "Restored the v0.0.152 released lineage and the unchanged 1,075 generated placements / 1,104 visible choices in the active resume; no product or package input changed. The first focused reread correctly remained red because Markdown wrapping split the generated-placement phrase; placing the exact derived equation contiguously corrected the record-format defect."
     }
   ],
   "nativeRuns": [],
