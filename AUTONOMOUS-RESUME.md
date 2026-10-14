@@ -268,15 +268,33 @@ later native round. Transaction `compat-20261014T101641Z-a38d3a138c4f`
 restored exactly; runtime-result SHA-256 is
 `97f760a9f13d7504a405a7373f5cd48ba8dce67abf98c88c3379b45780e3bb71`.
 
-The changed strategy now enrolls the disposable second victim in the existing
-request-owned Sprint 22 clock, releases the first victim, and yields boundedly
-through real native controller pulses until the later scheduled round. It
-requires exactly one attributed 2d8+11 packet for the surviving pair and zero
-packets for the released victim. Product swallow mechanics remain unchanged.
-Production compilation and the named Sprint 24 filter pass 13/13. Both keys
-remain suppressed.
+The native-clock correction commit
+`8aec80714cf8ca77f92d6ae72d065addf33161e1` passed a complete Sprint gate:
+2,607/2,607 tests in 95.3 seconds and strict package validation in 191.4
+seconds. ZIP SHA-256 is
+`738b15aca71d51d00c691f8b9c9da83cdb84a64b4dccfa34472c0159d3728d8e`;
+DLL SHA-256 is
+`4029dccf88ce60b9ae57a8aee11f21afb641bea29ac1a11cee8a43ba1391ce7e`,
+MVID `37420198-db58-4cbc-ba73-51685e56d840`, and source fingerprint
+`7160ad8324995115dbeefc64d2b4014bc0cdada21cc095025bc1464567665fb5`.
 
-Next action: commit and push this native-clock continuation observer correction
+Its changed TB reproduction again passed 10/11 assertions in 95.006 seconds.
+All Buff identity, release-isolation and cleanup predicates remained exact, but
+32 passive controller pulses advanced only 1.666 native seconds while the
+current TB turn remained open, so the naturally scheduled second packet was
+not due. Transaction `compat-20261014T103110Z-be8cc748cdf9` restored exactly;
+runtime-result SHA-256 is
+`d392f8f3c3ca892fff698bdbf42b088d9e050e33d937614f2c8ee15913a63e18`.
+
+The changed strategy now deliberately makes only pair one's packet due,
+releases that pair, then uses the qualified native turn-ownership seam to end
+active turns and reach pair two's scheduled round. It records turn transitions,
+controller rounds, ended turns and native elapsed time and requires one exact
+2d8+11 packet for pair two while pair one stays released. Product swallow
+mechanics remain unchanged. Production compilation and the named Sprint 24
+filter pass 13/13. Both keys remain suppressed.
+
+Next action: commit and push this native-turn continuation observer correction
 through the required wrapper, run one fresh complete Sprint gate on that exact
 commit, then rerun only `turn-based-tyrannosaurus` with
 `-ReuseInstalledArtifact`. Continue the remaining native phases only after that
