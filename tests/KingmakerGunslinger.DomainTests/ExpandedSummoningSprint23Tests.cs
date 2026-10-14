@@ -551,7 +551,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ordinaryWeaponStats",
                 "chargedWeaponStats",
                 "ObservePowerAttackChoice = true",
-                "PowerAttackOnBeforeRoll",
+                "PowerAttackActiveBeforeRoll",
                 "PowerAttackOffAfterAttack",
                 "desiredTargetArmorClass = ordinaryAttackBonus + 15",
                 "target.Stats.AC.BaseValue = armorClassBefore",
