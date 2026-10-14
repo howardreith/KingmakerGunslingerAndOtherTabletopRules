@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_CENSUS_OBSERVER_READY",
+  "status": "IN_PROGRESS_CENSUS_COMPLETE_HIDDEN_CANDIDATE_NEXT",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -199,10 +199,11 @@
   },
   "reuseAudit": {
     "sprint22And23FinalRecordsRead": true,
-    "nativePounceCarrierAudit": "IN_PROGRESS",
+    "nativePounceCarrierAudit": "EXACT_NATIVE_POUNCE_FACT_RESOLVED; BEHAVIOR_PROOF_PENDING",
     "sharedGrappleSwallowAudit": "IN_PROGRESS",
     "strengthContributionAudit": "SPRINT23_INSTALLED_IL_PROVEN; TYRANNOSAURUS SIGNED POLICY FROZEN",
-    "artAndRigAudit": "PRIOR_SURVEYS_REVIEWED; ONE CLOSED SAVE_FREE CENSUS OBSERVER READY"
+    "artAndRigAudit": "CENSUS_PASS; LIZARDFOLK_FREE_HANDS_SHARED_RIG_FROZEN; TROLL_TWO_JOINT_TAIL_NEGATIVE_CONTROL",
+    "criticalCarrierAudit": "NO_NATIVE_BLEEDING_CRITICAL_FEAT; PROJECT_EXACT_BITE_CONFIRMED_CRITICAL_TRIGGER_REUSES_NATIVE_BLEED2D6BUFF"
   },
   "plan": {
     "ordinaryTargetMinutes": 15,
@@ -223,6 +224,25 @@
       "failures": 0,
       "runtimePreflightCases": 570,
       "runtimePreflightPassed": true
+    },
+    "censusNative": {
+      "scenario": "observe-expanded-summoning-sprint24-theropod-census",
+      "status": "PASS",
+      "runId": "20261014T0546181426610Z-f8d247dbd44541ea8c8411e12a243680",
+      "gitCommit": "dba2402e270b3084c3cd571c063e1973323ad9b0",
+      "gameVersion": "2.1.7b",
+      "modVersion": "0.0.153",
+      "durationSeconds": 115.399,
+      "completeDomainTests": 2596,
+      "completeDomainSeconds": 88.5,
+      "runtimeResultSha256": "893d72987c0154877571378d72c7319f692f5131c77f788d3b2ac68daa761b35",
+      "censusSha256": "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4",
+      "packageSha256": "5c03793a412e535b214baaef3790eba539a363fc85406a39e7a397c84ce42169",
+      "dllSha256": "00e43cc30f132981b4201998bcd2f315d0d588e2fab7bc75955fb1bc73f80d11",
+      "dllMvid": "fd089740-039a-4aa6-9f68-361413932273",
+      "sourceStateSha256": "3208eb50a7867e9e568ff57d48bc335bdfff4ca94171d258ec982e17ad9d12de",
+      "donorDecision": "Lizardfolk Free Hands shared skeleton; Troll negative control",
+      "bleedingCriticalDecision": "Project exact Tyrannosaurus bite confirmed-critical trigger applies native Bleed2d6Buff"
     },
     "candidateSprintGate": null,
     "nativeRuns": [],
@@ -249,6 +269,15 @@
       "result": "2595 of 2596 domain tests passed; no deployment, process launch, save access or machine-state change occurred.",
       "cause": "The concise active resume omitted the exact contiguous 1,075 generated placements and 1,104 visible choices phrases required by expanded-summoning.published-records-match-derivation.",
       "correction": "Restore the released public equation in AUTONOMOUS-RESUME.md; no product or package input changed."
+    },
+    {
+      "timestampUtc": "2026-10-14T06:00:00Z",
+      "stage": "post-census exact machine restoration",
+      "scenario": "restore pre-census registry settings",
+      "disposition": "PRESERVED_RESTORATION_HELPER_TYPE_HYDRATION_FAILURES_THEN_EXACT_RESTORE_PASS",
+      "result": "Two attempts failed closed before the sanctioned restore rehydrated binary and DWord values; final 83-entry settings hash and every other intake authority match exactly.",
+      "cause": "ConvertFrom-Json represented registry Binary values as object arrays rather than byte arrays.",
+      "correction": "Rehydrate Binary as non-enumerated byte[] and DWord as int, then invoke Restore-KmgFlatGameSettingsValues; no manual registry or save mutation."
     }
   ],
   "acceptedLimitations": [
