@@ -36,13 +36,19 @@ Sprint 24 branches. Its SHA-256 moved from
 to `9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542`;
 removing those exact two lines reproduces the original hash.
 
-The one bounded theropod census observer is implemented on closed inputs: the
-Free Hands Lizardfolk candidate, Troll negative control, six released feat
-carriers, Diehard, Endurance, and the native 1d6 bleed graph. Focused Release
-compilation and its two named domain tests passed in 23.4 seconds; the 570-case
-offline runtime preflight also passed. The census is save-free, spawns nothing,
-and captures only transforms/binds, component/bounds, action/contact metadata,
-and blueprint graphs.
+The one bounded theropod census completed PASS on closed inputs: the Free Hands
+Lizardfolk candidate, Troll negative control, six released feat carriers,
+Diehard, Endurance, and bounded native bleed/critical graphs. The fresh complete
+prebuild passed 2,596/2,596 domain tests in 88.5 seconds. The guarded native run
+passed all four assertions in 115.399 seconds under Kingmaker 2.1.7b. Its local
+result and census SHA-256 values are respectively
+`893d72987c0154877571378d72c7319f692f5131c77f788d3b2ac68daa761b35`
+and `727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4`.
+The exact research ZIP SHA-256 is
+`5c03793a412e535b214baaef3790eba539a363fc85406a39e7a397c84ce42169`;
+its DLL SHA-256 is
+`00e43cc30f132981b4201998bcd2f315d0d588e2fab7bc75955fb1bc73f80d11`
+with MVID `fd089740-039a-4aa6-9f68-361413932273`.
 
 The first guarded census request stopped before deployment or launch because
 the frozen Sprint 23 source validator did not yet admit the two later-sprint
@@ -58,9 +64,22 @@ phrases required by the source-derived record test. The line above restores
 those facts without changing product or package inputs; the failure remains in
 the machine-readable ledger.
 
-Next action: push this coherent observer checkpoint, build one current package,
-then execute the census exactly once through the guarded runtime wrapper. Use
-its evidence to freeze the shared rig and critical/feat carrier decisions
-before appending stable identities. Do not run the broad Sprint gate yet. Do
-not begin Brachiosaurus, Elephant changes, companions, polymorph, mounts,
-feats, or any Sprint 25 work.
+The census freezes the Free Hands Lizardfolk rig as the shared authoring base:
+it has independent legs/feet/toes, four tail joints, jaw, both forelimbs, and
+separate claw and bite action contacts. The two-joint-tail Troll remains a
+negative control. Native `Bleed2d6Buff` is the exact standard 2d6 bleed carrier;
+Kingmaker has no native Bleeding Critical feat, so the candidate needs a narrow
+confirmed-critical trigger but must not clone the native bleed implementation.
+
+After the census transaction, the sanctioned restore returned the actual KMG
+installation to 0.0.117 with the exact intake 136-file canonical hash. All 83
+settings, 118 saves, both named saves, Mods inventory, and sound-bank state match
+intake exactly. There is no game process, active transaction, compatibility
+lock, or game staging. Two initial registry restore attempts exposed JSON
+binary-value type hydration in the restoration helper; both failed closed, then
+the sanctioned settings restore succeeded with the exact intake hash.
+
+Next action: implement the Sprint 24 stage-aware validator and append stable
+identities once, then build the hidden mechanics/art candidate. Do not run the
+broad Sprint gate yet. Do not begin Brachiosaurus, Elephant changes,
+companions, polymorph, mounts, feats, or any Sprint 25 work.
