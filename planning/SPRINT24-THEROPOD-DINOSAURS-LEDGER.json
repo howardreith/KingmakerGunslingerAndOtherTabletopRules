@@ -305,20 +305,20 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": {
-      "status": "PASS_HIDDEN_CRITICAL_HOLD_CANDIDATE_SUPERSEDED_BY_TB_CONTINUATION_OBSERVER_CORRECTION",
-      "gitCommit": "c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded",
+      "status": "PASS_HIDDEN_FIRST_CONTINUATION_CANDIDATE_SUPERSEDED_BY_NATIVE_CLOCK_OBSERVER_CORRECTION",
+      "gitCommit": "ca80f133e538c9607f6795297e0b2f6bd67c6ad7",
       "gateLevel": "Sprint",
-      "gateDurationSeconds": 190.4,
+      "gateDurationSeconds": 188.9,
       "completeDomainTests": 2607,
       "completeDomainFailures": 0,
-      "completeDomainSeconds": 94.4,
+      "completeDomainSeconds": 93.1,
       "packageEntries": 370,
       "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
-      "packageSha256": "e3c07a543796035e84f4d65a5783db72a42348683c931c442ba77742e104fc89",
-      "dllSha256": "d325dbae5437080e8efd3661e8ff1385b424dac70da66c1ba87a4765f1676b30",
-      "dllMvid": "5054599d-6a6d-442b-b323-38ca37dd7a26",
-      "sourceStateSha256": "665b32f6805cd8132d3bfccba307c47cd38903cb851703e418b4c66756b6bdab",
-      "disposition": "Complete critical/hold-isolated hidden Sprint gate PASS; corrected RTWP Tyrannosaurus passed completely, while the first TB Tyrannosaurus run exposed a post-release continuation probe that reused pre-release observer state."
+      "packageSha256": "4fe19f8d4b1129c4e8e88de9c1dd366436d68225983fec1b6e618c9151986215",
+      "dllSha256": "333fcc2a81d7c8bbc0ec53128bdc4bc3cc68a314a7e2a17391f4befcb71baa4f",
+      "dllMvid": "d53c7878-0ff6-4839-8d26-3bcb0bdaa4da",
+      "sourceStateSha256": "33e13b3989ee99b6768bffdd591f25c613c79bca14facc71067607dbf32b5d96",
+      "disposition": "Complete first-continuation hidden Sprint gate PASS. The changed TB reproduction again retained 10/11 and proved the surviving Buff was live and stable but its current turn boundary had already been processed, requiring bounded native-clock advancement instead of resubmitting that boundary."
     },
     "nativeRuns": [
       {
@@ -510,7 +510,7 @@
       },
       {
         "phase": "turn-based-tyrannosaurus",
-        "status": "FAIL_PRESERVED_POST_RELEASE_CONTINUATION_OBSERVER_CORRECTION_FOCUSED_PASS",
+        "status": "FAIL_PRESERVED_POST_RELEASE_CONTINUATION_FIRST_CORRECTION_REPRODUCED_SAME_BOUNDARY",
         "runId": "20261014T1006340014165Z-655b18d15e674115bbf6a4d6f24fbff8",
         "gitCommit": "c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded",
         "compatibilityTransaction": "compat-20261014T100454Z-b4ff58a2e19b",
@@ -526,7 +526,29 @@
           "After releasing the first victim, the second victim retained native swallowed state and its predator retained exactly one victim, but the continuation probe emitted no second packet."
         ],
         "correction": "Reacquire the live second-victim swallowed Buff after release, derive its due boundary from current GameTime, assert release caused no extra tick or relink, and record the live-reference and before/after schedule diagnostics.",
-        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; live-state, release-side-effect and due-boundary diagnostics domain-pinned. Fresh exact-candidate Sprint gate required before changed phase reproduction.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh ca80f133 exact-candidate Sprint gate 2,607/2,607 PASS. Changed reproduction again retained 10/11 and proved a stable live Buff, no release side effect and a zero-delay boundary already processed; bounded native-clock advancement is required.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "FAIL_PRESERVED_ALREADY_PROCESSED_TURN_BOUNDARY_NATIVE_CLOCK_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T1018203005588Z-5e4db794275a423f8455715af1870200",
+        "gitCommit": "ca80f133e538c9607f6795297e0b2f6bd67c6ad7",
+        "compatibilityTransaction": "compat-20261014T101641Z-a38d3a138c4f",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1018190013055Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1018202001468Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "97f760a9f13d7504a405a7373f5cd48ba8dce67abf98c88c3379b45780e3bb71",
+        "durationSeconds": 93.564,
+        "assertions": 11,
+        "passed": 10,
+        "failed": 1,
+        "proved": "All ten positive rows remained PASS. The independence row proved separate native swallowed state, stable surviving Buff identity, exactly one retained victim, no release-triggered tick or relink, and zero before/after delay at the already processed current turn boundary.",
+        "failures": [
+          "Resubmitting the surviving Buff's already processed zero-delay current boundary emitted no later-round packet."
+        ],
+        "correction": "Add the disposable second victim to the existing fixture-owned native buff clock and wait boundedly for an actual later native pulse to produce exactly one second-owner 2d8+11 periodic packet while the released first victim stays released.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; native-pulse count, elapsed native time, source/target attribution, round advance, next delay and released-first-victim controls are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required.",
         "restorationVerified": true,
         "permanentDeployment": false
       }
@@ -729,11 +751,21 @@
       "timestampUtc": "2026-10-14T10:08:13.9932768Z",
       "stage": "first guarded dedicated Tyrannosaurus turn-based phase",
       "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-tyrannosaurus",
-      "disposition": "PRESERVED_POST_RELEASE_CONTINUATION_OBSERVER_FAILURE_THEN_FOCUSED_PASS",
+      "disposition": "PRESERVED_POST_RELEASE_CONTINUATION_OBSERVER_FAILURE_THEN_CHANGED_REPRODUCTION",
       "result": "10/11 assertions passed in 91.969 seconds. All profile, turn, bite, signed Strength, critical, Grab/Swallow, three-round cadence, escape and initial independent-pair assertions passed. Releasing the first victim preserved the second native swallowed part and one-victim predator list, but the continuation probe emitted no second packet. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
       "cause": "The combined independence probe reused the second victim's pre-release Buff reference and pre-release due-time snapshot after freeing the first victim instead of reacquiring the surviving live state and its current native boundary.",
       "correction": "Reacquire the live second-victim Buff after release, set its due boundary from current GameTime, separately assert release caused neither a tick nor relinking, and retain the live-reference and before/after delay diagnostics.",
-      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; live-state, release-side-effect and due-boundary diagnostics domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh ca80f133 exact-candidate Sprint gate 2,607/2,607 PASS. The changed reproduction retained 10/11 and showed a stable live Buff, no release side effect and a zero-delay boundary already processed, so the next correction advances the native clock instead of resubmitting that boundary."
+    },
+    {
+      "timestampUtc": "2026-10-14T10:20:02.1128346Z",
+      "stage": "second guarded dedicated Tyrannosaurus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-tyrannosaurus",
+      "disposition": "PRESERVED_ALREADY_PROCESSED_TURN_BOUNDARY_FAILURE_THEN_NATIVE_CLOCK_FOCUSED_PASS",
+      "result": "10/11 assertions passed in 93.564 seconds. All ten positive rows remained PASS. The combined independence row proved distinct swallowed state, a stable live second-victim Buff, one retained second-predator victim, no release-triggered tick or relink, and zero delay before and after resubmitting the already processed boundary. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "A zero-delay current boundary had already been processed by the native turn controller. Reassigning that same timestamp could not represent the required later round and therefore emitted no continuation packet.",
+      "correction": "Include the disposable second victim in the existing fixture-owned native buff clock and wait boundedly for a genuine later native pulse, requiring exactly one second-owner 2d8+11 packet while the first victim remains released.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; native-pulse count, elapsed native time, exact source/target attribution, round advance, next delay and released-first-victim controls are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
     }
   ],
   "acceptedLimitations": [

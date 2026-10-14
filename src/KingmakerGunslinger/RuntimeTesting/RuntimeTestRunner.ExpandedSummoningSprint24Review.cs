@@ -1245,7 +1245,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint24PowerfulBiteMatrix(fixture, owner, turnBased);
                 Sprint24BleedingCriticalSuite(fixture, owner, turnBased);
                 Sprint24GrabAndSwallow(fixture, owner, turnBased);
-                Sprint24IndependentSwallowers(fixture, owner, turnBased);
+                foreach (int frame in Sprint24IndependentSwallowers(
+                    fixture, owner, turnBased)) yield return frame;
             }
             finally
             {
@@ -1874,7 +1875,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Remove<UnitPartGrappleTarget>();
         }
 
-        private void Sprint24IndependentSwallowers(
+        private IEnumerable<int> Sprint24IndependentSwallowers(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData firstOwner, bool turnBased)
         {
@@ -1884,6 +1885,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintUnit secondBlueprint = null;
             UnitEntityData secondTarget = Sprint18SecondTarget(fixture,
                 out secondBlueprint);
+            // The Sprint 22 native clock advances only request-owned fixture
+            // actors.  This disposable hostile normally needs no controller,
+            // but the post-release continuation deliberately observes its
+            // real later-round BuffCollection delivery.
+            fixture.Created.Add(secondTarget);
             UnitEntityData[] owners = { firstOwner, secondOwner };
             UnitEntityData[] targets = { firstTarget, secondTarget };
             Size firstSize = firstTarget.Descriptor.State.Size;
@@ -1984,7 +1990,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         damage.DamageBundle.Single().Bonus == 11)
                     .All(value => value);
 
-                int secondDamageBeforeRelease = observers[1].Damage.Count;
+                int firstInitialPeriodicEvents = observers[0].Damage.Count;
+                int secondInitialPeriodicEvents = observers[1].Damage.Count;
+                int secondDamageBeforeRelease = secondInitialPeriodicEvents;
                 swallowers[0].Free(firstTarget);
                 Buff secondLiveSwallowed = secondTarget.Descriptor.Buffs
                     .GetBuff(SummonGrabComponent.Find(secondOwner)
@@ -2007,25 +2015,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                     secondTarget.Get<UnitPartSwallowed>() != null &&
                     swallowers[1].SwallowedUnits.Count == 1 &&
                     releaseDidNotTickSecond && secondBuffPreserved;
+                observers[0].Clear();
                 observers[1].Clear();
                 int secondRound = secondLiveSwallowed == null ? -1 :
                     secondLiveSwallowed.RoundNumber;
-                if (secondLiveSwallowed != null)
+                int continuationNativePulses = 0;
+                while (secondBuffPreserved &&
+                    observers[1].Damage.Count == 0 &&
+                    continuationNativePulses < 32)
                 {
-                    nextTick.SetValue(secondLiveSwallowed,
-                        continuationGameTime, null);
-                    secondTarget.Descriptor.Buffs.UpdateNextEvent();
-                    secondTarget.Descriptor.Buffs.Tick();
-                    secondTarget.Descriptor.Buffs.Tick();
+                    continuationNativePulses++;
+                    yield return 0;
                 }
+                TimeSpan continuationGameTimeAfter =
+                    Game.Instance.TimeController.GameTime;
+                Buff secondAfterContinuation = secondTarget.Descriptor.Buffs
+                    .GetBuff(SummonGrabComponent.Find(secondOwner)
+                        .SwallowedBuff);
                 double continuationDelayAfter =
-                    secondLiveSwallowed == null ? -1d :
-                    ((TimeSpan)nextTick.GetValue(secondLiveSwallowed,
-                        null) - continuationGameTime).TotalSeconds;
+                    secondAfterContinuation == null ? -1d :
+                    ((TimeSpan)nextTick.GetValue(secondAfterContinuation,
+                        null) - continuationGameTimeAfter).TotalSeconds;
+                RuleDealDamage continuationDamage = observers[1].Damage
+                    .SingleOrDefault();
+                BaseDamage continuationChunk = continuationDamage == null ?
+                    null : continuationDamage.DamageBundle.SingleOrDefault();
+                bool firstStayedReleased = observers[0].Damage.Count == 0 &&
+                    firstTarget.Get<UnitPartSwallowed>() == null;
                 bool secondContinues = secondBuffPreserved &&
-                    observers[1].Damage.Count == 1 &&
-                    secondLiveSwallowed.RoundNumber == secondRound + 1 &&
-                    continuationDelayAfter > 0d;
+                    ReferenceEquals(secondAfterContinuation,
+                        secondLiveSwallowed) &&
+                    continuationDamage != null &&
+                    ReferenceEquals(continuationDamage.Initiator,
+                        secondOwner) &&
+                    ReferenceEquals(continuationDamage.Target,
+                        secondTarget) &&
+                    continuationDamage.AttackRoll == null &&
+                    continuationDamage.DamageBundle.Count() == 1 &&
+                    continuationChunk != null &&
+                    continuationChunk.Dice.Rolls == 2 &&
+                    continuationChunk.Dice.Dice == DiceType.D8 &&
+                    continuationChunk.Bonus == 11 &&
+                    secondAfterContinuation.RoundNumber == secondRound + 1 &&
+                    continuationDelayAfter > 0d && firstStayedReleased;
                 swallowers[1].Free(secondTarget);
                 bool cleanup = targets.All(value =>
                     value.Get<UnitPartSwallowed>() == null) &&
@@ -2043,20 +2075,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["event"] =
                             "independent-predators-victims-and-owned-payloads",
                         ["independentState"] = independentState,
-                        ["firstPeriodicEvents"] =
+                        ["firstInitialPeriodicEvents"] =
+                            firstInitialPeriodicEvents,
+                        ["secondInitialPeriodicEvents"] =
+                            secondInitialPeriodicEvents,
+                        ["releasedFirstPeriodicEvents"] =
                             observers[0].Damage.Count,
                         ["secondContinuedPeriodicEvents"] =
                             observers[1].Damage.Count,
                         ["secondBuffReferenceStable"] =
-                            ReferenceEquals(secondLiveSwallowed,
-                                swallowed[1]),
+                            ReferenceEquals(secondAfterContinuation,
+                                secondLiveSwallowed),
                         ["secondBuffPreserved"] = secondBuffPreserved,
                         ["releaseDidNotTickSecond"] =
                             releaseDidNotTickSecond,
+                        ["firstStayedReleased"] = firstStayedReleased,
+                        ["continuationNativePulses"] =
+                            continuationNativePulses,
+                        ["continuationAdvancedSeconds"] =
+                            (continuationGameTimeAfter -
+                                continuationGameTime).TotalSeconds,
                         ["continuationDelayBeforeSeconds"] =
                             continuationDelayBefore,
                         ["continuationDelayAfterSeconds"] =
                             continuationDelayAfter,
+                        ["continuationDamage"] =
+                            continuationDamage == null ? null :
+                            Sprint16DamageEvent(continuationDamage),
                         ["firstReleasePreservedSecond"] =
                             firstReleaseDoesNotTouchSecond,
                         ["secondContinuedAfterFirstRelease"] =
@@ -2080,10 +2125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Random.state = randomBefore;
                 ResetExpandedSummoningHostile(fixture);
                 DisposeExpandedSummoningUnits(fixture.Created,
-                    new[] { secondOwner });
-                if (secondTarget != null && !secondTarget.Destroyed)
-                    secondTarget.Destroy();
-                Game.Instance.EntityDestroyer.Tick();
+                    new[] { secondOwner, secondTarget });
                 if (secondBlueprint != null)
                     UnityEngine.Object.Destroy(secondBlueprint);
             }
