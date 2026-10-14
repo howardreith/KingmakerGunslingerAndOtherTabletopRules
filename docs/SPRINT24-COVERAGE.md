@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — RTWP DEINONYCHUS PASS; TB FRESH-TURN OBSERVER CORRECTION FOCUSED PASS** on
+Status: **IN PROGRESS — RTWP/TB DEINONYCHUS PASS; TYRANNOSAURUS OBSERVER CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -282,16 +282,45 @@ the AoO remained one non-charge talon. Both negative rows failed solely because
 the preceding legal charge marker was still present. The shared observer helper
 can return while the native controller is transiently null between turns, so
 those checks had not actually reached the owner's next turn. The correction
-keeps the native expiry requirement, waits for the actual fresh owner turn, and
-records marker state immediately after Pounce and before/after the illegal
-command. It never removes the marker. Production compilation and all 13 named
-Sprint 24 focused tests pass; the failed evidence and exact restoration remain
-retained. Compiled observer bytes changed, so a new exact Sprint candidate is
-required before rerunning only the failed TB phase.
+kept the native expiry requirement, waited for the actual fresh owner turn, and
+recorded marker state immediately after Pounce and before/after the illegal
+command. It never removed the marker.
 
-Seven earlier failed development checks, the two candidate/correction-suite
-failures, the first guarded native foundation failure, and the first RTWP and TB
-Deinonychus failures remain recorded in the machine-readable ledger:
+The exact fresh-turn commit
+`3ed00e74c5602b6a28609a063481e6cb81b100db` passed the next complete Sprint
+gate: 2,607/2,607 tests in 108.8 seconds and a strict 370-entry package in 214.2
+seconds total. ZIP SHA-256 is
+`923c2df33004b9fedcd2b23dcf514b7192b4ac407718d9ae54d5fae7f932b712`;
+DLL SHA-256 is
+`4d478541a126908e349121c6451f3a19fea9dc4468de143a63e51c7a0c8d7854`,
+MVID `e0ce5b26-0e79-4a59-a71b-f0726d45196e`, and source fingerprint
+`ba154235e334df4df69bbf1a2f65a062f3ab88bd186cd7d4f2e9c1706cccdcd6`.
+The corrected TB reproduction then passed 11/11 in 111.715 seconds: the marker
+was present immediately after Pounce, expired at the owner's actual fresh turn
+after 57 frames, remained absent through the rejected command, and the AoO was
+one non-charge talon.
+
+The first `rtwp-tyrannosaurus` phase retained 8 PASS and 2 FAIL assertions in
+91.386 seconds. The live adult profile, exact one-bite routine, every signed
+Powerful Bite row (+9/+10/+11/+12/zero/penalties), independent simultaneous
+predators, three 2d8+11 stomach rounds, escape and cleanup passed. The critical
+row also proved the 19–20 threat carrier, +4 Critical Focus, false native
+auto-confirm flag, confirmed ×2 physical damage, one native 2d6 bleed tick and
+healing removal. Its unconfirmed control used +100 fixture attack, however, so
+a natural-1 confirmation still beat target AC numerically. The same real bite
+probes were permitted to establish an unrelated Grab, occupying the mouth
+before the same-size test; the later independent Huge-target Grab/Swallow path
+passed. The narrow correction sets target AC between the natural-19 threat and
+natural-1 confirmation totals, suppresses only unrelated maneuver side effects
+during the critical fixture, and asserts clean mouth state before Grab. Product
+critical, Grab and Swallow rules are unchanged. Production compilation and all
+13 named Sprint 24 focused tests pass; a new exact Sprint candidate is required
+before rerunning only the failed RTWP Tyrannosaurus phase.
+
+Earlier failed development checks, the candidate/correction-suite failures,
+the guarded native foundation failure, both first Deinonychus attempts, the
+inter-turn reproduction and the first Tyrannosaurus phase remain recorded in
+the machine-readable ledger:
 the first stage allowlist omitted the new production seams, the first provenance
 check found the expected blueprint-ledger hash change, and the first production
 compile lacked the `ContextDiceValue` namespace import. The first observer
