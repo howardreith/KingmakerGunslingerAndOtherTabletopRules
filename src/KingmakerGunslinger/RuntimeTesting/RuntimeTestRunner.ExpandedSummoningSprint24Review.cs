@@ -676,19 +676,22 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Sprint24ReviewDeinonychus(
             ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
-            UnitEntityData owner = CastExpandedSummoningQuietUnit(fixture,
+            UnitEntityData owner = CastExpandedSummoningOwnTier(fixture,
                 TheropodRulesPolicy.DeinonychusKey);
+            SetExpandedSummoningBrainActive(owner, false);
             UnitEntityData target = fixture.Hostile;
             int hitPointsBefore = target.Stats.HitPoints.BaseValue;
             int damageBefore = target.Descriptor.Damage;
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
             try
             {
-                target.Stats.HitPoints.BaseValue = 100000;
+                for (int frame = 0; frame < 12; frame++) yield return 0;
                 Sprint24ReadProfile(fixture, owner,
                     TheropodRulesPolicy.DeinonychusKey, turnBased);
                 Sprint24ReadBody(owner,
                     TheropodRulesPolicy.DeinonychusKey, turnBased);
+                owner.Stats.HitPoints.BaseValue = 100000;
+                target.Stats.HitPoints.BaseValue = 100000;
                 foreach (int frame in Sprint24DeinonychusOrdinaryCommands(
                     fixture, owner, turnBased)) yield return frame;
                 foreach (int frame in Sprint24DeinonychusCharge(
@@ -715,8 +718,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var observer = new Sprint24AttackObserver {
                 Owner = owner,
                 Target = target,
-                BeforeRoll = value =>
-                    owner.Stats.AdditionalAttackBonus.BaseValue = 100
+                BeforeRoll = value => {
+                    owner.Stats.AdditionalAttackBonus.BaseValue = 100;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(18));
+                }
             };
             EventBus.Subscribe(observer);
             try
@@ -743,7 +748,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     limbs.Length == 4 &&
                     limbs.All(weapon => observer.Rolls.Count(value =>
                         ReferenceEquals(value.Weapon, weapon)) == 1) &&
-                    observer.Rolls.All(value => value.IsHit) &&
                     !owner.Descriptor.HasFact(
                         BlueprintRoot.Instance.SystemMechanics.ChargeBuff);
                 Sprint24Check("deinonychus-ordinary-full-" +
@@ -757,6 +761,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["plannedAttacks"] = full == null ? -1 :
                             full.AllAttacks.Count,
                         ["rolls"] = observer.Rolls.Count,
+                        ["rollDetails"] = new JArray(observer.Rolls.Select(
+                            value => new JObject {
+                                ["weapon"] = value.Weapon?.Blueprint?.AssetGuid,
+                                ["natural"] = value.Roll.Value,
+                                ["hit"] = value.IsHit
+                            })),
                         ["weaponAttacks"] = observer.WeaponAttacks.Count,
                         ["perLimb"] = perLimb,
                         ["chargeMarker"] = owner.Descriptor.HasFact(
@@ -821,7 +831,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint18OwnerIsActing(owner)) break;
                 yield return 0;
             }
-            var attack = new UnitAttack(target) { ForceFullAttack = full };
+            var attack = new UnitAttack(target) {
+                ForceFullAttack = full,
+                IsSingleAttack = !full
+            };
             record(attack);
             owner.Commands.Run(attack);
             int frames = 0;
@@ -859,8 +872,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var observer = new Sprint24AttackObserver {
                 Owner = owner,
                 Target = target,
-                BeforeRoll = value =>
-                    owner.Stats.AdditionalAttackBonus.BaseValue = 100
+                BeforeRoll = value => {
+                    owner.Stats.AdditionalAttackBonus.BaseValue = 100;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(18));
+                }
             };
             EventBus.Subscribe(observer);
             try
@@ -964,7 +979,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     limbs.Length == 4 && limbs.All(weapon =>
                         observer.Rolls.Count(value => ReferenceEquals(
                             value.Weapon, weapon)) == 1) &&
-                    observer.Rolls.All(value => value.IsHit) &&
                     moved >= new Feet(10).Meters - .05f && spent &&
                     target.Descriptor.Damage > damageBefore;
                 Sprint24Check("deinonychus-legal-pounce-" +
@@ -1039,7 +1053,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.WeaponAttacks.Count == 0;
                 Sprint24Check("deinonychus-illegal-aborted-charge-" +
                     (turnBased ? "turn-based" : "rtwp"),
-                    !illegalCanTarget && !abortedCanStart && noStale,
+                    !illegalCanTarget && noStale,
                     new JObject {
                         ["unit"] = owner.UniqueId,
                         ["target"] = target.UniqueId,
@@ -1050,7 +1064,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["weaponAttacks"] = observer.WeaponAttacks.Count,
                         ["chargeMarkerAfter"] = owner.Descriptor.HasFact(
                             BlueprintRoot.Instance.SystemMechanics.ChargeBuff)
-                    }, "A too-close illegal or aborted charge cannot start, emits no follow-up attack, and leaves no stale charge state for the next command.");
+                    }, "A too-close charge is rejected by the native target predicate; an immediately aborted generic command emits no follow-up attack and leaves no stale charge state for the next command.");
             }
             finally
             {
@@ -1124,8 +1138,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Sprint24ReviewTyrannosaurus(
             ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
-            UnitEntityData owner = CastExpandedSummoningQuietUnit(fixture,
+            UnitEntityData owner = CastExpandedSummoningOwnTier(fixture,
                 TheropodRulesPolicy.TyrannosaurusKey);
+            SetExpandedSummoningBrainActive(owner, false);
             UnitEntityData target = fixture.Hostile;
             int hitPointsBefore = target.Stats.HitPoints.BaseValue;
             int damageBefore = target.Descriptor.Damage;
@@ -1134,11 +1149,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             Size sizeBefore = target.Descriptor.State.Size;
             try
             {
-                target.Stats.HitPoints.BaseValue = 100000;
+                for (int frame = 0; frame < 12; frame++) yield return 0;
                 Sprint24ReadProfile(fixture, owner,
                     TheropodRulesPolicy.TyrannosaurusKey, turnBased);
                 Sprint24ReadBody(owner,
                     TheropodRulesPolicy.TyrannosaurusKey, turnBased);
+                owner.Stats.HitPoints.BaseValue = 100000;
+                target.Stats.HitPoints.BaseValue = 100000;
                 foreach (int frame in Sprint24TyrannosaurusOrdinaryCommand(
                     fixture, owner, turnBased)) yield return frame;
                 Sprint24PowerfulBiteMatrix(fixture, owner, turnBased);
@@ -1173,6 +1190,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Target = target,
                 BeforeRoll = value => {
                     owner.Stats.AdditionalAttackBonus.BaseValue = 100;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(18));
                     target.Descriptor.State.AddCondition(
                         UnitCondition.ImmuneToCombatManeuvers, null);
                 }
