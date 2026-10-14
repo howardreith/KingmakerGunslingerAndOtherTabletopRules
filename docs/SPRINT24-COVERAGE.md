@@ -1,10 +1,36 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — BOTH CREATURE MECHANICS PASS IN RTWP/TB; VISUAL RECEIPT/FORMATTER CORRECTION FOCUSED PASS** on
-October 14, 2026.
+Status: **PAUSED AT OWNER REQUEST — CURRENT SOURCE PASSES THE FULL SPRINT GATE;
+FINAL SHARED-CONTROLS NATIVE REPLAY REMAINS PENDING** on October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
 started.
+
+## Stopping checkpoint
+
+Product checkpoint `fb7e471a9877fb68cc0cb26feadc04615882a1b2` is pushed on
+the Sprint 24 product branch and represented by draft PR #45. The fresh full
+Sprint gate passed repository validation plus 2,607/2,607 domain tests in
+192.1 seconds overall (94.3 seconds for the complete test run). Its exact
+local-runtime ZIP is SHA-256
+`333a8c8772f089fd5b1e2d47bcfcc92c53f375360c120944fdf7b3cff0c82051`;
+the compile-candidate ZIP is SHA-256
+`750089752b4b37b5e7e5b0c5fb2761eb705d8b67463321d2c0fc3c7d94f9cad5`;
+and its DLL is SHA-256
+`24af1a3fb3b88410b26656ad2d457edf245b24012858c3ac26e6d316f206c867`,
+MVID `cd939d5b-6678-4c1f-8e26-ad5c761992d7`. There was no deployment.
+
+Fresh native evidence already passes both adult profiles, RTWP/TB mechanics,
+the four-attack legal-charge Pounce controls, the one-bite Powerful Bite and
+critical/Grab/later-Swallow behavior, and the 26/26 hidden visual lifecycle
+batch. The remaining shared-controls phase has one retained failed attempt:
+`20261014T1338497858128Z-db9c9e1da2754e1398037313c3b5a76b` rejected a broad
+AI-controller candidate set containing nine protected party units after its
+four unaffected-consumer controls passed. The current exact-owner native brain
+tick correction is offline-qualified but intentionally unrun following the
+owner's stop request. Targeted persistence/module-OFF proof, unsuppression,
+final public candidate qualification, merge, release, independent artifact
+verification, and final records remain pending.
 
 ## Frozen authority and interpretations
 

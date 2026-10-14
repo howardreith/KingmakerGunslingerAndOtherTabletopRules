@@ -1,4 +1,4 @@
-# Sprint 24 theropod dinosaurs — IN PROGRESS
+# Sprint 24 theropod dinosaurs — PAUSED AT OWNER REQUEST
 
 The owner selected the complete Deinonychus and Tyrannosaurus engineering and
 release campaign on HOWARD-LAPTOP. Work is on
@@ -6,6 +6,47 @@ release campaign on HOWARD-LAPTOP. Work is on
 released master `e825411a8f920fdb9447f7ad48d3f7d0267e6e32`. Stable v0.0.153
 is the verified baseline; v0.0.154 was free at intake but must be rechecked at
 publication. Sprint 25 has not been started.
+
+## 2026-10-14 quota stopping checkpoint
+
+The owner requested a stopping point before the final native replay. Product
+source checkpoint `fb7e471a9877fb68cc0cb26feadc04615882a1b2` is pushed and
+draft product PR #45 remains open. Its fresh full Sprint gate passed the
+repository checks and all 2,607 domain tests: 94.3 seconds for the complete
+test run and 192.1 seconds overall. The exact local-runtime ZIP SHA-256 is
+`333a8c8772f089fd5b1e2d47bcfcc92c53f375360c120944fdf7b3cff0c82051`;
+the compile-candidate ZIP SHA-256 is
+`750089752b4b37b5e7e5b0c5fb2761eb705d8b67463321d2c0fc3c7d94f9cad5`.
+The DLL SHA-256 is
+`24af1a3fb3b88410b26656ad2d457edf245b24012858c3ac26e6d316f206c867`
+with MVID `cd939d5b-6678-4c1f-8e26-ad5c761992d7`. This gate did not deploy or
+launch the game.
+
+The remaining shared-controls native check is not green. The last guarded run
+used the preceding AI-controller strategy and stopped fail-closed after four
+control assertions because the controller candidate set also contained nine
+protected party actors. Its evidence is
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1338497545977Z-disposable-expanded-summoning-sprint24-native-review`
+(run `20261014T1338497858128Z-db9c9e1da2754e1398037313c3b5a76b`). The current
+source replaces that broad controller tick with an exact native per-unit
+`DecisionContext.InitGroup -> AiBrainController.TickBrain -> ReleaseGroup`
+sequence and requires a native AI-owned `UnitAttack`; it passed focused checks
+and the full Sprint gate but has deliberately not been replayed after the stop
+request. Preserve the failed evidence rather than treating the offline pass as
+native proof.
+
+Resume with one guarded shared-controls replay against the exact current
+package. If it passes, the remaining campaign work is the targeted
+persistence/module-OFF batch, removal of only the two suppression entries,
+final public-artifact qualification, normal product merge/publication and the
+documentation-only final-records PR. No suppression was removed, version/tag
+was created, PR merged, or release published at this checkpoint.
+
+The last runtime transaction
+`compat-20261014T133710Z-3cf6f796211f` restored successfully at
+`2026-10-14T13:40:41.1768330Z`; restoration verification passed. The human
+installation remains KMG 0.0.117 with its intake installation/settings/save
+state, and no runtime launch occurred after the owner requested the stop.
 
 The primary Pathfinder First Edition rules, original charter pages 21–22,
 current repository policy, Sprint 22/23 reuse seams, and actual machine state
