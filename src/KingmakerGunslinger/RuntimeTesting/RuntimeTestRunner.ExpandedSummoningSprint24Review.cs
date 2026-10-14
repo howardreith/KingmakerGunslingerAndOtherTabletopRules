@@ -1906,8 +1906,39 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             foreach (Sprint16RuleObserver observer in observers)
                 EventBus.Subscribe(observer);
+            JObject secondPairTurnEnrollment = null;
+            int initialOwnerTurnFrames = 0;
+            bool initialOwnerTurnReady = !turnBased;
             try
             {
+                if (turnBased)
+                {
+                    secondPairTurnEnrollment = new JObject();
+                    foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                        new[] { secondOwner }, secondTarget,
+                        secondPairTurnEnrollment))
+                        yield return frame;
+                    if ((bool?)secondPairTurnEnrollment["admitted"] != true)
+                        throw new InvalidOperationException(
+                            "Independent Tyrannosaurus pair did not enter " +
+                            "native turn order.");
+                    while (++initialOwnerTurnFrames <=
+                        Sprint18AttackFrames)
+                    {
+                        if (Game.Instance.IsPaused)
+                            Game.Instance.IsPaused = false;
+                        if (Sprint18OwnerIsActing(firstOwner))
+                        {
+                            initialOwnerTurnReady = true;
+                            break;
+                        }
+                        yield return 0;
+                    }
+                    if (!initialOwnerTurnReady)
+                        throw new InvalidOperationException(
+                            "First Tyrannosaurus did not reach its native " +
+                            "turn before the independent swallow trial.");
+                }
                 foreach (UnitEntityData target in targets)
                 {
                     target.Descriptor.State.Size = Size.Huge;
@@ -2032,6 +2063,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int continuationEndedTurns = 0;
                 string continuationLastTurnState = null;
                 var continuationTurnTransitions = new JArray();
+                var continuationPulsedPairTurns =
+                    new HashSet<TurnController>();
                 while (secondBuffPreserved &&
                     observers[1].Damage.Count == 0 &&
                     continuationNativePulses < Sprint18AttackFrames)
@@ -2051,7 +2084,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             continuationTurnTransitions.Add(state);
                             continuationLastTurnState = state;
                         }
-                        if (turn != null && (turn.Status ==
+                        bool pairTurn = turn != null &&
+                            (ReferenceEquals(turn.Unit, secondOwner) ||
+                                ReferenceEquals(turn.Unit, secondTarget));
+                        bool leavePairCurrentForOnePulse = pairTurn &&
+                            continuationPulsedPairTurns.Add(turn);
+                        if (!leavePairCurrentForOnePulse && turn != null &&
+                            (turn.Status ==
                                 TurnController.TurnStatus.Preparing ||
                             turn.Status ==
                                 TurnController.TurnStatus.Acting))
@@ -2114,6 +2153,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["secondTarget"] = secondTarget.UniqueId,
                         ["event"] =
                             "independent-predators-victims-and-owned-payloads",
+                        ["secondPairTurnEnrollment"] =
+                            secondPairTurnEnrollment,
+                        ["initialOwnerTurnFrames"] =
+                            initialOwnerTurnFrames,
+                        ["initialOwnerTurnReady"] =
+                            initialOwnerTurnReady,
                         ["independentState"] = independentState,
                         ["firstInitialPeriodicEvents"] =
                             firstInitialPeriodicEvents,
@@ -2136,6 +2181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             continuationNativePulses,
                         ["continuationEndedTurns"] =
                             continuationEndedTurns,
+                        ["continuationPulsedPairTurns"] =
+                            continuationPulsedPairTurns.Count,
                         ["continuationControllerRoundBefore"] =
                             continuationControllerRoundBefore,
                         ["continuationControllerRoundAfter"] =
@@ -2144,6 +2191,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             continuationRoundAdvanced,
                         ["continuationTurnTransitions"] =
                             continuationTurnTransitions,
+                        ["continuationClockCoverage"] =
+                            _sprint22Clock?.DescribeTurnCoverage(),
                         ["continuationAdvancedSeconds"] =
                             (continuationGameTimeAfter -
                                 continuationGameTime).TotalSeconds,
