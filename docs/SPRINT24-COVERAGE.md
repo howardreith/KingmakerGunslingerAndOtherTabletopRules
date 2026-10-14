@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — CANDIDATE-GATE CORRECTIONS FOCUSED PASS** on
+Status: **IN PROGRESS — PACKAGE-INVENTORY FOCUSED PASS; SPRINT GATE NEXT** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -158,6 +158,26 @@ correction run reduced the retained failures to four missed append assertions;
 the final focused production build passes all four. The generated weapon audit
 now covers 134/134 active custom weapons, including both theropod weapons, with
 31 summoning-only exclusions. A fresh complete Sprint gate remains required.
+
+That fresh gate subsequently passed repository validation and all 2,607 domain
+tests in 94.4 seconds, then produced the exact-reference compile candidate. It
+stopped before the standalone ZIP because the deterministic packager still
+pinned the released 364-file total while the reviewed Sprint 24 append stages
+370 files: four original theropod body/paint files plus two original icons.
+No standalone candidate was accepted or deployed. The correction raises only
+the strict package inventory to 368 without the optional soundbank pair and 370
+with it; the current Sprint 24 test owns that total while historical tests now
+prove their assets enter the strict inventory without copying a future global
+count. Package-specific validation is next, followed by a complete Sprint gate
+on the committed correction.
+
+The exact seven affected package/source assertions now pass with production
+compilation. A disposable local package then assembled and passed the strict
+allowlist with exactly 370 entries: four theropod body/paint files and two
+theropod icons are present once each. Its SHA-256 is
+`697e6bcd5ba57f8dfaa7c8adeafe5849ebde34cf050f32aadfdbefd9298d1aa6`;
+it is correction evidence only, not the frozen native candidate and was not
+deployed. The complete Sprint gate remains next on the committed correction.
 
 Seven earlier failed development checks and the two candidate/correction-suite
 failures remain recorded in the machine-readable ledger:
