@@ -36,7 +36,9 @@ namespace KingmakerGunslinger.Blueprints
 
             BlueprintFeature deinonychusChassis = Require<BlueprintFeature>(
                 bySymbol, TheropodRulesPolicy.DeinonychusChassisSymbol);
-            ConfigureDeinonychusChassis(deinonychusChassis);
+            ConfigureDeinonychusChassis(Require<BlueprintUnit>(bySymbol,
+                    "KMG.Summoning.Unit.Deinonychus"), talon,
+                deinonychusChassis);
             BlueprintFeature tyrannosaurusChassis = Require<BlueprintFeature>(
                 bySymbol, TheropodRulesPolicy.TyrannosaurusChassisSymbol);
             ConfigureTyrannosaurusChassis(tyrannosaurusChassis);
@@ -79,8 +81,13 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureDeinonychusChassis(
+            BlueprintUnit owner, BlueprintItemWeapon talon,
             BlueprintFeature feature)
         {
+            var strength = ScriptableObject.CreateInstance<
+                DeinonychusPrimaryTalonStrength>();
+            strength.OwningBlueprint = owner;
+            strength.Talon = talon;
             feature.name = InternalName(
                 TheropodRulesPolicy.DeinonychusChassisSymbol);
             feature.IsClassFeature = false;
@@ -91,7 +98,8 @@ namespace KingmakerGunslinger.Blueprints
                 RacialSkill(StatType.SkillPerception,
                     TheropodRulesPolicy.DeinonychusRacialSkillBonus),
                 RacialSkill(StatType.SkillStealth,
-                    TheropodRulesPolicy.DeinonychusRacialSkillBonus)
+                    TheropodRulesPolicy.DeinonychusRacialSkillBonus),
+                strength
             };
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create(
@@ -99,7 +107,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Deinonychus Chassis"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Deinonychus.Chassis.Description",
-                    "Carries the adult deinonychus's exact racial bonuses to Acrobatics, Perception and Stealth without a quadruped trip-defense fact."),
+                    "Carries the adult deinonychus's exact racial bonuses to Acrobatics, Perception and Stealth plus the first talon's ordinary full-Strength term, without changing its mixed primary/secondary attack roles or adding quadruped trip defense."),
                 null);
         }
 

@@ -183,6 +183,24 @@ namespace KingmakerGunslinger.DomainTests
                 TheropodRulesPolicy.NativeOrdinaryBiteStrengthContribution(11) +
                 TheropodRulesPolicy.PowerfulBiteCorrection(11),
                 "Strength 32 yields the printed +22 bite term.");
+            foreach (KeyValuePair<int, int> sample in
+                new Dictionary<int, int> {
+                    { 2, 1 }, { 3, 1 }, { 0, 0 }, { -1, 0 } })
+                Assertions.Equal(sample.Value, TheropodRulesPolicy
+                    .MultipleNaturalPrimaryExcessStrength(sample.Key),
+                    "The exact lead talon removes only the excess native " +
+                    "single-natural-attack Strength term for " + sample.Key + ".");
+
+            string builder = File.ReadAllText(
+                "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.cs");
+            string chassis = File.ReadAllText(
+                "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.Theropods.cs");
+            Assertions.True(builder.Contains(
+                    "if (TheropodRulesPolicy.IsTheropod(profile.Key)) unit.Race = null") &&
+                chassis.Contains("DeinonychusPrimaryTalonStrength") &&
+                chassis.Contains("strength.OwningBlueprint = owner") &&
+                chassis.Contains("strength.Talon = talon"),
+                "Theropods discard the playable donor race and the lead talon correction is exact-owner/exact-weapon scoped.");
         }
 
         internal static void GrabAndLaterSwallowHaveDifferentSizeGates()
@@ -327,6 +345,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SummonViewScaleCatalog.TryGetMultiplier(
                     TheropodVisualPolicy.DeinonychusBlueprintName, out scale),
                 "Medium Deinonychus retains the measured donor scale.");
+
+            string attachment = File.ReadAllText(
+                "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs");
+            Assertions.True(attachment.Contains(
+                    "class TheropodAccessorySuppression") &&
+                attachment.Contains("private void LateUpdate()") &&
+                attachment.Contains("attachment.TheropodSuppression.Release()") &&
+                attachment.Contains("attachment.TheropodSuppression })"),
+                "Per-view suppression survives native fade updates, appears in the owned-resource receipt and releases before exact donor restoration.");
 
             JObject icons = JObject.Parse(File.ReadAllText(
                 "assets-source/original-icons/expanded-summoning/icon-manifest.json"));

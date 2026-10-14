@@ -93,8 +93,36 @@ complete corrected 20-frame offline review passes, with 181.63 seconds of
 Blender rendering and sorted hash-manifest SHA-256
 `504ea9cfaed5723e74b3b67b81ef43155baf71877510de80bbc9de3b950331ea`.
 
-Next action: push this coherent hidden candidate through the required wrapper,
-then run the single broad Sprint gate and preserve its exact immutable candidate
-identity for guarded native review and targeted persistence. Do not begin
-Brachiosaurus, Elephant changes,
-companions, polymorph, mounts, feats, or any Sprint 25 work.
+The committed hidden candidate at `ed25e0b56a4e4fc21f6bb39c05f43a5cff7fef4b`
+then passed the complete Sprint gate: repository validation, 2,607/2,607 domain
+tests in 93.5 seconds, exact-reference compilation and a 370-entry strict ZIP.
+The 189.4-second gate froze package SHA-256
+`a917ba3562ff39c44a0497271243bca12ba1e4b680c67b4a7f804112f58d7e13`,
+DLL SHA-256
+`2b085cd688b584ac7e5fa9a652060d6ac19d4b2a2b17f5d178e1fd26d8d55fdf`,
+MVID `e0300b83-d05a-4b3a-a872-cdbdea4a37f8`, and source fingerprint
+`22b4483a0367f63d87efac9135739ac10c9b0c5d18dface93713b9b6806328c6`.
+
+Its first guarded `rtwp-foundation` native phase retained 22 PASS and four FAIL
+assertions in 103.583 seconds. All 18 hidden routes executed through their real
+parent paths with legal quantities and template policy. The failures showed the
+Lizardfolk donor's Human race adding +2 Constitution and retaining Medium combat
+arithmetic, native 1.5x Strength on the lead Deinonychus talon, a standalone
+calculation flag that did not reflect the correctly equipped secondary limb,
+and native fade updates re-enabling `_ammunition04`. Transaction
+`compat-20261014T082738Z-1b5d4864c61a` restored exactly; no process, lease, lock,
+staging or permanent deployment remains. The failure is preserved at
+`runtime-evidence/20261014T0832560629690Z-disposable-expanded-summoning-sprint24-native-review`.
+
+The narrow correction clears the playable donor race only on the two theropods,
+scopes a lead-talon Strength correction to the exact Deinonychus and weapon,
+uses the equipped limb plus resulting attack/damage as secondary-role authority,
+and gives the accessory an exact per-view LateUpdate/release owner. Production
+compilation, all 13 Sprint 24 tests, six shared resource-authority tests and the
+instance-owned-resource control pass. Both keys remain suppressed.
+
+Next action: commit and push this correction through the required wrapper, run
+one fresh complete Sprint gate on that exact commit, then rerun only the changed
+`rtwp-foundation` phase with `-ReuseInstalledArtifact`. Continue the remaining
+native phases only after that reproduction passes. Do not begin Brachiosaurus,
+Elephant changes, companions, polymorph, mounts, feats, or any Sprint 25 work.
