@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint23TriceratopsPowerfulChargeRounding",
-  "status": "IN_PROGRESS",
+  "status": "QUALIFIED",
   "host": "HOWARD-LAPTOP",
   "startedUtc": "2026-10-14T00:46:28.9410661Z",
   "branch": "codex/expanded-summoning-sprint23-charge-rounding",
+  "pr": 43,
   "releaseRecordsBranch": "codex/expanded-summoning-sprint23-charge-rounding-release-records",
   "baseline": {
     "master": "15d6c0d82bf14fa4fd66c72c0f780f86abf44794",
@@ -114,7 +115,28 @@
     "publicVerificationMinutes": 15,
     "finalRecordsMinutes": 15
   },
-  "candidate": null,
+  "candidate": {
+    "source": "8f30cf72c916aaee840c18b373be82274729520e",
+    "sourceFingerprint": "5167ff01981bb3a6d4109ebc0dde5646db258902e4c8dea74f2d8414626046ef",
+    "version": "0.0.153",
+    "zipSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+    "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+    "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a",
+    "assetBundleSha256": "b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb",
+    "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+    "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "buildManifestSha256": "21e7a783f167cf19358fad40a18b17776350ff145e23eb641366e3d09ed04806",
+    "pipelineExitCode": 0,
+    "pipelineSeconds": 181.8,
+    "fullSuite": {
+      "exitCode": 0,
+      "failures": 0,
+      "executed": 2594,
+      "registered": 2594,
+      "unfiltered": true,
+      "seconds": 181.8
+    }
+  },
   "candidateAttempts": [
     {
       "source": "7b232a02cf5659adb7070e4ee88439b52e3cf6e1",
@@ -215,9 +237,64 @@
       "dllMvid": "679ec24a-6b0a-4c3d-9e7d-d66bbdc81655",
       "cause": "Starting Power Attack off produced clean native 2d10/4d10 charge rows with zero unrelated additive damage and exact +14/+16/+18/+20 Strength totals, but installed PowerAttackWatcher unconditionally activated the off toggle for a non-player unit. Every row therefore carried the native -3 attack penalty and correctly failed the PA-off attack-state assertion.",
       "repair": "Use the installed watcher's real player-faction early return only after the original-faction weapon-stat event is complete, then restore the original faction at RuleAttackRoll completion before damage. Keep both event-order and exact-restoration assertions."
+    },
+    {
+      "source": "8f30cf72c916aaee840c18b373be82274729520e",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+      "result": "PASS",
+      "stage": "complete source/build/package gate and all selected native profiles",
+      "registered": 2594,
+      "executed": 2594,
+      "failures": 0,
+      "elapsedSeconds": 181.8,
+      "sourceFingerprint": "5167ff01981bb3a6d4109ebc0dde5646db258902e4c8dea74f2d8414626046ef",
+      "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+      "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+      "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a",
+      "disposition": "FROZEN_QUALIFIED_CANDIDATE"
     }
   ],
-  "nativeRuns": [],
+  "nativeRuns": [
+    {
+      "profileRunId": "compat-20261014T025926Z-f7acd4897101",
+      "runtimeRunId": "20261014T0301019306544Z-7c896449d20e4e3d9335f1e4dde928e9",
+      "profile": "gunslinger-only",
+      "phase": "charge-rounding-rtwp",
+      "source": "8f30cf72c916aaee840c18b373be82274729520e",
+      "assertions": 13,
+      "failures": 0,
+      "result": "PASS",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0301019096029Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T025926Z-f7acd4897101/transaction.json"
+    },
+    {
+      "profileRunId": "compat-20261014T030403Z-28aa83f5aa3f",
+      "runtimeRunId": "20261014T0305412649861Z-3ce64fad9ff94f36a5fde7986fb999a5",
+      "profile": "gunslinger-only",
+      "phase": "charge-rounding-turn-based",
+      "source": "8f30cf72c916aaee840c18b373be82274729520e",
+      "assertions": 13,
+      "failures": 0,
+      "result": "PASS",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0305412372942Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T030403Z-28aa83f5aa3f/transaction.json"
+    },
+    {
+      "profileRunId": "compat-20261014T030800Z-b3091a8a321a",
+      "runtimeRunId": "20261014T0309454568154Z-c3d6c46905f1401c9d59ce7fb8f7d427",
+      "profile": "gunslinger-high-risk-combined",
+      "phase": "charge-rounding-rtwp",
+      "source": "8f30cf72c916aaee840c18b373be82274729520e",
+      "assertions": 13,
+      "failures": 0,
+      "result": "PASS",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0309454256031Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T030800Z-b3091a8a321a/transaction.json"
+    }
+  ],
   "nativeAttempts": [
     {
       "profileRunId": "compat-20261014T014029Z-1d24452a23e9",
@@ -309,7 +386,232 @@
       "repair": "Preserve original-faction stats, hand off to the real player-faction watcher exemption only after RuleCalculateWeaponStats completes, and restore at RuleAttackRoll completion before damage plus the outer finally guard."
     }
   ],
+  "releaseEligible": true,
+  "baselineExceptions": [],
+  "unresolvedFindings": [],
+  "evidenceRoot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint23-charge-rounding-20261014T004628Z",
+  "roster": {
+    "generatedRoots": 1075,
+    "nativeWrappers": 29,
+    "choices": 1104,
+    "identityChanges": 0,
+    "routeChanges": 0,
+    "assetChanges": 0,
+    "serializationChanges": 0
+  },
+  "coverage": [
+    {
+      "id": "source-reproduction-and-focused-correction",
+      "result": "PASS",
+      "details": "The released helper reproduced +13 rather than +14 at modifier +7. The corrected positive difference formula, zero/penalty convention, caller contract, ordinary/charge discrimination and a 1..20 positive property pass the 12-test Sprint 23 focused gate with production compilation.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint23-charge-rounding-20261014T004628Z\\source-qualification.json",
+          "sha256": "6730998487dcc17c4e7be3e80391d6e4c5c002921c892434992adf2b0b299d21"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "8f30cf72c916aaee840c18b373be82274729520e",
+          "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+          "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+          "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a"
+        }
+      ]
+    },
+    {
+      "id": "complete-source-build-package-gate",
+      "result": "PASS",
+      "details": "The frozen candidate passed one unfiltered Sprint source/build/package gate: 2,594/2,594 and strict standalone package validation in 181.8 seconds.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint23-charge-rounding-20261014T004628Z\\source-qualification.json",
+          "sha256": "6730998487dcc17c4e7be3e80391d6e4c5c002921c892434992adf2b0b299d21"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\artifacts\\local-runtime\\0.0.153\\KingmakerGunslinger-0.0.153-local-runtime.zip.build-local.json",
+          "sha256": "21e7a783f167cf19358fad40a18b17776350ff145e23eb641366e3d09ed04806"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "8f30cf72c916aaee840c18b373be82274729520e",
+          "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+          "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+          "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a"
+        }
+      ]
+    },
+    {
+      "id": "triceratops-charge-rtwp",
+      "result": "PASS",
+      "details": "Fresh standalone RTWP native commands at Strength 24/26/28/30 produced exact 2d10 ordinary and 4d10 charged rows with +14/+16/+18/+20 Strength totals, no unrelated additive damage, one eligible first strike and ordinary aborted/later/opportunity controls.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261014T0301019096029Z-disposable-expanded-summoning-sprint23-native-review\\sprint23-review.json",
+          "sha256": "5f2fe837194f4f4237e47788126663cbbc7e51f4325187d9de0351cdd403e079"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "8f30cf72c916aaee840c18b373be82274729520e",
+          "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+          "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+          "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a"
+        }
+      ]
+    },
+    {
+      "id": "triceratops-charge-turn-based",
+      "result": "PASS",
+      "details": "Fresh standalone turn-based native commands passed the same four Strength rows, including real odd-modifier hits, exact action/turn ownership, ordinary controls, Power Attack comparison and critical discrimination.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261014T0305412372942Z-disposable-expanded-summoning-sprint23-native-review\\sprint23-review.json",
+          "sha256": "e0f1bedda67d6613c313e5ab37639dcee405bb0fab5bc4d05ccf8432f0e3dabd"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "8f30cf72c916aaee840c18b373be82274729520e",
+          "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+          "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+          "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a"
+        }
+      ]
+    },
+    {
+      "id": "high-risk-combined-charge",
+      "result": "PASS",
+      "details": "Fresh highest-risk-combined RTWP execution passed all 13 selected assertions on the exact candidate bytes and restored its compatibility transaction.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261014T0309454256031Z-disposable-expanded-summoning-sprint23-native-review\\sprint23-review.json",
+          "sha256": "57eadae95c6f35ba79d738a9229234311ab90f8b41317093a4c2ce64766c3edd"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "8f30cf72c916aaee840c18b373be82274729520e",
+          "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+          "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+          "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a"
+        }
+      ]
+    },
+    {
+      "id": "ordinary-power-attack-critical",
+      "result": "PASS",
+      "details": "Fresh RTWP and turn-based evidence separates ordinary gore, charge-only correction, native +9 Power Attack exactly once, noncritical real hits and native critical multiplication exactly once; zero and signed penalties remain once-applied.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261014T0301019096029Z-disposable-expanded-summoning-sprint23-native-review\\sprint23-review.json",
+          "sha256": "5f2fe837194f4f4237e47788126663cbbc7e51f4325187d9de0351cdd403e079"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261014T0305412372942Z-disposable-expanded-summoning-sprint23-native-review\\sprint23-review.json",
+          "sha256": "e0f1bedda67d6613c313e5ab37639dcee405bb0fab5bc4d05ccf8432f0e3dabd"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "8f30cf72c916aaee840c18b373be82274729520e",
+          "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+          "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+          "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a"
+        }
+      ]
+    },
+    {
+      "id": "released-rhino-fixed-increment",
+      "result": "PASS",
+      "details": "Fresh candidate-byte native control preserved Rhinoceros +3 and Woolly Rhinoceros +5 fixed charge increments, their ordinary/later/opportunity rows and real charge damage; the unrelated bison Power Attack carrier also remained distinct.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261014T0301019096029Z-disposable-expanded-summoning-sprint23-native-review\\sprint23-review.json",
+          "sha256": "5f2fe837194f4f4237e47788126663cbbc7e51f4325187d9de0351cdd403e079"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "8f30cf72c916aaee840c18b373be82274729520e",
+          "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+          "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+          "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a"
+        }
+      ]
+    },
+    {
+      "id": "v0152-unchanged-sprint23-evidence",
+      "result": "REUSED_PASS",
+      "details": "The correction adds no identity, route, asset or serialized state and does not touch trample, Stegosaurus trip, art ownership or lifecycle seams. Their released v0.0.152 evidence remains applicable with its original provenance.",
+      "reuseJustification": "Diff review confines production behavior to the Triceratops live Powerful Charge increment. New current-byte tests cover the affected caller and fixed-increment consumers; unchanged Sprint 23 surfaces do not need a repeated art, route, persistence or whole-roster campaign.",
+      "priorSource": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s23r153-bf\\docs\\SPRINT23-COVERAGE.md",
+          "sha256": "0b7f9df4059683ba74cabd462fcb43d3d989acedd99ec0a6307a3ad79b584e54"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+          "packageSha256": "e417ad95e796bac7c312ed60e859b888b1dd2f83818ef211027e35d2c1c663db",
+          "dllSha256": "594113de52c514702b6999fd4e3d3abfd9823e12d003e63d7953f622feaa6c05",
+          "dllMvid": "5afdfc38-4657-48e2-a0fa-942098189a4b"
+        }
+      ]
+    },
+    {
+      "id": "exact-package-release-qualification",
+      "result": "PASS",
+      "details": "The candidate manifest, three fresh native profiles and corrected same-boundary restoration audit bind release eligibility to the exact qualified ZIP without a publication rebuild.",
+      "proofs": [
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\artifacts\\local-runtime\\0.0.153\\KingmakerGunslinger-0.0.153-local-runtime.zip.build-local.json",
+          "sha256": "21e7a783f167cf19358fad40a18b17776350ff145e23eb641366e3d09ed04806"
+        },
+        {
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint23-charge-rounding-20261014T004628Z\\final-restoration-audit-complete.json",
+          "sha256": "96753ac204ee224920bb1c737cd04547bdb15c8a95209e9bc25bd83210d8d049"
+        }
+      ],
+      "evidenceSources": [
+        {
+          "source": "8f30cf72c916aaee840c18b373be82274729520e",
+          "packageSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b",
+          "dllSha256": "bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0",
+          "dllMvid": "dd3797aa-a482-4411-b3a5-f574204a320a"
+        }
+      ]
+    }
+  ],
+  "harness": {
+    "candidateCommit": "8f30cf72c916aaee840c18b373be82274729520e",
+    "validationPolicy": "2026-10-11 focused workflow",
+    "launcher": "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1",
+    "scenario": "disposable-expanded-summoning-sprint23-native-review",
+    "runtimeEvidenceOutsideSource": true,
+    "observerDisposition": "The final request-local observer preserves original-faction weapon-stat calculation, exposes the installed player-faction PowerAttackWatcher exemption only for RuleAttackRoll, and restores the faction before damage and again in outer cleanup. No production combat component is disabled."
+  },
+  "ownerVisualReview": "REUSED_NOT_PERFORMED_NONBLOCKING",
   "release": null,
-  "restoration": null,
+  "restoration": {
+    "current": "EXACT_INTAKE_VERIFIED",
+    "workingFixtureClean": true,
+    "intakeManifest": "intake.json",
+    "auditPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint23-charge-rounding-20261014T004628Z\\final-restoration-audit-complete.json",
+    "auditSha256": "96753ac204ee224920bb1c737cd04547bdb15c8a95209e9bc25bd83210d8d049",
+    "supersededAuditPath": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\sprint23-charge-rounding-20261014T004628Z\\final-restoration-audit.json",
+    "supersededAuditSha256": "2cdd8317db8b02928f68fc61a07452986812a66c576d52596111ed30d7f8d927",
+    "modsManifestEntries": 968,
+    "saveFileCount": 118,
+    "gameSettingsValues": 83,
+    "installedKmgVersion": "0.0.117",
+    "gameProcessAbsent": true,
+    "compatibilityLockAbsent": true,
+    "ownedDiagnosticTempRemoved": true
+  },
+  "qualifiedUtc": "2026-10-14T03:20:42.2160541Z",
   "sprint24Started": false
 }
