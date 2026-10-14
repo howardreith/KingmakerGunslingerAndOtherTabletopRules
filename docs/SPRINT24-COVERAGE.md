@@ -77,17 +77,17 @@ celestial/fiendish policy; Nature's Ally routes remain untemplated.
 | --- | --- | --- | --- |
 | Stable, save-compatible identities | Append-only identity catalog, blueprint ledger, normal registration | GUID/type/collision tests; module OFF load/refusal; ON attach once | 48 exact identities appended; offline validators PASS; native load proof pending |
 | Deinonychus four attacks | Primary talon plus talon and bite as additional primary limbs; one foreclaws secondary limb | Live ordinary full attack has exactly four rolls and +5/+5/+5/+0 with +2/+2/+2/+1 Strength | Implemented and domain-pinned; live proof pending |
-| Pounce only on a legal charge | Exact native Pounce fact; ordinary body routine; no project replay | RTWP/TB legal, illegal, aborted, AoO, ordinary single/full, death/interruption, next-command controls | Reuse audit in progress |
+| Pounce only on a legal charge | Exact native Pounce fact; ordinary body routine; no project replay | RTWP/TB legal, illegal, aborted, AoO, ordinary single/full, death/interruption, next-command controls | Closed native observer implemented; live execution pending |
 | Deinonychus skills/CMD | Exact one-time 0/2/2 land ranks plus narrow racial modifiers; no four-leg fact | Live ranks, abilities, class bonuses, racial bonuses, ordinary Mobility versus jump-only distinction, CMD 17 | Implemented and derived offline; live proof pending |
 | Tyrannosaurus one bite | Owned 4d6 bite weapon with live signed Powerful Bite delta | Live +9/+10/+11/+12, zero/penalty, size, buff/debuff, enhancement, added damage, critical multiplication | Implemented; signed arithmetic tests PASS; native damage proof pending |
-| Critical suite | Exact native Improved Critical (bite) and Critical Focus facts; project-owned bite-only confirmed-critical trigger applying native `Bleed2d6Buff` | 19–20 threat, ordinary confirmation, confirmed piercing/slashing bleed, heal/end controls, negative attacks | Implemented with exact event gate; negative domain cases PASS; native proof pending |
+| Critical suite | Exact native Improved Critical (bite) and Critical Focus facts; project-owned bite-only confirmed-critical trigger applying native `Bleed2d6Buff` | 19–20 threat, ordinary confirmation, confirmed piercing/slashing bleed, heal/end controls, negative attacks | Exact event gate and closed confirmation/cadence/healing observer implemented; live execution pending |
 | Bite-only Grab | Existing summon grapple lifecycle, exact primary-limb identity, +4 maneuver | Hit/miss, same-size legal, oversized illegal, immunity/natural 1/20, duplicate callback, independent owners | Implemented; released shared-domain controls PASS; native proof pending |
 | Later Swallow Whole | Existing held-since-round-start and maintain seam; separate -1 size delta | Same-size grab cannot swallow; later Huge target check succeeds; immediate/failed/wrong-limb controls | Implemented; distinct size-gate tests PASS; native proof pending |
-| Periodic stomach damage | Tyrannosaurus-owned 2d8+11 payload, not Powerful Bite or donor stomach | One application per intended round in RTWP/TB; attribution, escape, source loss, simultaneous predators/victims | Owned payload implemented; live cadence/attribution proof pending |
-| Hold/swallow lifecycle | Existing ownership parts with narrow reload distinction | Mouth holds reset safely; already-swallowed native state is not indiscriminately erased; dismissal/death/expiry/escape cleanup | Load reset narrowed; shared focused regressions PASS; native persistence proof pending |
-| Original theropod presentation | Existing original-asset/export/attach infrastructure on the qualified Free Hands Lizardfolk skeleton | Offline clay/silhouette/textured/unlit/camera/extreme poses; live contacts, speed, reach, navigation, crowding, fade/fallback/module lifecycle | Original icons, procedural bodies, paint, exact renderer selection, rollback and package owners implemented; focused checks pass; final offline rerender and live proof pending |
+| Periodic stomach damage | Tyrannosaurus-owned 2d8+11 payload, not Powerful Bite or donor stomach | One application per intended round in RTWP/TB; attribution, escape, source loss, simultaneous predators/victims | Owned payload and independent-pair observer implemented; live cadence/attribution proof pending |
+| Hold/swallow lifecycle | Existing ownership parts with narrow reload distinction | Mouth holds reset safely; already-swallowed native state is not indiscriminately erased; dismissal/death/expiry/escape cleanup | Targeted prepare/load/cleanup/absence observer owns mouth-hold, swallowed and bleed receipts; live persistence proof pending |
+| Original theropod presentation | Existing original-asset/export/attach infrastructure on the qualified Free Hands Lizardfolk skeleton | Offline clay/silhouette/textured/unlit/camera/extreme poses; live contacts, speed, reach, navigation, crowding, fade/fallback/module lifecycle | Original icons, procedural bodies, paint, exact renderer selection, rollback and package owners implemented; 20-frame final offline review and focused checks PASS; live proof pending |
 | All 18 roots | Existing catalog generator and real parent spell paths | Every root, quantity, slot, duration, Monster templates, Nature's Ally untemplated behavior | Registered and suppressed; exact route/quantity/template tests PASS; native parent-path proof pending |
-| Affected old consumers | Existing pouncer, Dire Crocodile/Purple Worm, visual owner, Triceratops if shared Strength seam changes | Narrow fresh native regressions, with historical broad evidence reused only after dependency audit | Planned |
+| Affected old consumers | Existing pouncer, Dire Crocodile/Purple Worm, visual owner, Triceratops if shared Strength seam changes | Narrow fresh native regressions, with historical broad evidence reused only after dependency audit | Observer includes Leopard, released swallowers, donor isolation and Triceratops +7/+9; live execution pending |
 
 ## Bounded native census decision
 
@@ -139,18 +139,25 @@ reviews the finished art.
 The hidden candidate Release production assembly compiles. The Sprint 24 source
 validator passes at the hidden stage with 3,149 ledger rows, the manifest
 generator reports foundation 2,149 / active 3,146 / reserved 3, and its ten
-corruption fixtures pass. The named Sprint 24 filter passes 10/10 tests. A
+corruption fixtures pass. After the native-review and persistence observers
+were added, the named Sprint 24 filter passes 13/13 tests with production
+compilation. The guarded request preflight passes 588 checks; targeted
+persistence parsing passes 18 exact round trips and 168 fail-closed cases;
+launcher routing passes 30 valid and 17 rejected cases; and the installed-stack
+fixture passes 30 restoration predicates. A
 second affected-seam filter passes 14/14, including the released shared grapple
 lifecycle, universal grab-size rules, and Dire Crocodile swallow-number control.
 These are development checks, not native qualification: both suppression keys
 remain present and the one broad Sprint candidate gate has not run.
 
-Three failed development checks remain recorded in the machine-readable ledger:
+Five failed development checks remain recorded in the machine-readable ledger:
 the first stage allowlist omitted the new production seams, the first provenance
 check found the expected blueprint-ledger hash change, and the first production
-compile lacked the `ContextDiceValue` namespace import. Each failed before any
-deployment and passed after a narrow correction; none was discarded or rerolled
-unchanged.
+compile lacked the `ContextDiceValue` namespace import. The first observer
+focused build omitted one test-project namespace import, and its next run found
+that the closed reflection coverage expected an explicit Bleeding Critical
+carrier name. Each failed before any deployment and passed after a narrow
+correction; none was discarded or rerolled unchanged.
 
 ## Original art and attachment checkpoint
 
@@ -183,8 +190,13 @@ pose revealed that the original lower jaw was too far from the measured native
 pivot. The second turn pass exposed a neck seam and tail-root ring triangles.
 The authoring source now uses the actual jaw rest frame, a neck overlap and an
 uncapped body-embedded tail transition. No package was deployed for either
-failure. Final regenerated pose review is still required before the candidate
-Sprint gate; human aesthetic review remains `NOT_PERFORMED_NONBLOCKING`.
+failure. The complete regenerated clay, silhouette, textured, unlit,
+party-camera, movement, turn and contact/extreme set passes internal review:
+20 PNGs, 181.63 seconds of Blender render time, with the sorted hash-manifest
+SHA-256 `504ea9cfaed5723e74b3b67b81ef43155baf71877510de80bbc9de3b950331ea`.
+This proves only the offline authored shapes and pose envelope; native contact,
+cadence and lifecycle remain required. Human aesthetic review remains
+`NOT_PERFORMED_NONBLOCKING`.
 
 ## Validation order
 
