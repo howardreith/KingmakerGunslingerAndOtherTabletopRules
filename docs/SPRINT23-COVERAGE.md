@@ -4,7 +4,105 @@ Status: **RELEASED / STOP** on October 13, 2026. Product PR
 [#41](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/41)
 merged normally as `1d41388adb6aaa6e4e102e744abb392104cedbba`.
 Stable [v0.0.152](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.152)
-is published and Latest. Sprint 24 was not started.
+was published as Latest at that release point. Its historical result remains
+unchanged below; the bounded v0.0.153 follow-up now owns the Latest pointer.
+Sprint 24 was not started.
+
+## v0.0.153 bounded Powerful Charge follow-up
+
+Status: **RELEASED / STOP** on October 14, 2026. Product PR
+[#43](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/43)
+merged normally as `e122013edce9ceb88bd9aa0b40c9762cc717ed8d`.
+Stable [v0.0.153](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.153)
+is published and Latest. This arithmetic patch did not start Sprint 24.
+
+The released v0.0.152 helper documented a positive 2× live-Strength target but
+separately truncated its additional half-Strength term. The focused
+reproduction therefore produced +13 instead of +14 at modifier +7. Installed
+Kingmaker 2.1.7b IL confirmed that the ordinary positive single-natural-attack
+term is truncated after 1.5× multiplication, while zero and negative modifiers
+are applied once. The local correction now adds `2*m - floor(1.5*m)` for a
+positive modifier and adds nothing for zero or a penalty.
+
+| Strength modifier | Ordinary contribution | v0.0.152 charge total | v0.0.153 charge total |
+| ---: | ---: | ---: | ---: |
+| +7 | +10 | +13 | +14 |
+| +8 | +12 | +16 | +16 |
+| +9 | +13 | +17 | +18 |
+| +10 | +15 | +20 | +20 |
+
+Exact v0.0.153 lineage and artifact identity:
+
+- Tested source: `8f30cf72c916aaee840c18b373be82274729520e`.
+- Source fingerprint:
+  `5167ff01981bb3a6d4109ebc0dde5646db258902e4c8dea74f2d8414626046ef`.
+- Qualification-report commit: `e506840900575f82600e44a02e8beb5091937806`.
+- Product merge and peeled tag commit:
+  `e122013edce9ceb88bd9aa0b40c9762cc717ed8d`.
+- Annotated tag object: `586d42b70b30569f88266c73ea7afc3696e911be`.
+- Release ZIP SHA-256:
+  `cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b`.
+- DLL SHA-256:
+  `bab22f7fa8a10c4f9adc2410b4e2fd4ec98b56d3a5291bbd36cf0b47fbf333b0`;
+  MVID `dd3797aa-a482-4411-b3a5-f574204a320a`.
+- Downloaded release-manifest SHA-256:
+  `690e3dbb597d586fc41d9ef8989fb4dc0f443b4b3305d72177c6d727791b0a39`.
+- Downloaded SHA256SUMS SHA-256:
+  `c9e33dceafd4f125b58604bd62adb19001a71e673d3bce0a9348442d3e2febcd`.
+
+The frozen candidate's one full Sprint gate passed 2,594/2,594 tests plus
+strict package validation in 181.8 seconds. Fresh native proof on those bytes
+passed 13/13 assertions in each selected profile:
+
+- standalone RTWP runtime
+  `20261014T0301019306544Z-7c896449d20e4e3d9335f1e4dde928e9`;
+- standalone turn-based runtime
+  `20261014T0305412649861Z-3ce64fad9ff94f36a5fde7986fb999a5`;
+- highest-risk-combined RTWP runtime
+  `20261014T0309454568154Z-c3d6c46905f1401c9d59ce7fb8f7d427`.
+
+Each run used real issued native charge commands. The +7 and +9 rows supplied
+the required odd-modifier hit in both combat modes; +8 preserved the printed
+ordinary +12 and charged +16 baseline. The observer recorded 2d10 ordinary and
+4d10 charged weapon stats, exact Strength and additional-charge contributions,
+zero unrelated additive damage, weapon/command/target identity, noncritical
+state and action expenditure. Separate native Power Attack-on and critical
+checks passed without double application. Ordinary, aborted, later and
+opportunity attacks remained ordinary. Rhinoceros +3 and Woolly Rhinoceros +5
+fixed-increment charge paths remained unchanged.
+
+The final observer used a bounded request-local faction handoff solely at the
+installed `PowerAttackWatcher` attack-roll boundary. It retained the original
+summon faction through weapon-stat calculation, restored it before damage and
+again in outer cleanup, and changed no production combat component. Earlier
+observer/setup failures remain preserved in the machine-readable ledger rather
+than being relabeled as product passes.
+
+No identities, routes, assets or serialization state changed. The v0.0.152
+twelve-route, art, trample/trip, module lifecycle and persistence evidence is
+reused with its original provenance. The surface remains 105 project creatures,
+1,075 generated placements, 29 retained native wrappers and 1,104 visible
+choices.
+
+The public release contains exactly the ZIP, `SHA256SUMS.txt` and
+`release-manifest.json`. GitHub's digests match the downloaded files; the ZIP
+passed strict validation and contained the exact qualified DLL/MVID. The release
+is stable, non-draft, non-prerelease and Latest. Verification receipt SHA-256 is
+`59bf964616e60eec294e34b087b0f23a9653e271ecf657c220d2f173d4deca5b`.
+
+The post-release audit restored the actual intake exactly: 968 Mods entries,
+installed KMG 0.0.117 with 136 files, 83 game settings and 118 save files. The
+protected baseline and working-save SHA-256 values remain
+`cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`
+and `795d59ff448173c6631518676b655d3bd03b31dc31e418f578f9e9488cb10ada`.
+Installed/private references and the sound bank match, and no game process,
+compatibility lock, game staging, disposable publisher checkout or owned
+diagnostic temp remains. Audit SHA-256 is
+`02817e0ea81e9c874f3e3fe930c2f60f3035c353f3807f3abe7c0f6a7e5b364c`.
+
+The detailed qualification and failure provenance is in
+[`planning/SPRINT23-TRICERATOPS-POWERFUL-CHARGE-ROUNDING-LEDGER.json`](../planning/SPRINT23-TRICERATOPS-POWERFUL-CHARGE-ROUNDING-LEDGER.json).
+The endpoint is achieved. Stop; do not start Sprint 24.
 
 ## Exact artifact lineage
 
