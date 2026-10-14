@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — RTWP/TB DEINONYCHUS PASS; TYRANNOSAURUS OBSERVER CORRECTION FOCUSED PASS** on
+Status: **IN PROGRESS — DEINONYCHUS AND RTWP TYRANNOSAURUS PASS; TB CONTINUATION OBSERVER CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -310,16 +310,41 @@ healing removal. Its unconfirmed control used +100 fixture attack, however, so
 a natural-1 confirmation still beat target AC numerically. The same real bite
 probes were permitted to establish an unrelated Grab, occupying the mouth
 before the same-size test; the later independent Huge-target Grab/Swallow path
-passed. The narrow correction sets target AC between the natural-19 threat and
-natural-1 confirmation totals, suppresses only unrelated maneuver side effects
-during the critical fixture, and asserts clean mouth state before Grab. Product
-critical, Grab and Swallow rules are unchanged. Production compilation and all
-13 named Sprint 24 focused tests pass; a new exact Sprint candidate is required
-before rerunning only the failed RTWP Tyrannosaurus phase.
+passed. The narrow correction set target AC between the natural-19 threat and
+natural-1 confirmation totals, suppressed only unrelated maneuver side effects
+during the critical fixture, and asserted clean mouth state before Grab.
+Product critical, Grab and Swallow rules did not change.
+
+The exact correction commit
+`c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded` passed the next complete Sprint
+gate: 2,607/2,607 tests in 94.4 seconds and a strict 370-entry package in 190.4
+seconds total. ZIP SHA-256 is
+`e3c07a543796035e84f4d65a5783db72a42348683c931c442ba77742e104fc89`;
+DLL SHA-256 is
+`d325dbae5437080e8efd3661e8ff1385b424dac70da66c1ba87a4765f1676b30`,
+MVID `5054599d-6a6d-442b-b323-38ca37dd7a26`, and source fingerprint
+`665b32f6805cd8132d3bfccba307c47cd38903cb851703e418b4c66756b6bdab`.
+The changed RTWP reproduction then passed 10/10 in 91.283 seconds, including
+the natural-19/natural-1 non-confirm control at AC 30 and clean Grab isolation.
+
+The first `turn-based-tyrannosaurus` phase retained 10 PASS and 1 FAIL
+assertion in 91.969 seconds. Turn admission, one exact bite, all signed
+Powerful Bite cases, the critical suite, same-size Grab without swallow,
+later Huge-target swallow, three periodic rounds, escape, and one independent
+2d8+11 packet for each of two simultaneous predator/victim pairs passed.
+Releasing the first victim preserved the second victim's swallowed part and
+one-victim owner list, but the continuation probe emitted no second packet.
+That probe reused its pre-release Buff reference and due-time snapshot. The
+narrow correction reacquires the live second-victim Buff after release, uses
+the current native due boundary, and separately asserts that release neither
+ticks nor relinks the surviving pair. Product swallow mechanics remain
+unchanged. Production compilation and all 13 named Sprint 24 focused tests
+pass; a new exact Sprint candidate is required before rerunning only the failed
+TB Tyrannosaurus phase.
 
 Earlier failed development checks, the candidate/correction-suite failures,
 the guarded native foundation failure, both first Deinonychus attempts, the
-inter-turn reproduction and the first Tyrannosaurus phase remain recorded in
+inter-turn reproduction and both first Tyrannosaurus phases remain recorded in
 the machine-readable ledger:
 the first stage allowlist omitted the new production seams, the first provenance
 check found the expected blueprint-ledger hash change, and the first production
