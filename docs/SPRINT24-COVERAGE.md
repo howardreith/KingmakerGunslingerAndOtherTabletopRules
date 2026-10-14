@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — PACKAGE-INVENTORY FOCUSED PASS; SPRINT GATE NEXT** on
+Status: **IN PROGRESS — NATIVE FOUNDATION CORRECTION FOCUSED PASS; FRESH SPRINT GATE NEXT** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -177,9 +177,45 @@ allowlist with exactly 370 entries: four theropod body/paint files and two
 theropod icons are present once each. Its SHA-256 is
 `697e6bcd5ba57f8dfaa7c8adeafe5849ebde34cf050f32aadfdbefd9298d1aa6`;
 it is correction evidence only, not the frozen native candidate and was not
-deployed. The complete Sprint gate remains next on the committed correction.
+deployed.
 
-Seven earlier failed development checks and the two candidate/correction-suite
+The committed hidden candidate at
+`ed25e0b56a4e4fc21f6bb39c05f43a5cff7fef4b` subsequently passed one complete
+Sprint gate: repository validation, 2,607/2,607 domain tests in 93.5 seconds,
+exact-reference compilation, and a strict 370-entry package. Total gate time was
+189.4 seconds. The frozen ZIP SHA-256 was
+`a917ba3562ff39c44a0497271243bca12ba1e4b680c67b4a7f804112f58d7e13`;
+the DLL SHA-256 was
+`2b085cd688b584ac7e5fa9a652060d6ac19d4b2a2b17f5d178e1fd26d8d55fdf`,
+MVID `e0300b83-d05a-4b3a-a872-cdbdea4a37f8`, with source fingerprint
+`22b4483a0367f63d87efac9135739ac10c9b0c5d18dface93713b9b6806328c6`.
+That candidate was valid for native execution but is now superseded by the
+bounded correction below.
+
+The first guarded `rtwp-foundation` phase preserved 22 PASS and four FAIL
+assertions over 103.583 seconds. All 18 hidden roots executed through the real
+parent spell path with legal quantities and existing Monster/Ally template
+policy. The four failures were precise: the visual-only Lizardfolk donor's
+Human race supplied +2 Constitution and Medium combat-size arithmetic; the
+primary-hand talon received native sole-natural-weapon 1.5x Strength; the
+standalone weapon-stat probe's `SecondaryWeapon` diagnostic stayed false even
+though the foreclaws occupied the secondary limb and produced the correct +0/
+1d4+1 result; and native fade updates re-enabled `_ammunition04` after initial
+suppression. Both original bodies, paint, selection surfaces and size states
+attached; the failures do not claim mechanical or visual qualification.
+
+The correction removes only the playable donor race from these two reconstructed
+monster blueprints, removes only the excess lead-talon Strength term on the exact
+Deinonychus/weapon, records but no longer elevates the misleading calculation
+flag over equipped-limb and outcome evidence, and owns accessory suppression
+through a per-view LateUpdate component included in exact resource receipts and
+released before donor restoration. Production compilation and 13/13 Sprint 24,
+6/6 shared resource-authority, and 1/1 instance-owned-resource tests pass. A
+fresh complete Sprint gate is required before the changed bytes return to native
+review.
+
+Seven earlier failed development checks, the two candidate/correction-suite
+failures and the first guarded native foundation failure
 failures remain recorded in the machine-readable ledger:
 the first stage allowlist omitted the new production seams, the first provenance
 check found the expected blueprint-ledger hash change, and the first production

@@ -112,6 +112,13 @@ namespace KingmakerGunslinger.Summoning
                 NativeOrdinaryBiteStrengthContribution(strengthModifier));
         }
 
+        internal static int MultipleNaturalPrimaryExcessStrength(
+            int strengthModifier)
+        {
+            return checked(NativeOrdinaryBiteStrengthContribution(
+                strengthModifier) - strengthModifier);
+        }
+
         internal static bool CanGrab(int ownerSizeOrder, int targetSizeOrder)
         {
             return ownerSizeOrder >= 0 && targetSizeOrder >= 0 &&
@@ -143,6 +150,10 @@ namespace KingmakerGunslinger.Summoning
                 PowerfulBiteCorrection(0) != 0 ||
                 PowerfulBiteCorrection(-1) != -1 ||
                 PowerfulBiteCorrection(-5) != -5 ||
+                MultipleNaturalPrimaryExcessStrength(2) != 1 ||
+                MultipleNaturalPrimaryExcessStrength(3) != 1 ||
+                MultipleNaturalPrimaryExcessStrength(0) != 0 ||
+                MultipleNaturalPrimaryExcessStrength(-1) != 0 ||
                 DeinonychusBaseRacialHitPoints + 4 * 4 != 34 ||
                 TyrannosaurusBaseRacialHitPoints + 18 * 4 != 153 ||
                 DeinonychusPerceptionRanks + 3 + 1 +
