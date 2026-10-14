@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — FOUNDATION PASS; DEINONYCHUS OBSERVER CORRECTION FOCUSED PASS** on
+Status: **IN PROGRESS — RTWP DEINONYCHUS PASS; TURN-CONTROLLER CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -240,9 +240,35 @@ than all-hit luck. The named Sprint 24 focused gate passes 13/13. Because this
 observer is compiled into the DLL, one fresh complete Sprint gate is required
 before rerunning only the changed native phase.
 
+The exact observer-correction commit
+`aa048f1db9d279ea6185ec7ab1b3534eac93ff2a` passed that complete Sprint gate:
+2,607/2,607 tests in 91.5 seconds and a strict 370-entry package in 186.1
+seconds total. ZIP SHA-256 is
+`68ce7f2d0699cc07f61903ca460b78ffd34539784f2543eba7ab6f810988fbd1`;
+DLL SHA-256 is
+`e69ae58067b5f69a6b6b501a2cb8fbba3c7125f688c566b49520f419ebbcb3f8`,
+MVID `9228e5b3-1edd-44c7-9591-14520fe31c6f`, and source fingerprint
+`78ad09ba48adfaf2b902c8fbd12bd8f85aa793bbb2e37bfdf8cee3f03f98eda5`.
+The corrected `rtwp-deinonychus` reproduction then passed all 10 assertions:
+adult profile/body, exact ordinary full and single routines, 11.703 m native
+Pounce with four charge rolls, illegal/aborted and AoO controls, and teardown.
+
+The first `turn-based-deinonychus` phase preserved 5 PASS and 3 FAIL assertions
+in 194.520 seconds. The adult profile and body passed, but both ordinary attack
+commands remained unstarted with zero rolls because the owner had not been
+admitted to native turn order. The later charge route probe then reached a
+native `AbilityCustomCharge.CanTarget` null path because TB mode lacked a valid
+current turn. The qualified Sprint 22/23 sequence already defines the bounded
+fix: begin in RTWP, enroll only request-owned actors through the supported mode
+toggle, wait for the owner turn, and perform route survey in RTWP before
+re-enrolling for the actual TB charge. That correction is now in the closed
+observer and its carrier name is domain-pinned; production compilation and all
+13 Sprint 24 focused tests pass. Compiled observer bytes changed, so a new exact
+Sprint candidate is required before rerunning only the failed TB phase.
+
 Seven earlier failed development checks, the two candidate/correction-suite
-failures, the first guarded native foundation failure, and the first dedicated
-Deinonychus phase remain recorded in the machine-readable ledger:
+failures, the first guarded native foundation failure, and the first RTWP and TB
+Deinonychus failures remain recorded in the machine-readable ledger:
 the first stage allowlist omitted the new production seams, the first provenance
 check found the expected blueprint-ledger hash change, and the first production
 compile lacked the `ContextDiceValue` namespace import. The first observer
