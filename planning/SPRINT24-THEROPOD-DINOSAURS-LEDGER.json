@@ -305,20 +305,20 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": {
-      "status": "PASS_HIDDEN_CORRECTED_CANDIDATE_SUPERSEDED_BY_OBSERVER_CORRECTION",
-      "gitCommit": "905c1f7e926924e5ce0b636df2875fc20a2603ba",
+      "status": "PASS_HIDDEN_OBSERVER_CORRECTED_CANDIDATE_SUPERSEDED_BY_TURN_CONTROLLER_CORRECTION",
+      "gitCommit": "aa048f1db9d279ea6185ec7ab1b3534eac93ff2a",
       "gateLevel": "Sprint",
-      "gateDurationSeconds": 188.9,
+      "gateDurationSeconds": 186.1,
       "completeDomainTests": 2607,
       "completeDomainFailures": 0,
-      "completeDomainSeconds": 91.7,
+      "completeDomainSeconds": 91.5,
       "packageEntries": 370,
       "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
-      "packageSha256": "fbab7c4126d785acef8885e0d0b2d17517a87af0b7dfe5d0614c637d8d7f3807",
-      "dllSha256": "4de957a8bad495ff94c8e04d70b285102871578b59de2013269fda6a7e3b9422",
-      "dllMvid": "2534e2fd-4c1d-4758-9708-4cc14e5493ba",
-      "sourceStateSha256": "feaa8f8ca0eb4d97331725c89ea41cc368a50ec0b808f2cdb7eabb1ff047ea75",
-      "disposition": "Complete corrected hidden Sprint gate PASS; foundation executed successfully, then compiled observer bytes were superseded by evidence-driven test setup corrections."
+      "packageSha256": "68ce7f2d0699cc07f61903ca460b78ffd34539784f2543eba7ab6f810988fbd1",
+      "dllSha256": "e69ae58067b5f69a6b6b501a2cb8fbba3c7125f688c566b49520f419ebbcb3f8",
+      "dllMvid": "9228e5b3-1edd-44c7-9591-14520fe31c6f",
+      "sourceStateSha256": "78ad09ba48adfaf2b902c8fbd12bd8f85aa793bbb2e37bfdf8cee3f03f98eda5",
+      "disposition": "Complete observer-corrected hidden Sprint gate PASS; RTWP Deinonychus passed, then compiled turn-controller observer bytes were superseded by evidence-driven correction."
     },
     "nativeRuns": [
       {
@@ -384,6 +384,46 @@
         ],
         "correction": "Use the normal own-tier profile path and 12-frame settle before fixture HP inflation; set native IsSingleAttack; control and record d20 preconditions; assert routine shape rather than all-hit luck; keep target refusal and zero effects authoritative for the aborted illegal case.",
         "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh complete Sprint gate required because observer bytes changed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-deinonychus",
+        "status": "PASS_EXACT_HIDDEN_CANDIDATE",
+        "runId": "20261014T0910170141619Z-a373e8e2d66147d1ba787862c1d1722e",
+        "gitCommit": "aa048f1db9d279ea6185ec7ab1b3534eac93ff2a",
+        "compatibilityTransaction": "compat-20261014T090839Z-de4595196cfc",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0910158424752Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0910169829139Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "e3f8c65e72faceabedc11041b1b48432f813e8d3408e99930e479fa2ee05a791",
+        "durationSeconds": 92.724,
+        "assertions": 10,
+        "passed": 10,
+        "failed": 0,
+        "disposition": "Exact adult profile/body, ordinary four-roll full attack, primary-talon single attack, 11.703 m legal four-roll Pounce, illegal/aborted and AoO controls, and teardown all passed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-deinonychus",
+        "status": "FAIL_PRESERVED_TURN_CONTROLLER_ORDERING_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T0914132092096Z-6b3be0fef62341339e3cff41d6189590",
+        "gitCommit": "aa048f1db9d279ea6185ec7ab1b3534eac93ff2a",
+        "compatibilityTransaction": "compat-20261014T091235Z-920f582e4222",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0914119927206Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0914131714833Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "a4758447f28aea0df639bf0cadb73e5e68b00dfb99f63b601a2f584e1e1857cf",
+        "durationSeconds": 194.520,
+        "assertions": 8,
+        "passed": 5,
+        "failed": 3,
+        "failures": [
+          "Ordinary full command remained unstarted outside native turn order and emitted zero rolls.",
+          "Ordinary single command remained unstarted outside native turn order and emitted zero rolls.",
+          "Charge route probing in TB without a valid current-turn path reached native AbilityCustomCharge.CanTarget null state."
+        ],
+        "correction": "Start in RTWP, enroll request-owned owner/target through Sprint22EnrollTurnBasedOwners, wait for the owner's native turn, and survey Charge in RTWP before re-enrolling for actual TB execution.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; corrected carrier name domain-pinned. Fresh exact-candidate Sprint gate required before changed phase reproduction.",
         "restorationVerified": true,
         "permanentDeployment": false
       }
@@ -550,7 +590,17 @@
       "result": "5/10 assertions passed in 93.356 seconds. The exact ordinary four-roll routine, one-roll AoO and cleanup passed. Legal Pounce emitted exactly four charge rolls after 11.638 m of native movement and ordinary charge economy; the too-close target was rejected with zero attacks/state. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
       "cause": "The quiet-unit helper inflated owner HP before profile sampling; view state was sampled before its established settle; the single command omitted native IsSingleAttack; all-hit luck was incorrectly required for Pounce; generic command CanStart was incorrectly required false after exact target refusal.",
       "correction": "Sample an own-tier summon after the same 12-frame settle and inflate HP afterward; set UnitAttack.IsSingleAttack; deliberately seed and record rolls while asserting routine legality independent of hits; require target refusal and zero follow-up/stale state for the aborted illegal case.",
-      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh exact-candidate Sprint gate PASS; changed RTWP phase reproduction 10/10 PASS."
+    },
+    {
+      "timestampUtc": "2026-10-14T09:17:35.9272312Z",
+      "stage": "first guarded dedicated Deinonychus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-deinonychus",
+      "disposition": "PRESERVED_TURN_CONTROLLER_ORDERING_FAILURE_THEN_FOCUSED_PASS",
+      "result": "5/8 assertions passed in 194.520 seconds. Profile, original body and both cleanup assertions passed. Ordinary full/single commands remained unstarted with zero rolls, then route probing raised a structured native null exception. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The phase enabled TB before enrolling the request-owned summon, leaving commands outside turn order; AbilityCustomCharge route probing then ran in TB without a valid current-turn path.",
+      "correction": "Reuse the qualified Sprint 22/23 sequence: start in RTWP, enroll exact request-owned actors through the supported mode toggle, wait for the owner turn, and survey Charge in RTWP before re-enrolling for actual TB execution.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; turn-enrollment carrier domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
     }
   ],
   "acceptedLimitations": [
