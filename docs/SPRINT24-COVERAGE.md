@@ -407,12 +407,17 @@ the later lifecycle rows. This is retained at
 `runtime-evidence/20261014T1103586702473Z-disposable-expanded-summoning-sprint24-native-review`
 with runtime-result SHA-256
 `5cf24f7b0b3e217dc29345131052fa5571da7944bbcb38c84d141499c532212e`.
-The correction filters the receipt to the release path's exact
-`KMG_<key>_Original` material family, recognizes the qualified theropod driver
-set in the shared formatter and emits remaining-resource diagnostics. Product
-mechanics do not change. Production compilation and all 13 named Sprint 24
-focused tests pass; a new exact Sprint candidate is required before rerunning
-only `visual-lifecycle`.
+The first correction commit
+`b3c92b1c49a1a03f2e7d3b367985442f62a3c3f3` stopped at the Sprint 24 source
+boundary before compilation or packaging because it modified the older Sprint
+17 formatter. The narrowed correction restores that file exactly, filters the
+receipt to the release path's exact `KMG_<key>_Original` material family, and
+keeps a row-isolated full-transform formatter in the Sprint 24 observer. Its
+first focused compile exposed one missing existing `Kingmaker.View` import;
+after that import, production compilation and all 13 named Sprint 24 focused
+tests pass. Neither failure deployed, launched the game or accessed a save.
+Product mechanics do not change. A new exact Sprint candidate is required
+before rerunning only `visual-lifecycle`.
 
 Earlier failed development checks, the candidate/correction-suite failures,
 the guarded native foundation failure, both first Deinonychus attempts, the

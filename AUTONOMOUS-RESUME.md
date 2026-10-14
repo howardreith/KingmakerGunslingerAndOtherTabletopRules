@@ -336,12 +336,21 @@ attachment and aborted on the theropod death sample. Evidence is
 runtime-result SHA-256 is
 `5cf24f7b0b3e217dc29345131052fa5571da7944bbcb38c84d141499c532212e`.
 
-The batched correction now filters theropod receipts to the exact
+The first correction commit
+`b3c92b1c49a1a03f2e7d3b367985442f62a3c3f3` was rejected by the Sprint 24
+source boundary before compilation or packaging because it modified the older
+Sprint 17 formatter. The narrowed correction restores that file exactly and
+keeps the theropod transform formatter in the Sprint 24 observer. Its first
+focused compile exposed one missing existing `Kingmaker.View` import; after
+that import, production compilation and all 13 named Sprint 24 tests pass.
+Neither failed check deployed, launched the game or accessed a save.
+
+The current batched correction filters theropod receipts to the exact
 `KMG_<key>_Original` material family that the release path owns, recognizes the
-qualified theropod driver set in the full-transform formatter, and records any
-remaining teardown resource explicitly. Production compilation and the named
-Sprint 24 filter pass 13/13. Product mechanics remain unchanged and both keys
-remain suppressed.
+qualified theropod driver set in a Sprint 24-only full-transform formatter,
+contains a formatting exception to its diagnostic row, and records any
+remaining teardown resource explicitly. Product mechanics remain unchanged
+and both keys remain suppressed.
 
 Next action: commit and push this visual receipt/formatter correction through
 the required wrapper, run one fresh complete Sprint gate on that exact commit,
