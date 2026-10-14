@@ -249,8 +249,15 @@ if ($moduleScenario) {
     if ($Scenario.Count -ne 1 -or $keys.Count -ne 1 -or
         $keys[0] -cne 'reviewPhase' -or
         $Parameters.reviewPhase -isnot [string] -or
-        $Parameters.reviewPhase -cnotin @('rtwp-foundation',
-            'turn-based-control')) {
+        ($Scenario[0] -ceq
+            'disposable-expanded-summoning-sprint22-native-review' -and
+            $Parameters.reviewPhase -cnotin @('rtwp-foundation',
+                'turn-based-control')) -or
+        ($Scenario[0] -ceq
+            'disposable-expanded-summoning-sprint23-native-review' -and
+            $Parameters.reviewPhase -cnotin @('rtwp-foundation',
+                'turn-based-control', 'charge-rounding-rtwp',
+                'charge-rounding-turn-based'))) {
         throw 'Sprint 22/23 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.'
     }
 } elseif ($assetAttributionScenario) {
