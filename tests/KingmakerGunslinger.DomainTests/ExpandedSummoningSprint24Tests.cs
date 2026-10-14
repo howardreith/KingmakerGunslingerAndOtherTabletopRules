@@ -346,8 +346,49 @@ namespace KingmakerGunslinger.DomainTests
                     TheropodVisualPolicy.DeinonychusBlueprintName, out scale),
                 "Medium Deinonychus retains the measured donor scale.");
 
+            string visualKey;
+            Assertions.True(TheropodVisualPolicy.TryProductionTheropod(true,
+                    TheropodVisualPolicy.DeinonychusBlueprintGuid,
+                    TheropodVisualPolicy.DeinonychusBlueprintName,
+                    TheropodVisualPolicy.DonorPrefabGuid, out visualKey) &&
+                visualKey == TheropodRulesPolicy.DeinonychusKey,
+                "The exact enabled Deinonychus identity owns its view.");
+            Assertions.True(TheropodVisualPolicy.TryProductionTheropod(true,
+                    TheropodVisualPolicy.TyrannosaurusBlueprintGuid,
+                    TheropodVisualPolicy.TyrannosaurusBlueprintName,
+                    TheropodVisualPolicy.DonorPrefabGuid, out visualKey) &&
+                visualKey == TheropodRulesPolicy.TyrannosaurusKey,
+                "The exact enabled Tyrannosaurus identity owns its view.");
+            Assertions.False(TheropodVisualPolicy.TryProductionTheropod(false,
+                    TheropodVisualPolicy.DeinonychusBlueprintGuid,
+                    TheropodVisualPolicy.DeinonychusBlueprintName,
+                    TheropodVisualPolicy.DonorPrefabGuid, out visualKey) ||
+                TheropodVisualPolicy.TryProductionTheropod(true,
+                    TheropodVisualPolicy.TyrannosaurusBlueprintGuid,
+                    TheropodVisualPolicy.DeinonychusBlueprintName,
+                    TheropodVisualPolicy.DonorPrefabGuid, out visualKey) ||
+                TheropodVisualPolicy.TryProductionTheropod(true,
+                    TheropodVisualPolicy.DeinonychusBlueprintGuid,
+                    TheropodVisualPolicy.DeinonychusBlueprintName,
+                    "foreign-prefab", out visualKey),
+                "Module-off and mixed/foreign identities cannot mutate a view.");
+            float radius;
+            Assertions.True(TheropodVisualPolicy.TryBaseCorpulence(
+                    TheropodRulesPolicy.DeinonychusKey, out radius) &&
+                Math.Abs(radius - 0.762f) < .00001f,
+                "The Medium body owns the five-foot-space radius.");
+            Assertions.True(TheropodVisualPolicy.TryBaseCorpulence(
+                    TheropodRulesPolicy.TyrannosaurusKey, out radius) &&
+                Math.Abs(radius - 3.048f) < .00001f,
+                "The Gargantuan body owns the twenty-foot-space radius.");
+            Assertions.False(TheropodVisualPolicy.TryBaseCorpulence(
+                    "foreign", out radius),
+                "No unrelated visual receives a theropod footprint.");
+
             string attachment = File.ReadAllText(
                 "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs");
+            string builder = File.ReadAllText(
+                "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.Theropods.cs");
             Assertions.True(attachment.Contains(
                     "class TheropodAccessorySuppression") &&
                 attachment.Contains("private void LateUpdate()") &&
@@ -356,6 +397,13 @@ namespace KingmakerGunslinger.DomainTests
                 attachment.Contains("string ownedMaterialName") &&
                 attachment.Contains("StartsWith(\n                    ownedMaterialName, StringComparison.Ordinal)"),
                 "Per-view suppression survives native fade updates, appears in the owned-resource receipt and releases before exact donor restoration.");
+            Assertions.True(attachment.Contains("TryProductionTheropod(") &&
+                attachment.Contains("m_Corpulence") &&
+                attachment.Contains("SetupSelectionColliders") &&
+                builder.Contains("new UnitVisualParams()") &&
+                builder.Contains("visual.BloodPuddleFx = donor.Visual.BloodPuddleFx") &&
+                builder.Contains("TheropodVisualPolicy.ExpiryEffectDonorGuid"),
+                "The compiled owner gate installs exact native spatial and expiry carriers without mutating the shared donor visual record.");
 
             JObject icons = JObject.Parse(File.ReadAllText(
                 "assets-source/original-icons/expanded-summoning/icon-manifest.json"));
@@ -438,7 +486,9 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitPartSwallowWhole", "CriticalConfirmationRoll",
                 "PowerfulBite", "BleedingCritical",
                 "CaptureTheropodOwnedResources", "ExerciseExpandedSummoningRakeCadence",
-                "ExerciseExpandedSummoningGrappleLifecycle" })
+                "ExerciseExpandedSummoningGrappleLifecycle",
+                "DismemberUnitFX", "exactExpiryCarrier",
+                "combinedCorpulence", "UnitCombatPrepareController" })
                 Assertions.True(runner.Contains(token),
                     "The native observer must retain carrier: " + token);
             Assertions.True(runner.Contains("Sprint24OriginalBodySample") &&

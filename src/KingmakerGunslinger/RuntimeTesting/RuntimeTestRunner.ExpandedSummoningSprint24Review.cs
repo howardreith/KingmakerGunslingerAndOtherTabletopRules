@@ -35,6 +35,7 @@ using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.Particles;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -2244,6 +2245,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Quaternion.identity, fixture.Scene);
             fixture.Created.Add(control);
             SetExpandedSummoningBrainActive(control, false);
+            // Let the untouched donor finish its own EntityFader/material and
+            // equipment visibility setup before taking the negative-control
+            // snapshot. Comparing an attach-frame snapshot to a settled view
+            // would misclassify native per-instance initialization as a
+            // project mutation.
+            for (int frame = 0; frame < 60; frame++)
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
             SkinnedMeshRenderer[] controlSkins = control.View
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true);
             Mesh[] donorMeshes = controlSkins.Select(value =>
@@ -2404,6 +2415,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool isolated = control.View != null &&
                     ExpandedSummoningPteranodonViewPatch.DescribeView(
                         control.View) == "not-attempted" &&
+                    controlSkins.Length == after.Length &&
+                    controlSkins.Zip(after, (before, current) =>
+                        ReferenceEquals(before, current)).All(value => value) &&
                     donorMeshes.SequenceEqual(after.Select(value =>
                         value.sharedMesh)) &&
                     donorEnabled.SequenceEqual(after.Select(value =>
@@ -2415,6 +2429,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["event"] = "donor-negative-control",
                         ["owner"] = donorBlueprint.AssetGuid,
                         ["rendererCount"] = after.Length,
+                        ["before"] = new JArray(controlSkins.Select((value,
+                            index) => new JObject {
+                                ["rendererId"] = value.GetInstanceID(),
+                                ["name"] = value.name,
+                                ["meshId"] = donorMeshes[index] == null ? 0 :
+                                    donorMeshes[index].GetInstanceID(),
+                                ["enabled"] = donorEnabled[index]
+                            })),
+                        ["after"] = new JArray(after.Select(value =>
+                            new JObject {
+                                ["rendererId"] = value.GetInstanceID(),
+                                ["name"] = value.name,
+                                ["meshId"] = value.sharedMesh == null ? 0 :
+                                    value.sharedMesh.GetInstanceID(),
+                                ["enabled"] = value.enabled
+                            })),
                         ["unchanged"] = isolated
                     }, "The native donor retains the exact renderer mesh and enabled-state references across faults, recovered instances and teardown.");
             }
@@ -2442,6 +2472,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool finite = true, deathPlayed = false, deadObserved = false;
             float maximumDissolve = 0f;
             JObject expiry = null;
+            BlueprintUnit expiryDonor = fixture.Blueprints.OfType<BlueprintUnit>()
+                .Single(value => value.AssetGuid ==
+                    TheropodVisualPolicy.ExpiryEffectDonorGuid);
+            var expiryLink = unit.Blueprint.Visual == null ? null :
+                unit.Blueprint.Visual.BloodPuddleFx;
+            var donorExpiryLink = expiryDonor.Visual == null ? null :
+                expiryDonor.Visual.BloodPuddleFx;
+            GameObject expiryPrefab = expiryLink == null ? null :
+                expiryLink.Load(false);
+            DismemberUnitFX expiryEffect = expiryPrefab == null ? null :
+                expiryPrefab.GetComponent<DismemberUnitFX>();
+            bool exactExpiryCarrier = expiryLink != null &&
+                donorExpiryLink != null && ReferenceEquals(expiryLink,
+                    donorExpiryLink) && expiryEffect != null &&
+                expiryEffect.Delay > 0f;
             try
             {
                 for (int frame = 0; frame < 300; frame++)
@@ -2470,7 +2515,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool hasDeath = prone != null && prone.Clips != null &&
                     prone.Clips.Any(value => value != null);
                 Sprint24Check("lifecycle-carriers-" + key,
-                    set != null && resources.Count >= 2,
+                    set != null && resources.Count >= 2 &&
+                        exactExpiryCarrier,
                     new JObject {
                         ["unit"] = unit.UniqueId,
                         ["event"] =
@@ -2482,6 +2528,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? "native Hit carrier is retained; no project-authored flinch or synthetic playback"
                             : "native rig has no Hit action; no flinch claimed",
                         ["ownedResources"] = resources.Count,
+                        ["expiryEffectDonor"] = expiryDonor.AssetGuid,
+                        ["expiryEffectAsset"] = expiryLink == null ? null :
+                            expiryLink.AssetId,
+                        ["expiryEffectExact"] = exactExpiryCarrier,
+                        ["expiryEffectDelay"] = expiryEffect == null ?
+                            (JToken)JValue.CreateNull() : expiryEffect.Delay,
                         ["actionTypes"] = new JArray(set == null
                             ? Enumerable.Empty<string>()
                             : set.Actions.OfType<UnitAnimationAction>()
@@ -2593,8 +2645,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool released = unit.Destroyed && unit.View == null &&
                     unit.HoldingState == null &&
                     resources.All(value => value == null);
+                bool borrowedExpiryCarrierSurvives = expiryPrefab != null &&
+                    expiryEffect != null && donorExpiryLink != null &&
+                    donorExpiryLink.AssetId == expiryLink.AssetId;
                 Sprint24Check("native-fade-despawn-" + key,
-                    finite && maximumDissolve > .05f && released,
+                    finite && exactExpiryCarrier &&
+                        maximumDissolve > .05f && released &&
+                        borrowedExpiryCarrierSurvives,
                     new JObject {
                         ["unit"] = unit.UniqueId,
                         ["event"] =
@@ -2606,7 +2663,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["holdingGone"] = unit.HoldingState == null,
                         ["capturedResources"] = resources.Count,
                         ["remainingResources"] = resources.Count(value =>
-                            value != null)
+                            value != null),
+                        ["expiryEffectAsset"] = expiryLink == null ? null :
+                            expiryLink.AssetId,
+                        ["borrowedExpiryCarrierSurvives"] =
+                            borrowedExpiryCarrierSurvives
                     }, "Native summon expiry visibly dissolves the original body, despawns the logical unit, and reclaims only exact per-instance resources.");
             }
             finally
@@ -2710,6 +2771,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] awakeBefore = Game.Instance.State.AwakeUnits
                 .ToArray();
             bool pauseBefore = Game.Instance.IsPaused;
+            bool crowdCombat = false;
+            bool hostileJoined = false;
             try
             {
                 for (int frame = 0; frame < 30; frame++) yield return 0;
@@ -2822,13 +2885,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tyr.Stats.Speed.ModifiedValue == 40 &&
                     dein.Stats.Reach.ModifiedValue == 5 &&
                     tyr.Stats.Reach.ModifiedValue == 20 &&
-                    tyr.Corpulence > dein.Corpulence;
+                    Math.Abs(dein.Corpulence -
+                        TheropodVisualPolicy.DeinonychusBaseCorpulence) <
+                            .001f &&
+                    Math.Abs(tyr.Corpulence -
+                        TheropodVisualPolicy.TyrannosaurusBaseCorpulence) <
+                            .001f && tyr.Corpulence > dein.Corpulence;
                 Sprint24Check("movement-selection-scale", movement,
                     new JObject {
                         ["unit"] = "theropods",
                         ["event"] =
                             "native-shared-route-movement-and-selection",
                         ["routeSearchAttempts"] = attempts,
+                        ["deinonychusSpaceFeet"] =
+                            dein.Corpulence * 2f / .3048f,
+                        ["tyrannosaurusSpaceFeet"] =
+                            tyr.Corpulence * 2f / .3048f,
                         ["deinonychusSelection"] = deinSelection,
                         ["tyrannosaurusSelection"] = tyrSelection,
                         ["members"] = movementRows
@@ -2839,9 +2911,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Commands.InterruptAll(true);
                     PlaceExpandedSummoningUnit(unit,
                         origin.clampedPosition);
+                    unit.Memory.Add(fixture.Hostile);
+                    if (!unit.IsInCombat) unit.JoinCombat();
                 }
                 PlaceExpandedSummoningUnit(tyr,
                     destination.clampedPosition);
+                fixture.Hostile.Memory.Add(dein);
+                hostileJoined = !fixture.Hostile.IsInCombat;
+                if (hostileJoined) fixture.Hostile.JoinCombat();
+                Game.Instance.Player.UpdateIsInCombat();
+                new UnitCombatJoinController().Tick();
+                new UnitCombatPrepareController().Tick();
+                crowdCombat = true;
+                for (int settle = 0; settle < 4; settle++) yield return 0;
                 var deinMove = new UnitMoveTo(destination.clampedPosition,
                     .5f);
                 var tyrMove = new UnitMoveTo(origin.clampedPosition, .5f);
@@ -2873,6 +2955,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool collision = pairCanStart &&
                     (deinContacts > 0 || tyrContacts > 0) &&
                     initialDistance - minimumDistance >= 1f &&
+                    minimumDistance + .5f >=
+                        dein.Corpulence + tyr.Corpulence &&
                     pair.All(value =>
                         !value.View.MovementAgent.AvoidanceDisabled &&
                         value.Corpulence > 0 && Math.Abs(value.Corpulence -
@@ -2887,12 +2971,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["tyrannosaurusContacts"] = tyrContacts,
                         ["initialCenterDistance"] = initialDistance,
                         ["minimumCenterDistance"] = minimumDistance,
+                        ["combinedCorpulence"] = dein.Corpulence +
+                            tyr.Corpulence,
                         ["finalCenterDistance"] = Vector3.Distance(
                             dein.Position, tyr.Position),
                         ["frames"] = frames,
                         ["wallSeconds"] =
                             collisionClock.Elapsed.TotalSeconds
                     }, "The Medium and Gargantuan bodies approach head-on, produce native contacts, retain avoidance, and never replace logical position or collision with visual offsets.");
+
+                foreach (UnitEntityData unit in pair)
+                    if (unit.IsInCombat) unit.LeaveCombat();
+                if (hostileJoined && fixture.Hostile.IsInCombat)
+                    fixture.Hostile.LeaveCombat();
+                Game.Instance.Player.UpdateIsInCombat();
+                crowdCombat = false;
 
                 foreach (UnitEntityData unit in pair)
                 {
@@ -2907,6 +3000,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (crowdCombat)
+                {
+                    foreach (UnitEntityData unit in pair)
+                        if (unit.IsInCombat) unit.LeaveCombat();
+                    if (hostileJoined && fixture.Hostile.IsInCombat)
+                        fixture.Hostile.LeaveCombat();
+                    Game.Instance.Player.UpdateIsInCombat();
+                }
                 foreach (UnitEntityData unit in pair)
                 {
                     unit.Commands.InterruptAll(true);
