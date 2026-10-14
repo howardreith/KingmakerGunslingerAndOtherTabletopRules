@@ -96,7 +96,8 @@
       "orchestration": "168/168 PASS",
       "compatibilityProfileBoundary": "5/5 PASS",
       "profilePhaseAllowlistRepair": "The request/runtime layers already accepted both charge-rounding phases, but the outer compatibility transaction wrapper admitted only the two original Sprint 23 phases. Its scenario-specific allowlist now admits both charge phases for Sprint 23 while continuing to reject them for Sprint 22; the focused profile-boundary script and 12-test Sprint 23 gate passed.",
-      "intermediateSourceAssertionCorrection": "One source-text assertion used the wrong formatting/field spelling; production behavior was unchanged and the corrected focused selection passed."
+      "intermediateSourceAssertionCorrection": "One source-text assertion used the wrong formatting/field spelling; production behavior was unchanged and the corrected focused selection passed.",
+      "powerAttackOffSetupRepair": "The native watcher removed Power Attack's attack penalty after the watcher-choice setup, but its +9 damage had already entered the charge weapon-stat calculation. The corrected request starts with the native toggle off and retains the calibrated AC at which the installed watcher prefers it off; the focused production compile and 12/12 Sprint 23 selection passed in 24.6 seconds."
     }
   },
   "plan": {
@@ -181,6 +182,22 @@
       "dllMvid": "a6d4e228-719a-4196-af0a-5cf5ba1c22bf",
       "cause": "The player-faction setup correctly held Power Attack off and produced the exact +2 charge attack bonus, but installed RuleCalculateWeaponStats IL applies its separate player-faction size-scaling branch to overridden monster dice. That changed the observer's ordinary gore from the preserved normalized 2d10 line to raw 6d8 and correctly failed the ordinary-dice assertion.",
       "repair": "Preserve the original summon faction and its 2d10 monster-dice path. Let the installed PowerAttackWatcher make a native off choice by preparing Power Attack on against a request-local calibrated AC, then seed a genuine noncritical hit and require the watcher to remove the toggle before attack calculation."
+    },
+    {
+      "source": "ba2bb36c7c6b98b66ea662b919afe351be425fda",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+      "result": "SUPERSEDED_AFTER_NATIVE",
+      "stage": "complete source/build/package gate and affected RTWP native run",
+      "registered": 2594,
+      "executed": 2594,
+      "failures": 0,
+      "elapsedSeconds": 180.9,
+      "sourceFingerprint": "94b349b65065abf17a6229c6bc89345a71b2b58e4a1175432cec843b565e38a2",
+      "packageSha256": "9dadf7b55296c98236eade057c75f66226913845e385a648ca62f34d0cf975e6",
+      "dllSha256": "b066062300d7c26582970b6497848b24d204a27d3d7463cc19102d58e61025b1",
+      "dllMvid": "4853e91a-0857-491d-8ac0-24febee6c902",
+      "cause": "The native watcher selected Power Attack off for the attack roll, but the charge weapon-stat event retained the already-entered +9 Power Attack damage. The strict PA-off arithmetic rows therefore failed rather than accepting unrelated additive damage; the corrected +14/+16/+18/+20 Strength contributions and 2d10/4d10 dice were independently observed.",
+      "repair": "Begin the real command with the native toggle off at the same calibrated AC so the watcher leaves it off throughout attack-roll and weapon-stat calculation. Preserve the original faction, exact attack bonus, 2d10/4d10 dice, deterministic noncritical hit and request-local AC restoration assertions."
     }
   ],
   "nativeRuns": [],
@@ -243,6 +260,21 @@
       "restoration": "EXACT_VERIFIED",
       "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T021607Z-241b58c4dae6/transaction.json",
       "repair": "Do not accept 6d8 or weaken the printed-dice assertion. Restore the original faction and use the native watcher's documented expected-damage choice to turn Power Attack off at RuleAttackRoll under calibrated request-local AC, with a deterministic genuine noncritical hit and exact AC restoration."
+    },
+    {
+      "profileRunId": "compat-20261014T023230Z-8dfc65d0a9d8",
+      "runtimeRunId": "20261014T0234090115393Z-1229fd680d8f4eefba2e44bdbc7241f9",
+      "profile": "gunslinger-only",
+      "phase": "charge-rounding-rtwp",
+      "source": "ba2bb36c7c6b98b66ea662b919afe351be425fda",
+      "result": "SETUP_CONTROL_FAIL",
+      "cause": "The native watcher removed the -3 Power Attack attack penalty and every real charge retained the original-faction 2d10 ordinary / 4d10 charge dice, natural 18 hit and exact corrected Strength contribution. Its +9 Power Attack damage had already entered RuleCalculateWeaponStats, however, so the strict unrelated-additive-damage-zero assertion correctly failed all four rows.",
+      "productPostconditionReached": true,
+      "productArithmeticObserved": "PASS for Strength modifiers +7/+8/+9/+10; zero and signed-penalty calculation controls also passed",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0234089802694Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T023230Z-8dfc65d0a9d8/transaction.json",
+      "repair": "Start with native Power Attack off and retain the calibrated target AC so the installed watcher keeps the toggle off before both attack-roll and weapon-stat calculation; no production combat component is disabled."
     }
   ],
   "release": null,

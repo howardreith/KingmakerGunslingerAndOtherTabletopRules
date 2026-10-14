@@ -1404,18 +1404,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new RuleCalculateAC(owner, target,
                         AttackType.Melee)).TargetAC;
                 // PowerAttackWatcher compares native expected damage with and
-                // without its BAB+10 penalty. At this exact AC, the no-Power-
-                // Attack branch wins for every +7..+10 Strength row, while a
-                // deterministic natural 18 still makes the resulting charge
-                // hit. This exercises the watcher instead of disabling it.
+                // without its BAB+10 penalty. Begin with the native toggle off;
+                // at this exact AC its no-Power-Attack branch remains the
+                // winner for every +7..+10 Strength row, while a deterministic
+                // natural 18 still makes the resulting charge hit. This
+                // exercises the watcher instead of disabling it and keeps its
+                // +9 damage out of the charge-rounding measurement.
                 desiredTargetArmorClass = ordinaryAttackBonus + 15;
                 target.Stats.AC.BaseValue += desiredTargetArmorClass -
                     targetArmorClassBefore;
                 targetArmorClassDuring = Rulebook.Trigger(
                     new RuleCalculateAC(owner, target,
                         AttackType.Melee)).TargetAC;
-                foreach (int frame in Sprint22SetPowerAttack(owner, true))
-                    yield return frame;
                 var preparedPowerAttack = owner.Descriptor
                     .ActivatableAbilities.Enumerable.Single(value =>
                         value.Blueprint.AssetGuid ==
@@ -1535,7 +1535,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         requestedStrength &&
                     modifier == (requestedStrength - 10) / 2 &&
                     observer.PowerAttackDecisionCount == 1 &&
-                    observer.PowerAttackOnBeforeRoll &&
+                    !observer.PowerAttackActiveBeforeRoll &&
                     observer.PowerAttackOffAfterAttack &&
                     targetArmorClassDuring == desiredTargetArmorClass &&
                     ordinaryStats.DamageDescription[0].Dice.Rolls == 2 &&
@@ -1612,8 +1612,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             observer.PowerAttackAfterAttack,
                         ["powerAttackDecisionCount"] =
                             observer.PowerAttackDecisionCount,
-                        ["powerAttackOnBeforeRoll"] =
-                            observer.PowerAttackOnBeforeRoll,
+                        ["powerAttackActiveBeforeRoll"] =
+                            observer.PowerAttackActiveBeforeRoll,
                         ["powerAttackOffAfterAttack"] =
                             observer.PowerAttackOffAfterAttack,
                         ["weapon"] = gore.Blueprint.AssetGuid,
