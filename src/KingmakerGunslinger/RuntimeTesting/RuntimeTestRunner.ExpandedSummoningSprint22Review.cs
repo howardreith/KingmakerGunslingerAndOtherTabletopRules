@@ -79,6 +79,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _disposed;
             internal int Pulses { get; private set; }
             internal int MovementTicks { get; private set; }
+            internal int AiTicks { get; private set; }
             internal double AdvancedSeconds { get; private set; }
             internal bool Restored { get; private set; }
 
@@ -229,6 +230,77 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ReferenceEquals(owned, value)))
                         .Select(value => value.UniqueId))
                 };
+            }
+
+            /// <summary>
+            /// Runs Owlcat's unmodified RTWP brain controller once, while the
+            /// guarded native profile is hosted below Dialog mode.  The full
+            /// controller normally visits every awake combat group, so fail
+            /// closed unless the exact requested actor is the only live,
+            /// active AI candidate.  This selects and queues the ordinary
+            /// blueprint action; it does not issue a fixture command.
+            /// </summary>
+            internal string[] TickExactAi(UnitEntityData expectedOwner)
+            {
+                if (_disposed || expectedOwner == null)
+                    throw new InvalidOperationException(
+                        "Sprint 22 exact AI tick has no live owner.");
+                if (CombatController.IsInTurnBasedCombat())
+                    throw new InvalidOperationException(
+                        "Sprint 22 exact AI tick is RTWP-only.");
+                UnitEntityData[] candidates = Game.Instance.AwakeUnitGroups
+                    .Where(group => group != null && group.IsInCombat)
+                    .SelectMany(group => Enumerable.Range(0, group.Count)
+                        .Select(index => group[index]))
+                    .Where(unit => unit != null && !unit.Destroyed &&
+                        unit.IsInState && unit.IsInCombat &&
+                        !unit.IsSleeping && unit.Brain != null &&
+                        unit.IsBrainActive)
+                    .Distinct().ToArray();
+                if (candidates.Length != 1 ||
+                    !ReferenceEquals(candidates[0], expectedOwner))
+                    throw new InvalidOperationException(
+                        "Sprint 22 exact AI ownership changed: " +
+                        string.Join(",", candidates.Select(unit =>
+                            unit.UniqueId).ToArray()));
+
+                FieldInfo field = typeof(Game).GetField("m_GameModes", Members);
+                var modes = field == null ? null : field.GetValue(
+                    Game.Instance) as Stack<GameMode>;
+                if (modes == null || modes.Contains(_tickMode))
+                    throw new InvalidOperationException(
+                        "Sprint 22 exact AI Default-mode scope is ambiguous.");
+                GameMode[] before = modes.ToArray();
+                bool pause = Game.Instance.IsPaused;
+                TimeController time = Game.Instance.TimeController;
+                float delta = time.DeltaTime;
+                float gameDelta = time.GameDeltaTime;
+                modes.Push(_tickMode);
+                try
+                {
+                    Game.Instance.IsPaused = false;
+                    time.SetDeltaTime(.25f);
+                    time.SetGameDeltaTime(.25f);
+                    new Kingmaker.Controllers.Brain.AiBrainController()
+                        .ForceTick();
+                    AiTicks++;
+                }
+                finally
+                {
+                    time.SetDeltaTime(delta);
+                    time.SetGameDeltaTime(gameDelta);
+                    Game.Instance.IsPaused = pause;
+                    if (modes.Count != before.Length + 1 ||
+                        !ReferenceEquals(modes.Peek(), _tickMode))
+                        throw new InvalidOperationException(
+                            "A native controller changed the Sprint 22 " +
+                            "exact AI mode stack.");
+                    modes.Pop();
+                    if (!before.SequenceEqual(modes.ToArray()))
+                        throw new InvalidOperationException(
+                            "Sprint 22 exact AI mode restoration was not exact.");
+                }
+                return candidates.Select(unit => unit.UniqueId).ToArray();
             }
 
             public void Dispose()
