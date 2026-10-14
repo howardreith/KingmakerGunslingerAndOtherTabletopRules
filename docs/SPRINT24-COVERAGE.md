@@ -79,14 +79,41 @@ celestial/fiendish policy; Nature's Ally routes remain untemplated.
 | Pounce only on a legal charge | Exact native Pounce fact; ordinary body routine; no project replay | RTWP/TB legal, illegal, aborted, AoO, ordinary single/full, death/interruption, next-command controls | Reuse audit in progress |
 | Deinonychus skills/CMD | Exact one-time 0/2/2 land ranks plus narrow racial modifiers; no four-leg fact | Live ranks, abilities, class bonuses, racial bonuses, ordinary Mobility versus jump-only distinction, CMD 17 | Contract frozen |
 | Tyrannosaurus one bite | Owned 4d6 bite weapon with live signed Powerful Bite delta | Live +9/+10/+11/+12, zero/penalty, size, buff/debuff, enhancement, added damage, critical multiplication | Contract frozen |
-| Critical suite | Exact native Improved Critical (bite), Critical Focus, and Bleeding Critical carriers | 19–20 threat, ordinary confirmation, confirmed piercing/slashing bleed, heal/end controls, negative attacks | Native identity audit pending |
+| Critical suite | Exact native Improved Critical (bite) and Critical Focus facts; project-owned bite-only confirmed-critical trigger applying native `Bleed2d6Buff` | 19–20 threat, ordinary confirmation, confirmed piercing/slashing bleed, heal/end controls, negative attacks | Census carrier decision frozen |
 | Bite-only Grab | Existing summon grapple lifecycle, exact primary-limb identity, +4 maneuver | Hit/miss, same-size legal, oversized illegal, immunity/natural 1/20, duplicate callback, independent owners | Reuse audit in progress |
 | Later Swallow Whole | Existing held-since-round-start and maintain seam; separate -1 size delta | Same-size grab cannot swallow; later Huge target check succeeds; immediate/failed/wrong-limb controls | Reuse audit in progress |
 | Periodic stomach damage | Tyrannosaurus-owned 2d8+11 payload, not Powerful Bite or donor stomach | One application per intended round in RTWP/TB; attribution, escape, source loss, simultaneous predators/victims | Planned |
 | Hold/swallow lifecycle | Existing ownership parts with narrow reload distinction | Mouth holds reset safely; already-swallowed native state is not indiscriminately erased; dismissal/death/expiry/escape cleanup | Shared correction audit pending |
-| Original theropod presentation | Existing original-asset/export/attach infrastructure after one bounded donor census | Offline clay/silhouette/textured/unlit/camera/extreme poses; live contacts, speed, reach, navigation, crowding, fade/fallback/module lifecycle | Planned |
+| Original theropod presentation | Existing original-asset/export/attach infrastructure on the qualified Free Hands Lizardfolk skeleton | Offline clay/silhouette/textured/unlit/camera/extreme poses; live contacts, speed, reach, navigation, crowding, fade/fallback/module lifecycle | Shared rig frozen by bounded census |
 | All 18 roots | Existing catalog generator and real parent spell paths | Every root, quantity, slot, duration, Monster templates, Nature's Ally untemplated behavior | Planned |
 | Affected old consumers | Existing pouncer, Dire Crocodile/Purple Worm, visual owner, Triceratops if shared Strength seam changes | Narrow fresh native regressions, with historical broad evidence reused only after dependency audit | Planned |
+
+## Bounded native census decision
+
+The single closed, save-free census passed on Kingmaker 2.1.7b. The selected
+Free Hands Lizardfolk rig has separate upper/lower legs, feet and toes; four
+serial tail joints; a two-joint jaw; both upper/lower arms and palms; locomotion;
+and separate claw and bite actions whose command-contact events occur at 0.435/
+0.530 and 0.597 seconds. That is a credible shared skeleton for original
+Deinonychus and Tyrannosaurus geometry. The Troll negative control has only two
+tail joints and is not used as an authoring skeleton. Size-specific cadence,
+contact, reach, collision, navigation and crowding remain runtime proof items;
+the donor decision does not pre-approve either final presentation.
+
+The exact released Pounce, Critical Focus, Improved Critical (bite), Improved
+Initiative, Iron Will, Skill Focus (Perception), Diehard, Endurance and bleed
+facts resolved. No native blueprint named Bleeding Critical exists. Native
+`Bleed2d6Buff` (`16249b8075ab8684ca105a78a047a5ef`) already owns the standard
+2d6 bleed payload, healing removal and combat-end cleanup. The implementation
+therefore owns only the Tyrannosaurus/bite/confirmed-critical predicate and
+applies that native buff; it does not duplicate bleed timing or cleanup.
+
+Local-only evidence is
+`runtime-evidence/20261014T0546181325834Z-observe-expanded-summoning-sprint24-theropod-census`.
+The runtime-result SHA-256 is
+`893d72987c0154877571378d72c7319f692f5131c77f788d3b2ac68daa761b35`
+and the census SHA-256 is
+`727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4`.
 
 ## Explicit exclusions and limits
 
