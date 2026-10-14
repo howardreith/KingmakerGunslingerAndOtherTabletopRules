@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — DEINONYCHUS AND RTWP TYRANNOSAURUS PASS; TB NATIVE-TURN CONTINUATION CORRECTION FOCUSED PASS** on
+Status: **IN PROGRESS — DEINONYCHUS AND RTWP TYRANNOSAURUS PASS; TB SECOND-PAIR TURN-ENROLLMENT CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -366,14 +366,29 @@ exact Buff identity, release isolation and cleanup, but 32 passive controller
 pulses advanced only 1.666 native seconds while the current TB turn stayed
 open, so the second pair's naturally scheduled packet was not yet due.
 
-The changed strategy now deliberately makes only pair one's packet due,
-releases it, then uses the qualified native turn-ownership seam to end active
-turns and reach pair two's scheduled round. It records controller rounds, turn
-transitions, ended turns and elapsed native time and requires one exact 2d8+11
-packet for pair two while pair one stays released. Product swallow mechanics
-remain unchanged. Production compilation and all 13 named Sprint 24 focused
-tests pass; a new exact Sprint candidate is required before rerunning only the
-failed TB Tyrannosaurus phase.
+The native-turn correction commit
+`8558144395bd65522a26ad59788d1dcbcacb30f4` passed the next complete Sprint
+gate: 2,607/2,607 tests in 93.0 seconds and strict package validation in 189.8
+seconds. ZIP SHA-256 is
+`c596cd82b8c75c07b3eed8a2a5e5722db696087cd0d3f0542d9ace7f741cc437`;
+DLL SHA-256 is
+`62056224b8744a138a401900eaa41ae8d2feacb373cdc462d4dcb4ff320e1166`,
+MVID `24c973aa-73f6-49bd-aa2a-8136298b84b0`, and source fingerprint
+`747c8723b63c71fec814dcd0651293cea0af9cdab2b6aa3fbd372e43966c5a43`.
+The changed TB reproduction again passed 10/11 in 121.703 seconds. It advanced
+900 native pulses, ended 24 turns, crossed rounds 1 through 7 and advanced
+35.333 native seconds, but the second Buff did not tick. The frozen native
+contract requires the Buff owner or caster to be the current TB unit, while
+neither member of the disposable second pair was in turn order.
+
+The changed strategy now enrolls the exact second predator/victim pair through
+the qualified RTWP-to-TB seam before creating either hold and waits for the
+first predator's native turn. It records exact enrollment and clock coverage,
+then requires pair two's one attributed 2d8+11 packet on its own later turn
+while pair one remains released. Product swallow mechanics remain unchanged.
+Production compilation and all 13 named Sprint 24 focused tests pass; a new
+exact Sprint candidate is required before rerunning only the failed TB
+Tyrannosaurus phase.
 
 Earlier failed development checks, the candidate/correction-suite failures,
 the guarded native foundation failure, both first Deinonychus attempts, the
