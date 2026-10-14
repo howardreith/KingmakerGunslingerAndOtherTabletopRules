@@ -188,19 +188,21 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(1075,
+            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(0,
+            Assertions.Equal(TheropodRulesPolicy.HiddenLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Sprint 23 publication leaves no withheld roots.");
-            Assertions.Equal(1075,
+                "Only the Sprint 24 candidate remains withheld.");
+            Assertions.Equal(TheropodRulesPolicy.HiddenPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
-            foreach (SummonVariantSpec variant in all)
+            foreach (SummonVariantSpec variant in all.Where(value =>
+                !TheropodRulesPolicy.IsTheropod(value.Creature.Key)))
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Every placement is published: " + variant.StableKey);
+                    "Every pre-Sprint-24 placement is published: " +
+                    variant.StableKey);
             SummonVisibilityCatalog.Validate();
         }
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_HIDDEN_CANDIDATE_FOCUSED_PASS_SPRINT_GATE_NEXT",
+  "status": "IN_PROGRESS_HIDDEN_CANDIDATE_GATE_CORRECTION_FOCUSED_PASS",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -417,6 +417,27 @@
       "result": "Twelve of thirteen selected tests passed; no package, deployment, process launch or save access occurred.",
       "cause": "The observer proved the Bleeding Critical behavior under the generic method name Sprint24CriticalSuite while the closed reflection coverage requires the carrier to remain explicitly discoverable.",
       "correction": "Rename only the observer method to Sprint24BleedingCriticalSuite; production compilation and all 13 selected tests pass."
+    },
+    {
+      "timestampUtc": "2026-10-14T07:59:45.5022393Z",
+      "gateDurationSeconds": 165.5,
+      "stage": "first complete Sprint candidate gate",
+      "scenario": "Invoke-KmgGate.ps1 -Level Sprint",
+      "disposition": "PRESERVED_COMPLETE_DOMAIN_FAILURE_BEFORE_CANDIDATE_PACKAGE",
+      "result": "Repository validation passed; 2,567 of 2,607 domain tests passed in 125.3 seconds. No package, deployment, runtime lease, game process or save access occurred. Every Sprint 24 behavior assertion passed.",
+      "cause": "Forty historical tests still treated the released Sprint 23 roster or its former absolute ledger tail as the current global surface after Sprint 24 appended 48 identities, two creatures and 18 hidden roots.",
+      "correction": "Centralize the Sprint 24 append/count contract, preserve historical-prefix assertions by key, and exclude only the two hidden theropod keys from prior-sprint publication loops. Regenerate the weapon visual audit from the current manifest."
+    },
+    {
+      "timestampUtc": null,
+      "observedBeforeUtc": "2026-10-14T08:11:38.7557532Z",
+      "stage": "candidate-gate correction complete domain reproduction",
+      "scenario": "test-domain.ps1 -Configuration Release",
+      "disposition": "PRESERVED_FOUR_RESIDUAL_ASSERTIONS_THEN_FOCUSED_PASS",
+      "result": "2,603 of 2,607 domain tests passed in 92.2 seconds. The four residual failures were Sprint 23 private-tail offset, natural-profile count, template execution counts and custom-weapon audit coverage; no package or runtime action occurred.",
+      "cause": "The first correction batch used the total 48-identity append where the private tail is ten identities, and missed three direct aggregate assertions.",
+      "correction": "Use the centralized ten-private-identity count, add the two natural profiles and nine per-alignment template executions, regenerate the 134-entry audit, and run the exact four-test focused production gate.",
+      "correctionChecks": "Production compilation PASS; 4/4 exact residual reproductions PASS in 0.3 seconds."
     }
   ],
   "acceptedLimitations": [

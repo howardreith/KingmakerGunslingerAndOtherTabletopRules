@@ -11,6 +11,9 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint24Tests
     {
+        internal const int AppendedLedgerIdentities =
+            TheropodRulesPolicy.AppendedIdentityCount;
+
         private static readonly string[] PrivateIdentityTail = {
             TheropodRulesPolicy.DeinonychusTalonSymbol,
             TheropodRulesPolicy.DeinonychusUnitTypeSymbol,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KingmakerGunslinger.Assets;
+using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
@@ -29,9 +30,12 @@ namespace KingmakerGunslinger.DomainTests
             // and the Sprint 20 Giant Scorpion's own 1d6 claw and 1d6 sting,
             // which it owns because a shared native 1d6 scales up a step for
             // a Large wielder and because its poison gates on the sting's own
-            // weapon type, plus 43 Better Vendors variants.
+            // weapon type; Sprint 23's gore and spiked tail; Sprint 24's
+            // talon and powerful bite; plus 43 Better Vendors variants.
             Assertions.Equal(89 + KingmakerGunslinger.Acquisition
-                    .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
+                    .ProgressionWeaponCatalog.NewBlueprintCount +
+                    TheropodRulesPolicy.AppendedWeaponIdentityCount,
+                expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
                 "The visual audit does not cover every active custom weapon.");
@@ -90,8 +94,11 @@ namespace KingmakerGunslinger.DomainTests
             // the Girallon's own 1d6 bite and 1d4 claw for that same reason
             // and the Xill's own 1d4 claw and 1d3 bite, which it owns because
             // its claws carry grab and its bite carries paralysis. Sprint 23
-            // adds the Triceratops gore and Stegosaurus spiked tail.
-            Assertions.Equal(29, audit["items"].Count(value =>
+            // adds the Triceratops gore and Stegosaurus spiked tail; Sprint 24
+            // adds the Deinonychus talon and Tyrannosaurus powerful bite.
+            Assertions.Equal(29 +
+                    TheropodRulesPolicy.AppendedWeaponIdentityCount,
+                audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>

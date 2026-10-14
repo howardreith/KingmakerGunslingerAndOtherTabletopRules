@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — HIDDEN MECHANICS AND ORIGINAL-ART FOCUSED CHECKS PASS** on
+Status: **IN PROGRESS — CANDIDATE-GATE CORRECTIONS FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -148,9 +148,19 @@ fixture passes 30 restoration predicates. A
 second affected-seam filter passes 14/14, including the released shared grapple
 lifecycle, universal grab-size rules, and Dire Crocodile swallow-number control.
 These are development checks, not native qualification: both suppression keys
-remain present and the one broad Sprint candidate gate has not run.
+remain present. The first broad Sprint candidate attempt passed repository
+validation but stopped in the complete domain suite with 40 stale historical
+count/tail assertions out of 2,607 tests. It created no package, deployment,
+lease, game process, or save access; every Sprint 24 behavior assertion passed.
+The correction centralized the 48-identity/18-route append contract and kept
+the historical tests scoped to their own released creatures. A complete-domain
+correction run reduced the retained failures to four missed append assertions;
+the final focused production build passes all four. The generated weapon audit
+now covers 134/134 active custom weapons, including both theropod weapons, with
+31 summoning-only exclusions. A fresh complete Sprint gate remains required.
 
-Five failed development checks remain recorded in the machine-readable ledger:
+Seven earlier failed development checks and the two candidate/correction-suite
+failures remain recorded in the machine-readable ledger:
 the first stage allowlist omitted the new production seams, the first provenance
 check found the expected blueprint-ledger hash change, and the first production
 compile lacked the `ContextDiceValue` namespace import. The first observer
