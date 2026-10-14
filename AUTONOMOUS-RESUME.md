@@ -86,9 +86,9 @@ The post-release audit again matches the actual intake exactly: 968 Mods
 entries, installed KMG 0.0.117 with 136 files, 83 settings, 118 saves, both
 protected fixture hashes, the sound bank and installed/private references.
 There is no Kingmaker process, compatibility lock, game staging, publisher
-checkout or owned diagnostic temp. This documentation-only branch synchronizes
-that verified released state to master. The endpoint is achieved: stop; do not
-begin Sprint 24.
+checkout or owned diagnostic temp. Documentation-only PR #44 synchronizes that
+verified released state to master. The endpoint is achieved: stop; do not begin
+Sprint 24.
 
 The authoritative active contract and evidence ledger are
 [the rounding mission](docs/SPRINT23-TRICERATOPS-POWERFUL-CHARGE-ROUNDING-MISSION.md)

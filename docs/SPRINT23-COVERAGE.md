@@ -14,7 +14,10 @@ Status: **RELEASED / STOP** on October 14, 2026. Product PR
 [#43](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/43)
 merged normally as `e122013edce9ceb88bd9aa0b40c9762cc717ed8d`.
 Stable [v0.0.153](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.153)
-is published and Latest. This arithmetic patch did not start Sprint 24.
+is published and Latest. Documentation-only final-records PR
+[#44](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/44)
+synchronizes this verified endpoint. This arithmetic patch did not start
+Sprint 24.
 
 The released v0.0.152 helper documented a positive 2× live-Strength target but
 separately truncated its additional half-Strength term. The focused
