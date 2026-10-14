@@ -111,6 +111,19 @@
     "finalRecordsMinutes": 15
   },
   "candidate": null,
+  "candidateAttempts": [
+    {
+      "source": "7b232a02cf5659adb7070e4ee88439b52e3cf6e1",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+      "result": "FAIL",
+      "stage": "complete domain suite",
+      "registered": 2594,
+      "executed": 2594,
+      "failures": 7,
+      "cause": "The intentionally added v0.0.153 release-note package member advanced the strict sound-bank/no-sound-bank counts to 364/362, while six historical asset-delivery source tests and the deterministic packager count allowlist still pinned 363/361.",
+      "repair": "Updated only the exact package-count expectations and the deterministic packager's explicit 362/364 allowlist. A 22-test affected selection and the four-test package selection both passed before the next candidate."
+    }
+  ],
   "nativeRuns": [],
   "release": null,
   "restoration": null,
