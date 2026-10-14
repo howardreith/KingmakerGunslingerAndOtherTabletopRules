@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  117,
+    "count":  119,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1032,6 +1032,24 @@
                       "key":  "giant-crab",
                       "file":  "giant-crab.png",
                       "sha256":  "f5d2496f8b9bb100ffd628ee0eb41f3796898b5cf0025fde57fb200839ca9147",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "deinonychus",
+                      "file":  "deinonychus.png",
+                      "sha256":  "d7c15ef813f4920efac88a5b1bcd194e1f872af98c5d619dd60758e96aa1dd36",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "tyrannosaurus",
+                      "file":  "tyrannosaurus.png",
+                      "sha256":  "e80aeaa47e293e74fd6bd589670ff864f4c3375d01f1a8c6c7ca3eb25eb50698",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

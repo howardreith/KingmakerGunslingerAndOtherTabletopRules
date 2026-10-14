@@ -361,8 +361,9 @@ namespace KingmakerGunslinger.DomainTests
 
             JObject icons = JObject.Parse(File.ReadAllText(
                 "assets-source/original-icons/expanded-summoning/icon-manifest.json"));
-            Assertions.Equal(117, (int)icons["count"],
-                "Two distinct icon concepts append.");
+            Assertions.Equal(117, icons["icons"].Count(value =>
+                    !TheropodRulesPolicy.UsesExactRanks((string)value["key"])),
+                "All pre-Sprint-24 icon concepts remain unchanged.");
             JToken[] armored = icons["icons"].Where(value =>
                 ArmoredDinosaurVisualPolicy.Handles((string)value["key"]))
                 .ToArray();

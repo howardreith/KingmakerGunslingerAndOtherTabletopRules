@@ -21,10 +21,11 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(117, (int)manifest["count"],
-                "Icon manifest count changed.");
-            Assertions.Equal(117, rows.Count,
-                "Icon manifest row count changed.");
+            Assertions.Equal(SummonIconCatalog.All.Count,
+                (int)manifest["count"],
+                "Icon manifest count must follow the centralized catalog.");
+            Assertions.Equal(SummonIconCatalog.All.Count, rows.Count,
+                "Icon manifest row count must follow the centralized catalog.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
             string[] manifestKeys = rows.Select(value => (string)value["key"])
