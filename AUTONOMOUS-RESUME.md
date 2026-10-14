@@ -41,6 +41,14 @@ offline runtime preflight also passed. The census is save-free, spawns nothing,
 and captures only transforms/binds, component/bounds, action/contact metadata,
 and blueprint graphs.
 
+The first guarded census request stopped before deployment or launch because
+the frozen Sprint 23 source validator did not yet admit the two later-sprint
+research files. Its preserved failure is classified as an offline harness
+admission defect, not native evidence. The correction adds only those exact
+research files to the historical allowed set; it still rejects every Sprint 24
+gameplay builder/review/policy file. All eight corruption fixtures and the
+Sprint 23 source validator pass after the correction.
+
 Next action: push this coherent observer checkpoint, build one current package,
 then execute the census exactly once through the guarded runtime wrapper. Use
 its evidence to freeze the shared rig and critical/feat carrier decisions
