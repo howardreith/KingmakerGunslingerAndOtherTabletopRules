@@ -420,6 +420,8 @@ namespace KingmakerGunslinger.DomainTests
                 "desiredTargetArmorClass", "noGrabSideEffect",
                 "cleanStart",
                 "secondBuffPreserved", "releaseDidNotTickSecond",
+                "firstStayedReleased", "continuationNativePulses",
+                "continuationAdvancedSeconds", "continuationDamage",
                 "continuationDelayBeforeSeconds",
                 "continuationDelayAfterSeconds",
                 "RuleAttackWithWeapon", "ChargeAbility",
