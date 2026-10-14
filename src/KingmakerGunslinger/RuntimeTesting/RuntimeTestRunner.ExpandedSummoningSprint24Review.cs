@@ -638,6 +638,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal UnitEntityData Target;
             internal Action<RuleAttackRoll> BeforeRoll;
             internal Action<RuleAttackWithWeapon> AfterWeapon;
+            internal readonly List<RuleAttackWithWeapon> OwnerWeaponAttacks =
+                new List<RuleAttackWithWeapon>();
             internal readonly List<RuleAttackWithWeapon> WeaponAttacks =
                 new List<RuleAttackWithWeapon>();
             internal readonly List<RuleAttackRoll> Rolls =
@@ -648,11 +650,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
             {
-                if (ReferenceEquals(evt.Initiator, Owner) &&
-                    ReferenceEquals(evt.Target, Target))
+                if (ReferenceEquals(evt.Initiator, Owner))
                 {
-                    WeaponAttacks.Add(evt);
-                    if (AfterWeapon != null) AfterWeapon(evt);
+                    OwnerWeaponAttacks.Add(evt);
+                    if (ReferenceEquals(evt.Target, Target))
+                    {
+                        WeaponAttacks.Add(evt);
+                        if (AfterWeapon != null) AfterWeapon(evt);
+                    }
                 }
             }
             public void OnEventAboutToTrigger(RuleAttackRoll evt)
@@ -674,6 +679,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             internal void Clear()
             {
+                OwnerWeaponAttacks.Clear();
                 WeaponAttacks.Clear();
                 Rolls.Clear();
                 Damage.Clear();
@@ -3254,6 +3260,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int targetHp = target.Stats.HitPoints.BaseValue;
             int targetDamage = target.Descriptor.Damage;
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
+            int babBefore = owner.Stats.BaseAttackBonus.BaseValue;
             bool pauseBefore = Game.Instance.IsPaused;
             var observer = new Sprint24AttackObserver {
                 Owner = owner,
@@ -3262,6 +3269,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Stats.AdditionalAttackBonus.BaseValue = 100
             };
             var commands = new HashSet<UnitAttack>();
+            var commandTypes = new HashSet<string>(StringComparer.Ordinal);
             var join = new UnitCombatJoinController();
             var prepare = new UnitCombatPrepareController();
             EventBus.Subscribe(observer);
@@ -3278,16 +3286,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Kingmaker.Controllers.Brain.Blueprints.BlueprintAiAttack:",
                         StringComparison.Ordinal));
                 target.Stats.HitPoints.BaseValue = 100000;
-                var directions = new List<int>();
-                string chosenDirection;
+                owner.Stats.BaseAttackBonus.BaseValue = 100;
+                var targetDirections = new List<int>();
+                string chosenTargetDirection;
+                Vector3 targetOrigin = ExpandedSummoningOpenPoint(
+                    fixture.Caster.Position, 5f, targetDirections,
+                    out chosenTargetDirection);
+                PlaceExpandedSummoningUnit(target, targetOrigin);
+                var ownerDirections = new List<int>();
+                string chosenOwnerDirection;
                 Vector3 origin = ExpandedSummoningOpenPoint(target.Position,
-                    8f, directions, out chosenDirection);
+                    3f, ownerDirections, out chosenOwnerDirection);
                 PlaceExpandedSummoningUnit(owner, origin);
                 foreach (UnitEntityData unit in new[] { owner, target })
                     if (!Game.Instance.State.AwakeUnits.Contains(unit))
                         Game.Instance.State.AwakeUnits.Add(unit);
-                owner.Memory.Add(target);
-                target.Memory.Add(owner);
+                owner.Memory.Add(target).Visible = true;
+                target.Memory.Add(owner).Visible = true;
                 owner.JoinCombat();
                 target.JoinCombat();
                 Game.Instance.Player.UpdateIsInCombat();
@@ -3306,19 +3321,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 while (settleFrames++ < 30) yield return 0;
                 bool nativeReady = owner.IsInGame && owner.View != null &&
                     owner.View.IsInGame && owner.Descriptor.State.CanAct &&
-                    runtimeActions > 0 && availableActions > 0;
+                    runtimeActions > 0 && availableActions > 0 &&
+                    owner.IsEnemy(target) && target.IsEnemy(owner) &&
+                    owner.Memory.ContainsVisible(target);
                 owner.CombatState.AIData.NextCommandTime = Time.time;
 
                 int frames = 0;
                 float travel = 0f;
+                float targetTravel = 0f;
+                float minimumDistance = Vector3.Distance(owner.Position,
+                    target.Position);
+                float startDistance = minimumDistance;
                 DateTime deadline = DateTime.UtcNow.AddSeconds(45);
                 while (DateTime.UtcNow < deadline && frames++ < 5000 &&
                     observer.WeaponAttacks.Count == 0)
                 {
+                    foreach (var command in owner.Commands.Raw.Where(value =>
+                        value != null))
+                        commandTypes.Add(command.GetType().FullName);
                     foreach (UnitAttack command in owner.Commands.Raw
                         .OfType<UnitAttack>()) commands.Add(command);
                     travel = Math.Max(travel,
                         Vector3.Distance(origin, owner.Position));
+                    targetTravel = Math.Max(targetTravel,
+                        Vector3.Distance(targetOrigin, target.Position));
+                    minimumDistance = Math.Min(minimumDistance,
+                        Vector3.Distance(owner.Position, target.Position));
                     yield return 0;
                 }
                 foreach (UnitAttack command in owner.Commands.Raw
@@ -3343,13 +3371,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["availableBrainActions"] = availableActions,
                         ["nativeReady"] = nativeReady,
                         ["settleFrames"] = settleFrames - 1,
-                        ["chosenOpenDirection"] = chosenDirection,
-                        ["openDirectionCandidates"] = new JArray(directions),
+                        ["ownerEnemy"] = owner.IsEnemy(target),
+                        ["targetEnemy"] = target.IsEnemy(owner),
+                        ["targetVisible"] =
+                            owner.Memory.ContainsVisible(target),
+                        ["chosenTargetDirection"] = chosenTargetDirection,
+                        ["targetDirectionCandidates"] =
+                            new JArray(targetDirections),
+                        ["chosenOwnerDirection"] = chosenOwnerDirection,
+                        ["ownerDirectionCandidates"] =
+                            new JArray(ownerDirections),
                         ["ordinaryFallback"] = ordinaryFallback,
+                        ["commandTypes"] = new JArray(commandTypes.OrderBy(
+                            value => value, StringComparer.Ordinal)),
                         ["nativeCommands"] = commands.Count,
                         ["rolls"] = observer.Rolls.Count,
                         ["weaponAttacks"] = observer.WeaponAttacks.Count,
+                        ["allOwnerWeaponAttacks"] = new JArray(
+                            observer.OwnerWeaponAttacks.Select(value =>
+                                new JObject {
+                                    ["target"] = value.Target?.UniqueId,
+                                    ["weapon"] = value.Weapon?.Blueprint?
+                                        .AssetGuid
+                                })),
                         ["travel"] = travel,
+                        ["targetTravel"] = targetTravel,
+                        ["startDistance"] = startDistance,
+                        ["minimumDistance"] = minimumDistance,
+                        ["finalDistance"] = Vector3.Distance(owner.Position,
+                            target.Position),
                         ["frames"] = frames
                     }, "Without a fixture-issued attack, the unchanged natural-attack AI approaches and executes a real Deinonychus weapon command; manual command evidence is not presented as AI proof.");
             }
@@ -3363,6 +3413,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.CombatState.LeaveCombat();
                 Game.Instance.Player.UpdateIsInCombat();
                 owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
+                owner.Stats.BaseAttackBonus.BaseValue = babBefore;
+                if (target.Memory.Contains(owner)) target.Memory.Remove(owner);
                 target.Stats.HitPoints.BaseValue = targetHp;
                 target.Descriptor.Damage = targetDamage;
                 Game.Instance.IsPaused = pauseBefore;
