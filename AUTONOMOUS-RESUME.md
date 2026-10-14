@@ -5,6 +5,22 @@ released Triceratops Powerful Charge live-Strength calculation. Work is on
 `codex/expanded-summoning-sprint23-charge-rounding`, based directly on master
 `15d6c0d82bf14fa4fd66c72c0f780f86abf44794`. Sprint 24 has not been started.
 
+## Preserved released baseline
+
+Sprint 23 remains historically **RELEASED / STOP** at v0.0.152: product PR
+#41 merged as `1d41388adb6aaa6e4e102e744abb392104cedbba`, final-records
+PR #42 produced master `15d6c0d82bf14fa4fd66c72c0f780f86abf44794`, and the
+tested source was `e0d7cb863b23925cfbf1721e3965c05e811a0bd7`. Its exact
+ZIP SHA-256 is
+`e417ad95e796bac7c312ed60e859b888b1dd2f83818ef211027e35d2c1c663db`.
+The published surface remains 105 project creatures,
+**1,075 generated placements**, 29 retained native wrappers, and
+**1,104 visible choices**.
+That release's mechanics, art, route, lifecycle, persistence, compatibility
+and restoration results remain unchanged in
+[the Sprint 23 coverage record](docs/SPRINT23-COVERAGE.md) and
+[ledger](planning/SPRINT23-TRICERATOPS-STEGOSAURUS-LEDGER.json).
+
 The released helper separately truncated the additional half-Strength term.
 A fresh focused reproduction selected one test and failed at modifier +7:
 ordinary +10 plus the released +3 correction produced +13 instead of the
