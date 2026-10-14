@@ -1,11 +1,51 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_NATIVE_FOUNDATION_CORRECTION_FOCUSED_PASS_FRESH_SPRINT_GATE_NEXT",
+  "status": "PAUSED_BY_OWNER_AFTER_EXACT_AI_CORRECTION_SPRINT_GATE_PASS_NATIVE_REPLAY_NEXT",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
   "productPr": 45,
+  "stoppingCheckpoint": {
+    "requestedUtc": "2026-10-14T13:45:51Z",
+    "reason": "owner_weekly_quota_stop",
+    "released": false,
+    "productSourceCommit": "fb7e471a9877fb68cc0cb26feadc04615882a1b2",
+    "productPrState": "DRAFT_OPEN",
+    "freshSprintGate": {
+      "passed": true,
+      "domainTestsPassed": 2607,
+      "domainTestsFailed": 0,
+      "domainTestSeconds": 94.3,
+      "totalSeconds": 192.1,
+      "localRuntimeZipSha256": "333a8c8772f089fd5b1e2d47bcfcc92c53f375360c120944fdf7b3cff0c82051",
+      "compileCandidateZipSha256": "750089752b4b37b5e7e5b0c5fb2761eb705d8b67463321d2c0fc3c7d94f9cad5",
+      "dllSha256": "24af1a3fb3b88410b26656ad2d457edf245b24012858c3ac26e6d316f206c867",
+      "dllMvid": "cd939d5b-6678-4c1f-8e26-ad5c761992d7",
+      "deployed": false
+    },
+    "lastNativeSharedControlsAttempt": {
+      "passed": false,
+      "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1338497545977Z-disposable-expanded-summoning-sprint24-native-review",
+      "runId": "20261014T1338497858128Z-db9c9e1da2754e1398037313c3b5a76b",
+      "failure": "broad AI controller candidate set included nine protected party actors; stopped fail-closed before a command",
+      "currentExactOwnerCorrectionNativeReplay": "NOT_RUN_AFTER_OWNER_STOP_REQUEST"
+    },
+    "lastRuntimeTransaction": {
+      "id": "compat-20261014T133710Z-3cf6f796211f",
+      "status": "Restored",
+      "restoredAtUtc": "2026-10-14T13:40:41.1768330Z",
+      "restorationVerified": true
+    },
+    "remaining": [
+      "one guarded shared-controls native replay against the current exact package",
+      "targeted persistence and module-OFF native batch",
+      "remove only the two Sprint 24 suppression entries and qualify the final public artifact",
+      "merge product PR, publish and independently verify the next stable patch",
+      "merge the documentation-only final-records PR"
+    ],
+    "sprint25Started": false
+  },
   "startedUtc": "2026-10-14T05:07:45Z",
   "completedUtc": null,
   "masterBase": "e825411a8f920fdb9447f7ad48d3f7d0267e6e32",
