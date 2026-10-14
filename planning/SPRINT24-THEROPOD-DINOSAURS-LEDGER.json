@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint24DeinonychusTyrannosaurus",
+  "status": "IN_PROGRESS_SOURCE_CONTRACT_FROZEN",
+  "host": "HOWARD-LAPTOP",
+  "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
+  "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
+  "productPr": null,
+  "startedUtc": "2026-10-14T05:07:45Z",
+  "completedUtc": null,
+  "masterBase": "e825411a8f920fdb9447f7ad48d3f7d0267e6e32",
+  "stableBaseline": {
+    "version": "0.0.153",
+    "productMerge": "e122013edce9ceb88bd9aa0b40c9762cc717ed8d",
+    "annotatedTagObject": "586d42b70b30569f88266c73ea7afc3696e911be",
+    "zipSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b"
+  },
+  "intake": {
+    "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint24-deinonychus-tyrannosaurus-intake-20261014T050745Z/intake.json",
+    "sha256": "c54cfea1d5ee6577760ec710d37167951d2367a3e12088b8f823244c5f54a450",
+    "durationSeconds": 58.502,
+    "hostnameVerified": true,
+    "originMasterVerified": true,
+    "newerSprint24BranchFound": false,
+    "primaryCheckoutWasClean": true,
+    "gameProcessAbsent": true,
+    "activeRuntimeTransactions": 0,
+    "compatibilityLockPresent": false,
+    "gameStagingPresent": false,
+    "publisherCheckoutPresent": false,
+    "modsEntries": 968,
+    "modsCanonicalSha256": "caa0b310981642ddda2c3af79dec467a91dbb066fb51ee4437edf4fd9dbe9a37",
+    "installedKmgVersion": "0.0.117",
+    "installedKmgFiles": 136,
+    "installedKmgCanonicalSha256": "425f5ba9f38a0f1d4431949d0d87601fd39571503a4d62649d7c2d2264308d5c",
+    "settingsEntries": 83,
+    "settingsCanonicalSha256": "18d5b65b08c6eb99dd84f13d462e5306666b42315d173c87613ca5489d839354",
+    "saveFiles": 118,
+    "saveCatalogSha256": "9ddbcf64122f9147f895c81aa3c89c7e367f473198489565e1c2be33a9058a6a",
+    "protectedBaselineSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+    "authorizedWorkingSaveSha256": "795d59ff448173c6631518676b655d3bd03b31dc31e418f578f9e9488cb10ada",
+    "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "referencesByteMatched": true
+  },
+  "pushPolicyChange": {
+    "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "beforeSha256": "688b12798eac1b46b63a28205acbb647825e371cd3e9ae5e4db0ee13610d2fb2",
+    "afterSha256": "9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542",
+    "addedBranches": [
+      "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
+      "codex/expanded-summoning-sprint24-release-records"
+    ],
+    "exactRemovalReproducesBeforeHash": true,
+    "otherEdits": false
+  },
+  "charter": {
+    "authority": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx pages 21-22",
+    "authorizedSprint": 24,
+    "title": "Theropod Dinosaurs - Deinonychus and Tyrannosaurus",
+    "dependencies": ["original asset pipeline", "Sprint 7", "Sprint 16"],
+    "sprint25Started": false,
+    "excluded": [
+      "Brachiosaurus",
+      "Elephant changes",
+      "animal companions",
+      "polymorph forms",
+      "mounts",
+      "expanded summoning feats",
+      "another repository"
+    ]
+  },
+  "sourceContract": {
+    "edition": "Pathfinder First Edition adult monster entries",
+    "sourceUrls": [
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Deinonychus",
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Tyrannosaurus",
+      "https://legacy.aonprd.com/bestiary/dinosaur.html",
+      "https://legacy.aonprd.com/bestiary/universalMonsterRules.html",
+      "https://www.aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Monster%204",
+      "https://www.aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Nature%27s%20Ally%207",
+      "https://www.aonprd.com/FeatDisplay.aspx?ItemName=Bleeding%20Critical"
+    ],
+    "deinonychus": {
+      "alignment": "N",
+      "type": "animal",
+      "size": "Medium",
+      "hitDice": "4d8+16",
+      "hitPoints": 34,
+      "armorClass": [15, 12, 13],
+      "saves": [8, 6, 2],
+      "abilities": [15, 15, 19, 2, 12, 14],
+      "bab": 3,
+      "cmb": 5,
+      "cmd": 17,
+      "speedFeet": 60,
+      "spaceFeet": 5,
+      "reachFeet": 5,
+      "attacks": [
+        "talon +5, 1d8+2",
+        "talon +5, 1d8+2",
+        "bite +5, 1d6+2",
+        "foreclaws +0, 1d4+1 secondary"
+      ],
+      "specialAttacks": ["Pounce"],
+      "feats": ["Improved Initiative", "Run"],
+      "skills": {
+        "AcrobaticsOrMappedMobility": 10,
+        "jumpOnlyAcrobatics": 22,
+        "Perception": 14,
+        "Stealth": 15,
+        "rankAllocation": {"Mobility": 0, "Perception": 2, "Stealth": 2},
+        "racialBonuses": {"Mobility": 8, "Perception": 8, "Stealth": 8}
+      },
+      "forbidden": ["Rake", "Rend", "Grab", "Swallow Whole", "fear", "poison", "Powerful Charge"]
+    },
+    "tyrannosaurus": {
+      "alignment": "N",
+      "type": "animal",
+      "size": "Gargantuan",
+      "hitDice": "18d8+72",
+      "hitPoints": 153,
+      "armorClass": [21, 7, 20],
+      "saves": [15, 12, 10],
+      "abilities": [32, 13, 19, 2, 15, 10],
+      "bab": 13,
+      "cmb": 28,
+      "grappleCmb": 32,
+      "cmd": 39,
+      "speedFeet": 40,
+      "spaceFeet": 20,
+      "reachFeet": 20,
+      "attack": "bite +20, 4d6+22, 19-20, plus Grab",
+      "powerfulBite": {
+        "desiredSignedStrengthContribution": "2*m",
+        "nativePositiveContribution": "floor(1.5*m)",
+        "nativeZeroOrPenaltyContribution": "m",
+        "scopedCorrection": "2*m-native(m)",
+        "positiveExamples": {"9": 5, "10": 5, "11": 6, "12": 6}
+      },
+      "grab": {"maxTargetSizeDelta": 0, "maneuverBonus": 4, "biteOnly": true},
+      "swallowWhole": {
+        "maxTargetSizeDelta": -1,
+        "requiresHeldSinceRoundStart": true,
+        "requiresNewCheck": true,
+        "periodicDamage": "2d8+11",
+        "interiorArmorClass": 17,
+        "interiorHitPoints": 15
+      },
+      "feats": [
+        "Bleeding Critical",
+        "Critical Focus",
+        "Diehard",
+        "Endurance",
+        "Improved Critical (bite)",
+        "Improved Initiative",
+        "Iron Will",
+        "Run",
+        "Skill Focus (Perception)"
+      ],
+      "skills": {
+        "Perception": 37,
+        "rankAllocation": {"Mobility": 0, "Perception": 18, "Stealth": 0},
+        "racialBonuses": {"Perception": 8}
+      },
+      "forbidden": ["claws", "tail attack", "Pounce", "trample", "roar fear", "Power Attack", "automatic confirmation"]
+    },
+    "rulesInterpretations": [
+      "The plural foreclaws label is one secondary attack, so Deinonychus has four attacks, not five.",
+      "Powerful Bite is always applicable and reaches exactly twice the signed Strength modifier without doubling any other damage.",
+      "Grab permits the Tyrannosaurus's own size or smaller; Swallow Whole separately permits one category smaller.",
+      "Swallow occurs only after the target was held in the mouth at the start of a later qualifying turn/round and a new check succeeds."
+    ]
+  },
+  "surface": {
+    "baseline": {
+      "uniqueProjectCreatures": 105,
+      "monsterCreatures": 93,
+      "monsterPlacements": 534,
+      "natureAllyCreatures": 93,
+      "natureAllyPlacements": 541,
+      "generatedPlacements": 1075,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1104
+    },
+    "expectedPublic": {
+      "uniqueProjectCreatures": 107,
+      "monsterCreatures": 95,
+      "monsterPlacements": 543,
+      "natureAllyCreatures": 95,
+      "natureAllyPlacements": 550,
+      "generatedPlacements": 1093,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1122,
+      "newLogicalRoots": 18
+    },
+    "deinonychus": {"monsterRoots": 6, "natureAllyRoots": 6, "baseTier": 4},
+    "tyrannosaurus": {"monsterRoots": 3, "natureAllyRoots": 3, "baseTier": 7},
+    "suppressedUntilQualified": ["deinonychus", "tyrannosaurus"]
+  },
+  "reuseAudit": {
+    "sprint22And23FinalRecordsRead": true,
+    "nativePounceCarrierAudit": "IN_PROGRESS",
+    "sharedGrappleSwallowAudit": "IN_PROGRESS",
+    "strengthContributionAudit": "SPRINT23_INSTALLED_IL_PROVEN; TYRANNOSAURUS SIGNED POLICY FROZEN",
+    "artAndRigAudit": "PENDING_PRIOR_SURVEY_REVIEW_THEN_ONE_BOUNDED_CENSUS"
+  },
+  "plan": {
+    "ordinaryTargetMinutes": 15,
+    "ordinaryCeilingMinutes": 30,
+    "initialFinalNativePlanningBudgetMinutes": [60, 120],
+    "focusedFilter": "expanded-summoning.sprint24",
+    "candidateGate": "One Invoke-KmgGate.ps1 -Level Sprint on the coherent frozen candidate",
+    "publicArtifact": "Remove only the two suppression entries, regenerate controlled artifacts, rerun affected public/native gates, then freeze",
+    "recordsValidation": "Text, JSON, link and consistency checks only; no product rebuild",
+    "noUnchangedCampaignReplay": true
+  },
+  "qualification": {
+    "candidateSprintGate": null,
+    "nativeRuns": [],
+    "artRuns": [],
+    "persistenceRuns": [],
+    "publicationRuns": []
+  },
+  "failures": [],
+  "acceptedLimitations": [
+    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+    "PASSIVE_CREATURE_SENSES_UNMODELED (pending unchanged-boundary audit)",
+    "RUN_NATIVE_SUMMON_AI_DISPOSITION (pending unchanged-boundary audit)"
+  ],
+  "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
+  "stopCondition": "IN PROGRESS; release and exact restoration not yet achieved; Sprint 25 not started"
+}
