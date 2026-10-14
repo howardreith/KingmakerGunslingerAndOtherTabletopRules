@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_HIDDEN_ART_PIPELINE_FOCUSED_PASS_NATIVE_REVIEW_NEXT",
+  "status": "IN_PROGRESS_HIDDEN_CANDIDATE_FOCUSED_PASS_SPRINT_GATE_NEXT",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -252,10 +252,10 @@
       "releaseProductionCompile": "PASS",
       "sprint24Filter": {
         "filter": "expanded-summoning.sprint24",
-        "selectedTests": 11,
+        "selectedTests": 13,
         "failures": 0,
-        "productionCompileSeconds": 0.9,
-        "domainSeconds": 4.4
+        "productionCompileSeconds": 17.2,
+        "domainSeconds": 1.0
       },
       "sharedRegressionFilter": {
         "filter": "expanded-summoning.sprint24;expanded-summoning.sprint4-grapple-lifecycle;expanded-summoning.correction-grab;expanded-summoning.crocodilian-swallow-numbers",
@@ -264,13 +264,23 @@
         "productionCompileSeconds": 0.9,
         "domainSeconds": 1.0
       },
-      "registeredDomainTests": 2605,
+      "registeredDomainTests": 2607,
       "candidateSuppressionStillPresent": true,
       "nativeProofStillPending": true,
-      "artProofStillPending": true
+      "artProofStillPending": true,
+      "nativeObserver": "CLOSED_SEVEN_PHASE_RTWP_TB_MECHANICS_PRESENTATION_SHARED_CONTROLS_COMPILES",
+      "targetedPersistenceObserver": "THEROPODS_PREPARE_LOAD_CLEANUP_ABSENCE_WITH_HOLD_SWALLOWED_BLEED_RECEIPTS_COMPILES",
+      "sourceOnlyHarnessChecks": {
+        "runtimePreflight": 588,
+        "persistenceExactRoundTrips": 18,
+        "persistenceFailClosedCases": 168,
+        "launcherValidRoutes": 30,
+        "launcherRejectedRoutes": 17,
+        "installedStackRestorationPredicates": 30
+      }
     },
     "originalArtFocused": {
-      "status": "PASS_DEVELOPMENT_CHECKPOINT_FINAL_OFFLINE_RERENDER_PENDING",
+      "status": "PASS_OFFLINE_DEVELOPMENT_CHECKPOINT_NATIVE_PRESENTATION_PENDING",
       "imageWorkflow": "approved image generation plus established deterministic icon exporter",
       "iconExportsSha256": {
         "deinonychus": "d7c15ef813f4920efac88a5b1bcd194e1f872af98c5d619dd60758e96aa1dd36",
@@ -296,7 +306,20 @@
     },
     "candidateSprintGate": null,
     "nativeRuns": [],
-    "artRuns": [],
+    "artRuns": [
+      {
+        "kind": "FINAL_OFFLINE_POSE_REVIEW",
+        "status": "PASS_INTERNAL_TECHNICAL_REVIEW",
+        "tool": "Blender 4.5.10 LTS 6dc0b208d1b5",
+        "deinonychusFrames": 11,
+        "tyrannosaurusFrames": 9,
+        "totalRenderSeconds": 181.63,
+        "sortedHashManifestSha256": "504ea9cfaed5723e74b3b67b81ef43155baf71877510de80bbc9de3b950331ea",
+        "disposition": "Clay, silhouette, textured, unlit, party-camera, walk, turn, bite, talon, foreclaw, pounce and jaw extremes are coherent; corrected jaw remains attached and corrected neck/tail transitions do not expose prior gaps or radial shards.",
+        "scopeBoundary": "Offline authored-shape and pose-envelope evidence only; native contacts, cadence, reach, collision, navigation and lifecycle remain pending.",
+        "humanReview": "NOT_PERFORMED_NONBLOCKING"
+      }
+    ],
     "persistenceRuns": [],
     "publicationRuns": []
   },
@@ -375,7 +398,25 @@
       "disposition": "PRESERVED_LOCAL_PREDEPLOYMENT_ART_FAILURE_CORRECTION_REGENERATED",
       "result": "An exaggerated turn exposed a neck seam and radial tail-root triangles; no package was deployed.",
       "cause": "Rigid head motion lacked overlap at the neck and the first tail ring could surface at an oblique camera angle.",
-      "correction": "Add an original neck collar, remove the tail start cap and embed the transition inside an elongated original rump; final full pose rerender remains pending."
+      "correction": "Add an original neck collar, remove the tail start cap and embed the transition inside an elongated original rump; the complete 20-frame rerender passes internal technical review."
+    },
+    {
+      "timestampUtc": "2026-10-14T07:50:00Z",
+      "stage": "native observer focused domain build",
+      "scenario": "expanded-summoning.sprint24",
+      "disposition": "PRESERVED_TEST_PROJECT_COMPILE_FAILURE_THEN_PASS",
+      "result": "Production compilation passed; the domain test project failed before any package, deployment, process launch or save access.",
+      "cause": "ExpandedSummoningSprint24Tests.cs referenced the existing persistence policy without importing its RuntimeTesting namespace.",
+      "correction": "Add the one required using directive; the same named focused gate then advanced to behavior tests."
+    },
+    {
+      "timestampUtc": "2026-10-14T07:51:00Z",
+      "stage": "native observer focused reflection coverage",
+      "scenario": "expanded-summoning.sprint24-native-review",
+      "disposition": "PRESERVED_CLOSED_COVERAGE_NAMING_FAILURE_THEN_PASS",
+      "result": "Twelve of thirteen selected tests passed; no package, deployment, process launch or save access occurred.",
+      "cause": "The observer proved the Bleeding Critical behavior under the generic method name Sprint24CriticalSuite while the closed reflection coverage requires the carrier to remain explicitly discoverable.",
+      "correction": "Rename only the observer method to Sprint24BleedingCriticalSuite; production compilation and all 13 selected tests pass."
     }
   ],
   "acceptedLimitations": [

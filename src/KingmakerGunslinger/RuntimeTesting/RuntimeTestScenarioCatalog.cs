@@ -212,11 +212,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-sprint22-native-review";
         internal const string DisposableExpandedSummoningSprint23NativeReview =
             "disposable-expanded-summoning-sprint23-native-review";
+        internal const string DisposableExpandedSummoningSprint24NativeReview =
+            "disposable-expanded-summoning-sprint24-native-review";
         internal static bool IsSummoningNativeProfile(string scenario)
         {
             return scenario == DisposableExpandedSummoningNativeProfile ||
                 scenario == DisposableExpandedSummoningSprint22NativeReview ||
-                scenario == DisposableExpandedSummoningSprint23NativeReview;
+                scenario == DisposableExpandedSummoningSprint23NativeReview ||
+                scenario == DisposableExpandedSummoningSprint24NativeReview;
         }
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
@@ -828,6 +831,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningNativeProfile,
                 DisposableExpandedSummoningSprint22NativeReview,
                 DisposableExpandedSummoningSprint23NativeReview,
+                DisposableExpandedSummoningSprint24NativeReview,
                 DisposableExpandedSummoningPlayerPath,
                 DisposableExpandedSummoningProjectedMenu,
                 DisposableExpandedSummoningPteranodonFaultDrill,

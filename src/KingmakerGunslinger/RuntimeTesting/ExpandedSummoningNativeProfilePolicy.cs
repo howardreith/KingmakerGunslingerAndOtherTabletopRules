@@ -57,6 +57,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "turn-based-control" || reviewPhase ==
                     "charge-rounding-rtwp" || reviewPhase ==
                     "charge-rounding-turn-based");
+            if (scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint24NativeReview)
+                return parameters == 1 && (reviewPhase ==
+                    "rtwp-foundation" || reviewPhase ==
+                    "rtwp-deinonychus" || reviewPhase ==
+                    "turn-based-deinonychus" || reviewPhase ==
+                    "rtwp-tyrannosaurus" || reviewPhase ==
+                    "turn-based-tyrannosaurus" || reviewPhase ==
+                    "visual-lifecycle" || reviewPhase ==
+                    "shared-controls");
             return false;
         }
         public static bool CanStart(bool automaticExit, string scenario,
