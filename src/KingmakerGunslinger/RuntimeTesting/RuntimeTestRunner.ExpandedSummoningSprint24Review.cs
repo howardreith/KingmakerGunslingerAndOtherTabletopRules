@@ -1984,19 +1984,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                         damage.DamageBundle.Single().Bonus == 11)
                     .All(value => value);
 
+                int secondDamageBeforeRelease = observers[1].Damage.Count;
                 swallowers[0].Free(firstTarget);
+                Buff secondLiveSwallowed = secondTarget.Descriptor.Buffs
+                    .GetBuff(SummonGrabComponent.Find(secondOwner)
+                        .SwallowedBuff);
+                TimeSpan continuationGameTime =
+                    Game.Instance.TimeController.GameTime;
+                double continuationDelayBefore = secondLiveSwallowed == null
+                    ? -1d : ((TimeSpan)nextTick.GetValue(
+                        secondLiveSwallowed, null) -
+                        continuationGameTime).TotalSeconds;
+                bool releaseDidNotTickSecond =
+                    observers[1].Damage.Count == secondDamageBeforeRelease;
+                bool secondBuffPreserved = secondLiveSwallowed != null &&
+                    ReferenceEquals(secondLiveSwallowed.MaybeContext
+                        .MaybeCaster, secondOwner) &&
+                    ReferenceEquals(secondTarget.Get<UnitPartSwallowed>()?
+                        .Swallower.Value, secondOwner);
                 bool firstReleaseDoesNotTouchSecond =
                     firstTarget.Get<UnitPartSwallowed>() == null &&
                     secondTarget.Get<UnitPartSwallowed>() != null &&
-                    swallowers[1].SwallowedUnits.Count == 1;
+                    swallowers[1].SwallowedUnits.Count == 1 &&
+                    releaseDidNotTickSecond && secondBuffPreserved;
                 observers[1].Clear();
-                int secondRound = swallowed[1].RoundNumber;
-                nextTick.SetValue(swallowed[1], gameTime, null);
-                secondTarget.Descriptor.Buffs.UpdateNextEvent();
-                secondTarget.Descriptor.Buffs.Tick();
-                secondTarget.Descriptor.Buffs.Tick();
-                bool secondContinues = observers[1].Damage.Count == 1 &&
-                    swallowed[1].RoundNumber == secondRound + 1;
+                int secondRound = secondLiveSwallowed == null ? -1 :
+                    secondLiveSwallowed.RoundNumber;
+                if (secondLiveSwallowed != null)
+                {
+                    nextTick.SetValue(secondLiveSwallowed,
+                        continuationGameTime, null);
+                    secondTarget.Descriptor.Buffs.UpdateNextEvent();
+                    secondTarget.Descriptor.Buffs.Tick();
+                    secondTarget.Descriptor.Buffs.Tick();
+                }
+                double continuationDelayAfter =
+                    secondLiveSwallowed == null ? -1d :
+                    ((TimeSpan)nextTick.GetValue(secondLiveSwallowed,
+                        null) - continuationGameTime).TotalSeconds;
+                bool secondContinues = secondBuffPreserved &&
+                    observers[1].Damage.Count == 1 &&
+                    secondLiveSwallowed.RoundNumber == secondRound + 1 &&
+                    continuationDelayAfter > 0d;
                 swallowers[1].Free(secondTarget);
                 bool cleanup = targets.All(value =>
                     value.Get<UnitPartSwallowed>() == null) &&
@@ -2018,6 +2047,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             observers[0].Damage.Count,
                         ["secondContinuedPeriodicEvents"] =
                             observers[1].Damage.Count,
+                        ["secondBuffReferenceStable"] =
+                            ReferenceEquals(secondLiveSwallowed,
+                                swallowed[1]),
+                        ["secondBuffPreserved"] = secondBuffPreserved,
+                        ["releaseDidNotTickSecond"] =
+                            releaseDidNotTickSecond,
+                        ["continuationDelayBeforeSeconds"] =
+                            continuationDelayBefore,
+                        ["continuationDelayAfterSeconds"] =
+                            continuationDelayAfter,
                         ["firstReleasePreservedSecond"] =
                             firstReleaseDoesNotTouchSecond,
                         ["secondContinuedAfterFirstRelease"] =

@@ -216,16 +216,47 @@ the independent Huge-target Grab/later-Swallow path still passed. Transaction
 `compat-20261014T094705Z-c7e1b4e3f5b9` restored exactly; runtime-result SHA-256
 is `b3cfe78650c28cf814ed0c15e93b7dc6504bc81d6a4a0e041da1d956c4527291`.
 
-The narrow correction now tunes target AC between a natural-19 threat and a
-natural-1 confirmation, keeps the engine's auto-confirm flag false, suppresses
-only unrelated combat maneuvers during the critical fixture, and proves a clean
-mouth before the same-size Grab. It does not alter critical, Grab, or Swallow
-product rules. Production compilation and the named Sprint 24 filter pass
-13/13. Both keys remain suppressed.
+The exact critical/hold correction commit
+`c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded` passed a complete Sprint gate:
+2,607/2,607 tests in 94.4 seconds and a strict 370-entry package in 190.4
+seconds total. ZIP SHA-256 is
+`e3c07a543796035e84f4d65a5783db72a42348683c931c442ba77742e104fc89`;
+DLL SHA-256 is
+`d325dbae5437080e8efd3661e8ff1385b424dac70da66c1ba87a4765f1676b30`,
+MVID `5054599d-6a6d-442b-b323-38ca37dd7a26`, and source fingerprint
+`665b32f6805cd8132d3bfccba307c47cd38903cb851703e418b4c66756b6bdab`.
 
-Next action: commit and push this critical/hold observer correction through the
-required wrapper, run one fresh complete Sprint gate on that exact commit, then
-rerun only `rtwp-tyrannosaurus` with `-ReuseInstalledArtifact`. Continue the
-remaining native phases only after that reproduction passes. Do not begin
-Brachiosaurus, Elephant changes, companions, polymorph, mounts, feats, or any
-Sprint 25 work.
+The corrected `rtwp-tyrannosaurus` reproduction passed 10/10 assertions in
+91.283 seconds. Its natural-19 threat confirmed on a natural 20 and did not
+confirm on a natural 1 at AC 30; native auto-confirm remained false. The exact
+one-bite routine, every signed Powerful Bite case, same-size Grab without
+swallow, later Huge-target swallow, three separate 2d8+11 packets, escape,
+independent predators and cleanup all passed. Transaction
+`compat-20261014T100058Z-cf1d7b003d74` restored exactly; runtime-result
+SHA-256 is
+`03a5c6ce33c163bd0838f21f101758b86b4a45396babf88111914db48e6dc11c`.
+
+The first `turn-based-tyrannosaurus` phase retained 10 PASS and 1 FAIL
+assertion in 91.969 seconds. Its profile, turn admission, one-bite command,
+signed Powerful Bite matrix, critical suite, same-size/Huge Grab and later
+Swallow, three-round cadence, escape, and the first independent 2d8+11 packet
+for each of two predators all passed. Releasing the first victim preserved the
+second victim's native swallowed part and one-victim owner list, but the
+continuation probe emitted no second packet. The probe had reused the
+pre-release Buff reference and pre-release due time. Transaction
+`compat-20261014T100454Z-b4ff58a2e19b` restored exactly; runtime-result
+SHA-256 is
+`dcf214490735a54645f580caccd8bb801fbd457e85a264b7d51dd1d2bd5b54db`.
+
+The narrow observer correction now reacquires the live second-victim swallowed
+Buff after releasing the first, uses the current native due boundary, and
+separately proves that release neither ticks nor relinks the surviving pair.
+Product swallow mechanics are unchanged. Production compilation and the named
+Sprint 24 filter pass 13/13. Both keys remain suppressed.
+
+Next action: commit and push this continuation-boundary observer correction
+through the required wrapper, run one fresh complete Sprint gate on that exact
+commit, then rerun only `turn-based-tyrannosaurus` with
+`-ReuseInstalledArtifact`. Continue the remaining native phases only after that
+reproduction passes. Do not begin Brachiosaurus, Elephant changes, companions,
+polymorph, mounts, feats, or any Sprint 25 work.
