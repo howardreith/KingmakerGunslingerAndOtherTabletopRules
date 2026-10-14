@@ -19,9 +19,14 @@ The request-local charge observer now records engine weapon-stat rows and real
 issued charge commands at Strength 24/26/28/30, plus signed, Power Attack,
 critical, aborted/opportunity/later-attack and released-rhino controls. Offline
 request/profile preflight and the 12-test Sprint 23 focused selection pass.
-Next actions are to freeze the versioned 0.0.153 candidate, run one Sprint
-gate, and qualify the affected RTWP, turn-based and high-risk-combined cases
-through guarded Steam App ID 640820 transactions. Every transaction must
+The first versioned candidate gate preserved a seven-failure domain result:
+the added release-note package member correctly advanced inventory to 364/362,
+but six historical delivery assertions and the deterministic ZIP builder still
+pinned 363/361. Their exact expectations/allowlist were repaired; the affected
+22-test selection and the package-focused selection pass. Next actions are to
+commit that repair, rerun the Sprint gate on the changed candidate, and qualify
+the affected RTWP, turn-based and high-risk-combined cases through guarded
+Steam App ID 640820 transactions. Every transaction must
 restore the actual intake:
 968 Mods entries, KMG 0.0.117, 83 settings, 118 saves, the protected baseline
 and authorized working-save hashes, and no compatibility lock or staging.
