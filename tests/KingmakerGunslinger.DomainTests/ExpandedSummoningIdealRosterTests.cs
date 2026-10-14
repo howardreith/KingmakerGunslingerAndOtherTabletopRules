@@ -120,7 +120,8 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(105, reused,
+            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+                reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,7 +134,8 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(29, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount,
+                ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
                 "The remaining ideal roster needs 29 new creature identities after Sprint 23 registers both armored dinosaurs.");
@@ -175,13 +177,14 @@ namespace KingmakerGunslinger.DomainTests
 
             // The Shadow Mastiff moved from this set into the represented
             // one when Sprint 13 registered it.
-            Assertions.Equal(29, ExpandedSummoningIdealRosterCatalog.All.Count(
+            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount,
+                ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "29 ideal-roster creatures remain unregistered after Sprint 23 registers Triceratops and Stegosaurus.");
-            Assertions.Equal(116,
+                "Only the post-Sprint-24 ideal-roster creatures remain unregistered.");
+            Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "116 creatures own or retain a unit identity after Sprint 23 publication.");
+                "The registered theropods join the represented identity set while hidden.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
