@@ -149,6 +149,22 @@
       "dllMvid": "ebe819dc-d0e5-48e2-9043-8d54af7ad71b",
       "cause": "Offline scheduling discovered that the outer compatibility profile wrapper rejected the newly qualified charge-rounding phase names before transaction entry.",
       "repair": "Narrowly extended only the Sprint 23 profile phase allowlist, retained the Sprint 22 refusal, and added the missing outer-boundary test. No gameplay code changed and this package was never deployed."
+    },
+    {
+      "source": "f0bb53e3c88699fc5cd603f23170bc26630f2373",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+      "result": "SUPERSEDED_AFTER_NATIVE",
+      "stage": "complete source/build/package gate and first affected native run",
+      "registered": 2594,
+      "executed": 2594,
+      "failures": 0,
+      "elapsedSeconds": 184.5,
+      "sourceFingerprint": "ea4fae8911836ce44d4fee498de1099975e6c91f7fdf00d390212899eee0cbee",
+      "packageSha256": "16fc01fa5b37f0749d3ae1e9aa51ad674a4997c9b878a17a0212e84fc3c48de3",
+      "dllSha256": "0dd0a12958db7fcdf2bf03ae9c72d5a3b6eed14e1c853d46442932fc344d419e",
+      "dllMvid": "c92892e8-e394-4393-8748-d736f6d564e0",
+      "cause": "The strict RTWP native run proved all four corrected Strength contributions, but also proved that Kingmaker's non-player PowerAttackWatcher re-enabled Power Attack at RuleAttackRoll after the fixture stopped it at RuleAttackWithWeapon. The retained -3 attack penalty made the PA-off setup assertion fail while damage arithmetic passed.",
+      "repair": "Use the real player-faction contract for the disposable player summon during the PA-off charge rows, record player/hostile relationships, and restore its original request-local faction before teardown. Retain the strict attack-bonus and toggle assertions."
     }
   ],
   "nativeRuns": [],
@@ -181,6 +197,21 @@
       "restoration": "EXACT_VERIFIED",
       "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T014955Z-bbd1c332bd20/transaction.json",
       "repair": "Apply the same qualified native forced-stop sequence at the exact first charge-gore RuleAttackWithWeapon boundary before its attack-roll and weapon-stat children; record pre/post toggle state and independently require the charge attack bonus to be exactly +2 over the PA-off ordinary attack bonus."
+    },
+    {
+      "profileRunId": "compat-20261014T020133Z-7bffca83f063",
+      "runtimeRunId": "20261014T0203115573573Z-3471b887acfc40b19265708b4948d96d",
+      "profile": "gunslinger-only",
+      "phase": "charge-rounding-rtwp",
+      "source": "f0bb53e3c88699fc5cd603f23170bc26630f2373",
+      "result": "SETUP_CONTROL_FAIL",
+      "cause": "The exact RuleAttackWithWeapon boundary recorded Power Attack fully off, and all four real charge hits again produced +14/+16/+18/+20 with no unrelated additive damage. Installed 2.1.7b IL then identified PowerAttackWatcher.OnEventAboutToTrigger(RuleAttackRoll) as a non-player-faction AI policy that re-enabled the toggle and applied -3 attack after that boundary; the disposable caster's summon was non-player because the caster is intentionally not enrolled in the human party.",
+      "productPostconditionReached": true,
+      "productArithmeticObserved": "PASS for Strength modifiers +7/+8/+9/+10",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0203115205812Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T020133Z-7bffca83f063/transaction.json",
+      "repair": "Run the PA-off charge rows under BlueprintRoot.PlayerFaction, which is the real player-summon convention and makes the watcher honor the explicit native toggle state; record hostility and restore the request-owned unit's original faction exactly."
     }
   ],
   "release": null,
