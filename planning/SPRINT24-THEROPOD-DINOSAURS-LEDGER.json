@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_HIDDEN_CANDIDATE_GATE_CORRECTION_FOCUSED_PASS",
+  "status": "IN_PROGRESS_HIDDEN_PACKAGE_INVENTORY_FOCUSED_PASS_SPRINT_GATE_NEXT",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -438,6 +438,17 @@
       "cause": "The first correction batch used the total 48-identity append where the private tail is ten identities, and missed three direct aggregate assertions.",
       "correction": "Use the centralized ten-private-identity count, add the two natural profiles and nine per-alignment template executions, regenerate the 134-entry audit, and run the exact four-test focused production gate.",
       "correctionChecks": "Production compilation PASS; 4/4 exact residual reproductions PASS in 0.3 seconds."
+    },
+    {
+      "timestampUtc": "2026-10-14T08:17:17.0238475Z",
+      "gateDurationSeconds": 177.0,
+      "stage": "second complete Sprint candidate gate",
+      "scenario": "Invoke-KmgGate.ps1 -Level Sprint",
+      "disposition": "PRESERVED_STRICT_PACKAGE_INVENTORY_FAILURE_BEFORE_STANDALONE_CANDIDATE",
+      "result": "Repository validation passed; all 2,607 domain tests passed in 94.4 seconds; the exact-reference compile candidate was produced. Deterministic standalone packaging rejected 370 staged files against the released 364-file pin. No qualified standalone package, deployment, runtime lease, game process or save access occurred.",
+      "cause": "Sprint 24 adds exactly six package files: four original theropod mesh/albedo files and two manifest-owned original icons. Package staging and strict allowlisting already named them, but the deterministic count pin and admitted-count parser had not advanced.",
+      "correction": "Set the strict base inventory to 368 and the soundbank-present inventory to 370, admit those two counts in the deterministic packager, keep the current total in the Sprint 24 test, and make historical asset tests assert strict-inventory wiring without duplicating the current total.",
+      "correctionChecks": "Production compilation PASS; 7/7 exact package/source assertions PASS; disposable strict package PASS with 370 entries, four theropod body/paint files and two theropod icons; ZIP SHA-256 697e6bcd5ba57f8dfaa7c8adeafe5849ebde34cf050f32aadfdbefd9298d1aa6; never deployed and not a qualified native candidate."
     }
   ],
   "acceptedLimitations": [

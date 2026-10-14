@@ -253,9 +253,15 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Strict package inventory including the six reviewed Sprint 12 quadruped
-# mesh/painting files. The soundbank and its manifest account for the optional
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 364 } else { 362 }
+# Strict package inventory. Sprint 24 adds four original theropod body files
+# and two original creature icons to the previously qualified 362-file base.
+# The soundbank and its manifest account for the optional two-file delta.
+$basePackageFileCount = 368
+$expectedPackageFileCount = if ($hasFirearmSoundBank) {
+    $basePackageFileCount + 2
+} else {
+    $basePackageFileCount
+}
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount
