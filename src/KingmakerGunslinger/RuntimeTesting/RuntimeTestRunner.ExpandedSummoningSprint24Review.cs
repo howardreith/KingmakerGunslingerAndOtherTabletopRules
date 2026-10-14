@@ -3342,24 +3342,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Memory.ContainsVisible(target);
                 SetExpandedSummoningBrainActive(owner, true);
                 owner.Brain.RestoreAvailableActions();
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
                 owner.JoinCombat();
                 target.JoinCombat();
                 bool ownerJoined = owner.IsInCombat;
                 bool targetJoined = target.IsInCombat;
-                owner.CombatState.AIData.NextCommandTime = float.MaxValue;
                 Game.Instance.Player.UpdateIsInCombat();
                 memory.Tick();
                 join.Tick();
                 prepare.Tick();
-                owner.CombatState.AIData.NextCommandTime = float.MaxValue;
                 Game.Instance.IsPaused = false;
 
                 int runtimeActions = owner.Brain.Actions == null ? 0 :
                     owner.Brain.Actions.Count;
                 int availableActions = owner.Brain.AvailableActions == null ?
                     0 : owner.Brain.AvailableActions.Count;
-                int settleFrames = 0;
-                while (settleFrames++ < 30) yield return 0;
                 bool ownerGroupAwake = Game.Instance.AwakeUnitGroups.Contains(
                     owner.Group);
                 bool ownerGroupCombat = owner.Group != null &&
@@ -3374,7 +3372,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.IsEnemy(target) && target.IsEnemy(owner) &&
                     owner.Memory.ContainsVisible(target) &&
                     enemyIds.Contains(target.UniqueId);
-                owner.CombatState.AIData.NextCommandTime = Time.time;
+                owner.CombatState.AIData.NextCommandTime = Time.time - .01f;
+                string[] exactAiCandidates = _sprint24Clock.TickExactAi(owner);
+                foreach (UnitAttack command in owner.Commands.Raw
+                    .OfType<UnitAttack>()) commands.Add(command);
+                foreach (var command in owner.Commands.Raw.Where(value =>
+                    value != null)) commandTypes.Add(
+                        command.GetType().FullName);
 
                 int frames = 0;
                 float travel = 0f;
@@ -3401,11 +3405,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 foreach (UnitAttack command in owner.Commands.Raw
                     .OfType<UnitAttack>()) commands.Add(command);
+                float approach = startDistance - minimumDistance;
                 bool exact = ordinaryFallback && nativeReady &&
                     owner.IsBrainActive &&
                     commands.Any(value => value.AiAction != null) &&
                     observer.Rolls.Count > 0 &&
-                    observer.WeaponAttacks.Count > 0 && travel >= .25f &&
+                    observer.WeaponAttacks.Count > 0 && approach >= .25f &&
                     owner.Blueprint.Brain.Actions.Select(value =>
                         value.GetType().FullName + ":" + value.name)
                         .SequenceEqual(actions);
@@ -3421,7 +3426,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["runtimeBrainActions"] = runtimeActions,
                         ["availableBrainActions"] = availableActions,
                         ["nativeReady"] = nativeReady,
-                        ["settleFrames"] = settleFrames - 1,
+                        ["exactAiCandidates"] =
+                            new JArray(exactAiCandidates),
+                        ["exactAiControllerTicks"] =
+                            _sprint24Clock.AiTicks,
                         ["floorSurvey"] = floorSurvey,
                         ["ambientOwnerCommands"] =
                             new JArray(ambientOwnerCommands),
@@ -3466,6 +3474,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["targetTravel"] = targetTravel,
                         ["startDistance"] = startDistance,
                         ["minimumDistance"] = minimumDistance,
+                        ["approachDistance"] = approach,
                         ["finalDistance"] = Vector3.Distance(owner.Position,
                             target.Position),
                         ["frames"] = frames
