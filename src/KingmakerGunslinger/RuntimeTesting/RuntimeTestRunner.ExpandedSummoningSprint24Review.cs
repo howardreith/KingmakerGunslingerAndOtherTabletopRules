@@ -3374,7 +3374,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Memory.ContainsVisible(target) &&
                     enemyIds.Contains(target.UniqueId);
                 owner.CombatState.AIData.NextCommandTime = Time.time - .01f;
-                string[] exactAiCandidates = Sprint24TickExactAi(owner);
+                string[] ambientAiCandidates = Sprint24TickExactAi(owner);
                 foreach (UnitAttack command in owner.Commands.Raw
                     .OfType<UnitAttack>()) commands.Add(command);
                 foreach (var command in owner.Commands.Raw.Where(value =>
@@ -3427,10 +3427,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["runtimeBrainActions"] = runtimeActions,
                         ["availableBrainActions"] = availableActions,
                         ["nativeReady"] = nativeReady,
-                        ["exactAiCandidates"] =
-                            new JArray(exactAiCandidates),
+                        ["exactAiOwner"] = owner.UniqueId,
+                        ["ambientAiCandidates"] =
+                            new JArray(ambientAiCandidates),
                         ["exactAiControllerTicks"] =
                             1,
+                        ["nativeAiDriver"] =
+                            "DecisionContext.InitGroup -> " +
+                            "AiBrainController.TickBrain(exact owner) -> " +
+                            "DecisionContext.ReleaseGroup",
                         ["floorSurvey"] = floorSurvey,
                         ["ambientOwnerCommands"] =
                             new JArray(ambientOwnerCommands),
@@ -3504,10 +3509,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>
         /// The guarded profile is hosted below Dialog mode, so the ordinary
-        /// gameplay AI controller is not registered there. Run Owlcat's full
-        /// RTWP brain controller once through an ephemeral Default-mode token,
-        /// failing closed unless the exact theropod is its sole active AI
-        /// candidate. The controller selects and queues the blueprint action;
+        /// gameplay AI controller is not registered there. Run Owlcat's exact
+        /// per-unit RTWP brain sequence once through an ephemeral Default-mode
+        /// token. The loaded fixture's protected party also qualifies for the
+        /// full controller, so record those ambient candidates but never tick
+        /// them. The native method selects and queues the blueprint action;
         /// this observer never issues an attack command.
         /// </summary>
         private static string[] Sprint24TickExactAi(
@@ -3526,10 +3532,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !unit.IsSleeping && unit.Brain != null &&
                     unit.IsBrainActive)
                 .Distinct().ToArray();
-            if (candidates.Length != 1 ||
-                !ReferenceEquals(candidates[0], expectedOwner))
+            if (!candidates.Any(unit =>
+                ReferenceEquals(unit, expectedOwner)))
                 throw new InvalidOperationException(
-                    "Sprint 24 exact AI ownership changed: " +
+                    "Sprint 24 exact AI owner is not eligible: " +
                     string.Join(",", candidates.Select(unit =>
                         unit.UniqueId).ToArray()));
 
@@ -3548,14 +3554,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             var time = Game.Instance.TimeController;
             float delta = time.DeltaTime;
             float gameDelta = time.GameDeltaTime;
+            Type brainController = typeof(
+                Kingmaker.Controllers.Brain.AiBrainController);
+            MethodInfo tickBrain = brainController.GetMethod("TickBrain",
+                BindingFlags.Static | BindingFlags.NonPublic, null,
+                new[] { typeof(UnitEntityData) }, null);
+            FieldInfo contextField = brainController.GetField("s_Context",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            object context = contextField == null ? null :
+                contextField.GetValue(null);
+            MethodInfo initGroup = context == null ? null :
+                context.GetType().GetMethod("InitGroup", members, null,
+                    new[] { typeof(Kingmaker.UnitLogic.Groups.UnitGroup) },
+                    null);
+            MethodInfo releaseGroup = context == null ? null :
+                context.GetType().GetMethod("ReleaseGroup", members, null,
+                    Type.EmptyTypes, null);
+            if (tickBrain == null || context == null || initGroup == null ||
+                releaseGroup == null)
+                throw new MissingMethodException(
+                    "Sprint 24 exact native AI decision sequence");
             modes.Push(tickMode);
             try
             {
                 Game.Instance.IsPaused = false;
                 time.SetDeltaTime(.25f);
                 time.SetGameDeltaTime(.25f);
-                new Kingmaker.Controllers.Brain.AiBrainController()
-                    .ForceTick();
+                initGroup.Invoke(context, new object[] {
+                    expectedOwner.Group });
+                try
+                {
+                    tickBrain.Invoke(null, new object[] { expectedOwner });
+                }
+                finally
+                {
+                    releaseGroup.Invoke(context, null);
+                }
             }
             finally
             {
