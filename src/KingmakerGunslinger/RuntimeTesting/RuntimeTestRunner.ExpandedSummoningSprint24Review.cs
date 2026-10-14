@@ -3298,24 +3298,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string floorSurvey;
                 string chosenTargetDirection;
                 Vector3 targetOrigin;
-                Vector3 origin = Sprint24AiCombatLane(fixture.Caster, 5f,
-                    out targetOrigin, out floorSurvey,
+                Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner,
+                    target, 5f, out targetOrigin, out floorSurvey,
                     out chosenTargetDirection);
+                string[] ambientOwnerCommands = owner.Commands.Raw.Where(
+                    value => value != null).Select(value =>
+                        value.GetType().FullName + ":acted=" +
+                        value.IsActed + ":finished=" + value.IsFinished)
+                    .ToArray();
+                string[] ambientTargetCommands = target.Commands.Raw.Where(
+                    value => value != null).Select(value =>
+                        value.GetType().FullName + ":acted=" +
+                        value.IsActed + ":finished=" + value.IsFinished)
+                    .ToArray();
+                // UnitEntityData.JoinCombat deliberately returns while a
+                // non-attack standard command has acted but not finished.
+                // Summons can acquire that ambient follow/move between cast
+                // settlement and this isolated AI cell. End only those
+                // pre-existing commands; no attack is issued by the fixture.
+                owner.Commands.InterruptAll(true);
+                target.Commands.InterruptAll(true);
+                owner.Commands.RemoveFinishedAndUpdateQueue();
+                target.Commands.RemoveFinishedAndUpdateQueue();
                 PlaceExpandedSummoningUnit(owner, origin);
                 PlaceExpandedSummoningUnit(target, targetOrigin);
+                owner.SightCache.ClearIfNeeded();
+                target.SightCache.ClearIfNeeded();
                 foreach (UnitEntityData unit in new[] { owner, target })
+                {
+                    unit.Wake(0f);
                     if (!Game.Instance.State.AwakeUnits.Contains(unit))
                         Game.Instance.State.AwakeUnits.Add(unit);
+                }
                 owner.Memory.Add(target);
                 target.Memory.Add(owner);
+                var memory = new Kingmaker.Controllers.Units
+                    .UnitMemoryController();
+                bool memoryPeaceful = memory.IsPeaceful();
+                bool ownerHasLos = owner.HasLOS(target);
+                bool targetHasLos = target.HasLOS(owner);
+                memory.Tick();
+                bool targetVisibleBeforeJoin =
+                    owner.Memory.ContainsVisible(target);
                 SetExpandedSummoningBrainActive(owner, true);
                 owner.Brain.RestoreAvailableActions();
-                owner.CombatState.AIData.NextCommandTime = float.MaxValue;
                 owner.JoinCombat();
                 target.JoinCombat();
+                bool ownerJoined = owner.IsInCombat;
+                bool targetJoined = target.IsInCombat;
+                owner.CombatState.AIData.NextCommandTime = float.MaxValue;
                 Game.Instance.Player.UpdateIsInCombat();
+                memory.Tick();
                 join.Tick();
                 prepare.Tick();
+                owner.CombatState.AIData.NextCommandTime = float.MaxValue;
                 Game.Instance.IsPaused = false;
 
                 int runtimeActions = owner.Brain.Actions == null ? 0 :
@@ -3387,6 +3423,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeReady"] = nativeReady,
                         ["settleFrames"] = settleFrames - 1,
                         ["floorSurvey"] = floorSurvey,
+                        ["ambientOwnerCommands"] =
+                            new JArray(ambientOwnerCommands),
+                        ["ambientTargetCommands"] =
+                            new JArray(ambientTargetCommands),
+                        ["memoryPeaceful"] = memoryPeaceful,
+                        ["ownerHasLos"] = ownerHasLos,
+                        ["targetHasLos"] = targetHasLos,
+                        ["targetVisibleBeforeJoin"] =
+                            targetVisibleBeforeJoin,
+                        ["ownerJoined"] = ownerJoined,
+                        ["targetJoined"] = targetJoined,
                         ["ownerAiEnabled"] = owner.IsAIEnabled,
                         ["ownerDirectlyControllable"] =
                             owner.IsDirectlyControllable,
@@ -3446,12 +3493,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static Vector3 Sprint24AiCombatLane(UnitEntityData anchorCaster,
-            float distance, out Vector3 target, out string survey,
-            out string direction)
+            UnitEntityData owner, UnitEntityData targetUnit, float distance,
+            out Vector3 target, out string survey, out string direction)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
                     "Sprint 24 AI review has no fixture anchor.");
+            if (owner == null || targetUnit == null)
+                throw new InvalidOperationException(
+                    "Sprint 24 AI review has no exact combat pair.");
             if (AstarPath.active == null)
                 throw new InvalidOperationException(
                     "Sprint 24 AI review has no native path graph.");
@@ -3473,6 +3523,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int selectedDirection = -1;
             int originCandidates = 0;
             int laneCandidates = 0;
+            int nativeLosCandidates = 0;
             for (int dx = -15; dx <= 15; dx += 3)
                 for (int dz = -15; dz <= 15; dz += 3)
                 {
@@ -3512,6 +3563,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     targetPoint.clampedPosition)));
                         if (partyGap < 3.5f) continue;
                         laneCandidates++;
+                        PlaceExpandedSummoningUnit(owner,
+                            origin.clampedPosition);
+                        PlaceExpandedSummoningUnit(targetUnit,
+                            targetPoint.clampedPosition);
+                        owner.SightCache.ClearIfNeeded();
+                        targetUnit.SightCache.ClearIfNeeded();
+                        if (!owner.HasLOS(targetUnit) ||
+                            !targetUnit.HasLOS(owner)) continue;
+                        nativeLosCandidates++;
                         float anchorGap = Vector3.Distance(
                             anchor.clampedPosition, origin.clampedPosition);
                         if (anchorGap > selectedAnchorGap + .01f ||
@@ -3530,7 +3590,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     System.Globalization.CultureInfo.InvariantCulture) +
                 "m(graph-and-sight)";
             survey = "originCandidates=" + originCandidates +
-                ";laneCandidates=" + laneCandidates + ";partyGap=" +
+                ";laneCandidates=" + laneCandidates +
+                ";nativeLosCandidates=" + nativeLosCandidates +
+                ";partyGap=" +
                 selectedPartyGap.ToString("0.##",
                     System.Globalization.CultureInfo.InvariantCulture) +
                 ";anchorGap=" + selectedAnchorGap.ToString("0.##",
