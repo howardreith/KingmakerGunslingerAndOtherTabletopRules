@@ -338,6 +338,16 @@ namespace KingmakerGunslinger.DomainTests
                     .Distinct(StringComparer.Ordinal).Count() == 2 &&
                 rows.All(value => value["blueprintSymbols"].Any()),
                 "Theropod paintings are distinct and own concrete consumers.");
+
+            string package = File.ReadAllText("scripts/package.ps1");
+            string packager = File.ReadAllText(
+                "tools/create_deterministic_package.py");
+            Assertions.True(package.Contains("$basePackageFileCount = 368") &&
+                    package.Contains("$basePackageFileCount + 2") &&
+                    package.Contains(
+                        "--expected-file-count $expectedPackageFileCount") &&
+                    packager.Contains("364, 368, 370))"),
+                "The strict package inventory adds exactly four bodies and two icons.");
         }
 
         internal static void NativeReviewIsClosedAndObservesRequiredSeams()
