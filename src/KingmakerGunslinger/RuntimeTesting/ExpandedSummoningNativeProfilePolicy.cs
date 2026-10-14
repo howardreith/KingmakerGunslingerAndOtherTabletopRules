@@ -46,12 +46,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningNativeProfile)
                 return parameters == 0 && reviewPhase == null;
             if (scenario == RuntimeTestScenarioCatalog
-                    .DisposableExpandedSummoningSprint22NativeReview ||
-                scenario == RuntimeTestScenarioCatalog
-                    .DisposableExpandedSummoningSprint23NativeReview)
+                    .DisposableExpandedSummoningSprint22NativeReview)
                 return parameters == 1 && (reviewPhase ==
                     "rtwp-foundation" || reviewPhase ==
                     "turn-based-control");
+            if (scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint23NativeReview)
+                return parameters == 1 && (reviewPhase ==
+                    "rtwp-foundation" || reviewPhase ==
+                    "turn-based-control" || reviewPhase ==
+                    "charge-rounding-rtwp" || reviewPhase ==
+                    "charge-rounding-turn-based");
             return false;
         }
         public static bool CanStart(bool automaticExit, string scenario,
