@@ -227,10 +227,6 @@ namespace KingmakerGunslinger.Summoning
         private static readonly FieldInfo BaseCorpulence = typeof(UnitEntityView)
             .GetField("m_Corpulence", BindingFlags.Instance |
                 BindingFlags.NonPublic);
-        private static readonly MethodInfo SetupSelectionColliders =
-            typeof(UnitEntityView).GetMethod("SetupSelectionColliders",
-                BindingFlags.Instance | BindingFlags.NonPublic, null,
-                new[] { typeof(bool) }, null);
         private static readonly object Sync = new object();
         private static readonly List<string> Outcomes = new List<string>();
 
@@ -690,17 +686,14 @@ namespace KingmakerGunslinger.Summoning
                 failure = "missing-UnitEntityView.m_Corpulence";
                 return false;
             }
-            if (SetupSelectionColliders == null ||
-                SetupSelectionColliders.ReturnType != typeof(void))
-            {
-                failure = "missing-UnitEntityView.SetupSelectionColliders";
-                return false;
-            }
             float original = (float)BaseCorpulence.GetValue(view);
             try
             {
                 BaseCorpulence.SetValue(view, radius);
-                SetupSelectionColliders.Invoke(view, new object[] { false });
+                // This is public on the pinned Kingmaker 2.1.7b contract.
+                // Calling it directly makes reference drift a compile failure
+                // instead of silently rejecting every live theropod view.
+                view.SetupSelectionColliders(false);
                 CapsuleCollider soft = view.GetComponentsInChildren<
                     CapsuleCollider>(true).SingleOrDefault(value =>
                         value.name == "[soft collider]");
@@ -721,8 +714,7 @@ namespace KingmakerGunslinger.Summoning
                 try
                 {
                     BaseCorpulence.SetValue(view, original);
-                    SetupSelectionColliders.Invoke(view,
-                        new object[] { false });
+                    view.SetupSelectionColliders(false);
                 }
                 catch (Exception)
                 {

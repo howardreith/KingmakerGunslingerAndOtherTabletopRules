@@ -399,7 +399,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Per-view suppression survives native fade updates, appears in the owned-resource receipt and releases before exact donor restoration.");
             Assertions.True(attachment.Contains("TryProductionTheropod(") &&
                 attachment.Contains("m_Corpulence") &&
-                attachment.Contains("SetupSelectionColliders") &&
+                attachment.Contains("view.SetupSelectionColliders(false)") &&
                 builder.Contains("new UnitVisualParams()") &&
                 builder.Contains("visual.BloodPuddleFx = donor.Visual.BloodPuddleFx") &&
                 builder.Contains("TheropodVisualPolicy.ExpiryEffectDonorGuid"),
