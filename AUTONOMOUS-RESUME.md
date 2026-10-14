@@ -163,13 +163,36 @@ Transaction `compat-20261014T091235Z-920f582e4222` restored exactly;
 runtime-result SHA-256 is
 `a4758447f28aea0df639bf0cadb73e5e68b00dfb99f63b601a2f584e1e1857cf`.
 
-The narrow correction now starts every phase in RTWP, enrolls the exact owner
-and target through `Sprint22EnrollTurnBasedOwners`, waits for the owner's real
-turn before ordinary commands, and surveys Charge in RTWP before re-enrolling
-for its actual TB execution. Production compilation and the named Sprint 24
-filter pass 13/13. Both keys remain suppressed.
+The exact turn-controller correction commit
+`eea076088c695ebb7cf48932f452f59c819e61e0` passed a fresh complete Sprint
+gate: 2,607/2,607 tests in 90.4 seconds and a strict 370-entry package in 186.2
+seconds total. ZIP SHA-256 is
+`4156261f122646fd6ab952916c8358dbbecb150981b17be958ec3a6e3af6e4ab`;
+DLL SHA-256 is
+`e41019388e5af11bb11020bb4d681b082443b0d5e55eb4f371870fd93ff80549`,
+MVID `f70e80a8-1e81-4d0c-be9e-651422b156de`, and source fingerprint
+`5b5c3ae05e8f9e11a9b804231af4def80bf4e7723b1472d95895328a61795c20`.
 
-Next action: commit and push this turn-controller correction through the
+The changed `turn-based-deinonychus` reproduction then passed 9/11 assertions
+in 100.638 seconds. Native turn admission, the exact full and single routines,
+and an 11.097 m legal four-roll Pounce all passed. The two negative rows emitted
+zero illegal-charge attacks and exactly one non-charge AoO, but both found the
+legal charge marker still present. Raw evidence showed the local observer's
+shared round helper had returned during an inter-turn null-controller window,
+before the owner's actual fresh turn; it did not show a duplicate Pounce or
+creature-mechanics failure. Transaction
+`compat-20261014T092558Z-43136354a7f7` restored installation and settings
+exactly, with no process, lock or staging left. Runtime-result SHA-256 is
+`3995732f5bda934a030ac83ed778e8d0fbd25384a13eade57628213b78a1cf6e`.
+
+The narrow observer correction now waits through that transition until the
+owner's real next native turn and records the charge marker immediately after
+Pounce and before/after the illegal command. It does not clear the marker or
+weaken the requirement: the run still fails if native expiry has not occurred.
+Production compilation and the named Sprint 24 filter pass 13/13. Both keys
+remain suppressed.
+
+Next action: commit and push this fresh-turn observer correction through the
 required wrapper, run one fresh complete Sprint gate on that exact commit, then
 rerun only `turn-based-deinonychus` with `-ReuseInstalledArtifact`. Continue the
 remaining native phases only after that reproduction passes. Do not begin
