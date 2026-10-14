@@ -305,20 +305,20 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": {
-      "status": "PASS_HIDDEN_TURN_CONTROLLER_CANDIDATE_SUPERSEDED_BY_FRESH_TURN_OBSERVER_CORRECTION",
-      "gitCommit": "eea076088c695ebb7cf48932f452f59c819e61e0",
+      "status": "PASS_HIDDEN_FRESH_TURN_CANDIDATE_SUPERSEDED_BY_TYRANNOSAURUS_OBSERVER_CORRECTION",
+      "gitCommit": "3ed00e74c5602b6a28609a063481e6cb81b100db",
       "gateLevel": "Sprint",
-      "gateDurationSeconds": 186.2,
+      "gateDurationSeconds": 214.2,
       "completeDomainTests": 2607,
       "completeDomainFailures": 0,
-      "completeDomainSeconds": 90.4,
+      "completeDomainSeconds": 108.8,
       "packageEntries": 370,
       "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
-      "packageSha256": "4156261f122646fd6ab952916c8358dbbecb150981b17be958ec3a6e3af6e4ab",
-      "dllSha256": "e41019388e5af11bb11020bb4d681b082443b0d5e55eb4f371870fd93ff80549",
-      "dllMvid": "f70e80a8-1e81-4d0c-be9e-651422b156de",
-      "sourceStateSha256": "5b5c3ae05e8f9e11a9b804231af4def80bf4e7723b1472d95895328a61795c20",
-      "disposition": "Complete turn-controller-corrected hidden Sprint gate PASS; the changed TB run proved turn admission and all positive routines, then exposed an inter-turn observer boundary requiring one more compiled correction."
+      "packageSha256": "923c2df33004b9fedcd2b23dcf514b7192b4ac407718d9ae54d5fae7f932b712",
+      "dllSha256": "4d478541a126908e349121c6451f3a19fea9dc4468de143a63e51c7a0c8d7854",
+      "dllMvid": "e0ce5b26-0e79-4a59-a71b-f0726d45196e",
+      "sourceStateSha256": "ba154235e334df4df69bbf1a2f65a062f3ab88bd186cd7d4f2e9c1706cccdcd6",
+      "disposition": "Complete fresh-turn-corrected hidden Sprint gate PASS; TB Deinonychus then passed completely, while the first RTWP Tyrannosaurus run exposed two fixture-isolation defects requiring compiled observer correction."
     },
     "nativeRuns": [
       {
@@ -446,7 +446,48 @@
           "The subsequent one-roll non-charge AoO row observed that same marker before the owner reached a fresh native turn."
         ],
         "correction": "After native round advancement, wait boundedly until the exact owner reaches its actual fresh turn; record ChargeBuff immediately after Pounce and before/after the illegal command; do not remove the marker or weaken native-expiry assertions.",
-        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh-turn and pre-illegal marker diagnostics domain-pinned. Fresh exact-candidate Sprint gate required before changed phase reproduction.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh-turn and pre-illegal marker diagnostics domain-pinned; fresh exact-candidate Sprint gate PASS; changed phase reproduction 11/11 PASS.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-deinonychus",
+        "status": "PASS_EXACT_HIDDEN_CANDIDATE",
+        "runId": "20261014T0944265414174Z-7212bfe3b8d541e3a65a197a8ea98abb",
+        "gitCommit": "3ed00e74c5602b6a28609a063481e6cb81b100db",
+        "compatibilityTransaction": "compat-20261014T094217Z-8e09a731bba0",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0944253405542Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0944265101226Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "da9c62855c9d2854e5c2bbc607f6bde642a4ae3bcde6ed6aa2964143026ed609",
+        "durationSeconds": 111.715,
+        "assertions": 11,
+        "passed": 11,
+        "failed": 0,
+        "disposition": "Adult profile/body, native turn admission, ordinary four-roll full attack, one-roll single attack, 11.070 m four-roll Pounce, fresh-turn marker expiry, rejected illegal charge, one non-charge AoO and exact teardown all passed.",
+        "markerDisposition": "ChargeBuff was true immediately after legal Pounce, false at the owner's actual fresh turn after 57 frames, false after the rejected charge and false during the AoO control.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-tyrannosaurus",
+        "status": "FAIL_PRESERVED_CRITICAL_AND_HOLD_FIXTURE_ISOLATION_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T0948452245162Z-0d7e74c727dd45cfa0c5f9d76851c865",
+        "gitCommit": "3ed00e74c5602b6a28609a063481e6cb81b100db",
+        "compatibilityTransaction": "compat-20261014T094705Z-c7e1b4e3f5b9",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0948438707391Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0948451887900Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "b3cfe78650c28cf814ed0c15e93b7dc6504bc81d6a4a0e041da1d956c4527291",
+        "durationSeconds": 91.386,
+        "assertions": 10,
+        "passed": 8,
+        "failed": 2,
+        "proved": "Adult profile/body, one exact 4d6+22 bite, signed Powerful Bite +9/+10/+11/+12/zero/penalty cases, false native auto-confirm carrier, confirmed critical and one 2d6 bleed tick with healing removal, Huge later-Swallow with three 2d8+11 rounds and escape, independent predators and exact cleanup all executed.",
+        "failures": [
+          "The nominal unconfirmed threat used +100 fixture attack, so its natural-1 confirmation still beat target AC and applied bleed.",
+          "Those real critical-suite bite probes established an unrelated mouth hold, so the subsequent same-size Grab correctly refused an already occupied limb."
+        ],
+        "correction": "Tune target AC between the natural-19 threat and natural-1 confirmation totals while keeping AutoCriticalConfirmation false; make the critical-only fixture target maneuver-immune; assert no Grab side effect and a clean mouth before the dedicated Grab/Swallow sequence.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; target-AC, no-grab-side-effect and clean-start diagnostics domain-pinned. Fresh exact-candidate Sprint gate required before changed phase reproduction.",
         "restorationVerified": true,
         "permanentDeployment": false
       }
@@ -633,7 +674,17 @@
       "result": "9/11 assertions passed in 100.638 seconds. Turn admission, full/single commands and an 11.097 m four-roll legal Pounce passed. The rejected illegal command emitted zero attacks and the AoO remained one non-charge talon, but both rows observed the preceding legal ChargeBuff. Transaction restoration verified exactly; no process, lock, staging or permanent deployment remained.",
       "cause": "Sprint18AdvanceRound can return during a transient native null-controller window between turns, so the negative rows ran before the exact owner reached its fresh turn and before native marker expiry could be evaluated.",
       "correction": "After the shared round step, wait boundedly for the exact owner's real native turn; record the marker immediately after Pounce and before/after the illegal command; retain failure if native expiry does not occur and never remove the marker in the observer.",
-      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh-turn and marker-boundary diagnostics domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh-turn and marker-boundary diagnostics domain-pinned; fresh exact-candidate Sprint gate PASS; changed phase reproduction 11/11 PASS with native marker expiry at the owner's fresh turn."
+    },
+    {
+      "timestampUtc": "2026-10-14T09:48:45.2245162Z",
+      "stage": "first guarded dedicated Tyrannosaurus RTWP phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / rtwp-tyrannosaurus",
+      "disposition": "PRESERVED_CRITICAL_AND_HOLD_FIXTURE_ISOLATION_FAILURES_THEN_FOCUSED_PASS",
+      "result": "8/10 assertions passed in 91.386 seconds. The exact adult profile/body, one 4d6+22 bite, every signed Powerful Bite case, confirmed critical multiplication, native 2d6 bleed cadence/healing removal, Huge later-Swallow with three 2d8+11 rounds, escape, independent predators and cleanup executed. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The critical fixture retained +100 attack, so a natural-1 confirmation still beat target AC; those exact bite probes also established an unrelated mouth hold before the dedicated same-size Grab case.",
+      "correction": "Derive target AC between the natural-19 threat and natural-1 confirmation totals, make only the critical-fixture target maneuver-immune, assert no Grab side effect, and assert clean mouth state before the dedicated Grab/Swallow sequence.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; desired target AC, no-grab side effect and clean-start diagnostics domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
     }
   ],
   "acceptedLimitations": [
