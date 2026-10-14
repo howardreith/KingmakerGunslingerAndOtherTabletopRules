@@ -1341,6 +1341,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int damageBefore = target.Descriptor.Damage;
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
             int strengthBefore = owner.Stats.Strength.BaseValue;
+            BlueprintFaction factionBefore = owner.Descriptor.Faction;
             int armorClassBefore = target.Stats.AC.BaseValue;
             UnityEngine.Random.State randomBefore = UnityEngine.Random.state;
             ExpandedSummoningChargeAttackObserver observer = null;
@@ -1403,13 +1404,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 targetArmorClassBefore = Rulebook.Trigger(
                     new RuleCalculateAC(owner, target,
                         AttackType.Melee)).TargetAC;
-                // PowerAttackWatcher compares native expected damage with and
-                // without its BAB+10 penalty. Begin with the native toggle off;
-                // at this exact AC its no-Power-Attack branch remains the
-                // winner for every +7..+10 Strength row, while a deterministic
-                // natural 18 still makes the resulting charge hit. This
-                // exercises the watcher instead of disabling it and keeps its
-                // +9 damage out of the charge-rounding measurement.
+                // A deterministic natural 18 hits by five at this exact AC
+                // after the native +2 charge bonus, without threatening the
+                // gore's 19-20 critical. The observer keeps the original
+                // faction through weapon-stat calculation, exposes the native
+                // player-faction Power Attack exemption only to the child
+                // attack roll, then restores the faction before damage.
                 desiredTargetArmorClass = ordinaryAttackBonus + 15;
                 target.Stats.AC.BaseValue += desiredTargetArmorClass -
                     targetArmorClassBefore;
@@ -1429,7 +1429,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Marker = BlueprintRoot.Instance.SystemMechanics
                         .ChargeBuff,
                     ObservePowerAttackChoice = true,
-                    NativeRollSeed = nativeRollSeed };
+                    NativeRollSeed = nativeRollSeed,
+                    OriginalFaction = factionBefore,
+                    PlayerFaction = BlueprintRoot.Instance.PlayerFaction };
                 EventBus.Subscribe(observer);
                 awakeBefore = Game.Instance.State.AwakeUnits.ToArray();
                 foreach (UnitEntityData unit in new[] { owner, target })
@@ -1537,6 +1539,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.PowerAttackDecisionCount == 1 &&
                     !observer.PowerAttackActiveBeforeRoll &&
                     observer.PowerAttackOffAfterAttack &&
+                    observer.PlayerFactionSwitchCount == 1 &&
+                    observer.PlayerFactionAtAttackRoll &&
+                    observer.FactionRestoredAfterAttack &&
+                    ReferenceEquals(owner.Descriptor.Faction,
+                        factionBefore) &&
                     targetArmorClassDuring == desiredTargetArmorClass &&
                     ordinaryStats.DamageDescription[0].Dice.Rolls == 2 &&
                     (int)ordinaryStats.DamageDescription[0].Dice.Dice == 10 &&
@@ -1616,6 +1623,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             observer.PowerAttackActiveBeforeRoll,
                         ["powerAttackOffAfterAttack"] =
                             observer.PowerAttackOffAfterAttack,
+                        ["playerFactionSwitchCount"] =
+                            observer.PlayerFactionSwitchCount,
+                        ["playerFactionAtAttackRoll"] =
+                            observer.PlayerFactionAtAttackRoll,
+                        ["factionRestoredAfterAttack"] =
+                            observer.FactionRestoredAfterAttack,
+                        ["factionBefore"] = factionBefore?.AssetGuid,
+                        ["factionAfter"] = owner.Descriptor.Faction?
+                            .AssetGuid,
                         ["weapon"] = gore.Blueprint.AssetGuid,
                         ["weaponInstance"] = gore.GetHashCode().ToString("X8"),
                         ["ordinaryWeaponStats"] = Sprint23WeaponStatsRow(
@@ -1661,6 +1677,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
                 owner.Stats.Strength.BaseValue = strengthBefore;
+                owner.Descriptor.Faction = factionBefore;
                 target.Stats.AC.BaseValue = armorClassBefore;
                 target.Descriptor.State.Size = sizeBefore;
                 target.Descriptor.Damage = damageBefore;
