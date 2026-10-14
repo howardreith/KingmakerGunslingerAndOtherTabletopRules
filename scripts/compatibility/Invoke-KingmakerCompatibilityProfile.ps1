@@ -98,6 +98,7 @@ param(
         'disposable-expanded-summoning-native-profile',
         'disposable-expanded-summoning-sprint22-native-review',
         'disposable-expanded-summoning-sprint23-native-review',
+        'disposable-expanded-summoning-sprint24-native-review',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
         'summon-same-turn-multiple',
@@ -213,7 +214,8 @@ $assetAttributionScenario = @($Scenario | Where-Object { $_ -ceq
     'observe-kmg-compatibility-asset-attribution' }).Count -gt 0
 $sprint22ReviewScenario = @($Scenario | Where-Object { $_ -cin @(
     'disposable-expanded-summoning-sprint22-native-review',
-    'disposable-expanded-summoning-sprint23-native-review') }).Count -gt 0
+    'disposable-expanded-summoning-sprint23-native-review',
+    'disposable-expanded-summoning-sprint24-native-review') }).Count -gt 0
 if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
 }
@@ -258,8 +260,14 @@ if ($moduleScenario) {
             'disposable-expanded-summoning-sprint23-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation',
                 'turn-based-control', 'charge-rounding-rtwp',
-                'charge-rounding-turn-based'))) {
-        throw 'Sprint 22/23 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.'
+                'charge-rounding-turn-based')) -or
+        ($Scenario[0] -ceq
+            'disposable-expanded-summoning-sprint24-native-review' -and
+            $Parameters.reviewPhase -cnotin @('rtwp-foundation',
+                'rtwp-deinonychus', 'turn-based-deinonychus',
+                'rtwp-tyrannosaurus', 'turn-based-tyrannosaurus',
+                'visual-lifecycle', 'shared-controls'))) {
+        throw 'Sprint 22/23/24 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.'
     }
 } elseif ($assetAttributionScenario) {
     $keys = @($Parameters.Keys)
@@ -292,7 +300,8 @@ if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
 $sprint22Boundary=@($Scenario | Where-Object { $_ -cin @(
     'disposable-expanded-summoning-sprint22-native-review',
-    'disposable-expanded-summoning-sprint23-native-review') }).Count -gt 0
+    'disposable-expanded-summoning-sprint23-native-review',
+    'disposable-expanded-summoning-sprint24-native-review') }).Count -gt 0
 if($sprint22Boundary) {
     . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
     $sprint22SettingsKey='Software\Owlcat Games\Pathfinder Kingmaker'
@@ -441,7 +450,8 @@ try {
         }
         if ($name -cin @(
             'disposable-expanded-summoning-sprint22-native-review',
-            'disposable-expanded-summoning-sprint23-native-review')) {
+            'disposable-expanded-summoning-sprint23-native-review',
+            'disposable-expanded-summoning-sprint24-native-review')) {
             $arguments.Parameters = $Parameters
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -473,7 +483,8 @@ try {
         $arguments.RuntimeLease = $compatRuntimeLease
         $exactSprint22=$name -cin @(
             'disposable-expanded-summoning-sprint22-native-review',
-            'disposable-expanded-summoning-sprint23-native-review')
+            'disposable-expanded-summoning-sprint23-native-review',
+            'disposable-expanded-summoning-sprint24-native-review')
         if($exactSprint22) {
             . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
             $arguments.PassThru=$true
@@ -505,7 +516,8 @@ try {
         $configurationId = $ProfileId + '-' + $name
         if ($name -cin @(
             'disposable-expanded-summoning-sprint22-native-review',
-            'disposable-expanded-summoning-sprint23-native-review')) {
+            'disposable-expanded-summoning-sprint23-native-review',
+            'disposable-expanded-summoning-sprint24-native-review')) {
             $configurationId += '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {

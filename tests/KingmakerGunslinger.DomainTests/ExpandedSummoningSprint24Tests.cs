@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 
@@ -334,6 +335,121 @@ namespace KingmakerGunslinger.DomainTests
                     .Distinct(StringComparer.Ordinal).Count() == 2 &&
                 rows.All(value => value["blueprintSymbols"].Any()),
                 "Theropod paintings are distinct and own concrete consumers.");
+        }
+
+        internal static void NativeReviewIsClosedAndObservesRequiredSeams()
+        {
+            const string scenario =
+                "disposable-expanded-summoning-sprint24-native-review";
+            string catalog = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs");
+            string request = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs");
+            string runner = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs");
+            string common = File.ReadAllText(
+                "scripts/RuntimeAutomation.Common.ps1");
+            string preflight = File.ReadAllText(
+                "scripts/Test-RuntimeScenarioPreflight.ps1");
+            string compatibility = File.ReadAllText(
+                "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1");
+            string[] phases = { "rtwp-foundation", "rtwp-deinonychus",
+                "turn-based-deinonychus", "rtwp-tyrannosaurus",
+                "turn-based-tyrannosaurus", "visual-lifecycle",
+                "shared-controls" };
+
+            Assertions.True(catalog.Contains(scenario) &&
+                request.Contains("Sprint24ReviewPhase") &&
+                common.Contains("Test-KmgSprint24ReviewPhaseScope") &&
+                preflight.Contains(scenario) && compatibility.Contains(scenario),
+                "The Sprint 24 review is wired through every guarded admission seam.");
+            foreach (string phase in phases)
+                Assertions.True(request.Contains("\"" + phase + "\"") &&
+                    common.Contains("'" + phase + "'") &&
+                    preflight.Contains("'" + phase + "'") &&
+                    compatibility.Contains("'" + phase + "'"),
+                    "Every layer owns the exact phase: " + phase);
+            foreach (string token in new[] {
+                "Sprint24RegisteredRoutes", "Sprint24ReviewDeinonychus",
+                "Sprint24ReviewTyrannosaurus", "Sprint24VisualLifecycle",
+                "Sprint24MovementAndCrowding", "Sprint24SharedControls",
+                "Sprint24ContactPresentation", "Sprint24ReleaseHold",
+                "RuleAttackWithWeapon", "ChargeAbility",
+                "UnitPartSwallowWhole", "CriticalConfirmationRoll",
+                "PowerfulBite", "BleedingCritical",
+                "CaptureTheropodOwnedResources", "ExerciseExpandedSummoningRakeCadence",
+                "ExerciseExpandedSummoningGrappleLifecycle" })
+                Assertions.True(runner.Contains(token),
+                    "The native observer must retain carrier: " + token);
+            Assertions.False(runner.Contains("KMG_AUTOMATION_BASELINE"),
+                "The save-free observer never names the protected baseline.");
+        }
+
+        internal static void PersistenceScopeOwnsOnlyTheropodsAndNativeStates()
+        {
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                    .TheropodKeys.SequenceEqual(new[] {
+                        TheropodRulesPolicy.DeinonychusKey,
+                        TheropodRulesPolicy.TyrannosaurusKey }),
+                "The targeted save scope owns exactly the two Sprint 24 identities.");
+            foreach (string key in ExpandedSummoningRosterPersistencePolicy
+                .TheropodKeys)
+            {
+                SummonVariantSpec selected =
+                    ExpandedSummoningRosterPersistencePolicy
+                        .SelectCreatureVariant(
+                            ExpandedSummoningRosterPersistencePolicy
+                                .TheropodsScope, key);
+                Assertions.Equal(key, selected.Creature.Key,
+                    "The hidden qualification scope selects its registered identity.");
+                Assertions.Equal(SummonMultiplicity.One,
+                    selected.Multiplicity,
+                    "Persistence creates one creature, never a quantity group.");
+                Assertions.False(SummonVisibilityCatalog.IsPublished(
+                        selected),
+                    "Targeted qualification does not publish a hidden root.");
+            }
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                    .ExactSelectedKeys(
+                        ExpandedSummoningRosterPersistencePolicy
+                            .TheropodsScope,
+                        new[] { TheropodRulesPolicy.TyrannosaurusKey,
+                            TheropodRulesPolicy.DeinonychusKey }),
+                "The two saved identities match independently of load order.");
+            foreach (string[] corrupt in new[] {
+                new[] { TheropodRulesPolicy.DeinonychusKey },
+                new[] { TheropodRulesPolicy.DeinonychusKey,
+                    TheropodRulesPolicy.DeinonychusKey },
+                new[] { TheropodRulesPolicy.DeinonychusKey, "foreign" } })
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy
+                        .ExactSelectedKeys(
+                            ExpandedSummoningRosterPersistencePolicy
+                                .TheropodsScope, corrupt),
+                    "Missing, duplicate and foreign save identities fail closed.");
+            bool rejected = false;
+            try
+            {
+                ExpandedSummoningRosterPersistencePolicy
+                    .SelectCreatureVariant(
+                        ExpandedSummoningRosterPersistencePolicy
+                            .TheropodsScope,
+                        ArmoredDinosaurRulesPolicy.TriceratopsKey);
+            }
+            catch (InvalidOperationException) { rejected = true; }
+            Assertions.True(rejected,
+                "The Sprint 24 scope cannot select another sprint's creature.");
+
+            string persistence = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Persistence.cs");
+            foreach (string token in new[] {
+                "UnitPartSprint24StateReceipt", "active-mouth-hold",
+                "already-swallowed", "bleeding-critical",
+                "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+                "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+                "UnitPartSwallowed", "UnitPartSwallowWhole",
+                "2d8+11", "2d6", "RuleHealDamage" })
+                Assertions.True(persistence.Contains(token),
+                    "The targeted persistence observer retains: " + token);
         }
 
         private static string Sha256(string path)
