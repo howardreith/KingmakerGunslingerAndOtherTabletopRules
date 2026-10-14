@@ -84,11 +84,14 @@ namespace KingmakerGunslinger.Summoning
         // twelve roots through the complete hidden candidate. Publication
         // removes only those two keys: no identity, route or template child
         // is reallocated.
+        // Sprint 24 registers both theropods once and withholds exactly their
+        // eighteen logical roots. Removing both keys together is the later
+        // publication operation; a half-published pair is invalid.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal);
+            new HashSet<string>(new[] { "deinonychus", "tyrannosaurus" }, StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1075;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 1093;
+        internal const int SuppressedLogicalPlacementCount = 18;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

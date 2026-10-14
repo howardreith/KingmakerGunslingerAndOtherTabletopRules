@@ -2475,5 +2475,25 @@
     "nativeRuntimeQualified": false,
     "reusedSprint23Evidence": true,
     "sprint24Started": false
+  },
+  "expandedSummoningSprint24154": {
+    "releaseVersion": "0.0.154",
+    "releaseInformationalVersion": "0.0.154-expanded-summoning-sprint24-theropods",
+    "masterBase": "e825411a8f920fdb9447f7ad48d3f7d0267e6e32",
+    "newCreatures": 2,
+    "newLogicalRoots": 18,
+    "newTemplateExecutionChildren": 18,
+    "newPrivateIdentities": 10,
+    "registeredLogicalPlacements": 1093,
+    "suppressedLogicalPlacements": 18,
+    "publishedLogicalPlacements": 1075,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1104,
+    "projectIconConcepts": 119,
+    "originalBodyFiles": 4,
+    "nativeRuntimeQualified": false,
+    "candidateOnly": true,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "sprint25Started": false
   }
 }

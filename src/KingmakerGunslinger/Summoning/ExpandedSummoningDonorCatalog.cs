@@ -82,7 +82,13 @@ namespace KingmakerGunslinger.Summoning
                 // Sprint 23 reuses only the measured animation rigs. Both
                 // visible bodies remain deterministic project-owned geometry.
                 "triceratops|028cc6f46e7998f46855a33ffde89567|0",
-                "stegosaurus|c3524f96954a1d94f8525b86e7626633|0"
+                "stegosaurus|c3524f96954a1d94f8525b86e7626633|0",
+                // Sprint 24's one guarded census selected this shared rig for
+                // its independent legs, feet/toes, jaw, forearms and four-
+                // joint balancing tail. It is an animation skeleton only;
+                // both visible bodies and textures are project-owned.
+                "deinonychus|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "tyrannosaurus|a8cbd4cdb0feaf64eab1452257c3c971|0"
             });
         }
 
