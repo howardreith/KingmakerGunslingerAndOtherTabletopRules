@@ -1,6 +1,6 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS — NATIVE FOUNDATION CORRECTION FOCUSED PASS; FRESH SPRINT GATE NEXT** on
+Status: **IN PROGRESS — FOUNDATION PASS; DEINONYCHUS OBSERVER CORRECTION FOCUSED PASS** on
 October 14, 2026.
 Both creature keys remain unpublished until the required mechanics, art,
 runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
@@ -210,13 +210,39 @@ Deinonychus/weapon, records but no longer elevates the misleading calculation
 flag over equipped-limb and outcome evidence, and owns accessory suppression
 through a per-view LateUpdate component included in exact resource receipts and
 released before donor restoration. Production compilation and 13/13 Sprint 24,
-6/6 shared resource-authority, and 1/1 instance-owned-resource tests pass. A
-fresh complete Sprint gate is required before the changed bytes return to native
-review.
+6/6 shared resource-authority, and 1/1 instance-owned-resource tests pass.
+
+The exact corrected commit
+`905c1f7e926924e5ce0b636df2875fc20a2603ba` then passed one fresh complete
+Sprint gate: 2,607/2,607 tests in 91.7 seconds and a strict 370-entry package in
+188.9 seconds total. ZIP SHA-256 is
+`fbab7c4126d785acef8885e0d0b2d17517a87af0b7dfe5d0614c637d8d7f3807`;
+DLL SHA-256 is
+`4de957a8bad495ff94c8e04d70b285102871578b59de2013269fda6a7e3b9422`,
+MVID `2534e2fd-4c1d-4758-9708-4cc14e5493ba`, and source fingerprint
+`feaa8f8ca0eb4d97331725c89ea41cc368a50ec0b808f2cdb7eabb1ff047ea75`.
+Its changed `rtwp-foundation` reproduction passed 26/26 assertions in 95.127
+seconds: both adult profiles, original bodies, selection/accessory ownership and
+all 18 hidden real-parent routes are now exact.
+
+The following `rtwp-deinonychus` phase retained 5 PASS and 5 FAIL assertions.
+It proved the exact four-roll ordinary routine and single-roll AoO, while
+preserving five observer/setup defects: the quiet-unit helper had inflated the
+profile HP before readback; body/selection were sampled before the proven
+12-frame settle; the nominal single command omitted native `IsSingleAttack`;
+Pounce's exact four charge rolls and 11.638 m movement were failed merely because
+one legitimate roll was a natural 1; and the illegal-charge check elevated a
+generic `UnitUseAbility.CanStart` flag over the exact false target predicate and
+zero emitted attacks/state. The batched correction uses the normal own-tier
+profile path, waits for the same settle, explicitly selects native single attack,
+controls and records d20 preconditions, and asserts Pounce routine shape rather
+than all-hit luck. The named Sprint 24 focused gate passes 13/13. Because this
+observer is compiled into the DLL, one fresh complete Sprint gate is required
+before rerunning only the changed native phase.
 
 Seven earlier failed development checks, the two candidate/correction-suite
-failures and the first guarded native foundation failure
-failures remain recorded in the machine-readable ledger:
+failures, the first guarded native foundation failure, and the first dedicated
+Deinonychus phase remain recorded in the machine-readable ledger:
 the first stage allowlist omitted the new production seams, the first provenance
 check found the expected blueprint-ledger hash change, and the first production
 compile lacked the `ContextDiceValue` namespace import. The first observer

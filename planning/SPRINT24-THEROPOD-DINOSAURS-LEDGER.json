@@ -305,20 +305,20 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": {
-      "status": "PASS_HIDDEN_CANDIDATE_SUPERSEDED_BY_NATIVE_CORRECTION",
-      "gitCommit": "ed25e0b56a4e4fc21f6bb39c05f43a5cff7fef4b",
+      "status": "PASS_HIDDEN_CORRECTED_CANDIDATE_SUPERSEDED_BY_OBSERVER_CORRECTION",
+      "gitCommit": "905c1f7e926924e5ce0b636df2875fc20a2603ba",
       "gateLevel": "Sprint",
-      "gateDurationSeconds": 189.4,
+      "gateDurationSeconds": 188.9,
       "completeDomainTests": 2607,
       "completeDomainFailures": 0,
-      "completeDomainSeconds": 93.5,
+      "completeDomainSeconds": 91.7,
       "packageEntries": 370,
       "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
-      "packageSha256": "a917ba3562ff39c44a0497271243bca12ba1e4b680c67b4a7f804112f58d7e13",
-      "dllSha256": "2b085cd688b584ac7e5fa9a652060d6ac19d4b2a2b17f5d178e1fd26d8d55fdf",
-      "dllMvid": "e0300b83-d05a-4b3a-a872-cdbdea4a37f8",
-      "sourceStateSha256": "22b4483a0367f63d87efac9135739ac10c9b0c5d18dface93713b9b6806328c6",
-      "disposition": "Complete hidden Sprint gate PASS; candidate executed once natively, then superseded by evidence-driven scoped corrections."
+      "packageSha256": "fbab7c4126d785acef8885e0d0b2d17517a87af0b7dfe5d0614c637d8d7f3807",
+      "dllSha256": "4de957a8bad495ff94c8e04d70b285102871578b59de2013269fda6a7e3b9422",
+      "dllMvid": "2534e2fd-4c1d-4758-9708-4cc14e5493ba",
+      "sourceStateSha256": "feaa8f8ca0eb4d97331725c89ea41cc368a50ec0b808f2cdb7eabb1ff047ea75",
+      "disposition": "Complete corrected hidden Sprint gate PASS; foundation executed successfully, then compiled observer bytes were superseded by evidence-driven test setup corrections."
     },
     "nativeRuns": [
       {
@@ -342,6 +342,48 @@
           "Native fade/visibility updates re-enabled the exact _ammunition04 accessory after initial suppression."
         ],
         "correction": "Clear donor Race only for both theropods; exact-owner/weapon lead-talon correction; use equipped limb plus outcome as attack-role authority; per-view LateUpdate accessory suppression with exact receipt/release.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-foundation",
+        "status": "PASS_CORRECTED_HIDDEN_CANDIDATE",
+        "runId": "20261014T0851598235701Z-66773cfdb7af4e32a7c2aae7c2b5c14e",
+        "gitCommit": "905c1f7e926924e5ce0b636df2875fc20a2603ba",
+        "compatibilityTransaction": "compat-20261014T085021Z-254c16326dc0",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0851597922754Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "ad9c4b2c7e609ace23515213818d8a9241ebd8f39634e6dc7b000c43c5b4eb4e",
+        "durationSeconds": 95.127,
+        "assertions": 26,
+        "passed": 26,
+        "failed": 0,
+        "routeDisposition": "All 18 hidden roots executed through real parent paths with legal quantities and existing template policy.",
+        "profileDisposition": "Both exact adult profiles and original body/accessory/selection ownership passed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-deinonychus",
+        "status": "FAIL_PRESERVED_OBSERVER_SETUP_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T0856002190634Z-263ba54dd62e43bfb3cd06ed2b62aa13",
+        "gitCommit": "905c1f7e926924e5ce0b636df2875fc20a2603ba",
+        "compatibilityTransaction": "compat-20261014T085422Z-eb67bbd411f8",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0856001045658Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "72fa99628e0ddae8a3d9457e3f03509a16be6395dff8a9265b891ba46382ddb7",
+        "durationSeconds": 93.356,
+        "assertions": 10,
+        "passed": 5,
+        "failed": 5,
+        "proved": "Exact ordinary four-limb routine, one-roll AoO, charge target refusal with zero follow-up/state, legal Pounce movement/economy/four charge rolls, and exact cleanup were observed even where an overstrong assertion failed the row.",
+        "failures": [
+          "Quiet-unit fixture inflated owner HP before the adult profile readback.",
+          "Body and selection were sampled before the proven 12-frame fade settle.",
+          "The nominal single attack did not set native UnitAttack.IsSingleAttack.",
+          "One legal natural 1 incorrectly failed an otherwise exact four-roll Pounce routine.",
+          "The assertion elevated generic command CanStart over the false native target predicate and zero attacks/stale state."
+        ],
+        "correction": "Use the normal own-tier profile path and 12-frame settle before fixture HP inflation; set native IsSingleAttack; control and record d20 preconditions; assert routine shape rather than all-hit luck; keep target refusal and zero effects authoritative for the aborted illegal case.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh complete Sprint gate required because observer bytes changed.",
         "restorationVerified": true,
         "permanentDeployment": false
       }
@@ -498,7 +540,17 @@
       "result": "22/26 assertions passed in 103.583 seconds. All 18 hidden roots passed real parent-path execution. Four exact profile/view assertions failed. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
       "cause": "The visual-only Lizardfolk donor retained its Human race carrier; native primary-hand Strength inflated the lead talon; the standalone calculation flag did not mirror the equipped secondary limb; native fade updates re-enabled the donor accessory.",
       "correction": "Clear Race only on the two theropods, subtract only the exact lead talon's excess half-Strength term, treat the equipped limb and resulting arithmetic as role authority, and continuously suppress/release the exact accessory per view.",
-      "correctionChecks": "Production compilation PASS; Sprint 24 13/13 PASS; shared resource authority 6/6 PASS; instance-owned resource control 1/1 PASS. Fresh complete Sprint gate and changed native foundation reproduction remain required."
+      "correctionChecks": "Production compilation PASS; Sprint 24 13/13 PASS; shared resource authority 6/6 PASS; instance-owned resource control 1/1 PASS; fresh corrected complete Sprint gate PASS; changed native foundation reproduction 26/26 PASS."
+    },
+    {
+      "timestampUtc": "2026-10-14T08:57:41.4675488Z",
+      "stage": "first guarded dedicated Deinonychus RTWP phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / rtwp-deinonychus",
+      "disposition": "PRESERVED_OBSERVER_SETUP_AND_ASSERTION_FAILURES_THEN_FOCUSED_PASS",
+      "result": "5/10 assertions passed in 93.356 seconds. The exact ordinary four-roll routine, one-roll AoO and cleanup passed. Legal Pounce emitted exactly four charge rolls after 11.638 m of native movement and ordinary charge economy; the too-close target was rejected with zero attacks/state. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The quiet-unit helper inflated owner HP before profile sampling; view state was sampled before its established settle; the single command omitted native IsSingleAttack; all-hit luck was incorrectly required for Pounce; generic command CanStart was incorrectly required false after exact target refusal.",
+      "correction": "Sample an own-tier summon after the same 12-frame settle and inflate HP afterward; set UnitAttack.IsSingleAttack; deliberately seed and record rolls while asserting routine legality independent of hits; require target refusal and zero follow-up/stale state for the aborted illegal case.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
     }
   ],
   "acceptedLimitations": [

@@ -93,36 +93,51 @@ complete corrected 20-frame offline review passes, with 181.63 seconds of
 Blender rendering and sorted hash-manifest SHA-256
 `504ea9cfaed5723e74b3b67b81ef43155baf71877510de80bbc9de3b950331ea`.
 
-The committed hidden candidate at `ed25e0b56a4e4fc21f6bb39c05f43a5cff7fef4b`
-then passed the complete Sprint gate: repository validation, 2,607/2,607 domain
-tests in 93.5 seconds, exact-reference compilation and a 370-entry strict ZIP.
-The 189.4-second gate froze package SHA-256
-`a917ba3562ff39c44a0497271243bca12ba1e4b680c67b4a7f804112f58d7e13`,
+The corrected hidden candidate at
+`905c1f7e926924e5ce0b636df2875fc20a2603ba` passed the complete Sprint gate:
+repository validation, 2,607/2,607 domain tests in 91.7 seconds,
+exact-reference compilation and a 370-entry strict ZIP. The 188.9-second gate
+froze package SHA-256
+`fbab7c4126d785acef8885e0d0b2d17517a87af0b7dfe5d0614c637d8d7f3807`,
 DLL SHA-256
-`2b085cd688b584ac7e5fa9a652060d6ac19d4b2a2b17f5d178e1fd26d8d55fdf`,
-MVID `e0300b83-d05a-4b3a-a872-cdbdea4a37f8`, and source fingerprint
-`22b4483a0367f63d87efac9135739ac10c9b0c5d18dface93713b9b6806328c6`.
+`4de957a8bad495ff94c8e04d70b285102871578b59de2013269fda6a7e3b9422`,
+MVID `2534e2fd-4c1d-4758-9708-4cc14e5493ba`, and source fingerprint
+`feaa8f8ca0eb4d97331725c89ea41cc368a50ec0b808f2cdb7eabb1ff047ea75`.
 
-Its first guarded `rtwp-foundation` native phase retained 22 PASS and four FAIL
-assertions in 103.583 seconds. All 18 hidden routes executed through their real
-parent paths with legal quantities and template policy. The failures showed the
-Lizardfolk donor's Human race adding +2 Constitution and retaining Medium combat
-arithmetic, native 1.5x Strength on the lead Deinonychus talon, a standalone
-calculation flag that did not reflect the correctly equipped secondary limb,
-and native fade updates re-enabling `_ammunition04`. Transaction
-`compat-20261014T082738Z-1b5d4864c61a` restored exactly; no process, lease, lock,
-staging or permanent deployment remains. The failure is preserved at
-`runtime-evidence/20261014T0832560629690Z-disposable-expanded-summoning-sprint24-native-review`.
+The corrected `rtwp-foundation` reproduction passed 26/26 assertions in 95.127
+seconds under transaction `compat-20261014T085021Z-254c16326dc0`. Both exact
+adult profiles, body/accessory ownership and all 18 hidden real-parent routes
+passed. Runtime-result SHA-256 is
+`ad9c4b2c7e609ace23515213818d8a9241ebd8f39634e6dc7b000c43c5b4eb4e`;
+the evidence is
+`runtime-evidence/20261014T0851597922754Z-disposable-expanded-summoning-sprint24-native-review`.
 
-The narrow correction clears the playable donor race only on the two theropods,
-scopes a lead-talon Strength correction to the exact Deinonychus and weapon,
-uses the equipped limb plus resulting attack/damage as secondary-role authority,
-and gives the accessory an exact per-view LateUpdate/release owner. Production
-compilation, all 13 Sprint 24 tests, six shared resource-authority tests and the
-instance-owned-resource control pass. Both keys remain suppressed.
+The next `rtwp-deinonychus` phase retained 5 PASS and 5 FAIL assertions in
+93.356 seconds. The actual native run already proved one exact four-limb
+ordinary full routine, a one-strike AoO, and clean teardown. The failed profile
+was an observer setup defect: the shared quiet-unit helper had deliberately
+inflated the summon to 100,000 base hp before the adult readback. The body was
+sampled before its fade/selection settle. The ordinary single command omitted
+the engine's explicit `IsSingleAttack` carrier. The legal Pounce moved 11.638 m,
+spent native charge economy and emitted exactly four charge rolls, but a natural
+1 was incorrectly treated as a routine failure. The too-close target predicate
+correctly refused the charge and emitted zero attacks/state, while the assertion
+incorrectly required the generic command readiness flag to be false. Transaction
+`compat-20261014T085422Z-eb67bbd411f8` restored exactly; no process, lease, lock,
+staging or permanent deployment remains. Runtime-result SHA-256 is
+`72fa99628e0ddae8a3d9457e3f03509a16be6395dff8a9265b891ba46382ddb7`;
+the retained evidence is
+`runtime-evidence/20261014T0856001045658Z-disposable-expanded-summoning-sprint24-native-review`.
 
-Next action: commit and push this correction through the required wrapper, run
-one fresh complete Sprint gate on that exact commit, then rerun only the changed
-`rtwp-foundation` phase with `-ReuseInstalledArtifact`. Continue the remaining
+The batched observer correction now samples a normal own-tier summon after the
+same 12-frame foundation settle, then applies fixture survivability; uses the
+native `IsSingleAttack` contract; records controlled actual d20s without making
+all hits a Pounce legality requirement; and treats native target refusal plus
+zero attacks/stale state as the illegal/aborted result. Production compilation
+and the named Sprint 24 filter pass 13/13. Both keys remain suppressed.
+
+Next action: commit and push this observer correction through the required
+wrapper, run one fresh complete Sprint gate on that exact commit, then rerun
+only `rtwp-deinonychus` with `-ReuseInstalledArtifact`. Continue the remaining
 native phases only after that reproduction passes. Do not begin Brachiosaurus,
 Elephant changes, companions, polymorph, mounts, feats, or any Sprint 25 work.
