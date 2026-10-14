@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "IN_PROGRESS_SOURCE_CONTRACT_FROZEN",
+  "status": "IN_PROGRESS_CENSUS_OBSERVER_READY",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
-  "productPr": null,
+  "productPr": 45,
   "startedUtc": "2026-10-14T05:07:45Z",
   "completedUtc": null,
   "masterBase": "e825411a8f920fdb9447f7ad48d3f7d0267e6e32",
@@ -202,7 +202,7 @@
     "nativePounceCarrierAudit": "IN_PROGRESS",
     "sharedGrappleSwallowAudit": "IN_PROGRESS",
     "strengthContributionAudit": "SPRINT23_INSTALLED_IL_PROVEN; TYRANNOSAURUS SIGNED POLICY FROZEN",
-    "artAndRigAudit": "PENDING_PRIOR_SURVEY_REVIEW_THEN_ONE_BOUNDED_CENSUS"
+    "artAndRigAudit": "PRIOR_SURVEYS_REVIEWED; ONE CLOSED SAVE_FREE CENSUS OBSERVER READY"
   },
   "plan": {
     "ordinaryTargetMinutes": 15,
@@ -215,6 +215,15 @@
     "noUnchangedCampaignReplay": true
   },
   "qualification": {
+    "censusObserverFocused": {
+      "filter": "expanded-summoning.sprint24-census",
+      "productionCompileSeconds": 19.0,
+      "domainSeconds": 4.4,
+      "selectedTests": 2,
+      "failures": 0,
+      "runtimePreflightCases": 570,
+      "runtimePreflightPassed": true
+    },
     "candidateSprintGate": null,
     "nativeRuns": [],
     "artRuns": [],

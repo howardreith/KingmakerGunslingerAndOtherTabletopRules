@@ -1185,6 +1185,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint23-persistence-published-selection", ExpandedSummoningSprint23Tests.PublishedPersistenceSelectsCreatureRoutes),
             Case("expanded-summoning.sprint23-native-observer", ExpandedSummoningSprint23Tests.NativeReviewObservesRealCommandsAndControls),
             Case("expanded-summoning.sprint23-native-scripts", ExpandedSummoningSprint23Tests.NativeReviewScriptsRejectLooseAdmission),
+            Case("expanded-summoning.sprint24-census-selection", Sprint24CensusTests.TheCensusSelectionIsClosedAndExact),
+            Case("expanded-summoning.sprint24-census-wiring", Sprint24CensusTests.TheCensusIsWiredAsSaveFreeMetadata),
             Case("expanded-summoning.sprint19-four-claw-rend", Sprint19RulesTests.FourClawRendNeedsAllFourClawsOnOneTarget),
             Case("expanded-summoning.sprint19-no-stale-rend", Sprint19RulesTests.NoStaleFourClawRendCrossesACommand),
             Case("expanded-summoning.sprint19-review-agrees", Sprint19RulesTests.ReviewExpectationsAgreeWithTheRulesPolicies),

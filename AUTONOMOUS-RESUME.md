@@ -14,6 +14,7 @@ have been read. The compact source contract and requirement-to-proof map are in
 policy identities are in
 [the machine-readable ledger](planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json).
 Both new catalog keys must remain unpublished until qualification.
+Draft product PR #45 targets master directly.
 
 Fresh intake evidence is local-only at
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint24-deinonychus-tyrannosaurus-intake-20261014T050745Z/intake.json`
@@ -32,9 +33,17 @@ Sprint 24 branches. Its SHA-256 moved from
 to `9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542`;
 removing those exact two lines reproduces the original hash.
 
-Next action: finish the exact builder/component/identity and asset seam audit,
-append stable identities once, implement both hidden profiles and focused
-tests, then make the first coherent pushed checkpoint and open one draft
-product PR against master. Do not run the broad Sprint gate yet. Do not begin
-Brachiosaurus, Elephant changes, companions, polymorph, mounts, feats, or any
-Sprint 25 work.
+The one bounded theropod census observer is implemented on closed inputs: the
+Free Hands Lizardfolk candidate, Troll negative control, six released feat
+carriers, Diehard, Endurance, and the native 1d6 bleed graph. Focused Release
+compilation and its two named domain tests passed in 23.4 seconds; the 570-case
+offline runtime preflight also passed. The census is save-free, spawns nothing,
+and captures only transforms/binds, component/bounds, action/contact metadata,
+and blueprint graphs.
+
+Next action: push this coherent observer checkpoint, build one current package,
+then execute the census exactly once through the guarded runtime wrapper. Use
+its evidence to freeze the shared rig and critical/feat carrier decisions
+before appending stable identities. Do not run the broad Sprint gate yet. Do
+not begin Brachiosaurus, Elephant changes, companions, polymorph, mounts,
+feats, or any Sprint 25 work.
