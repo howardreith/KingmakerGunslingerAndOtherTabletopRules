@@ -152,6 +152,22 @@
     }
   ],
   "nativeRuns": [],
+  "nativeAttempts": [
+    {
+      "profileRunId": "compat-20261014T014029Z-1d24452a23e9",
+      "runtimeRunId": "20261014T0142055654226Z-a091a34a0d544f61a75760c3edad5a45",
+      "profile": "gunslinger-only",
+      "phase": "charge-rounding-rtwp",
+      "source": "cf62fea2d2cb97c408238331600d3be0fc9faee9",
+      "result": "PRECONDITION_FAIL",
+      "cause": "The compiled save-free fresh-world admission policy still allowlisted only rtwp-foundation and turn-based-control for Sprint 23, even though the request parser, preflight and scenario runner already accepted the two charge-rounding phases.",
+      "productPostconditionReached": false,
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0142055341413Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T014029Z-1d24452a23e9/transaction.json",
+      "repair": "Extend only the Sprint 23 SaveFreeParameterScope allowlist to the two already-qualified charge phases, retain the Sprint 22 refusal, and cover both boundaries in domain tests before rebuilding the compiled observer."
+    }
+  ],
   "release": null,
   "restoration": null,
   "sprint24Started": false
