@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint23TriceratopsPowerfulChargeRounding",
+  "status": "IN_PROGRESS",
+  "host": "HOWARD-LAPTOP",
+  "startedUtc": "2026-10-14T00:46:28.9410661Z",
+  "branch": "codex/expanded-summoning-sprint23-charge-rounding",
+  "releaseRecordsBranch": "codex/expanded-summoning-sprint23-charge-rounding-release-records",
+  "baseline": {
+    "master": "15d6c0d82bf14fa4fd66c72c0f780f86abf44794",
+    "stableVersion": "0.0.152",
+    "productPr": 41,
+    "productMerge": "1d41388adb6aaa6e4e102e744abb392104cedbba",
+    "finalRecordsPr": 42,
+    "testedSource": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
+    "newerRemoteDelta": false,
+    "nextPatchExpectedNotReserved": "0.0.153"
+  },
+  "intake": {
+    "hostnameVerified": true,
+    "sourceWorktreeCleanBeforeBranch": true,
+    "otherWorktreesPreserved": true,
+    "gameProcessCount": 0,
+    "compatibilityLock": null,
+    "stagingDirectories": [],
+    "modsEntries": 968,
+    "modsManifestSha256": "caa0b310981642ddda2c3af79dec467a91dbb066fb51ee4437edf4fd9dbe9a37",
+    "installedKmgVersion": "0.0.117",
+    "installedKmgFiles": 136,
+    "installedKmgTreeSha256": "216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3",
+    "featureModulesSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "settingsValueCount": 83,
+    "settingsSnapshotSha256": "18d5b65b08c6eb99dd84f13d462e5306666b42315d173c87613ca5489d839354",
+    "saveCount": 118,
+    "saveCatalogSha256": "c17d3252c3b8b031e69d93cf4ace39a1f309f3a04eba666b87df8bbd167e78c1",
+    "protectedBaselineSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+    "authorizedWorkingSha256": "795d59ff448173c6631518676b655d3bd03b31dc31e418f578f9e9488cb10ada",
+    "installedAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "privateAssemblyCSharpSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "referencesByteMatched": true,
+    "note": "The actual save catalog contains 118 files, not the historical 119. The two authorized fixture hashes remain exact and all current human state is the restoration target."
+  },
+  "pushPolicyChange": {
+    "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "beforeSha256": "1aae261a6af151c8c065027ac692f793c4920395ed4dd3f19cabc48f89705ee2",
+    "afterSha256": "688b12798eac1b46b63a28205acbb647825e371cd3e9ae5e4db0ee13610d2fb2",
+    "addedBranches": [
+      "codex/expanded-summoning-sprint23-charge-rounding",
+      "codex/expanded-summoning-sprint23-charge-rounding-release-records"
+    ],
+    "otherEdits": false
+  },
+  "sourceFinding": {
+    "releasedHelper": "floor(strengthModifier / 2)",
+    "caller": "adds helper output to the ordinary weapon-damage calculation",
+    "reproduction": {
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint23-powerful-charge'",
+      "productionCompilation": "PASS",
+      "selected": 1,
+      "registered": 2594,
+      "result": "EXPECTED_FAIL",
+      "failure": "modifier 7: expected final Strength contribution 14, actual 13",
+      "elapsedSeconds": 6.7
+    },
+    "engineContract": {
+      "authority": "Installed Kingmaker 2.1.7b Assembly-CSharp.dll IL, RuleCalculateWeaponStats.OnTrigger",
+      "positive": "truncate(strengthModifier * 1.5)",
+      "zero": "0",
+      "negative": "strengthModifier once; the engine substitutes multiplier 1.0",
+      "gameplayEncounterClaimedAtReleasedSource": false
+    }
+  },
+  "sourceCorrection": {
+    "formulaPositive": "2*m - (m + m/2)",
+    "formulaZeroOrNegative": "0 additional correction",
+    "focusedGate": {
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint23'",
+      "productionCompilation": "PASS",
+      "selected": 12,
+      "registered": 2594,
+      "failures": 0,
+      "elapsedSeconds": 24.3
+    },
+    "finalPreCandidateFocusedGate": {
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint23'",
+      "productionCompilation": "PASS",
+      "selected": 12,
+      "registered": 2594,
+      "failures": 0,
+      "elapsedSeconds": 22.2,
+      "observerIncludesRealChargeStrengths": [24, 26, 28, 30]
+    },
+    "observerChecks": {
+      "runtimePreflight": "570/570 PASS",
+      "orchestration": "168/168 PASS",
+      "compatibilityProfileBoundary": "5/5 PASS",
+      "intermediateSourceAssertionCorrection": "One source-text assertion used the wrong formatting/field spelling; production behavior was unchanged and the corrected focused selection passed."
+    }
+  },
+  "plan": {
+    "sourceAndReviewMinutes": 30,
+    "observerMinutes": 30,
+    "candidateGateMinutes": 30,
+    "nativeCases": [
+      { "profile": "gunslinger-only", "phase": "charge-rounding-rtwp", "budgetMinutes": 15, "timeoutSeconds": 900 },
+      { "profile": "gunslinger-only", "phase": "charge-rounding-turn-based", "budgetMinutes": 15, "timeoutSeconds": 900 },
+      { "profile": "gunslinger-high-risk-combined", "phase": "charge-rounding-rtwp", "budgetMinutes": 15, "timeoutSeconds": 900 }
+    ],
+    "publicationMinutes": 30,
+    "publicVerificationMinutes": 15,
+    "finalRecordsMinutes": 15
+  },
+  "candidate": null,
+  "nativeRuns": [],
+  "release": null,
+  "restoration": null,
+  "sprint24Started": false
+}

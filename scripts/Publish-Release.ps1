@@ -6,7 +6,7 @@ param(
 
     [string]$ReferenceBundleDir,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.151.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.153.md',
 
     [string]$ReleaseBranch = 'master',
 
@@ -19,6 +19,8 @@ param(
     # performs no build and requires the closure ledger and merged lineage.
     [switch]$ReuseQualifiedCandidate,
     [switch]$Sprint22,
+    [switch]$Sprint23ChargeRounding,
+    [string]$ProductPrNumber,
     [string]$PackagePath,
     [string]$CandidateRepositoryRoot,
     [string]$QualificationLedgerPath = 'planning\SPRINT22-QUALIFICATION-LEDGER.json',
@@ -35,14 +37,16 @@ if ($ReuseQualifiedCandidate) {
         -PackagePath $PackagePath -CandidateRepositoryRoot $CandidateRepositoryRoot `
         -QualificationLedgerPath $QualificationLedgerPath `
         -MergedReleaseCommit $MergedReleaseCommit -ReleaseNotesPath $ReleaseNotesPath `
-        -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady -Sprint22:$Sprint22
+        -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady -Sprint22:$Sprint22 `
+        -Sprint23ChargeRounding:$Sprint23ChargeRounding -ProductPrNumber $ProductPrNumber
     return
 }
 if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit) {
     throw 'Qualified-candidate arguments require -ReuseQualifiedCandidate.'
 }
-if ($Sprint22 -or (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -ceq '0.0.151') {
-    throw 'Sprint22 publication requires -ReuseQualifiedCandidate -Sprint22 and its exact tested artifact/ledger; no reporting rebuild.'
+if ($Sprint22 -or $Sprint23ChargeRounding -or
+    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153')) {
+    throw 'This release requires -ReuseQualifiedCandidate with its exact tested artifact, selected patch contract and qualification ledger; no reporting rebuild.'
 }
 
 function Assert-CommandAvailable {
