@@ -1,9 +1,10 @@
-# Sprint 23 Powerful Charge rounding follow-up — QUALIFIED
+# Sprint 23 Powerful Charge rounding follow-up — RELEASED / STOP
 
-The owner selected a bounded correction and patch-release campaign for the
-released Triceratops Powerful Charge live-Strength calculation. Work is on
-`codex/expanded-summoning-sprint23-charge-rounding`, based directly on master
-`15d6c0d82bf14fa4fd66c72c0f780f86abf44794`. Sprint 24 has not been started.
+The owner selected and completed a bounded correction and patch-release
+campaign for the released Triceratops Powerful Charge live-Strength
+calculation. Product PR #43 merged normally as
+`e122013edce9ceb88bd9aa0b40c9762cc717ed8d`; stable v0.0.153 is published and
+Latest. Sprint 24 was not started.
 
 ## Preserved released baseline
 
@@ -67,11 +68,27 @@ faction handoff is request-local: it preserves the original monster weapon-stat
 path, uses the installed Power Attack watcher's player-faction exemption only
 at the attack-roll boundary, and restores the original faction before damage.
 
-Product PR #43 is the single publication path. Remaining work is to commit the
-qualification record, mark and merge that PR normally, promote this exact ZIP
-as the next available stable patch, verify the downloaded public assets, repeat
-the restoration audit, synchronize the final released-state records through
-the documentation-only branch and stop.
+The exact qualified ZIP was promoted without rebuilding as
+[stable v0.0.153](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.153).
+The annotated tag object is
+`586d42b70b30569f88266c73ea7afc3696e911be` and peels to product merge
+`e122013edce9ceb88bd9aa0b40c9762cc717ed8d`. The public release has exactly the
+ZIP, `SHA256SUMS.txt` and `release-manifest.json`; their SHA-256 values are
+respectively
+`cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b`,
+`c9e33dceafd4f125b58604bd62adb19001a71e673d3bce0a9348442d3e2febcd`
+and `690e3dbb597d586fc41d9ef8989fb4dc0f443b4b3305d72177c6d727791b0a39`.
+The downloaded ZIP passed strict validation and contained the exact candidate
+DLL/MVID. GitHub's asset digests match, the release is stable/non-draft/
+non-prerelease, and Latest points to v0.0.153.
+
+The post-release audit again matches the actual intake exactly: 968 Mods
+entries, installed KMG 0.0.117 with 136 files, 83 settings, 118 saves, both
+protected fixture hashes, the sound bank and installed/private references.
+There is no Kingmaker process, compatibility lock, game staging, publisher
+checkout or owned diagnostic temp. Documentation-only PR #44 synchronizes that
+verified released state to master. The endpoint is achieved: stop; do not begin
+Sprint 24.
 
 The authoritative active contract and evidence ledger are
 [the rounding mission](docs/SPRINT23-TRICERATOPS-POWERFUL-CHARGE-ROUNDING-MISSION.md)
