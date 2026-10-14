@@ -248,13 +248,35 @@ pre-release Buff reference and pre-release due time. Transaction
 SHA-256 is
 `dcf214490735a54645f580caccd8bb801fbd457e85a264b7d51dd1d2bd5b54db`.
 
-The narrow observer correction now reacquires the live second-victim swallowed
-Buff after releasing the first, uses the current native due boundary, and
-separately proves that release neither ticks nor relinks the surviving pair.
-Product swallow mechanics are unchanged. Production compilation and the named
-Sprint 24 filter pass 13/13. Both keys remain suppressed.
+The first continuation correction commit
+`ca80f133e538c9607f6795297e0b2f6bd67c6ad7` passed a complete Sprint gate:
+2,607/2,607 tests in 93.1 seconds and a strict 370-entry package in 188.9
+seconds total. ZIP SHA-256 is
+`4fe19f8d4b1129c4e8e88de9c1dd366436d68225983fec1b6e618c9151986215`;
+DLL SHA-256 is
+`333fcc2a81d7c8bbc0ec53128bdc4bc3cc68a314a7e2a17391f4befcb71baa4f`,
+MVID `d53c7878-0ff6-4839-8d26-3bcb0bdaa4da`, and source fingerprint
+`33e13b3989ee99b6768bffdd591f25c613c79bca14facc71067607dbf32b5d96`.
 
-Next action: commit and push this continuation-boundary observer correction
+Its changed TB reproduction again passed 10/11 assertions in 93.564 seconds
+and preserved the same single continuation failure. The new diagnostics proved
+the second Buff reference was stable, its caster/victim ownership remained
+exact, release caused no tick, and the first victim stayed released. The
+surviving Buff was still at the already-processed current turn boundary before
+and after the manual collection call (`0.0s` delay), so that call was not a
+later native round. Transaction `compat-20261014T101641Z-a38d3a138c4f`
+restored exactly; runtime-result SHA-256 is
+`97f760a9f13d7504a405a7373f5cd48ba8dce67abf98c88c3379b45780e3bb71`.
+
+The changed strategy now enrolls the disposable second victim in the existing
+request-owned Sprint 22 clock, releases the first victim, and yields boundedly
+through real native controller pulses until the later scheduled round. It
+requires exactly one attributed 2d8+11 packet for the surviving pair and zero
+packets for the released victim. Product swallow mechanics remain unchanged.
+Production compilation and the named Sprint 24 filter pass 13/13. Both keys
+remain suppressed.
+
+Next action: commit and push this native-clock continuation observer correction
 through the required wrapper, run one fresh complete Sprint gate on that exact
 commit, then rerun only `turn-based-tyrannosaurus` with
 `-ReuseInstalledArtifact`. Continue the remaining native phases only after that
