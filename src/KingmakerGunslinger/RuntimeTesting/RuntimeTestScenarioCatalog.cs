@@ -149,6 +149,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ObserveExpandedSummoningSprint22Contracts =
             "observe-expanded-summoning-sprint22-contracts";
         /// <summary>
+        /// The one closed Sprint 24 biped-rig and critical-carrier census.
+        /// Detached read-only prefabs and exact blueprint metadata at mod load;
+        /// no save, spawn or native asset mutation.
+        /// </summary>
+        internal const string ObserveExpandedSummoningSprint24TheropodCensus =
+            "observe-expanded-summoning-sprint24-theropod-census";
+        /// <summary>
         /// The Sprint 18 hidden-candidate review: the two apes as they are in
         /// a running game. Live profiles, the printed routines, every rend
         /// case, both combat modes, the original bodies, the registered
@@ -810,6 +817,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningArachnidCensus,
                 ObserveExpandedSummoningSprint21Census,
                 ObserveExpandedSummoningSprint22Contracts,
+                ObserveExpandedSummoningSprint24TheropodCensus,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
