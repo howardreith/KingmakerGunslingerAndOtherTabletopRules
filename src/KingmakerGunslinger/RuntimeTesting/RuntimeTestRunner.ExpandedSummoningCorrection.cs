@@ -624,6 +624,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal BlueprintItemWeapon Gore;
             internal BlueprintBuff Marker;
             internal readonly List<string> Attacks = new List<string>();
+            internal readonly List<RuleAttackWithWeapon> AttackRules =
+                new List<RuleAttackWithWeapon>();
             internal bool FirstChargeHitWithMarker;
 
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
@@ -638,6 +640,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Initiator.Descriptor.HasFact(Marker);
                 bool hit = evt.AttackRoll != null && evt.AttackRoll.IsHit &&
                     !evt.AttackRoll.AutoMiss;
+                AttackRules.Add(evt);
                 Attacks.Add("gore=" + gore + ",charge=" + evt.IsCharge +
                     ",first=" + evt.IsFirstAttack + ",opportunity=" +
                     evt.IsAttackOfOpportunity + ",marker=" + marker +
