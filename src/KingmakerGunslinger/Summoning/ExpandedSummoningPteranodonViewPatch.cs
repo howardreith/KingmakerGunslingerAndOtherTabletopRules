@@ -8,6 +8,7 @@ using Harmony12;
 using Kingmaker.View;
 using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Assets;
+using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -223,6 +224,13 @@ namespace KingmakerGunslinger.Summoning
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
             Applied = new ConditionalWeakTable<UnitEntityView, Attachment>();
+        private static readonly FieldInfo BaseCorpulence = typeof(UnitEntityView)
+            .GetField("m_Corpulence", BindingFlags.Instance |
+                BindingFlags.NonPublic);
+        private static readonly MethodInfo SetupSelectionColliders =
+            typeof(UnitEntityView).GetMethod("SetupSelectionColliders",
+                BindingFlags.Instance | BindingFlags.NonPublic, null,
+                new[] { typeof(bool) }, null);
         private static readonly object Sync = new object();
         private static readonly List<string> Outcomes = new List<string>();
 
@@ -288,6 +296,22 @@ namespace KingmakerGunslinger.Summoning
             string blueprintName = __instance.EntityData.Blueprint.name;
             string visualKey;
             if (!VisualKeys.TryGetValue(blueprintName, out visualKey)) return;
+            if (TheropodVisualPolicy.Handles(visualKey))
+            {
+                ModContext context;
+                string exactKey;
+                var blueprint = __instance.EntityData.Blueprint;
+                if (!ModContext.TryGet(out context) ||
+                    context.FeatureModules == null ||
+                    context.FeatureModules.Active == null ||
+                    !TheropodVisualPolicy.TryProductionTheropod(
+                        context.FeatureModules.Active.ExpandedSummoning,
+                        blueprint.AssetGuid, blueprint.name,
+                        blueprint.Prefab == null ? null :
+                            blueprint.Prefab.AssetId, out exactKey) ||
+                    exactKey != visualKey)
+                    return;
+            }
 
             lock (Applied)
             {
@@ -307,6 +331,14 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static string Attach(UnitEntityView view, Attachment attachment)
         {
+            string spatial = string.Empty;
+            if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+            {
+                string failure;
+                if (!TryConfigureTheropodSpatial(view, attachment.VisualKey,
+                        out spatial, out failure))
+                    return "donor-visual:theropod-spatial-failed:" + failure;
+            }
             Mesh source;
             string[] boneNames;
             Texture2D albedo;
@@ -577,7 +609,8 @@ namespace KingmakerGunslinger.Summoning
                     ";accessorySuppressed=" +
                     (attachment.SuppressedRenderers == null ? 0 :
                         attachment.SuppressedRenderers.Length) + ";" + dressing +
-                    ";" + controller;
+                    ";" + controller + (spatial.Length == 0 ? string.Empty :
+                        ";" + spatial);
             }
             catch (Exception error)
             {
@@ -636,6 +669,68 @@ namespace KingmakerGunslinger.Summoning
                 attachment.Material = null;
                 attachment.Mesh = null;
                 return "donor-visual:attach-failed:" + error.GetType().Name;
+            }
+        }
+
+        private static bool TryConfigureTheropodSpatial(UnitEntityView view,
+            string key, out string description, out string failure)
+        {
+            description = string.Empty;
+            failure = string.Empty;
+            float radius;
+            if (view == null ||
+                !TheropodVisualPolicy.TryBaseCorpulence(key, out radius))
+            {
+                failure = "invalid-owner-or-key";
+                return false;
+            }
+            if (BaseCorpulence == null ||
+                BaseCorpulence.FieldType != typeof(float))
+            {
+                failure = "missing-UnitEntityView.m_Corpulence";
+                return false;
+            }
+            if (SetupSelectionColliders == null ||
+                SetupSelectionColliders.ReturnType != typeof(void))
+            {
+                failure = "missing-UnitEntityView.SetupSelectionColliders";
+                return false;
+            }
+            float original = (float)BaseCorpulence.GetValue(view);
+            try
+            {
+                BaseCorpulence.SetValue(view, radius);
+                SetupSelectionColliders.Invoke(view, new object[] { false });
+                CapsuleCollider soft = view.GetComponentsInChildren<
+                    CapsuleCollider>(true).SingleOrDefault(value =>
+                        value.name == "[soft collider]");
+                if (soft == null || soft.radius <= 0f ||
+                    Math.Abs((float)BaseCorpulence.GetValue(view) - radius) >
+                        .00001f)
+                    throw new InvalidOperationException(
+                        "theropod selection collider did not update");
+                description = "baseCorpulence=" + radius.ToString("R",
+                    CultureInfo.InvariantCulture) + ";liveCorpulence=" +
+                    view.Corpulence.ToString("R", CultureInfo.InvariantCulture) +
+                    ";softColliderRadius=" + soft.radius.ToString("R",
+                        CultureInfo.InvariantCulture);
+                return true;
+            }
+            catch (Exception error)
+            {
+                try
+                {
+                    BaseCorpulence.SetValue(view, original);
+                    SetupSelectionColliders.Invoke(view,
+                        new object[] { false });
+                }
+                catch (Exception)
+                {
+                    // Preserve the first exact failing contract in the
+                    // outcome; native view teardown must remain available.
+                }
+                failure = error.GetType().Name;
+                return false;
             }
         }
 
