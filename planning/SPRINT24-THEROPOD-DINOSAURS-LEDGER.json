@@ -305,20 +305,20 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
     },
     "candidateSprintGate": {
-      "status": "PASS_HIDDEN_NATIVE_TURN_CANDIDATE_SUPERSEDED_BY_SECOND_PAIR_ENROLLMENT_OBSERVER_CORRECTION",
-      "gitCommit": "8558144395bd65522a26ad59788d1dcbcacb30f4",
+      "status": "PASS_HIDDEN_TB_TYRANNOSAURUS_CANDIDATE_SUPERSEDED_BY_VISUAL_RECEIPT_FORMATTER_CORRECTION",
+      "gitCommit": "55695b0913a35b9a3a5521c780814b35b55ed3dc",
       "gateLevel": "Sprint",
-      "gateDurationSeconds": 189.8,
+      "gateDurationSeconds": 185.2,
       "completeDomainTests": 2607,
       "completeDomainFailures": 0,
-      "completeDomainSeconds": 93.0,
+      "completeDomainSeconds": 90.6,
       "packageEntries": 370,
       "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
-      "packageSha256": "c596cd82b8c75c07b3eed8a2a5e5722db696087cd0d3f0542d9ace7f741cc437",
-      "dllSha256": "62056224b8744a138a401900eaa41ae8d2feacb373cdc462d4dcb4ff320e1166",
-      "dllMvid": "24c973aa-73f6-49bd-aa2a-8136298b84b0",
-      "sourceStateSha256": "747c8723b63c71fec814dcd0651293cea0af9cdab2b6aa3fbd372e43966c5a43",
-      "disposition": "Complete native-turn hidden Sprint gate PASS. The changed TB reproduction again retained 10/11 after 900 pulses, 24 ended turns, rounds 1 through 7 and 35.333 native seconds. Frozen native IL proved a TB Buff ticks only when its owner or caster is current; the disposable second pair therefore requires supported turn-order admission."
+      "packageSha256": "44102a5c8833774a00ccc2b5a9f9a623561d35e1940dd7e5ce39ed7e5ca8865d",
+      "dllSha256": "80e1dd837ed3ff7a02b491a705975288bd15b195c56d60e4167d38e930eda75e",
+      "dllMvid": "01329835-0f78-4d37-88e6-04c27c8d589c",
+      "sourceStateSha256": "2e0cb8a932d2cd1edf0a3d7bad48a954cc3dd39d48e48fd631bf0fc23ee50ba3",
+      "disposition": "Complete hidden Sprint gate PASS. Supported second-pair turn admission then produced the exact later second-owner 2d8+11 packet in TB and passed all 11 assertions. The subsequent visual-lifecycle batch exposed a receipt-only native-material misclassification and a theropod diagnostic formatter null dereference, so this compiled candidate is superseded by that bounded correction."
     },
     "nativeRuns": [
       {
@@ -595,6 +595,46 @@
         "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; exact enrollment receipt, initial owner-turn readiness, pair-turn pulses, native clock coverage and later packet attribution are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required.",
         "restorationVerified": true,
         "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "PASS_EXACT_HIDDEN_CANDIDATE",
+        "runId": "20261014T1059561205280Z-7e64b0a8a1d74b569349f25605e3d40c",
+        "gitCommit": "55695b0913a35b9a3a5521c780814b35b55ed3dc",
+        "compatibilityTransaction": "compat-20261014T105815Z-6db7ea49dd7c",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1059549427066Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1059560888903Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "508a70436a939677f6052fbf65c14aaaf83f87d057463383521b2ac0915a8f2d",
+        "durationSeconds": 102.756,
+        "assertions": 11,
+        "passed": 11,
+        "failed": 0,
+        "disposition": "All profile, turn, bite, signed Powerful Bite, critical, Grab/Swallow, cadence, escape and cleanup rows passed. Pair two was admitted exactly, pair one delivered and was released, then pair two delivered one attributed 2d8+11 packet after 200 pulses, five ended turns and the controller advanced from round 1 to 2 while pair one stayed released.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "visual-lifecycle",
+        "status": "FAIL_PRESERVED_RESOURCE_RECEIPT_AND_FORMATTER_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T1103586924790Z-3ec0486b28af45db8cd18069744ebb95",
+        "gitCommit": "55695b0913a35b9a3a5521c780814b35b55ed3dc",
+        "compatibilityTransaction": "compat-20261014T110219Z-3b74e5f79bb1",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1103574711631Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1103586702473Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "5cf24f7b0b3e217dc29345131052fa5571da7944bbcb38c84d141499c532212e",
+        "durationSeconds": 98.290,
+        "assertions": 11,
+        "passed": 6,
+        "failed": 5,
+        "proved": "Both recovered Deinonychus views attached the exact original body and suppressed only the accessory; the native carrier inventory, fault rollback donor state, fixture restoration and guarded installation restoration were retained.",
+        "failures": [
+          "The exact owned-resource receipt misclassified one native Lizardfolk material-controller instance after rollback and on each successful view, failing the rollback and three teardown rows.",
+          "The shared full-transform diagnostic formatter dereferenced a missing SerpentineVisualAttachment on the theropod death sample and aborted the remaining visual rows."
+        ],
+        "correction": "Filter the theropod receipt to the exact KMG_<key>_Original material family that ReleasePhase2View actually owns, retain mesh/suppression ownership, recognize the qualified theropod driver set in the full-transform formatter, and add remaining-resource teardown diagnostics.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh exact-candidate Sprint gate and changed visual-lifecycle reproduction remain required; no unchanged relaunch was performed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
       }
     ],
     "artRuns": [
@@ -829,7 +869,17 @@
       "result": "10/11 assertions passed in 121.703 seconds. Pair one delivered one exact initial 2d8+11 packet; distinct swallowed ownership, stable surviving Buff identity, no release-triggered tick or relink, pair one remaining released and exact cleanup were retained. The controller advanced 900 pulses, 24 ended turns, rounds 1 through 7 and 35.333 native seconds. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
       "cause": "The frozen BuffCollection.Tick contract processes a TB Buff only while its owner or caster is current. Neither the disposable second predator nor its victim had been admitted to turn order, so elapsed GameTime alone could not deliver that Buff.",
       "correction": "Enroll the exact disposable second predator/victim pair through the qualified RTWP-to-TB admission seam before creating either hold, wait for the first predator's native turn, and require pair two's packet on the admitted pair's later native turn.",
-      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; exact second-pair admission, initial owner-turn readiness, pair-turn pulses, clock coverage and later packet attribution are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required."
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; exact second-pair admission, initial owner-turn readiness, pair-turn pulses, clock coverage and later packet attribution are domain-pinned. Fresh 55695b09 exact-candidate Sprint gate 2,607/2,607 PASS; changed phase reproduction 11/11 PASS with one later second-owner 2d8+11 packet."
+    },
+    {
+      "timestampUtc": "2026-10-14T11:05:44.8749238Z",
+      "stage": "first guarded visual-lifecycle phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / visual-lifecycle",
+      "disposition": "PRESERVED_NATIVE_RESOURCE_RECEIPT_AND_FORMATTER_FAILURES_THEN_FOCUSED_PASS",
+      "result": "6/11 assertions passed in 98.290 seconds. Two recovered Deinonychus attachments, exact accessory suppression, carrier inventory, fault rollback donor state, fixture teardown and machine restoration passed. Three teardown rows, the injected-fault resource row and later execution failed. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "CaptureTheropodOwnedResources counted a native per-view Lizardfolk material-controller clone that the exact release path intentionally does not own. The shared transform formatter then assumed every non-human body had a SerpentineVisualAttachment and dereferenced null on the theropod death sample.",
+      "correction": "Use the release path's exact KMG_<key>_Original material-name family for theropod receipts, retain exact mesh/suppression resources, recognize the qualified theropod driver set in the shared formatter, and record each remaining resource if teardown still fails.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh exact-candidate Sprint gate and changed visual-lifecycle reproduction remain required; no unchanged relaunch occurred."
     }
   ],
   "acceptedLimitations": [

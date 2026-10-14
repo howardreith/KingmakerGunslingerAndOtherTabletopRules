@@ -401,10 +401,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             Matrix4x4[] skin = bones.Select((bone, index) => bone.localToWorldMatrix * bind[index]).ToArray();
             bool poseFinite = skin.All(matrix => Enumerable.Range(0, 16)
                 .All(index => SerpentineRigSurveyPolicy.Finite(matrix[index / 4, index % 4])));
+            SalamanderHumanVisualAttachment human = body
+                .GetComponentInParent<SalamanderHumanVisualAttachment>();
+            SerpentineVisualAttachment serpentine = body
+                .GetComponentInParent<SerpentineVisualAttachment>();
+            string[] driverNames = human != null
+                ? SalamanderHumanBindingPolicy.Names
+                : serpentine != null
+                    ? serpentine.DriverNames
+                    : TheropodVisualPolicy.IsPermitted(
+                        TheropodRulesPolicy.DeinonychusKey,
+                        bones.Select(bone => bone.name))
+                        ? TheropodVisualPolicy.Bones
+                        : bones.Select(bone => bone.name).ToArray();
             var transforms = new JArray(bones.Select((bone, index) => new JObject {
-                ["name"] = body.GetComponentInParent<SalamanderHumanVisualAttachment>() != null
-                    ? SalamanderHumanBindingPolicy.Names[index]
-                    : body.GetComponentInParent<SerpentineVisualAttachment>().DriverNames[index],
+                ["name"] = driverNames[index],
                 ["nativeTransformName"] = bone.name, ["worldPosition"] = SurveyVector(bone.position),
                 ["skinToWorldRowMajor"] = Sprint17SurveyMatrix(skin[index]) }));
             return new JObject { ["frame"] = Time.frameCount, ["finite"] = finite, ["poseFinite"] = poseFinite,
