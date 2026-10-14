@@ -212,6 +212,7 @@ namespace KingmakerGunslinger.Summoning
             internal Mesh Mesh;
             internal SkinnedMeshRenderer[] SuppressedRenderers;
             internal bool[] OriginalSuppressedRendererStates;
+            internal TheropodAccessorySuppression TheropodSuppression;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal CrocodilianAttackVisualPose CrocodilianPose;
@@ -520,6 +521,14 @@ namespace KingmakerGunslinger.Summoning
                 // and the controller re-reads the renderer's materials.
                 string controller = AdoptByMaterialController(view, donor, material);
 
+                if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+                {
+                    attachment.TheropodSuppression = view.gameObject
+                        .AddComponent<TheropodAccessorySuppression>();
+                    attachment.TheropodSuppression.Configure(
+                        attachment.SuppressedRenderers.Single());
+                }
+
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
                 if (attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
@@ -737,6 +746,13 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.TheropodSuppression != null)
+            {
+                attachment.TheropodSuppression.Release();
+                UnityEngine.Object.DestroyImmediate(
+                    attachment.TheropodSuppression);
+                attachment.TheropodSuppression = null;
+            }
             if (attachment.AnkylosaurusImpact != null)
             {
                 attachment.AnkylosaurusImpact.enabled=false;
@@ -833,7 +849,8 @@ namespace KingmakerGunslinger.Summoning
                     installed.Concat(driven ?? new Material[0]),
                     attachment.OriginalMaterials);
             return privateMaterials.Cast<UnityEngine.Object>()
-                .Concat(new UnityEngine.Object[] { attachment.Mesh })
+                .Concat(new UnityEngine.Object[] { attachment.Mesh,
+                    attachment.TheropodSuppression })
                 .Where(value => value != null).Distinct().ToArray();
         }
 
@@ -1002,6 +1019,41 @@ namespace KingmakerGunslinger.Summoning
             if (method == null) return false;
             method.Invoke(controller, null);
             return true;
+        }
+    }
+
+    /// <summary>
+    /// Native fade/visibility controllers revisit every renderer after the
+    /// attachment has completed. The theropod donor's ammunition renderer is
+    /// not part of the authored body, so this per-view owner suppresses it
+    /// after those updates without touching the shared prefab. Revert restores
+    /// the exact state captured before attachment.
+    /// </summary>
+    internal sealed class TheropodAccessorySuppression : MonoBehaviour
+    {
+        private SkinnedMeshRenderer _renderer;
+
+        internal void Configure(SkinnedMeshRenderer renderer)
+        {
+            _renderer = renderer;
+            Suppress();
+        }
+
+        private void LateUpdate()
+        {
+            Suppress();
+        }
+
+        private void Suppress()
+        {
+            if (_renderer != null && _renderer.enabled)
+                _renderer.enabled = false;
+        }
+
+        internal void Release()
+        {
+            enabled = false;
+            _renderer = null;
         }
     }
 
