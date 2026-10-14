@@ -33,6 +33,7 @@ using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
+using Kingmaker.View;
 using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Blueprints;
@@ -2525,8 +2526,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     if (played.Count > 0 || frame % 30 == 0)
                     {
-                        JObject pose = Sprint17OriginalBodySample(unit,
-                            body);
+                        JObject pose;
+                        try
+                        {
+                            pose = Sprint24OriginalBodySample(unit, body);
+                        }
+                        catch (Exception error)
+                        {
+                            // A diagnostic formatting defect must remain in
+                            // this row and cannot discard later lifecycle,
+                            // movement, contact or shared-control evidence.
+                            pose = new JObject {
+                                ["finite"] = false,
+                                ["poseFinite"] = false,
+                                ["poseFormatError"] = error.GetType().Name +
+                                    ":" + error.Message
+                            };
+                        }
                         finite &= (bool)pose["finite"] &&
                             (bool)pose["poseFinite"];
                         if (samples.Count < 12)
@@ -2599,6 +2615,86 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new[] { unit });
             }
             yield return 0;
+        }
+
+        private static JObject Sprint24OriginalBodySample(
+            UnitEntityData unit, SkinnedMeshRenderer body)
+        {
+            Vector3[] points = Sprint17OriginalWorldVertices(body);
+            bool finite = points.All(point => !float.IsNaN(
+                    point.x + point.y + point.z) &&
+                !float.IsInfinity(point.x + point.y + point.z));
+            int lowest = Enumerable.Range(0, points.Length)
+                .OrderBy(index => points[index].y).First();
+            Matrix4x4[] bind = body.sharedMesh.bindposes;
+            Transform[] bones = body.bones;
+            bool exactDrivers = bones != null && bind != null &&
+                bones.Length == bind.Length && bones.All(value =>
+                    value != null) && TheropodVisualPolicy.IsPermitted(
+                        TheropodRulesPolicy.DeinonychusKey,
+                        bones.Select(value => value.name));
+            Matrix4x4[] skin = bones.Select((bone, index) =>
+                bone.localToWorldMatrix * bind[index]).ToArray();
+            bool poseFinite = exactDrivers && skin.All(matrix =>
+                Enumerable.Range(0, 16).All(index =>
+                    SerpentineRigSurveyPolicy.Finite(
+                        matrix[index / 4, index % 4])));
+            var transforms = new JArray(bones.Select((bone, index) =>
+                new JObject {
+                    ["name"] = TheropodVisualPolicy.Bones[index],
+                    ["nativeTransformName"] = bone.name,
+                    ["worldPosition"] = SurveyVector(bone.position),
+                    ["skinToWorldRowMajor"] =
+                        Sprint17SurveyMatrix(skin[index])
+                }));
+            Transform head = bones.Single(value => value.name == "Head");
+            return new JObject {
+                ["frame"] = Time.frameCount,
+                ["finite"] = finite,
+                ["poseFinite"] = poseFinite,
+                ["exactTheropodDrivers"] = exactDrivers,
+                ["actorPosition"] = SurveyVector(unit.Position),
+                ["vertices"] = points.Length,
+                ["lowestAboveActor"] = points.Min(point => point.y) -
+                    unit.Position.y,
+                ["height"] = points.Max(point => point.y) -
+                    points.Min(point => point.y),
+                ["lowestVertexIndex"] = lowest,
+                ["lowestWorldPosition"] = SurveyVector(points[lowest]),
+                ["actorFloor"] = Sprint17MeasuredFloor(unit, unit.Position),
+                ["lowestVertexFloor"] = Sprint17MeasuredFloor(unit,
+                    points[lowest]),
+                ["nativeMovementProjection"] = SurveyVector(
+                    UnitMovementAgentBase.Move(unit.Position, Vector3.zero, 0)),
+                ["viewLocalToWorldRowMajor"] = Sprint17SurveyMatrix(
+                    unit.View.transform.localToWorldMatrix),
+                ["rendererLocalToWorldRowMajor"] = Sprint17SurveyMatrix(
+                    body.transform.localToWorldMatrix),
+                ["skinTransforms"] = transforms,
+                ["nativeTerrainSnaps"] = new JArray(unit.View
+                    .GetComponentsInChildren<Kingmaker.Visual.SnapToTerrain>(
+                        true).Select(snap => new JObject {
+                            ["name"] = snap.name,
+                            ["parent"] = snap.transform.parent == null ? null :
+                                snap.transform.parent.name,
+                            ["enabled"] = snap.enabled,
+                            ["active"] = snap.gameObject.activeInHierarchy,
+                            ["boundsCenter"] = SurveyVector(
+                                snap.Bounds.center),
+                            ["boundsSize"] = SurveyVector(snap.Bounds.size),
+                            ["upShift"] = snap.UpShift,
+                            ["noRotationSnap"] = snap.NoRotationSnap,
+                            ["fixParentRotation"] = snap.FixParentRotation,
+                            ["localPosition"] = SurveyVector(
+                                snap.transform.localPosition),
+                            ["localToWorldRowMajor"] = Sprint17SurveyMatrix(
+                                snap.transform.localToWorldMatrix)
+                        })),
+                ["headViewPosition"] = SurveyVector(unit.View.transform
+                    .InverseTransformPoint(head.position)),
+                ["worldPoseMethod"] =
+                    "sum(weight * bone.localToWorld * bindpose * originalVertex)"
+            };
         }
 
         private IEnumerable<int> Sprint24MovementAndCrowding(
