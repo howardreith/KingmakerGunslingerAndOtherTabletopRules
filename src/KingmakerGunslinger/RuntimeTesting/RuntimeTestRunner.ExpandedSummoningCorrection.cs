@@ -627,8 +627,40 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<RuleAttackWithWeapon> AttackRules =
                 new List<RuleAttackWithWeapon>();
             internal bool FirstChargeHitWithMarker;
+            internal bool ForcePowerAttackOff;
+            internal int PowerAttackStopCount;
+            internal bool PowerAttackOffAtAttack;
+            internal JObject PowerAttackBeforeAttack;
+            internal JObject PowerAttackAfterStop;
 
-            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt)
+            {
+                if (!ForcePowerAttackOff || evt == null ||
+                    !ReferenceEquals(evt.Initiator, Initiator) ||
+                    !ReferenceEquals(evt.Target, Target) ||
+                    evt.Weapon == null ||
+                    !ReferenceEquals(evt.Weapon.Blueprint, Gore) ||
+                    !evt.IsCharge || !evt.IsFirstAttack ||
+                    evt.IsAttackOfOpportunity) return;
+                var toggle = Initiator.Descriptor.ActivatableAbilities
+                    .Enumerable.Single(value => value.Blueprint.AssetGuid ==
+                        "a7b339e4f6ff93a4697df5d7a87ff619");
+                PowerAttackBeforeAttack = Sprint22PowerAttackState(
+                    Initiator, toggle);
+                // A queued ChargeAbility can restart this attack-mode toggle
+                // after the pre-command setup. Apply the already-qualified
+                // native forced-stop sequence at the exact attack rule
+                // boundary, before its attack-roll and weapon-stat children.
+                if (toggle.IsRunning) toggle.Stop(true);
+                if (toggle.IsOn) toggle.IsOn = false;
+                PowerAttackAfterStop = Sprint22PowerAttackState(
+                    Initiator, toggle);
+                PowerAttackStopCount++;
+                PowerAttackOffAtAttack = !toggle.IsOn &&
+                    !toggle.IsRunning && toggle.Blueprint.Buff != null &&
+                    Initiator.Descriptor.Buffs.GetBuff(
+                        toggle.Blueprint.Buff) == null;
+            }
 
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
             {
