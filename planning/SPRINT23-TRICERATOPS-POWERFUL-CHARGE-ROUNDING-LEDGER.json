@@ -14,6 +14,7 @@
     "finalRecordsPr": 42,
     "testedSource": "e0d7cb863b23925cfbf1721e3965c05e811a0bd7",
     "newerRemoteDelta": false,
+    "remoteLineageObservation": "During development an external actor rewrote master, v0.0.152 and the feature branch to byte-identical trees. The issued and rewritten histories were preserved by normal merge 57ba06413f41afd855e18080b50fa6b6511b161b; no product-tree delta, force push, reset or rebase was performed by this mission.",
     "nextPatchExpectedNotReserved": "0.0.153"
   },
   "intake": {
@@ -94,6 +95,7 @@
       "runtimePreflight": "570/570 PASS",
       "orchestration": "168/168 PASS",
       "compatibilityProfileBoundary": "5/5 PASS",
+      "profilePhaseAllowlistRepair": "The request/runtime layers already accepted both charge-rounding phases, but the outer compatibility transaction wrapper admitted only the two original Sprint 23 phases. Its scenario-specific allowlist now admits both charge phases for Sprint 23 while continuing to reject them for Sprint 22; the focused profile-boundary script and 12-test Sprint 23 gate passed.",
       "intermediateSourceAssertionCorrection": "One source-text assertion used the wrong formatting/field spelling; production behavior was unchanged and the corrected focused selection passed."
     }
   },
@@ -133,6 +135,20 @@
       "failures": 1,
       "cause": "The active follow-up resume replaced the prior terminal resume without restating the current source-derived public equation required by expanded-summoning.published-records-match-derivation.",
       "repair": "Restored the v0.0.152 released lineage and the unchanged 1,075 generated placements / 1,104 visible choices in the active resume; no product or package input changed. The first focused reread correctly remained red because Markdown wrapping split the generated-placement phrase; placing the exact derived equation contiguously corrected the record-format defect."
+    },
+    {
+      "source": "57ba06413f41afd855e18080b50fa6b6511b161b",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+      "result": "SUPERSEDED_BEFORE_NATIVE",
+      "stage": "complete source/build/package gate",
+      "registered": 2594,
+      "executed": 2594,
+      "failures": 0,
+      "packageSha256": "290ff21c43128600b0308d163a9ffdbd7e22144b8096213919a6d3e1ccf5f2d4",
+      "dllSha256": "1b0567cd883882370c98be1d95375b20e6f5be3c66ac6a208769612bead0454a",
+      "dllMvid": "ebe819dc-d0e5-48e2-9043-8d54af7ad71b",
+      "cause": "Offline scheduling discovered that the outer compatibility profile wrapper rejected the newly qualified charge-rounding phase names before transaction entry.",
+      "repair": "Narrowly extended only the Sprint 23 profile phase allowlist, retained the Sprint 22 refusal, and added the missing outer-boundary test. No gameplay code changed and this package was never deployed."
     }
   ],
   "nativeRuns": [],
