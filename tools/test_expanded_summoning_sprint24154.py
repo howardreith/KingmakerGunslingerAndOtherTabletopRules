@@ -82,12 +82,15 @@ class Sprint24GateTests(unittest.TestCase):
                                                         "KMG.Summoning.Ability."))
                                  for symbol in gate.ADDED))
 
-    def test_production_boundary_starts_with_census_only(self):
+    def test_production_boundary_admits_only_named_sprint24_seams(self):
         self.assertIn(
             "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Census.cs",
             gate.ALLOWED_PRODUCTION)
-        self.assertNotIn(
+        self.assertIn(
             "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
+            gate.ALLOWED_PRODUCTION)
+        self.assertNotIn(
+            "src/KingmakerGunslinger/Summoning/ArmoredDinosaurRulesPolicy.cs",
             gate.ALLOWED_PRODUCTION)
 
 

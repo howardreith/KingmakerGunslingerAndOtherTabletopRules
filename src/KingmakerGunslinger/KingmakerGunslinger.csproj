@@ -222,6 +222,8 @@
     <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
     <Compile Include="Summoning\ArmoredDinosaurRulesPolicy.cs" />
+    <Compile Include="Summoning\TheropodRulesPolicy.cs" />
+    <Compile Include="Summoning\TheropodCombatComponents.cs" />
     <Compile Include="Summoning\CrocodilianRulesPolicy.cs" />
     <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
     <Compile Include="Summoning\ContextActionUngulateTrample.cs" />
@@ -1241,6 +1243,8 @@
     <Compile Include="Assets\PteranodonAssetRuntime.ArmoredDinosaurs.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Ankylosaurus.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.ArmoredDinosaurs.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Theropods.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Theropods.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Survey.cs" />
     <Compile Include="RuntimeTesting\Sprint24TheropodCensusPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Census.cs" />
