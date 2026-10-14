@@ -1416,6 +1416,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData target = fixture.Hostile;
             ItemEntityWeapon bite = owner.Body.PrimaryHand.MaybeWeapon;
             int attackBefore = owner.Stats.AdditionalAttackBonus.BaseValue;
+            int armorClassBefore = target.Stats.AC.BaseValue;
             int hitPointsBefore = target.Stats.HitPoints.BaseValue;
             int damageBefore = target.Descriptor.Damage;
             UnityEngine.Random.State randomBefore = UnityEngine.Random.state;
@@ -1429,10 +1430,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             EventBus.Subscribe(observer);
             try
             {
-                owner.Stats.AdditionalAttackBonus.BaseValue = 100;
+                owner.Stats.AdditionalAttackBonus.BaseValue = 0;
                 target.Stats.HitPoints.BaseValue = 100000;
                 target.Descriptor.Damage = 0;
                 Sprint24RemoveBuff(target, bleed);
+                Sprint24ReleaseHold(owner, target);
+                target.Descriptor.State.AddCondition(
+                    UnitCondition.ImmuneToCombatManeuvers, null);
+
+                int ordinaryAttackBonus = Rulebook.Trigger(
+                    new RuleCalculateAttackBonusWithoutTarget(owner, bite,
+                        0)).Result;
+                int targetArmorClassBefore = Rulebook.Trigger(
+                    new RuleCalculateAC(owner, target,
+                        AttackType.Melee)).TargetAC;
+                int desiredTargetArmorClass = ordinaryAttackBonus + 10;
+                target.Stats.AC.BaseValue += desiredTargetArmorClass -
+                    targetArmorClassBefore;
+                int targetArmorClassDuring = Rulebook.Trigger(
+                    new RuleCalculateAC(owner, target,
+                        AttackType.Melee)).TargetAC;
 
                 int probeSeed = FindNativeD20Seed(15);
                 UnityEngine.Random.InitState(probeSeed);
@@ -1509,9 +1526,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new DiceFormula(0, DiceType.D6), 5));
                 bool removedByHealing = healing.Value > 0 &&
                     !target.Descriptor.HasFact(bleed);
+                bool noGrabSideEffect =
+                    owner.Get<UnitPartGrappleInitiator>() == null &&
+                    target.Get<UnitPartGrappleTarget>() == null &&
+                    SummonHoldComponent.HeldTarget(owner) == null &&
+                    target.Get<UnitPartSwallowed>() == null;
 
                 bool exact = carrier && noBleed && applied && cadence &&
-                    removedByHealing && observer.WeaponAttacks.Count == 0;
+                    removedByHealing && noGrabSideEffect &&
+                    observer.WeaponAttacks.Count == 0;
                 Sprint24Check("tyrannosaurus-critical-suite-" +
                     (turnBased ? "turn-based" : "rtwp"), exact,
                     new JObject {
@@ -1527,6 +1550,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["autoThreat"] = focusProbe.AutoCriticalThreat,
                         ["autoConfirmation"] =
                             focusProbe.AutoCriticalConfirmation,
+                        ["ordinaryAttackBonus"] = ordinaryAttackBonus,
+                        ["targetArmorClassBefore"] =
+                            targetArmorClassBefore,
+                        ["targetArmorClassDuring"] =
+                            targetArmorClassDuring,
+                        ["desiredTargetArmorClass"] =
+                            desiredTargetArmorClass,
                         ["unconfirmedSeed"] = unconfirmedSeed,
                         ["unconfirmedNatural"] =
                             unconfirmed.AttackRoll?.Roll.Value,
@@ -1537,6 +1567,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                             unconfirmed.AttackRoll?.IsCriticalRoll,
                         ["unconfirmedConfirmed"] =
                             unconfirmed.AttackRoll?.IsCriticalConfirmed,
+                        ["unconfirmedAutoConfirmation"] =
+                            unconfirmed.AttackRoll?
+                                .AutoCriticalConfirmation,
+                        ["unconfirmedConfirmationTotal"] =
+                            unconfirmed.AttackRoll == null ? -1 :
+                            unconfirmed.AttackRoll
+                                .CriticalConfirmationRoll.Value +
+                            unconfirmed.AttackRoll.AttackBonus +
+                            unconfirmed.AttackRoll
+                                .CriticalConfirmationBonus,
+                        ["unconfirmedTargetCriticalAc"] =
+                            unconfirmed.AttackRoll?.TargetCriticalAC,
                         ["confirmedSeed"] = confirmedSeed,
                         ["confirmedNatural"] =
                             confirmed.AttackRoll?.Roll.Value,
@@ -1552,14 +1594,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Sprint16DamageEvent(bleedDamage),
                         ["oneBleedTick"] = cadence,
                         ["healing"] = healing.Value,
-                        ["removedByHealing"] = removedByHealing
+                        ["removedByHealing"] = removedByHealing,
+                        ["noGrabSideEffect"] = noGrabSideEffect
                     }, "Improved Critical gives a native 19-20 threat, Critical Focus adds +4 without automatic confirmation, only a confirmed exact bite applies one native 2d6 bleed cadence, and healing removes it.");
             }
             finally
             {
                 EventBus.Unsubscribe(observer);
                 Sprint24RemoveBuff(target, bleed);
+                Sprint24ReleaseHold(owner, target);
+                target.Descriptor.State.RemoveConditionAll(
+                    UnitCondition.ImmuneToCombatManeuvers);
                 owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
+                target.Stats.AC.BaseValue = armorClassBefore;
                 target.Stats.HitPoints.BaseValue = hitPointsBefore;
                 target.Descriptor.Damage = damageBefore;
                 UnityEngine.Random.state = randomBefore;
@@ -1596,6 +1643,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (grab == null || bite == null)
                     throw new InvalidOperationException(
                         "Tyrannosaurus exact bite grab carrier is absent.");
+                bool cleanStart =
+                    owner.Get<UnitPartGrappleInitiator>() == null &&
+                    target.Get<UnitPartGrappleTarget>() == null &&
+                    SummonHoldComponent.HeldTarget(owner) == null &&
+                    target.Get<UnitPartSwallowed>() == null;
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100;
                 owner.Stats.AdditionalCMB.BaseValue = 100;
                 target.Stats.HitPoints.BaseValue = 100000;
@@ -1755,7 +1807,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !target.Descriptor.State.HasCondition(
                         UnitCondition.CantAct);
 
-                bool exact = exactLimb && !oversized && !miss &&
+                bool exact = cleanStart && exactLimb && !oversized && !miss &&
                     !wrongLimb && sameSizeCannotSwallow &&
                     sameSizeMaintainedNotSwallowed && immediateRefused &&
                     swallowedState && cadence && initialEscapeGate &&
@@ -1767,6 +1819,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["target"] = target.UniqueId,
                         ["event"] = "bite-grab-later-swallow-cadence",
                         ["bite"] = bite.Blueprint.AssetGuid,
+                        ["cleanStart"] = cleanStart,
                         ["grappleLessTrip"] = delta,
                         ["maxHeld"] = grab.MaxHeldTargets,
                         ["oversizedRefused"] = !oversized,
