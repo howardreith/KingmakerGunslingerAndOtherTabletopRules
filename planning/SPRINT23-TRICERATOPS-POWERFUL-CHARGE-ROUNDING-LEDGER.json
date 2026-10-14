@@ -165,6 +165,22 @@
       "dllMvid": "c92892e8-e394-4393-8748-d736f6d564e0",
       "cause": "The strict RTWP native run proved all four corrected Strength contributions, but also proved that Kingmaker's non-player PowerAttackWatcher re-enabled Power Attack at RuleAttackRoll after the fixture stopped it at RuleAttackWithWeapon. The retained -3 attack penalty made the PA-off setup assertion fail while damage arithmetic passed.",
       "repair": "Use the real player-faction contract for the disposable player summon during the PA-off charge rows, record player/hostile relationships, and restore its original request-local faction before teardown. Retain the strict attack-bonus and toggle assertions."
+    },
+    {
+      "source": "d6e1d2b9a2776efb352e4c19e49d5de41b8329ba",
+      "command": ".\\scripts\\Invoke-KmgGate.ps1 -Level Sprint",
+      "result": "SUPERSEDED_AFTER_NATIVE",
+      "stage": "complete source/build/package gate and affected RTWP native run",
+      "registered": 2594,
+      "executed": 2594,
+      "failures": 0,
+      "elapsedSeconds": 179.5,
+      "sourceFingerprint": "775914fa43436dc8a7bfce1aa9d45e0d675cbc5834297d3a5c0b9340952ca360",
+      "packageSha256": "552ea4f3c04681505d1157f5eb36b1c602f7d186eaacbc364305aba6d8c220fe",
+      "dllSha256": "45f9c3cd26cfec4752e0b9a51be30ccc22dc31fbf2029412dc0c944ef0b59b27",
+      "dllMvid": "a6d4e228-719a-4196-af0a-5cf5ba1c22bf",
+      "cause": "The player-faction setup correctly held Power Attack off and produced the exact +2 charge attack bonus, but installed RuleCalculateWeaponStats IL applies its separate player-faction size-scaling branch to overridden monster dice. That changed the observer's ordinary gore from the preserved normalized 2d10 line to raw 6d8 and correctly failed the ordinary-dice assertion.",
+      "repair": "Preserve the original summon faction and its 2d10 monster-dice path. Let the installed PowerAttackWatcher make a native off choice by preparing Power Attack on against a request-local calibrated AC, then seed a genuine noncritical hit and require the watcher to remove the toggle before attack calculation."
     }
   ],
   "nativeRuns": [],
@@ -212,6 +228,21 @@
       "restoration": "EXACT_VERIFIED",
       "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T020133Z-7bffca83f063/transaction.json",
       "repair": "Run the PA-off charge rows under BlueprintRoot.PlayerFaction, which is the real player-summon convention and makes the watcher honor the explicit native toggle state; record hostility and restore the request-owned unit's original faction exactly."
+    },
+    {
+      "profileRunId": "compat-20261014T021607Z-241b58c4dae6",
+      "runtimeRunId": "20261014T0217425874407Z-83039ca255964558996740f86a766d4e",
+      "profile": "gunslinger-only",
+      "phase": "charge-rounding-rtwp",
+      "source": "d6e1d2b9a2776efb352e4c19e49d5de41b8329ba",
+      "result": "SETUP_PATH_FAIL",
+      "cause": "All four commands were genuine PA-off charge hits with exact +2 attack bonuses, corrected +14/+16/+18/+20 Strength totals and exact faction restoration. The request-local player-faction precondition also activated Kingmaker's unrelated overridden-weapon player size-scaling branch, yielding 6d8 ordinary gore instead of the preserved 2d10 monster line; only the strict ordinary-dice assertion failed.",
+      "productPostconditionReached": true,
+      "productArithmeticObserved": "PASS for Strength modifiers +7/+8/+9/+10",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0217425488373Z-disposable-expanded-summoning-sprint23-native-review",
+      "restoration": "EXACT_VERIFIED",
+      "restorationReceipt": "C:/Dev/KingmakerGunslingerLab/compatibility-state/compat-20261014T021607Z-241b58c4dae6/transaction.json",
+      "repair": "Do not accept 6d8 or weaken the printed-dice assertion. Restore the original faction and use the native watcher's documented expected-damage choice to turn Power Attack off at RuleAttackRoll under calibrated request-local AC, with a deterministic genuine noncritical hit and exact AC restoration."
     }
   ],
   "release": null,
