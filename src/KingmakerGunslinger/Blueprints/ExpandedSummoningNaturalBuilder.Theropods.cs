@@ -19,6 +19,15 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
+            BlueprintUnit expiryEffectDonor = BlueprintLibraryLookup
+                .RequireExact<BlueprintUnit>(library,
+                    TheropodVisualPolicy.ExpiryEffectDonorGuid,
+                    "qualified native theropod expiry dissolve donor");
+            ConfigureTheropodExpiryVisual(Require<BlueprintUnit>(bySymbol,
+                    "KMG.Summoning.Unit.Deinonychus"), expiryEffectDonor);
+            ConfigureTheropodExpiryVisual(Require<BlueprintUnit>(bySymbol,
+                    "KMG.Summoning.Unit.Tyrannosaurus"), expiryEffectDonor);
+
             BlueprintItemWeapon talon = Require<BlueprintItemWeapon>(bySymbol,
                 TheropodRulesPolicy.DeinonychusTalonSymbol);
             BlueprintItemWeapon bite = Require<BlueprintItemWeapon>(bySymbol,
@@ -62,6 +71,23 @@ namespace KingmakerGunslinger.Blueprints
                     Require<BlueprintFeature>(bySymbol,
                         TheropodRulesPolicy.TyrannosaurusBleedingCriticalSymbol)
                 });
+        }
+
+        private static void ConfigureTheropodExpiryVisual(BlueprintUnit unit,
+            BlueprintUnit donor)
+        {
+            if (unit == null || unit.Visual == null || donor == null ||
+                donor.Visual == null || donor.Visual.BloodPuddleFx == null ||
+                string.IsNullOrEmpty(donor.Visual.BloodPuddleFx.AssetId))
+                throw new InvalidOperationException(
+                    "The exact native theropod expiry carrier is unavailable.");
+            // Clone the nested visual record before replacing one link. Unit
+            // shells shallow-copy their donor's visual record, so assigning on
+            // that shared object would mutate the native Lizardfolk blueprint.
+            var visual = new UnitVisualParams();
+            CopyFields(unit.Visual, visual);
+            visual.BloodPuddleFx = donor.Visual.BloodPuddleFx;
+            unit.Visual = visual;
         }
 
         private static void ConfigureTheropodUnitType(BlueprintUnitType type,
