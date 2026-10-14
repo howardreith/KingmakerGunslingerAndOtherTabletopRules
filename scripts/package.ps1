@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint23.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint23-charge-rounding.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -72,7 +72,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.145.md',
     'docs\RELEASE-NOTES-0.0.146.md',
     'docs\RELEASE-NOTES-0.0.151.md',
-    'docs\RELEASE-NOTES-0.0.152.md')) {
+    'docs\RELEASE-NOTES-0.0.152.md',
+    'docs\RELEASE-NOTES-0.0.153.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -247,7 +248,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 363 } else { 361 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 364 } else { 362 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

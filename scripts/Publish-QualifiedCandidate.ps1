@@ -7,6 +7,8 @@ param(
     [Parameter(Mandatory=$true)][string]$ReleaseNotesPath,
     [switch]$Publish,
     [switch]$Sprint22,
+    [switch]$Sprint23ChargeRounding,
+    [string]$ProductPrNumber,
     [switch]$ConfirmReleaseReady
 )
 Set-StrictMode -Version Latest
@@ -26,9 +28,13 @@ function Resolve-KmgReleaseInput([string]$Path) {
 Push-Location $root
 try {
     $git = Get-KmgGitState -RepositoryRoot $root
-    $selectedBranch=if($Sprint22){'codex/expanded-summoning-sprint22-ankylosaurus'}else{'codex/expanded-summoning-sprint21-bebelith-giant-crab'}
-    $selectedPr=if($Sprint22){'39'}else{'36'}
-    $selectedSuffix=if($Sprint22){'expanded-summoning-sprint22'}else{'expanded-summoning-sprint21'}
+    if($Sprint22 -and $Sprint23ChargeRounding) { throw 'Select only one qualified-candidate release contract.' }
+    if($Sprint23ChargeRounding -and $ProductPrNumber -cnotmatch '^\d+$') {
+        throw 'Sprint 23 charge-rounding publication requires its numeric product PR.'
+    }
+    $selectedBranch=if($Sprint23ChargeRounding){'codex/expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'codex/expanded-summoning-sprint22-ankylosaurus'}else{'codex/expanded-summoning-sprint21-bebelith-giant-crab'}
+    $selectedPr=if($Sprint23ChargeRounding){$ProductPrNumber}elseif($Sprint22){'39'}else{'36'}
+    $selectedSuffix=if($Sprint23ChargeRounding){'expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'expanded-summoning-sprint22'}else{'expanded-summoning-sprint21'}
     if ($git.Status.Count -ne 0 -or $git.Branch -cne $selectedBranch) {
         throw 'Promotion requires the selected clean reporting branch.'
     }
@@ -66,7 +72,8 @@ try {
         $candidate.version -cnotmatch '^\d+\.\d+\.\d+$') { throw 'Stable version identity differs from the tested artifact.' }
     $ledgerPath = Resolve-KmgReleaseInput $QualificationLedgerPath
     $ledger = Get-Content -LiteralPath $ledgerPath -Raw | ConvertFrom-Json
-    if($Sprint22) { Assert-KmgSprint22ReleaseDecision -Ledger $ledger -Candidate $candidate }
+    if($Sprint23ChargeRounding) { Assert-KmgSprint23ChargeRoundingReleaseDecision -Ledger $ledger -Candidate $candidate }
+    elseif($Sprint22) { Assert-KmgSprint22ReleaseDecision -Ledger $ledger -Candidate $candidate }
     else { Assert-KmgClosureReleaseDecision -Ledger $ledger -Candidate $candidate }
     Assert-KmgClosureProofFiles -Ledger $ledger
     Assert-KmgNotRunning
@@ -74,7 +81,7 @@ try {
         throw 'A runtime transaction is still active; publication is refused.'
     }
     $intake = Get-Content -LiteralPath (Join-Path $ledger.evidenceRoot $ledger.restoration.intakeManifest) -Raw | ConvertFrom-Json
-    if($Sprint22) { $intake=@($intake.modsManifest) }
+    if($Sprint22 -or $Sprint23ChargeRounding) { $intake=@($intake.modsManifest) }
     $currentMods = Get-KmgCompatibilityDirectoryManifest 'C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker/Mods'
     if (-not (Test-KmgCompatibilityManifestEqual $intake $currentMods)) { throw 'Actual human installation has not been restored.' }
     $notesPath = Resolve-KmgReleaseInput $ReleaseNotesPath
