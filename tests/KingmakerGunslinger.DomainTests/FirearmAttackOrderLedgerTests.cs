@@ -130,6 +130,33 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(f.Ledger.Retarget(order, owner, f.Target, new object()), "Stale target search cannot borrow a fresh order.");
             Assertions.True(f.Ledger.IsCurrent(next), "Fresh explicit order is unaffected by stale work.");
         }
+        internal static void ConcludedOrderStopsConstrainingNativeContinuation()
+        {
+            var f = new Fixture(); var order = f.Accept(); f.Ledger.Own(order, new object());
+            Assertions.False(f.Ledger.Conclude(order, true, false),
+                "A surviving native command still carries the order through native retargeting.");
+            Assertions.False(f.Ledger.Conclude(order, false, true),
+                "A finished sequence whose target can still be attacked keeps its continuation.");
+            Assertions.True(f.Ledger.IsCurrent(order), "Neither live case ends the order.");
+            Assertions.True(f.Ledger.Conclude(order, false, false),
+                "Nothing can continue an order whose target can no longer be attacked.");
+            Assertions.True(f.Ledger.Current(f.Actor) == null && !f.Ledger.IsSuppressed(f.Actor, f.Weapon),
+                "An undegraded firearm returns to native automatic combat without suppression.");
+            Assertions.False(f.Ledger.Conclude(order, false, false), "Concluding is not repeated.");
+            Assertions.True(f.Ledger.IsCurrent(f.Accept()), "A later explicit order is accepted normally.");
+        }
+        internal static void DegradedOrStaleOrdersAreNotConcluded()
+        {
+            var f = new Fixture(); f.Ledger.Break(f.Actor, f.Weapon);
+            var broken = f.Accept();
+            Assertions.False(f.Ledger.Conclude(broken, false, false),
+                "A degraded firearm still needs a new explicit order; native work cannot end it early.");
+            Assertions.True(f.Ledger.IsCurrent(broken) && !f.Ledger.IsSuppressed(f.Actor, f.Weapon),
+                "The accepted Broken order is unchanged.");
+            var g = new Fixture(); var old = g.Accept(); var fresh = g.Accept();
+            Assertions.False(g.Ledger.Conclude(old, false, false), "A superseded order has nothing to conclude.");
+            Assertions.True(g.Ledger.IsCurrent(fresh), "Stale work cannot end the newer order.");
+        }
         internal static void DelayedAcceptanceFailsClosed()
         {
             var f = new Fixture();

@@ -116,9 +116,11 @@ ELIGIBILITY_PRODUCTION = {
     "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs",
 }
 
-# Development checkpoint after v0.0.154: firearm RTWP full-attack retarget
-# after a kill, with its guarded native kill-chain fixture.
+# Development checkpoint after v0.0.154: firearm RTWP continuation after a
+# kill (completed explicit order), with its guarded native kill-chain fixture.
 FIREARM_RETARGET_PRODUCTION = {
+    "src/KingmakerGunslinger/Firing/FirearmAttackOrderLedger.cs",
+    "src/KingmakerGunslinger/Firing/NativeFirearmAttackOrder.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmMaintenance.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmReviewKillChain.cs",
 }

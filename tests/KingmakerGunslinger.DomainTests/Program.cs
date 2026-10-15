@@ -1696,6 +1696,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("firearm-orders.owner-lifetime", FirearmAttackOrderLedgerTests.OwnershipDoesNotAdvanceSubmission),
             Case("firearm-orders.native-retarget-owner", FirearmAttackOrderLedgerTests.RetargetRequiresCurrentCommandOwnership),
             Case("firearm-orders.stale-retarget", FirearmAttackOrderLedgerTests.RetargetCannotReviveDegradedOrSupersededOrders),
+            Case("firearm-orders.concluded-unattackable-target", FirearmAttackOrderLedgerTests.ConcludedOrderStopsConstrainingNativeContinuation),
+            Case("firearm-orders.degraded-not-concluded", FirearmAttackOrderLedgerTests.DegradedOrStaleOrdersAreNotConcluded),
             Case("broken-sequence.construction-unsuppressed-allows", BrokenSequenceInterruptionTests.ConstructionUnsuppressedAlwaysAllows),
             Case("broken-sequence.construction-automatic-rejected", BrokenSequenceInterruptionTests.ConstructionAutomaticAfterBreakRejected),
             Case("broken-sequence.construction-player-order-consumes", BrokenSequenceInterruptionTests.ConstructionPlayerIssuedOrderConsumesSuppression),
