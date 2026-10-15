@@ -1,8 +1,13 @@
 # Kingmaker Gunslinger
 
-The **0.0.153-expanded-summoning-sprint23-charge-rounding** patch corrects the
-released Triceratops Powerful Charge contribution at positive odd Strength
-modifiers while keeping the printed +8 baseline unchanged. See the
+The **0.0.154-gunslinger-animal-companion-eligibility** patch stops animal
+companions from taking Gunslinger levels; player characters and humanoid
+companions keep the class. See the
+[v0.0.154 release notes](docs/RELEASE-NOTES-0.0.154.md).
+
+The earlier **0.0.153-expanded-summoning-sprint23-charge-rounding** patch
+corrected the released Triceratops Powerful Charge contribution at positive odd
+Strength modifiers while keeping the printed +8 baseline unchanged. See the
 [v0.0.153 release notes](docs/RELEASE-NOTES-0.0.153.md). The complete Sprint 23
 creature, route, art and historical qualification record remains in the
 [v0.0.152 coverage record](docs/SPRINT23-COVERAGE.md).
@@ -12,9 +17,9 @@ Sprint 24 is not started.
 
 ### Current release
 
-Version **0.0.153-expanded-summoning-sprint23-charge-rounding** retains 1,104
-choices: 1,075 generated roots and 29 native wrappers. It changes no route,
-level, quantity, template, stable identity, artwork or serialization state.
+Version **0.0.154-gunslinger-animal-companion-eligibility** retains 1,104
+choices: 1,075 generated roots and 29 native wrappers. It and v0.0.153 change
+no route, level, quantity, template, stable identity, artwork or serialization state.
 The v0.0.152 original visuals and unaffected qualification remain authoritative.
 
 ### Previous release

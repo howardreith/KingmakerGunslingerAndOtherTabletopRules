@@ -13,6 +13,7 @@ try {
     foreach ($name in @('Invoke-KmgGate.ps1','build.ps1','test-domain.ps1','common.ps1','KmgGate.Common.ps1')) { Copy-Item (Join-Path $PSScriptRoot $name) $fixtureScripts }
     '<Project />' | Set-Content (Join-Path $boundary 'GamePath.props')
     '{"Id":"KingmakerGunslinger","Version":"0.0.150"}' | Set-Content (Join-Path $boundary 'Info.json')
+    '<Project><PropertyGroup><KmgInformationalVersion>0.0.150-fixture-patch</KmgInformationalVersion></PropertyGroup></Project>' | Set-Content (Join-Path $boundary 'Directory.Build.props')
     $env:KMG_GATE_FIXTURE_TRACE = Join-Path $boundary 'trace.jsonl'
     $env:KMG_TEST_FILTER = 'prior'
     $compiler = Join-Path $fixtureScripts 'msbuild-fixture.ps1'
@@ -89,7 +90,7 @@ function Assert-FileExists($Path,$Label) { if (-not (Test-Path $Path -PathType L
 $root = Split-Path -Parent $PSScriptRoot
 $first = Invoke-QualifiedBuildAndPackage -RepositoryRoot $root -ConfiguredReferenceBundleDir 'fixture-references'
 $second = Invoke-QualifiedBuildAndPackage -RepositoryRoot $root -ConfiguredReferenceBundleDir 'fixture-references' -SkipDomainTests
-if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.150-expanded-summoning-sprint21.zip' -or
+if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.150-fixture-patch.zip' -or
     $first.PackageSha256 -cne $second.PackageSha256) { throw 'Publisher changed the asset name or candidate bytes.' }
 '@
     $publisherPath = Join-Path $fixtureScripts 'publisher-build-fixture.ps1'
