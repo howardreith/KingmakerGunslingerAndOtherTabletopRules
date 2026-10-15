@@ -76,6 +76,78 @@ function Assert-KmgClosureReleaseDecision {
     }
 }
 
+# Release-tooling lineage check. Immutable merged PRODUCT ancestry and reviewed
+# post-merge REPORTING ancestry are different things, and conflating them made
+# promotion impossible once the reporting branch carried the records that
+# describe its own merge. This distinguishes them without removing any check.
+#
+# Returns a provenance object; throws before any external mutation otherwise.
+function Assert-KmgReportingLineage {
+    param(
+        [Parameter(Mandatory=$true)][string]$RepositoryRoot,
+        [Parameter(Mandatory=$true)][string]$ReportingCommit,
+        [Parameter(Mandatory=$true)][string]$MergedReleaseCommit,
+        [Parameter(Mandatory=$true)][string]$MergedPrHead,
+        [Parameter(Mandatory=$true)][string[]]$AllowedReportingPaths
+    )
+    function Git-Lines([string[]]$Arguments) {
+        $out = @(& git -C $RepositoryRoot @Arguments 2>$null)
+        if ($LASTEXITCODE -ne 0) { throw "git $($Arguments -join ' ') failed with exit code $LASTEXITCODE." }
+        return $out
+    }
+    function Is-Ancestor([string]$Ancestor, [string]$Descendant) {
+        $null = & git -C $RepositoryRoot merge-base --is-ancestor $Ancestor $Descendant 2>$null
+        return ($LASTEXITCODE -eq 0)
+    }
+    foreach ($sha in @($ReportingCommit, $MergedReleaseCommit, $MergedPrHead)) {
+        if ([string]$sha -cnotmatch '^[0-9a-f]{40}$') {
+            throw 'Reporting lineage requires full forty-character commit identities.'
+        }
+    }
+    # Accepted path that predates this repair: the reporting commit is already
+    # part of the product merge, so nothing outside it is being released.
+    if (Is-Ancestor $ReportingCommit $MergedReleaseCommit) {
+        return [pscustomobject]@{ mode='contained-in-product-merge'
+            reportingCommit=$ReportingCommit; mergedPrHead=$MergedPrHead
+            mergedReleaseCommit=$MergedReleaseCommit; reportingDeltaPaths=@() }
+    }
+    # Reviewed post-merge reporting path. Every one of these must hold.
+    if (-not (Is-Ancestor $MergedPrHead $MergedReleaseCommit)) {
+        throw 'The merged pull-request head is not an ancestor of the product merge.'
+    }
+    if (-not (Is-Ancestor $MergedPrHead $ReportingCommit)) {
+        throw 'The reporting commit does not descend from the head that was merged.'
+    }
+    $base = (Git-Lines @('merge-base',$ReportingCommit,$MergedReleaseCommit) | Select-Object -First 1)
+    if ([string]$base -cne $MergedPrHead) {
+        throw 'Reporting and product lineages diverge somewhere other than the merged head.'
+    }
+    $changed = @(Git-Lines @('diff','--name-only',$MergedPrHead,$ReportingCommit) |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    if ($changed.Count -eq 0) {
+        throw 'A post-merge reporting commit must actually change a reviewed reporting path.'
+    }
+    $unexpected = @($changed | Where-Object { $AllowedReportingPaths -cnotcontains $_ })
+    if ($unexpected.Count -ne 0) {
+        throw ('Post-merge reporting changes outside the reviewed paths: ' + ($unexpected -join ', '))
+    }
+    # Belt and braces: never accept a compiled or packaged input here, whatever
+    # the allow-list happens to say. A records change cannot hide product work.
+    $frozen = @('src/','assets/','blueprints/','validation/','tools/','Info.json',
+        'Directory.Build.props','scripts/package.ps1','scripts/Build-Local.ps1',
+        'scripts/validate-package.ps1','scripts/validate-build-output.ps1')
+    foreach ($path in $changed) {
+        foreach ($root in $frozen) {
+            if ($path -ceq $root -or $path.StartsWith($root, [StringComparison]::Ordinal)) {
+                throw ('A frozen executable or package input changed after the merge: ' + $path)
+            }
+        }
+    }
+    return [pscustomobject]@{ mode='reviewed-post-merge-reporting'
+        reportingCommit=$ReportingCommit; mergedPrHead=$MergedPrHead
+        mergedReleaseCommit=$MergedReleaseCommit; reportingDeltaPaths=@($changed) }
+}
+
 function Assert-KmgClosureProofFiles {
     param([Parameter(Mandatory=$true)]$Ledger)
     foreach ($proof in @($Ledger.coverage | ForEach-Object { $_.proofs })) {
