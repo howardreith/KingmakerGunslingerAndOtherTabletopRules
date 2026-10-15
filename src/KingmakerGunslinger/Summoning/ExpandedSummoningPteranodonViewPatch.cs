@@ -297,15 +297,26 @@ namespace KingmakerGunslinger.Summoning
                 ModContext context;
                 string exactKey;
                 var blueprint = __instance.EntityData.Blueprint;
-                if (!ModContext.TryGet(out context) ||
-                    context.FeatureModules == null ||
-                    context.FeatureModules.Active == null ||
-                    !TheropodVisualPolicy.TryProductionTheropod(
-                        context.FeatureModules.Active.ExpandedSummoning,
+                bool moduleOn = ModContext.TryGet(out context) &&
+                    context.FeatureModules != null &&
+                    context.FeatureModules.Active != null &&
+                    context.FeatureModules.Active.ExpandedSummoning;
+                // The exact-identity gate only has meaning while the module is
+                // on, because TryProductionTheropod refuses outright when it is
+                // off. Returning here with the module off would skip the
+                // attachment record altogether and report "not-attempted",
+                // which deliberately does not prove this registered
+                // save-compatible identity reached the asset loader's
+                // module-disabled refusal. So fall through instead and let
+                // Attach record that refusal, exactly as the armored dinosaurs
+                // and every other family do. The loader still performs no file
+                // read and no Unity allocation while the module is off.
+                if (moduleOn &&
+                    (!TheropodVisualPolicy.TryProductionTheropod(true,
                         blueprint.AssetGuid, blueprint.name,
                         blueprint.Prefab == null ? null :
                             blueprint.Prefab.AssetId, out exactKey) ||
-                    exactKey != visualKey)
+                    exactKey != visualKey))
                     return;
             }
 
