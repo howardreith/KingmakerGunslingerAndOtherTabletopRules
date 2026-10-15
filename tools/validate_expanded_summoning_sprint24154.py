@@ -19,7 +19,14 @@ sys.dont_write_bytecode = True
 import validate_expanded_summoning_sprint21150 as common
 import validate_expanded_summoning_sprint23152 as prior
 
-BASELINE = "e825411a8f920fdb9447f7ad48d3f7d0267e6e32"
+# Re-based 2026-10-15 from the pre-rewrite master e825411a to the actual
+# current released master. Upstream rewrote the lineage (e825411a ->
+# 322ac7fe, content-identical) and then released v0.0.154 on top of it.
+# All three share blueprints/blueprints.json blob
+# fb8e80e70ea3c0d4e526a52a2addf947eaf7c4c2, so the accepted identity
+# prefix is unchanged; only the source-ownership boundary moves forward so
+# that the released animal-companion change is baseline, not "unrelated".
+BASELINE = "fd6c56ebd8eb82e313c6005972e4538d9b1444c9"
 SPRINT24_KEY = "expandedSummoningSprint24154"
 THEROPODS = {"deinonychus", "tyrannosaurus"}
 
@@ -99,6 +106,9 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.Theropods.cs",
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
     "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+    # Every sprint stamps its own version here, exactly as the released
+    # Sprint 23 boundary admits it.
+    "src/KingmakerGunslinger/Properties/AssemblyInfo.cs",
     "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs",
     "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.Theropods.cs",
     "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs",
@@ -257,11 +267,9 @@ def validate_art_and_package_owners(root: Path, stage: str):
 def validate_version(root: Path):
     info = common.document(root, "Info.json")
     version = info.get("Version")
-    if version not in ("0.0.153", "0.0.154"):
+    if version != "0.0.155":
         raise AssertionError("Unsupported Sprint 24 lineage version: " + repr(version))
-    informational = ("0.0.153-expanded-summoning-sprint23-charge-rounding"
-                     if version == "0.0.153" else
-                     "0.0.154-expanded-summoning-sprint24-theropods")
+    informational = "0.0.155-expanded-summoning-sprint24-theropods"
     props = (root / "Directory.Build.props").read_text(encoding="utf-8-sig")
     assembly = (root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs").read_text(
         encoding="utf-8-sig")

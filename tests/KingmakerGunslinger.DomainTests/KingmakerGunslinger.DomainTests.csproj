@@ -155,6 +155,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\Visuals\ElementalVisualResourceRecoveryPolicy.cs"><Link>ElementalRaces\Visuals\ElementalVisualResourceRecoveryPolicy.cs</Link></Compile>
     <Compile Include="GunslingerOutfitRenderTests.cs" />
     <Compile Include="GunslingerClassAppearanceTests.cs" />
+    <Compile Include="GunslingerAnimalCompanionEligibilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Presentation\GunslingerClassAppearanceCatalog.cs"><Link>Presentation\GunslingerClassAppearanceCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Compatibility\CompatibilityAssetAttributionPlan.cs"><Link>Compatibility\CompatibilityAssetAttributionPlan.cs</Link></Compile>
     <Compile Include="MartialPerformanceCompatibilityTests.cs" />
