@@ -13,7 +13,9 @@ $allowed=@(
     'planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json',
     'scripts/Publish-QualifiedCandidate.ps1',
     'scripts/QualifiedRelease.Common.ps1',
-    'scripts/Test-Sprint24Release.ps1')
+    'scripts/Test-Sprint24Release.ps1',
+    'scripts/Test-Sprint24ReportingLineage.ps1',
+    'scripts/validate-repository.ps1')
 
 function New-Fixture {
     $root=Join-Path ([IO.Path]::GetTempPath()) ('kmg-lineage-'+[Guid]::NewGuid().ToString('N'))
