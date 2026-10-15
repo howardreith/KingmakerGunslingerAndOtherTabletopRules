@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "PERSISTENCE_BEHAVIOUR_PROVEN_BOTH_MODULE_STATES_FINAL_COHERENT_CANDIDATE_SET_PENDING",
+  "status": "QUALIFIED_ALL_GATES_GREEN_RELEASE_PENDING",
   "current": {
     "asOfUtc": "2026-10-15",
     "controllingDecision": "claudeTakeover.ownerDecision_2026_10_15 \u2014 CLEAN_RESET_FOR_ALL. See acceptedLimitations.",
     "reloadContract": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD applies to every KMG summon with no exemption: save/reload resets active grabs, holds, swallowed and engulfed relationships, the mouth occupancy that goes with them and session-owned links, for Tyrannosaurus, Dire Crocodile, Purple Worm and Giant Flytrap alike. This is a clean reset, not grapple persistence. No creature opt-in, no swallowed-state preservation exception and no project-owned re-establishment is authorized. Native Bleeding Critical has its own separate lifetime, save behaviour and healing removal.",
-    "latestExecutableSource": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+    "latestExecutableSource": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
     "latestQualifiedHiddenCandidate": {
       "productCommit": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
       "sourceStateSha256": "fdb51df4f0f6efb4c353dfd9c8f2943c5457291f3ccd23ef39671b158cab0015",
@@ -17,7 +17,7 @@
       "sprintGate": "PASS: repository validation plus 2608/2608 domain tests, exact compilation, deterministic package and strict validation; no deployment",
       "sidecarValidated": true
     },
-    "stageRoute": "The Sprint 24 domain contracts assert the eighteen roots stay hidden and that targeted qualification never selects a published root, so hidden qualification must complete while suppressed. The hidden closeout therefore reuses this already-validated package, and exactly one public candidate follows.",
+    "stageRoute": "Hidden qualification completed while suppressed on candidate bf9388d3, because the Sprint 24 domain contracts assert the eighteen roots stay hidden and that targeted qualification never selects a published root. Exactly one public candidate followed it.",
     "hiddenClosureRemaining": [],
     "bothKeysSuppressed": true,
     "released": false,
@@ -128,7 +128,6 @@
       "installedKmgVersion": "0.0.117",
       "kmgFiles": 136,
       "modDirectories": 11,
-      "modsEntries": 967,
       "saves": 118,
       "baselineSaveSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
       "baselineMatchesIntake": true,
@@ -139,7 +138,58 @@
       "kingmakerProcess": 0,
       "allTransactionsRestoredAndVerified": true
     },
-    "nextAction": "Public candidate: unsuppress only the two keys together, re-derive totals to 1,093/29/1,122, move the version surface to the next free patch, extend the existing qualified-candidate publisher with a Sprint 24 contract plus rejection tests, run one Sprint gate, then the publication-affecting native checks."
+    "nextAction": "Finalize the qualification ledger with the product merge commit, mark PR #45 ready and merge to master, promote the exact f7ab30ac bytes through Publish-Release.ps1, publish stable v0.0.155 Latest, verify the three assets independently, audit restoration, then the documentation-only records PR.",
+    "publicCandidate": {
+      "productCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
+      "version": "0.0.155",
+      "localRuntimeZipSha256": "f7d3b5e651c4c4fb105ff4b734ddc1070c3887b57636e9eb217347809f00a751",
+      "dllSha256": "3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046",
+      "sprintGate": "PASS: repository wrapper, 2610/2610 domain tests, exact-reference build, deterministic package, strict validation, 174.9s; no deployment",
+      "note": "An earlier public candidate 00294f99 (DLL e4d19da4) is superseded: its public inventory run failed the prohibited-reference row and the correction changed the bytes."
+    },
+    "publicNativeEvidence": {
+      "inventory": {
+        "scenario": "observe-expanded-summoning-inventory",
+        "profile": "gunslinger-high-risk-combined",
+        "runId": "20261015T2141314204049Z-4325d362063c4f3ea8b6d559c98d28e1",
+        "status": "PASS",
+        "durationMs": 229945,
+        "loadedCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
+        "loadedDllSha256": "3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046",
+        "proved": [
+          "parentPlacements=1093",
+          "nativeAbilityContracts roots=1093 parents=1093 all executable exact",
+          "prohibitedReferences=0",
+          "templateLogicalChoices=319",
+          "menuReconciliation exact"
+        ]
+      },
+      "publicRoots": {
+        "scenario": "disposable-expanded-summoning-sprint24-native-review",
+        "reviewPhase": "rtwp-foundation",
+        "profile": "gunslinger-high-risk-combined",
+        "runId": "20261015T2148010120985Z-01c721f3259b408b807fe07599762800",
+        "status": "PASS",
+        "durationMs": 121529,
+        "loadedCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
+        "loadedDllSha256": "3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046",
+        "proved": [
+          "publishedRoutes=18",
+          "registeredRoutes=18",
+          "all nine Monster and nine Nature's Ally roots through real parent spell paths",
+          "both adult profiles and bodies in RTWP",
+          "fixture and native profile restoration"
+        ]
+      },
+      "failedAttemptPreserved": {
+        "runId": "20261015T2124328633099Z-cb71ec0557ab49658f4481d99aa1c1ce",
+        "status": "FAIL",
+        "row": "expanded-summoning-prohibited-references expected=0 observed=5",
+        "disposition": "PRESERVED: the inventory observer had no interpretation rows for the five private theropod carriers; corrected in f7ab30ac."
+      }
+    },
+    "reusedHiddenEvidenceAudit": "shared-controls, Cycle A and Cycle B remain bound to candidate bf9388d3 (DLL b8bffe18) with their original provenance and are never relabelled as execution on the public bytes. The publication delta does not change their dependencies: ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant applies the IsPublished filter only for the broad released-roster scope, the theropods scope deliberately selects its registered identity while its roots are suppressed, and no summoning runtime observer reads SuppressedCreatureKeys or IsPublished.",
+    "qualificationComplete": true
   },
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
