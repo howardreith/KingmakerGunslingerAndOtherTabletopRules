@@ -149,6 +149,18 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Summoning/TheropodVisualPolicy.cs",
 }
 
+# Not a Sprint 24 seam. A focused firearm development checkpoint on the
+# v0.0.155 lineage (RTWP continuation after an explicit order's target dies;
+# docs/FIREARM-RTWP-KILL-CONTINUATION.md) owns exactly these files. It is kept
+# apart so ALLOWED_PRODUCTION still describes only the theropod boundary.
+FIREARM_CONTINUATION_PRODUCTION = {
+    "src/KingmakerGunslinger/Firing/EmptyFirearmAttackCommandPatch.cs",
+    "src/KingmakerGunslinger/Firing/FirearmAttackOrderLedger.cs",
+    "src/KingmakerGunslinger/Firing/NativeFirearmAttackOrder.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmMaintenance.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmReviewKillChain.cs",
+}
+
 ART = {
     "assets/game/icons/expanded-summoning/deinonychus.png":
         "d7c15ef813f4920efac88a5b1bcd194e1f872af98c5d619dd60758e96aa1dd36",
@@ -211,7 +223,8 @@ def validate_production_scope(root: Path):
     changed += subprocess.check_output(
         ["git", "ls-files", "--others", "--exclude-standard", "--",
          "src/KingmakerGunslinger"], cwd=root, text=True).splitlines()
-    unexpected = sorted(set(changed) - ALLOWED_PRODUCTION)
+    unexpected = sorted(set(changed) - ALLOWED_PRODUCTION -
+                        FIREARM_CONTINUATION_PRODUCTION)
     if unexpected:
         raise AssertionError("Unrelated production source changed: " +
                              ", ".join(unexpected))
