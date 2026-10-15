@@ -1,4 +1,4 @@
-# Sprint 24 theropod dinosaurs — PAUSED AT OWNER REQUEST
+# Sprint 24 theropod dinosaurs — RESUMED; IN PROGRESS; NOT RELEASED
 
 Claude takeover instructions are in
 `CLAUDE-SPRINT24-HANDOFF-2026-10-14.md`. Treat its ordered remaining-work map as
@@ -10,6 +10,49 @@ release campaign on HOWARD-LAPTOP. Work is on
 released master `e825411a8f920fdb9447f7ad48d3f7d0267e6e32`. Stable v0.0.153
 is the verified baseline; v0.0.154 was free at intake but must be rechecked at
 publication. Sprint 25 has not been started.
+
+## 2026-10-15 Claude takeover checkpoint
+
+Intake on HOWARD-LAPTOP passed with two deviations from the handoff, both
+resolved without discarding work.
+
+**Upstream rewrote the repository lineage.** `origin/master` moved
+`e825411a` to `322ac7fe` and the Sprint 24 product branch moved `886e6ad0` to
+`5c5964da`, both as forced updates; the `v0.0.153` tag object also changed.
+Every commit subject is preserved and the trees are identical — the branch tips
+share tree `e0215299279e726b6a6fede1328b38d92ed63057`, released master shares
+tree `4ce5e45c260c4cd2c36ee8da8df95c1dc0643e6d`, the tested source `fb7e471a`
+shares tree `9314f862e1e8cfd2934f1af88a155eab34dae6f1` with remote `0784d0ef`,
+and both `v0.0.153` commits share tree `57f0a0eb1368c51262365653b3f804fba63c9011`.
+This is a SHA rewrite, not new work. The local lineage was preserved at
+`codex/local-safety/sprint24-prerewrite-886e6ad0-20261015` and the remote
+lineage merged in as an empty two-parent merge, mirroring the owner's own
+precedent merge `94aebf3c`, which used the same pre-rewrite common ancestor
+`91972f4e`. No reset, rebase, force-push or discarded commit. The local branch
+is now a fast-forward descendant of PR #45's head.
+
+Intake otherwise matched: product inputs unchanged between `fb7e471a` and the
+reporting head (only `AUTONOMOUS-RESUME.md`, the Claude handoff, the coverage
+record and the ledger differ); the hidden ZIP, sidecar, source-state, DLL and
+MVID identities all verified; no Kingmaker process, transaction, lock, staging
+or publisher checkout; `v0.0.154` still free.
+
+**The handoff's limitations list was incomplete and the shared reload change
+was out of scope.** Sprint 24's carriers declare four released limitations, not
+two; the coverage record now reconciles them against
+`ExpandedSummoningNaturalProfiles.cs`. The hidden candidate had also stopped
+clearing swallowed state on load for every KMG summon, retracting the published
+`ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD` promise for released Dire
+Crocodile, Purple Worm and Giant Flytrap. That change is narrowed to a single
+policy opt-in for the Tyrannosaurus, so the released load paths are unchanged
+and needed no requalification. The focused Sprint 24 filter passes 14/14 and the
+affected-seam selection passes 38/38 with production compilation.
+
+Because this corrected shared production source, the `fb7e471a` hidden
+candidate is stale. One new coherent hidden candidate is built before the
+remaining native work; the old ZIP is not reused for it and its earlier offline
+gate is not relabelled as execution on the new bytes. The shared-controls
+replay and both targeted persistence cycles remain to run, then publication.
 
 ## 2026-10-14 quota stopping checkpoint
 

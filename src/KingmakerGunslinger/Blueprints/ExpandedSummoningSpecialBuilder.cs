@@ -2937,6 +2937,14 @@ namespace KingmakerGunslinger.Blueprints
             grab.HoldBuff = spec.Hold;
             grab.GrappledBuff = spec.Grappled;
             grab.SwallowedBuff = spec.Swallowed;
+            if (spec.Swallowed != null && !ExpandedSummoningSpecialProfiles
+                    .SwallowingGrabberTokens.Contains(token))
+                throw new InvalidOperationException("The " + token +
+                    " swallow payload has no registered reload scope.");
+            // The reload scope is the policy's decision, never a per-call bool,
+            // so a released swallower cannot silently acquire persistence.
+            grab.PersistSwallowedAcrossLoad = spec.Swallowed != null &&
+                ExpandedSummoningSpecialProfiles.PersistsSwallowedAcrossLoad(token);
             grab.SwallowMaxSizeIsAbsolute = spec.SwallowAbsolute;
             grab.SwallowMaxSize = spec.SwallowMaxSize;
             grab.SwallowMaxSizeDelta = spec.SwallowDelta;

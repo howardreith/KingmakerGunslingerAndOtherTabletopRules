@@ -149,13 +149,56 @@ Charge. Tyrannosaurus has no claws, tail attack, Pounce, trample, roar/fear,
 Power Attack, or automatic critical confirmation. Animation cannot generate
 gameplay events or move logical position/collision.
 
-The existing accepted limitations are bounded, not expanded:
+The existing accepted limitations are bounded, not expanded. Sprint 24 reuses
+exactly four, all already released, and adds no waiver. The takeover
+reconciled this list against the actual carriers in
+`ExpandedSummoningNaturalProfiles.cs`, because the Claude handoff named only
+the first two:
 
-- `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD` applies to active mouth holds.
+- `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD` applies to the active mouth
+  hold. Releases 0.0.139 and 0.0.146 published it for every creature's active
+  grab, hold, swallow and engulf link, so a released swallower's swallowed
+  state still clears on a cold load; see the reload-scope decision below.
 - `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` leaves printed interior AC 17/hp 15
   in the fidelity record without claiming an attackable stomach implementation.
-- `PASSIVE_CREATURE_SENSES_UNMODELED` and `RUN_NATIVE_SUMMON_AI_DISPOSITION`
-  may be reused only after their exact existing boundaries are reconfirmed.
+  Declared on the Tyrannosaurus carrier.
+- `PASSIVE_CREATURE_SENSES_UNMODELED`, reconfirmed at its released boundary:
+  Scent, Darkvision and Low-light Vision have no faithful Kingmaker carrier and
+  nothing is substituted. Both theropods print low-light vision and scent and
+  both declare it. Released in 0.0.152/0.0.153 on the same boundary.
+- `RUN_NATIVE_SUMMON_AI_DISPOSITION`, reconfirmed at its released boundary: no
+  invented Run action is added. Both theropods declare it; the Triceratops
+  carried the same label through the 0.0.152/0.0.153 releases.
+
+### Reload scope of the shared swallowed state
+
+The hidden candidate's `SummonGrappleAreaSafeguard.ResetLoadedGrapples` had
+stopped clearing the swallower list and swallowed buffs on load for **every**
+KMG summon, while still resetting active mouth holds. That silently retracted a
+published promise: the released limitation covers the active swallow and engulf
+links of Dire Crocodile, Purple Worm and Giant Flytrap, and this sprint has no
+authority to change released gameplay or to grant a new waiver.
+
+The change is therefore narrowed rather than proven across the released roster.
+`ExpandedSummoningSpecialProfiles.PersistsSwallowedAcrossLoad` is the single
+decision point and admits only the Tyrannosaurus, which is new content with no
+released reload promise. The three released swallowers keep the published reset
+byte-for-byte, so their existing evidence stays valid under an unchanged-
+dependency audit and no released cold-load path needed requalification. The
+grabber builder reads that policy instead of a per-call flag and throws if a
+swallow payload has no registered reload scope, so a future swallower cannot
+acquire persistence silently.
+
+`SummonSwallowLifecycleComponent` also moved from a Dire-Crocodile name check to
+configured `OwningBlueprint`/`OwnedSwallowedBuff`/`ReleaseOnVictimDeath`. The
+Dire Crocodile sets all three, so its victim-boundary release is preserved and
+the Tyrannosaurus opts into the same behavior; a test pins that configuration so
+the generalization cannot silently drop the released consumer.
+
+`expanded-summoning.sprint24-swallow-reload-scope` covers the decision, and the
+affected-seam selection (38 tests: shared grapple lifecycle, grab carriers,
+universal grab sizes, Dire Crocodile stat block and swallow numbers, Sprint 17
+observers) passes with production compilation.
 
 `HumanReview` remains `NOT_PERFORMED_NONBLOCKING` unless the owner actually
 reviews the finished art.
