@@ -43,7 +43,10 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private const string Sprint24StateScope =
             "KMG_Sprint24_Theropod_State_v1";
-        private const string Sprint24HeldRole = "active-mouth-hold";
+        // There is no separate active-mouth-hold actor: one Tyrannosaurus bite
+        // cannot hold one victim while another is swallowed, because a swallowed
+        // victim keeps that mouth shut. The active hold this fixture resets is
+        // the owner's own residue from the grab that preceded the swallow.
         private const string Sprint24SwallowedRole = "already-swallowed";
         private const string Sprint24BleedingRole = "bleeding-critical";
         private const string Sprint24NativeBleedGuid =
@@ -153,27 +156,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Random.state;
                 UnitEntityData swallowed = null;
                 UnitEntityData bleeding = null;
-                UnitEntityData held = null;
                 try
                 {
-                    swallowed = Sprint24CreateStateActor(caster, source,
-                        Sprint24SwallowedRole, grab.SwallowedBuff.AssetGuid,
-                        Vector3.forward * 3f);
+                    // Order matters, and one mouth is the reason. SwallowHeld
+                    // re-records the link and marks it engulfed, so a swallowed
+                    // victim keeps this single bite shut until it is spat out:
+                    // afterwards TryGrab sees limbBusy and any further bite is
+                    // AutoMissed with its log suspended. So the confirmed
+                    // critical is taken first, while the mouth is still free,
+                    // and the grab/swallow is established last. A live mouth
+                    // hold and an already-swallowed victim cannot coexist on one
+                    // Tyrannosaurus, and this fixture no longer pretends they
+                    // can: the grab that precedes the swallow leaves the owner's
+                    // own hold residue, which is the active hold the load
+                    // boundary has to clear.
                     bleeding = Sprint24CreateStateActor(caster, source,
                         Sprint24BleedingRole, bleed.AssetGuid,
                         Vector3.right * 3f);
-                    held = Sprint24CreateStateActor(caster, source,
-                        Sprint24HeldRole, grab.GrappledBuff.AssetGuid,
-                        Vector3.left * 3f);
+                    swallowed = Sprint24CreateStateActor(caster, source,
+                        Sprint24SwallowedRole, grab.SwallowedBuff.AssetGuid,
+                        Vector3.forward * 3f);
                     swallowed.Descriptor.State.Size = Size.Huge;
-                    held.Descriptor.State.Size = Size.Gargantuan;
                     source.Stats.AdditionalAttackBonus.BaseValue = 100;
                     source.Stats.AdditionalCMB.BaseValue = 100;
 
+                    // Immune to maneuvers so the critical bite cannot also
+                    // start a grab and shut the mouth before the swallow.
+                    bleeding.Descriptor.State.AddCondition(
+                        UnitCondition.ImmuneToCombatManeuvers, null);
+                    UnityEngine.Random.InitState(
+                        Sprint24FindD20PairSeed(19, 20));
+                    RuleAttackWithWeapon critical = Rulebook.Trigger(
+                        new RuleAttackWithWeapon(source, bleeding, bite, 0));
+                    bleeding.Descriptor.State.RemoveConditionAll(
+                        UnitCondition.ImmuneToCombatManeuvers);
+
                     UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                    if (!grab.TryGrab(swallowed, bite, true))
+                    bool grabbed = grab.TryGrab(swallowed, bite, true);
+                    if (!grabbed)
                         throw new InvalidOperationException(
                             "Sprint 24 persistence swallow hold did not establish.");
+                    bool grappledTarget =
+                        swallowed.Get<UnitPartGrappleTarget>() != null &&
+                        swallowed.Descriptor.HasFact(grab.GrappledBuff);
                     Buff heldForSwallow = SummonHoldComponent.HeldState(
                         source, swallowed, grab);
                     if (heldForSwallow == null)
@@ -189,24 +214,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Random.InitState(FindNativeD20Seed(20));
                     ownerHold.TickMechanics();
 
-                    bleeding.Descriptor.State.AddCondition(
-                        UnitCondition.ImmuneToCombatManeuvers, null);
-                    UnityEngine.Random.InitState(
-                        Sprint24FindD20PairSeed(19, 20));
-                    RuleAttackWithWeapon critical = Rulebook.Trigger(
-                        new RuleAttackWithWeapon(source, bleeding, bite, 0));
-                    bleeding.Descriptor.State.RemoveConditionAll(
-                        UnitCondition.ImmuneToCombatManeuvers);
-
-                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                    bool heldNow = grab.TryGrab(held, bite, true);
                     Buff swallowedBuff = swallowed.Descriptor.Buffs
                         .GetBuff(grab.SwallowedBuff);
                     Buff bleedingBuff = bleeding.Descriptor.Buffs
                         .GetBuff(bleed);
-                    bool exact = heldNow &&
-                        ReferenceEquals(SummonHoldComponent.HeldTarget(
-                            source), held) &&
+                    // The owner's own session hold state after the swallow: the
+                    // non-MultiLink release clears the victim's grappled part,
+                    // never the initiator or the owner's hold buff.
+                    bool ownerHoldResidue =
+                        source.Get<UnitPartGrappleInitiator>() != null ||
+                        source.Descriptor.HasFact(grab.HoldBuff);
+                    bool mouthShut = SummonGrappleLinks.IsLimbOccupied(
+                        source, bite);
+                    bool exact = grabbed && grappledTarget &&
+                        ownerHoldResidue && mouthShut &&
                         swallowed.Get<UnitPartSwallowed>() != null &&
                         ReferenceEquals(swallowed.Get<UnitPartSwallowed>()
                             .Swallower.Value, source) &&
@@ -225,12 +246,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "sprint24-state-fixture-prepared", exact,
                         new JObject {
                             ["unit"] = source.UniqueId,
-                            ["heldTarget"] = held.UniqueId,
                             ["swallowedTarget"] = swallowed.UniqueId,
                             ["bleedingTarget"] = bleeding.UniqueId,
                             ["event"] =
                                 "native-hold-swallowed-and-confirmed-bleed-before-save",
-                            ["held"] = heldNow,
+                            ["grabbed"] = grabbed,
+                            ["grappledTarget"] = grappledTarget,
+                            ["activeMouthHoldResidue"] = ownerHoldResidue,
+                            ["engulfedMouthShut"] = mouthShut,
                             ["swallowed"] = swallowedBuff != null,
                             ["criticalNatural"] =
                                 critical.AttackRoll?.Roll.Value,
@@ -241,7 +264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
                             ["interiorLimit"] =
                                 "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED"
-                        }, "Before the exact working-save write, one active mouth hold, one already-swallowed native state and one confirmed-bite bleed are owned by the saved Tyrannosaurus.");
+                        }, "Before the exact working-save write, the saved Tyrannosaurus owns an active mouth-hold residue, an engulfed-shut mouth, one already-swallowed native state and one confirmed-bite bleed.");
                 }
                 finally
                 {
@@ -254,26 +277,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 yield break;
             }
 
-            if (actors.Length != 3 || sources.Length != 2)
+            if (actors.Length != 2 || sources.Length != 2)
                 throw new InvalidOperationException(
-                    "Sprint 24 cold load requires exactly two sources and three state actors.");
-            UnitEntityData heldActor = actors.Single(value =>
-                value.Get<UnitPartSprint24StateReceipt>().Role ==
-                    Sprint24HeldRole);
+                    "Sprint 24 cold load requires exactly two sources and two state actors.");
             UnitEntityData swallowedActor = actors.Single(value =>
                 value.Get<UnitPartSprint24StateReceipt>().Role ==
                     Sprint24SwallowedRole);
             UnitEntityData bleedingActor = actors.Single(value =>
                 value.Get<UnitPartSprint24StateReceipt>().Role ==
                     Sprint24BleedingRole);
-            bool receipts = Sprint24OwnsStateActor(heldActor, source,
-                    Sprint24HeldRole, grab.GrappledBuff.AssetGuid) &&
-                Sprint24OwnsStateActor(swallowedActor, source,
+            bool receipts = Sprint24OwnsStateActor(swallowedActor, source,
                     Sprint24SwallowedRole, grab.SwallowedBuff.AssetGuid) &&
                 Sprint24OwnsStateActor(bleedingActor, source,
                     Sprint24BleedingRole, bleed.AssetGuid);
-            bool holdReset = heldActor.Get<UnitPartGrappleTarget>() == null &&
-                !heldActor.Descriptor.HasFact(grab.GrappledBuff) &&
+            // The whole accepted limitation, not a part of it: every KMG-owned
+            // grab, hold, swallow, engulf and mouth occupancy is session-scoped
+            // and the load boundary owes a clean reset with no lingering
+            // condition, occupied slot or dangling link.
+            bool holdReset =
+                swallowedActor.Get<UnitPartGrappleTarget>() == null &&
+                !swallowedActor.Descriptor.HasFact(grab.GrappledBuff) &&
                 source.Get<UnitPartGrappleInitiator>() == null &&
                 !source.Descriptor.HasFact(grab.HoldBuff) &&
                 SummonHoldComponent.HeldTarget(source) == null;
@@ -283,35 +306,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Get<UnitPartSwallowWhole>();
             Buff swallowedState = swallowedActor.Descriptor.Buffs
                 .GetBuff(grab.SwallowedBuff);
-            bool swallowedPreserved = swallowedPart != null &&
-                ReferenceEquals(swallowedPart.Swallower.Value, source) &&
-                swallower != null &&
-                swallower.SwallowedUnits.Count == 1 &&
-                swallower.SwallowedUnits.Contains(swallowedActor) &&
-                swallowedState != null &&
-                ReferenceEquals(swallowedState.MaybeContext.MaybeCaster,
-                    source);
+            bool swallowReset = swallowedPart == null &&
+                (swallower == null ||
+                    (swallower.SwallowedUnits.Count == 0 &&
+                        !swallower.SwallowedUnits.Contains(swallowedActor))) &&
+                swallowedState == null;
+            // No dangling link: the engulfed mouth is free again, so the
+            // reloaded swallower is a released, usable unit.
+            bool mouthReleased = !SummonGrappleLinks.IsLimbOccupied(
+                source, bite);
+            // Bleeding Critical is the native Bleed2d6Buff, not a grapple
+            // relationship, so it is the one state that legitimately survives.
             Buff bleedingState = bleedingActor.Descriptor.Buffs
                 .GetBuff(bleed);
             bool bleedPreserved = bleedingState != null &&
                 ReferenceEquals(bleedingState.MaybeContext.MaybeCaster,
                     source);
             RosterPersistenceCheck("sprint24-cold-state-boundary",
-                receipts && holdReset && swallowedPreserved &&
+                receipts && holdReset && swallowReset && mouthReleased &&
                     bleedPreserved,
                 new JObject {
                     ["unit"] = source.UniqueId,
                     ["event"] =
-                        "fresh-process-load-distinguishes-session-hold-from-native-states",
+                        "fresh-process-load-resets-every-grapple-relationship-and-keeps-native-bleed",
                     ["moduleEnabled"] =
                         _context.FeatureModules.Active.ExpandedSummoning,
                     ["receiptsExact"] = receipts,
                     ["activeMouthHoldReset"] = holdReset,
-                    ["alreadySwallowedPreserved"] = swallowedPreserved,
+                    ["alreadySwallowedReset"] = swallowReset,
+                    ["engulfedMouthReleased"] = mouthReleased,
                     ["bleedingCriticalPreserved"] = bleedPreserved,
                     ["acceptedReloadLimit"] =
-                        "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD"
-                }, "Cold load resets only the un-restorable mouth hold; the same-source native swallowed and Bleeding Critical states remain intact with the module either ON or OFF.");
+                        "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+                    ["ownerDecisionUtc"] = "2026-10-15"
+                }, "Cold load resets every KMG-owned grab, hold, swallow, engulf and mouth occupancy under the accepted limitation, leaving no dangling link; only the native Bleeding Critical payload survives, still owned by its exact source.");
 
             PropertyInfo nextTick = typeof(Buff).GetProperty(
                 "NextTickTime", BindingFlags.Public |
@@ -325,33 +353,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Owner = source, Target = bleedingActor };
             EventBus.Subscribe(swallowedObserver);
             EventBus.Subscribe(bleedObserver);
-            bool swallowedTick = false;
+            bool noOrphanInteriorPacket = false;
             bool bleedTick = false;
             bool bleedRemoved = false;
             try
             {
                 TimeSpan now = Game.Instance.TimeController.GameTime;
-                int swallowedRound = swallowedState == null ? -1 :
-                    swallowedState.RoundNumber;
-                if (swallowedState != null)
-                {
-                    nextTick.SetValue(swallowedState, now, null);
-                    swallowedActor.Descriptor.Buffs.UpdateNextEvent();
-                    swallowedActor.Descriptor.Buffs.Tick();
-                    RuleDealDamage damage = swallowedObserver.Damage
-                        .SingleOrDefault();
-                    BaseDamage chunk = damage == null ? null :
-                        damage.DamageBundle.SingleOrDefault();
-                    swallowedActor.Descriptor.Buffs.Tick();
-                    swallowedTick = damage != null && chunk != null &&
-                        damage.AttackRoll == null &&
-                        ReferenceEquals(damage.Initiator, source) &&
-                        chunk.Dice.Rolls == 2 &&
-                        chunk.Dice.Dice == DiceType.D8 &&
-                        chunk.Bonus == 11 &&
-                        swallowedObserver.Damage.Count == 1 &&
-                        swallowedState.RoundNumber == swallowedRound + 1;
-                }
+                // The swallowed relationship was reset by the load boundary, so
+                // the Tyrannosaurus-owned 2d8+11 interior packet must not fire
+                // at all. That is the "no delayed damage, no orphan timer" half
+                // of the accepted limitation, and it is asserted rather than
+                // assumed: tick the former victim and require silence.
+                swallowedActor.Descriptor.Buffs.UpdateNextEvent();
+                swallowedActor.Descriptor.Buffs.Tick();
+                swallowedActor.Descriptor.Buffs.Tick();
+                noOrphanInteriorPacket = swallowedState == null &&
+                    swallowedObserver.Damage.Count == 0;
                 int bleedRound = bleedingState == null ? -1 :
                     bleedingState.RoundNumber;
                 if (bleedingState != null)
@@ -386,19 +403,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EventBus.Unsubscribe(bleedObserver);
             }
             RosterPersistenceCheck("sprint24-cold-state-behavior",
-                swallowedTick && bleedTick && bleedRemoved,
+                noOrphanInteriorPacket && bleedTick && bleedRemoved,
                 new JObject {
                     ["unit"] = source.UniqueId,
                     ["event"] =
                         "loaded-native-periodic-payloads-and-healing",
                     ["moduleEnabled"] =
                         _context.FeatureModules.Active.ExpandedSummoning,
-                    ["swallowed2d8Plus11Once"] = swallowedTick,
+                    ["noOrphanInteriorPacket"] = noOrphanInteriorPacket,
                     ["bleed2d6Once"] = bleedTick,
                     ["bleedRemovedByHealing"] = bleedRemoved,
                     ["interiorLimit"] =
-                        "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED"
-                }, "After cold load, the preserved swallowed victim receives one Tyrannosaurus-owned 2d8+11 packet, the confirmed bleed receives one native 2d6 tick, and healing removes only the bleed.");
+                        "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+                    ["acceptedReloadLimit"] =
+                        "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD"
+                }, "After cold load the reset swallow leaves no orphan timer and delivers no 2d8+11 interior packet, while the confirmed bleed still receives exactly one native 2d6 tick that healing removes.");
 
             if (swallower != null && swallowedActor
                 .Get<UnitPartSwallowed>() != null)

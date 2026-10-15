@@ -77,10 +77,35 @@ but failed `sprint24-state-fixture-prepared` and wrote no save. One cause:
 `SwallowHeld` marks the swallowing mouth engulfed, and the Tyrannosaurus has one
 bite limb, so after a swallow the hold is refused and a further bite auto-misses
 with the log suspended. A single Tyrannosaurus cannot hold and have swallowed at
-the same time, so the fixture needs two state sets — bleed plus live mouth hold,
-and bleed plus swallowed victim — to keep every required distinction provable.
-No save was written, both protected saves are byte-identical to intake, and the
-installation restored to KMG 0.0.117 with its eleven mod directories.
+the same time. No save was written, both protected saves are byte-identical to
+intake, and the installation restored to KMG 0.0.117 with its eleven mod
+directories.
+
+**The owner resolved the underlying scope question on 2026-10-15: clean reset
+for all.** Sprint 24's requirement that the Tyrannosaurus keep its swallowed
+victim across a cold load had no traceable owner charter — it appears only in
+codex's handoff and coverage record — and it contradicted his decision of
+2026-09-26, published in releases 0.0.139 and 0.0.146, that every KMG grab,
+hold, swallow, engulf and mouth occupancy is session-scoped in exchange for a
+clean reset, with project-owned re-establishment on load explicitly declined.
+The opt-in was therefore removed rather than narrowed: `ResetLoadedGrapples`
+again clears the swallower list and swallowed buffs for every KMG summon,
+`SummonGrabComponent` carries no persistence field, and
+`PersistsSwallowedAcrossLoad` is a pinned invariant returning false for every
+token, with the profile self-check and
+`expanded-summoning.sprint24-swallow-reload-scope` failing closed on any future
+exemption. No waiver was added and no declined workaround was implemented.
+
+That decision also removes the fixture's impossible premise. The prepare now
+takes the confirmed-critical bite first while the mouth is free, then grabs and
+swallows, and the active hold it resets is the owner's own residue from that
+grab. The cold load requires `activeMouthHoldReset`, `alreadySwallowedReset`,
+`engulfedMouthReleased`, `bleedingCriticalPreserved` and
+`noOrphanInteriorPacket` — no 2d8+11 packet may fire — plus exactly one native
+2d6 bleed tick that healing removes. Offline: production compilation and 136/136
+across Sprint 24, the shared grapple lifecycle, grab carriers, universal grab
+sizes, Dire Crocodile controls, the Sprint 17 persistence/load-reset observers
+and the published-equation record test.
 
 Two environment facts for the next session: the guarded harness refuses to run
 under administrator elevation, so launch it de-elevated (`runas
@@ -90,9 +115,10 @@ game-startup window. Also `Invoke-Sprint22InstalledStack.ps1` accepts
 `TimeoutSeconds` up to 900 but forwards it to a child capped at 600, so the
 handoff's prescribed 900 cannot bind; 600 is the usable maximum.
 
-Next concrete action: redesign the Sprint 24 prepare fixture for two state sets,
-run the named focused gate, build one new coherent candidate, then replay the
-targeted persistence cycles before publication.
+Next concrete action: build one new coherent candidate for the clean-reset
+source, then run the targeted persistence cycles (enabled, then module OFF)
+before publication. The candidate identities above belong to the superseded
+reload-scope source and must be re-derived for the new one.
 
 ## 2026-10-14 quota stopping checkpoint
 

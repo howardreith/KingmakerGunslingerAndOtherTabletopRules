@@ -557,67 +557,82 @@ namespace KingmakerGunslinger.DomainTests
             string persistence = File.ReadAllText(
                 "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Persistence.cs");
             foreach (string token in new[] {
-                "UnitPartSprint24StateReceipt", "active-mouth-hold",
+                "UnitPartSprint24StateReceipt",
                 "already-swallowed", "bleeding-critical",
                 "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
                 "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
                 "UnitPartSwallowed", "UnitPartSwallowWhole",
+                "activeMouthHoldReset", "alreadySwallowedReset",
+                "engulfedMouthReleased", "noOrphanInteriorPacket",
                 "2d8+11", "2d6", "RuleHealDamage" })
                 Assertions.True(persistence.Contains(token),
                     "The targeted persistence observer retains: " + token);
         }
 
-        internal static void SwallowedReloadScopeOptsInOnlyTheTyrannosaurus()
+        internal static void NoSwallowerOutlivesTheAcceptedReloadReset()
         {
-            // Releases 0.0.139/0.0.146 promised every published grab, hold,
-            // swallow and engulf link resets cleanly on reload. Sprint 24 may
-            // add its own persistent state; it may not silently retract that.
-            Assertions.Equal("Tyrannosaurus", ExpandedSummoningSpecialProfiles
-                    .PersistentSwallowGrabberToken,
-                "Only the Sprint 24 Tyrannosaurus opts out of the published reload reset.");
+            // The owner accepted ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD on
+            // 2026-09-26 in exchange for a clean reset rather than persistence,
+            // and releases 0.0.139/0.0.146 published it for every creature's
+            // active grab, hold, swallow and engulf. He confirmed on 2026-10-15
+            // that Sprint 24's Tyrannosaurus is not an exception. Persisting a
+            // swallowed victim, or re-recording its engulf link on load, is the
+            // re-establishment workaround he declined.
             foreach (string token in new[] {
-                "GiantFlytrap", "PurpleWorm", "DireCrocodile" })
+                "GiantFlytrap", "PurpleWorm", "DireCrocodile", "Tyrannosaurus" })
             {
                 Assertions.True(ExpandedSummoningSpecialProfiles
                         .SwallowingGrabberTokens.Contains(token),
                     token + " stays a registered swallow/engulf owner.");
                 Assertions.False(ExpandedSummoningSpecialProfiles
                         .PersistsSwallowedAcrossLoad(token),
-                    "Released " + token + " keeps ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD: " +
-                    "its swallowed state is cleared by a cold load exactly as published.");
+                    token + " keeps ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD: " +
+                    "its swallowed state is cleared by a cold load.");
             }
-            Assertions.True(ExpandedSummoningSpecialProfiles
-                    .PersistsSwallowedAcrossLoad("Tyrannosaurus"),
-                "The Tyrannosaurus keeps its already-swallowed native state across a cold load.");
+            Assertions.Equal(4, ExpandedSummoningSpecialProfiles
+                    .SwallowingGrabberTokens.Length,
+                "Exactly four grabbers own a swallow or engulf payload.");
+            Assertions.Equal(0, ExpandedSummoningSpecialProfiles
+                    .SwallowingGrabberTokens.Count(ExpandedSummoningSpecialProfiles
+                        .PersistsSwallowedAcrossLoad),
+                "No registered swallow owner outlives the reload reset.");
             foreach (string foreign in new[] {
                 null, string.Empty, "tyrannosaurus", "Triceratops", "Deinonychus" })
                 Assertions.False(ExpandedSummoningSpecialProfiles
                         .PersistsSwallowedAcrossLoad(foreign),
                     "An absent, differently cased or foreign token never persists swallowed state.");
-            Assertions.Equal(1, ExpandedSummoningSpecialProfiles
-                    .SwallowingGrabberTokens.Count(ExpandedSummoningSpecialProfiles
-                        .PersistsSwallowedAcrossLoad),
-                "Exactly one registered swallow owner outlives the reload reset.");
 
-            // The two Unity-bound seams that consume the decision.
             string builder = File.ReadAllText(
                 "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs");
             Assertions.True(builder.Contains(
-                    "grab.PersistSwallowedAcrossLoad = spec.Swallowed != null &&") &&
-                builder.Contains(
-                    "ExpandedSummoningSpecialProfiles.PersistsSwallowedAcrossLoad(token)") &&
-                builder.Contains("swallow payload has no registered reload scope"),
-                "The grabber builder takes its reload scope from the policy and fails closed.");
+                    "swallow payload has no registered reload scope"),
+                "A new swallower cannot slip past the accepted reload limitation unnoticed.");
             Assertions.True(builder.Contains("ReleaseSwallowedOnVictimDeath = true"),
                 "The configured victim-death release replaces the old Dire Crocodile name check.");
+            Assertions.False(builder.Contains("PersistSwallowedAcrossLoad"),
+                "No builder path grants swallowed-state persistence.");
+
             string combat = File.ReadAllText(
                 "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs");
-            Assertions.True(combat.Contains(
-                    "if (grab == null || !grab.PersistSwallowedAcrossLoad)") &&
-                combat.Contains("swallower.Free(reference)") &&
+            Assertions.True(combat.Contains("swallower.Free(reference)") &&
                 combat.Contains(
                     "target.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff)"),
-                "The load reset still clears swallowed state for every non-opt-in owner.");
+                "The load reset clears swallowed state for every KMG summon.");
+            Assertions.False(combat.Contains("PersistSwallowedAcrossLoad"),
+                "No component field exempts a creature from the accepted reset.");
+            Assertions.True(combat.Contains(
+                    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD"),
+                "The reset routine names the limitation it implements.");
+
+            // The reload reset must not be turned into a re-establishment.
+            string persistence = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Persistence.cs");
+            Assertions.True(persistence.Contains("alreadySwallowedReset") &&
+                persistence.Contains("engulfedMouthReleased") &&
+                persistence.Contains("noOrphanInteriorPacket"),
+                "The cold-load observer proves the reset, the freed mouth and the absent interior packet.");
+            Assertions.False(persistence.Contains("alreadySwallowedPreserved"),
+                "No observer still expects a swallowed victim to survive a cold load.");
         }
 
         private static string Sha256(string path)
