@@ -27,7 +27,7 @@ namespace KingmakerGunslinger.DomainTests
             TheropodRulesPolicy.TyrannosaurusBleedingCriticalSymbol
         };
 
-        internal static void RoutesAreTheExactEighteenHiddenRoots()
+        internal static void RoutesAreTheExactEighteenPublishedRoots()
         {
             ExpandedSummoningCatalog.Validate();
             SummonVisibilityCatalog.Validate();
@@ -56,21 +56,23 @@ namespace KingmakerGunslinger.DomainTests
                 .TemplatePolicy(SummonFamily.NaturesAlly) ==
                     SummonTemplatePolicy.CasterAlignment),
                 "Every new Ally root stays untemplated under caster alignment.");
-            Assertions.True(monster.Concat(ally).All(value =>
-                    !SummonVisibilityCatalog.IsPublished(value)),
-                "All eighteen new roots remain hidden in the candidate.");
+            // v0.0.155 publication: both keys were removed together, so
+            // every one of the eighteen new roots is now visible.
+            Assertions.True(monster.Concat(ally).All(
+                    SummonVisibilityCatalog.IsPublished),
+                "All eighteen new roots are published.");
             Assertions.Equal(107, ExpandedSummoningCatalog.All.Count,
                 "Exactly two creatures append to the released catalog.");
             Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "The current global route authority is centralized.");
-            Assertions.Equal(TheropodRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Exactly the two Sprint 24 route sets are withheld.");
+                "No route is withheld after publication.");
             Assertions.Equal(
-                TheropodRulesPolicy.HiddenPublishedLogicalPlacements,
+                TheropodRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "No released route moves while the candidate is hidden.");
+                "Publication moves no released route.");
         }
 
         internal static void DeinonychusHasOneMixedRoleFourAttackRoutine()
@@ -531,9 +533,9 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal(SummonMultiplicity.One,
                     selected.Multiplicity,
                     "Persistence creates one creature, never a quantity group.");
-                Assertions.False(SummonVisibilityCatalog.IsPublished(
+                Assertions.True(SummonVisibilityCatalog.IsPublished(
                         selected),
-                    "Targeted qualification does not publish a hidden root.");
+                    "The targeted scope selects the now-published theropod root.");
             }
             Assertions.True(ExpandedSummoningRosterPersistencePolicy
                     .ExactSelectedKeys(

@@ -1189,7 +1189,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint23-native-scripts", ExpandedSummoningSprint23Tests.NativeReviewScriptsRejectLooseAdmission),
             Case("expanded-summoning.sprint24-census-selection", Sprint24CensusTests.TheCensusSelectionIsClosedAndExact),
             Case("expanded-summoning.sprint24-census-wiring", Sprint24CensusTests.TheCensusIsWiredAsSaveFreeMetadata),
-            Case("expanded-summoning.sprint24-routes", ExpandedSummoningSprint24Tests.RoutesAreTheExactEighteenHiddenRoots),
+            Case("expanded-summoning.sprint24-routes", ExpandedSummoningSprint24Tests.RoutesAreTheExactEighteenPublishedRoots),
             Case("expanded-summoning.sprint24-deinonychus-routine", ExpandedSummoningSprint24Tests.DeinonychusHasOneMixedRoleFourAttackRoutine),
             Case("expanded-summoning.sprint24-tyrannosaurus-routine", ExpandedSummoningSprint24Tests.TyrannosaurusHasOnePowerfulBiteAndPrintedFeats),
             Case("expanded-summoning.sprint24-derived-profile", ExpandedSummoningSprint24Tests.HitPointsRanksAndRacialSkillsAreDerived),

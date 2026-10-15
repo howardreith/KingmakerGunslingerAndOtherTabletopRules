@@ -84,8 +84,15 @@ tests — then one Sprint gate, the publication-affecting native checks, merge,
 stable release, independent asset verification, exact restoration and the
 documentation-only records PR.
 
-Both creature keys remain suppressed. No suppression, version, tag, merge or
-release has been touched.
+**Publication is staged.** Both theropod keys were removed from suppression
+together at v0.0.155, so the source-derived public surface is now
+1,093 generated placements plus 29 retained native wrappers, giving
+1,122 visible choices — 107 project creatures, Summon Monster 95 creatures and
+543 placements, Summon Nature's Ally 95 and 550. No identity, GUID, execution
+child or route ordering moved with the keys.
+
+No tag, merge or release has been made. The public candidate still owes its
+Sprint gate and its publication-affecting native checks.
 
 ---
 

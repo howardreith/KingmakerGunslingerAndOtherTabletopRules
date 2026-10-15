@@ -69,10 +69,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Later sprints append without moving the twelve Sprint 23 placements.");
-            Assertions.Equal(TheropodRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Only the Sprint 24 candidate remains withheld.");
-            Assertions.Equal(TheropodRulesPolicy.HiddenPublishedLogicalPlacements,
+            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All twelve Sprint 23 roots remain published without moving an identity.");
         }

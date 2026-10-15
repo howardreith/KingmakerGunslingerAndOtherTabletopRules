@@ -877,10 +877,10 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(rows.Select(v => v.Multiplicity).Distinct().Count() == 3,
                     "Direct, 1d3 and 1d4+1 routes retain their allocated identities.");
             }
-            Assertions.Equal(TheropodRulesPolicy.HiddenPublishedLogicalPlacements,
+            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
                 all.Count(SummonVisibilityCatalog.IsPublished),
                 "Every previously qualified root remains published.");
-            Assertions.Equal(TheropodRulesPolicy.HiddenVisibleChoices,
+            Assertions.Equal(TheropodRulesPolicy.PublicVisibleChoices,
                 all.Count(SummonVisibilityCatalog.IsPublished) +
                 SummonNativeExpansionCatalog.All.Count, "Published surface is source-derived.");
             Assertions.True(all.Where(value =>

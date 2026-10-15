@@ -201,6 +201,111 @@ function Assert-KmgSprint23ChargeRoundingReleaseDecision {
     }
 }
 
+function Assert-KmgSprint24TheropodReleaseDecision {
+    param([Parameter(Mandatory=$true)]$Ledger,[Parameter(Mandatory=$true)]$Candidate)
+    if($Ledger.schemaVersion -ne 1 -or
+        $Ledger.mission -cne 'Sprint24DeinonychusTyrannosaurus' -or
+        $Ledger.status -cne 'QUALIFIED' -or -not $Ledger.releaseEligible -or
+        $Ledger.sprint25Started -or @($Ledger.baselineExceptions).Count -ne 0 -or
+        @($Ledger.unresolvedFindings).Count -ne 0) {
+        throw 'Sprint 24 is not fully qualified; no new exception or unfinished requirement is authorized.'
+    }
+    foreach($pair in @(@('source','commit'),@('zipSha256','packageSha256'),
+        @('dllSha256','dllSha256'),@('dllMvid','dllMvid'),
+        @('sourceFingerprint','sourceStateSha256'))) {
+        if([string]$Ledger.candidate.($pair[0]) -cne
+            [string]$Candidate.($pair[1])) {
+            throw 'Sprint 24 tested artifact identity differs.'
+        }
+    }
+    $suite=$Ledger.candidate.fullSuite
+    if($Ledger.candidate.pipelineExitCode -ne 0 -or $suite.exitCode -ne 0 -or
+        $suite.failures -ne 0 -or $suite.executed -le 0 -or
+        $suite.executed -ne $suite.registered -or -not $suite.unfiltered) {
+        throw 'Sprint 24 candidate gate did not execute and pass its full suite.'
+    }
+    # Publication removes exactly the two suppression keys and moves nothing.
+    if($Ledger.roster.projectCreatures -ne 107 -or
+        $Ledger.roster.monsterCreatures -ne 95 -or
+        $Ledger.roster.monsterPlacements -ne 543 -or
+        $Ledger.roster.natureAllyCreatures -ne 95 -or
+        $Ledger.roster.natureAllyPlacements -ne 550 -or
+        $Ledger.roster.generatedRoots -ne 1093 -or
+        $Ledger.roster.nativeWrappers -ne 29 -or
+        $Ledger.roster.choices -ne 1122 -or
+        $Ledger.roster.suppressedLogicalPlacements -ne 0 -or
+        $Ledger.roster.identityChanges -ne 0 -or
+        $Ledger.roster.routeOrderingChanges -ne 0 -or
+        $Ledger.roster.protectedIdentitySetsEqual -ne $true) {
+        throw 'Sprint 24 published identities or menu surface changed.'
+    }
+    # The four accepted limitations, exactly; no new waiver.
+    $limits=@('ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD',
+        'SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED',
+        'PASSIVE_CREATURE_SENSES_UNMODELED',
+        'RUN_NATIVE_SUMMON_AI_DISPOSITION')
+    $declared=@($Ledger.acceptedLimitations)
+    if($declared.Count -ne $limits.Count -or
+        @(Compare-Object -ReferenceObject ($limits | Sort-Object) `
+            -DifferenceObject ($declared | Sort-Object)).Count -ne 0) {
+        throw 'Sprint 24 accepted limitations are not exactly the four recorded labels.'
+    }
+    if($Ledger.swallowedStatePersistenceExemption) {
+        throw 'The clean-reset contract forbids a swallowed-state persistence exemption.'
+    }
+    if($Ledger.restoration.current -cne 'EXACT_INTAKE_VERIFIED' -or
+        -not $Ledger.restoration.workingFixtureClean) {
+        throw 'Sprint 24 restoration and clean fixture are required.'
+    }
+    # The release must promote the merge that actually carries this source.
+    if([string]::IsNullOrWhiteSpace([string]$Ledger.publication.productMergeCommit) -or
+        $Ledger.publication.mergeContainsTestedSource -ne $true -or
+        $Ledger.publication.tag -cne 'v0.0.155' -or
+        $Ledger.publication.prerelease -or $Ledger.publication.draft -or
+        -not $Ledger.publication.latest) {
+        throw 'Sprint 24 publication state or merge lineage is invalid.'
+    }
+    $mandatory=@('shared-controls-released-consumers-and-exact-ai',
+        'targeted-enabled-cold-load-cleanup-absence',
+        'module-disabled-cold-load-reenable',
+        'complete-public-source-build-package-gate',
+        'public-inventory-high-risk-combined',
+        'public-eighteen-roots-real-parent-paths',
+        'exact-package-release-qualification')
+    $ids=@($Ledger.coverage | ForEach-Object {$_.id})
+    if(@($ids | Sort-Object -Unique).Count -ne $ids.Count) {
+        throw 'Sprint 24 duplicate coverage identity.'
+    }
+    foreach($id in $mandatory) {
+        $row=@($Ledger.coverage | Where-Object {$_.id -ceq $id})
+        if($row.Count -ne 1 -or $row[0].result -cnotin @('PASS','REUSED_PASS')) {
+            throw "Sprint 24 mandatory coverage is incomplete: $id"
+        }
+    }
+    foreach($row in $Ledger.coverage) {
+        if($row.result -cnotin @('PASS','REUSED_PASS') -or
+            @($row.proofs).Count -eq 0 -or
+            @($row.evidenceSources).Count -eq 0) {
+            throw "Sprint 24 coverage lacks evidence: $($row.id)"
+        }
+        if($row.result -ceq 'REUSED_PASS') {
+            if([string]::IsNullOrWhiteSpace([string]$row.reuseJustification) -or
+                [string]::IsNullOrWhiteSpace([string]$row.priorSource)) {
+                throw 'Sprint 24 inherited proof lacks dependency comparison/provenance.'
+            }
+        } else {
+            foreach($source in $row.evidenceSources) {
+                if($source.source -cne $Candidate.commit -or
+                    $source.packageSha256 -cne $Candidate.packageSha256 -or
+                    $source.dllSha256 -cne $Candidate.dllSha256 -or
+                    $source.dllMvid -cne $Candidate.dllMvid) {
+                    throw 'Sprint 24 native coverage is bound to other candidate bytes.'
+                }
+            }
+        }
+    }
+}
+
 function Get-KmgClosurePublicCoverage {
     param([Parameter(Mandatory=$true)]$Ledger)
     foreach ($row in $Ledger.coverage) {

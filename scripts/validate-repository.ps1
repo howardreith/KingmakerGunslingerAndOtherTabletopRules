@@ -96,6 +96,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
 & (Join-Path $PSScriptRoot 'Test-ExplicitCandidateReuse.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint22Release.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint24Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint22InstalledStack.ps1')
 
 # Parse the guarded entry points with the installed PowerShell parser. This

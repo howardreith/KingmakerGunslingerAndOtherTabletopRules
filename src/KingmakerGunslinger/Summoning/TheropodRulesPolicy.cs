@@ -61,6 +61,8 @@ namespace KingmakerGunslinger.Summoning
         internal const int RetainedNativeWrappers = 29;
         internal const int HiddenVisibleChoices = 1104;
         internal const int PublicVisibleChoices = 1122;
+        /// <summary>v0.0.155 publication removed both keys together.</summary>
+        internal const int PublicSuppressedLogicalPlacements = 0;
 
         internal const int DeinonychusBaseRacialHitPoints = 18;
         internal const int DeinonychusMobilityRanks = 0;
@@ -186,7 +188,10 @@ namespace KingmakerGunslinger.Summoning
                 HiddenVisibleChoices != HiddenPublishedLogicalPlacements +
                     RetainedNativeWrappers ||
                 PublicVisibleChoices != FinalPublishedLogicalPlacements +
-                    RetainedNativeWrappers)
+                    RetainedNativeWrappers ||
+                PublicSuppressedLogicalPlacements != 0 ||
+                RegisteredLogicalPlacements - PublicSuppressedLogicalPlacements !=
+                    FinalPublishedLogicalPlacements)
                 throw new InvalidOperationException(
                     "Sprint 24 theropod arithmetic changed.");
         }
