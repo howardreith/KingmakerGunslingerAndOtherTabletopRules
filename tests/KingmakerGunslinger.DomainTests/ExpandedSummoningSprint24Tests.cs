@@ -646,6 +646,20 @@ namespace KingmakerGunslinger.DomainTests
                 "The cold-load observer proves the reset, the freed mouth and the absent interior packet.");
             Assertions.False(persistence.Contains("alreadySwallowedPreserved"),
                 "No observer still expects a swallowed victim to survive a cold load.");
+
+            // Publication puts both units in front of the inventory observer,
+            // whose interpretation table must record the mod's own carriers or
+            // report them as prohibited references.
+            string inventory = File.ReadAllText(
+                "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningInventoryObservationPolicy.cs");
+            foreach (string carrier in new[] {
+                "KMG_Summoning_Natural_Deinonychus_Chassis",
+                "KMG_Summoning_Natural_Tyrannosaurus_Chassis",
+                "KMG_Summoning_Special_Tyrannosaurus_PowerfulBite",
+                "KMG_Summoning_Special_Tyrannosaurus_BleedingCritical",
+                "KMG_Summoning_Special_Tyrannosaurus_CombatTraits" })
+                Assertions.True(inventory.Contains(carrier),
+                    "The published inventory observer records the carrier: " + carrier);
         }
 
         private static string Sha256(string path)

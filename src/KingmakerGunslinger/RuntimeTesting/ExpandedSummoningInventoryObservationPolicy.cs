@@ -77,6 +77,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "ce540cd4b3b74861a4a91458d742a692", "KMG_Summoning_Unit_Triceratops", "20c83d35a8234c9fb35e8f174d19e6ba", "KMG_Summoning_Special_Triceratops_Trample", "AddFacts" },
             new[] { "39cab5be4dc148339f4ce8b0157bd716", "KMG_Summoning_Unit_Stegosaurus", "95278500c12647adbf53f8b77b7d3955", "KMG_Summoning_Natural_Stegosaurus_Chassis", "AddFacts" },
             new[] { "39cab5be4dc148339f4ce8b0157bd716", "KMG_Summoning_Unit_Stegosaurus", "ce0af5b47a1a462095e9f308a5d1bba1", "KMG_Summoning_Special_Stegosaurus_Trip", "AddFacts" },
+            // Sprint 24, published in v0.0.155. Same pattern as the rows
+            // above: this mod's own registered blueprints granted on this
+            // mod's own units. Every GUID below is in the pinned Sprint 24
+            // identity set, so none is a donor or native reference leaking
+            // onto a unit, which is what this table exists to catch.
+            new[] { "10a13f87e3664e30b642a3c59cc8c700", "KMG_Summoning_Unit_Deinonychus", "fed90fe9166348a8b7ae8bff5f03566a", "KMG_Summoning_Natural_Deinonychus_Chassis", "AddFacts" },
+            new[] { "04b1a75a76544a9581ee832045f8227a", "KMG_Summoning_Unit_Tyrannosaurus", "7c6bb677353045189045129c097e4c2f", "KMG_Summoning_Natural_Tyrannosaurus_Chassis", "AddFacts" },
+            new[] { "04b1a75a76544a9581ee832045f8227a", "KMG_Summoning_Unit_Tyrannosaurus", "c1a9b9554bb744a9a22f7ee1557dd678", "KMG_Summoning_Special_Tyrannosaurus_PowerfulBite", "AddFacts" },
+            new[] { "04b1a75a76544a9581ee832045f8227a", "KMG_Summoning_Unit_Tyrannosaurus", "e45b109a0e96496d9efd42edd11f95c8", "KMG_Summoning_Special_Tyrannosaurus_BleedingCritical", "AddFacts" },
+            new[] { "04b1a75a76544a9581ee832045f8227a", "KMG_Summoning_Unit_Tyrannosaurus", "e22d935930eb4a9398e1160699f87b09", "KMG_Summoning_Special_Tyrannosaurus_CombatTraits", "AddFacts" },
         };
 
         internal static string[][] QualifiedReferenceRows

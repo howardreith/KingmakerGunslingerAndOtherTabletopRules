@@ -27,8 +27,12 @@ namespace KingmakerGunslinger.DomainTests
             // resolve to exactly one ledger symbol, so a row cannot qualify a
             // reference that does not exist or name one thing while pointing
             // at another.
-            Assertions.Equal(48, rows.Length, "All observed qualified project references through Sprint 23, with no blanket prefix exception.");
-            Assertions.Equal(48, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
+            // Sprint 24 publication adds five more exact rows: the
+            // Deinonychus and Tyrannosaurus chassis facts plus the
+            // Tyrannosaurus Powerful Bite, Bleeding Critical and combat
+            // traits carriers, all granted on their own units.
+            Assertions.Equal(53, rows.Length, "All observed qualified project references through Sprint 24, with no blanket prefix exception.");
+            Assertions.Equal(53, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
             var entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
             foreach (var r in rows)
             {
