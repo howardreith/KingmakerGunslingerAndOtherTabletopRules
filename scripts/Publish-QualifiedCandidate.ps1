@@ -93,7 +93,12 @@ try {
         'planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json',
         'scripts/Publish-QualifiedCandidate.ps1',
         'scripts/QualifiedRelease.Common.ps1',
-        'scripts/Test-Sprint24Release.ps1')
+        'scripts/Test-Sprint24Release.ps1',
+        # The focused publisher refusal suite added for this repair, and the
+        # validation wrapper that runs it. Neither is compiled into or included
+        # in the candidate package: the archive carries no scripts/ entry.
+        'scripts/Test-Sprint24ReportingLineage.ps1',
+        'scripts/validate-repository.ps1')
     if (-not $Sprint24Theropods) {
         $allowedReportingPaths = @()
         $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$git.Commit,$MergedReleaseCommit)
