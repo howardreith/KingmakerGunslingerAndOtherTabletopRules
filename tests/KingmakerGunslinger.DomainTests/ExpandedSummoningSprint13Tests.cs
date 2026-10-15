@@ -543,7 +543,7 @@ namespace KingmakerGunslinger.DomainTests
                 buildOutput.Contains("assets\\sprint13-creatures\\wolverine-mesh.json") &&
                 packageCheck.Contains("assets\\sprint13-creatures\\poisonous-frog-albedo.png") &&
                 build.Contains("'package.ps1') -Configuration Release -PackagePath $packagePath") &&
-                package.Contains("{ 364 } else { 362 }"),
+                package.Contains("{ 365 } else { 363 }"),
                 "All six Sprint 13 asset files enter the strict standalone package.");
         }
 
