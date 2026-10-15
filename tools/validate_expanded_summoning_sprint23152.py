@@ -93,6 +93,12 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint16Mechanics.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint22Review.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint23Review.cs",
+    # Forward research boundary only: Sprint 24's closed, save-free observer
+    # must run while the product/version/identity surface is still exactly the
+    # released Sprint 23 prefix. No Sprint 24 gameplay builder is admitted by
+    # this historical gate; the Sprint 24 candidate gets its own validator.
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Census.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/Sprint24TheropodCensusPolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",

@@ -70,7 +70,14 @@ namespace KingmakerGunslinger.DomainTests
             var salamander = variants.Where(v => v.Creature.Key == "salamander").ToArray();
             Assertions.Equal(5, salamander.Length, "Existing five routes retained.");
             Assertions.True(salamander.All(SummonVisibilityCatalog.IsPublished), "No accidental Salamander suppression.");
-            Assertions.Equal(0, variants.Count(v => !SummonVisibilityCatalog.IsPublished(v)), "No qualified creature, including either Sprint 23 dinosaur, remains suppressed.");
+            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
+                variants.Count(v =>
+                    !SummonVisibilityCatalog.IsPublished(v)),
+                "Only the two bounded Sprint 24 theropods remain suppressed.");
+            Assertions.True(variants.Where(v =>
+                    !TheropodRulesPolicy.IsTheropod(v.Creature.Key))
+                    .All(SummonVisibilityCatalog.IsPublished),
+                "No previously qualified creature becomes suppressed.");
             Assertions.Equal("salamander", SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.SalamanderTraitsSymbol), "Existing original species painting, no new art or action icon.");
         }
     }

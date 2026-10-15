@@ -66,15 +66,15 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.True(monster.All(value => value.Creature
                 .MonsterTemplated), "Every Triceratops Monster root owns template children.");
-            Assertions.Equal(1075,
+            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
-                "Twelve placements append.");
-            Assertions.Equal(0,
+                "Later sprints append without moving the twelve Sprint 23 placements.");
+            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Publication removes exactly the two qualified creature keys.");
-            Assertions.Equal(1075,
+                "Only the Sprint 24 candidate remains withheld.");
+            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "All twelve new roots publish without moving an identity.");
+                "All twelve Sprint 23 roots remain published without moving an identity.");
         }
 
         internal static void ProfilesDeriveThePrintedLines()
@@ -284,19 +284,25 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<SummoningIdentitySpec> planned =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(2101, planned.Count,
-                "Foundation gains exactly thirty-two active identities.");
-            Assertions.True(planned.Skip(planned.Count - PrivateTail.Length)
+            Assertions.Equal(2101 +
+                    ExpandedSummoningSprint24Tests.AppendedLedgerIdentities,
+                planned.Count,
+                "Sprint 24 appends without moving Sprint 23's foundation identities.");
+            Assertions.True(planned.Skip(planned.Count -
+                    TheropodRulesPolicy.AppendedPrivateIdentityCount -
+                    PrivateTail.Length).Take(PrivateTail.Length)
                 .Select(value => value.Symbol).SequenceEqual(PrivateTail),
-                "Ten active private carriers append in frozen order.");
+                "Ten active Sprint 23 private carriers remain in frozen order.");
             JObject manifest = JObject.Parse(File.ReadAllText(
                 "blueprints/blueprints.json"));
             JToken[] entries = manifest["entries"].ToArray();
             var bySymbol = entries.ToDictionary(value =>
                 (string)value["symbol"], value => (string)value["guid"],
                 StringComparer.Ordinal);
-            Assertions.Equal(3101, entries.Length,
-                "Manifest total includes the rejected gore type as a third reserved identity.");
+            Assertions.Equal(3101 +
+                    ExpandedSummoningSprint24Tests.AppendedLedgerIdentities,
+                entries.Length,
+                "Sprint 24 appends without moving the reserved Sprint 23 gore type.");
             JToken retired = entries.Single(value => (string)value["symbol"] ==
                 "KMG.Summoning.Natural.Triceratops.GoreType");
             Assertions.Equal("reserved", (string)retired["status"],
@@ -361,8 +367,9 @@ namespace KingmakerGunslinger.DomainTests
 
             JObject icons = JObject.Parse(File.ReadAllText(
                 "assets-source/original-icons/expanded-summoning/icon-manifest.json"));
-            Assertions.Equal(117, (int)icons["count"],
-                "Two distinct icon concepts append.");
+            Assertions.Equal(117, icons["icons"].Count(value =>
+                    !TheropodRulesPolicy.UsesExactRanks((string)value["key"])),
+                "All pre-Sprint-24 icon concepts remain unchanged.");
             JToken[] armored = icons["icons"].Where(value =>
                 ArmoredDinosaurVisualPolicy.Handles((string)value["key"]))
                 .ToArray();

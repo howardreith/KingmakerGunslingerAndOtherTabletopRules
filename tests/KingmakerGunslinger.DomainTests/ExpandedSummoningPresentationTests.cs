@@ -21,10 +21,11 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(117, (int)manifest["count"],
-                "Icon manifest count changed.");
-            Assertions.Equal(117, rows.Count,
-                "Icon manifest row count changed.");
+            Assertions.Equal(SummonIconCatalog.All.Count,
+                (int)manifest["count"],
+                "Icon manifest count must follow the centralized catalog.");
+            Assertions.Equal(SummonIconCatalog.All.Count, rows.Count,
+                "Icon manifest row count must follow the centralized catalog.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
             string[] manifestKeys = rows.Select(value => (string)value["key"])
@@ -131,7 +132,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 365 } else { 363 }"),
+                package.Contains("--expected-file-count $expectedPackageFileCount"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
@@ -159,9 +160,13 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG_Summoning_Unit_Eagle", out eagle) && eagle == 0.30f,
                 "Eagle view-only scale changed.");
             Assertions.True(SummonViewScaleCatalog.All.All(value =>
-                    value.Multiplier >= 0.20f && (value.CreatureKey == "dire-crocodile"
-                        ? value.Multiplier == 2.0f : value.Multiplier <= 1.25f)),
-                "Only the new Gargantuan crocodilian has the explicit 2x view step.");
+                    value.Multiplier >= 0.20f &&
+                    (value.CreatureKey == "dire-crocodile" ||
+                        value.CreatureKey ==
+                            TheropodRulesPolicy.TyrannosaurusKey
+                        ? value.Multiplier == 2.0f :
+                        value.Multiplier <= 1.25f)),
+                "Only the two reviewed Gargantuan original bodies have an explicit 2x view step.");
             string runtime = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));

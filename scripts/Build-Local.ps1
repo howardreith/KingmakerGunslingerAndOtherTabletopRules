@@ -33,7 +33,7 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.154') { throw "Build-Local supports only active version 0.0.154, observed $($info.Version)." }
+if ($info.Version -ne '0.0.155') { throw "Build-Local supports only active version 0.0.155, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -195,6 +195,11 @@ New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint23-armo
 foreach ($kind in @('triceratops','stegosaurus')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint23-armored-dinosaurs\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint23-armored-dinosaurs\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force
+}
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint24-theropods') -Force | Out-Null
+foreach ($kind in @('deinonychus','tyrannosaurus')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint24-theropods\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint24-theropods') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint24-theropods\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint24-theropods') -Force
 }
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
