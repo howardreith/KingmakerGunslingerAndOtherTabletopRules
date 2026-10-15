@@ -223,21 +223,34 @@ namespace KingmakerGunslinger.Firing
                 Track(command, actor, firearm.Weapon, CurrentForAutomatic(actor), false);
         }
         // Automatic work (native AI, auto-use reload) binds to the accepted
-        // order. Once its owner has finished and its target can no longer be
-        // attacked, it has nothing left to continue; native combat then
-        // proceeds as it would with an ordinary weapon. An unfinished owner
-        // always carries it: input prediction swaps actor.Commands, and a
-        // running sequence retargets natively on its own next tick.
+        // order. Once its owner has finished against a defeated target, it has
+        // nothing left to continue; on a Normal firearm it completes and native
+        // combat proceeds as it would with an ordinary weapon. An unfinished
+        // owner always carries it: input prediction swaps actor.Commands, and
+        // a running sequence retargets natively on its own next tick.
         private static FirearmAttackOrderLedger.Order CurrentForAutomatic(UnitEntityData actor)
         {
             var order = Ledger.Current(actor);
-            if (order == null) return null;
+            return order != null && Complete(actor, order) ? null : order;
+        }
+        internal static bool CompleteDefeated(Binding binding)
+        {
+            return binding != null && binding.Order != null && Complete(binding.Actor, binding.Order);
+        }
+        // Defeated means dead (or no longer a unit). A living target that is
+        // out of range, out of sight or briefly untargetable keeps its order.
+        // The condition is the exact equipped item's, never the epoch.
+        private static bool Complete(UnitEntityData actor, FirearmAttackOrderLedger.Order order)
+        {
             var owner = order.Owner as UnitCommand;
             var target = order.Target as UnitEntityData;
-            bool carried = owner != null && !owner.IsFinished;
-            bool attackable = target != null && target.Descriptor != null &&
-                !target.Descriptor.State.IsDead && actor.CanAttack(target);
-            return Ledger.Conclude(order, carried, attackable) ? null : order;
+            ExactEquippedFirearmContext firearm;
+            string reason;
+            var condition = actor != null && ExactEquippedFirearmResolver.TryResolve(
+                actor.Descriptor, out firearm, out reason) && ReferenceEquals(firearm.Weapon, order.Weapon)
+                ? firearm.EffectiveCondition : FirearmCondition.Unknown;
+            return Ledger.Complete(order, owner != null && !owner.IsFinished,
+                target == null || target.Descriptor == null || target.Descriptor.State.IsDead, condition);
         }
         internal static void CreatedAutomatic(UnitCommand command, UnitEntityData actor, UnitEntityData target)
         {
@@ -291,7 +304,7 @@ namespace KingmakerGunslinger.Firing
             if (binding != null && !binding.Proposal &&
                 (binding.Epoch != Ledger.Epoch(actor, binding.Weapon) ||
                  Ledger.IsSuppressed(actor, binding.Weapon) ||
-                 (binding.Epoch != 0 && binding.Order == null) ||
+                 (binding.Order == null && Ledger.RequiresOrder(actor, binding.Weapon)) ||
                  (binding.Order != null && (!Ledger.IsCurrent(binding.Order) ||
                     !ReferenceEquals(binding.Target, binding.Order.Target) ||
                     (command is UnitAttack && !ReferenceEquals(((UnitAttack)command).Target, binding.Order.Target)))))) return false;
@@ -393,7 +406,7 @@ namespace KingmakerGunslinger.Firing
             bool valid = !binding.Proposal &&
                 binding.Epoch == Ledger.Epoch(binding.Actor, binding.Weapon) &&
                 !Ledger.IsSuppressed(binding.Actor, binding.Weapon) &&
-                (binding.Epoch == 0 || binding.Order != null) &&
+                (binding.Order != null || !Ledger.RequiresOrder(binding.Actor, binding.Weapon)) &&
                 (binding.Order == null || (Ledger.IsCurrent(binding.Order) &&
                     ReferenceEquals(binding.Target, binding.Order.Target) &&
                     ReferenceEquals(command.Target, binding.Order.Target))) &&
@@ -445,7 +458,6 @@ namespace KingmakerGunslinger.Firing
         internal static bool MayResume(Binding binding)
         {
             return binding != null && !binding.Proposal && !binding.Preview &&
-                (binding.Epoch == 0 || binding.Order != null) &&
                 (binding.Order == null || ReferenceEquals(binding.Target, binding.Order.Target)) && Ledger.MayResume(
                 binding.Actor, binding.Weapon, binding.Epoch,
                 binding.Submission, binding.Order);

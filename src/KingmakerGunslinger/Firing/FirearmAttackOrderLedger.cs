@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using KingmakerGunslinger.Firearms;
 
 namespace KingmakerGunslinger.Firing
 {
@@ -13,8 +14,14 @@ namespace KingmakerGunslinger.Firing
             new ConditionalWeakTable<object, Actor>();
         private sealed class Damage
         {
+            // Monotonic generation: rejects work captured before a committed
+            // degradation. It is history, never the item's current condition.
             internal int Epoch;
             internal bool Suppressed;
+            // Broken-sequence authority: automatic work needs an accepted
+            // explicit order from a committed degradation until such an order
+            // completes normally on the repaired (Normal) firearm.
+            internal bool RequiresOrder;
         }
         private sealed class Actor
         {
@@ -50,6 +57,11 @@ namespace KingmakerGunslinger.Firing
         {
             return actor != null && weapon != null &&
                 For(actor).Items.GetOrCreateValue(weapon).Suppressed;
+        }
+        internal bool RequiresOrder(object actor, object weapon)
+        {
+            return actor != null && weapon != null &&
+                For(actor).Items.GetOrCreateValue(weapon).RequiresOrder;
         }
         internal Order Current(object actor)
         {
@@ -98,14 +110,19 @@ namespace KingmakerGunslinger.Firing
             order.Target = target;
             return true;
         }
-        // Native automatic work may end an undegraded order once no native
-        // command carries it and its target can no longer be attacked, the
-        // rule a captured reload continuation already applies. A degraded
-        // firearm keeps its order until a new explicit order replaces it.
-        internal bool Conclude(Order order, bool carried, bool targetAttackable)
+        // Normal completion, not a fault: no native command carries the order
+        // and its target is defeated, so nothing remains to continue. Only a
+        // currently Normal firearm completes; it then returns to ordinary
+        // automatic combat without suppression, while the epoch still rejects
+        // pre-degradation work. A Broken firearm keeps its explicit order.
+        internal bool Complete(Order order, bool carried, bool targetDefeated,
+            FirearmCondition condition)
         {
-            if (!IsCurrent(order) || order.Epoch != 0 || carried || targetAttackable) return false;
-            Cancel(order);
+            if (!IsCurrent(order) || carried || !targetDefeated ||
+                condition != FirearmCondition.Normal) return false;
+            Actor actor = For(order.Actor);
+            actor.Current = null;
+            actor.Items.GetOrCreateValue(order.Weapon).RequiresOrder = false;
             return true;
         }
         internal void Cancel(Order order)
@@ -116,7 +133,7 @@ namespace KingmakerGunslinger.Firing
             if (!ReferenceEquals(actor.Current, order)) return;
             actor.Current = null;
             Damage damage = actor.Items.GetOrCreateValue(order.Weapon);
-            if (damage.Epoch != 0) damage.Suppressed = true;
+            if (damage.RequiresOrder) damage.Suppressed = true;
         }
         internal void Break(object actor, object weapon)
         {
@@ -125,6 +142,7 @@ namespace KingmakerGunslinger.Firing
             Damage damage = state.Items.GetOrCreateValue(weapon);
             checked { damage.Epoch++; }
             damage.Suppressed = true;
+            damage.RequiresOrder = true;
             if (state.Current != null && ReferenceEquals(state.Current.Weapon, weapon))
                 Cancel(state.Current);
         }
@@ -143,7 +161,7 @@ namespace KingmakerGunslinger.Firing
         {
             return actor != null && weapon != null && epoch == Epoch(actor, weapon) &&
                 submission == Submission(actor) && !IsSuppressed(actor, weapon) &&
-                (order == null || IsCurrent(order));
+                (order == null ? !RequiresOrder(actor, weapon) : IsCurrent(order));
         }
     }
 }
