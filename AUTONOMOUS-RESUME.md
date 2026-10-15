@@ -39,11 +39,46 @@ hidden qualification must complete while both keys are suppressed. The hidden
 closeout therefore reuses the already-validated package above rather than
 rebuilding, and exactly one public candidate follows it.
 
-**Remaining for Sprint 24:** replay `shared-controls` (a shared gameplay
-dependency changed after its PASS on `70499a18`, so that receipt belongs to those
-bytes only), then Cycle A and Cycle B on one validated fixture version; then the
-public candidate, its publication-affecting native checks, merge, release,
-independent verification, exact restoration and the records PR.
+**Hidden closure is COMPLETE.** All seven closeout scenarios passed on the one
+validated candidate `bf9388d3` / DLL `b8bffe18` / MVID `c7f59041`, run from a
+temporary detached checkout at the tested commit so the sidecar identity matched.
+No rebuild was made to stamp the reporting head.
+
+- `shared-controls` replay, run `20261015T1956415320638Z-4adf192e492b429b85a05001af14859d`,
+  85,815 ms, all seven rows, with one exact-owner brain tick, a native
+  `UnitAttack`, real weapon rolls, 3.50 m approach and no fixture-issued attack.
+- Cycle A — prepare (natural 19 confirmed; grab, grappled target, hold residue,
+  engulfed-shut mouth, swallowed, bleeding; one save written), cold-load cleanup
+  (`activeMouthHoldReset`, `alreadySwallowedReset`, `engulfedMouthReleased`,
+  `bleedingCriticalPreserved`, `noOrphanInteriorPacket`, one 2d6 tick removed by
+  healing, resource cleanup with zero survivors), fresh absence `ownedVictims` 0.
+- Cycle B — prepare, module-OFF cold-load cleanup (same reset assertions true
+  with `moduleEnabled` false, `donor-visual:module-disabled` recorded for both
+  creatures, `theropodBodyExact` true, zero private and zero project resources),
+  then fresh absence `ownedVictims` 0 after re-enabling.
+
+**Released-behaviour dependency proof.** The `ResetLoadedGrapples` executable
+loop is identical to released master `322ac7fe` — 33 lines each, zero differences
+with comments stripped — so the loop was restored to its released behaviour
+rather than keeping the unapproved exception. Released Sprint 16/17 old-consumer
+cold-load evidence therefore applies to unchanged code, which is how the separate
+actively-held-victim requirement is satisfied; this fixture proves only the
+owner's hold residue and does not claim to prove both states. The separately
+changed `SummonSwallowLifecycleComponent` victim-death configuration is covered
+by the released-consumer controls inside `shared-controls`.
+
+Machine audited and exactly restored: KMG 0.0.117/136 files, eleven mod
+directories, 967 Mods entries, 118 saves, baseline save byte-identical, working
+fixture left verified empty, sound bank unchanged, no leftover staging, lock or
+process, and every transaction restored and verified.
+
+**Remaining for Sprint 24:** the public candidate — unsuppress only the two keys
+together, re-derive totals to 1,093 generated placements / 29 wrappers / 1,122
+visible choices, move the version surface to the next free patch, extend the
+existing qualified-candidate publisher with a Sprint 24 contract plus rejection
+tests — then one Sprint gate, the publication-affecting native checks, merge,
+stable release, independent asset verification, exact restoration and the
+documentation-only records PR.
 
 Both creature keys remain suppressed. No suppression, version, tag, merge or
 release has been touched.
