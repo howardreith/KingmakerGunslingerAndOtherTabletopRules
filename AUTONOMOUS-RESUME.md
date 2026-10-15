@@ -91,8 +91,47 @@ together at v0.0.155, so the source-derived public surface is now
 543 placements, Summon Nature's Ally 95 and 550. No identity, GUID, execution
 child or route ordering moved with the keys.
 
-No tag, merge or release has been made. The public candidate still owes its
-Sprint gate and its publication-affecting native checks.
+**All Sprint 24 qualification gates are green.** The public candidate is
+`f7ab30ac9c306d3db03a4687d6bf453cfca201e5` at version 0.0.155: package
+`f7d3b5e651c4c4fb105ff4b734ddc1070c3887b57636e9eb217347809f00a751`, DLL
+`3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046`. Its Sprint
+gate passed the repository wrapper, 2,610/2,610 domain tests, exact-reference
+build, deterministic packaging and strict validation in 174.9 s with no
+deployment.
+
+Public native evidence on exactly those bytes, both under
+`gunslinger-high-risk-combined`:
+
+- `observe-expanded-summoning-inventory`, run
+  `20261015T2141314204049Z-4325d362063c4f3ea8b6d559c98d28e1`, PASS: 1,093 parent
+  placements, all 1,093 executable native ability contracts exact, 319 template
+  logical choices, menu reconciliation exact, prohibited references 0.
+- `rtwp-foundation`, run
+  `20261015T2148010120985Z-01c721f3259b408b807fe07599762800`, PASS: 18 published
+  and 18 registered routes, every one of the nine Monster and nine Nature's Ally
+  roots exercised through its real parent spell path, both adult profiles and
+  bodies in RTWP, plus fixture and native-profile restoration.
+
+One failed public inventory attempt is preserved rather than discarded:
+`20261015T2124328633099Z-cb71ec0557ab49658f4481d99aa1c1ce` failed
+`expanded-summoning-prohibited-references` at 5, because the inventory
+observer's interpretation table had no rows for the five private theropod
+carriers. The correction added them and changed the bytes, so the earlier public
+candidate `00294f99` is superseded.
+
+The hidden closeout evidence stays bound to `bf9388d3` with its original
+provenance under a recorded dependency audit, and is never relabelled as
+execution on the public bytes.
+
+Machine audited and exactly restored again: KMG 0.0.117/136 files, eleven mod
+directories, 118 saves, baseline save byte-identical, working fixture verified
+empty, sound bank unchanged, no leftover staging, lock or process, and every
+transaction restored and verified.
+
+No tag, merge or release has been made yet. Next: finalize the qualification
+ledger with the product merge commit, mark PR #45 ready and merge, promote these
+exact bytes, publish stable v0.0.155 Latest, verify the three assets
+independently, then the documentation-only records PR.
 
 ---
 
