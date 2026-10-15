@@ -114,6 +114,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private IEnumerable<object> FirearmNativeInputCases()
         {
+            foreach (object step in FirearmReviewKillChainCases()) yield return step;
             foreach (object step in FirearmReviewMergeCases()) yield return step;
             foreach (object step in FirearmReviewHoverCases()) yield return step;
             foreach (object step in FirearmReviewReloadTurnCases()) yield return step;
