@@ -320,7 +320,8 @@ try {
     }
 
     $tag = "v$version"
-    $title = "$displayName $tag"
+    # The public project title since v0.0.150; $displayName stays the UMM name.
+    $title = "Tabletop Added Rules $tag"
     $existingRelease = $null
     if (Test-NativeCommand -FilePath 'gh' -Arguments @(
         'release', 'view', $tag, '--repo', $repository

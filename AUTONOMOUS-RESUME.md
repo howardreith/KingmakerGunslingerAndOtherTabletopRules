@@ -32,6 +32,17 @@ Assembly-CSharp SHA-256
 `3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`).
 `Build-Local.ps1` runs that script on the exact-reference DLL.
 
+Candidate gate: `Invoke-KmgGate.ps1 -Level Sprint` on `cc62cb1d0` passed in
+91.8s (2,596/2,596 domain tests, repository wrapper, exact-reference build,
+the 37-assertion harness and strict package validation; 365 package files).
+Package SHA-256
+`0f333f0988c1b2151334ebd634b45b79b1b55e4c47910862d936b29da81da586`, DLL
+SHA-256 `c02b2113ddffd2ecd0bfda6df14a37d607ba779a5836842e632397687ebe0f37`.
+This machine's Sep 6 private reference bundle lacks
+`UnityEngine.PhysicsModule.dll`, required since Oct 6; the gate used a fresh
+`export-private-build-references.ps1` bundle of the installed Steam 2.1.7b
+files at `C:\Dev\KingmakerGunslingerLab\private\refresh-2026-10-15`.
+
 Not performed: in-game observation of a real companion's level-up or respec
 selector. Open follow-up: CotW adds its Eidolon/Phantom/Dragon exclusions in its
 own `LoadDictionary` postfix, before KMG publishes Gunslinger, so CotW-only pets
