@@ -122,15 +122,6 @@ ELIGIBILITY_PRODUCTION = {
     "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs",
 }
 
-# Development checkpoint after v0.0.154: firearm RTWP continuation after a
-# kill (completed explicit order), with its guarded native kill-chain fixture.
-FIREARM_RETARGET_PRODUCTION = {
-    "src/KingmakerGunslinger/Firing/FirearmAttackOrderLedger.cs",
-    "src/KingmakerGunslinger/Firing/NativeFirearmAttackOrder.cs",
-    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmMaintenance.cs",
-    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmReviewKillChain.cs",
-}
-
 
 def validate_append(accepted, current):
     if current[:len(accepted)] != accepted:
@@ -163,8 +154,7 @@ def validate_production_scope(root: Path, version: str):
         ["git", "diff", "--name-only", BASELINE, "--", "src/KingmakerGunslinger"],
         cwd=root, text=True).splitlines()
     allowed = ALLOWED_PRODUCTION | (
-        ELIGIBILITY_PRODUCTION | FIREARM_RETARGET_PRODUCTION
-        if version == "0.0.154" else set())
+        ELIGIBILITY_PRODUCTION if version == "0.0.154" else set())
     unexpected = sorted(set(changed) - allowed)
     if unexpected:
         raise AssertionError("Unrelated production source changed: " + ", ".join(unexpected))
