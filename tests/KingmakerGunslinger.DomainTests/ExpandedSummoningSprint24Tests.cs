@@ -397,6 +397,14 @@ namespace KingmakerGunslinger.DomainTests
                 attachment.Contains("string ownedMaterialName") &&
                 attachment.Contains("StartsWith(\n                    ownedMaterialName, StringComparison.Ordinal)"),
                 "Per-view suppression survives native fade updates, appears in the owned-resource receipt and releases before exact donor restoration.");
+            // With the module off the identity gate must not swallow the
+            // attachment record: the targeted persistence observer requires the
+            // asset loader's explicit module-disabled refusal and rejects
+            // "not-attempted" as proof the identity reached that gate.
+            Assertions.True(attachment.Contains("bool moduleOn = ModContext.TryGet(out context) &&") &&
+                attachment.Contains("if (moduleOn &&") &&
+                attachment.Contains("TryProductionTheropod(true,"),
+                "The theropod identity gate applies only while the module is on, so a disabled module still records the loader's refusal.");
             Assertions.True(attachment.Contains("TryProductionTheropod(") &&
                 attachment.Contains("m_Corpulence") &&
                 attachment.Contains("view.SetupSelectionColliders(false)") &&
