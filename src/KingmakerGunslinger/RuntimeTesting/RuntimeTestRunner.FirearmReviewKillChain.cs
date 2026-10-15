@@ -15,6 +15,7 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.Visual.Animation.Actions;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Firing;
@@ -32,6 +33,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool Passed;
         }
 
+        private sealed class KillChainLane
+        {
+            internal string Name;
+            internal bool Loaded, Paused, FinalKill, NoReplacement;
+            internal bool Explicit = true;
+        }
+
+        private static readonly MethodInfo NativeAnimationFinish = typeof(AnimationActionHandle)
+            .GetMethod("FinishInternal", BindingFlags.Instance | BindingFlags.NonPublic);
+
         // CR-04 (owner RTWP report): one native full attack with four planned
         // attacks against several legal enemies. Native UpdateTarget chooses
         // every replacement after real projectile damage and native death; no
@@ -41,7 +52,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<object> FirearmReviewKillChainCases()
         {
             var verdicts = new List<KillChainVerdict>();
-            foreach (string lane in new[] { "loaded", "empty", "loaded-paused", "empty-paused" })
+            var lanes = new[] {
+                new KillChainLane { Name = "loaded", Loaded = true },
+                new KillChainLane { Name = "empty" },
+                new KillChainLane { Name = "loaded-paused", Loaded = true, Paused = true },
+                new KillChainLane { Name = "empty-paused", Paused = true },
+                new KillChainLane { Name = "final-kill", Loaded = true, FinalKill = true },
+                new KillChainLane { Name = "ai-only-final-kill", Loaded = true, FinalKill = true, Explicit = false },
+                new KillChainLane { Name = "no-replacement", Loaded = true, NoReplacement = true } };
+            foreach (var lane in lanes)
                 foreach (object step in FirearmKillChainLane(lane, verdicts)) yield return step;
             foreach (object step in OrdinaryBowKillChainControl(verdicts)) yield return step;
             foreach (var verdict in verdicts) FirearmInputCheck(verdict.Name, verdict.Passed, verdict.Detail);
@@ -52,23 +71,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new KillChainVerdict { Name = name, Passed = passed, Detail = detail };
         }
 
-        // A is the clicked target; B and C are mortal; D is durable so a shot
-        // after the native fourth attack would be visible. Native nearest-first
-        // selection is expected to choose B, C, then D from these positions.
-        private static UnitEntityData[] PrepareKillChainTargets(FirearmInputFixture f)
+        // A is the clicked target. Native nearest-first selection is expected
+        // to choose B, C, D, then E from these positions. The last unit is
+        // durable, so a shot beyond the native fourth attack stays visible.
+        // Without a replacement, the others stand beyond pistol range + 5 ft.
+        private static UnitEntityData[] PrepareKillChainTargets(FirearmInputFixture f,
+            bool finalKill, bool noReplacement)
         {
-            var targets = new[] { f.Enemy, f.SpawnAdditional(false, "KillChainB"),
-                f.SpawnAdditional(false, "KillChainC"), f.SpawnAdditional(false, "KillChainDurable") };
-            targets[1].Position = new Vector3(1f, 0f, 2.5f);
-            targets[2].Position = new Vector3(-1.5f, 0f, 3f);
-            targets[3].Position = new Vector3(2f, 0f, 3.5f);
-            for (int index = 0; index < 3; index++)
+            var targets = new List<UnitEntityData> { f.Enemy, f.SpawnAdditional(false, "KillChainB"),
+                f.SpawnAdditional(false, "KillChainC"), f.SpawnAdditional(false, "KillChainD") };
+            if (finalKill) targets.Add(f.SpawnAdditional(false, "KillChainE"));
+            Vector3[] positions = noReplacement
+                ? new[] { Vector3.zero, new Vector3(0f, 0f, 14f), new Vector3(1f, 0f, 15f), new Vector3(-1f, 0f, 16f) }
+                : new[] { Vector3.zero, new Vector3(1f, 0f, 2.5f), new Vector3(-1.5f, 0f, 3f),
+                    new Vector3(2f, 0f, 3.5f), new Vector3(-2f, 0f, 4.5f) };
+            for (int index = 1; index < targets.Count; index++) targets[index].Position = positions[index];
+            for (int index = 0; index < targets.Count - 1; index++)
             {
                 targets[index].Stats.Constitution.BaseValue = 1;
                 targets[index].Stats.HitPoints.BaseValue = 1;
                 targets[index].Descriptor.State.Immortality.Release();
             }
-            return targets;
+            return targets.ToArray();
         }
 
         private static void KillChainResolveImpacts(FirearmInputFixture f, IEnumerable<UnitEntityData> targets)
@@ -82,13 +106,40 @@ namespace KingmakerGunslinger.RuntimeTesting
             });
         }
 
-        private IEnumerable<object> FirearmKillChainLane(string lane, List<KillChainVerdict> verdicts)
+        // The save-free host plays no animation clips, so the fixture already
+        // supplies each native act cue. It likewise supplies the finish cue
+        // after the act, letting native UnitCommand.Tick end a completed
+        // sequence with Success as live animation playback does.
+        private static void KillChainFinishActedAnimations(FirearmInputFixture f, UnitEntityData unit)
         {
-            bool loaded = lane.StartsWith("loaded", StringComparison.Ordinal);
-            bool paused = lane.EndsWith("-paused", StringComparison.Ordinal);
-            string prefix = "cr04-" + lane + "-four-attack-kill-chain-";
+            if (NativeAnimationFinish == null) throw new MissingMethodException("Native animation finish boundary.");
+            f.Turns.Execute(() => {
+                foreach (var command in unit.Commands.Raw.Where(c => c != null && c.Animation != null &&
+                    c.Animation.IsActed && !c.Animation.IsFinished).ToArray())
+                    NativeAnimationFinish.Invoke(command.Animation, null);
+            });
+        }
+
+        // One fixture frame in native GameModesFactory order: scheduled
+        // callbacks, AI, unit actions with same-frame ability delivery,
+        // projectiles, hits, then life. Natural 10 is the disclosed roll
+        // control for firearm attacks (hit, no misfire).
+        private static void KillChainPump(FirearmInputFixture f, UnitEntityData[] targets, bool ai)
+        {
+            if (!FirearmMisfireRuntime.PendingForcedNaturalRoll.HasValue)
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(10);
+            f.Turns.FlushFirearmCallbacks();
+            if (ai) f.Turns.Execute(() => new Kingmaker.Controllers.Brain.AiBrainController().Tick());
+            f.Pump(false);
+            KillChainResolveImpacts(f, targets);
+            KillChainFinishActedAnimations(f, f.Actor);
+        }
+
+        private IEnumerable<object> FirearmKillChainLane(KillChainLane lane, List<KillChainVerdict> verdicts)
+        {
+            string prefix = "cr04-" + lane.Name + "-";
             _firearmInputStage = prefix + "fixture";
-            _firearmInputFixture = new FirearmInputFixture(false, _firearmInputRows, initiallyLoaded: loaded);
+            _firearmInputFixture = new FirearmInputFixture(false, _firearmInputRows, initiallyLoaded: lane.Loaded);
             var f = _firearmInputFixture;
             using (var costs = new FirearmReviewCosts(f.Actor, _firearmInputRows))
             using (var trace = new FirearmKillChainTrace(f.Actor, _firearmInputRows, prefix))
@@ -98,7 +149,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 f.Actor.Descriptor.AddFact(BlueprintBootstrap.GunslingerClass.GunTraining.ChoiceFor(FirearmKind.Pistol));
                 f.Actor.Stats.Dexterity.BaseValue = 30;
                 f.Actor.Stats.BaseAttackBonus.BaseValue = 16;
-                var targets = PrepareKillChainTargets(f);
+                var targets = PrepareKillChainTargets(f, lane.FinalKill, lane.NoReplacement);
                 var cartridge = BlueprintBootstrap.BasicAmmunition.PaperCartridge;
                 Game.Instance.Player.Inventory.Add(cartridge, 12);
                 f.Actor.Descriptor.ActivatableAbilities.Enumerable.Single(a =>
@@ -107,12 +158,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int planned = 0;
                 f.Turns.Execute(() => planned = UnitAttack.EstimateFullAttacks(f.Actor));
                 int cartridges = Game.Instance.Player.Inventory.Count(cartridge);
+                long attempted = FreeActionFullAttackReloadPatch.Attempted;
                 long reloads = FreeActionFullAttackReloadPatch.Succeeded;
                 long ended = FreeActionFullAttackReloadPatch.Interrupted;
                 long faults = FreeActionFullAttackReloadPatch.Failed;
                 bool ready = f.Actor.Commands.Empty && planned == 4 &&
                     !f.Actor.CombatState.IsFullAttackRestrictedBecauseOfMoveAction &&
-                    f.State.LoadedRounds == (loaded ? 1 : 0) && f.State.Condition == FirearmCondition.Normal &&
+                    f.State.LoadedRounds == (lane.Loaded ? 1 : 0) && f.State.Condition == FirearmCondition.Normal &&
                     ReferenceEquals(f.Actor.AutoUseAbility?.Blueprint, BlueprintBootstrap.ReloadTestMusketAbility);
                 string setup = "planned=" + planned + ";loadedRounds=" + f.State.LoadedRounds +
                     ";cartridges=" + cartridges + ";autoUseReload=" +
@@ -121,58 +173,95 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";distances=" + string.Join(",", targets.Select(t => f.Actor.DistanceTo(t).ToString("F2")).ToArray());
                 verdicts.Add(KillChainCheck(prefix + "native-ready", ready, setup));
 
-                // Supported deterministic control: natural 10 on each firearm
-                // attack roll (hit, no misfire). Damage and death are native.
-                FirearmMisfireRuntime.QueueForcedNaturalRoll(10);
-                if (paused) f.Turns.SetFirearmPaused(true);
-                f.Click(targets[0]);
-                var order = BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor);
-                trace.Note("click", f, null, targets);
-                if (paused)
+                FirearmAttackOrderLedger.Order order = null;
+                if (lane.Explicit)
                 {
-                    for (int frame = 0; frame < 3; frame++) yield return null;
-                    trace.Note("paused-frames", f, null, targets);
-                    f.Turns.SetFirearmPaused(false);
+                    if (lane.Paused) f.Turns.SetFirearmPaused(true);
+                    f.Click(targets[0]);
+                    order = BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor);
+                    trace.Note("click", f, null, targets);
+                    if (lane.Paused)
+                    {
+                        for (int frame = 0; frame < 3; frame++) yield return null;
+                        trace.Note("paused-frames", f, null, targets);
+                        f.Turns.SetFirearmPaused(false);
+                    }
                 }
+                // Party AI stays enabled as in ordinary RTWP play; it cannot
+                // preempt a started player command. Distant units in the
+                // no-replacement lane would otherwise draw an approach order.
+                bool ai = !lane.NoReplacement;
                 UnitAttack chain = null;
                 for (int tick = 0; tick < 200 && (chain == null || !chain.IsFinished); tick++)
                 {
-                    if (!FirearmMisfireRuntime.PendingForcedNaturalRoll.HasValue)
-                        FirearmMisfireRuntime.QueueForcedNaturalRoll(10);
-                    f.Pump(); KillChainResolveImpacts(f, targets);
+                    KillChainPump(f, targets, ai);
                     if (chain == null && trace.Shots.Count != 0) chain = trace.Shots[0].Command;
                     trace.Sample(tick, f, chain, targets);
                     yield return null;
                 }
-                trace.Note("finished", f, chain, targets);
-
+                trace.Note("chain-finished", f, chain, targets);
                 var own = trace.Shots.Where(s => ReferenceEquals(s.Command, chain)).ToArray();
-                var foreign = trace.Shots.Where(s => !ReferenceEquals(s.Command, chain)).ToArray();
+                int chainPhaseShots = trace.Shots.Count, chainCancellations = trace.Cancellations;
                 int spent = cartridges - Game.Instance.Player.Inventory.Count(cartridge);
+                bool orderFollowed = order != null && BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) &&
+                    ReferenceEquals(order.Owner, chain) && ReferenceEquals(order.Target, own.LastOrDefault()?.Target);
                 string detail = setup + ";" + trace.Summary(chain, targets) + ";spentCartridges=" + spent +
                     ";inlineReloads=" + (FreeActionFullAttackReloadPatch.Succeeded - reloads) +
+                    ";reloadAttempts=" + (FreeActionFullAttackReloadPatch.Attempted - attempted) +
                     ";endedFullAttacks=" + (FreeActionFullAttackReloadPatch.Interrupted - ended) +
                     ";reloadFaults=" + (FreeActionFullAttackReloadPatch.Failed - faults) +
                     ";orderCurrent=" + BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) +
                     ";orderOwnerIsChain=" + (order != null && ReferenceEquals(order.Owner, chain)) +
                     ";orderTarget=" + (order?.Target as UnitEntityData)?.UniqueId + ";" + f.Describe();
-                verdicts.Add(KillChainCheck(prefix + "one-command-four-native-attacks",
-                    chain != null && chain.IsFinished && chain.Result == UnitCommand.ResultType.Success &&
-                    chain.IsFullAttack && chain.AllAttacks.Count == 4 && chain.GetAttackIndex() == 4 &&
-                    own.Length == 4 && foreign.Length == 0 &&
-                    own.Select(s => s.AttackNumber).SequenceEqual(new[] { 0, 1, 2, 3 }), detail));
-                verdicts.Add(KillChainCheck(prefix + "native-replacements-after-kills",
-                    own.Select(s => s.Target).SequenceEqual(targets) && own.All(s => s.Hit) &&
-                    targets.Take(3).All(t => t.Descriptor.State.IsDead) && !targets[3].Descriptor.State.IsDead, detail));
-                verdicts.Add(KillChainCheck(prefix + "ammunition-and-action-economy",
-                    spent == (loaded ? 3 : 4) && f.State.IsEmpty && f.State.Condition == FirearmCondition.Normal &&
-                    FreeActionFullAttackReloadPatch.Succeeded - reloads == 3 &&
-                    FreeActionFullAttackReloadPatch.Interrupted == ended &&
-                    FreeActionFullAttackReloadPatch.Failed == faults && chain != null && costs.Exact(chain, false), detail));
-                verdicts.Add(KillChainCheck(prefix + "order-follows-surviving-command",
-                    order != null && BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) &&
-                    ReferenceEquals(order.Owner, chain) && ReferenceEquals(order.Target, targets[3]) &&
-                    trace.Cancellations == 0, detail));
+
+                // The next ordinary native cycle, distinct from the chain.
+                for (int tick = 0; tick < 60; tick++)
+                {
+                    KillChainPump(f, targets, ai);
+                    trace.Sample(200 + tick, f, chain, targets);
+                    yield return null;
+                }
+                trace.Note("next-cycle", f, chain, targets);
+                var next = trace.Shots.Skip(chainPhaseShots).ToArray();
+                string cycle = detail + ";nextCycle=" + string.Join(",", next.Select(s =>
+                    Array.IndexOf(targets, s.Target) + (s.Hit ? "h" : "m") +
+                    (ReferenceEquals(s.Command, chain) ? "@chain" : "@new")).ToArray());
+
+                if (lane.NoReplacement)
+                {
+                    verdicts.Add(KillChainCheck(prefix + "clean-native-completion",
+                        chain != null && chain.IsFinished && chain.GetAttackIndex() == 1 && own.Length == 1 &&
+                        ReferenceEquals(own[0].Target, targets[0]) && targets[0].Descriptor.State.IsDead &&
+                        targets.Skip(1).All(t => !t.Descriptor.State.IsDead) &&
+                        FreeActionFullAttackReloadPatch.Attempted == attempted && spent == 0 &&
+                        next.Length == 0 && f.Actor.Commands.Empty && f.State.IsEmpty, cycle));
+                }
+                else
+                {
+                    var expected = lane.Explicit ? targets.Take(4).ToArray() : null;
+                    verdicts.Add(KillChainCheck(prefix + "one-command-four-native-attacks",
+                        chain != null && chain.IsFinished && chain.Result == UnitCommand.ResultType.Success &&
+                        chain.IsFullAttack && chain.AllAttacks.Count == 4 && chain.GetAttackIndex() == 4 &&
+                        own.Length == 4 && chainPhaseShots == 4 && own.All(s => s.Hit) &&
+                        own.Select(s => s.AttackNumber).SequenceEqual(new[] { 0, 1, 2, 3 }) &&
+                        (expected == null || own.Select(s => s.Target).SequenceEqual(expected)) &&
+                        own.Select(s => s.Target).Distinct().Count() == 4, detail));
+                    int mortal = lane.FinalKill ? 4 : 3;
+                    verdicts.Add(KillChainCheck(prefix + "native-replacements-after-kills",
+                        targets.Take(mortal).All(t => t.Descriptor.State.IsDead) &&
+                        !targets.Last().Descriptor.State.IsDead, detail));
+                    verdicts.Add(KillChainCheck(prefix + "ammunition-and-action-economy",
+                        spent == (lane.Loaded ? 3 : 4) && f.State.Condition == FirearmCondition.Normal &&
+                        FreeActionFullAttackReloadPatch.Succeeded - reloads >= 3 &&
+                        FreeActionFullAttackReloadPatch.Interrupted == ended &&
+                        FreeActionFullAttackReloadPatch.Failed == faults && chain != null && costs.Exact(chain, false), detail));
+                    if (lane.Explicit)
+                        verdicts.Add(KillChainCheck(prefix + "order-follows-surviving-command",
+                            orderFollowed && chainCancellations == 0, detail));
+                    verdicts.Add(KillChainCheck(prefix + "next-native-cycle-continues",
+                        next.Length != 0 && next.All(s => !ReferenceEquals(s.Command, chain)) &&
+                        ReferenceEquals(next[0].Target, targets.Last()), cycle));
+                }
             }
             f.Dispose();
             verdicts.Add(KillChainCheck(prefix + "cleanup", f.Restored, "Native fixture restored exactly."));
@@ -188,7 +277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _firearmInputStage = prefix + "fixture";
             _firearmInputFixture = new FirearmInputFixture(false, _firearmInputRows);
             var f = _firearmInputFixture;
-            var targets = PrepareKillChainTargets(f);
+            var targets = PrepareKillChainTargets(f, false, false);
             var ally = f.SpawnAdditional(true, "KillChainLongbowAlly");
             ally.Position = new Vector3(0f, 0f, -1f);
             ally.Stats.BaseAttackBonus.BaseValue = 16;
@@ -219,6 +308,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         tickUnit.Invoke(actions, new object[] { ally });
                     });
                     KillChainResolveImpacts(f, targets);
+                    KillChainFinishActedAnimations(f, ally);
                     trace.Sample(tick, f, attack, targets);
                     yield return null;
                 }
@@ -264,7 +354,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<MethodBase> patched = new List<MethodBase>();
             private readonly Dictionary<UnitAttack, RuleAttackWithWeapon> lastRules =
                 new Dictionary<UnitAttack, RuleAttackWithWeapon>();
-            private int rejectedExecutions;
+            private int rejectedExecutions, rejectedSubmissions;
             internal readonly List<Shot> Shots = new List<Shot>();
             internal int Cancellations;
 
@@ -281,6 +371,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Patch(typeof(NativeFirearmAttackOrder).GetMethod("MayExecute", All), null, "Executed");
                     Patch(typeof(UnitAttack).GetMethod("UpdateTarget", All, null, Type.EmptyTypes, null), "Resolving", "Resolved");
                     Patch(typeof(UnitAttack).GetMethod("OnAction", All), "Acting", "Acted");
+                    Patch(typeof(NativeFirearmAttackOrder).GetMethod("Submitting", All), null, "Submitted");
                 }
                 catch { Dispose(); throw; }
             }
@@ -357,7 +448,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Array.IndexOf(targets, s.Target) + "#" + s.AttackNumber + (s.Hit ? "h" : "m")).ToArray()) +
                     ";targets=" + string.Join(",", targets.Select(t => t.Descriptor.State.IsDead ? "dead" :
                         t.Descriptor.State.IsConscious ? "up" : "down").ToArray()) +
-                    ";orderCancellations=" + Cancellations + ";rejectedExecutions=" + rejectedExecutions;
+                    ";orderCancellations=" + Cancellations + ";rejectedExecutions=" + rejectedExecutions +
+                    ";rejectedSubmissions=" + rejectedSubmissions;
             }
             private static void Cancelling(FirearmAttackOrderLedger __instance, FirearmAttackOrderLedger.Order __0)
             {
@@ -378,6 +470,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (active == null || __result || __0 == null || !ReferenceEquals(__0.Executor, active.actor) ||
                     active.rejectedExecutions++ > 12) return;
                 active.Add(new JObject { ["killChainMayExecute"] = false, ["attack"] = Attack(__0), ["stack"] = Stack() });
+            }
+            private static void Submitted(UnitEntityData __0, UnitCommand __1, bool __result)
+            {
+                if (active == null || __result || __1 == null || !ReferenceEquals(__0, active.actor) ||
+                    active.rejectedSubmissions++ > 12) return;
+                var binding = NativeFirearmAttackOrder.Get(__1);
+                var order = binding == null ? null : binding.Order;
+                var orderTarget = order == null ? null : order.Target as UnitEntityData;
+                var owner = order == null ? null : order.Owner as UnitCommand;
+                active.Add(new JObject { ["killChainSubmitRejected"] = Id(__1), ["ai"] = __1.AiAction != null,
+                    ["commandTarget"] = UnitId((__1 as UnitAttack)?.Target),
+                    ["bindingTarget"] = binding == null ? null : UnitId(binding.Target),
+                    ["order"] = Id(order), ["orderTarget"] = UnitId(orderTarget),
+                    ["orderTargetDead"] = orderTarget != null && orderTarget.Descriptor.State.IsDead,
+                    ["orderOwner"] = Id(owner), ["orderOwnerFinished"] = owner != null && owner.IsFinished,
+                    ["orderCurrent"] = BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order), ["stack"] = Stack() });
             }
             private static void Resolving(UnitAttack __instance, out UnitEntityData __state)
             { __state = __instance.Target; }
