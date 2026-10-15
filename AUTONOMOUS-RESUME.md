@@ -1,23 +1,32 @@
-# Firearm RTWP continuation after a kill — focused checkpoint / AWAITING REVIEW
+# Firearm RTWP continuation after a kill — revised after review / AWAITING REVIEW
 
-Branch `codex/firearm-rtwp-kill-retarget` (from `origin/master` `fd6c56ebd8`).
-Record: [docs/FIREARM-RTWP-KILL-CONTINUATION.md](docs/FIREARM-RTWP-KILL-CONTINUATION.md).
+Branch `codex/firearm-rtwp-kill-retarget`, with master `31672515` (v0.0.155)
+merged in at `1d98af476b`. Tested code commit `1890ba06cc`; later commits change
+records only. Record:
+[docs/FIREARM-RTWP-KILL-CONTINUATION.md](docs/FIREARM-RTWP-KILL-CONTINUATION.md).
 Not merged, released, tagged or permanently installed; no PR opened.
 
-- Guarded native evidence: a four-attack pistol full attack keeps its remaining
-  attacks through sequential kills (loaded, empty, paused; native retarget,
-  inline Free reloads). That part of the owner's report is not reproduced.
-- Reproduced and corrected: after an explicit full attack ends with its target
-  dead, the still-current order made `NativeFirearmAttackOrder.Submitting`
-  reject every native AI reload/attack on remaining enemies, so the pistol
-  stopped while unordered pistols and ordinary weapons continued. Undegraded
-  orders are now concluded at that point; Broken orders are unchanged.
-- Focused gate 30/30. Guarded native scenario on candidate DLL `f120026f…`:
-  468/468 PASS (55 new CR-04 + 413 existing firearm checks).
-- Live mod restored byte-for-byte to the 0.0.140 install after every run.
+- Original report (later attacks of one full attack stop after a kill): not
+  reproduced in the save-free fixture. The fixture supplies animation timing,
+  so a live animation/timing or mod-stack cause is not excluded.
+- Next-cycle stall after an explicit order's target dies: reproduced and
+  corrected. The review's blocking case is corrected too: the same stall after
+  Broken → Quick Clear → Normal, caused by treating a nonzero degradation epoch
+  as "currently Broken".
+  - The epoch stays as history; Broken-sequence authority is an explicit ledger
+    state.
+  - A new non-suppressing `Complete` ends a finished order only when its target
+    is dead and the exact item is currently `Normal`.
+  - The target rule is narrowed to dead targets only.
+- Focused gate 33/33.
+- Guarded native run `20261015T2303585727403Z`: 487/487 PASS, including the
+  repaired final-kill and reload-gap lanes. DLL `67c492d2…`, package
+  `2d596ce6…`, MVID `dede384d…`.
+- Live mod restored byte-for-byte to the 0.0.140 install; no save touched.
 
-Next: owner review and RTWP smoke (record's "Owner check"). Open design
-questions and infrastructure observations are listed in the record.
+Next: owner review and the deferred real RTWP check with animation playback
+(record's "Owner check", three behaviours recorded separately). Open design
+questions are listed in the record.
 
 ---
 
