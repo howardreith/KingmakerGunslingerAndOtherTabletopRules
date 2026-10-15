@@ -115,10 +115,41 @@ game-startup window. Also `Invoke-Sprint22InstalledStack.ps1` accepts
 `TimeoutSeconds` up to 900 but forwards it to a child capped at 600, so the
 handoff's prescribed 900 cannot bind; 600 is the usable maximum.
 
-Next concrete action: build one new coherent candidate for the clean-reset
-source, then run the targeted persistence cycles (enabled, then module OFF)
-before publication. The candidate identities above belong to the superseded
-reload-scope source and must be re-derived for the new one.
+**The targeted persistence behaviour is now proven, under both module states.**
+Running the cycles surfaced five defects, all observer or fixture gaps around the
+new family rather than product faults in released gameplay, and each fix was
+proven natively: the impossible prepare premise; the cold-load observer still
+expecting a surviving swallowed victim; `RosterImmutableCaches` having no
+theropod entry, so the albedo textures classified `UNRESOLVED` and failed
+cleanup closed; the theropod identity gate returning before the attachment
+record so module OFF reported `not-attempted` instead of the loader's
+`donor-visual:module-disabled` refusal; and the wrapper's 900-second timeout
+being unbindable against a child capped at 600.
+
+Cycle A passed coherently on candidate `fa55ef68` (DLL `c11f944c`): prepare
+proved the grab, grappled target, active mouth-hold residue, engulfed-shut
+mouth, swallowed state and a natural-19 confirmed bleed, then wrote one working
+save; the cold load proved `activeMouthHoldReset`, `alreadySwallowedReset`,
+`engulfedMouthReleased`, `bleedingCriticalPreserved` and
+`noOrphanInteriorPacket` with one 2d6 tick removed by healing; fresh absence
+reported `ownedVictims` 0. Module-OFF cold load passed on candidate `bf9388d3`
+(DLL `b8bffe18`) with `donor-visual:module-disabled` recorded and
+`theropodBodyExact` true for both creatures.
+
+Machine audited and exactly restored: KMG 0.0.117 with 136 files, eleven mod
+directories, 118 saves, the baseline save byte-identical to intake, the
+authorized working fixture left verified empty, the sound bank unchanged, and no
+leftover staging, lock or process.
+
+Next concrete action: the five fixes each changed the DLL, so the evidence is
+spread across candidates. Build one final hidden candidate and run one coherent
+set on it — Cycle A, Cycle B and the `shared-controls` replay, the last of which
+must be rerun because the shared grapple/swallow seam it covers changed after
+its PASS on `70499a18`. Then publication: remove only the two suppression keys,
+regenerate totals to 1,093/29/1,122, move the version surface to the next free
+patch, extend the qualified-candidate publisher with a Sprint 24 selector, run
+one fresh Sprint gate on the frozen public source, then the public high-risk
+inventory and all 18 public routes, then merge, release and the records PR.
 
 ## 2026-10-14 quota stopping checkpoint
 
