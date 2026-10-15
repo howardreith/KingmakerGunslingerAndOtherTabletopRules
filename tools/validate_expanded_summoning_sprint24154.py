@@ -118,6 +118,10 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs",
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
+    # Admitted 2026-10-15 for the swallowed-state reload scope only: the shared
+    # swallow/engulf constants already live here, and the narrowed opt-in policy
+    # belongs beside them rather than in a new file.
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
     "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
     "src/KingmakerGunslinger/Summoning/SummonViewScaleCatalog.cs",
     "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
