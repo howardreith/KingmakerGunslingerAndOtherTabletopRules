@@ -18,13 +18,128 @@
       "sidecarValidated": true
     },
     "stageRoute": "The Sprint 24 domain contracts assert the eighteen roots stay hidden and that targeted qualification never selects a published root, so hidden qualification must complete while suppressed. The hidden closeout therefore reuses this already-validated package, and exactly one public candidate follows.",
-    "hiddenClosureRemaining": [
-      "shared-controls replay",
-      "Cycle A",
-      "Cycle B"
-    ],
+    "hiddenClosureRemaining": [],
     "bothKeysSuppressed": true,
-    "released": false
+    "released": false,
+    "hiddenClosureComplete": true,
+    "hiddenClosureSet": {
+      "candidate": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+      "dllSha256": "b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee",
+      "dllMvid": "c7f59041-9373-42e0-8a0f-9578d49f53d0",
+      "coherent": "All seven scenarios ran on this one validated package and fixture version, executed from a temporary detached checkout at the tested commit so the sidecar identity matched; no rebuild was performed to stamp the reporting head.",
+      "sharedControls": {
+        "runId": "20261015T1956415320638Z-4adf192e492b429b85a05001af14859d",
+        "status": "PASS",
+        "durationMs": 85815,
+        "rows": [
+          "sprint24-review-phase-shared-controls",
+          "sprint24-released-pouncer-control",
+          "sprint24-released-grab-swallow-controls",
+          "sprint24-triceratops-strength-regression",
+          "sprint24-deinonychus-genuine-ai-fallback",
+          "sprint24-fixture-restored",
+          "expanded-summoning-native-profile-restored"
+        ],
+        "aiProof": {
+          "exactAiControllerTicks": 1,
+          "nativeAiCommands": 1,
+          "rolls": 1,
+          "weaponAttacks": 1,
+          "approachMetres": 3.50129318,
+          "ownerDirectlyControllable": false,
+          "fixtureIssuedAttack": false
+        }
+      },
+      "cycleA": {
+        "prepare": {
+          "runId": "20261015T2000370413257Z-4a006dacf7bf4432a22adce3d1843ef3",
+          "status": "PASS",
+          "durationMs": 183949,
+          "proved": {
+            "grabbed": true,
+            "grappledTarget": true,
+            "activeMouthHoldResidue": true,
+            "engulfedMouthShut": true,
+            "swallowed": true,
+            "criticalNatural": 19,
+            "criticalConfirmed": true,
+            "bleeding": true,
+            "workingSaveCount": 1
+          }
+        },
+        "verifyCleanup": {
+          "runId": "20261015T2006035905049Z-6848092d7ea24b8cb2635b6e881a38c1",
+          "status": "PASS",
+          "durationMs": 180333,
+          "proved": {
+            "receiptsExact": true,
+            "activeMouthHoldReset": true,
+            "alreadySwallowedReset": true,
+            "engulfedMouthReleased": true,
+            "bleedingCriticalPreserved": true,
+            "noOrphanInteriorPacket": true,
+            "bleed2d6Once": true,
+            "bleedRemovedByHealing": true,
+            "cleanupNativeDestruction": "PASS",
+            "remainingResources": 0
+          }
+        },
+        "verifyAbsent": {
+          "runId": "20261015T2011289658274Z-6b843a3258854723a6d9d639a15132e1",
+          "status": "PASS",
+          "durationMs": 153295,
+          "proved": {
+            "ownedVictims": 0
+          }
+        }
+      },
+      "cycleB": {
+        "prepare": {
+          "status": "PASS"
+        },
+        "verifyCleanupModuleOff": {
+          "runId": "20261015T2023012001961Z-1dab3a4d65dc414dbc89543b1e236bf4",
+          "status": "PASS",
+          "proved": {
+            "moduleEnabled": false,
+            "activeMouthHoldReset": true,
+            "alreadySwallowedReset": true,
+            "engulfedMouthReleased": true,
+            "bleedingCriticalPreserved": true,
+            "noOrphanInteriorPacket": true,
+            "originalBodyOutcome": "donor-visual:module-disabled",
+            "theropodBodyExact": true,
+            "theropodBodyPrivateResourceCount": 0,
+            "projectResourceCount": 0,
+            "remainingResources": 0
+          }
+        },
+        "verifyAbsent": {
+          "status": "PASS",
+          "proved": {
+            "ownedVictims": 0
+          }
+        }
+      }
+    },
+    "releasedResetLoopDependencyProof": "The ResetLoadedGrapples executable loop is identical to released master 322ac7fe: 33 lines each, zero differences with comments stripped. The loop was therefore restored to its released behaviour rather than retaining the unapproved exception, so released old-consumer cold-load evidence (Sprint 16/17 persistence) applies to unchanged code. The separately changed SummonSwallowLifecycleComponent victim-death configuration is the only executable delta in that file and is covered by the released-consumer controls in shared-controls (released Leopard pouncer, released shared Grab with Purple Worm later-turn swallow including refusedWhileSwallowed and spatOut, and Triceratops +7/+9).",
+    "activeHeldVictimRequirement": "Mapped to existing unchanged qualified evidence rather than a new case. This fixture proves the owner hold residue after swallowing; the separate actively-held-victim cold-load reset is proven by the released Sprint 16/17 persistence observers, which remain valid because the reset loop is identical to released master. No claim is made that one observation proves both states.",
+    "machineAudit": {
+      "installedKmgVersion": "0.0.117",
+      "kmgFiles": 136,
+      "modDirectories": 11,
+      "modsEntries": 967,
+      "saves": 118,
+      "baselineSaveSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+      "baselineMatchesIntake": true,
+      "workingFixture": "authorized, exercised, left verified empty",
+      "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "compatLeftovers": 0,
+      "lock": false,
+      "kingmakerProcess": 0,
+      "allTransactionsRestoredAndVerified": true
+    },
+    "nextAction": "Public candidate: unsuppress only the two keys together, re-derive totals to 1,093/29/1,122, move the version surface to the next free patch, extend the existing qualified-candidate publisher with a Sprint 24 contract plus rejection tests, run one Sprint gate, then the publication-affecting native checks."
   },
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
