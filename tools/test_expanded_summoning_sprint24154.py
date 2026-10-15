@@ -89,8 +89,16 @@ class Sprint24GateTests(unittest.TestCase):
         self.assertIn(
             "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
             gate.ALLOWED_PRODUCTION)
+        # The swallowed-state reload scope is a deliberate Sprint 24 seam.
+        self.assertIn(
+            "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
+            gate.ALLOWED_PRODUCTION)
         self.assertNotIn(
             "src/KingmakerGunslinger/Summoning/ArmoredDinosaurRulesPolicy.cs",
+            gate.ALLOWED_PRODUCTION)
+        # Another sprint's grapple carrier still cannot ride this boundary.
+        self.assertNotIn(
+            "src/KingmakerGunslinger/Summoning/CrocodilianAttackVisualPose.cs",
             gate.ALLOWED_PRODUCTION)
 
 
