@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class KillChainLane
         {
             internal string Name;
-            internal bool Loaded, Paused, FinalKill, NoReplacement, Broken;
+            internal bool Loaded, Paused, FinalKill, NoReplacement, Broken, Repaired;
             internal bool Explicit = true;
         }
 
@@ -60,9 +60,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new KillChainLane { Name = "final-kill", Loaded = true, FinalKill = true },
                 new KillChainLane { Name = "ai-only-final-kill", Loaded = true, FinalKill = true, Explicit = false },
                 new KillChainLane { Name = "broken-final-kill", FinalKill = true, Broken = true },
+                new KillChainLane { Name = "repaired-final-kill", FinalKill = true, Broken = true, Repaired = true },
                 new KillChainLane { Name = "no-replacement", Loaded = true, NoReplacement = true } };
             foreach (var lane in lanes)
                 foreach (object step in FirearmKillChainLane(lane, verdicts)) yield return step;
+            foreach (object step in FirearmRepairedReloadGapLane(verdicts)) yield return step;
             foreach (object step in OrdinaryBowKillChainControl(verdicts)) yield return step;
             foreach (var verdict in verdicts) FirearmInputCheck(verdict.Name, verdict.Passed, verdict.Detail);
         }
@@ -136,6 +138,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             KillChainFinishActedAnimations(f, f.Actor);
         }
 
+        // Ordinary pistol, matching Rapid Reload and paper cartridges: the
+        // existing Free reload. BAB 16 gives four native attacks.
+        private static UnitEntityData[] KillChainArmPistol(FirearmInputFixture f, bool finalKill, bool noReplacement)
+        {
+            f.Actor.Descriptor.AddFact(BlueprintBootstrap.GunslingerClass.GunTraining.ChoiceFor(FirearmKind.Pistol));
+            f.Actor.Stats.Dexterity.BaseValue = 30;
+            f.Actor.Stats.BaseAttackBonus.BaseValue = 16;
+            var targets = PrepareKillChainTargets(f, finalKill, noReplacement);
+            Game.Instance.Player.Inventory.Add(BlueprintBootstrap.BasicAmmunition.PaperCartridge, 12);
+            f.Actor.Descriptor.ActivatableAbilities.Enumerable.Single(a =>
+                ReferenceEquals(a.Blueprint, BlueprintBootstrap.PaperCartridgeMode.Ability)).IsOn = true;
+            return targets;
+        }
+
+        // The production Quick Clear (native action bar, standard action)
+        // repairs the misfire-Broken item. Repair alone neither resurrects nor
+        // releases the cancelled order, and the degradation epoch stays.
+        private IEnumerable<object> KillChainQuickClear(FirearmInputFixture f, string prefix,
+            FirearmReviewCosts costs, List<KillChainVerdict> verdicts)
+        {
+            var gunslinger = BlueprintBootstrap.GunslingerClass;
+            f.Actor.Descriptor.AddFact(gunslinger.Grit.Feature);
+            f.Actor.Descriptor.AddFact(gunslinger.QuickClear.Feature);
+            f.Actor.Descriptor.Resources.Restore(gunslinger.Grit.Resource);
+            int epoch = BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon);
+            int grit = f.Actor.Descriptor.Resources.GetResourceAmount(gunslinger.Grit.Resource);
+            int shots = f.Shots.Count;
+            var broken = f.State.Condition;
+            var quickClear = f.ClickAbility(gunslinger.QuickClear.StandardAbility);
+            for (int tick = 0; tick < 240 && !quickClear.IsFinished; tick++) { f.Pump(); yield return null; }
+            foreach (object step in DriveFirearmIdle(f)) yield return step;
+            verdicts.Add(KillChainCheck(prefix + "quick-clear-normal-nonzero-epoch",
+                broken == FirearmCondition.Broken && quickClear.IsFinished &&
+                quickClear.Result == UnitCommand.ResultType.Success && f.State.Condition == FirearmCondition.Normal &&
+                epoch > 0 && BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon) == epoch &&
+                BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon) &&
+                BrokenSequenceSuppressionRuntime.Orders.RequiresOrder(f.Actor, f.Weapon) &&
+                BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null && f.Shots.Count == shots &&
+                f.Actor.Descriptor.Resources.GetResourceAmount(gunslinger.Grit.Resource) == grit &&
+                costs.Exact(quickClear, false), f.Describe() + ";epoch=" + epoch + ";gritBefore=" + grit));
+        }
+
         private IEnumerable<object> FirearmKillChainLane(KillChainLane lane, List<KillChainVerdict> verdicts)
         {
             string prefix = "cr04-" + lane.Name + "-";
@@ -144,26 +188,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 initiallyLoaded: lane.Loaded || lane.Broken);
             var f = _firearmInputFixture;
             // A real natural-1 misfire commits Broken and stops that sequence;
-            // the lane's explicit order is then a legitimate new Broken order.
+            // the lane's explicit order is then a legitimate new Broken order,
+            // or, after Quick Clear, a new order on the repaired Normal item.
             if (lane.Broken) foreach (object step in FirearmReviewBreak(f, prefix)) yield return step;
-            var condition = lane.Broken ? FirearmCondition.Broken : FirearmCondition.Normal;
+            var condition = lane.Broken && !lane.Repaired ? FirearmCondition.Broken : FirearmCondition.Normal;
             using (var costs = new FirearmReviewCosts(f.Actor, _firearmInputRows))
             using (var trace = new FirearmKillChainTrace(f.Actor, _firearmInputRows, prefix))
             {
-                // Ordinary pistol, matching Rapid Reload and paper cartridges:
-                // the existing Free reload. BAB 16 gives four native attacks.
-                f.Actor.Descriptor.AddFact(BlueprintBootstrap.GunslingerClass.GunTraining.ChoiceFor(FirearmKind.Pistol));
-                f.Actor.Stats.Dexterity.BaseValue = 30;
-                f.Actor.Stats.BaseAttackBonus.BaseValue = 16;
-                var targets = PrepareKillChainTargets(f, lane.FinalKill, lane.NoReplacement);
+                if (lane.Repaired)
+                    foreach (object step in KillChainQuickClear(f, prefix, costs, verdicts)) yield return step;
+                int epoch = BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon);
+                var targets = KillChainArmPistol(f, lane.FinalKill, lane.NoReplacement);
                 var cartridge = BlueprintBootstrap.BasicAmmunition.PaperCartridge;
-                Game.Instance.Player.Inventory.Add(cartridge, 12);
-                f.Actor.Descriptor.ActivatableAbilities.Enumerable.Single(a =>
-                    ReferenceEquals(a.Blueprint, BlueprintBootstrap.PaperCartridgeMode.Ability)).IsOn = true;
                 for (int tick = 0; tick < 16; tick++) { f.Turns.PumpCommands(false); yield return null; }
                 int planned = 0;
                 f.Turns.Execute(() => planned = UnitAttack.EstimateFullAttacks(f.Actor));
                 int cartridges = Game.Instance.Player.Inventory.Count(cartridge);
+                int loadedAtSetup = f.State.LoadedRounds;
                 long attempted = FreeActionFullAttackReloadPatch.Attempted;
                 long reloads = FreeActionFullAttackReloadPatch.Succeeded;
                 long ended = FreeActionFullAttackReloadPatch.Interrupted;
@@ -265,12 +306,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (lane.Explicit)
                         verdicts.Add(KillChainCheck(prefix + "order-follows-surviving-command",
                             orderFollowed && chainCancellations == 0, detail));
-                    if (!lane.Broken)
+                    if (condition == FirearmCondition.Normal)
                         verdicts.Add(KillChainCheck(prefix + "next-native-cycle-continues",
                             next.Length != 0 && next.All(s => !ReferenceEquals(s.Command, chain)) &&
                             ReferenceEquals(next[0].Target, targets.Last()), cycle));
+                    if (lane.FinalKill && condition == FirearmCondition.Normal)
+                    {
+                        // Every cartridge spent became exactly one shot or the
+                        // round still chambered; each new native command was
+                        // charged once, exactly; no reload faulted.
+                        int spentAll = cartridges - Game.Instance.Player.Inventory.Count(cartridge);
+                        var nextCommands = next.Select(s => s.Command).Distinct().ToArray();
+                        verdicts.Add(KillChainCheck(prefix + "next-cycle-exact-economy",
+                            nextCommands.Length != 0 && nextCommands.All(c => costs.Exact(c, false)) &&
+                            spentAll == trace.Shots.Count + f.State.LoadedRounds - loadedAtSetup &&
+                            FreeActionFullAttackReloadPatch.Failed == faults && f.State.Condition == condition,
+                            cycle + ";spentAll=" + spentAll + ";loadedNow=" + f.State.LoadedRounds +
+                            ";nextCommands=" + nextCommands.Length));
+                    }
+                    if (lane.Repaired)
+                    {
+                        // Normal completion, not cancellation: no current order
+                        // was cancelled, suppression stayed off, and the
+                        // degradation epoch was not reset by repair or completion.
+                        verdicts.Add(KillChainCheck(prefix + "completed-without-suppression",
+                            order != null && order.Epoch == epoch && epoch > 0 &&
+                            !BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) &&
+                            BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null &&
+                            trace.Cancellations == chainCancellations &&
+                            !BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon) &&
+                            !BrokenSequenceSuppressionRuntime.Orders.RequiresOrder(f.Actor, f.Weapon) &&
+                            BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon) == epoch &&
+                            f.State.Condition == FirearmCondition.Normal, cycle + ";epoch=" + epoch));
+                    }
                 }
-                if (lane.Broken)
+                if (condition == FirearmCondition.Broken)
                 {
                     // A degraded firearm still needs a new explicit order once
                     // its accepted target is gone; that order then fires.
@@ -290,6 +360,69 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(NativeFirearmAttackOrder.Get(shot.Command)?.Order, reorder) &&
                         f.State.Condition == FirearmCondition.Broken, trace.Summary(chain, targets) + ";" + f.Describe()));
                 }
+            }
+            f.Dispose();
+            verdicts.Add(KillChainCheck(prefix + "cleanup", f.Restored, "Native fixture restored exactly."));
+            _firearmInputFixture = null;
+        }
+
+        // On the repaired Normal item, the explicit order's target dies after
+        // its auto-use reload ended but before the scheduled resume runs, as
+        // an ally's hit lands in native frame order (native damage, native
+        // life controller). The resume completes the order instead of
+        // cancelling it, so native AI carries on without another click.
+        private IEnumerable<object> FirearmRepairedReloadGapLane(List<KillChainVerdict> verdicts)
+        {
+            const string prefix = "cr04-repaired-reload-gap-kill-";
+            _firearmInputStage = prefix + "fixture";
+            _firearmInputFixture = new FirearmInputFixture(false, _firearmInputRows, initiallyLoaded: true);
+            var f = _firearmInputFixture;
+            foreach (object step in FirearmReviewBreak(f, prefix)) yield return step;
+            using (var costs = new FirearmReviewCosts(f.Actor, _firearmInputRows))
+            using (var trace = new FirearmKillChainTrace(f.Actor, _firearmInputRows, prefix))
+            {
+                foreach (object step in KillChainQuickClear(f, prefix, costs, verdicts)) yield return step;
+                int epoch = BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon);
+                var targets = KillChainArmPistol(f, false, false);
+                var cartridge = BlueprintBootstrap.BasicAmmunition.PaperCartridge;
+                for (int tick = 0; tick < 16; tick++) { f.Turns.PumpCommands(false); yield return null; }
+                int cartridges = Game.Instance.Player.Inventory.Count(cartridge);
+                f.Click(targets[0]);
+                var order = BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor);
+                var reload = f.Actor.Commands.Raw.Concat(f.Actor.Commands.Queue).OfType<UnitUseAbility>().SingleOrDefault();
+                trace.Note("click", f, null, targets);
+                for (int tick = 0; tick < 20 && reload != null && !reload.IsFinished; tick++)
+                { KillChainPump(f, targets, true); yield return null; }
+                int callbacks = FirearmScheduledCallbacks();
+                bool boundary = order != null && order.Epoch == epoch && epoch > 0 &&
+                    BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) && ReferenceEquals(order.Owner, reload) &&
+                    reload.IsFinished && reload.Result == UnitCommand.ResultType.Success && callbacks == 1 &&
+                    f.State.LoadedRounds == 1 && trace.Shots.Count == 0 && costs.Exact(reload, false);
+                targets[0].Descriptor.Damage = 20;
+                KillChainResolveImpacts(f, targets);
+                trace.Note("gap-kill", f, null, targets);
+                verdicts.Add(KillChainCheck(prefix + "reload-gap-boundary", boundary &&
+                    targets[0].Descriptor.State.IsDead && FirearmScheduledCallbacks() == 1,
+                    trace.Summary(null, targets) + ";callbacks=" + callbacks + ";" + f.Describe()));
+                for (int tick = 0; tick < 80 && trace.Shots.Count < 2; tick++)
+                { KillChainPump(f, targets, true); trace.Sample(tick, f, null, targets); yield return null; }
+                trace.Note("after-gap", f, null, targets);
+                string detail = trace.Summary(null, targets) + ";epoch=" + epoch + ";" + f.Describe();
+                verdicts.Add(KillChainCheck(prefix + "resume-completes-without-suppression",
+                    !BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) &&
+                    BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null && trace.Cancellations == 0 &&
+                    !BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon) &&
+                    !BrokenSequenceSuppressionRuntime.Orders.RequiresOrder(f.Actor, f.Weapon) &&
+                    BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon) == epoch &&
+                    f.State.Condition == FirearmCondition.Normal, detail));
+                var first = trace.Shots.FirstOrDefault();
+                int spent = cartridges - Game.Instance.Player.Inventory.Count(cartridge);
+                verdicts.Add(KillChainCheck(prefix + "native-ai-continues-exactly",
+                    first != null && first.Command.AiAction != null && first.Hit &&
+                    !ReferenceEquals(first.Target, targets[0]) && targets.Skip(1).Contains(first.Target) &&
+                    trace.Shots.Select(s => s.Command).Distinct().All(c => costs.Exact(c, false)) &&
+                    spent == trace.Shots.Count + f.State.LoadedRounds,
+                    detail + ";spentCartridges=" + spent));
             }
             f.Dispose();
             verdicts.Add(KillChainCheck(prefix + "cleanup", f.Restored, "Native fixture restored exactly."));
