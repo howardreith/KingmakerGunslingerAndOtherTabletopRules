@@ -49,10 +49,50 @@ and needed no requalification. The focused Sprint 24 filter passes 14/14 and the
 affected-seam selection passes 38/38 with production compilation.
 
 Because this corrected shared production source, the `fb7e471a` hidden
-candidate is stale. One new coherent hidden candidate is built before the
+candidate is stale. One new coherent hidden candidate was built before the
 remaining native work; the old ZIP is not reused for it and its earlier offline
-gate is not relabelled as execution on the new bytes. The shared-controls
-replay and both targeted persistence cycles remain to run, then publication.
+gate is not relabelled as execution on the new bytes. Its bytes are preserved
+outside the repository at
+`runtime-evidence/sprint24-superseded-candidate-fb7e471a/`.
+
+**Current candidate** `70499a18b6b7437fd686b4e5eff446b27ac54be6`: source state
+`05649b7f3ca7ba2cbaa7605432ff093575fce992f74f8a2b558aab52ebc0068b`,
+local-runtime ZIP
+`a45591472d65d6364230315c812205e9950be1368ca46756aa14111b4d591f16`,
+DLL `78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb`,
+MVID `39be1579-7fb7-4a13-a400-ef81d56bf345`. Fresh Sprint gate: repository
+validation plus 2,608/2,608 domain tests in 100.5 seconds, 200.5 overall, no
+deployment.
+
+**shared-controls now PASSES**, closing the one unfinished hidden native phase.
+Run `20261015T1656339936830Z-d7dbc7a93d8347918a382b1c0080a63e`, 96,330 ms, all
+seven rows including `deinonychus-genuine-ai-fallback` with one exact-owner
+brain tick against nine ambient candidates, a native `UnitAttack` carrying a
+real `AiAction`, actual weapon rolls and 3.50 m of approach. Transaction
+`compat-20261015T165501Z-e5ed30500b38` restored and verified; no save touched.
+
+**The targeted persistence prepare stage failed as a fixture defect.** Run
+`20261015T1705030393659Z-c88efbc2afa6415ab809c2170bce5cda` passed eleven rows
+but failed `sprint24-state-fixture-prepared` and wrote no save. One cause:
+`SwallowHeld` marks the swallowing mouth engulfed, and the Tyrannosaurus has one
+bite limb, so after a swallow the hold is refused and a further bite auto-misses
+with the log suspended. A single Tyrannosaurus cannot hold and have swallowed at
+the same time, so the fixture needs two state sets — bleed plus live mouth hold,
+and bleed plus swallowed victim — to keep every required distinction provable.
+No save was written, both protected saves are byte-identical to intake, and the
+installation restored to KMG 0.0.117 with its eleven mod directories.
+
+Two environment facts for the next session: the guarded harness refuses to run
+under administrator elevation, so launch it de-elevated (`runas
+/trustlevel:0x20000` works and keeps the needed write access); and Steam must
+already be running, because its cold start exceeds the harness's 60-second
+game-startup window. Also `Invoke-Sprint22InstalledStack.ps1` accepts
+`TimeoutSeconds` up to 900 but forwards it to a child capped at 600, so the
+handoff's prescribed 900 cannot bind; 600 is the usable maximum.
+
+Next concrete action: redesign the Sprint 24 prepare fixture for two state sets,
+run the named focused gate, build one new coherent candidate, then replay the
+targeted persistence cycles before publication.
 
 ## 2026-10-14 quota stopping checkpoint
 

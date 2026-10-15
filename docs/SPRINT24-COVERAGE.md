@@ -200,6 +200,109 @@ affected-seam selection (38 tests: shared grapple lifecycle, grab carriers,
 universal grab sizes, Dire Crocodile stat block and swallow numbers, Sprint 17
 observers) passes with production compilation.
 
+## Current hidden candidate (2026-10-15)
+
+The narrowing changed shared production source, so the `fb7e471a` artifact is
+superseded. Its bytes and sidecar are preserved outside the repository at
+`runtime-evidence/sprint24-superseded-candidate-fb7e471a/` with a note that its
+earlier offline gate belongs to those bytes only. The current candidate is:
+
+| Identity | Value |
+| --- | --- |
+| Product commit | `70499a18b6b7437fd686b4e5eff446b27ac54be6` |
+| Source-state SHA-256 | `05649b7f3ca7ba2cbaa7605432ff093575fce992f74f8a2b558aab52ebc0068b` |
+| Local-runtime ZIP SHA-256 | `a45591472d65d6364230315c812205e9950be1368ca46756aa14111b4d591f16` |
+| Compile-candidate ZIP SHA-256 | `a209a9e560efe04a334363b492cdb811c7a6b9faa61b7d3cd39e615c3d915955` |
+| DLL SHA-256 | `78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb` |
+| DLL MVID | `39be1579-7fb7-4a13-a400-ef81d56bf345` |
+
+Its fresh `Invoke-KmgGate.ps1 -Level Sprint` passed repository validation and
+2,608/2,608 domain tests in 100.5 seconds, 200.5 seconds overall, with exact
+compilation, packaging and strict validation. It performed no deployment. An
+earlier build of the same source was discarded because two validator files were
+still uncommitted when it ran; the recorded commit must describe the exact tree
+that produced the bytes, so the candidate was rebuilt on a clean tree.
+
+## shared-controls is now PASS
+
+The one unfinished hidden native phase passed on the current candidate, which
+closes it. This is fresh execution on these bytes, not a relabelled old pass.
+
+- Evidence: `runtime-evidence/20261015T1656339513175Z-disposable-expanded-summoning-sprint24-native-review`
+- Run ID: `20261015T1656339936830Z-d7dbc7a93d8347918a382b1c0080a63e`
+- Status PASS, 96,330 ms, Kingmaker started through Steam App ID 640820
+- Loaded identity: commit `70499a18`, MVID `39be1579-7fb7-4a13-a400-ef81d56bf345`,
+  DLL SHA-256 `78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb`
+- `runtime-result.json` SHA-256 `22c906efcf2548e5b225b3adc5dd124116af573152b481ecae3015bec2c643f3`
+- Transaction `compat-20261015T165501Z-e5ed30500b38`, restored and verified at
+  `2026-10-15T16:58:39.4171513Z`; settings exact; installation verified;
+  `saveInteractionOccurred` false
+
+All seven rows passed: phase selection; released Leopard pouncer control;
+released shared Grab plus Purple Worm later-turn swallow (including
+`refusedWhileSwallowed` and `spatOut`); released Triceratops +7/+9 charge-only
+Strength; `deinonychus-genuine-ai-fallback`; fixture restoration; native profile
+restoration.
+
+The AI row is the correction that had never run natively. It records nine
+ambient eligible candidates but `exactAiControllerTicks = 1` through
+`DecisionContext.InitGroup -> AiBrainController.TickBrain(exact owner) ->
+DecisionContext.ReleaseGroup`, with one native `UnitAttack` carrying a non-null
+`AiAction`, one attack roll, one weapon attack, 3.50 m of approach and an
+unmodified Dumb Monster Brain. No fixture attack was issued, and the owner is
+not directly controllable, so protected party actors were never ticked.
+
+## Targeted persistence: prepare fixture asks for an impossible state
+
+The enabled prepare stage ran natively and FAILED, and the failure is a fixture
+defect rather than a product fault. Preserved evidence:
+
+- `runtime-evidence/20261015T1705030096824Z-working-save-expanded-summoning-prepare`
+- Run ID `20261015T1705030393659Z-c88efbc2afa6415ab809c2170bce5cda`, 167,032 ms
+- Transaction `sprint24-stack-20261015T170326Z-cbec95373f88`, restored and
+  verified at `2026-10-15T17:08:17.4130807Z`
+- No save was written (`exact-working-save-write` observed `count=0`), both
+  protected saves remain byte-identical to intake, and the installed stack
+  returned to KMG 0.0.117 with eleven mod directories
+
+Eleven rows passed, including the native load boundary, publication at 1,075,
+stale-resource and stale-destruction observers, caster alignment restoration,
+and both exact theropod profile/original-body rows. Two rows failed:
+
+- `sprint24-state-fixture-prepared`: `swallowed` true, but `held` false and
+  `criticalConfirmed`/`bleeding` false with `criticalNatural` 0.
+- `exact-working-save-write`: `count=0`, because the fixture correctly refused
+  to save an unprepared state.
+
+Both failures have one cause. `SummonGrabComponent.SwallowHeld` ends the hold
+and then deliberately re-records the link and calls
+`SummonGrappleLinks.MarkEngulfed`, because a swallowed victim keeps that mouth
+shut until it is spat out or breaks free. The Tyrannosaurus has exactly one
+bite limb. The fixture swallows first, so afterwards:
+
+- `TryGrab(held, bite, true)` sees `limbBusy` and is refused, which is the same
+  released rule `shared-controls` independently re-proved as
+  `refusedWhileSwallowed`; and
+- the confirmed-critical bite against the bleeding actor enters
+  `SummonGrabComponent.OnEventAboutToTrigger(RuleAttackRoll)`, whose occupant is
+  the swallowed victim, so the swing is set to `AutoMiss` with the combat log
+  suspended and never rolls.
+
+A single Tyrannosaurus therefore cannot simultaneously own an active mouth hold
+and an already-swallowed victim. Reordering alone cannot fix it: the bleed must
+precede any grab, and then the mouth can take either a live hold or a swallow,
+never both. Manufacturing the combination by freeing the limb while retaining
+`UnitPartSwallowed` would fabricate a state the rules cannot produce and is not
+acceptable.
+
+The prepare fixture must therefore be redesigned so each required distinction is
+proven in a save that can actually hold it, without weakening any assertion. The
+mission requires active-hold reset, already-swallowed persistence, Bleeding
+Critical persistence, module-OFF cold load and fresh absence. That needs two
+state sets rather than one: bleed plus live mouth hold, and bleed plus swallowed
+victim. This is recorded as the next concrete action and is not an owner
+decision; no waiver is implied and no assertion is dropped.
+
 `HumanReview` remains `NOT_PERFORMED_NONBLOCKING` unless the owner actually
 reviews the finished art.
 
