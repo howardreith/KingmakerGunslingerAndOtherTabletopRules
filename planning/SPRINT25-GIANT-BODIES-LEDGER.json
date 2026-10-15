@@ -1,0 +1,435 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint25BrachiosaurusElephant",
+  "status": "IN_PROGRESS_SOURCE_CONTRACT_FROZEN_ONE_DECISION_ESCALATED",
+  "charter": {
+    "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
+    "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
+    "name": "Giant Bodies - Brachiosaurus and Elephant",
+    "rosterWeight": 5,
+    "calls": [
+      "Gargantuan/Huge quadruped navigation",
+      "trample",
+      "long-neck framing",
+      "replacing Elephant's Mastodon proxy",
+      "safe confined-space behavior"
+    ],
+    "outOfScope": [
+      "mounts",
+      "mounted combat",
+      "companions",
+      "polymorph changes",
+      "aquatic system",
+      "later creatures",
+      "Gorgon",
+      "Bulette",
+      "Sprint 26"
+    ]
+  },
+  "host": "HOWARD-LAPTOP",
+  "branch": "codex/expanded-summoning-sprint25-brachiosaurus-elephant",
+  "releaseRecordsBranch": "codex/expanded-summoning-sprint25-release-records",
+  "releaseRecordsBranchCreatedAfterReleaseOnly": true,
+  "startedUtc": "2026-10-15T23:20:00Z",
+  "base": {
+    "commit": "97c881ea847a5d3703982ed6b0aebc0e0537c7c5",
+    "description": "Sprint 24 verified released master: v0.0.155 published and verified, records and release tooling merged via PR #48",
+    "releasedTag": "v0.0.155",
+    "releasedPackageSha256": "d905a03442fc0c82fbd65c6e9949b94d085404c4040e580827e3299068765ae2"
+  },
+  "candidateRoot": {
+    "path": "C:/Dev/KingmakerGunslingerLab/wt/s25",
+    "chosenBeforeAnyBuildOrNativeQualification": true,
+    "retainedUntilPromotion": true,
+    "owner": "HOWARD-LAPTOP\\Howard",
+    "createdDeElevated": true,
+    "reason": "Sprint 24 produced two different artifact builds from one identical source in two different roots and the cause was never established. Choosing the root up front keeps the promoted artifact and its native evidence in the same root."
+  },
+  "version": {
+    "expected": "0.0.156",
+    "discoveredFromActualRemote": true,
+    "evidence": "git ls-remote --tags shows v0.0.150 through v0.0.155 and no v0.0.156; the GitHub release list ends at v0.0.155 (Latest)",
+    "observedUtc": "2026-10-15T23:18:00Z",
+    "note": "Not assumed from the order; re-confirm immediately before publication."
+  },
+  "pushPolicyChange": {
+    "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "authorizedAddition": [
+      "codex/expanded-summoning-sprint25-brachiosaurus-elephant",
+      "codex/expanded-summoning-sprint25-release-records"
+    ],
+    "beforeSha256": "9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542",
+    "afterSha256": "5e055ae122cee76d7e640f142c232880beffcdc9dae71a72e4b319b136d167c1",
+    "exactAddedLines": [
+      "    'codex/expanded-summoning-sprint25-brachiosaurus-elephant'",
+      "    'codex/expanded-summoning-sprint25-release-records'"
+    ],
+    "allowListEntriesBefore": 61,
+    "allowListEntriesAfter": 63,
+    "reconstructedBeforeExact": false,
+    "residualDifferenceDisclosed": {
+      "what": "Removing exactly the two added lines from the current file does NOT reproduce the recorded before-hash, so the editor normalised something else in the file as well - most consistently the line endings.",
+      "investigated": [
+        "pure LF and pure CRLF forms",
+        "with and without a UTF-8 BOM",
+        "with and without a trailing newline",
+        "UTF-16LE variants",
+        "cp1252 and latin-1 encodings",
+        "em dash encoded as cp1252 0x97",
+        "em dash replaced by hyphen or double hyphen",
+        "536 split-point mixed line-ending hypotheses"
+      ],
+      "result": "none reproduces 9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542",
+      "recoverySearched": [
+        "no version control on codex-policy",
+        "no volume shadow copies for C:",
+        "no system restore points",
+        "path is not under OneDrive",
+        "the only backups are from 2026-08-07 and far older"
+      ],
+      "functionalVerification": {
+        "parsesWithZeroErrors": true,
+        "allowListEntries": 63,
+        "wildcardOrPatternEntries": 0,
+        "guardsPresent": [
+          "Refusing to push a repository outside the dedicated Gunslinger lab",
+          "Refusing to push from a detached HEAD",
+          "Refusing to push non-allowlisted branch",
+          "No merge, force-push, reset, clean, rebase, or history rewrite occurred"
+        ],
+        "forcePushOrDeleteOrResetOrCleanOccurrences": 0
+      },
+      "safetyCopy": "C:/Dev/KingmakerGunslingerLab/safety/Push-KingmakerGunslinger.ps1.sprint25-allowlist-20261015",
+      "safetyCopySha256": "5e055ae122cee76d7e640f142c232880beffcdc9dae71a72e4b319b136d167c1",
+      "augustBackupsUntouched": true,
+      "disclosure": "Reported to the owner. The authorized change - exactly the two branch names - was made and nothing was removed, but the file is no longer byte-reversible to its prior state and no copy of those bytes exists."
+    }
+  },
+  "sourceContract": {
+    "edition": "Pathfinder First Edition adult monster entries and summon tables",
+    "frozenUtc": "2026-10-15",
+    "sourceUrls": [
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Brachiosaurus",
+      "https://legacy.aonprd.com/bestiary/dinosaur.html",
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Elephant",
+      "https://legacy.aonprd.com/bestiary/elephant.html",
+      "https://www.aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Nature%27s%20Ally%207",
+      "https://www.aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Monster%206",
+      "https://www.aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Monster%207"
+    ],
+    "excluded": [
+      "D&D 3.5",
+      "Pathfinder 2e",
+      "animal companion forms",
+      "advanced forms"
+    ],
+    "brachiosaurus": {
+      "new": true,
+      "cr": 10,
+      "xp": 9600,
+      "alignment": "N",
+      "type": "animal",
+      "size": "Gargantuan",
+      "init": 0,
+      "senses": [
+        "low-light vision",
+        "scent"
+      ],
+      "perception": 28,
+      "armorClass": [
+        18,
+        6,
+        18
+      ],
+      "armorClassComponents": {
+        "natural": 12,
+        "size": -4
+      },
+      "hitDice": "18d8+90",
+      "hitPoints": 171,
+      "saves": {
+        "fort": 18,
+        "ref": 11,
+        "will": 9
+      },
+      "speedFeet": 30,
+      "spaceFeet": 20,
+      "reachFeet": 20,
+      "abilities": {
+        "str": 37,
+        "dex": 10,
+        "con": 21,
+        "int": 2,
+        "wis": 13,
+        "cha": 10
+      },
+      "bab": 13,
+      "cmb": 30,
+      "cmd": 40,
+      "cmdVsTrip": 44,
+      "attacks": [
+        "tail +23 (4d6+19)"
+      ],
+      "specialAttacks": [
+        "trample (2d6+19, DC 32)"
+      ],
+      "feats": [
+        "Cleave",
+        "Great Cleave",
+        "Great Fortitude",
+        "Greater Overrun",
+        "Improved Bull Rush",
+        "Iron Will",
+        "Power Attack",
+        "Skill Focus (Perception)",
+        "Weapon Focus (tail)"
+      ],
+      "skills": {
+        "Perception": 28
+      },
+      "environment": "warm forests or plains",
+      "organization": "solitary, pair, or herd (3-12)",
+      "treasure": "none",
+      "loneNaturalWeapon": true,
+      "strengthRoutine": "one natural weapon: native 1.5x on a positive modifier (13 * 1.5 = 19, matching the printed 4d6+19); correct x1 at zero or a penalty",
+      "trampleDerivation": "damage 1.5x Str (2d6+19); DC 10 + floor(HD/2)=9 + Str mod 13 = 32",
+      "trampleSeparateFromOrdinaryTail": true,
+      "forbidden": [
+        "Ankylosaurus daze",
+        "Ankylosaurus stun",
+        "Stegosaurus trip",
+        "Tyrannosaurus bite multiplier",
+        "Grab",
+        "Swallow Whole",
+        "invented bite",
+        "stampede",
+        "tail-sweep area attack",
+        "frightening roar",
+        "a general overrun system"
+      ],
+      "tailBonusDiscrepancy": {
+        "aonCurrent": 22,
+        "legacyPrd": 23,
+        "selected": 23,
+        "sharedInputs": {
+          "bab": 13,
+          "strength": 37,
+          "strengthModifier": 13,
+          "sizeAttackModifier": -4,
+          "weaponFocusTail": 1
+        },
+        "derivation": "13 + 13 - 4 + 1 = 23",
+        "corroboration": "the same inputs independently derive both printed maneuver values: CMB +30 = 13 + 13 + 4 Gargantuan, and CMD 40 = 10 + 13 + 13 + 0 Dex + 4",
+        "rejectedAlternative": "+22 would require an unexplained -1 that no printed input supplies",
+        "prohibited": [
+          "manufacturing a hidden -1 modifier",
+          "removing Weapon Focus",
+          "asserting that the two sources agree"
+        ],
+        "bothSourcesRecorded": true,
+        "resolvedBeforeImplementation": true,
+        "authority": "owner instruction of 2026-10-15; stands unless an authoritative erratum",
+        "erratumChecked": false
+      },
+      "featConsumerAuditRequired": [
+        "Cleave",
+        "Great Cleave",
+        "Power Attack",
+        "Improved Bull Rush",
+        "Greater Overrun"
+      ],
+      "featAuditRule": "reuse qualified behaviour where supported; document an actual unsupported consumer; existing Improved Overrun limitations do not silently authorize omitting a different mandatory feat"
+    },
+    "elephant": {
+      "new": false,
+      "existingReleasedCreature": true,
+      "cr": 7,
+      "xp": 3200,
+      "alignment": "N",
+      "type": "animal",
+      "size": "Huge",
+      "init": 0,
+      "senses": [
+        "low-light vision",
+        "scent"
+      ],
+      "perception": 21,
+      "armorClass": [
+        17,
+        8,
+        17
+      ],
+      "armorClassComponents": {
+        "natural": 9,
+        "size": -2
+      },
+      "hitDice": "11d8+44",
+      "hitPoints": 93,
+      "saves": {
+        "fort": 13,
+        "ref": 7,
+        "will": 6
+      },
+      "speedFeet": 40,
+      "spaceFeet": 15,
+      "reachFeet": 10,
+      "abilities": {
+        "str": 30,
+        "dex": 10,
+        "con": 19,
+        "int": 2,
+        "wis": 13,
+        "cha": 7
+      },
+      "bab": 8,
+      "cmb": 20,
+      "cmd": 30,
+      "cmdVsTrip": 34,
+      "attacks": [
+        "gore +16 (2d8+10)",
+        "slam +16 (2d6+10)"
+      ],
+      "specialAttacks": [
+        "trample (2d8+15; DC 25)"
+      ],
+      "feats": [
+        "Endurance",
+        "Great Fortitude",
+        "Improved Bull Rush",
+        "Iron Will",
+        "Power Attack",
+        "Skill Focus (Perception)"
+      ],
+      "skills": {
+        "Perception": 21
+      },
+      "environment": "warm plains",
+      "organization": "solitary or herd (6-30)",
+      "treasure": "none",
+      "bothSourcesAgreeExactly": true,
+      "multiNaturalRoutine": true,
+      "strengthRoutine": "two primary natural attacks: x1 Strength each (+10 from Str 30), NOT Brachiosaurus's lone-tail 1.5x handling",
+      "trampleDerivation": "damage 1.5 x 10 = 2d8+15; DC 10 + floor(11/2)=5 + 10 = 25",
+      "reachRule": "space 15 ft but printed reach 10 ft; do not generalise 15-ft reach to every Huge creature",
+      "forbidden": [
+        "stamp routine",
+        "grab",
+        "a second Elephant",
+        "a Mastodon replacement",
+        "powerful charge",
+        "changing released d6 tramplers",
+        "suppressing an already released Elephant route",
+        "changing actual Mastodon units or assets"
+      ],
+      "preserve": [
+        "exact released identity",
+        "all eight existing roots",
+        "their execution children",
+        "their order",
+        "existing template behaviour",
+        "existing caster-alignment behaviour"
+      ],
+      "d8TrampleReuse": "reuse the exact Sprint 23 d8 trample support"
+    },
+    "rootShape": {
+      "rule": "a creature whose base tier is T gets one root at T, 1d3 at T+1, and 1d4+1 at each level from T+2 through 9",
+      "verifiedAgainst": "Sprint 24: Deinonychus base tier 4 produced 6 roots per list (4,5,6,7,8,9) and Tyrannosaurus base tier 7 produced 3 per list (7,8,9); the native route census observed exactly 18 routes",
+      "brachiosaurusBaseTier": 7,
+      "brachiosaurusRootsPerList": 3,
+      "elephantBaseTier": 6,
+      "elephantRootsPerList": 4,
+      "elephantExistingRootsTotal": 8
+    }
+  },
+  "surface": {
+    "baselineAfterSprint24": {
+      "projectCreatures": 107,
+      "monsterCreatures": 95,
+      "monsterPlacements": 543,
+      "natureAllyCreatures": 95,
+      "natureAllyPlacements": 550,
+      "generatedPlacements": 1093,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1122,
+      "suppressedLogicalPlacements": 0
+    },
+    "expectedIfNatureAllyOnly": {
+      "projectCreatures": 108,
+      "monsterCreatures": 95,
+      "monsterPlacements": 543,
+      "natureAllyCreatures": 96,
+      "natureAllyPlacements": 553,
+      "generatedPlacements": 1096,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1125,
+      "newRoots": 3,
+      "changedExistingRoots": 8,
+      "source": "the order's stated expectation, arithmetically self-consistent"
+    },
+    "expectedIfBothLists": {
+      "projectCreatures": 108,
+      "monsterCreatures": 96,
+      "monsterPlacements": 546,
+      "natureAllyCreatures": 96,
+      "natureAllyPlacements": 553,
+      "generatedPlacements": 1099,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1128,
+      "newRoots": 6,
+      "changedExistingRoots": 8,
+      "alsoAdds": "celestial/fiendish execution children on the Monster rows",
+      "source": "the printed Summon Monster VII table and the project roster catalog",
+      "status": "DERIVED_NOT_YET_VERIFIED_AGAINST_LIVE_SOURCE"
+    },
+    "deriveFromActualSource": true,
+    "preserveUnrelatedIdentitySets": true,
+    "brachiosaurusSuppressedUntilQualified": true,
+    "identityAllocation": "once, append-only"
+  },
+  "escalatedDecision": {
+    "id": "brachiosaurus-summon-list-placement",
+    "status": "OPEN_ESCALATED_TO_OWNER",
+    "raisedUtc": "2026-10-15T23:25:00Z",
+    "question": "Does Brachiosaurus get three roots on Summon Nature's Ally VII only, as the order states, or six roots across both Summon Monster VII and Nature's Ally VII, as the printed table and the project roster catalog indicate?",
+    "orderText": "Brachiosaurus is new: SNA VII only, three roots (VII one, VIII 1d3, IX 1d4+1), no Monster row and no celestial/fiendish execution children.",
+    "orderArithmeticSelfConsistent": true,
+    "conflictingEvidence": [
+      "The Summon Monster VII 7th-level list prints \"Brachiosaurus (dinosaur)*\" alongside Dire crocodile*, Dire shark*, Giant squid*, Mastodon (elephant)*, Roc* and Tyrannosaurus (dinosaur)*.",
+      "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdealRosterCatalog.cs records R(\"brachiosaurus\",\"Brachiosaurus\",7,7,25,...) - monster tier 7 AND nature's ally tier 7 - in the same two-tier shape that gives Summon-Monster-only outsiders such as Vrock and Xill a null nature's ally tier.",
+      "planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md row 104 records the same 7 / 7 pair.",
+      "Sprint 24's Tyrannosaurus, also recorded 7 / 7, was published on both lists."
+    ],
+    "whyBlockingForThisPart": "Identities are allocated once and append-only, and the root structure determines the identity allocation, the execution children, the published surface counts and the native route census. Implementing the wrong one cannot be cleanly withdrawn.",
+    "workProceedingMeanwhile": [
+      "the frozen source contract and both recorded resolutions",
+      "the Brachiosaurus tail +23 resolution",
+      "Elephant verification against its existing production carriers",
+      "the shared trample contract audit",
+      "the bounded quadruped art census",
+      "the requirement-to-evidence map"
+    ]
+  },
+  "acceptedLimitations": {
+    "inheritedUnchanged": [
+      "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+      "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+      "PASSIVE_CREATURE_SENSES_UNMODELED",
+      "RUN_NATIVE_SUMMON_AI_DISPOSITION"
+    ],
+    "newWaiver": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  },
+  "stopCondition": {
+    "stopAfter": "Sprint 25",
+    "forbidden": [
+      "Sprint 26",
+      "Gorgon",
+      "Bulette",
+      "DATA work of any kind",
+      "mounted combat",
+      "multi-sprint integration branch"
+    ],
+    "sprint26Started": false
+  },
+  "nextAction": "Await the owner decision on brachiosaurus-summon-list-placement. Meanwhile: audit the shared trample contract and the native feat consumers, verify Elephant's existing production carriers against the frozen entry, and run the bounded quadruped rig census. Do not allocate Brachiosaurus identities until the decision is recorded."
+}
