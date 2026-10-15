@@ -128,10 +128,48 @@ directories, 118 saves, baseline save byte-identical, working fixture verified
 empty, sound bank unchanged, no leftover staging, lock or process, and every
 transaction restored and verified.
 
-No tag, merge or release has been made yet. Next: finalize the qualification
-ledger with the product merge commit, mark PR #45 ready and merge, promote these
-exact bytes, publish stable v0.0.155 Latest, verify the three assets
-independently, then the documentation-only records PR.
+**PR #45 is MERGED.** It merged normally at
+`31672515529cd7271676556d3242854ac5a9948f` on 2026-10-15T21:55:11Z, parents
+`fd6c56eb` and `8e792b8e`. The tested source `f7ab30ac` is an ancestor, and
+`git diff --exit-code f7ab30ac..31672515` over `src`, `assets`, `blueprints`,
+`Info.json` and `Directory.Build.props` is empty, so merged master carries the
+exact tested product source.
+
+**No tag or release exists; v0.0.155 is still unpublished.** Promotion is
+blocked on one newly discovered constraint, not on a waiver.
+
+**The exact-reference build is byte-deterministic within a repository root but
+not across roots.** A full Sprint gate at the identical commit `f7ab30ac`, with
+an identical source fingerprint `b11196da`, run in the frozen worktree
+`C:/Dev/KingmakerGunslingerLab/wt/s24r155`, produced DLL `a94b7eb8` and package
+`d905a034` — not the main worktree's DLL `3ef0a724` and package `f7d3b5e6`. Both
+gates passed 2,610/2,610 with strict packaging. The publisher requires a
+candidate root that is at the candidate commit and whose sidecar records its own
+package path, so it can only promote from the root where the artifact was built;
+the bytes native-tested in the main worktree cannot be reproduced elsewhere, and
+the worktree-built bytes have no native evidence yet. No guard was weakened.
+
+Next action, in order:
+
+1. From `wt/s24r155` (HEAD `f7ab30ac`, clean, with `GamePath.props` and
+   `artifacts/inspection/bodyguard-native` already copied in), de-elevated and
+   with Steam already running, re-run `observe-expanded-summoning-inventory` and
+   `disposable-expanded-summoning-sprint24-native-review` at
+   `reviewPhase = rtwp-foundation`, both under `gunslinger-high-risk-combined`
+   with `-ReuseInstalledArtifact` and that worktree's package.
+2. Update `runtime-evidence/sprint24-release-20261015/sprint24-qualification-ledger.json`:
+   move the candidate identities and the four `PASS` rows' `evidenceSources` to
+   the worktree package, leaving the three `REUSED_PASS` hidden rows unchanged.
+3. From the main worktree on the product branch, run
+   `scripts/Publish-QualifiedCandidate.ps1 -Sprint24Theropods -ProductPrNumber 45`
+   with `-MergedReleaseCommit 31672515529cd7271676556d3242854ac5a9948f` and
+   `-CandidateRepositoryRoot C:/Dev/KingmakerGunslingerLab/wt/s24r155`, first
+   without `-Publish`, then with `-Publish -ConfirmReleaseReady`.
+4. Download and verify the three assets, audit restoration, then create
+   `codex/expanded-summoning-sprint24-release-records` from released master for
+   the documentation-only PR.
+
+Sprint 25 begins only after that barrier. It has not been started.
 
 ---
 

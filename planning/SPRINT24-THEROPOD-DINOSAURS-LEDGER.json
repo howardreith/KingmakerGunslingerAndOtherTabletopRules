@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "QUALIFIED_ALL_GATES_GREEN_RELEASE_PENDING",
+  "status": "MERGED_TO_MASTER_RELEASE_PENDING_PUBLIC_NATIVE_RERUN_IN_PROMOTABLE_ROOT",
   "current": {
     "asOfUtc": "2026-10-15",
     "controllingDecision": "claudeTakeover.ownerDecision_2026_10_15 \u2014 CLEAN_RESET_FOR_ALL. See acceptedLimitations.",
@@ -138,7 +138,7 @@
       "kingmakerProcess": 0,
       "allTransactionsRestoredAndVerified": true
     },
-    "nextAction": "Finalize the qualification ledger with the product merge commit, mark PR #45 ready and merge to master, promote the exact f7ab30ac bytes through Publish-Release.ps1, publish stable v0.0.155 Latest, verify the three assets independently, audit restoration, then the documentation-only records PR.",
+    "nextAction": "1) From C:/Dev/KingmakerGunslingerLab/wt/s24r155 (HEAD f7ab30ac, clean, GamePath.props and artifacts/inspection/bodyguard-native already present) run de-elevated, Steam already running: observe-expanded-summoning-inventory and disposable-expanded-summoning-sprint24-native-review with reviewPhase rtwp-foundation, both under gunslinger-high-risk-combined with -ReuseInstalledArtifact and that worktree's package. 2) Update runtime-evidence/sprint24-release-20261015/sprint24-qualification-ledger.json: candidate zipSha256/dllSha256/dllMvid/sourceFingerprint and the four PASS rows' evidenceSources to the worktree package identities, keeping the three REUSED_PASS hidden rows as they are. 3) From the main worktree on the product branch run scripts/Publish-QualifiedCandidate.ps1 -Sprint24Theropods -ProductPrNumber 45 -MergedReleaseCommit 31672515529cd7271676556d3242854ac5a9948f -CandidateRepositoryRoot C:/Dev/KingmakerGunslingerLab/wt/s24r155 -PackagePath <that worktree package> -QualificationLedgerPath <ledger> -ReleaseNotesPath docs/RELEASE-NOTES-0.0.155.md, first without -Publish, then with -Publish -ConfirmReleaseReady. 4) Download and verify the three assets, audit restoration, then create codex/expanded-summoning-sprint24-release-records from released master for the documentation-only PR. Sprint 25 starts only after that barrier.",
     "publicCandidate": {
       "productCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
       "version": "0.0.155",
@@ -189,7 +189,26 @@
       }
     },
     "reusedHiddenEvidenceAudit": "shared-controls, Cycle A and Cycle B remain bound to candidate bf9388d3 (DLL b8bffe18) with their original provenance and are never relabelled as execution on the public bytes. The publication delta does not change their dependencies: ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant applies the IsPublished filter only for the broad released-roster scope, the theropods scope deliberately selects its registered identity while its roots are suppressed, and no summoning runtime observer reads SuppressedCreatureKeys or IsPublished.",
-    "qualificationComplete": true
+    "qualificationComplete": true,
+    "merged": {
+      "productPr": 45,
+      "state": "MERGED",
+      "mergedAtUtc": "2026-10-15T21:55:11Z",
+      "productMergeCommit": "31672515529cd7271676556d3242854ac5a9948f",
+      "mergeParents": [
+        "fd6c56ebd8eb82e313c6005972e4538d9b1444c9",
+        "8e792b8e4ea372d3cc90de87e2171ead0a084547"
+      ],
+      "testedSourceIsAncestor": true,
+      "productSourceIdenticalToCandidate": "git diff --exit-code f7ab30ac..31672515 -- src assets blueprints Info.json Directory.Build.props is empty"
+    },
+    "buildReproducibilityFinding": {
+      "finding": "The exact-reference build is byte-deterministic WITHIN a repository root but NOT ACROSS roots.",
+      "evidence": "A full Sprint gate at the identical commit f7ab30ac, with an identical source fingerprint b11196da, in the frozen worktree C:/Dev/KingmakerGunslingerLab/wt/s24r155 produced DLL a94b7eb8549b7ae37bfbbb56faa09fb7196e777df15b0d85088e014996be5695 and package d905a03442fc0c82fbd65c6e9949b94d085404c4040e580827e3299068765ae2, against the main worktree's DLL 3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046 and package f7d3b5e651c4c4fb105ff4b734ddc1070c3887b57636e9eb217347809f00a751. Both gates passed 2610/2610 with strict packaging.",
+      "consequence": "Read-KmgBuildLocalManifest requires the sidecar packagePath to equal the actual path and Assert on the candidate root requires that root to be AT the candidate commit, so the publisher must be given a candidate root where the artifact was actually built. The bytes native-tested in the main worktree cannot be rebuilt elsewhere, and the worktree-built bytes have no native evidence yet.",
+      "notAWaiver": "No guard was weakened and no release was published. The frozen worktree is a fully gated candidate root; it simply needs its own public native evidence before promotion."
+    },
+    "releaseBlockedOn": "The two public native checks must be re-run from the frozen worktree against ITS package (d905a034 / DLL a94b7eb8), because that is the root the publisher can promote from. Then the ledger candidate and PASS-row evidenceSources move to those identities and the publisher runs with the main worktree as the reporting root."
   },
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
