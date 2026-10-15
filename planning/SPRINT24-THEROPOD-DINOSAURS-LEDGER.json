@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "MERGED_TO_MASTER_RELEASE_PENDING_PUBLIC_NATIVE_RERUN_IN_PROMOTABLE_ROOT",
+  "status": "RELEASED_v0.0.155_STOP",
   "current": {
     "asOfUtc": "2026-10-15",
-    "controllingDecision": "claudeTakeover.ownerDecision_2026_10_15 \u2014 CLEAN_RESET_FOR_ALL. See acceptedLimitations.",
+    "controllingDecision": "claudeTakeover.ownerDecision_2026_10_15 — CLEAN_RESET_FOR_ALL. See acceptedLimitations.",
     "reloadContract": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD applies to every KMG summon with no exemption: save/reload resets active grabs, holds, swallowed and engulfed relationships, the mouth occupancy that goes with them and session-owned links, for Tyrannosaurus, Dire Crocodile, Purple Worm and Giant Flytrap alike. This is a clean reset, not grapple persistence. No creature opt-in, no swallowed-state preservation exception and no project-owned re-establishment is authorized. Native Bleeding Critical has its own separate lifetime, save behaviour and healing removal.",
     "latestExecutableSource": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
     "latestQualifiedHiddenCandidate": {
@@ -19,8 +19,8 @@
     },
     "stageRoute": "Hidden qualification completed while suppressed on candidate bf9388d3, because the Sprint 24 domain contracts assert the eighteen roots stay hidden and that targeted qualification never selects a published root. Exactly one public candidate followed it.",
     "hiddenClosureRemaining": [],
-    "bothKeysSuppressed": true,
-    "released": false,
+    "bothKeysSuppressed": false,
+    "released": true,
     "hiddenClosureComplete": true,
     "hiddenClosureSet": {
       "candidate": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
@@ -138,14 +138,16 @@
       "kingmakerProcess": 0,
       "allTransactionsRestoredAndVerified": true
     },
-    "nextAction": "1) From C:/Dev/KingmakerGunslingerLab/wt/s24r155 (HEAD f7ab30ac, clean, GamePath.props and artifacts/inspection/bodyguard-native already present) run de-elevated, Steam already running: observe-expanded-summoning-inventory and disposable-expanded-summoning-sprint24-native-review with reviewPhase rtwp-foundation, both under gunslinger-high-risk-combined with -ReuseInstalledArtifact and that worktree's package. 2) Update runtime-evidence/sprint24-release-20261015/sprint24-qualification-ledger.json: candidate zipSha256/dllSha256/dllMvid/sourceFingerprint and the four PASS rows' evidenceSources to the worktree package identities, keeping the three REUSED_PASS hidden rows as they are. 3) From the main worktree on the product branch run scripts/Publish-QualifiedCandidate.ps1 -Sprint24Theropods -ProductPrNumber 45 -MergedReleaseCommit 31672515529cd7271676556d3242854ac5a9948f -CandidateRepositoryRoot C:/Dev/KingmakerGunslingerLab/wt/s24r155 -PackagePath <that worktree package> -QualificationLedgerPath <ledger> -ReleaseNotesPath docs/RELEASE-NOTES-0.0.155.md, first without -Publish, then with -Publish -ConfirmReleaseReady. 4) Download and verify the three assets, audit restoration, then create codex/expanded-summoning-sprint24-release-records from released master for the documentation-only PR. Sprint 25 starts only after that barrier.",
+    "nextAction": "Sprint 25 - Brachiosaurus and Elephant, as its own release. Branch codex/expanded-summoning-sprint25-brachiosaurus-elephant from released master; one sprint, one branch, one product PR, one stable release. Before the first push, add ONLY the two exact branch names codex/expanded-summoning-sprint25-brachiosaurus-elephant and codex/expanded-summoning-sprint25-release-records to AllowedBranches in C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1, recording the before and after SHA-256 and the exact diff. Expected version is the next free patch v0.0.156, subject to the actual remote state at the time. Choose the final candidate repository root BEFORE the full build and native qualification so the promoted artifact and its native evidence come from the same root; this sprint's cross-root byte divergence is the reason. Stop after Sprint 25: no Sprint 26, no DATA work, no mounted combat.",
     "publicCandidate": {
       "productCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
       "version": "0.0.155",
       "localRuntimeZipSha256": "f7d3b5e651c4c4fb105ff4b734ddc1070c3887b57636e9eb217347809f00a751",
       "dllSha256": "3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046",
       "sprintGate": "PASS: repository wrapper, 2610/2610 domain tests, exact-reference build, deterministic package, strict validation, 174.9s; no deployment",
-      "note": "An earlier public candidate 00294f99 (DLL e4d19da4) is superseded: its public inventory run failed the prohibited-reference row and the correction changed the bytes."
+      "note": "An earlier public candidate 00294f99 (DLL e4d19da4) is superseded: its public inventory run failed the prohibited-reference row and the correction changed the bytes. This record is artifact build A, built in the main worktree. It was NOT promoted: the owner selected build B from the frozen worktree, and A keeps its own closure ledger at runtime-evidence/sprint24-release-20261015/historical/sprint24-qualification-ledger-A-main-root.json (sha256 71e086ffecf2c305b4e738bb74de620e8058264d395631108be0f72f7247ceac). A and B are never merged into one identity.",
+      "artifactBuild": "A",
+      "promoted": false
     },
     "publicNativeEvidence": {
       "inventory": {
@@ -186,7 +188,10 @@
         "status": "FAIL",
         "row": "expanded-summoning-prohibited-references expected=0 observed=5",
         "disposition": "PRESERVED: the inventory observer had no interpretation rows for the five private theropod carriers; corrected in f7ab30ac."
-      }
+      },
+      "artifactBuild": "A",
+      "claimedForRelease": false,
+      "note": "These two runs loaded build A (DLL 3ef0a724). They are kept as A's history and are not claimed as evidence for the released bytes; releasedArtifact.publicNativeEvidence below carries the runs on the released build B."
     },
     "reusedHiddenEvidenceAudit": "shared-controls, Cycle A and Cycle B remain bound to candidate bf9388d3 (DLL b8bffe18) with their original provenance and are never relabelled as execution on the public bytes. The publication delta does not change their dependencies: ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant applies the IsPublished filter only for the broad released-roster scope, the theropods scope deliberately selects its registered identity while its roots are suppressed, and no summoning runtime observer reads SuppressedCreatureKeys or IsPublished.",
     "qualificationComplete": true,
@@ -206,9 +211,244 @@
       "finding": "The exact-reference build is byte-deterministic WITHIN a repository root but NOT ACROSS roots.",
       "evidence": "A full Sprint gate at the identical commit f7ab30ac, with an identical source fingerprint b11196da, in the frozen worktree C:/Dev/KingmakerGunslingerLab/wt/s24r155 produced DLL a94b7eb8549b7ae37bfbbb56faa09fb7196e777df15b0d85088e014996be5695 and package d905a03442fc0c82fbd65c6e9949b94d085404c4040e580827e3299068765ae2, against the main worktree's DLL 3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046 and package f7d3b5e651c4c4fb105ff4b734ddc1070c3887b57636e9eb217347809f00a751. Both gates passed 2610/2610 with strict packaging.",
       "consequence": "Read-KmgBuildLocalManifest requires the sidecar packagePath to equal the actual path and Assert on the candidate root requires that root to be AT the candidate commit, so the publisher must be given a candidate root where the artifact was actually built. The bytes native-tested in the main worktree cannot be rebuilt elsewhere, and the worktree-built bytes have no native evidence yet.",
-      "notAWaiver": "No guard was weakened and no release was published. The frozen worktree is a fully gated candidate root; it simply needs its own public native evidence before promotion."
+      "notAWaiver": "No guard was weakened and no release was published. The frozen worktree is a fully gated candidate root; it simply needs its own public native evidence before promotion.",
+      "resolution": "Resolved by re-running both public native checks against build B in the frozen root the publisher can promote from, then promoting those exact bytes. No guard was weakened, nothing unchanged was rebuilt, and A was not relabelled as B.",
+      "residualDebt": "Cause of the cross-root byte divergence is still not established. Every declared input was proven identical across the two roots and the outputs still differed, so digest comparison alone was not enough. Recorded as bounded debt, not as an explained result. Sprint 25 must therefore choose its final candidate root BEFORE full build and native qualification."
     },
-    "releaseBlockedOn": "The two public native checks must be re-run from the frozen worktree against ITS package (d905a034 / DLL a94b7eb8), because that is the root the publisher can promote from. Then the ledger candidate and PASS-row evidenceSources move to those identities and the publisher runs with the main worktree as the reporting root."
+    "releasedArtifact": {
+      "artifactBuild": "B",
+      "productCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
+      "version": "0.0.155",
+      "builtInRoot": "C:/Dev/KingmakerGunslingerLab/wt/s24r155",
+      "rootFrozenThroughNativeRunsAndPromotion": true,
+      "sourceFingerprint": "b11196da37d8fe228ea6658982bd34ad150b75076d5517937e941c464816805c",
+      "localRuntimeZipSha256": "d905a03442fc0c82fbd65c6e9949b94d085404c4040e580827e3299068765ae2",
+      "dllSha256": "a94b7eb8549b7ae37bfbbb56faa09fb7196e777df15b0d85088e014996be5695",
+      "dllMvid": "d7f1f815-358d-4bf7-a0b7-b12db26d3fac",
+      "packagedEntries": 371,
+      "sprintGate": "PASS: repository wrapper, 2610/2610 unfiltered domain tests, exact-reference build, deterministic package, strict validation; no deployment",
+      "sidecarValidated": true,
+      "ownerSelectedForPromotion": true,
+      "ownerRequiredTwoPublicNativeChecksOnB": true,
+      "closureLedger": "runtime-evidence/sprint24-release-20261015/sprint24-qualification-ledger-b.json",
+      "closureLedgerSha256": "589a3eb36cb981bbc23a1a01ad45516f7dac2f70fb578ef90d52f3e8a8325c59",
+      "publicNativeEvidence": {
+        "inventory": {
+          "scenario": "observe-expanded-summoning-inventory",
+          "profile": "gunslinger-high-risk-combined",
+          "runId": "20261015T2238064049987Z-71ea67e9412e4cc7a35c3ec068a15ab3",
+          "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261015T2238063712986Z-observe-expanded-summoning-inventory",
+          "status": "PASS",
+          "assertionsPassed": 50,
+          "assertionsFailed": 0,
+          "loadedDllSha256": "a94b7eb8549b7ae37bfbbb56faa09fb7196e777df15b0d85088e014996be5695",
+          "proved": [
+            "parentPlacements=1093",
+            "allExecutableNativeAbilityContractsExact=1093",
+            "menuReconciliationExact",
+            "menuCountsExact",
+            "prohibitedReferences=0",
+            "loadedModVersionExact"
+          ]
+        },
+        "eighteenRoots": {
+          "scenario": "disposable-expanded-summoning-sprint24-native-review",
+          "reviewPhase": "rtwp-foundation",
+          "profile": "gunslinger-high-risk-combined",
+          "runId": "20261015T2244341359144Z-24076cc5cc6a41798f30fe9abd4b128c",
+          "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261015T2244341043625Z-disposable-expanded-summoning-sprint24-native-review",
+          "status": "PASS",
+          "assertionsPassed": 26,
+          "assertionsFailed": 0,
+          "loadedDllSha256": "a94b7eb8549b7ae37bfbbb56faa09fb7196e777df15b0d85088e014996be5695",
+          "proved": [
+            "routeCensusExact",
+            "all 18 published Monster and NaturesAlly player routes exercised through their real parent spell paths",
+            "fixtureAndNativeProfileRestoration"
+          ]
+        },
+        "perRowProofs": "Each native row carries two proofs because runtime-result.json does not itself name the build: the result file and runtime-loaded-build-identity.json, which records the package the game actually loaded."
+      }
+    },
+    "releaseBlockerResolved": "The promotable-root blocker is cleared: both public native checks were re-run on build B in C:/Dev/KingmakerGunslingerLab/wt/s24r155, a new truthful ledger (ledger B) was written while the old one was preserved as a historical ledger for A, and the publisher promoted B exactly.",
+    "promotionRepair": {
+      "refusal": "Publication first refused with a reporting-lineage error: the records commit describing the release sits after the product merge, which the old ancestry check could only read as an unrelated lineage.",
+      "repair": "Assert-KmgReportingLineage in scripts/QualifiedRelease.Common.ps1",
+      "acceptedModes": [
+        "contained-in-product-merge",
+        "reviewed-post-merge-reporting"
+      ],
+      "modeUsed": "reviewed-post-merge-reporting",
+      "secondModeConditions": [
+        "the reviewed merged PR head is an ancestor of the product merge",
+        "the merged PR head is an ancestor of the reporting commit",
+        "merge-base(reporting, product merge) is exactly the merged PR head",
+        "the reporting delta is non-empty",
+        "every changed path appears exactly in the explicit reporting allow-list",
+        "every build and package input is refused independently, even if allow-listed by mistake"
+      ],
+      "refusalTests": "scripts/Test-Sprint24ReportingLineage.ps1",
+      "refusalCount": 18,
+      "testsRunInRepositoryValidation": true,
+      "disposableFixturesOnly": true,
+      "selfRefused": "The repaired check refused its own repair commit until the two new tooling paths were admitted deliberately, which is the intended behaviour.",
+      "notABypass": "No lineage check was deleted, no blanket bypass was added, no branch was reset, no direct tag or upload workaround was used and nothing unchanged was rebuilt.",
+      "publisherHardening": [
+        "fetch narrowed to the two compared refs with tag fetching disabled, because the upstream tag rewrite makes a --tags fetch fail",
+        "PR headRefOid cross-checked against the product merge parents",
+        "manifest records mergedPrHead, reportingLineageMode, reportingDeltaPaths and the SHA-256 of the publisher scripts themselves"
+      ]
+    },
+    "publication": {
+      "published": true,
+      "tag": "v0.0.155",
+      "tagObjectKind": "annotated",
+      "tagPeelsTo": "31672515529cd7271676556d3242854ac5a9948f",
+      "releaseName": "Tabletop Added Rules v0.0.155",
+      "draft": false,
+      "prerelease": false,
+      "isLatest": true,
+      "productPr": 45,
+      "productMergeCommit": "31672515529cd7271676556d3242854ac5a9948f",
+      "productMergeParents": [
+        "fd6c56eb",
+        "8e792b8e4ea372d3cc90de87e2171ead0a084547"
+      ],
+      "mergedPrHead": "8e792b8e4ea372d3cc90de87e2171ead0a084547",
+      "mergedUtc": "2026-10-15T21:55:11Z",
+      "mergeContainsTestedSource": true,
+      "testedSourceDiffAgainstMergeEmpty": "git diff --exit-code f7ab30ac..31672515 over src, assets, blueprints, Info.json and Directory.Build.props is empty",
+      "reportingCommit": "ba3ac897271685f5af2eba8b9e24dd4a7e24fa90",
+      "reportingLineageMode": "reviewed-post-merge-reporting",
+      "reportingDeltaPaths": [
+        "AUTONOMOUS-RESUME.md",
+        "planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json",
+        "scripts/Publish-QualifiedCandidate.ps1",
+        "scripts/QualifiedRelease.Common.ps1",
+        "scripts/Test-Sprint24ReportingLineage.ps1",
+        "scripts/validate-repository.ps1"
+      ],
+      "exactArtifactPromotion": true,
+      "rebuiltForPublication": false,
+      "coverage": {
+        "hiddenReusedPass": 3,
+        "hiddenReusedPassSource": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+        "publicPass": 4,
+        "publicPassSource": "artifact build B"
+      },
+      "independentVerification": {
+        "method": "the three published assets were downloaded fresh into a separate directory and hashed there",
+        "zipSha256": "d905a03442fc0c82fbd65c6e9949b94d085404c4040e580827e3299068765ae2",
+        "zipEqualsTestedBuildB": true,
+        "checksumsFileSha256": "d4613e30",
+        "manifestSha256": "ea700f6f",
+        "githubRecordedAssetDigestsAgree": true,
+        "checksumsFileAgreesWithDownloadedZip": true,
+        "strictPackageValidationOnDownloadedArchive": "PASS (exit 0)",
+        "downloadedDllSha256": "a94b7eb8549b7ae37bfbbb56faa09fb7196e777df15b0d85088e014996be5695",
+        "downloadedDllMvid": "d7f1f815-358d-4bf7-a0b7-b12db26d3fac",
+        "downloadedDllEqualsNativeTestedDll": true,
+        "packagedInfoJsonVersion": "0.0.155",
+        "packagedEntries": 371
+      }
+    },
+    "restorationAudit": {
+      "verdict": "RESTORED",
+      "record": "runtime-evidence/sprint24-release-20261015/restoration-audit.json",
+      "recordSha256": "ec51807c5da155f8b6d36988eb494fad27d0000cc48c6621e180d5552058f9f0",
+      "baselineIntake": "sprint24-deinonychus-tyrannosaurus-intake-20261014T050745Z (2026-10-14T05:08:43Z)",
+      "observedUtc": "2026-10-15T23:00:01Z",
+      "deElevated": true,
+      "access": "read-only; no game launch, no save load, no save edit, no registry write, no staging and no deployment",
+      "comparison": "every row compared on path, kind, length and SHA-256, not on file counts",
+      "modsTree": {
+        "entries": 968,
+        "contentIdenticalAtAllFourStages": true,
+        "stages": [
+          "campaign baseline 2026-10-14T05:08",
+          "pre-promotion 2026-10-15T21:57",
+          "post-B-native 2026-10-15T22:48",
+          "restoration audit 2026-10-15T23:00"
+        ],
+        "contentDifferences": 0,
+        "metadataOnlyDifferences": 9,
+        "metadataOnlyNote": "other mods' own settings and loaded-blueprint caches, rewritten byte-identically during the campaign's first authorized guarded run at 2026-10-14T05:48:40Z; no KingmakerGunslinger path moved"
+      },
+      "noPermanentDeployment": {
+        "installedVersion": "0.0.117",
+        "installedManifestEntries": 143,
+        "installedFileCount": 136,
+        "installedTreeByteIdenticalToPreCampaign": true,
+        "installedDllSha256": "fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f",
+        "releasedBuildInstalledAnywhere": false,
+        "featureModulesUnchanged": true
+      },
+      "soundBank": {
+        "path": "Kingmaker_Data/StreamingAssets/Audio/GeneratedSoundBanks/Windows/KMG_Firearms.bnk",
+        "sha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+        "unchanged": true
+      },
+      "gameSettings": {
+        "values": 83,
+        "byteIdentical": 81,
+        "humanSettingsChanged": 0,
+        "changed": [
+          "unity.player_session_count (5845 -> 5848)",
+          "unity.player_sessionid"
+        ],
+        "note": "Unity's own per-launch counter and session id, written by the engine itself"
+      },
+      "saves": {
+        "files": 118,
+        "addedOrRemoved": 0,
+        "protectedBaselineByteIdentical": true,
+        "protectedBaseline": "Manual_298_KMG_AUTOMATION_BASELINE.zks",
+        "unrelatedHumanSavesCompared": 116,
+        "unrelatedHumanSavesByteIdentical": true,
+        "onlyMutatedSave": "Manual_299_KMG_AUTOMATION_WORKING.zks",
+        "onlyMutatedSaveAuthorized": true
+      },
+      "privateBuildReferences": {
+        "rows": 14,
+        "unchanged": true,
+        "stillExactlyMatchInstalledAssemblies": true,
+        "committed": false
+      },
+      "ownedSurfacesLeftBehind": {
+        "kingmakerProcess": 0,
+        "unityModManagerProcess": 0,
+        "compatibilityLock": false,
+        "activeTransactions": 0,
+        "stagingDirectories": 0,
+        "runtimeLeases": 0
+      },
+      "guardedRunReceipts": {
+        "installedStackRuns": 19,
+        "restorationVerified": 19,
+        "gameSettingsExact": 19,
+        "transactionStatusRestored": 19,
+        "failures": 0
+      },
+      "pushPolicyWrapperSha256": "9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542",
+      "pushPolicyUnchangedSinceAuthorizedEdit": true,
+      "corroboration": "two independent reads of the current state, one elevated and one de-elevated, agree exactly"
+    },
+    "releaseRecordsAndTooling": {
+      "branch": "codex/expanded-summoning-sprint24-release-records",
+      "basedOn": "released master 31672515529cd7271676556d3242854ac5a9948f",
+      "scope": "release tooling AND records, not documentation-only: the reviewed publisher repair and its refusal tests travel with the final RELEASED/STOP records",
+      "paths": [
+        "AUTONOMOUS-RESUME.md",
+        "planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json",
+        "scripts/Publish-QualifiedCandidate.ps1",
+        "scripts/QualifiedRelease.Common.ps1",
+        "scripts/Test-Sprint24ReportingLineage.ps1",
+        "scripts/validate-repository.ps1"
+      ],
+      "productPrRemerged": false,
+      "note": "PR #45 is not remerged; this branch starts from the already-released master."
+    },
+    "bothKeysSuppressedNote": "True only through hidden qualification. Both Deinonychus and Tyrannosaurus keys were removed from suppression together at v0.0.155 and are published: SuppressedCreatureKeys is empty and SuppressedLogicalPlacementCount is 0."
   },
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
@@ -907,10 +1147,8 @@
       "natureAllyRoots": 3,
       "baseTier": 7
     },
-    "suppressedUntilQualified": [
-      "deinonychus",
-      "tyrannosaurus"
-    ]
+    "suppressedUntilQualified": [],
+    "suppressionReleasedAt": "v0.0.155 - both keys unsuppressed together; SuppressedCreatureKeys empty, suppressedLogicalPlacements 0"
   },
   "reuseAudit": {
     "sprint22And23FinalRecordsRead": true,
@@ -1625,5 +1863,18 @@
     "RUN_NATIVE_SUMMON_AI_DISPOSITION (reconfirmed 2026-10-15 at its released 0.0.152/0.0.153 boundary; no invented Run action; same label the Triceratops carried)"
   ],
   "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
-  "stopCondition": "IN PROGRESS; release and exact restoration not yet achieved; Sprint 25 not started"
+  "stopCondition": {
+    "sprint24": "RELEASED_AND_STOPPED at v0.0.155",
+    "sprint25Authorized": true,
+    "sprint25Started": false,
+    "sprint25Scope": "Brachiosaurus and Elephant only, as a separate release",
+    "stopAfter": "Sprint 25",
+    "forbidden": [
+      "Sprint 26",
+      "DATA work of any kind",
+      "mounted combat",
+      "multi-sprint integration branch"
+    ],
+    "priorStopCondition": "IN PROGRESS; release and exact restoration not yet achieved; Sprint 25 not started"
+  }
 }
