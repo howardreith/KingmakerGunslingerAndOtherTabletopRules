@@ -89,6 +89,10 @@ class Sprint24GateTests(unittest.TestCase):
         self.assertIn(
             "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
             gate.ALLOWED_PRODUCTION)
+        # The theropod family must be known to the shared resource observer.
+        self.assertIn(
+            "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs",
+            gate.ALLOWED_PRODUCTION)
         # The swallowed-state reload scope is a deliberate Sprint 24 seam.
         self.assertIn(
             "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
