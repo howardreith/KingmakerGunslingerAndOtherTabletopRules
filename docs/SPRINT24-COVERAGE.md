@@ -1,17 +1,24 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **IN PROGRESS on October 15, 2026 — SHARED-CONTROLS NATIVE REPLAY
-PASSED; TARGETED PERSISTENCE AWAITS ITS NEXT CANDIDATE.** Both creature keys
-remain unpublished until the required mechanics, art, runtime, persistence,
-route, and cleanup evidence passes. Sprint 25 was not started.
+Status: **IN PROGRESS on October 15, 2026 — RELOAD CONTRACT SETTLED AND
+PERSISTENCE BEHAVIOUR PROVEN UNDER BOTH MODULE STATES; ONE COHERENT NATIVE
+CLOSEOUT SET REMAINS.** Both creature keys remain unpublished until the required
+mechanics, art, runtime, persistence, route, and cleanup evidence passes.
+Sprint 25 was not started.
+
+The authoritative current state is the controlling section at the top of
+[AUTONOMOUS-RESUME.md](../AUTONOMOUS-RESUME.md) and the `current` block of
+[the ledger](../planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json). Where any
+dated section of this record disagrees with those, they win.
 
 The October 14 stopping checkpoint below is retained as the state codex handed
-over. Since then the upstream lineage rewrite was reconciled, the shared
-swallowed-state reload scope was resolved by owner decision, one new coherent
-candidate was qualified, `shared-controls` passed natively on it, and the
-targeted persistence prepare fixture was found to require a state the released
-one-mouth rule cannot produce and was redesigned. See the dated sections after
-the requirement map.
+over. Since then the upstream lineage rewrite was reconciled; the shared
+swallowed-state reload scope was resolved by owner decision as a clean reset for
+every KMG summon; four candidates were qualified in turn as five observer and
+fixture defects were found and fixed; `shared-controls` passed on `70499a18`
+before the final reload correction and so must be replayed; Cycle A passed
+coherently on `fa55ef68`; and the module-OFF cold load passed on `bf9388d3`.
+See the dated sections after the requirement map.
 
 ## Stopping checkpoint
 
@@ -178,6 +185,14 @@ the first two:
   carried the same label through the 0.0.152/0.0.153 releases.
 
 ### Reload scope of the shared swallowed state — resolved by owner decision
+
+> **Controlling contract.** `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`
+> applies to every KMG summon with no exemption, covering Tyrannosaurus, Dire
+> Crocodile, Purple Worm and Giant Flytrap alike. It is a clean reset, not
+> grapple persistence. No opt-in, preservation exception or project-owned
+> re-establishment is authorized. Any earlier text in this record proposing a
+> Tyrannosaurus opt-in is historical and superseded by the 2026-10-15 decision.
+
 
 The hidden candidate's `SummonGrappleAreaSafeguard.ResetLoadedGrapples` had
 stopped clearing the swallower list and swallowed buffs on load for **every**

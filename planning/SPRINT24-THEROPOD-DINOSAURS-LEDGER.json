@@ -2,6 +2,30 @@
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
   "status": "PERSISTENCE_BEHAVIOUR_PROVEN_BOTH_MODULE_STATES_FINAL_COHERENT_CANDIDATE_SET_PENDING",
+  "current": {
+    "asOfUtc": "2026-10-15",
+    "controllingDecision": "claudeTakeover.ownerDecision_2026_10_15 \u2014 CLEAN_RESET_FOR_ALL. See acceptedLimitations.",
+    "reloadContract": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD applies to every KMG summon with no exemption: save/reload resets active grabs, holds, swallowed and engulfed relationships, the mouth occupancy that goes with them and session-owned links, for Tyrannosaurus, Dire Crocodile, Purple Worm and Giant Flytrap alike. This is a clean reset, not grapple persistence. No creature opt-in, no swallowed-state preservation exception and no project-owned re-establishment is authorized. Native Bleeding Critical has its own separate lifetime, save behaviour and healing removal.",
+    "latestExecutableSource": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+    "latestQualifiedHiddenCandidate": {
+      "productCommit": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+      "sourceStateSha256": "fdb51df4f0f6efb4c353dfd9c8f2943c5457291f3ccd23ef39671b158cab0015",
+      "localRuntimeZipSha256": "7746d002b382b58b129b7809a2907ed01b21f31521ae0c353a3aad59b364fd36",
+      "dllSha256": "b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee",
+      "dllMvid": "c7f59041-9373-42e0-8a0f-9578d49f53d0",
+      "version": "0.0.153",
+      "sprintGate": "PASS: repository validation plus 2608/2608 domain tests, exact compilation, deterministic package and strict validation; no deployment",
+      "sidecarValidated": true
+    },
+    "stageRoute": "The Sprint 24 domain contracts assert the eighteen roots stay hidden and that targeted qualification never selects a published root, so hidden qualification must complete while suppressed. The hidden closeout therefore reuses this already-validated package, and exactly one public candidate follows.",
+    "hiddenClosureRemaining": [
+      "shared-controls replay",
+      "Cycle A",
+      "Cycle B"
+    ],
+    "bothKeysSuppressed": true,
+    "released": false
+  },
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -117,9 +141,12 @@
         "productionCompilation": "PASS",
         "newCase": "expanded-summoning.sprint24-swallow-reload-scope",
         "registeredTests": 2608
-      }
+      },
+      "status": "SUPERSEDED_2026_10_15",
+      "supersededBy": "claudeTakeover.ownerDecision_2026_10_15",
+      "supersededNote": "This entry proposed a Tyrannosaurus opt-in that would have preserved swallowed state across a cold load. The owner rejected that on 2026-10-15 in favour of a clean reset for every KMG summon. The facts, hashes and offline results below are retained exactly as observed; the decision and optInCreatures fields no longer describe the product."
     },
-    "candidateImpact": "fb7e471a hidden candidate is stale because shared production source changed; one new coherent hidden candidate is required before the remaining native work, and the old ZIP is not reused for it.",
+    "candidateImpact": "HISTORICAL: written while 70499a18 was current. Superseded by current.latestQualifiedHiddenCandidate. fb7e471a hidden candidate is stale because shared production source changed; one new coherent hidden candidate is required before the remaining native work, and the old ZIP is not reused for it.",
     "remaining": [
       "build one final hidden candidate",
       "one coherent native set on it: Cycle A, Cycle B and the shared-controls replay (shared-controls must rerun because the shared grapple/swallow seam changed after its PASS on 70499a18)",
@@ -129,24 +156,6 @@
       "merge PR #45, promote the exact qualified bytes, verify the release independently",
       "documentation-only records PR"
     ],
-    "currentCandidate": {
-      "productCommit": "70499a18b6b7437fd686b4e5eff446b27ac54be6",
-      "sourceStateSha256": "05649b7f3ca7ba2cbaa7605432ff093575fce992f74f8a2b558aab52ebc0068b",
-      "localRuntimeZipSha256": "a45591472d65d6364230315c812205e9950be1368ca46756aa14111b4d591f16",
-      "compileCandidateZipSha256": "a209a9e560efe04a334363b492cdb811c7a6b9faa61b7d3cd39e615c3d915955",
-      "dllSha256": "78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb",
-      "dllMvid": "39be1579-7fb7-4a13-a400-ef81d56bf345",
-      "version": "0.0.153",
-      "sprintGate": {
-        "repositoryValidation": "PASS",
-        "domainTests": "2608/2608",
-        "testSeconds": 100.5,
-        "totalSeconds": 200.5,
-        "deployment": null
-      },
-      "supersededCandidatePreservedAt": "runtime-evidence/sprint24-superseded-candidate-fb7e471a",
-      "note": "An earlier build of the same source was discarded because two validator files were uncommitted when it ran; the recorded commit must describe the exact tree that produced the bytes."
-    },
     "sharedControlsReplay": {
       "result": "PASS",
       "freshExecutionOnTheseBytes": true,
@@ -183,7 +192,9 @@
         "brain": "Dumb Monster Brain",
         "ownerDirectlyControllable": false,
         "fixtureIssuedAttack": false
-      }
+      },
+      "status": "VALID_FOR_70499a18_ONLY_REPLAY_REQUIRED",
+      "replayReason": "A shared gameplay dependency (the swallowed-state reload loop) changed after this PASS, so shared-controls must be replayed on the final validated candidate. This receipt is preserved for its own bytes and is not rewritten."
     },
     "persistencePrepareFailure": {
       "disposition": "PRESERVED_FIXTURE_DESIGN_DEFECT_NOT_PRODUCT_FAULT",
@@ -414,6 +425,27 @@
       "compatLeftovers": 0,
       "lock": false,
       "kingmakerProcess": 0
+    },
+    "supersededCandidate_70499a18": {
+      "productCommit": "70499a18b6b7437fd686b4e5eff446b27ac54be6",
+      "sourceStateSha256": "05649b7f3ca7ba2cbaa7605432ff093575fce992f74f8a2b558aab52ebc0068b",
+      "localRuntimeZipSha256": "a45591472d65d6364230315c812205e9950be1368ca46756aa14111b4d591f16",
+      "compileCandidateZipSha256": "a209a9e560efe04a334363b492cdb811c7a6b9faa61b7d3cd39e615c3d915955",
+      "dllSha256": "78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb",
+      "dllMvid": "39be1579-7fb7-4a13-a400-ef81d56bf345",
+      "version": "0.0.153",
+      "sprintGate": {
+        "repositoryValidation": "PASS",
+        "domainTests": "2608/2608",
+        "testSeconds": 100.5,
+        "totalSeconds": 200.5,
+        "deployment": null
+      },
+      "supersededCandidatePreservedAt": "runtime-evidence/sprint24-superseded-candidate-fb7e471a",
+      "note": "An earlier build of the same source was discarded because two validator files were uncommitted when it ran; the recorded commit must describe the exact tree that produced the bytes.",
+      "status": "HISTORICAL_SUPERSEDED",
+      "supersededBy": "current.latestQualifiedHiddenCandidate",
+      "supersededNote": "This candidate carried the superseded reload-scope opt-in. Its identities and its shared-controls PASS remain valid evidence for THESE bytes only and must not be relabelled onto any later candidate."
     }
   },
   "startedUtc": "2026-10-14T05:07:45Z",

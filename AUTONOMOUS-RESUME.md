@@ -1,4 +1,54 @@
-# Sprint 24 theropod dinosaurs — RESUMED; IN PROGRESS; NOT RELEASED
+# Sprint 24 theropod dinosaurs — IN PROGRESS; NOT RELEASED
+
+## Controlling state (2026-10-15) — read this section first
+
+Everything below this section is dated history. Where it disagrees with this
+section, this section wins.
+
+**Reload contract.** `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD` applies to
+every KMG summon with no exemption. A save and reload reset active grabs, holds,
+swallowed and engulfed relationships, the mouth occupancy that goes with them and
+session-owned links — for Tyrannosaurus exactly as for the released Dire
+Crocodile, Purple Worm and Giant Flytrap. This is a clean reset, **not** grapple
+persistence. No creature opt-in, no swallowed-state preservation exception and no
+project-owned re-establishment is authorized. The native Bleeding Critical effect
+keeps its own separate lifetime, save behaviour and healing-removal rules. The
+owner settled this on 2026-10-15; the October 14 handoff's swallowed-state
+survival requirement is superseded, and any earlier text proposing a Tyrannosaurus
+opt-in is historical.
+
+The four accepted limitations, at their existing scope and with no new waiver:
+`ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`,
+`SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`,
+`PASSIVE_CREATURE_SENSES_UNMODELED`, `RUN_NATIVE_SUMMON_AI_DISPOSITION`.
+`HumanReview` remains `NOT_PERFORMED_NONBLOCKING`.
+
+**Latest executable source** is `bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2`; the
+reporting head is ahead of it in records only. **The qualified hidden candidate**
+is that commit: source state
+`fdb51df4f0f6efb4c353dfd9c8f2943c5457291f3ccd23ef39671b158cab0015`, package
+`7746d002b382b58b129b7809a2907ed01b21f31521ae0c353a3aad59b364fd36`, DLL
+`b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee`, MVID
+`c7f59041-9373-42e0-8a0f-9578d49f53d0`, version 0.0.153, sidecar validated. Its
+Sprint gate passed repository validation and 2,608/2,608 domain tests with exact
+compilation, deterministic packaging and strict validation, and deployed nothing.
+
+**Stage route.** The Sprint 24 domain contracts assert that the eighteen roots
+stay hidden and that targeted qualification never selects a published root, so
+hidden qualification must complete while both keys are suppressed. The hidden
+closeout therefore reuses the already-validated package above rather than
+rebuilding, and exactly one public candidate follows it.
+
+**Remaining for Sprint 24:** replay `shared-controls` (a shared gameplay
+dependency changed after its PASS on `70499a18`, so that receipt belongs to those
+bytes only), then Cycle A and Cycle B on one validated fixture version; then the
+public candidate, its publication-affecting native checks, merge, release,
+independent verification, exact restoration and the records PR.
+
+Both creature keys remain suppressed. No suppression, version, tag, merge or
+release has been touched.
+
+---
 
 Claude takeover instructions are in
 `CLAUDE-SPRINT24-HANDOFF-2026-10-14.md`. Treat its ordered remaining-work map as
