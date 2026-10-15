@@ -95,6 +95,10 @@ class Sprint24GateTests(unittest.TestCase):
             gate.ALLOWED_PRODUCTION)
         # Sprint 24 is based on the actual released master, not the pre-rewrite one.
         self.assertEqual("fd6c56ebd8eb82e313c6005972e4538d9b1444c9", gate.BASELINE)
+        # The inventory observer must record the published theropod carriers.
+        self.assertIn(
+            "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningInventoryObservationPolicy.cs",
+            gate.ALLOWED_PRODUCTION)
         # The theropod family must be known to the shared resource observer.
         self.assertIn(
             "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs",

@@ -113,6 +113,11 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.Theropods.cs",
     "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningRosterPersistencePolicy.cs",
+    # Admitted 2026-10-15 for publication: the inventory observer's
+    # evidence-interpretation table must record the five Sprint 24 carriers
+    # this mod grants on its own units, or the public inventory reports them
+    # as prohibited references. It never grants a fact or changes sanitation.
+    "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningInventoryObservationPolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningNativeProfile.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs",
