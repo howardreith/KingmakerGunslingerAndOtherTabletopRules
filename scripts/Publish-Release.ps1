@@ -6,7 +6,7 @@ param(
 
     [string]$ReferenceBundleDir,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.153.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.154.md',
 
     [string]$ReleaseBranch = 'master',
 
@@ -171,8 +171,14 @@ function Invoke-QualifiedBuildAndPackage {
         $packageInfo = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'Info.json') -Raw | ConvertFrom-Json
         $packageVersion = $packageInfo.Version
         $candidatePath = Join-Path $RepositoryRoot "artifacts\local-runtime\$packageVersion\KingmakerGunslinger-$packageVersion-local-runtime.zip"
-        # Preserve the existing public asset name using the same verified bytes.
-        $packagePath = Join-Path $RepositoryRoot "artifacts\packages\$($packageInfo.Id)-$packageVersion-expanded-summoning-sprint21.zip"
+        # Name the public asset after the informational version, as every
+        # published ZIP is, using the same verified bytes.
+        [xml]$packageProps = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'Directory.Build.props') -Raw
+        $assetVersion = [string]$packageProps.Project.PropertyGroup.KmgInformationalVersion
+        if (-not $assetVersion.StartsWith("$packageVersion-", [StringComparison]::Ordinal)) {
+            throw "Informational version '$assetVersion' does not extend $packageVersion."
+        }
+        $packagePath = Join-Path $RepositoryRoot "artifacts\packages\$($packageInfo.Id)-$assetVersion.zip"
         New-Item -ItemType Directory -Path (Split-Path -Parent $packagePath) -Force | Out-Null
         Copy-Item -LiteralPath $candidatePath -Destination $packagePath -Force
         if ((Get-KmgSha256 -Path $candidatePath) -cne (Get-KmgSha256 -Path $packagePath)) {
@@ -314,7 +320,8 @@ try {
     }
 
     $tag = "v$version"
-    $title = "$displayName $tag"
+    # The public project title since v0.0.150; $displayName stays the UMM name.
+    $title = "Tabletop Added Rules $tag"
     $existingRelease = $null
     if (Test-NativeCommand -FilePath 'gh' -Arguments @(
         'release', 'view', $tag, '--repo', $repository
