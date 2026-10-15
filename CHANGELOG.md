@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.154-gunslinger-animal-companion-eligibility
+
+- Gives the Gunslinger class the native player-class prerequisite that refuses
+  units with Animal class levels, so animal companions levelled through the
+  ordinary class selector can no longer take Gunslinger.
+- Keeps Gunslinger available to player characters, humanoid companions and
+  existing Gunslingers, with Fighter's selector presentation.
+- Changes no identity, catalog entry, asset or save data; companions that
+  already hold a Gunslinger level keep it. Call of the Wild's Eidolon, Phantom
+  and Dragon companions are not covered.
+
 ## 0.0.153-expanded-summoning-sprint23-charge-rounding
 
 - Corrects Triceratops Powerful Charge at positive odd Strength modifiers by

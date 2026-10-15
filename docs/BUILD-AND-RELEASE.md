@@ -26,6 +26,24 @@ failed and must meet the owner mission's matched-baseline conditions and appear
 in the notes/manifest. Earlier release procedures below retain their historical
 authorization and original build cadence.
 
+## Current 0.0.154 publication authorization
+
+On 2026-10-15 the owner reviewed the animal-companion Gunslinger eligibility
+checkpoint and wrote: "This is acceptable. Please merge and cut a release."
+That accepts the checkpoint's stated limits: Gunslinger keeps Fighter's
+selector presentation, no real companion was observed in game, and Call of the
+Wild's Eidolon, Phantom and Dragon companions remain a separate follow-up.
+
+The release is 0.0.154, one above the published 0.0.153. The fix branch passes
+one Sprint-level `Build-Local` candidate gate before its PR merges normally;
+the existing exact-reference publisher then runs from clean, pushed `master`:
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir `
+  'C:\Dev\KingmakerGunslingerLab\private\extracted-references\KingmakerGunslinger-private-build-references' `
+  -Publish -ConfirmReleaseReady
+```
+
 ## Supported release baseline
 
 Kingmaker Gunslinger `0.0.120-elemental-races-completion` targets:
@@ -98,7 +116,7 @@ dependency-free test suite, production compilation, strict build-output
 validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
-## Current 0.0.138 publication authorization
+## Historical 0.0.138 publication authorization
 
 On 2026-09-23 the owner reviewed the Better Vendors progression candidate
 (PR #22), including its stated limits. The owner then wrote: "Run the final

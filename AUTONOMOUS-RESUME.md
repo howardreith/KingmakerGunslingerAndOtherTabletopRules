@@ -1,41 +1,41 @@
-# Gunslinger animal-companion class eligibility — FOCUSED CHECKPOINT
+# Gunslinger animal-companion class eligibility — v0.0.154 RELEASE CANDIDATE
 
-Review branch `codex/fix-gunslinger-animal-companion-eligibility`, from master
-`322ac7fe4`. Not merged, released, packaged or deployed; the live installation
-and saves were not touched.
+The owner accepted the focused checkpoint on 2026-10-15 ("This is acceptable.
+Please merge and cut a release."), including its stated limits. Branch
+`codex/fix-gunslinger-animal-companion-eligibility` carries the fix and the
+0.0.154 version metadata; its PR merges normally, then the exact-reference
+`Publish-Release.ps1` runs from clean, pushed `master`. Release identities
+belong in the release record once published.
 
-Root cause: installed Kingmaker 2.1.7b offers a class in level-up and respec
-(`CharBSelectorLayer.FillData`, console `CharGenClassPhaseVM`) and applies it
+Root cause: installed Kingmaker 2.1.7b applies a class
 (`LevelUpController.SelectClass` and level plans through `SelectClass.Check`)
-only when `BlueprintCharacterClass.MeetsPrerequisites` passes. That predicate
-reads only the class's `Prerequisite` components. Fighter, Rogue, Wizard and
-every native player base class carry exactly one
-`PrerequisiteNoClassLevel(AnimalClass 4cd1757a0eea7694ba5c933729a53920)`. The
+only when `BlueprintCharacterClass.MeetsPrerequisites` passes, and the class
+selector (`CharBSelectorLayer.FillData`, console `CharGenClassPhaseVM`) enables
+an entry on the same predicate. It reads only the class's `Prerequisite`
+components. Native player classes in the 2.1.4 blueprint dump carry
+`PrerequisiteNoClassLevel(AnimalClass 4cd1757a0eea7694ba5c933729a53920)`; the
 runtime-created Gunslinger had none, so a unit with Animal levels passed.
-Vanilla pets auto-level through `AddClassLevels`; the picker exists because the
-installed CallOfTheWild 1.14.4c levels Animal/Eidolon/Phantom/Dragon pets
-through the ordinary selector and adds Animal to the class catalog.
+Vanilla pets auto-level through `AddClassLevels`; the selector exists because
+the installed CallOfTheWild 1.14.4c levels Animal/Eidolon/Phantom/Dragon pets
+through it and adds Animal to the class catalog.
 
-Fix: `GunslingerClassBlueprints.CreateClass` adds that one native component
-before registration, and `Validate` fails bootstrap closed without it.
-`HideIfRestricted` stays false as on Fighter, so a pet's picker treats
-Gunslinger exactly like Fighter. GUID, symbol, manifest, publication order and
-the Animal blueprint are unchanged; no blueprint was added.
+Fix: `GunslingerClassBlueprints.CreateClass` adds that one component before
+registration, and `Validate` fails bootstrap closed without it.
+`HideIfRestricted` stays false as on Fighter: a selector that lists classes a
+pet cannot take shows Gunslinger unavailable beside Fighter. GUID, symbol,
+manifest, publication order and the Animal blueprint are unchanged.
 
-Focused validation passed: the production compile, the named domain selection
-and `scripts\Test-GunslingerAnimalCompanionEligibility.ps1` (37 assertions).
-That script runs installed `SelectClass.Check`/`MeetsPrerequisites` (Assembly-CSharp
-SHA-256 `3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`):
-the unfixed pet selection is Animal, Gunslinger; fixed is Animal; player,
-humanoid companion and existing Gunslinger keep Fighter, Rogue, Gunslinger.
-`Build-Local.ps1` now runs it on the exact-reference DLL.
+Validated: the production compile, the focused domain selection and
+`scripts\Test-GunslingerAnimalCompanionEligibility.ps1` (37 assertions, native
+`SelectClass.Check`/`MeetsPrerequisites` on synthetic units and classes,
+Assembly-CSharp SHA-256
+`3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`).
+`Build-Local.ps1` runs that script on the exact-reference DLL.
 
-Deferred: in-game level-up/respec observation of a real animal companion
-(needs guarded deployment to the live Mods folder, not authorized here) and
-the Sprint-boundary complete suite, repository wrapper and package checks.
-Open owner question: CotW adds its Eidolon/Phantom/Dragon exclusions in its own
-`LoadDictionary` postfix, before KMG publishes Gunslinger, so CotW-only pets are
-not covered. A pet that already took a Gunslinger level is not repaired; it
+Not performed: in-game observation of a real companion's level-up or respec
+selector. Open follow-up: CotW adds its Eidolon/Phantom/Dragon exclusions in its
+own `LoadDictionary` postfix, before KMG publishes Gunslinger, so CotW-only pets
+are not covered. A pet that already took a Gunslinger level is not repaired; it
 can no longer gain one.
 
 # Sprint 23 Powerful Charge rounding follow-up — RELEASED / STOP

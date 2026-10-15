@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.153-expanded-summoning-sprint23-charge-rounding",
+  "milestone": "0.0.154-gunslinger-animal-companion-eligibility",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.153",
+  "version": "0.0.154",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2474,6 +2474,22 @@
     "visibleChoiceTotal": 1104,
     "nativeRuntimeQualified": false,
     "reusedSprint23Evidence": true,
+    "sprint24Started": false
+  },
+  "gunslingerAnimalCompanionEligibility154": {
+    "releaseVersion": "0.0.154",
+    "releaseInformationalVersion": "0.0.154-gunslinger-animal-companion-eligibility",
+    "baseStableVersion": "0.0.153",
+    "correction": "Gunslinger class carries the native Animal-class prerequisite exclusion",
+    "identityChanges": 0,
+    "routeChanges": 0,
+    "assetChanges": 0,
+    "serializationChanges": 0,
+    "registeredLogicalPlacements": 1075,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1104,
+    "nativePrerequisiteHarnessQualified": true,
+    "inGameRuntimeQualified": false,
     "sprint24Started": false
   }
 }
