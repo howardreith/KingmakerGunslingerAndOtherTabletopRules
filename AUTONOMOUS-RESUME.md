@@ -1,5 +1,9 @@
 # Sprint 24 theropod dinosaurs — IN PROGRESS; NOT RELEASED
 
+Sprint 24 is the active work. The released records that follow it below —
+v0.0.154 Gunslinger animal-companion eligibility, then Sprint 23 — are kept
+intact as history and are not superseded by this sprint.
+
 ## Controlling state (2026-10-15) — read this section first
 
 Everything below this section is dated history. Where it disagrees with this
@@ -85,6 +89,82 @@ release has been touched.
 
 ---
 
+---
+
+# Gunslinger animal-companion class eligibility — v0.0.154 RELEASED / STOP
+
+The owner accepted the focused checkpoint on 2026-10-15 ("This is acceptable.
+Please merge and cut a release."), including its stated limits. Product PR #46
+merged normally as `342c8a80c7099b9b18d88de6abd46d9f3e918473` (tree identical
+to gated branch head `8f1223933d`). The exact-reference `Publish-Release.ps1`
+then ran once from clean, pushed `master` in 143s: its first build passed
+2,596/2,596 domain tests, the 37-assertion harness and strict package
+validation, and both clean builds produced identical bytes.
+
+[Stable v0.0.154](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.154)
+is published and Latest, titled "Tabletop Added Rules v0.0.154". Annotated tag
+object `4ca022374ec38a91fe435cd2a07078028653be11` peels to the merge commit.
+The public assets' SHA-256 values match GitHub's digests:
+
+- `KingmakerGunslinger-0.0.154-gunslinger-animal-companion-eligibility.zip`:
+  `c94f1b39ff9d7187110b42fc395fae7ed117ce64fa5b4bcc95518c5316f666e1`
+  (365 files; DLL
+  `9253342600110445ff091022fb9fdc257f33d3226f48d5a6f73358e4a7d806be`);
+- `SHA256SUMS.txt`:
+  `8368338b6e9defe776d263da6a5e5fb7488b115e86bc6ace444c3a197fb13d75`;
+- `release-manifest.json`:
+  `13d4d58e6e90f47d5f67c41610c1d26c0fad3d6f188f10ffd0b29358f7063ef6`.
+
+The downloaded ZIP passed strict package validation, and its DLL embeds the
+merge commit. The exact-reference build stamps `AssemblyMetadata("GitCommit")`,
+so these bytes differ from the gate candidate below. Between those commits only
+`Publish-Release.ps1` and this record changed, neither compiled nor packaged;
+the publisher's own run qualified the released bytes. Nothing was deployed to the
+live installation and no save was touched.
+
+Root cause: installed Kingmaker 2.1.7b applies a class
+(`LevelUpController.SelectClass` and level plans through `SelectClass.Check`)
+only when `BlueprintCharacterClass.MeetsPrerequisites` passes, and the class
+selector (`CharBSelectorLayer.FillData`, console `CharGenClassPhaseVM`) enables
+an entry on the same predicate. It reads only the class's `Prerequisite`
+components. Native player classes in the 2.1.4 blueprint dump carry
+`PrerequisiteNoClassLevel(AnimalClass 4cd1757a0eea7694ba5c933729a53920)`; the
+runtime-created Gunslinger had none, so a unit with Animal levels passed.
+Vanilla pets auto-level through `AddClassLevels`; the selector exists because
+the installed CallOfTheWild 1.14.4c levels Animal/Eidolon/Phantom/Dragon pets
+through it and adds Animal to the class catalog.
+
+Fix: `GunslingerClassBlueprints.CreateClass` adds that one component before
+registration, and `Validate` fails bootstrap closed without it.
+`HideIfRestricted` stays false as on Fighter: a selector that lists classes a
+pet cannot take shows Gunslinger unavailable beside Fighter. GUID, symbol,
+manifest, publication order and the Animal blueprint are unchanged.
+
+Validated: the production compile, the focused domain selection and
+`scripts\Test-GunslingerAnimalCompanionEligibility.ps1` (37 assertions, native
+`SelectClass.Check`/`MeetsPrerequisites` on synthetic units and classes,
+Assembly-CSharp SHA-256
+`3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`).
+`Build-Local.ps1` runs that script on the exact-reference DLL.
+
+Pre-merge candidate gate: `Invoke-KmgGate.ps1 -Level Sprint` on `cc62cb1d0` passed in
+91.8s (2,596/2,596 domain tests, repository wrapper, exact-reference build,
+the 37-assertion harness and strict package validation; 365 package files).
+Package SHA-256
+`0f333f0988c1b2151334ebd634b45b79b1b55e4c47910862d936b29da81da586`, DLL
+SHA-256 `c02b2113ddffd2ecd0bfda6df14a37d607ba779a5836842e632397687ebe0f37`.
+This machine's Sep 6 private reference bundle lacks
+`UnityEngine.PhysicsModule.dll`, required since Oct 6; the gate used a fresh
+`export-private-build-references.ps1` bundle of the installed Steam 2.1.7b
+files at `C:\Dev\KingmakerGunslingerLab\private\refresh-2026-10-15`.
+
+Not performed: in-game observation of a real companion's level-up or respec
+selector. Open follow-up: CotW adds its Eidolon/Phantom/Dragon exclusions in its
+own `LoadDictionary` postfix, before KMG publishes Gunslinger, so CotW-only pets
+are not covered. A pet that already took a Gunslinger level is not repaired; it
+can no longer gain one.
+
+# Sprint 23 Powerful Charge rounding follow-up — RELEASED / STOP
 Claude takeover instructions are in
 `CLAUDE-SPRINT24-HANDOFF-2026-10-14.md`. Treat its ordered remaining-work map as
 the concise resume path and this file/coverage/ledger as the evidence record.

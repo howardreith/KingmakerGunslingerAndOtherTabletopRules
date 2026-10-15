@@ -21,10 +21,12 @@ import validate_expanded_summoning_phase1 as phase1
 BASELINE = "bda157c6c402b329f47fb0531d96b52e01514114"
 SPRINT23_KEY = "expandedSummoningSprint23152"
 PATCH_KEY = "expandedSummoningSprint23ChargeRounding153"
+ELIGIBILITY_KEY = "gunslingerAnimalCompanionEligibility154"
 SUPPORTED = {
     "0.0.152": ("0.0.152-expanded-summoning-sprint23", 363),
     "0.0.153": (
         "0.0.153-expanded-summoning-sprint23-charge-rounding", 364),
+    "0.0.154": ("0.0.154-gunslinger-animal-companion-eligibility", 365),
 }
 
 ADDED = {
@@ -115,6 +117,11 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Summoning/UngulateRulesPolicy.cs",
 }
 
+# v0.0.154 adds the native Animal-class exclusion to the Gunslinger class.
+ELIGIBILITY_PRODUCTION = {
+    "src/KingmakerGunslinger/Blueprints/GunslingerClassBlueprints.cs",
+}
+
 
 def validate_append(accepted, current):
     if current[:len(accepted)] != accepted:
@@ -142,11 +149,13 @@ def validate_art(root: Path):
             raise AssertionError("Sprint 23 art hash changed: " + relative)
 
 
-def validate_production_scope(root: Path):
+def validate_production_scope(root: Path, version: str):
     changed = subprocess.check_output(
         ["git", "diff", "--name-only", BASELINE, "--", "src/KingmakerGunslinger"],
         cwd=root, text=True).splitlines()
-    unexpected = sorted(set(changed) - ALLOWED_PRODUCTION)
+    allowed = ALLOWED_PRODUCTION | (
+        ELIGIBILITY_PRODUCTION if version == "0.0.154" else set())
+    unexpected = sorted(set(changed) - allowed)
     if unexpected:
         raise AssertionError("Unrelated production source changed: " + ", ".join(unexpected))
 
@@ -156,13 +165,13 @@ def validate(root: Path):
     current = common.document(root, "blueprints/blueprints.json")["entries"]
     validate_append(old, current)
     validate_art(root)
-    validate_production_scope(root)
 
     info = common.document(root, "Info.json")
     version = info.get("Version")
     if version not in SUPPORTED:
         raise AssertionError("Unsupported Sprint 23 lineage version: " +
                              repr(version))
+    validate_production_scope(root, version)
     informational_version, package_owner_count = SUPPORTED[version]
     props = (root / "Directory.Build.props").read_text(encoding="utf-8-sig")
     assembly = (root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs").read_text(
@@ -213,7 +222,7 @@ def validate(root: Path):
     if manifest.returncode:
         raise AssertionError("Expanded Summoning manifest validation failed: " +
                              (manifest.stdout + manifest.stderr)[-1000:])
-    if version == "0.0.153":
+    if version in ("0.0.153", "0.0.154"):
         patch_record = static.get(PATCH_KEY, {})
         patch_expected = {
             "releaseVersion": "0.0.153",
@@ -236,6 +245,22 @@ def validate(root: Path):
                 "Math.Floor(strengthModifier / 2d)" in rules:
             raise AssertionError(
                 "Triceratops charge-rounding correction is absent or stale")
+    if version == "0.0.154":
+        eligibility_record = static.get(ELIGIBILITY_KEY, {})
+        eligibility_expected = {
+            "releaseVersion": "0.0.154",
+            "releaseInformationalVersion": informational_version,
+            "baseStableVersion": "0.0.153",
+            "identityChanges": 0,
+            "routeChanges": 0,
+            "assetChanges": 0,
+            "serializationChanges": 0,
+            "sprint24Started": False,
+        }
+        for key, value in eligibility_expected.items():
+            if eligibility_record.get(key) != value:
+                raise AssertionError(
+                    "Animal-companion eligibility patch metadata mismatch: " + key)
     phase1.validate_package_count_owners(root, package_owner_count)
     for token in ("sprint23-armored-dinosaurs", "triceratops", "stegosaurus"):
         for script in ("scripts/Build-Local.ps1", "scripts/package.ps1",

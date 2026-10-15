@@ -1,18 +1,22 @@
 # Installation, updates, removal, and compatibility
 
-Patch version: `0.0.153-expanded-summoning-sprint23-charge-rounding` (UMM
-version `0.0.153`), archive
-`KingmakerGunslinger-0.0.153-expanded-summoning-sprint23-charge-rounding.zip`.
-It is built on released v0.0.152 and changes only Triceratops Powerful Charge's
-live odd-Strength rounding. Install only the final standalone UMM ZIP, not
-source archives or private reference bundles. See the
-[patch scope and limitations](docs/RELEASE-NOTES-0.0.153.md).
+Patch version: `0.0.154-gunslinger-animal-companion-eligibility` (UMM
+version `0.0.154`), archive
+`KingmakerGunslinger-0.0.154-gunslinger-animal-companion-eligibility.zip`.
+It is built on released v0.0.153 and changes only which units may take the
+Gunslinger class: animal companions no longer can. Install only the final
+standalone UMM ZIP, not source archives or private reference bundles. See the
+[patch scope and limitations](docs/RELEASE-NOTES-0.0.154.md).
 
 ### Latest public release
 
-Before this patch, UMM `0.0.152`, archive
-`KingmakerGunslinger-0.0.152-expanded-summoning-sprint23.zip`, is the stable
-public release. Its Triceratops and Stegosaurus qualification is recorded in
+Before this patch, UMM `0.0.153`, archive
+`KingmakerGunslinger-0.0.153-expanded-summoning-sprint23-charge-rounding.zip`,
+is the stable public release. Its Triceratops Powerful Charge correction is
+recorded in [the v0.0.153 release notes](docs/RELEASE-NOTES-0.0.153.md).
+UMM `0.0.152`, archive
+`KingmakerGunslinger-0.0.152-expanded-summoning-sprint23.zip`, added
+Triceratops and Stegosaurus; see
 [the v0.0.152 release notes](docs/RELEASE-NOTES-0.0.152.md).
 
 ### Previously released versions

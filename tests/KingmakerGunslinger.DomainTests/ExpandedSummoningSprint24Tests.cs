@@ -427,11 +427,14 @@ namespace KingmakerGunslinger.DomainTests
             string package = File.ReadAllText("scripts/package.ps1");
             string packager = File.ReadAllText(
                 "tools/create_deterministic_package.py");
-            Assertions.True(package.Contains("$basePackageFileCount = 368") &&
+            // 363 is the base the released v0.0.154 animal-companion build
+            // qualified; Sprint 24 appends four original theropod body files
+            // and two original creature icons on top of it.
+            Assertions.True(package.Contains("$basePackageFileCount = 369") &&
                     package.Contains("$basePackageFileCount + 2") &&
                     package.Contains(
                         "--expected-file-count $expectedPackageFileCount") &&
-                    packager.Contains("364, 368, 370))"),
+                    packager.Contains("364, 365, 369, 371))"),
                 "The strict package inventory adds exactly four bodies and two icons.");
         }
 

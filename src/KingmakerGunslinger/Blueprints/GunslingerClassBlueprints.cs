@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
@@ -153,6 +154,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ProficienciesSymbol = "KMG.Classes.GunslingerProficiencies";
 
         private const string FighterClassGuid = "48ac8db94d5de7645906c7d0ad3bcfbd";
+        private const string AnimalClassGuid = "4cd1757a0eea7694ba5c933729a53920";
         private const string FullBaseAttackGuid = "b3057560ffff3514299e8b93e7648a9d";
         private const string GoodSaveGuid = "ff4662bde9e75f145853417313842751";
         private const string PoorSaveGuid = "dc0c7c1aba755c54f96c089cdf7d14a3";
@@ -187,6 +189,8 @@ namespace KingmakerGunslinger.Blueprints
 
             BlueprintCharacterClass fighter = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
                 library, FighterClassGuid, "Gunslinger starting-gold source Fighter class");
+            BlueprintCharacterClass animal = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
+                library, AnimalClassGuid, "native animal-companion class excluded like Fighter");
             BlueprintStatProgression fullBab = BlueprintLibraryLookup.RequireExact<BlueprintStatProgression>(
                 library, FullBaseAttackGuid, "full base attack progression");
             BlueprintStatProgression goodSave = BlueprintLibraryLookup.RequireExact<BlueprintStatProgression>(
@@ -214,7 +218,7 @@ namespace KingmakerGunslinger.Blueprints
                 proficiencies, archetypeProficiencies, firearmProficiency,
                 scopedProficiencies, legacyFirearmProficiency);
             BlueprintCharacterClass characterClass = registry.Register<BlueprintCharacterClass>(
-                ClassSymbol, () => CreateClass(fighter, fullBab, goodSave, poorSave,
+                ClassSymbol, () => CreateClass(fighter, animal, fullBab, goodSave, poorSave,
                     startingPistol, blackPowder, leadBall, gunsmithKit));
             GritBlueprintSet grit = GritBlueprints.Register(registry, characterClass);
             DeadeyeBlueprintSet deadeye = DeadeyeBlueprints.Register(registry,
@@ -308,7 +312,7 @@ namespace KingmakerGunslinger.Blueprints
                 deedTiers, nimble.Features,
                 Repeat(bonusFeats, Classes.BonusFeatProgression.Levels.Length),
                 Repeat(gunTraining.Selection, Classes.GunTrainingProgression.Levels.Length));
-            Validate(characterClass, progression, proficiencies, fullBab, goodSave,
+            Validate(characterClass, progression, proficiencies, animal, fullBab, goodSave,
                 poorSave, startingPistol, blackPowder, leadBall, gunsmithKit,
                 simple, martial, lightArmor, firearmProficiency);
             var set = new GunslingerClassBlueprintSet(characterClass, progression,
@@ -409,6 +413,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintCharacterClass CreateClass(BlueprintCharacterClass fighter,
+            BlueprintCharacterClass animal,
             BlueprintStatProgression fullBab, BlueprintStatProgression goodSave,
             BlueprintStatProgression poorSave, BlueprintItemWeapon startingPistol,
             BlueprintItem blackPowder, BlueprintItem leadBall, BlueprintItem gunsmithKit)
@@ -438,6 +443,16 @@ namespace KingmakerGunslinger.Blueprints
             result.Archetypes = Array.Empty<BlueprintArchetype>();
             result.RecommendedAttributes = new[] { StatType.Dexterity, StatType.Wisdom };
             result.NotRecommendedAttributes = Array.Empty<StatType>();
+            // Kingmaker offers and applies a class only when
+            // BlueprintCharacterClass.MeetsPrerequisites passes, and that reads only
+            // these Prerequisite components. Fighter and every other native player
+            // class carry this one entry, which refuses any unit with Animal levels:
+            // an animal companion. HideIfRestricted stays false, as on Fighter.
+            var noAnimalLevels = ScriptableObject.CreateInstance<PrerequisiteNoClassLevel>();
+            noAnimalLevels.name = "$KMG_Gunslinger_NoAnimalClassLevel";
+            noAnimalLevels.CharacterClass = animal;
+            noAnimalLevels.Group = Prerequisite.GroupType.All;
+            result.ComponentsArray = new BlueprintComponent[] { noAnimalLevels };
             GunslingerClassAppearance.Apply(result);
             return result;
         }
@@ -477,8 +492,23 @@ namespace KingmakerGunslinger.Blueprints
             return entries;
         }
 
+        internal static void RequireNativePlayerClassEligibility(
+            BlueprintCharacterClass characterClass, BlueprintCharacterClass animalClass)
+        {
+            if (characterClass == null) throw new ArgumentNullException("characterClass");
+            if (animalClass == null) throw new ArgumentNullException("animalClass");
+            BlueprintComponent[] components = characterClass.ComponentsArray;
+            var exclusion = components.Length == 1 ?
+                components[0] as PrerequisiteNoClassLevel : null;
+            if (exclusion == null || !ReferenceEquals(exclusion.CharacterClass, animalClass) ||
+                exclusion.Group != Prerequisite.GroupType.All)
+                throw new InvalidOperationException(
+                    "Gunslinger must carry exactly the native player-class Animal exclusion.");
+        }
+
         private static void Validate(BlueprintCharacterClass characterClass,
             BlueprintProgression progression, BlueprintFeature proficiencies,
+            BlueprintCharacterClass animal,
             BlueprintStatProgression fullBab, BlueprintStatProgression goodSave,
             BlueprintStatProgression poorSave, BlueprintItemWeapon startingPistol,
             BlueprintItem blackPowder, BlueprintItem leadBall, BlueprintItem gunsmithKit,
@@ -499,6 +529,7 @@ namespace KingmakerGunslinger.Blueprints
                 !ReferenceEquals(characterClass.StartingItems[2], leadBall) ||
                 !ReferenceEquals(characterClass.StartingItems[3], gunsmithKit))
                 throw new InvalidOperationException("Gunslinger class chassis references are incomplete.");
+            RequireNativePlayerClassEligibility(characterClass, animal);
             AddFacts grant = (AddFacts)proficiencies.ComponentsArray[0];
             if (grant.Facts.Length != facts.Length)
                 throw new InvalidOperationException("Gunslinger proficiency grant count changed.");
