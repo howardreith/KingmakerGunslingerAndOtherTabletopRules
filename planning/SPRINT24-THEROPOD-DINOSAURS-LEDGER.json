@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "SHARED_CONTROLS_PASS_ON_NEW_CANDIDATE_PERSISTENCE_PREPARE_FIXTURE_REDESIGN_REQUIRED",
+  "status": "SHARED_CONTROLS_PASS_CLEAN_RESET_DECIDED_PERSISTENCE_CYCLES_PENDING_NEW_CANDIDATE",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -121,10 +121,9 @@
     },
     "candidateImpact": "fb7e471a hidden candidate is stale because shared production source changed; one new coherent hidden candidate is required before the remaining native work, and the old ZIP is not reused for it.",
     "remaining": [
-      "redesign prepare fixture for two state sets",
-      "focused gate",
-      "one new coherent candidate",
-      "targeted persistence cycles (enabled and module OFF)",
+      "build one new coherent candidate for the clean-reset source",
+      "targeted persistence cycle A (enabled)",
+      "targeted persistence cycle B (module OFF)",
       "publication candidate",
       "public native gates",
       "merge, release, records PR"
@@ -213,7 +212,8 @@
       "correction": "Redesign the prepare fixture into two state sets (bleed plus live mouth hold; bleed plus swallowed victim) so active-hold reset, already-swallowed persistence, Bleeding Critical persistence, module-OFF cold load and fresh absence all stay provable.",
       "rejectedAlternative": "Freeing the limb while retaining UnitPartSwallowed would fabricate a state the rules cannot produce.",
       "weakenedAssertions": null,
-      "ownerDecisionRequired": false
+      "ownerDecisionRequired": false,
+      "resolution": "Superseded by the owner decision: with clean reset for all, nothing must survive except the native bleed, so one state set suffices and the impossible premise is gone."
     },
     "environmentFindings": [
       "The guarded harness refuses administrator elevation (Assert-KmgUnelevated); run it de-elevated. runas /trustlevel:0x20000 works and retains the required write access to the Steam Mods directory.",
@@ -230,6 +230,55 @@
       "compatLeftovers": 0,
       "lock": false,
       "kingmakerProcess": 0
+    },
+    "ownerDecision_2026_10_15": {
+      "question": "Should Sprint 24's Tyrannosaurus keep an already-swallowed victim across a cold load?",
+      "decision": "CLEAN_RESET_FOR_ALL",
+      "rationale": "The requirement had no traceable owner charter; it appears only in codex's handoff and coverage record. It contradicted the owner's 2026-09-26 decision, published in releases 0.0.139 and 0.0.146 and the CHANGELOG, that every KMG grab, hold, swallow, engulf and mouth occupancy is session-scoped in exchange for a clean reset, and that a project-owned re-establishment of holds on load is declined and out of scope until separately chartered.",
+      "implementation": "The opt-in was removed, not narrowed. ResetLoadedGrapples clears the swallower list and swallowed buffs for every KMG summon; SummonGrabComponent carries no persistence field; PersistsSwallowedAcrossLoad is a pinned invariant returning false for every token; the profile self-check and expanded-summoning.sprint24-swallow-reload-scope fail closed on any exemption; the grabber builder still throws when a swallow payload has no registered reload scope.",
+      "waiverAdded": false,
+      "declinedWorkaroundImplemented": false,
+      "unchartered": "Persisting swallowed state for any creature, which would also require re-recording the engulf mouth link on load so a reloaded swallower cannot bite with a victim in its stomach."
+    },
+    "redesignedPrepareFixture": {
+      "stateActors": [
+        "already-swallowed",
+        "bleeding-critical"
+      ],
+      "noSeparateHoldActor": "One Tyrannosaurus bite cannot hold one victim while another is swallowed.",
+      "order": [
+        "create actors",
+        "confirmed-critical bite first while the mouth is free, target immune to combat maneuvers so the bite cannot also start a grab",
+        "grab the swallowed actor, held state, owner hold, later-turn swallow"
+      ],
+      "activeHoldProven": "the owner's own UnitPartGrappleInitiator and hold buff residue, which the non-MultiLink release never clears",
+      "prepareReceipt": [
+        "grabbed",
+        "grappledTarget",
+        "activeMouthHoldResidue",
+        "engulfedMouthShut",
+        "swallowed",
+        "criticalNatural",
+        "criticalConfirmed",
+        "bleeding"
+      ],
+      "coldLoadBoundaryRequires": [
+        "receiptsExact",
+        "activeMouthHoldReset",
+        "alreadySwallowedReset",
+        "engulfedMouthReleased",
+        "bleedingCriticalPreserved"
+      ],
+      "coldLoadBehaviourRequires": [
+        "noOrphanInteriorPacket",
+        "bleed2d6Once",
+        "bleedRemovedByHealing"
+      ],
+      "offlineChecks": {
+        "productionCompilation": "PASS",
+        "affectedSelection": "136/136",
+        "registeredTests": 2608
+      }
     }
   },
   "startedUtc": "2026-10-14T05:07:45Z",
@@ -1219,7 +1268,7 @@
     }
   ],
   "acceptedLimitations": [
-    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD (owner reconfirmed 2026-10-15 that it covers every creature's grab, hold, swallow, engulf and mouth occupancy with no exemption)",
     "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
     "PASSIVE_CREATURE_SENSES_UNMODELED (reconfirmed 2026-10-15 at its released 0.0.152/0.0.153 boundary; both theropods print low-light vision and scent and both declare it; nothing substituted)",
     "RUN_NATIVE_SUMMON_AI_DISPOSITION (reconfirmed 2026-10-15 at its released 0.0.152/0.0.153 boundary; no invented Run action; same label the Triceratops carried)"

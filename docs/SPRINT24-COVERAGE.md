@@ -1,10 +1,17 @@
 # Sprint 24 Deinonychus and Tyrannosaurus coverage
 
-Status: **PAUSED AT OWNER REQUEST — CURRENT SOURCE PASSES THE FULL SPRINT GATE;
-FINAL SHARED-CONTROLS NATIVE REPLAY REMAINS PENDING** on October 14, 2026.
-Both creature keys remain unpublished until the required mechanics, art,
-runtime, persistence, route, and cleanup evidence passes. Sprint 25 was not
-started.
+Status: **IN PROGRESS on October 15, 2026 — SHARED-CONTROLS NATIVE REPLAY
+PASSED; TARGETED PERSISTENCE AWAITS ITS NEXT CANDIDATE.** Both creature keys
+remain unpublished until the required mechanics, art, runtime, persistence,
+route, and cleanup evidence passes. Sprint 25 was not started.
+
+The October 14 stopping checkpoint below is retained as the state codex handed
+over. Since then the upstream lineage rewrite was reconciled, the shared
+swallowed-state reload scope was resolved by owner decision, one new coherent
+candidate was qualified, `shared-controls` passed natively on it, and the
+targeted persistence prepare fixture was found to require a state the released
+one-mouth rule cannot produce and was redesigned. See the dated sections after
+the requirement map.
 
 ## Stopping checkpoint
 
@@ -110,7 +117,7 @@ celestial/fiendish policy; Nature's Ally routes remain untemplated.
 | Bite-only Grab | Existing summon grapple lifecycle, exact primary-limb identity, +4 maneuver | Hit/miss, same-size legal, oversized illegal, immunity/natural 1/20, duplicate callback, independent owners | Exact bite, +4, same-size/oversized and isolation controls PASS in RTWP/TB |
 | Later Swallow Whole | Existing held-since-round-start and maintain seam; separate -1 size delta | Same-size grab cannot swallow; later Huge target check succeeds; immediate/failed/wrong-limb controls | Distinct same-size Grab/Huge later-Swallow gates PASS in RTWP/TB |
 | Periodic stomach damage | Tyrannosaurus-owned 2d8+11 payload, not Powerful Bite or donor stomach | One application per intended round in RTWP/TB; attribution, escape, source loss, simultaneous predators/victims | Three-round cadence, escape and independent later packet PASS in RTWP/TB |
-| Hold/swallow lifecycle | Existing ownership parts with narrow reload distinction | Mouth holds reset safely; already-swallowed native state is not indiscriminately erased; dismissal/death/expiry/escape cleanup | Targeted prepare/load/cleanup/absence observer owns mouth-hold, swallowed and bleed receipts; live persistence proof pending |
+| Hold/swallow lifecycle | Existing ownership parts, one shared reload reset | Every KMG-owned grab, hold, swallow, engulf and mouth occupancy resets cleanly on load with no lingering condition, occupied slot, delayed damage or dangling link; the native Bleeding Critical payload survives; dismissal/death/expiry/escape cleanup | Owner decision of 2026-10-15 is clean reset for all, so the opt-in was removed; targeted prepare/load/cleanup/absence observer owns the swallowed and bleed receipts and the owner's own hold residue; live proof pending on the next candidate |
 | Original theropod presentation | Existing original-asset/export/attach infrastructure on the qualified Free Hands Lizardfolk skeleton | Offline clay/silhouette/textured/unlit/camera/extreme poses; live contacts, speed, reach, navigation, crowding, fade/fallback/module lifecycle | Original icons, procedural bodies, paint, exact renderer selection, rollback and package owners implemented; 20-frame final offline review and focused checks PASS; live proof pending |
 | All 18 roots | Existing catalog generator and real parent spell paths | Every root, quantity, slot, duration, Monster templates, Nature's Ally untemplated behavior | All 18 hidden real parent paths PASS; publication remains suppressed pending remaining gates |
 | Affected old consumers | Existing pouncer, Dire Crocodile/Purple Worm, visual owner, Triceratops if shared Strength seam changes | Narrow fresh native regressions, with historical broad evidence reused only after dependency audit | Observer includes Leopard, released swallowers, donor isolation and Triceratops +7/+9; live execution pending |
@@ -170,7 +177,7 @@ the first two:
   invented Run action is added. Both theropods declare it; the Triceratops
   carried the same label through the 0.0.152/0.0.153 releases.
 
-### Reload scope of the shared swallowed state
+### Reload scope of the shared swallowed state — resolved by owner decision
 
 The hidden candidate's `SummonGrappleAreaSafeguard.ResetLoadedGrapples` had
 stopped clearing the swallower list and swallowed buffs on load for **every**
@@ -179,15 +186,36 @@ published promise: the released limitation covers the active swallow and engulf
 links of Dire Crocodile, Purple Worm and Giant Flytrap, and this sprint has no
 authority to change released gameplay or to grant a new waiver.
 
-The change is therefore narrowed rather than proven across the released roster.
-`ExpandedSummoningSpecialProfiles.PersistsSwallowedAcrossLoad` is the single
-decision point and admits only the Tyrannosaurus, which is new content with no
-released reload promise. The three released swallowers keep the published reset
-byte-for-byte, so their existing evidence stays valid under an unchanged-
-dependency audit and no released cold-load path needed requalification. The
-grabber builder reads that policy instead of a per-call flag and throws if a
-swallow payload has no registered reload scope, so a future swallower cannot
-acquire persistence silently.
+Review then found that the Sprint 24 requirement itself — that the
+Tyrannosaurus's already-swallowed victim survive a cold load — had no traceable
+owner charter. It appears only in the previous agent's handoff and in this
+coverage record. Against it stood the owner's decision of 2026-09-26, published
+in releases 0.0.139 and 0.0.146 and in the CHANGELOG: an active grab, hold,
+swallow or engulf and the mouth occupancy that goes with it are session-scoped
+for every creature, and what is promised in exchange is **a clean reset rather
+than persistence** — no lingering condition, occupied slot, delayed damage or
+dangling link. The same decision explicitly declined a project-owned
+re-establishment of holds on load and set that subsystem aside until separately
+chartered.
+
+**The owner resolved this on 2026-10-15: clean reset for all.** Sprint 24's
+Tyrannosaurus resets exactly like the three released swallowers. The opt-in was
+removed entirely rather than narrowed, so `ResetLoadedGrapples` again clears the
+swallower list and swallowed buffs for every KMG summon, and
+`SummonGrabComponent` carries no persistence field at all.
+`ExpandedSummoningSpecialProfiles.PersistsSwallowedAcrossLoad` is retained as a
+pinned invariant that returns false for every token, and the profile self-check
+plus `expanded-summoning.sprint24-swallow-reload-scope` fail closed if any
+creature is ever exempted. The grabber builder still throws when a swallow
+payload has no registered reload scope, so a new swallower cannot slip past the
+limitation unnoticed.
+
+This keeps the published promise intact for the released roster, adds no waiver,
+invents no gameplay adaptation, and implements none of the declined
+re-establishment. Persisting swallowed state for any creature remains
+unchartered future work; it would also require re-recording the engulf mouth
+link on load, since otherwise a reloaded swallower could bite again with a
+victim still in its stomach.
 
 `SummonSwallowLifecycleComponent` also moved from a Dire-Crocodile name check to
 configured `OwningBlueprint`/`OwnedSwallowedBuff`/`ReleaseOnVictimDeath`. The
@@ -295,13 +323,41 @@ never both. Manufacturing the combination by freeing the limb while retaining
 `UnitPartSwallowed` would fabricate a state the rules cannot produce and is not
 acceptable.
 
-The prepare fixture must therefore be redesigned so each required distinction is
-proven in a save that can actually hold it, without weakening any assertion. The
-mission requires active-hold reset, already-swallowed persistence, Bleeding
-Critical persistence, module-OFF cold load and fresh absence. That needs two
-state sets rather than one: bleed plus live mouth hold, and bleed plus swallowed
-victim. This is recorded as the next concrete action and is not an owner
-decision; no waiver is implied and no assertion is dropped.
+### Redesigned prepare fixture
+
+The owner's clean-reset decision resolves this without a second state set,
+because nothing has to survive except the native bleed. The fixture now takes
+the only order one mouth allows and asserts the reset of everything else:
+
+1. Create the bleeding and swallowed actors — there is no separate
+   active-mouth-hold actor, since one bite cannot hold one victim while another
+   is swallowed.
+2. Take the confirmed-critical bite **first**, while the mouth is still free,
+   with the target immune to combat maneuvers so that bite cannot also start a
+   grab and shut the mouth.
+3. Grab the swallowed actor and carry it through the held state and the owner
+   hold to the later-turn swallow. The grab that precedes the swallow leaves the
+   owner's own hold residue — a `UnitPartGrappleInitiator` and hold buff that the
+   non-MultiLink release never clears — and that residue is the active hold the
+   load boundary must clear.
+4. The prepare receipt records `grabbed`, `grappledTarget`,
+   `activeMouthHoldResidue`, `engulfedMouthShut`, `swallowed`, the natural roll,
+   `criticalConfirmed` and `bleeding`, so the saved state is explicit rather than
+   assumed.
+
+After the cold load, `sprint24-cold-state-boundary` requires the exact receipts
+plus `activeMouthHoldReset`, `alreadySwallowedReset`, `engulfedMouthReleased`
+and `bleedingCriticalPreserved`, and `sprint24-cold-state-behavior` requires
+`noOrphanInteriorPacket` — the reset swallow must deliver no 2d8+11 interior
+damage at all — together with exactly one native 2d6 bleed tick that healing
+removes. Every assertion is non-vacuous: each state was proven present before
+the save, and the freed mouth plus the absent interior packet are the "no
+occupied slot, no delayed damage, no dangling link" half of the limitation.
+
+Offline: production compilation plus 136/136 across Sprint 24, the shared
+grapple lifecycle, grab carriers, universal grab sizes, Dire Crocodile stat
+block and swallow numbers, the Sprint 17 persistence/load-reset observers and
+the published-equation record test. The native cycles run on the next candidate.
 
 `HumanReview` remains `NOT_PERFORMED_NONBLOCKING` unless the owner actually
 reviews the finished art.
