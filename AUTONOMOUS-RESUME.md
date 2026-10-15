@@ -1,3 +1,26 @@
+# Firearm RTWP continuation after a kill — focused checkpoint / AWAITING REVIEW
+
+Branch `codex/firearm-rtwp-kill-retarget` (from `origin/master` `fd6c56ebd8`).
+Record: [docs/FIREARM-RTWP-KILL-CONTINUATION.md](docs/FIREARM-RTWP-KILL-CONTINUATION.md).
+Not merged, released, tagged or permanently installed; no PR opened.
+
+- Guarded native evidence: a four-attack pistol full attack keeps its remaining
+  attacks through sequential kills (loaded, empty, paused; native retarget,
+  inline Free reloads). That part of the owner's report is not reproduced.
+- Reproduced and corrected: after an explicit full attack ends with its target
+  dead, the still-current order made `NativeFirearmAttackOrder.Submitting`
+  reject every native AI reload/attack on remaining enemies, so the pistol
+  stopped while unordered pistols and ordinary weapons continued. Undegraded
+  orders are now concluded at that point; Broken orders are unchanged.
+- Focused gate 30/30. Guarded native scenario on candidate DLL `f120026f…`:
+  468/468 PASS (55 new CR-04 + 413 existing firearm checks).
+- Live mod restored byte-for-byte to the 0.0.140 install after every run.
+
+Next: owner review and RTWP smoke (record's "Owner check"). Open design
+questions and infrastructure observations are listed in the record.
+
+---
+
 # Gunslinger animal-companion class eligibility — v0.0.154 RELEASED / STOP
 
 The owner accepted the focused checkpoint on 2026-10-15 ("This is acceptable.
