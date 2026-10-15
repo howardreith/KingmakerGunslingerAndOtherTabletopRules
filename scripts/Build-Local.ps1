@@ -89,6 +89,11 @@ if ($LASTEXITCODE -ne 0) { throw "Exact-reference Release build failed with exit
     (Join-Path $PSScriptRoot 'Test-SupplyItemIcons.ps1') `
     -ReferenceBundleDir $ReferenceBundleDir
 if ($LASTEXITCODE -ne 0) { throw 'Focused supply-icon validation failed.' }
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
+    (Join-Path $PSScriptRoot 'Test-GunslingerAnimalCompanionEligibility.ps1') `
+    -ManagedDir (Join-Path $ReferenceBundleDir 'Managed') `
+    -ModAssemblyPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll')
+if ($LASTEXITCODE -ne 0) { throw 'Gunslinger animal-companion eligibility validation failed.' }
 
 $buildOutput = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'blueprints') -Force | Out-Null

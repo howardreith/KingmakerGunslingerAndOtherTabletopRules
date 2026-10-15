@@ -804,6 +804,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-races.persistence", GunslingerOutfitRenderTests.ElementalRacePersistenceIsGuardedAndExact),
             Case("outfit-appearance.catalog", GunslingerClassAppearanceTests.CatalogIsExactValidatedAndDefensive),
             Case("outfit-appearance.production", GunslingerClassAppearanceTests.ProductionWiringIsAtomicAndDonorIndependent),
+            Case("gunslinger-animal-companion.native-exclusion", GunslingerAnimalCompanionEligibilityTests.ClassCarriesFightersNativeAnimalExclusion),
+            Case("gunslinger-animal-companion.identity-publication", GunslingerAnimalCompanionEligibilityTests.IdentityAndCatalogPublicationAreUnchanged),
             Case("brown-fur.progression-normal", BrownFurContractTests.NormalProgressionIsExact),
             Case("brown-fur.progression-balance", BrownFurContractTests.BalanceProgressionIsExact),
             Case("brown-fur.progression-unknown", BrownFurContractTests.UnknownProgressionsFailClosed),
