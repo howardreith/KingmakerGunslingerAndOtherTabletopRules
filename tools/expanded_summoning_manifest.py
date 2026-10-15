@@ -72,6 +72,9 @@ DONOR_NAMES = {
     # Chosen by the guarded Sprint 18 primate donor census: the only
     # Large surveyed rig with real hands, a separate jaw and toes.
     "b98735a1737ae494dbe5cbeca1c7c083": "CR10_FerociousTrollGuard",
+    # Chosen by the bounded Sprint 24 theropod census: independent hind
+    # legs/feet/toes, jaw and forearms plus a four-joint balancing tail.
+    "a8cbd4cdb0feaf64eab1452257c3c971": "LizardfolkFreeHands",
     "124f1c45ef24d654e9cd420fe84f7f36": "CR5_CyclopStandard",
     "0cc7a2526e4557945b1d8eb277d1fb3a": "CR7_Nymph",
     "10a820de0a417f345866f794324205ad": "MephitFireSummoned",
@@ -170,6 +173,8 @@ SPECIAL_NOTES = {
     "ooze-mephit": "Water mephit chassis with its own rim light colour, water subtype; 15-foot enemy-only acid breath that sickens (Reflex negates both); acid arrow once per summoning; stinking cloud once per summoning on a project ally-safe clone of the native cloud area (enemies of the caster only).",
     "salt-mephit": "Air mephit chassis with its own rim light colour, earth subtype; 15-foot enemy-only slashing breath that sickens; glitterdust (enemies only) once per summoning; dehydrate as a project 20-foot burst (2d8, Fortitude half) once per summoning.",
     "steam-mephit": "Water mephit chassis with its own rim light colour, fire and water subtypes; 15-foot enemy-only fire breath that sickens; fire immunity, cold vulnerability; blur once per summoning; boiling rain as a project 20-foot burst (2d6 fire, Fortitude half) once per summoning.",
+    "deinonychus": "Sprint 24 adult Medium animal: exactly two primary talons, one primary bite and one secondary foreclaws attack; native Pounce only on a legal charge; exact land ranks/racial skills; no quadruped trip defence, Rake, Rend, Grab or Powerful Charge.",
+    "tyrannosaurus": "Sprint 24 adult Gargantuan animal: one 4d6 bite with signed twice-Strength Powerful Bite, 19-20 threat, bite-only Grab, later-turn Swallow Whole with a creature-owned 2d8+11 periodic payload, and confirmed-bite Bleeding Critical through the native 2d6 bleed buff.",
 }
 
 NATIVE_EXPANDED_OPTIONS = (
@@ -210,8 +215,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 105:
-        raise SystemExit(f"Expected 105 parsed creatures; observed {len(values)}")
+    if len(values) != 107:
+        raise SystemExit(f"Expected 107 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -579,8 +584,20 @@ def planned():
         ("KMG.Summoning.Special.Triceratops.Trample", "BlueprintAbility"),
         ("KMG.Summoning.Special.Stegosaurus.Trip", "BlueprintFeature"),
         ("KMG.Summoning.Natural.Stegosaurus.TailType", "BlueprintWeaponType"),
+        # Sprint 24: two exact natural weapons, a species type and chassis
+        # per creature, and four Tyrannosaurus-owned mechanic carriers.
+        ("KMG.Summoning.Natural.Deinonychus.Talon1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Deinonychus.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Deinonychus.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Tyrannosaurus.Bite4d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Tyrannosaurus.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Tyrannosaurus.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Tyrannosaurus.PowerfulBite", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Tyrannosaurus.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Tyrannosaurus.Swallowed", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Tyrannosaurus.BleedingCritical", "BlueprintFeature"),
     ))
-    if len(rows) != 2101 or len({symbol for symbol, _ in rows}) != 2101:
+    if len(rows) != 2149 or len({symbol for symbol, _ in rows}) != 2149:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -603,7 +620,7 @@ def generated_roster(manifest):
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-23 are technically qualified and published. Viper and Constrictor independently published after complete hidden PASS on 47e8c121 and all 32 public roots PASS on 996c5fe7. Salamander's observation-only reach correction db1da016 profile/view 73/73 PASS closed Sprint 17; its five existing public roots remain preserved and PASS. Sprint 18's Ape and Dire Ape published in v0.0.147 after their complete hidden candidate passed. Sprint 19 published the Girallon and the Xill in v0.0.148 after 39/39 mechanics and 12/12 body review. Sprint 20 published the Giant Scorpion in v0.0.149, Sprint 21 published the Giant Crab in v0.0.150, and Sprint 22 published the Ankylosaurus in v0.0.151. Sprint 23 published Triceratops and Stegosaurus in v0.0.152 after their complete hidden gameplay, presentation, ownership, persistence and compatibility qualification; publication removed only their two suppression keys and moved no identity. The v0.0.153 follow-up changes only Triceratops Powerful Charge odd-Strength rounding. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers. Final Sprint 23 release evidence is in `docs/SPRINT23-COVERAGE.md`.",
+        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-23 are technically qualified and published. Viper and Constrictor independently published after complete hidden PASS on 47e8c121 and all 32 public roots PASS on 996c5fe7. Salamander's observation-only reach correction db1da016 profile/view 73/73 PASS closed Sprint 17; its five existing public roots remain preserved and PASS. Sprint 18's Ape and Dire Ape published in v0.0.147 after their complete hidden candidate passed. Sprint 19 published the Girallon and the Xill in v0.0.148 after 39/39 mechanics and 12/12 body review. Sprint 20 published the Giant Scorpion in v0.0.149, Sprint 21 published the Giant Crab in v0.0.150, and Sprint 22 published the Ankylosaurus in v0.0.151. Sprint 23 published Triceratops and Stegosaurus in v0.0.152 after their complete hidden gameplay, presentation, ownership, persistence and compatibility qualification; publication removed only their two suppression keys and moved no identity. The v0.0.153 follow-up changes only Triceratops Powerful Charge odd-Strength rounding. Sprint 24 published Deinonychus and Tyrannosaurus in v0.0.155 after their complete hidden gameplay, presentation, ownership, persistence and shared-control qualification; publication removed only their two suppression keys together and moved no identity. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers. Current Sprint 24 authority and evidence are in `docs/SPRINT24-COVERAGE.md`.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",
@@ -665,7 +682,7 @@ def generated_roster(manifest):
     lines.extend((
         "## Explicit exclusions",
         "",
-        "No aquatic-only entries, unapproved ants, unapproved apes, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The two Sprint 18 apes are authorized by that sprint and no other primate is; Girallon belongs to a later sprint and is not registered here. The four authorized Sprint 12 canines and rat remain hidden until their mechanics, distinct visuals and lifecycle qualify. The four authorized Sprint 11 ungulates are published only after their mechanics, original visuals and lifecycle qualified. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
+        "No aquatic-only entries, unapproved ants, unapproved apes, dinosaurs beyond the two authorized Sprint 24 theropods, campaign spawns, companions, pets, vendors, loot, or external assets are added. Sprint 24 does not begin Brachiosaurus, Elephant changes, animal-companion or polymorph work. The two Sprint 18 apes are authorized by that sprint and no other primate is; Girallon belongs to a later sprint and is not registered here. The four authorized Sprint 12 canines and rat remain hidden until their mechanics, distinct visuals and lifecycle qualify. The four authorized Sprint 11 ungulates are published only after their mechanics, original visuals and lifecycle qualified. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
         "",
     ))
     return "\n".join(lines)

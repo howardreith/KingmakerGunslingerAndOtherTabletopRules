@@ -56,7 +56,7 @@ $ErrorActionPreference = 'Stop'
 # suite exercises the shipped rules rather than a second copy of them.
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 
-if ($PackagePath -and $SaveName -ceq 'KMG_AUTOMATION_WORKING' -and $ScenarioParameters.ContainsKey('persistenceScope') -and $ScenarioParameters.persistenceScope -cin @('ankylosaurus','armored-dinosaurs')) {
+if ($PackagePath -and $SaveName -ceq 'KMG_AUTOMATION_WORKING' -and $ScenarioParameters.ContainsKey('persistenceScope') -and $ScenarioParameters.persistenceScope -cin @('ankylosaurus','armored-dinosaurs','theropods')) {
     foreach($name in $Scenario) {
         & (Join-Path $PSScriptRoot 'Invoke-Sprint22InstalledStack.ps1') -Scenario $name -SaveName $SaveName `
             -PackagePath $PackagePath -ExpectedVersion $ExpectedVersion -ExpandedSummoningDisabled:$ExpandedSummoningDisabled `

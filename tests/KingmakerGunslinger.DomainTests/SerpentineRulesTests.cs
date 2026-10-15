@@ -727,7 +727,8 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.Equal(.2f, SerpentineVisualPolicy.SnakeViewMultiplier,
                 "Same view-only scale as the measured native snake bite research, pending production proof.");
-            Assertions.Equal(17, SummonViewScaleCatalog.All.Count,
+            Assertions.Equal(17, SummonViewScaleCatalog.All.Count(value =>
+                    value.CreatureKey != TheropodRulesPolicy.TyrannosaurusKey),
                 "All prior production view steps remain unchanged.");
         }
 
@@ -745,6 +746,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sprint21RulesTests.AppendedLedgerIdentities +
                 Sprint22RulesTests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                 masterTraits.Count,
                 entries.Count,
                 "Qualified Phase2B identities, the Sprint 18 appends and all eleven released master trait identities coexist.");
@@ -875,11 +877,16 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(rows.Select(v => v.Multiplicity).Distinct().Count() == 3,
                     "Direct, 1d3 and 1d4+1 routes retain their allocated identities.");
             }
-            Assertions.Equal(1075, all.Count(SummonVisibilityCatalog.IsPublished), "Every registered root is published.");
-            Assertions.Equal(1104, all.Count(SummonVisibilityCatalog.IsPublished) +
+            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
+                all.Count(SummonVisibilityCatalog.IsPublished),
+                "Every previously qualified root remains published.");
+            Assertions.Equal(TheropodRulesPolicy.PublicVisibleChoices,
+                all.Count(SummonVisibilityCatalog.IsPublished) +
                 SummonNativeExpansionCatalog.All.Count, "Published surface is source-derived.");
-            Assertions.True(all.All(SummonVisibilityCatalog.IsPublished),
-                "No old publication or new Sprint 23 root remains suppressed.");
+            Assertions.True(all.Where(value =>
+                    !TheropodRulesPolicy.IsTheropod(value.Creature.Key))
+                    .All(SummonVisibilityCatalog.IsPublished),
+                "No old publication remains suppressed by Sprint 24 registration.");
         }
 
         internal static void SnakeArtworkHasExactConsumersAndProvenance()

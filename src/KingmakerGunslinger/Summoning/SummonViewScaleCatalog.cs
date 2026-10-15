@@ -69,7 +69,14 @@ namespace KingmakerGunslinger.Summoning
             // Sprint 16 original Gargantuan body on the Large crocodilian
             // frame: exactly this identity gets the 2x visual-only step.
             // Existing creatures retain their old bounds and multipliers.
-            S("dire-crocodile", 2.0f)
+            S("dire-crocodile", 2.0f),
+            // Sprint 24: the Gargantuan original Tyrannosaurus body rides the
+            // measured Medium Lizardfolk frame. Its exported 3.149-unit body
+            // is already broader than the Medium Deinonychus; this exact 2x
+            // view-only step gives the large skull/countertail a distinct
+            // party-camera footprint without touching reach, collision or
+            // locomotion cadence. Native footprint review remains mandatory.
+            S("tyrannosaurus", 2.0f)
         };
 
         internal static IReadOnlyList<SummonViewScaleSpec> All
@@ -87,9 +94,10 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 17 || Values.Any(value => value.Multiplier <
+            if (Values.Length != 18 || Values.Any(value => value.Multiplier <
                     0.20f || value.Multiplier >
-                    (value.CreatureKey == "dire-crocodile" ? 2.0f : 1.25f)) ||
+                    (value.CreatureKey == "dire-crocodile" ||
+                     value.CreatureKey == "tyrannosaurus" ? 2.0f : 1.25f)) ||
                 Values.Select(value => value.CreatureKey).Distinct(
                     StringComparer.Ordinal).Count() != Values.Length ||
                 Values.Any(value => !ExpandedSummoningCatalog.All.Any(

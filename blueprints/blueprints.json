@@ -24815,6 +24815,390 @@
       "status": "reserved",
       "milestone": "Expanded Summoning",
       "notes": "Append-only identity reserved before release: native qualification proved the private type interrupted the Mastodon donor's real attack command. The exact project weapon instead keeps the native type and receives a module-, owner- and weapon-scoped range correction."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Deinonychus",
+      "guid": "10a13f87e3664e30b642a3c59cc8c700",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Tyrannosaurus",
+      "guid": "04b1a75a76544a9581ee832045f8227a",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Deinonychus.One",
+      "guid": "46a5cfe1ffae4b57acb94077ceb0ffaa",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Deinonychus.One.Celestial",
+      "guid": "44933dbcd05c43a5b242567712d86531",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Deinonychus.One.Fiendish",
+      "guid": "7b0080e107fe4529bbd9fc5e0fcbcfaf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Deinonychus.OneD3",
+      "guid": "f310d0f0154a4b5586c5cfed86ef925a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Deinonychus.OneD3.Celestial",
+      "guid": "46b57bb9d9af4782a421ef9b3434166b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Deinonychus.OneD3.Fiendish",
+      "guid": "f50867059c0442178c7132ce9957e4a7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Deinonychus.OneD4PlusOne",
+      "guid": "a5b34561d75648479e69942627eca878",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Deinonychus.OneD4PlusOne.Celestial",
+      "guid": "1f9c98d2815e46d3b934125fe2d07e99",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Deinonychus.OneD4PlusOne.Fiendish",
+      "guid": "233f45a798194a0bb57a97583b780f56",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Deinonychus.OneD4PlusOne",
+      "guid": "e6cc6b38b68942448b9739044bc1ff90",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Deinonychus.OneD4PlusOne.Celestial",
+      "guid": "21f266bedce44089a941c5eb53f755cd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Deinonychus.OneD4PlusOne.Fiendish",
+      "guid": "2e90e59c7ea04c35a62c3eb308569b50",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Tyrannosaurus.One",
+      "guid": "e1f591950fc94750b2876c5698f0fbe9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Tyrannosaurus.One.Celestial",
+      "guid": "60e1c7b2628a4eea87c5c4131cd96d4c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Tyrannosaurus.One.Fiendish",
+      "guid": "07fb9af037944f3485079dd7d9baccdb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Deinonychus.OneD4PlusOne",
+      "guid": "335c4f37b9c64ce699f15645312991ca",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Deinonychus.OneD4PlusOne.Celestial",
+      "guid": "2215a7a20e0e4419add1c660b701259f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Deinonychus.OneD4PlusOne.Fiendish",
+      "guid": "9d2016893ae44e53b98cb8b695bcc857",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3",
+      "guid": "f98d4354c6de491f804c5605c58ce982",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3.Celestial",
+      "guid": "191f3ef571cb4c6db2a4397edac70a95",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Tyrannosaurus.OneD3.Fiendish",
+      "guid": "4b480f09291442b3ac3226a12f69fe91",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Deinonychus.OneD4PlusOne",
+      "guid": "8546ddfbed574070920dca37c39f2da9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Deinonychus.OneD4PlusOne.Celestial",
+      "guid": "5dd271af3df541ccb21469b66bb685b4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Deinonychus.OneD4PlusOne.Fiendish",
+      "guid": "e575eb70d12248febdc72438733f2264",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne",
+      "guid": "f5a745af800142aabdff6c656848445b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne.Celestial",
+      "guid": "98aa7b4b4ff94c06acdbbc42e4192100",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Tyrannosaurus.OneD4PlusOne.Fiendish",
+      "guid": "1c55ba50b6404db381aedcddc91f6c5c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.Deinonychus.One",
+      "guid": "9f24f72736a549f8b1dac6d3241e0f00",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Deinonychus.OneD3",
+      "guid": "0fc9fa82f3b947ffad3e25824495cb4a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Deinonychus.OneD4PlusOne",
+      "guid": "ba60bfa64d17429da0b3a4ef175d49bb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Deinonychus.OneD4PlusOne",
+      "guid": "129e1ccfb23c483d845f8ac1400c00ec",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Tyrannosaurus.One",
+      "guid": "5a3e64964c814377ae14362af529584a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Deinonychus.OneD4PlusOne",
+      "guid": "4c18a58e32c14a47b67e8d21e73f18dc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Tyrannosaurus.OneD3",
+      "guid": "5fb610228a8043b88f9ebd11e0f1ccdb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Deinonychus.OneD4PlusOne",
+      "guid": "52dc5c5341794ce48c7363cf69639625",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Tyrannosaurus.OneD4PlusOne",
+      "guid": "cb1921bee3e94b8d974e45fb636ea770",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Deinonychus.Talon1d8",
+      "guid": "7bb056a081a4444b804e52508d91f6c8",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Deinonychus.UnitType",
+      "guid": "cf0919eae4304a148666742cebff1887",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Deinonychus.Chassis",
+      "guid": "fed90fe9166348a8b7ae8bff5f03566a",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Tyrannosaurus.Bite4d6",
+      "guid": "cfb6ea9c9c3b4405bb001f00159e8370",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Tyrannosaurus.UnitType",
+      "guid": "b3ae2d5ad26c4df9aea68260ad0a4228",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Tyrannosaurus.Chassis",
+      "guid": "7c6bb677353045189045129c097e4c2f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Tyrannosaurus.PowerfulBite",
+      "guid": "c1a9b9554bb744a9a22f7ee1557dd678",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Tyrannosaurus.CombatTraits",
+      "guid": "e22d935930eb4a9398e1160699f87b09",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Tyrannosaurus.Swallowed",
+      "guid": "b53c756df5b04546a87049d6f24e6f37",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Tyrannosaurus.BleedingCritical",
+      "guid": "e45b109a0e96496d9efd42edd11f95c8",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

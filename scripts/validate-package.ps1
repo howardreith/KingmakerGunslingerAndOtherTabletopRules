@@ -49,7 +49,7 @@ try {
         'docs\RELEASE-NOTES-0.0.151.md',
         'docs\RELEASE-NOTES-0.0.152.md',
         'docs\RELEASE-NOTES-0.0.153.md',
-        'docs\RELEASE-NOTES-0.0.154.md',
+        'docs\RELEASE-NOTES-0.0.155.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -129,6 +129,10 @@ try {
         'assets\sprint23-armored-dinosaurs\triceratops-albedo.png',
         'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json',
         'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png',
+        'assets\sprint24-theropods\deinonychus-mesh.json',
+        'assets\sprint24-theropods\deinonychus-albedo.png',
+        'assets\sprint24-theropods\tyrannosaurus-mesh.json',
+        'assets\sprint24-theropods\tyrannosaurus-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -187,7 +191,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 117 -or @($summonManifest.icons).Count -ne 117) {
+    if ($summonManifest.count -ne 119 -or @($summonManifest.icons).Count -ne 119) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'

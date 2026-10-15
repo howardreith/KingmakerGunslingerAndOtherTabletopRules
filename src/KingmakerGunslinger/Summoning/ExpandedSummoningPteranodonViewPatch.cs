@@ -8,6 +8,7 @@ using Harmony12;
 using Kingmaker.View;
 using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Assets;
+using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -133,7 +134,11 @@ namespace KingmakerGunslinger.Summoning
                 { ArmoredDinosaurVisualPolicy.TriceratopsBlueprintName,
                     ArmoredDinosaurRulesPolicy.TriceratopsKey },
                 { ArmoredDinosaurVisualPolicy.StegosaurusBlueprintName,
-                    ArmoredDinosaurRulesPolicy.StegosaurusKey }
+                    ArmoredDinosaurRulesPolicy.StegosaurusKey },
+                { TheropodVisualPolicy.DeinonychusBlueprintName,
+                    TheropodRulesPolicy.DeinonychusKey },
+                { TheropodVisualPolicy.TyrannosaurusBlueprintName,
+                    TheropodRulesPolicy.TyrannosaurusKey }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -206,6 +211,9 @@ namespace KingmakerGunslinger.Summoning
             internal Material[] OriginalMaterials;
             internal Material Material;
             internal Mesh Mesh;
+            internal SkinnedMeshRenderer[] SuppressedRenderers;
+            internal bool[] OriginalSuppressedRendererStates;
+            internal TheropodAccessorySuppression TheropodSuppression;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal CrocodilianAttackVisualPose CrocodilianPose;
@@ -216,6 +224,9 @@ namespace KingmakerGunslinger.Summoning
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
             Applied = new ConditionalWeakTable<UnitEntityView, Attachment>();
+        private static readonly FieldInfo BaseCorpulence = typeof(UnitEntityView)
+            .GetField("m_Corpulence", BindingFlags.Instance |
+                BindingFlags.NonPublic);
         private static readonly object Sync = new object();
         private static readonly List<string> Outcomes = new List<string>();
 
@@ -281,6 +292,33 @@ namespace KingmakerGunslinger.Summoning
             string blueprintName = __instance.EntityData.Blueprint.name;
             string visualKey;
             if (!VisualKeys.TryGetValue(blueprintName, out visualKey)) return;
+            if (TheropodVisualPolicy.Handles(visualKey))
+            {
+                ModContext context;
+                string exactKey;
+                var blueprint = __instance.EntityData.Blueprint;
+                bool moduleOn = ModContext.TryGet(out context) &&
+                    context.FeatureModules != null &&
+                    context.FeatureModules.Active != null &&
+                    context.FeatureModules.Active.ExpandedSummoning;
+                // The exact-identity gate only has meaning while the module is
+                // on, because TryProductionTheropod refuses outright when it is
+                // off. Returning here with the module off would skip the
+                // attachment record altogether and report "not-attempted",
+                // which deliberately does not prove this registered
+                // save-compatible identity reached the asset loader's
+                // module-disabled refusal. So fall through instead and let
+                // Attach record that refusal, exactly as the armored dinosaurs
+                // and every other family do. The loader still performs no file
+                // read and no Unity allocation while the module is off.
+                if (moduleOn &&
+                    (!TheropodVisualPolicy.TryProductionTheropod(true,
+                        blueprint.AssetGuid, blueprint.name,
+                        blueprint.Prefab == null ? null :
+                            blueprint.Prefab.AssetId, out exactKey) ||
+                    exactKey != visualKey))
+                    return;
+            }
 
             lock (Applied)
             {
@@ -300,6 +338,14 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static string Attach(UnitEntityView view, Attachment attachment)
         {
+            string spatial = string.Empty;
+            if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+            {
+                string failure;
+                if (!TryConfigureTheropodSpatial(view, attachment.VisualKey,
+                        out spatial, out failure))
+                    return "donor-visual:theropod-spatial-failed:" + failure;
+            }
             Mesh source;
             string[] boneNames;
             Texture2D albedo;
@@ -338,6 +384,14 @@ namespace KingmakerGunslinger.Summoning
             {
                 string status;
                 if (!PteranodonAssetRuntime.TryGetArmoredDinosaurVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
+            else if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetTheropodVisual(
                     attachment.VisualKey, out source, out boneNames,
                     out albedo, out status))
                     return Fallback(status);
@@ -394,9 +448,30 @@ namespace KingmakerGunslinger.Summoning
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.sharedMesh != null)
                 .ToArray();
-            if (donors.Length != 1)
-                return "donor-visual:donor-renderer-count=" + donors.Length;
-            SkinnedMeshRenderer donor = donors[0];
+            SkinnedMeshRenderer donor;
+            if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+            {
+                if (!TheropodVisualPolicy.IsExactRendererSet(
+                        donors.Select(value => value.name)))
+                    return "donor-visual:theropod-renderer-set=" +
+                        string.Join(",", donors.Select(value => value.name)
+                            .OrderBy(value => value,
+                                StringComparer.Ordinal).ToArray());
+                donor = donors.Single(value => value.name ==
+                    TheropodVisualPolicy.BodyRendererName);
+                SkinnedMeshRenderer accessory = donors.Single(value =>
+                    value.name == TheropodVisualPolicy.AccessoryRendererName);
+                attachment.SuppressedRenderers = new[] { accessory };
+                attachment.OriginalSuppressedRendererStates = new[] {
+                    accessory.enabled };
+            }
+            else
+            {
+                if (donors.Length != 1)
+                    return "donor-visual:donor-renderer-count=" +
+                        donors.Length;
+                donor = donors[0];
+            }
 
             Transform[] bones;
             Matrix4x4[] bindposes;
@@ -446,6 +521,8 @@ namespace KingmakerGunslinger.Summoning
                                     IsCrocodilian(attachment.VisualKey) ||
                                     attachment.VisualKey == AnkylosaurusRulesPolicy.Key ||
                                     ArmoredDinosaurVisualPolicy.Handles(
+                                        attachment.VisualKey) ||
+                                    TheropodVisualPolicy.Handles(
                                         attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
@@ -467,6 +544,10 @@ namespace KingmakerGunslinger.Summoning
                 donor.sharedMesh = mesh;
                 donor.bones = bones;
                 donor.sharedMaterials = new[] { material };
+                if (attachment.SuppressedRenderers != null)
+                    foreach (SkinnedMeshRenderer renderer in
+                        attachment.SuppressedRenderers)
+                        renderer.enabled = false;
 
                 attachment.Material = material;
                 attachment.Mesh = mesh;
@@ -478,6 +559,14 @@ namespace KingmakerGunslinger.Summoning
                 // fully dissolved stays invisible. So the clone starts intact
                 // and the controller re-reads the renderer's materials.
                 string controller = AdoptByMaterialController(view, donor, material);
+
+                if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+                {
+                    attachment.TheropodSuppression = view.gameObject
+                        .AddComponent<TheropodAccessorySuppression>();
+                    attachment.TheropodSuppression.Configure(
+                        attachment.SuppressedRenderers.Single());
+                }
 
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
@@ -523,8 +612,12 @@ namespace KingmakerGunslinger.Summoning
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";rendererEnabled=" +
-                    (donor.enabled ? "true" : "false") + ";" + dressing +
-                    ";" + controller;
+                    (donor.enabled ? "true" : "false") +
+                    ";accessorySuppressed=" +
+                    (attachment.SuppressedRenderers == null ? 0 :
+                        attachment.SuppressedRenderers.Length) + ";" + dressing +
+                    ";" + controller + (spatial.Length == 0 ? string.Empty :
+                        ";" + spatial);
             }
             catch (Exception error)
             {
@@ -562,7 +655,8 @@ namespace KingmakerGunslinger.Summoning
                 // Revert drops its references. Donor/cache materials survive.
                 var rollbackMaterials = new HashSet<Material>();
                 if (material != null) rollbackMaterials.Add(material);
-                if (swapped && IsCrocodilian(attachment.VisualKey))
+                if (swapped && (IsCrocodilian(attachment.VisualKey) ||
+                    TheropodVisualPolicy.Handles(attachment.VisualKey)))
                 {
                     string ownedName = "KMG_" + attachment.VisualKey + "_Original";
                     foreach (Material candidate in donor.sharedMaterials)
@@ -582,6 +676,64 @@ namespace KingmakerGunslinger.Summoning
                 attachment.Material = null;
                 attachment.Mesh = null;
                 return "donor-visual:attach-failed:" + error.GetType().Name;
+            }
+        }
+
+        private static bool TryConfigureTheropodSpatial(UnitEntityView view,
+            string key, out string description, out string failure)
+        {
+            description = string.Empty;
+            failure = string.Empty;
+            float radius;
+            if (view == null ||
+                !TheropodVisualPolicy.TryBaseCorpulence(key, out radius))
+            {
+                failure = "invalid-owner-or-key";
+                return false;
+            }
+            if (BaseCorpulence == null ||
+                BaseCorpulence.FieldType != typeof(float))
+            {
+                failure = "missing-UnitEntityView.m_Corpulence";
+                return false;
+            }
+            float original = (float)BaseCorpulence.GetValue(view);
+            try
+            {
+                BaseCorpulence.SetValue(view, radius);
+                // This is public on the pinned Kingmaker 2.1.7b contract.
+                // Calling it directly makes reference drift a compile failure
+                // instead of silently rejecting every live theropod view.
+                view.SetupSelectionColliders(false);
+                CapsuleCollider soft = view.GetComponentsInChildren<
+                    CapsuleCollider>(true).SingleOrDefault(value =>
+                        value.name == "[soft collider]");
+                if (soft == null || soft.radius <= 0f ||
+                    Math.Abs((float)BaseCorpulence.GetValue(view) - radius) >
+                        .00001f)
+                    throw new InvalidOperationException(
+                        "theropod selection collider did not update");
+                description = "baseCorpulence=" + radius.ToString("R",
+                    CultureInfo.InvariantCulture) + ";liveCorpulence=" +
+                    view.Corpulence.ToString("R", CultureInfo.InvariantCulture) +
+                    ";softColliderRadius=" + soft.radius.ToString("R",
+                        CultureInfo.InvariantCulture);
+                return true;
+            }
+            catch (Exception error)
+            {
+                try
+                {
+                    BaseCorpulence.SetValue(view, original);
+                    view.SetupSelectionColliders(false);
+                }
+                catch (Exception)
+                {
+                    // Preserve the first exact failing contract in the
+                    // outcome; native view teardown must remain available.
+                }
+                failure = error.GetType().Name;
+                return false;
             }
         }
 
@@ -692,6 +844,13 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.TheropodSuppression != null)
+            {
+                attachment.TheropodSuppression.Release();
+                UnityEngine.Object.DestroyImmediate(
+                    attachment.TheropodSuppression);
+                attachment.TheropodSuppression = null;
+            }
             if (attachment.AnkylosaurusImpact != null)
             {
                 attachment.AnkylosaurusImpact.enabled=false;
@@ -705,6 +864,14 @@ namespace KingmakerGunslinger.Summoning
                 UnityEngine.Object.DestroyImmediate(attachment.CrocodilianPose);
                 attachment.CrocodilianPose = null;
             }
+            if (attachment.SuppressedRenderers != null &&
+                attachment.OriginalSuppressedRendererStates != null)
+                for (int index = 0; index <
+                    attachment.SuppressedRenderers.Length && index <
+                    attachment.OriginalSuppressedRendererStates.Length; index++)
+                    if (attachment.SuppressedRenderers[index] != null)
+                        attachment.SuppressedRenderers[index].enabled =
+                            attachment.OriginalSuppressedRendererStates[index];
             SkinnedMeshRenderer donor = attachment.Donor;
             if (donor == null) return;
             donor.sharedMesh = attachment.OriginalMesh;
@@ -759,6 +926,40 @@ namespace KingmakerGunslinger.Summoning
                 .Where(value => value != null).Distinct().ToArray();
         }
 
+        /// <summary>Exact per-view owned resources for the two theropod bodies.
+        /// The disabled accessory and both donor renderers remain native and
+        /// therefore never appear in this receipt.</summary>
+        internal static UnityEngine.Object[] CaptureTheropodOwnedResources(
+            UnitEntityView view)
+        {
+            Attachment attachment;
+            if (view == null || !Applied.TryGetValue(view, out attachment) ||
+                !TheropodVisualPolicy.Handles(attachment.VisualKey))
+                return new UnityEngine.Object[0];
+            Material[] installed = attachment.Donor == null
+                ? new Material[0] : attachment.Donor.sharedMaterials;
+            IList<Material> driven = attachment.Donor == null ? null :
+                ControllerMaterials(attachment.Donor.GetComponentInParent<
+                    StandardMaterialController>());
+            // ReinitMaterials also creates native per-view instances for the
+            // restored donor materials. They are not theropod-owned and the
+            // release path intentionally does not destroy them. Match that
+            // path's exact KMG material family instead of treating every
+            // instance unequal to the prefab material as project-owned.
+            string ownedMaterialName = "KMG_" + attachment.VisualKey +
+                "_Original";
+            IEnumerable<Material> privateMaterials = installed
+                .Concat(driven ?? new Material[0])
+                .Concat(new[] { attachment.Material })
+                .Where(value => value != null && value.name.StartsWith(
+                    ownedMaterialName, StringComparison.Ordinal))
+                .Distinct();
+            return privateMaterials.Cast<UnityEngine.Object>()
+                .Concat(new UnityEngine.Object[] { attachment.Mesh,
+                    attachment.TheropodSuppression })
+                .Where(value => value != null).Distinct().ToArray();
+        }
+
         internal static void ReleaseOriginalFlightView(UnitEntityView view)
         {
             Attachment attachment;
@@ -799,6 +1000,8 @@ namespace KingmakerGunslinger.Summoning
                     attachment.VisualKey) &&
                  !IsCrocodilian(attachment.VisualKey) &&
                  !ArmoredDinosaurVisualPolicy.Handles(
+                    attachment.VisualKey) &&
+                 !TheropodVisualPolicy.Handles(
                     attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
@@ -922,6 +1125,41 @@ namespace KingmakerGunslinger.Summoning
             if (method == null) return false;
             method.Invoke(controller, null);
             return true;
+        }
+    }
+
+    /// <summary>
+    /// Native fade/visibility controllers revisit every renderer after the
+    /// attachment has completed. The theropod donor's ammunition renderer is
+    /// not part of the authored body, so this per-view owner suppresses it
+    /// after those updates without touching the shared prefab. Revert restores
+    /// the exact state captured before attachment.
+    /// </summary>
+    internal sealed class TheropodAccessorySuppression : MonoBehaviour
+    {
+        private SkinnedMeshRenderer _renderer;
+
+        internal void Configure(SkinnedMeshRenderer renderer)
+        {
+            _renderer = renderer;
+            Suppress();
+        }
+
+        private void LateUpdate()
+        {
+            Suppress();
+        }
+
+        private void Suppress()
+        {
+            if (_renderer != null && _renderer.enabled)
+                _renderer.enabled = false;
+        }
+
+        internal void Release()
+        {
+            enabled = false;
+            _renderer = null;
         }
     }
 

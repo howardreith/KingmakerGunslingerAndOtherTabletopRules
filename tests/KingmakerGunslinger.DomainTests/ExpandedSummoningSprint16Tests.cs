@@ -308,7 +308,9 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(SummonViewScaleCatalog.TryGetMultiplier(name, out multiplier),
                     "No scale mutation of ordinary Crocodile or native donor: " + name);
             Assertions.True(SummonViewScaleCatalog.All.Where(value =>
-                value.CreatureKey != "dire-crocodile").All(value =>
+                value.CreatureKey != "dire-crocodile" &&
+                value.CreatureKey != TheropodRulesPolicy.TyrannosaurusKey)
+                .All(value =>
                     value.Multiplier >= .20f && value.Multiplier <= 1.25f),
                 "No general widening of existing creature scale bounds.");
         }
@@ -398,6 +400,7 @@ namespace KingmakerGunslinger.DomainTests
                     GiantScorpionRulesPolicy.GiantScorpionKey &&
                 !ArmoredDinosaurRulesPolicy.UsesExactRanks(
                     value.Creature.Key) &&
+                !TheropodRulesPolicy.IsTheropod(value.Creature.Key) &&
                 !SummonVisibilityCatalog.IsPublished(value)),
                 "No creature qualified through Sprint 16 may become withheld.");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -

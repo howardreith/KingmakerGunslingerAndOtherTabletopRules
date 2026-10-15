@@ -1022,6 +1022,9 @@ namespace KingmakerGunslinger.DomainTests
                     // Sprint 23 derives each adult dinosaur's printed
                     // Perception-only allocation independently.
                     !ArmoredDinosaurRulesPolicy.UsesExactRanks(value.Key) &&
+                    // Sprint 24 likewise freezes each theropod's adult
+                    // allocation rather than applying this old default.
+                    !TheropodRulesPolicy.UsesExactRanks(value.Key) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

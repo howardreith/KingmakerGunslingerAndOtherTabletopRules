@@ -57,9 +57,13 @@ if ($activeVersion -eq '0.0.151') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint22151.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 22 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154')) {
+if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint23152.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 23 corruption fixtures failed.' }
+}
+if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155')) {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint24154.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint 24 corruption fixtures failed.' }
 }
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
@@ -92,6 +96,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
 & (Join-Path $PSScriptRoot 'Test-ExplicitCandidateReuse.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint22Release.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint24Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint22InstalledStack.ps1')
 
 # Parse the guarded entry points with the installed PowerShell parser. This
