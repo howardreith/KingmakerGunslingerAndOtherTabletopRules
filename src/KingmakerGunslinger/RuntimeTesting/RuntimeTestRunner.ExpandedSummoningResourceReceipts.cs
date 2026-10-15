@@ -137,7 +137,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PteranodonAssetRuntime.TryGetSprint13CreatureVisual(key, out mesh, out bones, out paint, out status) ||
                     PteranodonAssetRuntime.TryGetSprint14InsectVisual(key, out mesh, out bones, out paint, out status) ||
                     PteranodonAssetRuntime.TryGetCrocodilianVisual(key, out mesh, out bones, out paint, out status) ||
-                    PteranodonAssetRuntime.TryGetArmoredDinosaurVisual(key, out mesh, out bones, out paint, out status))
+                    PteranodonAssetRuntime.TryGetArmoredDinosaurVisual(key, out mesh, out bones, out paint, out status) ||
+                    // Sprint 24. Without this the theropod albedo is captured
+                    // with no ownership record at all, classifies UNRESOLVED and
+                    // fails cleanup closed, which is what it is supposed to do
+                    // for an unknown resource. The albedo is a genuine process
+                    // cache: it exists before the working load and its global
+                    // count is stable across cleanup. The per-attachment mesh
+                    // and materials stay private-owned and are destroyed on
+                    // release, exactly as for every other family here.
+                    PteranodonAssetRuntime.TryGetTheropodVisual(key, out mesh, out bones, out paint, out status))
                 { add(mesh, key + ".Mesh"); add(paint, key + ".Albedo"); }
             }
             return result;

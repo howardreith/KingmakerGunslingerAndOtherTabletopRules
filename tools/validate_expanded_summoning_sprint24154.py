@@ -109,6 +109,10 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Census.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Persistence.cs",
+    # Admitted 2026-10-15: the shared resource-receipt observer has to know the
+    # new theropod albedo is a process cache, or it classifies UNRESOLVED and
+    # fails cleanup closed. Every other creature family is already listed there.
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
     "src/KingmakerGunslinger/RuntimeTesting/Sprint24TheropodCensusPolicy.cs",
