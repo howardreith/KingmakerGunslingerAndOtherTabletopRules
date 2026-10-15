@@ -808,6 +808,15 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintBuff GrappledBuff;
         /// <summary>Set only for a swallower (or the Flytrap's engulf): applied on a later turn's successful check.</summary>
         public BlueprintBuff SwallowedBuff;
+        /// <summary>
+        /// Sprint 24 opt-in, set from
+        /// ExpandedSummoningSpecialProfiles.PersistsSwallowedAcrossLoad. False
+        /// for every released swallower/engulfer, which keeps the published
+        /// ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD reset of its swallowed
+        /// state. True only for the Tyrannosaurus, whose already-swallowed
+        /// native state survives a cold load while its exact owner survives.
+        /// </summary>
+        public bool PersistSwallowedAcrossLoad;
         public bool SwallowMaxSizeIsAbsolute;
         public Size SwallowMaxSize;
         /// <summary>-1: up to one size smaller than the swallower (the universal rule).</summary>
@@ -2061,10 +2070,13 @@ namespace KingmakerGunslinger.Summoning
 
         // Native grapple parts and their state buffs can survive
         // deserialization even though the session mouth-hold link is not
-        // reconstructible. Reset only active KMG-owned holds, including
-        // nonparty summons/prey. An already-swallowed native state is a
-        // different lifetime: UnitPartSwallowed and UnitPartSwallowWhole are
-        // authoritative and must survive while their exact owner survives.
+        // reconstructible. Reset every active KMG-owned hold, including
+        // nonparty summons/prey. Swallowed state follows the owner's published
+        // promise: released swallowers/engulfers keep the 0.0.139/0.0.146
+        // ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD reset, while a Sprint 24
+        // opt-in owner keeps its already-swallowed native state, because
+        // UnitPartSwallowed and UnitPartSwallowWhole are then authoritative and
+        // must survive while their exact owner survives.
         internal static void ResetLoadedGrapples(IEnumerable<UnitEntityData> units)
         {
             UnitEntityData[] all = (units ?? Enumerable.Empty<UnitEntityData>())
@@ -2072,6 +2084,18 @@ namespace KingmakerGunslinger.Summoning
             foreach (UnitEntityData owner in all.Where(IsKmgSummon))
             {
                 SummonGrabComponent grab = SummonGrabComponent.Find(owner);
+                if (grab == null || !grab.PersistSwallowedAcrossLoad)
+                {
+                    UnitPartSwallowWhole swallower = owner.Get<UnitPartSwallowWhole>();
+                    if (swallower != null)
+                        foreach (UnitReference reference in swallower.SwallowedUnits.ToArray())
+                        {
+                            UnitEntityData target = reference.Value;
+                            swallower.Free(reference);
+                            if (target != null && grab != null && grab.SwallowedBuff != null)
+                                target.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff);
+                        }
+                }
                 foreach (UnitEntityData target in all)
                 {
                     UnitPartGrappleTarget held = target.Get<UnitPartGrappleTarget>();

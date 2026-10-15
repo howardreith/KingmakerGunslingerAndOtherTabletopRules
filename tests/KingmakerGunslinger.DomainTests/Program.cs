@@ -1198,6 +1198,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint24-original-art", ExpandedSummoningSprint24Tests.OriginalBodiesIconsAndRendererOwnershipAreExact),
             Case("expanded-summoning.sprint24-native-review", ExpandedSummoningSprint24Tests.NativeReviewIsClosedAndObservesRequiredSeams),
             Case("expanded-summoning.sprint24-persistence", ExpandedSummoningSprint24Tests.PersistenceScopeOwnsOnlyTheropodsAndNativeStates),
+            Case("expanded-summoning.sprint24-swallow-reload-scope", ExpandedSummoningSprint24Tests.SwallowedReloadScopeOptsInOnlyTheTyrannosaurus),
             Case("expanded-summoning.sprint19-four-claw-rend", Sprint19RulesTests.FourClawRendNeedsAllFourClawsOnOneTarget),
             Case("expanded-summoning.sprint19-no-stale-rend", Sprint19RulesTests.NoStaleFourClawRendCrossesACommand),
             Case("expanded-summoning.sprint19-review-agrees", Sprint19RulesTests.ReviewExpectationsAgreeWithTheRulesPolicies),

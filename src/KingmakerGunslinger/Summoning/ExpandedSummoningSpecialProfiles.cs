@@ -672,6 +672,31 @@ namespace KingmakerGunslinger.Summoning
         internal const int PurpleWormSwallowSizeDelta = -1;
 
         /// <summary>
+        /// Every grabber that owns a swallow or engulf payload. Releases 0.0.139
+        /// and 0.0.146 published OwnerAcceptedEngineLimitation
+        /// ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD for all of them: an
+        /// active grab, hold, swallow or engulf link is session-scoped and a
+        /// reload resets it cleanly, with no relationship re-establishment.
+        /// </summary>
+        internal static readonly string[] SwallowingGrabberTokens = {
+            "GiantFlytrap", "PurpleWorm", "DireCrocodile", "Tyrannosaurus"
+        };
+
+        /// <summary>
+        /// The single Sprint 24 opt-in. The Tyrannosaurus is new content with no
+        /// released reload promise, so its already-swallowed native state
+        /// (UnitPartSwallowed/UnitPartSwallowWhole plus its own swallowed buff)
+        /// outlives a cold load while its exact owner survives. Its active mouth
+        /// hold still resets under the accepted limitation. Opting another
+        /// creature in would change a published promise and needs its own owner
+        /// decision and fresh cold-load proof, not this flag.
+        /// </summary>
+        internal const string PersistentSwallowGrabberToken = "Tyrannosaurus";
+
+        internal static bool PersistsSwallowedAcrossLoad(string grabberToken)
+        { return grabberToken == PersistentSwallowGrabberToken; }
+
+        /// <summary>
         /// Sprint 8: the Cheetah's sprint - a swift, once-per-summoning burst
         /// of +30 feet for one round (the game's own speed cap still applies);
         /// the tabletop once-per-hour tenfold sprint cannot repeat within one
@@ -764,6 +789,17 @@ namespace KingmakerGunslinger.Summoning
                 GiantFlytrapEngulfBonus != 7 ||
                 GiantFlytrapEngulfAcidDiceCount != 2 || GiantFlytrapEngulfAcidDieSides != 6)
                 throw new InvalidOperationException("Sprint 7 rake / grapple identity profile changed.");
+            if (SwallowingGrabberTokens.Length != 4 ||
+                PersistentSwallowGrabberToken != "Tyrannosaurus" ||
+                !PersistsSwallowedAcrossLoad("Tyrannosaurus") ||
+                PersistsSwallowedAcrossLoad("DireCrocodile") ||
+                PersistsSwallowedAcrossLoad("PurpleWorm") ||
+                PersistsSwallowedAcrossLoad("GiantFlytrap") ||
+                PersistsSwallowedAcrossLoad(null) ||
+                PersistsSwallowedAcrossLoad(string.Empty))
+                throw new InvalidOperationException(
+                    "Sprint 24 swallow reload scope changed: only the Tyrannosaurus " +
+                    "may outlive ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD.");
             if (GiantSpiderWebUses != 2 || GiantSpiderWebRangeFeet != 50 ||
                 GiantSpiderWebRounds != 10 || GiantSpiderWebSpellLevel != 1 ||
                 GiantSpiderWebMaxSizeDelta != 1 || !IsWebTargetSizeAllowed(5, 4, 1) ||

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "PAUSED_BY_OWNER_AFTER_EXACT_AI_CORRECTION_SPRINT_GATE_PASS_NATIVE_REPLAY_NEXT",
+  "status": "CLAUDE_TAKEOVER_LINEAGE_RECONCILED_RELOAD_SCOPE_NARROWED_NEW_HIDDEN_CANDIDATE_REQUIRED",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -45,6 +45,89 @@
       "merge the documentation-only final-records PR"
     ],
     "sprint25Started": false
+  },
+  "claudeTakeover": {
+    "dateUtc": "2026-10-15",
+    "agent": "Claude Opus 5 (1M context)",
+    "host": "HOWARD-LAPTOP",
+    "intake": {
+      "productInputsUnchangedSinceTestedSource": true,
+      "changedPathsSinceTestedSource": [
+        "AUTONOMOUS-RESUME.md",
+        "CLAUDE-SPRINT24-HANDOFF-2026-10-14.md",
+        "docs/SPRINT24-COVERAGE.md",
+        "planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json"
+      ],
+      "hiddenZipSha256Verified": "333a8c8772f089fd5b1e2d47bcfcc92c53f375360c120944fdf7b3cff0c82051",
+      "sidecarIdentitiesVerified": true,
+      "kingmakerProcess": null,
+      "runtimeTransaction": null,
+      "compatibilityLock": null,
+      "publisherCheckout": null,
+      "nextStableTagFree": "v0.0.154"
+    },
+    "upstreamLineageRewrite": {
+      "detected": true,
+      "masterMoved": {
+        "from": "e825411a8f920fdb9447f7ad48d3f7d0267e6e32",
+        "to": "322ac7fe4bf3a20427ef9a10364f061d3b9e751f",
+        "forced": true,
+        "sharedTree": "4ce5e45c260c4cd2c36ee8da8df95c1dc0643e6d"
+      },
+      "productBranchMoved": {
+        "from": "886e6ad005f97926f47be5f9a6d8384f28234b0f",
+        "to": "5c5964da9788a002d47740e0e27c12564c81c16e",
+        "forced": true,
+        "sharedTree": "e0215299279e726b6a6fede1328b38d92ed63057"
+      },
+      "testedSourceEquivalent": {
+        "local": "fb7e471a9877fb68cc0cb26feadc04615882a1b2",
+        "remote": "0784d0ef",
+        "sharedTree": "9314f862e1e8cfd2934f1af88a155eab34dae6f1"
+      },
+      "v0_0_153TagRetargeted": {
+        "localCommit": "e122013edce9ceb88bd9aa0b40c9762cc717ed8d",
+        "remoteCommit": "7b93a06e577efa19cbd6e78838eb8118978662f0",
+        "sharedTree": "57f0a0eb1368c51262365653b3f804fba63c9011"
+      },
+      "classification": "SHA_REWRITE_CONTENT_IDENTICAL_NOT_NEW_WORK",
+      "resolution": "Preserved local lineage at codex/local-safety/sprint24-prerewrite-886e6ad0-20261015 and merged the remote lineage as an empty two-parent merge, mirroring owner precedent 94aebf3c over the same pre-rewrite ancestor 91972f4e.",
+      "prohibitedActionsUsed": [],
+      "localBranchIsDescendantOfPrHead": true
+    },
+    "sharedReloadScopeFinding": {
+      "finding": "ResetLoadedGrapples stopped clearing the swallower list and swallowed buffs on load for every KMG summon while still resetting active mouth holds.",
+      "releasedContract": "Releases 0.0.139 and 0.0.146 published ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD for every creature's active grab, hold, swallow and engulf link.",
+      "affectedReleasedConsumers": [
+        "DireCrocodile",
+        "PurpleWorm",
+        "GiantFlytrap"
+      ],
+      "decision": "NARROWED_SO_RELEASED_LOAD_PATHS_ARE_UNCHANGED",
+      "decisionBasis": "Released owner-accepted limitation explicitly covers swallow and engulf; this sprint carries no authority to change released gameplay or grant a new waiver. Narrowing keeps released evidence valid under an unchanged-dependency audit instead of requalifying three released cold-load paths.",
+      "optInPolicy": "ExpandedSummoningSpecialProfiles.PersistsSwallowedAcrossLoad",
+      "optInCreatures": [
+        "Tyrannosaurus"
+      ],
+      "failClosed": "ConfigureGrabber throws when a swallow payload has no registered reload scope.",
+      "victimDeathGeneralization": "SummonSwallowLifecycleComponent moved from a Dire-Crocodile name check to configured OwningBlueprint/OwnedSwallowedBuff/ReleaseOnVictimDeath; the Dire Crocodile sets all three and a test pins that configuration.",
+      "offlineChecks": {
+        "focusedSprint24": "14/14",
+        "affectedSeamSelection": "38/38",
+        "productionCompilation": "PASS",
+        "newCase": "expanded-summoning.sprint24-swallow-reload-scope",
+        "registeredTests": 2608
+      }
+    },
+    "candidateImpact": "fb7e471a hidden candidate is stale because shared production source changed; one new coherent hidden candidate is required before the remaining native work, and the old ZIP is not reused for it.",
+    "remaining": [
+      "shared-controls native replay on the new candidate",
+      "targeted persistence cycle A",
+      "targeted persistence cycle B (module OFF)",
+      "publication candidate",
+      "public native gates",
+      "merge, release, records PR"
+    ]
   },
   "startedUtc": "2026-10-14T05:07:45Z",
   "completedUtc": null,
@@ -97,7 +180,11 @@
     "authority": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx pages 21-22",
     "authorizedSprint": 24,
     "title": "Theropod Dinosaurs - Deinonychus and Tyrannosaurus",
-    "dependencies": ["original asset pipeline", "Sprint 7", "Sprint 16"],
+    "dependencies": [
+      "original asset pipeline",
+      "Sprint 7",
+      "Sprint 16"
+    ],
     "sprint25Started": false,
     "excluded": [
       "Brachiosaurus",
@@ -126,9 +213,24 @@
       "size": "Medium",
       "hitDice": "4d8+16",
       "hitPoints": 34,
-      "armorClass": [15, 12, 13],
-      "saves": [8, 6, 2],
-      "abilities": [15, 15, 19, 2, 12, 14],
+      "armorClass": [
+        15,
+        12,
+        13
+      ],
+      "saves": [
+        8,
+        6,
+        2
+      ],
+      "abilities": [
+        15,
+        15,
+        19,
+        2,
+        12,
+        14
+      ],
       "bab": 3,
       "cmb": 5,
       "cmd": 17,
@@ -141,17 +243,38 @@
         "bite +5, 1d6+2",
         "foreclaws +0, 1d4+1 secondary"
       ],
-      "specialAttacks": ["Pounce"],
-      "feats": ["Improved Initiative", "Run"],
+      "specialAttacks": [
+        "Pounce"
+      ],
+      "feats": [
+        "Improved Initiative",
+        "Run"
+      ],
       "skills": {
         "AcrobaticsOrMappedMobility": 10,
         "jumpOnlyAcrobatics": 22,
         "Perception": 14,
         "Stealth": 15,
-        "rankAllocation": {"Mobility": 0, "Perception": 2, "Stealth": 2},
-        "racialBonuses": {"Mobility": 8, "Perception": 8, "Stealth": 8}
+        "rankAllocation": {
+          "Mobility": 0,
+          "Perception": 2,
+          "Stealth": 2
+        },
+        "racialBonuses": {
+          "Mobility": 8,
+          "Perception": 8,
+          "Stealth": 8
+        }
       },
-      "forbidden": ["Rake", "Rend", "Grab", "Swallow Whole", "fear", "poison", "Powerful Charge"]
+      "forbidden": [
+        "Rake",
+        "Rend",
+        "Grab",
+        "Swallow Whole",
+        "fear",
+        "poison",
+        "Powerful Charge"
+      ]
     },
     "tyrannosaurus": {
       "alignment": "N",
@@ -159,9 +282,24 @@
       "size": "Gargantuan",
       "hitDice": "18d8+72",
       "hitPoints": 153,
-      "armorClass": [21, 7, 20],
-      "saves": [15, 12, 10],
-      "abilities": [32, 13, 19, 2, 15, 10],
+      "armorClass": [
+        21,
+        7,
+        20
+      ],
+      "saves": [
+        15,
+        12,
+        10
+      ],
+      "abilities": [
+        32,
+        13,
+        19,
+        2,
+        15,
+        10
+      ],
       "bab": 13,
       "cmb": 28,
       "grappleCmb": 32,
@@ -175,9 +313,18 @@
         "nativePositiveContribution": "floor(1.5*m)",
         "nativeZeroOrPenaltyContribution": "m",
         "scopedCorrection": "2*m-native(m)",
-        "positiveExamples": {"9": 5, "10": 5, "11": 6, "12": 6}
+        "positiveExamples": {
+          "9": 5,
+          "10": 5,
+          "11": 6,
+          "12": 6
+        }
       },
-      "grab": {"maxTargetSizeDelta": 0, "maneuverBonus": 4, "biteOnly": true},
+      "grab": {
+        "maxTargetSizeDelta": 0,
+        "maneuverBonus": 4,
+        "biteOnly": true
+      },
       "swallowWhole": {
         "maxTargetSizeDelta": -1,
         "requiresHeldSinceRoundStart": true,
@@ -199,10 +346,24 @@
       ],
       "skills": {
         "Perception": 37,
-        "rankAllocation": {"Mobility": 0, "Perception": 18, "Stealth": 0},
-        "racialBonuses": {"Perception": 8}
+        "rankAllocation": {
+          "Mobility": 0,
+          "Perception": 18,
+          "Stealth": 0
+        },
+        "racialBonuses": {
+          "Perception": 8
+        }
       },
-      "forbidden": ["claws", "tail attack", "Pounce", "trample", "roar fear", "Power Attack", "automatic confirmation"]
+      "forbidden": [
+        "claws",
+        "tail attack",
+        "Pounce",
+        "trample",
+        "roar fear",
+        "Power Attack",
+        "automatic confirmation"
+      ]
     },
     "rulesInterpretations": [
       "The plural foreclaws label is one secondary attack, so Deinonychus has four attacks, not five.",
@@ -233,9 +394,20 @@
       "visibleChoices": 1122,
       "newLogicalRoots": 18
     },
-    "deinonychus": {"monsterRoots": 6, "natureAllyRoots": 6, "baseTier": 4},
-    "tyrannosaurus": {"monsterRoots": 3, "natureAllyRoots": 3, "baseTier": 7},
-    "suppressedUntilQualified": ["deinonychus", "tyrannosaurus"]
+    "deinonychus": {
+      "monsterRoots": 6,
+      "natureAllyRoots": 6,
+      "baseTier": 4
+    },
+    "tyrannosaurus": {
+      "monsterRoots": 3,
+      "natureAllyRoots": 3,
+      "baseTier": 7
+    },
+    "suppressedUntilQualified": [
+      "deinonychus",
+      "tyrannosaurus"
+    ]
   },
   "reuseAudit": {
     "sprint22And23FinalRecordsRead": true,
@@ -248,7 +420,10 @@
   "plan": {
     "ordinaryTargetMinutes": 15,
     "ordinaryCeilingMinutes": 30,
-    "initialFinalNativePlanningBudgetMinutes": [60, 120],
+    "initialFinalNativePlanningBudgetMinutes": [
+      60,
+      120
+    ],
     "focusedFilter": "expanded-summoning.sprint24",
     "candidateGate": "One Invoke-KmgGate.ps1 -Level Sprint on the coherent frozen candidate",
     "publicArtifact": "Remove only the two suppression entries, regenerate controlled artifacts, rerun affected public/native gates, then freeze",
@@ -453,7 +628,7 @@
         "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0914119927206Z/deployment.json",
         "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0914131714833Z-disposable-expanded-summoning-sprint24-native-review",
         "runtimeResultSha256": "a4758447f28aea0df639bf0cadb73e5e68b00dfb99f63b601a2f584e1e1857cf",
-        "durationSeconds": 194.520,
+        "durationSeconds": 194.52,
         "assertions": 8,
         "passed": 5,
         "failed": 3,
@@ -662,7 +837,7 @@
         "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1103574711631Z/deployment.json",
         "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1103586702473Z-disposable-expanded-summoning-sprint24-native-review",
         "runtimeResultSha256": "5cf24f7b0b3e217dc29345131052fa5571da7944bbcb38c84d141499c532212e",
-        "durationSeconds": 98.290,
+        "durationSeconds": 98.29,
         "assertions": 11,
         "passed": 6,
         "failed": 5,
@@ -943,8 +1118,8 @@
   "acceptedLimitations": [
     "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
     "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
-    "PASSIVE_CREATURE_SENSES_UNMODELED (pending unchanged-boundary audit)",
-    "RUN_NATIVE_SUMMON_AI_DISPOSITION (pending unchanged-boundary audit)"
+    "PASSIVE_CREATURE_SENSES_UNMODELED (reconfirmed 2026-10-15 at its released 0.0.152/0.0.153 boundary; both theropods print low-light vision and scent and both declare it; nothing substituted)",
+    "RUN_NATIVE_SUMMON_AI_DISPOSITION (reconfirmed 2026-10-15 at its released 0.0.152/0.0.153 boundary; no invented Run action; same label the Triceratops carried)"
   ],
   "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
   "stopCondition": "IN PROGRESS; release and exact restoration not yet achieved; Sprint 25 not started"
