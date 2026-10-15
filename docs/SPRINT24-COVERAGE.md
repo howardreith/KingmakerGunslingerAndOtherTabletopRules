@@ -357,7 +357,77 @@ occupied slot, no delayed damage, no dangling link" half of the limitation.
 Offline: production compilation plus 136/136 across Sprint 24, the shared
 grapple lifecycle, grab carriers, universal grab sizes, Dire Crocodile stat
 block and swallow numbers, the Sprint 17 persistence/load-reset observers and
-the published-equation record test. The native cycles run on the next candidate.
+the published-equation record test.
+
+### Targeted persistence native results
+
+Five defects were found by running the cycles, each fixed and each fix proven
+natively. None was a product fault in released gameplay; all were observer or
+fixture gaps around the new Sprint 24 family.
+
+1. The prepare fixture required a live mouth hold and an already-swallowed
+   victim on one Tyrannosaurus, which the released one-mouth rule cannot
+   produce. Resolved by the owner's clean-reset decision and the reordered
+   single-mouth fixture above.
+2. The cold-load observer expected the swallowed victim to survive. Corrected to
+   require the reset, the freed mouth and no orphan interior packet.
+3. `RosterImmutableCaches` had no theropod entry, so the two theropod albedo
+   textures were captured with no ownership record, classified `UNRESOLVED` and
+   failed `cleanup-native-destruction` closed. The albedo is a genuine process
+   cache: `preLoadGlobalCountSameTypeName` 1, before 1, after 1, `aliveAfter`
+   true, with `legacySurvivors` 0, while the per-attachment mesh and materials
+   are `PRIVATE_VIEW_OWNED`, start from a pre-load count of 0 and are destroyed
+   on release. Registering the family records ownership that already existed.
+4. The theropod-only exact-identity gate in the view patch returned before the
+   attachment record was created, so with the module off `DescribeView` reported
+   `not-attempted`. `ModuleOffArmoredBodyIsClean` deliberately rejects that,
+   because it does not prove the identity reached the loader's module-disabled
+   refusal. The gate now applies only while the module is on; with it off the
+   flow falls through and records `donor-visual:module-disabled`, exactly as the
+   armored dinosaurs do, with no file read, no allocation and no attached
+   visual.
+5. `Invoke-Sprint22InstalledStack.ps1` accepts `TimeoutSeconds` up to 900 but
+   forwards it to `ObserverStartupTimeoutSeconds`, which caps at 600, so the
+   handoff's prescribed 900 could not bind. 600 is the usable maximum.
+
+Cycle A passed coherently on candidate `fa55ef68` (DLL
+`c11f944cf5e5ba64eb2ca5895b442f678bb558964115100586c2c476cd22c479`):
+
+| Stage | Run ID | Duration |
+| --- | --- | ---: |
+| prepare | `20261015T1816238156943Z-e5c4be54c51b43c1bb922dd364b17c9d` | 182,604 ms |
+| verify-cleanup | `20261015T1821530488732Z-89c346fb27ca4462b871aecff7d0e363` | 179,465 ms |
+| verify-absent | `20261015T1827228847054Z-f86054690e264164ba9c75592cd2f751` | 153,872 ms |
+
+Prepare proved `grabbed`, `grappledTarget`, `activeMouthHoldResidue`,
+`engulfedMouthShut`, `swallowed`, a natural 19 with `criticalConfirmed`, and
+`bleeding`, then wrote exactly one working save. The cold load proved
+`activeMouthHoldReset`, `alreadySwallowedReset`, `engulfedMouthReleased` and
+`bleedingCriticalPreserved`, plus `noOrphanInteriorPacket`, one native 2d6 bleed
+tick and its removal by healing. Fresh absence reported `ownedVictims` 0.
+
+Module-OFF cold load passed on candidate `bf9388d3` (DLL
+`b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee`), run
+`20261015T1849389931701Z-44f1dbce0de747f1a38dd304c1e82a2c`, with
+`moduleEnabled` false, `originalBodyOutcome` `donor-visual:module-disabled`,
+`theropodBodyExact` true for both creatures, and the same reset and behaviour
+rows green. Fresh absence after it reported `ownedVictims` 0 again.
+
+Because each fix changed the DLL, these results are spread across candidates.
+The release still needs one coherent set — Cycle A, Cycle B and the
+shared-controls replay — on a single final hidden candidate, and
+`shared-controls` must be replayed because the shared grapple/swallow seam it
+covers changed after its PASS on `70499a18`.
+
+### Machine state after the persistence work
+
+Exactly restored and audited: installed KMG 0.0.117 with 136 files, eleven mod
+directories, 118 saves, `KMG_AUTOMATION_BASELINE` byte-identical to intake at
+`cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07`, the
+authorized `KMG_AUTOMATION_WORKING` fixture exercised and left verified empty,
+the firearm sound bank unchanged at
+`0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`, and no
+leftover staging directory, compatibility lock or game process.
 
 `HumanReview` remains `NOT_PERFORMED_NONBLOCKING` unless the owner actually
 reviews the finished art.

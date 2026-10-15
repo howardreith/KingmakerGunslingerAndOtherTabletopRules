@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint24DeinonychusTyrannosaurus",
-  "status": "SHARED_CONTROLS_PASS_CLEAN_RESET_DECIDED_PERSISTENCE_CYCLES_PENDING_NEW_CANDIDATE",
+  "status": "PERSISTENCE_BEHAVIOUR_PROVEN_BOTH_MODULE_STATES_FINAL_COHERENT_CANDIDATE_SET_PENDING",
   "host": "HOWARD-LAPTOP",
   "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
   "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
@@ -121,12 +121,13 @@
     },
     "candidateImpact": "fb7e471a hidden candidate is stale because shared production source changed; one new coherent hidden candidate is required before the remaining native work, and the old ZIP is not reused for it.",
     "remaining": [
-      "build one new coherent candidate for the clean-reset source",
-      "targeted persistence cycle A (enabled)",
-      "targeted persistence cycle B (module OFF)",
-      "publication candidate",
-      "public native gates",
-      "merge, release, records PR"
+      "build one final hidden candidate",
+      "one coherent native set on it: Cycle A, Cycle B and the shared-controls replay (shared-controls must rerun because the shared grapple/swallow seam changed after its PASS on 70499a18)",
+      "publication: remove only the two suppression keys, regenerate 1093/29/1122, next free patch version surface, Sprint 24 publisher selector",
+      "one fresh Sprint gate on the frozen public source",
+      "public high-risk inventory and all 18 public routes",
+      "merge PR #45, promote the exact qualified bytes, verify the release independently",
+      "documentation-only records PR"
     ],
     "currentCandidate": {
       "productCommit": "70499a18b6b7437fd686b4e5eff446b27ac54be6",
@@ -279,6 +280,140 @@
         "affectedSelection": "136/136",
         "registeredTests": 2608
       }
+    },
+    "candidateProgression": [
+      {
+        "commit": "70499a18b6b7437fd686b4e5eff446b27ac54be6",
+        "dll": "78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb",
+        "why": "reload-scope narrowing (superseded by the owner decision)",
+        "nativeEvidence": "shared-controls PASS"
+      },
+      {
+        "commit": "35a9c9738c2af9b4f251b43e7420ff90769ca297",
+        "dll": "04b0e39932ac4cbe75a5289f6f2887c22736fa93afce9b71599ada6712888507",
+        "why": "clean reset for all + reordered prepare fixture",
+        "nativeEvidence": "prepare PASS; cleanup FAILED on the theropod albedo cache gap"
+      },
+      {
+        "commit": "fa55ef680f763ed7c727ea207f761690c4ffb2d2",
+        "dll": "c11f944cf5e5ba64eb2ca5895b442f678bb558964115100586c2c476cd22c479",
+        "why": "theropod albedo registered as a process cache",
+        "nativeEvidence": "coherent Cycle A PASS; module-OFF cleanup FAILED on not-attempted"
+      },
+      {
+        "commit": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+        "dll": "b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee",
+        "why": "module-disabled refusal recorded for theropods",
+        "nativeEvidence": "module-OFF cleanup PASS; fresh absence PASS"
+      }
+    ],
+    "defectsFoundAndFixed": [
+      {
+        "id": 1,
+        "kind": "FIXTURE",
+        "detail": "Prepare required a live mouth hold and an already-swallowed victim on one Tyrannosaurus, impossible under the released one-mouth rule.",
+        "fix": "Owner clean-reset decision plus a reordered single-mouth fixture; the active hold proven is the owner's own residue."
+      },
+      {
+        "id": 2,
+        "kind": "OBSERVER",
+        "detail": "Cold load expected the swallowed victim to survive.",
+        "fix": "Require alreadySwallowedReset, engulfedMouthReleased and noOrphanInteriorPacket."
+      },
+      {
+        "id": 3,
+        "kind": "OBSERVER",
+        "detail": "RosterImmutableCaches had no theropod entry, so both albedo textures classified UNRESOLVED and failed cleanup-native-destruction closed.",
+        "fix": "Register the theropod family; evidence shows the albedo is a genuine process cache (pre 1, before 1, after 1, survivors 0) while mesh and materials stay private-owned and are destroyed."
+      },
+      {
+        "id": 4,
+        "kind": "PRODUCT_OBSERVABILITY",
+        "detail": "The theropod exact-identity gate returned before the attachment record, so module OFF reported not-attempted rather than the loader's donor-visual:module-disabled refusal.",
+        "fix": "Apply the gate only while the module is on; with it off fall through and record the refusal, as every other family does. No file read, no allocation, no attached visual."
+      },
+      {
+        "id": 5,
+        "kind": "WRAPPER",
+        "detail": "Invoke-Sprint22InstalledStack.ps1 accepts TimeoutSeconds up to 900 but forwards it to ObserverStartupTimeoutSeconds capped at 600.",
+        "fix": "Use 600, the usable maximum."
+      }
+    ],
+    "cycleA": {
+      "candidate": "fa55ef680f763ed7c727ea207f761690c4ffb2d2",
+      "dll": "c11f944cf5e5ba64eb2ca5895b442f678bb558964115100586c2c476cd22c479",
+      "coherent": true,
+      "prepare": {
+        "runId": "20261015T1816238156943Z-e5c4be54c51b43c1bb922dd364b17c9d",
+        "status": "PASS",
+        "durationMs": 182604,
+        "proved": [
+          "grabbed",
+          "grappledTarget",
+          "activeMouthHoldResidue",
+          "engulfedMouthShut",
+          "swallowed",
+          "criticalNatural=19",
+          "criticalConfirmed",
+          "bleeding",
+          "workingSaveCount=1"
+        ]
+      },
+      "verifyCleanup": {
+        "runId": "20261015T1821530488732Z-89c346fb27ca4462b871aecff7d0e363",
+        "status": "PASS",
+        "durationMs": 179465,
+        "proved": [
+          "activeMouthHoldReset",
+          "alreadySwallowedReset",
+          "engulfedMouthReleased",
+          "bleedingCriticalPreserved",
+          "noOrphanInteriorPacket",
+          "bleed2d6Once",
+          "bleedRemovedByHealing",
+          "cleanup-native-destruction"
+        ]
+      },
+      "verifyAbsent": {
+        "runId": "20261015T1827228847054Z-f86054690e264164ba9c75592cd2f751",
+        "status": "PASS",
+        "durationMs": 153872,
+        "proved": [
+          "ownedVictims=0"
+        ]
+      }
+    },
+    "moduleOffColdLoad": {
+      "candidate": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+      "dll": "b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee",
+      "runId": "20261015T1849389931701Z-44f1dbce0de747f1a38dd304c1e82a2c",
+      "status": "PASS",
+      "proved": [
+        "moduleEnabled=false",
+        "originalBodyOutcome=donor-visual:module-disabled",
+        "theropodBodyExact=true for both creatures",
+        "cold-state-boundary",
+        "cold-state-behavior",
+        "cleanup-native-destruction"
+      ],
+      "freshAbsenceAfter": {
+        "status": "PASS",
+        "ownedVictims": 0
+      },
+      "preparedBy": "fa55ef68 (mixed provenance; superseded by the pending coherent set)"
+    },
+    "machineAudit": {
+      "installedKmgVersion": "0.0.117",
+      "kmgFiles": 136,
+      "modDirectories": 11,
+      "saves": 118,
+      "baselineSaveSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+      "baselineMatchesIntake": true,
+      "workingFixture": "exercised under authorization and left verified empty (ownedVictims=0)",
+      "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "compatLeftovers": 0,
+      "lock": false,
+      "kingmakerProcess": 0
     }
   },
   "startedUtc": "2026-10-14T05:07:45Z",
