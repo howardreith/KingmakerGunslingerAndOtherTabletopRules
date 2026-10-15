@@ -48,7 +48,14 @@ try {
     $repositoryInfo = Get-KmgReleaseCommandText gh @('repo','view','--json','nameWithOwner,defaultBranchRef,isPrivate') | ConvertFrom-Json
     if ($repositoryInfo.nameWithOwner -cne $repository -or $repositoryInfo.isPrivate -or
         $repositoryInfo.defaultBranchRef.name -cne 'master') { throw 'Unexpected release repository metadata.' }
-    $null = Get-KmgReleaseCommandText git @('fetch','--tags','origin','master',$git.Branch)
+    # Fetch only the two refs this promotion compares. A --tags fetch fails
+    # outright on this repository because upstream rewrote its lineage, so
+    # local v0.0.136-v0.0.153 tags point at pre-rewrite commits and git
+    # refuses to clobber them. Those historical tags and their published
+    # assets are deliberately left untouched. Nothing is weakened: stable
+    # tag existence is already proven against the remote with ls-remote and
+    # the GitHub releases API below, both stronger than a local tag read.
+    $null = Get-KmgReleaseCommandText git @('fetch','origin','master',$git.Branch)
     if ((Get-KmgReleaseCommandText git @('rev-parse',('origin/'+$git.Branch))) -cne $git.Commit -or
         (Get-KmgReleaseCommandText git @('rev-parse','origin/master')) -cne $MergedReleaseCommit) {
         throw 'Reporting or merged release head has moved; review the current lineage.'
