@@ -98,6 +98,16 @@ namespace KingmakerGunslinger.Firing
             order.Target = target;
             return true;
         }
+        // Native automatic work may end an undegraded order once no native
+        // command carries it and its target can no longer be attacked, the
+        // rule a captured reload continuation already applies. A degraded
+        // firearm keeps its order until a new explicit order replaces it.
+        internal bool Conclude(Order order, bool carried, bool targetAttackable)
+        {
+            if (!IsCurrent(order) || order.Epoch != 0 || carried || targetAttackable) return false;
+            Cancel(order);
+            return true;
+        }
         internal void Cancel(Order order)
         {
             if (order == null) return;

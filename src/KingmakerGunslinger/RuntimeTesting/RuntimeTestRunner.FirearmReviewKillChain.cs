@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class KillChainLane
         {
             internal string Name;
-            internal bool Loaded, Paused, FinalKill, NoReplacement;
+            internal bool Loaded, Paused, FinalKill, NoReplacement, Broken;
             internal bool Explicit = true;
         }
 
@@ -59,6 +59,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new KillChainLane { Name = "empty-paused", Paused = true },
                 new KillChainLane { Name = "final-kill", Loaded = true, FinalKill = true },
                 new KillChainLane { Name = "ai-only-final-kill", Loaded = true, FinalKill = true, Explicit = false },
+                new KillChainLane { Name = "broken-final-kill", FinalKill = true, Broken = true },
                 new KillChainLane { Name = "no-replacement", Loaded = true, NoReplacement = true } };
             foreach (var lane in lanes)
                 foreach (object step in FirearmKillChainLane(lane, verdicts)) yield return step;
@@ -139,8 +140,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string prefix = "cr04-" + lane.Name + "-";
             _firearmInputStage = prefix + "fixture";
-            _firearmInputFixture = new FirearmInputFixture(false, _firearmInputRows, initiallyLoaded: lane.Loaded);
+            _firearmInputFixture = new FirearmInputFixture(false, _firearmInputRows,
+                initiallyLoaded: lane.Loaded || lane.Broken);
             var f = _firearmInputFixture;
+            // A real natural-1 misfire commits Broken and stops that sequence;
+            // the lane's explicit order is then a legitimate new Broken order.
+            if (lane.Broken) foreach (object step in FirearmReviewBreak(f, prefix)) yield return step;
+            var condition = lane.Broken ? FirearmCondition.Broken : FirearmCondition.Normal;
             using (var costs = new FirearmReviewCosts(f.Actor, _firearmInputRows))
             using (var trace = new FirearmKillChainTrace(f.Actor, _firearmInputRows, prefix))
             {
@@ -164,7 +170,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 long faults = FreeActionFullAttackReloadPatch.Failed;
                 bool ready = f.Actor.Commands.Empty && planned == 4 &&
                     !f.Actor.CombatState.IsFullAttackRestrictedBecauseOfMoveAction &&
-                    f.State.LoadedRounds == (lane.Loaded ? 1 : 0) && f.State.Condition == FirearmCondition.Normal &&
+                    f.State.LoadedRounds == (lane.Loaded ? 1 : 0) && f.State.Condition == condition &&
                     ReferenceEquals(f.Actor.AutoUseAbility?.Blueprint, BlueprintBootstrap.ReloadTestMusketAbility);
                 string setup = "planned=" + planned + ";loadedRounds=" + f.State.LoadedRounds +
                     ";cartridges=" + cartridges + ";autoUseReload=" +
@@ -205,6 +211,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int spent = cartridges - Game.Instance.Player.Inventory.Count(cartridge);
                 bool orderFollowed = order != null && BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) &&
                     ReferenceEquals(order.Owner, chain) && ReferenceEquals(order.Target, own.LastOrDefault()?.Target);
+                // Snapshot the chain's own economy before the next cycle spends more.
+                bool economy = spent == (lane.Loaded ? 3 : 4) && f.State.Condition == condition &&
+                    FreeActionFullAttackReloadPatch.Succeeded - reloads == 3 &&
+                    FreeActionFullAttackReloadPatch.Interrupted == ended &&
+                    FreeActionFullAttackReloadPatch.Failed == faults && chain != null && costs.Exact(chain, false);
                 string detail = setup + ";" + trace.Summary(chain, targets) + ";spentCartridges=" + spent +
                     ";inlineReloads=" + (FreeActionFullAttackReloadPatch.Succeeded - reloads) +
                     ";reloadAttempts=" + (FreeActionFullAttackReloadPatch.Attempted - attempted) +
@@ -250,17 +261,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     verdicts.Add(KillChainCheck(prefix + "native-replacements-after-kills",
                         targets.Take(mortal).All(t => t.Descriptor.State.IsDead) &&
                         !targets.Last().Descriptor.State.IsDead, detail));
-                    verdicts.Add(KillChainCheck(prefix + "ammunition-and-action-economy",
-                        spent == (lane.Loaded ? 3 : 4) && f.State.Condition == FirearmCondition.Normal &&
-                        FreeActionFullAttackReloadPatch.Succeeded - reloads >= 3 &&
-                        FreeActionFullAttackReloadPatch.Interrupted == ended &&
-                        FreeActionFullAttackReloadPatch.Failed == faults && chain != null && costs.Exact(chain, false), detail));
+                    verdicts.Add(KillChainCheck(prefix + "ammunition-and-action-economy", economy, detail));
                     if (lane.Explicit)
                         verdicts.Add(KillChainCheck(prefix + "order-follows-surviving-command",
                             orderFollowed && chainCancellations == 0, detail));
-                    verdicts.Add(KillChainCheck(prefix + "next-native-cycle-continues",
-                        next.Length != 0 && next.All(s => !ReferenceEquals(s.Command, chain)) &&
-                        ReferenceEquals(next[0].Target, targets.Last()), cycle));
+                    if (!lane.Broken)
+                        verdicts.Add(KillChainCheck(prefix + "next-native-cycle-continues",
+                            next.Length != 0 && next.All(s => !ReferenceEquals(s.Command, chain)) &&
+                            ReferenceEquals(next[0].Target, targets.Last()), cycle));
+                }
+                if (lane.Broken)
+                {
+                    // A degraded firearm still needs a new explicit order once
+                    // its accepted target is gone; that order then fires.
+                    verdicts.Add(KillChainCheck(prefix + "degraded-order-unchanged", next.Length == 0 &&
+                        BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) &&
+                        ReferenceEquals(order.Target, targets[3]) && targets[3].Descriptor.State.IsDead, cycle));
+                    int before = trace.Shots.Count;
+                    f.Click(targets.Last());
+                    var reorder = BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor);
+                    for (int tick = 0; tick < 80 && trace.Shots.Count == before; tick++)
+                    { KillChainPump(f, targets, true); yield return null; }
+                    trace.Note("explicit-broken-reattack", f, chain, targets);
+                    var shot = trace.Shots.Skip(before).FirstOrDefault();
+                    verdicts.Add(KillChainCheck(prefix + "explicit-broken-reattack", shot != null &&
+                        !ReferenceEquals(shot.Command, chain) && ReferenceEquals(shot.Target, targets.Last()) &&
+                        reorder != null && !ReferenceEquals(reorder, order) &&
+                        ReferenceEquals(NativeFirearmAttackOrder.Get(shot.Command)?.Order, reorder) &&
+                        f.State.Condition == FirearmCondition.Broken, trace.Summary(chain, targets) + ";" + f.Describe()));
                 }
             }
             f.Dispose();

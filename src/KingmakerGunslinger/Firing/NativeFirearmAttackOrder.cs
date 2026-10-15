@@ -220,7 +220,24 @@ namespace KingmakerGunslinger.Firing
             string reason;
             if (actor != null && ExactEquippedFirearmResolver.TryResolve(
                 actor.Descriptor, out firearm, out reason))
-                Track(command, actor, firearm.Weapon, Ledger.Current(actor), false);
+                Track(command, actor, firearm.Weapon, CurrentForAutomatic(actor), false);
+        }
+        // Automatic work (native AI, auto-use reload) binds to the accepted
+        // order. Once its owner has finished and its target can no longer be
+        // attacked, it has nothing left to continue; native combat then
+        // proceeds as it would with an ordinary weapon. An unfinished owner
+        // always carries it: input prediction swaps actor.Commands, and a
+        // running sequence retargets natively on its own next tick.
+        private static FirearmAttackOrderLedger.Order CurrentForAutomatic(UnitEntityData actor)
+        {
+            var order = Ledger.Current(actor);
+            if (order == null) return null;
+            var owner = order.Owner as UnitCommand;
+            var target = order.Target as UnitEntityData;
+            bool carried = owner != null && !owner.IsFinished;
+            bool attackable = target != null && target.Descriptor != null &&
+                !target.Descriptor.State.IsDead && actor.CanAttack(target);
+            return Ledger.Conclude(order, carried, attackable) ? null : order;
         }
         internal static void CreatedAutomatic(UnitCommand command, UnitEntityData actor, UnitEntityData target)
         {
@@ -240,7 +257,7 @@ namespace KingmakerGunslinger.Firing
             UnitEntityData actor, ItemEntityWeapon weapon)
         {
             if (Get(command) == null)
-                Track(command, actor, weapon, constructing ?? Ledger.Current(actor),
+                Track(command, actor, weapon, constructing ?? CurrentForAutomatic(actor),
                     constructing != null);
         }
         internal static bool Submitting(UnitEntityData actor, UnitCommand command,
@@ -248,7 +265,6 @@ namespace KingmakerGunslinger.Firing
         {
             if (actor == null || command == null) return false;
             Initialized(command, actor);
-            var current = Ledger.Current(actor);
             Binding binding = Get(command);
             if (binding != null && binding.Preview) return true;
             var reload = command as UnitUseAbility;
@@ -260,6 +276,7 @@ namespace KingmakerGunslinger.Firing
                 string reason;
                 if (ExactEquippedFirearmResolver.TryResolve(actor.Descriptor, out firearm, out reason))
                 {
+                    var current = CurrentForAutomatic(actor);
                     // An AI reload may be the very first stale operation after
                     // the break. Bind it even when there is no accepted order,
                     // so suppression rejects it before native action spend.
