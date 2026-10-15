@@ -191,10 +191,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(TheropodRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Only the Sprint 24 candidate remains withheld.");
-            Assertions.Equal(TheropodRulesPolicy.HiddenPublishedLogicalPlacements,
+            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
             foreach (SummonVariantSpec variant in all.Where(value =>

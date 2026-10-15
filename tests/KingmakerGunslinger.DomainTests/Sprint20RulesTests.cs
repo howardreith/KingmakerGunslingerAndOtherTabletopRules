@@ -114,14 +114,14 @@ namespace KingmakerGunslinger.DomainTests
             // modes and 4 of 4 on the party-camera art review. Publication was
             // the removal of one suppression key, so the registered count is
             // the one registration allocated and nothing moved to make room.
-            Assertions.Equal(TheropodRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Only the Sprint 24 candidate remains withheld.");
             Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placements rose from 1044 to 1056, and Sprint 21 "
                 + "registered seven more; later sprints append without moving them.");
-            Assertions.Equal(TheropodRulesPolicy.HiddenPublishedLogicalPlacements,
+            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "The published surface retains every pre-Sprint-24 placement, which "
                 + "is this test's real subject: a later sprint must not reach "
