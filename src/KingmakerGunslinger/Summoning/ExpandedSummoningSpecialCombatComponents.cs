@@ -1987,24 +1987,31 @@ namespace KingmakerGunslinger.Summoning
     public sealed class SummonSwallowLifecycleComponent : BuffLogic,
         IUnitHandler, IGlobalSubscriber
     {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintBuff OwnedSwallowedBuff;
+        public bool ReleaseOnVictimDeath;
+
         public void HandleUnitSpawned(UnitEntityData unit) { }
         public void HandleUnitDestroyed(UnitEntityData unit) { HandleUnitDeath(unit); }
         public void HandleUnitDeath(UnitEntityData unit)
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             // Existing worm/flytrap graphs keep their qualified native paths.
-            // Native swallow only watches the source's death, so Dire also
-            // releases its exact swallowed victim at that victim's boundary.
-            if (owner == null || owner.Blueprint == null ||
-                owner.Blueprint.name != "KMG_Summoning_Unit_DireCrocodile" ||
-                unit == null) return;
+            // Native swallow only watches the source's death, so exact
+            // creature-owned payloads opt in to victim-boundary cleanup.
+            if (!ReleaseOnVictimDeath || owner == null || unit == null ||
+                unit.Descriptor == null || OwningBlueprint == null ||
+                OwnedSwallowedBuff == null ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint)) return;
             SummonGrabComponent grab = SummonGrabComponent.Find(owner);
             UnitPartSwallowWhole part = owner.Get<UnitPartSwallowWhole>();
-            if (grab == null || part == null || !part.SwallowedUnits.Any(value =>
+            if (grab == null ||
+                !ReferenceEquals(grab.SwallowedBuff, OwnedSwallowedBuff) ||
+                part == null || !part.SwallowedUnits.Any(value =>
                     ReferenceEquals(value.Value, unit))) return;
             part.Free(unit);
             SummonGrappleLinks.Release(owner, unit);
-            if (grab.SwallowedBuff != null) unit.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff);
+            unit.Descriptor.Buffs.RemoveFact(OwnedSwallowedBuff);
         }
 
         public override void OnTurnOff()
@@ -2053,8 +2060,20 @@ namespace KingmakerGunslinger.Summoning
         }
 
         // Native parts and their state buffs can survive deserialization even
-        // though the session link is not reconstructible. Reset only KMG-owned
-        // relationships, including nonparty summons/prey, at the load boundary.
+        // though the session link is not reconstructible. Reset every KMG-owned
+        // relationship, including nonparty summons/prey, at the load boundary.
+        //
+        // This is the whole of OwnerAcceptedEngineLimitation:
+        // ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD, as the owner accepted it
+        // on 2026-09-26 and as releases 0.0.139 and 0.0.146 published it: an
+        // active grab, hold, swallow or engulf and the mouth occupancy that goes
+        // with it are session-scoped for EVERY creature, and what is promised in
+        // exchange is a clean reset -- no lingering condition, occupied slot,
+        // delayed damage or dangling link. No creature is exempt: the owner
+        // confirmed on 2026-10-15 that Sprint 24's Tyrannosaurus resets exactly
+        // like the released Dire Crocodile, Purple Worm and Giant Flytrap. A
+        // project-owned re-establishment of holds or engulf links on load is the
+        // workaround he declined; do not add one here opportunistically.
         internal static void ResetLoadedGrapples(IEnumerable<UnitEntityData> units)
         {
             UnitEntityData[] all = (units ?? Enumerable.Empty<UnitEntityData>())

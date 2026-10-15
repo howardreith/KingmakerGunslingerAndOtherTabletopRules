@@ -60,6 +60,19 @@ class Sprint23GateTests(unittest.TestCase):
             "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs",
             gate.ALLOWED_PRODUCTION)
 
+    def test_sprint24_admission_is_research_only(self):
+        self.assertIn(
+            "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Census.cs",
+            gate.ALLOWED_PRODUCTION)
+        self.assertIn(
+            "src/KingmakerGunslinger/RuntimeTesting/Sprint24TheropodCensusPolicy.cs",
+            gate.ALLOWED_PRODUCTION)
+        for production in (
+                "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.Theropods.cs",
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs",
+                "src/KingmakerGunslinger/Summoning/TheropodRulesPolicy.cs"):
+            self.assertNotIn(production, gate.ALLOWED_PRODUCTION)
+
 
 if __name__ == "__main__":
     unittest.main()

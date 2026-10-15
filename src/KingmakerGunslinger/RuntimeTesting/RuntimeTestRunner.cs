@@ -1339,6 +1339,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveExpandedSummoningSprint24TheropodCensus)
+                {
+                    Complete(RunExpandedSummoningSprint24TheropodCensus());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableShieldOther)
                 {
                     Complete(RunDisposableShieldOther());
@@ -36200,6 +36206,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopSprint21Review(result);
             if (_sprint22Steps != null || _sprint22Fixture != null) CleanupSprint22NativeReview();
             if (_sprint23Steps != null || _sprint23Fixture != null) CleanupSprint23NativeReview();
+            if (_sprint24Steps != null || _sprint24Fixture != null) CleanupSprint24NativeReview();
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

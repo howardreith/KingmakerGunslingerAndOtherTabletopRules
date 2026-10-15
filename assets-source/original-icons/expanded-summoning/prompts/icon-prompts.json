@@ -623,6 +623,20 @@
       "generator": "blender-procedural"
     },
     {
+      "key": "deinonychus",
+      "displayName": "Deinonychus",
+      "subjectPrompt": "Use case: stylized-concept. Asset type: Pathfinder-style game summon-choice source painting. An original painted portrait of exactly one adult Deinonychus, unmistakably a light agile two-legged predator, in a dynamic low pouncing stride through rugged badlands at warm amber dawn. Its long straight balancing countertail, narrow open jaw, both small grasping forelimbs, both powerful hind legs and the enlarged raised sickle claw on each foot must remain legible at thumbnail size. Rich realistic fantasy paint, tactile olive-brown and muted-rust scales, controlled gold rim light and an ornate aged-bronze circular medallion with safe margin. No text, letters, logos, watermark, gameplay counters, weapon, armor, feathers, quadruped posture, Tyrannosaurus proportions, cat or ape anatomy, plates, horns, wings, extra limbs, duplicated feet or cropped tail.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/SPRINT24-SOURCES.md"
+    },
+    {
+      "key": "tyrannosaurus",
+      "displayName": "Tyrannosaurus",
+      "subjectPrompt": "Use case: stylized-concept. Asset type: Pathfinder-style game summon-choice source painting. An original painted portrait of exactly one adult Tyrannosaurus, unmistakably a colossal heavy two-legged apex predator, grounded in a low three-quarter stance in rugged badlands at stormy amber dusk. The enormous deep muscular skull and open crushing jaws dominate, while the heavy neck, both tiny two-finger forearms, massive planted hind legs and thick long countertail remain readable. Rich realistic fantasy paint, tactile deep-umber and charcoal-olive scales, controlled amber rim light and an ornate aged-bronze circular medallion with safe margin. No text, letters, logos, watermark, gameplay counters, weapon, armor, feathers, quadruped posture, raptor proportions, raised sickle claws, plates, horns, wings, extra limbs or duplicated anatomy.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/SPRINT24-SOURCES.md"
+    },
+    {
       "key": "triceratops",
       "displayName": "Triceratops",
       "subjectPrompt": "A massive adult triceratops charging almost head-on in a low three-quarter view, all three facial horns distinct, a broad scalloped bony frill, beaked mouth, thick elephantine legs and heavy pebbled hide; sunlit rocky badlands and kicked-up dust, warm bronze-gold summon portrait frame, with no rhinoceros traits, saddle, rider or other dinosaur.",

@@ -167,19 +167,21 @@ namespace KingmakerGunslinger.DomainTests
             // passed 44 of 44 in both combat modes. Publication was the
             // removal of one suppression key: the registered count is the one
             // registration allocated, so nothing moved to make room.
-            Assertions.Equal(0,
+            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All seven Giant Crab roots and all Sprint 23 roots are published.");
-            Assertions.Equal(1075,
+                "Only the Sprint 24 candidate remains withheld.");
+            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
-                "Registered placements rise from 1056 to 1063.");
-            Assertions.Equal(1075,
+                "Later sprints append without moving the seven crab roots.");
+            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "And every one of them is visible.");
-            foreach (SummonVariantSpec variant in all)
+                "Every pre-Sprint-24 route remains visible.");
+            foreach (SummonVariantSpec variant in all.Where(value =>
+                !TheropodRulesPolicy.IsTheropod(value.Creature.Key)))
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Every placement is published: " + variant.StableKey);
+                    "Every pre-Sprint-24 placement is published: " +
+                    variant.StableKey);
         }
 
         /// <summary>

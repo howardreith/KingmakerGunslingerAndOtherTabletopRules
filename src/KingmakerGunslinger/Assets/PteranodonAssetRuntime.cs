@@ -599,6 +599,7 @@ namespace KingmakerGunslinger.Assets
             ConfigureCrocodilians(context);
             ConfigureAnkylosaurusVisual(context);
             ConfigureArmoredDinosaurVisuals(context);
+            ConfigureTheropodVisuals(context);
         }
 
         private static void ConfigureCrocodilians(ModContext context)

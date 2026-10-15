@@ -42,7 +42,7 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
-    internal static class ExpandedSummoningSpecialBuilder
+    internal static partial class ExpandedSummoningSpecialBuilder
     {
         private const string LanternUnitSymbol =
             "KMG.Summoning.Unit.LanternArchon";
@@ -660,6 +660,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDocileHooves(bySymbol, PonyUnitSymbol, PonyCombatTraitsSymbol, "Pony");
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
+            ConfigureTheropodSpecials(library, bySymbol);
             // After the grapplers, because ConfigureGrabber replaces
             // the traits buff's component array and these append to it.
             ConfigureXillDefences(library, bySymbol);
@@ -2016,6 +2017,7 @@ namespace KingmakerGunslinger.Blueprints
                     Swallowed = direSwallowed,
                     SwallowDelta = CrocodilianRulesPolicy.For("dire-crocodile")
                         .SwallowSizeDelta,
+                    ReleaseSwallowedOnVictimDeath = true,
                     DeathRollCreatureKey = "dire-crocodile" });
             ConfigureSummonWeb(library, bySymbol, new WebSpec {
                 UnitSymbol = GiantSpiderUnitSymbol,
@@ -2259,6 +2261,12 @@ namespace KingmakerGunslinger.Blueprints
             internal BlueprintBuff Hold;
             internal BlueprintBuff Grappled;
             internal BlueprintBuff Swallowed;
+            /// <summary>
+            /// Opts a creature-owned swallowed payload into exact victim-
+            /// death cleanup. Native Purple Worm and Flytrap behavior stays
+            /// on its already-qualified path.
+            /// </summary>
+            internal bool ReleaseSwallowedOnVictimDeath;
             internal bool SwallowAbsolute;
             internal Size SwallowMaxSize;
             internal int SwallowDelta = -1;
@@ -2929,6 +2937,12 @@ namespace KingmakerGunslinger.Blueprints
             grab.HoldBuff = spec.Hold;
             grab.GrappledBuff = spec.Grappled;
             grab.SwallowedBuff = spec.Swallowed;
+            // Every swallow/engulf payload is registered, so a new swallower
+            // cannot slip past the accepted reload limitation unnoticed.
+            if (spec.Swallowed != null && !ExpandedSummoningSpecialProfiles
+                    .SwallowingGrabberTokens.Contains(token))
+                throw new InvalidOperationException("The " + token +
+                    " swallow payload has no registered reload scope.");
             grab.SwallowMaxSizeIsAbsolute = spec.SwallowAbsolute;
             grab.SwallowMaxSize = spec.SwallowMaxSize;
             grab.SwallowMaxSizeDelta = spec.SwallowDelta;
@@ -2971,8 +2985,15 @@ namespace KingmakerGunslinger.Blueprints
                 components.Add(weaponStats);
             }
             if (spec.Swallowed != null)
-                components.Add(ScriptableObject.CreateInstance<
-                    SummonSwallowLifecycleComponent>());
+            {
+                var lifecycle = ScriptableObject.CreateInstance<
+                    SummonSwallowLifecycleComponent>();
+                lifecycle.OwningBlueprint = unit;
+                lifecycle.OwnedSwallowedBuff = spec.Swallowed;
+                lifecycle.ReleaseOnVictimDeath =
+                    spec.ReleaseSwallowedOnVictimDeath;
+                components.Add(lifecycle);
+            }
             if (spec.Rake > 0)
                 components.Add(ScriptableObject.CreateInstance<SummonRakeComponent>());
             traits.name = InternalName(traitsSymbol);

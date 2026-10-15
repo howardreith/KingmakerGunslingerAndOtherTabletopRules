@@ -1,0 +1,1610 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint24DeinonychusTyrannosaurus",
+  "status": "QUALIFIED_ALL_GATES_GREEN_RELEASE_PENDING",
+  "current": {
+    "asOfUtc": "2026-10-15",
+    "controllingDecision": "claudeTakeover.ownerDecision_2026_10_15 \u2014 CLEAN_RESET_FOR_ALL. See acceptedLimitations.",
+    "reloadContract": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD applies to every KMG summon with no exemption: save/reload resets active grabs, holds, swallowed and engulfed relationships, the mouth occupancy that goes with them and session-owned links, for Tyrannosaurus, Dire Crocodile, Purple Worm and Giant Flytrap alike. This is a clean reset, not grapple persistence. No creature opt-in, no swallowed-state preservation exception and no project-owned re-establishment is authorized. Native Bleeding Critical has its own separate lifetime, save behaviour and healing removal.",
+    "latestExecutableSource": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
+    "latestQualifiedHiddenCandidate": {
+      "productCommit": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+      "sourceStateSha256": "fdb51df4f0f6efb4c353dfd9c8f2943c5457291f3ccd23ef39671b158cab0015",
+      "localRuntimeZipSha256": "7746d002b382b58b129b7809a2907ed01b21f31521ae0c353a3aad59b364fd36",
+      "dllSha256": "b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee",
+      "dllMvid": "c7f59041-9373-42e0-8a0f-9578d49f53d0",
+      "version": "0.0.153",
+      "sprintGate": "PASS: repository validation plus 2608/2608 domain tests, exact compilation, deterministic package and strict validation; no deployment",
+      "sidecarValidated": true
+    },
+    "stageRoute": "Hidden qualification completed while suppressed on candidate bf9388d3, because the Sprint 24 domain contracts assert the eighteen roots stay hidden and that targeted qualification never selects a published root. Exactly one public candidate followed it.",
+    "hiddenClosureRemaining": [],
+    "bothKeysSuppressed": true,
+    "released": false,
+    "hiddenClosureComplete": true,
+    "hiddenClosureSet": {
+      "candidate": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+      "dllSha256": "b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee",
+      "dllMvid": "c7f59041-9373-42e0-8a0f-9578d49f53d0",
+      "coherent": "All seven scenarios ran on this one validated package and fixture version, executed from a temporary detached checkout at the tested commit so the sidecar identity matched; no rebuild was performed to stamp the reporting head.",
+      "sharedControls": {
+        "runId": "20261015T1956415320638Z-4adf192e492b429b85a05001af14859d",
+        "status": "PASS",
+        "durationMs": 85815,
+        "rows": [
+          "sprint24-review-phase-shared-controls",
+          "sprint24-released-pouncer-control",
+          "sprint24-released-grab-swallow-controls",
+          "sprint24-triceratops-strength-regression",
+          "sprint24-deinonychus-genuine-ai-fallback",
+          "sprint24-fixture-restored",
+          "expanded-summoning-native-profile-restored"
+        ],
+        "aiProof": {
+          "exactAiControllerTicks": 1,
+          "nativeAiCommands": 1,
+          "rolls": 1,
+          "weaponAttacks": 1,
+          "approachMetres": 3.50129318,
+          "ownerDirectlyControllable": false,
+          "fixtureIssuedAttack": false
+        }
+      },
+      "cycleA": {
+        "prepare": {
+          "runId": "20261015T2000370413257Z-4a006dacf7bf4432a22adce3d1843ef3",
+          "status": "PASS",
+          "durationMs": 183949,
+          "proved": {
+            "grabbed": true,
+            "grappledTarget": true,
+            "activeMouthHoldResidue": true,
+            "engulfedMouthShut": true,
+            "swallowed": true,
+            "criticalNatural": 19,
+            "criticalConfirmed": true,
+            "bleeding": true,
+            "workingSaveCount": 1
+          }
+        },
+        "verifyCleanup": {
+          "runId": "20261015T2006035905049Z-6848092d7ea24b8cb2635b6e881a38c1",
+          "status": "PASS",
+          "durationMs": 180333,
+          "proved": {
+            "receiptsExact": true,
+            "activeMouthHoldReset": true,
+            "alreadySwallowedReset": true,
+            "engulfedMouthReleased": true,
+            "bleedingCriticalPreserved": true,
+            "noOrphanInteriorPacket": true,
+            "bleed2d6Once": true,
+            "bleedRemovedByHealing": true,
+            "cleanupNativeDestruction": "PASS",
+            "remainingResources": 0
+          }
+        },
+        "verifyAbsent": {
+          "runId": "20261015T2011289658274Z-6b843a3258854723a6d9d639a15132e1",
+          "status": "PASS",
+          "durationMs": 153295,
+          "proved": {
+            "ownedVictims": 0
+          }
+        }
+      },
+      "cycleB": {
+        "prepare": {
+          "status": "PASS"
+        },
+        "verifyCleanupModuleOff": {
+          "runId": "20261015T2023012001961Z-1dab3a4d65dc414dbc89543b1e236bf4",
+          "status": "PASS",
+          "proved": {
+            "moduleEnabled": false,
+            "activeMouthHoldReset": true,
+            "alreadySwallowedReset": true,
+            "engulfedMouthReleased": true,
+            "bleedingCriticalPreserved": true,
+            "noOrphanInteriorPacket": true,
+            "originalBodyOutcome": "donor-visual:module-disabled",
+            "theropodBodyExact": true,
+            "theropodBodyPrivateResourceCount": 0,
+            "projectResourceCount": 0,
+            "remainingResources": 0
+          }
+        },
+        "verifyAbsent": {
+          "status": "PASS",
+          "proved": {
+            "ownedVictims": 0
+          }
+        }
+      }
+    },
+    "releasedResetLoopDependencyProof": "The ResetLoadedGrapples executable loop is identical to released master 322ac7fe: 33 lines each, zero differences with comments stripped. The loop was therefore restored to its released behaviour rather than retaining the unapproved exception, so released old-consumer cold-load evidence (Sprint 16/17 persistence) applies to unchanged code. The separately changed SummonSwallowLifecycleComponent victim-death configuration is the only executable delta in that file and is covered by the released-consumer controls in shared-controls (released Leopard pouncer, released shared Grab with Purple Worm later-turn swallow including refusedWhileSwallowed and spatOut, and Triceratops +7/+9).",
+    "activeHeldVictimRequirement": "Mapped to existing unchanged qualified evidence rather than a new case. This fixture proves the owner hold residue after swallowing; the separate actively-held-victim cold-load reset is proven by the released Sprint 16/17 persistence observers, which remain valid because the reset loop is identical to released master. No claim is made that one observation proves both states.",
+    "machineAudit": {
+      "installedKmgVersion": "0.0.117",
+      "kmgFiles": 136,
+      "modDirectories": 11,
+      "saves": 118,
+      "baselineSaveSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+      "baselineMatchesIntake": true,
+      "workingFixture": "authorized, exercised, left verified empty",
+      "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "compatLeftovers": 0,
+      "lock": false,
+      "kingmakerProcess": 0,
+      "allTransactionsRestoredAndVerified": true
+    },
+    "nextAction": "Finalize the qualification ledger with the product merge commit, mark PR #45 ready and merge to master, promote the exact f7ab30ac bytes through Publish-Release.ps1, publish stable v0.0.155 Latest, verify the three assets independently, audit restoration, then the documentation-only records PR.",
+    "publicCandidate": {
+      "productCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
+      "version": "0.0.155",
+      "localRuntimeZipSha256": "f7d3b5e651c4c4fb105ff4b734ddc1070c3887b57636e9eb217347809f00a751",
+      "dllSha256": "3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046",
+      "sprintGate": "PASS: repository wrapper, 2610/2610 domain tests, exact-reference build, deterministic package, strict validation, 174.9s; no deployment",
+      "note": "An earlier public candidate 00294f99 (DLL e4d19da4) is superseded: its public inventory run failed the prohibited-reference row and the correction changed the bytes."
+    },
+    "publicNativeEvidence": {
+      "inventory": {
+        "scenario": "observe-expanded-summoning-inventory",
+        "profile": "gunslinger-high-risk-combined",
+        "runId": "20261015T2141314204049Z-4325d362063c4f3ea8b6d559c98d28e1",
+        "status": "PASS",
+        "durationMs": 229945,
+        "loadedCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
+        "loadedDllSha256": "3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046",
+        "proved": [
+          "parentPlacements=1093",
+          "nativeAbilityContracts roots=1093 parents=1093 all executable exact",
+          "prohibitedReferences=0",
+          "templateLogicalChoices=319",
+          "menuReconciliation exact"
+        ]
+      },
+      "publicRoots": {
+        "scenario": "disposable-expanded-summoning-sprint24-native-review",
+        "reviewPhase": "rtwp-foundation",
+        "profile": "gunslinger-high-risk-combined",
+        "runId": "20261015T2148010120985Z-01c721f3259b408b807fe07599762800",
+        "status": "PASS",
+        "durationMs": 121529,
+        "loadedCommit": "f7ab30ac9c306d3db03a4687d6bf453cfca201e5",
+        "loadedDllSha256": "3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046",
+        "proved": [
+          "publishedRoutes=18",
+          "registeredRoutes=18",
+          "all nine Monster and nine Nature's Ally roots through real parent spell paths",
+          "both adult profiles and bodies in RTWP",
+          "fixture and native profile restoration"
+        ]
+      },
+      "failedAttemptPreserved": {
+        "runId": "20261015T2124328633099Z-cb71ec0557ab49658f4481d99aa1c1ce",
+        "status": "FAIL",
+        "row": "expanded-summoning-prohibited-references expected=0 observed=5",
+        "disposition": "PRESERVED: the inventory observer had no interpretation rows for the five private theropod carriers; corrected in f7ab30ac."
+      }
+    },
+    "reusedHiddenEvidenceAudit": "shared-controls, Cycle A and Cycle B remain bound to candidate bf9388d3 (DLL b8bffe18) with their original provenance and are never relabelled as execution on the public bytes. The publication delta does not change their dependencies: ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant applies the IsPublished filter only for the broad released-roster scope, the theropods scope deliberately selects its registered identity while its roots are suppressed, and no summoning runtime observer reads SuppressedCreatureKeys or IsPublished.",
+    "qualificationComplete": true
+  },
+  "host": "HOWARD-LAPTOP",
+  "branch": "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
+  "releaseRecordsBranch": "codex/expanded-summoning-sprint24-release-records",
+  "productPr": 45,
+  "stoppingCheckpoint": {
+    "requestedUtc": "2026-10-14T13:45:51Z",
+    "reason": "owner_weekly_quota_stop",
+    "released": false,
+    "productSourceCommit": "fb7e471a9877fb68cc0cb26feadc04615882a1b2",
+    "productPrState": "DRAFT_OPEN",
+    "freshSprintGate": {
+      "passed": true,
+      "domainTestsPassed": 2607,
+      "domainTestsFailed": 0,
+      "domainTestSeconds": 94.3,
+      "totalSeconds": 192.1,
+      "localRuntimeZipSha256": "333a8c8772f089fd5b1e2d47bcfcc92c53f375360c120944fdf7b3cff0c82051",
+      "compileCandidateZipSha256": "750089752b4b37b5e7e5b0c5fb2761eb705d8b67463321d2c0fc3c7d94f9cad5",
+      "dllSha256": "24af1a3fb3b88410b26656ad2d457edf245b24012858c3ac26e6d316f206c867",
+      "dllMvid": "cd939d5b-6678-4c1f-8e26-ad5c761992d7",
+      "deployed": false
+    },
+    "lastNativeSharedControlsAttempt": {
+      "passed": false,
+      "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1338497545977Z-disposable-expanded-summoning-sprint24-native-review",
+      "runId": "20261014T1338497858128Z-db9c9e1da2754e1398037313c3b5a76b",
+      "failure": "broad AI controller candidate set included nine protected party actors; stopped fail-closed before a command",
+      "currentExactOwnerCorrectionNativeReplay": "NOT_RUN_AFTER_OWNER_STOP_REQUEST"
+    },
+    "lastRuntimeTransaction": {
+      "id": "compat-20261014T133710Z-3cf6f796211f",
+      "status": "Restored",
+      "restoredAtUtc": "2026-10-14T13:40:41.1768330Z",
+      "restorationVerified": true
+    },
+    "remaining": [
+      "one guarded shared-controls native replay against the current exact package",
+      "targeted persistence and module-OFF native batch",
+      "remove only the two Sprint 24 suppression entries and qualify the final public artifact",
+      "merge product PR, publish and independently verify the next stable patch",
+      "merge the documentation-only final-records PR"
+    ],
+    "sprint25Started": false
+  },
+  "claudeTakeover": {
+    "dateUtc": "2026-10-15",
+    "agent": "Claude Opus 5 (1M context)",
+    "host": "HOWARD-LAPTOP",
+    "intake": {
+      "productInputsUnchangedSinceTestedSource": true,
+      "changedPathsSinceTestedSource": [
+        "AUTONOMOUS-RESUME.md",
+        "CLAUDE-SPRINT24-HANDOFF-2026-10-14.md",
+        "docs/SPRINT24-COVERAGE.md",
+        "planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json"
+      ],
+      "hiddenZipSha256Verified": "333a8c8772f089fd5b1e2d47bcfcc92c53f375360c120944fdf7b3cff0c82051",
+      "sidecarIdentitiesVerified": true,
+      "kingmakerProcess": null,
+      "runtimeTransaction": null,
+      "compatibilityLock": null,
+      "publisherCheckout": null,
+      "nextStableTagFree": "v0.0.154"
+    },
+    "upstreamLineageRewrite": {
+      "detected": true,
+      "masterMoved": {
+        "from": "e825411a8f920fdb9447f7ad48d3f7d0267e6e32",
+        "to": "322ac7fe4bf3a20427ef9a10364f061d3b9e751f",
+        "forced": true,
+        "sharedTree": "4ce5e45c260c4cd2c36ee8da8df95c1dc0643e6d"
+      },
+      "productBranchMoved": {
+        "from": "886e6ad005f97926f47be5f9a6d8384f28234b0f",
+        "to": "5c5964da9788a002d47740e0e27c12564c81c16e",
+        "forced": true,
+        "sharedTree": "e0215299279e726b6a6fede1328b38d92ed63057"
+      },
+      "testedSourceEquivalent": {
+        "local": "fb7e471a9877fb68cc0cb26feadc04615882a1b2",
+        "remote": "0784d0ef",
+        "sharedTree": "9314f862e1e8cfd2934f1af88a155eab34dae6f1"
+      },
+      "v0_0_153TagRetargeted": {
+        "localCommit": "e122013edce9ceb88bd9aa0b40c9762cc717ed8d",
+        "remoteCommit": "7b93a06e577efa19cbd6e78838eb8118978662f0",
+        "sharedTree": "57f0a0eb1368c51262365653b3f804fba63c9011"
+      },
+      "classification": "SHA_REWRITE_CONTENT_IDENTICAL_NOT_NEW_WORK",
+      "resolution": "Preserved local lineage at codex/local-safety/sprint24-prerewrite-886e6ad0-20261015 and merged the remote lineage as an empty two-parent merge, mirroring owner precedent 94aebf3c over the same pre-rewrite ancestor 91972f4e.",
+      "prohibitedActionsUsed": [],
+      "localBranchIsDescendantOfPrHead": true
+    },
+    "sharedReloadScopeFinding": {
+      "finding": "ResetLoadedGrapples stopped clearing the swallower list and swallowed buffs on load for every KMG summon while still resetting active mouth holds.",
+      "releasedContract": "Releases 0.0.139 and 0.0.146 published ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD for every creature's active grab, hold, swallow and engulf link.",
+      "affectedReleasedConsumers": [
+        "DireCrocodile",
+        "PurpleWorm",
+        "GiantFlytrap"
+      ],
+      "decision": "NARROWED_SO_RELEASED_LOAD_PATHS_ARE_UNCHANGED",
+      "decisionBasis": "Released owner-accepted limitation explicitly covers swallow and engulf; this sprint carries no authority to change released gameplay or grant a new waiver. Narrowing keeps released evidence valid under an unchanged-dependency audit instead of requalifying three released cold-load paths.",
+      "optInPolicy": "ExpandedSummoningSpecialProfiles.PersistsSwallowedAcrossLoad",
+      "optInCreatures": [
+        "Tyrannosaurus"
+      ],
+      "failClosed": "ConfigureGrabber throws when a swallow payload has no registered reload scope.",
+      "victimDeathGeneralization": "SummonSwallowLifecycleComponent moved from a Dire-Crocodile name check to configured OwningBlueprint/OwnedSwallowedBuff/ReleaseOnVictimDeath; the Dire Crocodile sets all three and a test pins that configuration.",
+      "offlineChecks": {
+        "focusedSprint24": "14/14",
+        "affectedSeamSelection": "38/38",
+        "productionCompilation": "PASS",
+        "newCase": "expanded-summoning.sprint24-swallow-reload-scope",
+        "registeredTests": 2608
+      },
+      "status": "SUPERSEDED_2026_10_15",
+      "supersededBy": "claudeTakeover.ownerDecision_2026_10_15",
+      "supersededNote": "This entry proposed a Tyrannosaurus opt-in that would have preserved swallowed state across a cold load. The owner rejected that on 2026-10-15 in favour of a clean reset for every KMG summon. The facts, hashes and offline results below are retained exactly as observed; the decision and optInCreatures fields no longer describe the product."
+    },
+    "candidateImpact": "HISTORICAL: written while 70499a18 was current. Superseded by current.latestQualifiedHiddenCandidate. fb7e471a hidden candidate is stale because shared production source changed; one new coherent hidden candidate is required before the remaining native work, and the old ZIP is not reused for it.",
+    "remaining": [
+      "build one final hidden candidate",
+      "one coherent native set on it: Cycle A, Cycle B and the shared-controls replay (shared-controls must rerun because the shared grapple/swallow seam changed after its PASS on 70499a18)",
+      "publication: remove only the two suppression keys, regenerate 1093/29/1122, next free patch version surface, Sprint 24 publisher selector",
+      "one fresh Sprint gate on the frozen public source",
+      "public high-risk inventory and all 18 public routes",
+      "merge PR #45, promote the exact qualified bytes, verify the release independently",
+      "documentation-only records PR"
+    ],
+    "sharedControlsReplay": {
+      "result": "PASS",
+      "freshExecutionOnTheseBytes": true,
+      "runId": "20261015T1656339936830Z-d7dbc7a93d8347918a382b1c0080a63e",
+      "evidenceDirectory": "runtime-evidence/20261015T1656339513175Z-disposable-expanded-summoning-sprint24-native-review",
+      "runtimeResultSha256": "22c906efcf2548e5b225b3adc5dd124116af573152b481ecae3015bec2c643f3",
+      "durationMs": 96330,
+      "loadedCommit": "70499a18b6b7437fd686b4e5eff446b27ac54be6",
+      "loadedDllSha256": "78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb",
+      "loadedMvid": "39be1579-7fb7-4a13-a400-ef81d56bf345",
+      "steamAppId": 640820,
+      "transaction": "compat-20261015T165501Z-e5ed30500b38",
+      "restoredAtUtc": "2026-10-15T16:58:39.4171513Z",
+      "restorationVerified": true,
+      "settingsExact": true,
+      "saveInteractionOccurred": false,
+      "rows": [
+        "sprint24-review-phase-shared-controls",
+        "sprint24-released-pouncer-control",
+        "sprint24-released-grab-swallow-controls",
+        "sprint24-triceratops-strength-regression",
+        "sprint24-deinonychus-genuine-ai-fallback",
+        "sprint24-fixture-restored",
+        "expanded-summoning-native-profile-restored"
+      ],
+      "aiProof": {
+        "ambientEligibleCandidates": 9,
+        "exactAiControllerTicks": 1,
+        "driver": "DecisionContext.InitGroup -> AiBrainController.TickBrain(exact owner) -> DecisionContext.ReleaseGroup",
+        "nativeAiCommands": 1,
+        "rolls": 1,
+        "weaponAttacks": 1,
+        "approachMetres": 3.50129318,
+        "brain": "Dumb Monster Brain",
+        "ownerDirectlyControllable": false,
+        "fixtureIssuedAttack": false
+      },
+      "status": "VALID_FOR_70499a18_ONLY_REPLAY_REQUIRED",
+      "replayReason": "A shared gameplay dependency (the swallowed-state reload loop) changed after this PASS, so shared-controls must be replayed on the final validated candidate. This receipt is preserved for its own bytes and is not rewritten."
+    },
+    "persistencePrepareFailure": {
+      "disposition": "PRESERVED_FIXTURE_DESIGN_DEFECT_NOT_PRODUCT_FAULT",
+      "runId": "20261015T1705030393659Z-c88efbc2afa6415ab809c2170bce5cda",
+      "evidenceDirectory": "runtime-evidence/20261015T1705030096824Z-working-save-expanded-summoning-prepare",
+      "durationMs": 167032,
+      "transaction": "sprint24-stack-20261015T170326Z-cbec95373f88",
+      "restoredAtUtc": "2026-10-15T17:08:17.4130807Z",
+      "restorationVerified": true,
+      "saveWritten": false,
+      "passedRows": 11,
+      "failedRows": [
+        "sprint24-state-fixture-prepared",
+        "exact-working-save-write"
+      ],
+      "observed": {
+        "swallowed": true,
+        "held": false,
+        "criticalNatural": 0,
+        "criticalConfirmed": false,
+        "bleeding": false,
+        "workingSaveCount": 0
+      },
+      "rootCause": "SummonGrabComponent.SwallowHeld ends the hold then re-records the link and calls SummonGrappleLinks.MarkEngulfed, so a swallowed victim keeps that mouth shut. The Tyrannosaurus has one bite limb, so after the swallow TryGrab hits limbBusy and a further bite enters OnEventAboutToTrigger(RuleAttackRoll) and is set AutoMiss with the combat log suspended.",
+      "corroboration": "shared-controls independently re-proved the same released rule as refusedWhileSwallowed on the Purple Worm.",
+      "conclusion": "One Tyrannosaurus cannot simultaneously own an active mouth hold and an already-swallowed victim; reordering cannot resolve it because the bleed must precede any grab and the single mouth then takes either a hold or a swallow.",
+      "correction": "Redesign the prepare fixture into two state sets (bleed plus live mouth hold; bleed plus swallowed victim) so active-hold reset, already-swallowed persistence, Bleeding Critical persistence, module-OFF cold load and fresh absence all stay provable.",
+      "rejectedAlternative": "Freeing the limb while retaining UnitPartSwallowed would fabricate a state the rules cannot produce.",
+      "weakenedAssertions": null,
+      "ownerDecisionRequired": false,
+      "resolution": "Superseded by the owner decision: with clean reset for all, nothing must survive except the native bleed, so one state set suffices and the impossible premise is gone."
+    },
+    "environmentFindings": [
+      "The guarded harness refuses administrator elevation (Assert-KmgUnelevated); run it de-elevated. runas /trustlevel:0x20000 works and retains the required write access to the Steam Mods directory.",
+      "Steam must already be running: its cold start exceeds the harness 60-second game-startup window, which caused one preserved pre-launch failure.",
+      "Invoke-Sprint22InstalledStack.ps1 accepts TimeoutSeconds up to 900 but forwards it to ObserverStartupTimeoutSeconds, capped at 600, so the handoff's prescribed 900 cannot bind. 600 is the usable maximum."
+    ],
+    "machineState": {
+      "installedKmgVersion": "0.0.117",
+      "modDirectories": 11,
+      "saves": 118,
+      "baselineSaveSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+      "workingSaveSha256": "795d59ff448173c6631518676b655d3bd03b31dc31e418f578f9e9488cb10ada",
+      "bothSavesMatchIntake": true,
+      "compatLeftovers": 0,
+      "lock": false,
+      "kingmakerProcess": 0
+    },
+    "ownerDecision_2026_10_15": {
+      "question": "Should Sprint 24's Tyrannosaurus keep an already-swallowed victim across a cold load?",
+      "decision": "CLEAN_RESET_FOR_ALL",
+      "rationale": "The requirement had no traceable owner charter; it appears only in codex's handoff and coverage record. It contradicted the owner's 2026-09-26 decision, published in releases 0.0.139 and 0.0.146 and the CHANGELOG, that every KMG grab, hold, swallow, engulf and mouth occupancy is session-scoped in exchange for a clean reset, and that a project-owned re-establishment of holds on load is declined and out of scope until separately chartered.",
+      "implementation": "The opt-in was removed, not narrowed. ResetLoadedGrapples clears the swallower list and swallowed buffs for every KMG summon; SummonGrabComponent carries no persistence field; PersistsSwallowedAcrossLoad is a pinned invariant returning false for every token; the profile self-check and expanded-summoning.sprint24-swallow-reload-scope fail closed on any exemption; the grabber builder still throws when a swallow payload has no registered reload scope.",
+      "waiverAdded": false,
+      "declinedWorkaroundImplemented": false,
+      "unchartered": "Persisting swallowed state for any creature, which would also require re-recording the engulf mouth link on load so a reloaded swallower cannot bite with a victim in its stomach."
+    },
+    "redesignedPrepareFixture": {
+      "stateActors": [
+        "already-swallowed",
+        "bleeding-critical"
+      ],
+      "noSeparateHoldActor": "One Tyrannosaurus bite cannot hold one victim while another is swallowed.",
+      "order": [
+        "create actors",
+        "confirmed-critical bite first while the mouth is free, target immune to combat maneuvers so the bite cannot also start a grab",
+        "grab the swallowed actor, held state, owner hold, later-turn swallow"
+      ],
+      "activeHoldProven": "the owner's own UnitPartGrappleInitiator and hold buff residue, which the non-MultiLink release never clears",
+      "prepareReceipt": [
+        "grabbed",
+        "grappledTarget",
+        "activeMouthHoldResidue",
+        "engulfedMouthShut",
+        "swallowed",
+        "criticalNatural",
+        "criticalConfirmed",
+        "bleeding"
+      ],
+      "coldLoadBoundaryRequires": [
+        "receiptsExact",
+        "activeMouthHoldReset",
+        "alreadySwallowedReset",
+        "engulfedMouthReleased",
+        "bleedingCriticalPreserved"
+      ],
+      "coldLoadBehaviourRequires": [
+        "noOrphanInteriorPacket",
+        "bleed2d6Once",
+        "bleedRemovedByHealing"
+      ],
+      "offlineChecks": {
+        "productionCompilation": "PASS",
+        "affectedSelection": "136/136",
+        "registeredTests": 2608
+      }
+    },
+    "candidateProgression": [
+      {
+        "commit": "70499a18b6b7437fd686b4e5eff446b27ac54be6",
+        "dll": "78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb",
+        "why": "reload-scope narrowing (superseded by the owner decision)",
+        "nativeEvidence": "shared-controls PASS"
+      },
+      {
+        "commit": "35a9c9738c2af9b4f251b43e7420ff90769ca297",
+        "dll": "04b0e39932ac4cbe75a5289f6f2887c22736fa93afce9b71599ada6712888507",
+        "why": "clean reset for all + reordered prepare fixture",
+        "nativeEvidence": "prepare PASS; cleanup FAILED on the theropod albedo cache gap"
+      },
+      {
+        "commit": "fa55ef680f763ed7c727ea207f761690c4ffb2d2",
+        "dll": "c11f944cf5e5ba64eb2ca5895b442f678bb558964115100586c2c476cd22c479",
+        "why": "theropod albedo registered as a process cache",
+        "nativeEvidence": "coherent Cycle A PASS; module-OFF cleanup FAILED on not-attempted"
+      },
+      {
+        "commit": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+        "dll": "b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee",
+        "why": "module-disabled refusal recorded for theropods",
+        "nativeEvidence": "module-OFF cleanup PASS; fresh absence PASS"
+      }
+    ],
+    "defectsFoundAndFixed": [
+      {
+        "id": 1,
+        "kind": "FIXTURE",
+        "detail": "Prepare required a live mouth hold and an already-swallowed victim on one Tyrannosaurus, impossible under the released one-mouth rule.",
+        "fix": "Owner clean-reset decision plus a reordered single-mouth fixture; the active hold proven is the owner's own residue."
+      },
+      {
+        "id": 2,
+        "kind": "OBSERVER",
+        "detail": "Cold load expected the swallowed victim to survive.",
+        "fix": "Require alreadySwallowedReset, engulfedMouthReleased and noOrphanInteriorPacket."
+      },
+      {
+        "id": 3,
+        "kind": "OBSERVER",
+        "detail": "RosterImmutableCaches had no theropod entry, so both albedo textures classified UNRESOLVED and failed cleanup-native-destruction closed.",
+        "fix": "Register the theropod family; evidence shows the albedo is a genuine process cache (pre 1, before 1, after 1, survivors 0) while mesh and materials stay private-owned and are destroyed."
+      },
+      {
+        "id": 4,
+        "kind": "PRODUCT_OBSERVABILITY",
+        "detail": "The theropod exact-identity gate returned before the attachment record, so module OFF reported not-attempted rather than the loader's donor-visual:module-disabled refusal.",
+        "fix": "Apply the gate only while the module is on; with it off fall through and record the refusal, as every other family does. No file read, no allocation, no attached visual."
+      },
+      {
+        "id": 5,
+        "kind": "WRAPPER",
+        "detail": "Invoke-Sprint22InstalledStack.ps1 accepts TimeoutSeconds up to 900 but forwards it to ObserverStartupTimeoutSeconds capped at 600.",
+        "fix": "Use 600, the usable maximum."
+      }
+    ],
+    "cycleA": {
+      "candidate": "fa55ef680f763ed7c727ea207f761690c4ffb2d2",
+      "dll": "c11f944cf5e5ba64eb2ca5895b442f678bb558964115100586c2c476cd22c479",
+      "coherent": true,
+      "prepare": {
+        "runId": "20261015T1816238156943Z-e5c4be54c51b43c1bb922dd364b17c9d",
+        "status": "PASS",
+        "durationMs": 182604,
+        "proved": [
+          "grabbed",
+          "grappledTarget",
+          "activeMouthHoldResidue",
+          "engulfedMouthShut",
+          "swallowed",
+          "criticalNatural=19",
+          "criticalConfirmed",
+          "bleeding",
+          "workingSaveCount=1"
+        ]
+      },
+      "verifyCleanup": {
+        "runId": "20261015T1821530488732Z-89c346fb27ca4462b871aecff7d0e363",
+        "status": "PASS",
+        "durationMs": 179465,
+        "proved": [
+          "activeMouthHoldReset",
+          "alreadySwallowedReset",
+          "engulfedMouthReleased",
+          "bleedingCriticalPreserved",
+          "noOrphanInteriorPacket",
+          "bleed2d6Once",
+          "bleedRemovedByHealing",
+          "cleanup-native-destruction"
+        ]
+      },
+      "verifyAbsent": {
+        "runId": "20261015T1827228847054Z-f86054690e264164ba9c75592cd2f751",
+        "status": "PASS",
+        "durationMs": 153872,
+        "proved": [
+          "ownedVictims=0"
+        ]
+      }
+    },
+    "moduleOffColdLoad": {
+      "candidate": "bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2",
+      "dll": "b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee",
+      "runId": "20261015T1849389931701Z-44f1dbce0de747f1a38dd304c1e82a2c",
+      "status": "PASS",
+      "proved": [
+        "moduleEnabled=false",
+        "originalBodyOutcome=donor-visual:module-disabled",
+        "theropodBodyExact=true for both creatures",
+        "cold-state-boundary",
+        "cold-state-behavior",
+        "cleanup-native-destruction"
+      ],
+      "freshAbsenceAfter": {
+        "status": "PASS",
+        "ownedVictims": 0
+      },
+      "preparedBy": "fa55ef68 (mixed provenance; superseded by the pending coherent set)"
+    },
+    "machineAudit": {
+      "installedKmgVersion": "0.0.117",
+      "kmgFiles": 136,
+      "modDirectories": 11,
+      "saves": 118,
+      "baselineSaveSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+      "baselineMatchesIntake": true,
+      "workingFixture": "exercised under authorization and left verified empty (ownedVictims=0)",
+      "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "compatLeftovers": 0,
+      "lock": false,
+      "kingmakerProcess": 0
+    },
+    "supersededCandidate_70499a18": {
+      "productCommit": "70499a18b6b7437fd686b4e5eff446b27ac54be6",
+      "sourceStateSha256": "05649b7f3ca7ba2cbaa7605432ff093575fce992f74f8a2b558aab52ebc0068b",
+      "localRuntimeZipSha256": "a45591472d65d6364230315c812205e9950be1368ca46756aa14111b4d591f16",
+      "compileCandidateZipSha256": "a209a9e560efe04a334363b492cdb811c7a6b9faa61b7d3cd39e615c3d915955",
+      "dllSha256": "78dce65d835bae16800dd3d4c48becf78c8e9eb5cc873da1e3532a54f4b492fb",
+      "dllMvid": "39be1579-7fb7-4a13-a400-ef81d56bf345",
+      "version": "0.0.153",
+      "sprintGate": {
+        "repositoryValidation": "PASS",
+        "domainTests": "2608/2608",
+        "testSeconds": 100.5,
+        "totalSeconds": 200.5,
+        "deployment": null
+      },
+      "supersededCandidatePreservedAt": "runtime-evidence/sprint24-superseded-candidate-fb7e471a",
+      "note": "An earlier build of the same source was discarded because two validator files were uncommitted when it ran; the recorded commit must describe the exact tree that produced the bytes.",
+      "status": "HISTORICAL_SUPERSEDED",
+      "supersededBy": "current.latestQualifiedHiddenCandidate",
+      "supersededNote": "This candidate carried the superseded reload-scope opt-in. Its identities and its shared-controls PASS remain valid evidence for THESE bytes only and must not be relabelled onto any later candidate."
+    }
+  },
+  "startedUtc": "2026-10-14T05:07:45Z",
+  "completedUtc": null,
+  "masterBase": "e825411a8f920fdb9447f7ad48d3f7d0267e6e32",
+  "stableBaseline": {
+    "version": "0.0.153",
+    "productMerge": "e122013edce9ceb88bd9aa0b40c9762cc717ed8d",
+    "annotatedTagObject": "586d42b70b30569f88266c73ea7afc3696e911be",
+    "zipSha256": "cca7c0d2fe902e79aab090250912e0aa03a135c5680a926ab4e4d8749dfd366b"
+  },
+  "intake": {
+    "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint24-deinonychus-tyrannosaurus-intake-20261014T050745Z/intake.json",
+    "sha256": "c54cfea1d5ee6577760ec710d37167951d2367a3e12088b8f823244c5f54a450",
+    "durationSeconds": 58.502,
+    "hostnameVerified": true,
+    "originMasterVerified": true,
+    "newerSprint24BranchFound": false,
+    "primaryCheckoutWasClean": true,
+    "gameProcessAbsent": true,
+    "activeRuntimeTransactions": 0,
+    "compatibilityLockPresent": false,
+    "gameStagingPresent": false,
+    "publisherCheckoutPresent": false,
+    "modsEntries": 968,
+    "modsCanonicalSha256": "caa0b310981642ddda2c3af79dec467a91dbb066fb51ee4437edf4fd9dbe9a37",
+    "installedKmgVersion": "0.0.117",
+    "installedKmgFiles": 136,
+    "installedKmgCanonicalSha256": "425f5ba9f38a0f1d4431949d0d87601fd39571503a4d62649d7c2d2264308d5c",
+    "settingsEntries": 83,
+    "settingsCanonicalSha256": "18d5b65b08c6eb99dd84f13d462e5306666b42315d173c87613ca5489d839354",
+    "saveFiles": 118,
+    "saveCatalogSha256": "9ddbcf64122f9147f895c81aa3c89c7e367f473198489565e1c2be33a9058a6a",
+    "protectedBaselineSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+    "authorizedWorkingSaveSha256": "795d59ff448173c6631518676b655d3bd03b31dc31e418f578f9e9488cb10ada",
+    "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "referencesByteMatched": true
+  },
+  "pushPolicyChange": {
+    "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "beforeSha256": "688b12798eac1b46b63a28205acbb647825e371cd3e9ae5e4db0ee13610d2fb2",
+    "afterSha256": "9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542",
+    "addedBranches": [
+      "codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus",
+      "codex/expanded-summoning-sprint24-release-records"
+    ],
+    "exactRemovalReproducesBeforeHash": true,
+    "otherEdits": false
+  },
+  "charter": {
+    "authority": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx pages 21-22",
+    "authorizedSprint": 24,
+    "title": "Theropod Dinosaurs - Deinonychus and Tyrannosaurus",
+    "dependencies": [
+      "original asset pipeline",
+      "Sprint 7",
+      "Sprint 16"
+    ],
+    "sprint25Started": false,
+    "excluded": [
+      "Brachiosaurus",
+      "Elephant changes",
+      "animal companions",
+      "polymorph forms",
+      "mounts",
+      "expanded summoning feats",
+      "another repository"
+    ]
+  },
+  "sourceContract": {
+    "edition": "Pathfinder First Edition adult monster entries",
+    "sourceUrls": [
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Deinonychus",
+      "https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Tyrannosaurus",
+      "https://legacy.aonprd.com/bestiary/dinosaur.html",
+      "https://legacy.aonprd.com/bestiary/universalMonsterRules.html",
+      "https://www.aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Monster%204",
+      "https://www.aonprd.com/SpellDisplay.aspx?ItemName=Summon%20Nature%27s%20Ally%207",
+      "https://www.aonprd.com/FeatDisplay.aspx?ItemName=Bleeding%20Critical"
+    ],
+    "deinonychus": {
+      "alignment": "N",
+      "type": "animal",
+      "size": "Medium",
+      "hitDice": "4d8+16",
+      "hitPoints": 34,
+      "armorClass": [
+        15,
+        12,
+        13
+      ],
+      "saves": [
+        8,
+        6,
+        2
+      ],
+      "abilities": [
+        15,
+        15,
+        19,
+        2,
+        12,
+        14
+      ],
+      "bab": 3,
+      "cmb": 5,
+      "cmd": 17,
+      "speedFeet": 60,
+      "spaceFeet": 5,
+      "reachFeet": 5,
+      "attacks": [
+        "talon +5, 1d8+2",
+        "talon +5, 1d8+2",
+        "bite +5, 1d6+2",
+        "foreclaws +0, 1d4+1 secondary"
+      ],
+      "specialAttacks": [
+        "Pounce"
+      ],
+      "feats": [
+        "Improved Initiative",
+        "Run"
+      ],
+      "skills": {
+        "AcrobaticsOrMappedMobility": 10,
+        "jumpOnlyAcrobatics": 22,
+        "Perception": 14,
+        "Stealth": 15,
+        "rankAllocation": {
+          "Mobility": 0,
+          "Perception": 2,
+          "Stealth": 2
+        },
+        "racialBonuses": {
+          "Mobility": 8,
+          "Perception": 8,
+          "Stealth": 8
+        }
+      },
+      "forbidden": [
+        "Rake",
+        "Rend",
+        "Grab",
+        "Swallow Whole",
+        "fear",
+        "poison",
+        "Powerful Charge"
+      ]
+    },
+    "tyrannosaurus": {
+      "alignment": "N",
+      "type": "animal",
+      "size": "Gargantuan",
+      "hitDice": "18d8+72",
+      "hitPoints": 153,
+      "armorClass": [
+        21,
+        7,
+        20
+      ],
+      "saves": [
+        15,
+        12,
+        10
+      ],
+      "abilities": [
+        32,
+        13,
+        19,
+        2,
+        15,
+        10
+      ],
+      "bab": 13,
+      "cmb": 28,
+      "grappleCmb": 32,
+      "cmd": 39,
+      "speedFeet": 40,
+      "spaceFeet": 20,
+      "reachFeet": 20,
+      "attack": "bite +20, 4d6+22, 19-20, plus Grab",
+      "powerfulBite": {
+        "desiredSignedStrengthContribution": "2*m",
+        "nativePositiveContribution": "floor(1.5*m)",
+        "nativeZeroOrPenaltyContribution": "m",
+        "scopedCorrection": "2*m-native(m)",
+        "positiveExamples": {
+          "9": 5,
+          "10": 5,
+          "11": 6,
+          "12": 6
+        }
+      },
+      "grab": {
+        "maxTargetSizeDelta": 0,
+        "maneuverBonus": 4,
+        "biteOnly": true
+      },
+      "swallowWhole": {
+        "maxTargetSizeDelta": -1,
+        "requiresHeldSinceRoundStart": true,
+        "requiresNewCheck": true,
+        "periodicDamage": "2d8+11",
+        "interiorArmorClass": 17,
+        "interiorHitPoints": 15
+      },
+      "feats": [
+        "Bleeding Critical",
+        "Critical Focus",
+        "Diehard",
+        "Endurance",
+        "Improved Critical (bite)",
+        "Improved Initiative",
+        "Iron Will",
+        "Run",
+        "Skill Focus (Perception)"
+      ],
+      "skills": {
+        "Perception": 37,
+        "rankAllocation": {
+          "Mobility": 0,
+          "Perception": 18,
+          "Stealth": 0
+        },
+        "racialBonuses": {
+          "Perception": 8
+        }
+      },
+      "forbidden": [
+        "claws",
+        "tail attack",
+        "Pounce",
+        "trample",
+        "roar fear",
+        "Power Attack",
+        "automatic confirmation"
+      ]
+    },
+    "rulesInterpretations": [
+      "The plural foreclaws label is one secondary attack, so Deinonychus has four attacks, not five.",
+      "Powerful Bite is always applicable and reaches exactly twice the signed Strength modifier without doubling any other damage.",
+      "Grab permits the Tyrannosaurus's own size or smaller; Swallow Whole separately permits one category smaller.",
+      "Swallow occurs only after the target was held in the mouth at the start of a later qualifying turn/round and a new check succeeds."
+    ]
+  },
+  "surface": {
+    "baseline": {
+      "uniqueProjectCreatures": 105,
+      "monsterCreatures": 93,
+      "monsterPlacements": 534,
+      "natureAllyCreatures": 93,
+      "natureAllyPlacements": 541,
+      "generatedPlacements": 1075,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1104
+    },
+    "expectedPublic": {
+      "uniqueProjectCreatures": 107,
+      "monsterCreatures": 95,
+      "monsterPlacements": 543,
+      "natureAllyCreatures": 95,
+      "natureAllyPlacements": 550,
+      "generatedPlacements": 1093,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1122,
+      "newLogicalRoots": 18
+    },
+    "deinonychus": {
+      "monsterRoots": 6,
+      "natureAllyRoots": 6,
+      "baseTier": 4
+    },
+    "tyrannosaurus": {
+      "monsterRoots": 3,
+      "natureAllyRoots": 3,
+      "baseTier": 7
+    },
+    "suppressedUntilQualified": [
+      "deinonychus",
+      "tyrannosaurus"
+    ]
+  },
+  "reuseAudit": {
+    "sprint22And23FinalRecordsRead": true,
+    "nativePounceCarrierAudit": "EXACT_NATIVE_POUNCE_FACT_RESOLVED; BEHAVIOR_PROOF_PENDING",
+    "sharedGrappleSwallowAudit": "FOCUSED_DOMAIN_REGRESSIONS_PASS; NATIVE_REQUALIFICATION_PENDING",
+    "strengthContributionAudit": "SPRINT23_INSTALLED_IL_PROVEN; TYRANNOSAURUS SIGNED POLICY FROZEN",
+    "artAndRigAudit": "CENSUS_PASS; LIZARDFOLK_FREE_HANDS_SHARED_RIG_FROZEN; TROLL_TWO_JOINT_TAIL_NEGATIVE_CONTROL",
+    "criticalCarrierAudit": "NO_NATIVE_BLEEDING_CRITICAL_FEAT; PROJECT_EXACT_BITE_CONFIRMED_CRITICAL_TRIGGER_REUSES_NATIVE_BLEED2D6BUFF"
+  },
+  "plan": {
+    "ordinaryTargetMinutes": 15,
+    "ordinaryCeilingMinutes": 30,
+    "initialFinalNativePlanningBudgetMinutes": [
+      60,
+      120
+    ],
+    "focusedFilter": "expanded-summoning.sprint24",
+    "candidateGate": "One Invoke-KmgGate.ps1 -Level Sprint on the coherent frozen candidate",
+    "publicArtifact": "Remove only the two suppression entries, regenerate controlled artifacts, rerun affected public/native gates, then freeze",
+    "recordsValidation": "Text, JSON, link and consistency checks only; no product rebuild",
+    "noUnchangedCampaignReplay": true
+  },
+  "qualification": {
+    "censusObserverFocused": {
+      "filter": "expanded-summoning.sprint24-census",
+      "productionCompileSeconds": 19.0,
+      "domainSeconds": 4.4,
+      "selectedTests": 2,
+      "failures": 0,
+      "runtimePreflightCases": 570,
+      "runtimePreflightPassed": true
+    },
+    "censusNative": {
+      "scenario": "observe-expanded-summoning-sprint24-theropod-census",
+      "status": "PASS",
+      "runId": "20261014T0546181426610Z-f8d247dbd44541ea8c8411e12a243680",
+      "gitCommit": "dba2402e270b3084c3cd571c063e1973323ad9b0",
+      "gameVersion": "2.1.7b",
+      "modVersion": "0.0.153",
+      "durationSeconds": 115.399,
+      "completeDomainTests": 2596,
+      "completeDomainSeconds": 88.5,
+      "runtimeResultSha256": "893d72987c0154877571378d72c7319f692f5131c77f788d3b2ac68daa761b35",
+      "censusSha256": "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4",
+      "packageSha256": "5c03793a412e535b214baaef3790eba539a363fc85406a39e7a397c84ce42169",
+      "dllSha256": "00e43cc30f132981b4201998bcd2f315d0d588e2fab7bc75955fb1bc73f80d11",
+      "dllMvid": "fd089740-039a-4aa6-9f68-361413932273",
+      "sourceStateSha256": "3208eb50a7867e9e568ff57d48bc335bdfff4ca94171d258ec982e17ad9d12de",
+      "donorDecision": "Lizardfolk Free Hands shared skeleton; Troll negative control",
+      "bleedingCriticalDecision": "Project exact Tyrannosaurus bite confirmed-critical trigger applies native Bleed2d6Buff"
+    },
+    "hiddenMechanicsFocused": {
+      "status": "PASS_DEVELOPMENT_CHECKPOINT_NOT_QUALIFICATION",
+      "sourceValidator": "PASS hidden stage; 3,149 ledger rows; exact pinned Sprint 24 identities",
+      "manifestValidator": "PASS foundation=2149 active=3146 reserved=3 total=3149",
+      "fixtureValidator": "10/10 PASS",
+      "releaseProductionCompile": "PASS",
+      "sprint24Filter": {
+        "filter": "expanded-summoning.sprint24",
+        "selectedTests": 13,
+        "failures": 0,
+        "productionCompileSeconds": 17.2,
+        "domainSeconds": 1.0
+      },
+      "sharedRegressionFilter": {
+        "filter": "expanded-summoning.sprint24;expanded-summoning.sprint4-grapple-lifecycle;expanded-summoning.correction-grab;expanded-summoning.crocodilian-swallow-numbers",
+        "selectedTests": 14,
+        "failures": 0,
+        "productionCompileSeconds": 0.9,
+        "domainSeconds": 1.0
+      },
+      "registeredDomainTests": 2607,
+      "candidateSuppressionStillPresent": true,
+      "nativeProofStillPending": true,
+      "artProofStillPending": true,
+      "nativeObserver": "CLOSED_SEVEN_PHASE_RTWP_TB_MECHANICS_PRESENTATION_SHARED_CONTROLS_COMPILES",
+      "targetedPersistenceObserver": "THEROPODS_PREPARE_LOAD_CLEANUP_ABSENCE_WITH_HOLD_SWALLOWED_BLEED_RECEIPTS_COMPILES",
+      "sourceOnlyHarnessChecks": {
+        "runtimePreflight": 588,
+        "persistenceExactRoundTrips": 18,
+        "persistenceFailClosedCases": 168,
+        "launcherValidRoutes": 30,
+        "launcherRejectedRoutes": 17,
+        "installedStackRestorationPredicates": 30
+      }
+    },
+    "originalArtFocused": {
+      "status": "PASS_OFFLINE_DEVELOPMENT_CHECKPOINT_NATIVE_PRESENTATION_PENDING",
+      "imageWorkflow": "approved image generation plus established deterministic icon exporter",
+      "iconExportsSha256": {
+        "deinonychus": "d7c15ef813f4920efac88a5b1bcd194e1f872af98c5d619dd60758e96aa1dd36",
+        "tyrannosaurus": "e80aeaa47e293e74fd6bd589670ff864f4c3375d01f1a8c6c7ca3eb25eb50698"
+      },
+      "bodyMeshesSha256": {
+        "deinonychus": "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
+        "tyrannosaurus": "308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87"
+      },
+      "albedosSha256": {
+        "deinonychus": "4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7",
+        "tyrannosaurus": "3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8"
+      },
+      "rigCensusSha256": "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4",
+      "rendererOwnership": "_lizardman001 body swap; exact _ammunition04 per-instance accessory state restored",
+      "moduleOffFileReads": 0,
+      "focusedFilter": "expanded-summoning.sprint24",
+      "focusedSelectedTests": 11,
+      "focusedFailures": 0,
+      "productionCompileSeconds": 17.7,
+      "domainSeconds": 4.4,
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    "candidateSprintGate": {
+      "status": "PASS_HIDDEN_TB_TYRANNOSAURUS_CANDIDATE_SUPERSEDED_BY_VISUAL_RECEIPT_FORMATTER_CORRECTION",
+      "gitCommit": "55695b0913a35b9a3a5521c780814b35b55ed3dc",
+      "gateLevel": "Sprint",
+      "gateDurationSeconds": 185.2,
+      "completeDomainTests": 2607,
+      "completeDomainFailures": 0,
+      "completeDomainSeconds": 90.6,
+      "packageEntries": 370,
+      "packagePath": "artifacts/local-runtime/0.0.153/KingmakerGunslinger-0.0.153-local-runtime.zip",
+      "packageSha256": "44102a5c8833774a00ccc2b5a9f9a623561d35e1940dd7e5ce39ed7e5ca8865d",
+      "dllSha256": "80e1dd837ed3ff7a02b491a705975288bd15b195c56d60e4167d38e930eda75e",
+      "dllMvid": "01329835-0f78-4d37-88e6-04c27c8d589c",
+      "sourceStateSha256": "2e0cb8a932d2cd1edf0a3d7bad48a954cc3dd39d48e48fd631bf0fc23ee50ba3",
+      "disposition": "Complete hidden Sprint gate PASS. Supported second-pair turn admission then produced the exact later second-owner 2d8+11 packet in TB and passed all 11 assertions. The subsequent visual-lifecycle batch exposed a receipt-only native-material misclassification and a theropod diagnostic formatter null dereference, so this compiled candidate is superseded by that bounded correction."
+    },
+    "nativeRuns": [
+      {
+        "phase": "rtwp-foundation",
+        "status": "FAIL_PRESERVED_THEN_SCOPED_CORRECTION",
+        "runId": "20261014T0832560710543Z-f246559fbf7f4109be472d1d19b943cc",
+        "gitCommit": "ed25e0b56a4e4fc21f6bb39c05f43a5cff7fef4b",
+        "compatibilityTransaction": "compat-20261014T082738Z-1b5d4864c61a",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0832549309542Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0832560629690Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "10f297b88443515fd76ace74da508c30b2eaf67a0f24be61c5a212025142d40f",
+        "durationSeconds": 103.583,
+        "assertions": 26,
+        "passed": 22,
+        "failed": 4,
+        "routeDisposition": "All 18 hidden roots executed through real parent paths with legal quantities and template policy.",
+        "failures": [
+          "Playable Human donor race added +2 Constitution and retained Medium combat-size arithmetic.",
+          "Native primary-hand sole-natural-weapon arithmetic added excess half Strength to the first talon.",
+          "Standalone RuleCalculateWeaponStats.SecondaryWeapon stayed false although the foreclaws occupied the secondary limb and produced exact secondary attack/damage.",
+          "Native fade/visibility updates re-enabled the exact _ammunition04 accessory after initial suppression."
+        ],
+        "correction": "Clear donor Race only for both theropods; exact-owner/weapon lead-talon correction; use equipped limb plus outcome as attack-role authority; per-view LateUpdate accessory suppression with exact receipt/release.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-foundation",
+        "status": "PASS_CORRECTED_HIDDEN_CANDIDATE",
+        "runId": "20261014T0851598235701Z-66773cfdb7af4e32a7c2aae7c2b5c14e",
+        "gitCommit": "905c1f7e926924e5ce0b636df2875fc20a2603ba",
+        "compatibilityTransaction": "compat-20261014T085021Z-254c16326dc0",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0851597922754Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "ad9c4b2c7e609ace23515213818d8a9241ebd8f39634e6dc7b000c43c5b4eb4e",
+        "durationSeconds": 95.127,
+        "assertions": 26,
+        "passed": 26,
+        "failed": 0,
+        "routeDisposition": "All 18 hidden roots executed through real parent paths with legal quantities and existing template policy.",
+        "profileDisposition": "Both exact adult profiles and original body/accessory/selection ownership passed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-deinonychus",
+        "status": "FAIL_PRESERVED_OBSERVER_SETUP_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T0856002190634Z-263ba54dd62e43bfb3cd06ed2b62aa13",
+        "gitCommit": "905c1f7e926924e5ce0b636df2875fc20a2603ba",
+        "compatibilityTransaction": "compat-20261014T085422Z-eb67bbd411f8",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0856001045658Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "72fa99628e0ddae8a3d9457e3f03509a16be6395dff8a9265b891ba46382ddb7",
+        "durationSeconds": 93.356,
+        "assertions": 10,
+        "passed": 5,
+        "failed": 5,
+        "proved": "Exact ordinary four-limb routine, one-roll AoO, charge target refusal with zero follow-up/state, legal Pounce movement/economy/four charge rolls, and exact cleanup were observed even where an overstrong assertion failed the row.",
+        "failures": [
+          "Quiet-unit fixture inflated owner HP before the adult profile readback.",
+          "Body and selection were sampled before the proven 12-frame fade settle.",
+          "The nominal single attack did not set native UnitAttack.IsSingleAttack.",
+          "One legal natural 1 incorrectly failed an otherwise exact four-roll Pounce routine.",
+          "The assertion elevated generic command CanStart over the false native target predicate and zero attacks/stale state."
+        ],
+        "correction": "Use the normal own-tier profile path and 12-frame settle before fixture HP inflation; set native IsSingleAttack; control and record d20 preconditions; assert routine shape rather than all-hit luck; keep target refusal and zero effects authoritative for the aborted illegal case.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. Fresh complete Sprint gate required because observer bytes changed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-deinonychus",
+        "status": "PASS_EXACT_HIDDEN_CANDIDATE",
+        "runId": "20261014T0910170141619Z-a373e8e2d66147d1ba787862c1d1722e",
+        "gitCommit": "aa048f1db9d279ea6185ec7ab1b3534eac93ff2a",
+        "compatibilityTransaction": "compat-20261014T090839Z-de4595196cfc",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0910158424752Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0910169829139Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "e3f8c65e72faceabedc11041b1b48432f813e8d3408e99930e479fa2ee05a791",
+        "durationSeconds": 92.724,
+        "assertions": 10,
+        "passed": 10,
+        "failed": 0,
+        "disposition": "Exact adult profile/body, ordinary four-roll full attack, primary-talon single attack, 11.703 m legal four-roll Pounce, illegal/aborted and AoO controls, and teardown all passed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-deinonychus",
+        "status": "FAIL_PRESERVED_TURN_CONTROLLER_ORDERING_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T0914132092096Z-6b3be0fef62341339e3cff41d6189590",
+        "gitCommit": "aa048f1db9d279ea6185ec7ab1b3534eac93ff2a",
+        "compatibilityTransaction": "compat-20261014T091235Z-920f582e4222",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0914119927206Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0914131714833Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "a4758447f28aea0df639bf0cadb73e5e68b00dfb99f63b601a2f584e1e1857cf",
+        "durationSeconds": 194.52,
+        "assertions": 8,
+        "passed": 5,
+        "failed": 3,
+        "failures": [
+          "Ordinary full command remained unstarted outside native turn order and emitted zero rolls.",
+          "Ordinary single command remained unstarted outside native turn order and emitted zero rolls.",
+          "Charge route probing in TB without a valid current-turn path reached native AbilityCustomCharge.CanTarget null state."
+        ],
+        "correction": "Start in RTWP, enroll request-owned owner/target through Sprint22EnrollTurnBasedOwners, wait for the owner's native turn, and survey Charge in RTWP before re-enrolling for actual TB execution.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; corrected carrier name domain-pinned; fresh exact-candidate Sprint gate PASS; changed reproduction proved turn admission and all positive routines.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-deinonychus",
+        "status": "FAIL_PRESERVED_FRESH_TURN_BOUNDARY_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T0927350935045Z-6e1a5607d71340db9a9a63c189551a12",
+        "gitCommit": "eea076088c695ebb7cf48932f452f59c819e61e0",
+        "compatibilityTransaction": "compat-20261014T092558Z-43136354a7f7",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0927339219909Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0927350557211Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "3995732f5bda934a030ac83ed778e8d0fbd25384a13eade57628213b78a1cf6e",
+        "durationSeconds": 100.638,
+        "assertions": 11,
+        "passed": 9,
+        "failed": 2,
+        "proved": "Native turn admission, adult profile/body, ordinary four-roll full attack, one-roll single attack, 11.097 m legal four-roll Pounce, zero illegal-charge attacks, one non-charge AoO and exact cleanup all executed.",
+        "failures": [
+          "The illegal-charge row observed the preceding legal ChargeBuff because the shared advance helper returned during an inter-turn null-controller window.",
+          "The subsequent one-roll non-charge AoO row observed that same marker before the owner reached a fresh native turn."
+        ],
+        "correction": "After native round advancement, wait boundedly until the exact owner reaches its actual fresh turn; record ChargeBuff immediately after Pounce and before/after the illegal command; do not remove the marker or weaken native-expiry assertions.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh-turn and pre-illegal marker diagnostics domain-pinned; fresh exact-candidate Sprint gate PASS; changed phase reproduction 11/11 PASS.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-deinonychus",
+        "status": "PASS_EXACT_HIDDEN_CANDIDATE",
+        "runId": "20261014T0944265414174Z-7212bfe3b8d541e3a65a197a8ea98abb",
+        "gitCommit": "3ed00e74c5602b6a28609a063481e6cb81b100db",
+        "compatibilityTransaction": "compat-20261014T094217Z-8e09a731bba0",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0944253405542Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0944265101226Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "da9c62855c9d2854e5c2bbc607f6bde642a4ae3bcde6ed6aa2964143026ed609",
+        "durationSeconds": 111.715,
+        "assertions": 11,
+        "passed": 11,
+        "failed": 0,
+        "disposition": "Adult profile/body, native turn admission, ordinary four-roll full attack, one-roll single attack, 11.070 m four-roll Pounce, fresh-turn marker expiry, rejected illegal charge, one non-charge AoO and exact teardown all passed.",
+        "markerDisposition": "ChargeBuff was true immediately after legal Pounce, false at the owner's actual fresh turn after 57 frames, false after the rejected charge and false during the AoO control.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-tyrannosaurus",
+        "status": "FAIL_PRESERVED_CRITICAL_AND_HOLD_FIXTURE_ISOLATION_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T0948452245162Z-0d7e74c727dd45cfa0c5f9d76851c865",
+        "gitCommit": "3ed00e74c5602b6a28609a063481e6cb81b100db",
+        "compatibilityTransaction": "compat-20261014T094705Z-c7e1b4e3f5b9",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T0948438707391Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T0948451887900Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "b3cfe78650c28cf814ed0c15e93b7dc6504bc81d6a4a0e041da1d956c4527291",
+        "durationSeconds": 91.386,
+        "assertions": 10,
+        "passed": 8,
+        "failed": 2,
+        "proved": "Adult profile/body, one exact 4d6+22 bite, signed Powerful Bite +9/+10/+11/+12/zero/penalty cases, false native auto-confirm carrier, confirmed critical and one 2d6 bleed tick with healing removal, Huge later-Swallow with three 2d8+11 rounds and escape, independent predators and exact cleanup all executed.",
+        "failures": [
+          "The nominal unconfirmed threat used +100 fixture attack, so its natural-1 confirmation still beat target AC and applied bleed.",
+          "Those real critical-suite bite probes established an unrelated mouth hold, so the subsequent same-size Grab correctly refused an already occupied limb."
+        ],
+        "correction": "Tune target AC between the natural-19 threat and natural-1 confirmation totals while keeping AutoCriticalConfirmation false; make the critical-only fixture target maneuver-immune; assert no Grab side effect and a clean mouth before the dedicated Grab/Swallow sequence.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; target-AC, no-grab-side-effect and clean-start diagnostics domain-pinned; fresh exact-candidate Sprint gate PASS; changed RTWP reproduction 10/10 PASS.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "rtwp-tyrannosaurus",
+        "status": "PASS_EXACT_HIDDEN_CANDIDATE",
+        "runId": "20261014T1002390021964Z-28dd196871c94d9d8dfbc9fd9d099bba",
+        "gitCommit": "c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded",
+        "compatibilityTransaction": "compat-20261014T100058Z-cf1d7b003d74",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1002377679853Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1002389709266Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "03a5c6ce33c163bd0838f21f101758b86b4a45396babf88111914db48e6dc11c",
+        "durationSeconds": 91.283,
+        "assertions": 10,
+        "passed": 10,
+        "failed": 0,
+        "disposition": "Adult profile/body, one 4d6+22 bite, signed Powerful Bite matrix, 19-20 threat with a real natural-1 non-confirm and natural-20 confirm, one native 2d6 bleed cadence/healing removal, same-size Grab boundary, Huge later-Swallow, three 2d8+11 rounds, escape, independent predators and exact cleanup all passed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "FAIL_PRESERVED_POST_RELEASE_CONTINUATION_FIRST_CORRECTION_REPRODUCED_SAME_BOUNDARY",
+        "runId": "20261014T1006340014165Z-655b18d15e674115bbf6a4d6f24fbff8",
+        "gitCommit": "c95a8c03ec644c81f5c0bfe2a0faaff3f7215ded",
+        "compatibilityTransaction": "compat-20261014T100454Z-b4ff58a2e19b",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1006328290269Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1006339791999Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "dcf214490735a54645f580caccd8bb801fbd457e85a264b7d51dd1d2bd5b54db",
+        "durationSeconds": 91.969,
+        "assertions": 11,
+        "passed": 10,
+        "failed": 1,
+        "proved": "Turn admission, adult profile/body, one bite, every signed Powerful Bite case, critical and bleed behavior, same-size/Huge Grab and later-Swallow, three periodic rounds, escape, independent swallowed state and one first 2d8+11 packet for each simultaneous pair all passed.",
+        "failures": [
+          "After releasing the first victim, the second victim retained native swallowed state and its predator retained exactly one victim, but the continuation probe emitted no second packet."
+        ],
+        "correction": "Reacquire the live second-victim swallowed Buff after release, derive its due boundary from current GameTime, assert release caused no extra tick or relink, and record the live-reference and before/after schedule diagnostics.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh ca80f133 exact-candidate Sprint gate 2,607/2,607 PASS. Changed reproduction again retained 10/11 and proved a stable live Buff, no release side effect and a zero-delay boundary already processed; bounded native-clock advancement is required.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "FAIL_PRESERVED_ALREADY_PROCESSED_TURN_BOUNDARY_NATIVE_CLOCK_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T1018203005588Z-5e4db794275a423f8455715af1870200",
+        "gitCommit": "ca80f133e538c9607f6795297e0b2f6bd67c6ad7",
+        "compatibilityTransaction": "compat-20261014T101641Z-a38d3a138c4f",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1018190013055Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1018202001468Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "97f760a9f13d7504a405a7373f5cd48ba8dce67abf98c88c3379b45780e3bb71",
+        "durationSeconds": 93.564,
+        "assertions": 11,
+        "passed": 10,
+        "failed": 1,
+        "proved": "All ten positive rows remained PASS. The independence row proved separate native swallowed state, stable surviving Buff identity, exactly one retained victim, no release-triggered tick or relink, and zero before/after delay at the already processed current turn boundary.",
+        "failures": [
+          "Resubmitting the surviving Buff's already processed zero-delay current boundary emitted no later-round packet."
+        ],
+        "correction": "Add the disposable second victim to the existing fixture-owned native buff clock and wait boundedly for an actual later native pulse to produce exactly one second-owner 2d8+11 periodic packet while the released first victim stays released.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh 8aec8071 exact-candidate Sprint gate 2,607/2,607 PASS. Changed reproduction retained 10/11 and proved 32 passive pulses advanced only 1.666 native seconds while the current TB turn remained open; the qualified native turn-ownership seam is required.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "FAIL_PRESERVED_PASSIVE_CLOCK_STALLED_ON_OPEN_TURN_NATIVE_TURN_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T1032494285038Z-bd65f472ab7e47438b614f79680e9244",
+        "gitCommit": "8aec80714cf8ca77f92d6ae72d065addf33161e1",
+        "compatibilityTransaction": "compat-20261014T103110Z-be8cc748cdf9",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1032482576743Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1032493955427Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "d392f8f3c3ca892fff698bdbf42b088d9e050e33d937614f2c8ee15913a63e18",
+        "durationSeconds": 95.006,
+        "assertions": 11,
+        "passed": 10,
+        "failed": 1,
+        "proved": "All ten other rows remained PASS. The independence row retained distinct swallowed ownership, a stable surviving Buff, no release-triggered tick or relink, the first victim released throughout, and exact cleanup.",
+        "failures": [
+          "Thirty-two passive native-clock pulses advanced only 1.666 native seconds while the current TB turn remained open, so the second pair's naturally scheduled periodic packet was not yet due."
+        ],
+        "correction": "Deliberately make only pair one's packet due, release it, then use the qualified native turn-ownership seam to end active turns and reach pair two's scheduled round; require one exact second-owner 2d8+11 packet while pair one stays released.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh 85581443 exact-candidate Sprint gate 2,607/2,607 PASS. Changed reproduction retained 10/11 after rounds 1 through 7 because neither second-pair actor could become the current TB unit; supported second-pair admission is required.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "FAIL_PRESERVED_SECOND_PAIR_OUTSIDE_TURN_ORDER_ENROLLMENT_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T1045328580408Z-fbcce7f6eeaf48908e4f2197144e2aaa",
+        "gitCommit": "8558144395bd65522a26ad59788d1dcbcacb30f4",
+        "compatibilityTransaction": "compat-20261014T104352Z-2fb0bc1662a8",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1045316568692Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1045328252481Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "931256a5b1fb7b5d960d1113f8dc8f4c774bf13b1bc2a5e4b887ffb994f04428",
+        "durationSeconds": 121.703,
+        "assertions": 11,
+        "passed": 10,
+        "failed": 1,
+        "proved": "All ten other rows remained PASS. Pair one delivered one exact initial 2d8+11 packet; the second Buff stayed reference-stable and owned, release caused no tick or relink, pair one stayed released, controller rounds advanced from 1 to 7, and cleanup was exact.",
+        "failures": [
+          "The controller advanced 900 pulses, 24 ended turns and 35.333 native seconds, but neither member of the disposable second pair was in turn order and the second Buff therefore never reached its owner-or-caster current-unit delivery gate."
+        ],
+        "correction": "Enroll the exact disposable second predator/victim pair through the qualified RTWP-to-TB admission seam before creating either hold, wait for the first predator's native turn, then require the second packet on the admitted pair's later native turn.",
+        "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; exact enrollment receipt, initial owner-turn readiness, pair-turn pulses, native clock coverage and later packet attribution are domain-pinned. Fresh exact-candidate Sprint gate and changed phase reproduction remain required.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "turn-based-tyrannosaurus",
+        "status": "PASS_EXACT_HIDDEN_CANDIDATE",
+        "runId": "20261014T1059561205280Z-7e64b0a8a1d74b569349f25605e3d40c",
+        "gitCommit": "55695b0913a35b9a3a5521c780814b35b55ed3dc",
+        "compatibilityTransaction": "compat-20261014T105815Z-6db7ea49dd7c",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1059549427066Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1059560888903Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "508a70436a939677f6052fbf65c14aaaf83f87d057463383521b2ac0915a8f2d",
+        "durationSeconds": 102.756,
+        "assertions": 11,
+        "passed": 11,
+        "failed": 0,
+        "disposition": "All profile, turn, bite, signed Powerful Bite, critical, Grab/Swallow, cadence, escape and cleanup rows passed. Pair two was admitted exactly, pair one delivered and was released, then pair two delivered one attributed 2d8+11 packet after 200 pulses, five ended turns and the controller advanced from round 1 to 2 while pair one stayed released.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      },
+      {
+        "phase": "visual-lifecycle",
+        "status": "FAIL_PRESERVED_RESOURCE_RECEIPT_AND_FORMATTER_CORRECTION_FOCUSED_PASS",
+        "runId": "20261014T1103586924790Z-3ec0486b28af45db8cd18069744ebb95",
+        "gitCommit": "55695b0913a35b9a3a5521c780814b35b55ed3dc",
+        "compatibilityTransaction": "compat-20261014T110219Z-3b74e5f79bb1",
+        "deploymentReceipt": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20261014T1103574711631Z/deployment.json",
+        "evidencePath": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261014T1103586702473Z-disposable-expanded-summoning-sprint24-native-review",
+        "runtimeResultSha256": "5cf24f7b0b3e217dc29345131052fa5571da7944bbcb38c84d141499c532212e",
+        "durationSeconds": 98.29,
+        "assertions": 11,
+        "passed": 6,
+        "failed": 5,
+        "proved": "Both recovered Deinonychus views attached the exact original body and suppressed only the accessory; the native carrier inventory, fault rollback donor state, fixture restoration and guarded installation restoration were retained.",
+        "failures": [
+          "The exact owned-resource receipt misclassified one native Lizardfolk material-controller instance after rollback and on each successful view, failing the rollback and three teardown rows.",
+          "The shared full-transform diagnostic formatter dereferenced a missing SerpentineVisualAttachment on the theropod death sample and aborted the remaining visual rows."
+        ],
+        "correction": "Filter the theropod receipt to the exact KMG_<key>_Original material family that ReleasePhase2View actually owns, retain mesh/suppression ownership, recognize the qualified theropod driver set in a Sprint 24-only full-transform formatter, contain formatter errors to one evidence row, and add remaining-resource teardown diagnostics.",
+        "correctionChecks": "The first candidate gate rejected an older Sprint 17 source edit before compilation. That file is restored exactly. The scoped observer initially missed the existing Kingmaker.View import; after correction, production compilation and the named Sprint 24 focused filter pass 13/13. Fresh exact-candidate Sprint gate and changed visual-lifecycle reproduction remain required; no unchanged relaunch was performed.",
+        "restorationVerified": true,
+        "permanentDeployment": false
+      }
+    ],
+    "artRuns": [
+      {
+        "kind": "FINAL_OFFLINE_POSE_REVIEW",
+        "status": "PASS_INTERNAL_TECHNICAL_REVIEW",
+        "tool": "Blender 4.5.10 LTS 6dc0b208d1b5",
+        "deinonychusFrames": 11,
+        "tyrannosaurusFrames": 9,
+        "totalRenderSeconds": 181.63,
+        "sortedHashManifestSha256": "504ea9cfaed5723e74b3b67b81ef43155baf71877510de80bbc9de3b950331ea",
+        "disposition": "Clay, silhouette, textured, unlit, party-camera, walk, turn, bite, talon, foreclaw, pounce and jaw extremes are coherent; corrected jaw remains attached and corrected neck/tail transitions do not expose prior gaps or radial shards.",
+        "scopeBoundary": "Offline authored-shape and pose-envelope evidence only; native contacts, cadence, reach, collision, navigation and lifecycle remain pending.",
+        "humanReview": "NOT_PERFORMED_NONBLOCKING"
+      }
+    ],
+    "persistenceRuns": [],
+    "publicationRuns": []
+  },
+  "failures": [
+    {
+      "timestampUtc": "2026-10-14T05:38:47Z",
+      "stage": "predeployment repository validation",
+      "scenario": "observe-expanded-summoning-sprint24-theropod-census",
+      "disposition": "PRESERVED_OFFLINE_HARNESS_ADMISSION_FAILURE",
+      "result": "No deployment, process launch, save access or machine-state change occurred.",
+      "cause": "The frozen Sprint 23 production-source allowlist rejected the two exact Sprint 24 research observer files.",
+      "correction": "Admit only RuntimeTestRunner.ExpandedSummoningSprint24Census.cs and Sprint24TheropodCensusPolicy.cs while continuing to reject all Sprint 24 gameplay/review sources.",
+      "correctionChecks": "8 corruption fixtures PASS; Sprint 23 source validator PASS"
+    },
+    {
+      "timestampUtc": "2026-10-14T05:42:05Z",
+      "stage": "predeployment complete domain suite",
+      "scenario": "observe-expanded-summoning-sprint24-theropod-census",
+      "disposition": "PRESERVED_OFFLINE_RECORD_FORMAT_FAILURE",
+      "result": "2595 of 2596 domain tests passed; no deployment, process launch, save access or machine-state change occurred.",
+      "cause": "The concise active resume omitted the exact contiguous 1,075 generated placements and 1,104 visible choices phrases required by expanded-summoning.published-records-match-derivation.",
+      "correction": "Restore the released public equation in AUTONOMOUS-RESUME.md; no product or package input changed."
+    },
+    {
+      "timestampUtc": "2026-10-14T06:00:00Z",
+      "stage": "post-census exact machine restoration",
+      "scenario": "restore pre-census registry settings",
+      "disposition": "PRESERVED_RESTORATION_HELPER_TYPE_HYDRATION_FAILURES_THEN_EXACT_RESTORE_PASS",
+      "result": "Two attempts failed closed before the sanctioned restore rehydrated binary and DWord values; final 83-entry settings hash and every other intake authority match exactly.",
+      "cause": "ConvertFrom-Json represented registry Binary values as object arrays rather than byte arrays.",
+      "correction": "Rehydrate Binary as non-enumerated byte[] and DWord as int, then invoke Restore-KmgFlatGameSettingsValues; no manual registry or save mutation."
+    },
+    {
+      "timestampUtc": null,
+      "observedUtcWindow": "2026-10-14T06:17:27Z/2026-10-14T06:25:36Z",
+      "stage": "hidden mechanics source validation",
+      "scenario": "Sprint 24 production seam admission",
+      "disposition": "PRESERVED_EXACT_ALLOWLIST_FAILURE_THEN_PASS",
+      "result": "No deployment, process launch or save access occurred.",
+      "cause": "The stage-aware validator initially admitted only the census files and rejected the exact new theropod production seams.",
+      "correction": "Append only the named policy, component and partial-builder seams; corruption fixtures and hidden-stage validation pass."
+    },
+    {
+      "timestampUtc": null,
+      "observedUtcWindow": "2026-10-14T06:17:27Z/2026-10-14T06:25:36Z",
+      "stage": "hidden mechanics repository validation",
+      "scenario": "icon provenance ledger pin",
+      "disposition": "PRESERVED_PROVENANCE_HASH_FAILURE_THEN_PASS",
+      "result": "No icon pixels or approved historical provenance rows changed.",
+      "cause": "Appending the exact Sprint 24 blueprint identities changed blueprints.json bytes while the icon catalog still pinned the released ledger hash.",
+      "correction": "Update the one current-ledger SHA-256 pin and add the exact Sprint 24 extension authorization; icon validation passes."
+    },
+    {
+      "timestampUtc": null,
+      "observedUtcWindow": "2026-10-14T06:17:27Z/2026-10-14T06:25:36Z",
+      "stage": "Release production compilation",
+      "scenario": "Tyrannosaurus-owned swallowed payload",
+      "disposition": "PRESERVED_COMPILE_FAILURE_THEN_PASS",
+      "result": "The first compilation failed before packaging or deployment; the corrected Release production compilation passes.",
+      "cause": "ExpandedSummoningSpecialBuilder.Theropods.cs omitted the Kingmaker.UnitLogic.Mechanics namespace required by ContextDiceValue.",
+      "correction": "Add the required using directive only; no behavior was relaxed."
+    },
+    {
+      "timestampUtc": null,
+      "stage": "offline original-body pose review",
+      "scenario": "first theropod wide-bite deformation",
+      "disposition": "PRESERVED_LOCAL_PREDEPLOYMENT_ART_FAILURE_THEN_CORRECTED",
+      "result": "The lower jaw detached in the first private Blender extreme-pose frame; no package was deployed.",
+      "cause": "The first original jaw geometry was authored below the measured native jaw pivot and the review rotation treated a global axis as bone-local.",
+      "correction": "Move the original skull and jaw onto the captured rest frame and convert review axes through the bone rest quaternion; the revised bite opens beneath the skull."
+    },
+    {
+      "timestampUtc": null,
+      "stage": "offline original-body turn review",
+      "scenario": "neck and tail transition extremes",
+      "disposition": "PRESERVED_LOCAL_PREDEPLOYMENT_ART_FAILURE_CORRECTION_REGENERATED",
+      "result": "An exaggerated turn exposed a neck seam and radial tail-root triangles; no package was deployed.",
+      "cause": "Rigid head motion lacked overlap at the neck and the first tail ring could surface at an oblique camera angle.",
+      "correction": "Add an original neck collar, remove the tail start cap and embed the transition inside an elongated original rump; the complete 20-frame rerender passes internal technical review."
+    },
+    {
+      "timestampUtc": "2026-10-14T07:50:00Z",
+      "stage": "native observer focused domain build",
+      "scenario": "expanded-summoning.sprint24",
+      "disposition": "PRESERVED_TEST_PROJECT_COMPILE_FAILURE_THEN_PASS",
+      "result": "Production compilation passed; the domain test project failed before any package, deployment, process launch or save access.",
+      "cause": "ExpandedSummoningSprint24Tests.cs referenced the existing persistence policy without importing its RuntimeTesting namespace.",
+      "correction": "Add the one required using directive; the same named focused gate then advanced to behavior tests."
+    },
+    {
+      "timestampUtc": "2026-10-14T07:51:00Z",
+      "stage": "native observer focused reflection coverage",
+      "scenario": "expanded-summoning.sprint24-native-review",
+      "disposition": "PRESERVED_CLOSED_COVERAGE_NAMING_FAILURE_THEN_PASS",
+      "result": "Twelve of thirteen selected tests passed; no package, deployment, process launch or save access occurred.",
+      "cause": "The observer proved the Bleeding Critical behavior under the generic method name Sprint24CriticalSuite while the closed reflection coverage requires the carrier to remain explicitly discoverable.",
+      "correction": "Rename only the observer method to Sprint24BleedingCriticalSuite; production compilation and all 13 selected tests pass."
+    },
+    {
+      "timestampUtc": "2026-10-14T07:59:45.5022393Z",
+      "gateDurationSeconds": 165.5,
+      "stage": "first complete Sprint candidate gate",
+      "scenario": "Invoke-KmgGate.ps1 -Level Sprint",
+      "disposition": "PRESERVED_COMPLETE_DOMAIN_FAILURE_BEFORE_CANDIDATE_PACKAGE",
+      "result": "Repository validation passed; 2,567 of 2,607 domain tests passed in 125.3 seconds. No package, deployment, runtime lease, game process or save access occurred. Every Sprint 24 behavior assertion passed.",
+      "cause": "Forty historical tests still treated the released Sprint 23 roster or its former absolute ledger tail as the current global surface after Sprint 24 appended 48 identities, two creatures and 18 hidden roots.",
+      "correction": "Centralize the Sprint 24 append/count contract, preserve historical-prefix assertions by key, and exclude only the two hidden theropod keys from prior-sprint publication loops. Regenerate the weapon visual audit from the current manifest."
+    },
+    {
+      "timestampUtc": null,
+      "observedBeforeUtc": "2026-10-14T08:11:38.7557532Z",
+      "stage": "candidate-gate correction complete domain reproduction",
+      "scenario": "test-domain.ps1 -Configuration Release",
+      "disposition": "PRESERVED_FOUR_RESIDUAL_ASSERTIONS_THEN_FOCUSED_PASS",
+      "result": "2,603 of 2,607 domain tests passed in 92.2 seconds. The four residual failures were Sprint 23 private-tail offset, natural-profile count, template execution counts and custom-weapon audit coverage; no package or runtime action occurred.",
+      "cause": "The first correction batch used the total 48-identity append where the private tail is ten identities, and missed three direct aggregate assertions.",
+      "correction": "Use the centralized ten-private-identity count, add the two natural profiles and nine per-alignment template executions, regenerate the 134-entry audit, and run the exact four-test focused production gate.",
+      "correctionChecks": "Production compilation PASS; 4/4 exact residual reproductions PASS in 0.3 seconds."
+    },
+    {
+      "timestampUtc": "2026-10-14T08:17:17.0238475Z",
+      "gateDurationSeconds": 177.0,
+      "stage": "second complete Sprint candidate gate",
+      "scenario": "Invoke-KmgGate.ps1 -Level Sprint",
+      "disposition": "PRESERVED_STRICT_PACKAGE_INVENTORY_FAILURE_BEFORE_STANDALONE_CANDIDATE",
+      "result": "Repository validation passed; all 2,607 domain tests passed in 94.4 seconds; the exact-reference compile candidate was produced. Deterministic standalone packaging rejected 370 staged files against the released 364-file pin. No qualified standalone package, deployment, runtime lease, game process or save access occurred.",
+      "cause": "Sprint 24 adds exactly six package files: four original theropod mesh/albedo files and two manifest-owned original icons. Package staging and strict allowlisting already named them, but the deterministic count pin and admitted-count parser had not advanced.",
+      "correction": "Set the strict base inventory to 368 and the soundbank-present inventory to 370, admit those two counts in the deterministic packager, keep the current total in the Sprint 24 test, and make historical asset tests assert strict-inventory wiring without duplicating the current total.",
+      "correctionChecks": "Production compilation PASS; 7/7 exact package/source assertions PASS; disposable strict package PASS with 370 entries, four theropod body/paint files and two theropod icons; ZIP SHA-256 697e6bcd5ba57f8dfaa7c8adeafe5849ebde34cf050f32aadfdbefd9298d1aa6; never deployed and not a qualified native candidate."
+    },
+    {
+      "timestampUtc": "2026-10-14T08:34:54.3186254Z",
+      "stage": "first guarded hidden-candidate native foundation phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / rtwp-foundation",
+      "disposition": "PRESERVED_NATIVE_PROFILE_AND_VIEW_FAILURE_THEN_SCOPED_CORRECTION",
+      "result": "22/26 assertions passed in 103.583 seconds. All 18 hidden roots passed real parent-path execution. Four exact profile/view assertions failed. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The visual-only Lizardfolk donor retained its Human race carrier; native primary-hand Strength inflated the lead talon; the standalone calculation flag did not mirror the equipped secondary limb; native fade updates re-enabled the donor accessory.",
+      "correction": "Clear Race only on the two theropods, subtract only the exact lead talon's excess half-Strength term, treat the equipped limb and resulting arithmetic as role authority, and continuously suppress/release the exact accessory per view.",
+      "correctionChecks": "Production compilation PASS; Sprint 24 13/13 PASS; shared resource authority 6/6 PASS; instance-owned resource control 1/1 PASS; fresh corrected complete Sprint gate PASS; changed native foundation reproduction 26/26 PASS."
+    },
+    {
+      "timestampUtc": "2026-10-14T08:57:41.4675488Z",
+      "stage": "first guarded dedicated Deinonychus RTWP phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / rtwp-deinonychus",
+      "disposition": "PRESERVED_OBSERVER_SETUP_AND_ASSERTION_FAILURES_THEN_FOCUSED_PASS",
+      "result": "5/10 assertions passed in 93.356 seconds. The exact ordinary four-roll routine, one-roll AoO and cleanup passed. Legal Pounce emitted exactly four charge rolls after 11.638 m of native movement and ordinary charge economy; the too-close target was rejected with zero attacks/state. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The quiet-unit helper inflated owner HP before profile sampling; view state was sampled before its established settle; the single command omitted native IsSingleAttack; all-hit luck was incorrectly required for Pounce; generic command CanStart was incorrectly required false after exact target refusal.",
+      "correction": "Sample an own-tier summon after the same 12-frame settle and inflate HP afterward; set UnitAttack.IsSingleAttack; deliberately seed and record rolls while asserting routine legality independent of hits; require target refusal and zero follow-up/stale state for the aborted illegal case.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh exact-candidate Sprint gate PASS; changed RTWP phase reproduction 10/10 PASS."
+    },
+    {
+      "timestampUtc": "2026-10-14T09:17:35.9272312Z",
+      "stage": "first guarded dedicated Deinonychus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-deinonychus",
+      "disposition": "PRESERVED_TURN_CONTROLLER_ORDERING_FAILURE_THEN_FOCUSED_PASS",
+      "result": "5/8 assertions passed in 194.520 seconds. Profile, original body and both cleanup assertions passed. Ordinary full/single commands remained unstarted with zero rolls, then route probing raised a structured native null exception. Transaction restoration verified; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The phase enabled TB before enrolling the request-owned summon, leaving commands outside turn order; AbilityCustomCharge route probing then ran in TB without a valid current-turn path.",
+      "correction": "Reuse the qualified Sprint 22/23 sequence: start in RTWP, enroll exact request-owned actors through the supported mode toggle, wait for the owner turn, and survey Charge in RTWP before re-enrolling for actual TB execution.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; turn-enrollment carrier domain-pinned; fresh exact-candidate Sprint gate PASS; changed reproduction proved admission and every positive routine."
+    },
+    {
+      "timestampUtc": "2026-10-14T09:29:23.9012865Z",
+      "stage": "second guarded dedicated Deinonychus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-deinonychus",
+      "disposition": "PRESERVED_INTERTURN_OBSERVER_BOUNDARY_FAILURE_THEN_FOCUSED_PASS",
+      "result": "9/11 assertions passed in 100.638 seconds. Turn admission, full/single commands and an 11.097 m four-roll legal Pounce passed. The rejected illegal command emitted zero attacks and the AoO remained one non-charge talon, but both rows observed the preceding legal ChargeBuff. Transaction restoration verified exactly; no process, lock, staging or permanent deployment remained.",
+      "cause": "Sprint18AdvanceRound can return during a transient native null-controller window between turns, so the negative rows ran before the exact owner reached its fresh turn and before native marker expiry could be evaluated.",
+      "correction": "After the shared round step, wait boundedly for the exact owner's real native turn; record the marker immediately after Pounce and before/after the illegal command; retain failure if native expiry does not occur and never remove the marker in the observer.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh-turn and marker-boundary diagnostics domain-pinned; fresh exact-candidate Sprint gate PASS; changed phase reproduction 11/11 PASS with native marker expiry at the owner's fresh turn."
+    },
+    {
+      "timestampUtc": "2026-10-14T09:48:45.2245162Z",
+      "stage": "first guarded dedicated Tyrannosaurus RTWP phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / rtwp-tyrannosaurus",
+      "disposition": "PRESERVED_CRITICAL_AND_HOLD_FIXTURE_ISOLATION_FAILURES_THEN_FOCUSED_PASS",
+      "result": "8/10 assertions passed in 91.386 seconds. The exact adult profile/body, one 4d6+22 bite, every signed Powerful Bite case, confirmed critical multiplication, native 2d6 bleed cadence/healing removal, Huge later-Swallow with three 2d8+11 rounds, escape, independent predators and cleanup executed. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The critical fixture retained +100 attack, so a natural-1 confirmation still beat target AC; those exact bite probes also established an unrelated mouth hold before the dedicated same-size Grab case.",
+      "correction": "Derive target AC between the natural-19 threat and natural-1 confirmation totals, make only the critical-fixture target maneuver-immune, assert no Grab side effect, and assert clean mouth state before the dedicated Grab/Swallow sequence.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; desired target AC, no-grab side effect and clean-start diagnostics domain-pinned; fresh exact-candidate Sprint gate PASS; changed RTWP reproduction 10/10 PASS."
+    },
+    {
+      "timestampUtc": "2026-10-14T10:08:13.9932768Z",
+      "stage": "first guarded dedicated Tyrannosaurus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-tyrannosaurus",
+      "disposition": "PRESERVED_POST_RELEASE_CONTINUATION_OBSERVER_FAILURE_THEN_CHANGED_REPRODUCTION",
+      "result": "10/11 assertions passed in 91.969 seconds. All profile, turn, bite, signed Strength, critical, Grab/Swallow, three-round cadence, escape and initial independent-pair assertions passed. Releasing the first victim preserved the second native swallowed part and one-victim predator list, but the continuation probe emitted no second packet. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The combined independence probe reused the second victim's pre-release Buff reference and pre-release due-time snapshot after freeing the first victim instead of reacquiring the surviving live state and its current native boundary.",
+      "correction": "Reacquire the live second-victim Buff after release, set its due boundary from current GameTime, separately assert release caused neither a tick nor relinking, and retain the live-reference and before/after delay diagnostics.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh ca80f133 exact-candidate Sprint gate 2,607/2,607 PASS. The changed reproduction retained 10/11 and showed a stable live Buff, no release side effect and a zero-delay boundary already processed, so the next correction advances the native clock instead of resubmitting that boundary."
+    },
+    {
+      "timestampUtc": "2026-10-14T10:20:02.1128346Z",
+      "stage": "second guarded dedicated Tyrannosaurus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-tyrannosaurus",
+      "disposition": "PRESERVED_ALREADY_PROCESSED_TURN_BOUNDARY_FAILURE_THEN_NATIVE_CLOCK_FOCUSED_PASS",
+      "result": "10/11 assertions passed in 93.564 seconds. All ten positive rows remained PASS. The combined independence row proved distinct swallowed state, a stable live second-victim Buff, one retained second-predator victim, no release-triggered tick or relink, and zero delay before and after resubmitting the already processed boundary. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "A zero-delay current boundary had already been processed by the native turn controller. Reassigning that same timestamp could not represent the required later round and therefore emitted no continuation packet.",
+      "correction": "Include the disposable second victim in the existing fixture-owned native buff clock and wait boundedly for a genuine later native pulse, requiring exactly one second-owner 2d8+11 packet while the first victim remains released.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh 8aec8071 exact-candidate Sprint gate 2,607/2,607 PASS. Changed reproduction retained 10/11 and proved 32 passive pulses advanced only 1.666 native seconds while the current TB turn remained open; the next correction uses the qualified native turn-ownership seam."
+    },
+    {
+      "timestampUtc": "2026-10-14T10:34:32.3000186Z",
+      "stage": "third guarded dedicated Tyrannosaurus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-tyrannosaurus",
+      "disposition": "PRESERVED_PASSIVE_CLOCK_STALLED_ON_OPEN_TURN_THEN_NATIVE_TURN_FOCUSED_PASS",
+      "result": "10/11 assertions passed in 95.006 seconds. All ten other rows remained PASS. Distinct swallowed ownership, stable surviving Buff identity, no release-triggered tick or relink, the first victim remaining released and exact cleanup were retained. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "Thirty-two passive controller pulses advanced only 1.666 native seconds while the current TB turn remained open, so the second pair's naturally scheduled periodic packet was not yet due.",
+      "correction": "Deliberately make only pair one's packet due, release that pair, then end active turns through the qualified native turn-ownership seam until pair two reaches its scheduled round; require one exact second-owner 2d8+11 packet while pair one stays released.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; fresh 85581443 exact-candidate Sprint gate 2,607/2,607 PASS. Changed reproduction retained 10/11 after 900 pulses, 24 ended turns, rounds 1 through 7 and 35.333 native seconds; frozen native IL identified missing second-pair turn-order admission."
+    },
+    {
+      "timestampUtc": "2026-10-14T10:47:35.8580408Z",
+      "stage": "fourth guarded dedicated Tyrannosaurus turn-based phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / turn-based-tyrannosaurus",
+      "disposition": "PRESERVED_SECOND_PAIR_OUTSIDE_TURN_ORDER_THEN_ENROLLMENT_FOCUSED_PASS",
+      "result": "10/11 assertions passed in 121.703 seconds. Pair one delivered one exact initial 2d8+11 packet; distinct swallowed ownership, stable surviving Buff identity, no release-triggered tick or relink, pair one remaining released and exact cleanup were retained. The controller advanced 900 pulses, 24 ended turns, rounds 1 through 7 and 35.333 native seconds. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "The frozen BuffCollection.Tick contract processes a TB Buff only while its owner or caster is current. Neither the disposable second predator nor its victim had been admitted to turn order, so elapsed GameTime alone could not deliver that Buff.",
+      "correction": "Enroll the exact disposable second predator/victim pair through the qualified RTWP-to-TB admission seam before creating either hold, wait for the first predator's native turn, and require pair two's packet on the admitted pair's later native turn.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS; exact second-pair admission, initial owner-turn readiness, pair-turn pulses, clock coverage and later packet attribution are domain-pinned. Fresh 55695b09 exact-candidate Sprint gate 2,607/2,607 PASS; changed phase reproduction 11/11 PASS with one later second-owner 2d8+11 packet."
+    },
+    {
+      "timestampUtc": "2026-10-14T11:05:44.8749238Z",
+      "stage": "first guarded visual-lifecycle phase",
+      "scenario": "disposable-expanded-summoning-sprint24-native-review / visual-lifecycle",
+      "disposition": "PRESERVED_NATIVE_RESOURCE_RECEIPT_AND_FORMATTER_FAILURES_THEN_FOCUSED_PASS",
+      "result": "6/11 assertions passed in 98.290 seconds. Two recovered Deinonychus attachments, exact accessory suppression, carrier inventory, fault rollback donor state, fixture teardown and machine restoration passed. Three teardown rows, the injected-fault resource row and later execution failed. Transaction restoration verified exactly; no process, lease, lock, staging or permanent deployment remained.",
+      "cause": "CaptureTheropodOwnedResources counted a native per-view Lizardfolk material-controller clone that the exact release path intentionally does not own. The shared transform formatter then assumed every non-human body had a SerpentineVisualAttachment and dereferenced null on the theropod death sample.",
+      "correction": "Use the release path's exact KMG_<key>_Original material-name family for theropod receipts, retain exact mesh/suppression resources, recognize the qualified theropod driver set in a Sprint 24-only formatter, contain formatting exceptions to their evidence row, and record each remaining resource if teardown still fails.",
+      "correctionChecks": "Production compilation PASS; named Sprint 24 focused filter 13/13 PASS. The first correction candidate then failed the source boundary because it touched the older Sprint 17 formatter; the narrowed Sprint 24-only formatter initially missed one namespace import, then compiled and passed 13/13. Fresh exact-candidate Sprint gate and changed visual-lifecycle reproduction remain required; no unchanged relaunch occurred."
+    },
+    {
+      "timestampUtc": "2026-10-14T11:10:00Z",
+      "stage": "visual correction candidate source boundary",
+      "scenario": "Invoke-KmgGate.ps1 -Level Sprint",
+      "disposition": "PRESERVED_SCOPE_BOUNDARY_FAILURE_THEN_NARROWED",
+      "result": "Repository wrapper stopped after the three source-validator tests; no production compile, package, deployment, process launch or save access occurred.",
+      "cause": "The first formatter correction changed RuntimeTestRunner.ExpandedSummoningSprint17Bodies.cs, which is outside the exact Sprint 24 production-source allowlist.",
+      "correction": "Restore the Sprint 17 file exactly and place the theropod-only formatter plus row-local exception containment in RuntimeTestRunner.ExpandedSummoningSprint24Review.cs."
+    },
+    {
+      "timestampUtc": "2026-10-14T11:12:00Z",
+      "stage": "narrowed visual correction focused compile",
+      "scenario": "expanded-summoning.sprint24-",
+      "disposition": "PRESERVED_COMPILE_FAILURE_THEN_PASS",
+      "result": "The first scoped production compilation failed before domain execution, packaging, deployment, process launch or save access; the corrected production compilation and 13/13 named tests pass.",
+      "cause": "The Sprint 24-only formatter referenced UnitMovementAgentBase without importing its existing Kingmaker.View namespace.",
+      "correction": "Add the one required using directive to the already admitted Sprint 24 observer."
+    }
+  ],
+  "acceptedLimitations": [
+    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD (owner reconfirmed 2026-10-15 that it covers every creature's grab, hold, swallow, engulf and mouth occupancy with no exemption)",
+    "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+    "PASSIVE_CREATURE_SENSES_UNMODELED (reconfirmed 2026-10-15 at its released 0.0.152/0.0.153 boundary; both theropods print low-light vision and scent and both declare it; nothing substituted)",
+    "RUN_NATIVE_SUMMON_AI_DISPOSITION (reconfirmed 2026-10-15 at its released 0.0.152/0.0.153 boundary; no invented Run action; same label the Triceratops carried)"
+  ],
+  "ownerAestheticReview": "NOT_PERFORMED_NONBLOCKING",
+  "stopCondition": "IN PROGRESS; release and exact restoration not yet achieved; Sprint 25 not started"
+}
