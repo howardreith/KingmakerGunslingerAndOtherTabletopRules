@@ -164,7 +164,7 @@ if (@(Compare-Object $expectedOutputs $actualOutputs).Count -ne 0) {
 }
 
 $provenance = [ordered]@{
-    schemaVersion = 1; provenance = 'Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.'
+    schemaVersion = 1; provenance = 'Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.'
     generator = 'tools/New-ExpandedSummoningIcons.ps1'; count = $icons.Count; icons = $provenanceRows
 }
 $runtime = [ordered]@{

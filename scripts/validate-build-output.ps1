@@ -115,7 +115,7 @@ foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
 }
 $summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
     'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
-if ($summonManifest.count -ne 117 -or @($summonManifest.icons).Count -ne 117) {
+if ($summonManifest.count -ne 119 -or @($summonManifest.icons).Count -ne 119) {
     throw 'Expanded Summoning runtime icon manifest is malformed.'
 }
 $requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
@@ -210,6 +210,10 @@ $allowedRelativePaths = @{
     'assets\sprint23-armored-dinosaurs\triceratops-albedo.png' = $true
     'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json' = $true
     'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = $true
+    'assets\sprint24-theropods\deinonychus-mesh.json' = $true
+    'assets\sprint24-theropods\deinonychus-albedo.png' = $true
+    'assets\sprint24-theropods\tyrannosaurus-mesh.json' = $true
+    'assets\sprint24-theropods\tyrannosaurus-albedo.png' = $true
 }
 
 $unexpected = @()

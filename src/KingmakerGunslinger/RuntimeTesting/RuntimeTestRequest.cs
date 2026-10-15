@@ -127,6 +127,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "charge-rounding-turn-based" ? phase : null;
         }
 
+        internal static string Sprint24ReviewPhase(RuntimeTestRequest request)
+        {
+            if (request == null || request.Scenario != RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint24NativeReview ||
+                request.Parameters == null || request.Parameters.Count != 1 ||
+                request.Parameters["reviewPhase"]?.Type != JTokenType.String)
+                return null;
+            string phase = (string)request.Parameters["reviewPhase"];
+            return phase == "rtwp-foundation" ||
+                phase == "rtwp-deinonychus" ||
+                phase == "turn-based-deinonychus" ||
+                phase == "rtwp-tyrannosaurus" ||
+                phase == "turn-based-tyrannosaurus" ||
+                phase == "visual-lifecycle" ||
+                phase == "shared-controls" ? phase : null;
+        }
+
         private static readonly string[] AllowedMembers =
         {
             "schemaVersion", "enabled", "runId", "scenario",
@@ -277,6 +294,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningSprint23NativeReview &&
                 (!request.ExitAfterCompletion || Sprint23ReviewPhase(request) == null))
                 return "sprint23-native-review-phase-and-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint24NativeReview &&
+                (!request.ExitAfterCompletion || Sprint24ReviewPhase(request) == null))
+                return "sprint24-native-review-phase-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather && !request.ExitAfterCompletion)
                 return "whiteout-observation-exit-required";
             if ((request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
@@ -494,6 +515,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                      (string)request.Parameters["persistenceScope"] != SerpentinePersistenceReviewPolicy.Scope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaursScope &&
+                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.TheropodsScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
                     return "summoning-persistence-scope-invalid";
                 // The ordinary native-control case joins the two same-turn
@@ -633,6 +655,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return "scenario-timeouts-not-allowed";
                 if (Sprint23ReviewPhase(request) == null)
                     return "sprint23-native-review-phase-invalid";
+            }
+            else if (request.Scenario == RuntimeTestScenarioCatalog
+                .DisposableExpandedSummoningSprint24NativeReview)
+            {
+                if (request.MainMenuTimeoutSeconds != 0 ||
+                    request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 ||
+                    request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 ||
+                    request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (Sprint24ReviewPhase(request) == null)
+                    return "sprint24-native-review-phase-invalid";
             }
             else if (request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)

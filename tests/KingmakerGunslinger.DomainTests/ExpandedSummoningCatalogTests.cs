@@ -11,11 +11,20 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningCatalog.Validate();
             // Sprint 18 adds the two apes at Summon Monster and Nature's Ally
             // III and IV, which is seven and six placements per family.
-            Assertions.Equal(105, ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
-            Assertions.Equal(93, ExpandedSummoningCatalog.All.Count(v => v.MonsterTier.HasValue), "SM roster count changed.");
-            Assertions.Equal(93, ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue), "SNA roster count changed.");
-            Assertions.Equal(534, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count, "SM placement count changed.");
-            Assertions.Equal(541, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count, "SNA placement count changed.");
+            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+                ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
+            Assertions.Equal(TheropodRulesPolicy.RegisteredMonsterCreatureCount,
+                ExpandedSummoningCatalog.All.Count(v => v.MonsterTier.HasValue),
+                "SM roster count changed.");
+            Assertions.Equal(TheropodRulesPolicy.RegisteredNatureAllyCreatureCount,
+                ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue),
+                "SNA roster count changed.");
+            Assertions.Equal(TheropodRulesPolicy.RegisteredMonsterPlacements,
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count,
+                "SM placement count changed.");
+            Assertions.Equal(TheropodRulesPolicy.RegisteredNatureAllyPlacements,
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count,
+                "SNA placement count changed.");
         }
         internal static void QuantityRulesAreExactAndSameKind()
         {

@@ -222,6 +222,8 @@
     <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
     <Compile Include="Summoning\ArmoredDinosaurRulesPolicy.cs" />
+    <Compile Include="Summoning\TheropodRulesPolicy.cs" />
+    <Compile Include="Summoning\TheropodCombatComponents.cs" />
     <Compile Include="Summoning\CrocodilianRulesPolicy.cs" />
     <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
     <Compile Include="Summoning\ContextActionUngulateTrample.cs" />
@@ -1239,11 +1241,19 @@
     <Compile Include="Assets\PteranodonAssetRuntime.Ankylosaurus.cs" />
     <Compile Include="Summoning\ArmoredDinosaurVisualPolicy.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.ArmoredDinosaurs.cs" />
+    <Compile Include="Summoning\TheropodVisualPolicy.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.Theropods.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Ankylosaurus.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.ArmoredDinosaurs.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Theropods.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Theropods.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Survey.cs" />
+    <Compile Include="RuntimeTesting\Sprint24TheropodCensusPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Census.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint23Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Persistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Persistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Survey.cs" />
     <Compile Include="RuntimeTesting\PrimateReviewPolicy.cs" />
@@ -1697,6 +1707,14 @@
     </Content>
     <Content Include="..\..\assets\sprint23-armored-dinosaurs\*-albedo.png">
       <Link>assets\sprint23-armored-dinosaurs\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint24-theropods\*-mesh.json">
+      <Link>assets\sprint24-theropods\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint24-theropods\*-albedo.png">
+      <Link>assets\sprint24-theropods\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\sprint19-fourarmed\*-mesh.json">

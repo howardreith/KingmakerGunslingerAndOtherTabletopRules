@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 105) throw new InvalidOperationException("Expanded Summoning unique creature count must be 105.");
+            if (Creatures.Length != 107) throw new InvalidOperationException("Expanded Summoning unique creature count must be 107.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             // Sprint 18 adds the two apes: the Ape at Summon Monster and
@@ -39,8 +39,11 @@ namespace KingmakerGunslinger.Summoning
             // seven placements for parents 3 through 9.
             // Sprint 23 adds Triceratops to both tier-VI tables and
             // Stegosaurus to Nature's Ally VI only: four and eight new roots.
-            ValidateFamily(SummonFamily.Monster, 93, 534);
-            ValidateFamily(SummonFamily.NaturesAlly, 93, 541);
+            // Sprint 24 adds Deinonychus to both tier-IV tables (six roots per
+            // family) and Tyrannosaurus to both tier-VII tables (three roots
+            // per family). All eighteen roots register before publication.
+            ValidateFamily(SummonFamily.Monster, 95, 543);
+            ValidateFamily(SummonFamily.NaturesAlly, 95, 550);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -101,7 +104,13 @@ namespace KingmakerGunslinger.Summoning
                 // Triceratops is templated only on Summon Monster; Nature's
                 // Ally uses caster alignment. Stegosaurus has no Monster row.
                 C("triceratops","Triceratops",6,true,6,"Mastodon"),
-                C("stegosaurus","Stegosaurus",null,false,6,"Hodag")
+                C("stegosaurus","Stegosaurus",null,false,6,"Hodag"),
+                // Sprint 24. Both adult theropods use the bounded-census
+                // Lizardfolk Free Hands skeleton under original bodies.
+                // Monster roots use only the existing celestial/fiendish
+                // policy; Nature's Ally roots remain untemplated.
+                C("deinonychus","Deinonychus",4,true,4,"Lizardfolk"),
+                C("tyrannosaurus","Tyrannosaurus",7,true,7,"Lizardfolk")
             };
         }
 

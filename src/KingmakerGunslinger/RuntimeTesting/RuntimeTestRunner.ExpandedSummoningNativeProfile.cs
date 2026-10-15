@@ -69,9 +69,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         EventBus.IsGloballySubscribed(_summoningProfileMenu);
                     string nativeReviewPhase = _request.Scenario ==
                             RuntimeTestScenarioCatalog
+                                .DisposableExpandedSummoningSprint24NativeReview
+                        ? RuntimeTestRequestParser.Sprint24ReviewPhase(_request)
+                        : _request.Scenario == RuntimeTestScenarioCatalog
                                 .DisposableExpandedSummoningSprint23NativeReview
-                        ? RuntimeTestRequestParser.Sprint23ReviewPhase(_request)
-                        : RuntimeTestRequestParser.Sprint22ReviewPhase(_request);
+                            ? RuntimeTestRequestParser.Sprint23ReviewPhase(_request)
+                            : RuntimeTestRequestParser.Sprint22ReviewPhase(_request);
                     if (!ExpandedSummoningNativeProfilePolicy.CanStart(
                         _request.ExitAfterCompletion, _request.Scenario,
                         _request.Parameters?.Count ?? 0, nativeReviewPhase,
@@ -174,7 +177,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableExpandedSummoningSprint22NativeReview ||
                         _request.Scenario == RuntimeTestScenarioCatalog
-                            .DisposableExpandedSummoningSprint23NativeReview)
+                            .DisposableExpandedSummoningSprint23NativeReview ||
+                        _request.Scenario == RuntimeTestScenarioCatalog
+                            .DisposableExpandedSummoningSprint24NativeReview)
                     { _summoningProfileStage=4; return; }
                     _summoningProfileResult = RunDisposableExpandedSummoning(false);
                     BeginSummoningProfileReset();
@@ -185,9 +190,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                         throw new TimeoutException("Expanded Summoning native review exceeded its declared scenario deadline.");
                     bool complete = _request.Scenario == RuntimeTestScenarioCatalog
-                            .DisposableExpandedSummoningSprint23NativeReview
-                        ? PollSprint23NativeReview()
-                        : PollSprint22NativeReview();
+                            .DisposableExpandedSummoningSprint24NativeReview
+                        ? PollSprint24NativeReview()
+                        : _request.Scenario == RuntimeTestScenarioCatalog
+                                .DisposableExpandedSummoningSprint23NativeReview
+                            ? PollSprint23NativeReview()
+                            : PollSprint22NativeReview();
                     if (complete) BeginSummoningProfileReset();
                     return;
                 }
@@ -210,6 +218,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try
                     {
                         if (_request.Scenario == RuntimeTestScenarioCatalog
+                                .DisposableExpandedSummoningSprint24NativeReview)
+                            CleanupSprint24NativeReview();
+                        else if (_request.Scenario == RuntimeTestScenarioCatalog
                                 .DisposableExpandedSummoningSprint23NativeReview)
                             CleanupSprint23NativeReview();
                         else CleanupSprint22NativeReview();

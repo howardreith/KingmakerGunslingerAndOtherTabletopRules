@@ -171,10 +171,12 @@ $expected = @(
     'disposable-expanded-summoning-native-profile',
     'disposable-expanded-summoning-sprint22-native-review',
     'disposable-expanded-summoning-sprint23-native-review',
+    'disposable-expanded-summoning-sprint24-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
     'observe-expanded-summoning-sprint22-contracts',
+    'observe-expanded-summoning-sprint24-theropod-census',
     'disposable-expanded-summoning-sprint18-review',
     'disposable-expanded-summoning-sprint19-review',
     'disposable-expanded-summoning-sprint20-review',
@@ -843,6 +845,39 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
     -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } `
     'sprint23-review-requires-automatic-exit'
+$sprint24ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint24-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+foreach ($phase in @(
+    'rtwp-foundation',
+    'rtwp-deinonychus',
+    'turn-based-deinonychus',
+    'rtwp-tyrannosaurus',
+    'turn-based-tyrannosaurus',
+    'visual-lifecycle',
+    'shared-controls')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint24ReviewArgs `
+        -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint24-review-allows-$phase"
+    $reviewRequest = New-KmgRuntimeRequest @sprint24ReviewArgs `
+        -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
+            'sprint24-review-request-test')
+    $reviewRoundTrip = $reviewRequest | ConvertTo-Json -Depth 8 |
+        ConvertFrom-Json
+    Assert-True (@($reviewRoundTrip.parameters.PSObject.Properties).Count -eq 1 -and
+        $reviewRoundTrip.parameters.reviewPhase -ceq $phase) `
+        "sprint24-review-serializes-$phase"
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint24ReviewArgs `
+    -ExitAfterCompletion $true } `
+    'sprint24-review-requires-bounded-phase'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint24ReviewArgs `
+    -ExitAfterCompletion $true -Parameters @{reviewPhase='all'} } `
+    'sprint24-review-rejects-broad-phase'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint24ReviewArgs `
+    -ExitAfterCompletion $true -Parameters @{reviewPhase='rtwp-foundation';saveName='KMG_AUTOMATION_WORKING'} } `
+    'sprint24-review-rejects-extra-parameters'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint24ReviewArgs `
+    -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } `
+    'sprint24-review-requires-automatic-exit'
 Assert-True (-not $expandedSummoningPlayerPath.RequiresManualInteraction) `
     'expanded-summoning-player-path-is-autonomous'
 Assert-True $expandedSummoningPlayerPath.RequiresSaveName `

@@ -13,19 +13,24 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(105, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+                ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(93, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(TheropodRulesPolicy.RegisteredMonsterCreatureCount,
+                ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(93, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(TheropodRulesPolicy.RegisteredNatureAllyCreatureCount,
+                ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(534, ExpandedSummoningBaselineInventory
+            Assertions.Equal(TheropodRulesPolicy.RegisteredMonsterPlacements,
+                ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
             // Sprint 21's Giant Crab and Sprint 23's Stegosaurus are Nature's
             // Ally-only creatures. Their placements remain on that side after
             // publication.
-            Assertions.Equal(541, ExpandedSummoningBaselineInventory
+            Assertions.Equal(TheropodRulesPolicy.RegisteredNatureAllyPlacements,
+                ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -44,7 +49,9 @@ namespace KingmakerGunslinger.DomainTests
             // and five Summon Nature's Ally roots for the Girallon. Sprint 20
             // publishes the Giant Scorpion on both tables: six Summon Monster
             // roots and six Summon Nature's Ally roots.
-            Assertions.Equal(551, ExpandedSummoningBaselineInventory
+            // Sprint 24 publishes nine Summon Monster theropod choices:
+            // six Deinonychus and three Tyrannosaurus.
+            Assertions.Equal(560, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
             // Sprint 21 publishes the Giant Crab's seven roots, every
@@ -52,7 +59,9 @@ namespace KingmakerGunslinger.DomainTests
             // Monster table, which is why that side does not move.
             // Sprint 23 adds four Triceratops and four Stegosaurus choices to
             // the Nature's Ally side; Triceratops adds four to Monster.
-            Assertions.Equal(553, ExpandedSummoningBaselineInventory
+            // Sprint 24 publishes nine Nature's Ally theropod choices:
+            // six Deinonychus and three Tyrannosaurus.
+            Assertions.Equal(562, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
@@ -66,11 +75,14 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(1075, generated, "Published generated placements changed.");
-            Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(1104, generated + wrappers,
+            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
+                generated, "Published generated placements changed.");
+            Assertions.Equal(TheropodRulesPolicy.RetainedNativeWrappers,
+                wrappers, "Native wrapper count changed.");
+            Assertions.Equal(TheropodRulesPolicy.PublicVisibleChoices,
+                generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(1104,
+            Assertions.Equal(TheropodRulesPolicy.PublicVisibleChoices,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -120,15 +132,14 @@ namespace KingmakerGunslinger.DomainTests
             // than a leftover, which is what this pin is for. Naming the
             // creature is the strongest form of it: an unexpected arrival and
             // a forgotten departure both fail.
-            // Empty, and for the last time in this series: Sprint 21
-            // is its end, and its Giant Crab published once its own guarded
-            // review passed 44 of 44 in both combat modes. An arrival here
-            // now would be a creature registered and then forgotten.
+            // Empty again after the v0.0.155 Sprint 24 publication removed
+            // both theropod keys together. An arrival here now would be a
+            // creature registered and then forgotten.
             Assertions.Equal(0, ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.Count,
-                "No qualified creature remains registered but withheld: "
-                + string.Join(", ", ExpandedSummoningBaselineInventory
-                    .RegisteredButHiddenCreatures));
+                "No creature is registered but withheld: " + string.Join(", ",
+                    ExpandedSummoningBaselineInventory
+                        .RegisteredButHiddenCreatures));
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -141,7 +152,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(43,
+            Assertions.Equal(43 + TheropodRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
                 "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, including both Sprint 23 dinosaurs whose project-owned bodies bind to their measured native animation donors.");
         }
@@ -179,7 +190,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 1104"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 1122"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 
@@ -208,11 +219,14 @@ namespace KingmakerGunslinger.DomainTests
                     " generated placements") && current.Contains(visibleText +
                     " visible choices"),
                 "The active resume must state the source-derived public equation.");
-            var sprint23 = Newtonsoft.Json.Linq.JObject.Parse(
+            // The machine-readable public surface lives in the ACTIVE sprint's
+            // ledger. Sprint 23's ledger keeps its own released figures as
+            // history and is deliberately not repointed at the current surface.
+            var activeLedger = Newtonsoft.Json.Linq.JObject.Parse(
                 System.IO.File.ReadAllText(System.IO.Path.Combine(
                     System.Environment.CurrentDirectory, "planning",
-                    "SPRINT23-TRICERATOPS-STEGOSAURUS-LEDGER.json")));
-            var surface = sprint23["surface"]["expectedPublic"];
+                    "SPRINT24-THEROPOD-DINOSAURS-LEDGER.json")));
+            var surface = activeLedger["surface"]["expectedPublic"];
             Assertions.Equal(generated, (int)surface["generatedPlacements"],
                 "Machine-readable public placement count.");
             Assertions.Equal(wrappers, (int)surface["retainedNativeWrappers"],
