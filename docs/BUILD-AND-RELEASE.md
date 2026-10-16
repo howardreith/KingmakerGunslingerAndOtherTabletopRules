@@ -26,7 +26,34 @@ failed and must meet the owner mission's matched-baseline conditions and appear
 in the notes/manifest. Earlier release procedures below retain their historical
 authorization and original build cadence.
 
-## Current 0.0.156 publication authorization
+## Current 0.0.157 publication authorization
+
+On 2026-10-16 the owner reviewed the alternate summoning sources checkpoint
+(PR #52, third pass with its evidence matrix) and wrote: "This look close to
+ready to go. Pro has some recommendations for finalizations." followed by a
+review's narrow correction pass, and then "After that, please merge tihs, push
+it to remote, and cut a new release, incrementing the version number." Asked
+which number to use because draft Sprint 25 (PR #49) already carries 0.0.157,
+the owner chose "0.0.157 (Recommended)": one above the published 0.0.156, with
+Sprint 25 renumbering when it releases. That accepts the checkpoint's stated
+limits: the owner checklist cases (hotbar binding, saved-shortcut cold load,
+a turn-based round, a scroll-required menu) are not run, and the
+blocked-family shortcut load and grapple/swallow reset on reload need
+maintainer fixtures (see `docs/ALTERNATE-SUMMONING-SOURCES.md`).
+
+The release is 0.0.157. The branch passes one Sprint-level `Build-Local`
+release candidate gate and the guarded alternate summoning native scenarios
+on that candidate before its PR merges normally; the existing exact-reference
+publisher then runs from clean, pushed `master` with the refreshed private
+reference bundle:
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir `
+  'C:\Dev\KingmakerGunslingerLab\private\refresh-2026-10-15\extracted\KingmakerGunslinger-private-build-references' `
+  -Publish -ConfirmReleaseReady
+```
+
+## Historical 0.0.156 publication authorization
 
 On 2026-10-15 the owner reviewed the firearm RTWP kill-continuation
 checkpoint (second review revision, guarded native run 491/491) and wrote:

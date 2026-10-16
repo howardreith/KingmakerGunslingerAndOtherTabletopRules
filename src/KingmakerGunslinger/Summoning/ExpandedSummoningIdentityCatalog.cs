@@ -581,6 +581,13 @@ namespace KingmakerGunslinger.Summoning
             return "KMG.Summoning.Unit." + Token(creature.Key);
         }
 
+        /// <summary>The creature segment of every placement symbol. Adapter
+        /// identities reuse it so one creature has one token everywhere.</summary>
+        internal static string CreatureToken(string key)
+        {
+            return Token(key);
+        }
+
         internal static void Validate(IEnumerable<SummoningIdentitySpec> identities)
         {
             if (identities == null) throw new ArgumentNullException("identities");

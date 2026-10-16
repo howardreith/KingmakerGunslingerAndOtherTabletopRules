@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.157-expanded-summoning-sprint25-giant-bodies",
+  "milestone": "0.0.158-expanded-summoning-sprint25-giant-bodies",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -2528,10 +2528,34 @@
     "originalInFullAttackSymptomReproduced": false,
     "ownerLiveRtwpCheckPerformed": false
   },
-  "expandedSummoningSprint25157": {
+  "alternateSummoningSources157": {
     "releaseVersion": "0.0.157",
-    "releaseInformationalVersion": "0.0.157-expanded-summoning-sprint25-giant-bodies",
-    "masterBase": "607da683b1f6fd545dab90fd6f4121d155573142",
+    "releaseInformationalVersion": "0.0.157-alternate-summoning-sources",
+    "baseStableVersion": "0.0.156",
+    "change": "Alternate summoning sources: the published Expanded Summoning roster projected onto the direct class summon callers (native Monster Tactician; with Call of the Wild 1.14.4c Summoner, Master Summoner, Occultist, Naturalist, Feral Hunter and Preservationist)",
+    "appendedIdentities": 3746,
+    "appendedNamespace": "KMG.Summoning.Adapter.",
+    "releasedIdentityChanges": 0,
+    "adapterFamilies": 7,
+    "registeredLogicalPlacements": 1093,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1122,
+    "guardedNativeQualified": true,
+    "ownerManualChecksOpen": [
+      "hotbar-binding",
+      "saved-shortcut-cold-load",
+      "turn-based-round",
+      "scroll-required-menu"
+    ],
+    "maintainerFixturesOpen": [
+      "blocked-family-shortcut-load",
+      "grapple-swallow-reset-on-reload"
+    ]
+  },
+  "expandedSummoningSprint25158": {
+    "releaseVersion": "0.0.158",
+    "releaseInformationalVersion": "0.0.158-expanded-summoning-sprint25-giant-bodies",
+    "masterBase": "8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c",
     "newCreatures": 1,
     "newLogicalRoots": 3,
     "newMonsterPlacements": 0,
@@ -2550,6 +2574,6 @@
     "candidateOnly": true,
     "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
     "sprint26Started": false,
-    "supersededVersionClaim": "Sprint 25 was prepared as 0.0.156 until master merged the firearm RTWP kill continuation under that version; Sprint 25 moved to the next free patch rather than contesting it."
+    "supersededVersionClaim": "Sprint 25 was prepared as 0.0.156 until master merged the firearm RTWP kill continuation under that version, then as 0.0.157 until master released the alternate summoning sources and tagged v0.0.157. Sprint 25 moved to the next free patch each time rather than contesting a released version."
   }
 }

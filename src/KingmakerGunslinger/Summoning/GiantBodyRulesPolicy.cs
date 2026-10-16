@@ -60,7 +60,25 @@ namespace KingmakerGunslinger.Summoning
         // is to check its actual production carriers against the frozen entry
         // before adding anything. Whatever the bounded native census proves
         // missing is appended then, with this count moved in the same commit.
-        internal const int AppendedIdentityCount = 10;
+        internal const int AppendedAdapterIdentityCount = 8;
+
+        /// <summary>
+        /// Ten Sprint 25 identities plus the eight caller adapters the
+        /// alternate summoning release projects for any creature added to
+        /// the central catalog. Those eight are not chosen here: each GUID
+        /// is uuid5 of its own symbol, so the manifest reproduces and
+        /// verifies them rather than trusting an allocation.
+        /// </summary>
+        internal const int AppendedIdentityCount = 18;
+
+        /// <summary>
+        /// What Sprint 25 adds to the C# identity catalog. The eight caller
+        /// adapters are deliberately excluded: they are a projection the
+        /// alternate summoning release derives from the roster and allocates
+        /// in the blueprint ledger, and they never become catalog rows.
+        /// </summary>
+        internal const int AppendedCatalogIdentityCount =
+            AppendedIdentityCount - AppendedAdapterIdentityCount;
         internal const int AppendedCreatureCount = 1;
         internal const int AppendedAbilityIdentityCount = 3;
         internal const int AppendedWeaponIdentityCount = 1;
@@ -448,10 +466,16 @@ namespace KingmakerGunslinger.Summoning
                 IsWithheldThisSprint(TheropodRulesPolicy.TyrannosaurusKey) ||
                 !IsCompletedExistingCreature(ElephantKey) ||
                 IsCompletedExistingCreature(BrachiosaurusKey) ||
-                // The append is one creature, three logical roots and eight
-                // private identities, and nothing templated.
+                // The append is one creature, three logical roots, six
+                // private identities and eight caller adapters, and nothing
+                // templated.
+                // The adapters are part of the append too: the alternate
+                // summoning release projects one caller identity for every
+                // creature its family and tiers admit, so a new creature
+                // brings its own with it.
                 AppendedAbilityIdentityCount +
                     AppendedPrivateIdentityCount +
+                    AppendedAdapterIdentityCount +
                     AppendedCreatureCount != AppendedIdentityCount ||
                 AppendedMonsterPlacements != 0 ||
                 AppendedTemplateExecutionsPerAlignment != 0 ||

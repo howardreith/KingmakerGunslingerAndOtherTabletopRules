@@ -13,7 +13,12 @@ param(
     # the repository exactly once; Invoke-KmgGate.ps1 passes it at the Focused
     # level, where the wrapper is deferred to the sprint candidate boundary.
     # No qualification level reaches the complete suite without the wrapper.
-    [switch]$SkipRepositoryValidation
+    [switch]$SkipRepositoryValidation,
+
+    # Records the runner's own standard output and error in these files as
+    # well as the console, for a caller that must keep the selected-test
+    # evidence. The runner's exit code still decides the outcome.
+    [string]$RunnerLogPath
 )
 
 Set-StrictMode -Version Latest
@@ -55,9 +60,19 @@ if (-not (Test-Path -LiteralPath $testExecutable -PathType Leaf)) {
 }
 
 Write-Host "Running dependency-free domain/reflection tests: $testExecutable"
-& $testExecutable
-if ($LASTEXITCODE -ne 0) {
-    throw "Domain tests failed with exit code $LASTEXITCODE."
+if ($RunnerLogPath) {
+    $runnerErrorPath = "$RunnerLogPath.stderr"
+    $runner = Start-Process -FilePath $testExecutable -NoNewWindow -Wait -PassThru `
+        -RedirectStandardOutput $RunnerLogPath -RedirectStandardError $runnerErrorPath
+    Get-Content -LiteralPath $RunnerLogPath | Out-Host
+    Get-Content -LiteralPath $runnerErrorPath | Out-Host
+    $runnerExitCode = $runner.ExitCode
+} else {
+    & $testExecutable
+    $runnerExitCode = $LASTEXITCODE
+}
+if ($runnerExitCode -ne 0) {
+    throw "Domain tests failed with exit code $runnerExitCode."
 }
 
 Write-Host 'Dependency-free domain/reflection tests passed.'

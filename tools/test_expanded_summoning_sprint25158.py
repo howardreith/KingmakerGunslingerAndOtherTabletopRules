@@ -10,7 +10,7 @@ import sys
 import unittest
 
 sys.dont_write_bytecode = True
-import validate_expanded_summoning_sprint25157 as gate
+import validate_expanded_summoning_sprint25158 as gate
 
 
 def row(symbol, guid, planned):
@@ -47,13 +47,23 @@ class Sprint25GateTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             gate.validate_append(self.old, changed)
 
-    def test_the_allowed_set_is_exactly_ten_and_names_the_elephant_trample(self):
+    def test_the_allowed_set_is_exact_and_names_both_groups(self):
         # The append grew by exactly one on 2026-10-16, after the bounded
         # observation of the released Elephant recorded six grants and no
         # trample ability or component. This pins the new exact set rather
         # than only the count.
-        self.assertEqual(10, len(gate.ADDED))
+        # Ten Sprint 25 identities plus the eight caller adapters the
+        # alternate summoning release projects for any creature added to the
+        # central catalog. The adapter GUIDs are uuid5 of their own symbols,
+        # so this pins a reproducible allocation rather than a chosen one.
+        self.assertEqual(18, len(gate.ADDED))
         self.assertIn("KMG.Summoning.Special.Elephant.Trample", gate.ADDED)
+        adapters = [s for s in gate.ADDED
+                    if s.startswith("KMG.Summoning.Adapter.")]
+        self.assertEqual(8, len(adapters))
+        self.assertTrue(all("Brachiosaurus" in s for s in adapters))
+        self.assertTrue(all(gate.ADDED[s][1] == "BlueprintAbility"
+                            for s in adapters))
         self.assertEqual(
             "BlueprintAbility",
             gate.ADDED["KMG.Summoning.Special.Elephant.Trample"][1])

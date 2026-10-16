@@ -177,6 +177,11 @@ $expected = @(
     'observe-expanded-summoning-sprint21-census',
     'observe-expanded-summoning-sprint22-contracts',
     'observe-expanded-summoning-sprint24-theropod-census',
+    'observe-alternate-summoning-sources',
+    'observe-alternate-summoning-blocked-family',
+    'disposable-alternate-summoning-contracts',
+    'disposable-alternate-summoning-player-paths',
+    'disposable-alternate-summoning-natural',
     'disposable-expanded-summoning-sprint18-review',
     'disposable-expanded-summoning-sprint19-review',
     'disposable-expanded-summoning-sprint20-review',
@@ -920,6 +925,12 @@ foreach ($summonCompatibilityScenario in @(
         -not $summonCompatibilityMetadata.UsesWorkingStageTimeouts) `
         ($summonCompatibilityScenario + '-is-autonomous-request-local')
 }
+$alternateSummoningNatural = Get-KmgRuntimeScenarioMetadata `
+    'disposable-alternate-summoning-natural'
+Assert-True (-not $alternateSummoningNatural.RequiresManualInteraction -and
+    $alternateSummoningNatural.RequiresSaveName -and
+    $alternateSummoningNatural.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
+    'alternate-summoning-natural-is-autonomous-working-save-only'
 $brownFurNativeCast = Get-KmgRuntimeScenarioMetadata `
     'disposable-brown-fur-native-cast'
 Assert-True (-not $brownFurNativeCast.RequiresManualInteraction) `
@@ -1233,6 +1244,8 @@ Assert-True ($orchestrator.Contains('$scenarioMetadata = Get-KmgRuntimeScenarioM
     'orchestrator-consumes-authoritative-metadata'
 Assert-True ($orchestrator.Contains("'disposable-brown-fur-native-cast',")) `
     'brown-fur-native-cast-uses-working-save-result-deadline'
+Assert-True ($orchestrator.Contains("'disposable-alternate-summoning-natural',")) `
+    'alternate-summoning-natural-uses-working-save-result-deadline'
 Assert-True ($orchestrator.Contains("'working-save-brown-fur-prepare',") -and
     $orchestrator.Contains("'working-save-brown-fur-verify-cleanup',")) `
     'brown-fur-persistence-uses-working-save-result-deadline'

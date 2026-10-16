@@ -8,13 +8,36 @@ param(
     [switch]$PlanOnly,
     # Used only by a second reproducibility compilation of unchanged inputs,
     # after the release publisher has already run the unchanged domain suite.
-    [switch]$SkipDomainTests
+    [switch]$SkipDomainTests,
+    # Builds a development candidate for this one named purpose instead of a
+    # release candidate. See DevelopmentCandidate.Common.ps1: it replaces only
+    # the active version's release validator with the development validator
+    # and the complete suite with -DevelopmentTestFilter's named selection,
+    # writes to its own development-only location under its own name, and
+    # records a development receipt that no release path accepts.
+    [string]$DevelopmentPurpose,
+    [string]$DevelopmentTestFilter
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
+. (Join-Path $PSScriptRoot 'KmgGate.Common.ps1')
+
+$development = -not [string]::IsNullOrEmpty($DevelopmentPurpose) -or
+    -not [string]::IsNullOrEmpty($DevelopmentTestFilter)
+if ($development) {
+    if ([string]::IsNullOrEmpty($DevelopmentPurpose) -or
+        [string]::IsNullOrWhiteSpace($DevelopmentTestFilter)) {
+        throw 'A development candidate requires both -DevelopmentPurpose and a named -DevelopmentTestFilter.'
+    }
+    if ($SkipDomainTests) {
+        throw 'A development candidate records its own selected tests; -SkipDomainTests belongs to release reproducibility.'
+    }
+    [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
+    $DevelopmentTestFilter = Resolve-KmgGateFilter -Level Focused -Filter $DevelopmentTestFilter
+}
 
 # The plan is descriptive only. Do not require any machine-local reference,
 # installed game or compiler just to enumerate it. The real path below still
@@ -26,6 +49,16 @@ $script:KmgBuildLocalPlan = @(
     'package-assembly'
     'strict-package-validation'
 )
+if ($development) {
+    $script:KmgBuildLocalPlan = @(
+        'development-repository-wrapper'
+        'selected-domain-tests'
+        'exact-reference-release-build'
+        'package-assembly'
+        'strict-package-validation'
+        'development-receipt'
+    )
+}
 if ($PlanOnly) {
     $script:KmgBuildLocalPlan
     return
@@ -33,11 +66,28 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.157') { throw "Build-Local supports only active version 0.0.157, observed $($info.Version)." }
+if ($info.Version -ne '0.0.158') { throw "Build-Local supports only active version 0.0.158, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
 $sourceStateSha256 = Get-KmgSourceStateFingerprint -RepositoryRoot $root
+if ($development) {
+    if ($git.Status.Count -ne 0) {
+        throw 'A development candidate is built only from an exactly clean commit.'
+    }
+    $developmentLayout = Get-KmgDevelopmentCandidateLayout -RepositoryRoot $root `
+        -Purpose $DevelopmentPurpose -Commit $git.Commit -Id $info.Id -Version $info.Version
+    if (Test-Path -LiteralPath $developmentLayout.ReceiptPath) {
+        throw "This commit's '$DevelopmentPurpose' development candidate already exists and is immutable: $($developmentLayout.PackagePath)"
+    }
+    if (Test-Path -LiteralPath $developmentLayout.Root) {
+        # An earlier attempt for this exact commit stopped before its receipt.
+        $partial = Assert-KmgPathWithin -Path $developmentLayout.Root `
+            -Root (Join-Path $root $script:KmgDevelopmentCandidateRoot)
+        Remove-Item -LiteralPath $partial -Recurse -Force
+    }
+    New-Item -ItemType Directory -Path $developmentLayout.Root -Force | Out-Null
+}
 
 if (-not $ReferenceBundleDir) {
     $cursor = [IO.DirectoryInfo]$root
@@ -53,7 +103,7 @@ if (-not $ReferenceBundleDir) {
 if (-not (Test-Path -LiteralPath $ReferenceBundleDir -PathType Container)) {
     throw "Qualified private reference bundle is missing: $ReferenceBundleDir"
 }
-[void](Assert-KmgReferenceBundleMatchesInstall `
+$referenceIdentity = @(Assert-KmgReferenceBundleMatchesInstall `
     -ReferenceBundleDir $ReferenceBundleDir `
     -KingmakerInstallDir $KingmakerInstallDir)
 
@@ -69,6 +119,24 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
     throw ".NET Framework 4.7 reference assemblies are missing: $net47"
 }
 
+if ($development) {
+    # The development wrapper: every fixture and offline contract of the
+    # repository wrapper, with the development validator in place of the
+    # active version's release validator. Then the named selection, once.
+    & (Join-Path $PSScriptRoot 'validate-repository.ps1') `
+        -DevelopmentPurpose $DevelopmentPurpose `
+        -DevelopmentSummaryPath $developmentLayout.ValidationSummaryPath
+    Invoke-KmgWithTestFilter -Filter $DevelopmentTestFilter -Body {
+        & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
+            -MSBuildPath $msbuild -SkipRepositoryValidation `
+            -RunnerLogPath $developmentLayout.TestLogPath
+    }
+    if ((Get-Item -LiteralPath "$($developmentLayout.TestLogPath).stderr").Length -ne 0) {
+        throw 'The selected domain-test runner wrote to standard error.'
+    }
+    $selectedTests = Read-KmgDomainTestEvidence -LogPath $developmentLayout.TestLogPath `
+        -Filter $DevelopmentTestFilter
+} else {
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 # The scenario preflight was reachable only by hand, so the one test that
 # proves the C# catalog, the PowerShell metadata table and the documented
@@ -86,9 +154,10 @@ if (-not $SkipDomainTests) {
     & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
         -MSBuildPath $msbuild -SkipRepositoryValidation
 }
+}
 
 $localRoot = Join-Path $root "artifacts\local-runtime\$($info.Version)"
-$exactRoot = Join-Path $localRoot 'exact-build'
+$exactRoot = if ($development) { $developmentLayout.ExactBuildRoot } else { Join-Path $localRoot 'exact-build' }
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
     --csc $csc.FullName --net47-ref-dir $net47 --output-dir $exactRoot `
@@ -233,7 +302,9 @@ Copy-Item -LiteralPath $spearBundle -Destination (Join-Path $buildOutput 'assets
 Copy-Item -LiteralPath $easternBundle -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 # package.ps1 owns output validation, one assembly and strict validation.
-$packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
+$packagePath = if ($development) { $developmentLayout.PackagePath } else {
+    Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
+}
 & (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath | Out-Host
 
 # The build above was produced for $git.Commit. If the tree moved underneath
@@ -254,6 +325,66 @@ $firearmManifestPath = Join-Path $stagedMod `
     'assets\soundbanks\firearm-soundbank-manifest.json'
 $firearmSoundBankPath = Join-Path $stagedMod `
     'assets\soundbanks\KMG_Firearms.bnk'
+if ($development) {
+    if ((Get-KmgSourceStateFingerprint -RepositoryRoot $root) -cne $sourceStateSha256) {
+        throw 'The source state changed during the development build.'
+    }
+    [xml]$developmentProps = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
+    $validationSummary = Get-Content -LiteralPath $developmentLayout.ValidationSummaryPath -Raw |
+        ConvertFrom-Json
+    $receipt = [ordered]@{
+        schemaVersion = 1
+        candidateKind = 'development'
+        releaseQualification = $false
+        generator = $script:KmgDevelopmentGenerator
+        purpose = $DevelopmentPurpose
+        generatedAtUtc = [DateTime]::UtcNow.ToString('o')
+        repositoryRoot = $root
+        commit = $git.Commit
+        branch = $git.Branch
+        sourceStateSha256 = $sourceStateSha256
+        version = $info.Version
+        informationalVersion = [string]$developmentProps.Project.PropertyGroup.KmgInformationalVersion
+        packagePath = $packagePath
+        packageSha256 = Get-KmgSha256 -Path $packagePath
+        dllSha256 = Get-KmgSha256 -Path $dllPath
+        dllMvid = Get-KmgDllMvid -Path $dllPath
+        firearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
+        firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
+        references = [ordered]@{
+            bundleDirectory = $ReferenceBundleDir
+            installDirectory = $KingmakerInstallDir
+            files = @($referenceIdentity)
+        }
+        validation = [ordered]@{
+            wrapper = 'scripts/validate-repository.ps1 -DevelopmentPurpose'
+            validator = $validationSummary.validator
+            purpose = $validationSummary.purpose
+            releaseQualification = $validationSummary.releaseQualification
+            baselineCommit = $validationSummary.baselineCommit
+            baselineVersion = $validationSummary.baselineVersion
+            releasedIdentities = $validationSummary.releasedIdentities
+            identities = $validationSummary.identities
+            appendedIdentities = $validationSummary.appendedIdentities
+            ledgerSha256 = $validationSummary.ledgerSha256
+            summarySha256 = Get-KmgSha256 -Path $developmentLayout.ValidationSummaryPath
+        }
+        selectedTests = $selectedTests
+        toolchain = [ordered]@{ msbuild = $msbuild; python = $python; dotnet = $dotnet; csc = $csc.FullName }
+    }
+    $receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $developmentLayout.ReceiptPath -Encoding UTF8
+    # Read the receipt back through the consumer's own checks.
+    $null = Read-KmgDevelopmentCandidate -PackagePath $packagePath -RepositoryRoot $root `
+        -Purpose $DevelopmentPurpose
+    Write-Host "DEVELOPMENT CANDIDATE (never a release): $packagePath"
+    Write-Host "Purpose: $DevelopmentPurpose"
+    Write-Host "Receipt: $($developmentLayout.ReceiptPath)"
+    Write-Host "Selected tests: $($selectedTests.selected) of $($selectedTests.registered) registered; filter '$DevelopmentTestFilter'"
+    Write-Host "Package SHA-256: $($receipt.packageSha256)"
+    Write-Host "DLL SHA-256: $($receipt.dllSha256)"
+    Write-Host 'No deployment was performed.'
+    return
+}
 $manifest = [ordered]@{
     schemaVersion = 1
     generatedAtUtc = [DateTime]::UtcNow.ToString('o')

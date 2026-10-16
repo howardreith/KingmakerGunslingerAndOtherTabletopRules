@@ -30,13 +30,15 @@ sys.dont_write_bytecode = True
 import validate_expanded_summoning_sprint21150 as common
 import validate_expanded_summoning_sprint24154 as prior
 
-# Re-based 2026-10-16 from 97c881ea to the actual current master. Master moved
-# while Sprint 25 was in registration: the firearm RTWP kill continuation
-# merged as PR #50 and claimed the 0.0.156 version surface, so Sprint 25 moved
-# to 0.0.157 and that merged firearm source is baseline here rather than
-# "unrelated production source". v0.0.155 remains the published release.
-BASELINE = "607da683b1f6fd545dab90fd6f4121d155573142"
-SPRINT25_KEY = "expandedSummoningSprint25157"
+# Re-based twice, because master released twice while Sprint 25 was in
+# registration. First the firearm RTWP continuation took 0.0.156, then the
+# alternate summoning sources took 0.0.157 and tagged it, so Sprint 25 now
+# targets 0.0.158 and the baseline is the v0.0.157 release commit. Everything
+# those two releases changed is therefore baseline here rather than
+# "unrelated production source", and this validator sees only Sprint 25's own
+# additions. v0.0.157 remains the published release.
+BASELINE = "8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c"
+SPRINT25_KEY = "expandedSummoningSprint25158"
 WITHHELD = {"brachiosaurus"}
 RELEASED_NEVER_SUPPRESSED = {"elephant", "mastodon"}
 
@@ -61,10 +63,35 @@ GUIDS = {
         "309ec3dedcf04c15b3011933f5eafef4",
     "KMG.Summoning.Special.Elephant.Trample":
         "a7c34e1d9b5f4a02ae6d8c71f3b02594",
+    # Appended 2026-10-16 when master released the alternate summoning
+    # sources: that release projects a caller-specific adapter identity
+    # for every creature whose family and tier admit it, and it keeps no
+    # per-creature list, so adding Brachiosaurus to the central catalog
+    # requires exactly these eight. Their GUIDs are not chosen: each is
+    # uuid5(ADAPTER_NAMESPACE, symbol), so the allocation is reproducible
+    # and the manifest verifies it rather than trusting it.
+    "KMG.Summoning.Adapter.Naturalist.Tier7.Brachiosaurus.One":
+        "8edc4ca5bab3563ba34e18326926842e",
+    "KMG.Summoning.Adapter.Naturalist.Tier8.Brachiosaurus.OneD3":
+        "78fc5dcf4d5650df9c08e71b4d32682c",
+    "KMG.Summoning.Adapter.Naturalist.Tier9.Brachiosaurus.OneD4PlusOne":
+        "c87b82cb13b5538080ae8d1864266fe0",
+    "KMG.Summoning.Adapter.FeralHunter.Tier7.Brachiosaurus.One":
+        "cf254d4c99a85a95b7876fb2a1d08c9c",
+    "KMG.Summoning.Adapter.FeralHunter.Tier8.Brachiosaurus.OneD3":
+        "90e0a532280e5390a4123c5415d611dd",
+    "KMG.Summoning.Adapter.FeralHunter.Tier9.Brachiosaurus.OneD4PlusOne":
+        "cf5e6a5c24875880b92778eb64992be2",
+    "KMG.Summoning.Adapter.Preservationist.Tier7.Brachiosaurus.One":
+        "10c8c8e7bd7e58169fca4489d1ad1545",
+    "KMG.Summoning.Adapter.Preservationist.Tier9.Brachiosaurus.OneD4PlusOne":
+        "f5306d9802655dca854d9f94e092da2c",
 }
 
 
 def planned_type(symbol: str) -> str:
+    if symbol.startswith("KMG.Summoning.Adapter."):
+        return "BlueprintAbility"
     if symbol.startswith("KMG.Summoning.Unit."):
         return "BlueprintUnit"
     if symbol.startswith("KMG.Summoning.Ability."):
@@ -203,9 +230,9 @@ def validate_static(root: Path, stage: str):
         raise AssertionError(
             "Registered Sprint 25 candidate lacks static metadata")
     expected = {
-        "releaseVersion": "0.0.157",
+        "releaseVersion": "0.0.158",
         "releaseInformationalVersion":
-            "0.0.157-expanded-summoning-sprint25-giant-bodies",
+            "0.0.158-expanded-summoning-sprint25-giant-bodies",
         "masterBase": BASELINE,
         "newCreatures": 1,
         "newLogicalRoots": 3,
@@ -268,10 +295,10 @@ def validate_art(root: Path, stage: str, authored: bool):
 def validate_version(root: Path):
     info = common.document(root, "Info.json")
     version = info.get("Version")
-    if version != "0.0.157":
+    if version != "0.0.158":
         raise AssertionError(
             "Unsupported Sprint 25 lineage version: " + repr(version))
-    informational = "0.0.157-expanded-summoning-sprint25-giant-bodies"
+    informational = "0.0.158-expanded-summoning-sprint25-giant-bodies"
     props = (root / "Directory.Build.props").read_text(encoding="utf-8-sig")
     assembly = (root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs").read_text(
         encoding="utf-8-sig")

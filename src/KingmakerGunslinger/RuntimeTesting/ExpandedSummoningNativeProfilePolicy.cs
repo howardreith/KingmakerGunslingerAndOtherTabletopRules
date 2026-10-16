@@ -43,7 +43,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int parameters, string reviewPhase)
         {
             if (scenario == RuntimeTestScenarioCatalog
-                    .DisposableExpandedSummoningNativeProfile)
+                    .DisposableExpandedSummoningNativeProfile ||
+                scenario == RuntimeTestScenarioCatalog
+                    .DisposableAlternateSummoningPlayerPaths)
                 return parameters == 0 && reviewPhase == null;
             if (scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSprint22NativeReview)

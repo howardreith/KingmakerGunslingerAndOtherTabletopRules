@@ -4,7 +4,8 @@ Behaviour regression for the version-specific child dispatch in
 scripts/validate-repository.ps1.
 
 .DESCRIPTION
-A nested `if` once made the 0.0.157 block a child of the 0.0.156 block. The
+A nested `if` once made the Sprint 25 block a child of the 0.0.156 block.
+The
 wrapper still exited 0, so a passing run did not establish that the Sprint 25
 corruption fixtures had executed at all. Exit status alone cannot catch that:
 the test has to observe which children were actually selected.
@@ -122,7 +123,7 @@ function Check {
 
 try {
     $firearm = 'test_firearm_continuation_release156.py'
-    $sprint25 = 'test_expanded_summoning_sprint25157.py'
+    $sprint25 = 'test_expanded_summoning_sprint25158.py'
     $sprint23 = 'test_expanded_summoning_sprint23152.py'
     $sprint24 = 'test_expanded_summoning_sprint24154.py'
 
@@ -134,19 +135,20 @@ try {
         (@($r156.Selected | Where-Object { $_ -eq $sprint25 }).Count -eq 0) `
         ($r156.Selected -join ', ')
 
-    $r157 = Invoke-Dispatch -Version '0.0.157'
+    $r158 = Invoke-Dispatch -Version '0.0.158'
     # This is the regression: before the repair the Sprint 25 block was nested
-    # inside the 0.0.156 block, so at 0.0.157 it was never reached and the
+    # inside the 0.0.156 block, so at the Sprint 25 version it was never
+    # reached and the
     # wrapper still exited 0.
-    Check '0.0.157 selects its Sprint 25 child exactly once' `
-        (@($r157.Selected | Where-Object { $_ -eq $sprint25 }).Count -eq 1) `
-        ($r157.Selected -join ', ')
-    Check '0.0.157 does not select the 0.0.156-only firearm child' `
-        (@($r157.Selected | Where-Object { $_ -eq $firearm }).Count -eq 0) `
-        ($r157.Selected -join ', ')
+    Check '0.0.158 selects its Sprint 25 child exactly once' `
+        (@($r158.Selected | Where-Object { $_ -eq $sprint25 }).Count -eq 1) `
+        ($r158.Selected -join ', ')
+    Check '0.0.158 does not select the 0.0.156-only firearm child' `
+        (@($r158.Selected | Where-Object { $_ -eq $firearm }).Count -eq 0) `
+        ($r158.Selected -join ', ')
 
     # Shared checks stay selected for both versions.
-    foreach ($version in @('0.0.156', '0.0.157')) {
+    foreach ($version in @('0.0.156', '0.0.157', '0.0.158')) {
         $shared = Invoke-Dispatch -Version $version
         Check "$version keeps the shared Sprint 23 child" `
             ($shared.Selected -contains $sprint23) ($shared.Selected -join ', ')
@@ -163,7 +165,7 @@ try {
 
     # A failing selected child must stop the parent, before anything is built
     # or deployed.
-    $failing = Invoke-Dispatch -Version '0.0.157' -FailOnChild $sprint25
+    $failing = Invoke-Dispatch -Version '0.0.158' -FailOnChild $sprint25
     Check 'a failing Sprint 25 child throws rather than continuing' `
         ($null -ne $failing.Thrown -and $failing.Thrown -match 'Sprint 25 corruption fixtures failed') `
         ([string]$failing.Thrown)

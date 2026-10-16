@@ -1,3 +1,63 @@
+# Alternate summoning sources — v0.0.157 RELEASED / STOP
+
+The owner accepted PR #52 (alternate summoning sources) on 2026-10-16 and
+authorized merge and release as v0.0.157 after a narrow correction pass
+(`docs/BUILD-AND-RELEASE.md`, "Current 0.0.157 publication authorization").
+The correction pass is recorded in `docs/ALTERNATE-SUMMONING-SOURCES.md` and
+`planning/ALTERNATE-SUMMONING-STATE.md`.
+
+Release candidate gates PASS on `3dc23e9c7a2e` (package `82d6baef...75e9c0`,
+DLL `6ee1ab75...5f31c`): Sprint gate in 103.3 s (release-mode wrapper with the
+v0.0.157 validator, 2,646 / 2,646 domain tests, exact build, strict 373-file
+package), and on the same bytes the CotW, standalone and module-OFF profile
+scenarios (alternate summoning observer, blocked-family drill, contract
+fixture, player paths, canonical inventory 50 / 50, settings 47 / 47) and the
+natural working-save scenario 11 / 11; every profile restored and the Mods
+content manifest unchanged.
+
+**PR #52 is MERGED and v0.0.157 is PUBLISHED.** PR #52 merged normally as
+`8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c` (tree identical to the gated
+branch head `94e7ab207d`; between the gated candidate `3dc23e9c7a` and the
+merge only unpackaged records changed). The exact-reference
+`Publish-Release.ps1` then ran once from the clean, pushed main checkout
+(`master` fast-forwarded to the merge) with the refreshed reference bundle, in
+190 s: its build passed 2,646 / 2,646 domain tests, the release-mode wrapper
+with the v0.0.157 validator and strict package validation, and both clean
+builds produced identical bytes.
+
+[Stable v0.0.157](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157)
+is published (2026-10-16T18:26:19Z) and Latest, titled "Tabletop Added Rules
+v0.0.157". Annotated tag object `5b7e4dbcd892c0929882619a58f1d6298731d529`
+peels to the merge commit. The downloaded public assets' SHA-256 values match
+GitHub's digests:
+
+- `KingmakerGunslinger-0.0.157-alternate-summoning-sources.zip`:
+  `d2e6489277b56fb8a2b1a949fde6ddec8ddb1c40e1fcda145b7a2296db0d32a5`
+  (373 files; DLL
+  `b5ac181083843268075503481f8a82589a4efb7496c563616ca631b6ffc67562`, MVID
+  `0105e3cb-ac91-45aa-8137-ac74c3239390`);
+- `SHA256SUMS.txt`:
+  `f9d2febc22c3026429c580a22d53e4e7b1978dc1375ccd7bc342c95ba2392e50`;
+- `release-manifest.json`:
+  `5853f4b6048b0b777481215e6f348e33033c1e6ec52846ddb82e6f4801f46c1e`.
+
+The downloaded ZIP passed strict package validation, and its DLL embeds the
+merge commit and `0.0.157-alternate-summoning-sources`. These bytes differ
+from the gated candidate (DLL `6ee1ab75...5f31c`) because the exact-reference
+build stamps the merge commit; the publisher's own run qualified the released
+bytes, and the native evidence stays bound to the candidate. Nothing was
+deployed permanently (the live install is still the 0.0.140 install, its Mods
+content manifest unchanged) and no save was touched.
+
+Still open, unchanged by release: the owner checklist (hotbar binding,
+saved-shortcut cold load, a turn-based round, a scroll-required menu) and the
+maintainer cases (blocked-family shortcut load, grapple/swallow reset on
+reload) in `docs/ALTERNATE-SUMMONING-SOURCES.md`. Sprint 25 (PR #49, draft)
+carries 0.0.157 in its `Info.json` and must renumber to 0.0.158 or later when
+it releases; the development-candidate validator must be re-pinned to the
+v0.0.157 baseline before the next development candidate
+(`docs/DEVELOPMENT-CANDIDATES.md`).
+
 # Firearm RTWP continuation after a kill — v0.0.156 RELEASED / STOP
 
 The owner accepted the second review revision on 2026-10-15 and authorized

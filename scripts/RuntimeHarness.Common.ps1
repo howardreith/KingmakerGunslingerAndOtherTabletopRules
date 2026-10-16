@@ -2,6 +2,7 @@ Set-StrictMode -Version Latest
 
 . (Join-Path $PSScriptRoot 'common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeCoordination.Common.ps1')
+. (Join-Path $PSScriptRoot 'DevelopmentCandidate.Common.ps1')
 
 function Assert-KmgNotRunning {
     $processes = @(Get-Process -Name 'Kingmaker' -ErrorAction SilentlyContinue)
@@ -43,14 +44,24 @@ function Assert-KmgReusableDeployment {
         [Parameter(Mandatory = $true)][string]$PackagePath,
         [Parameter(Mandatory = $true)][string]$RepositoryRoot,
         [Parameter(Mandatory = $true)][string]$ExpectedVersion,
-        [switch]$AllowDirtyGit
+        [switch]$AllowDirtyGit,
+        # Names the one development purpose this caller may consume. Without
+        # it, a development candidate or its deployment is refused.
+        [string]$DevelopmentPurpose
     )
     $deploymentPath = (Resolve-Path -LiteralPath $DeploymentManifestPath).Path
     $requiredRoot = [IO.Path]::GetFullPath(
         'C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments')
     [void](Assert-KmgPathWithin -Path $deploymentPath -Root $requiredRoot)
     $package = (Resolve-Path -LiteralPath $PackagePath).Path
-    $buildPath = Get-KmgPackageManifestPath -PackagePath $package
+    $development = -not [string]::IsNullOrEmpty($DevelopmentPurpose)
+    if ($development) {
+        [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
+        $buildPath = Get-KmgDevelopmentReceiptPath -PackagePath $package
+    } else {
+        Assert-KmgNotDevelopmentCandidate -PackagePath $package -RepositoryRoot $RepositoryRoot
+        $buildPath = Get-KmgPackageManifestPath -PackagePath $package
+    }
     if (-not (Test-Path -LiteralPath $buildPath -PathType Leaf)) {
         throw "Reusable deployment build manifest is missing: $buildPath"
     }
@@ -62,15 +73,25 @@ function Assert-KmgReusableDeployment {
     }
     $sourceStateSha256 = Get-KmgSourceStateFingerprint `
         -RepositoryRoot $RepositoryRoot
-    if ($build.schemaVersion -ne 1 -or $build.validated -ne $true -or
-        $build.generator -ne 'scripts/Build-Local.ps1' -or
-        $build.packagePath -ne $package -or $build.commit -ne $git.Commit -or
-        $build.version -ne $ExpectedVersion -or
-        $build.sourceStateSha256 -cnotmatch '^[0-9a-f]{64}$' -or
-        $build.sourceStateSha256 -cne $sourceStateSha256 -or
-        [string]::IsNullOrWhiteSpace([string]$build.firearmManifestSha256) -or
-        [string]::IsNullOrWhiteSpace([string]$build.firearmSoundBankSha256)) {
-        throw 'Reusable build identity does not match the exact current source state/commit/version.'
+    if ($development) {
+        Assert-KmgDevelopmentReceipt -Receipt $build -PackagePath $package `
+            -RepositoryRoot $RepositoryRoot -Purpose $DevelopmentPurpose
+        Assert-KmgDevelopmentSourceBinding -Receipt $build -Git $git `
+            -SourceStateSha256 $sourceStateSha256 -ExpectedVersion $ExpectedVersion
+        Assert-KmgDevelopmentDeploymentRecord -Deployment $deployment `
+            -ReceiptPath $buildPath -Purpose $DevelopmentPurpose
+    } else {
+        if ($build.schemaVersion -ne 1 -or $build.validated -ne $true -or
+            $build.generator -ne 'scripts/Build-Local.ps1' -or
+            $build.packagePath -ne $package -or $build.commit -ne $git.Commit -or
+            $build.version -ne $ExpectedVersion -or
+            $build.sourceStateSha256 -cnotmatch '^[0-9a-f]{64}$' -or
+            $build.sourceStateSha256 -cne $sourceStateSha256 -or
+            [string]::IsNullOrWhiteSpace([string]$build.firearmManifestSha256) -or
+            [string]::IsNullOrWhiteSpace([string]$build.firearmSoundBankSha256)) {
+            throw 'Reusable build identity does not match the exact current source state/commit/version.'
+        }
+        Assert-KmgReleaseDeploymentRecord -Deployment $deployment
     }
     if ((Get-KmgSha256 -Path $package) -ne $build.packageSha256) {
         throw 'Reusable package SHA-256 no longer matches its immutable build manifest.'
@@ -361,9 +382,20 @@ function Assert-KmgQualifiedElementalRaces114Deployment {
 function Read-KmgBuildLocalManifest {
     param(
         [Parameter(Mandatory = $true)][string]$PackagePath,
-        [Parameter(Mandatory = $true)][string]$RepositoryRoot
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        # Names the one development purpose this caller may consume. Without
+        # it, a development candidate is refused; with it, only a development
+        # candidate built for that purpose is accepted.
+        [string]$DevelopmentPurpose
     )
     $package = (Resolve-Path -LiteralPath $PackagePath).Path
+    if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
+        $receipt = Read-KmgDevelopmentCandidate -PackagePath $package `
+            -RepositoryRoot $RepositoryRoot -Purpose $DevelopmentPurpose
+        & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package
+        return $receipt
+    }
+    Assert-KmgNotDevelopmentCandidate -PackagePath $package -RepositoryRoot $RepositoryRoot
     $manifestPath = Get-KmgPackageManifestPath -PackagePath $package
     if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
         throw "Build-Local manifest is missing: $manifestPath"
