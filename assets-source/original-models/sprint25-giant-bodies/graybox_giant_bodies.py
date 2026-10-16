@@ -158,26 +158,34 @@ def build(kind, rest, neck_state):
     ellipsoid(bm, weights, uvs, torso_mid, lateral, up, forward,
               body_radii, "UpperTorso", region=slots["body"])
 
-    # The forward chain. Rest is what was measured; upright is the sauropod
-    # re-aim; curled is the probe.
+    # The forward chain. Three references are kept apart on purpose, because
+    # conflating them is what put the elephant's skull, ears and tusks on a
+    # point inside the torso:
+    #   head_joint  - the ANATOMICAL reference, the captured Head position.
+    #                 Everything that belongs to the head hangs off this and
+    #                 it never moves.
+    #   pts[0]      - a seam-overlap ANCHOR sunk inside the hull so the tube
+    #                 starts under the surface. It is not anatomy.
+    #   the sink on the skull below is a deliberate ARTISTIC offset.
+    #
+    # States: 'rest' is what was measured. The upright re-aim belongs to the
+    # sauropod neck only - an elephant's trunk must never be stood upright -
+    # and the curl is a probe that can apply to either.
     pts = chain_points(rest, FORWARD_CHAIN, "Head")
-    if neck_state in ("upright", "curled"):
+    if neck_state in ("upright", "upright-curled"):
         pts = reaim(pts, pts[0], up * 0.82 + forward * 0.57)
-    if neck_state == "curled":
+    if neck_state in ("curled", "upright-curled"):
         pts = curl(pts, pts[0], lateral, 16.0)
+    head_joint = pts[0]
     bones = ["Head"] + FORWARD_CHAIN
 
-    # The independent review measured 18 to 52 pixels of background between the
-    # torso and this chain: it was a free-floating island, because the chain
-    # began exactly at the Head joint, which sits ON the torso surface rather
-    # than inside it. The root is now sunk back along the chain's own direction
-    # by more than a base radius, and that anchor is weighted to UpperTorso, so
-    # the first ring starts inside the hull and the join closes.
-    # Sink toward the torso CENTRE, not backward along the chain. Sinking
-    # along the chain put the anchor outside the hull on the far side and hung
-    # a wide slab down the body's flank; aiming at the centre is the same
-    # method the limb sockets use and it lands inside by construction.
-    anchor = pts[0] + (torso_mid - pts[0]).normalized() * (neck_base * 1.35)
+    # The review measured 18 to 52 pixels of background between torso and
+    # chain: a free-floating island, because the chain began exactly at the
+    # Head joint, which sits ON the torso surface rather than inside it. The
+    # anchor sinks toward the torso CENTRE - sinking backward along the chain
+    # instead put it outside the hull on the far side and hung a slab down the
+    # flank - and it is weighted to UpperTorso.
+    anchor = head_joint + (torso_mid - head_joint).normalized() * (neck_base * 1.35)
     pts = [anchor] + pts
     bones = ["UpperTorso"] + bones
     radii = [neck_base * 1.22] + taper(len(pts) - 1, neck_base, neck_tip)
@@ -194,7 +202,7 @@ def build(kind, rest, neck_state):
     if kind == "brachiosaurus":
         head_at, aim_from, aim_to = pts[-1], pts[-2], pts[-1]
     else:
-        head_at, aim_from, aim_to = pts[0], rest["UpperTorso"], pts[0]
+        head_at, aim_from, aim_to = head_joint, rest["UpperTorso"], head_joint
     head_dir = (aim_to - aim_from).normalized()
     head_up = (up - head_dir * up.dot(head_dir)).normalized()
     head_lat = head_dir.cross(head_up).normalized()
@@ -218,7 +226,7 @@ def build(kind, rest, neck_state):
         for ear, sign in (("Ear_L", 1.0), ("Ear_R", -1.0)):
             if ear not in rest:
                 continue
-            centre = (pts[0]
+            centre = (head_joint
                       + lateral * (sign * body_len * 0.20)
                       - up * (body_len * 0.02)
                       - forward * (body_len * 0.10))
@@ -226,7 +234,7 @@ def build(kind, rest, neck_state):
                       (body_len * 0.035, body_len * 0.19, body_len * 0.21),
                       ear, region=slots["head"])
         for sign in (-1.0, 1.0):
-            root = pts[0] + lateral * (sign * body_len * 0.105)                 - up * body_len * 0.055
+            root = head_joint + lateral * (sign * body_len * 0.105)                 - up * body_len * 0.055
             tip = root + head_dir * body_len * 0.40                 - up * body_len * 0.10 + lateral * (sign * body_len * 0.045)
             tube(bm, weights, uvs, [root, (root + tip) * 0.5, tip],
                  [body_len * 0.035, body_len * 0.026, body_len * 0.012],
@@ -264,10 +272,76 @@ def build(kind, rest, neck_state):
              [upper_b, upper_b, lower_b, foot_b], region=slots["limb"],
              segments=8)
 
+    # P6 classified and repaired. The enclosed dark patch the review found was
+    # NOT a hole: the topology report shows zero boundary and zero non-manifold
+    # edges, so the shell is closed. The face-orientation pass showed the real
+    # cause - the tube end caps are wound inward, so their backfaces were being
+    # seen through the surface. Recalculating normals outward fixes the actual
+    # surface defect; it is not a material or a shading trick.
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    bm.normal_update()
     bm.to_mesh(mesh)
     bm.free()
     mesh.validate()
     return obj
+
+
+def topology_report(obj):
+    """Classify surface defects by topology, not by looking at shading.
+
+    A dark enclosed patch in a render is either a real hole, a flipped face,
+    or just a shadow. Matcap-style shading cannot tell them apart, so this
+    counts the things that actually distinguish them: boundary edges bound a
+    hole, non-manifold edges mean the surface is not a clean shell, and a face
+    whose normal points away from the local outward direction is flipped.
+    """
+    mesh = obj.data
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    bm.normal_update()
+    boundary = [e for e in bm.edges if len(e.link_faces) == 1]
+    nonmanifold = [e for e in bm.edges if len(e.link_faces) > 2]
+    wire = [e for e in bm.edges if len(e.link_faces) == 0]
+    centre = Vector((0.0, 0.0, 0.0))
+    for v in bm.verts:
+        centre += v.co
+    centre /= max(1, len(bm.verts))
+    flipped = []
+    for f in bm.faces:
+        outward = (f.calc_center_median() - centre)
+        if outward.length < 1e-6:
+            continue
+        if f.normal.dot(outward.normalized()) < -0.35:
+            flipped.append(f.index)
+    loose = [v for v in bm.verts if not v.link_edges]
+    report = {
+        "verts": len(bm.verts), "edges": len(bm.edges), "faces": len(bm.faces),
+        "boundaryEdges": len(boundary), "nonManifoldEdges": len(nonmanifold),
+        "wireEdges": len(wire), "looseVerts": len(loose),
+        "stronglyInwardFaces": len(flipped),
+    }
+    bm.free()
+    return report
+
+
+def orientation_material():
+    """Blender's face-orientation overlay, as a real material: blue where a
+    face points at the camera, red where its back does."""
+    mat = bpy.data.materials.new("FaceOrientation")
+    mat.use_nodes = True
+    tree = mat.node_tree
+    for node in list(tree.nodes):
+        tree.nodes.remove(node)
+    geo = tree.nodes.new("ShaderNodeNewGeometry")
+    mix = tree.nodes.new("ShaderNodeMixRGB")
+    mix.inputs[1].default_value = (0.12, 0.35, 0.95, 1.0)
+    mix.inputs[2].default_value = (0.95, 0.15, 0.10, 1.0)
+    emit = tree.nodes.new("ShaderNodeEmission")
+    out = tree.nodes.new("ShaderNodeOutputMaterial")
+    tree.links.new(geo.outputs["Backfacing"], mix.inputs[0])
+    tree.links.new(mix.outputs[0], emit.inputs["Color"])
+    tree.links.new(emit.outputs[0], out.inputs["Surface"])
+    return mat
 
 
 def main():
@@ -275,6 +349,9 @@ def main():
     parser.add_argument("--census", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--kind", default="both")
+    parser.add_argument("--diagnostic", action="store_true",
+                        help="add face-orientation renders and a topology "
+                             "report that classifies surface defects")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     args = parser.parse_args(argv)
 
@@ -301,14 +378,25 @@ def main():
     world.use_nodes = True
     world.node_tree.nodes["Background"].inputs[1].default_value = 1.6
 
-    light_data = bpy.data.lights.new("Key", type="SUN")
-    light_data.energy = 3.0
-    light = bpy.data.objects.new("Key", light_data)
-    light.rotation_euler = (math.radians(55), 0.0, math.radians(35))
-    scene.collection.objects.link(light)
+    # A single sun left the front and rear views backlit and unreadable, and
+    # an unreadable render cannot be inspected. Three suns from different
+    # azimuths give every view enough form to judge silhouette and joins.
+    # This is review lighting only - it changes no geometry.
+    for name, pitch, yaw, energy in (("Key", 52, 35, 3.0),
+                                     ("Fill", 60, 200, 1.9),
+                                     ("Side", 70, 290, 1.4)):
+        light_data = bpy.data.lights.new(name, type="SUN")
+        light_data.energy = energy
+        light = bpy.data.objects.new(name, light_data)
+        light.rotation_euler = (math.radians(pitch), 0.0, math.radians(yaw))
+        scene.collection.objects.link(light)
 
     kinds = ("brachiosaurus", "elephant") if args.kind == "both" else (args.kind,)
-    states = {"brachiosaurus": ("rest", "upright", "curled"),
+    # The elephant's curl is a TRUNK curl from its measured rest pose. Only
+    # the sauropod gets the upright re-aim, and only its curled probe stacks
+    # the two. Previously 'curled' meant both for both creatures, so the
+    # elephant's curled render stood its trunk up like a neck.
+    states = {"brachiosaurus": ("rest", "upright", "upright-curled"),
               "elephant": ("rest", "curled")}
     written = []
     for kind in kinds:
@@ -322,10 +410,14 @@ def main():
             centre = body.matrix_world @ centre
             extent = max(body.dimensions) * 0.78
 
+            # The conversion leaves the creature facing +Y, so the camera
+            # that sees its FRONT stands at +Y looking back along -Y, and the
+            # rear camera stands at -Y. These were the wrong way round, which
+            # mislabelled every front and rear render produced so far.
             for view, offset in (("side", Vector((1.0, 0.0, 0.12))),
-                                 ("front", Vector((0.0, -1.0, 0.12))),
-                                 ("rear", Vector((0.0, 1.0, 0.12))),
-                                 ("party", Vector((0.72, -0.72, 0.55)))):
+                                 ("front", Vector((0.0, 1.0, 0.12))),
+                                 ("rear", Vector((0.0, -1.0, 0.12))),
+                                 ("party", Vector((0.72, 0.72, 0.55)))):
                 camera.location = centre + offset.normalized() * extent * 4.0
                 point_camera(camera, centre)
                 camera_data.ortho_scale = extent * 2.6
@@ -333,6 +425,20 @@ def main():
                 scene.render.filepath = str(out / name)
                 bpy.ops.render.render(write_still=True)
                 written.append(name)
+
+            if args.diagnostic:
+                report = topology_report(body)
+                print("TOPOLOGY %s-%s: %s" % (kind, state, json.dumps(report)))
+                body.data.materials.clear()
+                body.data.materials.append(orientation_material())
+                for view, offset in (("orient-front", Vector((0.0, 1.0, 0.12))),
+                                     ("orient-side", Vector((1.0, 0.0, 0.12)))):
+                    camera.location = centre + offset.normalized() * extent * 4.0
+                    point_camera(camera, centre)
+                    name = "%s-%s-%s.png" % (kind, state, view)
+                    scene.render.filepath = str(out / name)
+                    bpy.ops.render.render(write_still=True)
+                    written.append(name)
     print("GRAYBOX RENDERS: " + ", ".join(written))
 
 
