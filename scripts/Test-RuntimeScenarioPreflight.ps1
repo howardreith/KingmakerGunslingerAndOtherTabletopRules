@@ -178,6 +178,8 @@ $expected = @(
     'observe-expanded-summoning-sprint22-contracts',
     'observe-expanded-summoning-sprint24-theropod-census',
     'observe-alternate-summoning-sources',
+    'observe-alternate-summoning-blocked-family',
+    'disposable-alternate-summoning-contracts',
     'disposable-expanded-summoning-sprint18-review',
     'disposable-expanded-summoning-sprint19-review',
     'disposable-expanded-summoning-sprint20-review',

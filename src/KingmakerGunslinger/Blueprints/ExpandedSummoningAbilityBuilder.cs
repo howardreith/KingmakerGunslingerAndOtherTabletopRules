@@ -425,6 +425,11 @@ namespace KingmakerGunslinger.Blueprints
         { return value == SummonMultiplicity.One ? "" : value ==
             SummonMultiplicity.OneD3 ? " (1d3)" : " (1d4+1)"; }
 
+        /// <summary>The same deep clone for any action or value object.</summary>
+        internal static object DeepCloneComponentObject(object source)
+        { return DeepClone(source,
+            new Dictionary<object, object>(ReferenceComparer.Instance)); }
+
         internal static BlueprintComponent DeepCloneComponent(BlueprintComponent source)
         { return (BlueprintComponent)DeepClone(source,
             new Dictionary<object, object>(ReferenceComparer.Instance)); }

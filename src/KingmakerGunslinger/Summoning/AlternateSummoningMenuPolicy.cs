@@ -4,30 +4,10 @@ using System.Linq;
 
 namespace KingmakerGunslinger.Summoning
 {
-    /// <summary>A native option's exact spawn signature, read from the live
-    /// canonical child that the native option catalog names.</summary>
-    internal sealed class AlternateSummoningLineageCandidate
-    {
-        internal AlternateSummoningLineageCandidate(string optionGuid,
-            SummonMultiplicity multiplicity, IEnumerable<string> unitGuids)
-        {
-            if (string.IsNullOrWhiteSpace(optionGuid))
-                throw new ArgumentException("A native option GUID is required.", "optionGuid");
-            OptionGuid = optionGuid; Multiplicity = multiplicity;
-            UnitGuids = AlternateSummoningLineagePolicy.Signature(unitGuids);
-        }
-
-        internal string OptionGuid { get; private set; }
-        internal SummonMultiplicity Multiplicity { get; private set; }
-        internal IReadOnlyList<string> UnitGuids { get; private set; }
-    }
-
     /// <summary>
-    /// Which canonical native option a host child descends from. A caller's
-    /// child is a copy of a native child, so it spawns exactly the same set of
-    /// units; that set, within the same tier and quantity, is the only
-    /// evidence accepted. No match, or more than one, means "unknown", and an
-    /// unknown option is always preserved.
+    /// A host ability's set of spawned unit identities, order- and
+    /// repeat-insensitive. Lineage itself is established by the family
+    /// template contracts, never by this set alone.
     /// </summary>
     internal static class AlternateSummoningLineagePolicy
     {
@@ -39,20 +19,6 @@ namespace KingmakerGunslinger.Summoning
             if (values.Any(string.IsNullOrWhiteSpace))
                 throw new ArgumentException("A spawn signature contains an empty unit GUID.");
             return values;
-        }
-
-        internal static AlternateSummoningLineageCandidate Match(
-            IEnumerable<string> hostUnitGuids, SummonMultiplicity? quantity,
-            IEnumerable<AlternateSummoningLineageCandidate> candidates)
-        {
-            IReadOnlyList<string> host = Signature(hostUnitGuids);
-            if (host.Count == 0 || candidates == null) return null;
-            AlternateSummoningLineageCandidate[] matches = candidates.Where(value =>
-                value != null && (!quantity.HasValue ||
-                    value.Multiplicity == quantity.Value) &&
-                value.UnitGuids.SequenceEqual(host, StringComparer.Ordinal))
-                .ToArray();
-            return matches.Length == 1 ? matches[0] : null;
         }
     }
 

@@ -4,12 +4,10 @@ using System.IO;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
-using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Mechanics.Actions;
-using Kingmaker.UnitLogic.Mechanics.Components;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -36,17 +34,21 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>
         /// Read-only, save-free observation of the installed alternate
-        /// summoning graph after reconciliation. For every published caller it
-        /// compares each adapter child with that caller's exact template -
-        /// resource and spend, pools and their clearing, duration rate, action,
-        /// checkers and custom cost - and with the canonical child it composes
-        /// from, and checks the per-tier roster against the central catalog. It
-        /// then lists every other spawn graph in the library and every
-        /// component that references one of the eighteen ordinary spell
-        /// parents. It casts nothing and changes nothing; it cannot qualify
-        /// character menus, resource consumption, animation or persistence.
+        /// summoning graph after reconciliation. Every adapter child's full
+        /// significant-mechanics signature - resource and spend, custom cost
+        /// facts, caster conditions with their pools, every rank expression,
+        /// spell traits, and the run action's spawn, quantity, duration, pool,
+        /// clear and conditional structure in order - must equal its caller
+        /// template's with only the deliberate creature and template/alignment
+        /// changes. Every authorized host template must still render exactly as
+        /// it did when it was resolved. With <paramref name="blockedFamily"/>
+        /// the named family must instead be blocked with placeholders and an
+        /// unchanged host. It casts nothing and changes nothing; it cannot
+        /// qualify character menus, resource consumption, animation or
+        /// persistence.
         /// </summary>
-        private RuntimeTestResult RunAlternateSummoningSourcesObservation()
+        private RuntimeTestResult RunAlternateSummoningSourcesObservation(
+            string blockedFamily)
         {
             WriteLifecycleStage("alternate-summoning-sources-start");
             var assertions = new List<RuntimeTestAssertion>();
@@ -57,6 +59,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["scope"] = "Save-free read-only observation of alternate summoning adapters, host templates, discovered spawn graphs and canonical-parent references. No cast, input, save or mutation.",
                 ["limits"] = "Structural and graph evidence only. Character ability menus, actual resource consumption, summon execution, animation and save persistence are not exercised.",
                 ["runId"] = _request.RunId,
+                ["blockedFamilyDrill"] = blockedFamily,
                 ["families"] = families,
                 ["spawnGraphCensus"] = census,
                 ["canonicalParentReferences"] = references
@@ -71,13 +74,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<BlueprintAbility>().ToLookup(value => value.name,
                         StringComparer.Ordinal);
                 AlternateSummoningRoster roster = AlternateSummoningRoster.Production();
-                bool cotwActive = AlternateSummoningSourceCatalog.All.Any(family =>
-                    family.Provider == AlternateSummoningProvider.CallOfTheWild &&
-                    Status(family.Key) != AlternateSummoningDisposition.AbsentInProfile);
                 document["moduleActive"] = moduleActive;
-                document["callOfTheWildObserved"] = cotwActive;
                 document["coordinatorPendingUpdates"] =
                     AlternateSummoningCoordinator.PendingUpdates;
+                document["exposedChildren"] = AlternateSummoningExposure.ExposedCount;
+                document["publishedRoots"] = AlternateSummoningExposure.PublishedRootCount;
                 foreach (AlternateSummoningFamilySpec family in
                     AlternateSummoningSourceCatalog.All)
                 {
@@ -99,32 +100,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["identities"] = choices.Count,
                         ["registered"] = registered
                     };
+                    bool drilled = string.Equals(family.Key, blockedFamily,
+                        StringComparison.Ordinal);
                     bool pass;
-                    if (status == null)
+                    string expected;
+                    if (drilled)
+                    {
+                        expected = "Blocked by the guarded fault drill, every identity an unavailable placeholder, host menus unchanged";
+                        record["placeholders"] = VerifyBlockedFamily(library, family,
+                            choices, failures);
+                        pass = status != null && status.Disposition ==
+                            AlternateSummoningDisposition.Blocked &&
+                            status.Reason.Contains(".fault-drill:") &&
+                            registered == choices.Count && failures.Count == 0;
+                    }
+                    else if (status == null)
+                    {
+                        expected = "a settled status";
                         pass = false;
+                    }
                     else if (status.Disposition == AlternateSummoningDisposition.Published)
                     {
-                        record["roots"] = VerifyAlternateFamily(library,
-                            abilities, family, identity, roster, choices, failures);
+                        expected = "Published; every adapter child equal to its template signature with only the deliberate changes; templates unchanged since resolution";
+                        record["roots"] = VerifyAlternateFamily(library, abilities,
+                            family, identity, roster, choices, failures);
                         pass = moduleActive && registered == choices.Count &&
                             failures.Count == 0;
                     }
                     else if (status.Disposition ==
                         AlternateSummoningDisposition.RegisteredModuleOff)
-                        pass = !moduleActive && registered == choices.Count;
+                    {
+                        expected = "RegisteredModuleOff with every identity registered and nothing exposed";
+                        pass = !moduleActive && registered == choices.Count &&
+                            AlternateSummoningExposure.ExposedCount == 0;
+                    }
                     else if (status.Disposition ==
                         AlternateSummoningDisposition.AbsentInProfile)
+                    {
+                        expected = "AbsentInProfile without its provider";
                         pass = family.Provider == AlternateSummoningProvider
                             .CallOfTheWild && registered == 0;
+                    }
                     else
+                    {
+                        expected = "Published (or AbsentInProfile without CotW)";
                         pass = false;
-                    record["failures"] = new JArray(failures.Take(60));
+                    }
+                    record["failures"] = new JArray(failures.Take(80));
                     families.Add(record);
                     assertions.Add(Assertion("alternate-summoning-" + family.Key,
-                        moduleActive ? "Published with every adapter child matching its caller template and canonical child (or AbsentInProfile without CotW)" :
-                            "RegisteredModuleOff with every identity registered",
-                        (status == null ? "missing" : status.Disposition + ":" +
-                            status.Reason) + ";registered=" + registered + "/" +
+                        expected, (status == null ? "missing" : status.Disposition +
+                            ":" + status.Reason) + ";registered=" + registered + "/" +
                             choices.Count + ";failures=" + failures.Count +
                             (failures.Count == 0 ? "" : ";first=" + failures[0]),
                         pass, "live library after first-update reconciliation"));
@@ -148,7 +174,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     canonicalExact && adapterUnderCanonical == 0,
                     "RequiredBasePublicationIsExact on the canonical inventory"));
 
-                CensusSpawnGraphs(library, all, parents, census, document);
+                CensusSpawnGraphs(all, parents, census, document);
                 CensusCanonicalReferences(all, parents, references);
             }
             catch (Exception exception)
@@ -172,14 +198,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? "PASS" : "FAIL", assertions, null);
         }
 
-        private static AlternateSummoningDisposition? Status(string key)
-        {
-            AlternateSummoningFamilyStatus status =
-                AlternateSummoningStatusRegistry.Find(key);
-            return status == null ? (AlternateSummoningDisposition?)null :
-                status.Disposition;
-        }
-
         private static JArray VerifyAlternateFamily(LibraryScriptableObject library,
             ILookup<string, BlueprintAbility> abilities,
             AlternateSummoningFamilySpec family, AlternateSummoningFamilyIdentity identity,
@@ -190,18 +208,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var byName = choices.ToDictionary(value =>
                 AlternateSummoningAdapterBuilder.InternalName(value.Symbol),
                 StringComparer.Ordinal);
-            var kmgUnits = new HashSet<string>(ExpandedSummoningCatalog.All.Select(
-                creature => AlternateSummoningAdapterBuilder.InternalName(
-                    ExpandedSummoningIdentityCatalog.UnitSymbol(creature))),
-                StringComparer.Ordinal);
+            IReadOnlyDictionary<string, string> renders =
+                AlternateSummoningCoordinator.TemplateRenders(family.Key);
             foreach (AlternateSummoningRootSpec spec in family.Roots)
             {
-                BlueprintAbility[] roots;
-                if (spec.RootGuid != null)
-                    roots = new[] { BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
-                        library, spec.RootGuid, family.Key + " root") };
-                else
-                    roots = AlternateSummoningGraph.References<BlueprintAbility>(
+                BlueprintAbility[] roots = spec.RootGuid != null ?
+                    new[] { BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                        library, spec.RootGuid, family.Key + " root") } :
+                    AlternateSummoningGraph.References<BlueprintAbility>(
                         BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
                             spec.FeatureGuid, family.Key + " feature").ComponentsArray)
                         .Distinct().ToArray();
@@ -231,16 +245,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 library, spec.Templates.Single(value =>
                                     value.Multiplicity == choice.Multiplicity).Guid,
                                 "template");
-                        CompareAdapterChild(library, abilities, child, root, template,
-                            choice, failures);
+                        CompareAdapterChild(abilities, child, root, template, choice,
+                            failures);
                     }
-                    foreach (AlternateSummoningTemplateSpec template in spec.Templates)
+                    var templates = spec.RootGuid == null || spec.IsDirect ?
+                        new[] { root } : spec.Templates.Select(value =>
+                            BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                                library, value.Guid, "template")).ToArray();
+                    foreach (BlueprintAbility template in templates)
                     {
-                        BlueprintAbility live = BlueprintLibraryLookup.RequireExact<
-                            BlueprintAbility>(library, template.Guid, "template");
-                        if (Spawns(live).Any(value => value.Blueprint != null &&
-                            kmgUnits.Contains(value.Blueprint.name)))
-                            failures.Add(live.name + ":host-template-mutated");
+                        string before;
+                        if (!renders.TryGetValue(template.AssetGuid, out before))
+                            failures.Add(template.name + ":template-not-recorded");
+                        else if (!string.Equals(before, SummonSignatureReader
+                            .Read(template).Render(), StringComparison.Ordinal))
+                            failures.Add(template.name + ":host-template-changed");
                     }
                     if (spec.RootGuid == null && quantities.Count > 1)
                         failures.Add(root.name + ":direct-root-mixes-quantities");
@@ -270,102 +289,145 @@ namespace KingmakerGunslinger.RuntimeTesting
             return rows;
         }
 
-        private static void CompareAdapterChild(LibraryScriptableObject library,
+        private static void CompareAdapterChild(
             ILookup<string, BlueprintAbility> abilities, BlueprintAbility child,
             BlueprintAbility root, BlueprintAbility template,
             AlternateSummoningChoice choice, List<string> failures)
         {
-            string id = child.name;
+            string id = child.name + ":" + child.AssetGuid;
             if (!ReferenceEquals(child.Parent, root)) failures.Add(id + ":parent");
-            if (child.ComponentsArray.OfType<AbilityVariants>().Any())
-                failures.Add(id + ":nested-variants");
-            if (child.ComponentsArray.OfType<AlternateSummoningAvailability>().Count() != 1)
-                failures.Add(id + ":availability-gate");
+            AlternateSummoningAvailability[] gates = (child.ComponentsArray ??
+                new BlueprintComponent[0]).OfType<AlternateSummoningAvailability>()
+                .ToArray();
+            if (gates.Length != 1) failures.Add(id + ":availability-gate");
             if (!AlternateSummoningExposure.IsExposed(child.AssetGuid))
                 failures.Add(id + ":not-exposed");
-            if (child.AvailabilityProviders.OfType<AlternateSummoningAvailability>()
-                .Count() != 1)
-                failures.Add(id + ":gate-not-in-provider-cache");
-            if (child.Type != template.Type || child.ActionType != template.ActionType ||
-                child.Range != template.Range ||
-                child.IsFullRoundAction != template.IsFullRoundAction ||
-                !ReferenceEquals(child.LocalizedDuration, template.LocalizedDuration))
-                failures.Add(id + ":ability-shape");
-            if (Describe(child.ComponentsArray.OfType<AbilityResourceLogic>()) !=
-                Describe(template.ComponentsArray.OfType<AbilityResourceLogic>()))
-                failures.Add(id + ":resource-logic");
-            if (TypeSet(child.ComponentsArray.OfType<IAbilityCasterChecker>()) !=
-                TypeSet(template.ComponentsArray.OfType<IAbilityCasterChecker>()) ||
-                TypeSet(child.ComponentsArray.OfType<IAbilityResourceCostCalculator>()) !=
-                TypeSet(template.ComponentsArray.OfType<IAbilityResourceCostCalculator>()) ||
-                child.ComponentsArray.OfType<ContextRankConfig>().Count() !=
-                template.ComponentsArray.OfType<ContextRankConfig>().Count() ||
-                child.ComponentsArray.OfType<SpellComponent>().Select(value =>
-                    value.School).FirstOrDefault() != template.ComponentsArray
-                    .OfType<SpellComponent>().Select(value => value.School).FirstOrDefault())
-                failures.Add(id + ":caller-components");
-            ContextActionSpawnMonster[] mine = Spawns(child);
-            ContextActionSpawnMonster[] theirs = Spawns(template);
-            if (mine.Length == 0 || mine.Length != theirs.Length ||
-                PoolSet(mine.Select(value => value.SummonPool)) !=
-                    PoolSet(theirs.Select(value => value.SummonPool)) ||
-                string.Join(",", mine.Select(value => value.DurationValue == null ? "" :
-                    value.DurationValue.Rate.ToString()).ToArray()) !=
-                string.Join(",", theirs.Select(value => value.DurationValue == null ? "" :
-                    value.DurationValue.Rate.ToString()).ToArray()))
-                failures.Add(id + ":spawn-pools-or-duration");
-            if (PoolSet(AlternateSummoningGraph.Objects<ContextActionClearSummonPool>(
-                    child.ComponentsArray).Select(value => value.SummonPool)) !=
-                PoolSet(AlternateSummoningGraph.Objects<ContextActionClearSummonPool>(
-                    template.ComponentsArray).Select(value => value.SummonPool)))
-                failures.Add(id + ":pool-clearing");
-            if (choice.Kind == AlternateSummoningChoiceKind.Preserved) return;
-            BlueprintAbility canonical = abilities[AlternateSummoningAdapterBuilder
-                .InternalName(choice.CanonicalSymbol)].SingleOrDefault();
-            if (canonical == null) { failures.Add(id + ":canonical-missing"); return; }
-            BlueprintUnit expectedUnit = Spawns(canonical).Select(value =>
-                value.Blueprint).Distinct().SingleOrDefault();
-            if (expectedUnit == null || mine.Any(value =>
-                !ReferenceEquals(value.Blueprint, expectedUnit)))
-                failures.Add(id + ":spawned-unit");
-            BlueprintUnitFactAccess access = BlueprintUnitFactAccess.Resolve();
-            if (!ReferenceEquals(access.GetDisplayName(child),
-                    access.GetDisplayName(canonical)) ||
-                !ReferenceEquals(access.GetDescription(child),
-                    access.GetDescription(canonical)) ||
-                !ReferenceEquals(child.Icon, canonical.Icon) || child.Icon == null)
-                failures.Add(id + ":presentation");
-            int templates = AlternateSummoningGraph.Objects<
-                ContextActionApplySummonTemplateByCaster>(child.ComponentsArray).Count;
-            int alignments = AlternateSummoningGraph.Objects<
-                ContextActionSetSummonAlignment>(child.ComponentsArray).Count;
-            if (choice.Kind == AlternateSummoningChoiceKind.Creature)
+            IAbilityAvailabilityProvider[] providers = child.AvailabilityProviders;
+            if (gates.Length == 1 && !providers.Any(value => ReferenceEquals(value,
+                    gates[0])))
+                failures.Add(id + ":own-gate-not-in-provider-cache");
+            if (providers.Any(value => template.ComponentsArray != null &&
+                template.ComponentsArray.Any(component => ReferenceEquals(component, value))))
+                failures.Add(id + ":provider-cache-shared-with-template");
+            string unit;
+            if (choice.Kind == AlternateSummoningChoiceKind.Preserved)
+                unit = null;
+            else
             {
-                SummonVariantSpec placement = choice.Placement;
-                bool dynamic = placement.Family == SummonFamily.Monster &&
-                    placement.Creature.MonsterTemplated;
-                bool ally = placement.Family == SummonFamily.NaturesAlly;
-                if ((dynamic && (templates != mine.Length || alignments != 0)) ||
-                    (ally && (alignments != mine.Length || templates != 0)) ||
-                    (!dynamic && !ally && (templates != 0 || alignments != 0)))
-                    failures.Add(id + ":template-or-alignment templates=" + templates +
-                        " alignments=" + alignments + " spawns=" + mine.Length);
+                BlueprintAbility canonical = abilities[AlternateSummoningAdapterBuilder
+                    .InternalName(choice.CanonicalSymbol)].SingleOrDefault();
+                if (canonical == null) { failures.Add(id + ":canonical-missing"); return; }
+                string[] units = SummonSignatureReader.Read(canonical).Spawns()
+                    .Select(value => value.Unit).Distinct().ToArray();
+                if (units.Length != 1) { failures.Add(id + ":canonical-unit"); return; }
+                unit = units[0];
+                BlueprintUnitFactAccess access = BlueprintUnitFactAccess.Resolve();
+                if (!ReferenceEquals(access.GetDisplayName(child),
+                        access.GetDisplayName(canonical)) ||
+                    !ReferenceEquals(access.GetDescription(child),
+                        access.GetDescription(canonical)) ||
+                    !ReferenceEquals(child.Icon, canonical.Icon) || child.Icon == null)
+                    failures.Add(id + ":presentation");
             }
-            else if (templates != 0 || alignments != 0)
-                failures.Add(id + ":native-option-composed-template");
+            SummonVariantSpec placement = choice.Placement;
+            SummonSignature expected = AlternateSummoningContracts.ExpectedAdapterChild(
+                SummonSignatureReader.Read(template), unit, choice.Kind,
+                placement == null ? choice.NativeOption == null ? SummonFamily.Monster :
+                    choice.NativeOption.Family : placement.Family,
+                placement != null && placement.Creature.MonsterTemplated);
+            string difference = SummonSignature.Difference(expected,
+                SummonSignatureReader.Read(child));
+            if (difference != null)
+                failures.Add(id + ":signature:" + difference);
+            if (choice.Kind != AlternateSummoningChoiceKind.Creature) return;
+            int spawns = AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(
+                child.ComponentsArray).Count;
+            int templateActions = AlternateSummoningGraph.Objects<
+                ContextActionApplySummonTemplateByCaster>(child.ComponentsArray).Count;
+            if (placement.Family == SummonFamily.Monster &&
+                placement.Creature.MonsterTemplated)
+            {
+                // The appended template action must carry the canonical
+                // child's exact template, smite and neutral-mode buffs.
+                BlueprintAbility canonical = abilities[AlternateSummoningAdapterBuilder
+                    .InternalName(choice.CanonicalSymbol)].Single();
+                ContextActionApplySummonTemplateByCaster model = AlternateSummoningGraph
+                    .Objects<ContextActionApplySummonTemplateByCaster>(
+                        canonical.ComponentsArray).First();
+                if (templateActions != spawns || AlternateSummoningGraph.Objects<
+                    ContextActionApplySummonTemplateByCaster>(child.ComponentsArray)
+                    .Any(value => !ReferenceEquals(value.CelestialTemplate,
+                        model.CelestialTemplate) || !ReferenceEquals(value.FiendishTemplate,
+                        model.FiendishTemplate) || !ReferenceEquals(value.CelestialSmite,
+                        model.CelestialSmite) || !ReferenceEquals(value.FiendishSmite,
+                        model.FiendishSmite) || !ReferenceEquals(value.NeutralFiendishMode,
+                        model.NeutralFiendishMode)))
+                    failures.Add(id + ":template-buffs");
+            }
         }
 
-        private static void CensusSpawnGraphs(LibraryScriptableObject library,
-            BlueprintScriptableObject[] all, BlueprintAbility[] canonical,
-            JArray census, JObject document)
+        /// <summary>The drilled family: every identity is resolvable as an
+        /// unavailable placeholder with no execution graph, and every host
+        /// root still has exactly the menu the host built.</summary>
+        private static JObject VerifyBlockedFamily(LibraryScriptableObject library,
+            AlternateSummoningFamilySpec family,
+            IReadOnlyList<AlternateSummoningChoice> choices, List<string> failures)
+        {
+            IReadOnlyDictionary<string, BlueprintAbility> owned =
+                AlternateSummoningCoordinator.OwnedIdentities(family.Key);
+            int placeholders = 0;
+            foreach (AlternateSummoningChoice choice in choices)
+            {
+                BlueprintAbility ability;
+                if (!owned.TryGetValue(choice.Symbol, out ability))
+                { failures.Add(choice.Symbol + ":not-owned"); continue; }
+                BlueprintScriptableObject resolved;
+                if (!library.BlueprintsByAssetId.TryGetValue(ability.AssetGuid,
+                    out resolved) || !ReferenceEquals(resolved, ability))
+                    failures.Add(choice.Symbol + ":not-resolvable");
+                BlueprintComponent[] components = ability.ComponentsArray ??
+                    new BlueprintComponent[0];
+                if (components.Length != 1 || !(components[0] is
+                    AlternateSummoningUnavailable) || ability.Parent != null ||
+                    !ability.Hidden || AlternateSummoningExposure.IsExposed(
+                        ability.AssetGuid) || !ability.AvailabilityProviders.Any(value =>
+                            ReferenceEquals(value, components.FirstOrDefault())))
+                    failures.Add(choice.Symbol + ":not-a-placeholder");
+                else placeholders++;
+            }
+            int roots = 0;
+            foreach (AlternateSummoningRootSpec spec in family.Roots)
+            {
+                if (spec.RootGuid == null) continue;
+                BlueprintAbility root = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(library, spec.RootGuid, family.Key + " root");
+                bool marked = (root.ComponentsArray ?? new BlueprintComponent[0])
+                    .OfType<AbilityVariants>().Any(value => string.Equals(value.name,
+                        AlternateSummoningExposure.VariantsComponentName,
+                        StringComparison.Ordinal));
+                BlueprintAbility[] variants = root.Variants ?? new BlueprintAbility[0];
+                if (marked || AlternateSummoningExposure.IsPublishedRoot(root) ||
+                    variants.Any(value => value != null && value.name.StartsWith(
+                        AdapterNamePrefix, StringComparison.Ordinal)) ||
+                    spec.Templates.Any(template => !variants.Any(value => value != null &&
+                        value.AssetGuid == template.Guid)))
+                    failures.Add(root.name + ":host-menu-changed");
+                roots++;
+            }
+            return new JObject { ["placeholders"] = placeholders, ["rootsChecked"] = roots };
+        }
+
+        private static void CensusSpawnGraphs(BlueprintScriptableObject[] all,
+            BlueprintAbility[] canonical, JArray census, JObject document)
         {
             var groups = new Dictionary<string, JObject>(StringComparer.Ordinal);
             int spawning = 0;
             var canonicalSet = new HashSet<BlueprintAbility>(canonical);
             foreach (BlueprintAbility ability in all.OfType<BlueprintAbility>())
             {
-                if (ability.ComponentsArray == null || Spawns(ability).Length == 0)
-                    continue;
+                if (ability.ComponentsArray == null || AlternateSummoningGraph
+                    .Objects<ContextActionSpawnMonster>(ability.ComponentsArray)
+                    .Count == 0) continue;
                 spawning++;
                 BlueprintAbility top = ability;
                 var seen = new HashSet<BlueprintAbility>();
@@ -418,36 +480,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     });
                 }
             }
-        }
-
-        private static ContextActionSpawnMonster[] Spawns(BlueprintAbility ability)
-        {
-            return ability == null ? new ContextActionSpawnMonster[0] :
-                AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(
-                    ability.ComponentsArray).ToArray();
-        }
-
-        private static string PoolSet(IEnumerable<BlueprintSummonPool> pools)
-        {
-            return string.Join(",", pools.Select(value => value == null ? "none" :
-                value.AssetGuid).Distinct().OrderBy(value => value,
-                    StringComparer.Ordinal).ToArray());
-        }
-
-        private static string TypeSet(IEnumerable<object> values)
-        {
-            return string.Join(",", values.Where(value => value != null &&
-                !(value is AlternateSummoningAvailability)).Select(value =>
-                    value.GetType().FullName).OrderBy(value => value,
-                        StringComparer.Ordinal).ToArray());
-        }
-
-        private static string Describe(IEnumerable<AbilityResourceLogic> logic)
-        {
-            return string.Join(";", logic.Select(value => (value.RequiredResource ==
-                null ? "none" : value.RequiredResource.AssetGuid) + "/" +
-                value.IsSpendResource + "/" + value.Amount + "/" + value.CostIsCustom)
-                .ToArray());
         }
     }
 }

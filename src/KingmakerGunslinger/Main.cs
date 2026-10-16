@@ -78,6 +78,7 @@ namespace KingmakerGunslinger
                 RuntimeTestRunner.RecordEarlyIdentity(context);
                 ElementalNereidQualificationControl.TryActivateEarly(context);
                 CompatibilityAttributionRuntimeControl.TryActivateEarly(context);
+                AlternateSummoningFaultDrillControl.TryActivateEarly(context);
                 if (CompatibilityAttributionRuntimeControl.IsAssetFamilyEnabled(
                     Compatibility.CompatibilityAssetFamily.Firearms))
                     Assets.FirearmAssetRuntime.Configure(context);
