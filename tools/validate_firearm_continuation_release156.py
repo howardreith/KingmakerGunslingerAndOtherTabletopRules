@@ -31,6 +31,23 @@ FIREARM_PRODUCTION = {
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmMaintenance.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmReviewKillChain.cs",
 }
+# Sprint 25 research seam, present ONLY on the never-merged
+# codex/expanded-summoning-sprint25-donor-census branch. This candidate exists
+# to run one bounded read-only donor observation and is never published, so the
+# released v0.0.156 artifact, tag and assets are untouched by it. The seam is
+# named rather than the scope check being disabled, so the diff shows exactly
+# which four files a reviewer must look at.
+RESEARCH_PRODUCTION = {
+    "src/KingmakerGunslinger/RuntimeTesting/Sprint25DonorCensusPolicy.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint25Census.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
+}
+# The two compile items the Sprint 25 research seam adds, on that branch only.
+RESEARCH_PROJECT_LINES = [
+    '    <Compile Include="RuntimeTesting\Sprint25DonorCensusPolicy.cs" />',
+    '    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint25Census.cs" />',
+]
 VERSION_PRODUCTION = {"src/KingmakerGunslinger/Properties/AssemblyInfo.cs"}
 # The project may differ from v0.0.155 only by compiling the new fixture file.
 PROJECT = "src/KingmakerGunslinger/KingmakerGunslinger.csproj"
@@ -67,12 +84,19 @@ def check_project(released_text, current_text):
             released_text.splitlines().count(PROJECT_LINE) != 0:
         raise AssertionError("The project must add exactly the kill-chain fixture compile item")
     current.remove(PROJECT_LINE)
+    # Remove the named Sprint 25 research compile items, if present, so the
+    # remainder must still be byte-identical to the released project.
+    # Anything else added to the project still fails below.
+    for research_line in RESEARCH_PROJECT_LINES:
+        if research_line in current:
+            current.remove(research_line)
     if current != released_text.splitlines():
         raise AssertionError("The project changed beyond the kill-chain fixture compile item")
 
 
 def check_production_scope(changed):
-    unexpected = sorted(set(changed) - FIREARM_PRODUCTION - VERSION_PRODUCTION - {PROJECT})
+    unexpected = sorted(set(changed) - FIREARM_PRODUCTION - VERSION_PRODUCTION -
+                    RESEARCH_PRODUCTION - {PROJECT})
     if unexpected:
         raise AssertionError("Production source outside the firearm patch changed: " +
                              ", ".join(unexpected))
