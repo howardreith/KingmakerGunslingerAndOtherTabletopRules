@@ -1,9 +1,11 @@
 # Expanded Summoning alternate sources - mission state
 
-Status: **corrections delivered; focused native validation partly complete.**
-Runtime is checked only for the scenarios in the transaction table below
-(details in the doc's "Native coverage"); the cases under "Remaining" are
-not checked.
+Status: **targeted verification corrections implemented; native
+command-fixture coverage passed; real-popup and natural-RTWP cases passed on
+the working save; player-facing validation partially complete.** Runtime is
+checked only for the scenarios in the tables below (details and the evidence
+matrix in the doc's "Targeted verification pass"); the cases under
+"Remaining" are not checked.
 
 - This file is the resumable state for the alternate-summoning-sources mission
   only. It does not replace the Sprint 25 worker's resume narrative or any
@@ -16,7 +18,11 @@ not checked.
 ## Intake
 
 First intake 2026-10-16 (first checkpoint); refreshed at 13:13Z before the
-first guarded launch and checked before every later one.
+first guarded launch and checked before every later one. Third-pass intake
+at 14:54Z, rechecked at 16:00Z: PR #52 head `e9db3c18f2` (draft, no reviewer,
+comment or review); `origin/master` `968b35495c` unchanged; PR #49 head
+`a295dd8902` (draft; it moved during the pass; not imported or touched); the
+installed Mods tree and settings as in the table below.
 
 | Item | Observed value |
 |---|---|
@@ -53,7 +59,17 @@ Corrections mission:
 | `4c5b721bdc` | Development-candidate route ([docs/DEVELOPMENT-CANDIDATES.md](../docs/DEVELOPMENT-CANDIDATES.md)); icon-catalog repin for the extended ledger and the `BlueprintBootstrap.IsFailed` accessor |
 | `f05256c3a1` | Save-free native-area player-path fixture for Master Summoner and Occultist |
 | `1a1864e870`, `67428817fb`, `7ed7dfcfbb`, `651dde310e` | Player-path fixture extended to every distinct family contract, and four fixture corrections found by guarded runs (see transactions) |
-| this commit | Documentation and state |
+| `e9db3c18f2` | Documentation and state |
+
+Third pass ("targeted verification corrections and player-path closure"):
+
+| Commit | What |
+|---|---|
+| `3e2bf5caf7` | Composed-action contract (`AlternateSummoningComposition`) in the observer, with negative controls in the contract fixture and 6 domain tests; assisted-execution labels on every player-path cast; Master Summoner eidolon pool cases, Occultist lower-tier group, Preservationist extract III -> SNA IV |
+| `c7216602b1` | Eidolon-return fixture correction (the engine's life tick after Summon Eidolon); new working-save scenario `disposable-alternate-summoning-natural` |
+| `3c17b769b6` | Natural scenario at Master Summoner 13 with the tier VII Tyrannosaurus. Its message also claims the observer comment change, which is actually in the next commit |
+| `b9c56e3da9` | Observer documentation names the supported contracts (comment only) |
+| this commit | Documentation, state and evidence matrix |
 
 ## Candidates
 
@@ -76,9 +92,12 @@ Candidates (all `0.0.156`, `candidateKind=development`, purpose
 | `1a1864e8702b` | `1355cf1972084aaa4f065283dfc05cb33d47bb9f5c23fdea1d7a165d0abc4b28` | `e71ae70537dadeff98897c0d28cd7e6343e6f9c4770663e95f82706947de8f50` | `a1fe32fa-1cc5-4346-8b1b-ac7530dea6a6` | 577 / 2,633, 0 failures |
 | `67428817fb8d` | `9004ecf54e153d244de0850e8baaa9ca38f0ed371d29ddf62c62e52bc2755c19` | `c2bd18f8975160c900b74536f683cc061f72d2d3d2fcc3153481183a0747ffcc` | `62ee00e8-0f5d-4616-b3c8-5a62b08a98a4` | 577 / 2,633, 0 failures |
 | `7ed7dfcfbb63` | `f684ca01cb450ba5db07a171bb299393b9834755eb8430e17b69797898cc2082` | `e11e8da23f103aa1c5abfd0955c543fb89476a964550dfd2fb9c9d76b718018f` | `467eb160-ac76-41a5-824e-80b919fe9c1b` | 577 / 2,633, 0 failures |
-| **`651dde310e63`** (final) | `7e76626cd5846444b7b23a11ef37c16955b5916fc340b0ea43de8f1ecdd4f677` | `1e5d53fe6f611912dc3d42afe811bf9e52dc1ea972e0d3c93f38c0a9935dfb0f` | `e49cb11e-6d1c-4770-b2dd-80f9fcd55530` | 577 / 2,633, 0 failures |
+| `651dde310e63` (final of the corrections mission) | `7e76626cd5846444b7b23a11ef37c16955b5916fc340b0ea43de8f1ecdd4f677` | `1e5d53fe6f611912dc3d42afe811bf9e52dc1ea972e0d3c93f38c0a9935dfb0f` | `e49cb11e-6d1c-4770-b2dd-80f9fcd55530` | 577 / 2,633, 0 failures |
+| `3e2bf5caf729` | `9915d67ef1e42922bcc726db3b3d24b8846b0bd942b29f8881d3f2e67dcfdb8e` | `d96792ced60f8728d1203e85ae187b7aed513805bffec65470d0e3c3dbe5d6ea` | `83279163-284d-4ad8-92a2-d40092295f7b` | 583 / 2,639, 0 failures |
+| `c7216602b103` | `14b46f66877342d3a5129561a818dbf141e50510e41ce2cafb3d0963d07eed47` | `633d4f83692987ac857c68048be1e49d374a23619a7a0503f5f3b216f9336f88` | `be269bac-a383-4599-aa72-911dfd43f06c` | 583 / 2,639, 0 failures |
+| **`b9c56e3da9a9`** (final) | `72a6c5c64e7143d01e011328e000b3145b8489cb4f2f8ebee7ea45e5aa4d3193` | `d7b578871f839e0051d82a757c96b148d9185fc2c28023abbd3873e78c58d1b9` | `7d375849-9c13-482d-a12d-cc1dfb0877f3` | 583 / 2,639, 0 failures |
 
-The final candidate's receipt (SHA-256 `6959f0cc9f0ca1f63df9910d18a2ac6deb8ce8dfbb84756b7f4179a19118d80e`) binds the 14 private reference hashes, the development validation (baseline `607da683b1f6`, 6,895 identities, 3,746 appended) and the selected-test log. Each build took about 70 s. Candidates and evidence stay under the gitignored `artifacts/` and the lab's `runtime-evidence`; nothing was installed permanently.
+Receipt SHA-256: `3e2bf5caf729` `896cb264ecb4975e6f953e937bbc34d4dd66938920d63d0a73b040f061239447`, `c7216602b103` `2f2b741f8d4f3190916be9f9161470c1195dc44ffaa7a1ee17101eaee30b516a`, `b9c56e3da9a9` `f08b3f6e48555de8b98541b84420d3116d5cafda7ce9621186017c1184ed3565`. The `651dde310e63` receipt (SHA-256 `6959f0cc9f0ca1f63df9910d18a2ac6deb8ce8dfbb84756b7f4179a19118d80e`) binds the 14 private reference hashes, the development validation (baseline `607da683b1f6`, 6,895 identities, 3,746 appended) and the selected-test log. Each build took about 70 s. Candidates and evidence stay under the gitignored `artifacts/` and the lab's `runtime-evidence`; nothing was installed permanently.
 
 ## Runtime transactions and restoration receipts
 
@@ -99,6 +118,28 @@ loaded or written, and no human save was touched.
 | `compat-20261016T134920Z-dc6f2b183039` | `gunslinger-call-of-the-wild` | `7ed7dfcfbb63` | player paths FAIL 19/20: the fixture's level-up visits skipped the native spellbook step, so the Alchemist had no formula book | 13:49:33 -> 13:52:06 |
 | `compat-20261016T135403Z-9c3962df18c5` | `gunslinger-call-of-the-wild` | `651dde310e63` | player paths PASS 20/20 | 13:54:16 -> 13:56:49 |
 | `compat-20261016T135711Z-dfc613566a70` | `gunslinger-call-of-the-wild`, Expanded Summoning OFF through the profile's feature-module parameters | `651dde310e63` | observer PASS 9/9 (every family `RegisteredModuleOff`, nothing exposed); feature-module settings PASS 47/47 | 13:57:24 -> 14:01:23 |
+| `compat-20261016T152216Z-2309b39e72d3` | `gunslinger-call-of-the-wild` | `3e2bf5caf729` | observer PASS 9/9; contract fixture PASS 17/17; player paths FAIL 27/28 (`player-ms-eidolon-return`: the fixture omitted the life tick after Summon Eidolon) | 15:22:29 -> 15:28:07 |
+| `compat-20261016T153610Z-e8eb945012ed` | `gunslinger-call-of-the-wild` | `c7216602b103` | observer PASS 9/9; blocked family PASS 9/9; contract fixture PASS 17/17; player paths PASS 28/28 | 15:36:23 -> 15:43:38 |
+| `compat-20261016T155231Z-ebe9626d778a` | `gunslinger-only` | `b9c56e3da9a9` | observer PASS 9/9 | 15:52:44 -> 15:54:33 |
+| `compat-20261016T155434Z-ea5fc4a94142` | `gunslinger-call-of-the-wild`, Expanded Summoning OFF | `b9c56e3da9a9` | observer PASS 9/9; feature-module settings PASS 47/47 | 15:54:48 -> 15:58:38 |
+
+Live working-save runs (third pass). The reduced CotW profile cannot load the
+working save, so these used the purpose-bound live route: `Deploy-Local.ps1
+-DevelopmentPurpose alternate-summoning-native` (backup first, settings
+preserved), `Invoke-KingmakerRuntimeTest.ps1 -Scenario
+disposable-alternate-summoning-natural -SaveName KMG_AUTOMATION_WORKING
+-ReuseInstalledArtifact -DevelopmentPurpose ...` (Steam App ID 640820,
+runtime lease, automatic exit), then `Restore-Live-Mod.ps1` from that run's
+backup. `KMG_AUTOMATION_WORKING` was loaded read-only: no save write was
+observed. After each run the live `KingmakerGunslinger` folder was
+byte-identical to its backup (254 files; `Info.json` 0.0.140, DLL
+`00ef6757...966fd`, `FeatureModules.json` `6e24b278...`), the Mods
+fingerprint read `9736b4f7c906b6f9`, and no game process or lock remained.
+
+| Evidence directory | Candidate | Result | Deployment / backup | Window (UTC) |
+|---|---|---|---|---|
+| `20261016T1544477038010Z-disposable-alternate-summoning-natural` | `c7216602b103` | PASS 8/8 (Master Summoner 5; tiers I and III; Dire Rat dismissed) | `deployments/20261016T1544457766822Z`; `runtime-backups/live-mod/20261016T1544375407470Z` | 15:44:37 -> 15:46:10 |
+| `20261016T1550339254110Z-disposable-alternate-summoning-natural` | `b9c56e3da9a9` | PASS 11/11 (Master Summoner 13; tiers I, III and VII Tyrannosaurus; Tyrannosaurus dismissed) | `runtime-backups/live-mod/20261016T1550239443522Z` | 15:50:23 -> 15:51:59 |
 
 Five launch attempts never entered a profile and changed nothing (verified
 by the unchanged fingerprint and the absence of a new transaction): two
@@ -126,6 +167,11 @@ All on this worktree. Durations are wall-clock.
 | Gate and orchestration contracts | `Test-ExplicitCandidateReuse.ps1`, `Test-KmgGate.ps1` (includes `Test-DevelopmentGate.ps1`) | 7 / 7; PASS (development gate 8 / 8) |
 | Runtime preflight | `scripts/Test-RuntimeScenarioPreflight.ps1` | 588 checks PASS; 14 s |
 | Pre-existing failures | `Test-RuntimeDeployment.ps1`, `Test-CompatibilityCandidateReuse.ps1` | both FAIL identically on unchanged `master` `607da683b1` ("legacy-deployment-pins-complete-artifact-identity"; "Nested build/deployment/scenario count mismatch"). Baseline, not caused here; neither runs in the wrapper |
+
+Third-pass gates and checks are in the doc's "Commands, durations and
+results (third pass)". One more pre-existing failure was found there:
+`Test-MagicCircleRuntimeRequest.ps1` fails identically on unchanged `master`
+("'Get-KmgRepositoryRoot' is not recognized").
 
 ## The earlier failed complete-suite execution (unclassified)
 
@@ -161,48 +207,35 @@ All on this worktree. Durations are wall-clock.
 
 ## Remaining (not checked in game)
 
-Runtime is not checked for any of these; they are not claimed.
+Runtime is not checked for any of these; they are not claimed. The doc's
+"Owner checklist" gives the minimal manual check for each.
 
-1. **Real UI selection.** No native action-bar popup was opened or clicked
-   and no hotbar slot was used: the casts used the same converted-ability
-   data the action bar builds, through `UnitUseAbility`. A popup-click
-   driver exists for spellbook spells (Magic Circle) but not for class
-   abilities, and the repository records that an earlier attempt to
-   install a slot through `settings.SetSlot` hung the game. Needs a
-   party-member caster selected in the UI and an ability-group popup
-   driver.
-2. **Hotbar reuse and saved references.** No saved shortcut to an adapter
-   child was reloaded: the reduced CotW profile cannot hydrate the
-   established working save, and no save-backed fixture exists for a
-   shortcut. What was observed instead: a blocked family's identities stay
-   registered as unavailable placeholders; with the module OFF every
-   identity registers and nothing is exposed; and an unexposed registered
-   child is refused through its root (the preserved Master Summoner tier-I
-   cast). That is what the real loader resolves a saved reference to, but a
-   reload of a real shortcut was not performed.
-3. **Turn-based sample.** Every cast ran synchronously outside combat, which
-   is the same command path in either mode; no turn-based combat round was
-   exercised.
-4. **Master Summoner with an eidolon.** The disposable Master Summoner took
-   no lesser eidolon, so the one-summon-while-the-eidolon-lives branch and
-   the eidolon's return were not exercised; only the no-eidolon coexistence
-   branch was.
-5. **Recent-creature cleanup** (for example Tyrannosaurus swallow/grapple
-   reset on reload) through an adapter route.
-6. **Higher tiers.** One tier per family was cast (tier I or III; Occultist
-   also at level 20). Middle and last menu positions were not each cast.
+1. **Hotbar binding and reuse** - not automated (the `settings.SetSlot` path
+   hung an earlier guarded run; not repeated or forced).
+2. **Saved-reference cold load** (normal, Expanded Summoning OFF, blocked
+   family, restored) - needs a save-writing shortcut orchestrator on a
+   disposable save.
+3. **Turn-based round** - no genuine turn-based combat round.
+4. **Scroll-required choice** - no menu needed scrolling at the natural run's
+   resolution.
+5. **Grapple or swallow reset on reload** through an adapter summon.
+
+Closed by the third pass (see the evidence matrix): Master Summoner with a
+real lesser eidolon (assisted), real popup selection and natural RTWP casts
+(tiers I, III and VII), a recent creature's natural dismissal (Tyrannosaurus),
+the Occultist lower-tier group cost and the Preservationist extract III ->
+SNA IV mapping (assisted).
 
 ## Next actions
 
 1. Owner review of PR #52 (draft). No merge, tag, release or install from
    this mission.
-2. If the remaining native cases above are wanted before integration: a
-   party-member caster selected in the UI with an ability-group popup driver
-   (real click and hotbar reuse), a save-backed shortcut fixture for the
-   module-OFF and blocked-family reload cases, a Master Summoner with a
-   lesser eidolon, and one turn-based combat round. Each needs its own
-   guarded fixture; none should reuse the working save without its own
-   prepare/verify contract.
+2. The owner checklist in the doc covers the remaining manual cases. If they
+   should be automated instead: a save-writing shortcut orchestrator on a
+   disposable save (cold load normal / OFF / restored), a turn-based round
+   with an enemy in a disposable fixture, and a low-resolution natural run for
+   the scroll-required choice. Hotbar binding should not be automated through
+   `settings.SetSlot` without first understanding the earlier hang.
 3. **Integration with Sprint 25 (PR #49).** Both branches append to
    `blueprints/blueprints.json` and update the same ledger-offset tests.
    Whichever merges second regenerates with
