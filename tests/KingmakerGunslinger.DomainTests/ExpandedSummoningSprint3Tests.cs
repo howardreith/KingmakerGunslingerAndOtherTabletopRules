@@ -271,7 +271,8 @@ namespace KingmakerGunslinger.DomainTests
                 value.Contains(".SNA.Tier8.FrostGiant") ||
                 value.Contains(".SNA.Tier9.FrostGiant")) &&
                 !value.StartsWith("KMG.Summoning.Special.Owlbear.", StringComparison.Ordinal) &&
-                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value))
+                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value) &&
+                !AlternateSummoningTests.IsAdapterIdentity(value))
                 .ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 3 must append exactly its own identities to the ledger.");
