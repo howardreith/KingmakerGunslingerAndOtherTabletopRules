@@ -48,14 +48,30 @@ try {
     $repositoryInfo = Get-KmgReleaseCommandText gh @('repo','view','--json','nameWithOwner,defaultBranchRef,isPrivate') | ConvertFrom-Json
     if ($repositoryInfo.nameWithOwner -cne $repository -or $repositoryInfo.isPrivate -or
         $repositoryInfo.defaultBranchRef.name -cne 'master') { throw 'Unexpected release repository metadata.' }
-    $null = Get-KmgReleaseCommandText git @('fetch','--tags','origin','master',$git.Branch)
+    # Fetch only the two refs this promotion compares. A --tags fetch fails
+    # outright on this repository because upstream rewrote its lineage, so
+    # local v0.0.136-v0.0.153 tags point at pre-rewrite commits and git
+    # refuses to clobber them. Those historical tags and their published
+    # assets are deliberately left untouched. Nothing is weakened: stable
+    # tag existence is already proven against the remote with ls-remote and
+    # the GitHub releases API below, both stronger than a local tag read.
+    $null = Get-KmgReleaseCommandText git @('fetch','origin','master',$git.Branch)
     if ((Get-KmgReleaseCommandText git @('rev-parse',('origin/'+$git.Branch))) -cne $git.Commit -or
         (Get-KmgReleaseCommandText git @('rev-parse','origin/master')) -cne $MergedReleaseCommit) {
         throw 'Reporting or merged release head has moved; review the current lineage.'
     }
-    $pr = Get-KmgReleaseCommandText gh @('pr','view',$selectedPr,'--json','state,mergeCommit') | ConvertFrom-Json
+    $pr = Get-KmgReleaseCommandText gh @('pr','view',$selectedPr,'--json','state,mergeCommit,headRefOid') | ConvertFrom-Json
     if ($pr.state -cne 'MERGED' -or $pr.mergeCommit.oid -cne $MergedReleaseCommit) {
         throw 'The selected sprint PR has not merged at the selected release commit.'
+    }
+    # The head that was actually merged, taken from verified metadata and then
+    # cross-checked against the product merge's own parents. Two independent
+    # sources, so no ledger claim can nominate a different head.
+    $mergedPrHead = [string]$pr.headRefOid
+    $mergeParents = @((Get-KmgReleaseCommandText git @('log','--format=%P','-1',$MergedReleaseCommit)) -split '\s+' |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    if ($mergedPrHead -cnotmatch '^[0-9a-f]{40}$' -or $mergeParents -cnotcontains $mergedPrHead) {
+        throw 'The merged pull-request head is not one of the product merge parents.'
     }
     $candidateRoot = (Resolve-Path -LiteralPath $CandidateRepositoryRoot).Path
     $candidate = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $candidateRoot
@@ -64,9 +80,32 @@ try {
         (Get-KmgSourceStateFingerprint -RepositoryRoot $candidateRoot) -cne $candidate.sourceStateSha256) {
         throw 'Qualified artifact source is no longer frozen.'
     }
-    foreach ($ancestor in @($candidate.commit,$git.Commit)) {
-        $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$ancestor,$MergedReleaseCommit)
+    # Candidate ancestry is unconditional: the released bytes must be built from
+    # source contained in the product merge.
+    $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$candidate.commit,$MergedReleaseCommit)
+    # Reporting ancestry is checked separately. A reporting branch legitimately
+    # carries the records describing its own merge, so it can be a reviewed
+    # descendant of the merged head rather than an ancestor of the merge.
+    $allowedReportingPaths = @(
+        'AUTONOMOUS-RESUME.md',
+        'docs/SPRINT24-COVERAGE.md',
+        'docs/RELEASE-NOTES-0.0.155.md',
+        'planning/SPRINT24-THEROPOD-DINOSAURS-LEDGER.json',
+        'scripts/Publish-QualifiedCandidate.ps1',
+        'scripts/QualifiedRelease.Common.ps1',
+        'scripts/Test-Sprint24Release.ps1',
+        # The focused publisher refusal suite added for this repair, and the
+        # validation wrapper that runs it. Neither is compiled into or included
+        # in the candidate package: the archive carries no scripts/ entry.
+        'scripts/Test-Sprint24ReportingLineage.ps1',
+        'scripts/validate-repository.ps1')
+    if (-not $Sprint24Theropods) {
+        $allowedReportingPaths = @()
+        $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$git.Commit,$MergedReleaseCommit)
     }
+    $reportingLineage = Assert-KmgReportingLineage -RepositoryRoot $root `
+        -ReportingCommit $git.Commit -MergedReleaseCommit $MergedReleaseCommit `
+        -MergedPrHead $mergedPrHead -AllowedReportingPaths $allowedReportingPaths
     # Harness/reporting changes may follow qualification. Product/package inputs
     # must remain byte-equivalent; no reporting-only rebuild is performed.
     $null = Get-KmgReleaseCommandText git @('diff','--exit-code',$candidate.commit,$MergedReleaseCommit,'--',
@@ -118,6 +157,11 @@ try {
         schemaVersion=2; generator='scripts/Publish-Release.ps1 -ReuseQualifiedCandidate'; version=$candidate.version;
         tag=$tag; commit=$MergedReleaseCommit; mergedReleaseCommit=$MergedReleaseCommit; reportingCommit=$git.Commit;
         testedSource=$candidate.commit; sourceFingerprint=$candidate.sourceStateSha256;
+        mergedPrHead=$mergedPrHead; reportingLineageMode=$reportingLineage.mode;
+        reportingDeltaPaths=@($reportingLineage.reportingDeltaPaths);
+        publisherScriptSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'Publish-QualifiedCandidate.ps1');
+        publisherCommonSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'QualifiedRelease.Common.ps1');
+        publisherTestSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'Test-Sprint24Release.ps1');
         package=$assetName; packageSha256=$candidate.packageSha256; dllSha256=$candidate.dllSha256; dllMvid=$candidate.dllMvid;
         buildLocalManifestSha256=Get-KmgSha256 -Path ($candidate.packagePath+'.build-local.json');
         fullSuite=$ledger.candidate.fullSuite; harness=$ledger.harness; qualificationStatus=$ledger.status;

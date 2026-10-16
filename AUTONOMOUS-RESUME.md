@@ -43,11 +43,13 @@ questions are listed in the record.
 
 ---
 
-# Sprint 24 theropod dinosaurs — IN PROGRESS; NOT RELEASED
+# Sprint 24 theropod dinosaurs — v0.0.155 RELEASED / STOP
 
-Sprint 24 is the active work. The released records that follow it below —
-v0.0.154 Gunslinger animal-companion eligibility, then Sprint 23 — are kept
-intact as history and are not superseded by this sprint.
+Sprint 24 is **complete and released**. Stable v0.0.155 is published as Latest,
+independently verified from the downloaded assets, and the machine is exactly
+restored. The released records that follow it below — v0.0.154 Gunslinger
+animal-companion eligibility, then Sprint 23 — are kept intact as history and
+are not superseded by this sprint.
 
 ## Controlling state (2026-10-15) — read this section first
 
@@ -72,9 +74,11 @@ The four accepted limitations, at their existing scope and with no new waiver:
 `PASSIVE_CREATURE_SENSES_UNMODELED`, `RUN_NATIVE_SUMMON_AI_DISPOSITION`.
 `HumanReview` remains `NOT_PERFORMED_NONBLOCKING`.
 
-**Latest executable source** is `bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2`; the
-reporting head is ahead of it in records only. **The qualified hidden candidate**
-is that commit: source state
+**Latest executable source** is `f7ab30ac9c306d3db03a4687d6bf453cfca201e5`, the
+released v0.0.155 product source; the reporting head is ahead of it in records
+and release tooling only. **The qualified hidden candidate** behind the hidden
+closeout rows below is the earlier commit
+`bf9388d3cd9ced7adef6f91bc6a21520f1eb67b2`: source state
 `fdb51df4f0f6efb4c353dfd9c8f2943c5457291f3ccd23ef39671b158cab0015`, package
 `7746d002b382b58b129b7809a2907ed01b21f31521ae0c353a3aad59b364fd36`, DLL
 `b8bffe1833bb7d577df93634b990e5501cfe311bf966cd6037de214457b0f4ee`, MVID
@@ -121,41 +125,70 @@ directories, 967 Mods entries, 118 saves, baseline save byte-identical, working
 fixture left verified empty, sound bank unchanged, no leftover staging, lock or
 process, and every transaction restored and verified.
 
-**Remaining for Sprint 24:** the public candidate — unsuppress only the two keys
-together, re-derive totals to 1,093 generated placements / 29 wrappers / 1,122
-visible choices, move the version surface to the next free patch, extend the
-existing qualified-candidate publisher with a Sprint 24 contract plus rejection
-tests — then one Sprint gate, the publication-affecting native checks, merge,
-stable release, independent asset verification, exact restoration and the
-documentation-only records PR.
+**Nothing remains for Sprint 24.** The public candidate was qualified, merged,
+promoted and published, the assets were verified from the download, the machine
+was audited back to its pre-campaign state, and this records-and-release-tooling
+PR closes the sprint.
 
-**Publication is staged.** Both theropod keys were removed from suppression
+**Publication is complete.** Both theropod keys were removed from suppression
 together at v0.0.155, so the source-derived public surface is now
 1,093 generated placements plus 29 retained native wrappers, giving
 1,122 visible choices — 107 project creatures, Summon Monster 95 creatures and
 543 placements, Summon Nature's Ally 95 and 550. No identity, GUID, execution
 child or route ordering moved with the keys.
 
-**All Sprint 24 qualification gates are green.** The public candidate is
-`f7ab30ac9c306d3db03a4687d6bf453cfca201e5` at version 0.0.155: package
-`f7d3b5e651c4c4fb105ff4b734ddc1070c3887b57636e9eb217347809f00a751`, DLL
-`3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046`. Its Sprint
-gate passed the repository wrapper, 2,610/2,610 domain tests, exact-reference
-build, deterministic packaging and strict validation in 174.9 s with no
-deployment.
+**All Sprint 24 qualification gates are green.** The public product source is
+`f7ab30ac9c306d3db03a4687d6bf453cfca201e5` at version 0.0.155. That one source
+produced **two distinct artifact builds**. They are kept as separate identities
+and are never merged:
 
-Public native evidence on exactly those bytes, both under
+- **A**, built in the main worktree: package
+  `f7d3b5e651c4c4fb105ff4b734ddc1070c3887b57636e9eb217347809f00a751`, DLL
+  `3ef0a724e0b39ca6ed4575e77ea7a0ad7f4f9a34530e1099d4096292dd9fd046`.
+- **B**, built in the frozen worktree `C:/Dev/KingmakerGunslingerLab/wt/s24r155`,
+  and **this is the released artifact**: package
+  `d905a03442fc0c82fbd65c6e9949b94d085404c4040e580827e3299068765ae2`, DLL
+  `a94b7eb8549b7ae37bfbbb56faa09fb7196e777df15b0d85088e014996be5695`, MVID
+  `d7f1f815-358d-4bf7-a0b7-b12db26d3fac`.
+
+Each passed its own full Sprint gate at that commit — repository wrapper,
+2,610/2,610 unfiltered domain tests, exact-reference build, deterministic
+packaging, strict validation, no deployment — from the identical source
+fingerprint `b11196da37d8fe228ea6658982bd34ad150b75076d5517937e941c464816805c`.
+The exact-reference build is therefore byte-deterministic within a repository
+root but not across roots: every declared input was proven identical and the
+output bytes still differed. Digest comparison alone did not establish the
+cause, so it is recorded as bounded debt rather than explained away. The owner
+selected **B** for promotion and required the two public native checks to be
+re-run on B instead of inherited from A, and the ledger keeps A's closure as a
+separate historical ledger (`historical/sprint24-qualification-ledger-A-main-root.json`,
+SHA-256 `71e086ffecf2c305b4e738bb74de620e8058264d395631108be0f72f7247ceac`)
+rather than rewriting A's proof to point at B.
+
+Public native evidence **on the released B bytes**, both under
 `gunslinger-high-risk-combined`:
 
 - `observe-expanded-summoning-inventory`, run
-  `20261015T2141314204049Z-4325d362063c4f3ea8b6d559c98d28e1`, PASS: 1,093 parent
-  placements, all 1,093 executable native ability contracts exact, 319 template
-  logical choices, menu reconciliation exact, prohibited references 0.
-- `rtwp-foundation`, run
-  `20261015T2148010120985Z-01c721f3259b408b807fe07599762800`, PASS: 18 published
-  and 18 registered routes, every one of the nine Monster and nine Nature's Ally
-  roots exercised through its real parent spell path, both adult profiles and
-  bodies in RTWP, plus fixture and native-profile restoration.
+  `20261015T2238064049987Z-71ea67e9412e4cc7a35c3ec068a15ab3`, PASS on all 50
+  assertions: 1,093 parent placements, all 1,093 executable native ability
+  contracts exact, template logical choices, menu reconciliation and counts
+  exact, prohibited references 0, loaded mod version exact.
+- `disposable-expanded-summoning-sprint24-native-review` at
+  `reviewPhase = rtwp-foundation`, run
+  `20261015T2244341359144Z-24076cc5cc6a41798f30fe9abd4b128c`, PASS on all 26
+  assertions: the route census plus every one of the eighteen published Monster
+  and Nature's Ally player routes exercised through its real parent spell path,
+  with fixture and native-profile restoration.
+
+Each native row carries two proofs, because the harness `runtime-result.json`
+does not itself name the build: the result file and the
+`runtime-loaded-build-identity.json` that records which package the game
+actually loaded. That is how the ledger shows B was under test rather than
+asserting it.
+
+The matching pair on the **A** bytes is kept as A's history and is not claimed
+for the release: `20261015T2141314204049Z-4325d362063c4f3ea8b6d559c98d28e1` and
+`20261015T2148010120985Z-01c721f3259b408b807fe07599762800`, both PASS.
 
 One failed public inventory attempt is preserved rather than discarded:
 `20261015T2124328633099Z-cb71ec0557ab49658f4481d99aa1c1ce` failed
@@ -173,10 +206,102 @@ directories, 118 saves, baseline save byte-identical, working fixture verified
 empty, sound bank unchanged, no leftover staging, lock or process, and every
 transaction restored and verified.
 
-No tag, merge or release has been made yet. Next: finalize the qualification
-ledger with the product merge commit, mark PR #45 ready and merge, promote these
-exact bytes, publish stable v0.0.155 Latest, verify the three assets
-independently, then the documentation-only records PR.
+**PR #45 is MERGED and v0.0.155 is PUBLISHED.** The product PR merged normally
+at `31672515529cd7271676556d3242854ac5a9948f` on 2026-10-15T21:55:11Z, parents
+`fd6c56eb` and `8e792b8e`. The tested source `f7ab30ac` is an ancestor, and
+`git diff --exit-code f7ab30ac..31672515` over `src`, `assets`, `blueprints`,
+`Info.json` and `Directory.Build.props` is empty, so merged master carries the
+exact tested product source.
+
+The release is `v0.0.155`, "Tabletop Added Rules v0.0.155", `draft` false,
+`prerelease` false, and it is the Latest release. The tag is an annotated tag
+object that peels to the product merge `31672515`. The published manifest
+records `exactArtifactPromotion` true and `rebuiltForPublication` false, so the
+release carries the bytes that were tested rather than a fresh build, together
+with `mergedPrHead` `8e792b8e`, `reportingCommit` `ba3ac897`,
+`reportingLineageMode` `reviewed-post-merge-reporting`, closure ledger SHA-256
+`589a3eb36cb981bbc23a1a01ad45516f7dac2f70fb578ef90d52f3e8a8325c59`, and seven
+coverage rows — the three hidden rows `REUSED_PASS` against `bf9388d3`, the four
+public rows `PASS` against B.
+
+**Verified from the download, not from the local build.** All three assets were
+fetched fresh into a separate directory and hashed there: ZIP
+`d905a03442fc0c82fbd65c6e9949b94d085404c4040e580827e3299068765ae2` — identical
+to B — plus `SHA256SUMS.txt` `d4613e30…` and `release-manifest.json`
+`ea700f6f…`. GitHub's own recorded asset digests agree with all three, and the
+checksums file agrees with the downloaded ZIP. Strict UMM package validation
+then passed on the **downloaded** archive with exit 0; its extracted DLL is
+`a94b7eb8…` with MVID `d7f1f815-358d-4bf7-a0b7-b12db26d3fac` — equal to B — and
+its packaged `Info.json` reads 0.0.155 across 371 entries. The bytes a player
+downloads are therefore the exact bytes the two public native checks loaded.
+
+**The promotion repair was a correction, not a bypass.** Publication first
+refused: the records commit describing the release sits after the product merge,
+and the publisher's old reporting-ancestry check could only read that as an
+unrelated lineage. The repair is `Assert-KmgReportingLineage`, which accepts
+exactly two shapes — reporting already contained in the product merge, or
+reporting descending from the merged PR head whose merge base with the product
+merge is that head — and in the second shape admits only an explicit allow-list
+of reporting paths while refusing every build and package input independently,
+even one allow-listed by mistake. `scripts/Test-Sprint24ReportingLineage.ps1`
+holds 18 refusals on disposable git fixtures and runs inside repository
+validation. The check refused its own repair commit until the two tooling paths
+were admitted deliberately, which is the behaviour the sprint wanted. No lineage
+check was deleted, no tag or upload workaround was used, no branch was reset and
+nothing unchanged was rebuilt.
+
+**Machine audited and exactly restored, against the pre-campaign intake.** The
+post-publication audit compared the current machine to the campaign intake of
+2026-10-14T05:08:43Z row by row — on path, kind, length and SHA-256, not on file
+counts — and ran de-elevated and read-only, with no launch, save load, save
+edit, registry write or deployment. Record:
+`runtime-evidence/sprint24-release-20261015/restoration-audit.json`, SHA-256
+`ec51807c5da155f8b6d36988eb494fad27d0000cc48c6621e180d5552058f9f0`.
+
+- All 968 Mods rows are content-identical at all four stages — campaign
+  baseline, pre-promotion, post-B-native and this audit. Nine rows differ in
+  `lastWriteTimeUtc` only, with zero content differences: other mods' own
+  settings and loaded-blueprint caches, rewritten byte-identically during the
+  campaign's first authorized guarded run at 2026-10-14T05:48:40Z. No
+  KingmakerGunslinger path moved.
+- **No permanent deployment.** The installed mod is still the owner's own
+  0.0.117 — 143 manifest rows, 136 files, every hash equal to the pre-campaign
+  intake, installed DLL `fd2fc61c…`, `FeatureModules.json` unchanged. The
+  released `a94b7eb8…` build is installed nowhere.
+- The sound bank `KMG_Firearms.bnk` is byte-identical at
+  `0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`.
+- 81 of 83 game settings are byte-identical. The only two that differ are
+  Unity's own per-launch `player_session_count` (5845 → 5848) and
+  `player_sessionid`, written by the engine on each authorized launch. Zero
+  gameplay, graphics, keybind or audio settings differ, and all 19 guarded runs
+  recorded restoration verified with `gameSettingsExact` true and
+  `transactionStatus` `Restored`.
+- All 118 saves are present with none added or removed. The protected immutable
+  `Manual_298_KMG_AUTOMATION_BASELINE.zks` is byte-identical at `cc7cbb0d…`. The
+  other 116 unrelated human saves are identical in length, creation time, write
+  time, attributes and hash. Only the owned disposable
+  `Manual_299_KMG_AUTOMATION_WORKING.zks` changed, which is the one save
+  authorized to be mutable.
+- All 14 private build references are unchanged and still exactly match the
+  installed assemblies; they remain local and uncommitted.
+- No owned game or UnityModManager process, no compatibility lock, no active
+  transaction, no staging directory and no runtime lease is left behind. The
+  push-policy wrapper is unchanged at `9354658937…` since the two authorized
+  Sprint 24 branch lines.
+
+**Next action: Sprint 25 — Brachiosaurus and Elephant, as its own release.**
+Work on `codex/expanded-summoning-sprint25-brachiosaurus-elephant` from released
+master, one branch and one product PR, ending in its own stable release. Before
+the first push, add only the two exact branch names
+`codex/expanded-summoning-sprint25-brachiosaurus-elephant` and
+`codex/expanded-summoning-sprint25-release-records` to `AllowedBranches` in the
+push wrapper, recording the before and after hashes and the exact diff. The
+expected version is the next free patch, v0.0.156, subject to the actual remote
+state at the time. Choose the final candidate repository root **before** the
+full build and native qualification, so the promoted artifact and its native
+evidence are produced in the same root; this sprint's cross-root divergence is
+the reason. Stop after Sprint 25: no Sprint 26, no DATA work, no mounted
+combat.
 
 ---
 
