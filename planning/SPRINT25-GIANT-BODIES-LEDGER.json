@@ -725,12 +725,15 @@
       "inspectionPendingReason": "the models do not exist yet; see geometry below"
     },
     "geometry": {
-      "status": "BLOCKED_ON_DONOR_CAPTURE",
-      "blocker": "the quadruped generator binds original geometry to a geometry-free Mastodon bind-frame capture and refuses anything else; that Sprint 11 capture was private machine-local evidence and is not on this machine",
-      "searched": "every runtime-evidence and private JSON for the capture shape (bindPosition rows): only Pteranodon attached-rig captures exist, and no Sprint 23 .blend or generation report survives",
-      "nothingFabricated": true,
-      "nextStep": "the smallest approved donor observation: one guarded unelevated run against a valid artifact that captures the Mastodon renderer bind frame geometry-free, exactly as Sprint 11 did",
-      "toolingReady": "Blender 4.5.10 LTS verified working, so authoring and review renders can start the moment the capture exists"
+      "status": "UNBLOCKED_PENDING_MOTION_PROTOTYPE",
+      "previousBlockerResolved": "The blocker was BLOCKED_ON_DONOR_CAPTURE: the Sprint 11 Mastodon bind-frame capture was private machine-local evidence that did not exist on this machine. It exists now. The guarded census captured the donor geometry-free on 2026-10-16: 150 transforms with local and world rest position, rotation and scale, 40 real skinning joints, the renderer bind frame, anatomy chains, animation managers and colliders. No native vertices, indices, UVs, textures or animation curves were read or retained.",
+      "capture": "runtime-evidence/20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census",
+      "donorPrefab": "fe9f25fe62e0f3b49a13910a996470b2",
+      "anatomyCorrection": "See engineering.donorRig. The first reading of this capture classified the rig by bone name and was withdrawn: the twelve Tail* joints are two chains, a seven-joint TRUNK parented to Head and running forward of it, and a five-joint real tail parented to LowerTorso. The forward chain is the carrier for a long sauropod neck, so there is no rigid-neck constraint to design around.",
+      "nextStep": "a low-cost graybox motion prototype before any final geometry or texture polish: the Brachiosaurus neck and the Elephant trunk on the forward chain, the tail on the rear chain, and the limb contacts, reviewed through idle, walk, turn, attack/trample and interruption/death transitions. Spatial classification says what the chains are; only the prototype says whether the native animation drives them acceptably.",
+      "toolingReady": "Blender 4.5.10 LTS already verified; no capability rediscovery needed.",
+      "originalBodyAssetsAuthored": false,
+      "whyStillFalse": "No original geometry, UVs or textures exist yet. The claim stays false until both bodies, their UVs and textures, their provenance and the required inspection outputs actually exist - a render that exists or a mesh that imports is not visual qualification."
     },
     "icon": {
       "status": "ASSET_HANDOFF_PREPARED_WITH_REAL_REFERENCE_IMAGES",
