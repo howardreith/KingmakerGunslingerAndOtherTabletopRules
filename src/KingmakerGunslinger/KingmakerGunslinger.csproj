@@ -1262,9 +1262,13 @@
     <Compile Include="RuntimeTesting\AlternateSummoningFaultDrillControl.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningContracts.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningPlayerPaths.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningPlayerPathsHost.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningComposition.cs" />
     <Compile Include="Blueprints\SummonSignatureReader.cs" />
+    <Compile Include="Blueprints\AlternateSummoningCompositionReader.cs" />
     <Compile Include="Summoning\SummonSignature.cs" />
     <Compile Include="Summoning\AlternateSummoningContracts.cs" />
+    <Compile Include="Summoning\AlternateSummoningComposition.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint23Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Review.cs" />

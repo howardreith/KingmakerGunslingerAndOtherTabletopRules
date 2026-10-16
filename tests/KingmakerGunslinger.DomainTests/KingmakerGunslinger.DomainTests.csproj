@@ -251,6 +251,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonSignature.cs"><Link>Summoning\SummonSignature.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AlternateSummoningContracts.cs"><Link>Summoning\AlternateSummoningContracts.cs</Link></Compile>
     <Compile Include="AlternateSummoningContractTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AlternateSummoningComposition.cs"><Link>Summoning\AlternateSummoningComposition.cs</Link></Compile>
+    <Compile Include="AlternateSummoningCompositionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonUnitSanitizationPolicy.cs"><Link>Summoning\SummonUnitSanitizationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningIdentityCatalog.cs"><Link>Summoning\ExpandedSummoningIdentityCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateBandPolicy.cs"><Link>Summoning\SummonTemplateBandPolicy.cs</Link></Compile>
