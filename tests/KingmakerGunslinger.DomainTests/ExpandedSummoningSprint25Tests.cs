@@ -17,7 +17,8 @@ namespace KingmakerGunslinger.DomainTests
             GiantBodyRulesPolicy.BrachiosaurusTailTypeSymbol,
             GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol,
             GiantBodyRulesPolicy.BrachiosaurusChassisSymbol,
-            GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol
+            GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
+            GiantBodyRulesPolicy.ElephantTrampleSymbol
         };
 
         internal static void RoutesAreExactlyThreeNatureAllyRootsAndNoMonsterRow()
@@ -208,8 +209,12 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void IdentityAppendOwnsExactlyFivePrivateCarriers()
         {
-            Assertions.Equal(5, PrivateIdentityTail.Length,
-                "Sprint 25 appends five private carriers.");
+            // Six since 2026-10-16: the five Brachiosaurus carriers plus
+            // the released Elephant trample, which was appended only
+            // after the bounded observation of that creature recorded six
+            // grants and no trample ability or component.
+            Assertions.Equal(6, PrivateIdentityTail.Length,
+                "Sprint 25 appends six private carriers.");
             Assertions.Equal(GiantBodyRulesPolicy.AppendedPrivateIdentityCount,
                 PrivateIdentityTail.Length,
                 "The policy's private count is the list's length.");
@@ -224,7 +229,7 @@ namespace KingmakerGunslinger.DomainTests
                 .ToArray();
             Assertions.True(tail.SequenceEqual(PrivateIdentityTail,
                     StringComparer.Ordinal),
-                "The five private carriers append last, in frozen order.");
+                "The six private carriers append last, in frozen order.");
 
             Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
                 ExpandedSummoningIdentityCatalog.UnitCount,
@@ -355,9 +360,23 @@ namespace KingmakerGunslinger.DomainTests
                 "SkillFocusPerception" })
                 Assertions.True(elephant.Facts.Contains(printed),
                     "Printed Elephant feat carried: " + printed);
+            // The trample is registered now, and the record still refuses
+            // to call registration qualification.
             Assertions.True(elephant.Deviations.Any(value =>
-                    value.Contains("NOT registered yet")),
-                "Trample is recorded as specified, not as shipped behaviour.");
+                    value.Contains("Registered is not qualified")),
+                "Trample registration is recorded without claiming native "
+                    + "qualification, which is a separate thing.");
+            Assertions.True(UngulateRulesPolicy.All.Any(value =>
+                    value.Key == GiantBodyRulesPolicy.ElephantKey &&
+                    value.TrampleDiceCount == GiantBodyRulesPolicy
+                        .ElephantTrampleDiceCount &&
+                    value.TrampleDieSides == GiantBodyRulesPolicy
+                        .ElephantTrampleDieSize &&
+                    value.TrampleBonus == 15 && value.TrampleDc == 25 &&
+                    !value.HasPowerfulCharge && !value.Stampede),
+                "The Elephant trample derives 2d8+15 and DC 25 from its "
+                    + "frozen Strength and hit dice, distinct from the "
+                    + "Brachiosaurus 2d6+19 and DC 32, and grants nothing else.");
 
             // The real Mastodon keeps its own distinct profile.
             NaturalSummonProfile mastodon =

@@ -83,7 +83,10 @@ namespace KingmakerGunslinger.Summoning
         // appended afterwards, with this count moved in the same commit.
         // Nothing templated is appended, because Brachiosaurus has no
         // Monster row.
-        internal const int SpecialIdentityCount = 274;
+        // 275 since 2026-10-16: the released Elephant trample joined the
+        // Special identities after the bounded observation of its own
+        // carriers found it had none.
+        internal const int SpecialIdentityCount = 275;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -550,6 +553,13 @@ namespace KingmakerGunslinger.Summoning
                 "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec(
                 GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
+                "BlueprintAbility"));
+            // The released Elephant's trample, appended after the bounded
+            // observation of its own carriers found none. Only this
+            // identity is new; the creature, its eight routes and every
+            // other released identity are untouched.
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.ElephantTrampleSymbol,
                 "BlueprintAbility"));
             Validate(result);
             return result.AsReadOnly();

@@ -608,8 +608,15 @@ def planned():
         ("KMG.Summoning.Natural.Brachiosaurus.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Natural.Brachiosaurus.Chassis", "BlueprintFeature"),
         ("KMG.Summoning.Special.Brachiosaurus.Trample", "BlueprintAbility"),
+        # Sprint 25, appended 2026-10-16 after the bounded observation of
+        # the released Elephant's own carriers: it recorded six grants, no
+        # trample ability and no trample component of any kind, so the
+        # reserved name becomes a real identity. Reusing another
+        # creature's trample was rejected because the shared carrier reads
+        # its damage and DC from the creature key the ability belongs to.
+        ("KMG.Summoning.Special.Elephant.Trample", "BlueprintAbility"),
     ))
-    if len(rows) != 2158 or len({symbol for symbol, _ in rows}) != 2158:
+    if len(rows) != 2159 or len({symbol for symbol, _ in rows}) != 2159:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
