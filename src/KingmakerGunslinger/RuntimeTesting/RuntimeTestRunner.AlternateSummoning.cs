@@ -121,7 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     else if (status.Disposition == AlternateSummoningDisposition.Published)
                     {
-                        expected = "Published; every adapter child equal to its template signature with only the deliberate changes; templates unchanged since resolution";
+                        expected = "Published; every adapter child matches its template under the supported signature contract and the composed-action contract (template, smite, neutral-mode and replaced native template buffs, alignment mode, placement under every spawn branch); templates unchanged since resolution";
                         record["roots"] = VerifyAlternateFamily(library, abilities,
                             family, identity, roster, choices, failures);
                         pass = moduleActive && registered == choices.Count &&
@@ -339,31 +339,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonSignatureReader.Read(child));
             if (difference != null)
                 failures.Add(id + ":signature:" + difference);
-            if (choice.Kind != AlternateSummoningChoiceKind.Creature) return;
-            int spawns = AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(
-                child.ComponentsArray).Count;
-            int templateActions = AlternateSummoningGraph.Objects<
-                ContextActionApplySummonTemplateByCaster>(child.ComponentsArray).Count;
-            if (placement.Family == SummonFamily.Monster &&
-                placement.Creature.MonsterTemplated)
-            {
-                // The appended template action must carry the canonical
-                // child's exact template, smite and neutral-mode buffs.
-                BlueprintAbility canonical = abilities[AlternateSummoningAdapterBuilder
-                    .InternalName(choice.CanonicalSymbol)].Single();
-                ContextActionApplySummonTemplateByCaster model = AlternateSummoningGraph
-                    .Objects<ContextActionApplySummonTemplateByCaster>(
-                        canonical.ComponentsArray).First();
-                if (templateActions != spawns || AlternateSummoningGraph.Objects<
-                    ContextActionApplySummonTemplateByCaster>(child.ComponentsArray)
-                    .Any(value => !ReferenceEquals(value.CelestialTemplate,
-                        model.CelestialTemplate) || !ReferenceEquals(value.FiendishTemplate,
-                        model.FiendishTemplate) || !ReferenceEquals(value.CelestialSmite,
-                        model.CelestialSmite) || !ReferenceEquals(value.FiendishSmite,
-                        model.FiendishSmite) || !ReferenceEquals(value.NeutralFiendishMode,
-                        model.NeutralFiendishMode)))
-                    failures.Add(id + ":template-buffs");
-            }
+            // The values the signature records only by type: the composed
+            // template or alignment action of a creature child, against its
+            // canonical child; a native option or preserved cast composes
+            // nothing. Placement under every spawn branch is part of it.
+            BlueprintAbility compositionModel = choice.Kind ==
+                AlternateSummoningChoiceKind.Creature ? abilities[
+                    AlternateSummoningAdapterBuilder.InternalName(
+                        choice.CanonicalSymbol)].Single() : null;
+            string composition = AlternateSummoningCompositionReader.Verify(child,
+                compositionModel);
+            if (composition != null)
+                failures.Add(id + ":composition:" + composition);
         }
 
         /// <summary>The drilled family: every identity is resolvable as an

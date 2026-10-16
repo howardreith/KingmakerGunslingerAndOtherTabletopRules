@@ -57,7 +57,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["started"] = Started, ["result"] = Result,
                     ["resourceBefore"] = ResourceBefore, ["resourceAfter"] = ResourceAfter,
                     ["expectedCost"] = ExpectedCost, ["summoned"] = Summoned, ["live"] = Live,
-                    ["units"] = Units, ["durationsSeconds"] = Durations, ["exception"] = Exception
+                    ["units"] = Units, ["durationsSeconds"] = Durations, ["exception"] = Exception,
+                    ["execution"] = "assisted-command-fixture"
                 };
             }
         }
@@ -79,6 +80,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>();
             var document = new JObject {
                 ["scope"] = "Save-free native first area. Disposable casters levelled by native LevelUpController visits; casts through the granted host root's variant data and UnitUseAbility. No save, no UI popup click, no hotbar slot.",
+                ["execution"] = PlayerPathAssistedExecution,
                 ["runId"] = _request.RunId
             };
             var casts = new JArray();
@@ -103,10 +105,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fixture.CasterBlueprint.IsCheater = false;
                 PlayerPathSection("master-summoner", assertions, document, () =>
                     PlayerPathMasterSummoner(fixture, assertions, casts, document));
+                PlayerPathSection("master-summoner-eidolon", assertions, document, () =>
+                    PlayerPathMasterSummonerEidolon(fixture, assertions, casts, document));
                 PlayerPathSection("occultist", assertions, document, () =>
                     PlayerPathOccultist(fixture, assertions, casts, document));
+                PlayerPathSection("occultist-lower-tier-group", assertions, document, () =>
+                    PlayerPathOccultistLowerTierGroup(fixture, assertions, casts, document));
                 PlayerPathSection("remaining-families", assertions, document, () =>
                     PlayerPathRemainingFamilies(fixture, assertions, casts, document));
+                PlayerPathSection("preservationist-extract-mapping", assertions, document, () =>
+                    PlayerPathPreservationistExtractMapping(fixture, assertions, casts, document));
             }
             catch (Exception exception)
             {
@@ -133,6 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             assertions.Add(Assertion("player-paths-cleanup",
                 "every disposable caster and summoned unit is gone and the native census is unchanged",
                 "cleaned=" + cleaned, cleaned, "exact unit/party/area reference snapshots"));
+            PlayerPathLabelAssisted(assertions);
             RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
                 "alternate-summoning-player-paths.json"), document.ToString(Formatting.Indented));
             WriteLifecycleStage("alternate-summoning-player-paths-written");
@@ -738,9 +747,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (InvalidOperationException) { return null; }
         }
 
+        /// <param name="select">Optional choices made on each visit through
+        /// the native selection state, after the class and spellbook steps
+        /// and before the level is applied.</param>
         private static void AdvanceDisposableArchetypeCaster(UnitDescriptor owner,
             BlueprintCharacterClass characterClass, BlueprintArchetype archetype, int levels,
-            ref object activeController)
+            ref object activeController, Action<LevelUpController> select = null)
         {
             MethodInfo start = typeof(LevelUpController).GetMethods(BindingFlags.Public |
                 BindingFlags.NonPublic | BindingFlags.Static).Single(value =>
@@ -765,6 +777,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // The native visit's spellbook step, as the level-up harness
                 // takes it: without it a prepared caster has no formula book.
                 controller.ApplySpellbook();
+                if (select != null) select(controller);
                 apply.Invoke(controller, new object[] { owner });
                 controller.Cancel();
                 activeController = null;

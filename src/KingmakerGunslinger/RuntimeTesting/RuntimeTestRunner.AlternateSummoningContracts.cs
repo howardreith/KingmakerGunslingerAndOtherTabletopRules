@@ -206,6 +206,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !AlternateSummoningExposure.IsExposed(child.AssetGuid),
                     "BlueprintAbility.AvailabilityProviders on the built child"));
 
+                // The composed-action contract, against the actual verifier.
+                AlternateSummoningCompositionControls(assertions, document, lookup,
+                    tactician, created);
+
                 // Repeating reconciliation must not register or publish again.
                 AlternateSummoningFamilyStatus[] before =
                     AlternateSummoningStatusRegistry.Snapshot().ToArray();
