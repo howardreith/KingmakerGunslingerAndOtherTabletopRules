@@ -60,14 +60,14 @@ namespace KingmakerGunslinger.Summoning
         // is to check its actual production carriers against the frozen entry
         // before adding anything. Whatever the bounded native census proves
         // missing is appended then, with this count moved in the same commit.
-        internal const int AppendedIdentityCount = 9;
+        internal const int AppendedIdentityCount = 10;
         internal const int AppendedCreatureCount = 1;
         internal const int AppendedAbilityIdentityCount = 3;
         internal const int AppendedWeaponIdentityCount = 1;
         internal const int AppendedWeaponTypeIdentityCount = 1;
         internal const int AppendedUnitTypeIdentityCount = 1;
         internal const int AppendedFeatureIdentityCount = 1;
-        internal const int AppendedTrampleAbilityIdentityCount = 1;
+        internal const int AppendedTrampleAbilityIdentityCount = 2;
         internal const int AppendedPrivateIdentityCount =
             AppendedWeaponIdentityCount + AppendedWeaponTypeIdentityCount +
             AppendedUnitTypeIdentityCount + AppendedFeatureIdentityCount +
@@ -82,10 +82,18 @@ namespace KingmakerGunslinger.Summoning
             AppendedAbilityIdentityCount + AppendedTrampleAbilityIdentityCount;
 
         /// <summary>
-        /// Elephant carriers named but deliberately not yet registered,
+        /// Elephant carriers still named but not registered. The
+        /// trample left this set on 2026-10-16: the bounded
+        /// observation of the released creature recorded six
+        /// grants, no trample ability and no trample component,
+        /// which is the condition this count was waiting on. The
+        /// chassis and unit type stay reserved - the same
+        /// observation showed the released Elephant still reads
+        /// the Mastodon unit type - because nothing in this
+        /// sprint needs them yet.
         /// pending the bounded native census of its real production carriers.
         /// </summary>
-        internal const int ReservedElephantIdentityCount = 3;
+        internal const int ReservedElephantIdentityCount = 2;
 
         /// <summary>Brachiosaurus has no Monster row, so nothing is appended
         /// to the Monster surface and no template children are created.</summary>

@@ -59,6 +59,8 @@ GUIDS = {
         "63280e8f08c94c3a9b67787ec2d7ab71",
     "KMG.Summoning.Special.Brachiosaurus.Trample":
         "309ec3dedcf04c15b3011933f5eafef4",
+    "KMG.Summoning.Special.Elephant.Trample":
+        "a7c34e1d9b5f4a02ae6d8c71f3b02594",
 }
 
 

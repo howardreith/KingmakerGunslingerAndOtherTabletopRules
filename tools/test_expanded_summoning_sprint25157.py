@@ -47,6 +47,31 @@ class Sprint25GateTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             gate.validate_append(self.old, changed)
 
+    def test_the_allowed_set_is_exactly_ten_and_names_the_elephant_trample(self):
+        # The append grew by exactly one on 2026-10-16, after the bounded
+        # observation of the released Elephant recorded six grants and no
+        # trample ability or component. This pins the new exact set rather
+        # than only the count.
+        self.assertEqual(10, len(gate.ADDED))
+        self.assertIn("KMG.Summoning.Special.Elephant.Trample", gate.ADDED)
+        self.assertEqual(
+            "BlueprintAbility",
+            gate.ADDED["KMG.Summoning.Special.Elephant.Trample"][1])
+        # And the ten-row tail is what the gate actually accepts.
+        self.assertEqual("registered",
+                         gate.validate_append(self.old, self.old + self.tail))
+
+    def test_the_other_reserved_elephant_symbols_still_fail(self):
+        # Only the trample was justified by that observation. The chassis and
+        # unit type remain reserved names, and appending either must still be
+        # refused rather than waved through because one sibling was allowed.
+        for symbol in ("KMG.Summoning.Natural.Elephant.Chassis",
+                       "KMG.Summoning.Natural.Elephant.UnitType"):
+            changed = self.old + self.tail + [
+                row(symbol, "d" * 32, "BlueprintFeature")]
+            with self.assertRaises(AssertionError):
+                gate.validate_append(self.old, changed)
+
     def test_wrong_planned_type_fails(self):
         changed = copy.deepcopy(self.old + self.tail)
         changed[-1]["plannedType"] = "BlueprintBuff"

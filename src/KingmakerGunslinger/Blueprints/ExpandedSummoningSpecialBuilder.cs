@@ -702,6 +702,17 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Summoning.Unit.Brachiosaurus",
                 GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
                 GiantBodyRulesPolicy.BrachiosaurusKey);
+            // The released Elephant now registers too. Its trample symbol
+            // became a real identity once the bounded observation of its
+            // own carriers recorded six grants and no trample ability or
+            // component of any kind. It joins the same qualified carrier,
+            // so it inherits the interrupt, duplicate-response, path and
+            // leave-combat guards rather than a second copy of them, and
+            // no released d6 trampler changes.
+            ConfigureUngulateTrample(library, bySymbol,
+                "KMG.Summoning.Unit.Elephant",
+                GiantBodyRulesPolicy.ElephantTrampleSymbol,
+                GiantBodyRulesPolicy.ElephantKey);
             ConfigureMephitVariants(library, bySymbol);
         }
 

@@ -840,11 +840,29 @@
       "stillRequired": "native proof of the command in play. Registered is not qualified."
     },
     "elephantTrample": {
-      "status": "BLOCKED_ON_AN_IDENTITY_APPEND_THAT_IS_ITSELF_GATED",
-      "why": "GiantBodyRulesPolicy.ElephantTrampleSymbol is a reserved NAME, not a registered identity: there is no row for it in blueprints.json and none in the identity catalog. Registering the command needs a BlueprintAbility identity, and appending one is refused by three independent gates that pin this sprint’s append at exactly its nine Brachiosaurus-only identities - validate_expanded_summoning_sprint25157.validate_append, expanded_summoning_manifest.py, and the Sprint 25 ledger test.",
-      "whatTheProjectSaysUnlocksIt": "GiantBodyRulesPolicy records the condition in its own words: the Elephant symbols stay reserved \"pending the bounded native census of its real production carriers\", and \"whatever the bounded native census proves missing is appended then, with this count moved in the same commit\".",
-      "whyTheCensusJustRunDoesNotUnlockIt": "The 2026-10-16 census measured the donor rig and the two open feats. It did not census the released Elephant’s own production carriers, so the stated precondition is still unmet. Extending the research candidate to observe them is the next step, and it was not taken here rather than appending an identity the gates refuse.",
-      "notDone": "No gate was disabled, no identity was appended, and the Elephant profile deviation still states plainly that its trample is not registered."
+      "status": "REGISTERED_NOT_QUALIFIED",
+      "precondition": "satisfied. The recorded condition was a bounded observation of the released creature’s real production carriers, and releasedElephantCensus above is that observation. It found no trample ability and no trample component of any kind.",
+      "reuseEvaluatedFirst": "Rejected on the evidence, not skipped. The shared Sprint 23 carrier reads its damage and difficulty class from the creature key the ability belongs to, so attaching another creature’s trample identity to the Elephant would deliver that creature’s numbers. A new identity is genuinely required.",
+      "appendedIdentity": {
+        "symbol": "KMG.Summoning.Special.Elephant.Trample",
+        "guid": "a7c34e1d9b5f4a02ae6d8c71f3b02594",
+        "plannedType": "BlueprintAbility",
+        "count": "exactly one; the Sprint 25 append is now ten, not nine"
+      },
+      "contractsMovedAtomically": [
+        "blueprints/blueprints.json: one appended row, last, 3158 to 3159 entries, no existing row reformatted or moved",
+        "tools/expanded_summoning_manifest.py: the plan row, and its row and distinct-symbol invariants, 2158 to 2159",
+        "tools/validate_expanded_summoning_sprint25157.py: the pinned GUID set, 9 to 10; planned_type already mapped a Trample suffix to BlueprintAbility",
+        "GiantBodyRulesPolicy: AppendedIdentityCount 9 to 10, AppendedTrampleAbilityIdentityCount 1 to 2, ReservedElephantIdentityCount 3 to 2",
+        "ExpandedSummoningIdentityCatalog: the catalog row, and SpecialIdentityCount 274 to 275, which the composed FoundationIdentityCount reads",
+        "assets-source/original-icons/icon-catalog.json: the live registrySha256 and the Sprint 25 extension authorization, which now records ten identities and why the tenth was justified",
+        "the Sprint 25 ledger test identity tail, and its private-carrier count 5 to 6"
+      ],
+      "negativeProof": "Two new fixtures. One pins the exact allowed set at ten and names the Elephant trample with its planned type. The other proves the two remaining reserved Elephant symbols - Chassis and UnitType - are still refused, so allowing one sibling did not open the set. The pre-existing extra-identity, missing-identity, wrong-type, reserved-status and released-row-move refusals all still hold: 17 fixtures pass.",
+      "noGateRelaxed": "None of the three named gates was disabled or generically relaxed, no existing identity was renumbered or recycled, there is no second Elephant, and no route disappeared - all eight still resolve.",
+      "derivation": "2d8+15 with a live DC 25, both derived: one and a half times the Strength modifier is +15 at Strength 30, and 10 + half the hit dice + the Strength modifier is 25 at eleven hit dice. Distinct from the Brachiosaurus 2d6+19 and DC 32, and asserted against the frozen policy.",
+      "carrier": "the same qualified Sprint 23 path/contact/response carrier, so it inherits the interrupt, duplicate-response, path and leave-combat guards rather than a second copy. No released d6 trampler changed, and the gore slots carry its real printed gore.",
+      "stillRequired": "native proof of the command in play, in both the RTWP and turn-based paths. Registered is not qualified, and the profile deviation says so."
     },
     "donorRig": {
       "measuredUtc": "2026-10-16T13:51:51Z",
@@ -894,6 +912,30 @@
       "whatThisChangesForElephant": "The released Elephant has a seven-joint articulated trunk after all. The earlier claim that there is no trunk chain is withdrawn.",
       "stillToProve": "Spatial classification establishes what the chains ARE. It does not establish that the native animation drives them the way an authored neck needs, which is what the graybox motion prototype is for: idle, walk, turn, attack and trample, plus interruption and death transitions, before any final geometry or texture work.",
       "notAnAcceptedLimitation": "No visual limitation is proposed and no waiver is requested. The four inherited limitations are unchanged."
+    },
+    "releasedElephantCensus": {
+      "performedUtc": "2026-10-16T15:27:34Z",
+      "scenario": "observe-expanded-summoning-sprint25-donor-census",
+      "status": "PASS",
+      "route": "the existing separately validated read-only research candidate, gated again before it ran because the compiled observer changed: Sprint gate exit 0, 2617 domain tests with no failures, 588 preflight assertions, package 9f140ca54f3f71d1926e689c159bbbf04c71f804a664ebf4d8ee9946fa9f5884. An old PASS was not reused for a new binary.",
+      "evidence": "runtime-evidence/20261016T1527343458689Z-observe-expanded-summoning-sprint25-donor-census",
+      "restoration": "live tree restored to its exact pre-run fingerprint 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "scope": "Metadata only, and the capture says so in its own scope line. It records which grants, abilities and attack carriers resolve on the released unit and records nothing about any live command outcome.",
+      "observedUnit": "9dd8544097234f05bcd35d400d91b510 KMG_Summoning_Unit_Elephant, Huge",
+      "observedUnitType": "Mastodon. The released Elephant still reads its donor’s unit type rather than one of its own, which is why the reserved Elephant UnitType symbol is a real gap - but nothing this sprint needs, so it stays reserved and unappended.",
+      "observedGrants": [
+        "NaturalArmor9",
+        "GreatFortitude",
+        "IronWill",
+        "PowerAttackFeature",
+        "SkillFocusPerception",
+        "KMG_Summoning_Subtype_Extraplanar"
+      ],
+      "tramplePresent": false,
+      "routesResolved": "8 of 8",
+      "observedBody": "primaryHand = MastodonGore 2d8 (de42c58801037b84c9d992634ddd7220), additionalLimbs = EMPTY, additionalSecondaryLimbs = MastodonSlam 2d6 (c2ce7bc3559b2024ea91ddf5bb321f0a).",
+      "whatThatConfirms": "Two Sprint 25 corrections are now backed by live evidence rather than by reading the printed entry. The slam really was in the secondary slot on the released creature, so it really was taking the native -5 and half Strength; and Endurance, Improved Bull Rush and the quadruped trip-defence really were absent from its six grants. The corrections fix measured defects, not suspected ones.",
+      "stillMetadata": "This does not establish the corrected routine in play. The two-primary attack routine and the six grants still need native qualification on the Sprint 25 candidate."
     }
   },
   "suite": {

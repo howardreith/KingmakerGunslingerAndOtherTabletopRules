@@ -205,7 +205,20 @@ namespace KingmakerGunslinger.Summoning
             // the Strength modifier alone. No powerful charge and no
             // Stampede, which belongs to the herd ungulates.
             new UngulateRulesProfile("brachiosaurus", 18, 37, 4, 6,
-                2, 6, 0, 0, 0, false, true)
+                2, 6, 0, 0, 0, false, true),
+            // Sprint 25 Elephant, on the same qualified carrier. The
+            // bounded observation of the released creature on 2026-10-16
+            // recorded six grants and no trample ability or component, so
+            // this adds a carrier the creature genuinely lacked rather
+            // than duplicating one it had. Nothing here is a literal from
+            // the printed line: one and a half times the Strength
+            // modifier on 2d8 is 2d8+15 at Strength 30, and ten plus half
+            // the hit dice plus the Strength modifier is DC 25 at eleven
+            // hit dice. The gore dice are its real printed gore, so the
+            // charge arithmetic has honest inputs; it has no powerful
+            // charge and no Stampede.
+            new UngulateRulesProfile("elephant", 11, 30, 2, 8,
+                2, 8, 0, 0, 0, false, true)
         };
 
         internal static IReadOnlyList<UngulateRulesProfile> All
@@ -216,8 +229,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 7 || Values.Select(value => value.Key)
-                    .Distinct(StringComparer.Ordinal).Count() != 7 ||
+            if (Values.Length != 8 || Values.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count() != 8 ||
                 Values.Any(value => value.HitDice < 1 || value.Strength < 1 ||
                     value.GoreDiceCount < 1 || value.GoreDieSides < 1 ||
                     !value.HasTrample && !value.HasPowerfulCharge))
