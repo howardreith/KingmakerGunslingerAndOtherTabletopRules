@@ -1,8 +1,46 @@
-# Firearm RTWP continuation after a kill — ACCEPTED; v0.0.156 RELEASE IN PROGRESS
+# Firearm RTWP continuation after a kill — v0.0.156 RELEASED / STOP
 
 The owner accepted the second review revision on 2026-10-15 and authorized
 merge and release as v0.0.156 (`docs/BUILD-AND-RELEASE.md`, "Current 0.0.156
 publication authorization").
+
+**PR #50 is MERGED and v0.0.156 is PUBLISHED.** PR #50 merged normally as
+`607da683b1f6fd545dab90fd6f4121d155573142` (tree identical to gated head
+`7703276127`). The exact-reference `Publish-Release.ps1` then ran once from
+the clean, pushed main checkout (`master` fast-forwarded to the merge) with the
+refreshed reference bundle, in 173 s: its first build passed 2,615/2,615
+domain tests, the 37-assertion harness and strict package validation, and both
+clean builds produced identical bytes.
+
+[Stable v0.0.156](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.156)
+is published (2026-10-16T04:21:12Z) and Latest, titled "Tabletop Added Rules
+v0.0.156". Annotated tag object `573af6430fad3269aa0b011de014b241ccd735d7`
+peels to the merge commit. The downloaded public assets' SHA-256 values match
+GitHub's digests:
+
+- `KingmakerGunslinger-0.0.156-firearm-rtwp-kill-continuation.zip`:
+  `07e8f06b29fc41743c85a46765caaf11779ab125d261ab737f80d736e5cb74c7`
+  (372 files; DLL
+  `8243acab2dad3ce65b3f3328d2d6e511c695c7c370938eab01bd142b3fa31671`, MVID
+  `543780f0-3294-4a2e-84ef-8d1ae4e84c86`);
+- `SHA256SUMS.txt`:
+  `fe526e6822930a79a19c129d3f45274d6e92115fc95675337213a5cbe20d8269`;
+- `release-manifest.json`:
+  `fbe830186d84f207c253b84158f4e659652c6d6ce755616e66f4d8e7501520c7`.
+
+The downloaded ZIP passed strict package validation, and its DLL embeds the
+merge commit and `0.0.156-firearm-rtwp-kill-continuation`. These bytes differ
+from the candidate below because the exact-reference build stamps the merge
+commit; between the candidate and the merge only this record file changed,
+neither compiled nor packaged, and the publisher's own run qualified the
+released bytes. Nothing was deployed to the live installation (still the
+0.0.140 install, 254 files) and no save was touched.
+
+Still open, unchanged by release: the owner's live RTWP check (three behaviours
+in the record's "Owner check"), the unreproduced original within-full-attack
+symptom, and the record's open design questions. Sprint 25 (draft PR #49)
+already used 0.0.156 on its branch and must move to 0.0.157 when it next
+integrates master, as Sprint 24 did after v0.0.154.
 
 Release candidate `1620870007` (version bump on merged master `97c881ea84`):
 
@@ -32,7 +70,7 @@ publisher scripts only) at `ff8b5b8ade`. Production correction `1890ba06cc`;
 the second review changed only the CR-04 fixture/observer (reviewed checkpoint
 `acc620cb4c`); `1620870007` is the version bump and release candidate. Record:
 [docs/FIREARM-RTWP-KILL-CONTINUATION.md](docs/FIREARM-RTWP-KILL-CONTINUATION.md).
-Release v0.0.156 in progress; nothing permanently installed.
+Released as v0.0.156 (above); nothing permanently installed in the lab.
 
 Separate statuses:
 
