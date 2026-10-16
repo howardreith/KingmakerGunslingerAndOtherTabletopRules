@@ -192,23 +192,25 @@ ways.
 | Graph discovery | `observe-alternate-summoning-sources` census, CotW profile (results under "Native coverage") |
 
 Abbreviations: **IMPL** means implemented with focused source and domain
-checks. **NATIVE** means one real granted cast was also observed in game (see
-"Native coverage"); other tiers and positions were not each cast. **SHARED**
+checks. **NATIVE** means a real granted cast was also observed in game (see
+"Native coverage"); "assisted" marks the synchronous command fixture and
+"natural" the working-save run with real popup clicks and native RTWP time.
+Other tiers and positions were not each cast. **SHARED**
 means the route reaches the canonical parents at use time, so it shows the
 canonical menu; that is static evidence unless the row says "observed" (the
 observer's canonical-reference census).
 
 | Route | Provider / identity | Tier and quantity | Ability type, action, resource, duration, pool | Disposition |
 |---|---|---|---|---|
-| Master Summoner SM | CotW `MasterSummonerSummonMonster{1-9}Feature` -> `MasterSummonerSummonISingle` / `MasterSummonerSummon{2-9}Base` | SM I-IX at class levels 1,3,...,17; single, 1d3 from II, 1d4+1 from III | Monster Tactician clone. 5 + Cha shared daily uses. Standard action. Minutes per level. Free pool, or the summoner pool while the eidolon lives, with a conditional clear | IMPL; NATIVE (tiers I and III, no-eidolon branch) |
+| Master Summoner SM | CotW `MasterSummonerSummonMonster{1-9}Feature` -> `MasterSummonerSummonISingle` / `MasterSummonerSummon{2-9}Base` | SM I-IX at class levels 1,3,...,17; single, 1d3 from II, 1d4+1 from III | Monster Tactician clone. 5 + Cha shared daily uses. Standard action. Minutes per level. Free pool, or the summoner pool while the eidolon lives, with a conditional clear | IMPL; NATIVE (assisted: tiers I and III, no-eidolon and real-eidolon pool branches; natural RTWP through the real popup: tiers I, III and VII) |
 | Summoner SM (base) | CotW `SummonerSummonMonster{1-9}Feature` -> `SummonerSummonISingle` / `SummonerSummon{2-9}Base` | SM I-IX | 3 + Cha. Eidolon must be dead or unsummoned. One effect (pool clear) | IMPL; NATIVE (tier I) |
 | Twinned Summoner SM | CotW; keeps the base Summoner features | SM I-IX | as base Summoner | IMPL (shared base Summoner roots, no separate adapter); NATIVE (tier I) |
 | Monster Tactician SM | native features `c19f6f34...` ... `f63d23b4...` | SM I-IX; one ability per quantity | as native: 1 use, minutes per level (observed) | IMPL; the observer verified every child against its template; NATIVE (lowest granted tier at Inquisitor 6 is III) |
-| Occultist Arcanist Conjurer's Focus | CotW `OccultistSummonMonster{1-9}Feature` -> `OccultistSummonISingle` / `OccultistSummon{2-9}Base` | SM I-IX at levels 1,3,...,17 | Arcane reservoir cost = tier, including lower-tier groups. Perfect Summoner: free use and one day. One effect | IMPL; NATIVE (tier III cost and duration, replacement, level-20 capstone) |
+| Occultist Arcanist Conjurer's Focus | CotW `OccultistSummonMonster{1-9}Feature` -> `OccultistSummonISingle` / `OccultistSummon{2-9}Base` | SM I-IX at levels 1,3,...,17 | Arcane reservoir cost = tier, including lower-tier groups. Perfect Summoner: free use and one day. One effect | IMPL; NATIVE (assisted: tier III cost and duration, lower-tier 1d3 group at the tier III cost, replacement, level-20 capstone) |
 | Naturalist SNA | CotW `SummonerSummonNaturesAlly{1-9}Feature` -> `FeyCallerSummonNaturesAllyI` / `SummonerSummonNaturesAlly{2-9}Base` | SNA I-IX | Copies of the native SNA children, Spell type. Summoner resource and pool. Minutes per level | IMPL; NATIVE (tier I) |
 | Fey Caller archetype | CotW `FeyCallerArchetype` | — | built but not offered in `SummonerClass.Archetypes` in 1.14.4c | ABSENT_IN_PROFILE; it would share the Naturalist roots |
 | Feral Hunter SNA | CotW `FeralHunterSummonNaturesAlly{1-9}Feature` -> `FeralHunterSummonNaturesAllyI` / `...{2-9}Base` | SNA I-IX | 3 + Wis. Hunter level. Minutes. Own pool with clear. Usable with no pet or a dead pet. Spell type | IMPL; NATIVE (tier I) |
-| Preservationist Bottled Ally | CotW `PreservationistBottledAlly{1-6}Feature` (AddKnownSpell, Alchemist) -> `PreservationistSummonNaturesAlly{I,II,IV,V,VII,IX}` | extract levels 1-6 -> SNA I, II, IV, V, VII, IX | Alchemist extract slot. Spell type. Standard action | IMPL; NATIVE (Bottled Ally I from a prepared slot) |
+| Preservationist Bottled Ally | CotW `PreservationistBottledAlly{1-6}Feature` (AddKnownSpell, Alchemist) -> `PreservationistSummonNaturesAlly{I,II,IV,V,VII,IX}` | extract levels 1-6 -> SNA I, II, IV, V, VII, IX | Alchemist extract slot. Spell type. Standard action | IMPL; NATIVE (assisted: Bottled Ally I from a prepared slot; Alchemist 8 extract III -> SNA IV) |
 | Spirit Summoner, Soulbound Summoner, Devil Binder SM | CotW | archetype removes the summon features | — | INTENTIONALLY_RESTRICTED (not restored) |
 | Devil Binder Infernal Arcana | CotW, SM VI single (named) | one named creature | — | INTENTIONALLY_RESTRICTED |
 | Hunter bonus SNA I-VI | CotW `AddKnownSpell` of the canonical parents | SNA I-VI | spellbook | SHARED |
@@ -325,11 +327,13 @@ restored, every profile restored exactly (see the state file for receipts).
 `observe-alternate-summoning-blocked-family`):
 - CotW profile: all seven families `Published` at the first update after
   `LoadDictionary`; registered identities 584 / 561 / 561 / 561 / 563 / 563
-  / 353 (all of each family's); every adapter child's executed signature
-  equals its authorized template's except the deliberate composed spawn and
-  template/alignment action; host templates unchanged since resolution; the
-  canonical publication is exact (1,093 references) and no adapter child sits
-  under a canonical parent.
+  / 353 (all of each family's); every adapter child matched its authorized
+  template under the supported signature contract, apart from the deliberate
+  creature and composed action (at `4c5b721bdcdf`/`651dde310e63` that
+  contract recorded the composed template/alignment action by type only; the
+  composed-action contract was added in the third pass, below); host
+  templates unchanged since resolution; the canonical publication is exact
+  (1,093 references) and no adapter child sits under a canonical parent.
 - Standalone profile (no CotW): Monster Tactician `Published` (584); the six
   CotW families `AbsentInProfile`, registering nothing.
 - Blocked-family drill (Master Summoner, by request): Master Summoner
@@ -350,8 +354,9 @@ provider cache with its template; a repeated reconciliation does no work
 in-area casters gain class and archetype through native `LevelUpController`
 visits, so their summon abilities are the real granted host roots; each cast
 builds the child's `AbilityData` from the root's own (the action bar's
-converted-ability path) and runs the native `UnitUseAbility` command.
-Final run (`651dde310e63`): 20 / 20.
+converted-ability path) and runs the native `UnitUseAbility` command as an
+assisted native command fixture (cooldown ignored, `IsActed` set, ticked
+synchronously; see the third pass). Final run (`651dde310e63`): 20 / 20.
 
 | Case | Observed |
 |---|---|
@@ -403,38 +408,243 @@ unexposed identity whose gate refuses the cast.
   d4plus1}` (`b1326a7a...`, `37f4f8bd...`, `21748672...`), have no caller
   identified by this audit; they are not adapted.
 
+## Targeted verification pass (2026-10-16, third pass)
+
+Corrections implemented; native command-fixture coverage passed; real-UI and
+natural-RTWP coverage passed on the working save for the cases listed;
+player-facing validation partially complete (turn-based, hotbar, saved
+shortcuts and grapple-on-reload remain manual, below).
+
+### What the observer verifies (the supported contracts)
+
+The observer does not compare an unrestricted "full executed signature". An
+adapter child must satisfy two named contracts.
+
+**Supported signature contract** (`SummonSignatureReader`, checked against
+`AlternateSummoningContracts.ExpectedAdapterChild` of the authorized
+template): ability type, action type, full-round flag, range, school,
+descriptor, spell-list and run-action counts, the host's own variants;
+each resource (identity, spend, amount, custom cost, cost-increasing facts);
+cost calculators; caster checkers with their fields (pools, flags); every
+rank configuration; and the run action in order: each spawn's unit, pool,
+count dice/count/bonus and duration rate/dice/count/bonus, each clear's pool,
+each conditional's operation, condition descriptions and branches, every
+other action by type, and a count of spawns hidden behind unmodelled actions.
+After-spawn actions are recorded by type only.
+
+**Composed-action contract** (`AlternateSummoningComposition`, from
+`3e2bf5caf729`): the values the signature records only by type, checked
+against the canonical child of the same placement.
+- Placement: every spawn branch ends with exactly one composed action of the
+  canonical kind, and none carries the other kind; a retained native option
+  or preserved cast carries none.
+- Template action: celestial and fiendish template buffs, both smite buffs and
+  the neutral-mode buff equal the canonical ones.
+- Replaced native template buffs: the canonical set. The runtime removes each
+  listed buff that is present, so order and repeats do nothing and are not
+  compared; a missing, extra or null entry is a difference.
+- Alignment action: the canonical `SummonAlignmentMode`.
+
+Anything outside both contracts is not compared, apart from the "template
+unchanged since resolution" rendering check on each authorized host template.
+Earlier observer PASS records (`4c5b721bdcdf`, `651dde310e63`) predate the
+composed-action contract; they established the signature contract only.
+
+Negative controls, against the actual verifier on disposable clones of real
+built children (contract fixture, `c7216602b103`, 17/17):
+
+| Mutation (clone only) | Verifier result | Summon signature |
+|---|---|---|
+| alignment mode changed, same action type (Naturalist tier I) | `branch0:alignment-mode:expected=Caster;actual=Celestial` | identical |
+| one replaced native template buff removed (Master Summoner tier I, templated) | `branch0:replaced-native-template-buffs:missing=[83a8a909...];extra=[]` | identical |
+| celestial template reference changed | `branch0:template-buffs:celestial-template:expected=e03163ef...;actual=6bf44252...` | identical |
+| template action removed from the last spawn branch | `placement:branch1:expected-one-final-template;actual=[...ContextActionApplyBuff]` | differs |
+| none (built children and an unmodified clone) | accepted; 2 templated branches | — |
+
+The built child itself is unchanged before and after every mutation.
+
+### Assisted native command fixture (`disposable-alternate-summoning-player-paths`)
+
+Every cast in this fixture, earlier and now, is an **assisted native command
+fixture**: the native `UnitUseAbility` built from the granted ability's own
+data, under a request-local cutscene command context, with the cooldown
+ignored, `Animation.IsActed` set, and the command and its execution process
+ticked synchronously. It is not natural animation, action-bar interaction,
+scheduler or turn timing, or a saved hotbar. The scenario output now says so
+in a top-level `execution` field, in an `execution` field on every cast
+record, and in the evidence text of every assertion that rests on a cast.
+The earlier 20/20 record (`651dde310e63`) is the same kind of evidence and
+keeps its result.
+
+New cases at `c7216602b103` (28/28), expectations taken from the installed
+CotW construction (constants from its `blueprints.txt`), not from this
+module's code:
+
+| Case | Observed |
+|---|---|
+| Master Summoner 5 takes a real lesser eidolon through the native level-1 `LesserEidolonFeatureSelection` | `LesserFey Eidolon`; `FeyEidolonUnit` live in the area; Summon and Unsummon Eidolon granted |
+| eidolon present: first effect | Dire Rat for 1 use (9 -> 8), alone in the free pool `ae450ab8...` |
+| eidolon present: second attempt | refused by `AbilityCasterCompanionDeadOrSummonPoolEmpty`: unavailable, no command, nothing spent or summoned |
+| group is one effect | after the first effect ends the free pool is empty; a 1d3 group gives 3 Giant Centipedes for 1 use, all in the free pool; the next attempt is refused with nothing spent |
+| eidolon absent | the real Unsummon Eidolon marks the eidolon for death; the engine's own life tick (`UnitLifeController.TickOnUnit`, request-local) makes it dead; two more effects, 1 use each, land in the summoner pool `e71b38e5...` beside the free-pool group |
+| eidolon returns | the real Summon Eidolon removes `EidolonUnsummonedBuff`; after the life tick the eidolon is alive; the two summoner-pool effects are dismissed and leave the pool when destroyed; the free-pool group stays; the next attempt is refused with nothing spent |
+| cleanup | every remaining effect's summoned-unit buff names this summoner; each leaves both pools when ended; one effect is then permitted again in the free pool (1 use) |
+| Occultist lower-tier group | tier III Conjurer's Focus, Giant Centipede (roster source tier 2) 1d3: 3 reservoir points (8 -> 5), the selected tier's cost from CotW's `OccultistSummon3Base` (the implementation's own calculated cost is recorded separately); 2 units, 300 s each |
+| Preservationist, Alchemist 8 | Summon Nature's Ally IV known as a 3rd-level extract (CotW Bottled Ally III); one prepared 3rd-level slot (1 -> 0; no 4th-level slot, 0 -> 0) opens a tier IV roster creature (Dire Boar) through the root; 48 s (8 rounds at caster level 8) |
+
+Ending a summon in this fixture removes its summoned-unit buff (what expiry
+and `ContextActionClearSummonPool` do); the engine then keeps the unit, and
+its pool membership, through a timed dismemberment, which this synchronous
+fixture completes by destroying the unit. The pool releases it on the
+engine's own destroy event.
+
+The first run of the eidolon cases (`3e2bf5caf729`, 27/28) failed
+`player-ms-eidolon-return`: `Resurrect` lowers damage and clears the death
+flags, and the life controller's next tick makes the eidolon conscious; the
+fixture had not applied that tick after Summon Eidolon (it did after
+Unsummon), so the eidolon still read dead and the next attempt was allowed.
+Fixture defect, corrected in `c7216602b1`.
+
+### Natural working-save run (`disposable-alternate-summoning-natural`)
+
+On the guarded read-only working save `KMG_AUTOMATION_WORKING` with the full
+installed mod set. A disposable Master Summoner 13 joins the UI party and is
+selected. Each choice opens the native abilities group, the granted root's
+own variant popup, and clicks the row (`ActionBarSlot.OnClick`); the cast is
+confirmed through the native selected-ability click handler
+(`ClickWithSelectedAbilityHandler.OnClick` on a point beside the caster) and
+left to the unpaused native RTWP scheduler and animation. No `IsActed`, no
+cooldown override, no synchronous command tick, no hotbar slot. Nothing is
+saved. `b9c56e3da9a9`, 11/11:
+
+| Case | Observed |
+|---|---|
+| tier I popup, early row | 7 rows (all exposed), navigation verified; row 0 Dire Rat clicked; selection is that child, converted from the granted root fact |
+| tier I cast | native act, no cooldown override, 2.2 s; 1 use (9 -> 8); 1 Dire Rat |
+| tier III popup, last row | 31 rows; last row (Viper 1d4+1) in view and clicked |
+| tier III cast | 2.7 s; 1 use (8 -> 7); 2 Vipers |
+| tier VII popup, recent creature | 94 rows; the single Tyrannosaurus (Sprint 24) row in view and clicked |
+| tier VII cast | 2.1 s; 1 use (7 -> 6); 1 Tyrannosaurus |
+| natural dismissal | the Tyrannosaurus's summoned-unit buff removed (expiry path); native dismemberment ran in native time (2.1 s) and destroyed it; its pool released it |
+| cleanup | the summoner and every summon gone; original units, area effects and party unchanged; no save write; game time advanced 8.4 s while unpaused |
+
+At the run's screen resolution no menu needed scrolling (7, 31 and 94 rows
+all fit), so the scroll-required choice is not exercised here. An earlier run
+of the same scenario at `c7216602b103` (level 5, tiers I and III, Dire Rat
+dismissed) also passed, 8/8.
+
+### Commands, durations and results (third pass)
+
+All on this worktree; durations are wall-clock.
+
+| Check | Result |
+|---|---|
+| `Invoke-KmgGate.ps1 -Level Focused -Filter 'alternate-summoning'` (before `3e2bf5caf7`) | compile PASS; 24 / 24 of 2,639; 9 s |
+| `Invoke-KmgGate.ps1 -Level Focused -Filter 'alternate-summoning;runtime-scenario;brown-fur.native-cast'` (each later commit) | compile PASS; 25 / 25; about 10 s |
+| `scripts/Test-RuntimeScenarioPreflight.ps1` | 590 PASS (two new checks for the natural scenario); 14 s |
+| `Test-ExplicitCandidateReuse.ps1`, `Test-KmgGate.ps1` | 7 / 7; PASS (development gate 8 / 8) |
+| Candidate builds (`Build-Local.ps1 -ReferenceBundleDir <refresh-2026-10-15> -DevelopmentPurpose alternate-summoning-native -DevelopmentTestFilter <focused + icon readers>`) | `3e2bf5caf729` 68 s, `c7216602b103` 63 s, `b9c56e3da9a9` 63 s; 583 / 2,639 selected, 0 failures each |
+| Guarded profile transactions | see the state file; 2-7 min each, all `Restored` and verified |
+| Guarded live working-save runs (`Deploy-Local -DevelopmentPurpose`, `Invoke-KingmakerRuntimeTest -ReuseInstalledArtifact -SaveName KMG_AUTOMATION_WORKING`, `Restore-Live-Mod`) | 2, about 1.5 min each; live mod byte-identical to its pre-run backup afterwards |
+| Pre-existing failures | `Test-RuntimeDeployment.ps1`, `Test-CompatibilityCandidateReuse.ps1` (recorded before) and `Test-MagicCircleRuntimeRequest.ps1` ("'Get-KmgRepositoryRoot' is not recognized") fail identically on unchanged `master` `607da683b1`; not caused here |
+
+Not run: the complete domain suite and the repository wrapper (Sprint-boundary
+checks under the validation policy), the historical full runtime matrix.
+
+### Evidence matrix
+
+Each row stands alone; no row's PASS covers another row's category.
+
+| Category | Status | Candidate | Covers | Evidence (under `C:\Dev\KingmakerGunslingerLab\runtime-evidence`) |
+|---|---|---|---|---|
+| Source and domain checks | PASS | per commit | composition model 6 cases; 25 related cases; 583 selected in each candidate build; runtime preflight 590 | gate output; candidate receipts |
+| Structural native observer, CotW | PASS 9/9 | `c7216602b103` | seven families published; both contracts on every adapter child; templates unchanged | `20261016T1537090363960Z-observe-alternate-summoning-sources` |
+| Blocked-family drill | PASS 9/9 | `c7216602b103` | Master Summoner blocked with placeholders; others published under both contracts | `20261016T1538502973891Z-observe-alternate-summoning-blocked-family` |
+| Standalone observer (no CotW) | <S> | `b9c56e3da9a9` | Monster Tactician under both contracts; CotW families absent | <S-dir> |
+| Module OFF observer + settings | <M> | `b9c56e3da9a9` | every identity registered, nothing exposed | <M-dir> |
+| Composed-action negative controls | PASS 17/17 | `c7216602b103` | table above | `20261016T1540259762240Z-disposable-alternate-summoning-contracts` |
+| Assisted native command fixture | PASS 28/28 | `c7216602b103` | every family's granted root; eidolon pools; Occultist lower-tier group; Preservationist III -> SNA IV. Timing assisted (see label) | `20261016T1541548916348Z-disposable-alternate-summoning-player-paths` |
+| Eidolon and pool behavior | PASS (assisted) | `c7216602b103` | real Master Summoner + real lesser eidolon (Fey); pools, units and uses read from the engine | same |
+| Real UI popup selection | PASS 11/11 (natural run) | `b9c56e3da9a9` | real action-bar popup rows for tiers I, III (last of 31) and VII (Tyrannosaurus of 94) clicked; the selected child is converted from the granted root fact | `20261016T1550339254110Z-disposable-alternate-summoning-natural` |
+| Scroll-required menu choice | NOT EXERCISED | — | at this resolution no menu (7, 31, 94 rows) needed scrolling; the last row was in view | owner checklist |
+| Natural RTWP timing | PASS | `b9c56e3da9a9` | target click through the native handler; unpaused native scheduler and animation; natural act; no cooldown override; one use each | same |
+| Turn-based timing | NOT RUN | — | no genuine turn-based round | owner checklist step 6 |
+| Hotbar binding and reuse | BLOCKED | — | binding goes through the `settings.SetSlot` path that hung a guarded run before; not repeated | owner checklist step 1 |
+| Saved-reference cold load (normal / OFF / blocked / restore) | BLOCKED | — | needs a save-writing shortcut orchestrator; structural substitutes: module-OFF observer, blocked drill, unexposed-child refusal | owner checklist steps 2-5 |
+| Dismissal / expiration cleanup | PASS (natural) | `b9c56e3da9a9` | Tyrannosaurus (Sprint 24) ended through the engine's expiry path; native dismemberment; pool released; exact cleanup | natural run |
+| Grapple / swallow reset on reload | NOT RUN | — | needs a save and reload with a grappling summon; grapple persistence is not implemented | owner checklist step 7 |
+
+### Owner checklist (manual cases not automated)
+
+Use a disposable save only (a copy, never `KMG_AUTOMATION_BASELINE` or a
+campaign save). Install the PR #52 development candidate temporarily over a
+backed-up mod folder, with Call of the Wild 1.14.4c-2.1, and restore the backup
+afterwards. Do not uninstall CotW from a save that depends on it. Report each
+step as PASS, FAIL or unclear, with a screenshot of anything unexpected.
+
+**Character.** A Summoner with the CotW Master Summoner archetype at level 5
+or higher (tier III summons), Charisma 14+. Take any lesser eidolon. Out of
+combat, in a safe area.
+
+1. **Hotbar binding.** Open the abilities group on the action bar, open the
+   Summon Monster I menu, and drag a KMG creature (for example Dire Rat) to an
+   empty hotbar slot. Click the slot and place the summon.
+   Expect: the same creature appears; one Master Summoner use is spent; the
+   slot keeps that creature's icon.
+2. **Saved shortcut, normal reload.** Save to the disposable slot, quit to the
+   main menu, load it. Click the hotbar slot.
+   Expect: the slot still shows the creature; the cast works and spends one use.
+3. **Expanded Summoning OFF.** Quit the game, set `expanded-summoning` to
+   `false` in `Mods/KingmakerGunslinger/FeatureModules.json`, start, load the
+   disposable save, click the slot.
+   Expect: the slot is unavailable or the cast is refused; no use is spent, no
+   creature appears, no error dialog; nothing else in the save changes.
+4. **Restore normal.** Quit, set `expanded-summoning` back to `true`, load the
+   same save, click the slot.
+   Expect: the same slot casts the same creature again with no respec and no
+   duplicate ability on the character sheet.
+5. **Blocked family (optional; needs a maintainer build).** Not owner-executable
+   in a normal install: the family block is a load-time refusal that only a
+   changed CotW contract triggers. The save-free drill
+   `observe-alternate-summoning-blocked-family` covers the placeholder
+   identities; skip this step unless a maintainer provides a drill build.
+6. **Turn-based round.** Turn on turn-based mode, start a fight, and on the
+   Master Summoner's turn choose a KMG creature from the Summon Monster menu.
+   Expect: the cast takes the standard action in that turn, one use is spent,
+   the creature appears and acts in the initiative order; the next attempt with
+   the eidolon present and a summon alive is refused.
+7. **Grapple or swallow reset on reload.** Summon a KMG creature with grapple
+   or swallow through a Master Summoner or Occultist menu, let it grab an
+   enemy, save in the disposable slot mid-grapple, reload.
+   Expect: no stuck grapple: both units can act normally, or the grapple is
+   cleanly ended. Grapple persistence is not implemented; a clean reset is
+   the expected result.
+
+
 ## Remaining (not checked in game)
 
-Runtime is not checked for any of these; they are not claimed.
+Runtime is not checked for any of these; they are not claimed. Items the
+third pass closed (eidolon pools, real popup selection, natural RTWP casts, a
+recent creature's dismissal) are no longer listed; see the evidence matrix.
 
-1. **Real UI selection.** No native action-bar popup was opened or clicked
-   and no hotbar slot was used: the casts used the same converted-ability
-   data the action bar builds, through `UnitUseAbility`. A popup-click
-   driver exists for spellbook spells (Magic Circle) but not for class
-   abilities, and the repository records that an earlier attempt to
-   install a slot through `settings.SetSlot` hung the game. Needs a
-   party-member caster selected in the UI and an ability-group popup
-   driver.
-2. **Hotbar reuse and saved references.** No saved shortcut to an adapter
-   child was reloaded: the reduced CotW profile cannot hydrate the
-   established working save, and no save-backed fixture exists for a
-   shortcut. What was observed instead: a blocked family's identities stay
-   registered as unavailable placeholders; with the module OFF every
-   identity registers and nothing is exposed; and an unexposed registered
-   child is refused through its root (the preserved Master Summoner tier-I
-   cast). That is what the real loader resolves a saved reference to, but a
-   reload of a real shortcut was not performed.
-3. **Turn-based sample.** Every cast ran synchronously outside combat, which
-   is the same command path in either mode; no turn-based combat round was
-   exercised.
-4. **Master Summoner with an eidolon.** The disposable Master Summoner took
-   no lesser eidolon, so the one-summon-while-the-eidolon-lives branch and
-   the eidolon's return were not exercised; only the no-eidolon coexistence
-   branch was.
-5. **Recent-creature cleanup** (for example Tyrannosaurus swallow/grapple
-   reset on reload) through an adapter route.
-6. **Higher tiers.** One tier per family was cast (tier I or III; Occultist
-   also at level 20). Middle and last menu positions were not each cast.
+1. **Hotbar binding and reuse.** Not automated: binding goes through the
+   `settings.SetSlot` path that hung an earlier guarded run, and it was not
+   repeated or forced. Owner checklist step 1.
+2. **Saved-reference cold load** (normal, Expanded Summoning OFF, blocked
+   family, restored). Needs a save-writing shortcut orchestrator on a
+   disposable save. Structural substitutes observed: a blocked family's
+   identities stay registered as unavailable placeholders; with the module
+   OFF every identity registers and nothing is exposed; an unexposed
+   registered child is refused through its root. Owner checklist steps 2-5.
+3. **Turn-based round.** No genuine turn-based combat round. Natural RTWP is
+   covered. Owner checklist step 6.
+4. **Scroll-required choice.** No menu needed scrolling at the natural run's
+   resolution (7, 31 and 94 rows); the last and a deep row were clicked in
+   view.
+5. **Grapple or swallow reset on reload** through an adapter summon. Owner
+   checklist step 7. Grapple persistence is not implemented.
+6. **Tiers.** Not every tier and position of every family was cast; the cases
+   are the ones listed in each table.
 
 ## Findings for review
 
