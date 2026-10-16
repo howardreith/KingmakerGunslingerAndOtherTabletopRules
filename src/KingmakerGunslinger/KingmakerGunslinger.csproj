@@ -1263,6 +1263,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningContracts.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningPlayerPaths.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningPlayerPathsHost.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningNatural.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningComposition.cs" />
     <Compile Include="Blueprints\SummonSignatureReader.cs" />
     <Compile Include="Blueprints\AlternateSummoningCompositionReader.cs" />

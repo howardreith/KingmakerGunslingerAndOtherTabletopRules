@@ -307,8 +307,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "EidolonUnsummonAbility; UnitLifeController.TickOnUnit (request-local); SummonPoolsManager"));
 
             // 4. Return the eidolon: the summoner pool is dismissed, the free pool kept.
+            // Resurrect lowers the eidolon's damage and clears its death
+            // flags; the life controller's next tick makes it conscious.
             string returned = PlayerPathRunOwnAbility(caster, summon);
-            bool petBack = !pet.Descriptor.State.IsDead && !caster.Descriptor.HasFact(unsummonedBuff);
+            bool buffRemoved = !caster.Descriptor.HasFact(unsummonedBuff);
+            bool deadBeforeTick = pet.Descriptor.State.IsDead;
+            PlayerPathLifeTick(pet);
+            bool petBack = buffRemoved && !pet.Descriptor.State.IsDead;
             bool boundDismissed = boundUnits.All(value => !PlayerPathSummoned(value));
             bool freeKept = groupUnits.All(PlayerPathSummoned);
             string afterReturn = pools("after-return-before-dismemberment");
@@ -320,13 +325,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             casts.Add(blocked.ToJson());
             assertions.Add(Assertion("player-ms-eidolon-return",
                 "the real Summon Eidolon returns the eidolon and dismisses every summoner-pool effect while the free-pool group stays; the pool releases them when they are gone; with the eidolon back and the free pool occupied a new attempt is refused with nothing spent",
-                "summon=" + returned + ";petBack=" + petBack + ";boundDismissed=" + boundDismissed +
+                "summon=" + returned + ";unsummonedBuffRemoved=" + buffRemoved +
+                    ";deadBeforeLifeTick=" + deadBeforeTick + ";petBack=" + petBack +
+                    ";boundDismissed=" + boundDismissed +
                     ";freeKept=" + freeKept + ";" + afterReturn + ";" + pools("after-dismemberment") +
                     ";next=" + blocked.ToJson().ToString(Formatting.None),
                 returned == "Success" && petBack && boundDismissed && freeKept && boundReleased &&
                     !blocked.Available && blocked.ResourceBefore == blocked.ResourceAfter &&
                     blocked.Summoned == 0,
-                "EidolonSummonAbility; EidolonUnsummonedBuff removal (ClearSummonPool); SummonPoolsManager destroy event; dismemberment delay completed by the fixture"));
+                "EidolonSummonAbility; EidolonUnsummonedBuff removal (Resurrect, ClearSummonPool); UnitLifeController.TickOnUnit (request-local); SummonPoolsManager destroy event; dismemberment delay completed by the fixture"));
 
             // 5. The remaining effects belong to this summoner and end cleanly;
             //    one effect is then permitted again.
