@@ -344,6 +344,45 @@ foreach ($contract in @(
         "runtime restoration wrapper must preserve stage-timeout contract: $contract"
 }
 
+# ----------------------------------------------- evidence-name array shape
+# The defect this exists for: `$x = if (...) { @(...) } else { @() }`
+# collapses to $null in PowerShell, so a scenario that errored before it
+# recorded an exact evidence directory made the wrapper bind $null to a
+# [string[]] parameter that allows an empty collection but not null.
+# Restoration had already run, so the live tree was never at risk, but the
+# real scenario error was replaced by a parameter-binding error. The
+# wrapper's own expression is executed below rather than a copy of it.
+$wrapperTokens = $null
+$wrapperErrors = $null
+$wrapperAst = [System.Management.Automation.Language.Parser]::ParseFile(
+    $wrapperPath, [ref]$wrapperTokens, [ref]$wrapperErrors)
+Assert-Equal 0 @($wrapperErrors).Count 'the restoration wrapper still parses'
+$evidenceAssignment = @($wrapperAst.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
+            $node.Left.Extent.Text -ceq '$evidenceNames' -and
+            $node.Right.Extent.Text -clike '*exactEvidenceDirectory*'
+    }, $true))[0]
+Assert-True ($null -ne $evidenceAssignment) `
+    'the wrapper still derives evidence names from the recorded exact directory'
+$evidenceShape = [ScriptBlock]::Create('param($run) ' +
+    $evidenceAssignment.Extent.Text +
+    '; Write-Output -NoEnumerate $evidenceNames')
+$absentNames = & $evidenceShape @{}
+Assert-True ($null -ne $absentNames) `
+    'a scenario with no recorded exact evidence directory yields an empty array, never $null'
+Assert-Equal 0 @($absentNames).Count `
+    'the absent case is genuinely empty rather than one element of nothing'
+$presentNames = & $evidenceShape @{ exactEvidenceDirectory = 'C:\evidence\20261016T131200000000Z-observe-x' }
+Assert-Equal 1 @($presentNames).Count `
+    'the recorded case still yields exactly one evidence name'
+Assert-Equal '20261016T131200000000Z-observe-x' @($presentNames)[0] `
+    'the recorded case still yields the directory leaf'
+# And the consumer must accept that empty array instead of throwing.
+Assert-Equal $null (Select-KmgScenarioEvidence -DirectoryNames $absentNames `
+    -Scenario 'observe-x' -StartedUtc ([DateTime]::UtcNow)) `
+    'the wrapper-produced empty array binds and yields no evidence'
+
 $enabledSettings = '{"schemaVersion":10,"expanded-summoning":true,"gunslinger":true}'
 $disabledBytes = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes `
     -OriginalBytes ([Text.Encoding]::UTF8.GetBytes($enabledSettings))
