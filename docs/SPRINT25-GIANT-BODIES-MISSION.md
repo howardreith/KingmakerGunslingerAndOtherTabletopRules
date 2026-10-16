@@ -104,7 +104,7 @@ preserved; it is not a second Elephant and not a Mastodon replacement. Actual
 Mastodon units and assets stay unchanged, and no already-released Elephant route
 is suppressed while a private development package exists.
 
-## Open decision escalated to the owner
+## Settled: Brachiosaurus is Nature's Ally VII only
 
 The order states that Brachiosaurus is "SNA VII only, three roots (VII one,
 VIII 1d3, IX 1d4+1), no Monster row and no celestial/fiendish execution
@@ -121,13 +121,21 @@ ally tier 7 — using the same two-tier shape that gives Summon-Monster-only
 outsiders a null nature's ally tier. Sprint 24's Tyrannosaurus, also tier 7/7,
 was published on both lists for this reason.
 
-So the decision is whether Brachiosaurus gets three roots (Nature's Ally only,
-as the order's sentence and its arithmetic say) or six (both lists, as the
-printed table and the project's catalog say, which would also add
-celestial/fiendish execution children on the Monster side and move the expected
-totals). Identities are allocated once and append-only, so this is settled
-before implementation rather than after. Everything in this document that does
-not depend on the answer proceeds meanwhile.
+The owner settled this on 2026-10-15: **Nature's Ally VII only, three roots** —
+`NaturesAlly.7.brachiosaurus.One`, `NaturesAlly.8.brachiosaurus.OneD3`,
+`NaturesAlly.9.brachiosaurus.OneD4PlusOne` — with no Summon Monster row and no
+celestial/fiendish execution children. The target surface is therefore 108
+project creatures, Monster unchanged at 95/543, Nature's Ally 96/553, 1,096
+generated placements plus 29 retained native wrappers for 1,125 visible choices,
+with suppressed logical placements back to 0 after publication. These totals are
+derived from source at build time, not hard-coded.
+
+Because identities are allocated once and append-only, this is the reversible
+direction: adding the Monster VII rows in a later sprint would be purely
+additive, whereas publishing Monster rows that were not wanted could not be
+cleanly withdrawn. The source discrepancy is kept in the sprint ledger so a
+later sprint can act on it without re-deriving it, and it is **not** treated as
+authorization to implement those rows now.
 
 ## Shared trample contract
 

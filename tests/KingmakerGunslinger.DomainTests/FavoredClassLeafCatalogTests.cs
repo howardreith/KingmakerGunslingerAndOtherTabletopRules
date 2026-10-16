@@ -46,6 +46,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sprint22RulesTests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint25Tests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 entries.Length, "Only accepted Phase 2 identities follow the committed blocks.");
             Assertions.Equal("KMG.Summoning.Natural.DireBat.Blindsense",
@@ -67,6 +68,7 @@ namespace KingmakerGunslinger.DomainTests
                     Sprint22RulesTests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length)]["symbol"],
                 "The Bat sense identity precedes Wasp's append.");
             Assertions.Equal("5dcc039bc9674208a51e4babcd8a30ee",
@@ -88,6 +90,7 @@ namespace KingmakerGunslinger.DomainTests
                     Sprint22RulesTests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length)]["guid"],
                 "The Dire Bat sense identity is stable.");
             JToken[] tail = entries.Skip(PrecedingManifestEntries).Take(identities.Count).ToArray();

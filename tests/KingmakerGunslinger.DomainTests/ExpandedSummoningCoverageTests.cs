@@ -69,12 +69,13 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
                 ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount,
+            Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount +
+                    GiantBodyRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures include the registered Sprint 24 identities plus retained native wrappers.");
+                "Represented creatures include the registered Sprint 25 identities plus retained native wrappers.");
             // Sprint 24 publication makes both registered identities visible.
             Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
@@ -89,9 +90,10 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount,
+            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
+                    GiantBodyRulesPolicy.AppendedCreatureCount,
                 notRepresented,
-                "Only the post-Sprint-24 ideal-roster creatures remain unregistered.");
+                "Only the post-Sprint-25 ideal-roster creatures remain unregistered.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");

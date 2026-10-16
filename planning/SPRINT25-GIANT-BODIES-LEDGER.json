@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "IN_PROGRESS_SOURCE_CONTRACT_FROZEN_ONE_DECISION_ESCALATED",
+  "status": "IN_PROGRESS_SOURCE_CONTRACT_FROZEN_PLACEMENT_DECIDED",
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
     "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
@@ -384,11 +384,34 @@
     "deriveFromActualSource": true,
     "preserveUnrelatedIdentitySets": true,
     "brachiosaurusSuppressedUntilQualified": true,
-    "identityAllocation": "once, append-only"
+    "identityAllocation": "once, append-only",
+    "selected": "expectedIfNatureAllyOnly",
+    "selectedByOwnerUtc": "2026-10-15T23:35:00Z",
+    "target": {
+      "projectCreatures": 108,
+      "monsterCreatures": 95,
+      "monsterPlacements": 543,
+      "natureAllyCreatures": 96,
+      "natureAllyPlacements": 553,
+      "generatedPlacements": 1096,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1125,
+      "suppressedLogicalPlacements": 0,
+      "newRoots": 3,
+      "changedExistingRoots": 8,
+      "monsterSurfaceUnchanged": true,
+      "celestialFiendishChildrenForBrachiosaurus": 0,
+      "mustBeDerivedFromSourceNotHardCoded": true
+    },
+    "brachiosaurusRoots": [
+      "NaturesAlly.7.brachiosaurus.One",
+      "NaturesAlly.8.brachiosaurus.OneD3",
+      "NaturesAlly.9.brachiosaurus.OneD4PlusOne"
+    ]
   },
   "escalatedDecision": {
     "id": "brachiosaurus-summon-list-placement",
-    "status": "OPEN_ESCALATED_TO_OWNER",
+    "status": "RESOLVED_BY_OWNER",
     "raisedUtc": "2026-10-15T23:25:00Z",
     "question": "Does Brachiosaurus get three roots on Summon Nature's Ally VII only, as the order states, or six roots across both Summon Monster VII and Nature's Ally VII, as the printed table and the project roster catalog indicate?",
     "orderText": "Brachiosaurus is new: SNA VII only, three roots (VII one, VIII 1d3, IX 1d4+1), no Monster row and no celestial/fiendish execution children.",
@@ -407,7 +430,18 @@
       "the shared trample contract audit",
       "the bounded quadruped art census",
       "the requirement-to-evidence map"
-    ]
+    ],
+    "resolvedUtc": "2026-10-15T23:35:00Z",
+    "decision": "NATURES_ALLY_VII_ONLY_THREE_ROOTS",
+    "decidedBy": "owner, 2026-10-15",
+    "decisionText": "Brachiosaurus gets three roots on Summon Nature's Ally only - VII one, VIII 1d3, IX 1d4+1 - with no Summon Monster row and no celestial/fiendish execution children.",
+    "decisionRationaleRecorded": "The order was followed as written. Because identities are allocated once and append-only, this is the reversible direction: adding the Summon Monster VII rows in a later sprint is purely additive, whereas publishing Monster rows the owner did not want could not be cleanly withdrawn. The source discrepancy is preserved in this ledger rather than discarded, so a later sprint can act on it without re-deriving it.",
+    "sourceDiscrepancyRetainedForLaterSprint": {
+      "finding": "The printed Summon Monster VII 7th-level list includes \"Brachiosaurus (dinosaur)*\", and ExpandedSummoningIdealRosterCatalog.cs records monster tier 7 for brachiosaurus.",
+      "notImplementedThisSprint": true,
+      "ifLaterAuthorized": "three additional Monster roots at tiers 7, 8 and 9 plus their celestial/fiendish execution children, moving the surface to 96/546 Monster, 1,099 generated placements and 1,128 visible choices",
+      "doNotTreatAsAuthorized": true
+    }
   },
   "acceptedLimitations": {
     "inheritedUnchanged": [
@@ -431,5 +465,5 @@
     ],
     "sprint26Started": false
   },
-  "nextAction": "Await the owner decision on brachiosaurus-summon-list-placement. Meanwhile: audit the shared trample contract and the native feat consumers, verify Elephant's existing production carriers against the frozen entry, and run the bounded quadruped rig census. Do not allocate Brachiosaurus identities until the decision is recorded."
+  "nextAction": "Implement under the decided structure. Brachiosaurus: three Nature's Ally roots only, suppressed until qualification, identities allocated once and append-only, lone-tail 1.5x Strength routine with tail +23, trample 2d6+19 DC 32 separate from the ordinary tail. Elephant: preserve the released identity and all eight existing roots while completing gore +16 (2d8+10), slam +16 (2d6+10), 10-foot reach and trample 2d8+15 DC 25 on the x1 multi-natural routine, reusing Sprint 23 d8 trample support without powerful charge. Audit the shared trample contract and the native feat consumers, then the bounded quadruped rig census and original visuals."
 }

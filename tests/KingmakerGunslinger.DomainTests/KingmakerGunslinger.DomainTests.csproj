@@ -295,9 +295,11 @@
     <Compile Include="ExpandedSummoningSprint23Tests.cs" />
     <Compile Include="Sprint24CensusTests.cs" />
     <Compile Include="ExpandedSummoningSprint24Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint25Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AnkylosaurusRulesPolicy.cs"><Link>Summoning\AnkylosaurusRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ArmoredDinosaurRulesPolicy.cs"><Link>Summoning\ArmoredDinosaurRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\TheropodRulesPolicy.cs"><Link>Summoning\TheropodRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantBodyRulesPolicy.cs"><Link>Summoning\GiantBodyRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\TheropodVisualPolicy.cs"><Link>Summoning\TheropodVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ArmoredDinosaurVisualPolicy.cs"><Link>Summoning\ArmoredDinosaurVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AnkylosaurusTailImpactPolicy.cs"><Link>Summoning\AnkylosaurusTailImpactPolicy.cs</Link></Compile>

@@ -61,16 +61,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(monster.Concat(ally).All(
                     SummonVisibilityCatalog.IsPublished),
                 "All eighteen new roots are published.");
-            Assertions.Equal(107, ExpandedSummoningCatalog.All.Count,
-                "Exactly two creatures append to the released catalog.");
-            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
+                ExpandedSummoningCatalog.All.Count,
+                "Later sprints append without moving the two theropods.");
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "The current global route authority is centralized.");
-            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.HiddenLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "No route is withheld after publication.");
             Assertions.Equal(
-                TheropodRulesPolicy.FinalPublishedLogicalPlacements,
+                GiantBodyRulesPolicy.HiddenPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "Publication moves no released route.");
         }
@@ -251,13 +252,17 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(2149, identities.Count,
+            Assertions.Equal(2149 + GiantBodyRulesPolicy.AppendedIdentityCount,
+                identities.Count,
                 "The foundation appends exactly forty-eight Sprint 24 identities.");
             SummoningIdentitySpec[] tail = identities
-                .Skip(identities.Count - PrivateIdentityTail.Length).ToArray();
+                .Skip(identities.Count -
+                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount -
+                    PrivateIdentityTail.Length)
+                .Take(PrivateIdentityTail.Length).ToArray();
             Assertions.True(tail.Select(value => value.Symbol)
                     .SequenceEqual(PrivateIdentityTail),
-                "The ten private theropod carriers append once in frozen order.");
+                "The ten private theropod carriers append once in frozen order, behind every later sprint's.");
             var types = tail.ToDictionary(value => value.Symbol,
                 value => value.PlannedType, StringComparer.Ordinal);
             Assertions.Equal("BlueprintItemWeapon",

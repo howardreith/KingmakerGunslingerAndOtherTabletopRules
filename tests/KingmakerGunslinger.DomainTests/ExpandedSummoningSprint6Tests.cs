@@ -171,7 +171,7 @@ namespace KingmakerGunslinger.DomainTests
             SummonIconCatalog.Validate();
             Assertions.Equal(117, SummonIconCatalog.All.Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks(value.Key)),
-                "All pre-Sprint-24 concepts remain without changing Sprint 6 identities.");
+                "All pre-Sprint-25 concepts remain without changing Sprint 6 identities.");
         }
     }
 }
