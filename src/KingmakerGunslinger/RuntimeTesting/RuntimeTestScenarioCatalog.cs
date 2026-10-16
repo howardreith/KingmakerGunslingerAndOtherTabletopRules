@@ -156,6 +156,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ObserveExpandedSummoningSprint24TheropodCensus =
             "observe-expanded-summoning-sprint24-theropod-census";
         /// <summary>
+        /// The one bounded Sprint 25 quadruped donor census: detached
+        /// read-only prefabs for the Mastodon rig and an already-measured
+        /// biped negative control, plus the native feat graphs the Great
+        /// Cleave and Greater Overrun questions need. Research evidence only;
+        /// no save, spawn or native asset mutation.
+        /// </summary>
+        internal const string ObserveExpandedSummoningSprint25DonorCensus =
+            "observe-expanded-summoning-sprint25-donor-census";
+        /// <summary>
         /// The Sprint 18 hidden-candidate review: the two apes as they are in
         /// a running game. Live profiles, the printed routines, every rend
         /// case, both combat modes, the original bodies, the registered
@@ -821,6 +830,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint21Census,
                 ObserveExpandedSummoningSprint22Contracts,
                 ObserveExpandedSummoningSprint24TheropodCensus,
+                ObserveExpandedSummoningSprint25DonorCensus,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,

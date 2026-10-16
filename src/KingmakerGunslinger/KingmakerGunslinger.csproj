@@ -1249,7 +1249,9 @@
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Theropods.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Survey.cs" />
     <Compile Include="RuntimeTesting\Sprint24TheropodCensusPolicy.cs" />
+    <Compile Include="RuntimeTesting\Sprint25DonorCensusPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Census.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint25Census.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint23Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Review.cs" />
