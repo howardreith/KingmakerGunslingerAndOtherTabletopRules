@@ -762,6 +762,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Disposable caster class selection failed at level " +
                         (owner.Progression.GetClassLevel(characterClass) + 1) + ".");
                 controller.ApplyClassMechanics();
+                // The native visit's spellbook step, as the level-up harness
+                // takes it: without it a prepared caster has no formula book.
+                controller.ApplySpellbook();
                 apply.Invoke(controller, new object[] { owner });
                 controller.Cancel();
                 activeController = null;
