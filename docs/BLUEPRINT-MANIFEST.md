@@ -1,6 +1,6 @@
 # Blueprint manifest and registration contract
 
-Active v0.0.154 animal-companion eligibility contract: 3101 stable identifiers: 3098 active and 3 reserved.
+Active v0.0.156 firearm continuation contract: 3149 stable identifiers: 3146 active and 3 reserved. Sprint 24 (v0.0.155) appended 48; v0.0.156 adds none.
 Sprint 23 preserves every released entry and appends 33 identities: two units,
 twelve logical placements, eight Triceratops Monster template execution children,
 two natural weapons, two unit types, two chassis features, three signature

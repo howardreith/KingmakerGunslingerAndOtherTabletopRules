@@ -261,7 +261,11 @@ namespace KingmakerGunslinger.Firing
                         executor, resolved.Weapon)) ||
                 !TurnBasedAllowsAttackQueue(executor))
             {
-                NativeFirearmAttackOrder.Invalidate(pending == null ? null : pending.Binding);
+                // A defeated target completes a Normal firearm's order; any
+                // other failure, or a Broken firearm, cancels it as before.
+                var binding = pending == null ? null : pending.Binding;
+                if (!NativeFirearmAttackOrder.CompleteDefeated(binding))
+                    NativeFirearmAttackOrder.Invalidate(binding);
                 Interlocked.Increment(ref _autoReloadCanceledAttacks);
                 return null;
             }

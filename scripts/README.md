@@ -75,3 +75,6 @@ weapon rules, recovery and stale-order negatives in request-owned save-free
 fixtures. Its 145 assertions and precise pause/rest boundaries are documented in
 `docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md`. It never uses authorization
 bridges, direct suppression resets, save selection or save mutation.
+Its CR-04 four-attack kill-chain lanes (native frame order, fixture-supplied
+act/finish cues, including repaired Broken → Quick Clear → Normal lanes) are
+recorded in `docs/FIREARM-RTWP-KILL-CONTINUATION.md`.

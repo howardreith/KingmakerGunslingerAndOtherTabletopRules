@@ -46,11 +46,14 @@
     "reason": "Sprint 24 produced two different artifact builds from one identical source in two different roots and the cause was never established. Choosing the root up front keeps the promoted artifact and its native evidence in the same root."
   },
   "version": {
-    "expected": "0.0.156",
+    "expected": "0.0.157",
     "discoveredFromActualRemote": true,
-    "evidence": "git ls-remote --tags shows v0.0.150 through v0.0.155 and no v0.0.156; the GitHub release list ends at v0.0.155 (Latest)",
-    "observedUtc": "2026-10-15T23:18:00Z",
-    "note": "Not assumed from the order; re-confirm immediately before publication."
+    "observedUtc": "2026-10-16T04:10:00Z",
+    "evidence": "git ls-remote --tags shows v0.0.150 through v0.0.155 and no v0.0.156 or v0.0.157 tag; the GitHub release list ends at v0.0.155 (Latest).",
+    "supersededExpectation": "0.0.156",
+    "whySuperseded": "Master moved from 97c881ea to 607da683 while Sprint 25 was in registration. Merged PR #50, the firearm RTWP kill continuation, claimed the 0.0.156 surface: Info.json, Directory.Build.props, AssemblyInfo.cs, docs/RELEASE-NOTES-0.0.156.md, its own static key and the 0.0.156 validator dispatch. That preparation is merged but not yet tagged or published. Sprint 25 took the next free patch rather than contesting a version another sprint had already stamped.",
+    "firearmPreparationPreserved": true,
+    "note": "Re-confirm immediately before publication."
   },
   "pushPolicyChange": {
     "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
@@ -579,8 +582,8 @@
     "withheld": true,
     "appendedIdentities": 9,
     "ledgerEntries": 3158,
-    "versionSurface": "0.0.156",
-    "staticValidator": "tools/validate_expanded_summoning_sprint25156.py",
+    "versionSurface": "0.0.157",
+    "staticValidator": "tools/validate_expanded_summoning_sprint25157.py",
     "repositoryValidation": "PASS exit 0, stage=hidden, bodiesAuthored=false",
     "domainSuite": {
       "registered": 2616,
@@ -615,5 +618,13 @@
       "expanded-summoning.sprint8-ledger-icons"
     ],
     "whyLeftFailing": "They are the honest signal that the art is outstanding. Moving the 119 pin or inventing a placeholder PNG would turn a real gap into a green gate."
+  },
+  "masterIntegration": {
+    "mergedMasterAt": "607da683b1f6fd545dab90fd6f4121d155573142",
+    "mergedUtc": "2026-10-16T04:45:00Z",
+    "conflicts": 8,
+    "resolution": "master's firearm 0.0.156 surface kept intact; Sprint 25 moved to 0.0.157",
+    "validatorBaselineRebasedTo": "607da683b1f6fd545dab90fd6f4121d155573142",
+    "nothingFromMasterDiscarded": true
   }
 }

@@ -30,12 +30,13 @@ sys.dont_write_bytecode = True
 import validate_expanded_summoning_sprint21150 as common
 import validate_expanded_summoning_sprint24154 as prior
 
-# The released Sprint 24 master: v0.0.155 published and verified, with its
-# records and release tooling merged. The product source here is identical to
-# the release merge 31672515; this commit simply also carries the records, so
-# they are baseline rather than "unrelated".
-BASELINE = "97c881ea847a5d3703982ed6b0aebc0e0537c7c5"
-SPRINT25_KEY = "expandedSummoningSprint25156"
+# Re-based 2026-10-16 from 97c881ea to the actual current master. Master moved
+# while Sprint 25 was in registration: the firearm RTWP kill continuation
+# merged as PR #50 and claimed the 0.0.156 version surface, so Sprint 25 moved
+# to 0.0.157 and that merged firearm source is baseline here rather than
+# "unrelated production source". v0.0.155 remains the published release.
+BASELINE = "607da683b1f6fd545dab90fd6f4121d155573142"
+SPRINT25_KEY = "expandedSummoningSprint25157"
 WITHHELD = {"brachiosaurus"}
 RELEASED_NEVER_SUPPRESSED = {"elephant", "mastodon"}
 
@@ -180,9 +181,9 @@ def validate_static(root: Path, stage: str):
         raise AssertionError(
             "Registered Sprint 25 candidate lacks static metadata")
     expected = {
-        "releaseVersion": "0.0.156",
+        "releaseVersion": "0.0.157",
         "releaseInformationalVersion":
-            "0.0.156-expanded-summoning-sprint25-giant-bodies",
+            "0.0.157-expanded-summoning-sprint25-giant-bodies",
         "masterBase": BASELINE,
         "newCreatures": 1,
         "newLogicalRoots": 3,
@@ -245,10 +246,10 @@ def validate_art(root: Path, stage: str, authored: bool):
 def validate_version(root: Path):
     info = common.document(root, "Info.json")
     version = info.get("Version")
-    if version != "0.0.156":
+    if version != "0.0.157":
         raise AssertionError(
             "Unsupported Sprint 25 lineage version: " + repr(version))
-    informational = "0.0.156-expanded-summoning-sprint25-giant-bodies"
+    informational = "0.0.157-expanded-summoning-sprint25-giant-bodies"
     props = (root / "Directory.Build.props").read_text(encoding="utf-8-sig")
     assembly = (root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs").read_text(
         encoding="utf-8-sig")
