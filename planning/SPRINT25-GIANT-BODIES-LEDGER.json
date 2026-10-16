@@ -765,26 +765,26 @@
       "renders": "runtime-evidence/sprint25-graybox",
       "renderCount": 20,
       "renderSha256": {
-        "brachiosaurus-curled-front.png": "0e54f25012841bc42bd98a97bac008952e3f2daf010ce542b3232a52a9ffef90",
-        "brachiosaurus-curled-party.png": "13403a92d59b3eb4f80ad50b318c2f1e22b54736488561ee42901a395eb0ee56",
-        "brachiosaurus-curled-rear.png": "0766c0850b3d16e20188153cd8b30119f8a43ea4a3612fb36f8d1c5f5e9bb864",
-        "brachiosaurus-curled-side.png": "bd6a61c5a270ebda6a965115055e292fafda00e2d9754f4c81dff72e4a57d213",
-        "brachiosaurus-rest-front.png": "ade63007871eb28e8a279f72a2c6456079f8ac473c9c9f7063e2191f0596ad15",
-        "brachiosaurus-rest-party.png": "d00b446f54173be4bb3894441c10405f3ad4970cb6906cd530be6815140fbcf1",
-        "brachiosaurus-rest-rear.png": "4d17b61752d8bd4c646d418b5c1fadc5b74d9c65aca93b45dc5093ffd6e38850",
-        "brachiosaurus-rest-side.png": "bf765a467dfc7008325522acb07dea7ba91366aa9894864477f2e896ac8d85f7",
-        "brachiosaurus-upright-front.png": "9cfda868b4f09ab1d482124d2a8568b95eef748a2dc23414af20e271561f8f36",
-        "brachiosaurus-upright-party.png": "3f896c7a059154e837f19c81f0ab8c371dc5b32999c7dcfb0226b5aca4bf14a6",
-        "brachiosaurus-upright-rear.png": "e19e0b9fb493ebcbed9ab04f456d85b368d96cbe0c55aee60ea6912b54f3cb66",
-        "brachiosaurus-upright-side.png": "8a64ebc57962a6c3d3dac23ceb88e97219556af39ccdcc3d5d143d122448b93f",
-        "elephant-curled-front.png": "38314a2287debb5b0e6dc849baf60c7f12310cc15518cb6a7a2b9b512e780d09",
-        "elephant-curled-party.png": "6b2b8b04238135313f0d07d3b337190e0d08672979d1c7f7b3c80bc93dff608f",
-        "elephant-curled-rear.png": "4615a75c50500e8f40e3fafb75eb330fd90b74039127e7efe9f7ea66db380f2f",
-        "elephant-curled-side.png": "9846c0361f5c5c1b29566718fefe3bb16bec0a854d91ebd12f454a468e8f0d96",
-        "elephant-rest-front.png": "cd38928ec1437c91b3ecb49dd689e0dc7709ca4d7f364721eb78fc7a10f75a35",
-        "elephant-rest-party.png": "36191f2008459b6e688f1f0ac65680001a3e9d24494872943eb828eedde70fce",
-        "elephant-rest-rear.png": "c721e0f772f84b9dd5950ddaa54320529774275aaed494a388ce3c6915b19715",
-        "elephant-rest-side.png": "03c90b8f977fe52c07e1a9134bdbebe2baed513976d9dbee5068c6e6a0342bd7"
+        "brachiosaurus-curled-front.png": "f44bfb438593f059b0a2d7fc0240411df1cb192197fa04c42c5acb91657e39d7",
+        "brachiosaurus-curled-party.png": "73398cd9dbf038f9e1647540c8f9b0f8d38b54f9d5822642e899f06c6d83e868",
+        "brachiosaurus-curled-rear.png": "cf3059458d5542d8ad486fc1628502dd4859241e7bb3e8722fb6f1d0177641be",
+        "brachiosaurus-curled-side.png": "ad4eb613a9a8b11a52e5cf9efa58d9da07f9c0c9a2d709ba0650f79a83eabf3f",
+        "brachiosaurus-rest-front.png": "c4da699e27146b34088a864ee9c322a9704ca6e19c850887ef45485c397d33b1",
+        "brachiosaurus-rest-party.png": "6b77eb2c5bc4dcff7bd8c9bc9ff507c49b68176119c8f5ad632d8f38ed33efc1",
+        "brachiosaurus-rest-rear.png": "4cdd2abd0a6750a3a3bafeea473fb3740d03e95eb19958e25fc2dbde6e7c3b69",
+        "brachiosaurus-rest-side.png": "7dcb2bebe8fadfb4b9bc2c74dfbf13840041e36a21c68d055895117915d606df",
+        "brachiosaurus-upright-front.png": "e1dcde0325b60664e5f7ef3cb2923e6f31d2eb18337b86b84f27c12604def11f",
+        "brachiosaurus-upright-party.png": "649ef12541adae6fdfb0949eb2702a493a655144d7ee490cd29b15c08077ba3b",
+        "brachiosaurus-upright-rear.png": "a9ea330bdfa6884133f2b9fdcafd9d3d6ff647fa739aa075a793822ed35ed71a",
+        "brachiosaurus-upright-side.png": "ccc3746f99be95fbbc60981328bf2036069a13ebd1c4ac8c411a2a733651fce7",
+        "elephant-curled-front.png": "eb9f335e5be3c55d034ff5f800529eded843c34724056255cebe72ad53c707f1",
+        "elephant-curled-party.png": "fa4748323f716cb0c9c18d7e486d3117819150feb8bc3aca1d4ed3bd95ba7d5d",
+        "elephant-curled-rear.png": "7ad179acfa06c0ea9b74804a503747d39c2973a74e92514ebd14fa5e2662b168",
+        "elephant-curled-side.png": "110ec9731bfeee73372488f3b82a97527bdd59e0561cca79794e979fa47ce093",
+        "elephant-rest-front.png": "5e7246d38629e145cff487a00f3db5945ec44503d95adca39f77f3949a174a5f",
+        "elephant-rest-party.png": "4188c42e4b7403501e51ba3faa8505fa0a7821b8f8723ef496489b5ad5988d1b",
+        "elephant-rest-rear.png": "a2e3ec682733f301a603831bdd0dff540dd7102b65a16165a787eecf1a876124",
+        "elephant-rest-side.png": "3c275c54836da79df754575c4a2588291bfa6c7b8e5ad9f6fa586e6cc19eb925"
       },
       "space": "renderer-local bind frame from the guarded census, converted to Blender Z-up by (x, y, z) -> (x, -z, y); feet land on z = 0",
       "pixelsActuallyInspected": true,
@@ -822,7 +822,40 @@
         "elephant skull at the wrong end: the head ellipsoid sat at the chain tip for both creatures, which is right for a sauropod and wrong for an elephant. Head placement is now per creature, with ears and tusks added so tusk clearance can be judged."
       ],
       "openDefects": 7,
-      "viewsNotProvided": "walk, turn, attack, trample, death and interruption frames; clay and wireframe passes; a textured pass on real UVs; native screenshots - the product candidate is not valid while the painted icon is missing"
+      "viewsNotProvided": "walk, turn, attack, trample, death and interruption frames; clay and wireframe passes; a textured pass on real UVs; native screenshots - the product candidate is not valid while the painted icon is missing",
+      "independentReview": {
+        "reviewer": ".claude/agents/kingmaker-visual-reviewer.md, read-only",
+        "verdict": "CHANGES_REQUIRED",
+        "pixelsOpenedByTheReviewerItself": true,
+        "method": "opened all eight assigned renders plus the shipped reference icon, then cropped and upscaled regions from the same files and ran per-column silhouette measurements, so its findings carry source-pixel coordinates rather than impressions",
+        "defectsRaised": 8,
+        "blockingDefectTheAuthoringPassUnderReported": "what this record had called \"a seam at the neck join\" measured 18 to 52 pixels of background between torso and chain root, 8 to 20 percent of body length, on both creatures from every angle shown. The head and neck were a free-floating island.",
+        "systematicBugItCaught": "the same chain overshot the foot plane by 11 px on one body and floated 61 px above it on the other; the cause was a leg extension pushing the feet below their measured joints.",
+        "correctionsApplied": [
+          "P1 chain, tail and limb roots sunk toward the torso centre",
+          "P2 skull sunk into the last segment",
+          "P3 limb sockets sunk into the hull",
+          "P4 harder neck taper",
+          "P5 below-foot leg extension removed",
+          "P7 ears rebuilt as lateral fans beside the skull"
+        ],
+        "stillOpen": [
+          "thin seam remains: placed primitives, not a unioned mesh",
+          "elephant head/ear/trunk assembly reads cluttered",
+          "P6 enclosed dark ellipse in the trunk is UNCLASSIFIED - hole or flipped face; needs a backface/normals pass",
+          "P8 vertical elephant skull with a broader trunk",
+          "tail short and flat for a sauropod"
+        ],
+        "confirmedNotBroken": [
+          "the 127 degree re-aim does not break the chain",
+          "the 16 deg/joint curl is sound along the shaft; the failure was confined to the tip",
+          "the rear tail is independent of the re-aimed chain",
+          "forelimb-taller is authored, 243 px against 200 px",
+          "feet coplanar in every provided state"
+        ],
+        "viewsNotCovered": "rear views, the elephant curled state entirely, brachiosaurus curled from a second camera, any wireframe or normals pass, any motion frames, a ground plane or scale reference, head close-ups, and an icon-scale render"
+      },
+      "correctionToAnEarlierClaimInThisRecord": "This record said the forward chain descends to ground level. In the donor bind data the chain tip is at y = 0.151 and the feet at y = 0.035, so the trunk ends slightly ABOVE the foot plane. Some trunk-to-ground clearance is faithful to the donor and is not a defect."
     }
   },
   "engineering": {
