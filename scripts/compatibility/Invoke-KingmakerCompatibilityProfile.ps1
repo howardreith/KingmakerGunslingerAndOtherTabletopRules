@@ -24,6 +24,7 @@ param(
         'observe-alternate-summoning-sources',
         'observe-alternate-summoning-blocked-family',
         'disposable-alternate-summoning-contracts',
+        'disposable-alternate-summoning-player-paths',
         'observe-favored-class-host-state',
         'observe-optional-mod-compatibility',
         'observe-class-blueprint-contracts',

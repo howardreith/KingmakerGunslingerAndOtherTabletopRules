@@ -222,6 +222,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// it registers nothing and is not read-only.</summary>
         internal const string DisposableAlternateSummoningContracts =
             "disposable-alternate-summoning-contracts";
+        /// <summary>Save-free native-area player paths: disposable Master
+        /// Summoner and Occultist casters levelled natively, casting through
+        /// their granted host roots' variant data.</summary>
+        internal const string DisposableAlternateSummoningPlayerPaths =
+            "disposable-alternate-summoning-player-paths";
         internal const string ObserveExpandedSummoningVariantMenu =
             "observe-expanded-summoning-variant-menu";
         internal const string DisposableExpandedSummoning =
@@ -237,6 +242,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool IsSummoningNativeProfile(string scenario)
         {
             return scenario == DisposableExpandedSummoningNativeProfile ||
+                scenario == DisposableAlternateSummoningPlayerPaths ||
                 scenario == DisposableExpandedSummoningSprint22NativeReview ||
                 scenario == DisposableExpandedSummoningSprint23NativeReview ||
                 scenario == DisposableExpandedSummoningSprint24NativeReview;
@@ -849,6 +855,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveAlternateSummoningSources,
                 ObserveAlternateSummoningBlockedFamily,
                 DisposableAlternateSummoningContracts,
+                DisposableAlternateSummoningPlayerPaths,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningNativeProfile,
