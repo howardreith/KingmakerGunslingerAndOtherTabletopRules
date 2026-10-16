@@ -115,6 +115,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # Sprint 25 fixtures had run at all. This executes the real dispatch
 # statements against a recorded child shim; it builds and launches nothing.
 & (Join-Path $PSScriptRoot 'Test-RepositoryValidatorDispatch.ps1')
+# The ported preflight has to be proved through the real gate dispatch, not
+# by a filename search: the gate must reach the child exactly once, a failing
+# child must stop everything downstream, and a scenario registered in only
+# one registry must be refused before any installation or save is touched.
+& (Join-Path $PSScriptRoot 'Test-GatePreflightIntegration.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint22InstalledStack.ps1')
 
 # Parse the guarded entry points with the installed PowerShell parser. This

@@ -70,6 +70,15 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 }
 
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
+# The scenario preflight was reachable only by hand, so the one test that
+# proves the C# catalog, the PowerShell metadata table and the documented
+# scenario union are the same set ran at no gate level - which is how a
+# scenario the guarded harness would refuse as "not allowlisted" passed a
+# full Sprint gate. It is source-only: no elevation, no install, no launch,
+# WhatIf alone, so it belongs beside the repository wrapper rather than in
+# a handoff instruction.
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'Test-RuntimeScenarioPreflight.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'Runtime scenario preflight failed.' }
 # The repository wrapper has just run. test-domain.ps1 would otherwise run it
 # again, which is the duplication the 2026-10-02 amendment called out: a
 # tranche gate for one immutable commit must validate the repository once.
