@@ -939,6 +939,19 @@
       "observedBody": "primaryHand = MastodonGore 2d8 (de42c58801037b84c9d992634ddd7220), additionalLimbs = EMPTY, additionalSecondaryLimbs = MastodonSlam 2d6 (c2ce7bc3559b2024ea91ddf5bb321f0a).",
       "whatThatConfirms": "Two Sprint 25 corrections are now backed by live evidence rather than by reading the printed entry. The slam really was in the secondary slot on the released creature, so it really was taking the native -5 and half Strength; and Endurance, Improved Bull Rush and the quadruped trip-defence really were absent from its six grants. The corrections fix measured defects, not suspected ones.",
       "stillMetadata": "This does not establish the corrected routine in play. The two-primary attack routine and the six grants still need native qualification on the Sprint 25 candidate."
+    },
+    "trampleArithmeticRepair": {
+      "foundUtc": "2026-10-16",
+      "kind": "source-contract inconsistency, not a reproduced native damage defect",
+      "theTwoFormulas": "GiantBodyRulesPolicy.TrampleStrengthContribution delegated to the lone-natural-weapon helper, which multiplies only a positive modifier and leaves zero and penalties at face value. UngulateRulesProfile.TrampleBonusFor multiplied unconditionally as liveStrengthModifier * 3 / 2 whenever LiveTrampleMath is set, and both Sprint 25 creatures select that mode. At a live modifier of -4 the first gives -4 and the second gives -6; they also disagree at -2, -3 and -5. They agree at every printed positive baseline, which is why it survived.",
+      "whichOneActuallyRan": "TrampleBonusFor. The damage path is ContextActionUngulateTrample line 122, damage.AddBonus(rules.TrampleBonusFor(liveStrengthModifier)). TrampleStrengthContribution is referenced only inside GiantBodyRulesPolicy.Validate at its two positive baselines and never reaches damage, so the record helper was the correct one and the runtime formula was the defect - the opposite of the convenient fix.",
+      "selectedRule": "One and a half times a Strength BONUS. A penalty is not a bonus, so zero and negatives stay at face value. This is what the frozen contract already stated in two places, and what the printed trample rule says.",
+      "implementation": "One authoritative implementation, UngulateRulesPolicy.OneAndAHalfStrength, on the shared carrier the damage path already reads. TrampleBonusFor and GoreBonus call it, and GiantBodyRulesPolicy.TrampleStrengthContribution delegates to it, so the record helper and the runtime are now literally the same code and cannot drift apart again.",
+      "changedDependency": "Triceratops is the one released creature that shares the live branch, so it shares this repair. Its printed positive values are unchanged - 8 gives 12 and 10 gives 15, the existing Sprint 23 assertions - and only the penalty case moves, to the rule the record always stated. The five frozen-math tramplers never take the live branch and are untouched; the test asserts they ignore a live modifier entirely.",
+      "controlsRun": "Focused run of 29 related tests, 0 failures: the new signed-Strength table plus the existing sprint11-trample-targets, sprint11-published-trample-contract, sprint23-trample-live-math and sprint15-stag-beetle-trample controls.",
+      "tableCovered": "modifiers 13, 10, 8, 7, 5, 1, 0, -1, -2, -3, -4 and -5 through the same UngulateRulesProfile the damage path consumes, each cross-checked against the record helper, plus live DC cases for both creatures at positive and negative live Strength.",
+      "notAuthorityFor": "a broad arithmetic refactor or a whole-roster replay. GoreBonus reads frozen positive Strengths, so no released attack value moves.",
+      "stillRequired": "native proof. This is a source-contract repair with table tests; it is not a measured in-play damage result."
     }
   },
   "suite": {
