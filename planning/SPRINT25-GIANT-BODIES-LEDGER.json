@@ -823,12 +823,13 @@
       ]
     },
     "remaining": [
-      "the painted Brachiosaurus icon, which is handed off and is the ONLY thing keeping the domain suite red: 7 failures, all one root cause, SummonIconCatalog.Validate() refusing 119 specs against 120 registered creatures. The 119->120 move lands with the real source and export and must not be moved before them.",
-      "the original bodies: geometry authored in Blender against the measured bind facts above, then the offline review renders, then the albedos inspected on actual UVs under lighting",
-      "original-body attachment, placement and navigation behaviour, native observers",
-      "native proof of the Brachiosaurus trample command in play, and of the composed twenty-foot uniform reach",
-      "the Elephant trample, blocked as recorded in elephantTrample above",
-      "the owner decision on Great Cleave and Greater Overrun, with the component evidence now attached in featAudit"
+      "the graybox motion prototype on the corrected anatomy: the Brachiosaurus neck and the Elephant trunk on the seven-joint forward chain, the tail on the five-joint rear chain, and the limb contacts, reviewed through idle, walk, turn, attack/trample and interruption/death transitions",
+      "full original Blender bodies once the prototype approach is proved, then the albedos inspected on their actual UVs under lighting at party-camera distance, plus clay, wireframe and action views",
+      "the painted Brachiosaurus icon, which is handed off; it is a registration and bootstrap dependency, so the production package is not native-ready while it is absent",
+      "original-body attachment, placement, navigation and confined-space behaviour, with native observers",
+      "the released-Elephant carrier census, then the evidence-justified identity append and the Elephant trample",
+      "native qualification of both composed creatures, including the Brachiosaurus trample command in play and the composed twenty-foot reach",
+      "the owner decision on Greater Overrun, with the exact failed path recorded in featAudit"
     ],
     "brachiosaurusTrample": {
       "status": "REGISTERED_NOT_QUALIFIED",
@@ -848,21 +849,51 @@
     "donorRig": {
       "measuredUtc": "2026-10-16T13:51:51Z",
       "evidence": "runtime-evidence/20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census",
-      "firstRunEvidence": "runtime-evidence/20261016T1335026699047Z-observe-expanded-summoning-sprint25-donor-census",
       "blueprint": "028cc6f46e7998f46855a33ffde89567 MastodonSummon",
       "prefab": "fe9f25fe62e0f3b49a13910a996470b2",
       "view": "Mastodon",
       "size": "Huge",
       "transforms": 150,
       "realSkinningJoints": 40,
-      "noLocatorsAmongSkinningJoints": true,
-      "tailChainJoints": 12,
-      "neckJoints": 1,
-      "headJoints": 1,
-      "trunkChainJoints": 0,
-      "carriesWell": "body, four limbs and tail. The twelve-joint tail chain (Tail0_M..Tail7_M plus Tail11/21/31/41_M) is what the 4d6 tail attack wants, and it is the same rig the released Elephant, Triceratops, Rhinoceros and Woolly Rhinoceros already ride.",
-      "measuredLimitation": "Exactly one neck joint and one head joint, so a long raised sauropod neck authored on this donor is a two-segment rigid structure rather than an articulated chain. There is no trunk chain at all. This is a measured property of the frozen donor, recorded BEFORE any geometry is authored against it, and it is not proposed as an accepted limitation - the four accepted limitations are unchanged and no new waiver is requested.",
-      "elephantTrunkIsPreExisting": "The released Elephant already rides this rig, so the absent trunk chain is a pre-existing condition of a shipped creature rather than a Sprint 25 regression."
+      "classificationCorrection": "The earlier record classified this rig from BONE NAMES and was wrong in the way that mattered most. It reported a single twelve-joint tail chain and no trunk chain, and concluded that a long sauropod neck on this donor could only be a rigid two-segment structure. Re-reading the captured world positions and the parent chain shows that conclusion does not hold.",
+      "spatialMethod": "The body axis is taken from LowerTorso to UpperTorso, which is unambiguous and points toward the front of the animal. Every joint is then placed by its signed distance along that axis from LowerTorso. Nothing in this record depends on a bone name.",
+      "twelveTailJointsAreTwoChains": {
+        "forwardChain": {
+          "joints": [
+            "Tail7_M",
+            "Tail11_M",
+            "Tail21_M",
+            "Tail31_M",
+            "Tail41_M",
+            "Tail5_M",
+            "Tail6_M"
+          ],
+          "count": 7,
+          "parentOfRoot": "Head",
+          "alongSpineRange": "+4.0371 .. +5.0558",
+          "headAlongSpine": "+4.0501",
+          "whatItActuallyIs": "The TRUNK. It is parented to Head and extends forward of it, and the engine hangs its own Locator_Head_02, _03, _04, _05 and _06 off these joints rather than off Head. A chain named Tail that is parented to the head and runs forward from it is not a tail.",
+          "allSkinned": true
+        },
+        "rearChain": {
+          "joints": [
+            "Tail0_M",
+            "Tail1_M",
+            "Tail2_M",
+            "Tail3_M",
+            "Tail4_M"
+          ],
+          "count": 5,
+          "parentOfRoot": "LowerTorso",
+          "alongSpineRange": "-0.3821 .. -1.0680",
+          "whatItActuallyIs": "The real tail. Parented to LowerTorso and running behind it.",
+          "allSkinned": true
+        }
+      },
+      "whatThisChangesForBrachiosaurus": "The rig does carry an articulated forward chain: seven skinned joints running forward from the head, as long as the whole UpperTorso-to-Head span. That is the natural carrier for a long sauropod neck, so the \"rigid pole neck\" finding is withdrawn. The approach it implies is a bounded retarget rather than new bones: author the neck along the forward chain with the creature head at the chain tip, leaving the native Head joint at the neck base. The existing five-joint rear chain stays with the real tail, which the 4d6 tail attack needs, so nothing is borrowed away from the attack.",
+      "whatThisChangesForElephant": "The released Elephant has a seven-joint articulated trunk after all. The earlier claim that there is no trunk chain is withdrawn.",
+      "stillToProve": "Spatial classification establishes what the chains ARE. It does not establish that the native animation drives them the way an authored neck needs, which is what the graybox motion prototype is for: idle, walk, turn, attack and trample, plus interruption and death transitions, before any final geometry or texture work.",
+      "notAnAcceptedLimitation": "No visual limitation is proposed and no waiver is requested. The four inherited limitations are unchanged."
     }
   },
   "suite": {
