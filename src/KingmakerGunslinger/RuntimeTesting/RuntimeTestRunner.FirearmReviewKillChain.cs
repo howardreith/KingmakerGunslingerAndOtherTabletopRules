@@ -139,6 +139,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             KillChainFinishActedAnimations(f, f.Actor);
         }
 
+        // Native AI decides at most once per 0.3-0.4 s of Unity time
+        // (AiBrainController NextCommandTime), not once per frame. An
+        // automatic-continuation window therefore waits for the first
+        // automatic command it sees to finish, and when none fires it lasts
+        // at least a frame minimum and two seconds of Unity time.
+        private const float KillChainAiWindowSeconds = 2f;
+        private static bool KillChainAiWindowOpen(int tick, int minFrames, float until, UnitAttack first)
+        {
+            return tick < 1200 && (first != null ? !first.IsFinished : tick < minFrames || Time.time < until);
+        }
+
         // Ordinary pistol, matching Rapid Reload and paper cartridges: the
         // existing Free reload. BAB 16 gives four native attacks.
         private static UnitEntityData[] KillChainArmPistol(FirearmInputFixture f, bool finalKill, bool noReplacement)
@@ -268,9 +279,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";orderTarget=" + (order?.Target as UnitEntityData)?.UniqueId + ";" + f.Describe();
 
                 // The next ordinary native cycle, distinct from the chain.
-                for (int tick = 0; tick < 60; tick++)
+                float until = Time.time + KillChainAiWindowSeconds;
+                UnitAttack firstNext = null;
+                for (int tick = 0; KillChainAiWindowOpen(tick, 60, until, firstNext); tick++)
                 {
                     KillChainPump(f, targets, ai);
+                    if (firstNext == null && trace.Shots.Count > chainPhaseShots) firstNext = trace.Shots[chainPhaseShots].Command;
                     trace.Sample(200 + tick, f, chain, targets);
                     yield return null;
                 }
@@ -499,7 +513,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 // Native automatic continuation with no further player input.
                 UnitAttack next = null;
-                for (int tick = 0; tick < 160 && (next == null || !next.IsFinished); tick++)
+                float until = Time.time + KillChainAiWindowSeconds;
+                for (int tick = 0; KillChainAiWindowOpen(tick, 160, until, next); tick++)
                 {
                     KillChainPump(f, targets, true);
                     if (allyAttack != null && !allyAttack.IsFinished) { allyFrame(false); KillChainFinishActedAnimations(f, ally); }
