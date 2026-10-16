@@ -33,7 +33,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] {
                 "mastodon",
                 "028cc6f46e7998f46855a33ffde89567",
-                DiscoverPrefab
+                // Measured by this census on 2026-10-16 and pinned: the
+                // 2026-10-16T13:35Z run discovered view 'Mastodon', Huge,
+                // 150 transforms and 40 real skinning joints. Discovery
+                // was a one-time step; an exact value is now asserted so
+                // a changed install fails instead of being re-measured.
+                "fe9f25fe62e0f3b49a13910a996470b2"
             },
             // Negative control: the already-measured Sprint 24 biped. Its
             // hierarchy is known, so if the capture cannot tell a two-legged
