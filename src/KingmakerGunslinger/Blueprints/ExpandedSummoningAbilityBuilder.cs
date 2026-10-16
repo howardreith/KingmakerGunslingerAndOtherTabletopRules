@@ -259,7 +259,7 @@ namespace KingmakerGunslinger.Blueprints
             return string.Empty;
         }
 
-        private static void AppendDynamicTemplate(
+        internal static void AppendDynamicTemplate(
             IEnumerable<BlueprintComponent> components,
             BlueprintBuff celestialTemplate, BlueprintBuff fiendishTemplate,
             BlueprintBuff celestialSmite, BlueprintBuff fiendishSmite,
@@ -334,7 +334,7 @@ namespace KingmakerGunslinger.Blueprints
                 "A templated summon requires at least one spawn branch.");
         }
 
-        private static void AppendAlignmentAction(
+        internal static void AppendAlignmentAction(
             IEnumerable<BlueprintComponent> components,
             SummonAlignmentMode mode)
         {
@@ -473,7 +473,7 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
-        private static int ReplaceSpawnUnits(IEnumerable<BlueprintComponent> components,
+        internal static int ReplaceSpawnUnits(IEnumerable<BlueprintComponent> components,
             BlueprintUnit unit)
         {
             int count = 0;

@@ -136,9 +136,10 @@ namespace KingmakerGunslinger.DomainTests
             var entries = Newtonsoft.Json.Linq.JObject.Parse(ledger)["entries"]
                 .Select(value => (string)value["symbol"]).ToArray();
             string[] appended = entries.Where(value =>
-                value == "KMG.Summoning.Unit.Tiger" || value.Contains(".Tiger.") ||
+                !AlternateSummoningTests.IsAdapterIdentity(value) &&
+                (value == "KMG.Summoning.Unit.Tiger" || value.Contains(".Tiger.") ||
                 value == "KMG.Summoning.Natural.Claw1d8" ||
-                value.StartsWith("KMG.Summoning.Special.Cheetah.", StringComparison.Ordinal)).ToArray();
+                value.StartsWith("KMG.Summoning.Special.Cheetah.", StringComparison.Ordinal))).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 8 must append exactly its own identities to the ledger.");
             Assertions.True(entries.Skip(entries.Length - ExpandedSummoningCorrectionTests.LaterLedgerIdentities -

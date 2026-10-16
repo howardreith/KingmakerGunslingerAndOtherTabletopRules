@@ -37,6 +37,15 @@ namespace KingmakerGunslinger.Blueprints
         private const string ExtraplanarSubtypeSymbol =
             "KMG.Summoning.Subtype.Extraplanar";
 
+        /// <summary>
+        /// The completely configured canonical set from this process's
+        /// registration. Alternate-source adapters compose from it; they read
+        /// it only after <c>BlueprintBootstrap.IsInitialized</c>, so a set left
+        /// by a rolled-back initialization is never consumed.
+        /// </summary>
+        internal static ExpandedSummoningBlueprintSet Registered
+        { get; private set; }
+
         internal static ExpandedSummoningBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry)
         {
@@ -144,6 +153,7 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar);
             ExpandedSummoningIconBuilder.Configure(registered);
             ApplyExtraplanarMarker(registered, extraplanar);
+            Registered = result;
             return result;
         }
 

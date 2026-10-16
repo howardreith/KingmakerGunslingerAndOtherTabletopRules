@@ -202,6 +202,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-sprint21-review";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
+        /// <summary>
+        /// Save-free, read-only observation of the alternate summoning
+        /// sources after first-update reconciliation: every caller family's
+        /// status, each adapter child against its caller template and its
+        /// canonical child, per-tier roster parity, the canonical inventory,
+        /// and a census of every other spawn graph and canonical-parent
+        /// reference. It casts nothing and cannot qualify character menus.
+        /// </summary>
+        internal const string ObserveAlternateSummoningSources =
+            "observe-alternate-summoning-sources";
         internal const string ObserveExpandedSummoningVariantMenu =
             "observe-expanded-summoning-variant-menu";
         internal const string DisposableExpandedSummoning =
@@ -826,6 +836,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningSprint20Review,
                 DisposableExpandedSummoningSprint21Review,
                 ObserveExpandedSummoningInventory,
+                ObserveAlternateSummoningSources,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningNativeProfile,

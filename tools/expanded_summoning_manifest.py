@@ -11,7 +11,17 @@ ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
 DONORS = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningDonorCatalog.cs"
 VISIBILITY = ROOT / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
+ADAPTERS = ROOT / "src/KingmakerGunslinger/Summoning/AlternateSummoningSourceCatalog.cs"
 MANIFEST = ROOT / "blueprints/blueprints.json"
+ADAPTER_ROW = re.compile(
+    r'I\("([A-Za-z0-9]+)", SummonFamily\.(Monster|NaturesAlly), '
+    r'"([0-9,]+)", AlternateSummoningPreservation\.(PerQuantity|TierOneOnly)\)')
+ADAPTER_PREFIX = "KMG.Summoning.Adapter."
+# Adapter GUIDs are name-based (RFC 4122 version 5) under this fixed namespace,
+# so allocating a symbol always yields the same GUID on any checkout. They are
+# still written once into the manifest; the runtime never derives an ID.
+ADAPTER_NAMESPACE = uuid.UUID("5f1c8e0b-6d63-4c55-9a41-2b7e3f9c0d18")
+ADAPTER_MILESTONE = "Expanded Summoning alternate sources"
 ROSTER = ROOT / "planning/EXPANDED-SUMMONING-ROSTER.md"
 ENTRY = re.compile(
     r'C\("([^"]+)","([^"]+)",(null|\d+),(true|false),(null|\d+)'
@@ -602,6 +612,111 @@ def planned():
     return rows
 
 
+def adapter_families(text=None):
+    """The alternate-summoning callers, read from their C# identity rows."""
+    if text is None:
+        text = ADAPTERS.read_text(encoding="utf-8")
+    rows = []
+    for key, family, tiers, preservation in ADAPTER_ROW.findall(text):
+        rows.append({
+            "key": key,
+            "family": "SM" if family == "Monster" else "SNA",
+            "tiers": [int(value) for value in tiers.split(",")],
+            "preservation": preservation,
+        })
+    if not rows or len({row["key"] for row in rows}) != len(rows):
+        raise SystemExit("Cannot read the alternate summoning identity rows")
+    return rows
+
+
+def quantities(tier):
+    return ["One"] + (["OneD3"] if tier >= 2 else []) + (
+        ["OneD4PlusOne"] if tier >= 3 else [])
+
+
+def adapter_planned(creatures=None, families=None):
+    """Every caller-specific identity, derived from the one central catalog.
+
+    A creature added to the catalog reaches every caller whose summon family
+    and tiers admit it, through exactly the ordinary spell's quantity rule.
+    No caller keeps a creature list, so nothing here is edited per sprint.
+    """
+    creatures = parsed_creatures() if creatures is None else creatures
+    families = adapter_families() if families is None else families
+    rows = []
+    for family in families:
+        field = "monster" if family["family"] == "SM" else "ally"
+        stem = ADAPTER_PREFIX + family["key"]
+        for tier in family["tiers"]:
+            for creature in creatures:
+                source = creature[field]
+                if source is None or source > tier:
+                    continue
+                count = "One" if source == tier else (
+                    "OneD3" if source == tier - 1 else "OneD4PlusOne")
+                rows.append((f"{stem}.Tier{tier}.{token(creature['key'])}.{count}",
+                             "BlueprintAbility"))
+            for native_family, native_tier, creature, count in NATIVE_EXPANDED_OPTIONS:
+                if native_family == family["family"] and native_tier == tier:
+                    rows.append((f"{stem}.NativeOption.Tier{tier}.{creature}.{count}",
+                                 "BlueprintAbility"))
+            preserved = quantities(tier) if family["preservation"] == "PerQuantity" \
+                else (["One"] if tier == 1 else [])
+            for count in preserved:
+                rows.append((f"{stem}.Preserved.Tier{tier}.{count}",
+                             "BlueprintAbility"))
+    if len({symbol for symbol, _ in rows}) != len(rows):
+        raise SystemExit("Alternate summoning adapter plan repeats a symbol")
+    return rows
+
+
+def adapter_guid(symbol):
+    return uuid.uuid5(ADAPTER_NAMESPACE, symbol).hex
+
+
+def allocate_adapters(manifest, plan):
+    """Append each missing adapter identity once, in plan order."""
+    existing = {entry["symbol"] for entry in manifest["entries"]}
+    used = {entry["guid"] for entry in manifest["entries"]}
+    added = 0
+    for symbol, planned_type in plan:
+        if symbol in existing:
+            continue
+        guid = adapter_guid(symbol)
+        if guid in used:
+            raise SystemExit(f"Adapter GUID collides with an existing identity: {symbol}")
+        used.add(guid)
+        manifest["entries"].append({
+            "symbol": symbol,
+            "guid": guid,
+            "plannedType": planned_type,
+            "status": "active",
+            "milestone": ADAPTER_MILESTONE,
+            "notes": "Caller-specific summon child projected from the central catalog.",
+        })
+        added += 1
+    return added
+
+
+def validate_adapters(manifest, plan):
+    by_symbol = {entry["symbol"]: entry for entry in manifest["entries"]}
+    planned_symbols = {symbol for symbol, _ in plan}
+    for symbol, planned_type in plan:
+        entry = by_symbol.get(symbol)
+        if entry is None:
+            raise SystemExit(f"Missing adapter identity: {symbol}; run with --allocate")
+        if entry["plannedType"] != planned_type or entry["status"] != "active":
+            raise SystemExit(f"Wrong adapter type/status for {symbol}")
+        if entry["guid"] != adapter_guid(symbol):
+            raise SystemExit(f"Adapter GUID is not the deterministic allocation: {symbol}")
+    stray = [entry["symbol"] for entry in manifest["entries"]
+             if entry["symbol"].startswith(ADAPTER_PREFIX) and
+             entry["symbol"] not in planned_symbols and entry["status"] == "active"]
+    if stray:
+        raise SystemExit(f"Active adapter identity has no catalog source: {stray[0]}")
+    print(f"Alternate summoning adapter manifest PASS: adapters={len(plan)}")
+
+
 def generated_roster(manifest):
     withheld = suppressed_keys()
     by_symbol = {entry["symbol"]: entry for entry in manifest["entries"]}
@@ -728,6 +843,7 @@ def main():
     parser.add_argument("--emit-roster", action="store_true")
     args = parser.parse_args()
     plan = planned()
+    adapters = adapter_planned()
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     existing = {entry["symbol"]: entry for entry in manifest["entries"]}
     if args.allocate:
@@ -747,6 +863,7 @@ def main():
                 "milestone": "Expanded Summoning",
                 "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
             })
+        allocate_adapters(manifest, adapters)
         write_lf(MANIFEST, json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     if args.activate:
         planned_symbols = {symbol for symbol, _ in plan}
@@ -756,6 +873,7 @@ def main():
                 entry["notes"] = "Registered in every feature-module state; live parent publication remains independently gated."
         write_lf(MANIFEST, json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     validate(manifest, plan)
+    validate_adapters(manifest, adapters)
     roster = generated_roster(manifest)
     if args.emit_roster:
         write_lf(ROSTER, roster)

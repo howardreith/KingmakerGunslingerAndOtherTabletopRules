@@ -898,6 +898,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunSummonSameTurnCompatibility();
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveAlternateSummoningSources)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading ||
+                        !AlternateSummoningSettled()) return;
+                    Complete(RunAlternateSummoningSourcesObservation());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeatherCatalog)
                 {
                     if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
