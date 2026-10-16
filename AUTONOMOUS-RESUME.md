@@ -1,3 +1,74 @@
+# Firearm RTWP continuation after a kill — ACCEPTED; v0.0.156 RELEASE IN PROGRESS
+
+The owner accepted the second review revision on 2026-10-15 and authorized
+merge and release as v0.0.156 (`docs/BUILD-AND-RELEASE.md`, "Current 0.0.156
+publication authorization").
+
+Release candidate `1620870007` (version bump on merged master `97c881ea84`):
+
+- Sprint-level `Build-Local` gate PASS (95 s): complete domain suite
+  2,615/2,615, version-aware repository validation dispatched to
+  `validate_firearm_continuation_release156.py`, the 37-assertion native
+  harness, exact-reference compile candidate, build-output, SoundBank and
+  strict standalone package validation (372 files). The first attempt failed
+  23 domain tests only because this worktree lacked the machine-local
+  `artifacts/inspection/bodyguard-native/Assembly-CSharp.il`; it was copied
+  from the main checkout (identical SHA-256 `33b4ad38…`) as in earlier
+  worktrees, and the unchanged commit then passed.
+- Guarded native `disposable-firearm-break-interruption` at 0.0.156, run
+  `20261016T0411002291236Z`: PASS 491/491 (78 CR-04 + 413 existing), on the
+  gate's exact bytes: package `5abb32fd950bd69e2fe546f610b63fe8596796e1a8ca9d476b4441ac33ac06e4`,
+  DLL `a5c4d6587af63102a4e1e1c96fdeca2d332913ad159f55e334aa2fca39b7770a`
+  (loaded module equal), MVID `5027a1b0-71cb-4ed2-9981-13eaec3ce5b7`. Live
+  mod restored from `20261016T0410533743786Z`, 254/254 identical to the
+  0.0.140 install; no save touched.
+- The publisher rebuilds from the merge commit and stamps that commit into the
+  DLL, so the released bytes will differ from this candidate; the publisher's
+  own run qualifies them.
+
+Branch `codex/firearm-rtwp-kill-retarget`, with master `31672515` (v0.0.155)
+merged in at `1d98af476b` and released master `97c881ea84` (records and
+publisher scripts only) at `ff8b5b8ade`. Production correction `1890ba06cc`;
+the second review changed only the CR-04 fixture/observer (reviewed checkpoint
+`acc620cb4c`); `1620870007` is the version bump and release candidate. Record:
+[docs/FIREARM-RTWP-KILL-CONTINUATION.md](docs/FIREARM-RTWP-KILL-CONTINUATION.md).
+Release v0.0.156 in progress; nothing permanently installed.
+
+Separate statuses:
+
+- Next-cycle stall after an explicit order's target dies: corrected, including
+  after Broken → Quick Clear → Normal and when the target dies in the reload
+  gap (guarded native evidence, save-free fixture).
+- Original report (later attacks of one full attack stop after a kill): not
+  reproduced in the save-free fixture. The fixture supplies animation timing,
+  so a live animation/timing or mod-stack cause is not excluded.
+- Owner RTWP check with live animation playback: not performed.
+
+Second review findings addressed:
+
+- Reload-gap kill is now a genuine selected-ally sword attack (native click,
+  melee damage, life controller) in the frame the reload ends, with the order
+  reload → pending resume → hit → death → resume observed. Run 5's lane is
+  relabelled as injected-state (direct damage assignment).
+- The continuation after the gap asserts the whole AI full attack B, C, D, D,
+  native transitions after each death, and exact ammunition/action accounting.
+- The longbow control is a four-attack smoke test; its pre-impact retarget
+  assertion is withdrawn.
+- Guarded run 6 (`f463ef6d56`) FAILED on a frame-bound next-cycle window
+  (native AI decides per 0.3–0.4 s of Unity time); the observer now waits by
+  Unity time.
+
+Evidence: focused gate 33/33; guarded run `20261016T0249284291547Z` 491/491
+PASS (78 CR-04 + 413 existing). DLL `ca23fe61…`, package `9ddf7a5f…`, MVID
+`829b84ad…`. Live mod restored byte-for-byte to the 0.0.140 install; no save
+touched.
+
+Next: owner review and the deferred real RTWP check with animation playback
+(record's "Owner check", three behaviours recorded separately). Open design
+questions are listed in the record.
+
+---
+
 # Sprint 24 theropod dinosaurs — v0.0.155 RELEASED / STOP
 
 Sprint 24 is **complete and released**. Stable v0.0.155 is published as Latest,

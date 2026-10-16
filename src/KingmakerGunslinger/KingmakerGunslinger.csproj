@@ -1321,6 +1321,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewReloadTurns.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewOwnership.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewMerge.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewKillChain.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmRestCompatibility.cs" />
     <Compile Include="RuntimeTesting\SummonSameTurnActivationScenario.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningVariantMenuObservation.cs" />

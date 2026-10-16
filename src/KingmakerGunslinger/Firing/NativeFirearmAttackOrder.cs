@@ -220,7 +220,37 @@ namespace KingmakerGunslinger.Firing
             string reason;
             if (actor != null && ExactEquippedFirearmResolver.TryResolve(
                 actor.Descriptor, out firearm, out reason))
-                Track(command, actor, firearm.Weapon, Ledger.Current(actor), false);
+                Track(command, actor, firearm.Weapon, CurrentForAutomatic(actor), false);
+        }
+        // Automatic work (native AI, auto-use reload) binds to the accepted
+        // order. Once its owner has finished against a defeated target, it has
+        // nothing left to continue; on a Normal firearm it completes and native
+        // combat proceeds as it would with an ordinary weapon. An unfinished
+        // owner always carries it: input prediction swaps actor.Commands, and
+        // a running sequence retargets natively on its own next tick.
+        private static FirearmAttackOrderLedger.Order CurrentForAutomatic(UnitEntityData actor)
+        {
+            var order = Ledger.Current(actor);
+            return order != null && Complete(actor, order) ? null : order;
+        }
+        internal static bool CompleteDefeated(Binding binding)
+        {
+            return binding != null && binding.Order != null && Complete(binding.Actor, binding.Order);
+        }
+        // Defeated means dead (or no longer a unit). A living target that is
+        // out of range, out of sight or briefly untargetable keeps its order.
+        // The condition is the exact equipped item's, never the epoch.
+        private static bool Complete(UnitEntityData actor, FirearmAttackOrderLedger.Order order)
+        {
+            var owner = order.Owner as UnitCommand;
+            var target = order.Target as UnitEntityData;
+            ExactEquippedFirearmContext firearm;
+            string reason;
+            var condition = actor != null && ExactEquippedFirearmResolver.TryResolve(
+                actor.Descriptor, out firearm, out reason) && ReferenceEquals(firearm.Weapon, order.Weapon)
+                ? firearm.EffectiveCondition : FirearmCondition.Unknown;
+            return Ledger.Complete(order, owner != null && !owner.IsFinished,
+                target == null || target.Descriptor == null || target.Descriptor.State.IsDead, condition);
         }
         internal static void CreatedAutomatic(UnitCommand command, UnitEntityData actor, UnitEntityData target)
         {
@@ -240,7 +270,7 @@ namespace KingmakerGunslinger.Firing
             UnitEntityData actor, ItemEntityWeapon weapon)
         {
             if (Get(command) == null)
-                Track(command, actor, weapon, constructing ?? Ledger.Current(actor),
+                Track(command, actor, weapon, constructing ?? CurrentForAutomatic(actor),
                     constructing != null);
         }
         internal static bool Submitting(UnitEntityData actor, UnitCommand command,
@@ -248,7 +278,6 @@ namespace KingmakerGunslinger.Firing
         {
             if (actor == null || command == null) return false;
             Initialized(command, actor);
-            var current = Ledger.Current(actor);
             Binding binding = Get(command);
             if (binding != null && binding.Preview) return true;
             var reload = command as UnitUseAbility;
@@ -260,6 +289,7 @@ namespace KingmakerGunslinger.Firing
                 string reason;
                 if (ExactEquippedFirearmResolver.TryResolve(actor.Descriptor, out firearm, out reason))
                 {
+                    var current = CurrentForAutomatic(actor);
                     // An AI reload may be the very first stale operation after
                     // the break. Bind it even when there is no accepted order,
                     // so suppression rejects it before native action spend.
@@ -274,7 +304,7 @@ namespace KingmakerGunslinger.Firing
             if (binding != null && !binding.Proposal &&
                 (binding.Epoch != Ledger.Epoch(actor, binding.Weapon) ||
                  Ledger.IsSuppressed(actor, binding.Weapon) ||
-                 (binding.Epoch != 0 && binding.Order == null) ||
+                 (binding.Order == null && Ledger.RequiresOrder(actor, binding.Weapon)) ||
                  (binding.Order != null && (!Ledger.IsCurrent(binding.Order) ||
                     !ReferenceEquals(binding.Target, binding.Order.Target) ||
                     (command is UnitAttack && !ReferenceEquals(((UnitAttack)command).Target, binding.Order.Target)))))) return false;
@@ -376,7 +406,7 @@ namespace KingmakerGunslinger.Firing
             bool valid = !binding.Proposal &&
                 binding.Epoch == Ledger.Epoch(binding.Actor, binding.Weapon) &&
                 !Ledger.IsSuppressed(binding.Actor, binding.Weapon) &&
-                (binding.Epoch == 0 || binding.Order != null) &&
+                (binding.Order != null || !Ledger.RequiresOrder(binding.Actor, binding.Weapon)) &&
                 (binding.Order == null || (Ledger.IsCurrent(binding.Order) &&
                     ReferenceEquals(binding.Target, binding.Order.Target) &&
                     ReferenceEquals(command.Target, binding.Order.Target))) &&
@@ -428,7 +458,6 @@ namespace KingmakerGunslinger.Firing
         internal static bool MayResume(Binding binding)
         {
             return binding != null && !binding.Proposal && !binding.Preview &&
-                (binding.Epoch == 0 || binding.Order != null) &&
                 (binding.Order == null || ReferenceEquals(binding.Target, binding.Order.Target)) && Ledger.MayResume(
                 binding.Actor, binding.Weapon, binding.Epoch,
                 binding.Submission, binding.Order);
