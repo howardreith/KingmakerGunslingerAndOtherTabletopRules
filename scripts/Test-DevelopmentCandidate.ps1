@@ -246,7 +246,10 @@ try {
     New-Item -ItemType Directory -Path (Join-Path $fixtureScripts 'compatibility') | Out-Null
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1') `
         -Destination (Join-Path $fixtureScripts 'compatibility')
-    '{"Id":"KingmakerGunslinger","Version":"0.0.156"}' | Set-Content (Join-Path $fixture 'Info.json')
+    # The fixture carries the active version, which the copied Build-Local pins.
+    $fixtureVersion = (Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot '..\Info.json') | ConvertFrom-Json).Version
+    ([ordered]@{ Id = 'KingmakerGunslinger'; Version = $fixtureVersion } | ConvertTo-Json -Compress) |
+        Set-Content (Join-Path $fixture 'Info.json')
     "artifacts/`n" | Set-Content (Join-Path $fixture '.gitignore')
     $env:KMG_DEVELOPMENT_FIXTURE_TRACE = Join-Path $boundary 'build-trace.jsonl'
     @'
@@ -295,7 +298,7 @@ sys.exit(3)
     $trace = @(Get-Content -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE | ForEach-Object { $_ | ConvertFrom-Json })
     $fixtureCommit = (& git -C $fixture rev-parse HEAD).Trim()
     $fixtureLayout = Get-KmgDevelopmentCandidateLayout -RepositoryRoot $fixture -Purpose $purpose `
-        -Commit $fixtureCommit -Id 'KingmakerGunslinger' -Version '0.0.156'
+        -Commit $fixtureCommit -Id 'KingmakerGunslinger' -Version $fixtureVersion
     $wrappers = @($trace | Where-Object event -eq 'repository-wrapper')
     $runs = @($trace | Where-Object event -eq 'test-domain')
     $builds = @($trace | Where-Object event -eq 'exact-build')
