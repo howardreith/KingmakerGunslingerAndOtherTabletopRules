@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "AUDIT_HARDENED_ELEPHANT_COMPLETED_ASSET_HANDOFF_REQUIRED",
+  "status": "BRACHIOSAURUS_BUILT_AND_TRAMPLED_ICON_AND_BODIES_OUTSTANDING",
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
     "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
@@ -772,9 +772,9 @@
       "printedFeatsCarried": "6 of 6"
     },
     "brachiosaurusProfile": {
-      "status": "DEFERRED_WITH_ITS_BUILDER",
+      "status": "LANDED_WITH_ITS_BUILDER",
       "why": "a profile whose weapon key cannot resolve makes blueprint initialization throw and roll back every registration, so shipping the row without the builder would be a runtime landmine rather than an honest gap. The row and its builder land together.",
-      "pinnedByTest": "expanded-summoning.sprint25-elephant-profile asserts the row is absent on purpose",
+      "pinnedByTest": "expanded-summoning.sprint25-elephant-profile now asserts the POSITIVE contract. The tripwire that asserted the row was absent on purpose has been replaced, which is what it existed for.",
       "frozenContract": {
         "hitDieClass": "Animal",
         "hitDice": 18,
@@ -813,16 +813,57 @@
         "omittedGreaterOverrun": "audited separately from the Sprint 22 and Sprint 23 Improved Overrun finding, because it is a different feat and that finding is not authority to drop this one. No Greater Overrun carrier exists; the earlier reviews recorded that the native Overrun family carries an identity with prerequisites but no mechanical consumer. No general overrun system is substituted.",
         "evidenceNeededToClose": "a bounded native library observation of whether the installed 2.1.7b library exposes concrete Great Cleave and Greater Overrun feats with summon-reachable consumers",
         "supersededBy": "featAudit above, which reads the native alias table and census evidence rather than counting profile-vocabulary uses"
-      }
+      },
+      "landedUtc": "2026-10-16",
+      "landedWith": [
+        "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.GiantBodies.cs: the 4d6 tail off the same native animated-tail donor the released Stegosaurus tail uses, its own weapon type, the species unit type and the chassis",
+        "the natural builder hook, the BrachiosaurusTail4d6 weapon key branch, the unit.Type branch, the BrachiosaurusChassis fact branch and the exact Perception-only rank allocation",
+        "the profile row itself, with seven recorded deviations",
+        "the trample command, on the Sprint 23 qualified carrier"
+      ]
     },
     "remaining": [
-      "the Sprint 25 natural builder: tail weapon from a native animated-tail donor at 4 x D6, its own weapon type carrying twenty-foot reach, the species unit type, and the chassis",
-      "the trample ability for both creatures on the Sprint 23 d8 and d6 support, with both command registrations in every interrupt and duplicate-response guard",
-      "the Brachiosaurus profile row, landing with its builder",
+      "the painted Brachiosaurus icon, which is handed off and is the ONLY thing keeping the domain suite red: 7 failures, all one root cause, SummonIconCatalog.Validate() refusing 119 specs against 120 registered creatures. The 119->120 move lands with the real source and export and must not be moved before them.",
+      "the original bodies: geometry authored in Blender against the measured bind facts above, then the offline review renders, then the albedos inspected on actual UVs under lighting",
       "original-body attachment, placement and navigation behaviour, native observers",
-      "the Mastodon donor capture, then geometry and the offline review renders",
-      "the painted icon, which is handed off"
-    ]
+      "native proof of the Brachiosaurus trample command in play, and of the composed twenty-foot uniform reach",
+      "the Elephant trample, blocked as recorded in elephantTrample above",
+      "the owner decision on Great Cleave and Greater Overrun, with the component evidence now attached in featAudit"
+    ],
+    "brachiosaurusTrample": {
+      "status": "REGISTERED_NOT_QUALIFIED",
+      "carrier": "ConfigureUngulateTrample, the Sprint 23 qualified path/contact/response carrier, so it inherits that carrier’s interrupt, duplicate-response, path and leave-combat guards rather than a second copy of them. No new rig-discovery or trample framework was built.",
+      "derivation": "Nothing is a literal from the printed line. One and a half times the Strength modifier on 2d6 is 2d6+19 at Strength 37, and 10 + half the hit dice + the Strength modifier is DC 32 at eighteen hit dice. Both are asserted against GiantBodyRulesPolicy in the domain suite.",
+      "goreSlotsCarryTheTail": "This creature has no gore: its single natural attack is the 4d6 tail. The gore slots carry the tail dice so the charge arithmetic has honest inputs, exactly as the released Giant Stag Beetle carries its bite there. Trample damage does not read them - TrampleBonus derives from the Strength modifier alone.",
+      "grantsNothingElse": "no powerful charge and no Stampede, and no released trampler changed",
+      "stillRequired": "native proof of the command in play. Registered is not qualified."
+    },
+    "elephantTrample": {
+      "status": "BLOCKED_ON_AN_IDENTITY_APPEND_THAT_IS_ITSELF_GATED",
+      "why": "GiantBodyRulesPolicy.ElephantTrampleSymbol is a reserved NAME, not a registered identity: there is no row for it in blueprints.json and none in the identity catalog. Registering the command needs a BlueprintAbility identity, and appending one is refused by three independent gates that pin this sprint’s append at exactly its nine Brachiosaurus-only identities - validate_expanded_summoning_sprint25157.validate_append, expanded_summoning_manifest.py, and the Sprint 25 ledger test.",
+      "whatTheProjectSaysUnlocksIt": "GiantBodyRulesPolicy records the condition in its own words: the Elephant symbols stay reserved \"pending the bounded native census of its real production carriers\", and \"whatever the bounded native census proves missing is appended then, with this count moved in the same commit\".",
+      "whyTheCensusJustRunDoesNotUnlockIt": "The 2026-10-16 census measured the donor rig and the two open feats. It did not census the released Elephant’s own production carriers, so the stated precondition is still unmet. Extending the research candidate to observe them is the next step, and it was not taken here rather than appending an identity the gates refuse.",
+      "notDone": "No gate was disabled, no identity was appended, and the Elephant profile deviation still states plainly that its trample is not registered."
+    },
+    "donorRig": {
+      "measuredUtc": "2026-10-16T13:51:51Z",
+      "evidence": "runtime-evidence/20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census",
+      "firstRunEvidence": "runtime-evidence/20261016T1335026699047Z-observe-expanded-summoning-sprint25-donor-census",
+      "blueprint": "028cc6f46e7998f46855a33ffde89567 MastodonSummon",
+      "prefab": "fe9f25fe62e0f3b49a13910a996470b2",
+      "view": "Mastodon",
+      "size": "Huge",
+      "transforms": 150,
+      "realSkinningJoints": 40,
+      "noLocatorsAmongSkinningJoints": true,
+      "tailChainJoints": 12,
+      "neckJoints": 1,
+      "headJoints": 1,
+      "trunkChainJoints": 0,
+      "carriesWell": "body, four limbs and tail. The twelve-joint tail chain (Tail0_M..Tail7_M plus Tail11/21/31/41_M) is what the 4d6 tail attack wants, and it is the same rig the released Elephant, Triceratops, Rhinoceros and Woolly Rhinoceros already ride.",
+      "measuredLimitation": "Exactly one neck joint and one head joint, so a long raised sauropod neck authored on this donor is a two-segment rigid structure rather than an articulated chain. There is no trunk chain at all. This is a measured property of the frozen donor, recorded BEFORE any geometry is authored against it, and it is not proposed as an accepted limitation - the four accepted limitations are unchanged and no new waiver is requested.",
+      "elephantTrunkIsPreExisting": "The released Elephant already rides this rig, so the absent trunk chain is a pre-existing condition of a shipped creature rather than a Sprint 25 regression."
+    }
   },
   "suite": {
     "registered": 2622,
@@ -853,29 +894,37 @@
         "evidenceBacked": true
       },
       "GreatCleave": {
-        "nativeIdentityPresent": "UNKNOWN",
-        "nativeGuid": null,
-        "componentsAndGrantedAbility": "unknown; not observed",
-        "implementedConsumerAndTrigger": "unknown; not observed",
-        "projectAlias": "absent. Cleave IS aliased to d809b6c4ff2aaff4fa70d712a70f7d7b, so the gap is specific to Great Cleave rather than to the Cleave family.",
-        "reachableForTheseCreatures": "unknown",
-        "disposition": "OPEN; needs the bounded native observation before any decision",
+        "nativeIdentityPresent": true,
+        "nativeGuid": "cc9c862ef2e03af4f89be5088851ea35",
+        "nativeName": "GreatCleaveFeature",
+        "nativeType": "Kingmaker.Blueprints.Classes.BlueprintFeature",
+        "componentsAndGrantedAbility": "Exactly two components, both prerequisites: PrerequisiteFeature(CleaveFeature d809b6c4ff2aaff4fa70d712a70f7d7b) and PrerequisiteStatValue(Strength 13). It carries no AddFacts and grants no ability. The contrast is the measured point: CleaveFeature in the same census does carry AddFacts, granting CleaveAction 6447d104a2222c14d9c9b8a36e4eb242.",
+        "implementedConsumerAndTrigger": "The only consumers this census observed are AI-side: GreatCleaveAiAction 4f9cd89dbe6ee6f41b7db1320efe032c (BlueprintAiCastSpell), with CleaveMonsterBrain 5eab98840b79382429d2e122337b626e and SprigganCleaveBrain 764625bf837205c4eb42d7b46a82454b. Those drive native monster brains, not a player-controlled summon’s granted fact.",
+        "projectAlias": "absent. Cleave IS aliased to d809b6c4ff2aaff4fa70d712a70f7d7b, so the gap was always specific to Great Cleave rather than to the Cleave family.",
+        "reachableForTheseCreatures": "The identity is reachable - it can be granted. What is NOT established is that granting it would do anything for this creature.",
+        "limitOfThisEvidence": "A blueprint-graph census proves what the blueprint carries. It does NOT prove that native cleave resolution never queries the fact directly in code. \"No components\" is therefore not the same claim as \"no effect\", and this record does not make the stronger claim.",
+        "disposition": "RESOLVED as to existence: the engine does implement a Great Cleave identity, so \"the engine does not implement it\" is withdrawn and \"this project never mapped it\" is the true statement. The carry/omit decision stays OPEN and is the owner’s, per this audit’s own remainingDecision, with the evidence above attached. Nothing is granted and no limitation is accepted by recording this.",
         "notAutomaticallyOwnerAccepted": true,
-        "coveredBySprint24Census": false,
-        "censusCheck": "the Sprint 24 census result contains no Cleave observation at all"
+        "evidenceBacked": true,
+        "evidence": "runtime-evidence/20261016T1335026699047Z-observe-expanded-summoning-sprint25-donor-census"
       },
       "GreaterOverrun": {
-        "nativeIdentityPresent": "UNKNOWN for this specific feat",
-        "nativeGuid": null,
-        "componentsAndGrantedAbility": "unknown; not observed",
-        "implementedConsumerAndTrigger": "Sprint 22 and Sprint 23 recorded that the native Overrun family carries an identity with prerequisites but no mechanical consumer. That finding is about IMPROVED Overrun and is explicitly not carried over to this different feat.",
-        "projectAlias": "absent; no Overrun alias of any kind exists in the builder table",
-        "reachableForTheseCreatures": "unknown",
-        "disposition": "OPEN; needs the bounded native observation, audited separately",
+        "nativeIdentityPresent": true,
+        "nativeGuid": "ee24c02cc68c4c9b9b54ebef9f9f8133",
+        "nativeName": "GreaterOverrunFeature",
+        "nativeType": "Kingmaker.Blueprints.Classes.BlueprintFeature",
+        "componentsAndGrantedAbility": "Six components, and unlike Great Cleave two of them are mechanical: ManeuverProvokeAttack(ManeuverType=Overrun) and ManeuverBonus(Type=Overrun, Bonus=2). The remaining four are prerequisites: Strength 13, BaseAttackBonus 6, PrerequisiteFeature(PowerAttackFeature 9972f33f977fc724c838e59641b2fca5) and PrerequisiteFeature(ImprovedOverrunFeature 978c9bf7b08342619f68d0b01bf40fa9).",
+        "implementedConsumerAndTrigger": "The Overrun maneuver itself, which this project already drives: ConfigureUngulateTrample clones native OverrunAbility 1a3b471ecea51f7439a946b23577fd70 for every shipped trample. A maneuver bonus on Overrun therefore has a real consumer on these creatures rather than a hypothetical one. The census also recorded ImprovedOverrunFeature carrying FactSinglify granting OverrunNotTrampleAbility 89f484f6a56c44a4874de4048a7996ec, plus ManeuverBonus and ManeuverDefenceBonus on Overrun.",
+        "projectAlias": "absent; no Overrun alias of any kind exists in the builder native fact table.",
+        "reachableForTheseCreatures": "Brachiosaurus meets the stat prerequisites on its frozen numbers (Strength 37, base attack 13) and carries PowerAttack. It does not carry Improved Overrun, which is a prerequisite of the native feat.",
+        "correctionToAnEarlierRecord": "This audit previously carried forward a Sprint 22/23 characterisation that the native Overrun family has \"an identity with prerequisites but no mechanical consumer\". For IMPROVED Overrun that is contradicted here: it carries FactSinglify, ManeuverBonus and ManeuverDefenceBonus. The description does fit GREAT CLEAVE, which is the feat that really has prerequisites and nothing else. The earlier wording was right to refuse to carry the claim across feats; the census now shows which feat it actually describes.",
+        "limitOfThisEvidence": "The polarity of ManeuverProvokeAttack is not established by its name: whether the component makes an Overrun provoke or marks it as not provoking was not measured, and the printed feat removes provocation. Mapping is now possible; asserting that the mapping is faithful needs that one further bounded check.",
+        "disposition": "RESOLVED as to existence and mechanics: the engine implements this feat and it carries real maneuver components, so the omission is not forced by the engine. The carry/omit decision stays OPEN and is the owner’s, pending the provocation-polarity check and the missing Improved Overrun prerequisite. Nothing is granted by recording this.",
         "notAutomaticallyOwnerAccepted": true,
         "keptSeparateFromImprovedOverrunLimitation": true,
-        "coveredBySprint24Census": false,
-        "noGeneralOverrunSystemSubstituted": true
+        "noGeneralOverrunSystemSubstituted": true,
+        "evidenceBacked": true,
+        "evidence": "runtime-evidence/20261016T1335026699047Z-observe-expanded-summoning-sprint25-donor-census"
       }
     },
     "netEffect": {
@@ -887,9 +936,27 @@
       "brachiosaurusOpen": [
         "GreatCleave",
         "GreaterOverrun"
-      ]
+      ],
+      "brachiosaurusOpenResolvedAsToExistence": [
+        "GreatCleave",
+        "GreaterOverrun"
+      ],
+      "brachiosaurusOpenCarryDecision": "still open and owner-owned; both feats exist in the engine, so neither omission can be attributed to a missing engine capability"
     },
-    "remainingDecision": "Only if the bounded native observation shows a concrete feat with no reachable consumer does an omission become a candidate limitation, and that would be an owner decision with the evidence attached rather than an automatic acceptance."
+    "remainingDecision": "Only if the bounded native observation shows a concrete feat with no reachable consumer does an omission become a candidate limitation, and that would be an owner decision with the evidence attached rather than an automatic acceptance.",
+    "boundedNativeObservation": {
+      "performedUtc": "2026-10-16T13:35:28Z",
+      "scenario": "observe-expanded-summoning-sprint25-donor-census",
+      "status": "PASS",
+      "loadedModVersion": "0.0.156",
+      "gitCommit": "09d18c1c959bbe4cc990061fbd9c481dd13ea1ec",
+      "durationMilliseconds": 139528,
+      "evidence": "runtime-evidence/20261016T1335026699047Z-observe-expanded-summoning-sprint25-donor-census",
+      "restoration": "live tree restored to its exact pre-run fingerprint 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "method": "detached read-only native blueprints at mod load; no spawn, save, actor, asset mutation or gameplay event. The two open feats were enumerated from the installed library by term and their component graphs read, so these answers are about engine capability rather than about this project’s own profile vocabulary, which is the exact error the earlier audit made.",
+      "candidatesEnumerated": 16,
+      "researchCandidateNeverPublished": true
+    }
   },
   "validationDispatchDefect": {
     "status": "REPAIRED",
@@ -918,5 +985,22 @@
       "buildsOrLaunchesNothing": true
     },
     "doesNotAffect": "the seven outstanding missing-icon domain failures, which remain failed for their own unmet requirement"
+  },
+  "domainSuite": {
+    "total": 2622,
+    "failures": 7,
+    "allOneRootCause": "SummonIconCatalog.Validate(): Brachiosaurus is registered, so IsRegisteredSomewhere yields 120 expected icon keys against 119 pinned specs. The project’s own rule is that a registered-and-withheld creature still carries its icon, so this is the painted icon dependency and nothing else.",
+    "failingTests": [
+      "expanded-summoning.icon-catalog",
+      "expanded-summoning.icon-manifest-files",
+      "expanded-summoning.sprint3-ledger-icons",
+      "expanded-summoning.sprint4-ledger-icons",
+      "expanded-summoning.sprint5-ledger-icons",
+      "expanded-summoning.sprint6-ledger",
+      "expanded-summoning.sprint8-ledger-icons"
+    ],
+    "noNewFailuresFromThisChange": "Verified by running the full suite before and after. The builder change first introduced one new failure, sprint14-printed-skill-totals, because Brachiosaurus allocates exact Perception-only ranks; that is now exempted the same way every prior sprint exempts its own exact-ranks creatures, and Elephant is deliberately NOT exempted because it still takes the generic default.",
+    "repositoryValidator": "PASS, exit 0, including the dispatch regression",
+    "focusedGate": "PASS, exit 0"
   }
 }

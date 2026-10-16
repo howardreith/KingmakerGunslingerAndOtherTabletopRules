@@ -270,16 +270,58 @@ namespace KingmakerGunslinger.DomainTests
             NaturalSummonProfile elephant = ExpandedSummoningNaturalProfiles.For(
                 GiantBodyRulesPolicy.ElephantKey);
 
-            // The new creature has no profile row yet, and that is deliberate
-            // rather than forgotten. Its weapon key cannot resolve in the
-            // natural builder until that builder exists, and a profile whose
-            // weapon does not resolve makes blueprint initialization throw and
-            // roll back every registration. The frozen adult contract is kept
-            // in GiantBodyRulesPolicy and the sprint ledger meanwhile, and the
-            // profile row lands in the same change as its builder.
-            Assertions.True(ExpandedSummoningNaturalProfiles.All.All(value =>
-                    value.Key != GiantBodyRulesPolicy.BrachiosaurusKey),
-                "The withheld creature has no profile row until its builder exists.");
+            // The profile row has landed, together with the builder that
+            // resolves its weapon key. This replaces the tripwire that held
+            // its place: the row was absent on purpose, because a profile
+            // whose weapon cannot resolve makes blueprint initialization
+            // throw and roll back every registration, so the row and its
+            // carriers had to be one change. The contract asserted now is
+            // the positive one.
+            NaturalSummonProfile brachiosaurus =
+                ExpandedSummoningNaturalProfiles.For(
+                    GiantBodyRulesPolicy.BrachiosaurusKey);
+            Assertions.Equal("BrachiosaurusTail4d6",
+                brachiosaurus.PrimaryWeapon,
+                "The frozen primary weapon key is the one the builder resolves.");
+            Assertions.Equal(GiantBodyRulesPolicy.BrachiosaurusHitDice,
+                brachiosaurus.HitDice, "Eighteen racial hit dice.");
+            Assertions.Equal(GiantBodyRulesPolicy.BrachiosaurusStrength,
+                brachiosaurus.Strength, "Printed Strength.");
+            Assertions.Equal("Gargantuan", brachiosaurus.Size,
+                "The frozen adult size.");
+            Assertions.Equal(0, brachiosaurus.AdditionalWeapons.Count,
+                "A single natural attack, which is what the lone-weapon "
+                    + "Strength routine depends on.");
+            Assertions.Equal(0,
+                brachiosaurus.AdditionalSecondaryWeapons.Count,
+                "Nothing on this creature is a secondary natural attack.");
+            Assertions.True(brachiosaurus.Facts.Contains(
+                    "BrachiosaurusChassis"),
+                "The chassis carrying the final five feet of reach is carried.");
+            Assertions.True(brachiosaurus.Facts.Contains("WeaponFocusTail"),
+                "Weapon Focus (tail) is carried; the selected +23 depends on it.");
+            // Measured present in the installed library by the 2026-10-16
+            // census - GreatCleaveFeature cc9c862e... and
+            // GreaterOverrunFeature ee24c02c... - so the omission is a
+            // recorded owner decision rather than a missing engine
+            // capability. Neither may be carried without that decision.
+            foreach (string open in new[] { "GreatCleave", "GreaterOverrun" })
+                Assertions.False(brachiosaurus.Facts.Contains(open),
+                    "Open printed feat is not silently carried: " + open);
+            Assertions.True(brachiosaurus.Deviations.Any(value =>
+                    value.Contains("Registered is not qualified")),
+                "The trample is registered and still refuses to claim "
+                    + "native qualification, which is a separate thing.");
+            Assertions.True(UngulateRulesPolicy.All.Any(value =>
+                    value.Key == GiantBodyRulesPolicy.BrachiosaurusKey &&
+                    value.TrampleDiceCount == GiantBodyRulesPolicy
+                        .BrachiosaurusTrampleDiceCount &&
+                    value.TrampleDieSides == GiantBodyRulesPolicy
+                        .BrachiosaurusTrampleDieSize &&
+                    value.TrampleBonus == 19 && value.TrampleDc == 32 &&
+                    !value.HasPowerfulCharge && !value.Stampede),
+                "The trample derives 2d6+19 and DC 32 from the frozen "
+                    + "Strength and hit dice, and grants nothing else.");
 
             // Elephant: the Sprint 25 correction. Both printed attacks are
             // primary, so neither takes the secondary -5 and half Strength.

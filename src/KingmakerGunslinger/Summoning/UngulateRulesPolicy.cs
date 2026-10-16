@@ -189,7 +189,23 @@ namespace KingmakerGunslinger.Summoning
             // Its Strength and racial-HD contributions are read live; the
             // older five rows retain their frozen released arithmetic.
             new UngulateRulesProfile("triceratops", 14, 26, 2, 10,
-                1, 8, 4, 10, 16, false, true, true)
+                1, 8, 4, 10, 16, false, true, true),
+            // Sprint 25 Brachiosaurus, on the same qualified
+            // path/contact/response carrier. Nothing here is a literal
+            // from the printed trample line and the derivation lands on it
+            // exactly: one and a half times the Strength modifier on 2d6
+            // is 2d6+19 at Strength 37, and ten plus half the hit dice
+            // plus the Strength modifier is DC 32 at eighteen hit dice.
+            //
+            // The gore slots carry the tail dice. This creature has no
+            // gore at all - its single natural attack is a 4d6 tail - and
+            // the slots exist so the charge arithmetic has honest inputs,
+            // exactly as the Giant Stag Beetle carries its bite there.
+            // Trample damage does not read them: TrampleBonus derives from
+            // the Strength modifier alone. No powerful charge and no
+            // Stampede, which belongs to the herd ungulates.
+            new UngulateRulesProfile("brachiosaurus", 18, 37, 4, 6,
+                2, 6, 0, 0, 0, false, true)
         };
 
         internal static IReadOnlyList<UngulateRulesProfile> All
@@ -200,8 +216,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 6 || Values.Select(value => value.Key)
-                    .Distinct(StringComparer.Ordinal).Count() != 6 ||
+            if (Values.Length != 7 || Values.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count() != 7 ||
                 Values.Any(value => value.HitDice < 1 || value.Strength < 1 ||
                     value.GoreDiceCount < 1 || value.GoreDieSides < 1 ||
                     !value.HasTrample && !value.HasPowerfulCharge))

@@ -690,6 +690,18 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Summoning.Unit.Triceratops",
                 ArmoredDinosaurRulesPolicy.TriceratopsTrampleSymbol,
                 ArmoredDinosaurRulesPolicy.TriceratopsKey);
+            // Sprint 25. Brachiosaurus registers on the same qualified
+            // carrier, so it inherits the interrupt, duplicate-response,
+            // path and leave-combat guards rather than a second copy of
+            // them. Elephant does NOT register here: its trample symbol is
+            // a reserved name with no allocated blueprint identity, and
+            // the append that would allocate one is gated on a bounded
+            // native census of the released creature’s own production
+            // carriers, which has not been run.
+            ConfigureUngulateTrample(library, bySymbol,
+                "KMG.Summoning.Unit.Brachiosaurus",
+                GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
+                GiantBodyRulesPolicy.BrachiosaurusKey);
             ConfigureMephitVariants(library, bySymbol);
         }
 

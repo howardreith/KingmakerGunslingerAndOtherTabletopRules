@@ -503,6 +503,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureAnkylosaurus(library, bySymbol);
             ConfigureArmoredDinosaurs(library, bySymbol);
             ConfigureTheropods(library, bySymbol);
+            ConfigureGiantBodies(library, bySymbol);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -1543,6 +1544,19 @@ namespace KingmakerGunslinger.Blueprints
                     ranks.BaseHitPoints = TheropodRulesPolicy
                         .DeinonychusBaseRacialHitPoints;
                 }
+                else if (profile.Key ==
+                    GiantBodyRulesPolicy.BrachiosaurusKey)
+                {
+                    // Perception is the only printed skill: 18 ranks + 3
+                    // class + 1 Wisdom + 6 Skill Focus = 28, and no racial
+                    // bonus. Half the Skill Focus is the chassis's.
+                    ranks.MobilityRanks = 0;
+                    ranks.PerceptionRanks = GiantBodyRulesPolicy
+                        .BrachiosaurusPerceptionRanks;
+                    ranks.StealthRanks = 0;
+                    ranks.BaseHitPoints = GiantBodyRulesPolicy
+                        .BrachiosaurusBaseRacialHitPoints;
+                }
                 else if (profile.Key == TheropodRulesPolicy.TyrannosaurusKey)
                 {
                     ranks.MobilityRanks = TheropodRulesPolicy
@@ -1670,6 +1684,9 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == TheropodRulesPolicy.TyrannosaurusKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     TheropodRulesPolicy.TyrannosaurusUnitTypeSymbol);
+            else if (profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol);
             // Both theropods borrow only the Lizardfolk rig. Its playable
             // Human race carrier otherwise adds a selected +2 Constitution
             // and keeps Medium combat-size arithmetic on a unit whose native
@@ -1764,6 +1781,9 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "TyrannosaurusChassis"
                     ? Require<BlueprintFeature>(bySymbol,
                         TheropodRulesPolicy.TyrannosaurusChassisSymbol)
+                    : fact == "BrachiosaurusChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantBodyRulesPolicy.BrachiosaurusChassisSymbol)
                     : fact == "TyrannosaurusPowerfulBite"
                     ? Require<BlueprintFeature>(bySymbol,
                         TheropodRulesPolicy.TyrannosaurusPowerfulBiteSymbol)
@@ -1912,6 +1932,8 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, TheropodRulesPolicy.DeinonychusTalonSymbol);
             if (key == "TyrannosaurusBite4d6") return Require<BlueprintItemWeapon>(
                 bySymbol, TheropodRulesPolicy.TyrannosaurusBiteSymbol);
+            if (key == "BrachiosaurusTail4d6") return Require<BlueprintItemWeapon>(
+                bySymbol, GiantBodyRulesPolicy.BrachiosaurusTailSymbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }
