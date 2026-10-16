@@ -88,7 +88,7 @@
       "authority": "owner order of 2026-10-16, conditional on this audit passing",
       "adoptedUtc": "2026-10-16T04:40:00Z",
       "reviewedPath": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
-      "reviewedSha256Fresh": "5e055ae122cee76d7e640f142c232880beffcdc9dae71a72e4b319b136d167c1",
+      "reviewedSha256Fresh": "f08d4da7834e63bbf4277274b014f388c93a40e41845a38d88ce2c8065f47dd7",
       "freshMeasurementMatchesReportedCurrent": true,
       "byteForByteCopy": {
         "path": "C:/Dev/KingmakerGunslingerLab/safety/Push-KingmakerGunslinger.ps1.sprint25-allowlist-20261015",
@@ -148,8 +148,8 @@
         "method": "the ACTUAL wrapper is executed against a controlled fake Git placed first on PATH; every requested argv is captured and asserted",
         "remoteContacted": false,
         "realPushPerformed": false,
-        "cases": 21,
-        "passed": 21,
+        "cases": 23,
+        "passed": 23,
         "permittedRootUnderTest": "C:/Dev/KingmakerGunslingerLab/wt/s25, exercised through the wrapper's existing lab-boundary authorization rather than by widening permission to arbitrary repositories",
         "accepted": [
           "sprint25 product branch in permitted worktree",
@@ -191,18 +191,27 @@
           "update-ref",
           "*"
         ],
-        "acceptedCasesAssertedExactRefspec": "HEAD:refs/heads/<the exact allow-listed branch>"
+        "acceptedCasesAssertedExactRefspec": "HEAD:refs/heads/<the exact allow-listed branch>",
+        "refusalBeforeMutation": {
+          "asserted": true,
+          "how": "every case declares its exact permitted push count; precondition refusals declare zero, the accepted branch declares one, and the post-attempt failures declare exactly one attempted push followed by the failure",
+          "negativeControl": "a deliberately bad wrapper that pushes and only then reports the expected refusal is run through the same assertions and must be rejected, which is what stops the zero-push check passing vacuously"
+        },
+        "exactArgvAssertion": "the accepted push is compared as a complete ordinal argument vector including element count and case, not a case-insensitive substring of a joined string",
+        "argvBoundariesPreserved": "the fake Git records each invocation as a JSON array",
+        "noOtherMutatingCommand": "every recorded verb must be one of the six read-only verbs or the single accounted push; forbidden arguments are matched exactly",
+        "fakeGitResolutionVerified": "the harness refuses to run unless git resolves to the fake, so an absolute real-Git fallback cannot turn the audit into a live-fire exercise"
       },
       "observations": [
         {
-          "id": "allow-list-comparison-is-case-insensitive",
-          "severity": "latitude, not unsafe",
-          "detail": "PowerShell's -notcontains compares strings case-insensitively, so a local branch differing from an authorized name only in letter case is accepted. The destination is still refs/heads/<that exact local name>, still a non-force push of HEAD, and no unrelated branch, tag namespace or deletion is reachable. Pinned by a test so it is measured rather than discovered."
+          "id": "allow-list-comparison-was-case-insensitive",
+          "severity": "resolved 2026-10-16",
+          "detail": "Previously a branch differing only in letter case was accepted and pushed. The hardened harness demonstrated it, and the -cnotcontains edit closed it. Two cases now pin the refusal."
         },
         {
           "id": "zero-line-branch-output-gives-a-less-clear-error",
           "severity": "cosmetic, fails closed",
-          "detail": "If git emitted no line at all for branch --show-current the wrapper would fail on a null method call instead of its detached-HEAD message. Real git prints an empty line, which reaches the intended refusal. It refuses either way, so no rule is weakened."
+          "detail": "If git emitted no line at all for branch --show-current the wrapper would fail on a null method call instead of its detached-HEAD message. Real git prints an empty line, which reaches the intended refusal. It refuses either way."
         }
       ],
       "unexplainedOrUnsafeExecutableRule": false,
@@ -212,7 +221,40 @@
         "make a byte-preserving targeted change",
         "inspect the diff",
         "prove that removing the inserted byte span reproduces the pre-edit hash"
-      ]
+      ],
+      "supersededReviewedSha256": "5e055ae122cee76d7e640f142c232880beffcdc9dae71a72e4b319b136d167c1",
+      "caseSensitiveBranchHardening": {
+        "authority": "owner order of 2026-10-16 section 2B, a narrow containment hardening",
+        "appliedUtc": "2026-10-16T06:33:00Z",
+        "why": "Git refs differing only in case can be distinct refs, so a differently cased spelling is not the authorized ref. The previous comparison used PowerShell -notcontains, which is case-insensitive, and the hardened harness demonstrated the wrapper accepting and pushing a case variant before the change.",
+        "change": "one comparison operator: -notcontains became -cnotcontains on the branch check",
+        "scope": "branch membership only. The origin, qualified-baseline ancestry, repository-root and destructive-operation restrictions are untouched, and the Windows path comparisons remain case-insensitive because file paths are not Git refs.",
+        "beforeSha256": "5e055ae122cee76d7e640f142c232880beffcdc9dae71a72e4b319b136d167c1",
+        "afterSha256": "f08d4da7834e63bbf4277274b014f388c93a40e41845a38d88ce2c8065f47dd7",
+        "byteDelta": 1,
+        "changedLines": 1,
+        "exactDiff": {
+          "line": 174,
+          "removed": "if ($allowedBranches -notcontains $branch) {",
+          "added": "if ($allowedBranches -cnotcontains $branch) {"
+        },
+        "byteDiscipline": {
+          "newBackupTaken": "C:/Dev/KingmakerGunslingerLab/safety/Push-KingmakerGunslinger.ps1.pre-case-sensitive-20261016T063253Z",
+          "backupVerifiedIdenticalToPreEditLive": true,
+          "olderSafetyCopyNotOverwritten": true,
+          "encodingPreserved": "no BOM before or after",
+          "lineEndingsPreserved": "269 LF, 0 CRLF before and after",
+          "removingTheInsertedByteReproducesThePreEditHash": true,
+          "note": "This is the protocol the earlier incident lacked, so this edit is reversible by construction rather than by search."
+        },
+        "testedBeforeInstall": true,
+        "proposalAuditCases": 23,
+        "reAuditedAfterInstall": true,
+        "installedAuditCases": 23,
+        "allowListUnchanged": 63,
+        "canonicalBranchesStillAccepted": true,
+        "caseVariantsNowRefusedBeforeAnyPush": true
+      }
     }
   },
   "sourceContract": {
@@ -707,13 +749,13 @@
       "fix": "the slam moves from additionalSecondaryWeapons to additionalWeapons",
       "alsoCarried": {
         "TripDefenseFourLegs": "the printed +4 quadruped defence against trip, which the printed CMD 30 / 34 versus trip requires; it was absent though 27 other profile references use this exact carrier",
-        "ImprovedBullRush": "previously recorded as unproven here, but Sprint 23 qualified the exact concrete carrier for Triceratops, so the omission no longer held"
+        "ImprovedBullRush": "previously recorded as unproven here, but Sprint 23 qualified the exact concrete carrier for Triceratops, so the omission no longer held",
+        "Endurance": "corrected: Sprint 25 had wrongly recorded this as unproven. It has been aliased to a native feat since Sprint 4, resolved in the Sprint 24 bounded native census, and ships on the released Tyrannosaurus. All six printed Elephant feats are now carried."
       },
-      "stillOmitted": {
-        "Endurance": "no proven concrete carrier in the project vocabulary; none invented"
-      },
+      "stillOmitted": {},
       "testCorrected": "ExpandedSummoningIdentityCatalogTests pinned the slam as the single secondary attack, which is what encoded the defect; it now pins the printed routine",
-      "identityUntouched": "key, tiers, eight roots, execution children and ordering unchanged; the real Mastodon profile is untouched"
+      "identityUntouched": "key, tiers, eight roots, execution children and ordering unchanged; the real Mastodon profile is untouched",
+      "printedFeatsCarried": "6 of 6"
     },
     "brachiosaurusProfile": {
       "status": "DEFERRED_WITH_ITS_BUILDER",
@@ -755,7 +797,8 @@
         ],
         "omittedGreatCleave": "no Great Cleave carrier exists in the vocabulary although Cleave does; audited separately from Cleave and not invented",
         "omittedGreaterOverrun": "audited separately from the Sprint 22 and Sprint 23 Improved Overrun finding, because it is a different feat and that finding is not authority to drop this one. No Greater Overrun carrier exists; the earlier reviews recorded that the native Overrun family carries an identity with prerequisites but no mechanical consumer. No general overrun system is substituted.",
-        "evidenceNeededToClose": "a bounded native library observation of whether the installed 2.1.7b library exposes concrete Great Cleave and Greater Overrun feats with summon-reachable consumers"
+        "evidenceNeededToClose": "a bounded native library observation of whether the installed 2.1.7b library exposes concrete Great Cleave and Greater Overrun feats with summon-reachable consumers",
+        "supersededBy": "featAudit above, which reads the native alias table and census evidence rather than counting profile-vocabulary uses"
       }
     },
     "remaining": [
@@ -774,5 +817,64 @@
     "allFailuresOneRootCause": "the icon catalog wants its 120th entry, which needs the handed-off painting",
     "notGreen": true,
     "note": "2,615 of 2,622 passing is not green and is not described as green. The seven new Sprint 25 cases establish their selected contracts; they do not establish creature behaviour."
+  },
+  "featAudit": {
+    "performedUtc": "2026-10-16T06:45:00Z",
+    "methodCorrection": "The earlier Sprint 25 audit counted carriers in the project PROFILE vocabulary only. That establishes missing project mappings, not missing native engine capability, and it produced a wrong conclusion. This audit reads the builder native alias table, the released profiles and the Sprint 24 bounded native census evidence.",
+    "contradictionResolved": {
+      "claim": "Sprint 25 recorded that no proven Endurance carrier existed",
+      "counterEvidence": "docs/SPRINT24-COVERAGE.md, Bounded native census decision, lists Endurance among the facts that resolved; the census runtime-result records \"Diehard, Endurance and bleed absence remain reportable findings\" at status PASS; ExpandedSummoningNaturalBuilder.cs has mapped \"Endurance\" to native 54ee847996c25cd4ba8773d7b8555174 since Sprint 4; and the released Tyrannosaurus profile carries it.",
+      "resolution": "the Sprint 25 claim was wrong and is withdrawn; Elephant now carries Endurance",
+      "censusEvidence": "runtime-evidence/20261014T0546181325834Z-observe-expanded-summoning-sprint24-theropod-census"
+    },
+    "feats": {
+      "Endurance": {
+        "nativeIdentityPresent": true,
+        "nativeGuid": "54ee847996c25cd4ba8773d7b8555174",
+        "componentsAndGrantedAbility": "native feat blueprint resolved in the Sprint 24 census; components not separately re-read this sprint",
+        "implementedConsumerAndTrigger": "the released Tyrannosaurus ships it through the same alias, so the grant path is exercised",
+        "projectAlias": "present since Sprint 4",
+        "reachableForTheseCreatures": true,
+        "disposition": "CARRIED by Elephant from this sprint",
+        "evidenceBacked": true
+      },
+      "GreatCleave": {
+        "nativeIdentityPresent": "UNKNOWN",
+        "nativeGuid": null,
+        "componentsAndGrantedAbility": "unknown; not observed",
+        "implementedConsumerAndTrigger": "unknown; not observed",
+        "projectAlias": "absent. Cleave IS aliased to d809b6c4ff2aaff4fa70d712a70f7d7b, so the gap is specific to Great Cleave rather than to the Cleave family.",
+        "reachableForTheseCreatures": "unknown",
+        "disposition": "OPEN; needs the bounded native observation before any decision",
+        "notAutomaticallyOwnerAccepted": true,
+        "coveredBySprint24Census": false,
+        "censusCheck": "the Sprint 24 census result contains no Cleave observation at all"
+      },
+      "GreaterOverrun": {
+        "nativeIdentityPresent": "UNKNOWN for this specific feat",
+        "nativeGuid": null,
+        "componentsAndGrantedAbility": "unknown; not observed",
+        "implementedConsumerAndTrigger": "Sprint 22 and Sprint 23 recorded that the native Overrun family carries an identity with prerequisites but no mechanical consumer. That finding is about IMPROVED Overrun and is explicitly not carried over to this different feat.",
+        "projectAlias": "absent; no Overrun alias of any kind exists in the builder table",
+        "reachableForTheseCreatures": "unknown",
+        "disposition": "OPEN; needs the bounded native observation, audited separately",
+        "notAutomaticallyOwnerAccepted": true,
+        "keptSeparateFromImprovedOverrunLimitation": true,
+        "coveredBySprint24Census": false,
+        "noGeneralOverrunSystemSubstituted": true
+      }
+    },
+    "netEffect": {
+      "elephantPrintedFeats": 6,
+      "elephantCarried": 6,
+      "elephantOmitted": 0,
+      "brachiosaurusPrintedFeats": 9,
+      "brachiosaurusCarriedWhenItsProfileLands": 7,
+      "brachiosaurusOpen": [
+        "GreatCleave",
+        "GreaterOverrun"
+      ]
+    },
+    "remainingDecision": "Only if the bounded native observation shows a concrete feat with no reachable consumer does an omission become a candidate limitation, and that would be an owner decision with the evidence attached rather than an automatic acceptance."
   }
 }
