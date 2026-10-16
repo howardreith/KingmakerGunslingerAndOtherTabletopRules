@@ -181,7 +181,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableExpandedSummoningSprint24NativeReview)
                     { _summoningProfileStage=4; return; }
-                    _summoningProfileResult = RunDisposableExpandedSummoning(false);
+                    _summoningProfileResult = _request.Scenario == RuntimeTestScenarioCatalog
+                            .DisposableAlternateSummoningPlayerPaths
+                        ? RunAlternateSummoningPlayerPaths()
+                        : RunDisposableExpandedSummoning(false);
                     BeginSummoningProfileReset();
                     return;
                 }

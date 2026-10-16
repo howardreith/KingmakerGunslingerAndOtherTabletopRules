@@ -386,7 +386,8 @@ namespace KingmakerGunslinger.DomainTests
             int later = Sprint21RulesTests.AppendedLedgerIdentities +
                 Sprint22RulesTests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
-                ExpandedSummoningSprint24Tests.AppendedLedgerIdentities;
+                ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                AlternateSummoningTests.AppendedLedgerIdentities;
             if (symbols.Count < AppendedLedgerIdentities + later)
                 throw new InvalidOperationException(
                     "The ledger parsed to " + symbols.Count + " symbols.");

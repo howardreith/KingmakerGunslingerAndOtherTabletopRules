@@ -8,7 +8,10 @@ param(
     [string]$GameDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string[]]$LogPath = @(),
     [string[]]$ScreenshotPath = @(),
-    [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
+    [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
+    # The development purpose of -PackagePath, when it is a development
+    # candidate. The evidence then says so, and qualification refuses it.
+    [string]$DevelopmentPurpose
 )
 
 Set-StrictMode -Version Latest
@@ -63,8 +66,12 @@ if (([int][bool]$PackagePath + [int][bool]$QualifiedElementalRaces114DeploymentM
         [int][bool]$QualifiedElementalRaces117DeploymentManifestPath) -gt 1) {
     throw 'Current-source and qualified-legacy evidence package authorities are mutually exclusive.'
 }
+if ($DevelopmentPurpose -and -not $PackagePath) {
+    throw 'A development purpose describes an explicit development package.'
+}
 if ($PackagePath) {
-    $buildManifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
+    $buildManifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
+        -DevelopmentPurpose $DevelopmentPurpose
     $builtHash = $buildManifest.dllSha256
     $packageVersion = $buildManifest.version
     $packageSha256 = $buildManifest.packageSha256
@@ -103,6 +110,13 @@ $manifest = [ordered]@{
     qualifiedLegacyRuntimeOverlay = $qualifiedLegacyRuntimeOverlay
     files = $records
     exclusions = @('saves', 'credentials', 'browser data', 'unrelated user files')
+}
+if ($DevelopmentPurpose) {
+    $manifest.candidateKind = 'development'
+    $manifest.releaseQualification = $false
+    $manifest.developmentPurpose = $DevelopmentPurpose
+    $manifest.developmentReceiptSha256 = Get-KmgSha256 -Path (
+        Get-KmgDevelopmentReceiptPath -PackagePath $buildManifest.packagePath)
 }
 $manifestPath = Join-Path $destination 'runtime-evidence.json'
 $manifest | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath $manifestPath -Encoding UTF8

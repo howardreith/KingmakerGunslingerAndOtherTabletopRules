@@ -259,7 +259,7 @@ namespace KingmakerGunslinger.Blueprints
             return string.Empty;
         }
 
-        private static void AppendDynamicTemplate(
+        internal static void AppendDynamicTemplate(
             IEnumerable<BlueprintComponent> components,
             BlueprintBuff celestialTemplate, BlueprintBuff fiendishTemplate,
             BlueprintBuff celestialSmite, BlueprintBuff fiendishSmite,
@@ -334,7 +334,7 @@ namespace KingmakerGunslinger.Blueprints
                 "A templated summon requires at least one spawn branch.");
         }
 
-        private static void AppendAlignmentAction(
+        internal static void AppendAlignmentAction(
             IEnumerable<BlueprintComponent> components,
             SummonAlignmentMode mode)
         {
@@ -425,6 +425,11 @@ namespace KingmakerGunslinger.Blueprints
         { return value == SummonMultiplicity.One ? "" : value ==
             SummonMultiplicity.OneD3 ? " (1d3)" : " (1d4+1)"; }
 
+        /// <summary>The same deep clone for any action or value object.</summary>
+        internal static object DeepCloneComponentObject(object source)
+        { return DeepClone(source,
+            new Dictionary<object, object>(ReferenceComparer.Instance)); }
+
         internal static BlueprintComponent DeepCloneComponent(BlueprintComponent source)
         { return (BlueprintComponent)DeepClone(source,
             new Dictionary<object, object>(ReferenceComparer.Instance)); }
@@ -473,7 +478,7 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
-        private static int ReplaceSpawnUnits(IEnumerable<BlueprintComponent> components,
+        internal static int ReplaceSpawnUnits(IEnumerable<BlueprintComponent> components,
             BlueprintUnit unit)
         {
             int count = 0;

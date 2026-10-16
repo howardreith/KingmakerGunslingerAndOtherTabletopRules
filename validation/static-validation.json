@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.156-firearm-rtwp-kill-continuation",
+  "milestone": "0.0.157-alternate-summoning-sources",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.156",
+  "version": "0.0.157",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2527,5 +2527,29 @@
     "guardedNativeFixtureQualified": true,
     "originalInFullAttackSymptomReproduced": false,
     "ownerLiveRtwpCheckPerformed": false
+  },
+  "alternateSummoningSources157": {
+    "releaseVersion": "0.0.157",
+    "releaseInformationalVersion": "0.0.157-alternate-summoning-sources",
+    "baseStableVersion": "0.0.156",
+    "change": "Alternate summoning sources: the published Expanded Summoning roster projected onto the direct class summon callers (native Monster Tactician; with Call of the Wild 1.14.4c Summoner, Master Summoner, Occultist, Naturalist, Feral Hunter and Preservationist)",
+    "appendedIdentities": 3746,
+    "appendedNamespace": "KMG.Summoning.Adapter.",
+    "releasedIdentityChanges": 0,
+    "adapterFamilies": 7,
+    "registeredLogicalPlacements": 1093,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1122,
+    "guardedNativeQualified": true,
+    "ownerManualChecksOpen": [
+      "hotbar-binding",
+      "saved-shortcut-cold-load",
+      "turn-based-round",
+      "scroll-required-menu"
+    ],
+    "maintainerFixturesOpen": [
+      "blocked-family-shortcut-load",
+      "grapple-swallow-reset-on-reload"
+    ]
   }
 }

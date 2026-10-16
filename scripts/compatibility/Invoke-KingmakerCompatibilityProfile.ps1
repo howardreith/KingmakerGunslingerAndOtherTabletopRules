@@ -21,6 +21,10 @@ param(
         'mod-load-smoke',
         'observe-expanded-summoning-sprint22-contracts',
         'observe-expanded-summoning-sprint24-theropod-census',
+        'observe-alternate-summoning-sources',
+        'observe-alternate-summoning-blocked-family',
+        'disposable-alternate-summoning-contracts',
+        'disposable-alternate-summoning-player-paths',
         'observe-favored-class-host-state',
         'observe-optional-mod-compatibility',
         'observe-class-blueprint-contracts',
@@ -120,6 +124,11 @@ param(
     [switch]$ExpandedSummoningDisabled,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
+    # The one development purpose of an explicit development candidate. Valid
+    # only with -ReuseInstalledArtifact and its exact -PackagePath; the
+    # profile then stages, deploys and records it as development, never as a
+    # release or qualification candidate.
+    [string]$DevelopmentPurpose,
     [string]$ReferenceRoot = 'C:\Dev\KingmakerGunslingerLab\examples',
     [string]$KingmakerInstallDir =
         'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
@@ -139,6 +148,13 @@ if ($ExpandedSummoningDisabled -and
 }
 if (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath)) {
     throw 'A profile transaction requires a fresh deployment record; an external -DeploymentManifestPath cannot survive restoration/profile changes.'
+}
+$developmentCandidate = -not [string]::IsNullOrEmpty($DevelopmentPurpose)
+if ($developmentCandidate) {
+    [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
+    if (-not $ReuseInstalledArtifact -or [string]::IsNullOrWhiteSpace($PackagePath)) {
+        throw 'A development candidate profile requires -ReuseInstalledArtifact and its exact -PackagePath; no profile was entered.'
+    }
 }
 $liveModDirectory = Join-Path $KingmakerInstallDir 'Mods\KingmakerGunslinger'
 $expectedInstall = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker'
@@ -289,8 +305,15 @@ if (-not $PackagePath) { $PackagePath = Get-KmgCompatibilityDefaultPackage $root
 if ((Get-KmgCompatibilityPackageVersion $PackagePath) -cne $expectedVersion) {
     throw 'Compatibility package version does not match the current repository; no profile was entered.'
 }
-$profileCandidate = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
+$candidateReadArguments = @{ PackagePath = $PackagePath; RepositoryRoot = $root }
+if ($developmentCandidate) { $candidateReadArguments.DevelopmentPurpose = $DevelopmentPurpose }
+$profileCandidate = Read-KmgBuildLocalManifest @candidateReadArguments
 $candidateGit = Get-KmgGitState -RepositoryRoot $root
+if ($developmentCandidate) {
+    Assert-KmgDevelopmentSourceBinding -Receipt $profileCandidate -Git $candidateGit `
+        -SourceStateSha256 (Get-KmgSourceStateFingerprint -RepositoryRoot $root) `
+        -ExpectedVersion $expectedVersion
+}
 if ($profileCandidate.commit -cne $candidateGit.Commit -or
     $profileCandidate.sourceStateSha256 -cne (Get-KmgSourceStateFingerprint -RepositoryRoot $root)) {
     throw 'Compatibility candidate must match the unchanged product worktree before profile entry.'
@@ -421,10 +444,12 @@ try {
     # Enter staged this candidate in a fresh profile. Create its own validated
     # deployment receipt under the transaction lease, after profile settings.
     # The outer finally still restores the exact original profile intake.
-    & (Join-Path $root 'scripts\Deploy-Local.ps1') -PackagePath $PackagePath `
-        -LiveModDirectory $liveModDirectory -RuntimeLease $compatRuntimeLease -WhatIf -Confirm:$false
+    $deployArguments = @{ PackagePath = $PackagePath; LiveModDirectory = $liveModDirectory
+        RuntimeLease = $compatRuntimeLease }
+    if ($developmentCandidate) { $deployArguments.DevelopmentPurpose = $DevelopmentPurpose }
+    & (Join-Path $root 'scripts\Deploy-Local.ps1') @deployArguments -WhatIf -Confirm:$false
     $profileDeploymentPath = & (Join-Path $root 'scripts\Deploy-Local.ps1') `
-        -PackagePath $PackagePath -LiveModDirectory $liveModDirectory -RuntimeLease $compatRuntimeLease -PassThru -Confirm:$false
+        @deployArguments -PassThru -Confirm:$false
     foreach ($name in $Scenario) {
         $before = [DateTime]::UtcNow
         $arguments = @{
@@ -460,6 +485,7 @@ try {
         $arguments.ReuseInstalledArtifact = $true
         $arguments.DeploymentManifestPath = $profileDeploymentPath
         $arguments.PackagePath = $PackagePath
+        if ($developmentCandidate) { $arguments.DevelopmentPurpose = $DevelopmentPurpose }
         if ($name -in @('musket-master-mechanics-and-starter',
             'disposable-expanded-summoning',
             'working-save-smoke', 'disposable-brown-fur-native-cast',
@@ -654,7 +680,7 @@ $favoredSettingsEvidencePath = Join-Path $StateRoot `
     completeModsRestorationVerified = [bool]$state.restorationVerified
 } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath `
     $favoredSettingsEvidencePath -Encoding UTF8
-[pscustomobject][ordered]@{
+$profileReceipt = [ordered]@{
     profileId = $ProfileId
     transactionRunId = $runId
     restorationVerified = $true
@@ -674,3 +700,10 @@ $favoredSettingsEvidencePath = Join-Path $StateRoot `
     featureSettingsEvidencePath = $featureSettingsEvidencePath
     runtimeResults = @($results)
 }
+if ($developmentCandidate) {
+    $profileReceipt.candidateKind = 'development'
+    $profileReceipt.releaseQualification = $false
+    $profileReceipt.developmentPurpose = $DevelopmentPurpose
+    $profileReceipt.packageSha256 = $profileCandidate.packageSha256
+}
+[pscustomobject]$profileReceipt
