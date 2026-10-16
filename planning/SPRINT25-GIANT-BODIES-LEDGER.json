@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "IN_PROGRESS_SOURCE_CONTRACT_FROZEN_PLACEMENT_DECIDED",
+  "status": "REGISTERED_WITHHELD_BLOCKED_ON_ORIGINAL_ART",
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
     "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
@@ -465,5 +465,49 @@
     ],
     "sprint26Started": false
   },
-  "nextAction": "Implement under the decided structure. Brachiosaurus: three Nature's Ally roots only, suppressed until qualification, identities allocated once and append-only, lone-tail 1.5x Strength routine with tail +23, trample 2d6+19 DC 32 separate from the ordinary tail. Elephant: preserve the released identity and all eight existing roots while completing gore +16 (2d8+10), slam +16 (2d6+10), 10-foot reach and trample 2d8+15 DC 25 on the x1 multi-natural routine, reusing Sprint 23 d8 trample support without powerful charge. Audit the shared trample contract and the native feat consumers, then the bounded quadruped rig census and original visuals."
+  "nextAction": "Owner decision on the original art. Once the Brachiosaurus icon and both creature albedos exist, the icon catalog pin moves to 120, the icon manifest gains its row, the static metadata's originalBodyAssetsAuthored flips to true with its pinned ART set, and the remaining seven assertions pass. The mechanical work that does not depend on art continues meanwhile: the blueprint builders for the tail, tail type, chassis and trample, the natural profiles for both creatures, the shared trample contract and native feat-consumer audit, and Elephant's production-carrier check against the frozen entry - which also decides whether its three reserved identities are needed.",
+  "registration": {
+    "complete": true,
+    "commit": "a7b1481a8bf5caaf290d66d9c3522ecd58d29862",
+    "creature": "brachiosaurus",
+    "withheld": true,
+    "appendedIdentities": 9,
+    "ledgerEntries": 3158,
+    "versionSurface": "0.0.156",
+    "staticValidator": "tools/validate_expanded_summoning_sprint25156.py",
+    "repositoryValidation": "PASS exit 0, stage=hidden, bodiesAuthored=false",
+    "domainSuite": {
+      "registered": 2616,
+      "failures": 7,
+      "sprint25CasesAdded": 6,
+      "sprint25CasesPassing": 6,
+      "allFailuresOneRootCause": true
+    }
+  },
+  "openBlocker": {
+    "id": "sprint25-original-art-not-authored",
+    "status": "OPEN_NEEDS_OWNER",
+    "raisedUtc": "2026-10-16T00:05:00Z",
+    "what": "Section 13 requires original project-authored geometry and painting. The icon catalog derives from the creature catalog, so registering Brachiosaurus makes it want a hundred-and-twentieth entry, and that entry needs an original 128x128 RGBA creature painting plus its source painting, both hashed, exactly like the 119 that exist.",
+    "required": [
+      "assets-source/original-icons/expanded-summoning/sources/brachiosaurus.png",
+      "assets/game/icons/expanded-summoning/brachiosaurus.png",
+      "assets/sprint25-giant-bodies/brachiosaurus-mesh.json",
+      "assets/sprint25-giant-bodies/brachiosaurus-albedo.png",
+      "assets/sprint25-giant-bodies/elephant-mesh.json",
+      "assets/sprint25-giant-bodies/elephant-albedo.png"
+    ],
+    "whatCanBeAuthoredHere": "The mesh JSON is deterministic structured geometry of the kind Sprint 24 shipped and can be authored programmatically.",
+    "whatCannotBeAuthoredHere": "The 128x128 icon and the 512x512 albedo are paintings. The 119 existing icons were produced with image generation or Blender renders, and no such capability is available in this session. Nothing was substituted, approximated or procedurally faked.",
+    "failuresLeftStanding": [
+      "expanded-summoning.icon-catalog",
+      "expanded-summoning.icon-manifest-files",
+      "expanded-summoning.sprint3-ledger-icons",
+      "expanded-summoning.sprint4-ledger-icons",
+      "expanded-summoning.sprint5-ledger-icons",
+      "expanded-summoning.sprint6-ledger",
+      "expanded-summoning.sprint8-ledger-icons"
+    ],
+    "whyLeftFailing": "They are the honest signal that the art is outstanding. Moving the 119 pin or inventing a placeholder PNG would turn a real gap into a green gate."
+  }
 }
