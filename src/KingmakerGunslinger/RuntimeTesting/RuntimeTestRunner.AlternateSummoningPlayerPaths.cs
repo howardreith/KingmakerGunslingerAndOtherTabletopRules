@@ -7,6 +7,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic;
@@ -96,8 +97,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (status == null ? "<no status>" : status.Disposition + " " + status.Reason));
                 }
                 fixture = BeginExpandedSummoningCorrectionFixture("KMG_Runtime_AlternateSummoning_Player");
-                PlayerPathMasterSummoner(fixture, assertions, casts, document, ref levelController);
-                PlayerPathOccultist(fixture, assertions, casts, document, ref levelController);
+                PlayerPathSection("master-summoner", assertions, document, () =>
+                    PlayerPathMasterSummoner(fixture, assertions, casts, document));
+                PlayerPathSection("occultist", assertions, document, () =>
+                    PlayerPathOccultist(fixture, assertions, casts, document));
+                PlayerPathSection("remaining-families", assertions, document, () =>
+                    PlayerPathRemainingFamilies(fixture, assertions, casts, document));
             }
             catch (Exception exception)
             {
@@ -108,6 +113,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                levelController = _playerPathLevelController;
+                _playerPathLevelController = null;
                 if (levelController != null)
                     try { levelController.GetType().GetMethod("Cancel").Invoke(levelController, null); }
                     catch (Exception) { }
@@ -133,9 +140,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions, null);
         }
 
+        private object _playerPathLevelController;
+
+        /// <summary>One section's exception becomes that section's failure;
+        /// the next section still runs on the same disposable world.</summary>
+        private void PlayerPathSection(string name, List<RuntimeTestAssertion> assertions,
+            JObject document, Action body)
+        {
+            try { body(); }
+            catch (Exception exception)
+            {
+                document["exception-" + name] = exception.ToString();
+                assertions.Add(Assertion("player-section-" + name, "section completes",
+                    exception.GetType().Name + ":" + exception.Message, false,
+                    "unknown state is not qualification"));
+                foreach (UnitEntityData unit in _playerPathKept.ToArray())
+                    CleanupExpandedSummoningUnit(unit);
+                _playerPathKept.Clear();
+            }
+        }
+
         private void PlayerPathMasterSummoner(ExpandedSummoningCorrectionFixture fixture,
-            List<RuntimeTestAssertion> assertions, JArray casts, JObject document,
-            ref object levelController)
+            List<RuntimeTestAssertion> assertions, JArray casts, JObject document)
         {
             LibraryScriptableObject library = BlueprintBootstrap.Library;
             UnitEntityData caster = fixture.Caster;
@@ -145,7 +171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var archetype = BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library,
                 PlayerPathMasterSummonerArchetype, "CotW Master Summoner archetype");
             AdvanceDisposableArchetypeCaster(caster.Descriptor, summoner, archetype, 5,
-                ref levelController);
+                ref _playerPathLevelController);
             AlternateSummoningFamilySpec family = AlternateSummoningSourceCatalog.Find(
                 AlternateSummoningSourceCatalog.MasterSummonerKey);
             var resource = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(library,
@@ -160,25 +186,55 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!grantedExact) return;
             caster.Descriptor.Resources.Restore(resource);
 
-            // Tier I: the preserved original cast and one project creature,
-            // both through the tier-I root's own menu.
+            // Tier I: the direct root became a menu. Record it, then cast a
+            // project creature and (when the menu keeps one) a native option.
             Ability tierOne = PlayerPathRootFact(caster, family, 1);
-            BlueprintAbility originalCopy = PlayerPathPreserved(tierOne.Blueprint, family.Key);
+            document["masterSummonerTierOneMenu"] = PlayerPathMenu(tierOne.Blueprint);
             BlueprintAbility tierOneCreature = PlayerPathChild(tierOne.Blueprint, true, "1");
-            foreach (var pair in new[] { Tuple.Create("ms-tier1-original", originalCopy),
-                Tuple.Create("ms-tier1-creature", tierOneCreature) })
+            BlueprintAbility nativeOption = PlayerPathChildOrNull(tierOne.Blueprint, false, "1");
+            var tierOneCasts = new List<Tuple<string, BlueprintAbility>> {
+                Tuple.Create("ms-tier1-creature", tierOneCreature) };
+            if (nativeOption != null)
+                tierOneCasts.Add(Tuple.Create("ms-tier1-native-option", nativeOption));
+            foreach (var pair in tierOneCasts)
             {
                 AlternateSummoningCastRecord record = PlayerPathCast(fixture, caster, tierOne,
                     pair.Item2, resource, pair.Item1, true);
                 casts.Add(record.ToJson());
                 assertions.Add(Assertion("player-" + pair.Item1,
-                    "the tier-I root's variant (its preserved original cast, or a project creature) casts natively, spends exactly its own cost from the Master Summoner resource and summons exactly one unit",
+                    "a tier-I menu option casts natively through the root, spends exactly its own cost from the Master Summoner resource and summons exactly one unit",
                     record.ToJson().ToString(Formatting.None),
                     record.Converted && record.Available && record.Started && record.Result == "Success" &&
                         record.ExpectedCost == 1 && record.ResourceBefore - record.ResourceAfter == 1 &&
                         record.Summoned == 1 && record.Live == 1,
                     "AbilityData(parent, child) + UnitUseAbility; UnitAbilityResourceCollection"));
             }
+
+            // The frozen copy of the original tier-I cast is a registered
+            // identity. When the menu policy replaced its lineage it is not
+            // exposed, and a cast through the root must be refused.
+            BlueprintAbility preserved = PlayerPathPreserved(family.Key);
+            bool preservedInMenu = tierOne.Blueprint.ComponentsArray.OfType<AbilityVariants>()
+                .Single().Variants.Contains(preserved);
+            if (!preservedInMenu)
+            {
+                AlternateSummoningCastRecord hidden = PlayerPathCast(fixture, caster, tierOne,
+                    preserved, resource, "ms-unexposed-preserved", false);
+                casts.Add(hidden.ToJson());
+                assertions.Add(Assertion("player-ms-unexposed-preserved-refused",
+                    "the registered but unexposed preserved tier-I cast is unavailable through the root: no command, no spend, no summon",
+                    "exposed=" + AlternateSummoningExposure.IsExposed(preserved.AssetGuid) + ";" +
+                        hidden.ToJson().ToString(Formatting.None),
+                    !AlternateSummoningExposure.IsExposed(preserved.AssetGuid) && !hidden.Available &&
+                        !hidden.Started && hidden.ResourceBefore == hidden.ResourceAfter &&
+                        hidden.Summoned == 0,
+                    "AlternateSummoningAvailability on the executed child"));
+            }
+            else assertions.Add(Assertion("player-ms-preserved-in-menu",
+                "the preserved tier-I cast is exposed exactly when the menu keeps it",
+                "exposed=" + AlternateSummoningExposure.IsExposed(preserved.AssetGuid),
+                AlternateSummoningExposure.IsExposed(preserved.AssetGuid),
+                "AlternateSummoningExposure"));
 
             // Tier III group: a 1d3 option.
             Ability tierThree = PlayerPathRootFact(caster, family, 3);
@@ -238,8 +294,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private void PlayerPathOccultist(ExpandedSummoningCorrectionFixture fixture,
-            List<RuntimeTestAssertion> assertions, JArray casts, JObject document,
-            ref object levelController)
+            List<RuntimeTestAssertion> assertions, JArray casts, JObject document)
         {
             LibraryScriptableObject library = BlueprintBootstrap.Library;
             UnitEntityData caster = PlayerPathSecondCaster(fixture, "KMG_Runtime_AlternateSummoning_Occultist");
@@ -249,7 +304,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var archetype = BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library,
                 PlayerPathOccultistArchetype, "CotW Occultist archetype");
             AdvanceDisposableArchetypeCaster(caster.Descriptor, arcanist, archetype, 5,
-                ref levelController);
+                ref _playerPathLevelController);
             AlternateSummoningFamilySpec family = AlternateSummoningSourceCatalog.Find(
                 AlternateSummoningSourceCatalog.OccultistKey);
             var reservoir = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(library,
@@ -290,7 +345,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // The level-20 capstone: Perfect Summoner removes the cost and the
             // duration becomes one day plus a minute per level.
             AdvanceDisposableArchetypeCaster(caster.Descriptor, arcanist, archetype, 15,
-                ref levelController);
+                ref _playerPathLevelController);
             var perfect = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
                 AlternateSummoningContracts.PerfectSummoner, "Perfect Summoner");
             PlayerPathFillResource(caster, reservoir, 10);
@@ -307,6 +362,198 @@ namespace KingmakerGunslinger.RuntimeTesting
                     capstone.ResourceBefore == capstone.ResourceAfter && capstone.Live == 1 &&
                     capstone.Durations == (1440 * 60).ToString(),
                 "ResourseCostCalculatorWithDecreasingFacts; ContextRankConfig FeatureRank x1420"));
+        }
+
+        // ---- remaining families: one real granted cast per distinct contract ----
+
+        private const string PlayerPathInquisitorClass = "f1a70d9e1b0b41e49874e1fa9052a1ce";
+        private const string PlayerPathAlchemistClass = "0937bec61c0dabc468428f496580c721";
+        private const string PlayerPathTwinnedSummonerArchetype = "e775f3730d5d4186a38bcf2ea67b8009";
+        private const string PlayerPathNaturalistArchetype = "5794865f6aa541ce9c09c8e682cea799";
+        private const string PlayerPathFeralHunterArchetype = "f7eae9611b8540e6978776123a85cba0";
+        private const string PlayerPathPreservationistArchetype = "a2c1e3724a304fb6a98c708fc0f3448c";
+
+        private void PlayerPathRemainingFamilies(ExpandedSummoningCorrectionFixture fixture,
+            List<RuntimeTestAssertion> assertions, JArray casts, JObject document)
+        {
+            LibraryScriptableObject library = BlueprintBootstrap.Library;
+            // The native Monster Tactician archetype is the one archetype whose
+            // added features grant the native Monster Tactician tier-I feature.
+            string tacticianFeature = AlternateSummoningSourceCatalog.Find(
+                AlternateSummoningSourceCatalog.MonsterTacticianKey).Roots
+                .Single(value => value.Tier == 1).FeatureGuid;
+            BlueprintArchetype[] tactician = library.GetAllBlueprints().OfType<BlueprintArchetype>()
+                .Where(value => (value.AddFeatures ?? new LevelEntry[0]).Any(level =>
+                    level.Features.Any(feature => feature != null &&
+                        feature.AssetGuid == tacticianFeature))).ToArray();
+            if (tactician.Length != 1)
+                throw new InvalidOperationException("The native Monster Tactician archetype is not unique: " +
+                    tactician.Length + ".");
+            var cases = new[] {
+                Tuple.Create(AlternateSummoningSourceCatalog.MonsterTacticianKey,
+                    PlayerPathInquisitorClass, tactician[0].AssetGuid, 6, StatType.Wisdom),
+                Tuple.Create(AlternateSummoningSourceCatalog.SummonerKey,
+                    AlternateSummoningContracts.SummonerClass, (string)null, 3, StatType.Charisma),
+                Tuple.Create(AlternateSummoningSourceCatalog.SummonerKey,
+                    AlternateSummoningContracts.SummonerClass, PlayerPathTwinnedSummonerArchetype, 3, StatType.Charisma),
+                Tuple.Create(AlternateSummoningSourceCatalog.NaturalistKey,
+                    AlternateSummoningContracts.SummonerClass, PlayerPathNaturalistArchetype, 3, StatType.Charisma),
+                Tuple.Create(AlternateSummoningSourceCatalog.FeralHunterKey,
+                    AlternateSummoningContracts.HunterClass, PlayerPathFeralHunterArchetype, 3, StatType.Wisdom)
+            };
+            foreach (var item in cases)
+            {
+                string label = item.Item1 + (item.Item3 == null ? "" : ":" + item.Item3.Substring(0, 8));
+                JObject record = new JObject { ["family"] = item.Item1, ["archetype"] = item.Item3 };
+                bool exact = false;
+                try
+                {
+                    UnitEntityData caster = PlayerPathSecondCaster(fixture,
+                        "KMG_Runtime_AlternateSummoning_" + item.Item1);
+                    caster.Descriptor.Stats.GetStat(item.Item5).BaseValue = 18;
+                    var characterClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
+                        library, item.Item2, item.Item1 + " class");
+                    BlueprintArchetype archetype = item.Item3 == null ? null :
+                        BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library, item.Item3,
+                            item.Item1 + " archetype");
+                    AdvanceDisposableArchetypeCaster(caster.Descriptor, characterClass, archetype,
+                        item.Item4, ref _playerPathLevelController);
+                    AlternateSummoningFamilySpec family = AlternateSummoningSourceCatalog.Find(item.Item1);
+                    Ability root = PlayerPathLowestGrantedRoot(caster, family, record);
+                    BlueprintAbility child = PlayerPathChild(root.Blueprint, true, "1");
+                    AbilityResourceLogic logic = child.ComponentsArray.OfType<AbilityResourceLogic>()
+                        .SingleOrDefault();
+                    BlueprintAbilityResource resource = logic == null ? null : logic.RequiredResource;
+                    if (resource != null) caster.Descriptor.Resources.Restore(resource);
+                    AlternateSummoningCastRecord cast = PlayerPathCast(fixture, caster, root, child,
+                        resource, "family-" + label, true);
+                    casts.Add(cast.ToJson());
+                    record["cast"] = cast.ToJson();
+                    exact = cast.Converted && cast.Started && cast.Result == "Success" &&
+                        cast.Summoned == 1 && cast.Live == 1 &&
+                        (resource == null || cast.ResourceBefore - cast.ResourceAfter == cast.ExpectedCost);
+                }
+                catch (Exception exception)
+                {
+                    record["exception"] = exception.GetType().Name + ":" + exception.Message;
+                }
+                document["family-" + label] = record;
+                assertions.Add(Assertion("player-family-" + label,
+                    "a natively levelled caster's lowest granted root offers a project creature that casts natively, spends exactly its own cost and summons one unit",
+                    record.ToString(Formatting.None), exact,
+                    "LevelUpController visits; AbilityData(parent, child) + UnitUseAbility"));
+            }
+            PlayerPathPreservationist(fixture, assertions, casts, document);
+        }
+
+        /// <summary>The granted root of the lowest tier the caster holds:
+        /// a direct root by its GUID, or for Monster Tactician the single
+        /// ability its tier feature adds.</summary>
+        private static Ability PlayerPathLowestGrantedRoot(UnitEntityData caster,
+            AlternateSummoningFamilySpec family, JObject record)
+        {
+            foreach (AlternateSummoningRootSpec root in family.Roots.OrderBy(value => value.Tier))
+            {
+                var feature = (BlueprintFeature)BlueprintBootstrap.Library.BlueprintsByAssetId[root.FeatureGuid];
+                if (!caster.Descriptor.HasFact(feature)) continue;
+                IEnumerable<string> guids = root.RootGuid != null ? new[] { root.RootGuid } :
+                    feature.ComponentsArray.OfType<Kingmaker.UnitLogic.FactLogic.AddFacts>()
+                        .SelectMany(value => value.Facts).OfType<BlueprintAbility>()
+                        .Select(value => value.AssetGuid);
+                Ability fact = caster.Descriptor.Abilities.RawFacts.OfType<Ability>().FirstOrDefault(
+                    value => value.Blueprint != null && guids.Contains(value.Blueprint.AssetGuid) &&
+                        AlternateSummoningExposure.IsPublishedRoot(value.Blueprint));
+                record["grantedTier"] = root.Tier;
+                record["feature"] = feature.AssetGuid;
+                record["root"] = fact == null ? null : fact.Blueprint.AssetGuid;
+                if (fact == null)
+                    throw new InvalidOperationException("Tier " + root.Tier + " feature is granted but no published root fact exists.");
+                return fact;
+            }
+            throw new InvalidOperationException("No " + family.Key + " tier feature was granted.");
+        }
+
+        /// <summary>Preservationist: Bottled Ally is a known extract in the
+        /// Alchemist's formula book; prepare it in a native slot and open the
+        /// bottle through the slot's own variant data.</summary>
+        private void PlayerPathPreservationist(ExpandedSummoningCorrectionFixture fixture,
+            List<RuntimeTestAssertion> assertions, JArray casts, JObject document)
+        {
+            var record = new JObject { ["family"] = AlternateSummoningSourceCatalog.PreservationistKey };
+            bool exact = false;
+            try
+            {
+                LibraryScriptableObject library = BlueprintBootstrap.Library;
+                UnitEntityData caster = PlayerPathSecondCaster(fixture, "KMG_Runtime_AlternateSummoning_Preservationist");
+                caster.Descriptor.Stats.Intelligence.BaseValue = 18;
+                var alchemist = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library,
+                    PlayerPathAlchemistClass, "Alchemist class");
+                var archetype = BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library,
+                    PlayerPathPreservationistArchetype, "Preservationist archetype");
+                AdvanceDisposableArchetypeCaster(caster.Descriptor, alchemist, archetype, 2,
+                    ref _playerPathLevelController);
+                AlternateSummoningFamilySpec family = AlternateSummoningSourceCatalog.Find(
+                    AlternateSummoningSourceCatalog.PreservationistKey);
+                AlternateSummoningRootSpec tierOne = family.Roots.Single(value => value.Tier == 1);
+                var feature = (BlueprintFeature)library.BlueprintsByAssetId[tierOne.FeatureGuid];
+                var root = (BlueprintAbility)library.BlueprintsByAssetId[tierOne.RootGuid];
+                Spellbook book = caster.Descriptor.GetSpellbook(alchemist);
+                bool known = book != null && book.IsKnown(root);
+                record["feature"] = caster.Descriptor.HasFact(feature);
+                record["known"] = known;
+                record["published"] = AlternateSummoningExposure.IsPublishedRoot(root);
+                if (!caster.Descriptor.HasFact(feature) || !known)
+                    throw new InvalidOperationException("Bottled Ally I is not granted as a known extract.");
+                BlueprintAbility child = PlayerPathChild(root, true, "1");
+                AbilityData data = PrepareExpandedSummoningPlayerPathSpell(book, root, child, 1);
+                int slotsBefore = CountAvailableExpandedSummoningSlots(book, 1);
+                object[] before = SnapshotReferences(fixture.SceneEntities);
+                ExpandedSummoningRuleCapture.Clear();
+                UnitUseAbility command;
+                var parameters = new Kingmaker.AreaLogic.Cutscenes.CutsceneParametersContext();
+                using (parameters.Data) command = new UnitUseAbility(data, new TargetWrapper(caster.Position));
+                bool available = data.IsAvailable && command.CanStart;
+                if (available)
+                {
+                    command.IgnoreCooldown(TimeSpan.Zero);
+                    caster.Commands.Run(command);
+                    command.Start();
+                    if (command.IsRunning)
+                    {
+                        if (command.Animation != null) command.Animation.IsActed = true;
+                        command.Tick();
+                        if (command.ExecutionProcess != null)
+                            for (int tick = 0; tick < 5000 && !command.ExecutionProcess.IsEnded; tick++)
+                                command.ExecutionProcess.Tick();
+                        if (command.Animation != null) FinishExpandedSummoningAnimation(command.Animation);
+                        if (!command.IsFinished) command.Tick();
+                    }
+                }
+                Game.Instance.EntityCreator.Tick();
+                UnitEntityData[] summoned = ExpandedSummoningRuleCapture.ToArray();
+                int slotsAfter = CountAvailableExpandedSummoningSlots(book, 1);
+                record["available"] = available;
+                record["result"] = command.Result.ToString();
+                record["slotsBefore"] = slotsBefore;
+                record["slotsAfter"] = slotsAfter;
+                record["summoned"] = string.Join(",", summoned.Select(value => value.Blueprint.name).ToArray());
+                exact = available && command.Result.ToString() == "Success" &&
+                    slotsAfter == slotsBefore - 1 && summoned.Length == 1 &&
+                    ReferenceEquals(data.ConvertedFrom == null ? null : data.ConvertedFrom.Blueprint, root);
+                foreach (UnitEntityData unit in summoned) CleanupExpandedSummoningUnit(unit);
+                DrainExpandedSummoningDestroyQueue(fixture.SceneEntities, before);
+                ExpandedSummoningRuleCapture.Clear();
+            }
+            catch (Exception exception)
+            {
+                record["exception"] = exception.GetType().Name + ":" + exception.Message;
+            }
+            document["family-Preservationist"] = record;
+            casts.Add(record);
+            assertions.Add(Assertion("player-family-Preservationist",
+                "a level-2 Preservationist knows Bottled Ally I as an extract; a prepared slot opens a project creature through the root's variant data, consuming exactly that slot",
+                record.ToString(Formatting.None), exact,
+                "LevelUpController visits; Spellbook.Memorize + AbilityData(slot spell, child) + UnitUseAbility"));
         }
 
         private static void PlayerPathFillResource(UnitEntityData caster,
@@ -381,19 +628,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 " child with quantity " + (quantity ?? "any") + " under " + root.AssetGuid + ".");
         }
 
-        /// <summary>The exact frozen copy of a direct root's original cast,
-        /// found by its own adapter identity in the root's live menu.</summary>
-        private static BlueprintAbility PlayerPathPreserved(BlueprintAbility root, string familyKey)
+        /// <summary>The exact frozen copy of a direct root's original tier-I
+        /// cast: the family's own registered identity of that symbol.</summary>
+        private static BlueprintAbility PlayerPathPreserved(string familyKey)
         {
             string name = AlternateSummoningAdapterBuilder.InternalName(
                 AlternateSummoningProjection.PreservedSymbol(familyKey, 1, SummonMultiplicity.One));
-            BlueprintAbility[] matches = root.ComponentsArray.OfType<AbilityVariants>().Single()
-                .Variants.Where(value => value != null && value.name == name &&
-                    AlternateSummoningExposure.IsExposed(value.AssetGuid)).ToArray();
+            BlueprintAbility[] matches = BlueprintBootstrap.Library.BlueprintsByAssetId.Values
+                .OfType<BlueprintAbility>().Where(value => value != null && value.name == name)
+                .ToArray();
             if (matches.Length != 1)
                 throw new InvalidOperationException("The preserved tier-I cast " + name +
-                    " is not exactly once in " + root.AssetGuid + "'s menu.");
+                    " is not registered exactly once: " + matches.Length + ".");
             return matches[0];
+        }
+
+        private static JArray PlayerPathMenu(BlueprintAbility root)
+        {
+            return new JArray(root.ComponentsArray.OfType<AbilityVariants>().Single().Variants
+                .Select(child =>
+                {
+                    SummonSpawn spawn = child == null ? null :
+                        SummonSignatureReader.Read(child).Spawns().FirstOrDefault();
+                    return new JObject { ["guid"] = child?.AssetGuid, ["name"] = child?.name,
+                        ["exposed"] = child != null && AlternateSummoningExposure.IsExposed(child.AssetGuid),
+                        ["unit"] = spawn?.Unit, ["count"] = spawn?.CountDice };
+                }));
+        }
+
+        private static BlueprintAbility PlayerPathChildOrNull(BlueprintAbility root, bool project,
+            string quantity)
+        {
+            try { return PlayerPathChild(root, project, quantity); }
+            catch (InvalidOperationException) { return null; }
         }
 
         private static void AdvanceDisposableArchetypeCaster(UnitDescriptor owner,
