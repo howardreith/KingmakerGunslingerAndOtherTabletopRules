@@ -41,8 +41,9 @@ namespace KingmakerGunslinger.Summoning
             ActionBarGroupSlot __state)
         {
             if (__instance == null || !___m_IsActive || sourceSpell == null ||
-                !ExpandedSummoningPublisher.IsPublishedExpandedParent(
-                    sourceSpell.Blueprint))
+                (!ExpandedSummoningPublisher.IsPublishedExpandedParent(
+                    sourceSpell.Blueprint) &&
+                !AlternateSummoningExposure.IsPublishedRoot(sourceSpell.Blueprint)))
             {
                 return;
             }

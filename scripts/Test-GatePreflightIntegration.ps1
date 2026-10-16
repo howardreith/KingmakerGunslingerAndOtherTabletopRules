@@ -8,7 +8,11 @@ assertions are about the production dispatch itself. Nothing is built,
 deployed or launched, and no installation or save is touched.
 #>
 [CmdletBinding()]
-param([string]$RepositoryRoot = (Split-Path -Parent $PSScriptRoot))
+param([string]$RepositoryRoot)
+
+# $PSScriptRoot is not reliably bound while parameter defaults are evaluated in
+# every invocation form, so the default is computed in the body instead.
+if (-not $RepositoryRoot) { $RepositoryRoot = Split-Path -Parent $PSScriptRoot }
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -27,37 +31,61 @@ $gateAst = [System.Management.Automation.Language.Parser]::ParseFile(
     $gatePath, [ref]$tokens, [ref]$errors)
 Assert-True (@($errors).Count -eq 0) 'production gate parses'
 
-$statements = $gateAst.EndBlock.Statements
-$preflightIndex = -1
-for ($i = 0; $i -lt $statements.Count; $i++) {
-    if ($statements[$i].Extent.Text -like '*Test-RuntimeScenarioPreflight.ps1*') {
+# Master's development-candidate route put the release path inside an else
+# branch, so the interesting statements are no longer top level. Find them
+# anywhere in the tree and order them by line, which is robust to nesting.
+$allStatements = @($gateAst.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.StatementAst]
+    }, $true))
+
+function Find-Line([string]$Needle) {
+    $hits = @($allStatements | Where-Object {
+        $_.Extent.Text -like ('*' + $Needle + '*') -and
+        ($_.Extent.EndLineNumber - $_.Extent.StartLineNumber) -lt 6
+    } | Sort-Object { $_.Extent.StartLineNumber })
+    if ($hits.Count -eq 0) { return -1 }
+    return $hits[0].Extent.StartLineNumber
+}
+
+$preflightLine = Find-Line 'Test-RuntimeScenarioPreflight.ps1'
+$guardLine = Find-Line 'Runtime scenario preflight failed'
+$wrapperLine = Find-Line "'validate-repository.ps1'"
+
+Assert-True ($preflightLine -gt 0) 'the production gate contains a preflight invocation statement'
+Assert-True ($guardLine -eq $preflightLine + 1) ('the statement immediately after the preflight call is its throwing guard; preflight=' + $preflightLine + ' guard=' + $guardLine)
+Assert-True ($wrapperLine -gt 0 -and $wrapperLine -lt $preflightLine) ('the repository wrapper still runs, and runs before the preflight; wrapper=' + $wrapperLine + ' preflight=' + $preflightLine)
+
+# The release path's build, package and validate steps must all follow the
+# guard. test-domain.ps1 is deliberately NOT checked here: the gate also has a
+# development-candidate route earlier in the file which runs its own wrapper
+# and domain tests and never reaches packaging.
+$buildish = @('build_mod_from_private_references', 'package.ps1', 'validate-package.ps1')
+$tooEarly = @()
+$after = 0
+foreach ($needle in $buildish) {
+    $line = Find-Line $needle
+    if ($line -gt 0 -and $line -lt $preflightLine) { $tooEarly += ($needle + '@' + $line) }
+    if ($line -gt $guardLine) { $after++ }
+}
+Assert-True ($tooEarly.Count -eq 0) ('no release build/package statement precedes the preflight guard; early=' + ($tooEarly -join ','))
+Assert-True ($after -ge 2) ('the release build and package steps are downstream of the guard; found=' + $after)
+
+# The shim cases below execute the shipped statement itself.
+$statements = $allStatements
+$preflightIndex = 0
+for ($i = 0; $i -lt $allStatements.Count; $i++) {
+    if ($allStatements[$i].Extent.StartLineNumber -eq $preflightLine -and
+        $allStatements[$i].Extent.Text -like '*Test-RuntimeScenarioPreflight.ps1*' -and
+        ($allStatements[$i].Extent.EndLineNumber - $allStatements[$i].Extent.StartLineNumber) -lt 6) {
         $preflightIndex = $i
         break
     }
 }
-Assert-True ($preflightIndex -ge 0) 'the production gate contains a preflight invocation statement'
-
-$guard = ''
-if ($preflightIndex -ge 0) { $guard = $statements[$preflightIndex + 1].Extent.Text }
-Assert-True ($guard -like '*LASTEXITCODE*' -and $guard -like '*throw*') 'the statement immediately after the preflight call is its throwing guard'
-
-$wrapperIndex = -1
-for ($i = 0; $i -lt $statements.Count; $i++) {
-    if ($statements[$i].Extent.Text -like "*'validate-repository.ps1'*") {
-        $wrapperIndex = $i
-        break
-    }
-}
-Assert-True ($wrapperIndex -ge 0 -and $wrapperIndex -lt $preflightIndex) 'the repository wrapper still runs, and runs before the preflight'
-
-$buildish = @('build_mod_from_private_references', 'package.ps1', 'validate-package.ps1', 'test-domain.ps1')
-$tooEarly = @()
-for ($i = 0; $i -le $preflightIndex; $i++) {
-    foreach ($needle in $buildish) {
-        if ($statements[$i].Extent.Text -like "*$needle*") { $tooEarly += ($needle + '@' + $i) }
-    }
-}
-Assert-True ($tooEarly.Count -eq 0) ('no build/package/deploy/test statement precedes the preflight guard; early=' + ($tooEarly -join ','))
+$guard = ($allStatements | Where-Object {
+    $_.Extent.StartLineNumber -eq $guardLine -and
+    $_.Extent.Text -like '*LASTEXITCODE*'
+} | Select-Object -First 1).Extent.Text
 
 $shimDir = Join-Path $env:TEMP ('kmg-preflight-shim-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $shimDir -Force | Out-Null

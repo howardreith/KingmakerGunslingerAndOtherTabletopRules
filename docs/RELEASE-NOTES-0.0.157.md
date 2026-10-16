@@ -1,89 +1,69 @@
-# v0.0.157 — Expanded Summoning Sprint 25: giant bodies
+# v0.0.157 — Expanded Summoning for class summon abilities
 
-`0.0.157-expanded-summoning-sprint25-giant-bodies`
+`0.0.157-alternate-summoning-sources`
 
-This release adds the Brachiosaurus to the Expanded Summoning roster and
-completes the Elephant that was already in it. Both are adult Pathfinder First
-Edition stat blocks with original project-authored bodies; no native Owlcat
-mesh, texture or animation is redistributed.
+Until now the Expanded Summoning creatures appeared only in the Summon Monster
+and Summon Nature's Ally spells. Class abilities that summon on their own
+resource still offered only their original creatures. This release gives
+those abilities the same creature menus, using the published roster: there is
+no second creature list.
 
-| Creature | Family and tier | Roots |
-| --- | --- | ---: |
-| Brachiosaurus | Summon Nature's Ally VII | 3 |
-| Elephant | Summon Monster VI, Summon Nature's Ally VI | 8 existing, completed |
+| Caller | Requires | What changes |
+| --- | --- | --- |
+| Monster Tactician (Inquisitor) | — | each per-tier, per-quantity ability opens a menu |
+| Summoner Summon Monster (Twinned Summoner shares it) | Call of the Wild 1.14.4c | menus at every tier |
+| Master Summoner Summon Monster | Call of the Wild 1.14.4c | menus at every tier |
+| Occultist (Arcanist) Conjurer's Focus | Call of the Wild 1.14.4c | menus at every tier |
+| Naturalist Summon Nature's Ally | Call of the Wild 1.14.4c | menus at every tier |
+| Feral Hunter Summon Nature's Ally | Call of the Wild 1.14.4c | menus at every tier |
+| Preservationist Bottled Ally (extracts I-VI cast SNA I, II, IV, V, VII, IX) | Call of the Wild 1.14.4c | menus on the extracts |
 
-Quantities follow the usual progression: one at the base tier, 1d3 at the next,
-then 1d4+1. Brachiosaurus is untemplated under caster alignment and is not on
-the Summon Monster table, so it has no celestial or fiendish execution
-children. Elephant's eight existing roots, their children and their order are
-unchanged — this is a completion of a released creature, not a re-registration,
-and no actual Mastodon unit or asset is touched.
+Each choice keeps its caller's own rules: resource and cost (including the
+Occultist's per-tier reservoir cost and Perfect Summoner), class-level
+scaling and duration, summon pools and clearing, the Master Summoner's and
+Summoner's eidolon conditions, action type, and the Preservationist's extract
+slot. Only the creature and its canonical template or alignment come from
+Expanded Summoning. Menus keep any option a caller already had, including
+third-party ones, and a caller's original single-creature cast stays
+available where the menu replaces it. Large menus use the same scrolling
+layout as the spell menus.
 
-## Brachiosaurus
+With Call of the Wild absent, only Monster Tactician changes. If Call of the
+Wild's own summon abilities ever no longer match what this release expects,
+that family stays unchanged and its new choices are registered as unavailable
+placeholders instead of guessing. With the Expanded Summoning module turned
+off, nothing new is offered: the new choices stay registered but refuse to
+cast, so a saved shortcut to one is designed to be refused safely and to work
+again once the module is back on. That shortcut behavior was not checked with
+a real saved shortcut (see Limits).
 
-One natural weapon and exactly one: a tail at +23 for 4d6+19 at the adult stat
-block. Because it is the creature's only natural attack it takes the native
-one-and-a-half Strength multiplier, so Strength 37 contributes +19, and zero or
-a penalty keeps correct behaviour rather than being multiplied.
+The release adds 3,746 new stable identities (in their own
+`KMG.Summoning.Adapter.*` namespace) after the unchanged released ones. The
+1,122 spell summon choices of v0.0.155 are unchanged.
 
-The printed tail bonus differs between sources — the current Archives of
-Nethys entry reads +22, the legacy PRD reads +23 — and this release uses +23.
-That is the value the inputs both sources print actually derive: BAB +13,
-Strength 37 for +13, Gargantuan −4 and Weapon Focus (tail) +1. The same inputs
-independently derive the CMB +30 and CMD 40 that both sources also print, so
-the ability score and base attack bonus are not in doubt, and +22 would require
-an unexplained −1 that no printed input supplies. Nothing invents a hidden
-modifier and Weapon Focus is not removed; both readings are recorded in the
-sprint ledger.
+## Limits
 
-Trample is 2d6+19 against a DC derived live as 10 + half its hit dice + its
-Strength modifier, which is the printed 32, and it is a separate effect from
-the ordinary tail attack. Twenty-foot space and twenty-foot reach, 30-foot
-land speed, AC 18, 171 hit points, Fort +18 / Ref +11 / Will +9, CMD 40 with
-the quadruped +4 against trip, and Perception +28 from real carriers rather
-than an adjusted total.
+- **Checked automatically:** the in-game graph of every adapted choice
+  against its caller's template, under two specific contracts (the signature
+  contract and the composed template/alignment contract), with negative
+  controls; real casts from natively levelled characters of every family in
+  a scripted fixture, including a Master Summoner with a real lesser eidolon,
+  the Occultist's lower-tier groups and the Preservationist's extract III ->
+  Summon Nature's Ally IV; and, on a real save, choosing creatures by clicking
+  the action-bar menu rows and casting them in normal real-time play
+  (Master Summoner tiers I, III and VII, including the Tyrannosaurus).
+- **Not checked before release:** dragging a new choice onto the hotbar and
+  using it after reloading a save (normal, module off and back on), a
+  turn-based round, a menu large enough to need scrolling at your screen
+  size, a saved shortcut while a family is blocked, and a grapple or swallow
+  across a save and reload. The game does not allow saving in combat, and a
+  grapple is not kept across a reload: a clean reset is the expected result.
+  Please report anything unexpected.
+- Not adapted: Occultist/Relic Hunter Servitor and Shadow Beasts, Warpriest
+  and Divine Tracker Battle Companion, Shadow Conjuration, Skald Spell
+  Kenning, Lore Wish, Twinned Eidolon spell-likes, Pact Wizard conversions and
+  Rogue Major Magic. Archetypes that remove their summon features are not
+  given them back.
 
-It has no bite, no stampede, no tail-sweep area attack and no frightening
-roar. It does not borrow the Ankylosaurus daze or stun, the Stegosaurus trip,
-or the Tyrannosaurus bite multiplier, Grab or Swallow Whole.
-
-## Elephant
-
-Two primary natural attacks: a gore at +16 for 2d8+10 and a slam at +16 for
-2d6+10. Both are primary, so each adds the live Strength modifier once rather
-than one and a half — the lone-weapon routine the Brachiosaurus uses does not
-apply here. There is no stamp routine and no grab; the adult Pathfinder
-Elephant has a gore and a slam and nothing else.
-
-Space is 15 feet but reach is 10 feet, exactly as printed. A Huge body is not
-evidence of 15-foot reach and this creature is not used to grant one
-generally. Trample is 2d8+15 at DC 25, reusing the existing d8 trample support
-without granting powerful charge and without changing released d6 tramplers.
-40-foot land speed, AC 17, 93 hit points, Fort +13 / Ref +7 / Will +6, CMD 30
-with the quadruped +4 against trip, and Perception +21.
-
-Existing template and caster-alignment behaviour is retained.
-
-## Shared trample behaviour
-
-Both creatures use the already-accepted automatic enemy-aware response: one
-legal native opportunity attack at its configured penalty, or a Reflex save for
-half, and never both. Target-size legality, one contact per target per round,
-exact command ownership, interrupt and death behaviour, action spending and the
-ordinary-attack fallback are all preserved, and both new registrations
-participate in the existing interruption and duplicate-response guards.
-
-## Accepted limitations, unchanged
-
-The four owner-accepted engine limitations carry forward at their existing
-scope with no new waiver:
-
-- `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD` — a save and reload reset
-  active grabs, holds, swallowed and engulfed relationships for every KMG
-  summon. This is a clean reset, not grapple persistence.
-- `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`
-- `PASSIVE_CREATURE_SENSES_UNMODELED` — Scent, Darkvision and Low-light Vision
-  have no faithful native carrier and nothing substitutes for them.
-- `RUN_NATIVE_SUMMON_AI_DISPOSITION`
-
-Owner visual review remains `NOT_PERFORMED_NONBLOCKING`.
+Checked with focused domain tests, the release's repository validation and
+complete domain suite, and guarded native scenarios on the release build.

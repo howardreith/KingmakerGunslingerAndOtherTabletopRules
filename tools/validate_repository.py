@@ -134,7 +134,9 @@ VALIDATORS = {
     "0.0.154": "validate_expanded_summoning_sprint23152.py",
     "0.0.155": "validate_expanded_summoning_sprint24154.py",
     "0.0.156": "validate_firearm_continuation_release156.py",
-    "0.0.157": "validate_expanded_summoning_sprint25157.py",
+    "0.0.157": "validate_alternate_summoning_release157.py",
+    "0.0.158": "validate_expanded_summoning_sprint25158.py",
+    "0.0.158": "validate_expanded_summoning_sprint25158.py",
 }
 
 

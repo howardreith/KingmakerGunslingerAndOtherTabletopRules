@@ -303,6 +303,7 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparer.Ordinal);
             Assertions.Equal(3101 +
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                    AlternateSummoningTests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
                 entries.Length,
                 "Sprint 24 appends without moving the reserved Sprint 23 gore type.");

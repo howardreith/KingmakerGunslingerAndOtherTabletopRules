@@ -387,6 +387,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sprint22RulesTests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                AlternateSummoningTests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint25Tests.AppendedLedgerIdentities;
             if (symbols.Count < AppendedLedgerIdentities + later)
                 throw new InvalidOperationException(

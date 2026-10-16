@@ -633,7 +633,7 @@
     "appendedIdentities": 9,
     "ledgerEntries": 3158,
     "versionSurface": "0.0.157",
-    "staticValidator": "tools/validate_expanded_summoning_sprint25157.py",
+    "staticValidator": "tools/validate_expanded_summoning_sprint25158.py",
     "repositoryValidation": "PASS exit 0, stage=hidden, bodiesAuthored=false",
     "domainSuite": {
       "registered": 2616,
@@ -954,7 +954,7 @@
       "contractsMovedAtomically": [
         "blueprints/blueprints.json: one appended row, last, 3158 to 3159 entries, no existing row reformatted or moved",
         "tools/expanded_summoning_manifest.py: the plan row, and its row and distinct-symbol invariants, 2158 to 2159",
-        "tools/validate_expanded_summoning_sprint25157.py: the pinned GUID set, 9 to 10; planned_type already mapped a Trample suffix to BlueprintAbility",
+        "tools/validate_expanded_summoning_sprint25158.py: the pinned GUID set, 9 to 10; planned_type already mapped a Trample suffix to BlueprintAbility",
         "GiantBodyRulesPolicy: AppendedIdentityCount 9 to 10, AppendedTrampleAbilityIdentityCount 1 to 2, ReservedElephantIdentityCount 3 to 2",
         "ExpandedSummoningIdentityCatalog: the catalog row, and SpecialIdentityCount 274 to 275, which the composed FoundationIdentityCount reads",
         "assets-source/original-icons/icon-catalog.json: the live registrySha256 and the Sprint 25 extension authorization, which now records ten identities and why the tenth was justified",
@@ -1207,7 +1207,7 @@
     "status": "REPAIRED",
     "foundBy": "owner review of the reviewed checkpoint d8913187",
     "introducedBy": "my own earlier edit: the insertion anchored on the first closing brace after the 0.0.156 marker, which was the inner LASTEXITCODE guard rather than the end of the block, so the 0.0.157 block was written inside it",
-    "defect": "scripts/validate-repository.ps1 nested the 0.0.157 dispatch inside the 0.0.156 dispatch. Since the active version is 0.0.157 the outer condition was false, so the inner block was unreachable and tools/test_expanded_summoning_sprint25157.py never ran.",
+    "defect": "scripts/validate-repository.ps1 nested the 0.0.157 dispatch inside the 0.0.156 dispatch. Since the active version is 0.0.157 the outer condition was false, so the inner block was unreachable and tools/test_expanded_summoning_sprint25158.py never ran.",
     "whyItWasNotCaught": "the wrapper still exited 0, so a passing run was mistaken for coverage. Exit status alone cannot distinguish a child that passed from a child that was never selected.",
     "coverageGapInEarlierRecords": "Earlier Sprint 25 records state that repository validation passed. Those runs did pass and are not rewritten, but they did NOT establish execution of the Sprint 25 corruption fixtures. That is annotated here rather than edited out of the history.",
     "notACreatureDefect": "this is a wiring defect. The standalone Sprint 25 fixtures were never failing: run directly they report 15 tests OK, both before and after the repair.",

@@ -407,6 +407,7 @@ namespace KingmakerGunslinger.DomainTests
             // Drone shares that prefix, so the unfiltered pattern counted its
             // 26 symbols as Sprint 14's and reported 133 appends.
             string[] mine = symbols.Where(value =>
+                !AlternateSummoningTests.IsAdapterIdentity(value) &&
                 !value.Contains("GiantAntDrone") &&
                 (value.Contains(".FireBeetle") || value.Contains(".GiantAnt") ||
                  value == "KMG.Summoning.Natural.AntSting1d4")).ToArray();
@@ -886,6 +887,10 @@ namespace KingmakerGunslinger.DomainTests
             var ledger = entries
                 .Where(value => ((string)value["symbol"]).StartsWith(
                     "KMG.Summoning.", StringComparison.Ordinal) &&
+                    // Adapter identities have their own creator and their own
+                    // both-ways check (alternate-summoning.identities-deterministic).
+                    !AlternateSummoningTests.IsAdapterIdentity(
+                        (string)value["symbol"]) &&
                     (string)value["status"] == "active")
                 .ToDictionary(value => (string)value["symbol"],
                     value => (string)value["plannedType"],

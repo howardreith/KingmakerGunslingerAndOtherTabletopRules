@@ -252,7 +252,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(2149 + GiantBodyRulesPolicy.AppendedIdentityCount,
+            Assertions.Equal(2149 + GiantBodyRulesPolicy.AppendedCatalogIdentityCount,
                 identities.Count,
                 "The foundation appends exactly forty-eight Sprint 24 identities.");
             SummoningIdentitySpec[] tail = identities
@@ -436,13 +436,13 @@ namespace KingmakerGunslinger.DomainTests
                 "tools/create_deterministic_package.py");
             // 363 is the base the released v0.0.154 animal-companion build
             // qualified; Sprint 24 appends four original theropod body files
-            // and two original creature icons on top of it; v0.0.156 adds
-            // its release notes and v0.0.157 adds its own.
+            // and two original creature icons on top of it; v0.0.156 and
+            // v0.0.157 each add their release notes.
             Assertions.True(package.Contains("$basePackageFileCount = 371") &&
                     package.Contains("$basePackageFileCount + 2") &&
                     package.Contains(
                         "--expected-file-count $expectedPackageFileCount") &&
-                    packager.Contains("364, 365, 369, 370, 371, 372))"),
+                    packager.Contains("364, 365, 369, 370, 371, 372, 373))"),
                 "The strict package inventory adds exactly four bodies and two icons.");
         }
 

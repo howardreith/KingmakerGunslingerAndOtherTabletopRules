@@ -294,6 +294,11 @@ namespace KingmakerGunslinger.Bootstrap
             }
         }
 
+        internal static bool IsFailed
+        {
+            get { lock (Gate) return _state == BootstrapState.Failed; }
+        }
+
         internal static BlueprintWeaponType TestMusketWeaponType
         {
             get

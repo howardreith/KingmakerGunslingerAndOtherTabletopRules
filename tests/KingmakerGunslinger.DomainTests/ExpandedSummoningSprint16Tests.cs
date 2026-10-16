@@ -531,7 +531,8 @@ namespace KingmakerGunslinger.DomainTests
             string[] symbols = entries
                 .Select(value => (string)value["symbol"]).ToArray();
             string[] mine = symbols
-                .Where(value => value.Contains("DireCrocodile")).ToArray();
+                .Where(value => value.Contains("DireCrocodile") &&
+                    !AlternateSummoningTests.IsAdapterIdentity(value)).ToArray();
             // One unit, three abilities in each family, a Celestial and a
             // Fiendish child for each of the three Monster abilities: 13.
             if (mine.Length != 20)

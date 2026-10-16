@@ -9,8 +9,18 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint25Tests
     {
+        /// <summary>
+        /// The ledger rows this sprint adds that no other term already counts.
+        /// Sprint 25 appends eighteen: ten of its own plus eight caller
+        /// adapters. The adapters are NOT included here, because every chain
+        /// that uses this constant sits beside
+        /// AlternateSummoningTests.AppendedLedgerIdentities, which counts the
+        /// adapter projection live from the production roster and therefore
+        /// already counts Brachiosaurus's eight. Adding them here too would
+        /// double-count them and slide every earlier sprint's window.
+        /// </summary>
         internal const int AppendedLedgerIdentities =
-            GiantBodyRulesPolicy.AppendedIdentityCount;
+            GiantBodyRulesPolicy.AppendedCatalogIdentityCount;
 
         private static readonly string[] PrivateIdentityTail = {
             GiantBodyRulesPolicy.BrachiosaurusTailSymbol,
