@@ -1,6 +1,13 @@
 # Kingmaker Gunslinger
 
-The **0.0.156-firearm-rtwp-kill-continuation** patch keeps a firearm
+The **0.0.157-alternate-summoning-sources** release gives class summon
+abilities the Expanded Summoning creature menus: Monster Tactician, and with
+Call of the Wild 1.14.4c the Summoner, Master Summoner, Occultist,
+Naturalist, Feral Hunter and Preservationist. See the
+[v0.0.157 release notes](docs/RELEASE-NOTES-0.0.157.md) and
+[the design and coverage record](docs/ALTERNATE-SUMMONING-SOURCES.md).
+
+The earlier **0.0.156-firearm-rtwp-kill-continuation** patch keeps a firearm
 Gunslinger fighting automatically in real time after an ordered full
 attack's last target dies. See the
 [v0.0.156 release notes](docs/RELEASE-NOTES-0.0.156.md). It is built on
@@ -24,9 +31,11 @@ Sprint 22 remains released and unchanged.
 
 ### Current release
 
-Version **0.0.156-firearm-rtwp-kill-continuation** retains the 1,122 choices
-v0.0.155 published: 1,093 generated roots and 29 native wrappers. It changes
-no route, level, quantity, template, stable identity, artwork or serialization state.
+Version **0.0.157-alternate-summoning-sources** retains the 1,122 spell
+summon choices v0.0.155 published: 1,093 generated roots and 29 native
+wrappers. It projects them onto the class summon callers above through 3,746
+new stable identities and changes no released identity, spell route, level,
+quantity, template, artwork or serialization state.
 The v0.0.155 Sprint 24 visuals and qualification remain authoritative.
 
 ### Previous release

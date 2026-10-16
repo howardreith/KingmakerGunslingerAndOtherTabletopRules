@@ -74,3 +74,12 @@ carries it. Release publication reads only `artifacts/local-runtime`.
 `tools/test_development_candidate_validator.py` exercise the success path and
 each refusal, including the executed nested calls of the development build up to
 its exact-reference compiler boundary.
+
+## Baseline after v0.0.157
+
+`tools/validate_development_candidate.py` accepts candidates only on the
+released v0.0.156 baseline (`607da683b1`), and refuses any version change.
+The active version is now 0.0.157, so a development candidate is refused until
+the validator's baseline is re-pinned to the released v0.0.157 commit (its
+version metadata, ledger prefix and static record). Do that in the next branch
+that needs a development candidate, with its corruption fixtures.

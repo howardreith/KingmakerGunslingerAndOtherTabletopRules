@@ -1,3 +1,12 @@
+# Alternate summoning sources — v0.0.157 release in preparation
+
+The owner accepted PR #52 (alternate summoning sources) on 2026-10-16 and
+authorized merge and release as v0.0.157 after a narrow correction pass
+(`docs/BUILD-AND-RELEASE.md`, "Current 0.0.157 publication authorization").
+The correction pass is recorded in `docs/ALTERNATE-SUMMONING-SOURCES.md` and
+`planning/ALTERNATE-SUMMONING-STATE.md`. The release candidate gate, native
+release evidence, merge and publication are recorded there as they complete.
+
 # Firearm RTWP continuation after a kill — v0.0.156 RELEASED / STOP
 
 The owner accepted the second review revision on 2026-10-15 and authorized
