@@ -564,8 +564,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AlternateSummoningRootSpec tierOne = family.Roots.Single(value => value.Tier == 1);
                 var feature = (BlueprintFeature)library.BlueprintsByAssetId[tierOne.FeatureGuid];
                 var root = (BlueprintAbility)library.BlueprintsByAssetId[tierOne.RootGuid];
-                Spellbook book = caster.Descriptor.GetSpellbook(alchemist);
+                // The formula book that knows the extract, recorded with every
+                // spellbook the caster holds so a miss is diagnosable.
+                Spellbook book = caster.Descriptor.Spellbooks.FirstOrDefault(value =>
+                    value.IsKnown(root)) ?? caster.Descriptor.GetSpellbook(alchemist);
                 bool known = book != null && book.IsKnown(root);
+                record["spellbooks"] = new JArray(caster.Descriptor.Spellbooks.Select(value =>
+                    new JObject { ["blueprint"] = value.Blueprint.AssetGuid + ":" + value.Blueprint.name,
+                        ["casterLevel"] = value.CasterLevel,
+                        ["known1"] = new JArray(value.GetKnownSpells(1).Select(spell =>
+                            spell.Blueprint.AssetGuid + ":" + spell.Blueprint.name)) }));
                 record["feature"] = caster.Descriptor.HasFact(feature);
                 record["known"] = known;
                 record["published"] = AlternateSummoningExposure.IsPublishedRoot(root);
@@ -746,7 +754,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var controller = (LevelUpController)start.Invoke(null,
                     new object[] { owner, false, null, null, charGen });
                 activeController = controller;
-                if (owner.Progression.GetClassLevel(characterClass) == 0 &&
+                if (archetype != null && owner.Progression.GetClassLevel(characterClass) == 0 &&
                     !controller.AddArchetype(characterClass, archetype))
                     throw new InvalidOperationException("Native archetype selection rejected " +
                         archetype.name + ".");
@@ -758,7 +766,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 controller.Cancel();
                 activeController = null;
             }
-            if (!owner.Progression.IsArchetype(archetype))
+            if (archetype != null && !owner.Progression.IsArchetype(archetype))
                 throw new InvalidOperationException("The disposable caster did not keep " +
                     archetype.name + ".");
         }
