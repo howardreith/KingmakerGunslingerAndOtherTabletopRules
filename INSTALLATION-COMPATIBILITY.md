@@ -1,19 +1,26 @@
 # Installation, updates, removal, and compatibility
 
-Patch version: `0.0.154-gunslinger-animal-companion-eligibility` (UMM
-version `0.0.154`), archive
-`KingmakerGunslinger-0.0.154-gunslinger-animal-companion-eligibility.zip`.
-It is built on released v0.0.153 and changes only which units may take the
-Gunslinger class: animal companions no longer can. Install only the final
-standalone UMM ZIP, not source archives or private reference bundles. See the
-[patch scope and limitations](docs/RELEASE-NOTES-0.0.154.md).
+Patch version: `0.0.156-firearm-rtwp-kill-continuation` (UMM
+version `0.0.156`), archive
+`KingmakerGunslinger-0.0.156-firearm-rtwp-kill-continuation.zip`.
+It is built on released v0.0.155 and changes only how a firearm's explicit
+attack order ends after its target dies in real-time combat. Install only the
+final standalone UMM ZIP, not source archives or private reference bundles.
+See the [patch scope and limitations](docs/RELEASE-NOTES-0.0.156.md).
 
 ### Latest public release
 
-Before this patch, UMM `0.0.153`, archive
+Before this patch, UMM `0.0.155`, archive
+`KingmakerGunslinger-0.0.155-expanded-summoning-sprint24-theropods.zip`, is the
+stable public release; it added the Deinonychus and Tyrannosaurus (see
+[the v0.0.155 release notes](docs/RELEASE-NOTES-0.0.155.md)). UMM `0.0.154`,
+archive `KingmakerGunslinger-0.0.154-gunslinger-animal-companion-eligibility.zip`,
+stopped animal companions from taking Gunslinger levels (see
+[the v0.0.154 release notes](docs/RELEASE-NOTES-0.0.154.md)). UMM `0.0.153`,
+archive
 `KingmakerGunslinger-0.0.153-expanded-summoning-sprint23-charge-rounding.zip`,
-is the stable public release. Its Triceratops Powerful Charge correction is
-recorded in [the v0.0.153 release notes](docs/RELEASE-NOTES-0.0.153.md).
+corrected Triceratops Powerful Charge; see
+[the v0.0.153 release notes](docs/RELEASE-NOTES-0.0.153.md).
 UMM `0.0.152`, archive
 `KingmakerGunslinger-0.0.152-expanded-summoning-sprint23.zip`, added
 Triceratops and Stegosaurus; see

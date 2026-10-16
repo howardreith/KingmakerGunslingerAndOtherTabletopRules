@@ -26,7 +26,31 @@ failed and must meet the owner mission's matched-baseline conditions and appear
 in the notes/manifest. Earlier release procedures below retain their historical
 authorization and original build cadence.
 
-## Current 0.0.154 publication authorization
+## Current 0.0.156 publication authorization
+
+On 2026-10-15 the owner reviewed the firearm RTWP kill-continuation
+checkpoint (second review revision, guarded native run 491/491) and wrote:
+"I think this is satisfactory. If you feel the goals set out to be
+accomplished in this mission are adequately resolved, I think we can finalize
+this and merge it and cut a new release." and then "I explicitly allow it."
+That accepts the checkpoint's stated limits: the original within-full-attack
+symptom was not reproduced in the save-free fixture, the owner's live RTWP
+check was not performed, and the recorded open design questions remain open
+(see `docs/FIREARM-RTWP-KILL-CONTINUATION.md`).
+
+The release is 0.0.156, one above the published 0.0.155. The fix branch
+passes one Sprint-level `Build-Local` candidate gate and the guarded firearm
+native scenario before its PR merges normally; the existing exact-reference
+publisher then runs from clean, pushed `master` with the refreshed private
+reference bundle (the older bundle lacks `UnityEngine.PhysicsModule.dll`):
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir `
+  'C:\Dev\KingmakerGunslingerLab\private\refresh-2026-10-15\extracted\KingmakerGunslinger-private-build-references' `
+  -Publish -ConfirmReleaseReady
+```
+
+## Historical 0.0.154 publication authorization
 
 On 2026-10-15 the owner reviewed the animal-companion Gunslinger eligibility
 checkpoint and wrote: "This is acceptable. Please merge and cut a release."

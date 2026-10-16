@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.155-expanded-summoning-sprint24-theropods",
+  "milestone": "0.0.156-firearm-rtwp-kill-continuation",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.155",
+  "version": "0.0.156",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2511,5 +2511,21 @@
     "candidateOnly": true,
     "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
     "sprint25Started": false
+  },
+  "firearmRtwpKillContinuation156": {
+    "releaseVersion": "0.0.156",
+    "releaseInformationalVersion": "0.0.156-firearm-rtwp-kill-continuation",
+    "baseStableVersion": "0.0.155",
+    "correction": "A finished explicit firearm order whose target is dead completes without suppression when the equipped firearm is currently Normal",
+    "identityChanges": 0,
+    "routeChanges": 0,
+    "assetChanges": 0,
+    "serializationChanges": 0,
+    "registeredLogicalPlacements": 1093,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1122,
+    "guardedNativeFixtureQualified": true,
+    "originalInFullAttackSymptomReproduced": false,
+    "ownerLiveRtwpCheckPerformed": false
   }
 }
