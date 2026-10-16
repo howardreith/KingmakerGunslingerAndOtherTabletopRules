@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.View;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
@@ -137,6 +139,116 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 NativeDonorReferenceComparer.Instance), 8)
                     });
 
+                // ---------------------------------------------------------
+                // The released Elephant, as a production creature. Its
+                // three Sprint 25 carrier symbols are reserved names with
+                // no allocated identity, and the recorded condition for
+                // appending any of them is exactly this observation.
+                BlueprintUnit elephant = units.SingleOrDefault(value =>
+                    string.Equals(value.AssetGuid,
+                        Sprint25DonorCensusPolicy.ReleasedElephantUnitGuid,
+                        StringComparison.Ordinal));
+                if (elephant == null)
+                    throw new InvalidOperationException(
+                        "creature=released-elephant;predicate=exact-unit;guid=" +
+                        Sprint25DonorCensusPolicy.ReleasedElephantUnitGuid);
+
+                var elephantGrants = new JArray();
+                bool trampleFound = false;
+                foreach (BlueprintUnitFact fact in
+                    (elephant.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                        .Where(value => value != null))
+                {
+                    JToken graph = DescribeGraph(fact, 0,
+                        new HashSet<object>(
+                            NativeDonorReferenceComparer.Instance), 6);
+                    string rendered = graph == null ? string.Empty
+                        : graph.ToString(Formatting.None);
+                    bool marker = Sprint25DonorCensusPolicy
+                        .TrampleComponentMarkers.Any(value =>
+                            rendered.IndexOf(value,
+                                StringComparison.Ordinal) >= 0);
+                    if (marker) trampleFound = true;
+                    elephantGrants.Add(new JObject {
+                        ["guid"] = fact.AssetGuid,
+                        ["name"] = fact.name,
+                        ["type"] = fact.GetType().FullName,
+                        ["carriesTrampleMarker"] = marker,
+                        ["graph"] = graph
+                    });
+                }
+
+                // The printed routine is two primary attacks. Which weapon
+                // sits in which limb slot is what decides whether a line
+                // takes the native secondary penalty, so the slots are
+                // reported separately rather than flattened.
+                var bodyRecord = new JObject();
+                if (elephant.Body != null)
+                {
+                    // The slot is typed as hand equipment, and a natural
+                    // weapon is one kind of it; anything else is reported
+                    // as absent rather than silently coerced.
+                    bodyRecord["primaryHand"] = DescribeWeaponSlot(
+                        elephant.Body.PrimaryHand as BlueprintItemWeapon);
+                    bodyRecord["primaryHandDeclaredType"] =
+                        elephant.Body.PrimaryHand == null ? null
+                            : elephant.Body.PrimaryHand.GetType().FullName;
+                    var additional = new JArray();
+                    foreach (BlueprintItemWeapon weapon in
+                        elephant.Body.AdditionalLimbs ??
+                        Array.Empty<BlueprintItemWeapon>())
+                        additional.Add(DescribeWeaponSlot(weapon));
+                    bodyRecord["additionalLimbs"] = additional;
+                    var secondary = new JArray();
+                    foreach (BlueprintItemWeapon weapon in
+                        elephant.Body.AdditionalSecondaryLimbs ??
+                        Array.Empty<BlueprintItemWeapon>())
+                        secondary.Add(DescribeWeaponSlot(weapon));
+                    bodyRecord["additionalSecondaryLimbs"] = secondary;
+                }
+
+                var routes = new JArray();
+                foreach (string guid in
+                    Sprint25DonorCensusPolicy.ReleasedElephantRoutes)
+                {
+                    BlueprintScriptableObject route = all.SingleOrDefault(
+                        value => string.Equals(value.AssetGuid, guid,
+                            StringComparison.Ordinal));
+                    routes.Add(new JObject {
+                        ["guid"] = guid,
+                        ["found"] = route != null,
+                        ["name"] = route == null ? null : route.name,
+                        ["type"] = route == null ? null
+                            : route.GetType().FullName
+                    });
+                }
+
+                document["releasedElephant"] = new JObject {
+                    ["scope"] = "Released production creature, observed as metadata only. It records which grants, abilities and attack carriers resolve; it records nothing about any live command outcome.",
+                    ["guid"] = elephant.AssetGuid,
+                    ["blueprintName"] = elephant.name,
+                    ["size"] = elephant.Size.ToString(),
+                    ["unitType"] = elephant.Type == null ? null
+                        : elephant.Type.name,
+                    ["prefab"] = elephant.Prefab == null ? null
+                        : elephant.Prefab.AssetId,
+                    ["grantCount"] = elephantGrants.Count,
+                    ["grants"] = elephantGrants,
+                    ["tramplePresent"] = trampleFound,
+                    ["body"] = bodyRecord,
+                    ["routes"] = routes,
+                    ["nativeUnit"] = DescribeNativeUnit(elephant)
+                };
+
+                bool routesResolved = routes.OfType<JObject>()
+                    .All(value => (bool)value["found"]);
+                assertions.Add(Assertion("sprint25-census-released-elephant",
+                    "the released Elephant resolves with its eight routes and its own carriers",
+                    "grants=" + elephantGrants.Count + ";routes=" +
+                        routes.Count + ";routesResolved=" + routesResolved +
+                        ";tramplePresent=" + trampleFound,
+                    routesResolved && elephantGrants.Count > 0,
+                    "metadata only; no spawn, save or command"));
                 bool anchorsFound = facts.OfType<JObject>()
                     .All(value => (bool)value["found"]);
                 assertions.Add(Assertion("sprint25-census-donors",
@@ -183,6 +295,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Unity Mod Manager ModEntry.Info.Version"));
             return CreateResult(assertions.All(value => value.Status == "PASS")
                 ? "PASS" : "FAIL", assertions, null);
+        }
+
+        /// <summary>
+        /// Exact identity and declared dice for one natural-weapon slot.
+        /// Which slot a weapon occupies is what decides whether it takes
+        /// the native secondary penalty, so the slot is never flattened.
+        /// </summary>
+        private static JObject DescribeWeaponSlot(BlueprintItemWeapon weapon)
+        {
+            if (weapon == null) return null;
+            return new JObject {
+                ["guid"] = weapon.AssetGuid,
+                ["name"] = weapon.name,
+                // The printed dice live in the private m_DamageDice
+                // field, and this class already has the reader for it.
+                ["damageDice"] = DescribeWeaponDice(weapon),
+                ["type"] = weapon.Type == null ? null : weapon.Type.name
+            };
         }
     }
 }

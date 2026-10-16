@@ -57,7 +57,29 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(
                 Sprint25DonorCensusPolicy.MaximumDiscoveredFeatBlueprints > 0,
                 "Discovery is bounded.");
-        }
+
+            // The released-Elephant observation. Its three Sprint 25
+            // carrier symbols are reserved names with no allocated
+            // identity, and observing what the creature actually carries
+            // today is the recorded precondition for appending any of
+            // them. The inputs are exact rather than discovered.
+            Assertions.Equal("9dd8544097234f05bcd35d400d91b510",
+                Sprint25DonorCensusPolicy.ReleasedElephantUnitGuid,
+                "The released Elephant identity is exact and is not a donor rig.");
+            Assertions.Equal(8,
+                Sprint25DonorCensusPolicy.ReleasedElephantRoutes.Length,
+                "All eight released routes are observed: four Monster tiers "
+                    + "and four Nature's Ally tiers.");
+            Assertions.True(Sprint25DonorCensusPolicy.ReleasedElephantRoutes
+                    .Distinct().Count() == 8,
+                "No route is listed twice.");
+            Assertions.True(Sprint25DonorCensusPolicy
+                    .TrampleComponentMarkers.Contains("AbilityCustomOverrun"),
+                "Trample presence is answered from the resolved graph, not "
+                    + "from the project ledger.");
+            Assertions.True(Sprint25DonorCensusPolicy
+                    .ReleasedElephantUnitSymbol.Contains("Elephant"),
+                "The observed symbol is the released Elephant unit.");        }
 
         internal static void TheCensusIsWiredAsReadOnlyResearch()
         {
