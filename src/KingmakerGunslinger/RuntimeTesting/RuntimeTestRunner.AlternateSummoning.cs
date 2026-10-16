@@ -34,13 +34,18 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>
         /// Read-only, save-free observation of the installed alternate
-        /// summoning graph after reconciliation. Every adapter child's full
-        /// significant-mechanics signature - resource and spend, custom cost
-        /// facts, caster conditions with their pools, every rank expression,
-        /// spell traits, and the run action's spawn, quantity, duration, pool,
-        /// clear and conditional structure in order - must equal its caller
-        /// template's with only the deliberate creature and template/alignment
-        /// changes. Every authorized host template must still render exactly as
+        /// summoning graph after reconciliation. Every adapter child must match
+        /// its caller template under the supported signature contract
+        /// (SummonSignatureReader: ability and action type, full-round flag,
+        /// range, school, descriptor, resource and spend, custom cost facts and
+        /// calculators, caster conditions with their pools, every rank
+        /// configuration, and the run action's spawn, quantity, duration, pool,
+        /// clear and conditional structure in order, after-spawn actions by
+        /// type), apart from the deliberate creature and composed action; and
+        /// its composed after-spawn action must match the canonical child's
+        /// under the composed-action contract (AlternateSummoningComposition).
+        /// Neither is an unrestricted comparison of every executed value.
+        /// Every authorized host template must still render exactly as
         /// it did when it was resolved. With <paramref name="blockedFamily"/>
         /// the named family must instead be blocked with placeholders and an
         /// unchanged host. It casts nothing and changes nothing; it cannot
