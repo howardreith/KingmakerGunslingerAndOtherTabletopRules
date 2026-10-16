@@ -188,7 +188,7 @@ ways.
 | | |
 |---|---|
 | Static source | installed CotW 1.14.4c-2.1 (`CallOfTheWild.dll` SHA-256 `4ebf8e1e...6915`), decompiled locally (not committed), plus Kingmaker 2.1.7b `Assembly-CSharp` (SHA-256 `3b6450ff...afb`) |
-| Runtime observation | guarded save-free runs on development candidates, 2026-10-16 (see "Native coverage") |
+| Runtime observation | guarded runs on development candidates, 2026-10-16: save-free compatibility-profile scenarios, plus read-only use of the disposable working save `KMG_AUTOMATION_WORKING` for the natural scenario (see "Native coverage" and the third pass); no save file was written |
 | Graph discovery | `observe-alternate-summoning-sources` census, CotW profile (results under "Native coverage") |
 
 Abbreviations: **IMPL** means implemented with focused source and domain
@@ -319,9 +319,13 @@ All on this worktree. Durations are wall-clock.
 
 ## Native coverage (what was actually exercised in game)
 
-Structured engine observations, not screenshots. All save-free, all in a
-fresh empty world, every created unit destroyed and the native census
-restored, every profile restored exactly (see the state file for receipts).
+Structured engine observations, not screenshots. The scenarios in this
+section ran through compatibility-profile transactions: save-free, in a fresh
+empty world, every created unit destroyed and the native census restored,
+every profile restored to its recorded per-file SHA-256 manifest (see the
+state file for receipts). The third pass's natural scenario is different: it
+loads the disposable working save read-only through the live development
+route (below).
 
 **Observer and blocked family** (`observe-alternate-summoning-sources`,
 `observe-alternate-summoning-blocked-family`):
@@ -411,9 +415,10 @@ unexposed identity whose gate refuses the cast.
 ## Targeted verification pass (2026-10-16, third pass)
 
 Corrections implemented; native command-fixture coverage passed; real-UI and
-natural-RTWP coverage passed on the working save for the cases listed;
-player-facing validation partially complete (turn-based, hotbar, saved
-shortcuts and grapple-on-reload remain manual, below).
+natural-RTWP coverage passed on the working save for the cases listed, under
+the strengthened natural verdict; player-facing validation partially complete
+(turn-based, hotbar, saved shortcuts and a scroll-required menu remain manual;
+a blocked-family load and grapple reset on reload need maintainer fixtures).
 
 ### What the observer verifies (the supported contracts)
 
@@ -507,31 +512,63 @@ Fixture defect, corrected in `c7216602b1`.
 
 ### Natural working-save run (`disposable-alternate-summoning-natural`)
 
-On the guarded read-only working save `KMG_AUTOMATION_WORKING` with the full
-installed mod set. A disposable Master Summoner 13 joins the UI party and is
-selected. Each choice opens the native abilities group, the granted root's
-own variant popup, and clicks the row (`ActionBarSlot.OnClick`); the cast is
-confirmed through the native selected-ability click handler
-(`ClickWithSelectedAbilityHandler.OnClick` on a point beside the caster) and
-left to the unpaused native RTWP scheduler and animation. No `IsActed`, no
-cooldown override, no synchronous command tick, no hotbar slot. Nothing is
-saved. `b9c56e3da9a9`, 11/11:
+On the guarded working save `KMG_AUTOMATION_WORKING`, loaded read-only (no
+save file is written) with the full installed mod set, through the live
+development route: `Deploy-Local.ps1 -DevelopmentPurpose` (backup first),
+`Invoke-KingmakerRuntimeTest.ps1 -ReuseInstalledArtifact -SaveName
+KMG_AUTOMATION_WORKING`, then `Restore-Live-Mod.ps1`. A disposable Master
+Summoner 13 joins the UI party and is selected. Each choice opens the native
+abilities group, the granted root's own variant popup, and clicks the row
+(`ActionBarSlot.OnClick`); the cast is confirmed through the native
+selected-ability click handler (`ClickWithSelectedAbilityHandler.OnClick` on a
+point beside the caster) and left to the unpaused native RTWP scheduler and
+animation. No forced act, no cooldown override, no direct command tick, no
+hotbar slot.
+
+**Verdict** (`AlternateSummoningNaturalVerdict`, from `a320442acd`). A cast
+passes only when:
+- the wait ended because the command finished and the standard-action
+  cooldown cleared, not at the 30 s deadline (`waitOutcome` records
+  `completed`, `command-stalled`, `cooldown-stalled` or `deadline`);
+- it acted natively with no override, forced act or direct tick;
+- exactly one use was spent;
+- every creature is the chosen unit and is owned by this summoner;
+- the count lies inside the option's tabletop bounds: one, 1d3 = 1-3,
+  1d4+1 = 2-5, widened only by an active native Maximize or Empower (read
+  from the cast; none was active).
+
+Domain tests cover an ordinary completion and the failures: an unfinished
+command with a creature already spawned, an uncleared cooldown, a deadline,
+out-of-range groups, assistance, wrong spend or unit, and the count modifiers.
+
+Run at `a320442acdb2`, strengthened verdict, 11/11 (evidence
+`20261016T1740160951203Z-disposable-alternate-summoning-natural`):
 
 | Case | Observed |
 |---|---|
 | tier I popup, early row | 7 rows (all exposed), navigation verified; row 0 Dire Rat clicked; selection is that child, converted from the granted root fact |
-| tier I cast | native act, no cooldown override, 2.2 s; 1 use (9 -> 8); 1 Dire Rat |
+| tier I cast | wait `completed` (command finished, cooldown cleared), native act, no override, 2.4 s; 1 use (9 -> 8); 1 Dire Rat, legal [1,1] |
 | tier III popup, last row | 31 rows; last row (Viper 1d4+1) in view and clicked |
-| tier III cast | 2.7 s; 1 use (8 -> 7); 2 Vipers |
+| tier III cast | `completed`, 2.7 s; 1 use (8 -> 7); 3 Vipers, legal [2,5] |
 | tier VII popup, recent creature | 94 rows; the single Tyrannosaurus (Sprint 24) row in view and clicked |
-| tier VII cast | 2.1 s; 1 use (7 -> 6); 1 Tyrannosaurus |
-| natural dismissal | the Tyrannosaurus's summoned-unit buff removed (expiry path); native dismemberment ran in native time (2.1 s) and destroyed it; its pool released it |
-| cleanup | the summoner and every summon gone; original units, area effects and party unchanged; no save write; game time advanced 8.4 s while unpaused |
+| tier VII cast | `completed`, 2.2 s; 1 use (7 -> 6); 1 Tyrannosaurus, legal [1,1] |
+| Tyrannosaurus cleanup | explicit lifecycle-buff removal followed by native dismemberment and pool cleanup: the fixture removed its summoned-unit buff, native time (2.1 s) ran the dismemberment and destroyed it, and its pool released it. Not the summon's full duration elapsing, not a dismissal click, not grapple/swallow reset on reload |
+| cleanup | the summoner and every summon gone; original units, area effects and party unchanged; no save write |
 
-At the run's screen resolution no menu needed scrolling (7, 31 and 94 rows
-all fit), so the scroll-required choice is not exercised here. An earlier run
-of the same scenario at `c7216602b103` (level 5, tiers I and III, Dire Rat
-dismissed) also passed, 8/8.
+The cleanup target must be the Tyrannosaurus cast in the same run; a missing
+target is a BLOCKED failure, never a substitute unit.
+
+Earlier runs of this scenario, kept with their original verdict, which did
+not yet require the command-finished, cooldown-cleared or wait-condition
+state and accepted any positive group count:
+- `b9c56e3da9a9`, 11/11 (`20261016T1550339254110Z-disposable-alternate-summoning-natural`);
+- `c7216602b103`, 8/8 (Master Summoner 5; tiers I and III; a Dire Rat cleaned up;
+  `20261016T1544477038010Z-disposable-alternate-summoning-natural`).
+Their raw evidence lacks the terminal-state fields, so they could not be
+re-read under the new verdict; the scenario was rerun instead.
+
+At the runs' screen resolution no menu needed scrolling (7, 31 and 94 rows
+all fit), so the scroll-required choice is not exercised.
 
 ### Commands, durations and results (third pass)
 
@@ -543,13 +580,24 @@ All on this worktree; durations are wall-clock.
 | `Invoke-KmgGate.ps1 -Level Focused -Filter 'alternate-summoning;runtime-scenario;brown-fur.native-cast'` (each later commit) | compile PASS; 25 / 25; about 10 s |
 | `scripts/Test-RuntimeScenarioPreflight.ps1` | 590 PASS (two new checks for the natural scenario); 14 s |
 | `Test-ExplicitCandidateReuse.ps1`, `Test-KmgGate.ps1` | 7 / 7; PASS (development gate 8 / 8) |
-| Candidate builds (`Build-Local.ps1 -ReferenceBundleDir <refresh-2026-10-15> -DevelopmentPurpose alternate-summoning-native -DevelopmentTestFilter <focused + icon readers>`) | `3e2bf5caf729` 68 s, `c7216602b103` 63 s, `b9c56e3da9a9` 63 s; 583 / 2,639 selected, 0 failures each |
+| `Invoke-KmgGate.ps1 -Level Focused -Filter 'alternate-summoning;runtime-scenario'` at `a320442acd` | compile PASS; 32 / 32 (7 new verdict cases); about 3 s |
+| Candidate builds (`Build-Local.ps1 -ReferenceBundleDir <refresh-2026-10-15> -DevelopmentPurpose alternate-summoning-native -DevelopmentTestFilter <focused + icon readers>`) | `3e2bf5caf729` 68 s, `c7216602b103` 63 s, `b9c56e3da9a9` 63 s (583 / 2,639 selected); `a320442acdb2` 68 s (590 / 2,646); 0 failures each |
 | Guarded profile transactions | see the state file; 2-7 min each, all `Restored` and verified |
-| Guarded live working-save runs (`Deploy-Local -DevelopmentPurpose`, `Invoke-KingmakerRuntimeTest -ReuseInstalledArtifact -SaveName KMG_AUTOMATION_WORKING`, `Restore-Live-Mod`) | 2, about 1.5 min each; live mod byte-identical to its pre-run backup afterwards |
+| Guarded live working-save runs (`Deploy-Local -DevelopmentPurpose`, `Invoke-KingmakerRuntimeTest -ReuseInstalledArtifact -SaveName KMG_AUTOMATION_WORKING`, `Restore-Live-Mod`) | 3, about 1.5 min each; restoration evidence in the state file |
 | Pre-existing failures | `Test-RuntimeDeployment.ps1`, `Test-CompatibilityCandidateReuse.ps1` (recorded before) and `Test-MagicCircleRuntimeRequest.ps1` ("'Get-KmgRepositoryRoot' is not recognized") fail identically on unchanged `master` `607da683b1`; not caused here |
 
-Not run: the complete domain suite and the repository wrapper (Sprint-boundary
-checks under the validation policy), the historical full runtime matrix.
+Repository wrapper. Each development `Build-Local` above ran
+`validate-repository.ps1 -DevelopmentPurpose alternate-summoning-native` as a
+nested step (its log: "Development-candidate repository validation passed
+... This is not a release qualification."). That is the development wrapper:
+it runs the development-candidate validator in place of the active release
+validator and the named test selection in place of the complete suite; every
+other wrapper fixture runs unchanged. No independent release-mode wrapper run
+qualified this work (the one recorded earlier fails, as intended, at the
+v0.0.156 release validator).
+
+Not run: the complete domain suite, a release-mode wrapper, the historical
+full runtime matrix.
 
 ### Evidence matrix
 
@@ -560,90 +608,138 @@ Each row stands alone; no row's PASS covers another row's category.
 | Source and domain checks | PASS | per commit | composition model 6 cases; 25 related cases; 583 selected in each candidate build; runtime preflight 590 | gate output; candidate receipts |
 | Structural native observer, CotW | PASS 9/9 | `c7216602b103` | seven families published; both contracts on every adapter child; templates unchanged | `20261016T1537090363960Z-observe-alternate-summoning-sources` |
 | Blocked-family drill | PASS 9/9 | `c7216602b103` | Master Summoner blocked with placeholders; others published under both contracts | `20261016T1538502973891Z-observe-alternate-summoning-blocked-family` |
-| Standalone observer (no CotW) | <S> | `b9c56e3da9a9` | Monster Tactician under both contracts; CotW families absent | <S-dir> |
-| Module OFF observer + settings | <M> | `b9c56e3da9a9` | every identity registered, nothing exposed | <M-dir> |
+| Standalone observer (no CotW) | PASS 9/9 | `b9c56e3da9a9` | Monster Tactician published under both contracts; the six CotW families `AbsentInProfile` | `20261016T1553238390102Z-observe-alternate-summoning-sources` (transaction `compat-20261016T155231Z-ebe9626d778a`) |
+| Module OFF observer + settings | PASS 9/9; 47/47 | `b9c56e3da9a9` | every identity registered, nothing exposed or published; the staged OFF setting was the one loaded | `20261016T1555338499418Z-observe-alternate-summoning-sources`, `20261016T1557081100540Z-observe-feature-module-settings` (transaction `compat-20261016T155434Z-ea5fc4a94142`) |
 | Composed-action negative controls | PASS 17/17 | `c7216602b103` | table above | `20261016T1540259762240Z-disposable-alternate-summoning-contracts` |
 | Assisted native command fixture | PASS 28/28 | `c7216602b103` | every family's granted root; eidolon pools; Occultist lower-tier group; Preservationist III -> SNA IV. Timing assisted (see label) | `20261016T1541548916348Z-disposable-alternate-summoning-player-paths` |
 | Eidolon and pool behavior | PASS (assisted) | `c7216602b103` | real Master Summoner + real lesser eidolon (Fey); pools, units and uses read from the engine | same |
-| Real UI popup selection | PASS 11/11 (natural run) | `b9c56e3da9a9` | real action-bar popup rows for tiers I, III (last of 31) and VII (Tyrannosaurus of 94) clicked; the selected child is converted from the granted root fact | `20261016T1550339254110Z-disposable-alternate-summoning-natural` |
-| Scroll-required menu choice | NOT EXERCISED | — | at this resolution no menu (7, 31, 94 rows) needed scrolling; the last row was in view | owner checklist |
-| Natural RTWP timing | PASS | `b9c56e3da9a9` | target click through the native handler; unpaused native scheduler and animation; natural act; no cooldown override; one use each | same |
-| Turn-based timing | NOT RUN | — | no genuine turn-based round | owner checklist step 6 |
-| Hotbar binding and reuse | BLOCKED | — | binding goes through the `settings.SetSlot` path that hung a guarded run before; not repeated | owner checklist step 1 |
-| Saved-reference cold load (normal / OFF / blocked / restore) | BLOCKED | — | needs a save-writing shortcut orchestrator; structural substitutes: module-OFF observer, blocked drill, unexposed-child refusal | owner checklist steps 2-5 |
-| Dismissal / expiration cleanup | PASS (natural) | `b9c56e3da9a9` | Tyrannosaurus (Sprint 24) ended through the engine's expiry path; native dismemberment; pool released; exact cleanup | natural run |
-| Grapple / swallow reset on reload | NOT RUN | — | needs a save and reload with a grappling summon; grapple persistence is not implemented | owner checklist step 7 |
+| Real UI popup selection | PASS (natural run 11/11) | `a320442acdb2` | real action-bar popup rows for tiers I, III (last of 31) and VII (Tyrannosaurus of 94) clicked; the selected child is converted from the granted root fact. Earlier: `b9c56e3da9a9` 11/11, `c7216602b103` 8/8 | `20261016T1740160951203Z-disposable-alternate-summoning-natural` |
+| Scroll-required menu choice (automated) | NOT EXERCISED | — | at the runs' resolution no menu (7, 31, 94 rows) needed scrolling; the last row was in view | — |
+| Natural RTWP timing | PASS (strengthened verdict) | `a320442acdb2` | target click through the native handler; wait ended on command finished + cooldown cleared, never the deadline; natural act; no override, forced act or direct tick; one use each; counts inside tabletop bounds. The earlier `b9c56e3da9a9`/`c7216602b103` passes used the weaker verdict | same |
+| Turn-based timing | NOT RUN | — | no genuine turn-based round | owner checklist step 5 |
+| Hotbar binding and reuse | NOT RUN (manual) | — | binding goes through the `settings.SetSlot` path that hung a guarded run before; not automated | owner checklist steps 1-2 |
+| Saved-reference cold load (normal / OFF / restored) | NOT RUN (manual) | — | needs a save-writing shortcut orchestrator; structural substitutes only: module-OFF observer, unexposed-child refusal | owner checklist steps 2-4 |
+| Saved-reference load with a blocked family | BLOCKED / UNVERIFIED (maintainer only) | — | no safe, identified drill-capable load procedure exists; the save-free placeholder drill is not shortcut deserialization | maintainer case M1 |
+| Recent-creature cleanup | PASS | `a320442acdb2` | the Tyrannosaurus (Sprint 24): explicit lifecycle-buff removal followed by native dismemberment and pool cleanup; not natural duration expiry, not a dismissal click | natural run |
+| Scroll-required menu choice (manual) | NOT RUN | — | see above | owner checklist step 6 |
+| Grapple / swallow reset on reload | BLOCKED (maintainer fixture needed) | — | the engine refuses to save in combat, and a grab or swallow exists only in combat; grapple persistence is not implemented | maintainer case M2 |
 
 ### Owner checklist (manual cases not automated)
 
-Use a disposable save only (a copy, never `KMG_AUTOMATION_BASELINE` or a
-campaign save). Install the PR #52 development candidate temporarily over a
-backed-up mod folder, with Call of the Wild 1.14.4c-2.1, and restore the backup
-afterwards. Do not uninstall CotW from a save that depends on it. Report each
-step as PASS, FAIL or unclear, with a screenshot of anything unexpected.
+None of these is automated or claimed. A checklist step that passes in your
+hands is owner evidence for that step only.
 
-**Character.** A Summoner with the CotW Master Summoner archetype at level 5
-or higher (tier III summons), Charisma 14+. Take any lesser eidolon. Out of
-combat, in a safe area.
+**Artifact.** Use the published v0.0.157 package once it is released.
+Before that, the development candidate is
+`artifacts/development-candidates/alternate-summoning-native/a320442acdb2/KingmakerGunslinger-0.0.156-development-alternate-summoning-native-a320442acdb2.zip`
+in the mission worktree, with its receipt next to it
+(`...zip.development-receipt.json`, SHA-256 `8f09e234...5a07`). Its limits: it
+is local and gitignored, never a release, still reports version 0.0.156, and
+only `Deploy-Local.ps1 -PackagePath <zip> -DevelopmentPurpose
+alternate-summoning-native` installs it (that backs up the live mod first;
+`Restore-Live-Mod.ps1 -BackupDirectory <backup>` puts it back).
+
+**Saves.** Work only in a disposable save: a new test character, or a copy
+of a non-campaign save in its own slot. Before starting, copy the whole
+`%USERPROFILE%\AppData\LocalLow\Owlcat Games\Pathfinder Kingmaker\Saved Games`
+folder somewhere safe, and copy it back when finished. Never use a campaign
+save, and never load, overwrite or rename `KMG_AUTOMATION_BASELINE`. Keep Call
+of the Wild 1.14.4c-2.1 installed throughout; do not uninstall it from a save
+that depends on it.
+
+**Character.** A Summoner with the CotW Master Summoner archetype, level 5 or
+higher (level 13 for tier VII), Charisma 14+, with a lesser eidolon. Rest
+first so at least 4 Master Summoner uses remain. Before step 1 cast **Unsummon
+Eidolon** and keep the eidolon unsummoned through step 4: with the eidolon
+present and a summon already alive, the host correctly refuses another cast,
+which would make the success expectations below misleading. Stay out of
+combat, idle, in a safe area that will not change (no area transition, so no
+autosave).
 
 1. **Hotbar binding.** Open the abilities group on the action bar, open the
    Summon Monster I menu, and drag a KMG creature (for example Dire Rat) to an
    empty hotbar slot. Click the slot and place the summon.
-   Expect: the same creature appears; one Master Summoner use is spent; the
-   slot keeps that creature's icon.
-2. **Saved shortcut, normal reload.** Save to the disposable slot, quit to the
-   main menu, load it. Click the hotbar slot.
-   Expect: the slot still shows the creature; the cast works and spends one use.
-3. **Expanded Summoning OFF.** Quit the game, set `expanded-summoning` to
-   `false` in `Mods/KingmakerGunslinger/FeatureModules.json`, start, load the
-   disposable save, click the slot.
-   Expect: the slot is unavailable or the cast is refused; no use is spent, no
-   creature appears, no error dialog; nothing else in the save changes.
-4. **Restore normal.** Quit, set `expanded-summoning` back to `true`, load the
-   same save, click the slot.
-   Expect: the same slot casts the same creature again with no respec and no
-   duplicate ability on the character sheet.
-5. **Blocked family (optional; needs a maintainer build).** Not owner-executable
-   in a normal install: the family block is a load-time refusal that only a
-   changed CotW contract triggers. The save-free drill
-   `observe-alternate-summoning-blocked-family` covers the placeholder
-   identities; skip this step unless a maintainer provides a drill build.
-6. **Turn-based round.** Turn on turn-based mode, start a fight, and on the
-   Master Summoner's turn choose a KMG creature from the Summon Monster menu.
-   Expect: the cast takes the standard action in that turn, one use is spent,
-   the creature appears and acts in the initiative order; the next attempt with
-   the eidolon present and a summon alive is refused.
-7. **Grapple or swallow reset on reload.** Summon a KMG creature with grapple
-   or swallow through a Master Summoner or Occultist menu, let it grab an
-   enemy, save in the disposable slot mid-grapple, reload.
-   Expect: no stuck grapple: both units can act normally, or the grapple is
-   cleanly ended. Grapple persistence is not implemented; a clean reset is
-   the expected result.
+   Expect: the tooltip names that creature under the Master Summoner's Summon
+   Monster I; the Dire Rat appears; the use count drops by exactly one; the
+   hotbar holds exactly one such slot.
+2. **Save and cold reload (normal).** Save once to a new disposable slot `S1`.
+   Exit the game to the desktop so the Kingmaker process ends, start it again
+   from Steam, and load `S1`. Click the slot.
+   Expect: the slot is still there once, with the same creature and icon; the
+   cast works, summons a Dire Rat and spends one use. (Quitting to the main
+   menu and loading is a separate warm-reload check, not this cold load.)
+3. **Expanded Summoning OFF, cold.** Exit the game. Set `"expanded-summoning"`
+   to `false` in `Mods\KingmakerGunslinger\FeatureModules.json`. Start the game
+   and load `S1`. Do not save in this step. Click the slot.
+   Expect: the slot is unavailable or the cast is refused; no use is spent; no
+   creature appears; no error dialog; the slot is neither lost nor duplicated.
+   Exit the game without saving; `S1`'s modified time is unchanged.
+4. **Restored, cold.** Set `"expanded-summoning"` back to `true`, start the
+   game, load the same `S1`, click the same slot.
+   Expect: the same slot casts the same Dire Rat and spends one use, with no
+   respec and no duplicated ability on the character sheet.
+5. **Turn-based round.** Turn on turn-based mode in the game options, start a
+   fight with a hostile you can handle, and on the Master Summoner's turn open
+   the Summon Monster menu and choose a KMG creature.
+   Expect, under the host rule (CotW Master Summoner summons are standard
+   actions): the cast uses that turn's standard action; exactly one use is
+   spent; the creature appears and is listed in the initiative order. When it
+   first acts (its first eligible turn, or later) is a separate observation:
+   record it rather than assuming it. With the eidolon summoned and a summon
+   alive, a further attempt is refused with nothing spent.
+6. **Scroll-required menu.** Note the current resolution and UI settings.
+   Lower the resolution in the game's graphics options (a supported,
+   reversible setting) until a large menu shows a scrollbar: tier VII (94
+   entries, level 13) or tier III (31 entries). Scroll to the end, choose an
+   entry that was out of view at the start, and cast it.
+   Expect: the tooltip and the summoned creature match the entry chosen; the
+   Master Summoner use count drops by one. Then restore the original
+   resolution and UI settings.
 
+Maintainer-only cases (BLOCKED / UNVERIFIED; not owner steps):
+- **M1. Saved shortcut with a blocked family.** A family is blocked only when
+  the installed provider's contract no longer matches. There is no safe,
+  identified drill-capable load procedure yet, and the save-free placeholder
+  drill (`observe-alternate-summoning-blocked-family`) is not proof of shortcut
+  deserialization. Do not edit the provider DLL or alter a live install to
+  provoke it.
+- **M2. Grapple or swallow reset on reload.** The Tyrannosaurus (tier VII,
+  Master Summoner 13) has grab and swallow. The engine refuses to save while
+  the player is in combat (`SaveManager.IsSaveAllowed`), and a grab or swallow
+  exists only in combat, so ordinary play cannot create the needed save. It
+  needs a maintainer fixture. Expected when tested: a clean reset, meaning the
+  grapple link and condition and the swallow (mouth) occupancy cleared, no
+  stale interior damage and no dangling relationship. Unrelated combat
+  conditions need not clear. Grapple persistence is not implemented.
 
 ## Remaining (not checked in game)
 
 Runtime is not checked for any of these; they are not claimed. Items the
 third pass closed (eidolon pools, real popup selection, natural RTWP casts, a
-recent creature's dismissal) are no longer listed; see the evidence matrix.
+recent creature's cleanup by explicit lifecycle-buff removal followed by
+native dismemberment and pool cleanup) are no longer listed; see the evidence
+matrix.
 
 1. **Hotbar binding and reuse.** Not automated: binding goes through the
    `settings.SetSlot` path that hung an earlier guarded run, and it was not
-   repeated or forced. Owner checklist step 1.
-2. **Saved-reference cold load** (normal, Expanded Summoning OFF, blocked
-   family, restored). Needs a save-writing shortcut orchestrator on a
-   disposable save. Structural substitutes observed: a blocked family's
-   identities stay registered as unavailable placeholders; with the module
-   OFF every identity registers and nothing is exposed; an unexposed
-   registered child is refused through its root. Owner checklist steps 2-5.
-3. **Turn-based round.** No genuine turn-based combat round. Natural RTWP is
-   covered. Owner checklist step 6.
-4. **Scroll-required choice.** No menu needed scrolling at the natural run's
+   repeated or forced. Owner checklist steps 1-2.
+2. **Saved-reference cold load** (normal, Expanded Summoning OFF, restored).
+   Needs a save-writing shortcut orchestrator on a disposable save.
+   Structural substitutes observed: with the module OFF every identity
+   registers and nothing is exposed; an unexposed registered child is refused
+   through its root. Owner checklist steps 2-4.
+3. **Saved-reference load with a blocked family.** BLOCKED / UNVERIFIED,
+   maintainer only (case M1); the save-free placeholder drill is not shortcut
+   deserialization.
+4. **Turn-based round.** No genuine turn-based combat round. Natural RTWP is
+   covered. Owner checklist step 5.
+5. **Scroll-required choice.** No menu needed scrolling at the natural runs'
    resolution (7, 31 and 94 rows); the last and a deep row were clicked in
-   view.
-5. **Grapple or swallow reset on reload** through an adapter summon. Owner
-   checklist step 7. Grapple persistence is not implemented.
-6. **Tiers.** Not every tier and position of every family was cast; the cases
+   view. Owner checklist step 6.
+6. **Grapple or swallow reset on reload** through an adapter summon. BLOCKED:
+   needs a maintainer fixture (case M2), because the engine refuses to save in
+   combat. Grapple persistence is not implemented.
+7. **Tiers.** Not every tier and position of every family was cast; the cases
    are the ones listed in each table.
 
 ## Findings for review
