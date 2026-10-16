@@ -898,11 +898,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunSummonSameTurnCompatibility();
                     return;
                 }
-                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveAlternateSummoningSources)
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveAlternateSummoningSources ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.ObserveAlternateSummoningBlockedFamily)
                 {
                     if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading ||
                         !AlternateSummoningSettled()) return;
-                    Complete(RunAlternateSummoningSourcesObservation());
+                    Complete(RunAlternateSummoningSourcesObservation(
+                        _request.Scenario == RuntimeTestScenarioCatalog.ObserveAlternateSummoningBlockedFamily ?
+                            AlternateSummoningFaultDrillControl.DrilledFamily : null));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableAlternateSummoningContracts)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading ||
+                        !AlternateSummoningSettled()) return;
+                    Complete(RunAlternateSummoningContractFixture());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeatherCatalog)

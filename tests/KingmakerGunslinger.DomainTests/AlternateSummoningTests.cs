@@ -346,29 +346,6 @@ namespace KingmakerGunslinger.DomainTests
                 "Tier I has only a single-creature root.");
         }
 
-        internal static void LineageNeedsAnExactUniqueSignature()
-        {
-            var candidates = new[] {
-                new AlternateSummoningLineageCandidate("a", SummonMultiplicity.One,
-                    new[] { "u1", "u2" }),
-                new AlternateSummoningLineageCandidate("b", SummonMultiplicity.OneD3,
-                    new[] { "u3" }),
-                new AlternateSummoningLineageCandidate("c", SummonMultiplicity.OneD4PlusOne,
-                    new[] { "u3" }) };
-            Assertions.Equal("a", AlternateSummoningLineagePolicy.Match(
-                new[] { "u2", "u1", "u2" }, null, candidates).OptionGuid,
-                "Order and repeats must not change a spawn signature.");
-            Assertions.True(AlternateSummoningLineagePolicy.Match(new[] { "u3" }, null,
-                candidates) == null, "An ambiguous signature must stay unknown.");
-            Assertions.Equal("c", AlternateSummoningLineagePolicy.Match(new[] { "u3" },
-                SummonMultiplicity.OneD4PlusOne, candidates).OptionGuid,
-                "The quantity must disambiguate within a tier.");
-            Assertions.True(AlternateSummoningLineagePolicy.Match(new[] { "u1" }, null,
-                candidates) == null, "A partial signature is not a lineage.");
-            Assertions.True(AlternateSummoningLineagePolicy.Match(new string[0], null,
-                candidates) == null, "A host that spawns nothing has no lineage.");
-        }
-
         internal static void LifecycleWaitsBlocksAndStaysAbsent()
         {
             AlternateSummoningLifecycleDecision decision;

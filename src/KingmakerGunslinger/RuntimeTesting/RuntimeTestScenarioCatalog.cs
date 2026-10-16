@@ -212,6 +212,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string ObserveAlternateSummoningSources =
             "observe-alternate-summoning-sources";
+        /// <summary>The same read-only observation with Master Summoner
+        /// drilled as unadaptable: its identities must stay resolvable as
+        /// unavailable placeholders and its host menus unchanged.</summary>
+        internal const string ObserveAlternateSummoningBlockedFamily =
+            "observe-alternate-summoning-blocked-family";
+        /// <summary>Save-free fixture that drives the production resolver,
+        /// contracts and builder against transient clones of real templates;
+        /// it registers nothing and is not read-only.</summary>
+        internal const string DisposableAlternateSummoningContracts =
+            "disposable-alternate-summoning-contracts";
         internal const string ObserveExpandedSummoningVariantMenu =
             "observe-expanded-summoning-variant-menu";
         internal const string DisposableExpandedSummoning =
@@ -837,6 +847,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningSprint21Review,
                 ObserveExpandedSummoningInventory,
                 ObserveAlternateSummoningSources,
+                ObserveAlternateSummoningBlockedFamily,
+                DisposableAlternateSummoningContracts,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningNativeProfile,

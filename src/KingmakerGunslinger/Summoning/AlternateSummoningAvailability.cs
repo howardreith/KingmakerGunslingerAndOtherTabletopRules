@@ -95,4 +95,23 @@ namespace KingmakerGunslinger.Summoning
             return "This summoning option is not offered in the current configuration.";
         }
     }
+
+    /// <summary>
+    /// The only component of a placeholder identity: kept so a saved
+    /// reference to a family that cannot be adapted in this process still
+    /// resolves to this mod's own blueprint, and never castable.
+    /// </summary>
+    [Serializable]
+    public sealed class AlternateSummoningUnavailable : BlueprintComponent,
+        IAbilityAvailabilityProvider
+    {
+        public string Reason;
+
+        public bool IsAvailableFor(AbilityData ability) { return false; }
+
+        public string GetReason()
+        {
+            return "This summoning option is unavailable: its caller could not be adapted in this configuration.";
+        }
+    }
 }

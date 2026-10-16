@@ -141,6 +141,9 @@ namespace KingmakerGunslinger.Summoning
                 DependencyProbe cotw = ProbeCotw(context);
                 AlternateSummoningRoster roster = null;
                 BlueprintManifest manifest = null;
+                AlternateSummoningTacticianSources tactician = null;
+                Func<string, BlueprintScriptableObject> lookup = library == null ? null :
+                    AlternateSummoningHostResolver.LibraryLookup(library);
                 bool waiting = false;
                 foreach (AlternateSummoningFamilySpec family in
                     AlternateSummoningSourceCatalog.All)
@@ -174,9 +177,11 @@ namespace KingmakerGunslinger.Summoning
                     }
                     if (roster == null) roster = AlternateSummoningRoster.Production();
                     if (manifest == null) manifest = LoadManifest(context);
-                    Reconcile(context, library, manifest, canonical, roster, family,
-                        decision.Publish, checkpoint, family.Provider ==
-                            AlternateSummoningProvider.CallOfTheWild ?
+                    if (tactician == null)
+                        tactician = AlternateSummoningHostResolver.ResolveTactician(lookup);
+                    Reconcile(context, library, lookup, manifest, canonical, roster,
+                        tactician, family, decision.Publish, checkpoint,
+                        family.Provider == AlternateSummoningProvider.CallOfTheWild ?
                             cotw.Fingerprint : "native");
                 }
                 return !waiting;
@@ -205,8 +210,9 @@ namespace KingmakerGunslinger.Summoning
         }
 
         private static void Reconcile(ModContext context,
-            LibraryScriptableObject library, BlueprintManifest manifest,
-            ExpandedSummoningBlueprintSet canonical, AlternateSummoningRoster roster,
+            LibraryScriptableObject library, Func<string, BlueprintScriptableObject> lookup,
+            BlueprintManifest manifest, ExpandedSummoningBlueprintSet canonical,
+            AlternateSummoningRoster roster, AlternateSummoningTacticianSources tactician,
             AlternateSummoningFamilySpec family, bool publish, string checkpoint,
             string fingerprint)
         {
@@ -214,17 +220,48 @@ namespace KingmakerGunslinger.Summoning
             AlternateSummoningFamilyIdentity identity = AlternateSummoningSourceCatalog
                 .Identities.Single(value => value.Key == family.Key);
             var registry = new BlueprintRegistry(library, manifest, context.Logger);
+            var owned = new Dictionary<string, BlueprintAbility>(StringComparer.Ordinal);
+            Func<string, BlueprintAbility> shell = symbol =>
+            {
+                BlueprintAbility value = registry.Register<BlueprintAbility>(symbol,
+                    () => AlternateSummoningAdapterBuilder.CreateShell(symbol));
+                owned.Add(symbol, value);
+                return value;
+            };
             AlternateSummoningFamilyPublication publication = null;
-            AlternateSummoningBuiltFamily built = null;
+            string stage = "resolve";
             try
             {
+                string drill = FaultDrillFor(family.Key);
+                if (drill != null)
+                    throw new AlternateSummoningResolutionException(family.Key +
+                        ".fault-drill:" + drill);
                 AlternateSummoningResolvedFamily resolved =
-                    AlternateSummoningHostResolver.Resolve(library, family, identity);
-                built = AlternateSummoningAdapterBuilder.Build(library, registry,
-                    resolved, roster, canonical);
+                    AlternateSummoningHostResolver.Resolve(lookup, family, identity,
+                        tactician);
+                // The authorized templates and the host's own menus as they were
+                // before this module touched anything, kept for read-only
+                // verification that nothing here later changed a host graph.
+                var templates = new Dictionary<string, string>(StringComparer.Ordinal);
+                var children = new Dictionary<string, BlueprintAbility[]>(
+                    StringComparer.Ordinal);
+                foreach (AlternateSummoningResolvedRoot root in resolved.Roots)
+                {
+                    foreach (BlueprintAbility template in root.Templates.Values)
+                        templates[template.AssetGuid] =
+                            SummonSignatureReader.Read(template).Render();
+                    if (!root.IsDirect)
+                        children[root.Root.AssetGuid] = root.HostChildren.ToArray();
+                }
+                stage = "build";
+                AlternateSummoningBuiltFamily built = AlternateSummoningAdapterBuilder
+                    .Build(lookup, shell, resolved, roster, canonical);
                 if (publish)
+                {
+                    stage = "publish";
                     publication = AlternateSummoningFamilyPublication.Publish(
                         resolved, built, roster);
+                }
                 clock.Stop();
                 var status = new AlternateSummoningFamilyStatus(family.Key,
                     publish ? AlternateSummoningDisposition.Published :
@@ -237,39 +274,143 @@ namespace KingmakerGunslinger.Summoning
                     clock.ElapsedMilliseconds, "provider=" + fingerprint +
                         ";hostRoots=" + resolved.Roots.Count);
                 lock (Gate) States[family.Key] = new FamilyState {
-                    Registry = registry, Built = built, Publication = publication };
+                    Registry = registry, Owned = owned, Publication = publication,
+                    TemplateRenders = templates, OriginalChildren = children };
                 AlternateSummoningStatusRegistry.Update(status);
                 context.Logger.Info("summoning", "alternate-sources.reconciled",
                     status.ToString());
             }
             catch (Exception exception)
             {
-                string reason = exception is AlternateSummoningResolutionException ?
+                string reason = stage + ":" + (exception is
+                    AlternateSummoningResolutionException ?
                     ((AlternateSummoningResolutionException)exception).Check :
-                    exception.GetType().Name + ":" + exception.Message;
+                    exception.GetType().Name + ":" + exception.Message);
+                if (publication != null)
+                {
+                    try { publication.Rollback(); }
+                    catch (Exception rollbackFailure)
+                    {
+                        reason += ";rollback-refused:" + rollbackFailure.Message;
+                        context.Logger.Failure("summoning",
+                            "alternate-sources.rollback-refused",
+                            "Alternate summoning rollback for " + family.Key +
+                            " was refused rather than overwrite another mutation.",
+                            rollbackFailure);
+                    }
+                }
+                int placeholders = 0;
                 try
                 {
-                    if (publication != null) publication.Rollback();
-                    registry.RollbackAll();
+                    placeholders = Placeholders(identity, roster, canonical, registry,
+                        owned, reason);
                 }
-                catch (Exception rollbackFailure)
+                catch (Exception placeholderFailure)
                 {
-                    reason += ";rollback-refused:" + rollbackFailure.Message;
-                    context.Logger.Failure("summoning",
-                        "alternate-sources.rollback-refused",
-                        "Alternate summoning rollback for " + family.Key +
-                        " was refused rather than overwrite another mutation.",
-                        rollbackFailure);
+                    // A collision with a foreign blueprint, or any other failure
+                    // to own every identity safely: release what this family
+                    // registered rather than keep a partial set.
+                    reason += ";placeholders-failed:" + placeholderFailure.Message;
+                    try { registry.RollbackAll(); }
+                    catch (Exception rollbackFailure)
+                    {
+                        reason += ";registration-rollback-failed:" + rollbackFailure.Message;
+                    }
+                    owned.Clear();
+                    placeholders = 0;
                 }
                 clock.Stop();
-                Settle(context, family.Key, new AlternateSummoningFamilyStatus(
-                    family.Key, AlternateSummoningDisposition.Blocked, reason, 0, 0,
-                    0, 0, 0, clock.ElapsedMilliseconds, "provider=" + fingerprint));
+                lock (Gate) States[family.Key] = new FamilyState {
+                    Registry = registry, Owned = owned };
+                var status = new AlternateSummoningFamilyStatus(family.Key,
+                    AlternateSummoningDisposition.Blocked, reason, 0, placeholders,
+                    0, 0, 0, clock.ElapsedMilliseconds, "provider=" + fingerprint +
+                        ";placeholders=" + placeholders);
+                AlternateSummoningStatusRegistry.Update(status);
+                context.Logger.Info("summoning", "alternate-sources.settled",
+                    status.ToString());
                 if (!(exception is AlternateSummoningResolutionException))
                     context.Logger.Failure("summoning", "alternate-sources.family-failed",
                         "Alternate summoning family " + family.Key +
                         " failed closed; its host keeps its original behavior.",
                         exception);
+            }
+        }
+
+        /// <summary>
+        /// Every identity of a family that is installed but cannot be exposed
+        /// becomes, or is registered as, an unavailable placeholder: the
+        /// identity stays resolvable for saved references, no execution graph
+        /// remains, and the host menus are unchanged. Returns how many.
+        /// </summary>
+        private static int Placeholders(AlternateSummoningFamilyIdentity identity,
+            AlternateSummoningRoster roster, ExpandedSummoningBlueprintSet canonical,
+            BlueprintRegistry registry, Dictionary<string, BlueprintAbility> owned,
+            string reason)
+        {
+            Kingmaker.Localization.LocalizedString name = LocalizationService.Create(
+                "KMG.AlternateSummoning.Unavailable.Name", "Unavailable summoning option");
+            Kingmaker.Localization.LocalizedString description =
+                LocalizationService.Create("KMG.AlternateSummoning.Unavailable.Description",
+                    "This summoning option is unavailable: its caller could not be adapted in this configuration. It cannot be cast.");
+            int count = 0;
+            foreach (AlternateSummoningChoice choice in AlternateSummoningProjection
+                .Identities(identity, roster))
+            {
+                BlueprintAbility ability;
+                if (!owned.TryGetValue(choice.Symbol, out ability))
+                {
+                    string symbol = choice.Symbol;
+                    ability = registry.Register<BlueprintAbility>(symbol,
+                        () => AlternateSummoningAdapterBuilder.CreateShell(symbol));
+                    owned.Add(symbol, ability);
+                }
+                BlueprintScriptableObject presentation = null;
+                if (choice.CanonicalSymbol != null)
+                    canonical.BySymbol.TryGetValue(choice.CanonicalSymbol,
+                        out presentation);
+                AlternateSummoningAdapterBuilder.MakePlaceholder(ability,
+                    presentation as Kingmaker.Blueprints.Facts.BlueprintUnitFact, name,
+                    description, reason);
+                count++;
+            }
+            return count;
+        }
+
+        // A guarded runtime request may ask for one family to be treated as
+        // unadaptable, to observe the blocked-family contract on real data.
+        // Nothing else can set it.
+        private static string _faultDrillFamily;
+
+        internal static void ArmFaultDrill(string familyKey, string source)
+        {
+            if (AlternateSummoningSourceCatalog.Find(familyKey) == null)
+                throw new ArgumentException("Unknown alternate summoning family.", "familyKey");
+            lock (Gate) _faultDrillFamily = familyKey + "|" + source;
+        }
+
+        private static string FaultDrillFor(string familyKey)
+        {
+            lock (Gate)
+            {
+                if (_faultDrillFamily == null) return null;
+                string[] parts = _faultDrillFamily.Split('|');
+                return parts[0] == familyKey ? "requested-by:" + parts[1] : null;
+            }
+        }
+
+        /// <summary>Owned identities of a family, published or placeholder;
+        /// read-only diagnostics for guarded observers.</summary>
+        internal static IReadOnlyDictionary<string, BlueprintAbility> OwnedIdentities(
+            string familyKey)
+        {
+            lock (Gate)
+            {
+                FamilyState state;
+                return States.TryGetValue(familyKey, out state) && state.Owned != null ?
+                    new Dictionary<string, BlueprintAbility>(state.Owned,
+                        StringComparer.Ordinal) :
+                    new Dictionary<string, BlueprintAbility>(StringComparer.Ordinal);
             }
         }
 
@@ -358,11 +499,45 @@ namespace KingmakerGunslinger.Summoning
             internal string Fingerprint { get; private set; }
         }
 
+        /// <summary>The rendered signature each authorized template had when
+        /// the family was resolved; read-only diagnostics.</summary>
+        internal static IReadOnlyDictionary<string, string> TemplateRenders(
+            string familyKey)
+        {
+            lock (Gate)
+            {
+                FamilyState state;
+                return States.TryGetValue(familyKey, out state) &&
+                    state.TemplateRenders != null ?
+                    new Dictionary<string, string>(state.TemplateRenders,
+                        StringComparer.Ordinal) :
+                    new Dictionary<string, string>(StringComparer.Ordinal);
+            }
+        }
+
+        /// <summary>A published menu root's host children before publication;
+        /// read-only diagnostics for guarded fixtures.</summary>
+        internal static BlueprintAbility[] OriginalHostChildren(string familyKey,
+            string rootGuid)
+        {
+            lock (Gate)
+            {
+                FamilyState state;
+                BlueprintAbility[] children;
+                return States.TryGetValue(familyKey, out state) &&
+                    state.OriginalChildren != null &&
+                    state.OriginalChildren.TryGetValue(rootGuid, out children) ?
+                    children.ToArray() : null;
+            }
+        }
+
         private sealed class FamilyState
         {
             internal BlueprintRegistry Registry;
-            internal AlternateSummoningBuiltFamily Built;
+            internal Dictionary<string, BlueprintAbility> Owned;
             internal AlternateSummoningFamilyPublication Publication;
+            internal Dictionary<string, string> TemplateRenders;
+            internal Dictionary<string, BlueprintAbility[]> OriginalChildren;
         }
     }
 }

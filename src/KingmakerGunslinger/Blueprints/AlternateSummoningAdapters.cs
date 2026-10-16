@@ -116,10 +116,14 @@ namespace KingmakerGunslinger.Blueprints
         internal bool IsDirect;
         /// <summary>The quantity a direct root casts; null for a menu root.</summary>
         internal SummonMultiplicity? Quantity;
+        /// <summary>The supported execution template of each quantity. Only a
+        /// template that passed its family contract is ever placed here.</summary>
         internal Dictionary<SummonMultiplicity, BlueprintAbility> Templates =
             new Dictionary<SummonMultiplicity, BlueprintAbility>();
         /// <summary>A menu root's live children, including unknown ones.</summary>
         internal BlueprintAbility[] HostChildren = new BlueprintAbility[0];
+        /// <summary>Template GUID -> the canonical native option its contract
+        /// proves it descends from. Unknown options have no entry.</summary>
         internal Dictionary<string, string> HostLineage =
             new Dictionary<string, string>(StringComparer.Ordinal);
         internal Dictionary<string, SummonMultiplicity> HostQuantity =
@@ -137,35 +141,152 @@ namespace KingmakerGunslinger.Blueprints
     }
 
     /// <summary>
-    /// Resolves a caller's installed host graph by exact identity and checks
-    /// its structure before anything is cloned or changed. Every failure
-    /// names the exact check, so a mismatched family is reported precisely
-    /// and keeps its original behavior.
+    /// The native Monster Tactician abilities, resolved once per
+    /// reconciliation. They are the tactician family's own roots and the
+    /// exact sources Call of the Wild's three Summon Monster callers copy, so
+    /// a tactician that is not understood blocks all four.
+    /// </summary>
+    internal sealed class AlternateSummoningTacticianSources
+    {
+        internal string Failure;
+        internal List<Entry> Entries = new List<Entry>();
+
+        internal Entry Find(int tier, SummonMultiplicity quantity)
+        {
+            return Entries.SingleOrDefault(value => value.Tier == tier &&
+                value.Quantity == quantity);
+        }
+
+        internal sealed class Entry
+        {
+            internal int Tier;
+            internal SummonMultiplicity Quantity;
+            internal BlueprintAbility Ability;
+            internal SummonSignature Signature;
+            internal string Lineage;
+        }
+    }
+
+    /// <summary>
+    /// Resolves a caller's installed host graph by exact identity and
+    /// authorizes each execution template only through its family contract
+    /// against its exact native source (<see cref="AlternateSummoningContracts"/>).
+    /// A required template that does not match blocks the family with the
+    /// first differing mechanic; an additional menu option that is not a
+    /// template is never a reason to block and is preserved untouched.
     /// </summary>
     internal static class AlternateSummoningHostResolver
     {
-        internal static AlternateSummoningResolvedFamily Resolve(
-            LibraryScriptableObject library, AlternateSummoningFamilySpec family,
-            AlternateSummoningFamilyIdentity identity)
+        internal static Func<string, BlueprintScriptableObject> LibraryLookup(
+            LibraryScriptableObject library)
         {
             if (library == null) throw new ArgumentNullException("library");
+            return guid =>
+            {
+                BlueprintScriptableObject found;
+                return library.BlueprintsByAssetId != null &&
+                    library.BlueprintsByAssetId.TryGetValue(guid, out found) ?
+                    found : null;
+            };
+        }
+
+        internal static AlternateSummoningTacticianSources ResolveTactician(
+            Func<string, BlueprintScriptableObject> lookup)
+        {
+            var result = new AlternateSummoningTacticianSources();
+            try
+            {
+                string[] features = AlternateSummoningSourceCatalog
+                    .MonsterTacticianFeatureGuids;
+                for (int index = 0; index < features.Length; index++)
+                {
+                    int tier = index + 1;
+                    BlueprintFeature feature = Require<BlueprintFeature>(lookup,
+                        features[index], null, "MonsterTactician tier " + tier + " feature");
+                    BlueprintAbility[] granted = AlternateSummoningGraph
+                        .References<BlueprintAbility>(feature.ComponentsArray)
+                        .Distinct().ToArray();
+                    SummonMultiplicity[] quantities = AlternateSummoningSourceCatalog
+                        .Quantities(tier).ToArray();
+                    if (granted.Length != quantities.Length)
+                        throw Failure("MonsterTactician", tier,
+                            "granted-ability-count-" + granted.Length);
+                    var seen = new HashSet<SummonMultiplicity>();
+                    foreach (BlueprintAbility ability in granted)
+                    {
+                        SummonSignature signature = SummonSignatureReader.Read(ability);
+                        var matches = new List<SummonMultiplicity>();
+                        string firstReason = null;
+                        foreach (SummonMultiplicity quantity in quantities)
+                        {
+                            SummonSignature canonical = SummonSignatureReader.Read(
+                                NativeSource(lookup, SummonFamily.Monster, tier, quantity));
+                            string reason = AlternateSummoningContracts
+                                .CheckMonsterTactician(signature, canonical);
+                            if (reason == null) matches.Add(quantity);
+                            else if (firstReason == null) firstReason = reason;
+                        }
+                        if (matches.Count != 1 || !seen.Add(matches[0]))
+                            throw Failure("MonsterTactician", tier,
+                                "tactician-contract:" + ability.name + ":" +
+                                (matches.Count == 0 ? firstReason :
+                                    "ambiguous-or-repeated-quantity"));
+                        result.Entries.Add(new AlternateSummoningTacticianSources.Entry {
+                            Tier = tier, Quantity = matches[0], Ability = ability,
+                            Signature = signature,
+                            Lineage = NativeOption(SummonFamily.Monster, tier,
+                                matches[0]).Guid });
+                    }
+                }
+                string[] resources = result.Entries.Select(value =>
+                    value.Signature.Resources[0].ToString()).Distinct().ToArray();
+                if (resources.Length != 1)
+                    throw new AlternateSummoningResolutionException(
+                        "MonsterTactician.tactician-resource-inconsistent:" +
+                        string.Join("|", resources));
+            }
+            catch (AlternateSummoningResolutionException exception)
+            {
+                result.Failure = exception.Check;
+                result.Entries.Clear();
+            }
+            return result;
+        }
+
+        internal static AlternateSummoningResolvedFamily Resolve(
+            Func<string, BlueprintScriptableObject> lookup,
+            AlternateSummoningFamilySpec family, AlternateSummoningFamilyIdentity identity,
+            AlternateSummoningTacticianSources tactician,
+            Func<BlueprintAbility, BlueprintAbility[]> hostChildren = null)
+        {
+            if (lookup == null) throw new ArgumentNullException("lookup");
+            if (tactician == null) throw new ArgumentNullException("tactician");
             var result = new AlternateSummoningResolvedFamily {
                 Spec = family, Identity = identity };
+            if (family.Provider == AlternateSummoningProvider.Native)
+            {
+                if (tactician.Failure != null)
+                    throw new AlternateSummoningResolutionException(tactician.Failure);
+                foreach (AlternateSummoningTacticianSources.Entry entry in
+                    tactician.Entries)
+                {
+                    var root = new AlternateSummoningResolvedRoot {
+                        Spec = family.Roots.Single(value => value.Tier == entry.Tier),
+                        Root = entry.Ability, IsDirect = true,
+                        Quantity = entry.Quantity, RootLineage = entry.Lineage };
+                    root.Templates.Add(entry.Quantity, entry.Ability);
+                    result.Roots.Add(root);
+                }
+                return result;
+            }
             foreach (AlternateSummoningRootSpec spec in family.Roots)
             {
-                BlueprintFeature feature = Require<BlueprintFeature>(library,
+                BlueprintFeature feature = Require<BlueprintFeature>(lookup,
                     spec.FeatureGuid, spec.FeatureName, family.Key + " tier " +
                     spec.Tier + " feature");
                 IList<BlueprintAbility> granted = AlternateSummoningGraph
                     .References<BlueprintAbility>(feature.ComponentsArray);
-                AlternateSummoningLineageCandidate[] candidates =
-                    Candidates(library, family.Family, spec.Tier);
-                if (spec.RootGuid == null)
-                {
-                    ResolveNativePerQuantity(result, spec, granted, candidates);
-                    continue;
-                }
-                BlueprintAbility root = Require<BlueprintAbility>(library,
+                BlueprintAbility root = Require<BlueprintAbility>(lookup,
                     spec.RootGuid, spec.RootName, family.Key + " tier " + spec.Tier +
                     " root");
                 if (!granted.Any(value => ReferenceEquals(value, root)))
@@ -174,134 +295,136 @@ namespace KingmakerGunslinger.Blueprints
                     Spec = spec, Root = root, IsDirect = spec.IsDirect };
                 if (spec.IsDirect)
                 {
-                    RequireExecutable(root, family.Key, spec.Tier, "direct-root");
                     resolved.Quantity = SummonMultiplicity.One;
+                    resolved.RootLineage = CheckTemplate(lookup, family, spec.Tier,
+                        SummonMultiplicity.One, root, tactician);
                     resolved.Templates.Add(SummonMultiplicity.One, root);
-                    AlternateSummoningLineageCandidate lineage =
-                        AlternateSummoningLineagePolicy.Match(
-                            AlternateSummoningGraph.SpawnUnits(root),
-                            SummonMultiplicity.One, candidates);
-                    resolved.RootLineage = lineage == null ? null : lineage.OptionGuid;
+                    result.Roots.Add(resolved);
+                    continue;
                 }
-                else
+                BlueprintAbility[] children = hostChildren != null ?
+                    hostChildren(root) : LiveHostChildren(family.Key, spec.Tier, root);
+                if (children == null)
+                    throw Failure(family.Key, spec.Tier, "menu-root-children-missing");
+                if (children.Any(value => value == null) || children.Select(
+                    value => value.AssetGuid).Distinct(StringComparer.Ordinal)
+                    .Count() != children.Length)
+                    throw Failure(family.Key, spec.Tier,
+                        "menu-root-null-or-duplicate-child");
+                foreach (AlternateSummoningTemplateSpec template in spec.Templates)
                 {
-                    AbilityVariants[] variants = (root.ComponentsArray ??
-                        new BlueprintComponent[0]).OfType<AbilityVariants>().ToArray();
-                    if (variants.Length != 1 || variants[0].Variants == null ||
-                        string.Equals(variants[0].name,
-                            AlternateSummoningExposure.VariantsComponentName,
-                            StringComparison.Ordinal))
-                        throw Failure(family.Key, spec.Tier, "menu-root-variants");
-                    BlueprintAbility[] children = variants[0].Variants;
-                    if (children.Any(value => value == null) || children.Select(
-                        value => value.AssetGuid).Distinct(StringComparer.Ordinal)
-                        .Count() != children.Length)
-                        throw Failure(family.Key, spec.Tier, "menu-root-null-or-duplicate-child");
-                    foreach (AlternateSummoningTemplateSpec template in spec.Templates)
-                    {
-                        BlueprintAbility child = children.SingleOrDefault(value =>
-                            string.Equals(value.AssetGuid, template.Guid,
-                                StringComparison.Ordinal));
-                        if (child == null || !string.Equals(child.name, template.Name,
-                            StringComparison.Ordinal) || !ReferenceEquals(child.Parent, root))
-                            throw Failure(family.Key, spec.Tier,
-                                "template-" + template.Multiplicity + "-identity");
-                        RequireExecutable(child, family.Key, spec.Tier,
-                            "template-" + template.Multiplicity);
-                        resolved.Templates.Add(template.Multiplicity, child);
-                        resolved.HostQuantity.Add(child.AssetGuid, template.Multiplicity);
-                        AlternateSummoningLineageCandidate lineage =
-                            AlternateSummoningLineagePolicy.Match(
-                                AlternateSummoningGraph.SpawnUnits(child),
-                                template.Multiplicity, candidates);
-                        if (lineage != null)
-                            resolved.HostLineage.Add(child.AssetGuid, lineage.OptionGuid);
-                    }
-                    resolved.HostChildren = children.ToArray();
+                    BlueprintAbility child = children.SingleOrDefault(value =>
+                        string.Equals(value.AssetGuid, template.Guid,
+                            StringComparison.Ordinal));
+                    if (child == null || !string.Equals(child.name, template.Name,
+                        StringComparison.Ordinal) || !ReferenceEquals(child.Parent, root))
+                        throw Failure(family.Key, spec.Tier,
+                            "template-" + template.Multiplicity + "-identity");
+                    string lineage = CheckTemplate(lookup, family, spec.Tier,
+                        template.Multiplicity, child, tactician);
+                    resolved.Templates.Add(template.Multiplicity, child);
+                    resolved.HostQuantity.Add(child.AssetGuid, template.Multiplicity);
+                    resolved.HostLineage.Add(child.AssetGuid, lineage);
                 }
+                // Every other child, whether another mod's option or anything
+                // this module does not recognise, stays in the menu untouched.
+                resolved.HostChildren = children.ToArray();
                 result.Roots.Add(resolved);
             }
             return result;
         }
 
         /// <summary>
-        /// The native Monster Tactician grants one ability per tier and
-        /// quantity, with no menu. Each granted ability's quantity is read
-        /// from its lineage alone: it must descend from exactly one native
-        /// option of its tier, and together they must cover the tier's
-        /// quantities exactly once.
+        /// Authorizes one execution template: its signature must equal the
+        /// family contract applied to its exact native source. Returns the
+        /// canonical native option the template is thereby proven to descend
+        /// from.
         /// </summary>
-        private static void ResolveNativePerQuantity(
-            AlternateSummoningResolvedFamily result, AlternateSummoningRootSpec spec,
-            IList<BlueprintAbility> granted,
-            AlternateSummoningLineageCandidate[] candidates)
+        /// <summary>The host's own menu: exactly one variants component that
+        /// this module has not already published.</summary>
+        private static BlueprintAbility[] LiveHostChildren(string family, int tier,
+            BlueprintAbility root)
         {
-            string key = result.Spec.Key;
-            BlueprintAbility[] abilities = granted.Distinct().ToArray();
-            SummonMultiplicity[] expected = AlternateSummoningSourceCatalog
-                .Quantities(spec.Tier).ToArray();
-            if (abilities.Length != expected.Length)
-                throw Failure(key, spec.Tier, "granted-ability-count-" +
-                    abilities.Length);
-            var seen = new HashSet<SummonMultiplicity>();
-            foreach (BlueprintAbility ability in abilities)
+            AbilityVariants[] variants = (root.ComponentsArray ??
+                new BlueprintComponent[0]).OfType<AbilityVariants>().ToArray();
+            if (variants.Length != 1 || variants[0].Variants == null ||
+                string.Equals(variants[0].name,
+                    AlternateSummoningExposure.VariantsComponentName,
+                    StringComparison.Ordinal))
+                throw Failure(family, tier, "menu-root-variants");
+            return variants[0].Variants;
+        }
+
+        internal static string CheckTemplate(Func<string, BlueprintScriptableObject> lookup,
+            AlternateSummoningFamilySpec family, int tier, SummonMultiplicity quantity,
+            BlueprintAbility template, AlternateSummoningTacticianSources tactician)
+        {
+            SummonSignature source;
+            string lineage;
+            if (family.Family == SummonFamily.Monster)
             {
-                RequireExecutable(ability, key, spec.Tier, "direct-root");
-                AlternateSummoningLineageCandidate lineage =
-                    AlternateSummoningLineagePolicy.Match(
-                        AlternateSummoningGraph.SpawnUnits(ability), null, candidates);
-                if (lineage == null || !seen.Add(lineage.Multiplicity))
-                    throw Failure(key, spec.Tier, "quantity-lineage-unresolved:" +
-                        ability.name);
-                var resolved = new AlternateSummoningResolvedRoot {
-                    Spec = spec, Root = ability, IsDirect = true,
-                    Quantity = lineage.Multiplicity, RootLineage = lineage.OptionGuid };
-                resolved.Templates.Add(lineage.Multiplicity, ability);
-                result.Roots.Add(resolved);
+                if (tactician.Failure != null)
+                    throw Failure(family.Key, tier, "source-tactician-unresolved:" +
+                        tactician.Failure);
+                AlternateSummoningTacticianSources.Entry entry =
+                    tactician.Find(tier, quantity);
+                if (entry == null)
+                    throw Failure(family.Key, tier, "source-tactician-missing-" + quantity);
+                source = entry.Signature;
+                lineage = entry.Lineage;
             }
-        }
-
-        /// <summary>The live spawn signature of every native option of a
-        /// tier, read from the exact canonical children the native option
-        /// catalog names.</summary>
-        internal static AlternateSummoningLineageCandidate[] Candidates(
-            LibraryScriptableObject library, SummonFamily family, int tier)
-        {
-            var result = new List<AlternateSummoningLineageCandidate>();
-            foreach (SummonNativeOptionSpec option in SummonNativeOptionCatalog.All
-                .Where(value => value.Family == family && value.Tier == tier))
+            else
             {
-                BlueprintScriptableObject found;
-                BlueprintAbility ability = library.BlueprintsByAssetId != null &&
-                    library.BlueprintsByAssetId.TryGetValue(option.Guid, out found) ?
-                    found as BlueprintAbility : null;
-                IReadOnlyList<string> units = AlternateSummoningGraph.SpawnUnits(ability);
-                if (units.Count > 0)
-                    result.Add(new AlternateSummoningLineageCandidate(option.Guid,
-                        option.Multiplicity, units));
+                source = SummonSignatureReader.Read(NativeSource(lookup,
+                    SummonFamily.NaturesAlly, tier, quantity));
+                lineage = NativeOption(SummonFamily.NaturesAlly, tier, quantity).Guid;
             }
-            return result.ToArray();
+            SummonSignature actual = SummonSignatureReader.Read(template);
+            if (actual.RunActions != 1 || actual.Variants != 0 || actual.HiddenSpawns != 0)
+                throw Failure(family.Key, tier, "template-" + quantity + "-shape:" +
+                    template.name + ":runActions=" + actual.RunActions + ",variants=" +
+                    actual.Variants + ",hiddenSpawns=" + actual.HiddenSpawns);
+            SummonSignature expected;
+            try
+            {
+                expected = AlternateSummoningContracts.ExpectedTemplate(family.Key, tier,
+                    source);
+            }
+            catch (InvalidOperationException exception)
+            {
+                throw Failure(family.Key, tier, "template-" + quantity +
+                    "-source-unsupported:" + exception.Message);
+            }
+            string difference = SummonSignature.Difference(expected, actual);
+            if (difference != null)
+                throw Failure(family.Key, tier, "template-" + quantity + "-contract:" +
+                    template.name + ":" + difference);
+            return lineage;
         }
 
-        private static void RequireExecutable(BlueprintAbility ability,
-            string family, int tier, string role)
+        internal static SummonNativeOptionSpec NativeOption(SummonFamily family,
+            int tier, SummonMultiplicity quantity)
         {
-            BlueprintComponent[] components = ability.ComponentsArray ??
-                new BlueprintComponent[0];
-            if (components.Any(value => value == null) ||
-                components.OfType<AbilityVariants>().Any() ||
-                components.OfType<AbilityEffectRunAction>().Count() != 1 ||
-                AlternateSummoningGraph.SpawnUnits(ability).Count == 0)
-                throw Failure(family, tier, role + "-not-executable:" + ability.name);
+            return SummonNativeOptionCatalog.All.Single(value => value.Family == family &&
+                value.Tier == tier && value.Multiplicity == quantity);
         }
 
-        private static T Require<T>(LibraryScriptableObject library, string guid,
-            string expectedName, string role) where T : BlueprintScriptableObject
+        /// <summary>The exact native child of a tier and quantity, as the
+        /// native option catalog names it (at tier I, this module's frozen copy
+        /// of the direct native spell).</summary>
+        internal static BlueprintAbility NativeSource(
+            Func<string, BlueprintScriptableObject> lookup, SummonFamily family,
+            int tier, SummonMultiplicity quantity)
         {
-            BlueprintScriptableObject found;
-            T value = library.BlueprintsByAssetId != null &&
-                library.BlueprintsByAssetId.TryGetValue(guid, out found) ?
-                found as T : null;
+            SummonNativeOptionSpec option = NativeOption(family, tier, quantity);
+            return Require<BlueprintAbility>(lookup, option.Guid, null,
+                family + " tier " + tier + " " + quantity + " native source");
+        }
+
+        private static T Require<T>(Func<string, BlueprintScriptableObject> lookup,
+            string guid, string expectedName, string role) where T : BlueprintScriptableObject
+        {
+            T value = lookup(guid) as T;
             if (value == null)
                 throw new AlternateSummoningResolutionException(role + "-missing:" + guid);
             if (expectedName != null && !string.Equals(value.name, expectedName,
@@ -311,7 +434,8 @@ namespace KingmakerGunslinger.Blueprints
             return value;
         }
 
-        private static Exception Failure(string family, int tier, string check)
+        private static AlternateSummoningResolutionException Failure(string family,
+            int tier, string check)
         {
             return new AlternateSummoningResolutionException(family + ".tier" + tier +
                 "." + check);
@@ -328,7 +452,6 @@ namespace KingmakerGunslinger.Blueprints
 
     internal sealed class AlternateSummoningBuiltFamily
     {
-        internal BlueprintRegistry Registry;
         internal Dictionary<string, BlueprintAbility> BySymbol =
             new Dictionary<string, BlueprintAbility>(StringComparer.Ordinal);
         internal Dictionary<AlternateSummoningResolvedRoot, BlueprintAbility> Preserved =
@@ -348,24 +471,33 @@ namespace KingmakerGunslinger.Blueprints
     /// </summary>
     internal static class AlternateSummoningAdapterBuilder
     {
+        /// <param name="shell">Creates the identity for a symbol. Production
+        /// registers it through the manifest registry; a guarded fixture may
+        /// supply an unregistered shell so it can exercise this exact builder
+        /// against real templates without touching the library.</param>
+        /// <param name="include">Optional subset of choices to build.</param>
         internal static AlternateSummoningBuiltFamily Build(
-            LibraryScriptableObject library, BlueprintRegistry registry,
+            Func<string, BlueprintScriptableObject> lookup,
+            Func<string, BlueprintAbility> shell,
             AlternateSummoningResolvedFamily family, AlternateSummoningRoster roster,
-            ExpandedSummoningBlueprintSet canonical)
+            ExpandedSummoningBlueprintSet canonical,
+            Func<AlternateSummoningChoice, bool> include = null)
         {
-            if (registry == null) throw new ArgumentNullException("registry");
+            if (lookup == null) throw new ArgumentNullException("lookup");
+            if (shell == null) throw new ArgumentNullException("shell");
             if (canonical == null) throw new ArgumentNullException("canonical");
             BlueprintUnitFactAccess access = BlueprintUnitFactAccess.Resolve();
-            var built = new AlternateSummoningBuiltFamily { Registry = registry };
+            var built = new AlternateSummoningBuiltFamily();
             foreach (AlternateSummoningChoice choice in AlternateSummoningProjection
                 .Identities(family.Identity, roster))
             {
+                if (include != null && !include(choice)) continue;
                 if (choice.Kind == AlternateSummoningChoiceKind.Preserved)
                 {
                     AlternateSummoningResolvedRoot root = family.Roots.Single(value =>
                         value.IsDirect && value.Spec.Tier == choice.Tier &&
                         value.Quantity == choice.Multiplicity);
-                    BlueprintAbility preserved = Register(registry, choice.Symbol);
+                    BlueprintAbility preserved = shell(choice.Symbol);
                     ConfigurePreserved(preserved, root.Root, choice.Symbol);
                     built.BySymbol.Add(choice.Symbol, preserved);
                     built.Preserved.Add(root, preserved);
@@ -374,13 +506,13 @@ namespace KingmakerGunslinger.Blueprints
                 AlternateSummoningResolvedRoot owner = Owner(family, choice.Tier,
                     choice.Multiplicity);
                 BlueprintAbility template = owner.Templates[choice.Multiplicity];
-                BlueprintAbility target = Register(registry, choice.Symbol);
+                BlueprintAbility target = shell(choice.Symbol);
                 if (choice.Kind == AlternateSummoningChoiceKind.Creature)
                     ConfigureCreature(target, template, owner.Root, choice, canonical,
                         access);
                 else
                     ConfigureNative(target, template, owner.Root, choice, canonical,
-                        library, access);
+                        lookup, access);
                 built.BySymbol.Add(choice.Symbol, target);
             }
             return built;
@@ -398,16 +530,45 @@ namespace KingmakerGunslinger.Blueprints
             return owners[0];
         }
 
-        private static BlueprintAbility Register(BlueprintRegistry registry,
-            string symbol)
+        /// <summary>A named, empty, unregistered ability for a symbol.</summary>
+        internal static BlueprintAbility CreateShell(string symbol)
         {
-            return registry.Register<BlueprintAbility>(symbol, () =>
-            {
-                BlueprintAbility shell = ScriptableObject.CreateInstance<BlueprintAbility>();
-                shell.name = InternalName(symbol);
-                shell.ComponentsArray = new BlueprintComponent[0];
-                return shell;
-            });
+            BlueprintAbility shell = ScriptableObject.CreateInstance<BlueprintAbility>();
+            shell.name = InternalName(symbol);
+            shell.Hidden = true;
+            shell.ActionBarAutoFillIgnored = true;
+            shell.ComponentsArray = new BlueprintComponent[0];
+            shell.ResourceAssetIds = new string[0];
+            shell.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            return shell;
+        }
+
+        /// <summary>
+        /// Turns an owned identity into a safe placeholder: no execution graph,
+        /// no parent, hidden from menus and auto-fill, and permanently
+        /// unavailable with a reason. A saved reference still resolves to this
+        /// mod's own blueprint and can never cast. Text and icon are the
+        /// canonical child's when one exists, so a saved shortcut stays
+        /// recognisable.
+        /// </summary>
+        internal static void MakePlaceholder(BlueprintAbility ability,
+            Kingmaker.Blueprints.Facts.BlueprintUnitFact presentation,
+            Kingmaker.Localization.LocalizedString name,
+            Kingmaker.Localization.LocalizedString description, string reason)
+        {
+            ability.Parent = null;
+            ability.Hidden = true;
+            ability.ActionBarAutoFillIgnored = true;
+            AlternateSummoningUnavailable gate = ScriptableObject
+                .CreateInstance<AlternateSummoningUnavailable>();
+            gate.name = "$KMG_AlternateSummoning_Unavailable";
+            gate.Reason = reason;
+            ability.ComponentsArray = new BlueprintComponent[] { gate };
+            ResetComponentCaches(ability);
+            BlueprintUnitFactAccess access = BlueprintUnitFactAccess.Resolve();
+            access.Configure(ability, presentation == null ? name :
+                access.GetDisplayName(presentation) ?? name, description,
+                presentation == null ? null : presentation.Icon);
         }
 
         /// <summary>
@@ -506,14 +667,12 @@ namespace KingmakerGunslinger.Blueprints
         private static void ConfigureNative(BlueprintAbility target,
             BlueprintAbility template, BlueprintAbility root,
             AlternateSummoningChoice choice, ExpandedSummoningBlueprintSet canonical,
-            LibraryScriptableObject library, BlueprintUnitFactAccess access)
+            Func<string, BlueprintScriptableObject> lookup, BlueprintUnitFactAccess access)
         {
             SummonNativeExpansionSpec spec = choice.NativeOption;
             BlueprintAbility source = RequireCanonical<BlueprintAbility>(canonical,
                 spec.Symbol);
-            BlueprintScriptableObject found;
-            BlueprintUnit unit = library.BlueprintsByAssetId.TryGetValue(spec.UnitGuid,
-                out found) ? found as BlueprintUnit : null;
+            BlueprintUnit unit = lookup(spec.UnitGuid) as BlueprintUnit;
             if (unit == null) throw Mismatch(choice, "native-unit-missing");
             CloneExecution(target, template, root, choice.Symbol);
             if (ExpandedSummoningAbilityBuilder.ReplaceSpawnUnits(
