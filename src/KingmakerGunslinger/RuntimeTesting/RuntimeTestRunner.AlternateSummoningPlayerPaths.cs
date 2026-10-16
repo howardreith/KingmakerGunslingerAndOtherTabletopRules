@@ -97,6 +97,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (status == null ? "<no status>" : status.Disposition + " " + status.Reason));
                 }
                 fixture = BeginExpandedSummoningCorrectionFixture("KMG_Runtime_AlternateSummoning_Player");
+                // The shared fixture marks its disposable caster a cheater, and
+                // AbilityResourceLogic.Spend skips cheaters. These casters must
+                // pay their real costs, so this fixture's own blueprint is not.
+                fixture.CasterBlueprint.IsCheater = false;
                 PlayerPathSection("master-summoner", assertions, document, () =>
                     PlayerPathMasterSummoner(fixture, assertions, casts, document));
                 PlayerPathSection("occultist", assertions, document, () =>
@@ -377,21 +381,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<RuntimeTestAssertion> assertions, JArray casts, JObject document)
         {
             LibraryScriptableObject library = BlueprintBootstrap.Library;
-            // The native Monster Tactician archetype is the one archetype whose
-            // added features grant the native Monster Tactician tier-I feature.
-            string tacticianFeature = AlternateSummoningSourceCatalog.Find(
-                AlternateSummoningSourceCatalog.MonsterTacticianKey).Roots
-                .Single(value => value.Tier == 1).FeatureGuid;
-            BlueprintArchetype[] tactician = library.GetAllBlueprints().OfType<BlueprintArchetype>()
-                .Where(value => (value.AddFeatures ?? new LevelEntry[0]).Any(level =>
-                    level.Features.Any(feature => feature != null &&
-                        feature.AssetGuid == tacticianFeature))).ToArray();
-            if (tactician.Length != 1)
-                throw new InvalidOperationException("The native Monster Tactician archetype is not unique: " +
-                    tactician.Length + ".");
             var cases = new[] {
                 Tuple.Create(AlternateSummoningSourceCatalog.MonsterTacticianKey,
-                    PlayerPathInquisitorClass, tactician[0].AssetGuid, 6, StatType.Wisdom),
+                    PlayerPathInquisitorClass, "discover", 6, StatType.Wisdom),
                 Tuple.Create(AlternateSummoningSourceCatalog.SummonerKey,
                     AlternateSummoningContracts.SummonerClass, (string)null, 3, StatType.Charisma),
                 Tuple.Create(AlternateSummoningSourceCatalog.SummonerKey,
@@ -403,7 +395,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             foreach (var item in cases)
             {
-                string label = item.Item1 + (item.Item3 == null ? "" : ":" + item.Item3.Substring(0, 8));
+                string label = item.Item1 + (item.Item3 == null || item.Item3 == "discover" ? "" :
+                    ":" + item.Item3.Substring(0, 8));
                 JObject record = new JObject { ["family"] = item.Item1, ["archetype"] = item.Item3 };
                 bool exact = false;
                 try
@@ -414,6 +407,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var characterClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
                         library, item.Item2, item.Item1 + " class");
                     BlueprintArchetype archetype = item.Item3 == null ? null :
+                        item.Item3 == "discover" ? PlayerPathTacticianArchetype(record) :
                         BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library, item.Item3,
                             item.Item1 + " archetype");
                     AdvanceDisposableArchetypeCaster(caster.Descriptor, characterClass, archetype,
@@ -444,6 +438,79 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "LevelUpController visits; AbilityData(parent, child) + UnitUseAbility"));
             }
             PlayerPathPreservationist(fixture, assertions, casts, document);
+        }
+
+        /// <summary>
+        /// The native Monster Tactician archetype: the one archetype whose
+        /// added features reach the native tier-I Monster Tactician feature,
+        /// directly or through a progression, selection or component
+        /// reference. Found by that exact feature identity, never by name.
+        /// </summary>
+        private static BlueprintArchetype PlayerPathTacticianArchetype(JObject record)
+        {
+            string tierOne = AlternateSummoningSourceCatalog.Find(
+                AlternateSummoningSourceCatalog.MonsterTacticianKey).Roots
+                .Single(value => value.Tier == 1).FeatureGuid;
+            var found = new List<BlueprintArchetype>();
+            foreach (BlueprintArchetype archetype in BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintArchetype>())
+            {
+                var seen = new HashSet<BlueprintScriptableObject>();
+                var queue = new Queue<KeyValuePair<BlueprintScriptableObject, int>>();
+                foreach (LevelEntry level in archetype.AddFeatures ?? new LevelEntry[0])
+                    foreach (BlueprintFeatureBase feature in level.Features)
+                        if (feature != null)
+                            queue.Enqueue(new KeyValuePair<BlueprintScriptableObject, int>(feature, 0));
+                while (queue.Count > 0)
+                {
+                    KeyValuePair<BlueprintScriptableObject, int> item = queue.Dequeue();
+                    if (!seen.Add(item.Key)) continue;
+                    if (item.Key.AssetGuid == tierOne) { found.Add(archetype); break; }
+                    if (item.Value >= 4) continue;
+                    foreach (BlueprintScriptableObject next in PlayerPathReferencedFacts(item.Key))
+                        queue.Enqueue(new KeyValuePair<BlueprintScriptableObject, int>(next,
+                            item.Value + 1));
+                }
+            }
+            record["tacticianArchetypes"] = new JArray(found.Select(value =>
+                value.AssetGuid + ":" + value.name));
+            if (found.Count != 1)
+                throw new InvalidOperationException("The native Monster Tactician archetype is not unique: " +
+                    found.Count + ".");
+            return found[0];
+        }
+
+        private static IEnumerable<BlueprintScriptableObject> PlayerPathReferencedFacts(
+            BlueprintScriptableObject source)
+        {
+            var progression = source as BlueprintProgression;
+            if (progression != null)
+                foreach (LevelEntry level in progression.LevelEntries ?? new LevelEntry[0])
+                    foreach (BlueprintFeatureBase feature in level.Features)
+                        if (feature != null) yield return feature;
+            var selection = source as Kingmaker.Blueprints.Classes.Selection.BlueprintFeatureSelection;
+            if (selection != null)
+                foreach (BlueprintFeature feature in selection.AllFeatures ?? new BlueprintFeature[0])
+                    if (feature != null) yield return feature;
+            foreach (BlueprintComponent component in source.ComponentsArray ?? new BlueprintComponent[0])
+            {
+                if (component == null) continue;
+                foreach (FieldInfo field in component.GetType().GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic))
+                {
+                    object value = field.GetValue(component);
+                    if (value is BlueprintFeatureBase)
+                    {
+                        yield return (BlueprintScriptableObject)value;
+                        continue;
+                    }
+                    var many = value as System.Collections.IEnumerable;
+                    if (many == null || value is string) continue;
+                    foreach (object element in many)
+                        if (element is BlueprintFeatureBase)
+                            yield return (BlueprintScriptableObject)element;
+                }
+            }
         }
 
         /// <summary>The granted root of the lowest tier the caster holds:
@@ -701,6 +768,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintUnit blueprint = UnityEngine.Object.Instantiate(fixture.CasterBlueprint);
             blueprint.name = name;
+            blueprint.IsCheater = false;
             UnitEntityData caster = Game.Instance.EntityCreator.SpawnUnit(blueprint,
                 fixture.Caster.Position + Vector3.right, Quaternion.identity, fixture.Scene);
             Game.Instance.EntityCreator.Tick();
