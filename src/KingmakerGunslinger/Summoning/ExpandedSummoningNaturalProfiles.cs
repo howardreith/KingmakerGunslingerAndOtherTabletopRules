@@ -436,7 +436,7 @@ namespace KingmakerGunslinger.Summoning
                 // carried: the decision is the owner's, so neither may
                 // appear here without that decision.
                 brachiosaurus.Facts.Contains("GreatCleave") ||
-                brachiosaurus.Facts.Contains("GreaterOverrun") ||
+                !brachiosaurus.Facts.Contains("GreaterOverrun") ||
                 // Never invented for this creature.
                 brachiosaurus.Facts.Contains("PowerfulCharge") ||
                 brachiosaurus.Facts.Contains("Pounce") ||
@@ -737,15 +737,15 @@ namespace KingmakerGunslinger.Summoning
                     37, 10, 21, 2, 13, 10, 30, 12,
                     "BrachiosaurusTail4d6", Array.Empty<string>(),
                     A("BrachiosaurusChassis", "Cleave", "GreatFortitude",
-                        "ImprovedBullRush", "IronWill", "PowerAttack",
-                        "SkillFocusPerception", "TripDefenseFourLegs",
-                        "WeaponFocusTail"),
+                        "GreaterOverrun", "ImprovedBullRush", "IronWill",
+                        "PowerAttack", "SkillFocusPerception",
+                        "TripDefenseFourLegs", "WeaponFocusTail"),
                     A("Perception"),
                     "The printed tail bonus differs between sources: the current AoN entry reads +22 and the legacy PRD reads +23. The selected contract is +23, because it is what the inputs both sources print derive - base attack +13, Strength 37 for +13, Gargantuan -4 and Weapon Focus (tail) +1 - and those same inputs independently derive the CMB +30 and CMD 40 that both also print. A +22 would require an unexplained -1 that no printed input supplies. The sources are not claimed to agree and no hidden modifier is manufactured.",
                     "A single natural attack, so the tail takes one-and-a-half Strength rather than the ordinary multiplier. This is the only creature in the roster that uses that routine.",
                     "Space is 20 feet and printed reach is 20 feet. This is the creature whose reach does equal its space, which is exactly why the released Elephant must not be read as evidence that a large body grants reach equal to space - there it is 15 and 10.",
                     "Twenty-foot reach is composed, not stated: a Gargantuan body exposes fifteen feet, the chassis adds the final five, and the private tail weapon type stores nine to expose five feet before body reach, the same arithmetic the released Stegosaurus tail uses. Native proof must confirm the uniform twenty feet before publication rather than trusting the composition.",
-                    "Great Cleave and Greater Overrun are printed but not carried, and the reason is now measured rather than assumed. The 2026-10-16 bounded native census found both in the installed 2.1.7b library: GreatCleaveFeature cc9c862ef2e03af4f89be5088851ea35, which carries only prerequisites and grants no ability, and GreaterOverrunFeature ee24c02cc68c4c9b9b54ebef9f9f8133, which does carry ManeuverProvokeAttack(Overrun) and ManeuverBonus(Overrun +2). So neither omission can be blamed on a missing engine capability; this project simply never mapped either feat. The carry decision is the owner’s and is recorded in the sprint ledger with the component evidence attached. Seven of the nine printed feats are carried.",
+                    "Greater Overrun is carried now, through the real native feat ee24c02cc68c4c9b9b54ebef9f9f8133 rather than a reinvention, and the creature gains a Brachiosaurus-owned ordinary Overrun command so the feat is reachable at all: every trample in this project sets AutoSuccess true and therefore never raises a combat maneuver, while that command sets it false. The feat’s +2 is exactly the printed bonus. Its provocation is NOT the printed rider: the native ManeuverProvokeAttack fires whenever the maneuver succeeds, and nothing in this build ever knocks a target prone, so it provokes more often than printed and the printed precondition never occurs. That is the engine’s behaviour, taken as-is rather than papered over, and no custom provocation is added beside it. Great Cleave is still not carried: the shipped CleaveAction points its GreaterFeature field at CleaveFeature, so the uncapped chain is already what ordinary Cleave gives this creature and the feat itself is read by nothing. Registration is not qualification for either",
                     "Trample is registered as a player-commandable full-round action on the Sprint 23 qualified path/contact/response carrier, so it inherits that carrier’s interrupt, duplicate-response, path and leave-combat guards rather than a second copy of them. 2d6+19 with a live DC 32, both derived rather than stated: one and a half times the Strength modifier for +19, and 10 + 18 hit dice halved + Strength 37 for DC 32. Separate from the tail, grants no powerful charge, and changes no released trampler. Registered is not qualified: native proof of the command in play is still required before publication.",
                     "The donor rig is measured, not assumed. The 2026-10-16 census recorded the frozen quadruped donor as 40 real skinning joints with a twelve-joint tail chain, which the tail attack wants, but exactly one neck joint and one head joint. A long raised sauropod neck on this rig is therefore a two-segment rigid structure. That is a measured limitation of the frozen donor and is recorded before any geometry is authored against it."),
                 PS("mastodon", "Mastodon", "Animal", 14, "Huge",

@@ -52,12 +52,20 @@ class Sprint25GateTests(unittest.TestCase):
         # observation of the released Elephant recorded six grants and no
         # trample ability or component. This pins the new exact set rather
         # than only the count.
-        # Ten Sprint 25 identities plus the eight caller adapters the
-        # alternate summoning release projects for any creature added to the
-        # central catalog. The adapter GUIDs are uuid5 of their own symbols,
-        # so this pins a reproducible allocation rather than a chosen one.
-        self.assertEqual(18, len(gate.ADDED))
+        # Ten Sprint 25 identities, the eight caller adapters the alternate
+        # summoning release projects for any creature added to the central
+        # catalog, and the one ordinary Overrun command from the owner-selected
+        # bounded native-command route. The adapter GUIDs are uuid5 of their
+        # own symbols, so those pin a reproducible allocation rather than a
+        # chosen one.
+        self.assertEqual(19, len(gate.ADDED))
         self.assertIn("KMG.Summoning.Special.Elephant.Trample", gate.ADDED)
+        # The Overrun command is a separate action from either trample, and
+        # the gate must type it as an ability rather than defaulting it to a
+        # feature.
+        self.assertEqual(
+            "BlueprintAbility",
+            gate.ADDED["KMG.Summoning.Special.Brachiosaurus.Overrun"][1])
         adapters = [s for s in gate.ADDED
                     if s.startswith("KMG.Summoning.Adapter.")]
         self.assertEqual(8, len(adapters))

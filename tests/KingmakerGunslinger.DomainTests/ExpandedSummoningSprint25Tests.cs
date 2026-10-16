@@ -28,7 +28,8 @@ namespace KingmakerGunslinger.DomainTests
             GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol,
             GiantBodyRulesPolicy.BrachiosaurusChassisSymbol,
             GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
-            GiantBodyRulesPolicy.ElephantTrampleSymbol
+            GiantBodyRulesPolicy.ElephantTrampleSymbol,
+            GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol
         };
 
         internal static void RoutesAreExactlyThreeNatureAllyRootsAndNoMonsterRow()
@@ -320,12 +321,12 @@ namespace KingmakerGunslinger.DomainTests
         }
         internal static void IdentityAppendOwnsExactlyFivePrivateCarriers()
         {
-            // Six since 2026-10-16: the five Brachiosaurus carriers plus
-            // the released Elephant trample, which was appended only
-            // after the bounded observation of that creature recorded six
-            // grants and no trample ability or component.
-            Assertions.Equal(6, PrivateIdentityTail.Length,
-                "Sprint 25 appends six private carriers.");
+            // Seven since 2026-10-16: the five Brachiosaurus carriers, the
+            // released Elephant trample that the bounded observation of that
+            // creature justified, and the Brachiosaurus ordinary Overrun
+            // command from the owner-selected bounded native-command route.
+            Assertions.Equal(7, PrivateIdentityTail.Length,
+                "Sprint 25 appends seven private carriers.");
             Assertions.Equal(GiantBodyRulesPolicy.AppendedPrivateIdentityCount,
                 PrivateIdentityTail.Length,
                 "The policy's private count is the list's length.");
@@ -340,7 +341,7 @@ namespace KingmakerGunslinger.DomainTests
                 .ToArray();
             Assertions.True(tail.SequenceEqual(PrivateIdentityTail,
                     StringComparer.Ordinal),
-                "The six private carriers append last, in frozen order.");
+                "The seven private carriers append last, in frozen order.");
 
             Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
                 ExpandedSummoningIdentityCatalog.UnitCount,
@@ -421,9 +422,17 @@ namespace KingmakerGunslinger.DomainTests
             // GreaterOverrunFeature ee24c02c... - so the omission is a
             // recorded owner decision rather than a missing engine
             // capability. Neither may be carried without that decision.
-            foreach (string open in new[] { "GreatCleave", "GreaterOverrun" })
-                Assertions.False(brachiosaurus.Facts.Contains(open),
-                    "Open printed feat is not silently carried: " + open);
+            // Greater Overrun is carried through the real native feat, and
+            // the creature owns an ordinary Overrun command so the feat is
+            // reachable: a trample sets AutoSuccess true and raises no
+            // maneuver, that command sets it false.
+            Assertions.True(brachiosaurus.Facts.Contains("GreaterOverrun"),
+                "The printed Greater Overrun is carried natively.");
+            // Great Cleave stays uncarried on purpose: the shipped
+            // CleaveAction points its GreaterFeature field at CleaveFeature,
+            // so the feat itself is read by nothing on this build.
+            Assertions.False(brachiosaurus.Facts.Contains("GreatCleave"),
+                "An inert display-only fact is not granted.");
             Assertions.True(brachiosaurus.Deviations.Any(value =>
                     value.Contains("Registered is not qualified")),
                 "The trample is registered and still refuses to claim "

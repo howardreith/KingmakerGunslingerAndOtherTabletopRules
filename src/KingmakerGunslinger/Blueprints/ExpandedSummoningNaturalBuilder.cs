@@ -269,6 +269,12 @@ namespace KingmakerGunslinger.Blueprints
                 { "ElectricityImmunity", "cd1e5ab641a833c49994aff99db98952" },
                 { "WeaponFocusSlam", "8c046dfa8d1c64247af0e830a5909510" },
                 { "WeaponFocusTail", "77680337beba8df439793669390cd638" },
+                // Sprint 25. The printed Greater Overrun, mapped to the
+                // real native feat rather than reinvented. Its +2 is
+                // exactly the printed bonus; how its provocation differs
+                // from the printed rider on this build is recorded in the
+                // sprint ledger rather than papered over here.
+                { "GreaterOverrun", "ee24c02cc68c4c9b9b54ebef9f9f8133" },
                 { "WeaponFocusGore", "1ee54cb77a9dbdb49891c2c2f31d6c1c" },
                 { "ImprovedBullRush", "b3614622866fe7046b787a548bbd7f59" },
                 { "AcidResistance20", "416386972c8de2e42953533c4946599a" },

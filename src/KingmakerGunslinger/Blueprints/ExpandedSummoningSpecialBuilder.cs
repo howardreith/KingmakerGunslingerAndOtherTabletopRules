@@ -713,9 +713,93 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Summoning.Unit.Elephant",
                 GiantBodyRulesPolicy.ElephantTrampleSymbol,
                 GiantBodyRulesPolicy.ElephantKey);
+            // The bounded ordinary Overrun command the owner selected
+            // over a waiver. Brachiosaurus only, separate from Trample,
+            // and it reuses the native implementation rather than
+            // inventing a maneuver system.
+            ConfigureBrachiosaurusOverrun(library, bySymbol);
             ConfigureMephitVariants(library, bySymbol);
         }
 
+        /// <summary>
+        /// One Brachiosaurus-owned ordinary Overrun, reusing the native
+        /// overrun ability as-is rather than building a maneuver system.
+        ///
+        /// <para>The one field that matters is AutoSuccess. Every trample
+        /// in this project sets it TRUE, and the IL of AbilityCustomOverrun
+        /// branches on it before constructing anything: an AutoSuccess
+        /// overrun never builds a RuleCombatManeuver and never raises
+        /// RuleCalculateCMB. This command sets it FALSE, which is what
+        /// makes it an actual maneuver and what makes the printed Greater
+        /// Overrun +2 reachable at all.</para>
+        ///
+        /// <para>It shares nothing with Trample: its own identity, its own
+        /// action cost, no ContextActionUngulateTrample, no path checker,
+        /// and no trample damage. Neither action replays the other, and no
+        /// custom provocation is added anywhere - the native feat's own
+        /// ManeuverProvokeAttack is the only provocation in play, so there
+        /// is no duplicate native-plus-custom effect.</para>
+        /// </summary>
+        private static void ConfigureBrachiosaurusOverrun(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol,
+                "KMG.Summoning.Unit.Brachiosaurus");
+            BlueprintAbility ability = Require<BlueprintAbility>(bySymbol,
+                GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol);
+            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeOverrunAbilityGuid,
+                    "native path-following overrun ability");
+            ExpandedSummoningAbilityBuilder.CopyFields(native, ability);
+            ability.name = InternalName(
+                GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol);
+            ability.Type = AbilityType.Extraordinary;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.DoubleMove;
+            ability.CanTargetPoint = true;
+            ability.CanTargetSelf = false;
+            ability.CanTargetFriends = false;
+            ability.CanTargetEnemies = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.None;
+            ability.SpellResistance = false;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.SetIsFullRoundAction(true);
+
+            var overrun = ScriptableObject.CreateInstance<
+                AbilityCustomOverrun>();
+            // FALSE is the whole point: this one really rolls.
+            overrun.AutoSuccess = false;
+            overrun.FirstTargetOnly = false;
+            overrun.StopOnCorpulence = false;
+            overrun.DelayBeforeStart = 0f;
+            overrun.DelayAfterFinish = 0f;
+            overrun.Actions = new ActionList {
+                Actions = Array.Empty<GameAction>()
+            };
+            var fullRound = ScriptableObject.CreateInstance<
+                AbilityIsFullRoundInTurnBased>();
+            fullRound.FullRoundIfTurnBased = true;
+            ability.ComponentsArray = new BlueprintComponent[] {
+                overrun, fullRound
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Brachiosaurus.Overrun.Name",
+                    "Overrun"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Brachiosaurus.Overrun.Description",
+                    "Move through an opponent's space, forcing a combat "
+                        + "maneuver check. This is the ordinary overrun "
+                        + "maneuver and is not the creature's trample."),
+                null);
+            unit.AddFacts = (unit.AddFacts ??
+                Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { ability }).ToArray();
+        }
         private static void ConfigureUngulateTrample(
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,

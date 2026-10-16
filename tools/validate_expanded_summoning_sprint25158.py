@@ -63,6 +63,11 @@ GUIDS = {
         "309ec3dedcf04c15b3011933f5eafef4",
     "KMG.Summoning.Special.Elephant.Trample":
         "a7c34e1d9b5f4a02ae6d8c71f3b02594",
+    # The owner-selected bounded native-command route: one
+    # Brachiosaurus-owned ordinary Overrun, kept separate from
+    # Trample and sharing none of its machinery.
+    "KMG.Summoning.Special.Brachiosaurus.Overrun":
+        "b41f7d2a6c8e40539af1c2d5e7b30486",
     # Appended 2026-10-16 when master released the alternate summoning
     # sources: that release projects a caller-specific adapter identity
     # for every creature whose family and tier admit it, and it keeps no
@@ -96,7 +101,7 @@ def planned_type(symbol: str) -> str:
         return "BlueprintUnit"
     if symbol.startswith("KMG.Summoning.Ability."):
         return "BlueprintAbility"
-    if symbol.endswith("Trample"):
+    if symbol.endswith("Trample") or symbol.endswith("Overrun"):
         return "BlueprintAbility"
     if symbol.endswith("Tail4d6"):
         return "BlueprintItemWeapon"

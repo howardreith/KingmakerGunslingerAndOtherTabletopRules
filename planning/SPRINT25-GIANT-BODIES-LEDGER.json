@@ -1157,12 +1157,33 @@
         "remainingOpenBehaviour": "Whether this creature can reach an ORDINARY overrun maneuver at all. The components are real and would fire on a RuleCombatManeuver of type Overrun, which only an overrun ability with AutoSuccess false raises. What grants such an ability to a summon, and whether any supported command or AI path reaches it, is not established by the evidence gathered so far.",
         "exactFailedPath": "Brachiosaurus carries no overrun ability. Its trample is AutoSuccess = true, which skips RuleCombatManeuver construction, so ManeuverBonus(Overrun, +2) and ManeuverProvokeAttack(Overrun) are both unreachable for it today.",
         "smallestGameplayChoice": "Either (a) grant the native GreaterOverrunFeature as a faithful but currently unreachable fact, which this order forbids presenting as implemented mechanics; or (b) also give the creature a reachable ordinary overrun command with AutoSuccess false, which is new gameplay surface beyond the printed stat block and would need its own qualification; or (c) record the printed feat as present-but-unreachable with this evidence and take no action. No option is taken unilaterally.",
-        "disposition": "OPEN, with the exact failed path and the smallest choice attached, as the order directs. Not carried, and not waived.",
+        "disposition": "IMPLEMENTED on the owner-selected route and REGISTERED, not qualified. Carried through the real native feat with a reachable command; the remaining divergence is the engine’s own and is recorded above. Native proof in play is still required: failure, success without knockdown, success with knockdown, prone and maneuver immunity, an already-prone target, and opportunity-attack consumption exactly once.",
         "evidence": [
           "runtime-evidence/20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census (GreaterOverrunFeature and ImprovedOverrunFeature graphs)",
           "IL of Kingmaker.Designers.Mechanics.Facts.ManeuverProvokeAttack and Kingmaker.UnitLogic.Abilities.Components.AbilityCustomOverrun",
           "reflection metadata for ManeuverBonus, ManeuverDefenceBonus, PrerequisiteFeature and PrerequisiteStatValue"
-        ]
+        ],
+        "ownerDecision": {
+          "status": "SELECTED - this record was stale and is corrected",
+          "whatWasStale": "This entry still read \"OPEN, with the smallest choice attached\" and listed three options. The owner had already chosen among them: the bounded native-command route, explicitly over a waiver. The choice is the owner’s; recording it as still open was an engineering bookkeeping error, not a second opinion.",
+          "selected": "implement a Brachiosaurus-owned usable ordinary Overrun command plus the printed Greater Overrun benefit, reusing the native implementation where faithful and keeping it separate from Trample",
+          "explicitlyNotAuthorised": "a general Overrun system, a new feat for player characters, or adding Improved Overrun as a bonus feat to work around a selection prerequisite"
+        },
+        "implementation": {
+          "status": "REGISTERED_NOT_QUALIFIED",
+          "identity": "KMG.Summoning.Special.Brachiosaurus.Overrun / b41f7d2a6c8e40539af1c2d5e7b30486, BlueprintAbility. One identity, appended with every dependent contract moved together, taking the Sprint 25 append to nineteen.",
+          "theOneFieldThatMatters": "AutoSuccess. Every trample in this project sets it TRUE, and the IL of AbilityCustomOverrun branches on it before constructing anything: an AutoSuccess overrun never builds a RuleCombatManeuver and never raises RuleCalculateCMB. This command sets it FALSE, which is what makes it an actual maneuver and what makes the printed +2 reachable at all.",
+          "reuseNotReinvention": "It clones the same native OverrunAbility the project already uses, and the feat is the real native GreaterOverrunFeature ee24c02cc68c4c9b9b54ebef9f9f8133 mapped through the builder fact table. No maneuver subsystem was written.",
+          "separateFromTrample": "Its own identity, its own action cost, no ContextActionUngulateTrample, no path checker and no trample damage. Neither action replays the other. Trample gained no maneuver check, no +2 to damage or DC, no forced knockdown and no opportunity attacks.",
+          "noDuplicateProvocation": "No custom provocation was added anywhere. The native feat’s own ManeuverProvokeAttack is the only provocation in play, so there is no native-plus-custom double effect.",
+          "prerequisiteHandled": "Improved Overrun was NOT added as a bonus feat. It is not on the printed stat block, and it does not need to be: PrerequisiteFeature derives from Prerequisite : BlueprintComponent with zero rulebook handlers, so it gates feat selection only and a direct blueprint grant bypasses it."
+        },
+        "remainingFidelityGap": {
+          "theBonus": "faithful. The +2 is exactly the printed bonus and it is now reachable, because the command raises a real maneuver.",
+          "theRider": "NOT faithful, and taken as-is rather than papered over. The printed rider is that opponents KNOCKED PRONE by the overrun provoke. The native ManeuverProvokeAttack fires on evt.Success alone, and nothing in this build ever knocks a target prone - the OverrunAbility blueprint carries an empty action list and the AbilityCustomOverrun IL contains no knockdown call. So on this build the component provokes MORE often than printed, and the printed precondition never occurs at all.",
+          "whyItWasNotCorrected": "Making it faithful would mean adding prone application to overrun resolution, which is a new subsystem and exactly the general Overrun system this route excludes. Suppressing the provocation instead would mean not granting the native feat as-is. The native rule outcome is preserved and the divergence is recorded; no new limitation is claimed and no waiver is taken.",
+          "modStackCaveat": "The overrun family on this host is partly third-party-modified: OverrunNotTrampleAbility carries a runtime component type named OverrunAbilityLogic that is defined by TweakOrTreat.dll and exists in none of the 109 installed managed assemblies. The ability this command clones still carries the stock AbilityCustomOverrun, but the family is shared and that is a compatibility question for qualification."
+        }
       },
       "ImprovedOverrun": {
         "identity": "978c9bf7b08342619f68d0b01bf40fa9 ImprovedOverrunFeature",
@@ -1187,7 +1208,7 @@
       ],
       "brachiosaurusOpenCarryDecision": "still open and owner-owned; both feats exist in the engine, so neither omission can be attributed to a missing engine capability",
       "brachiosaurusGreatCleave": "RESOLVED: behaviour already present through the engine wiring; the fact itself is inert on this build and is not granted",
-      "brachiosaurusGreaterOverrun": "OPEN: components are real but unreachable for this creature, with the exact failed path and smallest gameplay choice recorded",
+      "brachiosaurusGreaterOverrun": "CARRIED through the native feat, with a Brachiosaurus-owned ordinary Overrun command making it reachable. Registered, not qualified.",
       "method": "component metadata by reflection, method bodies by IL disassembly of the private reference assembly, and blueprint graphs from the guarded census. No game launch was needed for any of it."
     },
     "remainingDecision": "Only if the bounded native observation shows a concrete feat with no reachable consumer does an omission become a candidate limitation, and that would be an owner decision with the evidence attached rather than an automatic acceptance.",
