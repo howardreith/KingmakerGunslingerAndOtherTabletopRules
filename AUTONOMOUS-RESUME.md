@@ -4,8 +4,17 @@ The owner accepted PR #52 (alternate summoning sources) on 2026-10-16 and
 authorized merge and release as v0.0.157 after a narrow correction pass
 (`docs/BUILD-AND-RELEASE.md`, "Current 0.0.157 publication authorization").
 The correction pass is recorded in `docs/ALTERNATE-SUMMONING-SOURCES.md` and
-`planning/ALTERNATE-SUMMONING-STATE.md`. The release candidate gate, native
-release evidence, merge and publication are recorded there as they complete.
+`planning/ALTERNATE-SUMMONING-STATE.md`.
+
+Release candidate gates PASS on `3dc23e9c7a2e` (package `82d6baef...75e9c0`,
+DLL `6ee1ab75...5f31c`): Sprint gate in 103.3 s (release-mode wrapper with the
+v0.0.157 validator, 2,646 / 2,646 domain tests, exact build, strict 373-file
+package), and on the same bytes the CotW, standalone and module-OFF profile
+scenarios (alternate summoning observer, blocked-family drill, contract
+fixture, player paths, canonical inventory 50 / 50, settings 47 / 47) and the
+natural working-save scenario 11 / 11; every profile restored and the Mods
+content manifest unchanged. Next: merge PR #52 normally, publish with the
+exact-reference publisher from clean, pushed `master`, record the release.
 
 # Firearm RTWP continuation after a kill — v0.0.156 RELEASED / STOP
 

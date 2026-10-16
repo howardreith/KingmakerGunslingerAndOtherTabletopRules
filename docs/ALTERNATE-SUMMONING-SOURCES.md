@@ -712,6 +712,17 @@ Maintainer-only cases (BLOCKED / UNVERIFIED; not owner steps):
   stale interior damage and no dangling relationship. Unrelated combat
   conditions need not clear. Grapple persistence is not implemented.
 
+## Release v0.0.157
+
+Prepared for release as `0.0.157-alternate-summoning-sources` on the
+owner's authorization (`docs/BUILD-AND-RELEASE.md`). The release candidate
+`3dc23e9c7a2e` passed the Sprint gate (release-mode repository wrapper with
+the v0.0.157 validator, complete suite 2,646 / 2,646, exact build, strict
+373-file package) and, on exactly those bytes, the CotW, standalone and
+module-OFF profile scenarios (including the canonical inventory, 50 / 50) and
+the natural working-save scenario (11 / 11). Receipts are in the state file.
+The owner checklist and maintainer cases above remain open.
+
 ## Remaining (not checked in game)
 
 Runtime is not checked for any of these; they are not claimed. Items the
