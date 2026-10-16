@@ -45,6 +45,9 @@ param(
     [switch]$ReuseQualifiedElementalRaces117Release,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
+    # The one development purpose of an explicitly reused development
+    # candidate. Valid only with -ReuseInstalledArtifact; never a release.
+    [string]$DevelopmentPurpose,
     [switch]$PassThru,
     [string]$SteamPath = 'C:\Program Files (x86)\Steam\steam.exe',
     [ValidateRange(1, 300)]
@@ -269,6 +272,12 @@ if (-not $artifactReuse -and
      -not [string]::IsNullOrWhiteSpace($PackagePath))) {
     throw 'Deployment/package paths are valid only with an explicit artifact-reuse authority.'
 }
+if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
+    [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
+    if (-not $ReuseInstalledArtifact -or $qualifiedProducerReuse) {
+        throw 'A development candidate runs only through explicit installed-artifact reuse of its own deployment.'
+    }
+}
 if ($ReuseQualifiedElementalRaces114Release -and
     ($Scenario -cne 'elemental-race-persistence-prepare' -or
      $ExpectedVersion -cne '0.0.114' -or
@@ -315,7 +324,8 @@ elseif ($ReuseInstalledArtifact) {
     $reuse = Assert-KmgReusableDeployment `
         -DeploymentManifestPath $DeploymentManifestPath `
         -PackagePath $PackagePath -RepositoryRoot $root `
-        -ExpectedVersion $ExpectedVersion -AllowDirtyGit:$AllowDirtyGit
+        -ExpectedVersion $ExpectedVersion -AllowDirtyGit:$AllowDirtyGit `
+        -DevelopmentPurpose $DevelopmentPurpose
     $package = $reuse.PackagePath
     $deploymentManifestPath = $reuse.DeploymentManifestPath
 } elseif (-not [string]::IsNullOrWhiteSpace($PackagePath)) {
@@ -873,7 +883,8 @@ try {
     }
     else {
         & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
-            -EvidenceDirectory $evidence -PackagePath $package
+            -EvidenceDirectory $evidence -PackagePath $package `
+            -DevelopmentPurpose $DevelopmentPurpose
     }
     Write-Host "Runtime evidence manifest: $(Join-Path $evidence 'evidence-manifest.json')"
     Write-Host "Runtime result: $resultPath"
