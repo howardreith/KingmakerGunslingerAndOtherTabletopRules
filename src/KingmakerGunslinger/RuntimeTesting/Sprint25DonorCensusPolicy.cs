@@ -76,6 +76,51 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal const int MaximumDiscoveredFeatBlueprints = 64;
 
+        /// <summary>
+        /// The released Elephant, observed as a production creature rather
+        /// than as a donor rig. Its three Sprint 25 carrier symbols are
+        /// reserved names with no allocated identity, and the recorded
+        /// condition for appending any of them is a bounded observation of
+        /// what this creature actually carries today. That is what this
+        /// section is for.
+        ///
+        /// <para>Metadata only. It establishes which grants, abilities and
+        /// attack carriers resolve on the released unit; it establishes
+        /// nothing about any live command outcome.</para>
+        /// </summary>
+        internal const string ReleasedElephantUnitSymbol =
+            "KMG.Summoning.Unit.Elephant";
+        internal const string ReleasedElephantUnitGuid =
+            "9dd8544097234f05bcd35d400d91b510";
+
+        /// <summary>
+        /// The eight released summon routes that must still resolve. Four
+        /// Summon Monster tiers and four Nature's Ally tiers; the
+        /// celestial and fiendish children are template products of the
+        /// Monster rows and are not listed separately here.
+        /// </summary>
+        internal static readonly string[] ReleasedElephantRoutes = {
+            "fcc0499c83c34412896646146ea34258",
+            "cdc2a4b638784e8abde10a6fcfb3bd94",
+            "51667f3c49e14fceada9ba4a87a92664",
+            "1c801ff4dddd4653876707ec5ba6573a",
+            "1e24e9676a7a47c7b396128ddd538f58",
+            "d11a1826b80d4f649fba79ba6d572ba9",
+            "736fc7dc51fb43c18fd690b158510cee",
+            "7c16ff99e4784b969e7282159b42cb5b"
+        };
+
+        /// <summary>
+        /// Component type names that would indicate this creature already
+        /// carries a trample, so the census can answer "present or absent"
+        /// from the resolved graph rather than from the project ledger.
+        /// </summary>
+        internal static readonly string[] TrampleComponentMarkers = {
+            "AbilityCustomOverrun",
+            "ContextActionUngulateTrample",
+            "UngulateTramplePathChecker"
+        };
+
         internal static bool MatchesFeatCandidate(string name)
         {
             return !string.IsNullOrEmpty(name) && FeatDiscoveryTerms.Any(term =>
@@ -101,6 +146,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "Sprint 25 census fact anchors are invalid.");
 
+            if (ReleasedElephantUnitGuid.Length != 32 ||
+                ReleasedElephantUnitGuid.Any(c => !Uri.IsHexDigit(c)) ||
+                ReleasedElephantRoutes.Length != 8 ||
+                ReleasedElephantRoutes.Any(value => value.Length != 32 ||
+                    value.Any(c => !Uri.IsHexDigit(c))) ||
+                ReleasedElephantRoutes.Distinct().Count() !=
+                    ReleasedElephantRoutes.Length ||
+                TrampleComponentMarkers.Length != 3 ||
+                TrampleComponentMarkers.Any(string.IsNullOrWhiteSpace))
+                throw new InvalidOperationException(
+                    "Sprint 25 released-Elephant census inputs are invalid.");
             if (FeatDiscoveryTerms.Length != 2 ||
                 FeatDiscoveryTerms.Any(string.IsNullOrWhiteSpace) ||
                 MaximumDiscoveredFeatBlueprints <= 0)
