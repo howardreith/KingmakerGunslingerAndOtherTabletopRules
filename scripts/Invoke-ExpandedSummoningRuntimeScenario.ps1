@@ -240,7 +240,15 @@ try {
         # or after the moment this scenario started.
         $startedStamp = ([DateTime]$run.startedAtUtc).ToUniversalTime()
         if ($PackagePath) {
-            $evidenceNames = if ($run.Contains('exactEvidenceDirectory')) { @((Split-Path -Leaf $run.exactEvidenceDirectory)) } else { @() }
+            # The array subexpression must wrap the whole conditional. An
+            # assignment from a statement whose branch yields an empty array
+            # collapses to $null, and a scenario that errors before recording
+            # its exact evidence directory takes exactly that branch - so the
+            # wrapper used to bind $null to DirectoryNames and throw a
+            # parameter-binding error after restoration, hiding the real
+            # scenario failure behind it.
+            $evidenceNames = @(if ($run.Contains('exactEvidenceDirectory')) {
+                Split-Path -Leaf $run.exactEvidenceDirectory })
         } else {
         $evidenceNames = @(Get-ChildItem 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' -Directory -ErrorAction SilentlyContinue |
             ForEach-Object Name)
