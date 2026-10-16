@@ -232,6 +232,49 @@ pre-existing failure was found there:
   evidence either way, and it was not repeated: the complete suite remains
   a Sprint-boundary gate under the validation policy.
 
+## v0.0.157 release candidate gates
+
+Owner authorization: `docs/BUILD-AND-RELEASE.md`, "Current 0.0.157
+publication authorization". Release preparation `5a72066602`, fixture fix
+`3dc23e9c7a`.
+
+**Sprint gate** (`scripts/Invoke-KmgGate.ps1 -Level Sprint -ReferenceBundleDir
+<refresh-2026-10-15>`, delegating to `Build-Local.ps1` release mode) on
+`3dc23e9c7a`: PASS in 103.3 s. Repository wrapper in release mode (the
+active-version validator dispatched `validate_alternate_summoning_release157.py`:
+6,895 identities, 3,746 appended; its 16 corruption fixtures and every other
+wrapper fixture), complete domain suite 2,646 / 2,646, exact-reference
+build, deterministic package (373 files) and strict package validation. No
+deployment.
+
+A first Sprint gate attempt on `5a72066602` failed after 20 s, before any
+build: `Test-DevelopmentCandidate.ps1` copies the real `Build-Local`, which
+pins the active version, into a fixture whose `Info.json` was hard-coded to
+0.0.156. Fixed in `3dc23e9c7a` (the fixture reads the active version); the
+contract then passed 63 / 63 on Windows PowerShell 5.1 and PowerShell 7.
+
+**Release candidate** `3dc23e9c7a2e` (`artifacts/local-runtime/0.0.157`):
+package `82d6baef743717c81147b8ac394af2ffe9b2356389915f43850a676d0375e9c0`,
+DLL `6ee1ab757a3798067782e66ff09c886e279c3b119bac321bbd1a9e654b25f31c`, MVID
+`2f4d3a56-e82c-4c3e-bdea-2a67201efad5`, source state
+`4dac09d7c9d97d7c2705665b5c3ede71f2842116617a7b7af2f7157430cd6c8b`.
+
+**Native evidence on exactly those bytes** (release candidate, no
+development purpose):
+
+| Transaction / run | Profile | Scenarios -> result | Window (UTC) |
+|---|---|---|---|
+| `compat-20261016T175820Z-d3e9e558ff53` | `gunslinger-call-of-the-wild` | mod-load smoke 3/3; observer 9/9; blocked family 9/9; contract fixture 17/17; player paths 28/28; canonical inventory (`observe-expanded-summoning-inventory`) 50/50 | 17:58:32 -> 18:10:30 |
+| `compat-20261016T181031Z-d7158a197c79` | `gunslinger-only` | observer 9/9; canonical inventory 50/50 | 18:10:41 -> 18:14:09 |
+| `compat-20261016T181410Z-3edefc57dc90` | `gunslinger-call-of-the-wild`, Expanded Summoning OFF | observer 9/9; feature-module settings 47/47 | 18:14:21 -> 18:18:03 |
+| `20261016T1819161817592Z-disposable-alternate-summoning-natural` (deployment `20261016T1819144825462Z`, backup `runtime-backups/live-mod/20261016T1819070958436Z`) | live route, read-only `KMG_AUTOMATION_WORKING` | natural scenario 11/11 under the strengthened verdict (every wait `completed`; Dire Rat 1 in [1,1], Vipers 3 in [2,5], Tyrannosaurus 1 in [1,1]; Tyrannosaurus cleanup by explicit lifecycle-buff removal followed by native dismemberment and pool cleanup); no save write | 18:18:45 -> 18:20:40 |
+
+Each profile transaction is `Restored` with `restorationVerified=true`
+(per-file SHA-256 manifest, 1,057 files). The full Mods content manifest
+read `eae0b32e7c8c26b256ca36972d27e48c91e7b9b68a89aad87942f4aa2501a993`
+before the release runs and again after the live run restored the mod: identical. No save was written; no human save was
+touched.
+
 ## Remaining (not checked in game)
 
 Runtime is not checked for any of these; they are not claimed. The doc's
@@ -259,8 +302,9 @@ Preservationist extract III -> SNA IV mapping (assisted).
 
 ## Next actions
 
-1. Owner review of PR #52 (draft). No merge, tag, release or install from
-   this mission.
+1. Release v0.0.157 (authorized; see "v0.0.157 release candidate gates"):
+   merge PR #52 normally, then run the exact-reference publisher from clean,
+   pushed `master`, then record the published release.
 2. The owner checklist in the doc covers the remaining manual cases. If they
    should be automated instead: a save-writing shortcut orchestrator on a
    disposable save (cold load normal / OFF / restored), a turn-based round
