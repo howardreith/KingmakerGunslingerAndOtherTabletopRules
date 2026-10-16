@@ -6,7 +6,10 @@ param(
     [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
     [switch]$AllowEmptyFirstInstall,
     $RuntimeLease,
-    [switch]$PassThru
+    [switch]$PassThru,
+    # The one development purpose this deployment may stage. Without it a
+    # development candidate is refused; with it only that purpose's candidate.
+    [string]$DevelopmentPurpose
 )
 
 Set-StrictMode -Version Latest
@@ -20,7 +23,12 @@ $requiredEvidenceRoot = [IO.Path]::GetFullPath('C:\Dev\KingmakerGunslingerLab\ru
 if (-not [IO.Path]::GetFullPath($EvidenceRoot).TrimEnd('\').Equals($requiredEvidenceRoot, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Evidence root must be exactly: $requiredEvidenceRoot"
 }
-$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
+$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
+    -DevelopmentPurpose $DevelopmentPurpose
+$developmentDeployment = -not [string]::IsNullOrEmpty($DevelopmentPurpose)
+$candidateLabel = if ($developmentDeployment) {
+    "development candidate '$DevelopmentPurpose' (never a release)"
+} else { 'Build-Local package' }
 Assert-KmgNotRunning
 if (-not (Test-Path -LiteralPath $LiveModDirectory -PathType Container)) {
     throw "Expected live mod directory is missing: $LiveModDirectory"
@@ -35,10 +43,10 @@ if ($AllowEmptyFirstInstall -and $liveFiles.Count -ne 0) {
     throw '-AllowEmptyFirstInstall is valid only when the exact live mod tree contains no files.'
 }
 
-Write-Host "Validated Build-Local package: $($manifest.packagePath)"
+Write-Host "Validated ${candidateLabel}: $($manifest.packagePath)"
 Write-Host "Target directory: $live"
 $WhatIfPreference = $deploymentWhatIfRequested
-if (-not $PSCmdlet.ShouldProcess($live, "Back up and deploy version $($manifest.version)")) {
+if (-not $PSCmdlet.ShouldProcess($live, "Back up and deploy version $($manifest.version) $candidateLabel")) {
     Write-Host 'Dry run only; package and target were validated and no deployment manifest was written.'
     return
 }
@@ -47,7 +55,8 @@ $WhatIfPreference = $false
 $runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'deploy local candidate'
 try {
 Assert-KmgNotRunning
-$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
+$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
+    -DevelopmentPurpose $DevelopmentPurpose
 $backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
     -LiveModDirectory $live -BackupRoot $BackupRoot `
     -AllowEmptySource:$AllowEmptyFirstInstall -Confirm:$false
@@ -120,7 +129,7 @@ finally {
 
 $deploymentDirectory = Join-Path $EvidenceRoot ('deployments\' + [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ'))
 New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
-[ordered]@{
+$deploymentRecord = [ordered]@{
     schemaVersion = 2
     deployedAtUtc = [DateTime]::UtcNow.ToString('o')
     packagePath = $manifest.packagePath
@@ -145,7 +154,15 @@ New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
     backupDirectory = $backup.Destination
     backupWasEmpty = [bool]$backup.EmptySource
     files = $actualFiles
-} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $deploymentDirectory 'deployment.json') -Encoding UTF8
+}
+if ($developmentDeployment) {
+    $deploymentRecord.candidateKind = 'development'
+    $deploymentRecord.releaseQualification = $false
+    $deploymentRecord.developmentPurpose = $DevelopmentPurpose
+    $deploymentRecord.developmentReceiptSha256 = Get-KmgSha256 -Path (
+        Get-KmgDevelopmentReceiptPath -PackagePath $manifest.packagePath)
+}
+$deploymentRecord | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $deploymentDirectory 'deployment.json') -Encoding UTF8
 $deploymentManifestPath = Join-Path $deploymentDirectory 'deployment.json'
 Write-Host "Deployment verified; manifest: $deploymentManifestPath"
 if ($PassThru) {
