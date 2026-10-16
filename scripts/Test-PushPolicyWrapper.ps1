@@ -36,7 +36,12 @@ param(
     # The permitted root is the real Sprint 25 worktree, exercised through the
     # wrapper's existing lab-boundary authorization rather than by widening it.
     [string]$PermittedRoot = 'C:/Dev/KingmakerGunslingerLab/wt/s25',
-    [string]$LabRoot = 'C:/Dev/KingmakerGunslingerLab'
+    [string]$LabRoot = 'C:/Dev/KingmakerGunslingerLab',
+    # Run ONLY the harness-negative control, which proves the
+    # refusal-before-mutation assertion rejects a wrapper that pushes and then
+    # reports the expected failure. The full run always includes this control
+    # as well; this switch just makes it separately addressable.
+    [switch]$SelfTestNegativeControl
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -340,6 +345,17 @@ function Invoke-Case {
 }
 
 try {
+    if ($SelfTestNegativeControl) {
+        Invoke-Case -Name 'control: push-before-refusal wrapper is rejected' `
+            -Scenario @{ branch = 'codex/not-authorized' } `
+            -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Refusing to push non-allowlisted branch' `
+            -OverridePolicy $badPolicy -ExpectAuditFailure
+        $results | Format-Table -AutoSize | Out-String -Width 200 | Write-Host
+        if ($failures -ne 0) { throw 'Harness-negative control FAILED.' }
+        Write-Host 'Harness-negative control ran and passed: a push-before-refusal wrapper is rejected.'
+        return
+    }
     # --- Accepted: exactly one push, exact argv ---
     Invoke-Case -Name 'sprint25 product branch in permitted worktree' `
         -Scenario @{ branch = $sprint25[0] } -Expect push -ExpectedPushCalls 1
