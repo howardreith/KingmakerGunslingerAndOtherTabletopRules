@@ -300,12 +300,19 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(elephant.Facts.Contains("ImprovedBullRush"),
                 "Improved Bull Rush is carried now that its carrier is proven.");
             foreach (string absent in new[] { "PowerfulCharge", "Grab",
-                "Endurance", "Pounce" })
+                "Pounce" })
                 Assertions.False(elephant.Facts.Contains(absent),
                     "No invented or unproven Elephant carrier: " + absent);
-            Assertions.True(elephant.Deviations.Any(value =>
-                    value.Contains("Endurance remains omitted")),
-                "The one still-unproven feat keeps an honest omission.");
+            // All six printed Elephant feats are carried. Endurance was
+            // wrongly recorded as unproven: the builder has mapped it to a
+            // native feat since Sprint 4, the Sprint 24 bounded native census
+            // recorded it as resolved, and the released Tyrannosaurus ships
+            // it. Every printed feat now resolves through a real carrier.
+            foreach (string printed in new[] { "Endurance", "GreatFortitude",
+                "ImprovedBullRush", "IronWill", "PowerAttack",
+                "SkillFocusPerception" })
+                Assertions.True(elephant.Facts.Contains(printed),
+                    "Printed Elephant feat carried: " + printed);
             Assertions.True(elephant.Deviations.Any(value =>
                     value.Contains("NOT registered yet")),
                 "Trample is recorded as specified, not as shipped behaviour.");
