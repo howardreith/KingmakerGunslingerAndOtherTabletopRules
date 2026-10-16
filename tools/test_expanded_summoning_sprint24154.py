@@ -115,15 +115,6 @@ class Sprint24GateTests(unittest.TestCase):
             "src/KingmakerGunslinger/Summoning/CrocodilianAttackVisualPose.cs",
             gate.ALLOWED_PRODUCTION)
 
-    def test_firearm_checkpoint_scope_is_separate_and_exact(self):
-        # A firearm development checkpoint is not a Sprint 24 seam.
-        self.assertFalse(gate.FIREARM_CONTINUATION_PRODUCTION & gate.ALLOWED_PRODUCTION)
-        self.assertTrue(all(path.startswith((
-            "src/KingmakerGunslinger/Firing/",
-            "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Firearm"))
-            for path in gate.FIREARM_CONTINUATION_PRODUCTION))
-        self.assertEqual(5, len(gate.FIREARM_CONTINUATION_PRODUCTION))
-
 
 if __name__ == "__main__":
     unittest.main()

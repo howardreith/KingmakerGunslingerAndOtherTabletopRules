@@ -1,4 +1,9 @@
-# Firearm RTWP continuation after a kill — second review revision / AWAITING REVIEW
+# Firearm RTWP continuation after a kill — ACCEPTED; v0.0.156 RELEASE IN PROGRESS
+
+The owner accepted the second review revision on 2026-10-15 and authorized
+merge and release as v0.0.156 (`docs/BUILD-AND-RELEASE.md`, "Current 0.0.156
+publication authorization"). The release candidate is recorded below once
+its gates run.
 
 Branch `codex/firearm-rtwp-kill-retarget`, with master `31672515` (v0.0.155)
 merged in at `1d98af476b` (`origin/master` has since moved to `97c881ea84`,
@@ -6,7 +11,7 @@ records and publisher scripts only; not merged). Production correction
 `1890ba06cc`; the second review changed only the CR-04 fixture/observer.
 Tested code commit `acc620cb4c`; later commits change records only. Record:
 [docs/FIREARM-RTWP-KILL-CONTINUATION.md](docs/FIREARM-RTWP-KILL-CONTINUATION.md).
-Not merged, released, tagged or permanently installed; no PR opened.
+Release v0.0.156 in progress; nothing permanently installed.
 
 Separate statuses:
 
