@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "ALBEDOS_AUTHORED_GEOMETRY_BLOCKED_ON_DONOR_CAPTURE_ICON_HANDED_OFF",
+  "status": "ELEPHANT_CORRECTED_ALBEDOS_AUTHORED_BUILDER_AND_GEOMETRY_OUTSTANDING",
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
     "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
@@ -698,5 +698,80 @@
     },
     "originalBodyAssetsAuthored": false,
     "whyFlagStaysFalse": "textures alone do not flip it; it requires both geometries, UVs, albedos, provenance and the required inspection outputs to exist and verify"
+  },
+  "engineering": {
+    "elephantProfileCorrection": {
+      "status": "LANDED",
+      "defectFound": "The released Elephant registered its slam in the secondary natural-attack list. A secondary natural attack takes the native -5 to hit and half Strength, which yields slam +11 (2d6+5). The printed adult block is gore +16 (2d8+10) AND slam +16 (2d6+10): both primary, each adding Strength once.",
+      "fix": "the slam moves from additionalSecondaryWeapons to additionalWeapons",
+      "alsoCarried": {
+        "TripDefenseFourLegs": "the printed +4 quadruped defence against trip, which the printed CMD 30 / 34 versus trip requires; it was absent though 27 other profile references use this exact carrier",
+        "ImprovedBullRush": "previously recorded as unproven here, but Sprint 23 qualified the exact concrete carrier for Triceratops, so the omission no longer held"
+      },
+      "stillOmitted": {
+        "Endurance": "no proven concrete carrier in the project vocabulary; none invented"
+      },
+      "testCorrected": "ExpandedSummoningIdentityCatalogTests pinned the slam as the single secondary attack, which is what encoded the defect; it now pins the printed routine",
+      "identityUntouched": "key, tiers, eight roots, execution children and ordering unchanged; the real Mastodon profile is untouched"
+    },
+    "brachiosaurusProfile": {
+      "status": "DEFERRED_WITH_ITS_BUILDER",
+      "why": "a profile whose weapon key cannot resolve makes blueprint initialization throw and roll back every registration, so shipping the row without the builder would be a runtime landmine rather than an honest gap. The row and its builder land together.",
+      "pinnedByTest": "expanded-summoning.sprint25-elephant-profile asserts the row is absent on purpose",
+      "frozenContract": {
+        "hitDieClass": "Animal",
+        "hitDice": 18,
+        "size": "Gargantuan",
+        "abilities": {
+          "str": 37,
+          "dex": 10,
+          "con": 21,
+          "int": 2,
+          "wis": 13,
+          "cha": 10
+        },
+        "speedFeet": 30,
+        "naturalArmor": 12,
+        "primaryWeapon": "BrachiosaurusTail4d6",
+        "additionalWeapons": 0,
+        "secondaryWeapons": 0,
+        "skills": [
+          "Perception"
+        ],
+        "perceptionDerivation": "18 ranks + 3 class + 1 Wisdom + 6 Skill Focus = 28, no racial bonus"
+      },
+      "featAudit": {
+        "method": "counted proven carriers in the project profile vocabulary",
+        "carried": [
+          "Cleave",
+          "GreatFortitude",
+          "ImprovedBullRush",
+          "IronWill",
+          "PowerAttack",
+          "SkillFocusPerception",
+          "WeaponFocusTail",
+          "TripDefenseFourLegs"
+        ],
+        "omittedGreatCleave": "no Great Cleave carrier exists in the vocabulary although Cleave does; audited separately from Cleave and not invented",
+        "omittedGreaterOverrun": "audited separately from the Sprint 22 and Sprint 23 Improved Overrun finding, because it is a different feat and that finding is not authority to drop this one. No Greater Overrun carrier exists; the earlier reviews recorded that the native Overrun family carries an identity with prerequisites but no mechanical consumer. No general overrun system is substituted.",
+        "evidenceNeededToClose": "a bounded native library observation of whether the installed 2.1.7b library exposes concrete Great Cleave and Greater Overrun feats with summon-reachable consumers"
+      }
+    },
+    "remaining": [
+      "the Sprint 25 natural builder: tail weapon from a native animated-tail donor at 4 x D6, its own weapon type carrying twenty-foot reach, the species unit type, and the chassis",
+      "the trample ability for both creatures on the Sprint 23 d8 and d6 support, with both command registrations in every interrupt and duplicate-response guard",
+      "the Brachiosaurus profile row, landing with its builder",
+      "original-body attachment, placement and navigation behaviour, native observers",
+      "the Mastodon donor capture, then geometry and the offline review renders",
+      "the painted icon, which is handed off"
+    ]
+  },
+  "suite": {
+    "registered": 2622,
+    "failures": 7,
+    "sprint25CasesPassing": 7,
+    "allFailuresOneRootCause": "the icon catalog wants its 120th entry, which needs the handed-off painting",
+    "notGreen": true,
+    "note": "2,615 of 2,622 passing is not green and is not described as green. The seven new Sprint 25 cases establish their selected contracts; they do not establish creature behaviour."
   }
 }

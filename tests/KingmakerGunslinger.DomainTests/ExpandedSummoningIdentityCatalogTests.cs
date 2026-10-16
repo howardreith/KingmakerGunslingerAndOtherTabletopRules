@@ -592,9 +592,16 @@ namespace KingmakerGunslinger.DomainTests
             NaturalSummonProfile elephant =
                 ExpandedSummoningNaturalProfiles.For("elephant");
             Assertions.Equal(11, elephant.HitDice, "Elephant HD changed.");
-            Assertions.Equal("Slam2d6",
-                elephant.AdditionalSecondaryWeapons.Single(),
-                "Elephant slam profile changed.");
+            // Corrected in Sprint 25. This previously pinned the slam as the
+            // single secondary attack, which is what the released profile
+            // registered and what made the slam take the native -5 to hit and
+            // half Strength. The printed adult block is gore +16 (2d8+10) AND
+            // slam +16 (2d6+10): two primary attacks, each adding Strength
+            // once. The assertion now pins the printed routine.
+            Assertions.Equal("Slam2d6", elephant.AdditionalWeapons.Single(),
+                "The Elephant slam is a primary attack, as printed.");
+            Assertions.Equal(0, elephant.AdditionalSecondaryWeapons.Count,
+                "The Elephant has no secondary natural attack.");
             Assertions.True(elephant.Deviations.Any(value =>
                 value.Contains("Trample")),
                 "Elephant trample deviation is not explicit.");
