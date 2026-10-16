@@ -45,8 +45,8 @@ RESEARCH_PRODUCTION = {
 }
 # The two compile items the Sprint 25 research seam adds, on that branch only.
 RESEARCH_PROJECT_LINES = [
-    '    <Compile Include="RuntimeTesting\Sprint25DonorCensusPolicy.cs" />',
-    '    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint25Census.cs" />',
+    r'    <Compile Include="RuntimeTesting\Sprint25DonorCensusPolicy.cs" />',
+    r'    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint25Census.cs" />',
 ]
 VERSION_PRODUCTION = {"src/KingmakerGunslinger/Properties/AssemblyInfo.cs"}
 # The project may differ from v0.0.155 only by compiling the new fixture file.

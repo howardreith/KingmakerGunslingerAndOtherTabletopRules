@@ -17,14 +17,18 @@ namespace KingmakerGunslinger.DomainTests
                 "The closed donor order is stable and reviewable.");
             Assertions.Equal("028cc6f46e7998f46855a33ffde89567", donors[0][1],
                 "The Mastodon blueprint identity is exact.");
-            // The Mastodon prefab has never been recorded on this machine, so
-            // the census records what the library exposes rather than
-            // asserting an unmeasured value. The negative control stays pinned
-            // because its prefab IS known, which is what keeps the discovery
-            // path honest: only the unknown donor discovers.
-            Assertions.Equal(Sprint25DonorCensusPolicy.DiscoverPrefab,
+            // The Mastodon prefab had never been recorded on this machine, so
+            // the first census discovered it rather than asserting a value
+            // nobody had measured. The 2026-10-16T13:35Z guarded run measured
+            // it, so it is pinned now and discovery is spent: every donor in
+            // this closed set is exact, and a changed install fails the census
+            // instead of silently re-measuring.
+            Assertions.Equal("fe9f25fe62e0f3b49a13910a996470b2",
                 donors[0][2],
-                "The unmeasured Mastodon prefab is discovered, not asserted.");
+                "The measured Mastodon prefab is pinned exactly.");
+            Assertions.True(donors.All(value =>
+                    value[2] != Sprint25DonorCensusPolicy.DiscoverPrefab),
+                "No donor discovers any more; the census is fully pinned.");
             Assertions.Equal("d6db6ba3b2c459a48ba0730beef0bac8", donors[1][2],
                 "The already-measured control keeps its exact pinned prefab.");
 
