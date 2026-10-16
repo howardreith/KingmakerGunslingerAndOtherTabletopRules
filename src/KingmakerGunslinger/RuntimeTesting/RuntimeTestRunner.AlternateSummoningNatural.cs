@@ -35,10 +35,11 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// read-only working save: a disposable Master Summoner party member's
     /// granted root is opened from the native action bar, a creature is
     /// chosen by clicking its row in the native variant popup (an early row,
-    /// and the last row of a menu that needs scrolling), and the cast is
+    /// the last row of the tier III menu, and the single Tyrannosaurus of
+    /// tier VII, a recent creature with grapple and swallow), and the cast is
     /// confirmed through the native selected-ability click handler and then
     /// left to the unpaused native RTWP scheduler, animation and cooldown.
-    /// One summon is then ended through the engine's own expiry path and its
+    /// The Tyrannosaurus is then ended through the engine's own expiry path and its
     /// dismemberment allowed to finish in native time. No IsActed, cooldown
     /// override, synchronous command tick or hotbar slot is used; no save is
     /// written. Turn-based combat is not exercised.
@@ -100,7 +101,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var document = new JObject {
                 ["schemaVersion"] = 1, ["runId"] = _request.RunId,
-                ["claims"] = "Real action-bar popup selection and natural RTWP casts of a Master Summoner adapter root on the guarded read-only working save; native dismissal. No hotbar slot, saved shortcut, turn-based round or save write.",
+                ["claims"] = "Real action-bar popup selection and natural RTWP casts of Master Summoner adapter roots (tiers I, III and VII) on the guarded read-only working save; native dismissal of the recent Tyrannosaurus. No hotbar slot, saved shortcut, turn-based round or save write.",
                 ["execution"] = AltNaturalExecution,
                 ["captures"] = _altNaturalCaptures,
                 ["assertions"] = JArray.FromObject(_altNaturalAssertions),
@@ -219,7 +220,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExpandedSummoningBrainActive(caster, false);
                 caster.Stats.HitPoints.BaseValue = 10000;
                 caster.Descriptor.Stats.Charisma.BaseValue = 18;
-                AdvanceDisposableArchetypeCaster(caster.Descriptor, summoner, archetype, 5, ref levelController);
+                // Level 13: tier VII, where the Sprint 24 Tyrannosaurus is offered.
+                AdvanceDisposableArchetypeCaster(caster.Descriptor, summoner, archetype, 13, ref levelController);
                 caster.Descriptor.Resources.Restore(resource);
                 player.PartyCharacters.Add(caster);
                 player.InvalidateCharacterLists();
@@ -233,16 +235,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Ability tierOne = PlayerPathRootFact(caster, family, 1);
                 Ability tierThree = PlayerPathRootFact(caster, family, 3);
                 var early = new AltNaturalCast { Label = "early-row-tier1" };
-                foreach (int frame in AltNaturalChoose(caster, tierOne, false, early)) yield return frame;
+                foreach (int frame in AltNaturalChoose(caster, tierOne, AltNaturalPick.FirstProjectCreature, early)) yield return frame;
                 foreach (int frame in AltNaturalCastSelected(caster, resource, early, summons)) yield return frame;
                 AltNaturalAssertCast(early, tierOne, 1);
 
                 var late = new AltNaturalCast { Label = "last-row-tier3-scrolled" };
-                foreach (int frame in AltNaturalChoose(caster, tierThree, true, late)) yield return frame;
+                foreach (int frame in AltNaturalChoose(caster, tierThree, AltNaturalPick.LastRow, late)) yield return frame;
                 foreach (int frame in AltNaturalCastSelected(caster, resource, late, summons)) yield return frame;
                 AltNaturalAssertCast(late, tierThree, 3);
 
-                foreach (int frame in AltNaturalDismiss(caster, summons)) yield return frame;
+                // A recent creature through the adapter: the single
+                // Tyrannosaurus (Sprint 24; grapple and swallow) from tier VII.
+                Ability tierSeven = PlayerPathRootFact(caster, family, 7);
+                var recent = new AltNaturalCast { Label = "recent-tyrannosaurus-tier7" };
+                foreach (int frame in AltNaturalChoose(caster, tierSeven, AltNaturalPick.Tyrannosaurus, recent)) yield return frame;
+                foreach (int frame in AltNaturalCastSelected(caster, resource, recent, summons)) yield return frame;
+                AltNaturalAssertCast(recent, tierSeven, 7);
+
+                foreach (int frame in AltNaturalDismiss(caster, summons, recent.Summoned.FirstOrDefault())) yield return frame;
             }
             finally
             {
@@ -298,12 +308,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private enum AltNaturalPick { FirstProjectCreature, LastRow, Tyrannosaurus }
+
+        private static string AltNaturalSpawnName(AbilityData data)
+        {
+            SummonSpawn spawn = SummonSignatureReader.Read(data.Blueprint).Spawns().FirstOrDefault();
+            BlueprintScriptableObject unit = null;
+            if (spawn != null) Bootstrap.BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(spawn.Unit, out unit);
+            return unit == null ? "" : unit.name;
+        }
+
         /// <summary>Opens the native abilities group, the root's own variant
-        /// popup, and clicks one row: the first project creature, or the
-        /// last row after the menu has been scrolled to its end.</summary>
-        private IEnumerable<int> AltNaturalChoose(UnitEntityData caster, Ability root, bool last,
+        /// popup, and clicks one row: the first project creature, the last
+        /// row after the menu has been scrolled to its end, or the single
+        /// Tyrannosaurus.</summary>
+        private IEnumerable<int> AltNaturalChoose(UnitEntityData caster, Ability root, AltNaturalPick pick,
             AltNaturalCast cast)
         {
+            bool last = pick == AltNaturalPick.LastRow;
             const BindingFlags fields = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             Func<ActionBarGroupSlot, bool> isRoot = row =>
             {
@@ -359,16 +381,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 6; frame++) yield return 0;
                 chosenRow = rows.LastOrDefault();
             }
-            else
+            else if (pick == AltNaturalPick.Tyrannosaurus)
             {
-                chosenRow = rows.FirstOrDefault(row =>
+                ActionBarSlot[] matches = rows.Where(row =>
                 {
                     var data = (AbilityData)row.MechanicSlot.GetContentData();
                     SummonSpawn spawn = SummonSignatureReader.Read(data.Blueprint).Spawns().FirstOrDefault();
-                    BlueprintScriptableObject unit = null;
-                    if (spawn != null) Bootstrap.BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(spawn.Unit, out unit);
-                    return unit != null && unit.name.StartsWith("KMG_Summoning_", StringComparison.Ordinal);
-                });
+                    return spawn != null && (spawn.CountDice == "One" || spawn.CountDice == "Zero") &&
+                        AltNaturalSpawnName(data) == "KMG_Summoning_Unit_Tyrannosaurus";
+                }).ToArray();
+                chosenRow = matches.Length == 1 ? matches[0] : null;
+                if (chosenRow != null && !AltNaturalRowVisible(popup, chosenRow))
+                {
+                    // Bring the row into view as a player would by scrolling.
+                    ScrollRect scroll = popup.GetComponentInChildren<ScrollRect>(true);
+                    if (scroll != null) scroll.verticalNormalizedPosition =
+                        1f - (float)Array.IndexOf(rows, chosenRow) / Math.Max(1, rows.Length - 1);
+                    for (int frame = 0; frame < 6; frame++) yield return 0;
+                }
+            }
+            else
+            {
+                chosenRow = rows.FirstOrDefault(row => AltNaturalSpawnName((AbilityData)row.MechanicSlot
+                    .GetContentData()).StartsWith("KMG_Summoning_", StringComparison.Ordinal));
             }
             AbilityData rowData = chosenRow == null ? null : (AbilityData)chosenRow.MechanicSlot.GetContentData();
             bool rowVisible = chosenRow != null && AltNaturalRowVisible(popup, chosenRow);
@@ -490,11 +525,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>Ends one summon through the engine's expiry path and lets
         /// native time finish its dismemberment; the pool releases it.</summary>
-        private IEnumerable<int> AltNaturalDismiss(UnitEntityData caster, List<UnitEntityData> summons)
+        private IEnumerable<int> AltNaturalDismiss(UnitEntityData caster, List<UnitEntityData> summons,
+            UnitEntityData preferred)
         {
             Game game = Game.Instance;
-            UnitEntityData unit = summons.FirstOrDefault(value => !value.Destroyed &&
-                !value.Descriptor.State.IsDead);
+            UnitEntityData unit = preferred != null && !preferred.Destroyed &&
+                !preferred.Descriptor.State.IsDead ? preferred : summons.FirstOrDefault(value =>
+                    !value.Destroyed && !value.Descriptor.State.IsDead);
             if (unit == null) yield break;
             ISummonPool free = PlayerPathPool(AlternateSummoningContracts.MasterSummonerFreePool);
             ISummonPool bound = PlayerPathPool(AlternateSummoningContracts.SummonerPool);
