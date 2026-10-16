@@ -701,6 +701,7 @@ try {
         'summon-same-turn-rtwp-control',
         'disposable-expanded-summoning-visual-contracts',
         'disposable-brown-fur-native-cast',
+        'disposable-alternate-summoning-natural',
         'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
         'working-save-favored-class-visual-census',
