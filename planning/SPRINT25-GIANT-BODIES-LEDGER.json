@@ -855,7 +855,59 @@
         ],
         "viewsNotCovered": "rear views, the elephant curled state entirely, brachiosaurus curled from a second camera, any wireframe or normals pass, any motion frames, a ground plane or scale reference, head close-ups, and an icon-scale render"
       },
-      "correctionToAnEarlierClaimInThisRecord": "This record said the forward chain descends to ground level. In the donor bind data the chain tip is at y = 0.151 and the feet at y = 0.035, so the trunk ends slightly ABOVE the foot plane. Some trunk-to-ground clearance is faithful to the donor and is not a defect."
+      "correctionToAnEarlierClaimInThisRecord": "This record said the forward chain descends to ground level. In the donor bind data the chain tip is at y = 0.151 and the feet at y = 0.035, so the trunk ends slightly ABOVE the foot plane. Some trunk-to-ground clearance is faithful to the donor and is not a defect.",
+      "revision2": {
+        "renders": "runtime-evidence/sprint25-graybox-r2",
+        "renderCount": 30,
+        "renderSha256": {
+          "brachiosaurus-rest-front.png": "3d2c2d4bbd0f3bc17e170c8ee215ecfa42a31e2a569ada3c4cbf81bb1f705ff6",
+          "brachiosaurus-rest-orient-front.png": "992c884d52ffed23775aa244865a9cdee2270ca39d598e6aba8944d86404585f",
+          "brachiosaurus-rest-orient-side.png": "7afd0c99b2b7874a6183b6bfe6f79adce114a5fcb0ed3ce8808744a3acf4e462",
+          "brachiosaurus-rest-party.png": "6c68de3b9a218e82e310c79dc10681cc872d4be53105b7137dbc6df6428f971d",
+          "brachiosaurus-rest-rear.png": "8d5a5fa1400027b6442a251b1edb6d525c09abb6235f731e5113c9624914f1cb",
+          "brachiosaurus-rest-side.png": "dd7b54ac8c481ef03d8f7730543b51709139b7e5177f62afce36dffa432140d7",
+          "brachiosaurus-upright-curled-front.png": "1e3644fb724001fd80b401e2b000f56e753454be4e128025d375d474bce6edd3",
+          "brachiosaurus-upright-curled-orient-front.png": "7d8a29bfab9c13a45cc0b6d6aa14eeddcf093d7a0a43687cc8bafef0df2c65e9",
+          "brachiosaurus-upright-curled-orient-side.png": "afef99be55777a0f0604c54839eccf11b2fc121ed2a4642ca8470513a3010b25",
+          "brachiosaurus-upright-curled-party.png": "957a48e04f82f116bc6583b772fed828b9a4d56f73ddd4e5d50865dffcff0a18",
+          "brachiosaurus-upright-curled-rear.png": "0f475f49d71f4a4a1ffa6147770ff7d99ed96a83c11718b062706d5c8944b14b",
+          "brachiosaurus-upright-curled-side.png": "8396dcc44c2a34b57b302b94377e2b57e53f33bea7b663372d69c1fb0c2bc5ee",
+          "brachiosaurus-upright-front.png": "f2b3957d6d28f84fbdb599a6b270f779c7111b173ad19dd553e75e26a8d0a806",
+          "brachiosaurus-upright-orient-front.png": "9b60c5147333c0c81347605ef16407457df5453f83147af4bf1e9e076b743b3e",
+          "brachiosaurus-upright-orient-side.png": "130acddc9482c80328e21e4e0d3163b09bf93314f44f0c4d0a12d0f06d5ff3b6",
+          "brachiosaurus-upright-party.png": "66345f2110128c4cace02a71456674b9b25c4fd3551151eb8d334f5b6bde79d4",
+          "brachiosaurus-upright-rear.png": "602ef8b65cd8f9f8f280f671468312f63766ef6798aad7ae003e13f468e648c4",
+          "brachiosaurus-upright-side.png": "93405eee142f86cb9cc6bd8efcea0d94ecc97614e679bcbca6bdd7a731c5f392",
+          "elephant-curled-front.png": "613c1acae436d94f68939a24e31e9084b6100a315588a1a0574900ad03e60dfd",
+          "elephant-curled-orient-front.png": "c7a3be36e3f3b3c5d86e2d045657568980c5f1b44d8467266b992d729f9162e4",
+          "elephant-curled-orient-side.png": "a10055bb9ce0f0168642793659da637073869b22d67f8515a97030f7c64819f3",
+          "elephant-curled-party.png": "341f75e64a6c7e39b474ff35a73994b2be512af762ff2ff1e6f6ebf75fb9562f",
+          "elephant-curled-rear.png": "1e6e5c517b8d9cd5805ca9b4fbfd32b7bc67692d93a5b703f93193c1da0183d7",
+          "elephant-curled-side.png": "82522b8659de3b843f3418ab335aac11bbfb49b6a7e5f977c7761c72188083bf",
+          "elephant-rest-front.png": "09e919f27b37197611f1be80af6c8d0a8ae1fcd57dccc709dd8adb569cdbce05",
+          "elephant-rest-orient-front.png": "b9464550a40610c8ed0def25b878745b269900edd21b578cbebc848aad500973",
+          "elephant-rest-orient-side.png": "2e3f30022dd93f457486c3da408962652e81f9f21ed1b16db0d8082b39b0d4ae",
+          "elephant-rest-party.png": "f3a55ea251a937d5e29e981e171a91afd9b123549229f2770a62925aec791e89",
+          "elephant-rest-rear.png": "24895225237c6fedee34ed9f4c41fedbf2a83c2cf2d92538158f787d5aa9c6a8",
+          "elephant-rest-side.png": "a15254384d196a65f1b139179ddc888ee2eab89b4b764397dc170433babce1af"
+        },
+        "supersedes": "runtime-evidence/sprint25-graybox, which is retained as the original evidence the independent review actually inspected",
+        "generatorRepairs": {
+          "anatomyVersusAnchor": "After the seam anchor was prepended, pts[0] was no longer the captured Head position, yet the elephant skull, ears and tusks still read it - so they hung off a point inside the torso. The three kinds of reference are now distinct and named: head_joint is the anatomical one and never moves, pts[0] is a seam-overlap anchor and is not anatomy, and the skull sink is a deliberate artistic offset.",
+          "cameraDirections": "front and rear were swapped against the declared +Y forward frame. The conversion leaves the creature facing +Y, so the front camera stands at +Y and the rear at -Y. Every front and rear render before this revision was mislabelled.",
+          "stateSeparation": "The elephant curled state was receiving the sauropod upright re-aim as well as the curl, which stood its trunk up like a neck. The states are now rest, upright and upright-curled for Brachiosaurus and rest and curled for Elephant: the re-aim belongs to the neck only.",
+          "reviewLighting": "One sun left the front and rear views backlit and unreadable, and an unreadable render cannot be inspected. Three suns now light the review renders. Lighting only - no geometry changed."
+        },
+        "p6Classified": {
+          "question": "is the enclosed dark patch a hole or a flipped face?",
+          "method": "not another look. A topology report counts what actually distinguishes them - boundary edges bound a hole, non-manifold edges mean an unclean shell - and a face-orientation pass renders backfaces red, which is Blender’s own overlay expressed as a material.",
+          "topology": "every mesh: 0 boundary edges, 0 non-manifold edges, 0 wire edges, 0 loose vertices. The shell is closed, so it is NOT a hole.",
+          "orientationPass": "red appeared only on the limb end caps and two small spots on the body, so the caps were closed but wound inward and their backfaces were being seen through the surface.",
+          "verdict": "FLIPPED CAP FACES, not a hole",
+          "repair": "normals are recalculated outward at build time. The re-rendered orientation pass is uniformly outward-facing with no red anywhere. The actual surface defect was repaired; it was not hidden behind a material or an edited image.",
+          "caveat": "the stronglyInwardFaces number in the topology report is a crude whole-body-centroid heuristic and is meaningless for a limbed shape, where the inner side of a leg legitimately faces the centroid. It is reported but carries no verdict."
+        }
+      }
     }
   },
   "engineering": {
