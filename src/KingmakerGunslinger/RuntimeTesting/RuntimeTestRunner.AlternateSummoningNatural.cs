@@ -39,8 +39,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// tier VII, a recent creature with grapple and swallow), and the cast is
     /// confirmed through the native selected-ability click handler and then
     /// left to the unpaused native RTWP scheduler, animation and cooldown.
-    /// The Tyrannosaurus is then ended through the engine's own expiry path and its
-    /// dismemberment allowed to finish in native time. No IsActed, cooldown
+    /// The Tyrannosaurus is then cleaned up by explicit lifecycle-buff removal
+    /// followed by native dismemberment and pool cleanup. No IsActed, cooldown
     /// override, synchronous command tick or hotbar slot is used; no save is
     /// written. Turn-based combat is not exercised.
     /// </summary>
@@ -101,7 +101,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var document = new JObject {
                 ["schemaVersion"] = 1, ["runId"] = _request.RunId,
-                ["claims"] = "Real action-bar popup selection and natural RTWP casts of Master Summoner adapter roots (tiers I, III and VII) on the guarded read-only working save; native dismissal of the recent Tyrannosaurus. No hotbar slot, saved shortcut, turn-based round or save write.",
+                ["claims"] = "Real action-bar popup selection and natural RTWP casts of Master Summoner adapter roots (tiers I, III and VII) on the guarded read-only working save; explicit lifecycle-buff removal of the recent Tyrannosaurus followed by native dismemberment and pool cleanup. No hotbar slot, saved shortcut, turn-based round or save write.",
                 ["execution"] = AltNaturalExecution,
                 ["captures"] = _altNaturalCaptures,
                 ["assertions"] = JArray.FromObject(_altNaturalAssertions),
@@ -141,21 +141,58 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal int ResourceAfter;
             internal UnitEntityData[] Summoned = new UnitEntityData[0];
             internal string ExpectedUnit;
+            internal bool WaitConditionReached;
+            internal bool CommandFinished;
+            internal bool CooldownCleared;
+            internal SummonMultiplicity Multiplicity;
+            internal bool Maximize;
+            internal bool Empower;
+            internal bool AllOwnedByCaster;
+            internal string[] ForeignExpectedUnits = new string[0];
+
+            internal NaturalCastObservation Observation()
+            {
+                return new NaturalCastObservation {
+                    TargetClickAccepted = Clicked, CommandIssued = Issued,
+                    WaitConditionReached = WaitConditionReached, CommandFinished = CommandFinished,
+                    CooldownCleared = CooldownCleared, Result = Result, Acted = NaturallyActed,
+                    CooldownOverride = IgnoredCooldown,
+                    // This scenario never forces the act or ticks the command.
+                    AssistedAct = false, DirectCommandTick = false,
+                    ResourceBefore = ResourceBefore, ResourceAfter = ResourceAfter, ExpectedCost = 1,
+                    Multiplicity = Multiplicity, Maximize = Maximize, Empower = Empower,
+                    ExpectedUnit = ExpectedUnit,
+                    SummonedUnits = Summoned.Select(value => value.Blueprint.AssetGuid).ToArray(),
+                    AllOwnedByCaster = AllOwnedByCaster };
+            }
 
             internal JObject ToJson()
             {
+                NaturalCastObservation observation = Observation();
+                int minimum, maximum;
+                AlternateSummoningNaturalVerdict.Bounds(Multiplicity, Maximize, Empower,
+                    out minimum, out maximum);
                 return new JObject {
                     ["label"] = Label,
                     ["selectedChild"] = Selected == null ? null : Selected.Blueprint.AssetGuid + ":" + Selected.Blueprint.name,
                     ["convertedFrom"] = Selected == null || Selected.ConvertedFrom == null ? null :
                         Selected.ConvertedFrom.Blueprint.AssetGuid,
                     ["targetClickAccepted"] = Clicked, ["commandIssued"] = Issued, ["result"] = Result,
+                    ["waitOutcome"] = AlternateSummoningNaturalVerdict.WaitOutcome(observation),
+                    ["waitConditionReached"] = WaitConditionReached,
+                    ["commandFinished"] = CommandFinished, ["standardCooldownCleared"] = CooldownCleared,
                     ["actedNaturally"] = NaturallyActed, ["cooldownOverride"] = IgnoredCooldown,
+                    ["forcedAct"] = false, ["directCommandTick"] = false,
                     ["realSeconds"] = Math.Round(Seconds, 2), ["frames"] = Frames,
                     ["resourceBefore"] = ResourceBefore, ["resourceAfter"] = ResourceAfter,
+                    ["multiplicity"] = Multiplicity.ToString(), ["maximize"] = Maximize, ["empower"] = Empower,
+                    ["legalCount"] = "[" + minimum + "," + maximum + "]",
                     ["expectedUnit"] = ExpectedUnit,
                     ["summoned"] = new JArray(Summoned.Select(value => value.UniqueId + ":" +
-                        value.Blueprint.AssetGuid + ":" + value.Blueprint.name))
+                        value.Blueprint.AssetGuid + ":" + value.Blueprint.name)),
+                    ["allOwnedByCaster"] = AllOwnedByCaster,
+                    ["foreignExpectedUnits"] = new JArray(ForeignExpectedUnits),
+                    ["verdict"] = AlternateSummoningNaturalVerdict.Verify(observation) ?? "pass"
                 };
             }
         }
@@ -252,7 +289,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in AltNaturalCastSelected(caster, resource, recent, summons)) yield return frame;
                 AltNaturalAssertCast(recent, tierSeven, 7);
 
-                foreach (int frame in AltNaturalDismiss(caster, summons, recent.Summoned.FirstOrDefault())) yield return frame;
+                foreach (int frame in AltNaturalDismiss(caster, recent)) yield return frame;
             }
             finally
             {
@@ -262,6 +299,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (levelController != null)
                     try { levelController.GetType().GetMethod("Cancel").Invoke(levelController, null); }
                     catch (Exception) { }
+                if (caster != null && !caster.Destroyed)
+                    try { caster.Commands.InterruptAll(); }
+                    catch (Exception error) { _altNaturalDiagnostics.Add("command cleanup: " + error.Message); }
                 foreach (UnitEntityData unit in summons)
                     if (!unit.Destroyed) CleanupExpandedSummoningUnit(unit);
                 foreach (UnitEntityData unit in game.State.Units.All.Except(units).ToArray())
@@ -470,6 +510,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             Game game = Game.Instance;
             SummonSpawn spawn = SummonSignatureReader.Read(cast.Selected.Blueprint).Spawns().First();
             cast.ExpectedUnit = spawn.Unit;
+            // The option's quantity from the roster (one, 1d3 or 1d4+1), and
+            // the only native count modifiers, read from the cast's own data.
+            cast.Multiplicity = PlayerPathChoice(AlternateSummoningSourceCatalog.MasterSummonerKey,
+                cast.Selected.Blueprint).Multiplicity;
+            cast.Maximize = cast.Selected.MetamagicData != null &&
+                cast.Selected.MetamagicData.Has(Kingmaker.UnitLogic.Abilities.Metamagic.Maximize);
+            cast.Empower = cast.Selected.MetamagicData != null &&
+                cast.Selected.MetamagicData.Has(Kingmaker.UnitLogic.Abilities.Metamagic.Empower);
             UnitEntityData[] before = game.State.Units.All.ToArray();
             cast.ResourceBefore = caster.Descriptor.Resources.GetResourceAmount(resource);
             Vector3 point = caster.Position + caster.View.transform.forward * 2f;
@@ -485,54 +533,78 @@ namespace KingmakerGunslinger.RuntimeTesting
             cast.IgnoredCooldown = command.IsIgnoreCooldown;
             var watch = Stopwatch.StartNew();
             game.IsPaused = false;
-            while (watch.Elapsed.TotalSeconds < 30 && (!command.IsFinished ||
-                caster.CombatState.HasCooldownForCommand(UnitCommand.CommandType.Standard)))
+            // The wait ends only when the command has finished and the
+            // standard-action cooldown has cleared; the deadline is a failure.
+            while (watch.Elapsed.TotalSeconds < 30)
             {
+                if (command.IsFinished &&
+                    !caster.CombatState.HasCooldownForCommand(UnitCommand.CommandType.Standard))
+                {
+                    cast.WaitConditionReached = true;
+                    break;
+                }
                 cast.Frames++;
                 yield return 0;
             }
             game.IsPaused = true;
             cast.Seconds = watch.Elapsed.TotalSeconds;
+            cast.CommandFinished = command.IsFinished;
+            cast.CooldownCleared = !caster.CombatState.HasCooldownForCommand(UnitCommand.CommandType.Standard);
             cast.Result = command.Result.ToString();
             cast.NaturallyActed = command.IsActed;
             cast.ResourceAfter = caster.Descriptor.Resources.GetResourceAmount(resource);
-            cast.Summoned = game.State.Units.All.Except(before).Where(unit =>
+            UnitEntityData[] appeared = game.State.Units.All.Except(before).ToArray();
+            Func<UnitEntityData, bool> ours = unit =>
             {
                 Buff lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>().FirstOrDefault(value =>
                     ReferenceEquals(value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
                 return lifecycle != null && lifecycle.MaybeContext != null &&
                     ReferenceEquals(lifecycle.MaybeContext.MaybeCaster, caster);
-            }).ToArray();
+            };
+            cast.Summoned = appeared.Where(ours).ToArray();
+            cast.ForeignExpectedUnits = appeared.Where(unit => !ours(unit) &&
+                unit.Blueprint.AssetGuid == cast.ExpectedUnit).Select(unit => unit.UniqueId).ToArray();
+            cast.AllOwnedByCaster = cast.ForeignExpectedUnits.Length == 0;
             summons.AddRange(cast.Summoned);
+            summons.AddRange(appeared.Where(unit => !ours(unit) && unit.Blueprint.AssetGuid == cast.ExpectedUnit));
             AltNaturalCapture("cast-" + cast.Label, cast.ToJson());
         }
 
         private void AltNaturalAssertCast(AltNaturalCast cast, Ability root, int tier)
         {
-            bool group = cast.Selected != null && SummonSignatureReader.Read(cast.Selected.Blueprint).Spawns()
-                .First().CountDice != "One" && SummonSignatureReader.Read(cast.Selected.Blueprint).Spawns()
-                .First().CountDice != "Zero";
+            string verdict = cast.Selected == null ? "no-selection" :
+                AlternateSummoningNaturalVerdict.Verify(cast.Observation());
             AltNaturalAssert("cast-" + cast.Label,
-                "the target click issues the native command for the chosen child; native RTWP time completes it with the native act and no cooldown override; one Master Summoner use is spent and the chosen creature appears (" +
-                    (group ? "one group" : "one creature") + ")",
-                cast.ToJson().ToString(Formatting.None),
-                cast.Clicked && cast.Issued && cast.Result == "Success" && cast.NaturallyActed &&
-                    !cast.IgnoredCooldown && cast.ResourceBefore - cast.ResourceAfter == 1 &&
-                    cast.Summoned.Length >= 1 && (group || cast.Summoned.Length == 1) &&
-                    cast.Summoned.All(unit => unit.Blueprint.AssetGuid == cast.ExpectedUnit),
-                "ClickWithSelectedAbilityHandler.OnClick; UnitUseAbility; native RTWP; UnitAbilityResourceCollection");
+                "the target click issues the native command for the chosen child; the wait ends because the command finished and the standard-action cooldown cleared (not at the deadline), with the native act and no cooldown override, forced act or direct tick; exactly one Master Summoner use is spent; the creatures are the chosen unit, all owned by this summoner, and their count is inside the option's tabletop bounds (one, 1d3 or 1d4+1, with any native Maximize or Empower)",
+                cast.ToJson().ToString(Formatting.None), verdict == null,
+                "AlternateSummoningNaturalVerdict; ClickWithSelectedAbilityHandler.OnClick; UnitUseAbility; native RTWP; UnitAbilityResourceCollection");
         }
 
-        /// <summary>Ends one summon through the engine's expiry path and lets
-        /// native time finish its dismemberment; the pool releases it.</summary>
-        private IEnumerable<int> AltNaturalDismiss(UnitEntityData caster, List<UnitEntityData> summons,
-            UnitEntityData preferred)
+        internal const string AltNaturalCleanupLabel =
+            "explicit lifecycle-buff removal followed by native dismemberment and pool cleanup";
+
+        /// <summary>
+        /// The recent creature's cleanup: explicit lifecycle-buff removal
+        /// followed by native dismemberment and pool cleanup. The summon's
+        /// full duration is not left to elapse and no dismissal ability is
+        /// clicked. The target must be the Tyrannosaurus this scenario cast;
+        /// there is no fallback to another unit.
+        /// </summary>
+        private IEnumerable<int> AltNaturalDismiss(UnitEntityData caster, AltNaturalCast recent)
         {
             Game game = Game.Instance;
-            UnitEntityData unit = preferred != null && !preferred.Destroyed &&
-                !preferred.Descriptor.State.IsDead ? preferred : summons.FirstOrDefault(value =>
-                    !value.Destroyed && !value.Descriptor.State.IsDead);
-            if (unit == null) yield break;
+            UnitEntityData[] targets = recent.Summoned.Where(value => !value.Destroyed &&
+                !value.Descriptor.State.IsDead &&
+                value.Blueprint.name == "KMG_Summoning_Unit_Tyrannosaurus").ToArray();
+            if (targets.Length != 1)
+            {
+                AltNaturalAssert("cleanup-recent-tyrannosaurus",
+                    "the Tyrannosaurus cast in this run is present for " + AltNaturalCleanupLabel,
+                    "BLOCKED: live Tyrannosaurus targets=" + targets.Length, false,
+                    "missing prerequisite; no other unit is substituted");
+                yield break;
+            }
+            UnitEntityData unit = targets[0];
             ISummonPool free = PlayerPathPool(AlternateSummoningContracts.MasterSummonerFreePool);
             ISummonPool bound = PlayerPathPool(AlternateSummoningContracts.SummonerPool);
             bool memberBefore = free.Units.Contains(unit) || bound.Units.Contains(unit);
@@ -554,12 +626,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["dismembering"] = dismembering, ["destroyed"] = unit.Destroyed,
                 ["dead"] = unit.Descriptor.State.IsDead, ["poolReleased"] = released,
                 ["realSeconds"] = Math.Round(watch.Elapsed.TotalSeconds, 2), ["frames"] = frames };
-            AltNaturalCapture("dismissal", state);
-            AltNaturalAssert("dismissal",
-                "ending a summon through the engine's expiry path starts its dismemberment; native time finishes it and its summon pool releases it",
+            state["method"] = AltNaturalCleanupLabel;
+            AltNaturalCapture("cleanup-recent-tyrannosaurus", state);
+            AltNaturalAssert("cleanup-recent-tyrannosaurus",
+                "the Tyrannosaurus: " + AltNaturalCleanupLabel + "; the dismemberment buff starts, native time destroys or kills the unit, and its summon pool releases it (not natural duration expiry, not a dismissal click, not grapple/swallow reset on reload)",
                 state.ToString(Formatting.None),
                 memberBefore && dismembering && (unit.Destroyed || unit.Descriptor.State.IsDead) && released,
-                "SummonedUnitBuff removal; DismemberedUnitBuff; SummonPoolsManager death/destroy events");
+                "SummonedUnitBuff removal by the fixture; DismemberedUnitBuff; SummonPoolsManager death/destroy events");
         }
     }
 }

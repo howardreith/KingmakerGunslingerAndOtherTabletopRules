@@ -1270,6 +1270,7 @@
     <Compile Include="Summoning\SummonSignature.cs" />
     <Compile Include="Summoning\AlternateSummoningContracts.cs" />
     <Compile Include="Summoning\AlternateSummoningComposition.cs" />
+    <Compile Include="Summoning\AlternateSummoningNaturalVerdict.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint23Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Review.cs" />
