@@ -69,17 +69,29 @@ Third pass ("targeted verification corrections and player-path closure"):
 | `c7216602b1` | Eidolon-return fixture correction (the engine's life tick after Summon Eidolon); new working-save scenario `disposable-alternate-summoning-natural` |
 | `3c17b769b6` | Natural scenario at Master Summoner 13 with the tier VII Tyrannosaurus. Its message also claims the observer comment change, which is actually in the next commit |
 | `b9c56e3da9` | Observer documentation names the supported contracts (comment only) |
-| this commit | Documentation, state and evidence matrix |
+| `3cc8bd3499` | Documentation, state and evidence matrix |
+| `a320442acd` | Natural verdict: terminal state, pinned quantity bounds, explicit Tyrannosaurus cleanup, with domain tests |
+| this commit | Evidence reconciliation and the corrected owner checklist |
 
 ## Candidates
 
-Every launch went through `scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1
--ReuseInstalledArtifact -PackagePath <development package> -DevelopmentPurpose
-alternate-summoning-native`: Steam App ID 640820, the profile's own runtime
-lease, intake snapshot, staged Mods tree, deployment receipt and exact
-restoration. Every scenario is save-free (no save was selected, loaded or
-written) and exits automatically. Evidence directories are under
-`C:\Dev\KingmakerGunslingerLab\runtime-evidence` and are not committed.
+Two launch routes were used, both Steam App ID 640820 with a runtime lease
+and automatic exit:
+- **Compatibility-profile transactions** (every profile scenario):
+  `scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1
+  -ReuseInstalledArtifact -PackagePath <development package>
+  -DevelopmentPurpose alternate-summoning-native`, with the profile's intake
+  snapshot, staged Mods tree, deployment receipt and restoration. These
+  scenarios are save-free: no save was selected, loaded or written.
+- **Live development route** (only `disposable-alternate-summoning-natural`,
+  third pass): `Deploy-Local.ps1 -DevelopmentPurpose` (backup first),
+  `Invoke-KingmakerRuntimeTest.ps1 -ReuseInstalledArtifact -SaveName
+  KMG_AUTOMATION_WORKING`, then `Restore-Live-Mod.ps1`. It loads the
+  disposable working save read-only; no save file was written (the runner's
+  write guard observed none). No human save was selected or touched.
+
+Evidence directories are under `C:\Dev\KingmakerGunslingerLab\runtime-evidence`
+and are not committed.
 
 Candidates (all `0.0.156`, `candidateKind=development`, purpose
 `alternate-summoning-native`, built by
@@ -95,18 +107,23 @@ Candidates (all `0.0.156`, `candidateKind=development`, purpose
 | `651dde310e63` (final of the corrections mission) | `7e76626cd5846444b7b23a11ef37c16955b5916fc340b0ea43de8f1ecdd4f677` | `1e5d53fe6f611912dc3d42afe811bf9e52dc1ea972e0d3c93f38c0a9935dfb0f` | `e49cb11e-6d1c-4770-b2dd-80f9fcd55530` | 577 / 2,633, 0 failures |
 | `3e2bf5caf729` | `9915d67ef1e42922bcc726db3b3d24b8846b0bd942b29f8881d3f2e67dcfdb8e` | `d96792ced60f8728d1203e85ae187b7aed513805bffec65470d0e3c3dbe5d6ea` | `83279163-284d-4ad8-92a2-d40092295f7b` | 583 / 2,639, 0 failures |
 | `c7216602b103` | `14b46f66877342d3a5129561a818dbf141e50510e41ce2cafb3d0963d07eed47` | `633d4f83692987ac857c68048be1e49d374a23619a7a0503f5f3b216f9336f88` | `be269bac-a383-4599-aa72-911dfd43f06c` | 583 / 2,639, 0 failures |
-| **`b9c56e3da9a9`** (final) | `72a6c5c64e7143d01e011328e000b3145b8489cb4f2f8ebee7ea45e5aa4d3193` | `d7b578871f839e0051d82a757c96b148d9185fc2c28023abbd3873e78c58d1b9` | `7d375849-9c13-482d-a12d-cc1dfb0877f3` | 583 / 2,639, 0 failures |
+| `b9c56e3da9a9` | `72a6c5c64e7143d01e011328e000b3145b8489cb4f2f8ebee7ea45e5aa4d3193` | `d7b578871f839e0051d82a757c96b148d9185fc2c28023abbd3873e78c58d1b9` | `7d375849-9c13-482d-a12d-cc1dfb0877f3` | 583 / 2,639, 0 failures |
+| **`a320442acdb2`** (final development candidate) | `2b398a7c3cf2dc5bcad2d17c0681fc3c54d6273a93be5c14932e81bf08454a02` | `d9921be87c7bc2626200ccf8927a6413ae2403657beda7cab63af14af83b8395` | `177607b6-ff79-4906-b16f-b73d586d6398` | 590 / 2,646, 0 failures |
 
-Receipt SHA-256: `3e2bf5caf729` `896cb264ecb4975e6f953e937bbc34d4dd66938920d63d0a73b040f061239447`, `c7216602b103` `2f2b741f8d4f3190916be9f9161470c1195dc44ffaa7a1ee17101eaee30b516a`, `b9c56e3da9a9` `f08b3f6e48555de8b98541b84420d3116d5cafda7ce9621186017c1184ed3565`. The `651dde310e63` receipt (SHA-256 `6959f0cc9f0ca1f63df9910d18a2ac6deb8ce8dfbb84756b7f4179a19118d80e`) binds the 14 private reference hashes, the development validation (baseline `607da683b1f6`, 6,895 identities, 3,746 appended) and the selected-test log. Each build took about 70 s. Candidates and evidence stay under the gitignored `artifacts/` and the lab's `runtime-evidence`; nothing was installed permanently.
+Receipt SHA-256: `3e2bf5caf729` `896cb264ecb4975e6f953e937bbc34d4dd66938920d63d0a73b040f061239447`, `c7216602b103` `2f2b741f8d4f3190916be9f9161470c1195dc44ffaa7a1ee17101eaee30b516a`, `b9c56e3da9a9` `f08b3f6e48555de8b98541b84420d3116d5cafda7ce9621186017c1184ed3565`, `a320442acdb2` `8f09e23465d332ad101b55734c3596a1c7b5741fcbeaa47df2e2956a3e355a07`. The `651dde310e63` receipt (SHA-256 `6959f0cc9f0ca1f63df9910d18a2ac6deb8ce8dfbb84756b7f4179a19118d80e`) binds the 14 private reference hashes, the development validation (baseline `607da683b1f6`, 6,895 identities, 3,746 appended) and the selected-test log. Each build took about 70 s. Candidates and evidence stay under the gitignored `artifacts/` and the lab's `runtime-evidence`; nothing was installed permanently.
 
 ## Runtime transactions and restoration receipts
 
-Every transaction is a compatibility-profile transaction under
-`C:\Dev\KingmakerGunslingerLab\compatibility-state`. Its own record says
-`Restored` with `restorationVerified=true`, and after each one the Mods-tree
-fingerprint read back `9736b4f7c906b6f9` with the original KMG DLL
-`00ef6757...966fd`, no Kingmaker process and no lock. No save was selected,
-loaded or written, and no human save was touched.
+Every transaction in this table is a compatibility-profile transaction under
+`C:\Dev\KingmakerGunslingerLab\compatibility-state`. Its `transaction.json`
+holds the original Mods manifest (every file's SHA-256, length and timestamp;
+1,057 files in the third pass) and says `Restored` with
+`restorationVerified=true`: the restored tree was compared with that manifest
+exactly. That comparison is the byte-level evidence. After each one I also
+read the names-and-sizes fingerprint `9736b4f7c906b6f9` (file paths and sizes
+only, a quick check that does not by itself prove unchanged bytes) and the KMG
+DLL `00ef6757...966fd`, and saw no Kingmaker process and no lock. These
+scenarios are save-free.
 
 | Transaction | Profile | Candidate | Scenarios -> result | Created -> restored (UTC) |
 |---|---|---|---|---|
@@ -130,16 +147,25 @@ preserved), `Invoke-KingmakerRuntimeTest.ps1 -Scenario
 disposable-alternate-summoning-natural -SaveName KMG_AUTOMATION_WORKING
 -ReuseInstalledArtifact -DevelopmentPurpose ...` (Steam App ID 640820,
 runtime lease, automatic exit), then `Restore-Live-Mod.ps1` from that run's
-backup. `KMG_AUTOMATION_WORKING` was loaded read-only: no save write was
-observed. After each run the live `KingmakerGunslinger` folder was
-byte-identical to its backup (254 files; `Info.json` 0.0.140, DLL
-`00ef6757...966fd`, `FeatureModules.json` `6e24b278...`), the Mods
-fingerprint read `9736b4f7c906b6f9`, and no game process or lock remained.
+backup, which writes and verifies only the `KingmakerGunslinger` folder.
+`KMG_AUTOMATION_WORKING` was loaded read-only: no save write was observed.
+Restoration evidence per run:
+- `c7216602b103` and `b9c56e3da9a9`: the live `KingmakerGunslinger` folder was
+  byte-compared (`diff -rq`) with its pre-run backup: identical, 254 files
+  (`Info.json` 0.0.140, DLL `00ef6757...966fd`, `FeatureModules.json`
+  `6e24b278...`). The rest of the Mods tree, which this route does not write,
+  was checked only by the names-and-sizes fingerprint `9736b4f7c906b6f9`.
+- `a320442acdb2`: a full content manifest of the Mods tree (1,057 files, SHA-256
+  each) was captured before deployment and after restoration and is identical
+  (manifest digest `eae0b32e7c8c26b256ca36972d27e48c91e7b9b68a89aad87942f4aa2501a993`;
+  the manifest files are kept in this session's scratch area, not committed).
+No game process or lock remained after any run.
 
 | Evidence directory | Candidate | Result | Deployment / backup | Window (UTC) |
 |---|---|---|---|---|
-| `20261016T1544477038010Z-disposable-alternate-summoning-natural` | `c7216602b103` | PASS 8/8 (Master Summoner 5; tiers I and III; Dire Rat dismissed) | `deployments/20261016T1544457766822Z`; `runtime-backups/live-mod/20261016T1544375407470Z` | 15:44:37 -> 15:46:10 |
-| `20261016T1550339254110Z-disposable-alternate-summoning-natural` | `b9c56e3da9a9` | PASS 11/11 (Master Summoner 13; tiers I, III and VII Tyrannosaurus; Tyrannosaurus dismissed) | `runtime-backups/live-mod/20261016T1550239443522Z` | 15:50:23 -> 15:51:59 |
+| `20261016T1544477038010Z-disposable-alternate-summoning-natural` | `c7216602b103` | PASS 8/8 under the earlier verdict (Master Summoner 5; tiers I and III; a Dire Rat cleaned up) | `deployments/20261016T1544457766822Z`; `runtime-backups/live-mod/20261016T1544375407470Z` | 15:44:37 -> 15:46:10 |
+| `20261016T1550339254110Z-disposable-alternate-summoning-natural` | `b9c56e3da9a9` | PASS 11/11 under the earlier verdict (Master Summoner 13; tiers I, III and VII Tyrannosaurus; Tyrannosaurus cleaned up) | `runtime-backups/live-mod/20261016T1550239443522Z` | 15:50:23 -> 15:51:59 |
+| `20261016T1740160951203Z-disposable-alternate-summoning-natural` | `a320442acdb2` | PASS 11/11 under the strengthened verdict (terminal state, pinned quantity bounds, explicit Tyrannosaurus cleanup) | `deployments/20261016T1740133603843Z`; `runtime-backups/live-mod/20261016T1740050751130Z` | 17:40:05 -> 17:41:49 |
 
 Five launch attempts never entered a profile and changed nothing (verified
 by the unchanged fingerprint and the absence of a new transaction): two
@@ -162,14 +188,15 @@ All on this worktree. Durations are wall-clock.
 | Development validator, live | `python tools/validate_development_candidate.py --purpose alternate-summoning-native` | PASS: 6,895 identities, 3,746 appended to the released 3,149 |
 | Release validator, unchanged | `python tools/validate_repository.py --root .` | still FAIL: "The firearm patch must not change blueprint identities" (expected; this branch is not a release) |
 | Development-candidate contract | `scripts/Test-DevelopmentCandidate.ps1` (Windows PowerShell 5.1 and pwsh 7) | 63 / 63 each; about 2 s |
-| Repository wrapper, development mode | `scripts/validate-repository.ps1 -DevelopmentPurpose alternate-summoning-native` | PASS; 28 s |
+| Repository wrapper, development mode | `scripts/validate-repository.ps1 -DevelopmentPurpose alternate-summoning-native` | PASS; 28 s. It also runs nested inside every development `Build-Local` (log: "Development-candidate repository validation passed ... not a release qualification"): the development-candidate validator replaces the release validator and the named selection replaces the complete suite; every other wrapper fixture is unchanged |
 | Repository wrapper, release mode | `scripts/validate-repository.ps1` | FAIL at the v0.0.156 release validator, as before; 1 s |
 | Gate and orchestration contracts | `Test-ExplicitCandidateReuse.ps1`, `Test-KmgGate.ps1` (includes `Test-DevelopmentGate.ps1`) | 7 / 7; PASS (development gate 8 / 8) |
 | Runtime preflight | `scripts/Test-RuntimeScenarioPreflight.ps1` | 588 checks PASS; 14 s |
 | Pre-existing failures | `Test-RuntimeDeployment.ps1`, `Test-CompatibilityCandidateReuse.ps1` | both FAIL identically on unchanged `master` `607da683b1` ("legacy-deployment-pins-complete-artifact-identity"; "Nested build/deployment/scenario count mismatch"). Baseline, not caused here; neither runs in the wrapper |
 
 Third-pass gates and checks are in the doc's "Commands, durations and
-results (third pass)". One more pre-existing failure was found there:
+results (third pass)", including the wrapper reconciliation. One more
+pre-existing failure was found there:
 `Test-MagicCircleRuntimeRequest.ps1` fails identically on unchanged `master`
 ("'Get-KmgRepositoryRoot' is not recognized").
 
@@ -211,20 +238,24 @@ Runtime is not checked for any of these; they are not claimed. The doc's
 "Owner checklist" gives the minimal manual check for each.
 
 1. **Hotbar binding and reuse** - not automated (the `settings.SetSlot` path
-   hung an earlier guarded run; not repeated or forced).
-2. **Saved-reference cold load** (normal, Expanded Summoning OFF, blocked
-   family, restored) - needs a save-writing shortcut orchestrator on a
-   disposable save.
-3. **Turn-based round** - no genuine turn-based combat round.
-4. **Scroll-required choice** - no menu needed scrolling at the natural run's
-   resolution.
-5. **Grapple or swallow reset on reload** through an adapter summon.
+   hung an earlier guarded run; not repeated or forced). Owner steps 1-2.
+2. **Saved-reference cold load** (normal, Expanded Summoning OFF, restored) -
+   needs a save-writing shortcut orchestrator on a disposable save. Owner
+   steps 2-4.
+3. **Saved-reference load with a blocked family** - BLOCKED / UNVERIFIED,
+   maintainer only (case M1).
+4. **Turn-based round** - no genuine turn-based combat round. Owner step 5.
+5. **Scroll-required choice** - no menu needed scrolling at the natural runs'
+   resolution. Owner step 6.
+6. **Grapple or swallow reset on reload** - BLOCKED, needs a maintainer
+   fixture (case M2): the engine refuses to save in combat.
 
 Closed by the third pass (see the evidence matrix): Master Summoner with a
 real lesser eidolon (assisted), real popup selection and natural RTWP casts
-(tiers I, III and VII), a recent creature's natural dismissal (Tyrannosaurus),
-the Occultist lower-tier group cost and the Preservationist extract III ->
-SNA IV mapping (assisted).
+(tiers I, III and VII) under the strengthened verdict, the recent
+Tyrannosaurus's cleanup by explicit lifecycle-buff removal followed by native
+dismemberment and pool cleanup, the Occultist lower-tier group cost and the
+Preservationist extract III -> SNA IV mapping (assisted).
 
 ## Next actions
 
