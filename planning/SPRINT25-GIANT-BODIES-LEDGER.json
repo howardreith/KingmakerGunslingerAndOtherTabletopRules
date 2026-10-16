@@ -48,12 +48,13 @@
   "version": {
     "expected": "0.0.157",
     "discoveredFromActualRemote": true,
-    "observedUtc": "2026-10-16T04:10:00Z",
-    "evidence": "git ls-remote --tags shows v0.0.150 through v0.0.155 and no v0.0.156 or v0.0.157 tag; the GitHub release list ends at v0.0.155 (Latest).",
+    "observedUtc": "2026-10-16T05:05:00Z",
+    "evidence": "At 04:10Z no v0.0.156 or v0.0.157 tag existed and the release list ended at v0.0.155. At 04:21Z the firearm sprint published v0.0.156, which is now Latest. v0.0.157 remains free: an explicit refs/tags/v0.0.157 lookup returns no ref.",
     "supersededExpectation": "0.0.156",
-    "whySuperseded": "Master moved from 97c881ea to 607da683 while Sprint 25 was in registration. Merged PR #50, the firearm RTWP kill continuation, claimed the 0.0.156 surface: Info.json, Directory.Build.props, AssemblyInfo.cs, docs/RELEASE-NOTES-0.0.156.md, its own static key and the 0.0.156 validator dispatch. That preparation is merged but not yet tagged or published. Sprint 25 took the next free patch rather than contesting a version another sprint had already stamped.",
+    "whySuperseded": "Master moved from 97c881ea to 607da683 while Sprint 25 was in registration. Merged PR #50, the firearm RTWP kill continuation, claimed the 0.0.156 surface: Info.json, Directory.Build.props, AssemblyInfo.cs, docs/RELEASE-NOTES-0.0.156.md, its own static key and the 0.0.156 validator dispatch. It published that release during this session, so the version is now not merely claimed but taken. Sprint 25 moved to the next free patch rather than contesting it.",
     "firearmPreparationPreserved": true,
-    "note": "Re-confirm immediately before publication."
+    "note": "Re-confirm immediately before publication.",
+    "firearmReleaseState": "PUBLISHED as v0.0.156 Latest at 2026-10-16T04:21:12Z"
   },
   "pushPolicyChange": {
     "path": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
