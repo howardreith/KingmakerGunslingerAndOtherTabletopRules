@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "REGISTERED_WITHHELD_BLOCKED_ON_ORIGINAL_ART",
+  "status": "PUSH_POLICY_REVIEWED_IN_PROGRESS_SPRINT25",
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
     "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
@@ -67,42 +67,148 @@
     "allowListEntriesBefore": 61,
     "allowListEntriesAfter": 63,
     "reconstructedBeforeExact": false,
-    "residualDifferenceDisclosed": {
-      "what": "Removing exactly the two added lines from the current file does NOT reproduce the recorded before-hash, so the editor normalised something else in the file as well - most consistently the line endings.",
-      "investigated": [
-        "pure LF and pure CRLF forms",
-        "with and without a UTF-8 BOM",
-        "with and without a trailing newline",
-        "UTF-16LE variants",
-        "cp1252 and latin-1 encodings",
-        "em dash encoded as cp1252 0x97",
-        "em dash replaced by hyphen or double hyphen",
-        "536 split-point mixed line-ending hypotheses"
-      ],
-      "result": "none reproduces 9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542",
-      "recoverySearched": [
-        "no version control on codex-policy",
-        "no volume shadow copies for C:",
-        "no system restore points",
-        "path is not under OneDrive",
-        "the only backups are from 2026-08-07 and far older"
-      ],
-      "functionalVerification": {
-        "parsesWithZeroErrors": true,
-        "allowListEntries": 63,
-        "wildcardOrPatternEntries": 0,
-        "guardsPresent": [
-          "Refusing to push a repository outside the dedicated Gunslinger lab",
-          "Refusing to push from a detached HEAD",
-          "Refusing to push non-allowlisted branch",
-          "No merge, force-push, reset, clean, rebase, or history rewrite occurred"
-        ],
-        "forcePushOrDeleteOrResetOrCleanOccurrences": 0
+    "incidentHistory": {
+      "historicalBeforeSha256": "9354658937f2e679d3b77493a8bc56eed2395a53b8da3614b4e2cd5a05246542",
+      "whatHappened": "An authorized two-line allow-list edit also rewrote the whole file, so the pre-edit bytes were not recoverable and the before-hash could not be reproduced by removing the inserted lines.",
+      "reconstructionAbandonedByOwnerOrder": true,
+      "historicalEquivalenceCertified": false,
+      "claimRestoredTo93546589": false,
+      "whatComparisonWasImpossible": "No before/after byte comparison exists, so nothing here identifies which bytes changed. The earlier session note that line endings alone changed is NOT established and is withdrawn: a hash mismatch does not localise a change.",
+      "recoverySearchesStopped": [
+        "encoding/BOM/newline brute force",
+        "broad backup and drive searches"
+      ]
+    },
+    "reviewedNewBaseline": {
+      "status": "PUSH_POLICY_REVIEWED_NEW_BASELINE",
+      "authority": "owner order of 2026-10-16, conditional on this audit passing",
+      "adoptedUtc": "2026-10-16T04:40:00Z",
+      "reviewedPath": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+      "reviewedSha256Fresh": "5e055ae122cee76d7e640f142c232880beffcdc9dae71a72e4b319b136d167c1",
+      "freshMeasurementMatchesReportedCurrent": true,
+      "byteForByteCopy": {
+        "path": "C:/Dev/KingmakerGunslingerLab/safety/Push-KingmakerGunslinger.ps1.sprint25-allowlist-20261015",
+        "sha256": "5e055ae122cee76d7e640f142c232880beffcdc9dae71a72e4b319b136d167c1",
+        "verifiedIdenticalToLive": true,
+        "preexistingCopyReused": true,
+        "notOverwritten": true
       },
-      "safetyCopy": "C:/Dev/KingmakerGunslingerLab/safety/Push-KingmakerGunslinger.ps1.sprint25-allowlist-20261015",
-      "safetyCopySha256": "5e055ae122cee76d7e640f142c232880beffcdc9dae71a72e4b319b136d167c1",
-      "augustBackupsUntouched": true,
-      "disclosure": "Reported to the owner. The authorized change - exactly the two branch names - was made and nothing was removed, but the file is no longer byte-reversible to its prior state and no copy of those bytes exists."
+      "parser": {
+        "tool": "System.Management.Automation.Language.Parser.ParseFile",
+        "errors": 0,
+        "tokens": 863,
+        "topLevelStatements": 37,
+        "paramBlock": "present"
+      },
+      "executableSurface": {
+        "method": "AST CommandAst enumeration, not keyword scanning",
+        "gitInvocations": [
+          "rev-parse --show-toplevel",
+          "branch --show-current",
+          "remote get-url origin",
+          "cat-file -e <qualifiedBase>^{commit}",
+          "merge-base --is-ancestor <qualifiedBase> HEAD",
+          "rev-parse HEAD",
+          "status --porcelain",
+          "push --set-upstream origin HEAD:refs/heads/$branch",
+          "rev-parse @{u}"
+        ],
+        "onlyMutatingCall": "push --set-upstream origin HEAD:refs/heads/$branch",
+        "refspecFullyQualified": true,
+        "wildcardRefspec": false,
+        "forcePushDeleteMirrorTagsPrune": "none executed; literal hits are comments and messages only",
+        "repositoryResolution": "git rev-parse --show-toplevel from the current directory, then full-path normalised and compared to the lab root by exact equality or a StartsWith on labRoot + path separator, which is what blocks a sibling directory sharing the name prefix",
+        "branchMembership": "exact string membership in the 63-entry allow-list",
+        "remoteSelection": "origin only, and its URL must be one of four exact allowed URLs",
+        "lineageGuard": "HEAD must descend from qualified base 2d9d95c8b0f919fb5f129c783522608bc47e2029",
+        "postPushVerification": "rev-parse @{u} must equal the pushed HEAD or the script throws",
+        "failureHandling": "every git call goes through Invoke-GitChecked, which treats the child exit code as authoritative rather than the presence of stderr and throws with rendered output on nonzero; the script sets ErrorActionPreference Stop, so a throw exits nonzero",
+        "dirtyTree": "warns only; pushes committed HEAD and modifies no local file"
+      },
+      "intendedSprint25Additions": {
+        "exactly": [
+          "codex/expanded-summoning-sprint25-brachiosaurus-elephant",
+          "codex/expanded-summoning-sprint25-release-records"
+        ],
+        "bothPresentInAllowList": true,
+        "allowListEntries": 63,
+        "patternOrWildcardEntries": 0,
+        "removals": 0,
+        "unrelatedPermission": "none",
+        "destructiveCommand": "none",
+        "remoteRedirection": "none"
+      },
+      "behaviourTests": {
+        "harness": "scripts/Test-PushPolicyWrapper.ps1",
+        "wiredInto": "scripts/validate-repository.ps1",
+        "method": "the ACTUAL wrapper is executed against a controlled fake Git placed first on PATH; every requested argv is captured and asserted",
+        "remoteContacted": false,
+        "realPushPerformed": false,
+        "cases": 21,
+        "passed": 21,
+        "permittedRootUnderTest": "C:/Dev/KingmakerGunslingerLab/wt/s25, exercised through the wrapper's existing lab-boundary authorization rather than by widening permission to arbitrary repositories",
+        "accepted": [
+          "sprint25 product branch in permitted worktree",
+          "sprint25 records branch in permitted worktree",
+          "existing allow-listed sprint24 branch",
+          "lab-root repository is inside the boundary",
+          "dirty worktree warns but pushes committed HEAD",
+          "case-variant of an allow-listed name (recorded latitude)"
+        ],
+        "refused": [
+          "unallowlisted branch",
+          "allow-listed name with a suffix",
+          "truncated prefix of an allow-listed name",
+          "allow-listed name under a different namespace",
+          "detached HEAD",
+          "repository outside the lab",
+          "sibling directory sharing the lab name prefix",
+          "unexpected origin remote",
+          "repository lookup fails",
+          "branch lookup fails",
+          "qualified baseline object missing",
+          "HEAD does not descend from the qualified baseline",
+          "upstream push rejected",
+          "upstream verification mismatch",
+          "upstream read fails after push"
+        ],
+        "everyCaseAssertedNoForbiddenArgv": [
+          "--force",
+          "--delete",
+          "--mirror",
+          "--tags",
+          "--prune",
+          "+refs",
+          "refs/tags",
+          "reset",
+          "clean",
+          "rebase",
+          "filter-branch",
+          "update-ref",
+          "*"
+        ],
+        "acceptedCasesAssertedExactRefspec": "HEAD:refs/heads/<the exact allow-listed branch>"
+      },
+      "observations": [
+        {
+          "id": "allow-list-comparison-is-case-insensitive",
+          "severity": "latitude, not unsafe",
+          "detail": "PowerShell's -notcontains compares strings case-insensitively, so a local branch differing from an authorized name only in letter case is accepted. The destination is still refs/heads/<that exact local name>, still a non-force push of HEAD, and no unrelated branch, tag namespace or deletion is reachable. Pinned by a test so it is measured rather than discovered."
+        },
+        {
+          "id": "zero-line-branch-output-gives-a-less-clear-error",
+          "severity": "cosmetic, fails closed",
+          "detail": "If git emitted no line at all for branch --show-current the wrapper would fail on a null method call instead of its detached-HEAD message. Real git prints an empty line, which reaches the intended refusal. It refuses either way, so no rule is weakened."
+        }
+      ],
+      "unexplainedOrUnsafeExecutableRule": false,
+      "conclusion": "The current script is adopted as the reviewed new baseline. This accepts the loss of exact prior byte reconstruction and certifies present behaviour only; it does not certify historical equivalence and does not relax any push rule.",
+      "futureEditProtocol": [
+        "preserve the original bytes first",
+        "make a byte-preserving targeted change",
+        "inspect the diff",
+        "prove that removing the inserted byte span reproduces the pre-edit hash"
+      ]
     }
   },
   "sourceContract": {

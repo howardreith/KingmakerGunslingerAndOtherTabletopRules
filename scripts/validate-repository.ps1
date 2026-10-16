@@ -98,6 +98,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 & (Join-Path $PSScriptRoot 'Test-Sprint22Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24ReportingLineage.ps1')
+# The push wrapper lives outside this repository and had no behaviour test
+# until the Sprint 25 audit. It reports SKIP when the wrapper is absent, so a
+# clean clone elsewhere still validates.
+& (Join-Path $PSScriptRoot 'Test-PushPolicyWrapper.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint22InstalledStack.ps1')
 
 # Parse the guarded entry points with the installed PowerShell parser. This
