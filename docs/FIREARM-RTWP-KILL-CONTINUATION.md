@@ -1,15 +1,24 @@
-# Firearm RTWP continuation after a kill — development checkpoint
+# Firearm RTWP continuation after a kill — released in v0.0.156
 
-Branch `codex/firearm-rtwp-kill-retarget`. It started from `origin/master`
-`fd6c56ebd8` (v0.0.154 record); master `31672515529c` (v0.0.155) is merged in
-at `1d98af476b`. The production correction is `1890ba06cc`; the second review
-changed only the CR-04 fixture and observer (`f463ef6d56`, `acc620cb4c`). The
-tested code commit is `acc620cb4c`; any later commit changes records only.
-`origin/master` has since advanced to `97c881ea84` (Sprint 24 release records
-and publisher-script repair, still v0.0.155); it is not merged here. This is an
-ordinary focused checkpoint under [VALIDATION-POLICY.md](VALIDATION-POLICY.md),
-not release, Sprint or compatibility qualification. Nothing is merged, tagged,
-published or permanently installed.
+**Released.** The owner accepted this checkpoint and it shipped as
+[v0.0.156](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.156)
+(PR #50, merge `607da683b1`; release candidate gates and public asset hashes
+are in `AUTONOMOUS-RESUME.md`). The release candidate repeated the guarded
+native scenario at 0.0.156: PASS 491/491 (run `20261016T0411002291236Z`). The
+statuses below are unchanged by release: the original within-full-attack
+symptom is still unreproduced and the owner's live RTWP check is still not
+performed.
+
+The checkpoint history follows. Branch `codex/firearm-rtwp-kill-retarget`
+started from `origin/master` `fd6c56ebd8` (v0.0.154 record); master
+`31672515529c` (v0.0.155) was merged in at `1d98af476b` and released master
+`97c881ea84` at `ff8b5b8ade`. The production correction is `1890ba06cc`; the
+second review changed only the CR-04 fixture and observer (`f463ef6d56`,
+`acc620cb4c`). The checkpoint's tested code commit is `acc620cb4c`;
+`1620870007` is the version bump. The checkpoint itself was an ordinary focused
+checkpoint under [VALIDATION-POLICY.md](VALIDATION-POLICY.md); release
+qualification is the Sprint-level gate and publisher run recorded in
+`AUTONOMOUS-RESUME.md`, not a compatibility or Tranche qualification.
 
 ## Status
 
