@@ -74,7 +74,9 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.151.md',
     'docs\RELEASE-NOTES-0.0.152.md',
     'docs\RELEASE-NOTES-0.0.153.md',
-    'docs\RELEASE-NOTES-0.0.156.md')) {
+    'docs\RELEASE-NOTES-0.0.155.md',
+    'docs\RELEASE-NOTES-0.0.156.md',
+    'docs\RELEASE-NOTES-0.0.157.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -254,10 +256,11 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Strict package inventory. Sprint 24 adds four original theropod body files
-# and two original creature icons to the previously qualified 363-file base.
+# Strict package inventory. Sprint 24 added four original theropod body files
+# and two original creature icons to the previously qualified 363-file base;
+# v0.0.156 adds its release notes.
 # The soundbank and its manifest account for the optional two-file delta.
-$basePackageFileCount = 369
+$basePackageFileCount = 371
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
