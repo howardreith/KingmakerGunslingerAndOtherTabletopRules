@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "ELEPHANT_CORRECTED_ALBEDOS_AUTHORED_BUILDER_AND_GEOMETRY_OUTSTANDING",
+  "status": "AUDIT_HARDENED_ELEPHANT_COMPLETED_ASSET_HANDOFF_REQUIRED",
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
     "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
@@ -726,7 +726,7 @@
       "toolingReady": "Blender 4.5.10 LTS verified working, so authoring and review renders can start the moment the capture exists"
     },
     "icon": {
-      "status": "ASSET_HANDOFF_PREPARED",
+      "status": "ASSET_HANDOFF_PREPARED_WITH_REAL_REFERENCE_IMAGES",
       "brief": "docs/art/Kingmaker_Sprint25_Brachiosaurus_Icon_Asset_Brief.md",
       "reason": "no image-generation skill is installed in this session",
       "policy": "docs/ICON-ART-GUIDE.md requires a built-in image tool or authorized artist for the painted summon family and forbids silent procedural substitution",
@@ -737,7 +737,14 @@
       ],
       "correctionToSuppliedBriefText": "The drafted prompt asked for a simple dark background and no decorative frame. The approved family is the opposite: a circular medallion inside an ornate notched ring, a warm sepia and amber cast, the creature three-quarter side-on over a lit sky and landscape. The brief was written to the observed family and the discrepancy is flagged in it rather than silently followed.",
       "elephantIconReplacementRequested": false,
-      "noProceduralSubstitute": true
+      "noProceduralSubstitute": true,
+      "packet": "C:/Dev/KingmakerGunslingerLab/handoffs/sprint25-brachiosaurus-icon-20261016",
+      "packetManifest": "PACKET.json",
+      "referenceImagesIncluded": true,
+      "referenceImageCount": 6,
+      "referenceHashesVerifiedAgainstRepositoryManifest": true,
+      "notFilenamesOnly": "the three project-owned source paintings and their three 128x128 production exports are copied into the packet and every hash was recomputed from the copied bytes",
+      "outsideRepository": "the packet lives in the lab handoffs tree, not in the repository"
     },
     "originalBodyAssetsAuthored": false,
     "whyFlagStaysFalse": "textures alone do not flip it; it requires both geometries, UVs, albedos, provenance and the required inspection outputs to exist and verify"
