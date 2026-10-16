@@ -625,8 +625,12 @@ def planned():
         # creature's trample was rejected because the shared carrier reads
         # its damage and DC from the creature key the ability belongs to.
         ("KMG.Summoning.Special.Elephant.Trample", "BlueprintAbility"),
+        # The bounded ordinary Overrun command the owner
+        # selected over a waiver. It is a separate action
+        # from Trample and never replays it.
+        ("KMG.Summoning.Special.Brachiosaurus.Overrun", "BlueprintAbility"),
     ))
-    if len(rows) != 2159 or len({symbol for symbol, _ in rows}) != 2159:
+    if len(rows) != 2160 or len({symbol for symbol, _ in rows}) != 2160:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

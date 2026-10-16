@@ -37,6 +37,15 @@ namespace KingmakerGunslinger.Summoning
             "KMG.Summoning.Natural.Brachiosaurus.Chassis";
         internal const string BrachiosaurusTrampleSymbol =
             "KMG.Summoning.Special.Brachiosaurus.Trample";
+
+        /// <summary>
+        /// The bounded ordinary Overrun command, selected by the owner over a
+        /// waiver. It is a DIFFERENT action from Trample and shares none of
+        /// its machinery: an overrun raises a real combat maneuver, where a
+        /// trample is automatic and raises none.
+        /// </summary>
+        internal const string BrachiosaurusOverrunSymbol =
+            "KMG.Summoning.Special.Brachiosaurus.Overrun";
         internal const string ElephantChassisSymbol =
             "KMG.Summoning.Natural.Elephant.Chassis";
         internal const string ElephantUnitTypeSymbol =
@@ -69,7 +78,7 @@ namespace KingmakerGunslinger.Summoning
         /// is uuid5 of its own symbol, so the manifest reproduces and
         /// verifies them rather than trusting an allocation.
         /// </summary>
-        internal const int AppendedIdentityCount = 18;
+        internal const int AppendedIdentityCount = 19;
 
         /// <summary>
         /// What Sprint 25 adds to the C# identity catalog. The eight caller
@@ -86,18 +95,30 @@ namespace KingmakerGunslinger.Summoning
         internal const int AppendedUnitTypeIdentityCount = 1;
         internal const int AppendedFeatureIdentityCount = 1;
         internal const int AppendedTrampleAbilityIdentityCount = 2;
+
+        /// <summary>
+        /// One Brachiosaurus-owned ordinary Overrun command. It is counted
+        /// apart from the tramples because it is a different action: it raises
+        /// a real combat maneuver, where a trample never does.
+        /// </summary>
+        internal const int AppendedOverrunAbilityIdentityCount = 1;
         internal const int AppendedPrivateIdentityCount =
             AppendedWeaponIdentityCount + AppendedWeaponTypeIdentityCount +
             AppendedUnitTypeIdentityCount + AppendedFeatureIdentityCount +
-            AppendedTrampleAbilityIdentityCount;
+            AppendedTrampleAbilityIdentityCount +
+            AppendedOverrunAbilityIdentityCount;
 
         /// <summary>
-        /// Every appended identity whose planned type is BlueprintAbility:
-        /// the three logical roots plus the trample, which is counted as a
-        /// private carrier but is still an ability.
+        /// Every appended identity in the C# catalog whose planned type is
+        /// BlueprintAbility: the three logical roots, the two tramples and
+        /// the ordinary Overrun command. All three of the latter are counted
+        /// as private carriers but are still abilities. The eight caller
+        /// adapters are also abilities but never enter the C# catalog, so
+        /// they are not here.
         /// </summary>
         internal const int AppendedTotalAbilityIdentityCount =
-            AppendedAbilityIdentityCount + AppendedTrampleAbilityIdentityCount;
+            AppendedAbilityIdentityCount + AppendedTrampleAbilityIdentityCount +
+            AppendedOverrunAbilityIdentityCount;
 
         /// <summary>
         /// Elephant carriers still named but not registered. The
