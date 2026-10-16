@@ -266,9 +266,11 @@ namespace KingmakerGunslinger.Summoning
         internal static int LoneNaturalWeaponStrengthContribution(
             int strengthModifier)
         {
-            return strengthModifier > 0
-                ? checked(strengthModifier + strengthModifier / 2)
-                : strengthModifier;
+            // One implementation, on the shared carrier the trample
+            // damage path reads, so this record helper and the runtime
+            // cannot drift apart again.
+            return UngulateRulesPolicy.OneAndAHalfStrength(
+                strengthModifier);
         }
 
         /// <summary>

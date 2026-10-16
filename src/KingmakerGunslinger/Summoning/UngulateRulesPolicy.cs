@@ -103,7 +103,8 @@ namespace KingmakerGunslinger.Summoning
         internal int StrengthModifier { get { return (Strength - 10) / 2; } }
         internal int GoreDiceCount { get; private set; }
         internal int GoreDieSides { get; private set; }
-        internal int GoreBonus { get { return StrengthModifier * 3 / 2; } }
+        internal int GoreBonus
+        { get { return UngulateRulesPolicy.OneAndAHalfStrength(StrengthModifier); } }
         internal bool HasTrample { get { return TrampleDiceCount > 0; } }
         internal int TrampleDiceCount { get; private set; }
         internal int TrampleDieSides { get; private set; }
@@ -135,10 +136,18 @@ namespace KingmakerGunslinger.Summoning
         internal int TrampleSaveDc(int adjacentStampedingCreatures)
         { return TrampleDc + (StampedeActive(adjacentStampedingCreatures) ? 2 : 0); }
 
+        /// <summary>
+        /// The live branch used to multiply unconditionally, which turned
+        /// a Strength penalty into a larger penalty. It now applies the
+        /// one authoritative rule, so a debuffed trampler loses its bonus
+        /// rather than gaining an invented extra penalty.
+        /// </summary>
         internal int TrampleBonusFor(int liveStrengthModifier)
         {
-            return LiveTrampleMath ? liveStrengthModifier * 3 / 2 :
-                TrampleBonus;
+            return LiveTrampleMath
+                ? UngulateRulesPolicy.OneAndAHalfStrength(
+                    liveStrengthModifier)
+                : TrampleBonus;
         }
 
         internal int TrampleSaveDc(int adjacentStampedingCreatures,
@@ -158,6 +167,26 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class UngulateRulesPolicy
     {
+        /// <summary>
+        /// One and a half times a Strength BONUS, which is what the
+        /// printed rule says: a penalty is not a bonus, so zero and
+        /// negatives stay at face value rather than being multiplied.
+        ///
+        /// <para>This exists because two formulas disagreed. The record
+        /// helper in GiantBodyRulesPolicy already applied this rule, but
+        /// the live branch of TrampleBonusFor multiplied unconditionally
+        /// as strengthModifier * 3 / 2, so at a live modifier of -4 the
+        /// record said -4 and the damage path said -6. Agreement at the
+        /// printed positive baselines hid it. The damage path is what
+        /// runs, so the rule now lives here and everything reads it.</para>
+        /// </summary>
+        internal static int OneAndAHalfStrength(int strengthModifier)
+        {
+            return strengthModifier > 0
+                ? checked(strengthModifier + strengthModifier / 2)
+                : strengthModifier;
+        }
+
         private static readonly UngulateRulesProfile[] Values = {
             new UngulateRulesProfile("aurochs", 3, 23, 1, 8, 2, 6,
                 0, 0, 0, true),

@@ -207,6 +207,107 @@ namespace KingmakerGunslinger.DomainTests
                 "Brachiosaurus is the creature whose reach equals its space.");
         }
 
+        /// <summary>
+        /// The signed-Strength trample contract, read through the same
+        /// UngulateRulesProfile the damage path uses at
+        /// ContextActionUngulateTrample line 122. Two formulas disagreed
+        /// here: the record helper applied one and a half times a Strength
+        /// BONUS, while the live branch multiplied unconditionally, so at
+        /// a live modifier of -4 the record said -4 and the damage path
+        /// said -6. The positive printed baselines agreed, which is why it
+        /// survived. This table covers the cases the baselines do not.
+        /// </summary>
+        internal static void TrampleStrengthArithmeticIsOneRule()
+        {
+            foreach (string key in new[] {
+                GiantBodyRulesPolicy.BrachiosaurusKey,
+                GiantBodyRulesPolicy.ElephantKey })
+            {
+                UngulateRulesProfile rules = UngulateRulesPolicy.For(key);
+                Assertions.True(rules.LiveTrampleMath,
+                    key + " derives its trample live, which is the branch "
+                        + "the disagreement was in.");
+                // modifier -> expected contribution. A penalty is not a
+                // bonus, so it is never multiplied.
+                foreach (int[] row in new[] {
+                    new[] { 13, 19 }, new[] { 10, 15 }, new[] { 8, 12 },
+                    new[] { 7, 10 }, new[] { 5, 7 }, new[] { 1, 1 },
+                    new[] { 0, 0 }, new[] { -1, -1 }, new[] { -2, -2 },
+                    new[] { -3, -3 }, new[] { -4, -4 }, new[] { -5, -5 } })
+                {
+                    Assertions.Equal(row[1],
+                        rules.TrampleBonusFor(row[0]),
+                        key + " trample Strength contribution at modifier "
+                            + row[0]);
+                    // The record helper and the damage path are now one
+                    // implementation; this proves they cannot drift.
+                    Assertions.Equal(rules.TrampleBonusFor(row[0]),
+                        GiantBodyRulesPolicy.TrampleStrengthContribution(
+                            row[0]),
+                        "record helper and damage path agree at " + row[0]);
+                }
+            }
+
+            // The live save DC for each creature, from live hit dice and
+            // live Strength, with no stampede adjacency.
+            UngulateRulesProfile brach = UngulateRulesPolicy.For(
+                GiantBodyRulesPolicy.BrachiosaurusKey);
+            Assertions.Equal(32, brach.TrampleSaveDc(0,
+                    GiantBodyRulesPolicy.BrachiosaurusHitDice, 13),
+                "Brachiosaurus printed DC 32 derives from 18 HD and +13.");
+            Assertions.Equal(28, brach.TrampleSaveDc(0,
+                    GiantBodyRulesPolicy.BrachiosaurusHitDice, 9),
+                "A debuffed Brachiosaurus DC falls with live Strength.");
+            Assertions.Equal(15, brach.TrampleSaveDc(0,
+                    GiantBodyRulesPolicy.BrachiosaurusHitDice, -4),
+                "A negative live modifier lowers the DC by its face value.");
+
+            UngulateRulesProfile eleph = UngulateRulesPolicy.For(
+                GiantBodyRulesPolicy.ElephantKey);
+            Assertions.Equal(25, eleph.TrampleSaveDc(0,
+                    GiantBodyRulesPolicy.ElephantHitDice, 10),
+                "Elephant printed DC 25 derives from 11 HD and +10.");
+            Assertions.Equal(11, eleph.TrampleSaveDc(0,
+                    GiantBodyRulesPolicy.ElephantHitDice, -4),
+                "Elephant DC at a negative live modifier.");
+
+            // The two creatures stay distinct, and neither gains the
+            // other's dice.
+            Assertions.Equal(2, brach.TrampleDiceCount, "Brachiosaurus 2d6.");
+            Assertions.Equal(6, brach.TrampleDieSides, "Brachiosaurus d6.");
+            Assertions.Equal(2, eleph.TrampleDiceCount, "Elephant 2d8.");
+            Assertions.Equal(8, eleph.TrampleDieSides, "Elephant d8.");
+
+            // The released frozen-math tramplers are the changed
+            // dependency's control: they never take the live branch, so
+            // their behaviour is unchanged at any live modifier.
+            foreach (string released in new[] { "aurochs", "bison",
+                "woolly-rhinoceros", "giant-stag-beetle" })
+            {
+                UngulateRulesProfile frozen = UngulateRulesPolicy.For(
+                    released);
+                Assertions.False(frozen.LiveTrampleMath,
+                    released + " keeps its frozen released arithmetic.");
+                Assertions.Equal(frozen.TrampleBonus,
+                    frozen.TrampleBonusFor(-4),
+                    released + " ignores a live modifier entirely.");
+            }
+
+            // Triceratops IS on the live branch, so it is the released
+            // creature this repair actually touches. Its printed positive
+            // values are unchanged; only the penalty case moves, and it
+            // moves to the rule the record always stated.
+            UngulateRulesProfile tri = UngulateRulesPolicy.For(
+                "triceratops");
+            Assertions.True(tri.LiveTrampleMath,
+                "Triceratops derives live, so it shares this repair.");
+            Assertions.Equal(12, tri.TrampleBonusFor(8),
+                "Triceratops positive contribution is unchanged.");
+            Assertions.Equal(15, tri.TrampleBonusFor(10),
+                "Triceratops positive contribution is unchanged.");
+            Assertions.Equal(-4, tri.TrampleBonusFor(-4),
+                "Triceratops no longer doubles a Strength penalty.");
+        }
         internal static void IdentityAppendOwnsExactlyFivePrivateCarriers()
         {
             // Six since 2026-10-16: the five Brachiosaurus carriers plus
