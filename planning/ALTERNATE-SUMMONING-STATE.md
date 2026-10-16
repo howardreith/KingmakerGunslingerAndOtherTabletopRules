@@ -1,6 +1,6 @@
 # Expanded Summoning alternate sources - mission state
 
-Status: **targeted verification corrections implemented; native
+Status: **released as v0.0.157 (2026-10-16).** Before release: **targeted verification corrections implemented; native
 command-fixture coverage passed; real-popup and natural-RTWP cases passed on
 the working save; player-facing validation partially complete.** Runtime is
 checked only for the scenarios in the tables below (details and the evidence
@@ -302,9 +302,12 @@ Preservationist extract III -> SNA IV mapping (assisted).
 
 ## Next actions
 
-1. Release v0.0.157 (authorized; see "v0.0.157 release candidate gates"):
-   merge PR #52 normally, then run the exact-reference publisher from clean,
-   pushed `master`, then record the published release.
+1. Done: PR #52 merged as `8726ec737a`; v0.0.157 published and Latest
+   (package `d2e6489277b56fb8a2b1a949fde6ddec8ddb1c40e1fcda145b7a2296db0d32a5`,
+   DLL `b5ac181083843268075503481f8a82589a4efb7496c563616ca631b6ffc67562`; see
+   `AUTONOMOUS-RESUME.md`). The owner checklist and maintainer cases remain
+   open. Sprint 25 renumbers to 0.0.158 or later; the development-candidate
+   validator is re-pinned before the next development candidate.
 2. The owner checklist in the doc covers the remaining manual cases. If they
    should be automated instead: a save-writing shortcut orchestrator on a
    disposable save (cold load normal / OFF / restored), a turn-based round
