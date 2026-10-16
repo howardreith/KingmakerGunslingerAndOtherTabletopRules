@@ -158,6 +158,16 @@ namespace KingmakerGunslinger.Summoning
         // publication rather than trusting this constant.
         internal const int BrachiosaurusReachBonusFeet = 5;
 
+        // BlueprintWeaponType subtracts four feet from melee values at or
+        // below ten, so nine stores as five - the same arithmetic the
+        // released Stegosaurus tail uses, and the reason that value is
+        // nine here rather than twenty. The weapon type carries the five
+        // feet a tail contributes before body reach; the Gargantuan body
+        // contributes fifteen and BrachiosaurusReachBonusFeet the final
+        // five. Native proof must confirm the twenty-foot uniform reach
+        // this composes before publication rather than trusting it here.
+        internal const int BrachiosaurusTailTypeStoredRangeFeet = 9;
+
         // Elephant, frozen adult entry. Both sources agree exactly and there
         // is no discrepancy to resolve. hp 93 (11d8+44) with Con 19, so the
         // racial base is 93 - 11 * 4.
@@ -199,6 +209,20 @@ namespace KingmakerGunslinger.Summoning
         internal static bool IsGiantBody(string key)
         {
             return key == BrachiosaurusKey || key == ElephantKey;
+        }
+
+        /// <summary>
+        /// Brachiosaurus allocates its printed Perception-only ranks
+        /// exactly, which the generic default-three priority list cannot
+        /// express at Intelligence 2. Elephant is deliberately NOT
+        /// included: it takes the generic default today and already
+        /// satisfies the Sprint 14 printed-totals guard, so exempting it
+        /// here would weaken that guard for a released creature rather
+        /// than describe it.
+        /// </summary>
+        internal static bool UsesExactRanks(string key)
+        {
+            return key == BrachiosaurusKey;
         }
 
         /// <summary>

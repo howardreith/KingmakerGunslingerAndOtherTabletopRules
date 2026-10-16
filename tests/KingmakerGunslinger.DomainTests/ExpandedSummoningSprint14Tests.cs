@@ -1025,6 +1025,11 @@ namespace KingmakerGunslinger.DomainTests
                     // Sprint 24 likewise freezes each theropod's adult
                     // allocation rather than applying this old default.
                     !TheropodRulesPolicy.UsesExactRanks(value.Key) &&
+                    // Sprint 25's Brachiosaurus for the same reason: 18
+                    // printed Perception ranks and nothing else, which the
+                    // default three cannot express. Its Elephant is not
+                    // exempted, because it still takes the default.
+                    !GiantBodyRulesPolicy.UsesExactRanks(value.Key) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

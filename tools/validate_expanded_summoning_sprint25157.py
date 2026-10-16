@@ -98,6 +98,19 @@ ALLOWED_PRODUCTION = {
     # is deliberate rather than incidental.
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
     "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
+    # Admitted 2026-10-16 with the Brachiosaurus builder. The profile row
+    # names weapon key "BrachiosaurusTail4d6", and a profile whose weapon
+    # cannot resolve makes blueprint initialization throw and roll back
+    # every registration - so the row and the carriers that resolve it are
+    # one change, and these are exactly the seams that change carries.
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.GiantBodies.cs",
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.cs",
+    # Admitted 2026-10-16 with the Brachiosaurus trample. It registers on
+    # the Sprint 23 qualified path/contact/response carrier rather than a
+    # second copy of it, so the seams are the one call site and the one
+    # rules row that call site reads.
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+    "src/KingmakerGunslinger/Summoning/UngulateRulesPolicy.cs",
 }
 
 # Original project-authored bodies and icons, pinned once authored. A public

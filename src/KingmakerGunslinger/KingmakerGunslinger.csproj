@@ -1247,6 +1247,7 @@
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Ankylosaurus.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.ArmoredDinosaurs.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Theropods.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.GiantBodies.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Theropods.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Survey.cs" />
     <Compile Include="RuntimeTesting\Sprint24TheropodCensusPolicy.cs" />

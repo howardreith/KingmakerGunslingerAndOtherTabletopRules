@@ -352,7 +352,11 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();
-            Assertions.Equal(56 + TheropodRulesPolicy.AppendedCreatureCount,
+            // Composed from each sprint's own appended delta rather than a
+            // literal, so a sprint that adds a creature moves its own
+            // policy count and this stays true.
+            Assertions.Equal(56 + TheropodRulesPolicy.AppendedCreatureCount
+                    + GiantBodyRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningNaturalProfiles.All.Count,
                 "Natural reconstruction count changed.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
