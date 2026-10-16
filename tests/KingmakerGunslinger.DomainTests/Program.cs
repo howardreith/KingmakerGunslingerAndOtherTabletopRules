@@ -1315,6 +1315,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("alternate-summoning.contract-natures-ally-and-extract", AlternateSummoningContractTests.NaturesAllyCopiesFollowTheirProviders),
             Case("alternate-summoning.contract-tactician", AlternateSummoningContractTests.TacticianNeedsTheCanonicalQuantity),
             Case("alternate-summoning.verifier-adapter-child", AlternateSummoningContractTests.AdapterChildAllowsOnlyTheDeliberateChanges),
+            Case("alternate-summoning.player-paths-native-scope", AlternateSummoningContractTests.PlayerPathsUseTheSaveFreeNativeProfile),
             Case("expanded-summoning.merge-conflicts", SummonPublicationPolicyTests.MergeDeduplicatesExistingAndRejectsConflicts),
             Case("expanded-summoning.native-reconciliation", SummonPublicationPolicyTests.NativeDuplicateCatalogIsExact),
             Case("expanded-summoning.display-order", SummonPublicationPolicyTests.DisplayOrderGroupsSinglesBeforeQuantities),

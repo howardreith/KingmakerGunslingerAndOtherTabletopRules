@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -196,6 +197,30 @@ namespace KingmakerGunslinger.DomainTests
             other.Resources.Add(other.Resources[0].Clone());
             Assertions.True(AlternateSummoningContracts.CheckMonsterTactician(
                 other, Spawning(Wolf, Dog)) != null, "Two resources are unsupported.");
+        }
+
+        /// <summary>
+        /// The player-path fixture runs only inside the save-free native
+        /// profile: a fresh empty world, no parameters, automatic exit.
+        /// </summary>
+        internal static void PlayerPathsUseTheSaveFreeNativeProfile()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableAlternateSummoningPlayerPaths;
+            Assertions.True(RuntimeTestScenarioCatalog.IsSummoningNativeProfile(scenario),
+                "The player paths run in the native first-area profile.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(
+                scenario, 0, null), "The player paths take no parameters.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(
+                scenario, 1, "rtwp-foundation"), "No review phase is borrowed.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario,
+                0, null, 0, 0, 0, false, false, false, false, true),
+                "Automatic exit is required.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario,
+                0, null, 0, 0, 0, false, true, false, false, true),
+                "An existing main character (a loaded world) is never admitted.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario,
+                0, null, 0, 0, 0, false, false, false, false, true),
+                "A fresh idle native world is admitted.");
         }
 
         internal static void AdapterChildAllowsOnlyTheDeliberateChanges()

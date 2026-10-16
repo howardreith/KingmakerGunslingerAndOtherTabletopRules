@@ -1261,6 +1261,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoning.cs" />
     <Compile Include="RuntimeTesting\AlternateSummoningFaultDrillControl.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningContracts.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningPlayerPaths.cs" />
     <Compile Include="Blueprints\SummonSignatureReader.cs" />
     <Compile Include="Summoning\SummonSignature.cs" />
     <Compile Include="Summoning\AlternateSummoningContracts.cs" />
