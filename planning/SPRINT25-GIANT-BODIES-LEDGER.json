@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "PUSH_POLICY_REVIEWED_IN_PROGRESS_SPRINT25",
+  "status": "ALBEDOS_AUTHORED_GEOMETRY_BLOCKED_ON_DONOR_CAPTURE_ICON_HANDED_OFF",
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
     "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
@@ -626,5 +626,77 @@
     "resolution": "master's firearm 0.0.156 surface kept intact; Sprint 25 moved to 0.0.157",
     "validatorBaselineRebasedTo": "607da683b1f6fd545dab90fd6f4121d155573142",
     "nothingFromMasterDiscarded": true
+  },
+  "capabilityAudit": {
+    "performedUtc": "2026-10-16T04:17:00Z",
+    "blender": {
+      "found": true,
+      "path": "C:/Program Files/Blender Foundation/Blender 4.5/blender.exe",
+      "onPath": true,
+      "version": "4.5.10 LTS",
+      "buildDate": "2026-05-19",
+      "bundledPython": "3.11.11",
+      "smoke": "background render with --python-exit-code 1 produced a new 6982-byte PNG; real exit code 0, verified by the output file rather than by the shell launching",
+      "evidence": "runtime-evidence/sprint25-capability-20261016/",
+      "lookupScope": "Get-Command plus the narrow recorded install locations; DATA untouched"
+    },
+    "python": {
+      "found": true,
+      "version": "3.14.6"
+    },
+    "imageGenerationSkill": {
+      "found": false,
+      "checked": [
+        "~/.claude/skills (absent)",
+        "~/.claude/plugins marketplaces",
+        "project .claude/skills and .claude/agents (absent)"
+      ],
+      "consequence": "the painted summon icon is handed off; nothing procedural substitutes for it"
+    },
+    "conclusion": "Geometry authoring and offline review renders are available on this machine. Only the painted UI icon lacks a tool."
+  },
+  "originalArt": {
+    "albedos": {
+      "status": "AUTHORED",
+      "authoringScript": "assets-source/original-models/sprint25-giant-bodies/paint_giant_body.py",
+      "category": "same deterministic standard-library UV texture authoring as the released Sprint 23 and Sprint 24 scripts; no image generation and no Blender",
+      "toolchain": "CPython 3.14.6, standard library only",
+      "dimensions": "512x512 RGBA",
+      "deterministic": true,
+      "regeneratesByteIdentical": true,
+      "outputs": {
+        "assets/sprint25-giant-bodies/brachiosaurus-albedo.png": "99b077a7f3453c34bf5b3503111b9535d34a80c19393efb711d67ff69da6e8e7",
+        "assets/sprint25-giant-bodies/elephant-albedo.png": "b002da80a6ec4a56fb5a9d8b84b6ee751174e2ca53d1a2962f46344e623b7b8b"
+      },
+      "speciesSpecific": "the two creatures share no grain algorithm: sauropod tubercle cells with dorsal counter-shading and banded columnar legs, against elephant two-frequency crease network, dust in the folds, ringed trunk and smooth ivory tusks",
+      "noDinosaurPixelsReusedAsElephantArt": true,
+      "inspected": "both opened and viewed, and calibrated against the released Sprint 24 theropod albedo: in-family and comparably structured",
+      "inspectedOnModelUnderLighting": false,
+      "inspectionPendingReason": "the models do not exist yet; see geometry below"
+    },
+    "geometry": {
+      "status": "BLOCKED_ON_DONOR_CAPTURE",
+      "blocker": "the quadruped generator binds original geometry to a geometry-free Mastodon bind-frame capture and refuses anything else; that Sprint 11 capture was private machine-local evidence and is not on this machine",
+      "searched": "every runtime-evidence and private JSON for the capture shape (bindPosition rows): only Pteranodon attached-rig captures exist, and no Sprint 23 .blend or generation report survives",
+      "nothingFabricated": true,
+      "nextStep": "the smallest approved donor observation: one guarded unelevated run against a valid artifact that captures the Mastodon renderer bind frame geometry-free, exactly as Sprint 11 did",
+      "toolingReady": "Blender 4.5.10 LTS verified working, so authoring and review renders can start the moment the capture exists"
+    },
+    "icon": {
+      "status": "ASSET_HANDOFF_PREPARED",
+      "brief": "docs/art/Kingmaker_Sprint25_Brachiosaurus_Icon_Asset_Brief.md",
+      "reason": "no image-generation skill is installed in this session",
+      "policy": "docs/ICON-ART-GUIDE.md requires a built-in image tool or authorized artist for the painted summon family and forbids silent procedural substitution",
+      "referencesInspected": [
+        "triceratops",
+        "stegosaurus",
+        "tyrannosaurus"
+      ],
+      "correctionToSuppliedBriefText": "The drafted prompt asked for a simple dark background and no decorative frame. The approved family is the opposite: a circular medallion inside an ornate notched ring, a warm sepia and amber cast, the creature three-quarter side-on over a lit sky and landscape. The brief was written to the observed family and the discrepancy is flagged in it rather than silently followed.",
+      "elephantIconReplacementRequested": false,
+      "noProceduralSubstitute": true
+    },
+    "originalBodyAssetsAuthored": false,
+    "whyFlagStaysFalse": "textures alone do not flip it; it requires both geometries, UVs, albedos, provenance and the required inspection outputs to exist and verify"
   }
 }
