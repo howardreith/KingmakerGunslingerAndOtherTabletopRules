@@ -130,7 +130,7 @@ namespace KingmakerGunslinger.DomainTests
             SummonIconCatalog.Validate();
             Assertions.Equal(117, SummonIconCatalog.All.Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks(value.Key)),
-                "All pre-Sprint-24 concepts retain Tiger without changing Sprint 8 identities.");
+                "All pre-Sprint-25 concepts retain Tiger without changing Sprint 8 identities.");
             string ledger = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "blueprints", "blueprints.json"));
             var entries = Newtonsoft.Json.Linq.JObject.Parse(ledger)["entries"]

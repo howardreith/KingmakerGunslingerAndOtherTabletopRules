@@ -113,14 +113,39 @@ namespace KingmakerGunslinger.DomainTests
                     .Find(creature.Key);
                 Assertions.True(entry != null,
                     "Shipped creature is missing from the ideal roster: " + creature.Key);
-                Assertions.Equal(creature.MonsterTier, entry.MonsterTier,
-                    "Ideal roster changed the shipped Monster tier for " + creature.Key);
+                if (GiantBodyRulesPolicy.IsWithheldThisSprint(creature.Key))
+                {
+                    // The one deliberate disagreement in the programme, and it
+                    // is recorded rather than smoothed over. The printed Summon
+                    // Monster VII table and this planning roster both place
+                    // Brachiosaurus on the Monster side; the owner settled on
+                    // 2026-10-15 that Sprint 25 ships the Nature's Ally side
+                    // only, choosing the reversible direction because
+                    // identities are allocated once and append-only. So the
+                    // planning row keeps the source reading on record while the
+                    // shipped catalog deliberately omits it. The exception is
+                    // exactly this creature and exactly this field: if it ever
+                    // widens, or if the planning record quietly loses the
+                    // source reading, this fails.
+                    Assertions.Equal(7, entry.MonsterTier,
+                        "The ideal roster keeps the printed Monster tier on record for "
+                        + creature.Key);
+                    Assertions.True(creature.MonsterTier == null,
+                        "The shipped catalog ships no Monster row for " + creature.Key
+                        + " this sprint.");
+                    Assertions.False(creature.MonsterTemplated,
+                        "And therefore no celestial or fiendish execution child for "
+                        + creature.Key);
+                }
+                else
+                    Assertions.Equal(creature.MonsterTier, entry.MonsterTier,
+                        "Ideal roster changed the shipped Monster tier for " + creature.Key);
                 Assertions.Equal(creature.NaturesAllyTier, entry.NaturesAllyTier,
                     "Ideal roster changed the shipped Ally tier for " + creature.Key);
                 reused++;
             }
 
-            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
                 reused,
                 "Every project-owned creature must be reused.");
 
@@ -134,11 +159,12 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount,
+            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
+                    GiantBodyRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
-                "The remaining ideal roster needs 29 new creature identities after Sprint 23 registers both armored dinosaurs.");
+                "The remaining ideal roster shrinks by one for every creature a sprint registers.");
         }
 
         /// <summary>
@@ -177,14 +203,16 @@ namespace KingmakerGunslinger.DomainTests
 
             // The Shadow Mastiff moved from this set into the represented
             // one when Sprint 13 registered it.
-            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount,
+            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
+                    GiantBodyRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "Only the post-Sprint-24 ideal-roster creatures remain unregistered.");
-            Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount,
+                "Only the post-Sprint-25 ideal-roster creatures remain unregistered.");
+            Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount +
+                    GiantBodyRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "The published theropods join the represented identity set.");
+                "A registered creature joins the represented identity set even while withheld.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828

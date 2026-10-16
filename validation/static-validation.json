@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.155-expanded-summoning-sprint24-theropods",
+  "milestone": "0.0.156-expanded-summoning-sprint25-giant-bodies",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.155",
+  "version": "0.0.156",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2511,5 +2511,28 @@
     "candidateOnly": true,
     "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
     "sprint25Started": false
+  },
+  "expandedSummoningSprint25156": {
+    "releaseVersion": "0.0.156",
+    "releaseInformationalVersion": "0.0.156-expanded-summoning-sprint25-giant-bodies",
+    "masterBase": "97c881ea847a5d3703982ed6b0aebc0e0537c7c5",
+    "newCreatures": 1,
+    "newLogicalRoots": 3,
+    "newMonsterPlacements": 0,
+    "newTemplateExecutionChildren": 0,
+    "newPrivateIdentities": 5,
+    "completedExistingCreatures": 1,
+    "completedExistingRoots": 8,
+    "registeredLogicalPlacements": 1096,
+    "suppressedLogicalPlacements": 3,
+    "publishedLogicalPlacements": 1093,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1122,
+    "originalBodyAssetsAuthored": false,
+    "originalBodyFiles": 0,
+    "nativeRuntimeQualified": false,
+    "candidateOnly": true,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "sprint26Started": false
   }
 }

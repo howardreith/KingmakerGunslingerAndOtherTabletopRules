@@ -223,6 +223,7 @@
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
     <Compile Include="Summoning\ArmoredDinosaurRulesPolicy.cs" />
     <Compile Include="Summoning\TheropodRulesPolicy.cs" />
+    <Compile Include="Summoning\GiantBodyRulesPolicy.cs" />
     <Compile Include="Summoning\TheropodCombatComponents.cs" />
     <Compile Include="Summoning\CrocodilianRulesPolicy.cs" />
     <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
