@@ -733,7 +733,7 @@
       "nextStep": "a low-cost graybox motion prototype before any final geometry or texture polish: the Brachiosaurus neck and the Elephant trunk on the forward chain, the tail on the rear chain, and the limb contacts, reviewed through idle, walk, turn, attack/trample and interruption/death transitions. Spatial classification says what the chains are; only the prototype says whether the native animation drives them acceptably.",
       "toolingReady": "Blender 4.5.10 LTS already verified; no capability rediscovery needed.",
       "originalBodyAssetsAuthored": false,
-      "whyStillFalse": "No original geometry, UVs or textures exist yet. The claim stays false until both bodies, their UVs and textures, their provenance and the required inspection outputs actually exist - a render that exists or a mesh that imports is not visual qualification."
+      "whyStillFalse": "A graybox prototype exists and has been inspected, but no final geometry, UVs or textures do. A prototype is not finished art."
     },
     "icon": {
       "status": "ASSET_HANDOFF_PREPARED_WITH_REAL_REFERENCE_IMAGES",
@@ -757,7 +757,73 @@
       "outsideRepository": "the packet lives in the lab handoffs tree, not in the repository"
     },
     "originalBodyAssetsAuthored": false,
-    "whyFlagStaysFalse": "textures alone do not flip it; it requires both geometries, UVs, albedos, provenance and the required inspection outputs to exist and verify"
+    "whyFlagStaysFalse": "textures alone do not flip it; it requires both geometries, UVs, albedos, provenance and the required inspection outputs to exist and verify",
+    "grayboxPrototype": {
+      "status": "PROTOTYPE_INSPECTED_NOT_FINAL_GEOMETRY",
+      "generator": "assets-source/original-models/sprint25-giant-bodies/graybox_giant_bodies.py",
+      "review": "assets-source/original-models/sprint25-giant-bodies/GRAYBOX-REVIEW.md",
+      "renders": "runtime-evidence/sprint25-graybox",
+      "renderCount": 20,
+      "renderSha256": {
+        "brachiosaurus-curled-front.png": "0e54f25012841bc42bd98a97bac008952e3f2daf010ce542b3232a52a9ffef90",
+        "brachiosaurus-curled-party.png": "13403a92d59b3eb4f80ad50b318c2f1e22b54736488561ee42901a395eb0ee56",
+        "brachiosaurus-curled-rear.png": "0766c0850b3d16e20188153cd8b30119f8a43ea4a3612fb36f8d1c5f5e9bb864",
+        "brachiosaurus-curled-side.png": "bd6a61c5a270ebda6a965115055e292fafda00e2d9754f4c81dff72e4a57d213",
+        "brachiosaurus-rest-front.png": "ade63007871eb28e8a279f72a2c6456079f8ac473c9c9f7063e2191f0596ad15",
+        "brachiosaurus-rest-party.png": "d00b446f54173be4bb3894441c10405f3ad4970cb6906cd530be6815140fbcf1",
+        "brachiosaurus-rest-rear.png": "4d17b61752d8bd4c646d418b5c1fadc5b74d9c65aca93b45dc5093ffd6e38850",
+        "brachiosaurus-rest-side.png": "bf765a467dfc7008325522acb07dea7ba91366aa9894864477f2e896ac8d85f7",
+        "brachiosaurus-upright-front.png": "9cfda868b4f09ab1d482124d2a8568b95eef748a2dc23414af20e271561f8f36",
+        "brachiosaurus-upright-party.png": "3f896c7a059154e837f19c81f0ab8c371dc5b32999c7dcfb0226b5aca4bf14a6",
+        "brachiosaurus-upright-rear.png": "e19e0b9fb493ebcbed9ab04f456d85b368d96cbe0c55aee60ea6912b54f3cb66",
+        "brachiosaurus-upright-side.png": "8a64ebc57962a6c3d3dac23ceb88e97219556af39ccdcc3d5d143d122448b93f",
+        "elephant-curled-front.png": "38314a2287debb5b0e6dc849baf60c7f12310cc15518cb6a7a2b9b512e780d09",
+        "elephant-curled-party.png": "6b2b8b04238135313f0d07d3b337190e0d08672979d1c7f7b3c80bc93dff608f",
+        "elephant-curled-rear.png": "4615a75c50500e8f40e3fafb75eb330fd90b74039127e7efe9f7ea66db380f2f",
+        "elephant-curled-side.png": "9846c0361f5c5c1b29566718fefe3bb16bec0a854d91ebd12f454a468e8f0d96",
+        "elephant-rest-front.png": "cd38928ec1437c91b3ecb49dd689e0dc7709ca4d7f364721eb78fc7a10f75a35",
+        "elephant-rest-party.png": "36191f2008459b6e688f1f0ac65680001a3e9d24494872943eb828eedde70fce",
+        "elephant-rest-rear.png": "c721e0f772f84b9dd5950ddaa54320529774275aaed494a388ce3c6915b19715",
+        "elephant-rest-side.png": "03c90b8f977fe52c07e1a9134bdbebe2baed513976d9dbee5068c6e6a0342bd7"
+      },
+      "space": "renderer-local bind frame from the guarded census, converted to Blender Z-up by (x, y, z) -> (x, -z, y); feet land on z = 0",
+      "pixelsActuallyInspected": true,
+      "inspectionNote": "Images were opened and their pixels read. A filename, dimension, hash or renderer exit code is not inspection, and none of those stood in for it here.",
+      "establishes": {
+        "uprightNeckViable": true,
+        "reAimDegrees": 127,
+        "silhouette": "reads as a sauropod: rising neck, small head at the far end, barrel torso, four columnar legs, rear tail intact",
+        "rigidPoleNeckReproduced": false
+      },
+      "curlTolerance": {
+        "skullStopsFacingForwardAt": "8 degrees per joint, about 48 degrees total",
+        "headBehindShoulderAt": "16 degrees per joint, about 96 degrees total",
+        "neckIntersectsTorsoAt": "40 degrees per joint, about 240 degrees total",
+        "risk": "an elephant trunk clip routinely curls well past 50 degrees, so the native clips driving this chain are the open risk",
+        "nativeClipsOnThisRig": [
+          "idle",
+          "idle2",
+          "idle_on_alert",
+          "walk",
+          "slow_walk",
+          "run",
+          "gore_attack",
+          "gore_attack_02",
+          "slam_attack",
+          "slam_attack2",
+          "standup",
+          "stun",
+          "outstun"
+        ]
+      },
+      "isNotMotionEvidence": "The curl is a geometric probe of the authored rig. The census captured clip NAMES, not animation curves, so the real per-joint amplitude of those clips is unmeasured. Measuring it, or capturing in-game action frames, is the next required evidence before final geometry.",
+      "correctionCyclesPerformed": [
+        "wrong authoring space: the generator used census worldPosition rows carrying an arbitrary scene placement, so the trunk arced over the back and the limbs splayed. Corrected to the renderer-local bind frame every released body uses, with the released Z-up camera helper.",
+        "elephant skull at the wrong end: the head ellipsoid sat at the chain tip for both creatures, which is right for a sauropod and wrong for an elephant. Head placement is now per creature, with ears and tusks added so tusk clearance can be judged."
+      ],
+      "openDefects": 7,
+      "viewsNotProvided": "walk, turn, attack, trample, death and interruption frames; clay and wireframe passes; a textured pass on real UVs; native screenshots - the product candidate is not valid while the painted icon is missing"
+    }
   },
   "engineering": {
     "elephantProfileCorrection": {
@@ -1110,5 +1176,24 @@
     "noNewFailuresFromThisChange": "Verified by running the full suite before and after. The builder change first introduced one new failure, sprint14-printed-skill-totals, because Brachiosaurus allocates exact Perception-only ranks; that is now exempted the same way every prior sprint exempts its own exact-ranks creatures, and Elephant is deliberately NOT exempted because it still takes the generic default.",
     "repositoryValidator": "PASS, exit 0, including the dispatch regression",
     "focusedGate": "PASS, exit 0"
+  },
+  "imageCapability": {
+    "checkedUtc": "2026-10-16",
+    "client": "Claude Code 2.1.268",
+    "imageINSPECTION": {
+      "available": true,
+      "verifiedWith": "one existing reference painting (the shipped triceratops 128px export) and one actual Blender render from this session, both opened as pixels before any verdict was given",
+      "consequence": "the visual feedback loop is installed and was exercised: render, open the pixels, name the defect, change the real geometry, render again. Two correction cycles are recorded in GRAYBOX-REVIEW.md.",
+      "subagent": ".claude/agents/kingmaker-visual-reviewer.md installed project-local, read-only (Read, Glob, Grep). It opens the PNG files itself rather than inheriting an attached image."
+    },
+    "imageGENERATION": {
+      "available": false,
+      "howEstablished": "not by searching ~/.claude/skills alone. The session tool surface was searched directly for an image-generation capability and returns none: the only tools present are documents, scheduling, worktree, design-sync and remote-trigger. No skills and no agents were installed in this client before this session.",
+      "exactMissingCapability": "an image-generation backend reachable from this Claude Code session. Inspecting images is not generating them, and installing a Markdown skill would not create a backend.",
+      "notAttempted": "no paid API, no new credentials, no service purchase, no MCP bridge install, no stored-credential reuse, no local diffusion stack, and no host-tool update or policy change was attempted to chase it.",
+      "setupPassCost": "one short pass, well inside the 20 minute planning target",
+      "retainedRoute": "the existing single-asset handoff packet at handoffs/sprint25-brachiosaurus-icon-20261016, verified byte-intact this session: all six reference images and the brief match their recorded hashes. The brief was NOT rewritten.",
+      "nextExecutableStep": "open the packet in an image-capable session that has a real built-in generator, pass it the actual reference pixels rather than the path, and generate one original Brachiosaurus source painting in the established medallion family."
+    }
   }
 }
