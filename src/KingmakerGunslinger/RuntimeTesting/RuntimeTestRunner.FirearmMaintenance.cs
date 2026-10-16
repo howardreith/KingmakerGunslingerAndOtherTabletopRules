@@ -114,6 +114,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private IEnumerable<object> FirearmNativeInputCases()
         {
+            foreach (object step in FirearmReviewKillChainCases()) yield return step;
             foreach (object step in FirearmReviewMergeCases()) yield return step;
             foreach (object step in FirearmReviewHoverCases()) yield return step;
             foreach (object step in FirearmReviewReloadTurnCases()) yield return step;
@@ -408,9 +409,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             internal void WatchActionCost(UnitUseAbility command) { actionCosts[command] = 0; }
             internal float PeakActionCost(UnitUseAbility command) { return actionCosts[command]; }
-            internal void Pump()
+            internal void Pump(bool processAi = true)
             {
-                Turns.PumpCommands();
+                Turns.PumpCommands(processAi);
                 foreach (var command in actionCosts.Keys.ToArray())
                 {
                     // Swift/Free commands can end before their detached native

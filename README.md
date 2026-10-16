@@ -1,6 +1,14 @@
 # Kingmaker Gunslinger
 
-The **0.0.154-gunslinger-animal-companion-eligibility** patch stops animal
+The **0.0.156-firearm-rtwp-kill-continuation** patch keeps a firearm
+Gunslinger fighting automatically in real time after an ordered full
+attack's last target dies. See the
+[v0.0.156 release notes](docs/RELEASE-NOTES-0.0.156.md). It is built on
+**0.0.155-expanded-summoning-sprint24-theropods**, which added the
+Deinonychus and Tyrannosaurus; see the
+[v0.0.155 release notes](docs/RELEASE-NOTES-0.0.155.md).
+
+The earlier **0.0.154-gunslinger-animal-companion-eligibility** patch stops animal
 companions from taking Gunslinger levels; player characters and humanoid
 companions keep the class. See the
 [v0.0.154 release notes](docs/RELEASE-NOTES-0.0.154.md).
@@ -12,15 +20,14 @@ Strength modifiers while keeping the printed +8 baseline unchanged. See the
 creature, route, art and historical qualification record remains in the
 [v0.0.152 coverage record](docs/SPRINT23-COVERAGE.md).
 
-Sprint 22 remains released and unchanged. This mission stops after Sprint 23;
-Sprint 24 is not started.
+Sprint 22 remains released and unchanged.
 
 ### Current release
 
-Version **0.0.154-gunslinger-animal-companion-eligibility** retains 1,104
-choices: 1,075 generated roots and 29 native wrappers. It and v0.0.153 change
+Version **0.0.156-firearm-rtwp-kill-continuation** retains the 1,122 choices
+v0.0.155 published: 1,093 generated roots and 29 native wrappers. It changes
 no route, level, quantity, template, stable identity, artwork or serialization state.
-The v0.0.152 original visuals and unaffected qualification remain authoritative.
+The v0.0.155 Sprint 24 visuals and qualification remain authoritative.
 
 ### Previous release
 

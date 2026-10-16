@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.156-firearm-rtwp-kill-continuation
+
+- Ends a finished explicit firearm order normally once its target is dead
+  and the equipped firearm is currently Normal, so party AI reloads and
+  keeps attacking in real time without another click. Also after Broken ->
+  Quick Clear -> Normal, and when the target dies between an automatic
+  reload and the attack it was resuming.
+- Keeps a currently Broken firearm's explicit-order rule, misfire,
+  retargeting, reload, action, ammunition and turn-based behaviour; changes
+  no identity, route, asset or save data.
+- The originally reported within-full-attack stop was not reproduced in the
+  save-free fixture and is not claimed fixed; see the release notes.
+
+## 0.0.155-expanded-summoning-sprint24-theropods
+
+- Adds the Deinonychus (Summon Monster IV, Summon Nature's Ally IV) and the
+  Tyrannosaurus (Summon Monster VII, Summon Nature's Ally VII) with original
+  bodies and icons, for 1,122 visible summon choices. See
+  [the v0.0.155 release notes](docs/RELEASE-NOTES-0.0.155.md).
+
 ## 0.0.154-gunslinger-animal-companion-eligibility
 
 - Gives the Gunslinger class the native player-class prerequisite that refuses
