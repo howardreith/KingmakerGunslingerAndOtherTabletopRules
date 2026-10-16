@@ -714,8 +714,9 @@ Maintainer-only cases (BLOCKED / UNVERIFIED; not owner steps):
 
 ## Release v0.0.157
 
-Prepared for release as `0.0.157-alternate-summoning-sources` on the
-owner's authorization (`docs/BUILD-AND-RELEASE.md`). The release candidate
+Released as `0.0.157-alternate-summoning-sources` on 2026-10-16
+([v0.0.157](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157),
+merge `8726ec737a`, package `d2e64892...d32a5`) on the owner's authorization (`docs/BUILD-AND-RELEASE.md`). The release candidate
 `3dc23e9c7a2e` passed the Sprint gate (release-mode repository wrapper with
 the v0.0.157 validator, complete suite 2,646 / 2,646, exact build, strict
 373-file package) and, on exactly those bytes, the CotW, standalone and
