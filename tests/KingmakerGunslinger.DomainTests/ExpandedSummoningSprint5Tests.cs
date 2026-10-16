@@ -197,7 +197,8 @@ namespace KingmakerGunslinger.DomainTests
                 (value.Contains(".DustMephit") || value.Contains(".IceMephit") ||
                 value.Contains(".MagmaMephit") || value.Contains(".OozeMephit") ||
                 value.Contains(".SaltMephit") || value.Contains(".SteamMephit")) &&
-                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value)).ToArray();
+                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value) &&
+                !AlternateSummoningTests.IsAdapterIdentity(value)).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 5 must append exactly its own identities to the ledger.");
             // Append-only: the Sprint 5 block sits directly before the Sprint 6

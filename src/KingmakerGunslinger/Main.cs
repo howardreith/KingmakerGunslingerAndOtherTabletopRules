@@ -78,6 +78,7 @@ namespace KingmakerGunslinger
                 RuntimeTestRunner.RecordEarlyIdentity(context);
                 ElementalNereidQualificationControl.TryActivateEarly(context);
                 CompatibilityAttributionRuntimeControl.TryActivateEarly(context);
+                AlternateSummoningFaultDrillControl.TryActivateEarly(context);
                 if (CompatibilityAttributionRuntimeControl.IsAssetFamilyEnabled(
                     Compatibility.CompatibilityAssetFamily.Firearms))
                     Assets.FirearmAssetRuntime.Configure(context);
@@ -120,6 +121,7 @@ namespace KingmakerGunslinger
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);
                 BrownFurOptionalExtensionCoordinator.Install(context);
                 AidAnotherOptionalExtensionCoordinator.Install(context);
+                Summoning.AlternateSummoningCoordinator.Install(context);
 
                 // A LoadDictionary call observed during PatchAll is retained and processed
                 // only after the context reports that patch installation completed.

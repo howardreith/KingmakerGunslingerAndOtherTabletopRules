@@ -1,6 +1,12 @@
 [CmdletBinding()]
 param(
-    [string]$RepositoryRoot
+    [string]$RepositoryRoot,
+    # Validates a development candidate for this one named purpose instead of
+    # the active version's release. It replaces only the release validator
+    # dispatch below; every fixture and offline contract still runs, and the
+    # result never qualifies a release.
+    [string]$DevelopmentPurpose,
+    [string]$DevelopmentSummaryPath
 )
 
 Set-StrictMode -Version Latest
@@ -27,9 +33,23 @@ if ($null -eq $python) {
 
 & $python.Source (Join-Path $repositoryRoot 'tools\test_repository_validator.py')
 if ($LASTEXITCODE -ne 0) { throw 'Repository validator regression fixtures failed.' }
-& $python.Source $validator --root $repositoryRoot
-if ($LASTEXITCODE -ne 0) {
-    throw "Repository validation failed with exit code $LASTEXITCODE."
+& $python.Source (Join-Path $repositoryRoot 'tools\test_development_candidate_validator.py')
+if ($LASTEXITCODE -ne 0) { throw 'Development-candidate validator corruption fixtures failed.' }
+if ([string]::IsNullOrEmpty($DevelopmentPurpose)) {
+    if ($DevelopmentSummaryPath) { throw '-DevelopmentSummaryPath requires -DevelopmentPurpose.' }
+    & $python.Source $validator --root $repositoryRoot
+    if ($LASTEXITCODE -ne 0) {
+        throw "Repository validation failed with exit code $LASTEXITCODE."
+    }
+} else {
+    $developmentArguments = @(
+        (Join-Path $repositoryRoot 'tools\validate_development_candidate.py'),
+        '--root', $repositoryRoot, '--purpose', $DevelopmentPurpose)
+    if ($DevelopmentSummaryPath) { $developmentArguments += @('--summary', $DevelopmentSummaryPath) }
+    & $python.Source @developmentArguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "Development-candidate source validation failed with exit code $LASTEXITCODE."
+    }
 }
 
 $activeVersion = (Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'Info.json') | ConvertFrom-Json).Version
@@ -57,17 +77,21 @@ if ($activeVersion -eq '0.0.151') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint22151.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 22 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156')) {
+if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint23152.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 23 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156')) {
+if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint24154.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 24 corruption fixtures failed.' }
 }
 if ($activeVersion -eq '0.0.156') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_firearm_continuation_release156.py')
     if ($LASTEXITCODE -ne 0) { throw 'Firearm continuation patch corruption fixtures failed.' }
+}
+if ($activeVersion -eq '0.0.157') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_alternate_summoning_release157.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Alternate summoning release corruption fixtures failed.' }
 }
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
@@ -99,6 +123,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # than in a script nobody executes.
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
 & (Join-Path $PSScriptRoot 'Test-ExplicitCandidateReuse.ps1')
+& (Join-Path $PSScriptRoot 'Test-DevelopmentCandidate.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint22Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24ReportingLineage.ps1')
@@ -119,4 +144,8 @@ foreach ($scriptName in @('Invoke-KingmakerRuntimeTest.ps1',
     }
 }
 
-Write-Host 'Version-aware repository validation passed.'
+if ([string]::IsNullOrEmpty($DevelopmentPurpose)) {
+    Write-Host 'Version-aware repository validation passed.'
+} else {
+    Write-Host "Development-candidate repository validation passed for '$DevelopmentPurpose'. This is not a release qualification."
+}

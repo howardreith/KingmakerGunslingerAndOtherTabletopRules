@@ -156,6 +156,11 @@ function Assert-KmgClosureProofFiles {
             (Get-FileHash -LiteralPath $proof.path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $proof.sha256) {
             throw 'Closure evidence is missing or changed after qualification.'
         }
+        # Deployment records, runtime evidence and profile receipts produced
+        # under a development candidate say so; none of them qualifies a release.
+        if ([IO.File]::ReadAllText($proof.path) -match '"candidateKind"\s*:\s*"development"') {
+            throw 'Development-candidate evidence cannot qualify a release.'
+        }
     }
 }
 

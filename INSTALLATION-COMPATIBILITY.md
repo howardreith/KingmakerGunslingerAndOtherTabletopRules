@@ -1,16 +1,22 @@
 # Installation, updates, removal, and compatibility
 
-Patch version: `0.0.156-firearm-rtwp-kill-continuation` (UMM
-version `0.0.156`), archive
-`KingmakerGunslinger-0.0.156-firearm-rtwp-kill-continuation.zip`.
-It is built on released v0.0.155 and changes only how a firearm's explicit
-attack order ends after its target dies in real-time combat. Install only the
-final standalone UMM ZIP, not source archives or private reference bundles.
-See the [patch scope and limitations](docs/RELEASE-NOTES-0.0.156.md).
+Release version: `0.0.157-alternate-summoning-sources` (UMM version
+`0.0.157`), archive `KingmakerGunslinger-0.0.157-alternate-summoning-sources.zip`.
+It is built on released v0.0.156 and gives class summon abilities the
+Expanded Summoning creature menus. Six of its seven caller families need
+Call of the Wild 1.14.4c; without it only Monster Tactician changes, and a
+Call of the Wild version whose summon abilities no longer match leaves that
+family unchanged. Install only the final standalone UMM ZIP, not source
+archives or private reference bundles. See the
+[release scope and limitations](docs/RELEASE-NOTES-0.0.157.md).
 
 ### Latest public release
 
-Before this patch, UMM `0.0.155`, archive
+Before this release, UMM `0.0.156`, archive
+`KingmakerGunslinger-0.0.156-firearm-rtwp-kill-continuation.zip`, is the stable
+public release; it keeps firearm Gunslingers attacking in real time after an
+ordered target dies (see [the v0.0.156 release notes](docs/RELEASE-NOTES-0.0.156.md)).
+UMM `0.0.155`, archive
 `KingmakerGunslinger-0.0.155-expanded-summoning-sprint24-theropods.zip`, is the
 stable public release; it added the Deinonychus and Tyrannosaurus (see
 [the v0.0.155 release notes](docs/RELEASE-NOTES-0.0.155.md)). UMM `0.0.154`,

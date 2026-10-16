@@ -378,6 +378,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                 RuntimeTestScenarioCatalog.IsMagicCirclePersistence(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableAlternateSummoningNatural ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistenceGamepad ||

@@ -106,6 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-brown-fur-cast-execution";
         internal const string DisposableBrownFurArcanistSlot =
             "disposable-brown-fur-arcanist-slot";
+        internal const string DisposableAlternateSummoningNatural =
+            "disposable-alternate-summoning-natural";
         internal const string DisposableBrownFurNativeCast =
             "disposable-brown-fur-native-cast";
         internal const string WorkingSaveBrownFurPrepare =
@@ -202,6 +204,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-sprint21-review";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
+        /// <summary>
+        /// Save-free, read-only observation of the alternate summoning
+        /// sources after first-update reconciliation: every caller family's
+        /// status, each adapter child against its caller template and its
+        /// canonical child, per-tier roster parity, the canonical inventory,
+        /// and a census of every other spawn graph and canonical-parent
+        /// reference. It casts nothing and cannot qualify character menus.
+        /// </summary>
+        internal const string ObserveAlternateSummoningSources =
+            "observe-alternate-summoning-sources";
+        /// <summary>The same read-only observation with Master Summoner
+        /// drilled as unadaptable: its identities must stay resolvable as
+        /// unavailable placeholders and its host menus unchanged.</summary>
+        internal const string ObserveAlternateSummoningBlockedFamily =
+            "observe-alternate-summoning-blocked-family";
+        /// <summary>Save-free fixture that drives the production resolver,
+        /// contracts and builder against transient clones of real templates;
+        /// it registers nothing and is not read-only.</summary>
+        internal const string DisposableAlternateSummoningContracts =
+            "disposable-alternate-summoning-contracts";
+        /// <summary>Save-free native-area player paths: disposable Master
+        /// Summoner and Occultist casters levelled natively, casting through
+        /// their granted host roots' variant data.</summary>
+        internal const string DisposableAlternateSummoningPlayerPaths =
+            "disposable-alternate-summoning-player-paths";
         internal const string ObserveExpandedSummoningVariantMenu =
             "observe-expanded-summoning-variant-menu";
         internal const string DisposableExpandedSummoning =
@@ -217,6 +244,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool IsSummoningNativeProfile(string scenario)
         {
             return scenario == DisposableExpandedSummoningNativeProfile ||
+                scenario == DisposableAlternateSummoningPlayerPaths ||
                 scenario == DisposableExpandedSummoningSprint22NativeReview ||
                 scenario == DisposableExpandedSummoningSprint23NativeReview ||
                 scenario == DisposableExpandedSummoningSprint24NativeReview;
@@ -801,6 +829,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableBrownFurCastExecution,
                 DisposableBrownFurArcanistSlot,
                 DisposableBrownFurNativeCast,
+                DisposableAlternateSummoningNatural,
                 WorkingSaveBrownFurPrepare,
                 WorkingSaveBrownFurVerifyCleanup,
                 WorkingSaveBrownFurOffVerifyCleanup,
@@ -826,6 +855,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningSprint20Review,
                 DisposableExpandedSummoningSprint21Review,
                 ObserveExpandedSummoningInventory,
+                ObserveAlternateSummoningSources,
+                ObserveAlternateSummoningBlockedFamily,
+                DisposableAlternateSummoningContracts,
+                DisposableAlternateSummoningPlayerPaths,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningNativeProfile,

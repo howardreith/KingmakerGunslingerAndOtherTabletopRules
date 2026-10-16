@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.0.157-alternate-summoning-sources
+
+- Gives class summon abilities the Expanded Summoning creature menus:
+  Monster Tactician, and with Call of the Wild 1.14.4c the Summoner (and
+  Twinned Summoner), Master Summoner, Occultist Conjurer's Focus, Naturalist,
+  Feral Hunter and Preservationist Bottled Ally. Each choice keeps its
+  caller's resource, cost, scaling, duration, pools and eidolon rules.
+- Adds 3,746 stable identities in their own namespace; released identities
+  and the 1,122 spell summon choices are unchanged. A family whose host no
+  longer matches stays unchanged with safe placeholders; with the module off
+  nothing new is offered.
+- Hotbar reuse after reload, a turn-based round, scrolling menus and grapple
+  across a reload were not checked before release; see
+  [the v0.0.157 release notes](docs/RELEASE-NOTES-0.0.157.md).
+
 ## 0.0.156-firearm-rtwp-kill-continuation
 
 - Ends a finished explicit firearm order normally once its target is dead

@@ -1089,6 +1089,45 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    # Save-free read-only alternate summoning source observation after the
+    # first-update reconciliation. No save, actor, input or mutation.
+    'observe-alternate-summoning-sources' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-alternate-summoning-blocked-family' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    # Save-free contract fixture: transient clones of real templates through
+    # the production resolver and builder. Registers nothing; not read-only.
+    'disposable-alternate-summoning-contracts' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    # Save-free native-area player paths (fresh empty world, disposable
+    # casters, exact cleanup, automatic exit). No save is read or written.
+    'disposable-alternate-summoning-player-paths' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    # Guarded read-only working save: a disposable Master Summoner party
+    # member, real action-bar popup selection, natural RTWP casts and a
+    # native dismissal. Nothing is saved; automatic exit.
+    'disposable-alternate-summoning-natural' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'observe-expanded-summoning-inventory' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -2146,7 +2185,8 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -cin @('disposable-magic-circle-profile', 'disposable-magic-circle-terrain') -and -not $ExitAfterCompletion) {
         throw 'The native Magic Circle profile fixture requires automatic exit.'
     }
-    if ($Scenario -ceq 'disposable-expanded-summoning-native-profile' -and
+    if ($Scenario -cin @('disposable-expanded-summoning-native-profile',
+            'disposable-alternate-summoning-player-paths') -and
         (-not $ExitAfterCompletion -or $Parameters.Count -ne 0)) {
         throw 'Native summoning profile requires automatic exit and no save/import parameters.'
     }

@@ -300,7 +300,8 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["symbol"], value => (string)value["guid"],
                 StringComparer.Ordinal);
             Assertions.Equal(3101 +
-                    ExpandedSummoningSprint24Tests.AppendedLedgerIdentities,
+                    ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                    AlternateSummoningTests.AppendedLedgerIdentities,
                 entries.Length,
                 "Sprint 24 appends without moving the reserved Sprint 23 gore type.");
             JToken retired = entries.Single(value => (string)value["symbol"] ==

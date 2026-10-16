@@ -274,7 +274,8 @@ namespace KingmakerGunslinger.DomainTests
                 (value.Contains(".ShamblingMound") || value.Contains(".GiantFlytrap") ||
                 value.Contains(".PurpleWorm") || value.Contains(".Grapple.") ||
                 value == "KMG.Summoning.Special.Owlbear.CombatTraits") &&
-                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value)).ToArray();
+                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value) &&
+                !AlternateSummoningTests.IsAdapterIdentity(value)).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 4 must append exactly its own identities to the ledger.");
             // Append-only: the Sprint 4 block sits directly before the Sprint 5
