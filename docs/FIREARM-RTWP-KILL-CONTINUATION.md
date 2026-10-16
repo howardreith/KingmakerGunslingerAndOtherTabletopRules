@@ -1,24 +1,31 @@
 # Firearm RTWP continuation after a kill — development checkpoint
 
 Branch `codex/firearm-rtwp-kill-retarget`. It started from `origin/master`
-`fd6c56ebd8` (v0.0.154 record); current master `31672515529c` (v0.0.155) is
-merged in at `1d98af476b`. The tested code commit is `1890ba06cc`; any later
-commit on the branch changes records only. This is an ordinary focused
-checkpoint under [VALIDATION-POLICY.md](VALIDATION-POLICY.md), not release,
-Sprint or compatibility qualification. Nothing is merged, tagged, published or
-permanently installed.
+`fd6c56ebd8` (v0.0.154 record); master `31672515529c` (v0.0.155) is merged in
+at `1d98af476b`. The production correction is `1890ba06cc`; the second review
+changed only the CR-04 fixture and observer (`f463ef6d56`, `acc620cb4c`). The
+tested code commit is `acc620cb4c`; any later commit changes records only.
+`origin/master` has since advanced to `97c881ea84` (Sprint 24 release records
+and publisher-script repair, still v0.0.155); it is not merged here. This is an
+ordinary focused checkpoint under [VALIDATION-POLICY.md](VALIDATION-POLICY.md),
+not release, Sprint or compatibility qualification. Nothing is merged, tagged,
+published or permanently installed.
 
 ## Status
 
-- **Original report (later attacks of the same full attack stop after the first
-  kill): not reproduced** in the save-free fixture. Loaded, empty and paused
-  four-attack full attacks continue A→B→C→D natively. The fixture supplies
-  animation act/finish timing, so this does not exclude a live
+These are separate results:
+
+- **Next-cycle stall: corrected**, with the evidence stated under "Evidence"
+  and "Validation and limits". After an explicit full attack's last target
+  died, the pistol never fired again without a new click. It now continues
+  natively, including after Broken → Quick Clear → Normal (the first
+  review's blocking case) and when the target dies in the reload gap.
+- **Original report (later attacks of the same full attack stop after the
+  first kill): not reproduced** in the save-free fixture. Loaded, empty and
+  paused four-attack full attacks continue A→B→C→D natively. The fixture
+  supplies animation act/finish timing, so this does not exclude a live
   animation/timing cause or a mod-stack cause.
-- **Related next-cycle stall: reproduced and corrected.** After an explicit full
-  attack's last target died, the pistol never fired again without a new click.
-- **Review blocking case: corrected.** The same stall after Broken → Quick
-  Clear → Normal, which the first correction (`9336cac6`) still had.
+- **Owner RTWP check with live animation playback: not performed.**
 
 ## Report and installed identity
 
@@ -52,6 +59,11 @@ What was established about it:
   the same frame, applies the reload on its first tick. Scheduled callbacks run
   before the next frame's AI. AI never preempts a started player command.
 - With animations finished, a completed full attack ends `Success`.
+- Native AI decides at most once per 0.3–0.4 s of Unity time
+  (`AiBrainController`: `NextCommandTime = Time.time + 0.3 + Random(0, 0.1)`),
+  not once per frame.
+- Melee `RuleAttackWithWeapon` deals its damage inside the attack rule;
+  ranged attacks launch projectiles whose damage lands later.
 - `UnitEntityData.CanAttack(unit)` is a faction test only:
   `unit.Descriptor.Faction.Neutral || Group.IsEnemy(unit)`. It does not consider
   range, line of sight or temporary untargetability.
@@ -64,8 +76,11 @@ Gun Training, paper cartridges and auto-use Reload. Native `UpdateTarget`
 chooses every replacement after real projectile damage and native death. The
 disclosed roll control is natural 10 on firearm attack rolls (hit, no misfire);
 Broken lanes use a real natural-1 misfire first. A fixture-only observer records
-order cancellations, command endings, `MayExecute` and submission rejections
-with call stacks; it changes nothing.
+order cancellations, command endings, target transitions, `MayExecute` and
+submission rejections and the moment a scheduled reload resume executes, with
+call stacks; it changes nothing. Automatic-continuation windows wait for the
+first automatic command to finish, or, when none fires, for at least a frame
+minimum and two seconds of Unity time (several native AI decisions).
 
 | Run | Source / DLL | Result |
 | --- | --- | --- |
@@ -73,7 +88,9 @@ with call stacks; it changes nothing.
 | 2 `20261015T2127116112635Z` | `b5f48fee` / `c76925a3…` | Native frame order + finish cues. Primary lanes correct; **final-kill next cycle stalls** (baseline reproduction). |
 | 3 `20261015T2134449241861Z` | `9336cac6` / `f120026f…` | First correction: 55 CR-04 + 124 existing PASS, then aborted by an external read of the evidence file (sharing violation). |
 | 4 `20261015T2137515866390Z` | `9336cac6`, same installed artifact | PASS 468/468. Superseded by review: it had no repaired-Normal lane. |
-| 5 `20261015T2303585727403Z` | `1890ba06cc` (integrated v0.0.155) / `67c492d2…` | **PASS 487/487**: 74 CR-04 (55 earlier + 19 new) + all 413 existing firearm native checks. Scenario 264 s; build + run 356 s. |
+| 5 `20261015T2303585727403Z` | `1890ba06cc` (integrated v0.0.155) / `67c492d2…` | PASS 487/487: 74 CR-04 + all 413 existing firearm native checks. Its reload-gap lane was injected-state and its longbow retarget assertion was unsound (see below). Superseded by run 7. |
+| 6 `20261016T0242514282821Z` | `f463ef6d56` / `f5e65d8f…` | **FAIL**, aborted at the first failed check (37 PASS, 1 FAIL of 38 asserted): `cr04-final-kill-next-native-cycle-continues`. Observer defect: the next-cycle window was 60 frames, and at this run's frame rate it closed before native AI's next 0.3–0.4 s decision (the repaired lane needed 51 frames; run 5 had needed 12–14). Production code was unchanged from run 5. |
+| 7 `20261016T0249284291547Z` | `acc620cb4c` / `ca23fe61…` | **PASS 491/491**: 78 CR-04 + all 413 existing firearm native checks. Scenario 218 s; build + run 304 s. |
 
 Run 2 baseline facts (production firing code unchanged):
 
@@ -81,7 +98,8 @@ Run 2 baseline facts (production firing code unchanged):
   A→B→C→D, `Success`, order current on its surviving command, exact cost and
   three inline Free reloads. **The remaining attacks of the full attack are
   preserved; the original report is not reproduced in this fixture.**
-- Ordinary longbow: the same native in-command continuation.
+- Ordinary longbow: one native command made four attacks. The retarget
+  assertion it then carried is withdrawn (see run 5 corrections).
 - No replacement in range: one shot, native `Interrupt`, no reload or loop.
 - **Final kill:** the explicit full attack kills A–D and ends `Success`; its
   order stays current with dead target D. Native AI builds the auto-use Reload
@@ -95,7 +113,7 @@ Run 2 baseline facts (production firing code unchanged):
 continuation because a completed explicit order whose target is dead is still
 current.
 
-Run 5, new lanes (all PASS):
+Lanes added for the first review (run 5 PASS; run 7 PASS on current bytes):
 
 - `repaired-final-kill`: real natural-1 misfire → Broken; production Quick Clear
   (native action bar, standard action, exact cost, grit unchanged) → item
@@ -106,16 +124,78 @@ Run 5, new lanes (all PASS):
   (no current order was cancelled), suppression stayed off, the epoch stayed 1,
   and every next-cycle command was charged once, exactly. Ammunition was
   conserved: cartridges spent = shots + chambered round.
-- `repaired-reload-gap-kill`: same repair; empty pistol; click A; the auto-use
-  Free reload ends with its resume scheduled (one callback, exact cost); A is
-  then killed by native damage and the native life controller, as an ally's hit
-  lands in native frame order. The resume completes the order instead of
-  cancelling it; native AI then attacks B and C with no click. No suppression,
-  epoch unchanged, exact costs, ammunition conserved.
 - `final-kill` and `ai-only-final-kill` gained the same next-cycle exact-economy
   check.
 - `broken-final-kill` is unchanged: AI stays blocked with the dead-target order
-  current; an explicit click on E is accepted and fires while Broken.
+  current; an explicit click on E is accepted and fires while Broken. In run 7
+  its no-continuation window spans at least two seconds of Unity time.
+
+### Run 5 corrections (second review)
+
+- **Run 5 `repaired-reload-gap-kill` was an injected-state test, not an ally
+  attack.** After the auto-use reload ended with its resume pending, the
+  fixture assigned A's damage directly (`Descriptor.Damage = 20`) and then ran
+  native projectile-hit and life processing. It shows the resume completing on
+  a target already dead by assignment. Its final assertion required only the
+  first automatic shot, so one shot followed by another stall would also have
+  passed. The run's observations (AI shot B, then C) remain as recorded; they
+  are not evidence of an ally hit or of a full continuation. The lane is
+  replaced, not rerun.
+- **The ordinary longbow control's retarget assertion was unsound.** It read
+  each target's consciousness in the `OnAction` postfix, before the arrow's
+  projectile impact and life processing, so it did not establish retargeting
+  after a kill. The control is now a four-attack ordinary-weapon smoke test only
+  (`four-native-attacks-smoke`). In run 7 its unforced rolls left targets
+  down, dead, down and up with a fourth-shot miss, which the smoke test does
+  not judge.
+
+### Reload gap killed by a genuine ally attack (run 7)
+
+`cr04-repaired-reload-gap-ally-kill-` (all PASS):
+
+1. Real natural-1 misfire → Broken → production Quick Clear → `Normal`,
+   epoch 1.
+2. A selected party ally (BAB 1: one native attack; Strength 30; ordinary
+   sword `57c8994d…`), 1.00 m from A, clicks A through native
+   `ClickUnitHandler`. Its native attack starts and waits for its act cue
+   (animation handle present, one planned attack, A alive, no firearm binding).
+3. The Gunslinger's empty pistol: click A; the auto-use Free reload ends
+   `Success`, one round chambered, exact Free cost, and its resume is scheduled
+   (one callback, order current, no shot).
+4. **In that same frame**, after the pistol's unit action and before
+   projectiles, hits and life, the ally's attack acts: native melee
+   `RuleAttackWithWeapon`, natural 10, hit, 15 damage, then the native life
+   controller kills A. The resume is still pending and the order still current.
+5. **Next frame**, the scheduled resume executes with A already dead and
+   completes the order. Observed order:
+   `reload-ended:continuation-pending > ally-hit:a > a-dead > continuation-executed:watched-dead`.
+   The order is not current and not cancelled, no cancellation occurred, the
+   resume queued no attack, suppression stayed off, `RequiresOrder` is clear,
+   the epoch stayed 1, and the item is `Normal`.
+6. **Native AI continuation, no player input:** one AI command,
+   `IsFullAttack`, four planned attacks, attack index 4, `Success`. Shots 0–3
+   all hit, at B, C, D, D. Native target transitions, each after the previous
+   target's death: B(dead)→C, C(dead)→D. B and C dead, durable D alive, no
+   current order.
+7. **Exact economy:** four cartridges spent for four shots, none chambered at
+   the end (one auto-use reload plus three inline Free reloads; no ended full
+   attack, no reload fault). The actor ran exactly two commands, the reload
+   and the AI attack, both `Success` and each charged once, exactly.
+8. Fixture restored exactly.
+
+Disclosed fixture controls in this lane:
+
+- the host plays no animation clips, so the fixture supplies every act and
+  finish cue;
+- it supplies the ally's act cue in the reload frame, after the pistol's
+  unit action (one valid native unit order; the opposite order is not
+  exercised);
+- the ally's attack d20 is fixed at natural 10 through the native
+  `RuleRollDice.Override` seam, as firearm rolls are; the native rule still
+  compares it with A's AC and rolls damage.
+
+Nothing assigns death, targets, orders, attack progress or cooldowns. In native
+play this gap is a single frame wide.
 
 ## Correction
 
@@ -179,7 +259,9 @@ abandoned.
 ## Validation and limits
 
 - **Focused gate** `-Filter 'firearm-orders;full-attack-reload;paper-full-attack;broken-sequence'`
-  with production compilation: 33/33 PASS (2,615 registered), about 10 s.
+  with production compilation: 33/33 PASS (2,615 registered), about 8–10 s,
+  on `1890ba06cc` and again after each fixture change (`f463ef6d56`,
+  `acc620cb4c`; no compiler warnings).
   Ledger cases, built on the production `FirearmStateMachine` misfire and
   Quick Clear item transitions:
   - **A, never broken:** a Normal pistol's finished dead-target order completes
@@ -196,34 +278,40 @@ abandoned.
     complete the newer order or clear its authority.
   - **E, pre-degradation callbacks:** work captured before the misfire stays
     invalid after repair and completion.
-- **Exact build and strict packaging** on `1890ba06cc` through the guarded
+- **Exact build and strict packaging** on `acc620cb4c` through the guarded
   launcher's `Build-Local.ps1`: version-aware repository validation (dispatched
   to the v0.0.155 validator), exact-reference compile candidate, build-output,
   SoundBank and strict standalone UMM package validation. Domain tests were
   skipped in that wrapper (`SkipDomainTests`); the complete domain suite is
   deferred by policy.
-- **Tested artifact:**
-  - commit `1890ba06ccac0c765350e2de0d6c56bbfda17407`;
-  - source state `6d5c26ef519543efd86f1c0dce4abad0449da860836dae5ab46531cc9bd45c55`;
-  - package `2d596ce6270c011e15523cd6923bb12246b56e280d97fcc26a9149666403852a`;
-  - DLL `67c492d296b7aa67dd179cbdbbd1c43989b55111f3395f82db06588b4bcbe558`,
-    MVID `dede384d-3922-4d19-830c-baa815090e80`;
-  - the loaded module hash in the run equals the DLL.
+- **Tested artifact (run 7):**
+  - commit `acc620cb4c8a2694e1195d3109486ae257f537d2`;
+  - source state `f51ef9483109a58c398145460964ea711290420f71c0b423a0eaa204e1ae8181`;
+  - package `9ddf7a5ff9e8634e80c146a8fbf3a1eb7b6ff9ca780d3b10b0bf5ffd544fa3e6`;
+  - DLL `ca23fe61cb049654b879eae14c56c6cba6b50752d0fb92424122480d60fa726a`,
+    MVID `829b84ad-f535-44d8-9df2-e88a9fc36238`;
+  - the loaded module hash in the run equals the DLL;
+  - deployment manifest `runtime-evidence\deployments\20261016T0249283831532Z`.
 
-  Earlier candidates (`9336cac6`/`f120026f…`) are superseded and are not
-  evidence for these bytes.
+  Production code is identical to `1890ba06cc`, but the fixture is compiled
+  into the same DLL, so run 7 is the evidence for these bytes. Earlier
+  artifacts are not: run 5 (`1890ba06cc`, DLL `67c492d2…`, package
+  `2d596ce6…`, MVID `dede384d…`), run 6 (`f463ef6d56`, DLL `f5e65d8f…`,
+  package `7bb05b01…`, MVID `59a006c8…`, FAIL) and `9336cac6`/`f120026f…`.
 - **Validation ownership.** The Sprint 23 armored-dinosaur validator is back to
   its released text. At v0.0.155 the repository dispatches to the Sprint 24
   validator, which now admits this checkpoint's five exact files as a separately
   named `FIREARM_CONTINUATION_PRODUCTION` set. Its theropod
   `ALLOWED_PRODUCTION` is untouched. Validator tests: Sprint 24 11/11,
   Sprint 23 8/8.
-- **Restoration and saves.** The live mod was restored from the run's pre-test
-  backup `20261015T2303515102026Z` with `Restore-Live-Mod.ps1`. It is
-  byte-identical (254/254 files) to that backup and to the first pre-session
-  backup `20261015T2107538162175Z` (DLL `00ef6757…`). No Kingmaker process or
-  lease remains. The run reports `saveBacked: false` and
-  `saveInteractionOccurred: false`; no save was selected, loaded or mutated.
+- **Restoration and saves.** After each guarded run the live mod was restored
+  with `Restore-Live-Mod.ps1` from that run's pre-test backup (run 6:
+  `20261016T0242441173288Z`; run 7: `20261016T0249216276661Z`). After run 7 it
+  is byte-identical (254/254 files) to that backup and to the first pre-session
+  backup `20261015T2107538162175Z` (`Info.json` 0.0.140, DLL `00ef6757…`). No
+  Kingmaker process or lease remains. Runs 6 and 7 report `saveBacked: false`
+  and `saveInteractionOccurred: false`; no save was selected, loaded or
+  mutated.
 - **Not run:**
   - complete domain suite;
   - compatibility profiles;
@@ -232,11 +320,15 @@ abandoned.
   - the owner's RTWP check with live animation playback (below).
 
   The save-free host plays no animation clips; act and finish cues are
-  fixture-supplied. The reload-gap lane was not run on bytes without the
-  resume-path change; only the corrected bytes were run.
+  fixture-supplied, including the ally's act cue in the reload frame. The
+  reload-gap lanes were not run on bytes without the resume-path change; only
+  the corrected bytes were run. Existing non-CR-04 firearm observers were not
+  reviewed for the same frame-rate dependence; they passed in run 7.
 - **Budget.** The original pass exceeded the 30-minute ordinary ceiling
-  (fixture corrections and the run 3 abort). This revision used one gate and
-  one guarded run (356 s including build).
+  (fixture corrections and the run 3 abort). The first review revision used one
+  gate and one guarded run (356 s including build). This second revision used
+  two focused gates and two guarded runs: run 6 (140 s, observer FAIL) and
+  run 7 (304 s, PASS).
 
 ## Open design questions (owner review)
 

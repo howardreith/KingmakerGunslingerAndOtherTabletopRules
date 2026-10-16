@@ -1,28 +1,41 @@
-# Firearm RTWP continuation after a kill — revised after review / AWAITING REVIEW
+# Firearm RTWP continuation after a kill — second review revision / AWAITING REVIEW
 
 Branch `codex/firearm-rtwp-kill-retarget`, with master `31672515` (v0.0.155)
-merged in at `1d98af476b`. Tested code commit `1890ba06cc`; later commits change
-records only. Record:
+merged in at `1d98af476b` (`origin/master` has since moved to `97c881ea84`,
+records and publisher scripts only; not merged). Production correction
+`1890ba06cc`; the second review changed only the CR-04 fixture/observer.
+Tested code commit `acc620cb4c`; later commits change records only. Record:
 [docs/FIREARM-RTWP-KILL-CONTINUATION.md](docs/FIREARM-RTWP-KILL-CONTINUATION.md).
 Not merged, released, tagged or permanently installed; no PR opened.
 
+Separate statuses:
+
+- Next-cycle stall after an explicit order's target dies: corrected, including
+  after Broken → Quick Clear → Normal and when the target dies in the reload
+  gap (guarded native evidence, save-free fixture).
 - Original report (later attacks of one full attack stop after a kill): not
   reproduced in the save-free fixture. The fixture supplies animation timing,
   so a live animation/timing or mod-stack cause is not excluded.
-- Next-cycle stall after an explicit order's target dies: reproduced and
-  corrected. The review's blocking case is corrected too: the same stall after
-  Broken → Quick Clear → Normal, caused by treating a nonzero degradation epoch
-  as "currently Broken".
-  - The epoch stays as history; Broken-sequence authority is an explicit ledger
-    state.
-  - A new non-suppressing `Complete` ends a finished order only when its target
-    is dead and the exact item is currently `Normal`.
-  - The target rule is narrowed to dead targets only.
-- Focused gate 33/33.
-- Guarded native run `20261015T2303585727403Z`: 487/487 PASS, including the
-  repaired final-kill and reload-gap lanes. DLL `67c492d2…`, package
-  `2d596ce6…`, MVID `dede384d…`.
-- Live mod restored byte-for-byte to the 0.0.140 install; no save touched.
+- Owner RTWP check with live animation playback: not performed.
+
+Second review findings addressed:
+
+- Reload-gap kill is now a genuine selected-ally sword attack (native click,
+  melee damage, life controller) in the frame the reload ends, with the order
+  reload → pending resume → hit → death → resume observed. Run 5's lane is
+  relabelled as injected-state (direct damage assignment).
+- The continuation after the gap asserts the whole AI full attack B, C, D, D,
+  native transitions after each death, and exact ammunition/action accounting.
+- The longbow control is a four-attack smoke test; its pre-impact retarget
+  assertion is withdrawn.
+- Guarded run 6 (`f463ef6d56`) FAILED on a frame-bound next-cycle window
+  (native AI decides per 0.3–0.4 s of Unity time); the observer now waits by
+  Unity time.
+
+Evidence: focused gate 33/33; guarded run `20261016T0249284291547Z` 491/491
+PASS (78 CR-04 + 413 existing). DLL `ca23fe61…`, package `9ddf7a5f…`, MVID
+`829b84ad…`. Live mod restored byte-for-byte to the 0.0.140 install; no save
+touched.
 
 Next: owner review and the deferred real RTWP check with animation playback
 (record's "Owner check", three behaviours recorded separately). Open design
