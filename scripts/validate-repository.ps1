@@ -68,10 +68,10 @@ if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157'))
 if ($activeVersion -eq '0.0.156') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_firearm_continuation_release156.py')
     if ($LASTEXITCODE -ne 0) { throw 'Firearm continuation patch corruption fixtures failed.' }
+}
 if ($activeVersion -eq '0.0.157') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint25157.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 25 corruption fixtures failed.' }
-}
 }
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
@@ -110,6 +110,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # until the Sprint 25 audit. It reports SKIP when the wrapper is absent, so a
 # clean clone elsewhere still validates.
 & (Join-Path $PSScriptRoot 'Test-PushPolicyWrapper.ps1')
+# The version-specific child dispatch above once nested the 0.0.157 block
+# inside the 0.0.156 block, so a passing run did not establish that the
+# Sprint 25 fixtures had run at all. This executes the real dispatch
+# statements against a recorded child shim; it builds and launches nothing.
+& (Join-Path $PSScriptRoot 'Test-RepositoryValidatorDispatch.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint22InstalledStack.ps1')
 
 # Parse the guarded entry points with the installed PowerShell parser. This

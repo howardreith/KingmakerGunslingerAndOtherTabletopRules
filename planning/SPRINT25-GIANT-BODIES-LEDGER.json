@@ -200,7 +200,13 @@
         "exactArgvAssertion": "the accepted push is compared as a complete ordinal argument vector including element count and case, not a case-insensitive substring of a joined string",
         "argvBoundariesPreserved": "the fake Git records each invocation as a JSON array",
         "noOtherMutatingCommand": "every recorded verb must be one of the six read-only verbs or the single accounted push; forbidden arguments are matched exactly",
-        "fakeGitResolutionVerified": "the harness refuses to run unless git resolves to the fake, so an absolute real-Git fallback cannot turn the audit into a live-fire exercise"
+        "fakeGitResolutionVerified": "the harness refuses to run unless git resolves to the fake, so an absolute real-Git fallback cannot turn the audit into a live-fire exercise",
+        "selfTestSwitch": {
+          "option": "-SelfTestNegativeControl",
+          "behaviour": "runs only the harness-negative control, which the full run also always includes; the switch makes it separately addressable rather than optional",
+          "ran": true,
+          "result": "PASS - a push-before-refusal wrapper is rejected"
+        }
       },
       "observations": [
         {
@@ -254,7 +260,8 @@
         "allowListUnchanged": 63,
         "canonicalBranchesStillAccepted": true,
         "caseVariantsNowRefusedBeforeAnyPush": true
-      }
+      },
+      "auditClosed": "treated as closed; reopened only for a concrete new defect"
     }
   },
   "sourceContract": {
@@ -883,5 +890,33 @@
       ]
     },
     "remainingDecision": "Only if the bounded native observation shows a concrete feat with no reachable consumer does an omission become a candidate limitation, and that would be an owner decision with the evidence attached rather than an automatic acceptance."
+  },
+  "validationDispatchDefect": {
+    "status": "REPAIRED",
+    "foundBy": "owner review of the reviewed checkpoint d8913187",
+    "introducedBy": "my own earlier edit: the insertion anchored on the first closing brace after the 0.0.156 marker, which was the inner LASTEXITCODE guard rather than the end of the block, so the 0.0.157 block was written inside it",
+    "defect": "scripts/validate-repository.ps1 nested the 0.0.157 dispatch inside the 0.0.156 dispatch. Since the active version is 0.0.157 the outer condition was false, so the inner block was unreachable and tools/test_expanded_summoning_sprint25157.py never ran.",
+    "whyItWasNotCaught": "the wrapper still exited 0, so a passing run was mistaken for coverage. Exit status alone cannot distinguish a child that passed from a child that was never selected.",
+    "coverageGapInEarlierRecords": "Earlier Sprint 25 records state that repository validation passed. Those runs did pass and are not rewritten, but they did NOT establish execution of the Sprint 25 corruption fixtures. That is annotated here rather than edited out of the history.",
+    "notACreatureDefect": "this is a wiring defect. The standalone Sprint 25 fixtures were never failing: run directly they report 15 tests OK, both before and after the repair.",
+    "repair": "the two version-specific blocks are now siblings; both child exit-code checks kept",
+    "proofSprint25ChildNowRuns": "a full validate-repository.ps1 run at 0.0.157 now emits the fixtures \"Ran 15 tests ... OK\" line, which was absent before",
+    "regression": {
+      "script": "scripts/Test-RepositoryValidatorDispatch.ps1",
+      "wiredInto": "scripts/validate-repository.ps1",
+      "method": "parses the real validator, takes the actual top-level if statements whose condition reads $activeVersion, and executes those exact source extents with a recorded child shim. Not a hand-copied switch and not a filename search; nesting is reproduced faithfully because a block inside a non-matching parent simply never runs.",
+      "checks": 12,
+      "covers": [
+        "0.0.156 selects its firearm child exactly once and not the Sprint 25 child",
+        "0.0.157 selects its Sprint 25 child exactly once and not the firearm child",
+        "both versions keep the shared Sprint 23 and Sprint 24 children",
+        "0.0.155 selects neither version-specific child",
+        "a failing selected child throws before anything is built or deployed",
+        "no version dispatch is nested inside another"
+      ],
+      "provenToCatchTheDefect": "run against the pre-fix validator extracted from d8913187 it fails 3 of 12 checks and reports 9 top-level dispatch statements instead of 10",
+      "buildsOrLaunchesNothing": true
+    },
+    "doesNotAffect": "the seven outstanding missing-icon domain failures, which remain failed for their own unmet requirement"
   }
 }
