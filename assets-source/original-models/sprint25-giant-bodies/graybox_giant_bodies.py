@@ -149,7 +149,7 @@ def build(kind, rest, neck_state):
 
     if kind == "brachiosaurus":
         body_radii = (body_len * 0.42, body_len * 0.46, body_len * 0.72)
-        neck_base, neck_tip = body_len * 0.20, body_len * 0.085
+        neck_base, neck_tip = body_len * 0.22, body_len * 0.055
     else:
         body_radii = (body_len * 0.46, body_len * 0.44, body_len * 0.66)
         neck_base, neck_tip = body_len * 0.17, body_len * 0.055
@@ -166,7 +166,22 @@ def build(kind, rest, neck_state):
     if neck_state == "curled":
         pts = curl(pts, pts[0], lateral, 16.0)
     bones = ["Head"] + FORWARD_CHAIN
-    tube(bm, weights, uvs, pts, taper(len(pts), neck_base, neck_tip),
+
+    # The independent review measured 18 to 52 pixels of background between the
+    # torso and this chain: it was a free-floating island, because the chain
+    # began exactly at the Head joint, which sits ON the torso surface rather
+    # than inside it. The root is now sunk back along the chain's own direction
+    # by more than a base radius, and that anchor is weighted to UpperTorso, so
+    # the first ring starts inside the hull and the join closes.
+    # Sink toward the torso CENTRE, not backward along the chain. Sinking
+    # along the chain put the anchor outside the hull on the far side and hung
+    # a wide slab down the body's flank; aiming at the centre is the same
+    # method the limb sockets use and it lands inside by construction.
+    anchor = pts[0] + (torso_mid - pts[0]).normalized() * (neck_base * 1.35)
+    pts = [anchor] + pts
+    bones = ["UpperTorso"] + bones
+    radii = [neck_base * 1.22] + taper(len(pts) - 1, neck_base, neck_tip)
+    tube(bm, weights, uvs, pts, radii,
          bones, region=slots["forward"], segments=10)
 
     # Where the skull sits is the one thing these two creatures do NOT share.
@@ -183,7 +198,10 @@ def build(kind, rest, neck_state):
     head_dir = (aim_to - aim_from).normalized()
     head_up = (up - head_dir * up.dot(head_dir)).normalized()
     head_lat = head_dir.cross(head_up).normalized()
-    ellipsoid(bm, weights, uvs, head_at + head_dir * head_size * 0.55,
+    # The review found the skull separated from the neck tip under curl and
+    # off-axis even uncurled: it was pushed OUTWARD past the final cap. It now
+    # sinks back into the last segment so the join stays closed at any curl.
+    ellipsoid(bm, weights, uvs, head_at - head_dir * head_size * 0.30,
               head_lat, head_up, head_dir,
               (head_size * 0.70, head_size * 0.78, head_size),
               "Head" if kind == "elephant" else FORWARD_CHAIN[-1],
@@ -192,13 +210,20 @@ def build(kind, rest, neck_state):
     # The elephant's ears and tusks, because tusk clearance against the trunk
     # is one of the things this prototype has to show.
     if kind == "elephant":
-        for ear in ("Ear_L", "Ear_R"):
+        # The review measured these projecting upward above the skull as two
+        # narrow spikes, which read as horns. The cause was offsetting along
+        # (ear - headBase), which on this rig points mostly UP. An ear is a
+        # flat fan hung BESIDE the skull, so it is offset along lateral only,
+        # dropped to skull height, and swept back.
+        for ear, sign in (("Ear_L", 1.0), ("Ear_R", -1.0)):
             if ear not in rest:
                 continue
-            side = (rest[ear] - pts[0])
-            ellipsoid(bm, weights, uvs, rest[ear] + side * 0.45,
-                      head_lat, head_up, head_dir,
-                      (body_len * 0.055, body_len * 0.21, body_len * 0.16),
+            centre = (pts[0]
+                      + lateral * (sign * body_len * 0.20)
+                      - up * (body_len * 0.02)
+                      - forward * (body_len * 0.10))
+            ellipsoid(bm, weights, uvs, centre, lateral, up, forward,
+                      (body_len * 0.035, body_len * 0.19, body_len * 0.21),
                       ear, region=slots["head"])
         for sign in (-1.0, 1.0):
             root = pts[0] + lateral * (sign * body_len * 0.105)                 - up * body_len * 0.055
@@ -209,9 +234,13 @@ def build(kind, rest, neck_state):
 
     # The real tail keeps the rear chain; the neck never borrows it.
     tail_pts = chain_points(rest, REAR_CHAIN, "LowerTorso")
+    tail_base = body_len * 0.15
+    tail_pts = [tail_pts[0] + (torso_mid - tail_pts[0]).normalized()
+                * (tail_base * 1.5)] + tail_pts
     tube(bm, weights, uvs, tail_pts,
-         taper(len(tail_pts), body_len * 0.15, body_len * 0.035),
-         ["LowerTorso"] + REAR_CHAIN, region=slots["tail"], segments=8)
+         [tail_base * 1.2] + taper(len(tail_pts) - 1, tail_base,
+                                   body_len * 0.035),
+         ["LowerTorso"] * 2 + REAR_CHAIN, region=slots["tail"], segments=8)
 
     # Four columnar limbs from the measured joints.
     for upper_b, lower_b, foot_b in (
@@ -222,11 +251,17 @@ def build(kind, rest, neck_state):
         if not all(b in rest for b in (upper_b, lower_b, foot_b)):
             continue
         top, knee, foot = rest[upper_b], rest[lower_b], rest[foot_b]
-        ground = foot - up * (body_len * 0.06)
         radius = body_len * (0.115 if kind == "brachiosaurus" else 0.125)
-        tube(bm, weights, uvs, [top, knee, foot, ground],
-             [radius, radius * 0.84, radius * 0.78, radius * 0.86],
-             [upper_b, lower_b, foot_b, foot_b], region=slots["limb"],
+        # The limb top is sunk toward the torso centre so the proximal cap is
+        # inside the hull rather than exposed in silhouette, and the foot is
+        # NOT extended below its measured joint. The donor already places the
+        # feet and the chain tip on the same ground, and the old extension
+        # broke exactly that: it made the elephant trunk float and the
+        # brachiosaurus tail tip dip under the foot plane.
+        socket = top + (torso_mid - top).normalized() * (radius * 1.5)
+        tube(bm, weights, uvs, [socket, top, knee, foot],
+             [radius * 1.25, radius, radius * 0.84, radius * 0.80],
+             [upper_b, upper_b, lower_b, foot_b], region=slots["limb"],
              segments=8)
 
     bm.to_mesh(mesh)
