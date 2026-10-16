@@ -11,6 +11,7 @@ using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
+using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
@@ -366,72 +367,237 @@ namespace KingmakerGunslinger.RuntimeTesting
             _firearmInputFixture = null;
         }
 
-        // On the repaired Normal item, the explicit order's target dies after
-        // its auto-use reload ended but before the scheduled resume runs, as
-        // an ally's hit lands in native frame order (native damage, native
-        // life controller). The resume completes the order instead of
-        // cancelling it, so native AI carries on without another click.
+        // Reload gap on the repaired Normal item, killed by a genuine ally
+        // attack. The explicit order's auto-use Free reload ends with its
+        // resume scheduled for the next frame. In that same frame, after the
+        // pistol's unit action (one native unit order), a selected ally's
+        // ordinary sword attack from a native click deals native melee damage
+        // and the native life controller kills A. The next frame's scheduled
+        // resume finds A dead and completes the order without suppression,
+        // and native AI makes its own next full attack without a click.
+        // Disclosed fixture controls: the host plays no clips, so the fixture
+        // supplies the ally's act cue in that frame (and every finish cue), and
+        // the ally's attack d20 is natural 10 as firearm rolls are. Nothing
+        // assigns death, targets, orders, attack progress or cooldowns.
         private IEnumerable<object> FirearmRepairedReloadGapLane(List<KillChainVerdict> verdicts)
         {
-            const string prefix = "cr04-repaired-reload-gap-kill-";
+            const string prefix = "cr04-repaired-reload-gap-ally-kill-";
             _firearmInputStage = prefix + "fixture";
             _firearmInputFixture = new FirearmInputFixture(false, _firearmInputRows, initiallyLoaded: true);
             var f = _firearmInputFixture;
             foreach (object step in FirearmReviewBreak(f, prefix)) yield return step;
             using (var costs = new FirearmReviewCosts(f.Actor, _firearmInputRows))
             using (var trace = new FirearmKillChainTrace(f.Actor, _firearmInputRows, prefix))
+            using (var roll = new KillChainAllyRoll())
             {
                 foreach (object step in KillChainQuickClear(f, prefix, costs, verdicts)) yield return step;
                 int epoch = BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon);
                 var targets = KillChainArmPistol(f, false, false);
+                var a = targets[0];
                 var cartridge = BlueprintBootstrap.BasicAmmunition.PaperCartridge;
                 for (int tick = 0; tick < 16; tick++) { f.Turns.PumpCommands(false); yield return null; }
+
+                // The CR-02 ally pattern: a selected party ally's native click
+                // on A with an ordinary sword; BAB 1 gives one native attack.
+                var ally = f.SpawnAdditional(true, "ReloadGapSwordAlly");
+                ally.Position = new Vector3(0f, 0f, 1f);
+                ally.Stats.BaseAttackBonus.BaseValue = 1;
+                ally.Stats.Strength.BaseValue = 30;
+                var sword = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("57c8994d1f1becf49ac4f642e5d8ca9d");
+                if (sword == null) throw new InvalidOperationException("Native ordinary sword fixture is unavailable.");
+                ally.Body.PrimaryHand.InsertItem(new ItemEntityWeapon(sword));
+                Game.Instance.Player.PartyCharacters.Add(ally);
+                Game.Instance.Player.InvalidateCharacterLists(); Game.Instance.Player.UpdateCharacterLists();
+                roll.Ally = ally;
+                f.Turns.Execute(() => Game.Instance.UI.SelectionManager.SelectUnit(ally.View, true, false, false));
+                f.Click(a);
+                f.Turns.Execute(() => Game.Instance.UI.SelectionManager.SelectUnit(f.Actor.View, true, false, false));
+                var allyAttack = ally.Commands.Raw.OfType<UnitAttack>().SingleOrDefault();
+                var actions = new UnitActionController();
+                var cooldowns = new Kingmaker.Controllers.Combat.UnitCombatCooldownsController();
+                MethodInfo tickCooldown = cooldowns.GetType().GetMethod("TickOnUnit", BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo tickUnit = typeof(UnitActionController).GetMethod("TickOnUnit", BindingFlags.Instance | BindingFlags.NonPublic);
+                // The ally's native unit frame, after the two owned actors'.
+                // Its act cue is supplied only in the frame the lane names.
+                Action<bool> allyFrame = act => f.Turns.Execute(() => {
+                    tickCooldown.Invoke(cooldowns, new object[] { ally });
+                    ally.View.AnimationManager.Tick(); ally.View.AnimationManager.Update(0.25f);
+                    if (act && allyAttack.Animation != null) allyAttack.Animation.IsActed = true;
+                    tickUnit.Invoke(actions, new object[] { ally });
+                });
+                for (int tick = 0; tick < 240 && allyAttack != null && !allyAttack.IsStarted && !allyAttack.IsFinished; tick++)
+                { f.Pump(false); allyFrame(false); KillChainResolveImpacts(f, targets); yield return null; }
+                verdicts.Add(KillChainCheck(prefix + "ally-native-attack-waits-for-act",
+                    allyAttack != null && allyAttack.IsStarted && !allyAttack.IsActed && !allyAttack.IsFinished &&
+                    allyAttack.Animation != null && allyAttack.AllAttacks.Count == 1 &&
+                    ReferenceEquals(allyAttack.Target, a) && !a.Descriptor.State.IsDead &&
+                    NativeFirearmAttackOrder.Get(allyAttack) == null && trace.Shots.Count == 0 && f.Actor.Commands.Empty,
+                    "allyAttack=" + (allyAttack != null) + ";started=" + (allyAttack != null && allyAttack.IsStarted) +
+                    ";animation=" + (allyAttack != null && allyAttack.Animation != null) +
+                    ";planned=" + (allyAttack == null ? -1 : allyAttack.AllAttacks.Count) +
+                    ";allyDistance=" + ally.DistanceTo(a).ToString("F2") + ";" + f.Describe()));
+
+                trace.Watched = a;
                 int cartridges = Game.Instance.Player.Inventory.Count(cartridge);
-                f.Click(targets[0]);
+                long reloads = FreeActionFullAttackReloadPatch.Succeeded, ended = FreeActionFullAttackReloadPatch.Interrupted,
+                    faults = FreeActionFullAttackReloadPatch.Failed, resumed = EmptyFirearmAttackCommandPatch.AutoReloadResumedAttacks;
+                int endedBefore = trace.EndedCommands.Count;
+                f.Click(a);
                 var order = BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor);
                 var reload = f.Actor.Commands.Raw.Concat(f.Actor.Commands.Queue).OfType<UnitUseAbility>().SingleOrDefault();
                 trace.Note("click", f, null, targets);
-                for (int tick = 0; tick < 20 && reload != null && !reload.IsFinished; tick++)
-                { KillChainPump(f, targets, true); yield return null; }
-                int callbacks = FirearmScheduledCallbacks();
-                bool boundary = order != null && order.Epoch == epoch && epoch > 0 &&
-                    BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) && ReferenceEquals(order.Owner, reload) &&
-                    reload.IsFinished && reload.Result == UnitCommand.ResultType.Success && callbacks == 1 &&
-                    f.State.LoadedRounds == 1 && trace.Shots.Count == 0 && costs.Exact(reload, false);
-                targets[0].Descriptor.Damage = 20;
-                KillChainResolveImpacts(f, targets);
-                trace.Note("gap-kill", f, null, targets);
-                verdicts.Add(KillChainCheck(prefix + "reload-gap-boundary", boundary &&
-                    targets[0].Descriptor.State.IsDead && FirearmScheduledCallbacks() == 1,
-                    trace.Summary(null, targets) + ";callbacks=" + callbacks + ";" + f.Describe()));
-                for (int tick = 0; tick < 80 && trace.Shots.Count < 2; tick++)
-                { KillChainPump(f, targets, true); trace.Sample(tick, f, null, targets); yield return null; }
-                trace.Note("after-gap", f, null, targets);
-                string detail = trace.Summary(null, targets) + ";epoch=" + epoch + ";" + f.Describe();
+                bool gap = false, boundary = false, killedInGap = false;
+                string boundaryDetail = "The auto-use reload never ended.", gapDetail = "No reload-gap frame.";
+                for (int tick = 0; tick < 20 && reload != null && allyAttack != null && !gap; tick++)
+                {
+                    // KillChainPump's native frame order, with the ally's unit
+                    // action after the pistol's and before projectiles, hits and life.
+                    if (!FirearmMisfireRuntime.PendingForcedNaturalRoll.HasValue)
+                        FirearmMisfireRuntime.QueueForcedNaturalRoll(10);
+                    f.Turns.FlushFirearmCallbacks();
+                    f.Turns.Execute(() => new Kingmaker.Controllers.Brain.AiBrainController().Tick());
+                    f.Pump(false);
+                    gap = reload.IsFinished;
+                    if (gap)
+                    {
+                        int callbacks = FirearmScheduledCallbacks();
+                        boundary = order != null && order.Epoch == epoch && epoch > 0 &&
+                            BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) && ReferenceEquals(order.Owner, reload) &&
+                            reload.Result == UnitCommand.ResultType.Success && callbacks == 1 &&
+                            f.State.LoadedRounds == 1 && trace.Shots.Count == 0 && costs.Exact(reload, false) &&
+                            !a.Descriptor.State.IsDead && allyAttack.IsStarted && !allyAttack.IsActed;
+                        boundaryDetail = trace.Summary(null, targets) + ";callbacks=" + callbacks +
+                            ";reloadResult=" + reload.Result + ";allyActed=" + allyAttack.IsActed + ";" + f.Describe();
+                        trace.Mark("reload-ended:continuation-pending");
+                    }
+                    allyFrame(gap);
+                    var rule = allyAttack.LastAttackRule;
+                    bool hit = rule != null && rule.AttackRoll != null && rule.AttackRoll.IsHit && ReferenceEquals(rule.Target, a);
+                    if (gap && hit) trace.Mark("ally-hit:a");
+                    KillChainResolveImpacts(f, targets);
+                    if (gap && a.Descriptor.State.IsDead) trace.Mark("a-dead");
+                    if (gap)
+                    {
+                        int pending = FirearmScheduledCallbacks();
+                        killedInGap = hit && allyAttack.IsActed && ReferenceEquals(rule.Initiator, ally) &&
+                            rule.MeleeDamage != null && rule.MeleeDamage.Damage > 0 && roll.Applied == 1 &&
+                            a.Descriptor.State.IsDead && pending == 1 &&
+                            BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) && trace.Shots.Count == 0 &&
+                            NativeFirearmAttackOrder.Get(allyAttack) == null;
+                        gapDetail = "allyNaturalRoll=" + (rule == null || rule.AttackRoll == null ? -1 : (int)rule.AttackRoll.Roll) +
+                            ";allyHit=" + hit + ";meleeDamage=" + (rule == null || rule.MeleeDamage == null ? -1 : rule.MeleeDamage.Damage) +
+                            ";rollControls=" + roll.Applied + ";aDamage=" + a.Descriptor.Damage +
+                            ";aHitPoints=" + a.Stats.HitPoints.ModifiedValue + ";aConstitution=" + a.Stats.Constitution.ModifiedValue +
+                            ";callbacksAfterKill=" + pending + ";orderCurrent=" + BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) +
+                            ";" + trace.Summary(null, targets);
+                        trace.Note("ally-gap-kill", f, null, targets);
+                    }
+                    KillChainFinishActedAnimations(f, f.Actor);
+                    KillChainFinishActedAnimations(f, ally);
+                    yield return null;
+                }
+
+                // Native automatic continuation with no further player input.
+                UnitAttack next = null;
+                for (int tick = 0; tick < 160 && (next == null || !next.IsFinished); tick++)
+                {
+                    KillChainPump(f, targets, true);
+                    if (allyAttack != null && !allyAttack.IsFinished) { allyFrame(false); KillChainFinishActedAnimations(f, ally); }
+                    if (next == null && trace.Shots.Count != 0) next = trace.Shots[0].Command;
+                    trace.Sample(tick, f, next, targets);
+                    yield return null;
+                }
+                trace.Note("after-gap", f, next, targets);
+                verdicts.Add(KillChainCheck(prefix + "reload-gap-boundary", boundary, boundaryDetail));
+                verdicts.Add(KillChainCheck(prefix + "ally-native-hit-kills-a-in-gap", killedInGap &&
+                    allyAttack.IsFinished && allyAttack.Result == UnitCommand.ResultType.Success,
+                    gapDetail + ";allyResult=" + (allyAttack == null ? "none" : allyAttack.Result.ToString())));
+                var marks = new[] { "reload-ended:continuation-pending", "ally-hit:a", "a-dead", "continuation-executed:watched-dead" };
+                verdicts.Add(KillChainCheck(prefix + "observed-order-reload-kill-continuation",
+                    trace.Marks.SequenceEqual(marks), string.Join(" > ", trace.Marks.ToArray())));
+                string detail = trace.Summary(next, targets) + ";epoch=" + epoch + ";" + f.Describe();
                 verdicts.Add(KillChainCheck(prefix + "resume-completes-without-suppression",
-                    !BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) &&
+                    order != null && !BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order) && !order.Cancelled &&
                     BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null && trace.Cancellations == 0 &&
+                    EmptyFirearmAttackCommandPatch.AutoReloadResumedAttacks == resumed &&
                     !BrokenSequenceSuppressionRuntime.IsSuppressed(f.Actor, f.Weapon) &&
                     !BrokenSequenceSuppressionRuntime.Orders.RequiresOrder(f.Actor, f.Weapon) &&
                     BrokenSequenceSuppressionRuntime.GetDegradationEpoch(f.Actor, f.Weapon) == epoch &&
                     f.State.Condition == FirearmCondition.Normal, detail));
-                var first = trace.Shots.FirstOrDefault();
+
+                // A is dead, so native nearest-first selection gives B, C, then
+                // the durable D twice; each change follows the target's death.
+                var own = trace.Shots.Where(s => ReferenceEquals(s.Command, next)).ToArray();
+                var moves = trace.Transitions.Where(t => ReferenceEquals(t.Command, next)).ToArray();
+                string moved = string.Join(",", moves.Select(m => Array.IndexOf(targets, m.Previous) +
+                    (m.PreviousDead ? "dead" : "up") + ">" + Array.IndexOf(targets, m.Next) + (m.Resolved ? "" : "!")).ToArray());
+                verdicts.Add(KillChainCheck(prefix + "native-ai-full-attack-b-c-d-d",
+                    next != null && next.AiAction != null && next.IsFinished && next.Result == UnitCommand.ResultType.Success &&
+                    next.IsFullAttack && next.AllAttacks.Count == 4 && next.GetAttackIndex() == 4 &&
+                    trace.Shots.Count == 4 && own.Length == 4 && own.All(s => s.Hit) &&
+                    own.Select(s => s.AttackNumber).SequenceEqual(new[] { 0, 1, 2, 3 }) &&
+                    own.Select(s => s.Target).SequenceEqual(new[] { targets[1], targets[2], targets[3], targets[3] }) &&
+                    moves.Length == 2 && moves.All(m => m.Resolved && m.PreviousDead) &&
+                    ReferenceEquals(moves[0].Previous, targets[1]) && ReferenceEquals(moves[0].Next, targets[2]) &&
+                    ReferenceEquals(moves[1].Previous, targets[2]) && ReferenceEquals(moves[1].Next, targets[3]) &&
+                    targets.Take(3).All(t => t.Descriptor.State.IsDead) && !targets[3].Descriptor.State.IsDead &&
+                    BrokenSequenceSuppressionRuntime.Orders.Current(f.Actor) == null,
+                    detail + ";transitions=" + moved));
+
+                // One auto-use reload and three inline Free reloads feed four
+                // shots; the actor ran exactly the reload and the AI attack,
+                // each charged once, exactly.
                 int spent = cartridges - Game.Instance.Player.Inventory.Count(cartridge);
-                verdicts.Add(KillChainCheck(prefix + "native-ai-continues-exactly",
-                    first != null && first.Command.AiAction != null && first.Hit &&
-                    !ReferenceEquals(first.Target, targets[0]) && targets.Skip(1).Contains(first.Target) &&
-                    trace.Shots.Select(s => s.Command).Distinct().All(c => costs.Exact(c, false)) &&
-                    spent == trace.Shots.Count + f.State.LoadedRounds,
-                    detail + ";spentCartridges=" + spent));
+                var ran = trace.EndedCommands.Skip(endedBefore).ToArray();
+                verdicts.Add(KillChainCheck(prefix + "exact-ammunition-and-action-economy",
+                    spent == 4 && trace.Shots.Count == 4 && f.State.LoadedRounds == 0 &&
+                    FreeActionFullAttackReloadPatch.Succeeded - reloads == 3 &&
+                    FreeActionFullAttackReloadPatch.Interrupted == ended && FreeActionFullAttackReloadPatch.Failed == faults &&
+                    ran.Length == 2 && ReferenceEquals(ran[0], reload) && ReferenceEquals(ran[1], next) &&
+                    costs.Exact(reload, false) && next != null && costs.Exact(next, false) &&
+                    f.State.Condition == FirearmCondition.Normal,
+                    detail + ";spentCartridges=" + spent + ";loadedNow=" + f.State.LoadedRounds +
+                    ";inlineReloads=" + (FreeActionFullAttackReloadPatch.Succeeded - reloads) +
+                    ";endedFullAttacks=" + (FreeActionFullAttackReloadPatch.Interrupted - ended) +
+                    ";reloadFaults=" + (FreeActionFullAttackReloadPatch.Failed - faults) +
+                    ";actorCommandsRun=" + string.Join(",", ran.Select(c => c.GetType().Name + ":" + c.Result).ToArray())));
             }
             f.Dispose();
             verdicts.Add(KillChainCheck(prefix + "cleanup", f.Restored, "Native fixture restored exactly."));
             _firearmInputFixture = null;
         }
 
-        // Ordinary native longbow under the same four-attack geometry. Its
-        // rolls are unforced, so a miss may legitimately repeat a target; the
-        // control asserts native continuation, not a kill sequence.
+        // Disclosed roll control for the one ally attack, as natural 10 is for
+        // firearm attacks: the first d20 of the ally's next attack roll is 10
+        // through the native RuleRollDice.Override seam. The native attack
+        // rule still compares it with A's AC and rolls damage.
+        private sealed class KillChainAllyRoll : IDisposable,
+            IGlobalRulebookHandler<RuleAttackRoll>, IGlobalRulebookHandler<RuleRollD20>
+        {
+            internal UnitEntityData Ally;
+            internal int Applied;
+            private RuleAttackRoll armed;
+            internal KillChainAllyRoll() { EventBus.Subscribe(this); }
+            public void OnEventAboutToTrigger(RuleAttackRoll evt)
+            {
+                if (Ally != null && Applied == 0 && ReferenceEquals(evt.Initiator, Ally)) armed = evt;
+            }
+            public void OnEventDidTrigger(RuleAttackRoll evt) { if (ReferenceEquals(evt, armed)) armed = null; }
+            public void OnEventAboutToTrigger(RuleRollD20 evt)
+            {
+                if (armed == null || !ReferenceEquals(evt.Initiator, Ally)) return;
+                evt.Override(10);
+                armed = null;
+                Applied++;
+            }
+            public void OnEventDidTrigger(RuleRollD20 evt) { }
+            public void Dispose() { EventBus.Unsubscribe(this); }
+        }
+
+        // Ordinary native longbow under the same four-attack geometry: a
+        // four-attack ordinary-weapon smoke test only. Its rolls are unforced
+        // and its arrows land after OnAction, so it asserts neither a kill
+        // sequence nor retargeting after a kill.
         private IEnumerable<object> OrdinaryBowKillChainControl(List<KillChainVerdict> verdicts)
         {
             const string prefix = "cr04-ordinary-longbow-control-";
@@ -475,14 +641,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var own = trace.Shots.Where(s => ReferenceEquals(s.Command, attack)).ToArray();
                 string detail = trace.Summary(attack, targets);
-                // After any shot that left its target unconscious or dead, the
-                // next shot of the same command chose a conscious replacement.
-                bool retargeted = own.Length == 4;
-                for (int index = 1; index < own.Length; index++)
-                    if (!own[index - 1].TargetConsciousAfter && ReferenceEquals(own[index].Target, own[index - 1].Target))
-                        retargeted = false;
-                verdicts.Add(KillChainCheck(prefix + "native-continuation", attack != null && attack.IsFullAttack &&
-                    attack.AllAttacks.Count == 4 && attack.GetAttackIndex() == 4 && retargeted &&
+                verdicts.Add(KillChainCheck(prefix + "four-native-attacks-smoke", attack != null && attack.IsFullAttack &&
+                    attack.AllAttacks.Count == 4 && attack.GetAttackIndex() == 4 && own.Length == 4 &&
                     ReferenceEquals(own[0].Target, targets[0]) && NativeFirearmAttackOrder.Get(attack) == null, detail));
                 f.Turns.Execute(() => Game.Instance.UI.SelectionManager.SelectUnit(f.Actor.View, true, false, false));
             }
@@ -501,8 +661,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 internal UnitAttack Command;
                 internal UnitEntityData Target;
                 internal int AttackNumber;
-                internal bool Hit, TargetConsciousAfter;
+                internal bool Hit;
                 internal RuleAttackWithWeapon Rule;
+            }
+            internal sealed class Transition
+            {
+                internal UnitAttack Command;
+                internal UnitEntityData Previous, Next;
+                internal bool PreviousDead, Resolved;
             }
             private const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic |
                 BindingFlags.Instance | BindingFlags.Static;
@@ -517,6 +683,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new Dictionary<UnitAttack, RuleAttackWithWeapon>();
             private int rejectedExecutions, rejectedSubmissions;
             internal readonly List<Shot> Shots = new List<Shot>();
+            internal readonly List<Transition> Transitions = new List<Transition>();
+            internal readonly List<UnitCommand> EndedCommands = new List<UnitCommand>();
+            // Ordered lane observations; a scheduled reload resume adds the
+            // watched unit's state at the moment it executes.
+            internal readonly List<string> Marks = new List<string>();
+            internal UnitEntityData Watched;
             internal int Cancellations;
 
             internal FirearmKillChainTrace(UnitEntityData actor, JArray rows, string lane)
@@ -533,6 +705,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Patch(typeof(UnitAttack).GetMethod("UpdateTarget", All, null, Type.EmptyTypes, null), "Resolving", "Resolved");
                     Patch(typeof(UnitAttack).GetMethod("OnAction", All), "Acting", "Acted");
                     Patch(typeof(NativeFirearmAttackOrder).GetMethod("Submitting", All), null, "Submitted");
+                    Patch(typeof(EmptyFirearmAttackCommandPatch).GetMethod("ResumeAttack", All), "Resuming", null);
                 }
                 catch { Dispose(); throw; }
             }
@@ -583,6 +756,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["orderCurrent"] = BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order),
                     ["orderCancelled"] = order != null && order.Cancelled };
             }
+            internal void Mark(string what)
+            {
+                Marks.Add(what);
+                Add(new JObject { ["killChainMark"] = what });
+            }
             internal void Note(string what, FirearmInputFixture f, UnitAttack chain, UnitEntityData[] targets)
             {
                 var current = BrokenSequenceSuppressionRuntime.Orders.Current(actor);
@@ -623,6 +801,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private static void Ended(UnitCommand __instance)
             {
                 if (active == null || !ReferenceEquals(__instance.Executor, active.actor)) return;
+                active.EndedCommands.Add(__instance);
                 active.Add(new JObject { ["killChainEnded"] = Id(__instance), ["result"] = __instance.Result.ToString(),
                     ["attack"] = Attack(__instance as UnitAttack), ["stack"] = Stack() });
             }
@@ -648,12 +827,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["orderOwner"] = Id(owner), ["orderOwnerFinished"] = owner != null && owner.IsFinished,
                     ["orderCurrent"] = BrokenSequenceSuppressionRuntime.Orders.IsCurrent(order), ["stack"] = Stack() });
             }
+            private static void Resuming()
+            {
+                if (active == null) return;
+                active.Mark("continuation-executed:" + (active.Watched == null ? "unwatched" :
+                    active.Watched.Descriptor.State.IsDead ? "watched-dead" : "watched-alive"));
+            }
             private static void Resolving(UnitAttack __instance, out UnitEntityData __state)
             { __state = __instance.Target; }
             private static void Resolved(UnitAttack __instance, UnitEntityData __state, bool __result)
             {
                 if (active == null || !ReferenceEquals(__instance.Executor, active.actor) ||
                     (__result && ReferenceEquals(__state, __instance.Target))) return;
+                active.Transitions.Add(new Transition { Command = __instance, Previous = __state, Next = __instance.Target,
+                    PreviousDead = __state != null && __state.Descriptor.State.IsDead, Resolved = __result });
                 active.Add(new JObject { ["killChainUpdateTarget"] = __result, ["previous"] = UnitId(__state),
                     ["previousDead"] = __state != null && __state.Descriptor.State.IsDead, ["attack"] = Attack(__instance) });
             }
@@ -669,8 +856,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     active.lastRules[__instance] = rule;
                     active.Shots.Add(new Shot { Command = __instance, Target = rule.Target, AttackNumber = rule.AttackNumber,
-                        Hit = rule.AttackRoll != null && rule.AttackRoll.IsHit, Rule = rule,
-                        TargetConsciousAfter = rule.Target.Descriptor.State.IsConscious });
+                        Hit = rule.AttackRoll != null && rule.AttackRoll.IsHit, Rule = rule });
                 }
                 active.Add(new JObject { ["killChainOnAction"] = __result.ToString(), ["indexBefore"] = __state,
                     ["shot"] = shot, ["shotTarget"] = shot ? rule.Target.UniqueId : null,
