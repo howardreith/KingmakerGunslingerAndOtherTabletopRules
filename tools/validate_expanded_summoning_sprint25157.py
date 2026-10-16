@@ -90,6 +90,13 @@ ALLOWED_PRODUCTION = {
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningDonorCatalog.cs",
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
     "src/KingmakerGunslinger/Summoning/GiantBodyRulesPolicy.cs",
+    # Admitted 2026-10-16: the new creature's frozen adult profile has to live
+    # beside every other creature's, and the released Elephant profile is
+    # corrected in the same file. That correction is a point of the sprint -
+    # its printed slam is a primary attack and had been registered as a
+    # secondary, taking the native -5 to hit and half Strength - so this seam
+    # is deliberate rather than incidental.
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
     "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
 }
 

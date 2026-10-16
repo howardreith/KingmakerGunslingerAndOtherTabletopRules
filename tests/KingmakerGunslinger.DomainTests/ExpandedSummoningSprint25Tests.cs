@@ -265,6 +265,60 @@ namespace KingmakerGunslinger.DomainTests
                 "No Brachiosaurus Summon Monster ability exists in the ledger.");
         }
 
+        internal static void ElephantProfileIsCorrectedToItsPrintedRoutine()
+        {
+            NaturalSummonProfile elephant = ExpandedSummoningNaturalProfiles.For(
+                GiantBodyRulesPolicy.ElephantKey);
+
+            // The new creature has no profile row yet, and that is deliberate
+            // rather than forgotten. Its weapon key cannot resolve in the
+            // natural builder until that builder exists, and a profile whose
+            // weapon does not resolve makes blueprint initialization throw and
+            // roll back every registration. The frozen adult contract is kept
+            // in GiantBodyRulesPolicy and the sprint ledger meanwhile, and the
+            // profile row lands in the same change as its builder.
+            Assertions.True(ExpandedSummoningNaturalProfiles.All.All(value =>
+                    value.Key != GiantBodyRulesPolicy.BrachiosaurusKey),
+                "The withheld creature has no profile row until its builder exists.");
+
+            // Elephant: the Sprint 25 correction. Both printed attacks are
+            // primary, so neither takes the secondary -5 and half Strength.
+            Assertions.Equal("Gore2d8", elephant.PrimaryWeapon,
+                "The gore stays the primary weapon.");
+            Assertions.True(elephant.AdditionalWeapons.Contains("Slam2d6"),
+                "The slam is a primary attack, as printed.");
+            Assertions.Equal(0, elephant.AdditionalSecondaryWeapons.Count,
+                "Nothing on this creature is a secondary natural attack.");
+            Assertions.Equal(GiantBodyRulesPolicy.ElephantHitDice,
+                elephant.HitDice, "Eleven racial hit dice.");
+            Assertions.Equal(GiantBodyRulesPolicy.ElephantStrength,
+                elephant.Strength, "Printed Strength.");
+            Assertions.Equal(GiantBodyRulesPolicy.ElephantSpeedFeet,
+                elephant.SpeedFeet, "Forty-foot land speed.");
+            Assertions.True(elephant.Facts.Contains("TripDefenseFourLegs"),
+                "The printed quadruped defence against trip is carried.");
+            Assertions.True(elephant.Facts.Contains("ImprovedBullRush"),
+                "Improved Bull Rush is carried now that its carrier is proven.");
+            foreach (string absent in new[] { "PowerfulCharge", "Grab",
+                "Endurance", "Pounce" })
+                Assertions.False(elephant.Facts.Contains(absent),
+                    "No invented or unproven Elephant carrier: " + absent);
+            Assertions.True(elephant.Deviations.Any(value =>
+                    value.Contains("Endurance remains omitted")),
+                "The one still-unproven feat keeps an honest omission.");
+            Assertions.True(elephant.Deviations.Any(value =>
+                    value.Contains("NOT registered yet")),
+                "Trample is recorded as specified, not as shipped behaviour.");
+
+            // The real Mastodon keeps its own distinct profile.
+            NaturalSummonProfile mastodon =
+                ExpandedSummoningNaturalProfiles.For("mastodon");
+            Assertions.Equal(14, mastodon.HitDice,
+                "The Mastodon is untouched by this sprint.");
+            Assertions.Equal(34, mastodon.Strength,
+                "The Mastodon keeps its own Strength.");
+        }
+
         internal static void TheDonorIsTheMeasuredQuadrupedRigAndNotAnIdentity()
         {
             SummonDonorSpec donor = ExpandedSummoningDonorCatalog.For(
