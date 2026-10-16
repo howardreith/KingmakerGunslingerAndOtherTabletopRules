@@ -1130,6 +1130,44 @@
         "https://legacy.aonprd.com/bestiary/universalMonsterRules.html (Trample)"
       ],
       "scope": "These establish the printed rules only. What the installed engine does is recorded separately below, from its own code."
+    },
+    "overrunResolutionTrace": {
+      "tracedUtc": "2026-10-16",
+      "method": "blueprint component graphs from the guarded census, which observes the final mod-stack wiring, plus IL of the installed assembly. The reference bundle was checked byte-for-byte against the installed Assembly-CSharp.dll and is identical - same size, same sha256 - so the IL findings are about the build that actually runs.",
+      "nativeOrdinaryOverrun": {
+        "blueprint": "OverrunAbility 1a3b471ecea51f7439a946b23577fd70",
+        "components": "AbilityCustomOverrun with AutoSuccess = False, FirstTargetOnly = False, StopOnCorpulence = False and an EMPTY Actions list, plus AbilityIsFullRoundInTurnBased(True).",
+        "whatItDoes": "With AutoSuccess false it constructs RuleCombatManeuver(caster, target, Overrun) and triggers it, then reads Success and IsPartialSuccess. It is a full-round action in turn-based."
+      },
+      "proneFinding": {
+        "doesASuccessfulOverrunKnockTheTargetProne": false,
+        "evidence": "Three independent places, and none of them applies prone. The OverrunAbility blueprint has an empty Actions list. The AbilityCustomOverrun IL contains no knockdown or prone call at all - its Deliver coroutine triggers the maneuver, reads Success and IsPartialSuccess, and yields delivery targets. And the engine DOES have the machinery - ContextActionKnockdownTarget, ProneState, UnitProneController, AddFallProneTrigger, IKnockOffHandler - so its absence here is a fact about this ability, not about the engine."
+      },
+      "fidelityGapConfirmed": {
+        "theConcern": "The audit had called ManeuverProvokeAttack an exact match to Greater Overrun. The printed benefit is narrower: the target must be KNOCKED PRONE by that overrun, and a successful passage is not automatically the same event as knocking prone.",
+        "verdict": "CONFIRMED, and it is wider than suspected. ManeuverProvokeAttack fires on evt.Success alone, and in this build a successful overrun never knocks anyone prone. So the component does not implement the printed rider at all: it provokes on every successful overrun, which is broader than printed, and the prone precondition the printed rule depends on does not occur.",
+        "whatThatMeansForThisSprint": "Granting the native Greater Overrun feat would not reproduce the printed benefit, because the benefit is conditioned on an event this build does not generate. Making it faithful would mean adding prone application to overrun resolution - a new subsystem, and exactly the general Overrun system this order rules out. That is a genuine scope boundary and it is reported, not worked around.",
+        "notYetProven": "Failure, ordinary success without knockdown, success with knockdown, prone or maneuver immunity, an already-prone target, and whether an opportunity attack is consumed exactly once were NOT separately exercised in play. The trace establishes that no code path applies prone; it does not substitute for those observations."
+      },
+      "modStackFinding": {
+        "why": "the order required checking actual final mod-stack wiring rather than a reference-assembly inference, and that turned out to matter here.",
+        "observed": "The census recorded the component on OverrunNotTrampleAbility 89f484f6a56c44a4874de4048a7996ec as a runtime type named OverrunAbilityLogic. That type is in NONE of the 109 managed assemblies of the installed game, and none of the reference bundle. It is defined by TweakOrTreat.dll, a third-party mod installed on this machine.",
+        "consequence": "The overrun family on this host is partly third-party-modified. A reference-assembly-only inference would have reported a stock component and been wrong. The ability this project actually clones for trample, OverrunAbility, still carries the stock AbilityCustomOverrun, so the trample path itself is unmodified - but any Brachiosaurus-owned ordinary Overrun command would share a family another mod edits, and that is a compatibility question to settle before implementing it.",
+        "installedMods": [
+          "BagOfTricks",
+          "CallOfTheWild",
+          "CheatMenu",
+          "CraftMagicItems",
+          "KingmakerBuffPlanner",
+          "KingmakerDiceRoller",
+          "KingmakerGunslinger",
+          "KingmakerLastAzlantiPreserver",
+          "RacesUnleashed",
+          "TweakOrTreat",
+          "ZFavoredClass"
+        ]
+      },
+      "greaterOverrunStatus": "OPEN. The owner selected the bounded native-command route over a waiver, and that remains the direction - but the trace changes what \"faithful reuse\" means, because the printed rider depends on a knockdown this build does not produce. The next executable step is a bounded observation of overrun resolution in play - failure, success without knockdown, prone and maneuver immunity, an already-prone target, and opportunity-attack consumption - on a host whose overrun family is known to be mod-modified. No feat was granted, no waiver taken, and no subsystem built."
     }
   },
   "validationDispatchDefect": {
