@@ -387,10 +387,10 @@ namespace KingmakerGunslinger.Blueprints
         private const string NativeOverrunAbilityGuid =
             "1a3b471ecea51f7439a946b23577fd70";
 
-        /// <summary>The real printed Greater Overrun feat. It is cloned,
-        /// never modified: every other actor that has it keeps it exactly
-        /// as the game ships it.</summary>
-        private const string NativeGreaterOverrunFeatureGuid =
+        /// <summary>Greater Overrun observed in the installed-stack census.
+        /// It is absent in standalone 2.1.7b. When present it is cloned,
+        /// never modified; its absence must not disable the package.</summary>
+        private const string InstalledGreaterOverrunFeatureGuid =
             "ee24c02cc68c4c9b9b54ebef9f9f8133";
         internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
         internal const string MediumClawGuid = "118fdd03e569a66459ab01a20af6811a";
@@ -763,6 +763,10 @@ namespace KingmakerGunslinger.Blueprints
         /// still granted to every actor that has it. There is exactly one
         /// provocation in play for this creature, not a second stacked on
         /// the original, and no opportunity attack is emitted and undone.</para>
+        /// <para>The installed-stack donor is optional: standalone 2.1.7b
+        /// does not expose its GUID. There the same private carrier uses the
+        /// native ManeuverBonus component for the printed +2, plus the same
+        /// exact-owner knockdown rider. No optional-mod feat is required.</para>
         /// </summary>
         private static void ConfigureBrachiosaurusGreaterOverrun(
             LibraryScriptableObject library,
@@ -770,25 +774,28 @@ namespace KingmakerGunslinger.Blueprints
         {
             BlueprintFeature carrier = Require<BlueprintFeature>(bySymbol,
                 GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol);
-            BlueprintFeature native = BlueprintLibraryLookup.RequireExact<
-                BlueprintFeature>(library, NativeGreaterOverrunFeatureGuid,
-                    "native Greater Overrun feat");
+            BlueprintScriptableObject installed;
+            BlueprintFeature native = library.BlueprintsByAssetId.TryGetValue(
+                InstalledGreaterOverrunFeatureGuid, out installed) && installed != null
+                ? BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                    InstalledGreaterOverrunFeatureGuid, "installed Greater Overrun feat")
+                : null;
             // A feature is not an ability, so the ability field copier is
             // not used here. Only what a granted creature feat needs is set,
             // and the native blueprint is read, never written.
             carrier.name = InternalName(
                 GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol);
-            carrier.HideInUI = native.HideInUI;
+            carrier.HideInUI = native != null && native.HideInUI;
             carrier.HideInCharacterSheetAndLevelUp =
-                native.HideInCharacterSheetAndLevelUp;
-            carrier.IsClassFeature = native.IsClassFeature;
-            carrier.Ranks = native.Ranks;
+                native != null && native.HideInCharacterSheetAndLevelUp;
+            carrier.IsClassFeature = native != null && native.IsClassFeature;
+            carrier.Ranks = native != null ? native.Ranks : 1;
 
             // Everything the native feat carries except the provocation whose
             // condition is wrong for the printed rider.
             var kept = new List<BlueprintComponent>();
             foreach (BlueprintComponent component in
-                native.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                native?.ComponentsArray ?? Array.Empty<BlueprintComponent>())
             {
                 if (component is ManeuverProvokeAttack) continue;
                 // Deep-cloned, the way every other reuse of a native
@@ -798,6 +805,16 @@ namespace KingmakerGunslinger.Blueprints
                 // left exactly as the game shipped it.
                 kept.Add(ExpandedSummoningAbilityBuilder
                     .DeepCloneComponent(component));
+            }
+            if (native == null)
+            {
+                // The exact printed benefit, using the game's own component
+                // already used by our other maneuver carriers. No Improved
+                // Overrun grant, optional-mod dependency or new maneuver rule.
+                var bonus = ScriptableObject.CreateInstance<ManeuverBonus>();
+                bonus.Type = CombatManeuver.Overrun;
+                bonus.Bonus = 2;
+                kept.Add(bonus);
             }
             kept.Add(ScriptableObject.CreateInstance<
                 BrachiosaurusOverrunKnockdown>());
@@ -815,7 +832,8 @@ namespace KingmakerGunslinger.Blueprints
                     "+2 on overrun checks. An opponent knocked prone by this "
                         + "creature's overrun provokes attacks of "
                         + "opportunity."),
-                native.Icon);
+                native != null ? native.Icon :
+                    ExpandedSummoningProjectIcons.Require("brachiosaurus"));
         }
 
         private static void ConfigureBrachiosaurusOverrun(

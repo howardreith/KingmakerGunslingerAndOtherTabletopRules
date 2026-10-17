@@ -50,7 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Exact request-owned giant-body units in the native first-area fixture."));
             RuntimeTestResultWriter.WriteAtomic(Path.Combine(
                 _request.EvidenceDirectory, "sprint25-review-progress.json"),
-                BoundaryObservationPolicy.Serialize(_sprint25Rows));
+                _sprint25Rows.ToString(Formatting.Indented));
         }
 
         private bool PollSprint25NativeReview()
@@ -77,7 +77,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string report = Path.Combine(_request.EvidenceDirectory,
                 "sprint25-review.json");
             RuntimeTestResultWriter.WriteAtomic(report,
-                BoundaryObservationPolicy.Serialize(_sprint25Rows));
+                _sprint25Rows.ToString(Formatting.Indented));
             _summoningProfileResult = CreateResult(
                 _sprint25Assertions.Count > 1 && _sprint25Assertions.All(
                     value => value.Status == RuntimeTestStatuses.Pass)

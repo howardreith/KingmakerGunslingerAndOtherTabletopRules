@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "NATIVE_REVIEW_SOURCE_CHECKPOINT_READY_FOR_CANDIDATE",
+  "status": "NATIVE_BOOTSTRAP_REPAIR_READY_FOR_CANDIDATE",
   "current": {
     "authority": "Owner Codex takeover mission, 2026-10-17: complete scoped functional native qualification, publication qualification, PR 49 merge, next stable release, downloaded-asset verification and final records; then STOP. No Sprint 26.",
     "historyPolicy": "Older art blockers, prototype vetoes, append counts, seven icon failures and Overrun interpretations below are dated research/development history. This current section, controllingAcceptance, candidate and remainingNativeCampaign govern the campaign.",
@@ -57,7 +57,29 @@
       "durationSeconds": 3.12,
       "result": "REFUSED before build/package/native: source ownership whitelist did not yet admit the exact twelve RuntimeTesting files used by the authorized observer and targeted persistence. Added only those paths; unrelated tracked/untracked runtime siblings remain refused. No candidate identity was replaced by this attempt."
     },
-    "nextAction": "Commit/push the narrow source-scope correction, run the new Sprint gate unelevated with child completion evidence, then reuse its exact package for guarded smoke and the scoped native batch in Steam Offline Mode."
+    "observerCandidate": {
+      "source": "a15a5bfeffe9ad1f0a15922d5988b71159ff55cf",
+      "sourceFingerprint": "8d26213d71e3ac12522dc01d02e5e1b524b324935f672c2830b59423b8a85502",
+      "zipSha256": "0125f1f7e21a0d06f6b1f9ae086af676c0cf07b535aabd9627ec1b23d216616e",
+      "dllSha256": "a6c2b9911b897abb8df67effc8f5c0b4be5e0f4f40acbb9e6ce3e6f10279a3df",
+      "dllMvid": "22c97761-f02f-4fd6-a08d-cf71ea289a91",
+      "gate": "PASS: unfiltered 2657/2657, exact build and strict standalone package validation; 297.41 s; artifacts/sprint25-candidate-gate-a15a5bfe-r2.result.json",
+      "priorAttempt": "The first a15a5bfe gate stopped before building after the supervisor script was created concurrently inside the artifact fingerprint. Its exact delta is recorded in the log. Preparation completed before the passing rerun; no refusal was disabled.",
+      "archive": "artifacts/checkpoints/source-build-a15a5bfe: exact ZIP and both sidecars preserved before the next build. The original 9b55df81 checkpoint remains separate and unchanged."
+    },
+    "firstNativeAttempt": {
+      "transactionRunId": "compat-20261017T162750Z-5eee01c59c8b",
+      "runtimeRunId": "20261017T1629593990984Z-ea3cb94b465b4de48601c11da7fbcc6b",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261017T1629593678421Z-disposable-expanded-summoning-sprint25-native-review",
+      "batchReceipt": "artifacts/native-batch-a15a5bfe-first/result.json",
+      "durationSeconds": 236.63,
+      "result": "FAIL before gameplay: standalone mod initialization required absent GreaterOverrunFeature ee24c02cc68c4c9b9b54ebef9f9f8133. The earlier installed-stack census established presence in that stack, not standalone availability. No mechanic/body/route predicate executed; no native PASS claimed.",
+      "rawLogSha256": "f5e4ee9655d1b4a8ad36ba68b01f0561266186250e3f4099b3a36f944e59b3d2",
+      "restoration": "Exact installation, registry settings and sound bank verified for this RunId; all 118 protected save files and private references preserved; game exited and lease removed. Batch stopped before any further launch.",
+      "repair": "Keep the private carrier and frozen +2 benefit: clone kept donor components when that installed-only donor exists; otherwise create the existing native ManeuverBonus component for Overrun +2. The exact-owner threshold/rider remains unchanged. No Improved Overrun grant, global repair, optional-mod dependency or identity change. Direct JArray output added for the new review to avoid host serializer defaults; unrelated runtime-events output was not changed.",
+      "focusedValidation": "PASS: production compilation 15.8 s plus 47/47 selected tests 5.1 s; 2658 registered. Full gate and native requalification of the repaired source remain required."
+    },
+    "nextAction": "Commit/push the demonstrated standalone bootstrap repair, run one repaired Sprint candidate gate unelevated, then reuse its exact package for the scoped standalone/high-risk native batch and targeted persistence. No public promotion, merge or release until mandatory qualification passes."
   },
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",

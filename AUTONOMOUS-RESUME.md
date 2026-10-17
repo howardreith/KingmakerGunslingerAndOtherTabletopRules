@@ -1,4 +1,4 @@
-# Sprint 25 takeover — observer checkpoint, native candidate next
+# Sprint 25 takeover — first native failure safely restored, narrow repair next
 
 Current owner mission: finish scoped Brachiosaurus/Elephant native qualification,
 then publication qualification, merge PR #49, publish/verify the next available
@@ -40,8 +40,26 @@ ownership allowlist omitted the authorized native-observer/persistence seams.
 Only those twelve paths were admitted; unrelated runtime siblings remain refused.
 No new package or native result was produced by that attempt.
 
-Next: commit/push the narrow gate correction, build one new Sprint candidate in this root,
-then run same-package smoke and the standalone/high-risk native phases, followed
+Candidate `a15a5bfe` passed the full Sprint gate (2657/2657, exact build, strict
+package; 297.41 s). ZIP `0125f1f7…216616e`, MVID
+`22c97761-f02f-4fd6-a08d-cf71ea289a91`; exact ZIP/sidecars archived separately.
+The first gate attempt at that source caught my concurrent ignored supervisor
+creation during its artifact fingerprint; no package was built in that attempt.
+
+The first standalone native run failed before gameplay: GreaterOverrunFeature
+`ee24c02c…9f9f8133` exists in the earlier installed-stack census but is absent
+standalone. Exact transaction `compat-20261017T162750Z-5eee01c59c8b` restored the
+actual installation/settings/sound bank; 118 protected save files and private
+references are unchanged. Game exited and lease cleared. No body/mechanics PASS.
+
+The narrow repair retains donor deep clones when present and uses native
+ManeuverBonus (Overrun +2) on the same private carrier when absent. No new feat,
+identity or general maneuver rule. New review evidence writes its JArray
+directly, bypassing host serializer defaults. Production plus 47/47 focused
+tests pass (20.9 s); the repaired candidate still needs its full/native gates.
+
+Next: commit/push this repair, build one repaired Sprint candidate in this root,
+then run the standalone/high-risk native phases on its exact package, followed
 by targeted fresh-process persistence and the public boundary. Use the existing
 de-elevation route and capture actual child exit/restoration receipts. Recheck
 source ownership and process/lease state before each native transaction. Plan
