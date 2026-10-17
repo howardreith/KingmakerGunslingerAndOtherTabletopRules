@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -88,7 +89,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         origin = ground.clampedPosition;
                         Vector3 forward = Vector3.zero;
                         Vector3[] legalTargets = null;
-                        foreach (Vector3 direction in CompassOffsets)
+                        PlaceExpandedSummoningUnit(owner, origin);
+                        foreach (Vector3 direction in new[] { (far - origin).normalized }.Concat(CompassOffsets))
                         {
                             Vector3 side = Vector3.Cross(direction, Vector3.up).normalized;
                             Vector3[] requested = Enumerable.Range(0, 3).Select(index =>
@@ -99,6 +101,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Vector3.Distance(node.clampedPosition, requested[index]) < .6f &&
                                 !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
                                     origin + Vector3.up * 1.2f, node.clampedPosition + Vector3.up * 1.2f, 0)).Count() != 3) continue;
+                            for (int index = 0; index < targets.Length; index++)
+                                PlaceExpandedSummoningUnit(targets[index], nodes[index].clampedPosition);
+                            owner.SightCache.ClearIfNeeded();
+                            if (targets.Any(value => !UnitEngagementExtension.IsReach(owner, value,
+                                owner.Body.PrimaryHand))) continue;
                             legalTargets = nodes.Select(node => node.clampedPosition).ToArray();
                             forward = direction;
                             break;
@@ -160,6 +167,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         var custom = blueprint.GetComponents<Kingmaker.UnitLogic.Abilities.Components.AbilityCustomCleave>().Single();
                         bool greaterPath = owner.Descriptor.Progression.Features.HasFact(custom.GreaterFeature);
+                        // The native delivery enumerates remembered, living,
+                        // in-game enemies through IsReach (including LOS),
+                        // not merely the clear geometry used by the survey.
+                        foreach (UnitEntityData target in targets.Concat(new[] { remote }))
+                            owner.Memory.Add(target);
+                        var nativeCandidates = new JArray(targets.Select(value => new JObject {
+                            ["unit"] = value.UniqueId, ["enemy"] = owner.IsEnemy(value),
+                            ["inGame"] = value.IsInGame,
+                            ["rememberedEnemy"] = owner.Memory.Enemies.Any(info => ReferenceEquals(info.Unit, value)),
+                            ["nativeReachAndLos"] = UnitEngagementExtension.IsReach(owner, value, owner.Body.PrimaryHand) }));
+                        bool candidatesReady = nativeCandidates.OfType<JObject>().All(value =>
+                            (bool)value["enemy"] && (bool)value["inGame"] &&
+                            (bool)value["rememberedEnemy"] && (bool)value["nativeReachAndLos"]);
+                        Sprint25Check("great-cleave-native-candidates-" + missSecond + "-" + turnBased,
+                            candidatesReady, new JObject { ["candidates"] = nativeCandidates },
+                            "All three legal targets satisfy the actual native Cleave memory, life and reach/LOS filter before dispatch.");
+                        if (!candidatesReady) throw new InvalidOperationException("Native Cleave target prerequisites unmet: " + nativeCandidates);
                         EventBus.Subscribe(observer);
                         costs = new FirearmReviewCosts(owner, costRows);
                         var remoteRange = new UnitAttack(remote);
@@ -173,6 +197,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!command.CanStart) throw new InvalidOperationException("Native Cleave command cannot start.");
                         owner.Commands.Run(command);
                         var controller = new Kingmaker.Controllers.Units.UnitActionController();
+                        bool executionSeen = false;
+                        int commandFinishedFrame = -1, deliveryEndedFrame = -1;
                         for (int frame = 0; frame < 700; frame++)
                         {
                             if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
@@ -181,15 +207,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 if (command.Animation != null && frame > 4) command.Animation.IsActed = true;
                                 ElementalBreathScenario.TickCommand(controller, command);
                             }
-                            if (command.ExecutionProcess != null) TickExpandedSummoningDetachedAbility(command, frame);
+                            executionSeen |= command.ExecutionProcess != null;
+                            if (command.ExecutionProcess != null) TickExpandedSummoningDetachedAbility(command, frame, true);
+                            if (command.IsFinished && commandFinishedFrame < 0) commandFinishedFrame = frame;
+                            if (command.ExecutionProcess != null && command.ExecutionProcess.IsEnded && deliveryEndedFrame < 0)
+                                deliveryEndedFrame = frame;
                             maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
                             combatThroughout &= owner.IsInCombat;
                             yield return 0;
                             combatThroughout &= owner.IsInCombat;
-                            if (command.IsFinished) break;
+                            if (command.IsFinished && commandFinishedFrame < 0) commandFinishedFrame = frame;
+                            if (command.ExecutionProcess != null && command.ExecutionProcess.IsEnded && deliveryEndedFrame < 0)
+                                deliveryEndedFrame = frame;
+                            if (command.IsFinished && command.ExecutionProcess != null && command.ExecutionProcess.IsEnded) break;
                         }
                         int expectedCount = missSecond ? 2 : 3;
-                        bool exact = adjacentCluster && greaterPath && command.IsStarted && command.IsFinished &&
+                        bool exact = adjacentCluster && candidatesReady && greaterPath && command.IsStarted && command.IsFinished &&
+                            executionSeen && command.ExecutionProcess != null && command.ExecutionProcess.IsEnded &&
                             !command.Cutscene && !command.IsIgnoreCooldown &&
                             blueprint.ActionType.ToString() == "Standard" &&
                             !ability.RequireFullRoundAction && combatThroughout &&
@@ -207,6 +241,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["nativeDisjointAdjacentCluster"] = adjacentCluster,
                                 ["mode"] = turnBased ? "turn-based" : "rtwp",
                                 ["commandFinished"] = command.IsFinished,
+                                ["commandFinishedFrame"] = commandFinishedFrame,
+                                ["nativeDeliveryEndedFrame"] = deliveryEndedFrame,
+                                ["nativeDeliveryEnded"] = command.ExecutionProcess?.IsEnded,
                                 ["commandResult"] = command.Result.ToString(),
                                 ["standardCooldown"] = new JArray(standardBefore, maxStandard),
                                 ["combatThroughout"] = combatThroughout,

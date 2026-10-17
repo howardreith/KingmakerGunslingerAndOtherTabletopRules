@@ -1,34 +1,37 @@
-# Sprint 25 takeover — native fixture repair, candidate next
+# Sprint 25 takeover — delivery-completion observer repair, candidate next
 
-Controlling update, 2026-10-17 22:38 UTC: continue the selected release campaign;
+Controlling update, 2026-10-17 23:14 UTC: continue the selected release campaign;
 PR49 remains draft/unmerged, Brachiosaurus hidden. No release or Sprint26.
 The ledger's `current.latestCheckpoint` has exact identities and failed evidence.
 
-8f5de4c3 full2660/exact/strict378 PASS (305.45s), archived with untouched
-sidecars. Its27.05-minute six-cell batch: foundation PASS both profiles;
-Overrun/Cleave FAIL. All six transactions restored actual installation/settings/
+7e8f4c36 full2660/exact/strict378 PASS (291.41s), archived with untouched
+sidecars. Its27.84-minute six-cell batch: mechanical foundation PASS but
+mandatory Trample captures FAIL; all9 RTWP Overrun cases PASS per profile,
+TB response FAIL; Cleave geometry PASS but sequences FAIL. All transactions restored installation/settings/
 bank,118 protected saves/private references; no game/lease remains.
 
-Seven Overrun RTWP cases pass per profile, including threshold/two responders,
-partial/no knockdown and repeat deduplication. Remaining failures: bad immune-
-failure pass-through expectation, Count0 exhaustion refilled before dispatch,
-and TB native queued opportunities not observed executing. Cleave stops at
-invalid wolf cluster geometry before a chain. Trample mechanics pass but fixed
-frame callbacks missed contact; those results contain no Trample capture.
+The Trample callback checked before a yielded tick, then missed contact during
+that tick. Cleave records only its first attack and disposes actors on early
+command finish without awaiting the ability process. TB Overrun has no completed
+opportunity attack within its short window; standalone real queues never start,
+combined has none queued. These remain mandatory failures, not gameplay waivers.
 
-Grouped qualification-only repair uses native refill timing, actual queued AOO
-instances/the existing command driver, observed knockdown transitions, existing
-native humanoid fixture targets/measured geometry, and a mandatory capture at
-real Trample save/damage contact. No gameplay/art/identity/difficulty change.
-Compile16.2s and57/57 focused tests2.1s PASS after a corrected compile-time Target
-type mistake. Fresh full candidate and affected native execution remain required.
+Grouped qualification-only repair observes after the tick, opts into native
+delivery completion through the existing helper (old defaults preserved),
+records Cleave's real memory/reach/LOS prerequisites, and uses qualified native
+TB attack waiting/hands settling/start-gate observation. A balanced disposable-
+target flag excludes only separate get-up provocation for TB attribution.
+No UI guard/cost bypass, substitute attack, new clock, gameplay/art/identity/
+difficulty change. Compile17s,57/57 focused tests2s, source gate/19 refusals PASS.
 
-Next: commit/push, one Sprint candidate, then exact-package carrier-repair batch
-(foundation/Overrun/Cleave, both profiles; planning30-40min). Then targeted six
+Next: commit/push, one Sprint candidate, then exact-package delivery-repair batch
+(foundation/TB commands/Overrun/Cleave, both profiles;8cells, planning35-45min).
+Then targeted six
 ON/OFF cold-save stages; public boundary/full candidate/fresh public inventory/
 icon/eleven roots; publisher preflight; authorized merge/release/download and
-restoration audit; final-records merge; STOP. Preserve D7 TB, EE5 AI and E8
-body/routes under original identities with actual dependency arguments.
+restoration audit; final-records merge; STOP. Preserve EE5 AI and E8 body/routes
+under original identities/dependency arguments. D7 TB remains historical proof,
+not execution of the strengthened completion observer.
 HumanReview NOT_PERFORMED_NONBLOCKING. Steam Offline Mode works unchanged.
 
 ## Dated 21:58 checkpoint (superseded chronology)
