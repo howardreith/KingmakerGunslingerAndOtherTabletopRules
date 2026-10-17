@@ -177,6 +177,7 @@
     <Compile Include="Summoning\CrocodilianVisualPolicy.cs" />
     <Compile Include="Summoning\SerpentineVisualPolicy.cs" />
     <Compile Include="Summoning\SalamanderTailAnimationPolicy.cs" />
+    <Compile Include="Summoning\SalamanderTailGait.cs" />
     <Compile Include="Summoning\SalamanderTailAction.cs" />
     <Compile Include="Summoning\SalamanderHumanBindingPolicy.cs" />
     <Compile Include="Summoning\SalamanderHumanVisualAttachment.cs" />
