@@ -1374,7 +1374,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string.Join("|", rimAnimations.ToArray()) + "];rimPatch=" +
                 ExpandedSummoningRimAnimationPatch.Describe(unit.View) + ";summonGlow=" +
                 ExpandedSummoningSummonGlowPatch.Describe(unit.View) + ";buffEffects=" +
-                ExpandedSummoningSummonGlowPatch.DescribeBuffEffects(unit);
+                ExpandedSummoningSummonGlowPatch.DescribeBuffEffects(unit) + ";tailGait=" +
+                DescribeReviewTailGait(unit.View);
+        }
+
+        private static string DescribeReviewTailGait(UnitEntityView view)
+        {
+            SalamanderHumanVisualAttachment attachment = view == null ? null :
+                view.GetComponent<SalamanderHumanVisualAttachment>();
+            return attachment == null ? "<not applicable>" : attachment.DescribeGait();
         }
 
         /// <summary>
@@ -1468,7 +1476,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var floats = new List<string>();
             foreach (string name in new[] { "_Emission", "_RimPower", "_RimLighting",
                 "_Metallic", "_Cutout", "_Alpha", "_AlphaScale", "_DissolveEmission",
-                "_Glossiness", "_Smoothness", "_BumpScale", "_OcclusionStrength" })
+                "_Glossiness", "_Smoothness", "_BumpScale", "_OcclusionStrength",
+                "_Roughness", "_Specular", "_SpecularIntensity", "_UseNormalMapAtlas" })
                 if (material.HasProperty(name))
                     floats.Add(name + "=" + material.GetFloat(name).ToString("0.###",
                         CultureInfo.InvariantCulture));
@@ -1558,7 +1567,7 @@ namespace KingmakerGunslinger.RuntimeTesting
               "ankylosaurus", "crocodile", "dire-crocodile",
               "giant-ant-worker", "giant-ant-soldier", "giant-ant-drone",
               "giant-scorpion", "dire-bat", "pteranodon", "giant-wasp",
-              "ape", "dire-ape", "xill" };
+              "ape", "dire-ape", "xill", "salamander" };
 
         // Single-renderer donors only; the Tyrannosaurus' two-renderer
         // Lizardfolk frame comes from its own Sprint 24 census.
