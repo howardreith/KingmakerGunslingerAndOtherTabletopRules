@@ -18,6 +18,8 @@ namespace KingmakerGunslinger.BrownFur
         private const string ArcanistTypeName = "CallOfTheWild.Arcanist";
         private const string CreationMethodName = "createArcanistClass";
         private static readonly object Gate = new object();
+        private static readonly BrownFurStartupGate Startup = new BrownFurStartupGate();
+        private static string _lastPendingReason;
         private static ModContext _context;
         private static UnityModManager.ModEntry _cotwEntry;
         private static CotwArcanistResolution _current;
@@ -132,7 +134,14 @@ namespace KingmakerGunslinger.BrownFur
 
         private static void AfterCotwArcanistCreation()
         {
-            TryReconcile("cotw-create-postfix");
+            TryReconcile("cotw-create-postfix", true);
+        }
+
+        // Synchronous notification from the committed package bootstrap,
+        // before its LoadDictionary postfix (or retained initialization) returns.
+        internal static void OnPackageBlueprintLibraryReady()
+        {
+            TryReconcile("package-blueprint-library-ready");
         }
 
         private static void FirstUpdate(UnityModManager.ModEntry entry, float delta)
@@ -157,19 +166,41 @@ namespace KingmakerGunslinger.BrownFur
             context.ModEntry.OnUpdate += FirstUpdate;
         }
 
-        private static void TryReconcile(string checkpoint)
+        private static void TryReconcile(string checkpoint, bool creationCompleted = false)
         {
             ModContext context;
             UnityModManager.ModEntry cotw;
             lock (Gate)
             {
-                if (_reconciling) return;
+                if (_reconciling || _context == null || _cotwEntry == null) return;
                 _reconciling = true;
                 context = _context;
                 cotw = _cotwEntry;
             }
             try
             {
+                bool begin;
+                lock (Gate)
+                    begin = Startup.TryBegin(CotwArcanistResolver.HasConstructedArcanist(cotw.Assembly),
+                        creationCompleted, BlueprintBootstrap.IsInitialized && BlueprintBootstrap.Library != null);
+                if (!begin)
+                {
+                    if (Startup.State == BrownFurStartupState.WaitingForCotw ||
+                        Startup.State == BrownFurStartupState.WaitingForLibrary)
+                    {
+                        string reason = Startup.State == BrownFurStartupState.WaitingForCotw
+                            ? "cotw-arcanist-construction-pending" : "package-blueprint-library-not-ready";
+                        BrownFurFeatureStatusRegistry.Update(new BrownFurFeatureStatus(
+                            BrownFurDependencyAvailability.Pending, false, reason));
+                        if (_lastPendingReason != reason)
+                        {
+                            _lastPendingReason = reason;
+                            BrownFurDiagnostics.Info(context, "registration.deferred",
+                                "checkpoint=" + checkpoint + ";reason=" + reason);
+                        }
+                    }
+                    return;
+                }
                 CotwArcanistResolution resolution =
                     CotwArcanistResolver.Resolve(cotw);
                 lock (Gate) _current = resolution;
@@ -181,8 +212,11 @@ namespace KingmakerGunslinger.BrownFur
                     return;
                 }
 
-                if (!EnsureBlueprintsRegistered(context, resolution.Contract,
-                    checkpoint)) return;
+                if (!EnsureBlueprintsRegistered(context, resolution.Contract, checkpoint))
+                {
+                    lock (Gate) Startup.AwaitLibrary();
+                    return;
+                }
 
                 bool published = context.FeatureModules.Active
                     .BrownFurTransmuter && EnsurePublished(context,
@@ -193,7 +227,11 @@ namespace KingmakerGunslinger.BrownFur
                 resolution.Contract.Fingerprint.PublicationStatus = published ?
                     "published" : "compatible-not-published-module-off";
 
-                lock (Gate) _successfulReconciliations++;
+                lock (Gate)
+                {
+                    Startup.Complete();
+                    _successfulReconciliations++;
+                }
                 BrownFurFeatureStatusRegistry.Update(new BrownFurFeatureStatus(
                     BrownFurDependencyAvailability.Available, published,
                     published ?
@@ -336,6 +374,7 @@ namespace KingmakerGunslinger.BrownFur
             if (existing != null)
             {
                 BrownFurBlueprints.Validate(existing, contract);
+                BrownFurBlueprints.ValidateRegistered(BlueprintBootstrap.Library, existing);
                 BrownFurDiagnostics.Info(context, "registration.idempotent",
                     "checkpoint=" + checkpoint + ";count=" + existing.Count);
                 return true;
@@ -345,7 +384,7 @@ namespace KingmakerGunslinger.BrownFur
             if (library == null)
             {
                 BrownFurFeatureStatusRegistry.Update(new BrownFurFeatureStatus(
-                    BrownFurDependencyAvailability.Available, false,
+                    BrownFurDependencyAvailability.Pending, false,
                     "Compatible CotW contract resolved; awaiting the package blueprint lifecycle before optional Brown-Fur identity registration."));
                 BrownFurDiagnostics.Info(context, "registration.deferred",
                     "checkpoint=" + checkpoint +
@@ -372,6 +411,7 @@ namespace KingmakerGunslinger.BrownFur
                     throw new InvalidOperationException(
                         "Brown-Fur optional registration did not create exactly " +
                         BrownFurIdentityCatalog.IdentityCount + " identities.");
+                BrownFurBlueprints.ValidateRegistered(library, registered);
                 lock (Gate)
                 {
                     _registry = registry;
@@ -379,7 +419,7 @@ namespace KingmakerGunslinger.BrownFur
                 }
                 BrownFurDiagnostics.Info(context, "registration.complete",
                     "checkpoint=" + checkpoint + ";count=" +
-                    registry.RegisteredCount + ";published=false");
+                    registry.RegisteredCount + ";resolvedTypes=25;published=false");
                 return true;
             }
             catch
@@ -399,6 +439,7 @@ namespace KingmakerGunslinger.BrownFur
         private static void Block(ModContext context, string failedCheck,
             string message, Exception exception)
         {
+            lock (Gate) Startup.Reject();
             BrownFurFeatureStatusRegistry.Update(new BrownFurFeatureStatus(
                 BrownFurDependencyAvailability.Blocked, false,
                 failedCheck + ": " + message));
