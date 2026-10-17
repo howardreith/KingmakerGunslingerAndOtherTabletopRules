@@ -1256,7 +1256,8 @@
     "scope": "Original bodies outside the owner's review list found shipping inside out from the legacy shared writer, repaired in place on the owner's word (2026-10-17); the Bebelith (VIS-035) stays the accepted control",
     "tool": "assets-source/original-models/continuous-bodies/repair_outward_winding.py",
     "commit": "930474b4e9",
-    "native": "20261017T1930246388436Z and 20261017T1934032621760Z (development candidate 930474b4e924): creature review PASS for all seven (31 and 22 assertions), close views solid and lit, the Fire Beetle's eyes glowing; visual contracts 20261017T1937434175208Z PASS (15)",
+    "native": "20261017T1930246388436Z and 20261017T1934032621760Z (development candidate 930474b4e924): creature review PASS for all seven (31 and 22 assertions); close views and tracking sequences for six, solid and lit, the Fire Beetle's eyes glowing; the single Stirge review skipped its refinement packet (its attached-prey branch went straight to cleanup; see run 21); visual contracts 20261017T1937434175208Z PASS (15)",
+    "stirgeFollowUp": "20261017T2049460194047Z (development candidate 95a5c2e2f013, after the independent review of 17eb252777): the Stirge's attached-prey review PASS, then its full refinement packet (9 stills, 108 tracking, 72 low side frames, 5.43 m); the near wing's outer face, both wings' inner faces and their upper surfaces render as continuous solid panels with nothing seen through them, so the offline wing-gap lead is not substantiated and no asset was changed; limits: the Stirge spans about 60-100 px, several low frames are walled, and the wings stay largely raised through the move legs",
     "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release",
     "bodies": [
       {

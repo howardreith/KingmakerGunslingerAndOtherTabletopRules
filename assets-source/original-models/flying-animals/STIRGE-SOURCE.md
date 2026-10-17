@@ -46,3 +46,13 @@ UVs, weights and bones are unchanged.
 To reproduce the shipped bytes, run the generator, then the repair on its
 output. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
 the result and checks it is lit from the front.
+
+Native review of the repaired Stirge: run `20261017T1930246388436Z` reviewed it
+without its refinement packet (the single Stirge review then skipped from its
+attached-prey phase to cleanup); after the harness fix (`95a5c2e2f0`), run
+`20261017T2049460194047Z` produced the full packet. The near wing's outer face,
+both wings' inner faces and their upper surfaces render as continuous solid
+panels; an offline backface-culling inspection had raised wing gaps as a lead,
+which this does not substantiate, so the asset is unchanged. The Stirge spans
+only about 60-100 px in those frames and its wings stay largely raised through
+the move legs.

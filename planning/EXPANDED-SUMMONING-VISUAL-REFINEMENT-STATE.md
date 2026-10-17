@@ -75,11 +75,20 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 
 - `master` = `origin/master` = `2eed3944f6eab657f9030d33acae6d81eb5f10ae`,
   version 0.0.157, clean (re-read 2026-10-17).
-- Open PRs: only #49, draft, Sprint 25 Brachiosaurus and Elephant, targeting
-  0.0.158, head `e7d35f17c38d1343d9195041bf66ad0ad06afd3d` (94 files,
-  re-read 2026-10-17). The only shared file is
-  `ExpandedSummoningSprint24Tests.cs`, in different hunks (#49 at 61-77,
-  251-269 and 432-451; this branch at 319-339).
+- Open PRs: only #49, draft, Sprint 25 Brachiosaurus and Elephant, base
+  `master` `2eed3944f6`. Re-read at its head
+  `ee5d6fd0cd992be97df3d90f4c384fed4e6b45fc` (2026-10-17, 123 files): it
+  overlaps this branch in 14 files - both icon manifests
+  (`assets-source/.../expanded-summoning/icon-manifest.json`,
+  `assets/game/icons/expanded-summoning/icon-manifest.json`), the icon catalog
+  and `tools/test_icon_catalog.py`, `scripts/Build-Local.ps1`,
+  `scripts/validate-package.ps1`, the mod project, the domain-test project and
+  `Program.cs`, and `ExpandedSummoningSprint14Tests.cs`, `Sprint16Tests.cs`,
+  `Sprint23Tests.cs`, `Sprint24Tests.cs` and `Sprint20RulesTests.cs`. (The
+  earlier note at head `e7d35f17c3` named only the Sprint 24 test file.)
+  Integration must keep both the approved Dire Rat edit and Sprint 25's icon
+  additions, regenerate the shared provenance manifest and repin its hash in
+  the icon catalog and `tools/test_icon_catalog.py`.
 - Branch `codex/expanded-summoning-visual-refinement-pilot`, worktree
   `C:\Dev\KingmakerGunslingerLab\worktrees\expanded-summoning-visual-refinement-pilot`.
 - Machine-local preconditions copied into the worktree, gitignored, never
@@ -158,6 +167,7 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 20 | `930474b4e924` (package `25f9ed3b…5295`, 113 focused build tests) | creature review: Eagle, Stirge, Fire Beetle, Giant Stag Beetle | 3:39 | PASS (31 assertions); repaired bodies solid and lit, the Fire Beetle's eyes glowing |
 | 20 | same | creature review: Girallon, Giant Crab, Stegosaurus, Dire Rat | 3:40 | PASS (22 assertions) |
 | 20 | same | disposable-expanded-summoning-visual-contracts | 1:17 | PASS (15) |
+| 21 | `95a5c2e2f013` (package `a2f00e7b…3c5a`) | creature review: Stirge, Giant Crab | 2:50 | PASS (18): the Stirge's attached-prey review still PASS, then its full packet (9 stills, 108 tracking, 72 low side frames, 5.43 m); the Giant Crab's packet complete under the stricter check (9 stills, 108 frames, 4.91 m) |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -306,9 +316,23 @@ tracking frames, the review captures and the donor bind captures.
   normals included). The Girallon and Giant Crab declare the outward marker,
   which `PrimateVisualPolicy` now requires of the Girallon as well.
   `RepairedBodyTests` pins the seven; `scripts/validate-package.ps1` and the
-  Sprint 23 test repin the Girallon, Giant Crab and Stegosaurus. The creature
-  review gives the seven close views. Details and before/after hashes in each
-  family `SOURCE.md` and the ledger's `additionalRepairs`.
+  Sprint 23 test repin the Girallon, Giant Crab and Stegosaurus. Run 20 gave
+  close views and tracking sequences for six of the seven; a single Stirge
+  review went from its attached-prey phase straight to cleanup, so its
+  refinement packet was first produced in run 21 after the route fix below.
+  Details and before/after hashes in each family `SOURCE.md` and the ledger's
+  `additionalRepairs`.
+- Review harness (`95a5c2e2f0`, after the independent review of
+  `17eb252777`): a single Stirge review now enters the refinement phase after
+  its attached-prey phase (which restores the prey and detaches the Stirge)
+  and before cleanup. `RuntimeTesting/VisualRefinementReviewPolicy.cs` (moved
+  out of the runner into a plain file) defines a complete packet: all nine
+  close stills written, all 108 tracking frames, for the Stirge 72 low side
+  frames through the two move legs, and at least 0.75 m of travel. The
+  assertion names whatever is missing; before, it counted only the tracking
+  frames and travel, so a packet with failed stills could pass.
+  `VisualRefinementReviewTests` pins the Stirge route and fails packets with a
+  missing still, frame or travel.
 
 No identity, GUID, blueprint, statistic, size, reach, collision, attack,
 timing, AI, duration, template, adapter, material path or runtime binding code
@@ -356,6 +380,10 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Focused gate (repairs, `930474b4e9` content) | `scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning.'` | 16 s | production compilation PASS; 467 PASS |
 | Focused build tests (run 20 candidate) | `-DevelopmentTestFilter 'repaired-first-exports;sprint18-;sprint19-;sprint21-;sprint23-;sprint14-;sprint10-;icon-'` | 66 s | 113 PASS |
 | Native | run 20 above | 8:36 | as tabled |
+| Focused gate (harness, `95a5c2e2f0`) | `scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning.'` | 16 s | production compilation PASS; 469 PASS (two new harness cases) |
+| Focused build tests (run 21 candidate) | `-DevelopmentTestFilter 'refinement-;repaired-first-exports'` | 66 s | 3 PASS |
+| Native | run 21 above | 2:50 | as tabled |
+| Development repository wrapper (`95a5c2e2f0` content) | `scripts/validate-repository.ps1 -DevelopmentPurpose visual-refinement` | 41 s | PASS |
 | Development repository wrapper (`930474b4e9` content) | `scripts/validate-repository.ps1 -DevelopmentPurpose visual-refinement` | 35 s | PASS (63 development-candidate contract checks, icon catalog and fixtures) |
 
 ## Remaining limitations
@@ -394,14 +422,43 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
   front and renders solid. The Bebelith, the owner's accepted control, still
   ships its unchanged inward first export. The Stegosaurus was missed from the
   first list of inside-out bodies and found in the final audit.
-- Release lane: historical validators still pin superseded art or markers and
-  must accept the refined assets at the next release:
-  `tools/validate_expanded_summoning_sprint24154.py` (Tyrannosaurus,
-  Deinonychus; inherited by the v0.0.155/v0.0.157 release validators),
-  `validate_expanded_summoning_sprint23152.py` (Triceratops, Stegosaurus),
-  `validate_expanded_summoning_sprint18147.py` and `_sprint19148.py` (the
-  primates' `shared-exporter-sprint18` marker). The development wrapper does
-  not run their tree checks.
+- Stirge wings (run 21): an offline backface-culling inspection raised wing
+  gaps as a lead. Natively, the outer face of the near wing (low side
+  frames), the inner faces of both wings (front and rear stills) and their
+  upper surfaces (top still) render as continuous solid panels, with nothing
+  seen through them; no asset correction was made. Limits: the Stirge spans
+  only about 60-100 px in these frames (its framing follows renderer
+  bounds), several low side frames are walled (the game's blue occluded-unit
+  silhouette or an empty frame where the side camera stands behind a wall),
+  and the wings stay largely raised through the move legs, so little beat is
+  seen.
+- Release handoff (independently confirmed against this branch). The active
+  release validator `tools/validate_alternate_summoning_release157.py` fails
+  this branch in three separate classes, each checked on its own:
+  1. Inherited art: it dispatches the Sprint 24 art-owner check
+     (`validate_expanded_summoning_sprint24154.validate_art_and_package_owners`),
+     which requires the superseded Tyrannosaurus and Deinonychus bytes.
+  2. Production-source scope: seven changed files lie outside its frozen
+     v0.0.157 scope - `RuntimeTestRunner.ExpandedSummoningCreatureReview.cs`,
+     `RuntimeTesting/VisualRefinementReviewPolicy.cs`,
+     `Summoning/ExpandedSummoningSummonGlowPatch.cs`, `SummonGlowPolicy.cs`,
+     `PrimateVisualPolicy.cs`, `SalamanderHumanVisualAttachment.cs` and
+     `SalamanderTailGait.cs`.
+  3. Exact project contract: four compile entries it does not accept -
+     `SummonGlowPolicy.cs`, `ExpandedSummoningSummonGlowPatch.cs`,
+     `SalamanderTailGait.cs` and `RuntimeTesting/VisualRefinementReviewPolicy.cs`.
+  The four historical art contracts and what they expect: `sprint24154`
+  (earlier Tyrannosaurus and Deinonychus hashes; the only one v0.0.157
+  exercises against this tree), `sprint23152` (earlier Triceratops and
+  Stegosaurus hashes; run only at Sprint 24's census stage), `sprint18147`
+  (the earlier Ape and Dire Ape winding marker) and `sprint19148` (the earlier
+  Girallon and Xill winding marker). They describe released versions and are
+  not expected to pass against this tree; they stay as they are. The next
+  release needs its own reviewed validation contract that admits the refined
+  assets (with their new hashes and markers), these seven production files
+  and four compile entries, and the record and icon-manifest changes - not
+  edits to the historical files. The development wrapper runs only those
+  validators' synthetic fixtures, which pass.
 - Rhinoceros: the rump is still a broad, round mass from behind. Lowering the
   head by 30° about the Mastodon's high head pivot swings the skull under the
   chest offline; the native attack did not show it.
@@ -411,8 +468,14 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. Release (owner): the lane is a pushed development checkpoint; the release
-   lane updates the validators listed above. The owner reviews everything in
-   the game after the release and the lane refines what that review finds.
-2. Optional: Viper/Constrictor locomotion (VIS-007, VIS-018). Roster-owned:
+1. Release (owner): the lane is a pushed development checkpoint. Merge,
+   version selection and the next release's validation contract (above) stay
+   with the owner and the release lane; integration with Sprint 25 (#49) must
+   keep both icon changes. The owner reviews everything in the game after the
+   release and the lane refines what that review finds.
+2. Still unresolved and kept visible: the Ghaele's own rising dissolve and its
+   review move (glow removed, native visual review unresolved); the Frost
+   Giant and Thanadaemon (covered by the glow policy, not observed natively);
+   the Bebelith stays the accepted unchanged control.
+3. Optional: Viper/Constrictor locomotion (VIS-007, VIS-018). Roster-owned:
    Elephant, Lantern Archon, Invisible Stalker.
