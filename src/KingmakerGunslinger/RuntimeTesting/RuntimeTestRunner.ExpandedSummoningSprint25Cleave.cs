@@ -59,8 +59,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         created.AddRange(targets);
                         UnitEntityData ally = CastExpandedSummoningQuietUnit(fixture, "wolf");
                         UnitEntityData remote = CastExpandedSummoningQuietUnit(fixture, "wolf", fixture.Hostile);
-                        UnitEntityData nonadjacent = CastExpandedSummoningQuietUnit(fixture, "wolf", fixture.Hostile);
-                        created.AddRange(new[] { ally, remote, nonadjacent });
+                        created.AddRange(new[] { ally, remote });
+                        foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
                         Vector3 origin = fixture.Caster.Position;
                         PlaceExpandedSummoningUnit(owner, origin);
                         for (int index = 0; index < targets.Length; index++)
@@ -68,7 +68,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Vector3.right * (index - 1) * 1.2f);
                         PlaceExpandedSummoningUnit(ally, origin + Vector3.forward * 4.3f);
                         PlaceExpandedSummoningUnit(remote, origin + Vector3.forward * 30);
-                        PlaceExpandedSummoningUnit(nonadjacent, origin + Vector3.right * 5.5f);
                         foreach (UnitEntityData unit in created)
                         {
                             unit.Stats.HitPoints.BaseValue = 100000;
@@ -135,14 +134,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["commandResult"] = command.Result.ToString(),
                                 ["standardCooldown"] = new JArray(standardBefore, maxStandard),
                                 ["alliesExcluded"] = ally.UniqueId, ["outOfReachExcluded"] = remote.UniqueId,
-                                ["nonadjacentExcluded"] = nonadjacent.UniqueId,
+                                ["nativeTargetSelection"] = "Living remembered enemies within native IsReach, sorted from the first target; no native inter-target adjacency predicate. The positive fixture uses three adjacent foes. No global Cleave repair.",
                                 ["legalTargets"] = new JArray(targets.Select(value => new JObject {
                                     ["unit"] = value.UniqueId, ["ownerDistance"] = owner.DistanceTo(value),
                                     ["position"] = SurveyVector(value.Position) })),
                                 ["attacks"] = new JArray(observer.Attacks.Select(value => new JObject {
                                     ["target"] = value.Target.UniqueId, ["weapon"] = value.Weapon.Blueprint.AssetGuid,
                                     ["hit"] = value.AttackRoll?.IsHit, ["roll"] = value.AttackRoll?.Roll.Value })) },
-                            "The existing native greater path executes a legal three-target chain, terminates on the first miss, excludes allies/out-of-reach/nonadjacent targets, and spends one Standard action.");
+                            "The existing native greater path executes an adjacent three-target chain, terminates on the first miss, excludes allies and out-of-reach enemies, and spends one Standard action.");
                     }
                     finally
                     {

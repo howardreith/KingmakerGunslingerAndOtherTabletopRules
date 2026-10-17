@@ -34,6 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private ExpandedSummoningCorrectionFixture _sprint25Fixture;
         private Sprint22NativeClock _sprint25Clock;
         private IEnumerator<int> _sprint25Steps;
+        private bool _sprint25WaitingForUnityAppearance;
         private readonly List<RuntimeTestAssertion> _sprint25Assertions =
             new List<RuntimeTestAssertion>();
         private readonly JArray _sprint25Rows = new JArray();
@@ -64,7 +65,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _sprint25Clock = new Sprint22NativeClock(_sprint25Fixture);
                     _sprint25Steps = ReviewSprint25(_sprint25Fixture).GetEnumerator();
                 }
-                _sprint25Clock.Pulse();
+                if (!_sprint25WaitingForUnityAppearance) _sprint25Clock.Pulse();
                 if (_sprint25Steps.MoveNext()) return false;
             }
             catch (Exception error)
@@ -95,6 +96,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 _sprint25Steps = null;
+                _sprint25WaitingForUnityAppearance = false;
                 if (_sprint25Fixture != null)
                 {
                     bool cleaned = false, clockRestored = false;
@@ -168,7 +170,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     foreach (string key in new[] { "brachiosaurus", "elephant" })
                         foreach (int frame in Sprint24AiFallback(fixture, key,
-                            12f, Sprint25Check)) yield return frame;
+                            10.5f, Sprint25Check, true)) yield return frame;
                     yield break;
                 }
                 bool turnBased = phase == "turn-based-commands";
@@ -242,6 +244,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 float reach = (key == "brachiosaurus" ? 20 : 10) * .3048f;
                 float distanceOffset = owner.Corpulence + target.Corpulence;
+                // Mutual sight is 8.5 m for a peaceful hostile, 11.7 m in
+                // combat. The 20-foot boundary plus actor radii exceeds the
+                // former. Establish combat, not a vision override.
+                owner.Commands.InterruptAll(true);
+                target.Commands.InterruptAll(true);
+                owner.Commands.RemoveFinishedAndUpdateQueue();
+                target.Commands.RemoveFinishedAndUpdateQueue();
+                owner.JoinCombat(); target.JoinCombat();
                 Vector3 far; string lane, direction;
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target,
                     reach + distanceOffset + .2f, out far, out lane, out direction);
@@ -620,6 +630,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     using (PteranodonAssetRuntime.WithdrawGiantBodyForTest(key))
                         failed = CastExpandedSummoningQuietUnit(fixture, key);
+                    foreach (int frame in Sprint25NativeAppearance(failed, key)) yield return frame;
                     var skins = failed.View.GetComponentsInChildren<SkinnedMeshRenderer>(true);
                     string outcome = ExpandedSummoningPteranodonViewPatch.DescribeView(failed.View);
                     Sprint25Check("payload-fallback-" + key,
@@ -647,8 +658,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     foreach (UnitEntityData unit in group) SetExpandedSummoningBrainActive(unit, false);
-                    for (int frame = 0; frame < 120 && group.Any(value => !EntityFadedIn(value)); frame++) yield return 0;
-                    bool quantity = group.Length >= 2 && group.Length <= 5 && group.All(EntityFadedIn);
+                    foreach (UnitEntityData unit in group)
+                        foreach (int frame in Sprint25NativeAppearance(unit, key)) yield return frame;
+                    bool quantity = group.Length >= 2 && group.Length <= 5 && group.All(value =>
+                        EntityFadedIn(value) && DissolveAmount(value) >= 0f && DissolveAmount(value) <= .02f);
                     for (int index = 0; index < group.Length; index++)
                     {
                         Sprint25Body(group[index], key, "quantity-" + index);
@@ -796,7 +809,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var owned = ExpandedSummoningPteranodonViewPatch.CaptureGiantBodyOwnedResources(owner.View);
             JObject selection = Sprint22SelectionSurface(owner);
             JObject pose = original.Length == 1 ? Sprint24OriginalBodySample(owner, original[0], key) : null;
+            float dissolve = DissolveAmount(owner);
             bool exact = loaded && original.Length == 1 && original[0].enabled &&
+                EntityFadedIn(owner) && dissolve >= 0f && dissolve <= .02f &&
                 original[0].name == GiantBodyVisualPolicy.BodyRendererName &&
                 original[0].sharedMesh != cache && original[0].bones.Length == bones.Length &&
                 original[0].sharedMaterial != null &&
@@ -807,6 +822,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint25Check("body-" + key + "-" + state, exact, new JObject {
                 ["unit"] = owner.UniqueId, ["blueprint"] = owner.Blueprint.AssetGuid,
                 ["state"] = state, ["assetStatus"] = status, ["selection"] = selection,
+                ["dissolve"] = dissolve, ["fadedIn"] = EntityFadedIn(owner),
                 ["pose"] = pose,
                 ["partyCamera"] = WriteExpandedSummoningPartyCameraCapture(owner,
                     _request.EvidenceDirectory, "sprint25-" + key + "-" + state + "-party.png"),
@@ -819,19 +835,49 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> Sprint25NativeAppearance(UnitEntityData unit, string key)
         {
+            Vector3 spawnPosition = unit.Position;
+            if (AstarPath.active == null) throw new InvalidOperationException("No native appearance placement graph.");
+            var ground = AstarPath.active.GetNearest(spawnPosition);
+            if (ground.node == null || !ground.node.Walkable)
+                throw new InvalidOperationException("No walkable native appearance placement: " + key);
+            // The save-free new-game anchor is above the settled floor until
+            // ordinary terrain/movement controllers run. Use the real graph
+            // for this request-owned idle fixture, not a model transform fix.
+            PlaceExpandedSummoningUnit(unit, ground.clampedPosition);
             int frames = 0;
-            for (; frames < 300; frames++)
+            bool ready = false;
+            double before = Game.Instance.Player.GameTime.TotalSeconds;
+            DateTime deadline = DateTime.UtcNow.AddSeconds(10);
+            bool waitingBefore = _sprint25WaitingForUnityAppearance;
+            try
             {
-                var body = unit.View == null ? null : unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
-                    .SingleOrDefault(value => value.name == GiantBodyVisualPolicy.BodyRendererName);
-                if (body != null && body.enabled && EntityFadedIn(unit)) break;
-                Game.Instance.IsPaused = false;
-                yield return 0;
+                for (; frames < 1800 && DateTime.UtcNow < deadline; frames++)
+                {
+                    var body = unit.View == null ? null : unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .SingleOrDefault(value => value.name == GiantBodyVisualPolicy.BodyRendererName);
+                    float dissolve = DissolveAmount(unit);
+                    bool appearanceBuffAbsent = unit.Descriptor.Buffs.GetBuff(
+                        Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null;
+                    ready = body != null && body.enabled && EntityFadedIn(unit) &&
+                        appearanceBuffAbsent && dissolve >= 0f && dissolve <= .02f;
+                    if (ready) break;
+                    // Native dissolve reads Unity Time.time, not GameTime.
+                    // Once gameplay prerequisites settle, wait on Unity frames
+                    // without consuming the summon's duration via .25 s pulses.
+                    _sprint25WaitingForUnityAppearance = appearanceBuffAbsent && body != null && EntityFadedIn(unit);
+                    Game.Instance.IsPaused = false;
+                    yield return 0;
+                }
             }
-            Sprint25Check("native-appearance-ready-" + key, frames < 300,
+            finally { _sprint25WaitingForUnityAppearance = waitingBefore; }
+            Sprint25Check("native-appearance-ready-" + key, ready,
                 new JObject { ["unit"] = unit.UniqueId, ["frames"] = frames,
+                    ["spawnPosition"] = SurveyVector(spawnPosition),
+                    ["nativeGroundPosition"] = SurveyVector(ground.clampedPosition),
+                    ["gameSecondsDuringWait"] = Game.Instance.Player.GameTime.TotalSeconds - before,
                     ["fadedIn"] = EntityFadedIn(unit), ["dissolve"] = DissolveAmount(unit) },
-                "The real native fader enables the view before visual/command observations; no renderer or material state is forced by setup.");
+                "Native appearance prerequisites and finite intact material dissolve settle before visual/command observations; no renderer, fader or material state is forced.");
+            if (!ready) throw new InvalidOperationException("Native giant appearance did not settle: " + key);
         }
     }
 }
