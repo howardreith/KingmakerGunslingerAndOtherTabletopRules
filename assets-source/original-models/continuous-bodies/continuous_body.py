@@ -164,6 +164,16 @@ class Volume:
         bm.faces.new(tuple(reversed(rows[0])))
         bm.faces.new(tuple(rows[1]))
 
+    def shell(self, obj):
+        """Add a closed surface built and relaxed on its own (a torso blended
+        at a coarser scale than the limbs) and remove its object."""
+        verts = [self.bm.verts.new(vertex.co) for vertex in obj.data.vertices]
+        for polygon in obj.data.polygons:
+            self.bm.faces.new(tuple(verts[index] for index in polygon.vertices))
+        mesh = obj.data
+        bpy.data.objects.remove(obj)
+        bpy.data.meshes.remove(mesh)
+
     def polygonise(self, name):
         mesh = bpy.data.meshes.new(name)
         self.bm.to_mesh(mesh)
@@ -189,11 +199,24 @@ def fan_triangles(bm):
     bm.verts.index_update()
     out = bmesh.new()
     verts = [out.verts.new(vertex.co) for vertex in bm.verts]
+    triangles, uses = [], {}
     for face in bm.faces:
         ids = [loop.vert.index for loop in face.loops]
         for corner in range(1, len(ids) - 1):
-            out.faces.new((verts[ids[0]], verts[ids[corner]],
-                           verts[ids[corner + 1]]))
+            triangle = (ids[0], ids[corner], ids[corner + 1])
+            triangles.append(triangle)
+            key = tuple(sorted(triangle))
+            uses[key] = uses.get(key, 0) + 1
+    # Decimating a dense, lumpy union (a bison's shaggy coat) can collapse a
+    # thin region into two faces on the same three vertices: a zero-volume
+    # fin. Both are dropped with any vertex they orphan; orient_outward
+    # still refuses anything that is not then a closed, consistent shell.
+    for triangle in triangles:
+        if uses[tuple(sorted(triangle))] == 1:
+            out.faces.new(tuple(verts[index] for index in triangle))
+    orphans = [vertex for vertex in out.verts if not vertex.link_faces]
+    if orphans:
+        bmesh.ops.delete(out, geom=orphans, context="VERTS")
     bm.free()
     return out
 
@@ -248,6 +271,23 @@ def orient_outward(bm):
         if volume < 0.0:
             bmesh.ops.reverse_faces(bm, faces=island)
     bm.normal_update()
+
+
+def relax(obj, iterations):
+    """Volume-preserving Laplacian passes. Each pass reaches about one voxel,
+    so masses meeting over tenths of a metre are relaxed on a coarse union
+    (see Volume.shell); a bison's hump and cape kept their creases through
+    44 passes at limb resolution."""
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    for _ in range(iterations):
+        bmesh.ops.smooth_laplacian_vert(
+            bm, verts=bm.verts, lambda_factor=0.6, lambda_border=0.0,
+            use_x=True, use_y=True, use_z=True, preserve_volume=True)
+    bm.to_mesh(obj.data)
+    bm.free()
+    obj.data.update()
+    return obj
 
 
 def finish_surface(obj, target_triangles, smooth_iterations=6,

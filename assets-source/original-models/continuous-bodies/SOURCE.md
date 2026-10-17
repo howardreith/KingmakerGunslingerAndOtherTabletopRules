@@ -58,6 +58,12 @@ seen through its head and a leg. `audit_mesh_orientation.py` and
   tail grow out of the trunk instead of meeting it at a cap. A first version
   blended metaballs; overlapping fields add, so dense sweeps swelled far past
   their radii (a Rhinoceros head swallowed its horns), and it was abandoned.
+  Each relaxation pass reaches about one voxel, so where large masses meet
+  over tenths of a metre (a bison's hump) the torso is united and relaxed on
+  a coarser union of its own and joined to the limbs and head as a closed
+  shell (`Volume.shell`, `relax`). Decimating a dense, lumpy union can leave
+  two faces on the same three vertices; `fan_triangles` drops such zero-volume
+  fins and the outward check still refuses anything else that is not closed.
 - **Blended weights.** Blender's bone-heat solve over that surface, restricted
   to the reviewed donor controls, then Laplacian weight smoothing over the
   surface's edges. Species-local rules, each commented in its builder, cover
@@ -81,7 +87,11 @@ seen through its head and a leg. `audit_mesh_orientation.py` and
 - **Painting.** UVs come from Smart UV Project; the albedo is rasterised from a
   deterministic procedural colour field over the surface (value and cell noise,
   countershading, skin regions taken from the weights) and written by a fixed
-  PNG encoder.
+  PNG encoder. The colour values are stored as they are. The game lights them
+  warmly and more brightly than the offline studio renders: the first native
+  run showed the Rhinoceros's 0.41 grey hide as tan in torchlight, while the
+  olive-brown Tyrannosaurus read as intended. Neutral greys are therefore kept
+  darker and slightly cool; saturated browns and olives read as authored.
 - **Export.** Blender's winding is kept, vertices are split only where a texture
   seam needs it (position, normal and weights are shared, so seams are
   invisible), and the exporter refuses any component that is open, wound
@@ -112,6 +122,9 @@ Blender 4.5.10 LTS, `PYTHONHASHSEED=0`, from the repository root:
 ```text
 blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/sprint12-quadrupeds/build_dire_rat.py -- --capture <private sprint12-dog-bind-rig.json> --albedo assets/sprint12-quadrupeds/dire-rat-albedo.png --mesh-data assets/sprint12-quadrupeds/dire-rat-mesh.json --report <private report.json> --blend-out <private source.blend>
 blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/ungulates/build_rhinoceros.py -- --capture <private sprint11-mastodon-bind-rig.json> --albedo assets/ungulates/rhinoceros-albedo.png --mesh-data assets/ungulates/rhinoceros-mesh.json --report <private report.json> --blend-out <private source.blend>
+blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/ungulates/build_rhinoceros.py -- --kind woolly-rhinoceros --capture <private sprint11-mastodon-bind-rig.json> --albedo assets/ungulates/woolly-rhinoceros-albedo.png --mesh-data assets/ungulates/woolly-rhinoceros-mesh.json --report <private report.json> --blend-out <private source.blend>
+blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/ungulates/build_cattle.py -- --kind aurochs --capture <private sprint11-horse-bind-rig.json> --albedo assets/ungulates/aurochs-albedo.png --mesh-data assets/ungulates/aurochs-mesh.json --report <private report.json> --blend-out <private source.blend>
+blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/ungulates/build_cattle.py -- --kind bison --capture <private sprint11-horse-bind-rig.json> --albedo assets/ungulates/bison-albedo.png --mesh-data assets/ungulates/bison-mesh.json --report <private report.json> --blend-out <private source.blend>
 blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/sprint24-theropods/build_tyrannosaurus.py -- --capture <private sprint24-theropod-census.json> --albedo assets/sprint24-theropods/tyrannosaurus-albedo.png --mesh-data assets/sprint24-theropods/tyrannosaurus-mesh.json --report <private report.json> --blend-out <private source.blend>
 ```
 

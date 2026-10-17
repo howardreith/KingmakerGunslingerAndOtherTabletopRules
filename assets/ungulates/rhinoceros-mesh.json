@@ -40,7 +40,7 @@
  },
  "albedo": {
   "file": "rhinoceros-albedo.png",
-  "sha256": "91042f178fb275c9cff8bd5b53cacc0626b8b89f3e8c623028b489dee681c584",
+  "sha256": "e8d172fdb09e68d5910dfc70623ed634696cd8347d2249b5744b49cc12770bbf",
   "width": 1024,
   "height": 1024,
   "bitDepth": 8,
