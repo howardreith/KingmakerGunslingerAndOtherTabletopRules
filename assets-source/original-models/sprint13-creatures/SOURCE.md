@@ -129,3 +129,44 @@ Reviewed shipped SHA-256 values:
 - `shadow-mastiff-albedo.png`: `a29c2bdce8e4c640eef8d04cb2ec45569816c8192a0da29e7674111e5cc785b4`
 - `poisonous-frog-mesh.json`: `2b37e38a4e6fb7613a06ab69f161273221a05c50105691a9dcdfd58899f58ed6`
 - `poisonous-frog-albedo.png`: `89ac9f05d76582d86b7a32f16f9afada165e1f37cd4565290313d001b25f8a21`
+
+## Wolverine, Shadow Mastiff and Poisonous Frog refinement, 2026-10-17 (VIS-014, VIS-033, VIS-006)
+
+All three first exports rendered inside out (14, 15 and 7 inward parts). The
+owner reported for the Wolverine rear holes and a very dark, pug-like form; for
+the Shadow Mastiff a slightly detached-looking head and neck and a blocky body
+(its darkness is intended); for the Poison Frog a conspicuous rear opening,
+and questioned its orange.
+
+- **Wolverine** and **Shadow Mastiff** are built by
+  `../sprint12-quadrupeds/build_worg_frame.py` on the Worg frame (method and
+  frame rules in `../sprint12-quadrupeds/SOURCE.md`). The Wolverine is a broad,
+  low, arched body with a low head, a short blunt muzzle, small round ears,
+  thick legs, a short bushy hanging tail and a dark-brown coat with a broad
+  pale band along the upper flank. The Shadow Mastiff is a big shadow-black
+  hound with a deep chest, a drawn-in loin, a heavy square head, tall pointed
+  ears, a long heavy tail and large pale eyes, the only light thing on it.
+- **Poisonous Frog** is built by `build_poisonous_frog.py` on the Giant
+  Poisonous Frog frame, along its bind pose (hind legs stretched back, arms
+  forward; the animations fold them into the crouch): a squat body and a wide,
+  flat head as one surface, bulging eyes on the eyelid controls, the chin on
+  both jaw controls, the belly sharing `stomach`, fingered hands and long
+  webbed feet. It binds the same reviewed 25 controls. The colour is now an
+  emerald green with black blotches over a paler belly, still a warning
+  colour.
+
+- Captures: the Worg capture above and `sprint13-giant-poisonous-frog-bind-rig.json`
+  (SHA-256 `b54385e73fd35c2e0ce46e05b8a82a5f64041a6dc3dd91614e9271a34ff16379`),
+  from guarded run `20261017T0225090480213Z-disposable-expanded-summoning-native-profile`
+  on master `2eed3944f6`.
+- `wolverine-mesh.json`: `f2c4385b53a3cead1b8dbd38299dd199bc4c7b5d1c09624ea1a1dbbd7dffb6d6`
+  (6,121 vertices, 8,124 triangles, 28 closed outward parts); albedo
+  `131a49db826403a5abdf0979825c3e737b568751a61aab4d8e595a1a99b22bd7`.
+- `shadow-mastiff-mesh.json`: `fdb05b264035c10dbba7c066957a11c9ebfbff49c069bb276b7a80c84a751862`
+  (6,160 vertices, 8,044 triangles, 27 closed outward parts); albedo
+  `f335df805a3e211a4effd4744823ca7d00c9b9e02e0e4339f5b316899c684246`.
+- `poisonous-frog-mesh.json`: `17529a2781d680ad8e995eb52cfaef71fb8cccba848f6bd4039ed3f20279d79a`
+  (5,071 vertices, 6,976 triangles, 3 closed outward parts); albedo
+  `ce040536c0a3de1815e7e4770083a0e42092045e9f754a207ed7cdf2ee56211e`.
+- Superseded: the reviewed values listed above. `generate_sprint13_creatures.py`
+  now refuses all three kinds; its loader still validates the captures.

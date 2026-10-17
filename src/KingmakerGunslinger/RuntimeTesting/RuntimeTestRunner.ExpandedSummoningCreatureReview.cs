@@ -1550,7 +1550,9 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal static readonly string[] Keys =
             { "dire-rat", "rhinoceros", "tyrannosaurus",
-              "woolly-rhinoceros", "aurochs", "bison" };
+              "woolly-rhinoceros", "aurochs", "bison",
+              "hyena", "goblin-dog", "wolverine", "shadow-mastiff",
+              "poisonous-frog" };
 
         // Single-renderer donors only; the Tyrannosaurus' two-renderer
         // Lizardfolk frame comes from its own Sprint 24 census.
@@ -1561,7 +1563,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "rhinoceros", new[] { "mastodon", "Sprint 11" } },
                 { "woolly-rhinoceros", new[] { "mastodon", "Sprint 11" } },
                 { "aurochs", new[] { "horse", "Sprint 11" } },
-                { "bison", new[] { "horse", "Sprint 11" } }
+                { "bison", new[] { "horse", "Sprint 11" } },
+                { "hyena", new[] { "wolf", "Sprint 12" } },
+                { "goblin-dog", new[] { "worg", "Sprint 12" } },
+                { "wolverine", new[] { "worg", "Sprint 12" } },
+                { "shadow-mastiff", new[] { "worg", "Sprint 12" } },
+                { "poisonous-frog", new[] { "giant-poisonous-frog", "Sprint 13" } }
             };
 
         internal static bool Handles(string key)
