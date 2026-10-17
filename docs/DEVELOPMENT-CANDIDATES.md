@@ -1,5 +1,12 @@
 # Development candidates
 
+Second explicit owner exception on 2026-10-17: publish exact CotW action-bar
+repair product `92b442c06dd8` as test prerelease
+`v0.0.157-controller-load-alpha.2` through its hash-pinned
+`Publish-CotwActionBarAlpha.ps1`. No rebuild or native qualification is inferred;
+candidateKind=development and releaseQualification=false remain. See
+[authorization](BUILD-AND-RELEASE.md#controller-load-alpha-2-authorization--2026-10-17).
+
 One subsequent owner exception: on 2026-10-17 the owner explicitly authorized
 publishing the exact Brown-Fur product `913dfd6e8938` as a public test alpha.
 Only `Publish-BrownFurAlpha.ps1` accepts that hash-pinned preview, with a

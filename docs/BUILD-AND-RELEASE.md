@@ -1,5 +1,19 @@
 # Build, package, and publish
 
+## Controller-load alpha 2 authorization — 2026-10-17
+
+The owner subsequently asked to push another alpha to test and clarify whether
+Gunslinger needs an accompanying change. This authorizes one public test alpha
+of exact KMG product `92b442c06dd8d13f246ca006fdda6382b9eb6236`, including its
+review-branch/tag push. `Publish-CotwActionBarAlpha.ps1` accepts only its pinned
+development receipt, ZIP/DLL/MVID and 39-assertion evidence log. Publish tag
+`v0.0.157-controller-load-alpha.2` as prerelease / never Latest; retain
+releaseQualification=false. No full suite, rebuild, native run, merge or game
+installation is selected. This is the Gunslinger update itself; no companion
+Buff Planner or CotW update is part of the repair. See
+[alpha notes](RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-2.md). All stable release and
+other development-candidate publication guards remain unchanged.
+
 ## Brown-Fur alpha 1 authorization — 2026-10-17
 
 After the local repair handoff, the owner explicitly requested: "Could you

@@ -1,5 +1,12 @@
 # CotW controller action-bar load — isolated repair checkpoint (2026-10-17)
 
+Subsequent owner request authorizes one public controller-load alpha 2 of exact
+product `92b442c06dd8`, using `Publish-CotwActionBarAlpha.ps1`, prerelease /
+never Latest. This is the KMG/Tabletop Added Rules update; no companion KBP or
+CotW update. No rebuild/full suite/native rerun, merge or installation selected.
+See [alpha notes](docs/RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-2.md). Earlier
+no-publication statements describe the preceding development checkpoint.
+
 Review branch `codex/cotw-controller-actionbar-load-review-20261017`; frozen
 product/source branch `codex/cotw-controller-actionbar-load-20261017` at
 `92b442c06dd8d13f246ca006fdda6382b9eb6236`. Both have isolated worktrees.
