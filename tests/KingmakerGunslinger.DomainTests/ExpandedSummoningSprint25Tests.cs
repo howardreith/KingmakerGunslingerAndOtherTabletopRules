@@ -489,8 +489,14 @@ namespace KingmakerGunslinger.DomainTests
             string carrier = Section(builder,
                 "private static void ConfigureBrachiosaurusGreaterOverrun(");
             Assertions.True(carrier.Contains(
-                "NativeGreaterOverrunFeatureGuid"),
-                "The carrier clones the real printed feat.");
+                "InstalledGreaterOverrunFeatureGuid"),
+                "The carrier clones the installed-stack donor when present.");
+            Assertions.True(carrier.Contains("TryGetValue(") &&
+                carrier.Contains("if (native == null)") &&
+                carrier.Contains("CreateInstance<ManeuverBonus>()") &&
+                carrier.Contains("bonus.Type = CombatManeuver.Overrun") &&
+                carrier.Contains("bonus.Bonus = 2"),
+                "Standalone uses the native +2 Overrun component, not a required optional donor.");
             Assertions.True(carrier.Contains(
                 "if (component is ManeuverProvokeAttack) continue"),
                 "The success-only native provocation is dropped.");
@@ -528,6 +534,23 @@ namespace KingmakerGunslinger.DomainTests
                 "profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey"),
                 "The substitution is keyed on the creature as well as " +
                 "the fact, so no other profile can pick it up.");
+        }
+
+        internal static void NativeEvidenceRetainsArrayAndNestedRuleRows()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningSprint25Review.cs"));
+            Assertions.Equal(2, CountOccurrences(source,
+                "_sprint25Rows.ToString(Formatting.Indented)"),
+                "Progress and final evidence write the actual JArray, bypassing game serializer defaults.");
+            var rows = new JArray(new JObject { ["predicate"] = "native-rule",
+                ["passed"] = false, ["damage"] = new JArray(new JObject {
+                    ["unit"] = "exact-owner", ["bonus"] = -3 }) });
+            JArray parsed = JArray.Parse(rows.ToString(Newtonsoft.Json.Formatting.Indented));
+            Assertions.Equal(-3, (int)parsed[0]["damage"][0]["bonus"],
+                "Nested signed native observations remain machine-readable.");
+            Assertions.False((bool)parsed[0]["passed"], "A failed predicate is not erased.");
         }
 
         private static string Section(string source, string signature)
