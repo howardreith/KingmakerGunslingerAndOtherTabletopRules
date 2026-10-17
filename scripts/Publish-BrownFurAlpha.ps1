@@ -4,7 +4,8 @@
 param(
     [string]$CandidateRepositoryRoot='C:/Dev/KingmakerGunslingerLab/worktrees/brown-fur-startup-order-20261017',
     [switch]$Publish,
-    [switch]$ConfirmAlphaTestPublication
+    [switch]$ConfirmAlphaTestPublication,
+    [switch]$ResumeTagOnly
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
@@ -14,11 +15,6 @@ $root=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 . (Join-Path $PSScriptRoot 'BrownFurAlpha.Common.ps1')
 . (Join-Path $PSScriptRoot 'QualifiedRelease.Common.ps1')
 . (Join-Path $CandidateRepositoryRoot 'scripts/RuntimeHarness.Common.ps1')
-function Read-AlphaNative([string]$Command,[string[]]$Arguments) {
-    $output=@(& $Command @Arguments)
-    if($LASTEXITCODE -ne 0){throw "Alpha command failed: $Command $($Arguments[0])"}
-    return (($output | ForEach-Object {[string]$_}) -join "`n").Trim()
-}
 if($Publish -and -not $ConfirmAlphaTestPublication){throw 'Public alpha publication requires explicit -ConfirmAlphaTestPublication.'}
 $git=Get-KmgGitState $root
 if($git.Status.Count -ne 0 -or $git.Branch -cne 'codex/brown-fur-startup-order-20261017'){throw 'Alpha publisher requires the clean dedicated review branch.'}
@@ -41,8 +37,21 @@ if($latest -cne 'v0.0.157'){throw 'Stable Latest changed; review before alpha pu
 $releases=(Read-AlphaNative gh @('release','list','--repo',$repository,'--limit','100','--json','tagName')) | ConvertFrom-Json
 if(@($releases|Where-Object tagName -ceq $plan.tag).Count -ne 0){throw 'Alpha release already exists; never overwrite it.'}
 $remoteTag=Read-AlphaNative git @('-C',$root,'ls-remote','--tags','origin',"refs/tags/$($plan.tag)")
-if($remoteTag){throw 'Alpha tag already exists remotely; no ref will be replaced.'}
 $directory=Join-Path $root 'artifacts/alpha-publication/v0.0.157-brown-fur-alpha.1'
+$publicPackage=Join-Path $directory $plan.asset
+$manifestPath=Join-Path $directory 'alpha-manifest.json'
+if($ResumeTagOnly) {
+    $peeled=Read-AlphaNative git @('-C',$root,'ls-remote','--tags','origin',"refs/tags/$($plan.tag)^{}")
+    Assert-KmgBrownFurAlphaTagOnlyResume -RemoteCommit (($peeled -split '\s+')[0]) `
+        -PackageHash (Get-KmgSha256 $publicPackage) -ManifestHash (Get-KmgSha256 $manifestPath) `
+        -ChecksumsHash (Get-KmgSha256 (Join-Path $directory 'SHA256SUMS.txt'))
+    $originalManifest=Get-Content -LiteralPath $manifestPath -Raw|ConvertFrom-Json
+    $null=Read-AlphaNative git @('-C',$root,'merge-base','--is-ancestor',$originalManifest.documentationCommit,$git.Commit)
+    $originalNotes=Read-AlphaNative git @('-C',$root,'show',"$($originalManifest.documentationCommit):docs/RELEASE-NOTES-BROWN-FUR-ALPHA-1.md")
+    if($originalNotes.Replace("`r`n","`n").Trim() -cne ([IO.File]::ReadAllText($notes)).Replace("`r`n","`n").Trim()) {
+        throw 'Interrupted alpha notes changed; do not silently replace them.'
+    }
+} elseif($remoteTag){throw 'Alpha tag already exists remotely; no ref will be replaced.'}
 $createArguments=@(Get-KmgBrownFurAlphaCreateArguments $plan $directory $notes)
 $WhatIfPreference=$alphaWhatIf
 if(-not $Publish -or -not $PSCmdlet.ShouldProcess($repository,'publish exact Brown-Fur alpha 1; prerelease, never Latest')) {
@@ -53,6 +62,7 @@ $WhatIfPreference=$false
 $remoteHead=Read-AlphaNative git @('-C',$root,'ls-remote','--heads','origin',"refs/heads/$($git.Branch)")
 if(($remoteHead -split '\s+')[0] -cne $git.Commit){throw 'Push the clean review branch through the project guard before publication.'}
 $null=Read-AlphaNative git @('-C',$root,'merge-base','--is-ancestor',$plan.productCommit,$git.Commit)
+if(-not $ResumeTagOnly) {
 if(Test-Path -LiteralPath $directory){throw 'Alpha output already exists; inspect the prior attempt instead of overwriting it.'}
 [void][IO.Directory]::CreateDirectory($directory)
 $publicPackage=Join-Path $directory $plan.asset
@@ -73,6 +83,7 @@ $null=Read-AlphaNative git @('-C',$root,'tag','-a',$plan.tag,$plan.productCommit
 $null=Read-AlphaNative git @('-C',$root,'push','origin',"refs/tags/$($plan.tag)")
 $peeled=Read-AlphaNative git @('-C',$root,'ls-remote','--tags','origin',"refs/tags/$($plan.tag)^{}")
 if(($peeled -split '\s+')[0] -cne $plan.productCommit){throw 'Remote annotated tag does not resolve to the tested product.'}
+}
 $null=Read-AlphaNative gh $createArguments
 # Keep the draft private until all three uploaded asset digests match.
 $uploaded=(Read-AlphaNative gh @('release','view',$plan.tag,'--repo',$repository,'--json','isDraft,isPrerelease,assets'))|ConvertFrom-Json
