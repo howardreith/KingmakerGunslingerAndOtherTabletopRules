@@ -1,3 +1,69 @@
+# Expanded Summoning visual refinement — v0.0.158 RELEASED / STOP
+
+**PR #55 is MERGED and v0.0.158 is PUBLISHED.** On 2026-10-17 the owner,
+after testing `v0.0.157-visual-refinement-alpha.2`, wrote: "this is an
+EXCELLENT revision. Please merge this into master and cut a new full release.
+The next stage of revisions are minor and can go when we have more summons
+added to revise."
+
+- **Merge.** PR #55 merged normally as
+  `5d89a9ddd0b8b58156bfe609caedda000024a132`. Between the gated candidate
+  `e68e441544` and the merge, only the unpackaged record `fdf314bda4` changed.
+- **Gates on the candidate.** The Sprint-level gate passed 2,664 / 2,664,
+  including the v0.0.158 release validator, the exact-reference build and
+  strict package validation. The guarded creature review passed 31/31, the
+  Salamander bounded review 15/15 and the visual contracts 15/15, all on
+  package `15cec3d2…d6f3`.
+- **Publication.** `Publish-Release.ps1` then ran once from the clean, pushed
+  main checkout (`master` fast-forwarded to the merge) with the refreshed
+  reference bundle, in 205 s. Its build passed 2,664 / 2,664 domain tests, the
+  release-mode wrapper with
+  `validate_expanded_summoning_visual_refinement_release158.py` and strict
+  package validation, and both clean builds produced identical bytes.
+
+[Stable v0.0.158](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.158)
+is published (2026-10-17T23:54:43Z) and Latest, titled "Tabletop Added Rules
+v0.0.158". Annotated tag object `57361f133f5dd8f4025e09975ce59b92bd2f9020`
+peels to the merge commit. The downloaded public assets match GitHub's
+digests:
+
+- `KingmakerGunslinger-0.0.158-expanded-summoning-visual-refinement.zip`:
+  `d63f1a8bb9b4392432808422cae140db6a543b40455e3094b12402bdae2d15fb`
+  (374 files; DLL
+  `441a03979f9cba9bf554690fe7acd97d1184335fb31225d2e9d3456e09bc03e4`,
+  assembly version 0.0.158.0);
+- `SHA256SUMS.txt`:
+  `e628e7bd0cfc59730c598430464d49672ad1842aca7bd99a69b2c00c8d9e7dd5`;
+- `release-manifest.json`:
+  `a269daf7b086c682bbc6142c12e0ce32ca8389f4ef8ff51cb7ac59e0e8b79fa9`.
+
+The downloaded ZIP passed strict package validation, and its DLL embeds the
+merge commit and `0.0.158-expanded-summoning-visual-refinement`. These bytes
+differ from the gated candidate because the exact-reference build stamps the
+merge commit. The publisher's own run qualified the released bytes, and the
+native evidence stays bound to the candidate. Nothing was deployed
+permanently: every guarded run restored the live mod exactly (254 files,
+`5C3E4AD4…BFBB`), and no save was touched.
+
+**Still open:**
+- The owner's in-game visual review; the lane accepted it provisionally, and
+  the owner plans minor revisions with the next summon additions.
+- The Ghaele's own rising dissolve.
+- The Frost Giant and Thanadaemon: covered by the glow change but not
+  observed natively.
+- Viper and Constrictor movement.
+- On the Brown-Fur and controller repair: controller-mode loading with
+  physical input, and saved Brown-Fur owner reconstruction.
+
+**Next:**
+- Sprint 25 (PR #49, draft) carries 0.0.157 in its `Info.json` and must
+  renumber to 0.0.159 or later when it releases. It overlaps this release in
+  14 files, including both icon manifests and the icon catalog, so it must keep
+  the approved Dire Rat edit.
+- The development-candidate validator resolves its baseline from the
+  `v0.0.158` tag, which now exists; it needs no re-pin.
+- Lane details are in `planning/EXPANDED-SUMMONING-VISUAL-REFINEMENT-STATE.md`.
+
 # output_log2 — CotW installer and early-update repair (2026-10-17)
 
 **Owner test / review checkpoint:** after alpha 3, the owner reported "That
