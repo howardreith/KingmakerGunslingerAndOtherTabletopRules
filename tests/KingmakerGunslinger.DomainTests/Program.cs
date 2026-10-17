@@ -1218,7 +1218,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint18-review-expectations", PrimateVisualTests.ReviewExpectationsAgreeWithThePrintedRules),
             Case("expanded-summoning.sprint18-refined-bodies-outward", PrimateVisualTests.RefinedBodiesShipOutward),
             Case("expanded-summoning.summon-glow-scope", SummonGlowPolicyTests.OnlyKmgSummonsWithoutARegisteredRimLoseTheGlow),
-            Case("expanded-summoning.summon-glow-patch", SummonGlowPolicyTests.ThePatchTouchesOnlyTheSummonedUnitBuffEffect),
+            Case("expanded-summoning.summon-glow-patch", SummonGlowPolicyTests.ThePatchTouchesOnlyTheSummonedCreatureVisualEffect),
             Case("blueprints.ledger-fits-the-loader-bound", BlueprintManifestSizeTests.ShippedLedgerFitsTheLoaderBound),
             Case("blueprints.ledger-bound-still-rejects", BlueprintManifestSizeTests.TheCorruptionBoundStillRejectsBothEnds),
             Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),
