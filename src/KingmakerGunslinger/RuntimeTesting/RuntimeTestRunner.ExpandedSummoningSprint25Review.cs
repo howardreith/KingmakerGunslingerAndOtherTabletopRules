@@ -170,7 +170,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     foreach (string key in new[] { "brachiosaurus", "elephant" })
                         foreach (int frame in Sprint24AiFallback(fixture, key,
-                            10.5f, Sprint25Check, true)) yield return frame;
+                            key == "brachiosaurus" ? 10.5f : 6f,
+                            Sprint25Check, true)) yield return frame;
                     yield break;
                 }
                 bool turnBased = phase == "turn-based-commands";
@@ -239,9 +240,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Random.InitState(FindNativeD20Seed(18));
                 }
             };
+            var costRows = new JArray();
+            FirearmReviewCosts costs = null;
             EventBus.Subscribe(observer);
             try
             {
+                costs = new FirearmReviewCosts(owner, costRows);
                 float reach = (key == "brachiosaurus" ? 20 : 10) * .3048f;
                 float distanceOffset = owner.Corpulence + target.Corpulence;
                 // Mutual sight is 8.5 m for a peaceful hostile, 11.7 m in
@@ -282,6 +286,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["weaponRange"] = owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Meters },
                     "The actual UnitAttack approach radius and engine distance convention discriminate the printed reach boundary.");
                 PlaceExpandedSummoningUnit(target, origin + forward * 2);
+                owner.Memory.Add(target); target.Memory.Add(owner);
+                owner.JoinCombat(); target.JoinCombat();
+                if (!owner.IsInCombat || !target.IsInCombat)
+                    throw new InvalidOperationException("Ordinary attack combat prerequisites are unmet.");
+                bool combatThroughout = owner.IsInCombat;
                 float standardBefore = owner.CombatState.Cooldown.StandardAction;
                 float moveBefore = owner.CombatState.Cooldown.MoveAction;
                 float maxStandard = standardBefore, maxMove = moveBefore;
@@ -292,13 +301,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
                     maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
+                    combatThroughout &= owner.IsInCombat;
                     yield return frame;
                 }
                 maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
                 maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
+                combatThroughout &= owner.IsInCombat;
                 int count = key == "brachiosaurus" ? 1 : 2;
                 bool exact = command != null && command.IsFinished &&
-                    !command.Cutscene && !command.IsIgnoreCooldown && maxStandard > standardBefore &&
+                    combatThroughout && costs.Count(command) == 1 && costs.Exact(command, turnBased) &&
                     command.AllAttacks.Count == count && observer.WeaponAttacks.Count == count &&
                     observer.Rolls.Count == count && observer.Rolls.All(value => value.IsHit) &&
                     observer.WeaponAttacks.All(value => !value.IsCharge && !value.IsAttackOfOpportunity);
@@ -313,18 +324,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
                         ["standardCooldown"] = new JArray(standardBefore, maxStandard, owner.CombatState.Cooldown.StandardAction),
                         ["moveCooldown"] = new JArray(moveBefore, maxMove, owner.CombatState.Cooldown.MoveAction),
-                        ["nativeEconomy"] = !command.Cutscene && !command.IsIgnoreCooldown },
-                    "The real ordinary full-attack command executes exactly the frozen natural routine, with no extra attack or special-command rider.");
+                        ["nativeEconomy"] = !command.Cutscene && !command.IsIgnoreCooldown,
+                        ["combatThroughout"] = combatThroughout,
+                        ["nativeCostApplications"] = costs.Count(command),
+                        ["nativeCostExact"] = costs.Exact(command, turnBased),
+                        ["nativeCostBoundary"] = costRows },
+                    "The real ordinary command executes exactly the frozen routine and crosses the native cost boundary exactly once with the engine's elapsed-time/mode charge, in combat, without a cutscene or cooldown bypass.");
                 Sprint25Body(owner, key, "ordinary-attack-" + turnBased);
             }
             finally
             {
-                EventBus.Unsubscribe(observer);
-                owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
-                owner.Commands.InterruptAll(true);
-                owner.Commands.RemoveFinishedAndUpdateQueue();
-                UnityEngine.Random.state = random;
-                ResetExpandedSummoningHostile(fixture);
+                try { costs?.Dispose(); }
+                finally
+                {
+                    EventBus.Unsubscribe(observer);
+                    owner.Stats.AdditionalAttackBonus.BaseValue = attackBefore;
+                    owner.Commands.InterruptAll(true);
+                    owner.Commands.RemoveFinishedAndUpdateQueue();
+                    UnityEngine.Random.state = random;
+                    ResetExpandedSummoningHostile(fixture);
+                }
             }
         }
 
@@ -845,7 +864,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "The original body actually attaches to the exact donor renderer with private mesh ownership, borrowed paint and native selection.");
         }
 
-        private IEnumerable<int> Sprint25NativeAppearance(UnitEntityData unit, string key)
+        private IEnumerable<int> Sprint25NativeAppearance(UnitEntityData unit, string key,
+            bool requireVisible = true)
         {
             Vector3 spawnPosition = unit.Position;
             if (AstarPath.active == null) throw new InvalidOperationException("No native appearance placement graph.");
@@ -870,8 +890,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     float dissolve = DissolveAmount(unit);
                     bool appearanceBuffAbsent = unit.Descriptor.Buffs.GetBuff(
                         Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null;
-                    ready = body != null && body.enabled && EntityFadedIn(unit) &&
-                        appearanceBuffAbsent && dissolve >= 0f && dissolve <= .02f;
+                    ready = body != null && body.enabled && appearanceBuffAbsent &&
+                        unit.Descriptor.State.CanAct && unit.Descriptor.State.CanMove &&
+                        (!requireVisible || EntityFadedIn(unit) && dissolve >= 0f && dissolve <= .02f);
                     if (ready) break;
                     // Native dissolve reads Unity Time.time, not GameTime.
                     // Once gameplay prerequisites settle, wait on Unity frames
@@ -882,13 +903,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             finally { _sprint25WaitingForUnityAppearance = waitingBefore; }
-            Sprint25Check("native-appearance-ready-" + key, ready,
+            Sprint25Check((requireVisible ? "native-appearance-ready-" : "native-action-ready-") + key, ready,
                 new JObject { ["unit"] = unit.UniqueId, ["frames"] = frames,
                     ["spawnPosition"] = SurveyVector(spawnPosition),
                     ["nativeGroundPosition"] = SurveyVector(ground.clampedPosition),
                     ["gameSecondsDuringWait"] = Game.Instance.Player.GameTime.TotalSeconds - before,
+                    ["requireVisible"] = requireVisible,
                     ["fadedIn"] = EntityFadedIn(unit), ["dissolve"] = DissolveAmount(unit) },
-                "Native appearance prerequisites and finite intact material dissolve settle before visual/command observations; no renderer, fader or material state is forced.");
+                requireVisible
+                    ? "Native appearance prerequisites and finite intact material dissolve settle before visual observations; no renderer, fader or material state is forced."
+                    : "The native appearance action lock clears and the exact owned actor can act/move; an isolated mechanical lane need not be in party sight. No visual result is claimed here.");
             if (!ready) throw new InvalidOperationException("Native giant appearance did not settle: " + key);
         }
     }

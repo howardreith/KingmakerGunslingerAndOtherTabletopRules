@@ -85,4 +85,64 @@ $ledger.coverage[7].priorSource=$candidate.commit
 $ledger.coverage[7].reuseJustification='Unit fixture: unchanged dependencies, exact original execution identities retained.'
 Assert-KmgSprint25GiantBodyReleaseDecision -Ledger $ledger -Candidate $candidate
 $checks++
+function New-Sprint25PremergeFixture {
+    $ledger=New-Sprint25Fixture
+    $ledger.publication.productMergeCommit=$null
+    $ledger.publication.mergeContainsTestedSource=$false
+    $ledger.publication | Add-Member -NotePropertyName status -NotePropertyValue 'PENDING_PRODUCT_MERGE'
+    $ledger.publication | Add-Member -NotePropertyName expectedBaseCommit -NotePropertyValue ('7'*40)
+    $ledger.publication | Add-Member -NotePropertyName productPr -NotePropertyValue 49
+    [pscustomobject]@{ledger=$ledger;head=$candidate.commit;base=('7'*40);expected=('7'*40);
+        pr=[pscustomobject]@{state='OPEN';isDraft=$true;mergeable='MERGEABLE';baseRefName='master';
+            baseRefOid=('7'*40);headRefOid=$candidate.commit}}
+}
+function Test-Sprint25PremergeInput($inputState) {
+    Assert-KmgSprint25PremergeAuthority -Ledger $inputState.ledger -Candidate $candidate -PullRequest $inputState.pr `
+        -RemoteProductHead $inputState.head -RemoteMaster $inputState.base -ExpectedBaseCommit $inputState.expected
+}
+Test-Sprint25PremergeInput (New-Sprint25PremergeFixture)
+$checks++
+foreach($change in @(
+    {param($s) $s.pr.state='MERGED'}, {param($s) $s.pr.isDraft=$false},
+    {param($s) $s.pr.mergeable='CONFLICTING'}, {param($s) $s.pr.baseRefName='other'},
+    {param($s) $s.pr.baseRefOid=('8'*40)}, {param($s) $s.pr.headRefOid=('8'*40)},
+    {param($s) $s.head=('8'*40)}, {param($s) $s.base=('8'*40)},
+    {param($s) $s.expected='not-a-commit'},
+    {param($s) $s.ledger.publication.productMergeCommit=('9'*40)},
+    {param($s) $s.ledger.publication.mergeContainsTestedSource=$true},
+    {param($s) $s.ledger.publication.status='RELEASED'},
+    {param($s) $s.ledger.publication.expectedBaseCommit=('8'*40)},
+    {param($s) $s.ledger.publication.productPr=48},
+    {param($s) $s.ledger.coverage[0].result='FAIL'}
+)) {
+    $state=New-Sprint25PremergeFixture
+    & $change $state
+    $refused=$false
+    try { Test-Sprint25PremergeInput $state } catch {$refused=$true}
+    if(-not $refused){throw 'Invalid premerge authority was accepted.'}
+    $checks++
+}
+$refused=$false
+try { Assert-KmgSprint25GiantBodyReleaseDecision -Ledger (New-Sprint25PremergeFixture).ledger -Candidate $candidate } catch {$refused=$true}
+if(-not $refused){throw 'A truthful pending merge was accepted for publication.'}
+$checks++
+$mode=@{PreflightOnly=$true;Sprint25GiantBodies=$true;ExpectedBaseCommit=('7'*40);
+    Publish=$false;ConfirmReleaseReady=$false;MergedReleaseCommit=''}
+Assert-KmgQualifiedCandidateInvocationMode @mode
+$checks++
+foreach($change in @(
+    {param($m) $m.Publish=$true}, {param($m) $m.ConfirmReleaseReady=$true},
+    {param($m) $m.MergedReleaseCommit=('9'*40)}, {param($m) $m.Sprint25GiantBodies=$false},
+    {param($m) $m.ExpectedBaseCommit=''}, {param($m) $m.ExpectedBaseCommit='bad'},
+    {param($m) $m.PreflightOnly=$false;$m.MergedReleaseCommit=('9'*40)},
+    {param($m) $m.PreflightOnly=$false;$m.ExpectedBaseCommit=''}
+)) {
+    $inputMode=$mode.Clone(); & $change $inputMode
+    $refused=$false
+    try {Assert-KmgQualifiedCandidateInvocationMode @inputMode} catch {$refused=$true}
+    if(-not $refused){throw 'Invalid preflight/publication mode was accepted.'}
+    $checks++
+}
+Assert-KmgQualifiedCandidateInvocationMode -MergedReleaseCommit ('9'*40)
+$checks++
 Write-Host "Sprint 25 release decision: PASS=$checks; source-derived counts and refusal fixtures only; no publication."

@@ -1,39 +1,46 @@
-# Sprint 25 takeover — native Cleave/fixture repair batch, candidate next
+# Sprint 25 takeover — grouped native repair, candidate next
 
-Controlling update, 2026-10-17 18:50 UTC: continue the explicitly selected
-qualification/merge/release campaign. PR49 remains OPEN/DRAFT; no release and
-no Sprint26. See `current.latestCheckpoint` in the Sprint25 ledger for exact
-candidate identities, failed predicates and the next batch.
+Controlling update, 2026-10-17 20:06 UTC: continue the explicitly selected
+qualification/merge/release campaign in `wt/s25`. PR49 remains OPEN/DRAFT;
+no merge/release, public unsuppression or Sprint26. Exact identities and
+remaining assertions are in `current.latestCheckpoint` and
+`remainingNativeCampaign` in the Sprint25 ledger. Earlier checkpoints are dated
+history, not current asset blockers or a reason to restart.
 
-Prior c170dc87 passed 2660/2660, exact build and strict378-file package
-(304.59s). Its independent native batch finished FAIL after2668.43s:
-routes/icons pass standalone and high-risk combined; AI lane setup, payload
-fallback timing, Overrun fixture controller and Cleave require correction.
-All ten exact transactions restored installation/settings/sound bank;
-all118 protected saves/private references are preserved; no game/lease remains.
-Its ZIP/sidecars are archived separately under source-build-c170dc87.
+e8b00499 passed 2660/2660, exact production build and strict378-file package
+(298.78s). Its 46.2-minute independent native batch completed overall FAIL:
+routes/icons and functional body/resource lifecycle PASS in both profiles;
+AI, Overrun and Cleave remain incomplete. All ten transactions restored the
+actual installation/settings/sound bank, all118 protected saves and private
+references. No owned game/lease remains. Exact ZIP/sidecars are archived under
+`artifacts/checkpoints/source-build-e8b00499`; original 9b55df81 and every other
+successful old source/build gate keep their own identities.
 
-The grouped edit grants Brachiosaurus's real native Great Cleave feat
-(standalone actually requires it), preserves global Cleave and its observed
-native target-selection contract, establishes legal combat sight, waits for
-intact native dissolve without burning artificial gameplay time, grounds only
-request-owned fixture actors on the native graph, and scopes/restores the
-native engagement controller rather than fabricating opportunities.
-It also records the five exact new private inventory facts and affected
-persistence fact/command identities. Accepted art/payload bytes are untouched;
-HumanReview: NOT_PERFORMED_NONBLOCKING.
+The coherent repair adds only the native high-rank Skill Focus completion
+Elephant demonstrably lacked (18 instead of21 Perception at11 ranks), without
+moving its unit/type/weapons/eight routes. It reuses the existing read-only
+native cost-boundary sampler, corrects Elephant's AI approach lane and separates
+isolated mechanical action readiness from party-camera visibility. Overrun
+setup isolates its actual route/caster from protected actors and observes native
+Charge/CMB modifiers separately from the frozen baseline. Existing clocks,
+ownership, rules, damage attribution and rollback remain reused. Persistence
+compares the stable receipt before adding module-ON-only observations.
 
-62241247 subsequently passed its full2660-test/exact-build/strict-package
-gate (332.99s), archived under source-build-62241247; it ran no native phase.
-The completed observation-only delta now samples action-spending maxima and
-requires actual native active-prone transitions, with exact-unit prone ticks,
-native rule/timing and existing damage-attribution formatting. Production and
-57/57 selected regressions pass (16.6s +2.0s). All19 source-boundary/refusal
-fixtures passed; the allowed path set is unchanged by this final delta.
-Commit/push and freeze the completed-observer candidate, then finish mandatory
-native/persistence/public proof, publisher preflight, merge, next free stable
-patch/download/restoration, and final-records merge. Do not ask the owner to
-select these already-authorized next actions again.
+Production compilation and57/57 selected regressions PASS (16.9s +5.1s step);
+actual hidden-state source gate and19 source-boundary/refusal fixtures PASS.
+Publisher tooling now has an honest premerge-only dry run:70 Sprint25 checks,
+43 predecessor decisions and18 reporting-lineage checks PASS. It cannot publish
+or claim a future merge. The actual public-artifact preflight has not run.
+
+Next: commit/push, prepare one fresh Sprint candidate, run repaired foundation,
+turn-based, AI, Overrun and Cleave phases in both profiles on that exact package;
+then targeted ON/OFF cold-load/cleanup/fresh-absence stages. Reuse E8 body/route
+results only with original identities and unchanged-dependency justification.
+Complete the final public artifact/inventory/icon/eleven-root proof, publisher
+preflight, authorized merge/release/download/restoration audit and final-records
+merge; STOP. No mandatory failure is waived. Accepted asset bytes are untouched;
+rough polish is deferred and HumanReview is NOT_PERFORMED_NONBLOCKING. Signed-in
+Steam Offline Mode works with the existing guards; no online requirement was added.
 
 ## Dated prior takeover/checkpoint history
 

@@ -21,6 +21,8 @@ param(
     [switch]$Sprint22,
     [switch]$Sprint23ChargeRounding,
     [switch]$Sprint25GiantBodies,
+    [switch]$PreflightOnly,
+    [string]$ExpectedBaseCommit,
     [string]$ProductPrNumber,
     [string]$PackagePath,
     [string]$CandidateRepositoryRoot,
@@ -39,10 +41,11 @@ if ($ReuseQualifiedCandidate) {
         -QualificationLedgerPath $QualificationLedgerPath `
         -MergedReleaseCommit $MergedReleaseCommit -ReleaseNotesPath $ReleaseNotesPath `
         -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady -Sprint22:$Sprint22 `
+        -PreflightOnly:$PreflightOnly -ExpectedBaseCommit $ExpectedBaseCommit `
         -Sprint23ChargeRounding:$Sprint23ChargeRounding -Sprint25GiantBodies:$Sprint25GiantBodies -ProductPrNumber $ProductPrNumber
     return
 }
-if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit) {
+if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit -or $PreflightOnly -or $ExpectedBaseCommit) {
     throw 'Qualified-candidate arguments require -ReuseQualifiedCandidate.'
 }
 if ($Sprint22 -or $Sprint23ChargeRounding -or $Sprint25GiantBodies -or

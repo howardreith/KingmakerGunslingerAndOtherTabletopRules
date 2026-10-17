@@ -1,9 +1,37 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "NATIVE_ACTION_AND_ACTIVE_PRONE_OBSERVERS_FOCUSED_PASS_CANDIDATE_NEXT",
+  "status": "E8_NATIVE_PARTIAL_RETAINED_COHERENT_REPAIR_FOCUSED_PASS_CANDIDATE_NEXT",
   "current": {
     "latestCheckpoint": {
+      "asOfUtc": "2026-10-17T20:06:12Z",
+      "sourceBuildCheckpoint": {
+        "source": "e8b00499142c944dfada6172ac4bd17e64e28e42",
+        "sourceFingerprint": "75e66d8a10373fbf437e0a776cae1505d075670838506b82a376c8cc3b0f7d86",
+        "zipSha256": "f763686b89228c856df62c12b1d9d4fcfdc50d34dae9a823ee2d20a445c6dd29",
+        "dllSha256": "6539446fa532e0b351d8246608a8260befb6bb8d1bf329b79124c94d7f9c2fd0",
+        "dllMvid": "f39059ee-0892-4951-bd69-cda2cb92a2f4",
+        "gate": "PASS: 2660/2660, exact production build, strict 378-file package, 298.78 s; artifacts/sprint25-candidate-gate-e8b00499.result.json",
+        "archive": "artifacts/checkpoints/source-build-e8b00499: original ZIP and both untouched sidecars copied and hash-verified before replacement. Earlier checkpoints, especially the original 9b55df81 candidate object, retain their actual identities."
+      },
+      "native": {
+        "foundation": "Standalone FAIL at native RunId 20261017T1859264988484Z-ff02324b856a4e9abd0b8dbf012a03a1, transaction compat-20261017T185752Z-b7fb9d1f61d6. Profiles/reach/signed actual weapon and trample damage/live HD DC/Power Attack/native Tramples and Triceratops control largely pass; Elephant Perception 18 instead of 21 and Brachiosaurus ordinary cooldown maxima zero fail. Exact restoration and all 118 protected saves/private references pass.",
+        "independentBatch": "artifacts/native-batch-e8b00499-independent/result.json; 2026-10-17T19:05:52Z through 19:52:04Z; 2772.1474159 s. Overall FAIL: four PASS cells (routes and functional lifecycle, each in standalone/high-risk combined), six FAIL cells (AI, Overrun, Cleave in each). All ten exact transactions restored installation/settings/sound bank; all 118 protected saves and private references preserved; no owned game/lease remained.",
+        "ai": "Brachiosaurus's exact-owner native AI approaches and attacks in both profiles. Elephant selects an attack but stalls on the same 10.5 m surveyed lane; it separately passes native 6 m movement. No successful Elephant AI outcome is claimed.",
+        "mechanicalSetup": "Overrun/Cleave stop before mechanics because the isolated lane is outside party sight while the observer requires faded-in visibility. This is unmet setup, not a maneuver verdict. Review also found the hostile-seeded route survey must be explicitly relocated to the isolated lane, with the request caster outside contact.",
+        "bodyIcon": "Both original bodies visibly attach and pass movement/confined navigation, quantities, fallback, OFF/ON, death/removal, private teardown and native donor isolation in both profiles. Unaltered party-camera captures inspected for functional visibility, not aesthetic approval. All eleven registered roots and eight Elephant template children use the actual loaded sprites; 120 icons and no fallback; 32-pixel native-sprite preview inspected. Brachiosaurus remains hidden."
+      },
+      "coherentRepair": {
+        "product": "Append only Elephant chassis bd380912f7c74843966c363ab281c0c2 for the demonstrated missing high-rank Skill Focus +3, using the existing standard native modifier lifetime. Eleven real ranks, existing unit/type/weapons and eight routes remain intact. No global feat repair, fake ranks, asset/driver or retarget change.",
+        "observation": "Reuse FirearmReviewCosts at the actual native UpdateCooldowns boundary: require exactly one correct elapsed-time/mode charge in sustained combat, without changing costs. Elephant AI uses a legal 6 m approach with the same exact-owner controller. Isolated mechanics wait only on native action readiness, not party visibility; caster/hostiles are placed outside protected actors. Native ChargeBuff/contextual CMB deltas are observed separately from the required +32 baseline; only disposable defense/resource prerequisites are normalized before the real rule. Existing clock, ownership, damage, rollback and command implementations are reused.",
+        "persistence": "The stable existing racial/weapon receipt is compared before module-ON-only evidence is added. No new serialized part/schema. ON cold-load additionally checks exact giant facts/commands and total Perception. The exact six-stage two-creature ON/OFF prepare/cold-cleanup/fresh-absence supervisor is prepared but has not run.",
+        "checks": "PASS: production compilation 16.9 s; 57/57 selected regressions (2660 registered), domain step 5.1 s. Actual Sprint25 source gate PASS hidden/6916 identities; exact append/source refusals 19/19. Publisher checks: Sprint25 70, predecessor decision 43, reporting lineage 18. No new full/native gate is claimed for this changed source.",
+        "releaseTooling": "PreflightOnly/ExpectedBaseCommit added narrowly for Sprint25 PR49/wt/s25: open draft, exact remote head/base and full public qualification/proofs/restoration required; no promotion directory, tag, push, release or claimed merge. Publication still requires the actual merged PR/parents/candidate ancestry, frozen exact artifact and explicit confirmation. Fetch explicitly excludes tags. This is tooling, not documentation-only."
+      },
+      "next": "Commit/push this coherent repair; prepare one fresh Sprint candidate; reuse its exact artifact through repaired phases (foundation, turn-based commands, AI, Overrun, Cleave) in both profiles. Reuse e8 route/lifecycle evidence only with original identities and a dependency argument: body assets/view/resource/route code is unchanged; the new Elephant stat fact cannot qualify public visibility. Then targeted persistence, public unsuppression/artifact gate and fresh public inventory/icon/all-eleven-root checks, publisher preflight, merge/release/download/restoration audit, final records merge, STOP. No mandatory failure waived; no Sprint26.",
+      "acceptance": "HumanReview NOT_PERFORMED_NONBLOCKING. Rough neck/skull/seams/faceting/tail/contact/texture polish remains deferred. Steam Offline Mode works with existing guards. PR49 remains OPEN/DRAFT; no merge/release."
+    },
+    "previousCheckpoint20261017T1850Z": {
       "asOfUtc": "2026-10-17T18:50:23Z",
       "sourceBuild6224": {
         "source": "622412477dd96e7bf876e30fecd477c092011a82",
@@ -49,7 +77,7 @@
     },
     "authority": "Owner Codex takeover mission, 2026-10-17: complete scoped functional native qualification, publication qualification, PR 49 merge, next stable release, downloaded-asset verification and final records; then STOP. No Sprint 26.",
     "historyPolicy": "Older art blockers, prototype vetoes, append counts, seven icon failures and Overrun interpretations below are dated research/development history. This current section, controllingAcceptance, candidate and remainingNativeCampaign govern the campaign.",
-    "implementation": "Both original body payloads/albedos and the supplied Brachiosaurus icon are integrated. Head-weighted neck stiffness and recorded visual polish are accepted deferrals. Functional attachment, mechanics, resources, persistence and public routes remain unqualified.",
+    "implementation": "Both original body payloads/albedos and the supplied icon are integrated. E8 now has passing functional body/resource and registered-route/icon evidence in both profiles. Mandatory remaining mechanics, affected persistence and exact public-artifact qualification remain open. Rough visual polish is deferred; the original candidate object is a historical 9b55df81 source/build checkpoint, not the current native artifact.",
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
     "intake": {
       "observedUtc": "2026-10-17T14:48:40Z",
@@ -1679,14 +1707,14 @@
     "whatItIsNot": "A package passing structural checks is not native qualification. Nothing has been deployed, launched or observed in game."
   },
   "remainingNativeCampaign": {
-    "status": "PARTIAL NATIVE RESULTS RETAINED ON C170; COMPLETED OBSERVER FOCUSED PASS; NEW FROZEN CANDIDATE AND MANDATORY NATIVE QUALIFICATION NEXT",
+    "status": "E8 BOTH-PROFILE ROUTES/BODY/LIFECYCLE PASS RETAINED; SIX FAILED INDEPENDENT CELLS AND TWO FOUNDATION PREDICATES; COHERENT REPAIR FOCUSED PASS; NEW CANDIDATE NEXT",
     "whyItIsABatchAndNotACheckpoint": "Implement one bounded Sprint 25 review with phases for profiles/commands, ordinary Overrun, functional visuals/resources and routes, plus separate targeted persistence stages. Reuse the existing partial-class fixture, native clock and observers; predecessor file sizes are not an implementation target.",
     "candidateBoundary": "Compiled observers change DLL/MVID as expected and are authorized. Batch the complete minimal observer and focused checks, then build one fresh Sprint candidate. Preserve candidate.commit 9b55df81 and its exact hashes as the historical source/build checkpoint; it is not invalidated or relabelled by later work.",
     "coverageMap": [
       {
         "required": "Composed profiles, signed Strength, reach, trample DC/damage, feats, Great Cleave and RTWP/turn-based action costs",
         "existing": "ExpandedSummoningCorrectionFixture / BeginExpandedSummoningCorrectionFixture and Sprint22NativeClock are private members of the same RuntimeTestRunner partial class. Existing weapon-stat/damage observers, Sprint23FindTrampleRoute, ExpandedSummoningTrampleObserver, Sprint22EnrollTurnBasedOwners and detached native command tick/teardown seams can be reused.",
-        "missing": "Parameterize only the required creature observations; predecessor command cases hard-code creature names, dice and DCs and cannot qualify these units unchanged. Add actual signed-Strength damage rows, exact-owner ordinary/Trample commands, reach boundary probes, Elephant grants/effects and legal multi-target Great Cleave including miss termination."
+        "missing": "Fresh corrected Elephant Perception and actual native cost-boundary proof, both-profile foundation and turn-based command completion, and legal Great Cleave/miss/action sequences. E8 signed actual damage, reach, live DC, Power Attack and RTWP Tramples retain their original partial PASS identities. FirearmReviewCosts supplies the existing read-only cost boundary."
       },
       {
         "required": "Brachiosaurus ordinary Overrun outcome, target limit, movement/action budget and per-responder opportunity ownership",
@@ -1696,17 +1724,17 @@
       {
         "required": "Both original bodies attach, usable motion/navigation/icon, fallback and resource lifecycle",
         "existing": "Sprint24 visual/death/crowding cases demonstrate the fixture and observation pattern; CaptureRosterUnitResources distinguishes attachment-private resources, borrowed originals and cache ownership. Reuse the current giant-body attachment/fault seams after inspecting their exact interfaces.",
-        "missing": "Giant-specific attachment identity, unaltered party-camera captures, icon consumer assignments/normal-size UI, practical placement/confined movement, quantity/removal/death, fault fallback, repeated spawn/despawn, OFF/ON and affected-load observations. Do not count borrowed/process-cache survival as a private leak."
+        "missing": "E8 passes both-profile original attachment, normal party captures, native icon consumers, practical/confined movement, quantities, death/removal, payload/attach fallback, repeated teardown and OFF/ON. Reuse only under its exact identity with unchanged asset/view/resource dependencies. Affected cold-load observations and final public icon consumers remain fresh requirements. Borrowed/process-cache survival is not a private leak."
       },
       {
         "required": "Three Brachiosaurus SNA roots and eight Elephant roots, quantity/template/slot/duration cleanup and cold persistence",
         "existing": "Own-tier/quiet summon helpers, registered/player route observations, generic inventory checks and the separate guarded working-save persistence transaction exist. Invoke-Sprint22InstalledStack currently permits ankylosaurus, armored-dinosaurs and theropods only.",
-        "missing": "Add the exact giant-body inputs and a truthful targeted persistence scope through parser/PowerShell/runner metadata; do not invoke old whole-roster campaigns. Preserve fresh prepare/load/cleanup/absence processes, module-disabled coverage and the all-KMG clean grapple reset."
+        "missing": "Registered hidden/public Elephant route inputs pass both profiles on E8. The exact final public artifact must freshly cast all eleven roots. Run the already-registered giant-bodies prepare/cold-cleanup/fresh-absence stages ON and OFF, preserving process isolation and the existing all-KMG clean grapple reset. No new whole-roster campaign."
       },
       {
         "required": "Supported AI, regression controls and exact-artifact publication",
         "existing": "Sprint24TickExactAi is the final exact-owner controller path. Publish-QualifiedCandidate preserves root/sidecar/ancestry/remote/proof/confirmation guards and separates Sprint24 reporting lineage from candidate ancestry.",
-        "missing": "Add giant-specific supported AI/fallback assertions and Triceratops/native Mastodon controls. Publisher has no Sprint25 selector yet: add the narrow evidence mapping and focused refusal tests before the final candidate; keep reporting descendants legal without weakening candidate ancestry."
+        "missing": "Elephant exact-owner AI must complete a real attack on the corrected legal lane; Brachiosaurus AI and Triceratops/native donor controls have original E8 PASS evidence. Publisher now supports Sprint25 and has 70 focused checks including honest premerge authority; actual positive public-artifact preflight, merged promotion and public-download audit remain required. Reporting descendants stay legal without weakening tested-source ancestry."
       }
     ],
     "batches": [

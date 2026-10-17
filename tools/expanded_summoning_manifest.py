@@ -633,8 +633,12 @@ def planned():
         # creature. A BlueprintFeature, like the native feat
         # it clones.
         ("KMG.Summoning.Special.Brachiosaurus.GreaterOverrun", "BlueprintFeature"),
+        # Native qualification proved the missing high-rank Skill Focus +3.
+        # A standard private fact owns its native modifier through save/load;
+        # the released Elephant unit/type/weapons and eight roots do not move.
+        ("KMG.Summoning.Natural.Elephant.Chassis", "BlueprintFeature"),
     ))
-    if len(rows) != 2161 or len({symbol for symbol, _ in rows}) != 2161:
+    if len(rows) != 2162 or len({symbol for symbol, _ in rows}) != 2162:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

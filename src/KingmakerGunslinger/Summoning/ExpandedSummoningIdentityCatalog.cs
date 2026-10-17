@@ -83,13 +83,14 @@ namespace KingmakerGunslinger.Summoning
         // appended afterwards, with this count moved in the same commit.
         // Nothing templated is appended, because Brachiosaurus has no
         // Monster row.
-        // 277 since 2026-10-16: the released Elephant trample joined these
+        // 278 after product-native qualification: the released Elephant trample joined these
         // after the bounded observation of its own carriers found it had
         // none, the Brachiosaurus ordinary Overrun command joined when
         // the owner selected the bounded native-command route, and its
         // cloned Greater Overrun carrier joined when the printed rider
-        // was corrected for that one creature.
-        internal const int SpecialIdentityCount = 277;
+        // was corrected for that one creature. Elephant's missing high-rank
+        // Skill Focus completion appends last without replacing any identity.
+        internal const int SpecialIdentityCount = 278;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -576,6 +577,9 @@ namespace KingmakerGunslinger.Summoning
             // not an ability.
             result.Add(new SummoningIdentitySpec(
                 GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.ElephantChassisSymbol,
                 "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();

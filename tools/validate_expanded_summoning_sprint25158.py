@@ -74,6 +74,11 @@ GUIDS = {
     # actually caused and nothing stacks on the original.
     "KMG.Summoning.Special.Brachiosaurus.GreaterOverrun":
         "c9f41b8d20e7456eae3d6c1f5a8b7204",
+    # Product-native e8b00499 measured Perception 18 at eleven ranks:
+    # the existing native feat supplies only +3. This standard native
+    # modifier completes its high-rank half without changing ranks or GUIDs.
+    "KMG.Summoning.Natural.Elephant.Chassis":
+        "bd380912f7c74843966c363ab281c0c2",
     # Appended 2026-10-16 when master released the alternate summoning
     # sources: that release projects a caller-specific adapter identity
     # for every creature whose family and tier admit it, and it keeps no

@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.DomainTests
             // Tyrannosaurus Powerful Bite, Bleeding Critical and combat
             // traits carriers, all granted on their own units.
             int giantRows = rows.Count(r => r[1] == "KMG_Summoning_Unit_Brachiosaurus" || r[1] == "KMG_Summoning_Unit_Elephant");
-            Assertions.Equal(5, giantRows, "Only the four new Brachiosaurus carriers and existing Elephant's new Trample are admitted.");
+            Assertions.Equal(6, giantRows, "Only the four Brachiosaurus carriers and Elephant's exact Trample/chassis are admitted.");
             Assertions.Equal(53, rows.Length - giantRows, "The released interpretation prefix through Sprint 24 is preserved.");
             Assertions.Equal(rows.Length, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
             var entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];

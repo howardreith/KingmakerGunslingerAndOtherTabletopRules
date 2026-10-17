@@ -1809,6 +1809,9 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "BrachiosaurusChassis"
                     ? Require<BlueprintFeature>(bySymbol,
                         GiantBodyRulesPolicy.BrachiosaurusChassisSymbol)
+                    : fact == "ElephantChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantBodyRulesPolicy.ElephantChassisSymbol)
                     : fact == "TyrannosaurusPowerfulBite"
                     ? Require<BlueprintFeature>(bySymbol,
                         TheropodRulesPolicy.TyrannosaurusPowerfulBiteSymbol)

@@ -60,8 +60,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnitEntityData ally = CastExpandedSummoningQuietUnit(fixture, "wolf");
                         UnitEntityData remote = CastExpandedSummoningQuietUnit(fixture, "wolf", fixture.Hostile);
                         created.AddRange(new[] { ally, remote });
-                        foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
-                        Vector3 origin = fixture.Caster.Position;
+                        foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus", false)) yield return frame;
+                        var ground = AstarPath.active.GetNearest(fixture.Caster.Position);
+                        if (ground.node == null || !ground.node.Walkable)
+                            throw new InvalidOperationException("No native floor for the isolated Cleave fixture.");
+                        Vector3 origin = ground.clampedPosition;
                         PlaceExpandedSummoningUnit(owner, origin);
                         for (int index = 0; index < targets.Length; index++)
                             PlaceExpandedSummoningUnit(targets[index], origin + Vector3.forward * 5.5f +
@@ -111,7 +114,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                             }
                             if (command.ExecutionProcess != null) TickExpandedSummoningDetachedAbility(command, frame);
                             maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
-                            if (frame == 12 || frame == 24) Sprint25Body(owner, "brachiosaurus", "cleave-" + missSecond + "-" + frame);
                             yield return 0;
                             if (command.IsFinished) break;
                         }

@@ -1,5 +1,18 @@
 Set-StrictMode -Version Latest
 
+function Assert-KmgQualifiedCandidateInvocationMode {
+    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Publish,
+        [switch]$ConfirmReleaseReady,[string]$MergedReleaseCommit,[string]$ExpectedBaseCommit)
+    if($PreflightOnly) {
+        if(-not $Sprint25GiantBodies -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
+            $ExpectedBaseCommit -cnotmatch '^[0-9a-f]{40}$') {
+            throw 'PreflightOnly requires Sprint 25 and its pinned base, and forbids publication, confirmation or a claimed merge.'
+        }
+    } elseif($ExpectedBaseCommit -or $MergedReleaseCommit -cnotmatch '^[0-9a-f]{40}$') {
+        throw 'Promotion requires its actual merged release commit; pinned-base arguments belong only to PreflightOnly.'
+    }
+}
+
 function Assert-KmgReleaseOrigin {
     param([Parameter(Mandatory=$true)][string]$Origin)
     $allowed = @('git@github.com:howardreith/KingmakerGunslingerAndOtherTabletopRules.git',
@@ -406,7 +419,7 @@ print(json.dumps(dict(projectCreatures=len(c),monsterCreatures=sum(x['monster'] 
     return (($output -join "`n") | ConvertFrom-Json)
 }
 
-function Assert-KmgSprint25GiantBodyReleaseDecision {
+function Assert-KmgSprint25GiantBodyQualification {
     param([Parameter(Mandatory=$true)]$Ledger,[Parameter(Mandatory=$true)]$Candidate)
     if($Ledger.schemaVersion -ne 1 -or $Ledger.mission -cne 'Sprint25BrachiosaurusElephant' -or
         $Ledger.status -cne 'QUALIFIED' -or -not $Ledger.releaseEligible -or
@@ -449,9 +462,7 @@ function Assert-KmgSprint25GiantBodyReleaseDecision {
     if($Ledger.restoration.current -cne 'EXACT_INTAKE_VERIFIED' -or -not $Ledger.restoration.workingFixtureClean) {
         throw 'Sprint 25 requires exact restoration and a clean working fixture.'
     }
-    if($Ledger.publication.productMergeCommit -cnotmatch '^[0-9a-f]{40}$' -or
-        $Ledger.publication.mergeContainsTestedSource -ne $true -or
-        $Ledger.publication.tag -cne ('v'+$Candidate.version) -or $Ledger.publication.prerelease -or
+    if($Ledger.publication.tag -cne ('v'+$Candidate.version) -or $Ledger.publication.prerelease -or
         $Ledger.publication.draft -or -not $Ledger.publication.latest) { throw 'Sprint 25 stable publication lineage/state is invalid.' }
     $fresh=@('complete-public-source-build-package-gate','public-inventory-icon-eleven-roots','exact-package-release-qualification')
     $mandatory=@('composed-profiles-signed-strength-and-commands','great-cleave-native-sequences',
@@ -481,6 +492,38 @@ function Assert-KmgSprint25GiantBodyReleaseDecision {
         }
         if($row.result -ceq 'REUSED_PASS' -and ([string]::IsNullOrWhiteSpace([string]$row.reuseJustification) -or
             [string]::IsNullOrWhiteSpace([string]$row.priorSource))) { throw 'Sprint 25 reuse lacks dependency/provenance evidence.' }
+    }
+}
+
+function Assert-KmgSprint25GiantBodyReleaseDecision {
+    param([Parameter(Mandatory=$true)]$Ledger,[Parameter(Mandatory=$true)]$Candidate)
+    Assert-KmgSprint25GiantBodyQualification -Ledger $Ledger -Candidate $Candidate
+    if($Ledger.publication.productMergeCommit -cnotmatch '^[0-9a-f]{40}$' -or
+        $Ledger.publication.mergeContainsTestedSource -ne $true) {
+        throw 'Sprint 25 publication requires the actual verified product merge.'
+    }
+}
+
+function Assert-KmgSprint25PremergeAuthority {
+    param([Parameter(Mandatory=$true)]$Ledger,[Parameter(Mandatory=$true)]$Candidate,
+        [Parameter(Mandatory=$true)]$PullRequest,
+        [Parameter(Mandatory=$true)][string]$RemoteProductHead,
+        [Parameter(Mandatory=$true)][string]$RemoteMaster,
+        [Parameter(Mandatory=$true)][string]$ExpectedBaseCommit)
+    Assert-KmgSprint25GiantBodyQualification -Ledger $Ledger -Candidate $Candidate
+    if($ExpectedBaseCommit -cnotmatch '^[0-9a-f]{40}$' -or
+        $RemoteMaster -cne $ExpectedBaseCommit -or $PullRequest.baseRefOid -cne $ExpectedBaseCommit -or
+        $PullRequest.baseRefName -cne 'master' -or $PullRequest.state -cne 'OPEN' -or
+        $PullRequest.isDraft -ne $true -or $PullRequest.mergeable -cne 'MERGEABLE' -or
+        $RemoteProductHead -cne $Candidate.commit -or $PullRequest.headRefOid -cne $Candidate.commit) {
+        throw 'Sprint 25 premerge authority moved or is not the exact open draft candidate/base.'
+    }
+    if($Ledger.publication.status -cne 'PENDING_PRODUCT_MERGE' -or
+        -not [string]::IsNullOrEmpty([string]$Ledger.publication.productMergeCommit) -or
+        $Ledger.publication.mergeContainsTestedSource -ne $false -or
+        $Ledger.publication.expectedBaseCommit -cne $ExpectedBaseCommit -or
+        [string]$Ledger.publication.productPr -cne '49') {
+        throw 'Sprint 25 premerge proof must truthfully record its pending merge and exact pinned base/PR.'
     }
 }
 

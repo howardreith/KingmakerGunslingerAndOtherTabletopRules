@@ -3,13 +3,15 @@ param(
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$CandidateRepositoryRoot,
     [Parameter(Mandatory=$true)][string]$QualificationLedgerPath,
-    [Parameter(Mandatory=$true)][string]$MergedReleaseCommit,
+    [string]$MergedReleaseCommit,
     [Parameter(Mandatory=$true)][string]$ReleaseNotesPath,
     [switch]$Publish,
     [switch]$Sprint22,
     [switch]$Sprint23ChargeRounding,
     [switch]$Sprint24Theropods,
     [switch]$Sprint25GiantBodies,
+    [switch]$PreflightOnly,
+    [string]$ExpectedBaseCommit,
     [string]$ProductPrNumber,
     [switch]$ConfirmReleaseReady
 )
@@ -29,11 +31,16 @@ function Resolve-KmgReleaseInput([string]$Path) {
 }
 Push-Location $root
 try {
+    Assert-KmgQualifiedCandidateInvocationMode -PreflightOnly:$PreflightOnly -Sprint25GiantBodies:$Sprint25GiantBodies `
+        -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady -MergedReleaseCommit $MergedReleaseCommit `
+        -ExpectedBaseCommit $ExpectedBaseCommit
     $git = Get-KmgGitState -RepositoryRoot $root
     if(@($Sprint22,$Sprint23ChargeRounding,$Sprint24Theropods,$Sprint25GiantBodies | Where-Object {$_}).Count -gt 1) { throw 'Select only one qualified-candidate release contract.' }
     if($Sprint25GiantBodies -and $ProductPrNumber -cne '49') {
         throw 'Sprint 25 publication is authorized only for product PR 49.'
     }
+    if($Sprint25GiantBodies -and [IO.Path]::GetFullPath($root).TrimEnd('\') -ine
+        'C:\Dev\KingmakerGunslingerLab\wt\s25') { throw 'Sprint 25 publisher must run from the assigned wt/s25 root.' }
     if($Sprint23ChargeRounding -and $ProductPrNumber -cnotmatch '^\d+$') {
         throw 'Sprint 23 charge-rounding publication requires its numeric product PR.'
     }
@@ -59,23 +66,28 @@ try {
     # assets are deliberately left untouched. Nothing is weakened: stable
     # tag existence is already proven against the remote with ls-remote and
     # the GitHub releases API below, both stronger than a local tag read.
-    $null = Get-KmgReleaseCommandText git @('fetch','origin','master',$git.Branch)
-    if ((Get-KmgReleaseCommandText git @('rev-parse',('origin/'+$git.Branch))) -cne $git.Commit -or
-        (Get-KmgReleaseCommandText git @('rev-parse','origin/master')) -cne $MergedReleaseCommit) {
+    $null = Get-KmgReleaseCommandText git @('fetch','--no-tags','origin','master',$git.Branch)
+    $remoteMaster=Get-KmgReleaseCommandText git @('rev-parse','origin/master')
+    $remoteProduct=Get-KmgReleaseCommandText git @('rev-parse',('origin/'+$git.Branch))
+    if ($remoteProduct -cne $git.Commit -or
+        (-not $PreflightOnly -and $remoteMaster -cne $MergedReleaseCommit)) {
         throw 'Reporting or merged release head has moved; review the current lineage.'
     }
-    $pr = Get-KmgReleaseCommandText gh @('pr','view',$selectedPr,'--json','state,mergeCommit,headRefOid') | ConvertFrom-Json
-    if ($pr.state -cne 'MERGED' -or $pr.mergeCommit.oid -cne $MergedReleaseCommit) {
+    $pr = Get-KmgReleaseCommandText gh @('pr','view',$selectedPr,'--json','state,mergeCommit,headRefOid,baseRefOid,baseRefName,isDraft,mergeable') | ConvertFrom-Json
+    if (-not $PreflightOnly -and ($pr.state -cne 'MERGED' -or $pr.mergeCommit.oid -cne $MergedReleaseCommit)) {
         throw 'The selected sprint PR has not merged at the selected release commit.'
     }
     # The head that was actually merged, taken from verified metadata and then
     # cross-checked against the product merge's own parents. Two independent
     # sources, so no ledger claim can nominate a different head.
+    $mergedPrHead = $null
+    if(-not $PreflightOnly) {
     $mergedPrHead = [string]$pr.headRefOid
     $mergeParents = @((Get-KmgReleaseCommandText git @('log','--format=%P','-1',$MergedReleaseCommit)) -split '\s+' |
         Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
     if ($mergedPrHead -cnotmatch '^[0-9a-f]{40}$' -or $mergeParents -cnotcontains $mergedPrHead) {
         throw 'The merged pull-request head is not one of the product merge parents.'
+    }
     }
     $candidateRoot = (Resolve-Path -LiteralPath $CandidateRepositoryRoot).Path
     if($Sprint25GiantBodies -and [IO.Path]::GetFullPath($candidateRoot).TrimEnd('\') -ine
@@ -88,9 +100,14 @@ try {
         (Get-KmgSourceStateFingerprint -RepositoryRoot $candidateRoot) -cne $candidate.sourceStateSha256) {
         throw 'Qualified artifact source is no longer frozen.'
     }
-    # Candidate ancestry is unconditional: the released bytes must be built from
-    # source contained in the product merge.
-    $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$candidate.commit,$MergedReleaseCommit)
+    # Publication unconditionally requires tested source inside the actual
+    # merge. Preflight proves only the pinned base ancestry, never a future merge.
+    if($PreflightOnly) {
+        if($candidate.commit -cne $git.Commit) { throw 'Premerge source and artifact head differ.' }
+        $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$ExpectedBaseCommit,$candidate.commit)
+    } else {
+        $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$candidate.commit,$MergedReleaseCommit)
+    }
     # Reporting ancestry is checked separately. A reporting branch legitimately
     # carries the records describing its own merge, so it can be a reviewed
     # descendant of the merged head rather than an ancestor of the merge.
@@ -118,6 +135,8 @@ try {
         $allowedReportingPaths = @()
         $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$git.Commit,$MergedReleaseCommit)
     }
+    $reportingLineage=$null
+    if(-not $PreflightOnly) {
     $reportingLineage = Assert-KmgReportingLineage -RepositoryRoot $root `
         -ReportingCommit $git.Commit -MergedReleaseCommit $MergedReleaseCommit `
         -MergedPrHead $mergedPrHead -AllowedReportingPaths $allowedReportingPaths
@@ -125,12 +144,20 @@ try {
     # must remain byte-equivalent; no reporting-only rebuild is performed.
     $null = Get-KmgReleaseCommandText git @('diff','--exit-code',$candidate.commit,$MergedReleaseCommit,'--',
         'src/KingmakerGunslinger','assets','blueprints','Info.json','Directory.Build.props')
+    }
     $info = Get-Content (Join-Path $root 'Info.json') -Raw | ConvertFrom-Json
     if ($info.Id -cne 'KingmakerGunslinger' -or $info.Version -cne $candidate.version -or
         $candidate.version -cnotmatch '^\d+\.\d+\.\d+$') { throw 'Stable version identity differs from the tested artifact.' }
     $ledgerPath = Resolve-KmgReleaseInput $QualificationLedgerPath
     $ledger = Get-Content -LiteralPath $ledgerPath -Raw | ConvertFrom-Json
-    if($Sprint25GiantBodies) { Assert-KmgSprint25GiantBodyReleaseDecision -Ledger $ledger -Candidate $candidate }
+    if($PreflightOnly) {
+        Assert-KmgSprint25PremergeAuthority -Ledger $ledger -Candidate $candidate -PullRequest $pr `
+            -RemoteProductHead $remoteProduct -RemoteMaster $remoteMaster -ExpectedBaseCommit $ExpectedBaseCommit
+    }
+    elseif($Sprint25GiantBodies) {
+        Assert-KmgSprint25GiantBodyReleaseDecision -Ledger $ledger -Candidate $candidate
+        if($ledger.publication.productMergeCommit -cne $MergedReleaseCommit) { throw 'Ledger product merge differs from verified GitHub/Git lineage.' }
+    }
     elseif($Sprint24Theropods) { Assert-KmgSprint24TheropodReleaseDecision -Ledger $ledger -Candidate $candidate }
     elseif($Sprint23ChargeRounding) { Assert-KmgSprint23ChargeRoundingReleaseDecision -Ledger $ledger -Candidate $candidate }
     elseif($Sprint22) { Assert-KmgSprint22ReleaseDecision -Ledger $ledger -Candidate $candidate }
@@ -160,6 +187,18 @@ try {
     $releases = Get-KmgReleaseCommandText gh @('api',('repos/'+$repository+'/releases?per_page=100')) | ConvertFrom-Json
     if (@($releases | Where-Object {$_.tag_name -ceq $tag}).Count -gt 0) { throw 'Stable release already exists.' }
     if ($Publish -and -not $ConfirmReleaseReady) { throw 'Publication requires -ConfirmReleaseReady.' }
+    if($PreflightOnly) {
+        # No output directory, tag, push or release is created by this path.
+        # A real product merge must still pass the unchanged publication path.
+        [pscustomobject]@{kind='KmgSprint25PremergePreflight';status='PASS';published=$false;
+            checkedUtc=[DateTime]::UtcNow.ToString('o');requiresProductMerge=$true;productPr=49;
+            expectedBaseCommit=$ExpectedBaseCommit;testedSource=$candidate.commit;tag=$tag;
+            candidateRoot=$candidateRoot;packageSha256=$candidate.packageSha256;
+            dllSha256=$candidate.dllSha256;dllMvid=$candidate.dllMvid;
+            sourceFingerprint=$candidate.sourceStateSha256;qualificationLedger=$ledgerPath;
+            qualificationLedgerSha256=Get-KmgSha256 $ledgerPath;promotionDirectoryCreated=$false}
+        return
+    }
     $releaseRoot = Join-Path $root ('artifacts/release-promotion/'+$candidate.version+'/'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ'))
     if (Test-Path -LiteralPath $releaseRoot) { throw 'Promotion output already exists.' }
     New-Item -ItemType Directory -Path $releaseRoot | Out-Null

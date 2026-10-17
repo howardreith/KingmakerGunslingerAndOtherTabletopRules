@@ -68,7 +68,8 @@ class Sprint25GateTests(unittest.TestCase):
             gate.validate_append(self.old, changed)
 
     def test_the_allowed_set_is_exact_and_names_both_groups(self):
-        # Twenty since 2026-10-17. This pins the exact set, not only the
+        # Twenty-one after the product-native Elephant Skill Focus finding.
+        # This pins the exact set, not only the
         # count: ten Sprint 25 identities, the eight caller adapters the
         # alternate summoning release projects for any creature added to the
         # central catalog, the ordinary Overrun command from the
@@ -76,7 +77,9 @@ class Sprint25GateTests(unittest.TestCase):
         # Overrun carrier that corrects the printed rider for this creature
         # alone. The adapter GUIDs are uuid5 of their own symbols, so those
         # pin a reproducible allocation rather than a chosen one.
-        self.assertEqual(20, len(gate.ADDED))
+        self.assertEqual(21, len(gate.ADDED))
+        self.assertEqual(("bd380912f7c74843966c363ab281c0c2", "BlueprintFeature"),
+                         gate.ADDED["KMG.Summoning.Natural.Elephant.Chassis"])
         # The carrier is a FEATURE, like the native feat it clones, and it
         # ends in "Overrun" - so it must not fall through to the ability rule
         # that the ordinary command below relies on.
@@ -103,10 +106,10 @@ class Sprint25GateTests(unittest.TestCase):
         self.assertEqual("registered",
                          gate.validate_append(self.old, self.old + self.tail))
 
-    def test_the_other_reserved_elephant_symbols_still_fail(self):
-        # Only the trample was justified by that observation. The chassis and
-        # unit type remain reserved names, and appending either must still be
-        # refused rather than waved through because one sibling was allowed.
+    def test_duplicate_or_unapproved_elephant_carriers_still_fail(self):
+        # Chassis is already pinned in the exact tail: a second allocation
+        # with another GUID is forbidden. UnitType remains unneeded and
+        # forbidden; the measured completion does not authorize its sibling.
         for symbol in ("KMG.Summoning.Natural.Elephant.Chassis",
                        "KMG.Summoning.Natural.Elephant.UnitType"):
             changed = self.old + self.tail + [
