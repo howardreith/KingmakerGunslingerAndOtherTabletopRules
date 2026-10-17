@@ -59,3 +59,22 @@ Stegosaurus and its loader.
 - `triceratops-albedo.png`: `eb458f118a7f3eebbc44d068ea6b306443cba54a3288e30269d535575037f9d0`.
 - Superseded: mesh `ec2e38eae2cb3279a003ec2cf507f4eb30e4e3153905a60a697940833cd8c914`,
   albedo `15be7f5c733e770572513dc735cb85fa303ddaa8205de6edc722b558eb5e58e3`.
+
+## Outward repair, 2026-10-17 (visual refinement)
+
+The owner approved repairing the original bodies that the visual
+refinement found shipping inside out from the legacy shared writer
+("Let's assume that your repairs are good. Move forward with them.").
+The shipped Stegosaurus body was repaired in place with `../continuous-bodies/repair_outward_winding.py`
+(the generator's private donor capture is not needed): each triangle is
+wound to agree with its own authored normals, and a closed part whose
+volume is then negative has its triangles and normals turned. Positions,
+UVs, weights and bones are unchanged.
+
+| File | Before | After |
+| --- | --- | --- |
+| `assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json` | `02a37218c41c…` | `6c5dcb055eafe011e76616c7a137a18d1c8ff1a63e603ddb4dbb8328b87c4117` |
+
+To reproduce the shipped bytes, run the generator, then the repair on its
+output. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
+the result and checks it is lit from the front.

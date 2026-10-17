@@ -142,13 +142,13 @@ try {
     # the offline review passed. A mesh without its own painting is not
     # the reviewed creature, so both halves are checked.
     $primateBodies = @{
-        'assets\sprint19-fourarmed\girallon-mesh.json' = '475a8ca131056251c02680c625c16ab7c3c84cba1546782b95054e8c3334e7e9'
+        'assets\sprint19-fourarmed\girallon-mesh.json' = '003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb'
         'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
         'assets\sprint19-fourarmed\xill-mesh.json' = 'd7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243'
         'assets\sprint19-fourarmed\xill-albedo.png' = 'eca0206533fad6c67cb2cbce79c5ff4eac7987b3311229c8d9f6b883522999fa'
         'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f'
         'assets\sprint20-arachnids\giant-scorpion-albedo.png' = 'c4a5a29d54ee52c3c1679de55a6c0f3d7e46e8ad56d02b0c25e51c43f55feb1a'
-        'assets\sprint21-arthropods\giant-crab-mesh.json' = 'c2b84d93f304df674aad4b8f0d80e1c62871574a611885435f1c7ea3827f847a'
+        'assets\sprint21-arthropods\giant-crab-mesh.json' = 'dd7448eb9fc384350baf734fa8e7430994a5b4c08858f79b53eab1c30d2ed8eb'
         'assets\sprint21-arthropods\giant-crab-albedo.png' = '42be10115e53644da45f66f5e1d9beb989a310eeee061756d1fe842d78c07781'
         'assets\sprint21-arthropods\bebelith-mesh.json' = '7ff4e4dd8fc8edf4beb9dd983f245c329f40d94c751111888e8c5c658d1ab68e'
         'assets\sprint21-arthropods\bebelith-albedo.png' = 'afd98003bcc96ae32db4c3da63fdf3377d84f07141148ef7742cf8d3742fd554'

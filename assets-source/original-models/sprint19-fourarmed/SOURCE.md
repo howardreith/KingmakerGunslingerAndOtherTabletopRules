@@ -99,7 +99,7 @@ sampled from the game, from a photograph, or from any other image.
 
 | File | SHA-256 |
 | --- | --- |
-| `assets/sprint19-fourarmed/girallon-mesh.json` | `475a8ca131056251c02680c625c16ab7c3c84cba1546782b95054e8c3334e7e9` |
+| `assets/sprint19-fourarmed/girallon-mesh.json` | `003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb` (repaired outward; below) |
 | `assets/sprint19-fourarmed/girallon-albedo.png` | `21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6` |
 | `assets/sprint19-fourarmed/xill-mesh.json` | `b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d` |
 | `assets/sprint19-fourarmed/xill-albedo.png` | `f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4` |
@@ -168,3 +168,24 @@ mesh declares `triangleWinding: outward-visual-refinement`.
   `f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4`.
 - `generate_fourarmed.py` refuses the Xill and still builds the unchanged
   Girallon.
+
+## Outward repair, 2026-10-17 (visual refinement)
+
+The owner approved repairing the original bodies that the visual
+refinement found shipping inside out from the legacy shared writer
+("Let's assume that your repairs are good. Move forward with them.").
+The shipped Girallon body was repaired in place with `../continuous-bodies/repair_outward_winding.py`
+(the generator's private donor capture is not needed): each triangle is
+wound to agree with its own authored normals, and a closed part whose
+volume is then negative has its triangles and normals turned. Positions,
+UVs, weights and bones are unchanged.
+It now declares `triangleWinding: outward-visual-refinement`, which
+`PrimateVisualPolicy.PermitsOriginalWinding` requires of every primate.
+
+| File | Before | After |
+| --- | --- | --- |
+| `assets/sprint19-fourarmed/girallon-mesh.json` | `475a8ca13105…` | `003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb` |
+
+To reproduce the shipped bytes, run the generator, then the repair on its
+output with `--marker outward-visual-refinement`. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
+the result and checks it is lit from the front.

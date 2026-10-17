@@ -337,7 +337,7 @@ namespace KingmakerGunslinger.DomainTests
         /// Visual refinement (VIS-019, VIS-025, VIS-030): the Ape, Dire Ape and
         /// Xill ship their rebuilt continuous bodies, closed and outward, and
         /// declare the outward marker the policy now requires of them; the
-        /// unchanged Girallon keeps the first exporter's marker.
+        /// Girallon's repaired first export declares it too (RepairedBodyTests).
         /// </summary>
         internal static void RefinedBodiesShipOutward()
         {
@@ -368,11 +368,11 @@ namespace KingmakerGunslinger.DomainTests
                         PrimateVisualPolicy.AuthoredWinding),
                     key + " must refuse the first exporter's marker.");
             }
-            Assertions.True(PrimateVisualPolicy.PermitsOriginalWinding("girallon",
+            Assertions.True(!PrimateVisualPolicy.PermitsOriginalWinding("girallon",
                     PrimateVisualPolicy.AuthoredWinding) &&
-                !PrimateVisualPolicy.PermitsOriginalWinding("girallon",
+                PrimateVisualPolicy.PermitsOriginalWinding("girallon",
                     PrimateVisualPolicy.OutwardWinding),
-                "The unchanged Girallon keeps the first exporter's marker.");
+                "The repaired Girallon declares the outward marker and refuses the first exporter's.");
         }
     }
 }

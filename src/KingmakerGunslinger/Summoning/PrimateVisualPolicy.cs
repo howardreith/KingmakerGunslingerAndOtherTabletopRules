@@ -32,9 +32,10 @@ namespace KingmakerGunslinger.Summoning
         internal const string AuthoredWinding = "shared-exporter-sprint18";
         /// <summary>
         /// The visual refinement rebuilt the Ape, Dire Ape and Xill as
-        /// continuous bodies exported with Blender's outward winding; the
-        /// Girallon keeps the first exporter's marker. Each body must declare
-        /// the marker of the exporter that wrote it.
+        /// continuous bodies exported with Blender's outward winding and
+        /// repaired the Girallon's first export outward
+        /// (continuous-bodies/repair_outward_winding.py). Every body must
+        /// declare the outward marker; the first exporter's is refused.
         /// </summary>
         internal const string OutwardWinding = "outward-visual-refinement";
         internal const string ApeAssetDirectory = "sprint18-primates";
@@ -172,9 +173,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static bool PermitsOriginalWinding(string key, string marker)
         {
-            if (!Keys.Contains(key, StringComparer.Ordinal)) return false;
-            return marker == (key == GirallonRulesPolicy.GirallonKey ?
-                AuthoredWinding : OutwardWinding);
+            return Keys.Contains(key, StringComparer.Ordinal) && marker == OutwardWinding;
         }
 
         /// <summary>
