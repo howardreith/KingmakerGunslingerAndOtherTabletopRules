@@ -435,6 +435,47 @@ def strand(name, points, radii, segments=6):
     return _rigid_object(name, bm)
 
 
+def tube(name, points, radii, segments=8):
+    """Like `strand`, but each ring's frame is carried along the path by
+    parallel transport. `strand` frames every ring on its own, so a sharply
+    bent path (a raptor's folded arm) twists between rings and folds its
+    own faces; `strand` stays as it is for the bodies already built with it."""
+    bm = bmesh.new()
+    points = [Vector(p) for p in points]
+    tangents = []
+    for index in range(len(points)):
+        if index == 0:
+            direction = points[1] - points[0]
+        elif index == len(points) - 1:
+            direction = points[-1] - points[-2]
+        else:
+            direction = (points[index + 1] - points[index]).normalized() + \
+                (points[index] - points[index - 1]).normalized()
+        tangents.append(direction.normalized())
+    side, up, _ = frame(tangents[0])
+    rows = []
+    for index, centre in enumerate(points):
+        if index > 0:
+            turn = tangents[index - 1].rotation_difference(tangents[index])
+            side, up = turn @ side, turn @ up
+        rows.append([bm.verts.new(centre + side * math.cos(a) * radii[index] +
+                                  up * math.sin(a) * radii[index])
+                     for a in (2.0 * math.pi * s / segments
+                               for s in range(segments))])
+    for ring in range(len(rows) - 1):
+        for step in range(segments):
+            nxt = (step + 1) % segments
+            bm.faces.new((rows[ring][step], rows[ring][nxt],
+                          rows[ring + 1][nxt], rows[ring + 1][step]))
+    start = bm.verts.new(points[0] - tangents[0] * radii[0] * 0.5)
+    end = bm.verts.new(points[-1] + tangents[-1] * radii[-1] * 0.5)
+    for step in range(segments):
+        nxt = (step + 1) % segments
+        bm.faces.new((rows[0][nxt], rows[0][step], start))
+        bm.faces.new((rows[-1][step], rows[-1][nxt], end))
+    return _rigid_object(name, bm)
+
+
 def _rigid_object(name, bm):
     bm = fan_triangles(bm)
     orient_outward(bm)

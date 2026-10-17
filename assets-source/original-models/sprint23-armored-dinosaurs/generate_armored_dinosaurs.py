@@ -256,6 +256,9 @@ def main():
     for name in ("capture", "albedo", "mesh-data", "report", "blend-out"):
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
+    if args.kind == "triceratops":
+        raise SystemExit("triceratops is built by build_triceratops.py since "
+                         "the visual refinement (VIS-002); see SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig_data, rig, rig_hash = measured_rig(args.capture, args.kind)
     armature = shared.build_armature(rig_data)

@@ -253,6 +253,9 @@ def main():
     if args.kind == "tyrannosaurus":
         raise SystemExit("tyrannosaurus is built by build_tyrannosaurus.py "
                          "since the visual refinement (VIS-001); see SOURCE.md")
+    if args.kind == "deinonychus":
+        raise SystemExit("deinonychus is built by build_deinonychus.py since "
+                         "the visual refinement (VIS-027); see SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig_data, rig, rig_hash = measured_rig(args.capture)
     armature = shared.build_armature(rig_data)
