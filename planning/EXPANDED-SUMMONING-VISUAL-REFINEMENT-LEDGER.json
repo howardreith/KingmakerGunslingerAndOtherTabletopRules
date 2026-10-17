@@ -23,7 +23,7 @@
     ],
     "ownerAcceptance": [
       "pending",
-      "pending (style approved 2026-10-17)",
+      "provisionally accepted for release ...",
       "accepted ...",
       "rejected"
     ],
@@ -116,7 +116,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-003",
@@ -153,7 +153,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-004",
@@ -168,9 +168,9 @@
       "batch": "dire-rat-icon",
       "owner": "cosmetic lane",
       "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
-      "technicalStatus": "pilot-pending-approval",
-      "visualEvidence": "pilot at assets-source/original-icons/expanded-summoning/pilots/dire-rat (8ff9893b2f): the original painting cropped closer on the rat, the medallion faded into a dark vignette, compared at 128/64/48/32 px; the production icon is unchanged until the owner approves",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "visualEvidence": "owner-approved edit at assets-source/original-icons/expanded-summoning/edits/dire-rat (pilot 8ff9893b2f, adopted b6af1725ff): the original painting cropped closer on the rat, the medallion faded into a dark vignette; source df593dfa..., 128 px export 15970071...; the original sources/dire-rat.png is kept byte for byte",
+      "ownerAcceptance": "accepted on 2026-10-17 (\"The new dire rat icon looks great. Go ahead with it.\")"
     },
     {
       "id": "VIS-005",
@@ -252,7 +252,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-007",
@@ -298,7 +298,7 @@
         "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
         "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
       },
-      "ownerAcceptance": "pending"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-009",
@@ -333,7 +333,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-010",
@@ -368,7 +368,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-011",
@@ -403,7 +403,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-012",
@@ -438,7 +438,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-013",
@@ -473,7 +473,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-014",
@@ -508,7 +508,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-015",
@@ -543,7 +543,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-016",
@@ -595,7 +595,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-018",
@@ -656,7 +656,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-020",
@@ -691,7 +691,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-021",
@@ -726,7 +726,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-022",
@@ -761,7 +761,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-023",
@@ -796,7 +796,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-024",
@@ -880,7 +880,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-026",
@@ -915,7 +915,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-027",
@@ -950,7 +950,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-028",
@@ -985,7 +985,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-029",
@@ -1015,7 +1015,7 @@
         "offlineCheck": "assets-source/original-models/sprint17-serpents/check_tail_gait.py: lowest tail vertex 0.0361 (rest 0.0367); non-adjacent coils at least 6.3 cm apart (12 cm at rest)",
         "commits": "185e379a74, 58123c87fa (491e60249f and c1b87bce72 reverted)"
       },
-      "ownerAcceptance": "pending"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-030",
@@ -1051,7 +1051,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-031",
@@ -1120,7 +1120,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-034",
@@ -1155,7 +1155,7 @@
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
-      "ownerAcceptance": "pending (style approved 2026-10-17)"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-035",
@@ -1180,7 +1180,7 @@
       },
       "technicalStatus": "accepted-control",
       "visualEvidence": "owner screenshot; native control review PASS in run 20261017T1515590534136Z (development candidate 04144ec1457a) on unchanged bytes (the body still ships inside out, like the other bodies outside the review list)",
-      "ownerAcceptance": "pending"
+      "ownerAcceptance": "accepted in the handoff review (\"pretty good\", no specific defect); kept unchanged as the control"
     },
     {
       "id": "VIS-036",
@@ -1204,7 +1204,7 @@
         "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
         "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
       },
-      "ownerAcceptance": "pending"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-037",
@@ -1225,7 +1225,7 @@
         "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
         "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
       },
-      "ownerAcceptance": "pending"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     },
     {
       "id": "VIS-038",
@@ -1249,7 +1249,115 @@
         "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
         "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
       },
-      "ownerAcceptance": "pending"
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
     }
-  ]
+  ],
+  "additionalRepairs": {
+    "scope": "Original bodies outside the owner's review list found shipping inside out from the legacy shared writer, repaired in place on the owner's word (2026-10-17); the Bebelith (VIS-035) stays the accepted control",
+    "tool": "assets-source/original-models/continuous-bodies/repair_outward_winding.py",
+    "commit": "930474b4e9",
+    "native": "20261017T1930246388436Z and 20261017T1934032621760Z (development candidate 930474b4e924): creature review PASS for all seven (31 and 22 assertions), close views solid and lit, the Fire Beetle's eyes glowing; visual contracts 20261017T1937434175208Z PASS (15)",
+    "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release",
+    "bodies": [
+      {
+        "creature": "Eagle",
+        "mesh": "assets/flying-animals/eagle-mesh.json",
+        "supersededMeshSha256": "a45d0cd203c9742e6daa64b86bcf642906ae08b41a4b8285b51d33050a760753",
+        "repaired": {
+          "mesh": "assets/flying-animals/eagle-mesh.json",
+          "meshSha256": "4b254a4b17bd1cab51b4856203dc07ff5ad70091d037e9e26eaa50aecaae93c4",
+          "components": 69,
+          "inwardComponents": 27,
+          "componentsWithReversedCaps": 69,
+          "openComponents": 55,
+          "normalCornersOpposingWinding": "29/8604"
+        }
+      },
+      {
+        "creature": "Stirge",
+        "mesh": "assets/flying-animals/stirge-mesh.json",
+        "supersededMeshSha256": "449453e7dc3eb75cf32947b4c3c99cf1accc4b433c7e85c5a591a0ac3a6a800b",
+        "repaired": {
+          "mesh": "assets/flying-animals/stirge-mesh.json",
+          "meshSha256": "f9ea0f0e639faf6f642b41f59a6e3216e2838f5c3dbb608a26c0c7eb073b3b82",
+          "components": 22,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 22,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "6/2808"
+        }
+      },
+      {
+        "creature": "Fire Beetle",
+        "mesh": "assets/sprint14-insects/fire-beetle-mesh.json",
+        "supersededMeshSha256": "3f19d378d4a64c7396dc648b7f95a61d3c921f5ee3b03c596c3034edf385667e",
+        "repaired": {
+          "mesh": "assets/sprint14-insects/fire-beetle-mesh.json",
+          "meshSha256": "71acda0c408a0f925f50591744f9355ecc2f8cc8c126771e33ca4cd74eb8a661",
+          "components": 17,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 15,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "94/5460"
+        }
+      },
+      {
+        "creature": "Giant Stag Beetle",
+        "mesh": "assets/sprint14-insects/giant-stag-beetle-mesh.json",
+        "supersededMeshSha256": "e3b2c221ded30f9ba5e8ec312bf407b7da614dae8ecf80097437a43b801fc40f",
+        "repaired": {
+          "mesh": "assets/sprint14-insects/giant-stag-beetle-mesh.json",
+          "meshSha256": "a7276d63c5e14fb6f45adb055c437bf61980f43344ee329b4c6cd5d048cc3cd6",
+          "components": 17,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 15,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "66/4956"
+        }
+      },
+      {
+        "creature": "Girallon",
+        "mesh": "assets/sprint19-fourarmed/girallon-mesh.json",
+        "supersededMeshSha256": "475a8ca131056251c02680c625c16ab7c3c84cba1546782b95054e8c3334e7e9",
+        "repaired": {
+          "mesh": "assets/sprint19-fourarmed/girallon-mesh.json",
+          "meshSha256": "003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb",
+          "components": 64,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 1,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "14/17004"
+        }
+      },
+      {
+        "creature": "Giant Crab",
+        "mesh": "assets/sprint21-arthropods/giant-crab-mesh.json",
+        "supersededMeshSha256": "c2b84d93f304df674aad4b8f0d80e1c62871574a611885435f1c7ea3827f847a",
+        "repaired": {
+          "mesh": "assets/sprint21-arthropods/giant-crab-mesh.json",
+          "meshSha256": "dd7448eb9fc384350baf734fa8e7430994a5b4c08858f79b53eab1c30d2ed8eb",
+          "components": 22,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 0,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "0/7788"
+        }
+      },
+      {
+        "creature": "Stegosaurus",
+        "mesh": "assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json",
+        "supersededMeshSha256": "02a37218c41c09ed9962ac39a8e01ad0e9d99d8f07d718e1e27d9b9b7573582f",
+        "repaired": {
+          "mesh": "assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json",
+          "meshSha256": "6c5dcb055eafe011e76616c7a137a18d1c8ff1a63e603ddb4dbb8328b87c4117",
+          "components": 27,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 2,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "24/5628"
+        }
+      }
+    ],
+    "note": "The Eagle's feathers are 55 open sheets with no volume, so the audit's inward count for it is not meaningful; its corners agree with their triangles (29 of 8604 oppose). The tests check every repaired body as lit from the front (RepairedBodyTests); only the Giant Crab is also strictly closed and consistent."
+  }
 }
