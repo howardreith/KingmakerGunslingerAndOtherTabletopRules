@@ -33,8 +33,9 @@ $runId='brown-fur-startup-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+
 $resolution=New-KmgBrownFurProbeResolution -ModsRoot (Join-Path $install 'Mods') `
     -BackupRoot (Join-Path $install "Mods.kmg-compat-$runId.original") -PackagePath $candidate.packagePath
 $scenario='disposable-brown-fur-native-cast'
+$timings=Get-KmgBrownFurProbeTimings $TimeoutSeconds
 $null=Assert-KmgRuntimeScenarioPreflight -Scenario $scenario -ExpectedVersion '0.0.157' `
-    -TimeoutSeconds $TimeoutSeconds -Parameters @{saveName=$SaveName}
+    @timings -StartupTimeoutSeconds $TimeoutSeconds -Parameters @{saveName=$SaveName}
 $WhatIfPreference=$probeWhatIfRequested
 if (-not $PSCmdlet.ShouldProcess($SaveName,'read-only native Load Game, disposable Brown-Fur cast, exact installed-stack/settings restoration')) { return }
 $WhatIfPreference=$false
@@ -66,10 +67,12 @@ try {
     $deployArgs=@{PackagePath=$candidate.packagePath;DevelopmentPurpose=$DevelopmentPurpose;RuntimeLease=$lease;Confirm=$false}
     & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') @deployArgs -WhatIf
     $deployment=& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') @deployArgs -PassThru
-    $launchArgs=@{Scenario=$scenario;ExpectedVersion='0.0.157';SaveName=$SaveName
-        TimeoutSeconds=$TimeoutSeconds;ObserverStartupTimeoutSeconds=$TimeoutSeconds;CompletionTimeoutSeconds=$TimeoutSeconds
-        ExitAfterCompletion=$true;RuntimeLease=$lease;ReuseInstalledArtifact=$true;PackagePath=$candidate.packagePath
-        DeploymentManifestPath=$deployment;DevelopmentPurpose=$DevelopmentPurpose;PassThru=$true;Confirm=$false}
+    $launchArgs=$timings.Clone()
+    $launchArgs.Scenario=$scenario;$launchArgs.ExpectedVersion='0.0.157';$launchArgs.SaveName=$SaveName
+    $launchArgs.ObserverStartupTimeoutSeconds=$TimeoutSeconds;$launchArgs.ExitAfterCompletion=$true
+    $launchArgs.RuntimeLease=$lease;$launchArgs.ReuseInstalledArtifact=$true;$launchArgs.PackagePath=$candidate.packagePath
+    $launchArgs.DeploymentManifestPath=$deployment;$launchArgs.DevelopmentPurpose=$DevelopmentPurpose
+    $launchArgs.PassThru=$true;$launchArgs.Confirm=$false
     & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @launchArgs -WhatIf | Out-Host
     $output=@(& (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @launchArgs)
     $receipt=Get-KmgExactRuntimeLaunchReceipt $output
