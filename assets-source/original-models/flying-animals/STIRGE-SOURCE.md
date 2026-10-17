@@ -26,3 +26,23 @@ the mesh manifest pins that file and hash. Blender top and front renders were
 inspected. These source renders do not establish live animation, scale,
 attachment pose, material-controller behavior, or owner visual approval;
 those require guarded in-game review before publication.
+
+## Outward repair, 2026-10-17 (visual refinement)
+
+The owner approved repairing the original bodies that the visual
+refinement found shipping inside out from the legacy shared writer
+("Let's assume that your repairs are good. Move forward with them.").
+The shipped Eagle and Stirge bodies were repaired in place with `../continuous-bodies/repair_outward_winding.py`
+(the generator's private donor capture is not needed): each triangle is
+wound to agree with its own authored normals, and a closed part whose
+volume is then negative has its triangles and normals turned. Positions,
+UVs, weights and bones are unchanged.
+
+| File | Before | After |
+| --- | --- | --- |
+| `assets/flying-animals/eagle-mesh.json` | `a45d0cd203c9…` | `4b254a4b17bd1cab51b4856203dc07ff5ad70091d037e9e26eaa50aecaae93c4` |
+| `assets/flying-animals/stirge-mesh.json` | `449453e7dc3e…` | `f9ea0f0e639faf6f642b41f59a6e3216e2838f5c3dbb608a26c0c7eb073b3b82` |
+
+To reproduce the shipped bytes, run the generator, then the repair on its
+output. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
+the result and checks it is lit from the front.

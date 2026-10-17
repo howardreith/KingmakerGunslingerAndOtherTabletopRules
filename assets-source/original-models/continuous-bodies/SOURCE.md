@@ -114,6 +114,17 @@ seen through its head and a leg. `audit_mesh_orientation.py` and
   generator keeps its geometry and the legacy shared writer, makes each part
   consistently outward in Blender, and then calls `restore_outward_winding`,
   which undoes the writer's reversal in the payload under the same refusal.
+- **Repairs in place.** For the inside-out first exports outside the review
+  list (Eagle, Stirge, Fire Beetle, Giant Stag Beetle, Girallon, Giant Crab,
+  Stegosaurus), whose generators need private captures, `repair_outward_winding.py`
+  repairs the shipped bytes: each triangle is wound to agree with its own
+  authored normals, then a closed part with negative volume (a mirrored part
+  with inward normals, such as the Fire Beetle's eyes) has its triangles and
+  normals turned. Walking shared edges for topological consistency was tried
+  and shaded the Stirge's thin wing solids wrongly; a plain whole-mesh flip
+  left the mirrored parts dark. Where authored normals disagree with the
+  topology a few edges stay one-way, so these bodies are checked as lit from
+  the front, not as strictly closed (the Giant Crab passes both).
 
 ## Determinism hazards found in Blender 4.5.10
 

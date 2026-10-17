@@ -1568,7 +1568,9 @@ namespace KingmakerGunslinger.RuntimeTesting
               "ankylosaurus", "crocodile", "dire-crocodile",
               "giant-ant-worker", "giant-ant-soldier", "giant-ant-drone",
               "giant-scorpion", "dire-bat", "pteranodon", "giant-wasp",
-              "ape", "dire-ape", "xill", "salamander" };
+              "ape", "dire-ape", "xill", "salamander",
+              "eagle", "stirge", "fire-beetle", "giant-stag-beetle",
+              "girallon", "giant-crab", "stegosaurus" };
 
         // Single-renderer donors only; the Tyrannosaurus' two-renderer
         // Lizardfolk frame comes from its own Sprint 24 census.

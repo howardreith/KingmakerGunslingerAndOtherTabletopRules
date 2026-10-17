@@ -186,3 +186,23 @@ The albedos are unchanged. Capture: the Sprint 14 Giant Spider capture
 `20261017T0225090480213Z`); the old generator reproduced all three superseded
 meshes exactly from it, and the new exports reproduce exactly from clean
 Blender processes with `PYTHONHASHSEED=0`.
+
+## Outward repair, 2026-10-17 (visual refinement)
+
+The owner approved repairing the original bodies that the visual
+refinement found shipping inside out from the legacy shared writer
+("Let's assume that your repairs are good. Move forward with them.").
+The shipped Fire Beetle and Giant Stag Beetle bodies were repaired in place with `../continuous-bodies/repair_outward_winding.py`
+(the generator's private donor capture is not needed): each triangle is
+wound to agree with its own authored normals, and a closed part whose
+volume is then negative has its triangles and normals turned. Positions,
+UVs, weights and bones are unchanged.
+
+| File | Before | After |
+| --- | --- | --- |
+| `assets/sprint14-insects/fire-beetle-mesh.json` | `3f19d378d4a6…` | `71acda0c408a0f925f50591744f9355ecc2f8cc8c126771e33ca4cd74eb8a661` |
+| `assets/sprint14-insects/giant-stag-beetle-mesh.json` | `e3b2c221ded3…` | `a7276d63c5e14fb6f45adb055c437bf61980f43344ee329b4c6cd5d048cc3cd6` |
+
+To reproduce the shipped bytes, run the generator, then the repair on its
+output. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
+the result and checks it is lit from the front.

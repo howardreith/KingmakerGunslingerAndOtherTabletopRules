@@ -135,3 +135,25 @@ skip them.
   spinnerets were placed from the abdomen chain's last bone after the abdomen
   mass had already moved forward and up off it, and rendered floating behind
   the animal.
+
+## Outward repair, 2026-10-17 (visual refinement)
+
+The owner approved repairing the original bodies that the visual
+refinement found shipping inside out from the legacy shared writer
+("Let's assume that your repairs are good. Move forward with them.").
+The shipped Giant Crab body was repaired in place with `../continuous-bodies/repair_outward_winding.py`
+(the generator's private donor capture is not needed): each triangle is
+wound to agree with its own authored normals, and a closed part whose
+volume is then negative has its triangles and normals turned. Positions,
+UVs, weights and bones are unchanged.
+It now declares `triangleWinding: outward-visual-refinement` and passes
+the strict closed-and-consistent check. The Bebelith, the owner's accepted
+visual control, is unchanged.
+
+| File | Before | After |
+| --- | --- | --- |
+| `assets/sprint21-arthropods/giant-crab-mesh.json` | `c2b84d93f304…` | `dd7448eb9fc384350baf734fa8e7430994a5b4c08858f79b53eab1c30d2ed8eb` |
+
+To reproduce the shipped bytes, run the generator, then the repair on its
+output with `--marker outward-visual-refinement`. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
+the result and checks it is lit from the front.

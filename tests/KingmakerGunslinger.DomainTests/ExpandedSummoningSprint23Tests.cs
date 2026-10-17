@@ -366,8 +366,10 @@ namespace KingmakerGunslinger.DomainTests
             OriginalMeshOrientation.AssertShippedBody(
                 "assets/sprint23-armored-dinosaurs/triceratops-mesh.json",
                 "triceratops");
+            // The Stegosaurus first export, repaired outward in place by the
+            // visual refinement (RepairedBodyTests).
             Assertions.Equal(
-                "02a37218c41c09ed9962ac39a8e01ad0e9d99d8f07d718e1e27d9b9b7573582f",
+                "6c5dcb055eafe011e76616c7a137a18d1c8ff1a63e603ddb4dbb8328b87c4117",
                 Sha256("assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json"),
                 "Deterministic Stegosaurus mesh bytes.");
 

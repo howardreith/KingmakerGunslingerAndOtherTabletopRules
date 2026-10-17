@@ -677,6 +677,24 @@ namespace KingmakerGunslinger.DomainTests
                 report.NormalAgreement.ToString("0.###"));
         }
 
+        /// <summary>
+        /// A first export repaired in place by
+        /// continuous-bodies/repair_outward_winding.py: every triangle faces
+        /// the way its authored normals light it, and (for a body of closed
+        /// parts) no part encloses negative volume. Where the authored normals
+        /// disagree with the topology, a few edges stay traversed one way
+        /// only, so the strict closed-and-consistent check does not apply.
+        /// </summary>
+        internal static void AssertRepairedBody(string path, string creature, bool closedParts)
+        {
+            Report report = AuditFile(path);
+            Assertions.True(report.Components > 0 && report.NormalAgreement >= 0.99 &&
+                    (!closedParts || report.InwardComponents == 0),
+                creature + " ships its repaired first export lit from the front: components=" +
+                report.Components + ";inward=" + report.InwardComponents +
+                ";normalAgreement=" + report.NormalAgreement.ToString("0.###"));
+        }
+
         private static double[] Vector(byte[] blob, int offset)
         {
             return new double[] { BitConverter.ToSingle(blob, offset),
