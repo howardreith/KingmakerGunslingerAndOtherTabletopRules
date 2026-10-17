@@ -167,14 +167,6 @@ namespace KingmakerGunslinger.Summoning
                 _masks.Apply(false, false);
                 _material.SetTexture("_Parameters", _masks);
             }
-            // Development experiment (run 18): the character-system donor also
-            // shades a global rim by N.L, which the native cape, the Wolf and
-            // the other rebodied creatures' donors do not.
-            if (_material.IsKeywordEnabled("RIM_LIGHTING_GLOBAL_SHADE_NDOTL"))
-            {
-                _material.DisableKeyword("RIM_LIGHTING_GLOBAL_SHADE_NDOTL");
-                _material.EnableKeyword("_RIMGLOBALSHADENDOTL_OFF");
-            }
 
             Vector3[] rest = Points(payload["originalTailRest"]);
             JObject animation = (JObject)payload["originalTailSlap"];
