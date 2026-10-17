@@ -13,6 +13,7 @@
   "statusVocabulary": {
     "technicalStatus": [
       "open",
+      "investigated",
       "source-and-asset-changed",
       "owned-elsewhere",
       "accepted-control"
@@ -288,8 +289,8 @@
       "batch": "materials",
       "owner": "cosmetic lane",
       "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
+      "technicalStatus": "investigated",
+      "visualEvidence": "owner screenshot; native material evidence: 20261017T1616452002903Z (development candidate a29f6edd5bff): the native-body Wolf (cast through Summon Nature's Ally, so untemplated) carries a persistent looping rim animation (colour 0.98/0.68/0.32, intensity 0.5, never finishing) with rim lighting on, a golden rim colour and a warm 0.15/0.13/0.09 tint at 0.37 on its material; every KMG rebodied creature reviewed carries none. Not a material asset, not the summon transition, not the alignment template",
       "ownerAcceptance": "pending"
     },
     {
@@ -628,16 +629,27 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint18-primates/ape-mesh.json",
-        "meshSha256": "751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0",
-        "components": 51,
-        "inwardComponents": 51,
+        "meshSha256": "2f0196eca297019770894b66d69cb474e9bba59c449a95590326f888086631ee",
+        "components": 24,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "15708/15708"
+        "normalCornersOpposingWinding": "0/35268"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint18-primates/build_primates.py --kind ape",
+        "commits": "cad14078e1, a29f6edd5b",
+        "supersededMeshSha256": "751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0",
+        "supersededAlbedoSha256": "f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1608412847094Z (development candidate cad14078e1cc): PASS; the 0.33 grey coat read as cream in the game's light",
+          "20261017T1616452002903Z (development candidate a29f6edd5bff): PASS after the charcoal recolour (a29f6edd5b)"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-020",
@@ -842,16 +854,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint18-primates/dire-ape-mesh.json",
-        "meshSha256": "e2f0242141a01179cf3c5915f2d11cf1335b9de51aa387150fb69a42bcdd0341",
-        "components": 67,
-        "inwardComponents": 67,
+        "meshSha256": "d0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a",
+        "components": 24,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "20508/20508"
+        "normalCornersOpposingWinding": "0/35268"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint18-primates/build_primates.py --kind dire-ape",
+        "commits": "cad14078e1",
+        "supersededMeshSha256": "e2f0242141a01179cf3c5915f2d11cf1335b9de51aa387150fb69a42bcdd0341",
+        "supersededAlbedoSha256": "e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1608412847094Z (development candidate cad14078e1cc): PASS; russet coat and straw ruff read as painted"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-026",
@@ -997,16 +1019,27 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint19-fourarmed/xill-mesh.json",
-        "meshSha256": "b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d",
-        "components": 64,
-        "inwardComponents": 64,
+        "meshSha256": "d7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243",
+        "components": 46,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "16713/16752"
+        "normalCornersOpposingWinding": "1/39264"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint19-fourarmed/build_xill.py",
+        "commits": "cad14078e1",
+        "supersededMeshSha256": "b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d",
+        "supersededAlbedoSha256": "f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1553034339677Z (development candidate 69435567008c; before): identity confirmed (the xill review attached the Xill body)",
+          "20261017T1608412847094Z (development candidate cad14078e1cc): PASS; four arms, banded rust-red carapace"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-031",
@@ -1170,8 +1203,8 @@
       "batch": "materials",
       "owner": "cosmetic lane",
       "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
+      "technicalStatus": "investigated",
+      "visualEvidence": "owner screenshot; native material evidence: 20261017T1616452002903Z (development candidate a29f6edd5bff): the Ghaele carries the same golden looping rim and tint; its materials also dissolve progressively during the review (0.05, 0.133, 0.175), which fails the review's intactness assertion",
       "ownerAcceptance": "pending"
     },
     {
