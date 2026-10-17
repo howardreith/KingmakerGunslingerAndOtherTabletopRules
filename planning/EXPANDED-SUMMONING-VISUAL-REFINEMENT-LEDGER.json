@@ -14,6 +14,9 @@
     "technicalStatus": [
       "open",
       "investigated",
+      "pilot-pending-approval",
+      "covered-not-observed",
+      "presentation-changed",
       "source-and-asset-changed",
       "owned-elsewhere",
       "accepted-control"
@@ -165,8 +168,8 @@
       "batch": "dire-rat-icon",
       "owner": "cosmetic lane",
       "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
+      "technicalStatus": "pilot-pending-approval",
+      "visualEvidence": "pilot at assets-source/original-icons/expanded-summoning/pilots/dire-rat (8ff9893b2f): the original painting cropped closer on the rat, the medallion faded into a dark vignette, compared at 128/64/48/32 px; the production icon is unchanged until the owner approves",
       "ownerAcceptance": "pending"
     },
     {
@@ -289,8 +292,12 @@
       "batch": "materials",
       "owner": "cosmetic lane",
       "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
-      "technicalStatus": "investigated",
-      "visualEvidence": "owner screenshot; native material evidence: 20261017T1616452002903Z (development candidate a29f6edd5bff): the native-body Wolf (cast through Summon Nature's Ally, so untemplated) carries a persistent looping rim animation (colour 0.98/0.68/0.32, intensity 0.5, never finishing) with rim lighting on, a golden rim colour and a warm 0.15/0.13/0.09 tint at 0.37 on its material; every KMG rebodied creature reviewed carries none. Not a material asset, not the summon transition, not the alignment template",
+      "technicalStatus": "presentation-changed",
+      "visualEvidence": "20261017T1629452235697Z (development candidate 22cbb8a5695e): a patch on the SummonedUnitBuff's effect changed nothing; 20261017T1639002324262Z (development candidate dc5b84838cc1): that buff spawns no effect, and the rim and tints come from the permanent SummonedCreatureVisual buff (706c182e86d9be848b59ddccca73d13e) that the base game's summoned unit blueprints carry and KMG units cloned from them inherit (1 looping rim, 2 tints); the Salamander, built from another donor, carries none; 20261017T1648032811260Z (development candidate 01eb9e3aad53): PASS; the visual buff's rim and both tints finished, the material back to tint 1/1/1/1 with rim lighting off, the Wolf rendered in its own dark coat (gold before, run 14); the Ice Mephit, a registered rim variant, keeps the glow and PASS",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
+        "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
+      },
       "ownerAcceptance": "pending"
     },
     {
@@ -1186,8 +1193,12 @@
       "batch": "materials",
       "owner": "cosmetic lane",
       "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
+      "technicalStatus": "covered-not-observed",
+      "visualEvidence": "owner screenshot only; the Frost Giant is summoned through KMG native options and adapters, which the glow policy covers (domain test), but the creature review cannot cast it, so its buffs were not observed natively",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
+        "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
+      },
       "ownerAcceptance": "pending"
     },
     {
@@ -1203,8 +1214,12 @@
       "batch": "materials",
       "owner": "cosmetic lane",
       "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
-      "technicalStatus": "investigated",
-      "visualEvidence": "owner screenshot; native material evidence: 20261017T1616452002903Z (development candidate a29f6edd5bff): the Ghaele carries the same golden looping rim and tint; its materials also dissolve progressively during the review (0.05, 0.133, 0.175), which fails the review's intactness assertion",
+      "technicalStatus": "presentation-changed",
+      "visualEvidence": "20261017T1629452235697Z (development candidate 22cbb8a5695e): a patch on the SummonedUnitBuff's effect changed nothing; 20261017T1639002324262Z (development candidate dc5b84838cc1): that buff spawns no effect, and the rim and tints come from the permanent SummonedCreatureVisual buff (706c182e86d9be848b59ddccca73d13e) that the base game's summoned unit blueprints carry and KMG units cloned from them inherit (1 looping rim, 2 tints); the Salamander, built from another donor, carries none; 20261017T1648032811260Z (development candidate 01eb9e3aad53): the Ghaele's visual-buff rim and tints finished and its material back to tint 1/1/1/1 with rim lighting off; the review still FAILs: its native dissolve keeps rising (0.009, 0.04, 0.118, 0.156, gold dissolve colour) and the scripted move did not start this run; the dissolve's source is not identified and is left unchanged",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
+        "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
+      },
       "ownerAcceptance": "pending"
     },
     {
@@ -1223,8 +1238,12 @@
       "batch": "materials",
       "owner": "cosmetic lane",
       "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
+      "technicalStatus": "covered-not-observed",
+      "visualEvidence": "owner screenshot only; the Thanadaemon is summoned through a KMG native option, which the glow policy covers (domain test), but the creature review cannot cast it, so its buffs were not observed natively",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
+        "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
+      },
       "ownerAcceptance": "pending"
     }
   ]

@@ -41,8 +41,11 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-019 Ape | rebuilt, coat darkened after run 11; focused gate PASS | native after: PASS (runs 11 and 12) | pending (style approved) |
 | VIS-025 Dire Ape | rebuilt, approved palette kept; focused gate PASS | native after: PASS (run 11) | pending (style approved) |
 | VIS-030 Xill | rebuilt; identity confirmed (run 10); focused gate PASS | native after: PASS (run 11) | pending (style approved) |
-| VIS-008 Wolf, VIS-037 Ghaele | investigated: persistent native golden rim (run 12) | material evidence | decision recorded below |
-| other 9 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
+| VIS-008 Wolf | presentation change: KMG summons drop the summoned-creature glow; focused build tests PASS | native after: PASS, own dark coat, rim and tint off (run 15; gold in run 14) | pending |
+| VIS-037 Ghaele | the same change; glow off (run 15) | the review still fails on the Ghaele's own rising dissolve and a move that did not start | pending |
+| VIS-036 Frost Giant, VIS-038 Thanadaemon | covered by the same policy (native options and adapters; domain test) | not observed: the creature review cannot cast them | pending |
+| VIS-004 Dire Rat icon | pilot only; production icon unchanged | menu-size comparison sheet | pending the owner's approval of the pilot |
+| other 6 items | open or owned elsewhere (see ledger) | owner screenshots only | pending |
 
 ## Owner decisions, 2026-10-17
 
@@ -133,6 +136,10 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 11 | `cad14078e1cc` (package `deafd054…e15f`, 65 s build) | creature review: Ape, Dire Ape, Xill | 3:09 | PASS (13 assertions); the Ape's grey read as cream |
 | 11 | same | disposable-expanded-summoning-visual-contracts | 1:15 | PASS |
 | 12 | `a29f6edd5bff` (package `d36bb2b6…a517`) | creature review: Ape, Wolf, Ghaele | 2:21 | Ape and Wolf PASS; Ghaele FAIL (dissolving during the review); golden-rim evidence |
+| 13 | `22cbb8a5695e` (package `73cfb282…9d7e`) | creature review: Wolf, Ghaele, Ice Mephit | 1:56 | Wolf and Ice Mephit PASS, Ghaele FAIL as in run 12; the glow patch on the SummonedUnitBuff changed nothing |
+| 13 | same | disposable-expanded-summoning-visual-contracts | 1:19 | PASS |
+| 14 | `dc5b84838cc1` (package `c2140645…f223`, diagnostics) | creature review: Wolf, Salamander | 1:51 | PASS; the SummonedUnitBuff spawns no effect, the glow is the SummonedCreatureVisual buff's; Salamander locomotion and material evidence |
+| 15 | `01eb9e3aad53` (package `bc7ccc75…5d66`, 66 s build) | creature review: Wolf, Ghaele, Ice Mephit | 2:02 | Wolf PASS with the glow gone; Ice Mephit PASS, glow kept; Ghaele FAIL (own dissolve; move did not start) with the glow gone |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -240,6 +247,26 @@ tracking frames, the review captures and the donor bind captures.
   render targets and pause state are restored. Keys: every refined creature.
 - `tools/validate_development_candidate.py`, its fixtures and
   `docs/DEVELOPMENT-CANDIDATES.md` (owner decision above).
+- The summoned-creature glow (`22cbb8a569`, `dc5b84838c`, `01eb9e3aad`):
+  `Summoning/ExpandedSummoningSummonGlowPatch.cs` and `SummonGlowPolicy.cs`.
+  The base game's summoned unit blueprints carry a permanent
+  SummonedCreatureVisual buff (`706c182e86d9be848b59ddccca73d13e`) whose
+  effect loops a golden rim light and two warm tints on the materials; KMG
+  units cloned from those blueprints inherit it. A postfix on
+  `Buff.SpawnParticleEffect` for that buff or the SummonedUnitBuff marks the
+  visual buff's rim and tint animations finished for units summoned through a
+  KMG ability (spell variants, native options, adapters) or KMG summon units,
+  unless the unit has a registered rim variant (the mephits and the lion keep
+  the glow their look is built on). The material controllers then revert to
+  the unit's own rim and tint. The setups stay enabled because the effect
+  object is pooled, and nothing is destroyed. Base-game summons are unchanged.
+  The first version patched only the SummonedUnitBuff, which spawns no effect
+  (run 13 showed no change; run 14's diagnostics found the real buff). The
+  creature review records `summonGlow=` and `buffEffects=` per unit.
+- The Dire Rat icon pilot (`8ff9893b2f`):
+  `assets-source/original-icons/expanded-summoning/pilots/dire-rat/` crops the
+  original painting closer on the rat and fades the medallion into a dark
+  vignette; the production icon is unchanged until the owner approves it.
 
 No identity, GUID, blueprint, statistic, size, reach, collision, attack,
 timing, AI, duration, template, adapter, material path or runtime binding code
@@ -277,6 +304,8 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Native | run 9 above | 4:59 | as tabled |
 | Focused gate (primates, `cad14078e1`, `a29f6edd5b`) | `sprint18-;sprint19-` plus the visual filter | 11 s | production compilation PASS; 36 then 29 PASS |
 | Native | runs 10-12 above | 3:17, 4:51, 2:48 | as tabled |
+| Focused build tests (glow, `01eb9e3aad`) | `Build-Local.ps1 -DevelopmentPurpose visual-refinement -DevelopmentTestFilter 'summon-glow'` | 66 s | production compilation PASS; 2 PASS |
+| Native | runs 13-15 above | 3:15, 1:51, 2:02 | as tabled |
 
 ## Remaining limitations
 
@@ -285,10 +314,14 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
   observer limitation, to be fixed in the observer, not the mesh.
 - Triceratops: the Huge body fills its close views, and the near clip at its
   bounding box cuts into the room around it; an observer framing limit.
-- Ghaele: in run 12 its materials dissolved progressively while it was
-  reviewed (0.05, 0.133, 0.175 across the move and attack captures), which
-  fails the review's intactness assertion; the cause (a native effect of the
-  unit or its summon expiring) is not yet identified.
+- Ghaele: its materials dissolve progressively while it is reviewed (0.05,
+  0.133, 0.175 in run 12; 0.009, 0.04, 0.118, 0.156 in run 15, with a gold
+  dissolve colour), which fails the review's intactness assertion; in run 15
+  its scripted move also did not start. The dissolve's source is not
+  identified and is left unchanged; the glow change does not touch it.
+- Frost Giant and Thanadaemon: the glow policy covers their KMG native
+  options and adapters, but the creature review cannot cast them, so whether
+  their base blueprints carry the SummonedCreatureVisual buff is unobserved.
 - Flyers: the refinement close views frame the whole wingspan, so the camera
   sits far back and the room's walls hide most of them; the party-camera
   frames show the bodies. The idle and attack poses are the Giant Eagle's.
@@ -314,19 +347,14 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. The shine (VIS-008, VIS-036, VIS-037, VIS-038, in progress). Run 12
-   found the golden look on native-body summons is a persistent looping rim
-   animation (colour 0.98/0.68/0.32, intensity 0.5) with rim lighting on, a
-   golden rim colour and a warm tint on the material. The Wolf was cast
-   through Summon Nature's Ally, so it is not the alignment template, and it
-   persists past the summon transition; every KMG rebodied creature shows
-   none, because its attachment replaces the materials. The handoff asks for
-   a summon-scoped presentation change once the source is known: the next
-   step records the unit's buffs and the rim animation's source so the
-   change can be scoped to the buff that applies it.
-2. The Dire Rat icon (VIS-004): a pilot that crops the painted source closer
-   on the rat and fades the bronze medallion into a dark vignette; pilots
-   stay out of production until the owner approves them (icon guide).
-3. Then the Salamander (VIS-029).
+1. The Salamander (VIS-029, in progress). Run 14: the native move travels
+   12.4 m at up to 2.0 m/s and the body renders intact, but the ten owned
+   tail bones move only during the authored tail slap, so the tail is rigid
+   while the human upper body walks (the owner's "static sliding"). The body
+   material keeps the human donor's emission keyword. The next step is a
+   presentation-only tail undulation while the unit moves and idles, standing
+   aside for the slap, with no change to commands, reach, contact or timing.
+2. The owner's decisions waiting: the Dire Rat icon pilot (VIS-004), and the
+   found inside-out bodies listed above.
    Optional: Viper/Constrictor locomotion. Roster-owned: Elephant, Lantern
    Archon, Invisible Stalker.
