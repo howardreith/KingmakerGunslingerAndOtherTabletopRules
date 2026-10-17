@@ -51,32 +51,49 @@ creature has a beak.
 | `beak` | small head | tusks |
 | `limbs` | columnar legs | legs |
 
-## What the geometry step still needs
+## The geometry step — no longer blocked on a capture
 
-`generate_armored_dinosaurs.py` — the quadruped precedent this sprint follows
-— binds original geometry to a **geometry-free Mastodon bind-frame capture**
-and refuses anything else: it requires a capture whose source names the
-Mastodon, a single skinned renderer, and `boneCount == bindPoseCount`.
+This section previously recorded the geometry step as blocked: the Mastodon
+bind-frame capture `generate_armored_dinosaurs.py` requires was Sprint 11
+machine-local evidence and was not on this machine.
 
-That capture was Sprint 11 private machine-local evidence and is **not on this
-machine**. A repository-wide search for the capture shape (`bindPosition`
-rows) finds only Pteranodon attached-rig captures, and no `.blend` or report
-from the Sprint 23 generation survives either.
+**That is resolved.** The Sprint 25 guarded donor census captured the Mastodon
+renderer bind frame geometry-free — 40 joints, `boneCount == bindPoseCount`,
+prefab `fe9f25fe62e0f3b49a13910a996470b2` — and original geometry has since
+been bound to it and posed through the real skin cluster. The census schema is
+the Sprint 18 census shape (`donors[].skinnedRenderers[]`) rather than the
+Sprint 12 shape (`renderers[]`) the older generator reads, which is why
+`prototype_giant_bodies.py` carries its own reader with the same refusals:
+one skinned renderer, counts agreeing, unique names, three-component
+positions.
 
-So the Brachiosaurus and Elephant meshes cannot be generated yet, and nothing
-here fabricates a rig. The next step is the smallest approved donor
-observation: one guarded, unelevated run against a valid artifact that
-captures the Mastodon renderer bind frame geometry-free, exactly as Sprint 11
-did. Blender 4.5.10 LTS is installed and verified working on this machine
-(background render, real exit code 0), so authoring and the offline review
-renders can proceed the moment the capture exists.
-
-Planned commands once the capture is in hand, with `--python-exit-code 1`:
+Two scripts stand today, both run under `--python-exit-code 1`:
 
 ```text
-blender -b --python-exit-code 1 --python generate_giant_bodies.py -- --kind <kind> --capture <private-capture.json> --albedo <albedo.png> --mesh-data <mesh.json> --report <private-report.json> --blend-out <private-source.blend>
-blender -b --python-exit-code 1 --python review_giant_bodies.py -- --kind <kind> --source <private-source.blend> --out <private-review-directory>
+blender -b --python-exit-code 1 --python graybox_giant_bodies.py -- --census <sprint25-donor-census.json> --out <dir> [--diagnostic]
+blender -b --python-exit-code 1 --python prototype_giant_bodies.py -- --census <sprint25-donor-census.json> --out <dir> [--albedo-dir <dir>]
 ```
+
+The first renders authored shape. The second binds that shape to the donor
+armature, moves it by posing bones only, measures what the skin does, and
+exports FBX. `WEIGHTED-PROTOTYPE.md` records what it proved and what it
+refused to prove, and the findings it hands to the final geometry pass:
+
+- the Brachiosaurus neck must be weighted to `Head` alone — full donor-chain
+  influence measures 5.08 visible stretch and 10.5 units of displacement, and
+  damping to a quarter collapses the surface to 0.15 of its rest length;
+- the shoulder and neck base need actual mass and a unioned surface — the
+  wedge there survived all five seam weightings, so it is geometry;
+- a seam that bends needs more rings than it has — the trunk base exceeds
+  tolerance past 8 degrees per joint because its rings are as thick as its
+  segments are long;
+- the mid-limb donor joints `frontKnee_*` and `frontAnkle_*` carry no
+  influence, and bending them stretches the visible shin seam to 1.05.
+
+Still required and not done: final geometry, UVs on final geometry, the
+textures inspected on the actual models, and native animation qualification.
+The census captured clip names and event times, never curves, so every
+amplitude measured so far is an authored probe.
 
 Brachiosaurus is authored with a long elevated neck, a small head, tall
 forequarters, a heavy quadruped torso, columnar legs and a balancing tapering

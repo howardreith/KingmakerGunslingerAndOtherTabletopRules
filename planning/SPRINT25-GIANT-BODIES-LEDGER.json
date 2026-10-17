@@ -725,15 +725,61 @@
       "inspectionPendingReason": "the models do not exist yet; see geometry below"
     },
     "geometry": {
-      "status": "UNBLOCKED_PENDING_MOTION_PROTOTYPE",
+      "status": "WEIGHTED_PROTOTYPE_MEASURED_PENDING_FINAL_GEOMETRY",
       "previousBlockerResolved": "The blocker was BLOCKED_ON_DONOR_CAPTURE: the Sprint 11 Mastodon bind-frame capture was private machine-local evidence that did not exist on this machine. It exists now. The guarded census captured the donor geometry-free on 2026-10-16: 150 transforms with local and world rest position, rotation and scale, 40 real skinning joints, the renderer bind frame, anatomy chains, animation managers and colliders. No native vertices, indices, UVs, textures or animation curves were read or retained.",
       "capture": "runtime-evidence/20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census",
       "donorPrefab": "fe9f25fe62e0f3b49a13910a996470b2",
       "anatomyCorrection": "See engineering.donorRig. The first reading of this capture classified the rig by bone name and was withdrawn: the twelve Tail* joints are two chains, a seven-joint TRUNK parented to Head and running forward of it, and a five-joint real tail parented to LowerTorso. The forward chain is the carrier for a long sauropod neck, so there is no rigid-neck constraint to design around.",
-      "nextStep": "a low-cost graybox motion prototype before any final geometry or texture polish: the Brachiosaurus neck and the Elephant trunk on the forward chain, the tail on the rear chain, and the limb contacts, reviewed through idle, walk, turn, attack/trample and interruption/death transitions. Spatial classification says what the chains are; only the prototype says whether the native animation drives them acceptably.",
+      "nextStep": "Final geometry, UVs on it, and the textures inspected on the actual models, carrying the five findings above. The motion prototype that this step previously waited on is done and measured.",
       "toolingReady": "Blender 4.5.10 LTS already verified; no capability rediscovery needed.",
       "originalBodyAssetsAuthored": false,
-      "whyStillFalse": "A graybox prototype exists and has been inspected, but no final geometry, UVs or textures do. A prototype is not finished art."
+      "whyStillFalse": "A weighted prototype exists, is bound through the real pipeline, moves by skinning and is measured. No final geometry, UVs or textures exist. A prototype is not finished art, and proving motion is not authoring it.",
+      "captureEquivalence": "Three guarded census runs exist for this donor. Their bind frames are identical - same 40 joints, same bind-position hash 0ac4268cd15e52f2 - so the choice between them does not affect any geometry. The run named in `capture` above is the one of record and is what the prototype reads; the 1527Z run adds an unrelated released-Elephant observation section and nothing about the bind frame.",
+      "weightedPrototype": {
+        "whatItIs": "The graybox rebuilt a static shape per state, so no render it produced was evidence about skinning. This binds the same authored bodies through the released binding pipeline - donor-measured armature, one vertex group per donor bone, normalised influences, Armature modifier, FBX export - and moves them by posing bones only.",
+        "generator": "assets-source/original-models/sprint25-giant-bodies/prototype_giant_bodies.py",
+        "record": "assets-source/original-models/sprint25-giant-bodies/WEIGHTED-PROTOTYPE.md",
+        "reviewPacket": "assets-source/original-models/sprint25-giant-bodies/REVIEW-PACKET.md",
+        "evidence": "runtime-evidence/sprint25-weighted-prototype",
+        "motionIsSkinning": "The unposed mesh is hashed in every state: one distinct base-mesh digest per variant across all pose evaluations, equal to the bind digest. Single-bone parts depart from rigid motion by at most 2e-6 units, which is the harness checking itself.",
+        "exportVerified": "Every variant written to FBX and read back: 40 bones, zero unweighted vertices, influence sums exactly 1.000, at most 2 influences per vertex (3 for the damped weighting) against Unity's 4, Armature modifier present.",
+        "brachiosaurusNeckDecision": "DECIDED ON MEASUREMENT. The donor chain hangs down; an authored upright neck leaves its bind path, and the chain bones then drive skin 3.1 to 7.5 units away from them - lever arms of 6.4x to 33.4x the skin's own radius. Under a 16 deg/joint curl: full chain influence 3.46 visible stretch and 10.51 units of displacement; damped to 0.25 the surface collapses to 0.14 of rest length; chain influence removed holds at 1.01 and 1.24, and stays inside tolerance at every amplitude tested up to 24 deg/joint. The neck ships weighted to Head alone, whose bind head is the neck's own base. The cost is recorded: 20 vertex groups instead of 27, no secondary motion, and the seven chain joints carry nothing.",
+        "seamTreatment": "Five weightings measured on the Elephant, visible-surface stretch. add_tube's default blend carries the limb socket OUT of the torso under a slam (hull 1.22). Pinning keeps it in and makes one band absorb the whole step (2.01). Graded rings fix the limb (1.52) and worsen the neck (gore 1.29 -> 1.58). Grading along the donor's own UpperTorso-Neck-Head chain was tried on the anatomy and LOST (1.72, and the curl floor from 0.84 to 0.13). Shipped: graded limb sockets, pinned neck anchor.",
+        "islandDefectClosed": "The independent review had measured 18 to 52 px of background between torso and chain. Measured against a scale instead: the anchor ring sits 0.205 (Brachiosaurus) and 0.075 (Elephant) from the nearest torso vertex, against torso facet spacings of 0.707 and 0.684 - 0.29 and 0.11 of one facet - and it is pinned to UpperTorso, so those numbers are identical in every pose and cannot be reopened by motion.",
+        "definingMotion": "Elephant trunk: bind-faithful, every chain bone exactly on the skin it drives, within tolerance to 12 deg/joint after the taper correction (was 8), 1.37 at 16; tusk-to-trunk clearance 0.113 at bind and 0.128 to 0.137 under curl, never touching. Brachiosaurus neck: rigid on Head, gore swing moves the skull 3.24 units at 1.20 visible stretch. Slam lifts one forefoot to +0.741 with the other three measuring exactly 0.000 above the sole plane.",
+        "topologyMetricCorrected": "The earlier report counted faces pointing away from the WHOLE body's centroid, which labels the inner surface of every leg as inward and reported 78 and 105 on bodies with nothing wrong. Replaced by per-shell signed volume, which is exact: 8 shells (Brachiosaurus) and 12 (Elephant), 0 open, 0 inside out.",
+        "notProved": "Native motion. The census captured clip names, durations and event times, never curves, so every pose is an authored probe named after a donor clip and not that clip. Native animation qualification is outstanding.",
+        "requiredBeforeFinalGeometry": [
+          "weight the Brachiosaurus neck to Head alone",
+          "shoulder and neck-base mass with a unioned surface - the wedge survived all five seam weightings, so it is geometry",
+          "more rings where a seam bends - the trunk base exceeds tolerance past 8 deg/joint because its rings are as thick as its segments are long",
+          "weight the mid-limb donor joints frontKnee_* and frontAnkle_*, or accept the 1.05 shin seam and say so",
+          "native clip amplitudes, which no offline probe can supply"
+        ],
+        "censusOfRecord": "20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census, SHA-256 e2ce2a776dc06fdb...; the three runs' bind frames are identical",
+        "bindingContract": "PteranodonAssetRuntime.TryResolveDonorBinding resolves our bone NAMES against the live donor and takes donorMesh.bindposes[donorSlot], and Unity skins as sum_i w_i * bones[i].localToWorldMatrix * bindposes[i] * v. So a bone rotates the skin about where that bone IS. Everything the prototype measured follows from that, and it is read from the shipping runtime rather than assumed.",
+        "independentReview": {
+          "verdict": "CHANGES_REQUIRED, ten prioritised defects, read-only, 22 renders opened",
+          "packet": "assets-source/original-models/sprint25-giant-bodies/REVIEW-PACKET.md",
+          "correctedThisRecord": [
+            "'the other three are planted' was false: the walk probe rotates joints only - no root motion, no IK - so three of four feet left the ground. The pose is renamed walk-swing and its per-foot lift is reported. Stance contact across a gait cycle is UNASSESSED.",
+            "the four soles were not coplanar at bind (-0.049 fore against +0.036 hind) although the donor's own foot joints are coplanar to 0.006. Every sole ring is now flattened onto the donor's sole plane z = 0.0352 and the review ground is drawn there; all four now measure 0.000 at bind.",
+            "the neck anchor ring was OUTSIDE the torso hull in every pose - 1.008 and 1.145 - which the reviewer saw as a protruding cap on the chest of both creatures. This record had quoted the socket ring's 0.79 and never the anchor's. The sink is now solved against the hull instead of guessed: 0.840 and 0.844, 100 per cent of the ring inside, in every pose of every variant."
+          ],
+          "correctedTheShape": "The reviewer measured the trunk as a near-constant-width column that hooks at the end, and the curl as a rigid boom plus a wrist flick. One cause, which the generator could not see: the donor's chain is not evenly spaced - Head to Tail7_M is 1.754 units, every joint after it 0.44 to 0.54 - and radii were tapered by ring INDEX. Radii now fall with arc length. Measured effect: the trunk's curl tolerance rises from 8 to 12 deg/joint and the rigid neck holds tolerance at every amplitude tested. Per-joint turn is now reported: at bind the chain turns 54.2 and 45.1 degrees at its first two joints and about 0.4 at each of the other five, so a uniform per-joint probe is not a faithful stand-in for a trunk clip on this donor.",
+          "handedToFinalGeometry": [
+            "the trunk still reads as a fifth leg and passes within 0.06 units of the foreleg; its reaching near the ground is faithful to the donor, so the fix is shape, not length",
+            "the Brachiosaurus neck is a hinged boom with a capped knob for a head - the crease is the donor's own 44.9 degree rest turn carried through the rigid re-aim",
+            "the shoulder and neck-base wedge, which survived all five seam weightings",
+            "the mid-limb joints drive 16 vertices, so an Elephant slam has no carpal bend",
+            "the tail is about a quarter of the neck's length",
+            "a UV pole whorl on the dorsal midline and a texel-density step at the shoulder; the trunk and legs do NOT share a UV region, so that part of the reviewer's hypothesis is wrong while the observation that they read alike stands",
+            "the ears are flat plates and do not yet read as ears",
+            "the gore pose tucks the trunk between the forelegs to ground level"
+          ],
+          "confirmedNotBroken": "The neck-weighting decision is settled in pixels: the full-chain neck collapses into a folded slab across the back and its chain tip punches 1.40 units through the ground, while the rigid variant at the same amplitude is visually indistinguishable from bind. The free-floating island is resolved - contact with a shadow line, never background. No hole and no flipped face anywhere. Camera labels correct. The tusk UV region is right: the only ivory pixels on the Elephant are on the tusk."
+        }
+      }
     },
     "icon": {
       "status": "ASSET_HANDOFF_PREPARED_WITH_REAL_REFERENCE_IMAGES",

@@ -21,6 +21,7 @@ Run:
       -- --census <sprint25-donor-census.json> --out <dir>
 """
 import argparse
+import collections
 import json
 import math
 from pathlib import Path
@@ -37,11 +38,32 @@ sys.path.insert(0, str(ROOT / "sprint12-quadrupeds"))
 import generate_pteranodon as shared          # noqa: E402
 from generate_sprint12_quadrupeds import ellipsoid, tube   # noqa: E402
 
+# What build() hands back. The shape alone was enough while this script only
+# rendered static states; a weighted prototype needs the influences, the
+# texture coordinates and the measured landmarks as well, so the binding step
+# consumes exactly the geometry that was rendered rather than a second copy of
+# the body definition that could drift from it.
+BuiltBody = collections.namedtuple(
+    "BuiltBody", "obj weights uvs landmarks anchorRing parts")
+
 # The measured chains. Classification is spatial, from the captured bind
 # frames, and must not be re-derived from these names.
 FORWARD_CHAIN = ["Tail7_M", "Tail11_M", "Tail21_M", "Tail31_M", "Tail41_M",
                  "Tail5_M", "Tail6_M"]
 REAR_CHAIN = ["Tail0_M", "Tail1_M", "Tail2_M", "Tail3_M", "Tail4_M"]
+# The forward chain's ring resolution, named once because the binding step
+# has to know how many vertices the anchor ring holds.
+FORWARD_SEGMENTS = 10
+LIMB_SEGMENTS = 8
+
+# How many extra rings the "graded" seam treatment puts across a seam. Two is
+# the smallest count that gives the step more than one band to happen in.
+SEAM_RINGS = 2
+
+# The parts that partition the body. Anything else build() records is an
+# overlay: a named subset of one of these, for measurement.
+PRIMARY_PARTS = ("torso", "forward", "skull", "ears", "tusks", "tail", "limbs")
+
 LEG_BONES = ["L_Arm_Upper", "L_Arm_Lower", "L_Palm",
              "R_Arm_Upper", "R_Arm_Lower", "R_Palm",
              "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0",
@@ -135,14 +157,133 @@ def taper(count, base, tip):
     return [base + (tip - base) * (i / max(1, count - 1)) for i in range(count)]
 
 
-def build(kind, rest, neck_state):
-    """One graybox body. neck_state is 'rest', 'upright' or 'curled'."""
+def taper_along(points, base, tip):
+    """Radii that fall with ARC LENGTH rather than with ring index.
+
+    The donor's forward chain is not evenly spaced: Head -> Tail7_M is 1.754
+    units and every joint after it is 0.44 to 0.54. Tapering by index spends
+    almost no narrowing over the first 38 per cent of the length and all of it
+    over the short distal joints, which is what made the trunk read as a
+    constant-width column with a hook on the end - and what makes a uniform
+    per-joint curl look like a rigid boom plus a wrist flick, because the bend
+    per unit length is 9 degrees at the base against 36 distally.
+    """
+    lengths = [0.0]
+    for index in range(1, len(points)):
+        lengths.append(lengths[-1]
+                       + (points[index] - points[index - 1]).length)
+    total = lengths[-1] or 1.0
+    return [base + (tip - base) * (value / total) for value in lengths]
+
+
+def insert_seam(points, radii, count):
+    """Subdivide the first segment of a tube `count` times.
+
+    The seam between a part and the body it leaves is one segment long by
+    default, so a single band of faces has to absorb the whole step from
+    torso-driven skin to part-driven skin. These rings give that step somewhere
+    to happen gradually. They add no shape: every inserted ring lies on the
+    segment it subdivides, with its radius interpolated.
+    """
+    if count < 1:
+        return points, radii
+    head, tail = points[0], points[1]
+    inserted, inserted_radii = [], []
+    for step in range(1, count + 1):
+        share = step / float(count + 1)
+        inserted.append(head + (tail - head) * share)
+        inserted_radii.append(radii[0] + (radii[1] - radii[0]) * share)
+    return ([head] + inserted + points[1:],
+            [radii[0]] + inserted_radii + radii[1:])
+
+
+def build(kind, rest, neck_state, seam="mixed"):
+    """One graybox body. neck_state is 'rest', 'upright' or 'curled'.
+
+    `seam` is how the neck anchor and the limb sockets join the body, and it
+    is a parameter rather than a decision buried in the builder because the
+    weighted prototype measures all three:
+
+      "blend"   add_tube's default, a quarter of each seam ring on the part it
+                feeds - which lets a slam carry the socket out of the torso;
+      "pin"     the seam ring driven by the torso alone - which keeps it in the
+                body and makes the one band behind it absorb the whole step;
+      "graded"  extra rings across BOTH seams with the influence graded
+                over them, so no single band takes the step;
+      "mixed"   graded limb sockets and a pinned neck anchor. This is what
+                the measurements chose, and the two halves of it disagree for
+                a reason: a limb socket spans a real transition and wants room
+                for it, while the neck anchor is a stub sunk inside the torso
+                whose far ring already sits on the pivot, so extra rings there
+                only shorten the band that has to absorb the step;
+      "chained" the same extra rings, but graded along the donor's OWN
+                joints across the seam - for the neck that is
+                UpperTorso -> Neck -> Head, and the middle one is the point:
+                the donor has a Neck joint, the first pass weighted nothing to
+                it, and a gore swing of that joint tore a wedge at the
+                shoulder. It was measured and it LOST - elephant gore 1.39 ->
+                2.01, trunk-curl floor 0.81 -> 0.31 - for the same reason
+                grading the neck lost: inserting rings shortens the bands, so
+                the same step across a third of the length reads as a larger
+                stretch. The wedge is not a weighting defect at all. It is a
+                cylinder leaving a sphere with no shoulder mass between them,
+                and it belongs to the geometry pass.
+    """
     lateral, up, forward = frame(rest)
     mesh = bpy.data.meshes.new(kind + "_graybox")
     obj = bpy.data.objects.new(kind + "_graybox", mesh)
     bpy.context.scene.collection.objects.link(obj)
     bm = bmesh.new()
     weights, uvs = {}, {}
+    parts = {}
+
+    def mark(name, start):
+        """Record which vertices each part owns.
+
+        The binding step has to measure one part against another - tusk
+        against trunk, skull against torso - and texture coordinates cannot
+        tell them apart, because the atlas regions share edges and a pole
+        vertex lands exactly on one. The builder already knows, so it says.
+        """
+        parts.setdefault(name, []).extend(range(start, len(bm.verts)))
+
+    def pin(indices, bone):
+        """Drive a ring from one bone alone.
+
+        A ring that lies on the torso's surface - the neck's anchor, a limb's
+        socket - is the TORSO's skin, not the neck's or the limb's. The ring
+        blend that add_tube applies by default left a quarter of each on the
+        part it feeds, and the weighted prototype measured what that costs: the
+        gore pose pulled the anchor ring out of the torso hull, and a slam
+        stretched a shoulder seam to 1.68 of its rest length. Pinned to the
+        torso, those rings cannot move away from the body at all.
+        """
+        if seam == "blend":
+            return
+        bm.verts.ensure_lookup_table()
+        for index in indices:
+            weights[bm.verts[index]] = [(bone, 1.0)]
+
+    def grade(rings, chain, enabled):
+        """Spread influence along `chain` across the rings.
+
+        `chain` is the bones the seam actually crosses, body end first. For a
+        limb that is the torso and the limb's own bone; for the neck it is
+        UpperTorso, Neck and Head. The end rings are left as they were - ring
+        zero pinned to the body, the last ring as add_tube weighted it - so
+        this only fills in the steps between them.
+        """
+        if not enabled or len(rings) < 3 or len(chain) < 2:
+            return
+        bm.verts.ensure_lookup_table()
+        for position in range(1, len(rings) - 1):
+            place = position / float(len(rings) - 1) * (len(chain) - 1)
+            lower = min(int(place), len(chain) - 2)
+            share = place - lower
+            rows = [(chain[lower], 1.0 - share), (chain[lower + 1], share)]
+            rows = [row for row in rows if row[1] > 1e-4]
+            for index in rings[position]:
+                weights[bm.verts[index]] = rows
 
     torso_mid = (rest["LowerTorso"] + rest["UpperTorso"]) * 0.5
     body_len = (rest["UpperTorso"] - rest["LowerTorso"]).length
@@ -155,8 +296,10 @@ def build(kind, rest, neck_state):
         neck_base, neck_tip = body_len * 0.17, body_len * 0.055
 
     slots = REGIONS[kind]
+    start = len(bm.verts)
     ellipsoid(bm, weights, uvs, torso_mid, lateral, up, forward,
               body_radii, "UpperTorso", region=slots["body"])
+    mark("torso", start)
 
     # The forward chain. Three references are kept apart on purpose, because
     # conflating them is what put the elephant's skull, ears and tusks on a
@@ -185,12 +328,62 @@ def build(kind, rest, neck_state):
     # anchor sinks toward the torso CENTRE - sinking backward along the chain
     # instead put it outside the hull on the far side and hung a slab down the
     # flank - and it is weighted to UpperTorso.
-    anchor = head_joint + (torso_mid - head_joint).normalized() * (neck_base * 1.35)
+    # The sink is solved against the hull, not guessed. At the guessed 1.35
+    # the independent review found the ring's outermost vertex 1.008
+    # (Brachiosaurus) and 1.145 (Elephant) of a hull radius OUTSIDE the torso,
+    # and saw it as a flat cap and a protruding box on the chest of both
+    # creatures. The ring is a disc, so the test has to be on the disc rather
+    # than on its centre: this takes the smallest sink that puts every vertex
+    # of it inside, with margin.
+    toward = (torso_mid - head_joint).normalized()
+    anchor_radius = neck_base * 1.22
+
+    def hull_value(point):
+        offset = point - torso_mid
+        return ((offset.dot(lateral) / body_radii[0]) ** 2 +
+                (offset.dot(up) / body_radii[1]) ** 2 +
+                (offset.dot(forward) / body_radii[2]) ** 2)
+
+    anchor = None
+    for step in range(10, 101):
+        trial = head_joint + toward * (neck_base * step / 10.0)
+        right, lift, _ = shared.basis(head_joint - trial)
+        ring = [trial + right * (math.cos(angle) * anchor_radius)
+                + lift * (math.sin(angle) * anchor_radius)
+                for angle in (2.0 * math.pi * index / FORWARD_SEGMENTS
+                              for index in range(FORWARD_SEGMENTS))]
+        if max(hull_value(point) for point in ring) <= 0.85:
+            anchor = trial
+            break
+    if anchor is None:
+        raise SystemExit("no anchor sink puts the whole seam ring inside the "
+                         "torso hull; the torso is too small for this neck")
     pts = [anchor] + pts
     bones = ["UpperTorso"] + bones
-    radii = [neck_base * 1.22] + taper(len(pts) - 1, neck_base, neck_tip)
+    radii = [anchor_radius] + taper_along(pts[1:], neck_base, neck_tip)
+    extra = SEAM_RINGS if seam in ("graded", "chained") else 0
+    pts, radii = insert_seam(pts, radii, extra)
+    bones = [bones[0]] * extra + bones
+    # The anchor ring is the first ring this call creates, so its vertices are
+    # the first FORWARD_SEGMENTS the bmesh hands out here. Recording the range
+    # is how the binding step can later prove, per pose, that the ring the
+    # reviewer saw floating is still inside the torso hull.
+    start = len(bm.verts)
+    seam_rings = [list(range(start + index * FORWARD_SEGMENTS,
+                             start + (index + 1) * FORWARD_SEGMENTS))
+                  for index in range(extra + 2)]
+    anchor_ring = seam_rings[0]
     tube(bm, weights, uvs, pts, radii,
-         bones, region=slots["forward"], segments=10)
+         bones, region=slots["forward"], segments=FORWARD_SEGMENTS)
+    mark("forward", start)
+    pin(anchor_ring, "UpperTorso")
+    # "graded" steps straight from the torso to the head, which is the
+    # comparison; "chained" goes through the Neck joint the donor actually
+    # has between them.
+    grade(seam_rings,
+          ["UpperTorso", "Neck", "Head"] if seam == "chained"
+          else ["UpperTorso", "Head"],
+          seam in ("graded", "chained"))
 
     # Where the skull sits is the one thing these two creatures do NOT share.
     # A sauropod's head is at the far end of the neck, so it rides the chain
@@ -209,11 +402,13 @@ def build(kind, rest, neck_state):
     # The review found the skull separated from the neck tip under curl and
     # off-axis even uncurled: it was pushed OUTWARD past the final cap. It now
     # sinks back into the last segment so the join stays closed at any curl.
+    start = len(bm.verts)
     ellipsoid(bm, weights, uvs, head_at - head_dir * head_size * 0.30,
               head_lat, head_up, head_dir,
               (head_size * 0.70, head_size * 0.78, head_size),
               "Head" if kind == "elephant" else FORWARD_CHAIN[-1],
               region=slots["head"])
+    mark("skull", start)
 
     # The elephant's ears and tusks, because tusk clearance against the trunk
     # is one of the things this prototype has to show.
@@ -230,25 +425,40 @@ def build(kind, rest, neck_state):
                       + lateral * (sign * body_len * 0.20)
                       - up * (body_len * 0.02)
                       - forward * (body_len * 0.10))
+            start = len(bm.verts)
             ellipsoid(bm, weights, uvs, centre, lateral, up, forward,
                       (body_len * 0.035, body_len * 0.19, body_len * 0.21),
                       ear, region=slots["head"])
+            mark("ears", start)
         for sign in (-1.0, 1.0):
             root = head_joint + lateral * (sign * body_len * 0.105)                 - up * body_len * 0.055
             tip = root + head_dir * body_len * 0.40                 - up * body_len * 0.10 + lateral * (sign * body_len * 0.045)
+            start = len(bm.verts)
             tube(bm, weights, uvs, [root, (root + tip) * 0.5, tip],
                  [body_len * 0.035, body_len * 0.026, body_len * 0.012],
                  ["Head", "Head", "Head"], region=slots["tusk"], segments=6)
+            mark("tusks", start)
 
     # The real tail keeps the rear chain; the neck never borrows it.
     tail_pts = chain_points(rest, REAR_CHAIN, "LowerTorso")
     tail_base = body_len * 0.15
     tail_pts = [tail_pts[0] + (torso_mid - tail_pts[0]).normalized()
                 * (tail_base * 1.5)] + tail_pts
+    start = len(bm.verts)
     tube(bm, weights, uvs, tail_pts,
-         [tail_base * 1.2] + taper(len(tail_pts) - 1, tail_base,
-                                   body_len * 0.035),
+         [tail_base * 1.2] + taper_along(tail_pts[1:], tail_base,
+                                         body_len * 0.035),
          ["LowerTorso"] * 2 + REAR_CHAIN, region=slots["tail"], segments=8)
+    mark("tail", start)
+
+    # The donor's own sole plane. Its four foot joints are coplanar to
+    # 0.006 units, so the 0.085 spread the review measured between fore and
+    # hind soles was the foot RING tilting about its joint, not the donor.
+    # Every sole is flattened onto this plane, and the review ground is drawn
+    # there, so "planted" means one thing and is checkable.
+    sole_plane = min(rest[bone].z for bone in
+                     ("L_Palm", "R_Palm", "L_Foot0", "R_Foot0")
+                     if bone in rest)
 
     # Four columnar limbs from the measured joints.
     for upper_b, lower_b, foot_b in (
@@ -267,10 +477,38 @@ def build(kind, rest, neck_state):
         # broke exactly that: it made the elephant trunk float and the
         # brachiosaurus tail tip dip under the foot plane.
         socket = top + (torso_mid - top).normalized() * (radius * 1.5)
-        tube(bm, weights, uvs, [socket, top, knee, foot],
-             [radius * 1.25, radius, radius * 0.84, radius * 0.80],
-             [upper_b, upper_b, lower_b, foot_b], region=slots["limb"],
-             segments=8)
+        limb_pts = [socket, top, knee, foot]
+        limb_radii = [radius * 1.25, radius, radius * 0.84, radius * 0.80]
+        extra = SEAM_RINGS if seam in ("graded", "chained", "mixed") else 0
+        limb_pts, limb_radii = insert_seam(limb_pts, limb_radii, extra)
+        limb_bones = [upper_b] * (extra + 2) + [lower_b, foot_b]
+        start = len(bm.verts)
+        tube(bm, weights, uvs, limb_pts, limb_radii, limb_bones,
+             region=slots["limb"], segments=LIMB_SEGMENTS)
+        mark("limbs", start)
+        limb_rings = [list(range(start + index * LIMB_SEGMENTS,
+                                 start + (index + 1) * LIMB_SEGMENTS))
+                      for index in range(extra + 2)]
+        parts.setdefault("sockets", []).extend(limb_rings[0])
+        # The forelimbs hang off UpperTorso and the hind legs off LowerTorso in
+        # the donor's own hierarchy, so each socket is pinned to its own host.
+        if "Arm" in upper_b:
+            parts.setdefault("forelimbs", []).extend(
+                range(start, len(bm.verts)))
+        # The LAST ring of the whole tube, which is the sole. limb_rings
+        # enumerates only the seam rings at the other end, and flattening
+        # those would drop the shoulder to the ground.
+        bm.verts.ensure_lookup_table()
+        sole_ring = range(start + (len(limb_pts) - 1) * LIMB_SEGMENTS,
+                          start + len(limb_pts) * LIMB_SEGMENTS)
+        for index in sole_ring:
+            bm.verts[index].co.z = sole_plane
+        host = "UpperTorso" if "Arm" in upper_b else "LowerTorso"
+        pin(limb_rings[0], host)
+        # A limb socket crosses no intermediate donor joint: UpperTorso
+        # parents L_Arm_Upper directly.
+        grade(limb_rings, [host, upper_b],
+              seam in ("graded", "chained", "mixed"))
 
     # P6 classified and repaired. The enclosed dark patch the review found was
     # NOT a hole: the topology report shows zero boundary and zero non-manifold
@@ -280,10 +518,34 @@ def build(kind, rest, neck_state):
     # surface defect; it is not a material or a shading trick.
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
     bm.normal_update()
+    # The influence rows are keyed by BMVert, and a BMVert does not survive
+    # bm.free(). Re-key them by vertex index first, the way the released
+    # generators do, so the binding step can address mesh vertices.
+    bm.verts.index_update()
     bm.to_mesh(mesh)
+    indexed = {vert.index: entries for vert, entries in weights.items()}
+    uv_indexed = {vert.index: uv for vert, uv in uvs.items()}
     bm.free()
     mesh.validate()
-    return obj
+    if len(mesh.vertices) != len(indexed):
+        raise SystemExit("validate() changed the vertex count, so the "
+                         "influence rows no longer address this mesh")
+    landmarks = {
+        "torsoMid": torso_mid.copy(), "bodyRadii": tuple(body_radii),
+        "bodyLength": body_len, "headJoint": head_joint.copy(),
+        "anchor": anchor.copy(), "chainTip": pts[-1].copy(),
+        "neckState": neck_state, "solePlane": sole_plane,
+        "anchorSink": (anchor - head_joint).length,
+    }
+    # "sockets" is an overlay inside "limbs", so the cover check counts the
+    # parts that partition the body and not the overlays on top of it.
+    covered = set()
+    for name, rows in parts.items():
+        if name in PRIMARY_PARTS:
+            covered.update(rows)
+    if len(covered) != len(mesh.vertices):
+        raise SystemExit("a part of the body was built without being named")
+    return BuiltBody(obj, indexed, uv_indexed, landmarks, anchor_ring, parts)
 
 
 def topology_report(obj):
@@ -292,33 +554,61 @@ def topology_report(obj):
     A dark enclosed patch in a render is either a real hole, a flipped face,
     or just a shadow. Matcap-style shading cannot tell them apart, so this
     counts the things that actually distinguish them: boundary edges bound a
-    hole, non-manifold edges mean the surface is not a clean shell, and a face
-    whose normal points away from the local outward direction is flipped.
+    hole, non-manifold edges mean the surface is not a clean shell, and a
+    closed shell whose signed volume comes out NEGATIVE is wound inside out.
+
+    The signed volume replaced an earlier test that asked whether a face
+    pointed away from the whole body's centroid. On a body of overlapping
+    placed primitives that labels the inner surface of every leg as inward: it
+    reported 78 and 105 flipped faces on bodies whose shells are all closed and
+    correctly wound. Signed volume is exact per shell, and indifferent to
+    convexity and to where the rest of the body is.
     """
     mesh = obj.data
     bm = bmesh.new()
     bm.from_mesh(mesh)
     bm.normal_update()
-    boundary = [e for e in bm.edges if len(e.link_faces) == 1]
+    boundary = set(e for e in bm.edges if len(e.link_faces) == 1)
     nonmanifold = [e for e in bm.edges if len(e.link_faces) > 2]
     wire = [e for e in bm.edges if len(e.link_faces) == 0]
-    centre = Vector((0.0, 0.0, 0.0))
-    for v in bm.verts:
-        centre += v.co
-    centre /= max(1, len(bm.verts))
-    flipped = []
-    for f in bm.faces:
-        outward = (f.calc_center_median() - centre)
-        if outward.length < 1e-6:
-            continue
-        if f.normal.dot(outward.normalized()) < -0.35:
-            flipped.append(f.index)
     loose = [v for v in bm.verts if not v.link_edges]
+
+    shells, seen = [], set()
+    for face in bm.faces:
+        if face.index in seen:
+            continue
+        group, stack = [], [face]
+        seen.add(face.index)
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for edge in current.edges:
+                for neighbour in edge.link_faces:
+                    if neighbour.index not in seen:
+                        seen.add(neighbour.index)
+                        stack.append(neighbour)
+        shells.append(group)
+
+    open_shells, inside_out = 0, 0
+    for group in shells:
+        if any(edge in boundary for face in group for edge in face.edges):
+            open_shells += 1
+            continue
+        volume = 0.0
+        for face in group:
+            verts = face.verts[:]
+            for index in range(1, len(verts) - 1):
+                volume += verts[0].co.dot(
+                    verts[index].co.cross(verts[index + 1].co)) / 6.0
+        if volume < 0.0:
+            inside_out += 1
+
     report = {
         "verts": len(bm.verts), "edges": len(bm.edges), "faces": len(bm.faces),
         "boundaryEdges": len(boundary), "nonManifoldEdges": len(nonmanifold),
         "wireEdges": len(wire), "looseVerts": len(loose),
-        "stronglyInwardFaces": len(flipped),
+        "shells": len(shells), "openShells": open_shells,
+        "insideOutShells": inside_out,
     }
     bm.free()
     return report
@@ -404,7 +694,7 @@ def main():
             for obj in [o for o in bpy.data.objects
                         if o.name.endswith("_graybox")]:
                 bpy.data.objects.remove(obj, do_unlink=True)
-            body = build(kind, rest, state)
+            body = build(kind, rest, state).obj
             centre = sum((Vector(c) for c in body.bound_box),
                          Vector()) / 8.0
             centre = body.matrix_world @ centre

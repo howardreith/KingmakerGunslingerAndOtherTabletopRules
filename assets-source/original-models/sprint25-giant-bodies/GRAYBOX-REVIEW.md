@@ -197,3 +197,22 @@ visual acceptance is not the owner's aesthetic approval.
 
 `originalBodyAssetsAuthored` stays **false**: this is a graybox, not final
 geometry, and a prototype is not finished art.
+
+## Superseded by the weighted prototype
+
+Everything above describes static shapes: nothing in it was bound to a bone,
+so none of its renders are evidence about skinning. `WEIGHTED-PROTOTYPE.md`
+in this directory carries the pass that binds these same bodies through the
+real pipeline and moves them by posing bones, and `REVIEW-PACKET.md` is the
+one current review packet. The render sets `runtime-evidence/sprint25-graybox/`
+and `…-graybox-r2/` are superseded by
+`runtime-evidence/sprint25-weighted-prototype/` and should not be mixed with
+it: the bodies have changed since, in ways that pass recorded measurements
+(radii now taper by arc length, the neck anchor is solved against the torso
+hull, the soles are flattened onto the donor's own sole plane).
+
+Two findings here are corrected there and should be read in their corrected
+form: the curl-tolerance table above is a **geometric** probe of the authored
+shape, not a measurement of the skin, and the open defect P5 "ground
+relationship" is now measured against the donor's sole plane rather than
+against z = 0.
