@@ -1,5 +1,91 @@
 # Autonomous Gunslinger blockers
 
+## 2026-10-17 output_log2 follow-up
+
+Owner now reports alpha 3 appears to have fixed the problem. At their request,
+[PR #54](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/54)
+is open for owner review/merge, containing the complete repair chain. No new
+instrumented native log/acceptance sequence accompanied this human report;
+retain automated NOT_RUN and detailed gaps rather than inventing coverage.
+Controller-mode feedback is pending separately. No merge or new publication
+performed as part of opening the PR.
+
+Owner's subsequent GitHub request has been completed:
+[controller-load alpha 3](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3)
+is public, prerelease / not Latest, exact product `39c60fb5e916`. Its downloaded
+ZIP matches the frozen candidate; no rebuild or native run. This supersedes the
+earlier no-publication checkpoint below, not the remaining native/data gaps.
+No publication or restoration blocker remains. Next is the owner's affected-save
+test with the replacement KMG ZIP; keep KBP/CotW unchanged and do not overwrite
+the save. Public alpha 2 is preserved but has the demonstrated installer defect.
+
+Local replacement candidate is ready: product `39c60fb5e916`, 64/64 exact-DLL
+regressions and 33/33 selected domain tests, strict package PASS; ZIP copied
+to owner handoff. Source branch pushed, clean candidate preserved separately.
+Native load remains NOT_RUN. At that preceding source checkpoint no new public
+alpha was authorized; the later request/publication is recorded above. The
+unresolved external ZFavoredClass data errors are
+not represented as repaired. No companion KBP/CotW update needed for this fix.
+
+Alpha 2's installer was blocked by a diagnostic-only GetPatchInfo(unpatched)
+NRE in the exact installed Harmony12 facade; original CotW crash then recurred.
+Reproduced once on exact alpha 2 DLL, corrected and tested through real Install.
+64/64 expanded assembly-backed assertions and 33/33 affected-neighbor tests PASS;
+no source blocker. Five related first-update consumers now wait for registration.
+Brown-Fur's 25 actual registrations are independently confirmed in the log.
+Four ZFavoredClass missing-key data errors predate alpha 2; exact missing IDs
+remain unknown, and no external data/mod was altered. Native load remains
+NOT_RUN, not inferred PASS. No runtime transaction/restoration debt. This task
+does not authorize another automatic public alpha. See
+[current evidence](docs/COTW-ACTIONBAR-INSTALLER-REPAIR.md).
+
+## 2026-10-17 CotW controller action-bar load
+
+Subsequent owner authorization was exercised for one public test alpha:
+[`v0.0.157-controller-load-alpha.2`](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2).
+Public ZIP matches the frozen candidate; this is the KMG update itself, with
+no accompanying KBP/CotW change. Stable Latest unchanged. Native gaps below
+remain; publication is not native save-load acceptance.
+
+Source repair and local package are not blocked: product `92b442c06dd8`,
+39/39 exact-assembly adapter assertions, 6/6 Brown-Fur startup tests, strict
+development package PASS. Brown-Fur alpha preserved. Full affected log/DLL
+no longer available; its installed identity and first null cannot be recovered
+from the tail. Exact local CotW/game identities do match the observed MVIDs.
+DATA is available/authorized, but current guarded loader is mouse receiver-bound
+and the verified controller fixture switches AFTER load. Native comparison,
+action-bar readiness/refresh and later KBP no-cast entry/exit remain NOT_RUN,
+not PASS or a hardware/permission failure. Next is a narrow no-cast guarded
+controller load/scene-lifecycle protocol; do not force a mode field or run the
+older cast campaign to claim this acceptance. No transaction/restoration debt,
+no stable-release/merge/install authority for this repair. See
+[investigation and exact candidate](docs/COTW-CONTROLLER-ACTIONBAR-LOAD-REPAIR.md).
+
+## 2026-10-17 Brown-Fur startup-order repair
+
+Publication is complete: public prerelease
+[`v0.0.157-brown-fur-alpha.1`](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-brown-fur-alpha.1),
+downloaded ZIP hash verified against the frozen candidate. Stable remains Latest;
+there is no publication blocker or outstanding transaction. The owner-dependent
+next action is the affected-computer save-load test, not another release suite.
+
+The earlier push denial is superseded for one alpha by the owner's subsequent
+explicit publication request on 2026-10-17. Source branch/tag and public
+prerelease `v0.0.157-brown-fur-alpha.1` are authorized. Stable release, merge
+and installation remain unauthorized. Use the alpha-specific hash-pinned path;
+do not weaken the stable-release or development qualification guards.
+
+Source/package checkpoint is not blocked (83/83 related tests PASS; frozen
+development candidate `913dfd6e8938`). Authorized native read-only working-load
+and disposable-cast probe PASS 10/10, with all 25 identities resolved and exact
+restoration. No transaction remains active. Full save-load qualification is
+PARTIAL: the affected save was not supplied and the lab working save lacks the
+missing GUID. Saved Brown-Fur owner reconstruction and controller-mode loading
+are NOT_RUN. Neither missing-blueprint causation of PostLoad nor successful
+affected-state loading is established. See
+[repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md). Only the test alpha is
+authorized; no stable release or permanent installation.
+
 ## 2026-09-30 Expanded Summoning 0.0.141 checkpoint
 
 No active blocker prevents the owner-requested release at the end of Sprint

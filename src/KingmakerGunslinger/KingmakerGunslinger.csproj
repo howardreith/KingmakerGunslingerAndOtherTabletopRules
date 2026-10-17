@@ -40,6 +40,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Compatibility\CotwSpontaneousSlotCompatibility.cs" />
     <Compile Include="Acquisition\CampaignWeaponRegistry.cs" />
     <Compile Include="Acquisition\CampaignWeaponNativeReference.cs" />
     <Compile Include="Acquisition\CampaignWeaponSceneObservation.cs" />
@@ -640,6 +641,7 @@
     <Compile Include="BrownFur\CotwArcanistResolver.cs" />
     <Compile Include="BrownFur\BrownFurDiagnostics.cs" />
     <Compile Include="BrownFur\BrownFurOptionalExtensionCoordinator.cs" />
+    <Compile Include="BrownFur\BrownFurStartupGate.cs" />
     <Compile Include="BrownFur\BrownFurSpellInventoryRecord.cs" />
     <Compile Include="BrownFur\BrownFurInventoryClassification.cs" />
     <Compile Include="BrownFur\BrownFurTransmutationInventory.cs" />

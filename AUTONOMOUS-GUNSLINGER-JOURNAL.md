@@ -1,5 +1,237 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — owner-positive alpha feedback / PR #54
+
+Owner reported alpha 3 "appears to have fixed things" and requested a PR for
+their merge. Opened
+[PR #54](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/54),
+ready for review, `codex/cotw-actionbar-installer-review-20261017` -> `master`.
+Fetched/inspected actual default base `2eed3944f6eab657f9030d33acae6d81eb5f10ae`;
+the cumulative diff includes Brown-Fur, CotW slot access, installer/readiness,
+focused tests, guarded tooling and alpha records. No duplicate repair PR existed.
+Initial PR head `50b6ca7c5004e52cc964e35dafea2873c1b234f1`; this subsequent
+documentation-only checkpoint records the PR/feedback without changing the
+frozen alpha product `39c60fb5e916` or any release/tag/asset. Diff and relevant
+text/link checks only, no build/test-suite/native rerun or machine changes.
+Human-reported success is separate from automated native NOT_RUN; no new raw
+log or detailed physical-input/party/page acceptance was supplied. Owner will
+provide controller-mode comments separately. No automatic merge or expansion.
+
+## 2026-10-17 — controller-load alpha 3 published
+
+Owner explicitly requested GitHub publication after the local repair handoff.
+[Alpha 3](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3)
+published 2026-10-17T22:55:15Z, draft=false/prerelease=true. Stable Latest
+remains v0.0.157; previous alphas and default branch unchanged. Tag object
+`8acb146b7b24a8e1c0162c0c156baaa5973c97d0` peels to product
+`39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e`; manifest documentation identity
+is `a1bbecb059244e34002f04fe9cf5613b654041ae`, guarded-pushed before publication.
+The helper has two fixed profiles; alpha 2's original pins remain unchanged.
+Parser/diff checks PASS, alpha 3 mutation-free preflight PASS, wrong-profile
+refusal PASS (exit 1); no full test-suite rerun or rebuild. Actual command
+`Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3 -Publish
+-ConfirmAlphaTestPublication -Confirm:$false` completed in **16.896 s**.
+Log: `artifacts/controller-alpha-3-publication.log` in the current review worktree.
+
+All three uploaded asset digests match local staging. Downloaded public ZIP
+(48,088,155 bytes) and collision-safe handoff copy match SHA-256
+`6d4ed736a18cfdcac668eb5fad24e6b19001af635fd7e1fc53006834bd507aed`.
+Public manifest SHA-256
+`0b6cd7c6f81b687c549cb2863a4c2d6e6c197daae409554b1a8bcafc25cec0be`;
+checksums file `bbe4486f7ed448afc768d431a73b56d322e9fb3f70aabc1e984c1e9dd79df56b`.
+Reused exact 64/64 adapter/callback and 33/33 domain evidence; native save load
+and physical input remain NOT_RUN, not upgraded by publication. No private
+log/assembly/receipt published, game/process/install/save/settings changes or
+transaction/restoration debt. Next: owner loads without overwriting the save,
+checks installed marker/party/pages, then KBP no-cast entry/exit. Update KMG only;
+keep KBP 0.5.4-controller.1 and CotW unchanged. Existing ZFavoredClass data
+errors remain unresolved. Alpha ZIP and uniquely named notes are in owner handoff.
+
+## 2026-10-17 — frozen installer/readiness replacement candidate
+
+Product/source `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e` guarded-pushed,
+original worktree clean/frozen; review records isolated on descendant review
+branch/worktree. Existing development route produced a strict local UMM ZIP
+in 65.746 s with 33/33 selected tests, exact-reference build and 37 native-contract
+companion assertions. Exact packaged DLL then passed the expanded 64/64 real
+installer/callback regressions in 0.977 s. No complete domain suite/live run.
+ZIP/receipt/checksum copied collision-safely to owner handoff. ZIP
+`6d4ed736a18cfdcac668eb5fad24e6b19001af635fd7e1fc53006834bd507aed`;
+DLL `d9fea590a604b81b5a14046ac88454a7eb8d4510e94e0b4ae5de082cbc2d606b`;
+MVID `c1a4d16b-efae-4ea8-b3ef-5966c3db9c6b`. Input log copied unchanged
+privately; no old evidence, alpha tag/asset or human installation replaced.
+Commands/log paths, causal attribution and source-only limits are in the
+[current record](docs/COTW-ACTIONBAR-INSTALLER-REPAIR.md). Next test confirms
+cotw-actionbar/installed and exact DLL identity before native load/page/party
+and later KBP no-cast checks. No companion KBP/CotW change or new public release.
+
+## 2026-10-17 — output_log2 diagnosis and corrections
+
+Preserved private log SHA-256
+`18b473dd944a3da1772f3d859f790aad819c3cd3359394d7ed9ab8a70181481a`.
+KMG stack MVID matches alpha 2; metadata inspection threw before patching.
+The earlier 39 tests covered transpilation, not the installer. Exact released
+DLL reproduction fails the new real-Install assertion after 4 PASS; corrected
+installer checkpoint `132398b46e4f` passes 47/47, including foreign owner/postfix
+and diagnostic-failure behavior. No CotW helper/execution exception suppression.
+The log independently confirms 25 Brown-Fur registrations and publication.
+
+Subsequent bounded readiness guards preserve the five early FirstUpdate
+subscriptions until committed KMG registration, with no discovery/frame work
+or host retry consumption. Real-callback probe 64/64 PASS, including terminal
+ready-boundary failure handling with absent native graph (not publication PASS).
+Affected neighbors 33/33 of 2,652 PASS with production compilation; no full suite.
+Old and new logs have the same four handled ZFavoredClass missing-key stacks;
+classified as pre-existing data issue once, not repaired speculatively. Source
+changes stay in KMG; KBP, CotW and external data untouched. No game launch,
+settings/save/install change, merge or publication. Exact commands and remaining
+native gates: [correction record](docs/COTW-ACTIONBAR-INSTALLER-REPAIR.md).
+
+## 2026-10-17 — controller-load alpha 2 published
+
+[Public prerelease](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2)
+published 2026-10-17T22:34:31Z, draft=false/prerelease=true; stable Latest
+still v0.0.157, unrelated visual-refinement alpha untouched. Tag object
+`016c4afcc0b18bd4d7fcfe57deaf7e29146cdb3b` peels to frozen product
+`92b442c06dd8d13f246ca006fdda6382b9eb6236`. Manifest documentation identity
+is publication-tooling commit `b66c1dd44c6caef653e4a33fdd0f96b0c43b161a`.
+`Publish-CotwActionBarAlpha.ps1 -Publish -ConfirmAlphaTestPublication -WhatIf`
+passed without writes; guarded branch push and actual command with
+`-Confirm:$false` passed in 17.637 s. Log:
+`artifacts/controller-alpha-2-publication.log`. No build/test-suite/native
+rerun; existing exact 39/39 + 6/6 evidence retained with saveLoad=NOT_RUN.
+
+GitHub's three asset digests match local staging; public ZIP downloaded and
+rehashed. ZIP (48,088,071 bytes)
+`798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`;
+alpha manifest `e4c1f8cae2a0b172c8b1f8aed7fe58a9ccb479f643382a8210b7eba260ccaec2`;
+checksums `6e554c5e94abc6b191f82ac79ee139f6f61830593ab497222f93588e89362c66`.
+Alpha ZIP copied to owner handoff without replacing any earlier file. No
+installation/settings/saves/game activity, default-branch merge or stable
+publication. UMM remains 0.0.157. Guidance: install this KMG update in place of
+Brown-Fur alpha 1, keep existing KBP and CotW, test loading/party/pages before
+KBP no-cast entry/exit, and retain fresh output_log/action/input-mode evidence.
+
+## 2026-10-17 — owner authorizes controller-load alpha 2
+
+Owner requested another alpha and companion-mod guidance. Selected exact tested
+KMG product `92b442c06dd8` / ZIP `798ff15e...b3f5f3`, with both Brown-Fur
+and CotW slot-read repairs, tag `v0.0.157-controller-load-alpha.2`, prerelease /
+not Latest. Publish the unchanged candidate, not a metadata rebuild; no full
+suite/native rerun. KMG ZIP itself is the Gunslinger update; keep existing KBP
+controller alpha and CotW. New hash-pinned publisher preserves stable/dev
+qualification guards; notes disclose all native loading gaps. No merge,
+installation or unrelated alpha changes authorized. Outcome follows separately.
+
+## 2026-10-17 — CotW spontaneous-slot controller load repair checkpoint
+
+Isolated from Brown-Fur alpha documentation HEAD `86de8f281c`; repaired source
+`92b442c06dd8d13f246ca006fdda6382b9eb6236`, guarded-pushed as the product
+branch. Matching installed IL establishes sibling slot classes and CotW's
+three incorrect memorized getter calls. Executing that getter in the actual
+assembly returns BlueprintAbility, not AbilityData. Narrow MVID/shape-pinned
+transpiler corrects access; native CotW owner/order and full helper retained.
+Full new log/affected KMG DLL unavailable per owner; first null on affected
+character is not claimed observed. Brown-Fur changes and alpha untouched.
+
+Focused gate final compile 7.5 s, tests 0.4 s: 6/6 startup PASS. Candidate build
+69.245 s: development wrapper, same 6/6 of 2,652, exact-reference build, 37
+native-contract companion assertions and strict package PASS. Older default
+private bundle missing PhysicsModule; reused the existing refreshed matched
+bundle, no guard weakened. Exact candidate DLL: 39/39 installed-game/CotW
+behavior assertions in 0.950 s, including production patch order, variants,
+owner/book identity, empty/unbound/rebind and no slot spend. Full suite NOT_RUN.
+Private logs in frozen worktree `artifacts/actionbar-inspection`; exact command,
+ZIP/DLL/MVID and evidence boundaries in
+[repair record](docs/COTW-CONTROLLER-ACTIONBAR-LOAD-REPAIR.md).
+
+Candidate ZIP/receipt/checksum copied collision-safely to owner handoff folder.
+ZIP `798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`;
+DLL `e78d79cfb334f6d59c2948b6258128ce73334db59e8f7dba16a01860cc946801`;
+MVID `0fa8ccba-349e-47e1-a2ec-8b46d20ed69c`. Original worktree remains clean;
+review/documentation branch/worktree is separate. No installed file/save/settings
+mutation, game launch, release, merge or transaction. DATA was reauthorized,
+but verified mouse loader / post-load controller fixture are not a qualified
+cold-controller load route. Next bounded protocol work is recorded rather than
+substituting direct mode assignment, an old native PASS or a cast fixture.
+
+## 2026-10-17 — Brown-Fur alpha 1 published
+
+Owner reiterated that this test alpha does not require the full release suite.
+Published the existing exact build, without rebuilding or rerunning native/full
+qualification, at 2026-10-17T21:49:11Z:
+[alpha release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-brown-fur-alpha.1).
+Draft=false, prerelease=true; stable Latest still v0.0.157. Annotated tag
+`cb0474e2210fcbd92241cdd537b16fb3e69a51e3` peels to frozen product
+`913dfd6e89386ff233849f06f902ca8ea2de239e`, not the publication tooling HEAD
+`3395c122a92ee81ae1379337a6efb1d7ca624781` or later documentation commits.
+Initial attempt stopped after the correct tag push because Windows PowerShell
+treated Git progress stderr as failure. Retained that tag and staging files;
+fixed native exit-code handling, then resumed only their exact hash identities.
+Thirty focused publication-safety assertions passed before this final request;
+none rerun as a release suite. Resume -WhatIf passed, then guarded branch push
+and `Publish-BrownFurAlpha.ps1 -Publish -ConfirmAlphaTestPublication
+-ResumeTagOnly -Confirm:$false` succeeded. Logs:
+`artifacts/alpha-publication-publish.log`, `artifacts/alpha-publication-resume.log`.
+Three GitHub asset digests match local files; independent metadata/tag query and
+public ZIP download agree. ZIP SHA-256
+`d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`;
+manifest `1f53cec66ce1c15e0ea97a943ad7dbe0e41af30f4c028cc51e9395a76dea58c5`;
+checksums `c289761347b5d86d772d04f0c8660cb2bf49d5ba10f7a762e0a6da72405c5b98`.
+Copied these public assets to the requested Buff Planner lab handoff folder;
+no existing evidence/artifact replaced. UMM remains 0.0.157, manifest provenance
+remains `a92b5d25e2f8d5cd86dcdd5730790a5bfb36cdd0`, and all qualification gaps
+are unchanged. No default-branch merge, game/install/save changes or live run.
+Next: owner loads affected save without overwriting it and reports action/input
+mode and fresh output_log on failure. No further publication selected.
+
+## 2026-10-17 — owner requests public Brown-Fur test alpha
+
+Owner explicitly authorized a new alpha after the local repair handoff. Selected
+exact tested product `913dfd6e89386ff233849f06f902ca8ea2de239e`, unchanged ZIP
+`d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`,
+tag `v0.0.157-brown-fur-alpha.1`, prerelease / never Latest. No rebuild,
+default-branch merge, stable publication, installation or native rerun is
+selected. Alpha-specific hash/evidence/ancestry and draft-digest checks retain
+all stable/dev qualification refusals; notes disclose affected saved-owner and
+controller-mode gaps. See [authorization](docs/BUILD-AND-RELEASE.md).
+
+## 2026-10-17 — Brown-Fur candidate and guarded native probe
+
+Remote-write note: guarded push dry run passed, but the actual push was blocked
+by the approval guard. No remote ref changed. Source remains local pending
+explicit owner authorization; handoff artifacts are unaffected.
+
+Frozen product `913dfd6e89386ff233849f06f902ca8ea2de239e` on
+`codex/brown-fur-startup-order-20261017`. Final development build 61.341 s,
+83/83 selected tests, exact-reference compilation and strict package PASS.
+ZIP `d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`;
+DLL `f878c8c3e36264b9f34d0441443a26c50da5ea939490d03e264f30164731afbb`;
+MVID `88974741-ddbe-4fcb-8f1c-145305534eaa`. Copied ZIP/receipt/checksum to
+requested handoff; archived only our earlier candidate as superseded.
+Native run `20261017T2101467133518Z-92560c397d6c4e269ed1ad43e00d7222`
+PASS 10/10 in 99.829 s wall, Load Game native receiver route, mouse mode.
+All 25 actual types registered at committed-library boundary; actual cast
+effects/resource debits and cleanup PASS. All sixteen mods retained and
+restored, all 95 saves unchanged, registry settings exact, no game/lock left.
+Qualification remains PARTIAL: saved Brown-Fur owners / affected save and
+controller-mode cold loading NOT_RUN. No attribution of PostLoad causation or
+publication claim. Exact commands, failures corrected during preflight,
+evidence/hashes and smallest next action: [repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md).
+
+## 2026-10-17 — Brown-Fur lifecycle repair intake and source checkpoint
+
+Isolated `codex/brown-fur-startup-order-20261017` at base
+`2eed3944f6eab657f9030d33acae6d81eb5f10ae`; preserved other worktrees and
+Buff Planner. Supplied 0.0.157 ZIP matches published release bytes. Confirmed
+missed library-ready retry; PostLoad causal relationship remains unverified.
+Added pending/readiness gate, synchronous committed-library notification and
+actual 25-identity/type registration validation. Focused gates: 6/6 in 9.672 s,
+83/83 related in 2.111 s, production compilation included. Evidence and exact
+hashes: [repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md). Native NOT_RUN;
+owner now authorizes DATA guarded disposable-fixture test. Next packaging
+baseline repin and guarded preflight, not broad release qualification.
+
 ## 2026-09-30 Expanded Summoning Phase 2A release boundary
 
 The owner shortened the current run to a release checkpoint at the qualified
