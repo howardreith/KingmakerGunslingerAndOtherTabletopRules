@@ -28,7 +28,9 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-027 Deinonychus | rebuilt; focused gate PASS | native after: body in frame, lit and intact; the review assertion fails only on the Tyrannosaurus's observer limitation (same donor) (run 5) | pending (style approved) |
 | VIS-002 Triceratops | rebuilt; focused gate PASS | native after: PASS (run 5) | pending (style approved) |
 | VIS-028 Ankylosaurus | rebuilt, club bone-tan; focused gate PASS | native after: PASS (run 5) | pending (style approved) |
-| other 24 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
+| VIS-012 Crocodile | targeted: exported outward, repainted; focused gate PASS | native after: PASS (run 6) | pending (style approved) |
+| VIS-034 Dire Crocodile | targeted: exported outward, repainted; focused gate PASS | native after: PASS (run 6) | pending (style approved) |
+| other 22 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
 
 ## Owner decisions, 2026-10-17
 
@@ -105,6 +107,8 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 4 | same | creature review: Hyena, Goblin Dog, Woolly Rhinoceros | 3:19 | PASS; close views now sharp and clear of walls |
 | 5 | `7defdfb2f295` (package `f4aa1e03…50df`, 72 s build) | creature review: Deinonychus, Triceratops, Ankylosaurus | 3:04 | Triceratops and Ankylosaurus PASS every assertion; Deinonychus as the Tyrannosaurus below |
 | 5 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
+| 6 | `dd82130f3890` (package `e4735192…d7d6`, 66 s build) | creature review: Crocodile, Dire Crocodile | 2:40 | PASS (22 assertions); solid and lit, no head hole |
+| 6 | same | disposable-expanded-summoning-visual-contracts | 1:17 | PASS |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -145,7 +149,10 @@ tracking frames, the review captures and the donor bind captures.
   Dog, Wolverine, Shadow Mastiff), `build_poisonous_frog.py`,
   `build_deinonychus.py`, `build_triceratops.py` and `build_ankylosaurus.py`.
   The library's `tube` carries ring frames along a bent path (the
-  Deinonychus's folded arms). The legacy generators refuse the kinds
+  Deinonychus's folded arms). The crocodilians were a targeted repair in
+  their own generator (`dd82130f38`): the same geometry, UVs and weights,
+  exported outward after the shared writer, and a lighter, irregular
+  painting. The legacy generators refuse the kinds
   they no longer build and name the new builders; their helpers stay for the
   creatures and families that still import them.
 - Current identities (SHA-256; full hashes in each family `SOURCE.md` and the
@@ -167,12 +174,14 @@ tracking frames, the review captures and the donor bind captures.
   | Deinonychus | `b085f640a33b…ecdf6` | `9e60ec305e08…8780f` | 7,037 / 9,192 / 46 |
   | Triceratops | `f99f5d350a3a…f49fa` | `eb458f118a7f…7f9d0` | 7,618 / 10,356 / 30 |
   | Ankylosaurus | `3eb7585e6f41…a9ca9` | `2cdd8bc7e913…98bac` | 11,520 / 14,560 / 75 |
+  | Crocodile | `6615b7680876…96ef9` | `108668f562d9…37c85` | 2,342 / 4,188 / 124 |
+  | Dire Crocodile | `d4507796f688…daf1e` | `86488f581289…62d3c` | 2,342 / 4,188 / 124 |
 
 - Packaging (`7defdfb2f2`): `scripts/Build-Local.ps1` no longer rewrites the
   Ankylosaurus mesh to the released v0.0.151 CRLF bytes (it refused any other
   export); the refined body ships as committed and `scripts/validate-package.ps1`
   pins its mesh and albedo. The Sprint 23 released-controls test follows.
-- Domain tests: hash pins in the Sprint 11, 12, 13, 23 and 24 visual tests;
+- Domain tests: hash pins in the Sprint 11, 12, 13, 16, 23 and 24 visual tests;
   `OriginalMeshOrientation` (in `ExpandedSummoningSprint12Tests.cs`) requires
   closed, consistently wound, outward components lit by agreeing normals for
   every refined body (all four ungulates now), with synthetic positive and
@@ -210,6 +219,9 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Native | runs 1 and 2 above | 7 min each | as tabled |
 | Focused gate (armored dinosaurs, `7defdfb2f2`) | `scripts/Invoke-KmgGate.ps1 -Filter 'sprint12-hidden-foundation;sprint13-original-visuals;sprint11-original-ungulate-visuals;sprint11-donor;sprint22-original-asset;sprint23-original-art;sprint23-released-controls;sprint24-original-art;pteranodon'` | 11.6 s | production compilation PASS; 12 PASS |
 | Native | run 5 above | 4:46 | as tabled |
+| Focused gate (crocodilians, `dd82130f38`) | the armored-dinosaur filter plus `sprint16-original-assets;sprint16-bone-policy` | 11.5 s | production compilation PASS; 14 PASS |
+| Determinism (crocodilians) | old generator reproduced the shipped bytes; new painter and generator twice from clean Blender processes | 25 s per creature | byte-identical |
+| Native | run 6 above | 4:22 | as tabled |
 
 ## Remaining limitations
 
@@ -218,6 +230,13 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
   observer limitation, to be fixed in the observer, not the mesh.
 - Triceratops: the Huge body fills its close views, and the near clip at its
   bounding box cuts into the room around it; an observer framing limit.
+- Dire Crocodile: at its 2x Gargantuan view scale several close views put
+  the body behind the room's walls (the game's blue occluded-unit
+  silhouette); an observer framing limit.
+- Found, not changed: these original bodies outside the owner's review list
+  also ship inside out (all or most parts inward): Fire Beetle, Giant Stag
+  Beetle, Giant Crab, Girallon, Eagle and Stirge, and the Bebelith control.
+  The same outward-export repair would apply; it waits for the owner's word.
 - Release lane: the released v0.0.155 validator (inherited by the v0.0.157
   release validator) still pins the superseded Tyrannosaurus and Deinonychus
   bytes; the next release's validator must accept the refined art.
@@ -230,13 +249,14 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. Crocodilians (in progress): targeted repair of the Crocodile and Dire
-   Crocodile. Both ship inside out (124 inward parts each), which shows their
-   interiors as the owner's dark head hole and black osteoderms; the painting
-   is a dark, regular tile grid.
-2. Then, in order: arthropods (ants, scorpion; Bebelith as control), flying (Dire
-   Bat, Pteranodon, Giant Wasp), primates and four-armed (Ape, Dire Ape,
-   Xill), the material and shine investigations (Wolf, Frost Giant, Ghaele,
-   Thanadaemon), the Salamander, and the Dire Rat icon (VIS-004, icon rules).
+1. Arthropods (in progress): the three ants (outward export; the Worker's
+   thorax and the Soldier's and Drone's mandibles rooted in the head) and the
+   Giant Scorpion (outward export; the telson, which stopped about 5 cm short
+   of the tail, rooted on it). The Bebelith is the control: inspected, not
+   changed.
+2. Then, in order: flying (Dire Bat, Pteranodon, Giant Wasp), primates and
+   four-armed (Ape, Dire Ape, Xill), the material and shine investigations
+   (Wolf, Frost Giant, Ghaele, Thanadaemon), the Salamander, and the Dire Rat
+   icon (VIS-004, icon rules).
    Optional: Viper/Constrictor locomotion. Roster-owned: Elephant, Lantern
    Archon, Invisible Stalker.
