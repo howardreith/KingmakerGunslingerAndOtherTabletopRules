@@ -991,6 +991,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 case 6:
                     if (!StepExpandedSummoningStirgePreyMovement()) return;
+                    // The prey is restored and the Stirge detached; its close
+                    // views and tracking sequences come before cleanup.
+                    if (VisualRefinementReviewPolicy.FollowsStirgePreyReview(key,
+                            _creatureReviewQuantity))
+                    {
+                        BeginVisualRefinementReview(_creatureReviewUnits[0], key);
+                        _creatureReviewPhase = 7;
+                        return;
+                    }
                     foreach (UnitEntityData unit in _creatureReviewUnits)
                         CleanupExpandedSummoningUnit(unit);
                     Game.Instance.EntityDestroyer.Tick();
@@ -1552,59 +1561,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             Complete(result);
         }
     }
-    /// <summary>
-    /// The creatures whose original bodies the visual-refinement lane is
-    /// rebuilding, and the donors whose pre-swap bind frame the review records
-    /// for the offline builders. A key outside this list reviews exactly as
-    /// before.
-    /// </summary>
-    internal static class VisualRefinementReviewPolicy
-    {
-        internal static readonly string[] Keys =
-            { "dire-rat", "rhinoceros", "tyrannosaurus",
-              "woolly-rhinoceros", "aurochs", "bison",
-              "hyena", "goblin-dog", "wolverine", "shadow-mastiff",
-              "poisonous-frog", "deinonychus", "triceratops",
-              "ankylosaurus", "crocodile", "dire-crocodile",
-              "giant-ant-worker", "giant-ant-soldier", "giant-ant-drone",
-              "giant-scorpion", "dire-bat", "pteranodon", "giant-wasp",
-              "ape", "dire-ape", "xill", "salamander",
-              "eagle", "stirge", "fire-beetle", "giant-stag-beetle",
-              "girallon", "giant-crab", "stegosaurus" };
-
-        // Single-renderer donors only; the Tyrannosaurus' two-renderer
-        // Lizardfolk frame comes from its own Sprint 24 census.
-        private static readonly Dictionary<string, string[]> Donors =
-            new Dictionary<string, string[]>(StringComparer.Ordinal)
-            {
-                { "dire-rat", new[] { "dog", "Sprint 12" } },
-                { "rhinoceros", new[] { "mastodon", "Sprint 11" } },
-                { "woolly-rhinoceros", new[] { "mastodon", "Sprint 11" } },
-                { "aurochs", new[] { "horse", "Sprint 11" } },
-                { "bison", new[] { "horse", "Sprint 11" } },
-                { "hyena", new[] { "wolf", "Sprint 12" } },
-                { "goblin-dog", new[] { "worg", "Sprint 12" } },
-                { "wolverine", new[] { "worg", "Sprint 12" } },
-                { "shadow-mastiff", new[] { "worg", "Sprint 12" } },
-                { "poisonous-frog", new[] { "giant-poisonous-frog", "Sprint 13" } },
-                { "triceratops", new[] { "mastodon", "Sprint 11" } }
-            };
-
-        internal static bool Handles(string key)
-        {
-            return Keys.Contains(key, StringComparer.Ordinal);
-        }
-
-        internal static bool TryGetDonor(string key, out string donor,
-            out string sprintLabel)
-        {
-            string[] row;
-            bool found = Donors.TryGetValue(key, out row);
-            donor = found ? row[0] : null;
-            sprintLabel = found ? row[1] : null;
-            return found;
-        }
-    }
 
     /// <summary>
     /// Visual-refinement evidence for a single reviewed creature, taken after
@@ -1619,16 +1575,19 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private const int RefinementFrameWidth = 640;
         private const int RefinementFrameHeight = 400;
-        private const int RefinementStride = 2;
-        private const int RefinementLegFrames = 72;
-        private const int RefinementActionFrames = 48;
-        private const int RefinementHitFrames = 24;
+        private const int RefinementStride = VisualRefinementReviewPolicy.Stride;
+        private const int RefinementLegFrames = VisualRefinementReviewPolicy.LegFrames;
+        private const int RefinementActionFrames = VisualRefinementReviewPolicy.ActionFrames;
+        private const int RefinementHitFrames = VisualRefinementReviewPolicy.HitFrames;
 
         private UnitEntityData _refinementUnit;
         private string _refinementKey;
         private int _refinementPhase;
         private int _refinementFrame;
         private int _refinementWritten;
+        private int _refinementLowWritten;
+        private readonly HashSet<string> _refinementStills =
+            new HashSet<string>(StringComparer.Ordinal);
         private float _refinementRadius;
         private float _refinementDistance;
         private Bounds _refinementBounds;
@@ -1651,6 +1610,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _refinementAction = null;
             _refinementChangedPause = false;
             _refinementRecords.Clear();
+            _refinementLowWritten = 0;
+            _refinementStills.Clear();
         }
 
         /// <summary>One step per update; true once the review is complete.</summary>
@@ -1860,8 +1821,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private void WriteRefinementStills(UnitEntityData unit, string key)
         {
-            string[] names = { "front", "front-left", "left", "rear-left", "rear",
-                "rear-low", "rear-right", "right", "top" };
+            string[] names = VisualRefinementReviewPolicy.StillViews;
             float[] yaws = { 0f, -40f, -90f, -140f, 180f, 180f, 140f, 90f, 180f };
             float[] pitches = { 22f, 25f, 18f, 25f, 22f, 6f, 25f, 18f, 85f };
             Vector3 centre = RefinementCentre(unit);
@@ -1873,9 +1833,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float pitch = pitches[index] * Mathf.Deg2Rad;
                 Vector3 eye = centre + (toward * Mathf.Cos(pitch) +
                     Vector3.up * Mathf.Sin(pitch)) * _refinementDistance;
-                _refinementRecords.Add(WriteRefinementImage(eye,
-                    Quaternion.LookRotation(centre - eye, Vector3.up),
-                    key + "-refine-view-" + names[index] + ".png"));
+                string file = VisualRefinementReviewPolicy.StillFile(key, names[index]);
+                string result = WriteRefinementImage(eye,
+                    Quaternion.LookRotation(centre - eye, Vector3.up), file);
+                _refinementRecords.Add(result);
+                if (result.StartsWith("png=" + file + ";", StringComparison.Ordinal))
+                    _refinementStills.Add(file);
             }
         }
 
@@ -1934,6 +1897,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _refinementWritten++;
             else
                 _refinementRecords.Add(result);
+            if (!VisualRefinementReviewPolicy.TracksLow(key) ||
+                (sequence != "move-out" && sequence != "move-back"))
+                return;
+            // Level with the body from its left side, a little below it, so
+            // the beating wings show both their upper and lower surfaces.
+            Vector3 side = RefinementTurn(unit, -90f);
+            Vector3 low = centre + side * _refinementDistance +
+                Vector3.down * (_refinementDistance * 0.08f);
+            string lowResult = WriteRefinementImage(low,
+                Quaternion.LookRotation(centre - low, Vector3.up),
+                key + "-refine-" + sequence + "-low-" +
+                frame.ToString("000", CultureInfo.InvariantCulture) + ".png");
+            if (lowResult.StartsWith("png=", StringComparison.Ordinal) &&
+                !lowResult.StartsWith("png=<none>", StringComparison.Ordinal))
+                _refinementLowWritten++;
+            else
+                _refinementRecords.Add(lowResult);
         }
 
         private string WriteRefinementImage(Vector3 position, Quaternion rotation,
@@ -2012,17 +1992,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.IsPaused = _refinementWasPaused;
                 _refinementChangedPause = false;
             }
-            int expected = RefinementLegFrames / RefinementStride * 2 +
-                RefinementActionFrames / RefinementStride +
-                RefinementHitFrames / RefinementStride;
+            string missing;
+            bool complete = VisualRefinementReviewPolicy.EvidenceComplete(_refinementKey,
+                _refinementStills, _refinementWritten, _refinementLowWritten,
+                _refinementTravel, out missing);
+            int low = VisualRefinementReviewPolicy.ExpectedLowFrames(_refinementKey);
             _creatureReviewAssertions.Add(Assertion(
                 "expanded-summoning-refinement-sequences-" + _refinementKey,
-                expected + " tracking frames across move-out, move-back, attack and hit, and at least 0.75 m native travel",
-                "written=" + _refinementWritten + ";travel=" +
+                VisualRefinementReviewPolicy.StillViews.Length + " close stills, " +
+                    VisualRefinementReviewPolicy.ExpectedTrackingFrames +
+                    " tracking frames across move-out, move-back, attack and hit" +
+                    (low > 0 ? ", " + low + " low side frames through the move legs" : "") +
+                    ", and at least 0.75 m native travel",
+                "stills=" + _refinementStills.Count + ";written=" + _refinementWritten +
+                    ";low=" + _refinementLowWritten + ";travel=" +
                     _refinementTravel.ToString("0.##", CultureInfo.InvariantCulture) +
+                    ";missing=" + (missing.Length == 0 ? "<none>" : missing) +
                     ";records=" + string.Join("|", _refinementRecords.ToArray()),
-                _refinementWritten == expected && _refinementTravel >= 0.75f,
-                "request-local camera pose and pause state restored; images support art review, not mechanical proof"));
+                complete,
+                "request-local camera pose and pause state restored; image completeness only - images support art review, not mechanical proof"));
             _refinementUnit = null;
             return true;
         }

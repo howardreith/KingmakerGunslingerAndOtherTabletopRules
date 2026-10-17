@@ -1225,6 +1225,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.salamander-tail-gait-scope", SalamanderTailGaitTests.TheAttachmentDrivesOnlyItsOwnTailOutsideTheSlap),
             Case("expanded-summoning.salamander-undissolved-body", SalamanderTailGaitTests.TheOwnedBodyStartsUndissolved),
             Case("expanded-summoning.repaired-first-exports", RepairedBodyTests.FirstExportsShipRepairedOutward),
+            Case("expanded-summoning.refinement-stirge-route", VisualRefinementReviewTests.StirgeRefinementFollowsItsPreyReview),
+            Case("expanded-summoning.refinement-packet-complete", VisualRefinementReviewTests.RefinementPacketRequiresEveryStill),
             Case("blueprints.ledger-fits-the-loader-bound", BlueprintManifestSizeTests.ShippedLedgerFitsTheLoaderBound),
             Case("blueprints.ledger-bound-still-rejects", BlueprintManifestSizeTests.TheCorruptionBoundStillRejectsBothEnds),
             Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),

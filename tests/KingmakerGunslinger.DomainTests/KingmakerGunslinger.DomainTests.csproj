@@ -228,6 +228,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailGait.cs"><Link>Summoning\SalamanderTailGait.cs</Link></Compile>
     <Compile Include="SalamanderTailGaitTests.cs" />
     <Compile Include="RepairedBodyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\VisualRefinementReviewPolicy.cs"><Link>RuntimeTesting\VisualRefinementReviewPolicy.cs</Link></Compile>
+    <Compile Include="VisualRefinementReviewTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplatePolicy.cs"><Link>Summoning\SummonTemplatePolicy.cs</Link></Compile>
