@@ -152,6 +152,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("combinedResourceCountersBeforeAfter", Order = 49)] public string CombinedResourceCounters { get; set; }
             [JsonProperty("abilityBonusCasts", Order = 50)] public List<AbilityBonusCastEvidence> AbilityBonusCasts { get; set; }
             [JsonProperty("shareOffSelfCast", Order = 51)] public ShareOffCastEvidence ShareOffSelfCast { get; set; }
+            [JsonProperty("controllerGamepad", Order = 52)] public bool ControllerGamepad { get; set; }
+            [JsonProperty("registeredIdentityTypes", Order = 53)] public Dictionary<string, string> RegisteredIdentityTypes { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -185,6 +187,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string stage = "contract";
             try
             {
+                evidence.ControllerGamepad = Game.Instance.IsControllerGamepad;
                 BrownFurCastExecutionRuntime.Clear();
                 CotwArcanistResolution resolution =
                     BrownFurOptionalExtensionCoordinator.Current;
@@ -198,6 +201,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     blueprints.Count != BrownFurIdentityCatalog.IdentityCount)
                     throw new InvalidOperationException(
                         "Registered Brown-Fur blueprints are unavailable.");
+                BrownFurBlueprints.ValidateRegistered(BlueprintBootstrap.Library, blueprints);
+                evidence.RegisteredIdentityTypes = BrownFurIdentityCatalog.All.ToDictionary(
+                    value => value.Guid, value => BlueprintBootstrap.Library.BlueprintsByAssetId[value.Guid].GetType().FullName);
                 BlueprintAbility root = ResourcesLibrary.TryGetBlueprint<
                     BlueprintAbility>(CanonicalSpellGuid);
                 BlueprintAbility selected = ResourcesLibrary.TryGetBlueprint<

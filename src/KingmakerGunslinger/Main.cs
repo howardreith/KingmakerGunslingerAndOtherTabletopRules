@@ -119,6 +119,7 @@ namespace KingmakerGunslinger
                 Spells.Teleportation.WorldMapPointSpellActionPatches.Install(context);
                 Spells.Teleportation.WorldMapPointConsoleSpellActionPatches.Install(context);
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);
+                CotwSpontaneousSlotCompatibility.Install(context);
                 BrownFurOptionalExtensionCoordinator.Install(context);
                 AidAnotherOptionalExtensionCoordinator.Install(context);
                 Summoning.AlternateSummoningCoordinator.Install(context);

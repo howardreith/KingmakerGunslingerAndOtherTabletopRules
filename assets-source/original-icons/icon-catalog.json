@@ -13306,6 +13306,11 @@
         {
           "before": "        internal static BlueprintWeaponType TestMusketWeaponType\n",
           "after": "        internal static bool IsFailed\n        {\n            get { lock (Gate) return _state == BootstrapState.Failed; }\n        }\n\n        internal static BlueprintWeaponType TestMusketWeaponType\n"
+        },
+        {
+          "before": "                return true;\n            }\n            catch (Exception exception)\n            {\n                lock (Gate)\n                {\n                    _state = BootstrapState.Failed;",
+          "after": "                // Optional saved identities deferred by CotW creation must\n                // complete here, not on a later UMM frame after deserialization.\n                BrownFur.BrownFurOptionalExtensionCoordinator.OnPackageBlueprintLibraryReady();\n                return true;\n            }\n            catch (Exception exception)\n            {\n                lock (Gate)\n                {\n                    _state = BootstrapState.Failed;",
+          "authorization": "Brown-Fur startup-order repair: synchronous committed-library notification only. Reverse this exact hunk before enforcing the unchanged icon-mapping baseline."
         }
       ],
       "featureAuthorization": "Magic Circle implementation mission; exact new module registration, publication, rollback and counts only. Reverse these edits before enforcing the original protected icon-mapping insertion. Favored Class integration mission: contained favored-class registry, registration, rollback and totals only; these hunks are reversed first. 0.0.142 continuation: three exact Model D call/rollback edits reverse before inherited protected presentation baseline. Alternate summoning sources (development branch): one read-only IsFailed bootstrap-state accessor so the alternate summoning coordinator leaves every family unpublished after a failed bootstrap; reversed first."

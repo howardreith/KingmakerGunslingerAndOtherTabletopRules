@@ -430,6 +430,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwArcanistContractPolicy.cs"><Link>BrownFur\CotwArcanistContractPolicy.cs</Link></Compile>
     <Compile Include="BrownFurCastTests.cs" />
     <Compile Include="BrownFurIdentityTests.cs" />
+    <Compile Include="BrownFurStartupTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurStartupGate.cs"><Link>BrownFur\BrownFurStartupGate.cs</Link></Compile>
     <Compile Include="BrownFurPlayerIntentTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurPlayerIntentPolicy.cs"><Link>BrownFur\BrownFurPlayerIntentPolicy.cs</Link></Compile>
     <Compile Include="BrownFurArchetypePlanTests.cs" />

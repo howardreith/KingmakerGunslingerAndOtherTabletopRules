@@ -75,8 +75,9 @@ namespace KingmakerGunslinger.EasternWeapons
             lock (Gate)
             {
                 context = _context;
-                _attached = false;
             }
+            if (context != null && !BlueprintBootstrap.IsInitialized && !context.IsFailed) return;
+            lock (Gate) _attached = false;
             if (context != null) context.ModEntry.OnUpdate -= FirstUpdate;
             TryPublish("first-update-after-load-dictionary");
         }

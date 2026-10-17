@@ -112,11 +112,11 @@ class DevelopmentCandidateValidatorTests(unittest.TestCase):
                 self.metadata(props=props, assembly=assembly)
 
     def test_static_record_must_be_unchanged(self):
-        released = {"version": "0.0.156", "history": {"value": 1}}
+        released = {"version": "0.0.157", "history": {"value": 1}}
         gate.check_static(released, copy.deepcopy(released))
-        for current in ({"version": "0.0.157", "history": {"value": 1}},
-                        {"version": "0.0.156", "history": {"value": 2}},
-                        {"version": "0.0.156", "history": {"value": 1},
+        for current in ({"version": "0.0.158", "history": {"value": 1}},
+                        {"version": "0.0.157", "history": {"value": 2}},
+                        {"version": "0.0.157", "history": {"value": 1},
                          "developmentQualification": True}):
             with self.assertRaises(AssertionError):
                 gate.check_static(released, current)

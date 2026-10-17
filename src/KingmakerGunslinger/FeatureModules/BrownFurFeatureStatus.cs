@@ -6,7 +6,8 @@ namespace KingmakerGunslinger.FeatureModules
     {
         Unavailable = 0,
         Available = 1,
-        Blocked = 2
+        Blocked = 2,
+        Pending = 3
     }
 
     internal sealed class BrownFurFeatureStatus
@@ -33,6 +34,8 @@ namespace KingmakerGunslinger.FeatureModules
             {
                 switch (Availability)
                 {
+                    case BrownFurDependencyAvailability.Pending:
+                        return "Pending  awaiting dependency blueprint construction";
                     case BrownFurDependencyAvailability.Available:
                         return "Available  compatible Call of the Wild detected";
                     case BrownFurDependencyAvailability.Blocked:
