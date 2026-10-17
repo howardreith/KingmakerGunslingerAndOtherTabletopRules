@@ -1492,5 +1492,38 @@
       "the dorsal UV pole whorl and the texel-density step at the shoulder",
       "faceting, minor clipping and contact choreography"
     ]
+  },
+  "candidate": {
+    "status": "BUILT AND STRICTLY VALIDATED; NOT NATIVELY QUALIFIED",
+    "builtUtc": "2026-10-17T13:44:32Z",
+    "root": "C:/Dev/KingmakerGunslingerLab/wt/s25 - the root chosen before any build, and the one promotion must use",
+    "gate": "scripts/Invoke-KmgGate.ps1 -Level Sprint, run once, exit 0. It had to run DE-ELEVATED through runas /trustlevel:0x20000: both tool shells here are elevated and the runtime scenario preflight correctly refuses to run as administrator.",
+    "commit": "9b55df816345b0fc0b98d833b0f91ef0e68891e3",
+    "branch": "codex/expanded-summoning-sprint25-brachiosaurus-elephant",
+    "version": "0.0.158",
+    "sourceStateSha256": "fe241151c5e8543d5537df07f74f8ec2c23609ba23a43fcf3cc6ff492316dbfd",
+    "package": "artifacts/local-runtime/0.0.158/KingmakerGunslinger-0.0.158-local-runtime.zip",
+    "packageSha256": "e02637152fd6d8f221de3ce2d5976f8f129bf32cd9d62d65219effe345099921",
+    "dllSha256": "064891671a6a82a6ba79e19a1608df1aae314ad7a30cbe04eaef0ead50f316ac",
+    "dllMvid": "6cc58dfd-46e3-4340-a649-9fa7514726a2",
+    "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "domainSuite": "2656 tests, 0 failures, inside the gate",
+    "strictPackageValidation": "PASSED",
+    "packagedFileCount": "378 = the released 373 plus Sprint 25's five: two giant-body mesh payloads, their two albedos and the Brachiosaurus icon",
+    "whatItIsNot": "A package passing structural checks is not native qualification. Nothing has been deployed, launched or observed in game."
+  },
+  "remainingNativeCampaign": {
+    "status": "NOT STARTED - no Sprint 25 native scenario exists",
+    "whyItIsABatchAndNotACheckpoint": "The scenario must be written before it can be run. The comparable precedents are RuntimeTestRunner.ExpandedSummoningSprint23Review.cs at 132 KB and ...Sprint24Review.cs at 200 KB, each with its C# scenario catalog entry, PowerShell allowlist metadata and documentation registration. A search of the runtime testing sources finds no Sprint 25 scenario and no creature-generic one that would cover these two.",
+    "costOfStartingItBadly": "Observer code compiled into the product changes the binary identity, so a half-written scenario would invalidate the candidate recorded above and force a rebuild. It is deliberately not begun at the tail of a session.",
+    "batches": [
+      "1. Author the Sprint 25 native review scenario and register it in all three places the harness requires, then rebuild the candidate because the binary identity changes.",
+      "2. Fresh HOWARD-LAPTOP intake: installation, settings, saves, private reference identity, Steam readiness, lease and process state - before any transaction.",
+      "3. A: composed profiles and commands. Brachiosaurus's +23 lone tail with signed-Strength handling, usable Great Cleave, 20-foot reach, trample 2d6+19 at live DC 32, and the ordinary Overrun with its printed +2. Elephant's primary gore and slam at +16, no extra lead-limb Strength, six grants, quadruped defence, 10-foot reach despite 15-foot space, trample 2d8+15 at live DC 25, and its unchanged eight routes.",
+      "4. B: the Overrun outcome table on the composed unit - failure; ordinary success below the margin; threshold success with eligible knockdown and ONE provocation; maneuver and prone immunity and a pre-existing prone target; repeated commands and responders without remaining opportunities; unaffected Trample and unrelated actors. Attribute the roll, the effective defence, the partial-success outcome and each responder.",
+      "5. C: functional bodies - each original body actually ATTACHING rather than leaving a working donor fallback, at party-camera scale across idle, movement, attack/trample and removal, plus failed attachment rollback, donor negative controls, module OFF/ON, repeated spawn and despawn, and private versus process-cache resource ownership.",
+      "6. D: all three new Brachiosaurus routes and all eight affected Elephant routes with quantities, duration and cleanup; the targeted cold-load, module-disabled and absence coverage; all-summon grapple reset; protected saves untouched.",
+      "7. Publication: remove only Brachiosaurus's suppression, regenerate controlled artifacts, qualify the public inventory, icon and eleven affected roots on the exact artifact, then publisher preflight, merge, tag v0.0.158, verify downloads, restore and merge records."
+    ]
   }
 }
