@@ -1,5 +1,24 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — Brown-Fur candidate and guarded native probe
+
+Frozen product `913dfd6e89386ff233849f06f902ca8ea2de239e` on
+`codex/brown-fur-startup-order-20261017`. Final development build 61.341 s,
+83/83 selected tests, exact-reference compilation and strict package PASS.
+ZIP `d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`;
+DLL `f878c8c3e36264b9f34d0441443a26c50da5ea939490d03e264f30164731afbb`;
+MVID `88974741-ddbe-4fcb-8f1c-145305534eaa`. Copied ZIP/receipt/checksum to
+requested handoff; archived only our earlier candidate as superseded.
+Native run `20261017T2101467133518Z-92560c397d6c4e269ed1ad43e00d7222`
+PASS 10/10 in 99.829 s wall, Load Game native receiver route, mouse mode.
+All 25 actual types registered at committed-library boundary; actual cast
+effects/resource debits and cleanup PASS. All sixteen mods retained and
+restored, all 95 saves unchanged, registry settings exact, no game/lock left.
+Qualification remains PARTIAL: saved Brown-Fur owners / affected save and
+controller-mode cold loading NOT_RUN. No attribution of PostLoad causation or
+publication claim. Exact commands, failures corrected during preflight,
+evidence/hashes and smallest next action: [repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md).
+
 ## 2026-10-17 — Brown-Fur lifecycle repair intake and source checkpoint
 
 Isolated `codex/brown-fur-startup-order-20261017` at base

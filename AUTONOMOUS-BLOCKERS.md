@@ -2,12 +2,14 @@
 
 ## 2026-10-17 Brown-Fur startup-order repair
 
-Source checkpoint is not blocked (6/6 new, 83/83 related tests PASS).
-Development packaging requires the documented released-0.0.157 baseline repin.
-Native acceptance remains NOT_RUN pending exact candidate and guarded route
-preflight. DATA disposable-fixture session is owner-authorized; the affected
-character's save has not been supplied. Neither missing-blueprint causation of
-PostLoad nor successful affected-state loading is established. See
+Source/package checkpoint is not blocked (83/83 related tests PASS; frozen
+development candidate `913dfd6e8938`). Authorized native read-only working-load
+and disposable-cast probe PASS 10/10, with all 25 identities resolved and exact
+restoration. No transaction remains active. Full save-load qualification is
+PARTIAL: the affected save was not supplied and the lab working save lacks the
+missing GUID. Saved Brown-Fur owner reconstruction and controller-mode loading
+are NOT_RUN. Neither missing-blueprint causation of PostLoad nor successful
+affected-state loading is established. See
 [repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md). No release or permanent
 installation is authorized.
 
