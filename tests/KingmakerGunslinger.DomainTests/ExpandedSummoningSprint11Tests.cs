@@ -475,10 +475,10 @@ namespace KingmakerGunslinger.DomainTests
             string[] kinds = { "aurochs", "bison", "rhinoceros",
                 "woolly-rhinoceros" };
             string[] meshHashes = {
-                "477354af79aefb21de544517c498a05b2d420fbb5ebbb1cb675613f66f09196e",
-                "bd042f973a2a871283dea51614cbce56736f2d9d7dbc65fe6f3874ab4a193d56",
-                "c6c1c9236236235e089a619560a8138bfdee43c5a8414111b0cb275f0d3ae969",
-                "45b3003b0184049921982d828faf71e95b90c2babf5acc0827f0095ec41aac52"
+                "e1cd846250eb18d3a9bb5e852814cd38069c19581d32bd8bc60f135c562cc3e9",
+                "7195063b5a13117adad7edf6d3cf5c2b38ee4008c14345b5c9f51609394f3641",
+                "3bcd3bcfa0a73ce05a7876bcac988850ab6a62795996f2a9235d53d4222b5224",
+                "a53793a0283f263acf57fb4b56f20d8696ab9df6200bf547ac40f45d84da1265"
             };
             for (int item = 0; item < kinds.Length; item++)
             {
@@ -523,11 +523,11 @@ namespace KingmakerGunslinger.DomainTests
                         kind + " painting matches its geometry manifest.");
                 }
             }
-            // VIS-024: the refined Rhinoceros is the first ungulate body built
-            // with outward winding; the cattle and the Woolly Rhinoceros keep
-            // the first export until their own refinement batch.
-            OriginalMeshOrientation.AssertShippedBody(
-                Path.Combine(directory, "rhinoceros-mesh.json"), "rhinoceros");
+            // VIS-024, VIS-003, VIS-017, VIS-023: every ungulate body is now
+            // one continuous surface exported with outward winding.
+            foreach (string kind in kinds)
+                OriginalMeshOrientation.AssertShippedBody(
+                    Path.Combine(directory, kind + "-mesh.json"), kind);
             string source = Path.Combine(root, "assets-source", "original-models",
                 "ungulates");
             Assertions.True(File.Exists(Path.Combine(source, "generate_ungulates.py")) &&

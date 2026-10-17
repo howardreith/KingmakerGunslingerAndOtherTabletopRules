@@ -1,9 +1,11 @@
-"""Build the refined Rhinoceros as one continuous skinned body (VIS-024).
+"""Build the refined Rhinoceros (VIS-024) or Woolly Rhinoceros (VIS-003) as
+one continuous skinned body.
 
 blender -b --factory-startup --python-exit-code 1 --python build_rhinoceros.py -- \
+    [--kind woolly-rhinoceros] \
     --capture <private sprint11-mastodon-bind-rig.json> \
-    --albedo assets/ungulates/rhinoceros-albedo.png \
-    --mesh-data assets/ungulates/rhinoceros-mesh.json \
+    --albedo assets/ungulates/<kind>-albedo.png \
+    --mesh-data assets/ungulates/<kind>-mesh.json \
     --report <private report.json> --blend-out <private source.blend>
 
 The Mastodon capture is validated by the ungulate generator's own loader.
@@ -12,7 +14,9 @@ heavy barrel close to the ground. The body therefore hangs deep enough to
 bury the upper legs, so only short, thick lower legs show, and the large
 head is carried forward and low from the donor's high head pivot. Horns,
 ears, eyes, toenails and the tail tuft are closed rigid features rooted
-inside the surface.
+inside the surface. The Woolly Rhinoceros shares the frame and the 26
+controls; it adds a high shoulder hump, a coat hanging below the belly, a
+long side-flattened front horn, smaller ears and a red-brown streaked coat.
 """
 import argparse
 import json
@@ -66,12 +70,18 @@ def build(rig, armature, params):
                   point(belly + r[3] + 0.08, shoulder.z - 0.02)], r)
     # Withers hump and a short, deep neck, narrower than the chest, falling
     # to the head.
-    mass(point(shoulder.y - ground - 0.20, shoulder.z - 0.10),
-         (0.86, 0.40, 1.15))
+    mass(point(shoulder.y - ground - 0.20 + params["hump"][1] - 0.40,
+               shoulder.z - 0.10), params["hump"])
     nape = point(head.y - ground - 0.72, head.z - 0.50)
     volume.sweep([point(shoulder.y - ground - 0.55, shoulder.z - 0.55),
                   nape], [0.98, 0.74])
     mass(nape + UP * 0.30 - FORWARD * 0.30, (0.50, 0.34, 0.60))
+    if params["coat"]:
+        # The woolly coat: a barrel hung lower (see "belly") and a fuller
+        # throat; the painted streaks carry the hair. Separate hanging locks
+        # read as bubbles and a belly coat mass as a ridge.
+        mass(point(shoulder.y - ground - 1.20, shoulder.z - 0.55),
+             params["coat"])
     # Long, boxy head carried forward and low: one tapering skull from the
     # cranium to the muzzle (separate masses left a waist that read as a
     # ball on a stalk), a deep, straight jaw line beneath it and a broad,
@@ -177,8 +187,9 @@ def build(rig, armature, params):
     front_tip = front_base + (face_up * 0.95 + axis * 0.12).normalized() * \
         params["front_horn"]
     rigid(cb.horn("RhinoFrontHorn", front_base - face_up * 0.12, front_tip,
-                  0.31, segments=14, rings=8, curve=-axis * 0.16,
-                  flatten=0.85, hint=axis),
+                  params["front_radius"], segments=14, rings=8,
+                  curve=-axis * params["front_curve"],
+                  flatten=params["front_flatten"], hint=axis),
           [("Head", 1.0)], "horn")
     rear_base = mid + face_up * 0.40 + axis * 0.08
     rigid(cb.horn("RhinoRearHorn", rear_base - face_up * 0.10,
@@ -194,9 +205,10 @@ def build(rig, armature, params):
         ear_base = cranium + SIDE * sign * 0.34 + face_up * 0.46 - axis * 0.18
         rise = (UP * 0.85 + SIDE * sign * 0.40 - axis * 0.25).normalized()
         facing = (axis - rise * axis.dot(rise)).normalized()
-        rigid(cb.blob("RhinoEar", ear_base + rise * 0.30,
-                      (rise.cross(facing), rise, facing), (0.16, 0.38, 0.11),
-                      16, 10),
+        ear = params["ear_scale"]
+        rigid(cb.blob("RhinoEar", ear_base + rise * 0.30 * ear,
+                      (rise.cross(facing), rise, facing),
+                      (0.16 * ear, 0.38 * ear, 0.11 * ear), 16, 10),
               [("Head", 1.0)], "ear")
         eye = mid + SIDE * sign * 0.52 - face_up * 0.02 - axis * 0.16
         rigid(cb.blob("RhinoEye", eye, (SIDE, axis, face_up),
@@ -234,14 +246,13 @@ def build(rig, armature, params):
                             "barrel_floor": ground + belly + 0.30}
 
 
-def colour_field(landmarks):
+def colour_field(landmarks, palette):
     girth = landmarks["girth"]
     ground = landmarks["ground"]
 
     def colour(p, n, region):
         up = n[:, 1]
-        hide = np.array([0.52, 0.49, 0.45])
-        under = np.array([0.44, 0.42, 0.39])
+        hide, under = palette["hide"], palette["under"]
         t = np.clip(up * 0.5 + 0.5, 0, 1)[:, None]
         base = under + (hide - under) * t
         broad = cb.fbm(p, 1.0 / (0.6 * girth), 21)
@@ -249,6 +260,10 @@ def colour_field(landmarks):
         crease = np.clip((second - pebble) * 4.0, 0, 1)
         base = base * (0.84 + 0.22 * broad[:, None]) * \
             (0.86 + 0.14 * crease[:, None])
+        if palette["fur"]:
+            # Long hair: streaks running down the body.
+            streak = cb.fbm(p * np.array([5.0, 0.5, 5.0]), 1.0 / 0.12, 24)
+            base = base * (0.78 + 0.40 * streak[:, None])
         # Heavy skin folds read as darker bands at party distance.
         folds = np.zeros(len(p))
         for centre, width in landmarks["folds"]:
@@ -258,14 +273,13 @@ def colour_field(landmarks):
         flank = np.clip(np.abs(n[:, 0]) * 1.6 - 0.5, 0, 1) * \
             np.clip((ground + 3.9 - p[:, 1]) / 0.8, 0, 1) * \
             np.clip((p[:, 1] - landmarks["barrel_floor"]) / 0.4, 0, 1)
-        base = base * (1.0 - 0.14 * (folds * flank)[:, None])
+        base = base * (1.0 - palette["folds"] * (folds * flank)[:, None])
         # Dust on the legs and darker, worn feet.
         height = (p[:, 1] - ground) / girth
         dust = np.clip(1.0 - height / 1.6, 0, 1)[:, None]
-        base = base * (1 - 0.25 * dust) + np.array([0.43, 0.38, 0.32]) * \
-            0.25 * dust
+        base = base * (1 - 0.25 * dust) + palette["dust"] * 0.25 * dust
         foot = np.clip(1.0 - height / 0.35, 0, 1)[:, None]
-        base = base * (1 - 0.5 * foot) + np.array([0.22, 0.21, 0.20]) * \
+        base = base * (1 - 0.5 * foot) + np.array([0.18, 0.17, 0.16]) * \
             0.5 * foot
         # Nostrils and the line of the mouth, so the square lip reads as a
         # face rather than a blank bulb.
@@ -293,8 +307,8 @@ def colour_field(landmarks):
             gap = np.linalg.norm(p - (root + t[:, None] * span), axis=1)
             reach = np.where(gap < nearest, t, reach)
             nearest = np.minimum(gap, nearest)
-        horn = np.array([0.30, 0.26, 0.22]) + \
-            np.array([0.36, 0.33, 0.27]) * (reach ** 0.8)[:, None]
+        horn = palette["horn_root"] + \
+            palette["horn_rise"] * (reach ** 0.8)[:, None]
         horn = horn * (0.88 + 0.20 * cb.fbm(p * np.array([4.0, 0.6, 4.0]),
                                             1.0 / (0.1 * girth), 23))[:, None]
         rgb = np.where((region == REGION["horn"])[:, None], horn, base)
@@ -321,27 +335,30 @@ DEFAULTS = {
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--kind", choices=tuple(PROPORTIONS),
+                        default="rhinoceros")
     for name in ("capture", "albedo", "mesh-data", "report", "blend-out"):
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    rig_data, rig, rig_hash = measured_rig(args.capture, "rhinoceros")
+    rig_data, rig, rig_hash = measured_rig(args.capture, args.kind)
     # The capture carries only the 26 controls the body binds; the Mastodon's
     # ankle helpers sit between each knee and foot.
     armature = cb.review_armature(rig_data, "RhinocerosRigPreview", bridge={
         "frontAnkle_L": "frontKnee_L", "frontAnkle_R": "frontKnee_R",
         "backAnkle_L": "backKnee_L", "backAnkle_R": "backKnee_R"})
     params = dict(DEFAULTS)
-    params.update(PROPORTIONS)
+    params.update(PROPORTIONS[args.kind])
     rhino, weights, landmarks = build(rig, armature, params)
     cb.unwrap(rhino)
-    cb.bake_albedo(rhino, 1024, colour_field(landmarks), args.albedo)
+    cb.bake_albedo(rhino, 1024, colour_field(landmarks, PALETTES[args.kind]),
+                   args.albedo)
     cb.attach_albedo_preview(rhino, args.albedo)
     summary = cb.write_mesh_data(args.mesh_data, rhino, weights, rig_hash,
                                  args.albedo, SPACE)
     if not set(summary["bones"]) <= set(params["bones"]):
         raise SystemExit("Rhinoceros binds an unreviewed control")
-    report = {"schemaVersion": 1, "creature": "rhinoceros",
+    report = {"schemaVersion": 1, "creature": args.kind,
               "builder": "build_rhinoceros.py", "donorFamily": "mastodon",
               "rigSha256": rig_hash, **summary,
               "albedo": cb.albedo_manifest(args.albedo)}
@@ -357,18 +374,59 @@ def main():
     modifier.object = armature
     rhino.parent = armature
     bpy.ops.wm.save_as_mainfile(filepath=args.blend_out)
-    print("[rhinoceros] " + json.dumps(report, sort_keys=True))
+    print("[" + args.kind + "] " + json.dumps(report, sort_keys=True))
 
 
 # Proportions in donor units, tuned against the measured Mastodon frame.
 PROPORTIONS = {
-    "belly": 1.25,
-    "barrel": (1.22, 1.38, 1.42, 1.30),
-    "front_horn": 1.30,
-    "rear_horn": 0.60,
-    "front_radii": (0.70, 0.58, 0.52, 0.48),
-    "hind_radii": (0.80, 0.62, 0.52, 0.48),
-    "triangles": 5200,
+    "rhinoceros": {
+        "belly": 1.25,
+        "barrel": (1.22, 1.38, 1.42, 1.30),
+        "hump": (0.86, 0.40, 1.15),
+        "coat": None,
+        "front_horn": 1.30, "front_curve": 0.16, "front_flatten": 0.85,
+        "front_radius": 0.31,
+        "rear_horn": 0.60,
+        "ear_scale": 1.0,
+        "front_radii": (0.70, 0.58, 0.52, 0.48),
+        "hind_radii": (0.80, 0.62, 0.52, 0.48),
+        "triangles": 5200,
+    },
+    "woolly-rhinoceros": {
+        "belly": 1.00,
+        "barrel": (1.28, 1.44, 1.50, 1.36),
+        "hump": (0.92, 0.62, 1.10),
+        "coat": (0.80, 0.55, 0.70),
+        "front_horn": 2.05, "front_curve": 0.42, "front_flatten": 0.55,
+        "front_radius": 0.40,
+        "rear_horn": 0.70,
+        "ear_scale": 0.72,
+        "front_radii": (0.74, 0.62, 0.55, 0.50),
+        "hind_radii": (0.84, 0.66, 0.55, 0.50),
+        "triangles": 5600,
+    },
+}
+
+# Stored albedo values. The game lights them warmly and brightly: the first
+# native capture showed the 0.41 grey hide as tan, so the hide is a darker,
+# cooler slate that stays grey in torchlight.
+PALETTES = {
+    "rhinoceros": {
+        "hide": np.array([0.36, 0.36, 0.385]),
+        "under": np.array([0.29, 0.29, 0.30]),
+        "dust": np.array([0.34, 0.31, 0.28]),
+        "fur": False, "folds": 0.14,
+        "horn_root": np.array([0.24, 0.21, 0.18]),
+        "horn_rise": np.array([0.32, 0.29, 0.24]),
+    },
+    "woolly-rhinoceros": {
+        "hide": np.array([0.40, 0.27, 0.16]),
+        "under": np.array([0.24, 0.16, 0.10]),
+        "dust": np.array([0.26, 0.19, 0.13]),
+        "fur": True, "folds": 0.0,
+        "horn_root": np.array([0.16, 0.14, 0.12]),
+        "horn_rise": np.array([0.26, 0.22, 0.18]),
+    },
 }
 
 

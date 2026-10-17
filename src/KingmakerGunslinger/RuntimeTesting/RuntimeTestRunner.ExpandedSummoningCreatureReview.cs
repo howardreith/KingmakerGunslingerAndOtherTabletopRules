@@ -1549,7 +1549,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class VisualRefinementReviewPolicy
     {
         internal static readonly string[] Keys =
-            { "dire-rat", "rhinoceros", "tyrannosaurus" };
+            { "dire-rat", "rhinoceros", "tyrannosaurus",
+              "woolly-rhinoceros", "aurochs", "bison" };
 
         // Single-renderer donors only; the Tyrannosaurus' two-renderer
         // Lizardfolk frame comes from its own Sprint 24 census.
@@ -1557,7 +1558,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             new Dictionary<string, string[]>(StringComparer.Ordinal)
             {
                 { "dire-rat", new[] { "dog", "Sprint 12" } },
-                { "rhinoceros", new[] { "mastodon", "Sprint 11" } }
+                { "rhinoceros", new[] { "mastodon", "Sprint 11" } },
+                { "woolly-rhinoceros", new[] { "mastodon", "Sprint 11" } },
+                { "aurochs", new[] { "horse", "Sprint 11" } },
+                { "bison", new[] { "horse", "Sprint 11" } }
             };
 
         internal static bool Handles(string key)
@@ -1847,6 +1851,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        /// <summary>
+        /// Near clip just in front of the creature. A large creature's framing
+        /// distance puts the orbit camera beyond the room's walls; the first
+        /// native run drew most views as the game's blue occluded-unit
+        /// silhouette. Geometry nearer than this plane is not drawn, so the
+        /// creature is seen unobstructed from every angle.
+        /// </summary>
+        private float RefinementNearClip()
+        {
+            return Mathf.Max(0.3f, _refinementDistance - _refinementRadius * 1.25f);
+        }
+
         private Vector3 RefinementCentre(UnitEntityData unit)
         {
             SkinnedMeshRenderer renderer = RefinementRenderer(unit);
@@ -1879,6 +1895,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (camera == null) return "png=<none>;reason=no-camera";
             Vector3 priorPosition = camera.transform.position;
             Quaternion priorRotation = camera.transform.rotation;
+            float priorNear = camera.nearClipPlane;
             RenderTexture priorTarget = camera.targetTexture;
             RenderTexture priorActive = RenderTexture.active;
             RenderTexture renderTexture = null;
@@ -1887,6 +1904,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 camera.transform.position = position;
                 camera.transform.rotation = rotation;
+                camera.nearClipPlane = Mathf.Max(priorNear, RefinementNearClip());
                 renderTexture = new RenderTexture(RefinementFrameWidth,
                     RefinementFrameHeight, 24, RenderTextureFormat.ARGB32);
                 camera.targetTexture = renderTexture;
@@ -1913,6 +1931,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 camera.targetTexture = priorTarget;
                 camera.transform.position = priorPosition;
                 camera.transform.rotation = priorRotation;
+                camera.nearClipPlane = priorNear;
                 RenderTexture.active = priorActive;
                 if (renderTexture != null)
                 {
