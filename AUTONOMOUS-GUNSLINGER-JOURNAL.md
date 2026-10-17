@@ -1,5 +1,23 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — frozen installer/readiness replacement candidate
+
+Product/source `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e` guarded-pushed,
+original worktree clean/frozen; review records isolated on descendant review
+branch/worktree. Existing development route produced a strict local UMM ZIP
+in 65.746 s with 33/33 selected tests, exact-reference build and 37 native-contract
+companion assertions. Exact packaged DLL then passed the expanded 64/64 real
+installer/callback regressions in 0.977 s. No complete domain suite/live run.
+ZIP/receipt/checksum copied collision-safely to owner handoff. ZIP
+`6d4ed736a18cfdcac668eb5fad24e6b19001af635fd7e1fc53006834bd507aed`;
+DLL `d9fea590a604b81b5a14046ac88454a7eb8d4510e94e0b4ae5de082cbc2d606b`;
+MVID `c1a4d16b-efae-4ea8-b3ef-5966c3db9c6b`. Input log copied unchanged
+privately; no old evidence, alpha tag/asset or human installation replaced.
+Commands/log paths, causal attribution and source-only limits are in the
+[current record](docs/COTW-ACTIONBAR-INSTALLER-REPAIR.md). Next test confirms
+cotw-actionbar/installed and exact DLL identity before native load/page/party
+and later KBP no-cast checks. No companion KBP/CotW change or new public release.
+
 ## 2026-10-17 — output_log2 diagnosis and corrections
 
 Preserved private log SHA-256

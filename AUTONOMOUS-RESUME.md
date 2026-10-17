@@ -1,5 +1,19 @@
 # output_log2 — CotW installer and early-update repair (2026-10-17)
 
+Frozen product/source `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e` is clean in
+`cotw-actionbar-installer-20261017`; review records are on
+`codex/cotw-actionbar-installer-review-20261017` in the separate worktree.
+Local test ZIP/receipt/checksum are in handoff, suffix
+`cotw-actionbar-installer-39c60fb5e916`. ZIP SHA-256
+`6d4ed736a18cfdcac668eb5fad24e6b19001af635fd7e1fc53006834bd507aed`;
+DLL `d9fea590a604b81b5a14046ac88454a7eb8d4510e94e0b4ae5de082cbc2d606b`,
+MVID `c1a4d16b-efae-4ea8-b3ef-5966c3db9c6b`. Exact candidate: 64/64
+installer/callback assertions, 33/33 selected domain tests, strict package PASS.
+Build 65.746 s, exact-DLL regression 0.977 s. No game/install/save/settings
+activity or public release. Next: native load test confirms installed marker
+and this DLL identity first; no accompanying KBP/CotW change. Do not reuse
+alpha 2 as though it installed the correction. Full details in the current record.
+
 Current branch/worktree `codex/cotw-actionbar-installer-20261017`, based on
 `e50db0da63d4`. The new crash log confirms alpha 2 never installed the CotW
 correction: optional metadata diagnostics threw in the installed Harmony12

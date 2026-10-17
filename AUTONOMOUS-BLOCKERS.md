@@ -2,6 +2,13 @@
 
 ## 2026-10-17 output_log2 follow-up
 
+Local replacement candidate is ready: product `39c60fb5e916`, 64/64 exact-DLL
+regressions and 33/33 selected domain tests, strict package PASS; ZIP copied
+to owner handoff. Source branch pushed, clean candidate preserved separately.
+Native load remains NOT_RUN and no new public alpha has been authorized or
+published by this task. The unresolved external ZFavoredClass data errors are
+not represented as repaired. No companion KBP/CotW update needed for this fix.
+
 Alpha 2's installer was blocked by a diagnostic-only GetPatchInfo(unpatched)
 NRE in the exact installed Harmony12 facade; original CotW crash then recurred.
 Reproduced once on exact alpha 2 DLL, corrected and tested through real Install.
