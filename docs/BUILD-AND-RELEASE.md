@@ -1,5 +1,38 @@
 # Build, package, and publish
 
+## Brown-Fur alpha 1 authorization — 2026-10-17
+
+After the local repair handoff, the owner explicitly requested: "Could you
+publish a new alpha build for me to test please?" This supersedes the earlier
+no-publication / remote-write boundary for this one test prerelease only.
+It does not authorize a stable release, default-branch merge or installation.
+
+Publish the exact tested product `913dfd6e89386ff233849f06f902ca8ea2de239e`
+as **v0.0.157-brown-fur-alpha.1**, following the repository's earlier convention
+of a distinct alpha tag over unchanged UMM version metadata. UMM still displays
+0.0.157. Do not rebuild, change GUIDs, relabel the binary's test provenance,
+mark Latest, or replace any existing stable tag/asset.
+
+This is a narrow owner-authorized **public unqualified preview** of a development
+artifact, not a promotion to a qualified release. The stable publisher and its
+development-proof refusals remain unchanged. The selected package keeps its
+development receipt; only a sanitized alpha manifest is public. Other development
+candidates remain private. See [alpha notes](RELEASE-NOTES-BROWN-FUR-ALPHA-1.md).
+
+```powershell
+# First commit and push the clean review branch through the project push guard.
+./scripts/Test-BrownFurAlpha.ps1
+./scripts/Publish-BrownFurAlpha.ps1 -Publish -ConfirmAlphaTestPublication -WhatIf
+./scripts/Publish-BrownFurAlpha.ps1 -Publish -ConfirmAlphaTestPublication -Confirm:$false
+```
+
+The alpha-specific publisher revalidates the frozen source/receipt/package,
+checks exact native evidence identity and remote source ancestry, copies the
+ZIP byte-for-byte, tags the product commit, verifies all uploaded draft asset
+digests, and only then publishes prerelease / not Latest. It verifies the public
+download SHA-256 and unchanged stable Latest. It refuses existing release/tag
+collisions and never clobbers an asset. No full build/runtime campaign is selected.
+
 ## Qualified Sprint 21 artifact promotion
 
 The October 11 owner closure mission authorizes PR #36 merge and stable release

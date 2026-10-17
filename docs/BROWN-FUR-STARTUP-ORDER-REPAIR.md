@@ -1,9 +1,12 @@
 # Brown-Fur startup-order repair — tested development candidate
 
-Remote status: local commits only. The guarded push dry run passed, but the
-actual remote write was denied by the approval guard because this repair lacks
-explicit push authorization. Nothing was pushed or published. Do not retry
-without owner approval; a push would expose the repair source branch remotely.
+Remote status amendment: after the local-only handoff and its blocked push,
+the owner explicitly requested a public alpha on 2026-10-17. One prerelease
+publication of the exact tested product is now authorized, including its source
+branch/tag. Stable release, merge and permanent installation remain unauthorized.
+See [alpha notes](RELEASE-NOTES-BROWN-FUR-ALPHA-1.md) and
+[publication authority](BUILD-AND-RELEASE.md#brown-fur-alpha-1-authorization--2026-10-17).
+Historical no-publication statements below describe the earlier checkpoint.
 
 Current outcome: missed startup retry repaired; focused source checks and one
 guarded native load/cast probe PASS. Reconstruction of previously serialized

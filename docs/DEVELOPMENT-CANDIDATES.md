@@ -1,5 +1,14 @@
 # Development candidates
 
+One subsequent owner exception: on 2026-10-17 the owner explicitly authorized
+publishing the exact Brown-Fur product `913dfd6e8938` as a public test alpha.
+Only `Publish-BrownFurAlpha.ps1` accepts that hash-pinned preview, with a
+prerelease tag, unchanged bytes and `releaseQualification=false`. This does not
+make development evidence eligible for stable release/closure or authorize
+publication of any other candidate. See
+[the explicit alpha authorization](BUILD-AND-RELEASE.md#brown-fur-alpha-1-authorization--2026-10-17).
+The general private-candidate rules below remain unchanged.
+
 A development candidate is an exact package of unreleased review-branch work,
 built so that a guarded native observation can run against it. It is never a
 release candidate, a qualification candidate or a public artifact, and nothing

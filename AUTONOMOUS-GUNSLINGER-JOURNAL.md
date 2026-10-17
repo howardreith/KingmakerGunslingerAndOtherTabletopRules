@@ -1,5 +1,16 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — owner requests public Brown-Fur test alpha
+
+Owner explicitly authorized a new alpha after the local repair handoff. Selected
+exact tested product `913dfd6e89386ff233849f06f902ca8ea2de239e`, unchanged ZIP
+`d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`,
+tag `v0.0.157-brown-fur-alpha.1`, prerelease / never Latest. No rebuild,
+default-branch merge, stable publication, installation or native rerun is
+selected. Alpha-specific hash/evidence/ancestry and draft-digest checks retain
+all stable/dev qualification refusals; notes disclose affected saved-owner and
+controller-mode gaps. See [authorization](docs/BUILD-AND-RELEASE.md).
+
 ## 2026-10-17 — Brown-Fur candidate and guarded native probe
 
 Remote-write note: guarded push dry run passed, but the actual push was blocked

@@ -19,8 +19,11 @@ fixture. Saved-owner reconstruction/controller-mode load remain NOT_RUN; do
 not infer PostLoad causation from this ordinary-working-save pass. No further
 native campaign, publication/merge/permanent install is selected automatically.
 Historical release authorizations below do not apply to this repair.
-Remote push was blocked by the approval guard; all repair commits remain local.
-Do not retry without explicit owner authorization for this repair branch.
+Subsequent owner amendment: "Could you publish a new alpha build for me to test
+please?" One public alpha is authorized, including required source branch/tag.
+Use `Publish-BrownFurAlpha.ps1` for exact existing bytes, tag
+`v0.0.157-brown-fur-alpha.1`, prerelease / never Latest. No rebuild or additional
+runtime campaign. Stable release, merge and installation remain out of scope.
 
 # Alternate summoning sources — v0.0.157 RELEASED / STOP
 
