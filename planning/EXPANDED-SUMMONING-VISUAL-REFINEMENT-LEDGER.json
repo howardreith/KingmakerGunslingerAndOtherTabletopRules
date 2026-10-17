@@ -376,16 +376,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint14-insects/giant-ant-worker-mesh.json",
-        "meshSha256": "f69b3d4bafeb2827ccfbf15bb7db1fb4b7890a026817a27b01cf08dd28fa9b5e",
+        "meshSha256": "e6e3df7b477170b1f80bbd7ceefdfe573a6d31a3d70832fb4cb64e22841500fb",
         "components": 15,
-        "inwardComponents": 12,
-        "componentsWithReversedCaps": 12,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "4950/5160"
+        "normalCornersOpposingWinding": "0/5160"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint14-insects/generate_sprint14_insects.py --kind giant-ant-worker (targeted: outward export, carried tubes, joins rooted in the head; painting and leg layout unchanged)",
+        "commits": "04144ec145",
+        "supersededMeshSha256": "f69b3d4bafeb2827ccfbf15bb7db1fb4b7890a026817a27b01cf08dd28fa9b5e",
+        "supersededAlbedoSha256": "unchanged",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1515590534136Z (development candidate 04144ec1457a): PASS; solid and lit; the legs keep the Giant Spider donor's splayed stance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-012",
@@ -496,16 +506,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint14-insects/giant-ant-soldier-mesh.json",
-        "meshSha256": "421e8f7ccfd3c63818dc4f5d7096a96cbe18c40fd9db6d6d8d927471872cb077",
+        "meshSha256": "0eb9a2ea895477581ef18dc0af05f6b3d9b645e071418c4ab121e34f16048d1a",
         "components": 16,
-        "inwardComponents": 13,
-        "componentsWithReversedCaps": 13,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "5058/5244"
+        "normalCornersOpposingWinding": "0/5244"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint14-insects/generate_sprint14_insects.py --kind giant-ant-soldier (targeted: outward export, carried tubes, joins rooted in the head; painting and leg layout unchanged)",
+        "commits": "04144ec145",
+        "supersededMeshSha256": "421e8f7ccfd3c63818dc4f5d7096a96cbe18c40fd9db6d6d8d927471872cb077",
+        "supersededAlbedoSha256": "unchanged",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1515590534136Z (development candidate 04144ec1457a): PASS; solid and lit; the legs keep the Giant Spider donor's splayed stance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-016",
@@ -648,16 +668,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint14-insects/giant-ant-drone-mesh.json",
-        "meshSha256": "3d1160f7dbc076f6ab274fd82c45c070459d58e9f8eb16229a16a47a31f55d27",
+        "meshSha256": "2aa85130a354e498acb17bb3663d21618eb6f1248cf67cd16f02ce20496f86e8",
         "components": 20,
-        "inwardComponents": 17,
-        "componentsWithReversedCaps": 17,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "5953/6156"
+        "normalCornersOpposingWinding": "0/6156"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint14-insects/generate_sprint14_insects.py --kind giant-ant-drone (targeted: outward export, carried tubes, joins rooted in the head; painting and leg layout unchanged)",
+        "commits": "04144ec145",
+        "supersededMeshSha256": "3d1160f7dbc076f6ab274fd82c45c070459d58e9f8eb16229a16a47a31f55d27",
+        "supersededAlbedoSha256": "unchanged",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1515590534136Z (development candidate 04144ec1457a): PASS; solid and lit; the legs keep the Giant Spider donor's splayed stance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-022",
@@ -807,16 +837,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint20-arachnids/giant-scorpion-mesh.json",
-        "meshSha256": "813dfed7e48f7bb281fbaa0a6ba2c426febf653a76cc92a4fda201642dba8004",
+        "meshSha256": "1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f",
         "components": 25,
-        "inwardComponents": 25,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "7014/7056"
+        "normalCornersOpposingWinding": "0/7056"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint20-arachnids/generate_scorpion.py (targeted: outward export, telson rooted on the tail, carried chelicerae; painting unchanged; arachnid census retaken in run 20261017T1514597575080Z)",
+        "commits": "fba63c2500",
+        "supersededMeshSha256": "813dfed7e48f7bb281fbaa0a6ba2c426febf653a76cc92a4fda201642dba8004",
+        "supersededAlbedoSha256": "unchanged",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1525415452761Z (development candidate fba63c250028): PASS; solid and lit, the tail continuous into the stinger"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-027",
@@ -1064,7 +1104,7 @@
         "normalCornersOpposingWinding": "6205/6300"
       },
       "technicalStatus": "accepted-control",
-      "visualEvidence": "owner screenshot only",
+      "visualEvidence": "owner screenshot; native control review PASS in run 20261017T1515590534136Z (development candidate 04144ec1457a) on unchanged bytes (the body still ships inside out, like the other bodies outside the review list)",
       "ownerAcceptance": "pending"
     },
     {

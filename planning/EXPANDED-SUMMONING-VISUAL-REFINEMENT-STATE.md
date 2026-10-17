@@ -30,7 +30,12 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-028 Ankylosaurus | rebuilt, club bone-tan; focused gate PASS | native after: PASS (run 5) | pending (style approved) |
 | VIS-012 Crocodile | targeted: exported outward, repainted; focused gate PASS | native after: PASS (run 6) | pending (style approved) |
 | VIS-034 Dire Crocodile | targeted: exported outward, repainted; focused gate PASS | native after: PASS (run 6) | pending (style approved) |
-| other 22 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
+| VIS-011 Giant Ant (Worker) | minor polish: outward, carried tubes, thorax rooted; focused gate PASS | native after: PASS (run 7) | pending (style approved) |
+| VIS-015 Giant Ant (Soldier) | minor polish: outward, carried tubes, mandibles rooted; focused gate PASS | native after: PASS (run 7) | pending (style approved) |
+| VIS-021 Giant Ant (Drone) | minor polish: outward, carried tubes, mandibles rooted; focused gate PASS | native after: PASS (run 7) | pending (style approved) |
+| VIS-026 Giant Scorpion | targeted: outward, telson rooted; focused gate PASS | native after: PASS (run 8) | pending (style approved) |
+| VIS-035 Bebelith | control, unchanged | native control review PASS (run 7) | accepted control (owner) |
+| other 17 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
 
 ## Owner decisions, 2026-10-17
 
@@ -109,6 +114,11 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 5 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
 | 6 | `dd82130f3890` (package `e4735192…d7d6`, 66 s build) | creature review: Crocodile, Dire Crocodile | 2:40 | PASS (22 assertions); solid and lit, no head hole |
 | 6 | same | disposable-expanded-summoning-visual-contracts | 1:17 | PASS |
+| 7 | `04144ec1457a` (package `8d65e0b3…a91a`, 65 s build) | observe-expanded-summoning-arachnid-census (no save) | 0:59 | PASS; retook the Sprint 20 census for the scorpion (`a62bb768…7269`) |
+| 7 | same | creature review: the three ants and the Bebelith control | 3:17 | PASS |
+| 7 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
+| 8 | `fba63c250028` (package `2c0ad6c4…fa1c`, 66 s build) | creature review: Giant Scorpion | 1:51 | PASS (9 assertions) |
+| 8 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -152,7 +162,11 @@ tracking frames, the review captures and the donor bind captures.
   Deinonychus's folded arms). The crocodilians were a targeted repair in
   their own generator (`dd82130f38`): the same geometry, UVs and weights,
   exported outward after the shared writer, and a lighter, irregular
-  painting. The legacy generators refuse the kinds
+  painting. The ants (`04144ec145`) and the scorpion (`fba63c2500`) were
+  targeted repairs in their generators too: outward export through the
+  library's `restore_outward_winding`, a parallel-transport `carried_tube`
+  where the shared tube's +Y frame hint folded body-axis tubes, and rooted
+  joins (ant thorax and mandibles, scorpion telson). The legacy generators refuse the kinds
   they no longer build and name the new builders; their helpers stay for the
   creatures and families that still import them.
 - Current identities (SHA-256; full hashes in each family `SOURCE.md` and the
@@ -176,12 +190,16 @@ tracking frames, the review captures and the donor bind captures.
   | Ankylosaurus | `3eb7585e6f41…a9ca9` | `2cdd8bc7e913…98bac` | 11,520 / 14,560 / 75 |
   | Crocodile | `6615b7680876…96ef9` | `108668f562d9…37c85` | 2,342 / 4,188 / 124 |
   | Dire Crocodile | `d4507796f688…daf1e` | `86488f581289…62d3c` | 2,342 / 4,188 / 124 |
+  | Giant Ant (Worker) | `e6e3df7b4771…500fb` | unchanged | 890 / 1,720 / 15 |
+  | Giant Ant (Soldier) | `0eb9a2ea8954…48d1a` | unchanged | 906 / 1,748 / 16 |
+  | Giant Ant (Drone) | `2aa85130a354…f86e8` | unchanged | 1,066 / 2,052 / 20 |
+  | Giant Scorpion | `1b48a74e4296…bba7f` | unchanged | 1,226 / 2,352 / 25 |
 
 - Packaging (`7defdfb2f2`): `scripts/Build-Local.ps1` no longer rewrites the
   Ankylosaurus mesh to the released v0.0.151 CRLF bytes (it refused any other
   export); the refined body ships as committed and `scripts/validate-package.ps1`
   pins its mesh and albedo. The Sprint 23 released-controls test follows.
-- Domain tests: hash pins in the Sprint 11, 12, 13, 16, 23 and 24 visual tests;
+- Domain tests: hash pins in the Sprint 11, 12, 13, 14, 16, 20, 23 and 24 visual tests;
   `OriginalMeshOrientation` (in `ExpandedSummoningSprint12Tests.cs`) requires
   closed, consistently wound, outward components lit by agreeing normals for
   every refined body (all four ungulates now), with synthetic positive and
@@ -222,6 +240,10 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Focused gate (crocodilians, `dd82130f38`) | the armored-dinosaur filter plus `sprint16-original-assets;sprint16-bone-policy` | 11.5 s | production compilation PASS; 14 PASS |
 | Determinism (crocodilians) | old generator reproduced the shipped bytes; new painter and generator twice from clean Blender processes | 25 s per creature | byte-identical |
 | Native | run 6 above | 4:22 | as tabled |
+| Focused gate (ants, `04144ec145`) | Sprint 14 six-legs, painting, allowlist, corrupt-mesh and loaded-insect cases plus the visual filter | 11 s | production compilation PASS; 17 PASS |
+| Focused gate (scorpion, `fba63c2500`) | adds `sprint20-original-body;sprint20-review-wired;sprint20-census-wired` | 10 s | production compilation PASS; 14 PASS |
+| Determinism (ants, scorpion) | old generators reproduced the shipped bytes; new exports twice from clean Blender processes | 10-15 s per creature | byte-identical |
+| Native | runs 7 and 8 above | 6:00 and 3:34 | as tabled |
 
 ## Remaining limitations
 
@@ -230,6 +252,9 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
   observer limitation, to be fixed in the observer, not the mesh.
 - Triceratops: the Huge body fills its close views, and the near clip at its
   bounding box cuts into the room around it; an observer framing limit.
+- Ants: the six legs still follow the Giant Spider's chains, so they keep
+  the donor's splayed stance; moving the leg geometry off those chains would
+  leave the limbs away from where the animation plants the bones.
 - Dire Crocodile: at its 2x Gargantuan view scale several close views put
   the body behind the room's walls (the game's blue occluded-unit
   silhouette); an observer framing limit.
@@ -249,13 +274,12 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. Arthropods (in progress): the three ants (outward export; the Worker's
-   thorax and the Soldier's and Drone's mandibles rooted in the head) and the
-   Giant Scorpion (outward export; the telson, which stopped about 5 cm short
-   of the tail, rooted on it). The Bebelith is the control: inspected, not
-   changed.
-2. Then, in order: flying (Dire Bat, Pteranodon, Giant Wasp), primates and
-   four-armed (Ape, Dire Ape, Xill), the material and shine investigations
+1. Flying (in progress): Dire Bat, Pteranodon and Giant Wasp, rebuilt as
+   continuous bodies with closed membrane wings on the Giant Eagle frame
+   (`../pteranodon/convert_bind_rig.py` of the Pteranodon capture reproduces
+   the flyers' rig hash `38fc5f00…`). The Dire Bat and Pteranodon tests
+   require all 46 audited bones; the Wasp keeps its Tail-driven sting pose.
+2. Then, in order: primates and four-armed (Ape, Dire Ape, Xill), the material and shine investigations
    (Wolf, Frost Giant, Ghaele, Thanadaemon), the Salamander, and the Dire Rat
    icon (VIS-004, icon rules).
    Optional: Viper/Constrictor locomotion. Roster-owned: Elephant, Lantern
