@@ -146,7 +146,7 @@ try {
         'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
         'assets\sprint19-fourarmed\xill-mesh.json' = 'b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d'
         'assets\sprint19-fourarmed\xill-albedo.png' = 'f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4'
-        'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '813dfed7e48f7bb281fbaa0a6ba2c426febf653a76cc92a4fda201642dba8004'
+        'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f'
         'assets\sprint20-arachnids\giant-scorpion-albedo.png' = 'c4a5a29d54ee52c3c1679de55a6c0f3d7e46e8ad56d02b0c25e51c43f55feb1a'
         'assets\sprint21-arthropods\giant-crab-mesh.json' = 'c2b84d93f304df674aad4b8f0d80e1c62871574a611885435f1c7ea3827f847a'
         'assets\sprint21-arthropods\giant-crab-albedo.png' = '42be10115e53644da45f66f5e1d9beb989a310eeee061756d1fe842d78c07781'
