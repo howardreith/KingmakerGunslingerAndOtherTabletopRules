@@ -1,5 +1,19 @@
 # Autonomous Gunslinger blockers
 
+## 2026-10-17 output_log2 follow-up
+
+Alpha 2's installer was blocked by a diagnostic-only GetPatchInfo(unpatched)
+NRE in the exact installed Harmony12 facade; original CotW crash then recurred.
+Reproduced once on exact alpha 2 DLL, corrected and tested through real Install.
+64/64 expanded assembly-backed assertions and 33/33 affected-neighbor tests PASS;
+no source blocker. Five related first-update consumers now wait for registration.
+Brown-Fur's 25 actual registrations are independently confirmed in the log.
+Four ZFavoredClass missing-key data errors predate alpha 2; exact missing IDs
+remain unknown, and no external data/mod was altered. Native load remains
+NOT_RUN, not inferred PASS. No runtime transaction/restoration debt. This task
+does not authorize another automatic public alpha. See
+[current evidence](docs/COTW-ACTIONBAR-INSTALLER-REPAIR.md).
+
 ## 2026-10-17 CotW controller action-bar load
 
 Subsequent owner authorization was exercised for one public test alpha:

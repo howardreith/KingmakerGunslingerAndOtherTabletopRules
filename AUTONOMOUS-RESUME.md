@@ -1,3 +1,19 @@
+# output_log2 — CotW installer and early-update repair (2026-10-17)
+
+Current branch/worktree `codex/cotw-actionbar-installer-20261017`, based on
+`e50db0da63d4`. The new crash log confirms alpha 2 never installed the CotW
+correction: optional metadata diagnostics threw in the installed Harmony12
+facade for an unpatched method. Brown-Fur registered all 25 identities normally.
+Preserve that repair and the frozen/public alpha 1/2 identities. Installer
+correction checkpoint `132398b46e4f`; expanded real-installer + five actual
+startup-callback regressions 64/64 PASS; focused affected neighbors 33/33 PASS.
+See [current correction/evidence](docs/COTW-ACTIONBAR-INSTALLER-REPAIR.md).
+Other early library consumers now remain pending without consuming a callback
+or Favored Class host retry. Native loading remains NOT_RUN. No release/merge/
+installation is authorized by the new repair request; older publication entries
+below are history, not a new alpha authorization. Preserve the final candidate
+cleanly before updating evidence/docs; no broad campaign selected.
+
 # CotW controller action-bar load — isolated repair checkpoint (2026-10-17)
 
 [Controller-load alpha 2 is public](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2)
