@@ -1,6 +1,17 @@
 Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'compatibility/CompatibilityProfile.Common.ps1')
 
+function Get-KmgBrownFurProbeTimings {
+    param([ValidateRange(120,600)][int]$TimeoutSeconds)
+    # Shared by the real preflight and launcher, including every required
+    # working-save phase; do not rely on the preflight's zero defaults.
+    return @{TimeoutSeconds=$TimeoutSeconds;CatalogTimeoutSeconds=120
+        SelectionTimeoutSeconds=60;CompletionTimeoutSeconds=$TimeoutSeconds
+        MainMenuTimeoutSeconds=120;ActionResolutionTimeoutSeconds=60
+        ActionInvocationTimeoutSeconds=30;DescriptorResolutionTimeoutSeconds=30
+        LoadEntryTimeoutSeconds=30;FingerprintTimeoutSeconds=60}
+}
+
 function New-KmgBrownFurProbeResolution {
     param([string]$ModsRoot, [string]$BackupRoot, [string]$PackagePath)
     # This mission's actual DATA intake. Never drop an unfamiliar mod to get a

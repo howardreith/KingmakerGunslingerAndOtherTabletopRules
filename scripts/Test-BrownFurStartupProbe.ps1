@@ -3,6 +3,8 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'BrownFurStartupProbe.Common.ps1')
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+. (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 $fixture=Join-Path (Get-KmgCompatibilityRepositoryRoot) ('artifacts/brown-fur-startup/protocol-'+[Guid]::NewGuid().ToString('N'))
 $mods=Join-Path $fixture 'Mods'
 $names=@('BagOfTricks','BetterVendors','CallOfTheWild','CheatMenu','CraftMagicItems','EddicKingmakerRespec',
@@ -16,6 +18,13 @@ foreach ($name in $names) {
 $checks=0
 function Check([bool]$value) { if(-not $value){throw 'Brown-Fur probe safety assertion failed.'};$script:checks++ }
 function Reject([scriptblock]$action) { $rejected=$false;try{& $action|Out-Null}catch{$rejected=$true};Check $rejected }
+$timings=Get-KmgBrownFurProbeTimings 300
+$null=Assert-KmgRuntimeScenarioPreflight -Scenario disposable-brown-fur-native-cast -ExpectedVersion '0.0.157' `
+    @timings -StartupTimeoutSeconds 300 -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Check ($timings.MainMenuTimeoutSeconds -gt 0 -and $timings.FingerprintTimeoutSeconds -gt 0)
+Reject {Get-KmgBrownFurProbeTimings 0}
+Reject {Assert-KmgRuntimeScenarioPreflight -Scenario disposable-brown-fur-native-cast -ExpectedVersion '0.0.157' `
+    @timings -Parameters @{saveName='KMG_AUTOMATION_BASELINE'}}
 $before=@(Get-KmgCompatibilityDirectoryManifest $mods)
 $resolution=New-KmgBrownFurProbeResolution $mods (Join-Path $fixture 'not-yet-existing-backup') 'candidate.zip'
 Check ($resolution.runtimeMods.Count -eq 15)
