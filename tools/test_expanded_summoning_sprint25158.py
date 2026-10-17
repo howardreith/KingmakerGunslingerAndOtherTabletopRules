@@ -48,17 +48,21 @@ class Sprint25GateTests(unittest.TestCase):
             gate.validate_append(self.old, changed)
 
     def test_the_allowed_set_is_exact_and_names_both_groups(self):
-        # The append grew by exactly one on 2026-10-16, after the bounded
-        # observation of the released Elephant recorded six grants and no
-        # trample ability or component. This pins the new exact set rather
-        # than only the count.
-        # Ten Sprint 25 identities, the eight caller adapters the alternate
-        # summoning release projects for any creature added to the central
-        # catalog, and the one ordinary Overrun command from the owner-selected
-        # bounded native-command route. The adapter GUIDs are uuid5 of their
-        # own symbols, so those pin a reproducible allocation rather than a
-        # chosen one.
-        self.assertEqual(19, len(gate.ADDED))
+        # Twenty since 2026-10-17. This pins the exact set, not only the
+        # count: ten Sprint 25 identities, the eight caller adapters the
+        # alternate summoning release projects for any creature added to the
+        # central catalog, the ordinary Overrun command from the
+        # owner-selected bounded native-command route, and the cloned Greater
+        # Overrun carrier that corrects the printed rider for this creature
+        # alone. The adapter GUIDs are uuid5 of their own symbols, so those
+        # pin a reproducible allocation rather than a chosen one.
+        self.assertEqual(20, len(gate.ADDED))
+        # The carrier is a FEATURE, like the native feat it clones, and it
+        # ends in "Overrun" - so it must not fall through to the ability rule
+        # that the ordinary command below relies on.
+        self.assertEqual(
+            "BlueprintFeature",
+            gate.ADDED["KMG.Summoning.Special.Brachiosaurus.GreaterOverrun"][1])
         self.assertIn("KMG.Summoning.Special.Elephant.Trample", gate.ADDED)
         # The Overrun command is a separate action from either trample, and
         # the gate must type it as an ability rather than defaulting it to a
