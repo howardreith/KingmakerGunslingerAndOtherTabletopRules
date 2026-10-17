@@ -144,8 +144,8 @@ try {
     $primateBodies = @{
         'assets\sprint19-fourarmed\girallon-mesh.json' = '475a8ca131056251c02680c625c16ab7c3c84cba1546782b95054e8c3334e7e9'
         'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
-        'assets\sprint19-fourarmed\xill-mesh.json' = 'b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d'
-        'assets\sprint19-fourarmed\xill-albedo.png' = 'f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4'
+        'assets\sprint19-fourarmed\xill-mesh.json' = 'd7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243'
+        'assets\sprint19-fourarmed\xill-albedo.png' = 'eca0206533fad6c67cb2cbce79c5ff4eac7987b3311229c8d9f6b883522999fa'
         'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f'
         'assets\sprint20-arachnids\giant-scorpion-albedo.png' = 'c4a5a29d54ee52c3c1679de55a6c0f3d7e46e8ad56d02b0c25e51c43f55feb1a'
         'assets\sprint21-arthropods\giant-crab-mesh.json' = 'c2b84d93f304df674aad4b8f0d80e1c62871574a611885435f1c7ea3827f847a'
@@ -154,10 +154,10 @@ try {
         'assets\sprint21-arthropods\bebelith-albedo.png' = 'afd98003bcc96ae32db4c3da63fdf3377d84f07141148ef7742cf8d3742fd554'
         'assets\ankylosaurus\ankylosaurus-mesh.json' = '3eb7585e6f410711c7bf84bf4e23ff0df2c04fbe06ec226a0552a715c9fa9ca9'
         'assets\ankylosaurus\ankylosaurus-albedo.png' = '2cdd8bc7e9139e748a9a88ec52e8a360245b6ca5ecb7829eec78a57d5a598bac'
-        'assets\sprint18-primates\ape-albedo.png' = 'f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc'
-        'assets\sprint18-primates\ape-mesh.json' = '751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0'
-        'assets\sprint18-primates\dire-ape-albedo.png' = 'e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7'
-        'assets\sprint18-primates\dire-ape-mesh.json' = 'e2f0242141a01179cf3c5915f2d11cf1335b9de51aa387150fb69a42bcdd0341'
+        'assets\sprint18-primates\ape-albedo.png' = '6b591af841a1b8d403cec6b2783565480e747b721466b3e641509048a21f1f89'
+        'assets\sprint18-primates\ape-mesh.json' = '5b469ed2670ce94bffd7968b8a14d2d273f80505beb38bb275d23ddadfd27d12'
+        'assets\sprint18-primates\dire-ape-albedo.png' = '37bdc23e705bfa0771105b768d1cd052157dfdc1d2c6bbd2a99236cf8268e219'
+        'assets\sprint18-primates\dire-ape-mesh.json' = 'd0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a'
     }
     foreach ($entry in $primateBodies.GetEnumerator()) {
         $path = Join-Path $modDirectory $entry.Key

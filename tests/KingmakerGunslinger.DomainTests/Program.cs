@@ -1216,6 +1216,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint18-body-pinned-to-its-painting", PrimateVisualTests.EachBodyIsPinnedToItsOwnPainting),
             Case("expanded-summoning.sprint18-instance-owned-resources", PrimateVisualTests.InstanceResourcesAreNamedPerInstance),
             Case("expanded-summoning.sprint18-review-expectations", PrimateVisualTests.ReviewExpectationsAgreeWithThePrintedRules),
+            Case("expanded-summoning.sprint18-refined-bodies-outward", PrimateVisualTests.RefinedBodiesShipOutward),
             Case("blueprints.ledger-fits-the-loader-bound", BlueprintManifestSizeTests.ShippedLedgerFitsTheLoaderBound),
             Case("blueprints.ledger-bound-still-rejects", BlueprintManifestSizeTests.TheCorruptionBoundStillRejectsBothEnds),
             Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),
