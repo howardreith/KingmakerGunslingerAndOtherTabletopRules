@@ -1,3 +1,36 @@
+# Sprint 25 takeover — native qualification blocked on Steam authentication
+
+Current owner mission: finish scoped Brachiosaurus/Elephant native qualification,
+then publication qualification, merge PR #49, publish/verify the next available
+stable patch and merge final records. Stop after Sprint 25; no Sprint 26.
+
+Takeover intake on HOWARD-LAPTOP, 2026-10-17: clean `wt/s25` on
+`codex/expanded-summoning-sprint25-brachiosaurus-elephant` at `e7d35f17`.
+Fetched only master/product refs with `--no-tags`; master remains `2eed3944`
+with no new integration needed. PR #49 is draft/open/mergeable. Remote tag
+`v0.0.158` is absent; recheck availability before freezing/publication.
+
+Steam's `ActiveProcess` registry reports `ActiveUser=0`, with `pid=22564`
+matching the running client. The owner must sign in before native testing.
+No Kingmaker process or runtime lease was found; no deployment, native launch,
+save operation, candidate build or release action was started by this takeover.
+
+The supplied icon and both original bodies are integrated. Rough visuals and
+the Head-weighted stiff neck are accepted deferrals; HumanReview remains
+NOT_PERFORMED_NONBLOCKING. The full native mechanics/body/resource/route and
+targeted persistence proof remains required. See `current`, `coverageMap` under
+`remainingNativeCampaign`, and `candidate` in
+`planning/SPRINT25-GIANT-BODIES-LEDGER.json`. Preserve `9b55df81` and its exact
+hashes as the earlier source/build checkpoint; the complete compiled observer
+change will need one new candidate, as already authorized.
+
+After Steam sign-in, recheck authentication, source ownership, process/lease
+state and elevation. Implement the bounded review using the existing fixture,
+native clock and exact-owner command/AI paths, plus the narrow Sprint 25
+publisher mapping/refusal tests. No new art handoff or visual R&D is required.
+
+The release records below describe earlier releases and do not control Sprint 25.
+
 # Alternate summoning sources — v0.0.157 RELEASED / STOP
 
 The owner accepted PR #52 (alternate summoning sources) on 2026-10-16 and
