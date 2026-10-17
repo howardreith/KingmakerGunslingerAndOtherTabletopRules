@@ -95,3 +95,40 @@ Packaging still needs the documented development validator repin from released
 0.0.156 to released 0.0.157, with corruption fixtures. Keep that tooling change
 separate from the source repair. A development ZIP must retain distinct purpose,
 commit, receipt and hashes; it is not a new public release.
+
+## Candidate/probe preparation follow-on
+
+Source repair is preserved at `6912c86503`; development validator repin at
+`ab68d92c08` (14 corruption tests and 16 unchanged release-validator tests PASS,
+6,895 released identities, no appends). The first build refused an incomplete
+shared reference bundle; a separate branch-local export from the installed
+game supplies all 14 exact references, without changing the shared bundle.
+A second attempted invocation stopped on redirected Python unittest stderr;
+the corrected invocation retains normal child-process error/exit semantics.
+The next build correctly refused the unlisted bootstrap delta in the protected
+icon catalog. Its existing exact-hunk feature-extension mechanism now declares
+only the synchronous callback; baseline/art/mapping pins remain unchanged.
+All 30 icon corruption tests PASS, including removal/substitution of that
+exact notification and continued rejection of unrelated/mapping mutations.
+
+The historical eleven-mod installed-stack wrapper cannot represent current
+DATA. The new `Invoke-BrownFurStartupProbe.ps1` preserves all sixteen current
+installed mod directories and their exact files through the existing locked
+compatibility transaction, rather than choosing a subset or replacing other
+mods from examples. It accepts only the attributed CotW version, explicit
+working-save name and exact development purpose. All pre-existing saves,
+including WORKING, receive OS read leases. It uses the existing guarded native
+Load Game route and disposable Brown-Fur cast scenario, preserves native
+registry settings, and restores the original Mods/SoundBank transaction.
+It does not set controller mode or alter UMM, bindings, drivers or display.
+Observer evidence records `Game.IsControllerGamepad` and the 25 actual resolved
+types. That post-load dictionary is supporting evidence; the synchronous
+registration validation/log is the earlier pre-load boundary.
+
+Probe protocol fixtures: 8/8; reused installed-stack restoration fixtures:
+30/30; protected-save catalog fixtures: 6/6. These do not launch the game.
+The read-only probe cannot prove reconstruction of persisted Brown-Fur owners
+on cold load: that requires the separate prepare/cold-verify protocol or an
+authorized affected-state fixture. Keep that gap explicit even if the probe
+passes. Current DATA intake now reports KMG Info 0.0.157; do not reuse the
+historical 0.0.140 banner as current identity.
