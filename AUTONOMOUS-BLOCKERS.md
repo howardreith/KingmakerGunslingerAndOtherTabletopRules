@@ -2,10 +2,11 @@
 
 ## 2026-10-17 Brown-Fur startup-order repair
 
-Remote review delivery: guarded push WhatIf passed; actual push was denied by
-the approval guard (remote-write authority not established). No remote write
-occurred. The ZIP/local commits are delivered; retry only with explicit owner
-authorization to expose the source branch remotely.
+The earlier push denial is superseded for one alpha by the owner's subsequent
+explicit publication request on 2026-10-17. Source branch/tag and public
+prerelease `v0.0.157-brown-fur-alpha.1` are authorized. Stable release, merge
+and installation remain unauthorized. Use the alpha-specific hash-pinned path;
+do not weaken the stable-release or development qualification guards.
 
 Source/package checkpoint is not blocked (83/83 related tests PASS; frozen
 development candidate `913dfd6e8938`). Authorized native read-only working-load
@@ -15,8 +16,8 @@ PARTIAL: the affected save was not supplied and the lab working save lacks the
 missing GUID. Saved Brown-Fur owner reconstruction and controller-mode loading
 are NOT_RUN. Neither missing-blueprint causation of PostLoad nor successful
 affected-state loading is established. See
-[repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md). No release or permanent
-installation is authorized.
+[repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md). Only the test alpha is
+authorized; no stable release or permanent installation.
 
 ## 2026-09-30 Expanded Summoning 0.0.141 checkpoint
 
