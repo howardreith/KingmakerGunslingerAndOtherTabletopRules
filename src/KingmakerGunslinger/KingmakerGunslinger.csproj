@@ -1286,6 +1286,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Routine.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Surface.cs" />
     <Compile Include="RuntimeTesting\Sprint20ReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\VisualRefinementReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Review.cs" />
     <Compile Include="RuntimeTesting\Sprint21ReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Review.cs" />
