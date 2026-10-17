@@ -9,16 +9,15 @@ matrices or native vertices. All four legs, jaw and seven tail joints remain
 functional; no extra limb, animator or movement system is introduced.
 
 Visual refinement, 2026-10-17 (VIS-012, VIS-034): the shared writer reversed
-every triangle, so both bodies shipped inside out. `restore_outward_winding`
-puts Blender's outward order back; geometry, UVs and weights are unchanged.
+every triangle, so both bodies shipped inside out.
+`continuous_body.restore_outward_winding` puts Blender's outward order back;
+geometry, UVs and weights are unchanged.
 """
 import argparse
-import base64
 import hashlib
 import json
 import math
 from pathlib import Path
-import struct
 import sys
 
 import bpy
@@ -248,33 +247,6 @@ def build_body(bm, weights, uvs, rig, kind):
                   (.026, .043 if dire else .029, .083), bone)
 
 
-def restore_outward_winding(payload):
-    """The shared writer emits (a, c, b) on the theory that the donor frame
-    mirrors Blender's. It does not: the Monitor Lizard frame (+X left, +Y up,
-    -Z forward) is a proper rotation of Unity's, so every part shipped inside
-    out and the game drew its far inner walls (see
-    ../continuous-bodies/SOURCE.md). Restore Blender's outward (a, b, c) and
-    refuse anything that is not then closed, consistent and outward."""
-    data = bytearray(base64.b64decode(payload["data"]))
-    count = payload["vertexCount"]
-    start = count * 32  # positions, normals, then texture coordinates
-    positions = [struct.unpack_from("<3f", data, 12 * index)
-                 for index in range(count)]
-    triangles = []
-    for index in range(payload["triangleCount"]):
-        a, c, b = struct.unpack_from("<3i", data, start + 12 * index)
-        struct.pack_into("<3i", data, start + 12 * index, a, b, c)
-        triangles.append((a, b, c))
-    bad = [row for row in cb.orientation_audit(positions, triangles)
-           if row["openEdges"] or row["repeatedDirectedEdges"] or
-           row["volume"] <= 0.0]
-    if bad:
-        raise SystemExit("refusing to export open, inconsistent or inward "
-                         "components: " + json.dumps(bad[:5]))
-    payload["data"] = base64.b64encode(bytes(data)).decode("ascii")
-    payload["winding"] = "outward; front is Cross(b - a, c - a), not reversed"
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--kind", required=True, choices=KINDS)
@@ -338,7 +310,7 @@ def main():
     Path(args.report).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     shared.write_mesh_data(args.mesh_data, obj, mesh, indexed, uv_indexed, report, args.albedo)
     payload = json.loads(Path(args.mesh_data).read_text(encoding="utf-8"))
-    restore_outward_winding(payload)
+    cb.restore_outward_winding(payload)
     # The left limbs are measured at +X, so the frame is +X left.
     payload.update(space="donor renderer local; +X left, +Y up, -Z forward",
                    visibleLegs=4, jawSeparated=True, tailJoints=7)

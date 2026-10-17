@@ -140,3 +140,49 @@ the donor's real gait crosses the six legs or reads as a tripod, whether the
 wings' stroke reads as a wingbeat at animation speed rather than as a leg
 cycle, contact timing, fades, selection and collision, shader and
 material-controller behaviour, crowding and cleanup.
+
+## Visual refinement, 2026-10-17 (VIS-011, VIS-015, VIS-021)
+
+The owner found the three ants reasonably good, with a slightly
+detached-looking thorax, an overly arachnid body and leg arrangement and, on
+the Drone, slightly detached mandibles. A minor polish, so the painting, the
+leg layout and every bone binding are unchanged.
+
+- **Inside out.** The builders never made their primitives' winding
+  consistent (12 to 17 parts per ant had their caps opposite to their walls),
+  and the shared writer then reversed every triangle, so most parts shipped
+  inward and the game drew their far inner walls. For the three ants the
+  generator now makes each part consistently outward
+  (`bmesh.ops.recalc_face_normals`) and `continuous_body.restore_outward_winding`
+  undoes the writer's reversal, refusing anything not closed, consistent and
+  outward.
+- **Folded tubes.** The shared tube frames each ring with +Y as its up hint,
+  and on this rig +Y is the body axis: the mesosoma, gaster, mandibles and
+  antennae turned through that hint and their rings swung a quarter turn, so
+  191 to 229 normal corners per ant faced away from their faces. Those parts
+  now use `carried_tube`, whose ring frames are carried along the path; every
+  normal corner agrees with its face.
+- **Joins.** The mesosoma now starts inside every caste's head capsule (the
+  Worker's began on the capsule's back pole), and a mandible root outside the
+  capsule is pulled in until it sits inside (the Soldier's measured 1.16 and
+  the Drone's 1.09 of the capsule's radius).
+- **Legs, unchanged.** The six legs still follow the Giant Spider's chains,
+  so from above they fan out from the thorax. Re-angling or shortening them
+  would leave the visible limb away from where the donor's animation plants
+  the bone (finding 6 above).
+- The Fire Beetle and Giant Stag Beetle were outside the owner's review; their
+  generator path and shipped bytes are unchanged, and they still ship mostly
+  inward.
+
+| Asset | Mesh SHA-256 | Superseded |
+| --- | --- | --- |
+| Giant Ant (Worker) | `e6e3df7b477170b1f80bbd7ceefdfe573a6d31a3d70832fb4cb64e22841500fb` (890 vertices, 1,720 triangles, 15 parts) | `f69b3d4bafeb2827ccfbf15bb7db1fb4b7890a026817a27b01cf08dd28fa9b5e` |
+| Giant Ant (Soldier) | `0eb9a2ea895477581ef18dc0af05f6b3d9b645e071418c4ab121e34f16048d1a` (906, 1,748, 16) | `421e8f7ccfd3c63818dc4f5d7096a96cbe18c40fd9db6d6d8d927471872cb077` |
+| Giant Ant (Drone) | `2aa85130a354e498acb17bb3663d21618eb6f1248cf67cd16f02ce20496f86e8` (1,066, 2,052, 20) | `3d1160f7dbc076f6ab274fd82c45c070459d58e9f8eb16229a16a47a31f55d27` |
+
+The albedos are unchanged. Capture: the Sprint 14 Giant Spider capture
+(`sprint14-giant-spider-bind-rig.json`, SHA-256
+`60074cc2…a19b`, written by the native-profile baseline run
+`20261017T0225090480213Z`); the old generator reproduced all three superseded
+meshes exactly from it, and the new exports reproduce exactly from clean
+Blender processes with `PYTHONHASHSEED=0`.

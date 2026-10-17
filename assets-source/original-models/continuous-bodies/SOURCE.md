@@ -101,6 +101,11 @@ seen through its head and a leg. `audit_mesh_orientation.py` and
   invisible), and the exporter refuses any component that is open, wound
   inconsistently or not outward. The domain tests repeat that check on the
   shipped bytes (`OriginalMeshOrientation`).
+- **Targeted repairs.** Where the owner asked for a repair rather than a
+  rebuild (the crocodilians, the ants, the scorpion), the creature's own
+  generator keeps its geometry and the legacy shared writer, makes each part
+  consistently outward in Blender, and then calls `restore_outward_winding`,
+  which undoes the writer's reversal in the payload under the same refusal.
 
 ## Determinism hazards found in Blender 4.5.10
 

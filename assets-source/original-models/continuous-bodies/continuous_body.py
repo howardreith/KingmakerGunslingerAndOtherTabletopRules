@@ -953,6 +953,35 @@ def orientation_audit(positions, triangles):
     return report
 
 
+def restore_outward_winding(payload):
+    """Undo the legacy shared writer's reversal in a schema-2 payload.
+
+    `pteranodon/generate_pteranodon.write_mesh_data` emits (a, c, b) on the
+    theory that the donor frame mirrors Blender's; every measured donor frame
+    is a proper rotation of Unity's, so those bodies shipped inside out. For
+    a generator that made each part consistently wound and outward in
+    Blender first, this puts Blender's (a, b, c) back and refuses anything
+    that is not then closed, consistent and outward."""
+    data = bytearray(base64.b64decode(payload["data"]))
+    count = payload["vertexCount"]
+    start = count * 32  # positions, normals, then texture coordinates
+    positions = [struct.unpack_from("<3f", data, 12 * index)
+                 for index in range(count)]
+    triangles = []
+    for index in range(payload["triangleCount"]):
+        a, c, b = struct.unpack_from("<3i", data, start + 12 * index)
+        struct.pack_into("<3i", data, start + 12 * index, a, b, c)
+        triangles.append((a, b, c))
+    bad = [row for row in orientation_audit(positions, triangles)
+           if row["openEdges"] or row["repeatedDirectedEdges"] or
+           row["volume"] <= 0.0]
+    if bad:
+        raise SystemExit("refusing to export open, inconsistent or inward "
+                         "components: " + json.dumps(bad[:5]))
+    payload["data"] = base64.b64encode(bytes(data)).decode("ascii")
+    payload["winding"] = "outward; front is Cross(b - a, c - a), not reversed"
+
+
 def write_mesh_data(path, obj, weights, rig_sha256, albedo_path, space,
                     extra=None):
     positions, normals, coords, triangles, rows = split_for_export(obj, weights)
