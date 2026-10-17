@@ -41,9 +41,12 @@ namespace KingmakerGunslinger.Compatibility
                 MethodInfo prefix = VerifyContract(matches[0]);
                 MethodInfo native = typeof(MechanicActionBarSlotSpontaneusSpell)
                     .GetMethod("GetConvertedAbilityData");
-                Log("patches.before", Describe(context.Harmony.GetPatchInfo(native)));
-                Log("prefix-patches.before", Describe(context.Harmony.GetPatchInfo(prefix)));
-                Log("assemblies", AssemblyIdentity(matches[0]) + ";game=" +
+                // The installed Harmony12 facade throws when GetPatchInfo is
+                // called for an unpatched method. A diagnostic must never consume
+                // this adapter's only installation opportunity.
+                Diagnostic("patches.before", () => Describe(context.Harmony, native));
+                Diagnostic("prefix-patches.before", () => Describe(context.Harmony, prefix));
+                Diagnostic("assemblies", () => AssemblyIdentity(matches[0]) + ";game=" +
                     AssemblyIdentity(native.Module.Assembly) + ";kmg=" + AssemblyIdentity(context.Assembly));
                 context.Harmony.Patch(prefix, null, null, new HarmonyMethod(
                     typeof(CotwSpontaneousSlotCompatibility).GetMethod("Transpile",
@@ -174,6 +177,25 @@ namespace KingmakerGunslinger.Compatibility
             if (patches == null) return "none";
             return "prefixes=" + Describe(patches.Prefixes) + ";postfixes=" +
                 Describe(patches.Postfixes) + ";transpilers=" + Describe(patches.Transpilers);
+        }
+
+        private static string Describe(HarmonyInstance harmony, MethodBase target)
+        {
+            // Verified shim GetPatchedMethods delegates to Harmony's global
+            // GetAllPatchedMethods, so foreign owners are not omitted here.
+            return harmony.GetPatchedMethods().Contains(target)
+                ? Describe(harmony.GetPatchInfo(target)) : "none";
+        }
+
+        private static void Diagnostic(string name, Func<string> read)
+        {
+            try { Log(name, read()); }
+            catch (Exception exception)
+            {
+                // Only optional inspection is isolated, never contract checks,
+                // transpilation, CotW conversion execution or game loading.
+                Log("diagnostic.unavailable", "event=" + name + ";exception=" + exception.GetType().Name);
+            }
         }
 
         private static string Describe(IEnumerable<Patch> patches)

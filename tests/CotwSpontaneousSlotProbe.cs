@@ -18,6 +18,8 @@ public static class CotwSpontaneousSlotProbe
 {
     private const BindingFlags Hidden = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
     private static int _passed;
+    private static int _neighborCalls;
+    private static void NeighborPostfix() { _neighborCalls++; }
     private sealed class References<T> : IEqualityComparer<T> where T : class
     {
         public bool Equals(T left,T right) {return ReferenceEquals(left,right);}
@@ -74,6 +76,7 @@ public static class CotwSpontaneousSlotProbe
     public static void Run(Assembly mod)
     {
         HarmonyInstance harmony = HarmonyInstance.Create("KMG.Tests.CotwSpontaneousSlot");
+        HarmonyInstance foreign = HarmonyInstance.Create("KMG.Tests.ForeignCotwOwner");
         Type adapter = mod.GetType("KingmakerGunslinger.Compatibility.CotwSpontaneousSlotCompatibility", true);
         Assembly cotw = typeof(CallOfTheWild.Main).Assembly;
         MethodInfo brokenPrefix = (MethodInfo)adapter.GetMethod("VerifyContract", Hidden).Invoke(null, new object[] {cotw});
@@ -102,16 +105,45 @@ public static class CotwSpontaneousSlotProbe
             object settings = FormatterServices.GetUninitializedObject(settingsField.FieldType);
             settingsField.SetValue(null, settings);
             FieldInfo meta = settings.GetType().GetField("<metamagic_for_spontaneous_spell_conversion>k__BackingField", Hidden);
-            harmony.Patch(target, new HarmonyMethod(brokenPrefix), null, null);
+            foreign.Patch(target, new HarmonyMethod(brokenPrefix),
+                new HarmonyMethod(typeof(CotwSpontaneousSlotProbe).GetMethod("NeighborPostfix", Hidden)), null);
             Patches before = harmony.GetPatchInfo(target);
             // Match production order: CotW already patched the native method
             // before KMG instruments the existing prefix itself.
-            harmony.Patch(brokenPrefix, null, null, new HarmonyMethod(adapter.GetMethod("Transpile", Hidden)));
+            bool nullMetadata = false;
+            try { nullMetadata = harmony.GetPatchInfo(brokenPrefix) == null; }
+            catch (NullReferenceException) { nullMetadata = true;
+                Console.WriteLine("BASELINE installed Harmony12 GetPatchInfo(unpatched) throws NullReferenceException"); }
+            Check(nullMetadata, "unpatched prefix has no metadata before real installer");
+            Type contextType = mod.GetType("KingmakerGunslinger.Bootstrap.ModContext", true);
+            object context = FormatterServices.GetUninitializedObject(contextType);
+            Set(context, "_stateGate", new object());
+            Set(context, "_harmony", harmony);
+            Set(context, "<Assembly>k__BackingField", mod);
+            // Substitute only the UMM log sink. Its production wrapper tolerates
+            // the absent external logger; real installation/patching stays intact.
+            Type loggerType = mod.GetType("KingmakerGunslinger.Bootstrap.ModLogger", true);
+            Set(context, "<Logger>k__BackingField", FormatterServices.GetUninitializedObject(loggerType));
+            adapter.GetMethod("Install", Hidden).Invoke(null, new[] {context});
+            Check(Equals(adapter.GetField("_patched", Hidden).GetValue(null), brokenPrefix), "real installer reaches patch completion on an unpatched CotW prefix");
+            string owners = (string)adapter.GetMethod("Describe", Hidden, null,
+                new[] {typeof(HarmonyInstance),typeof(MethodBase)}, null).Invoke(null,new object[] {harmony,target});
+            Check(owners.Contains(foreign.Id) && owners.Contains("NeighborPostfix"), "metadata inspection includes foreign owners and neighbors");
+            Check(harmony.GetPatchInfo(brokenPrefix).Transpilers.Count == 1, "real installer registers exactly one correction");
+            adapter.GetMethod("Install", Hidden).Invoke(null, new[] {context});
+            Check(harmony.GetPatchInfo(brokenPrefix).Transpilers.Count == 1, "repeated real installation is idempotent");
+            Func<string> failDiagnostic = () => { throw new System.IO.IOException("owned diagnostic fixture"); };
+            adapter.GetMethod("Diagnostic", Hidden).Invoke(null, new object[] {"fixture-read-failure", failDiagnostic});
+            Check(harmony.GetPatchInfo(brokenPrefix).Transpilers.Count == 1, "diagnostic read failure does not remove or duplicate the correction");
             Patches after = harmony.GetPatchInfo(target);
             Check(before.Prefixes.Count == after.Prefixes.Count &&
                 before.Prefixes.Zip(after.Prefixes,(left,right)=>left.owner == right.owner &&
                     left.index == right.index && left.patch == right.patch && left.priority == right.priority).All(value=>value),
                 "native prefix ownership/order unchanged");
+            Check(before.Postfixes.Count == after.Postfixes.Count &&
+                before.Postfixes.Zip(after.Postfixes,(left,right)=>left.owner == right.owner &&
+                    left.patch == right.patch && left.index == right.index).All(value=>value),
+                "foreign native postfix remains installed unchanged");
             foreach (bool enabled in new[] {false, true})
             {
                 meta.SetValue(settings, enabled);
@@ -157,11 +189,15 @@ public static class CotwSpontaneousSlotProbe
             try { adapter.GetMethod("VerifyContract", Hidden).Invoke(null, new object[] {mod}); }
             catch (TargetInvocationException) { rejected = true; }
             Check(rejected, "unsupported provider identity refused");
+            Check(_neighborCalls > 0, "foreign native postfix actually executes after correction");
             Console.WriteLine("Native-contract adapter assertions: PASS=" + _passed + ";FAIL=0;saveLoad=NOT_RUN");
         }
         finally
         {
             harmony.UnpatchAll(harmony.Id);
+            foreign.UnpatchAll(foreign.Id);
+            adapter.GetField("_context", Hidden).SetValue(null,null);
+            adapter.GetField("_patched", Hidden).SetValue(null,null);
             foreach(IntPtr block in Blocks) Marshal.FreeHGlobal(block);
         }
     }
