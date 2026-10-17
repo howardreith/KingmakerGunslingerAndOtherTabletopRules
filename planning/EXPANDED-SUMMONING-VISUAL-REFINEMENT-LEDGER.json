@@ -446,16 +446,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/flying-animals/dire-bat-mesh.json",
-        "meshSha256": "3c488cd4838812c12946410b9bba3283917f9b005904d4b237fedaac508f0819",
-        "components": 33,
-        "inwardComponents": 26,
-        "componentsWithReversedCaps": 29,
-        "openComponents": 4,
-        "normalCornersOpposingWinding": "6470/6576"
+        "meshSha256": "b04e9dd146b1c9db87de7907f7b6affb4f7910ff8fcfe4cd65288217f17b7cce",
+        "components": 40,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/37788"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/flying-animals/build_dire_bat.py",
+        "commits": "bde6b6d1bf",
+        "supersededMeshSha256": "3c488cd4838812c12946410b9bba3283917f9b005904d4b237fedaac508f0819",
+        "supersededAlbedoSha256": "c84011da7d1ca446191632ed1330892ed320edf253f1ab6dcdb17e76df21e335",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1543288716546Z (development candidate bde6b6d1bfe4): PASS, flight and doorway travel included; close views mostly walled at the wingspan's framing distance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-014",
@@ -643,16 +653,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/pteranodon/pteranodon-mesh.json",
-        "meshSha256": "cc80e28589f5644c86e870c672cd8f188312920f7092cacbd6cb3dff4007de3c",
-        "components": 19,
-        "inwardComponents": 12,
-        "componentsWithReversedCaps": 18,
-        "openComponents": 7,
-        "normalCornersOpposingWinding": "3522/3660"
+        "meshSha256": "42627bc93837ab0979bd4e1e338a9900bdb038cb16c71a4d20d2c50185a24345",
+        "components": 34,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/36240"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/pteranodon/build_pteranodon.py",
+        "commits": "bde6b6d1bf",
+        "supersededMeshSha256": "cc80e28589f5644c86e870c672cd8f188312920f7092cacbd6cb3dff4007de3c",
+        "supersededAlbedoSha256": "7169649b8ec101cf6ff3071420678feab4499a743bba263ecbefe2b04b0325c7",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1543288716546Z (development candidate bde6b6d1bfe4): PASS; close views mostly walled at the wingspan's framing distance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-021",
@@ -703,16 +723,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/flying-animals/giant-wasp-mesh.json",
-        "meshSha256": "07d84d01695540b6ed295efdf905a0058ec7a0f55bf9726387fea721250a81ac",
-        "components": 26,
-        "inwardComponents": 17,
-        "componentsWithReversedCaps": 22,
+        "meshSha256": "a32d454cff58ec4827d91888a3d9803178ad74c731882a22e1bd2ebf83b205c5",
+        "components": 18,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "2852/2856"
+        "normalCornersOpposingWinding": "0/28212"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/flying-animals/build_giant_wasp.py",
+        "commits": "bde6b6d1bf",
+        "supersededMeshSha256": "07d84d01695540b6ed295efdf905a0058ec7a0f55bf9726387fea721250a81ac",
+        "supersededAlbedoSha256": "6a40c0e9a08d532cdfc6ff01d508eb4e6d28e4f8eeb75065a4e77678970a40f6",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1543288716546Z (development candidate bde6b6d1bfe4): PASS, flight and doorway travel included"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-023",
