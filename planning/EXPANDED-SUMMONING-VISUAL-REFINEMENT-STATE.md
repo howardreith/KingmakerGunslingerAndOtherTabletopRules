@@ -35,7 +35,10 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-021 Giant Ant (Drone) | minor polish: outward, carried tubes, mandibles rooted; focused gate PASS | native after: PASS (run 7) | pending (style approved) |
 | VIS-026 Giant Scorpion | targeted: outward, telson rooted; focused gate PASS | native after: PASS (run 8) | pending (style approved) |
 | VIS-035 Bebelith | control, unchanged | native control review PASS (run 7) | accepted control (owner) |
-| other 17 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
+| VIS-013 Dire Bat | rebuilt; focused gate PASS | native after: PASS, flight included (run 9) | pending (style approved) |
+| VIS-020 Pteranodon | rebuilt; focused gate PASS | native after: PASS (run 9) | pending (style approved) |
+| VIS-022 Giant Wasp | rebuilt; focused gate PASS | native after: PASS, flight included (run 9) | pending (style approved) |
+| other 14 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
 
 ## Owner decisions, 2026-10-17
 
@@ -119,6 +122,8 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 7 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
 | 8 | `fba63c250028` (package `2c0ad6c4…fa1c`, 66 s build) | creature review: Giant Scorpion | 1:51 | PASS (9 assertions) |
 | 8 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
+| 9 | `bde6b6d1bfe4` (package `f1e24baa…bf41`, 65 s build) | creature review: Dire Bat, Pteranodon, Giant Wasp | 3:18 | PASS (27 assertions, flight and doorway travel included) |
+| 9 | same | disposable-expanded-summoning-visual-contracts | 1:15 | PASS |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -166,7 +171,11 @@ tracking frames, the review captures and the donor bind captures.
   targeted repairs in their generators too: outward export through the
   library's `restore_outward_winding`, a parallel-transport `carried_tube`
   where the shared tube's +Y frame hint folded body-axis tubes, and rooted
-  joins (ant thorax and mandibles, scorpion telson). The legacy generators refuse the kinds
+  joins (ant thorax and mandibles, scorpion telson). The flyers
+  (`bde6b6d1bf`) are continuous bodies with membrane wings: the library's
+  `sheet` closes a span-by-chord grid into a thin solid and `membrane_grid`
+  keeps the first flyers' weighting, so the eagle's wing animation folds it.
+  The legacy generators refuse the kinds
   they no longer build and name the new builders; their helpers stay for the
   creatures and families that still import them.
 - Current identities (SHA-256; full hashes in each family `SOURCE.md` and the
@@ -194,12 +203,15 @@ tracking frames, the review captures and the donor bind captures.
   | Giant Ant (Soldier) | `0eb9a2ea8954…48d1a` | unchanged | 906 / 1,748 / 16 |
   | Giant Ant (Drone) | `2aa85130a354…f86e8` | unchanged | 1,066 / 2,052 / 20 |
   | Giant Scorpion | `1b48a74e4296…bba7f` | unchanged | 1,226 / 2,352 / 25 |
+  | Dire Bat | `b04e9dd146b1…b7cce` | `ffb7ed2bcf2a…b9a4b` | 9,115 / 12,596 / 40 |
+  | Pteranodon | `42627bc93837…24345` | `0d9e25209…37455` | 8,905 / 12,080 / 34 |
+  | Giant Wasp | `a32d454cff58…205c5` | `2d26b8dad843…a8943` | 6,502 / 9,404 / 18 |
 
 - Packaging (`7defdfb2f2`): `scripts/Build-Local.ps1` no longer rewrites the
   Ankylosaurus mesh to the released v0.0.151 CRLF bytes (it refused any other
   export); the refined body ships as committed and `scripts/validate-package.ps1`
   pins its mesh and albedo. The Sprint 23 released-controls test follows.
-- Domain tests: hash pins in the Sprint 11, 12, 13, 14, 16, 20, 23 and 24 visual tests;
+- Domain tests: hash pins in the Sprint 9, 10, 11, 12, 13, 14, 16, 20, 23 and 24 visual tests and the Pteranodon mesh-data tests (whose atlas check now expects the single `body` region);
   `OriginalMeshOrientation` (in `ExpandedSummoningSprint12Tests.cs`) requires
   closed, consistently wound, outward components lit by agreeing normals for
   every refined body (all four ungulates now), with synthetic positive and
@@ -244,6 +256,9 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Focused gate (scorpion, `fba63c2500`) | adds `sprint20-original-body;sprint20-review-wired;sprint20-census-wired` | 10 s | production compilation PASS; 14 PASS |
 | Determinism (ants, scorpion) | old generators reproduced the shipped bytes; new exports twice from clean Blender processes | 10-15 s per creature | byte-identical |
 | Native | runs 7 and 8 above | 6:00 and 3:34 | as tabled |
+| Focused gate (flyers, `bde6b6d1bf`) | adds `sprint10-wasp-original-visual;sprint9-dire-bat-asset;pteranodon` | 10 s | production compilation PASS; 10 PASS |
+| Determinism (flyers) | each builder twice from clean Blender processes; the library refactor rebuilt the Dire Bat byte-identically | 25-40 s per creature | byte-identical |
+| Native | run 9 above | 4:59 | as tabled |
 
 ## Remaining limitations
 
@@ -252,6 +267,9 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
   observer limitation, to be fixed in the observer, not the mesh.
 - Triceratops: the Huge body fills its close views, and the near clip at its
   bounding box cuts into the room around it; an observer framing limit.
+- Flyers: the refinement close views frame the whole wingspan, so the camera
+  sits far back and the room's walls hide most of them; the party-camera
+  frames show the bodies. The idle and attack poses are the Giant Eagle's.
 - Ants: the six legs still follow the Giant Spider's chains, so they keep
   the donor's splayed stance; moving the leg geometry off those chains would
   leave the limbs away from where the animation plants the bones.
@@ -274,12 +292,14 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. Flying (in progress): Dire Bat, Pteranodon and Giant Wasp, rebuilt as
-   continuous bodies with closed membrane wings on the Giant Eagle frame
-   (`../pteranodon/convert_bind_rig.py` of the Pteranodon capture reproduces
-   the flyers' rig hash `38fc5f00…`). The Dire Bat and Pteranodon tests
-   require all 46 audited bones; the Wasp keeps its Tail-driven sting pose.
-2. Then, in order: primates and four-armed (Ape, Dire Ape, Xill), the material and shine investigations
+1. Primates and four-armed (in progress): Ape, Dire Ape and Xill on the
+   Troll guard frame (primate census). The bodies must bind exactly the
+   closed 56-bone set, and the primate attachment accepts only the old
+   winding marker, so the refined bodies need an outward marker in
+   `PrimateVisualPolicy` (the Girallon keeps the old one). The Xill
+   screenshot's log names a Redcap, but the body shown is the Xill's own
+   rust-red banded four-armed carapace; the native review confirms it.
+2. Then, in order: the material and shine investigations
    (Wolf, Frost Giant, Ghaele, Thanadaemon), the Salamander, and the Dire Rat
    icon (VIS-004, icon rules).
    Optional: Viper/Constrictor locomotion. Roster-owned: Elephant, Lantern
