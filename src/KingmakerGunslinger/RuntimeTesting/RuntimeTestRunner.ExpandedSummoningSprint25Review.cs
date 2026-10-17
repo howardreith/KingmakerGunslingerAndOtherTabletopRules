@@ -190,14 +190,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Sprint25Body(owner, key, "idle");
                             foreach (int frame in Sprint25SignedStrength(fixture, owner, key)) yield return frame;
                         }
-                        else
-                        {
-                            var admission = new JObject();
-                            foreach (int frame in Sprint22EnrollTurnBasedOwners(
-                                new[] { owner }, fixture.Hostile, admission)) yield return frame;
-                            if (!(bool)admission["admitted"])
-                                throw new InvalidOperationException("Giant owner not admitted to native turn order: " + admission);
-                        }
                         foreach (int frame in Sprint25OrdinaryAttack(fixture,
                             owner, key, turnBased)) yield return frame;
                     }
@@ -256,12 +248,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.Commands.RemoveFinishedAndUpdateQueue();
                 target.Commands.RemoveFinishedAndUpdateQueue();
                 owner.JoinCombat(); target.JoinCombat();
+                if (turnBased && CombatController.IsInTurnBasedCombat())
+                    throw new InvalidOperationException("Survey the giant attack lane before native turn enrollment.");
                 Vector3 far; string lane, direction;
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target,
                     reach + distanceOffset + .2f, out far, out lane, out direction);
                 Vector3 forward = (far - origin).normalized;
                 PlaceExpandedSummoningUnit(owner, origin);
                 PlaceExpandedSummoningUnit(target, far);
+                if (turnBased)
+                {
+                    // Survey/place before enabling turn-based mode, as the
+                    // qualified charge/trample paths do. Preserve that lane
+                    // while existing enrollment prepares the exact actor turn.
+                    var admission = new JObject { ["legalLaneSurvey"] = lane };
+                    foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                        new[] { owner }, target, admission)) yield return frame;
+                    int waited = 0;
+                    while (!Sprint18OwnerIsActing(owner) && waited++ < 500) yield return 0;
+                    bool acting = Sprint18OwnerIsActing(owner);
+                    admission["acting"] = acting;
+                    admission["nativeTurnWaitFrames"] = waited;
+                    bool admitted = (bool)admission["admitted"] && acting &&
+                        (bool?)admission["turnBasedBefore"] == false;
+                    Sprint25Check("ordinary-turn-admission-" + key, admitted, admission,
+                        "A surveyed legal lane precedes native enrollment and the exact owner reaches its own turn without initiative/current-turn/cooldown writes.");
+                    if (!admitted) throw new InvalidOperationException("Giant owner did not reach its native turn: " + admission);
+                }
                 var range = new UnitAttack(target);
                 range.Init(owner);
                 PlaceExpandedSummoningUnit(target, origin + forward *
@@ -864,8 +877,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "The original body actually attaches to the exact donor renderer with private mesh ownership, borrowed paint and native selection.");
         }
 
-        private IEnumerable<int> Sprint25NativeAppearance(UnitEntityData unit, string key,
-            bool requireVisible = true)
+        private IEnumerable<int> Sprint25NativeAppearance(UnitEntityData unit, string key)
         {
             Vector3 spawnPosition = unit.Position;
             if (AstarPath.active == null) throw new InvalidOperationException("No native appearance placement graph.");
@@ -878,6 +890,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             PlaceExpandedSummoningUnit(unit, ground.clampedPosition);
             int frames = 0;
             bool ready = false;
+            SkinnedMeshRenderer body = null;
+            bool appearanceBuffAbsent = false, canAct = false, canMove = false;
+            bool fadedIn = false;
+            float dissolve = 1f;
             double before = Game.Instance.Player.GameTime.TotalSeconds;
             DateTime deadline = DateTime.UtcNow.AddSeconds(10);
             bool waitingBefore = _sprint25WaitingForUnityAppearance;
@@ -885,14 +901,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 for (; frames < 1800 && DateTime.UtcNow < deadline; frames++)
                 {
-                    var body = unit.View == null ? null : unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    body = unit.View == null ? null : unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                         .SingleOrDefault(value => value.name == GiantBodyVisualPolicy.BodyRendererName);
-                    float dissolve = DissolveAmount(unit);
-                    bool appearanceBuffAbsent = unit.Descriptor.Buffs.GetBuff(
+                    dissolve = DissolveAmount(unit);
+                    fadedIn = EntityFadedIn(unit);
+                    appearanceBuffAbsent = unit.Descriptor.Buffs.GetBuff(
                         Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null;
+                    canAct = unit.Descriptor.State.CanAct;
+                    canMove = unit.Descriptor.State.CanMove;
                     ready = body != null && body.enabled && appearanceBuffAbsent &&
-                        unit.Descriptor.State.CanAct && unit.Descriptor.State.CanMove &&
-                        (!requireVisible || EntityFadedIn(unit) && dissolve >= 0f && dissolve <= .02f);
+                        canAct && canMove && fadedIn && dissolve >= 0f && dissolve <= .02f;
                     if (ready) break;
                     // Native dissolve reads Unity Time.time, not GameTime.
                     // Once gameplay prerequisites settle, wait on Unity frames
@@ -903,16 +921,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             finally { _sprint25WaitingForUnityAppearance = waitingBefore; }
-            Sprint25Check((requireVisible ? "native-appearance-ready-" : "native-action-ready-") + key, ready,
+            Sprint25Check("native-appearance-ready-" + key, ready,
                 new JObject { ["unit"] = unit.UniqueId, ["frames"] = frames,
                     ["spawnPosition"] = SurveyVector(spawnPosition),
                     ["nativeGroundPosition"] = SurveyVector(ground.clampedPosition),
                     ["gameSecondsDuringWait"] = Game.Instance.Player.GameTime.TotalSeconds - before,
-                    ["requireVisible"] = requireVisible,
-                    ["fadedIn"] = EntityFadedIn(unit), ["dissolve"] = DissolveAmount(unit) },
-                requireVisible
-                    ? "Native appearance prerequisites and finite intact material dissolve settle before visual observations; no renderer, fader or material state is forced."
-                    : "The native appearance action lock clears and the exact owned actor can act/move; an isolated mechanical lane need not be in party sight. No visual result is claimed here.");
+                    ["bodyPresent"] = body != null, ["bodyEnabled"] = body != null && body.enabled,
+                    ["appearanceBuffAbsent"] = appearanceBuffAbsent,
+                    ["canAct"] = canAct, ["canMove"] = canMove,
+                    ["fadedIn"] = fadedIn, ["dissolve"] = dissolve },
+                "Native appearance prerequisites and finite intact material dissolve settle near the party before observation or isolated placement; no renderer, fader or material state is forced.");
             if (!ready) throw new InvalidOperationException("Native giant appearance did not settle: " + key);
         }
     }

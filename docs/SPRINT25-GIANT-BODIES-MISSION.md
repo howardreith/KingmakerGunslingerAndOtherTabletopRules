@@ -1,5 +1,12 @@
 # Sprint 25 — Giant Bodies: Brachiosaurus and Elephant
 
+Current campaign authority: the owner's 2026-10-17 takeover acceptance and
+`current.latestCheckpoint` / `remainingNativeCampaign` in the Sprint25 ledger.
+The supplied icon is delivered; rough functional bodies are accepted without
+claiming owner aesthetic review. Next stable patch is expected v0.0.158,
+subject to fresh availability checks. Earlier version/next-action observations
+below are dated intake, not reservations or authority to skip native gates.
+
 Charter v1.0 page 22, Sprint 25, roster weight 5. Gargantuan/Huge quadruped
 navigation, trample, long-neck framing, and completing Elephant so it is no
 longer served by a Mastodon proxy. No mounts, companions, polymorph changes,

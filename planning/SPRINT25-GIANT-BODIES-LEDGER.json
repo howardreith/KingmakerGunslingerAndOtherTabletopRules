@@ -1,9 +1,37 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "E8_NATIVE_PARTIAL_RETAINED_COHERENT_REPAIR_FOCUSED_PASS_CANDIDATE_NEXT",
+  "status": "EE5_FOUNDATION_AI_PASS_BOTH_PROFILES_COMMAND_FIXTURE_REPAIR_FOCUSED_PASS_CANDIDATE_NEXT",
   "current": {
     "latestCheckpoint": {
+      "asOfUtc": "2026-10-17T21:09:00Z",
+      "sourceBuildCheckpoint": {
+        "source": "ee5d6fd0cd992be97df3d90f4c384fed4e6b45fc",
+        "sourceFingerprint": "c245946ba2225282178ab8390d2dc30192a97d0d5760cc54a7246604728fd702",
+        "zipSha256": "89bd8c39fb8b13c3978a62da71885bde52c03492fe4cf8591395be3cb283ccc3",
+        "dllSha256": "b8b7ebe7bda32b9b0923d552385f1eb7956c3652953e3a6a8456a6c9e817b9b5",
+        "dllMvid": "22819f67-db3c-4ca7-ac4c-d15c3ee95740",
+        "gate": "PASS: 2660/2660 unfiltered, exact build, strict 378-file package; 301.6496786 s; completed 2026-10-17T20:20:19.3073901Z; artifacts/sprint25-candidate-gate-ee5d6fd0.result.json.",
+        "archive": "artifacts/checkpoints/source-build-ee5d6fd0: original ZIP and both untouched sidecars copied and hash-verified. Earlier checkpoints and the original 9b55df81 candidate object retain their own identities."
+      },
+      "nativeBatch": {
+        "receipt": "artifacts/native-batch-ee5d6fd0-repaired/result.json",
+        "receiptSha256": "ad061469c7b18327e46670a63a5ddbcc11cb1008d282670f4b5cbb36f219d88e",
+        "startedUtc": "2026-10-17T20:22:04.9804152Z",
+        "completedUtc": "2026-10-17T21:05:25.0231783Z",
+        "seconds": 2598.5622723,
+        "result": "FAIL: foundation and exact-owner AI PASS in both profiles (four cells). Turn-based ordinary commands stop at lane setup after enrollment; Overrun/Cleave stop at summon readiness before any maneuver/chain (six cells). No mandatory failure waived.",
+        "freshPass": "Both profiles, signed actual weapon/trample damage, reach, live HD DC, Power Attack, native ordinary costs, Tramples and Triceratops control pass. Elephant reads 21 Perception with 11 ranks. Both creatures' real exact-owner AI approaches and attacks in both profiles, without a fixture-issued attack.",
+        "costFinding": "Brachiosaurus incurred one native Standard charge of 5.97316074 s despite zero between-frame maxima. Existing read-only FirearmReviewCosts closes the observation gap; production action-cost code did not change.",
+        "restoration": "All ten exact RunIds restored actual installation/settings/sound bank; all 118 protected saves per save-free cell and private references preserved. No owned game/lease remains. Steam Offline Mode worked unchanged."
+      },
+      "coherentObserverRepair": "Survey/place the ordinary lane in RTWP before existing native turn enrollment and record exact-owner acting admission. Warm giants near the visible party before isolated placement; read each appearance prerequisite without forcing faders/materials/action state. Cleave surveys native walkable clear-sight adjacent targets. Reuse FirearmReviewCosts for ability commands and require one exact native charge in sustained combat. Check each repeated Overrun command's own target/cost/movement budget, not only aggregate counts. Existing clocks/controllers/rules/damage/rollback remain reused; no product rule or asset change.",
+      "focusedChecks": "PASS 2026-10-17T21:07:23Z: production compilation 17.5 s; 57/57 named Sprint23/24/25, native-profile, natural and inventory tests (2660 registered), domain step 2.2 s. Actual hidden-state source gate PASS/6916 identities; 19/19 source-boundary refusals. Changed observer still needs its full/native gate.",
+      "reuse": "E8 both-profile original-body/resource lifecycle and route/icon proof retain their original source/ZIP/DLL/MVID; those asset/view/resource/route inputs are unchanged. EE5 foundation/AI retain their own identities. The new readiness helper preserves the old visible-path criteria and adds prerequisite readback. Fresh corrected command phases, targeted persistence and final public inventory/icon/all-eleven-root proof remain mandatory.",
+      "next": "Commit/push; prepare one fresh Sprint candidate; run one exact-package commands batch (turn-based commands, Overrun, Cleave; both profiles). Plan roughly 30-45 minutes from measured per-cell launch cost, not a restoration deadline; record actual duration. Continue targeted ON/OFF persistence, public boundary/candidate/fresh public checks, publisher preflight, merge/release/download/restoration audit and final-records merge; STOP. No Sprint26.",
+      "acceptance": "PR49 OPEN/DRAFT; Brachiosaurus hidden; no merge/release. HumanReview NOT_PERFORMED_NONBLOCKING. Accepted art/body bytes and rough visual backlog unchanged."
+    },
+    "previousCheckpoint20261017T2014Z": {
       "asOfUtc": "2026-10-17T20:14:29Z",
       "registryIntegrityCorrection": "PASS: icon catalog protection/coverage validation and 29/29 refusal tests (12.470 s); actual Sprint25 hidden-state source gate PASS. Parsed catalog comparison proves only registrySha256 and sprint25ExtensionAuthorization changed. All image, consumer and approval metadata is preserved. This is registry integrity metadata, not new art or owner visual approval.",
       "candidateGatePreflight": "4c96a3cb3e3029c90e3c2f7f3dd84984fe321afd was committed/pushed and the unelevated full gate REFUSED before full build/package/native in15.806 s (2026-10-17T20:10:12Z): icon catalog registrySha256 still pinned the pre-chassis blueprint ledger. Receipt artifacts/sprint25-candidate-gate-4c96a3cb.result.json retained. Correct only the exact registry hash/hidden-carrier authorization; no image/export/consumer bytes change. No new artifact or game launch occurred; e8 remains archived and valid under its own identity.",
@@ -1709,14 +1737,14 @@
     "whatItIsNot": "A package passing structural checks is not native qualification. Nothing has been deployed, launched or observed in game."
   },
   "remainingNativeCampaign": {
-    "status": "E8 BOTH-PROFILE ROUTES/BODY/LIFECYCLE PASS RETAINED; SIX FAILED INDEPENDENT CELLS AND TWO FOUNDATION PREDICATES; COHERENT REPAIR FOCUSED PASS; NEW CANDIDATE NEXT",
+    "status": "EE5 FOUNDATION/AI PASS BOTH PROFILES; E8 BODY/ROUTES PASS RETAINED; THREE COMMAND PHASES REQUIRE CORRECTED FIXTURE; TARGETED PERSISTENCE AND PUBLIC QUALIFICATION REMAIN",
     "whyItIsABatchAndNotACheckpoint": "Implement one bounded Sprint 25 review with phases for profiles/commands, ordinary Overrun, functional visuals/resources and routes, plus separate targeted persistence stages. Reuse the existing partial-class fixture, native clock and observers; predecessor file sizes are not an implementation target.",
     "candidateBoundary": "Compiled observers change DLL/MVID as expected and are authorized. Batch the complete minimal observer and focused checks, then build one fresh Sprint candidate. Preserve candidate.commit 9b55df81 and its exact hashes as the historical source/build checkpoint; it is not invalidated or relabelled by later work.",
     "coverageMap": [
       {
         "required": "Composed profiles, signed Strength, reach, trample DC/damage, feats, Great Cleave and RTWP/turn-based action costs",
         "existing": "ExpandedSummoningCorrectionFixture / BeginExpandedSummoningCorrectionFixture and Sprint22NativeClock are private members of the same RuntimeTestRunner partial class. Existing weapon-stat/damage observers, Sprint23FindTrampleRoute, ExpandedSummoningTrampleObserver, Sprint22EnrollTurnBasedOwners and detached native command tick/teardown seams can be reused.",
-        "missing": "Fresh corrected Elephant Perception and actual native cost-boundary proof, both-profile foundation and turn-based command completion, and legal Great Cleave/miss/action sequences. E8 signed actual damage, reach, live DC, Power Attack and RTWP Tramples retain their original partial PASS identities. FirearmReviewCosts supplies the existing read-only cost boundary."
+        "missing": "EE5 foundation/profile/signed damage/reach/live DC/Power Attack/RTWP Tramples and exact ordinary costs PASS both profiles. Fresh corrected turn-based command completion and legal Great Cleave/miss/action sequences remain. Reuse the existing read-only FirearmReviewCosts boundary, not between-frame maxima alone."
       },
       {
         "required": "Brachiosaurus ordinary Overrun outcome, target limit, movement/action budget and per-responder opportunity ownership",
@@ -1730,13 +1758,13 @@
       },
       {
         "required": "Three Brachiosaurus SNA roots and eight Elephant roots, quantity/template/slot/duration cleanup and cold persistence",
-        "existing": "Own-tier/quiet summon helpers, registered/player route observations, generic inventory checks and the separate guarded working-save persistence transaction exist. Invoke-Sprint22InstalledStack currently permits ankylosaurus, armored-dinosaurs and theropods only.",
+        "existing": "Own-tier/quiet summon helpers, registered/player route observations, generic inventory checks and separate guarded working-save persistence exist. Invoke-Sprint22InstalledStack and its native observer now admit the exact giant-bodies scope and two keys.",
         "missing": "Registered hidden/public Elephant route inputs pass both profiles on E8. The exact final public artifact must freshly cast all eleven roots. Run the already-registered giant-bodies prepare/cold-cleanup/fresh-absence stages ON and OFF, preserving process isolation and the existing all-KMG clean grapple reset. No new whole-roster campaign."
       },
       {
         "required": "Supported AI, regression controls and exact-artifact publication",
         "existing": "Sprint24TickExactAi is the final exact-owner controller path. Publish-QualifiedCandidate preserves root/sidecar/ancestry/remote/proof/confirmation guards and separates Sprint24 reporting lineage from candidate ancestry.",
-        "missing": "Elephant exact-owner AI must complete a real attack on the corrected legal lane; Brachiosaurus AI and Triceratops/native donor controls have original E8 PASS evidence. Publisher now supports Sprint25 and has 70 focused checks including honest premerge authority; actual positive public-artifact preflight, merged promotion and public-download audit remain required. Reporting descendants stay legal without weakening tested-source ancestry."
+        "missing": "EE5 exact-owner AI completes real attacks for both creatures in both profiles; EE5 Triceratops and E8 donor controls retain their exact identities. Publisher has 70 focused checks including honest premerge authority; actual public-artifact preflight, merged promotion and public-download audit remain required. Reporting descendants stay legal without weakening tested-source ancestry."
       }
     ],
     "batches": [

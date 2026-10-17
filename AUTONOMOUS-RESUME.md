@@ -1,6 +1,36 @@
 # Sprint 25 takeover — grouped native repair, candidate next
 
-Controlling update, 2026-10-17 20:14 UTC: continue the explicitly selected
+Controlling update, 2026-10-17 21:09 UTC: continue Sprint25 through qualified
+publication, PR49 merge, release/download verification and final-records merge;
+then STOP. No merge/release yet, Brachiosaurus is hidden, no Sprint26.
+
+ee5d6fd0 passed the full2660 suite, exact build and strict378-file package
+(301.65s). Its exact ZIP/sidecars are archived under
+`artifacts/checkpoints/source-build-ee5d6fd0`; original9b55df81 stays unchanged.
+The 43.3-minute native batch completed: foundation and exact-owner AI PASS in
+both profiles; six command cells stop in setup, not gameplay verdicts. All ten
+RunIds restored actual installation/settings/bank, all118 protected saves and
+private references. No game/lease remains. See `current.latestCheckpoint` in
+the Sprint25 ledger for hashes, exact receipt and original evidence identities.
+
+The grouped observer-only repair surveys the ordinary lane before TB enrollment,
+warms native summons near the party before isolation, checks Cleave's native
+walkable/clear-sight cluster, reuses atomic cost observation and checks each
+repeated Overrun command separately. No product rule/asset change. Production
+compile17.5s, 57/57 named tests2.2s, source gate and19 refusal tests PASS.
+
+Next: commit/push, one fresh Sprint candidate, then exact-package commands batch
+(TB commands/Overrun/Cleave, both profiles; estimated30-45min, not a cleanup
+deadline). Continue two-creature ON/OFF cold-load/cleanup/fresh absence, public
+boundary/full gate/fresh inventory/icon/eleven roots, publisher preflight,
+authorized merge/release/download/restoration audit and final-records merge.
+Reuse EE5 foundation/AI and E8 body/routes only with original identities and a
+dependency argument. HumanReview NOT_PERFORMED_NONBLOCKING; rough polish deferred.
+Signed-in Steam Offline Mode works; no online requirement was added.
+
+## Dated 20:14 checkpoint (superseded chronology)
+
+Recorded update, 2026-10-17 20:14 UTC: continue the explicitly selected
 qualification/merge/release campaign in `wt/s25`. PR49 remains OPEN/DRAFT;
 no merge/release, public unsuppression or Sprint26. Exact identities and
 remaining assertions are in `current.latestCheckpoint` and
