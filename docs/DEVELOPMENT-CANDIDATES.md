@@ -8,7 +8,7 @@ in this route changes how a release is built or validated.
 ## Why it exists
 
 `Build-Local.ps1` runs the repository wrapper, whose version-aware validator for
-the active release (`validate_firearm_continuation_release156.py` at v0.0.156)
+the active release (`validate_alternate_summoning_release157.py` at v0.0.157)
 pins that release's exact content: no identity change and production scope
 limited to the release's own files. That is correct for a release, and it means
 a review branch that appends identities without bumping the version cannot
@@ -23,11 +23,11 @@ replaces exactly two release steps:
 
 | Release step | Development replacement |
 | --- | --- |
-| `validate_repository.py` dispatch to the active release validator | `tools/validate_development_candidate.py`: released version metadata unchanged (no bump); the released v0.0.156 ledger as an exact prefix (append-only); schema, format and uniqueness of every identity (collisions); released Sprint 24 public boundary and original assets; released static record unchanged; `expanded_summoning_manifest.py` validation, which re-derives every adapter identity |
+| `validate_repository.py` dispatch to the active release validator | `tools/validate_development_candidate.py`: released version metadata unchanged (no bump); the released v0.0.157 ledger as an exact prefix (append-only); schema, format and uniqueness of every identity (collisions); released Sprint 24 public boundary and original assets; released static record unchanged; `expanded_summoning_manifest.py` validation, which re-derives every adapter identity |
 | complete domain suite | the named `-DevelopmentTestFilter` selection, run once, with the runner's own output kept as evidence |
 
 Everything else is the release pipeline, unchanged: every corruption fixture and
-offline contract in the repository wrapper (including the v0.0.156 release
+offline contract in the repository wrapper (including the active release
 validator's own fixtures), private-reference provenance against the installed
 game, the exact-reference Release build, supply-icon and companion checks,
 deterministic package assembly and strict package validation.
@@ -77,9 +77,9 @@ its exact-reference compiler boundary.
 
 ## Baseline after v0.0.157
 
-`tools/validate_development_candidate.py` accepts candidates only on the
-released v0.0.156 baseline (`607da683b1`), and refuses any version change.
-The active version is now 0.0.157, so a development candidate is refused until
-the validator's baseline is re-pinned to the released v0.0.157 commit (its
-version metadata, ledger prefix and static record). Do that in the next branch
-that needs a development candidate, with its corruption fixtures.
+`tools/validate_development_candidate.py` now pins released v0.0.157 product
+`8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c`: its version metadata, full ledger
+prefix (including the 3,746 alternate-summoning identities), and static record.
+The Brown-Fur startup-order branch performs this documented repin with positive
+and corruption fixtures, including refusal of old/future versions and changed
+informational metadata. The release validator itself remains unchanged.
