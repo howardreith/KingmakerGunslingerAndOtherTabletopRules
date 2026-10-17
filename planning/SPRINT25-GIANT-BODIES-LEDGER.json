@@ -1,7 +1,35 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "BRACHIOSAURUS_BUILT_AND_TRAMPLED_ICON_AND_BODIES_OUTSTANDING",
+  "status": "NATIVE_QUALIFICATION_REQUIRED_STEAM_AUTHENTICATION_BLOCKED",
+  "current": {
+    "authority": "Owner Codex takeover mission, 2026-10-17: complete scoped functional native qualification, publication qualification, PR 49 merge, next stable release, downloaded-asset verification and final records; then STOP. No Sprint 26.",
+    "historyPolicy": "Older art blockers, prototype vetoes, append counts, seven icon failures and Overrun interpretations below are dated research/development history. This current section, controllingAcceptance, candidate and remainingNativeCampaign govern the campaign.",
+    "implementation": "Both original body payloads/albedos and the supplied Brachiosaurus icon are integrated. Head-weighted neck stiffness and recorded visual polish are accepted deferrals. Functional attachment, mechanics, resources, persistence and public routes remain unqualified.",
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "intake": {
+      "observedUtc": "2026-10-17T14:48:40Z",
+      "host": "HOWARD-LAPTOP",
+      "worktree": "C:/Dev/KingmakerGunslingerLab/wt/s25",
+      "head": "e7d35f17c38d1343d9195041bf66ad0ad06afd3d",
+      "cleanAtIntake": true,
+      "master": "2eed3944f6eab657f9030d33acae6d81eb5f10ae",
+      "upstreamChangesToIntegrate": false,
+      "fetch": "git fetch --no-tags origin master codex/expanded-summoning-sprint25-brachiosaurus-elephant; exit 0; historical tags untouched",
+      "pr": "49: OPEN, DRAFT, MERGEABLE, exact reporting head confirmed; no newer owner changes found",
+      "nextStableAvailability": "v0.0.158 has no remote tag; release list ends at stable v0.0.157. Recheck before freezing/publication.",
+      "runtime": "No Kingmaker process and no compatibility.lock observed. No native transaction, deployment, game launch or save operation started.",
+      "shell": "Default sandbox shell cannot start (setup refresh had errors). Approved worktree access succeeds as HOWARD-LAPTOP/Howard, elevated. Runtime elevation refusal remains intact; use the established de-elevation route with child completion evidence.",
+      "blocker": "Steam ActiveProcess reports ActiveUser=0 and pid=22564, matching the running steam.exe. Authenticated Steam readiness is missing; owner sign-in is required. Credentials and login UI are outside agent authority. This is an environment blocker, not product failure."
+    },
+    "checkpointValidation": {
+      "scope": "Reporting only: current ledger, active resume and PR summary. No compiled observer or product change.",
+      "checks": "ConvertFrom-Json PASS; git diff --check PASS; candidate object compared with HEAD and unchanged; live Steam/process/lease recheck still blocked with no Kingmaker process and no lock.",
+      "durationSeconds": 0.42,
+      "deferred": "All Sprint 25 native phases, observer implementation, new candidate gate, public inventory/icon/eleven-root qualification, publisher extension/refusals, merge, release/download verification and final records remain outstanding."
+    },
+    "nextAction": "After owner signs in to Steam, recheck the live authenticated session, process/lease and worktree ownership, then implement the bounded native review from coverageMap. Preserve the existing source/build checkpoint; do not rebuild it merely for this reporting edit."
+  },
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
     "traceability": "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md row S25",
@@ -46,10 +74,10 @@
     "reason": "Sprint 24 produced two different artifact builds from one identical source in two different roots and the cause was never established. Choosing the root up front keeps the promoted artifact and its native evidence in the same root."
   },
   "version": {
-    "expected": "0.0.157",
+    "expected": "0.0.158",
     "discoveredFromActualRemote": true,
-    "observedUtc": "2026-10-16T05:05:00Z",
-    "evidence": "At 04:10Z no v0.0.156 or v0.0.157 tag existed and the release list ended at v0.0.155. At 04:21Z the firearm sprint published v0.0.156, which is now Latest. v0.0.157 remains free: an explicit refs/tags/v0.0.157 lookup returns no ref.",
+    "observedUtc": "2026-10-17T14:48:40Z",
+    "evidence": "Fresh refs/tags/v0.0.158 lookup returns no ref; gh release list ends at stable v0.0.157 (published 2026-10-16T18:26:19Z). Historical v0.0.156/v0.0.157 availability observations below are superseded. Recheck before freezing/publication.",
     "supersededExpectation": "0.0.156",
     "whySuperseded": "Master moved from 97c881ea to 607da683 while Sprint 25 was in registration. Merged PR #50, the firearm RTWP kill continuation, claimed the 0.0.156 surface: Info.json, Directory.Build.props, AssemblyInfo.cs, docs/RELEASE-NOTES-0.0.156.md, its own static key and the 0.0.156 validator dispatch. It published that release during this session, so the version is now not merely claimed but taken. Sprint 25 moved to the next free patch rather than contesting it.",
     "firearmPreparationPreserved": true,
@@ -624,7 +652,7 @@
     ],
     "sprint26Started": false
   },
-  "nextAction": "Owner decision on the original art. Once the Brachiosaurus icon and both creature albedos exist, the icon catalog pin moves to 120, the icon manifest gains its row, the static metadata's originalBodyAssetsAuthored flips to true with its pinned ART set, and the remaining seven assertions pass. The mechanical work that does not depend on art continues meanwhile: the blueprint builders for the tail, tail type, chassis and trample, the natural profiles for both creatures, the shared trample contract and native feat-consumer audit, and Elephant's production-carrier check against the frozen entry - which also decides whether its three reserved identities are needed.",
+  "nextAction": "Resolve Steam authentication, then continue the authorized bounded native review implementation and release campaign in wt/s25. See current and remainingNativeCampaign. The icon dependency is resolved; no new art handoff or visual R&D is required.",
   "registration": {
     "complete": true,
     "commit": "a7b1481a8bf5caaf290d66d9c3522ecd58d29862",
@@ -1475,7 +1503,7 @@
     "interimNeck": "AUTHORIZED VISUAL DEFERRAL. The Head-weighted Brachiosaurus neck is the interim release design. It is stiff by construction and is recorded as such; it is not described as polished and no owner aesthetic approval is claimed.",
     "articulatedDriverPrototype": "RETAINED, DEFERRED, NOT A RELEASE REQUIREMENT. The private-driver retarget experiment and its measurements stay as future work. Integrating it into the runtime is not required for this release, and no further articulation experiment, mesh-schema change or per-frame neck driver was started for visual improvement.",
     "functionalBodyIntegration": "DONE IN SOURCE, PENDING IN GAME. Both creatures now ship original mesh data through the released exporter and load through the proven donor attachment path. Whether the bodies appear and behave in play is native qualification and has not been performed.",
-    "mechanicsAndIconStillRequired": "The scoped mechanics now include the corrected Overrun threshold and its exact-owner Greater Overrun carrier, and they are NOT natively qualified. The painted Brachiosaurus icon is still missing and is still a registration and bootstrap dependency.",
+    "mechanicsAndIconStillRequired": "The scoped mechanics include the corrected Overrun threshold and its exact-owner Greater Overrun carrier, and are NOT natively qualified. The supplied Brachiosaurus source and exported icon are integrated; catalog/manifest count is 120 and the historical seven missing-icon failures are closed by the recorded 2656/2656 source/build checkpoint. Native consumer/UI qualification remains required. Preserve accepted image bytes; metadata was read, not cryptographically verified.",
     "acceptanceSeparation": "Internal technical acceptance and the owner's aesthetic approval are separate. HumanReview stays NOT_PERFORMED_NONBLOCKING.",
     "supersedes": "The earlier record stated that the rigid Head-only neck was NOT authorized and that an acceptable articulated production design was not established. Both statements were accurate when written on 2026-10-16 and are preserved above as dated history. This owner instruction supersedes their ACCEPTANCE DECISION only: the measurements are unchanged, and what changed is that a stiff interim neck is now sufficient for release."
   },
@@ -1513,14 +1541,41 @@
     "whatItIsNot": "A package passing structural checks is not native qualification. Nothing has been deployed, launched or observed in game."
   },
   "remainingNativeCampaign": {
-    "status": "NOT STARTED - no Sprint 25 native scenario exists",
-    "whyItIsABatchAndNotACheckpoint": "The scenario must be written before it can be run. The comparable precedents are RuntimeTestRunner.ExpandedSummoningSprint23Review.cs at 132 KB and ...Sprint24Review.cs at 200 KB, each with its C# scenario catalog entry, PowerShell allowlist metadata and documentation registration. A search of the runtime testing sources finds no Sprint 25 scenario and no creature-generic one that would cover these two.",
-    "costOfStartingItBadly": "Observer code compiled into the product changes the binary identity, so a half-written scenario would invalidate the candidate recorded above and force a rebuild. It is deliberately not begun at the tail of a session.",
+    "status": "NOT STARTED - Steam authentication missing at takeover intake; no Sprint 25 native review scenario exists",
+    "whyItIsABatchAndNotACheckpoint": "Implement one bounded Sprint 25 review with phases for profiles/commands, ordinary Overrun, functional visuals/resources and routes, plus separate targeted persistence stages. Reuse the existing partial-class fixture, native clock and observers; predecessor file sizes are not an implementation target.",
+    "candidateBoundary": "Compiled observers change DLL/MVID as expected and are authorized. Batch the complete minimal observer and focused checks, then build one fresh Sprint candidate. Preserve candidate.commit 9b55df81 and its exact hashes as the historical source/build checkpoint; it is not invalidated or relabelled by later work.",
+    "coverageMap": [
+      {
+        "required": "Composed profiles, signed Strength, reach, trample DC/damage, feats, Great Cleave and RTWP/turn-based action costs",
+        "existing": "ExpandedSummoningCorrectionFixture / BeginExpandedSummoningCorrectionFixture and Sprint22NativeClock are private members of the same RuntimeTestRunner partial class. Existing weapon-stat/damage observers, Sprint23FindTrampleRoute, ExpandedSummoningTrampleObserver, Sprint22EnrollTurnBasedOwners and detached native command tick/teardown seams can be reused.",
+        "missing": "Parameterize only the required creature observations; predecessor command cases hard-code creature names, dice and DCs and cannot qualify these units unchanged. Add actual signed-Strength damage rows, exact-owner ordinary/Trample commands, reach boundary probes, Elephant grants/effects and legal multi-target Great Cleave including miss termination."
+      },
+      {
+        "required": "Brachiosaurus ordinary Overrun outcome, target limit, movement/action budget and per-responder opportunity ownership",
+        "existing": "The native fixture, real UnitUseAbility command path, rule EventBus observers, request-owned targets and native clock already exist; current production carrier reads native partial-success and owns its own feat clone.",
+        "missing": "Observe failure/partial/threshold, maneuver/prone immunity, already-prone, repeated notifications/commands, exhausted responders and one-target limit. Attribute effective CMD, native partial-success, state transitions and each legal responder; multiple responders per provocation are allowed, duplicate spending by one responder is not. The combined charge-route interpretation remains a source hypothesis until command qualification."
+      },
+      {
+        "required": "Both original bodies attach, usable motion/navigation/icon, fallback and resource lifecycle",
+        "existing": "Sprint24 visual/death/crowding cases demonstrate the fixture and observation pattern; CaptureRosterUnitResources distinguishes attachment-private resources, borrowed originals and cache ownership. Reuse the current giant-body attachment/fault seams after inspecting their exact interfaces.",
+        "missing": "Giant-specific attachment identity, unaltered party-camera captures, icon consumer assignments/normal-size UI, practical placement/confined movement, quantity/removal/death, fault fallback, repeated spawn/despawn, OFF/ON and affected-load observations. Do not count borrowed/process-cache survival as a private leak."
+      },
+      {
+        "required": "Three Brachiosaurus SNA roots and eight Elephant roots, quantity/template/slot/duration cleanup and cold persistence",
+        "existing": "Own-tier/quiet summon helpers, registered/player route observations, generic inventory checks and the separate guarded working-save persistence transaction exist. Invoke-Sprint22InstalledStack currently permits ankylosaurus, armored-dinosaurs and theropods only.",
+        "missing": "Add the exact giant-body inputs and a truthful targeted persistence scope through parser/PowerShell/runner metadata; do not invoke old whole-roster campaigns. Preserve fresh prepare/load/cleanup/absence processes, module-disabled coverage and the all-KMG clean grapple reset."
+      },
+      {
+        "required": "Supported AI, regression controls and exact-artifact publication",
+        "existing": "Sprint24TickExactAi is the final exact-owner controller path. Publish-QualifiedCandidate preserves root/sidecar/ancestry/remote/proof/confirmation guards and separates Sprint24 reporting lineage from candidate ancestry.",
+        "missing": "Add giant-specific supported AI/fallback assertions and Triceratops/native Mastodon controls. Publisher has no Sprint25 selector yet: add the narrow evidence mapping and focused refusal tests before the final candidate; keep reporting descendants legal without weakening candidate ancestry."
+      }
+    ],
     "batches": [
       "1. Author the Sprint 25 native review scenario and register it in all three places the harness requires, then rebuild the candidate because the binary identity changes.",
       "2. Fresh HOWARD-LAPTOP intake: installation, settings, saves, private reference identity, Steam readiness, lease and process state - before any transaction.",
       "3. A: composed profiles and commands. Brachiosaurus's +23 lone tail with signed-Strength handling, usable Great Cleave, 20-foot reach, trample 2d6+19 at live DC 32, and the ordinary Overrun with its printed +2. Elephant's primary gore and slam at +16, no extra lead-limb Strength, six grants, quadruped defence, 10-foot reach despite 15-foot space, trample 2d8+15 at live DC 25, and its unchanged eight routes.",
-      "4. B: the Overrun outcome table on the composed unit - failure; ordinary success below the margin; threshold success with eligible knockdown and ONE provocation; maneuver and prone immunity and a pre-existing prone target; repeated commands and responders without remaining opportunities; unaffected Trample and unrelated actors. Attribute the roll, the effective defence, the partial-success outcome and each responder.",
+      "4. B: the Overrun outcome table on the composed unit - failure; ordinary success below the margin; threshold success with eligible knockdown and its legal responders; maneuver and prone immunity and a pre-existing prone target; repeated commands/notifications and exhausted responders; unaffected Trample and unrelated actors. Attribute the roll, effective defence, native partial-success, target transition and each responder; never spend one responder's opportunity twice for the same event.",
       "5. C: functional bodies - each original body actually ATTACHING rather than leaving a working donor fallback, at party-camera scale across idle, movement, attack/trample and removal, plus failed attachment rollback, donor negative controls, module OFF/ON, repeated spawn and despawn, and private versus process-cache resource ownership.",
       "6. D: all three new Brachiosaurus routes and all eight affected Elephant routes with quantities, duration and cleanup; the targeted cold-load, module-disabled and absence coverage; all-summon grapple reset; protected saves untouched.",
       "7. Publication: remove only Brachiosaurus's suppression, regenerate controlled artifacts, qualify the public inventory, icon and eleven affected roots on the exact artifact, then publisher preflight, merge, tag v0.0.158, verify downloads, restore and merge records."
