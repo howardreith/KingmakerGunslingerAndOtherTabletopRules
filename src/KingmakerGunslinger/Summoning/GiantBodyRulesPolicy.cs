@@ -26,6 +26,8 @@ namespace KingmakerGunslinger.Summoning
     {
         internal const string BrachiosaurusKey = "brachiosaurus";
         internal const string ElephantKey = "elephant";
+        // Existing released identity; no new Elephant blueprint is allocated.
+        internal const string ElephantUnitGuid = "9dd8544097234f05bcd35d400d91b510";
 
         internal const string BrachiosaurusTailSymbol =
             "KMG.Summoning.Natural.Brachiosaurus.Tail4d6";
@@ -278,16 +280,14 @@ namespace KingmakerGunslinger.Summoning
 
         /// <summary>
         /// Brachiosaurus allocates its printed Perception-only ranks
-        /// exactly, which the generic default-three priority list cannot
-        /// express at Intelligence 2. Elephant is deliberately NOT
-        /// included: it takes the generic default today and already
-        /// satisfies the Sprint 14 printed-totals guard, so exempting it
-        /// here would weaken that guard for a released creature rather
-        /// than describe it.
+        /// exactly. Elephant keeps its observed eleven Perception ranks but
+        /// also needs the creation-only racial HP path: the native class
+        /// average produced 94 rather than its printed 93. Other skills and
+        /// released identities remain unchanged.
         /// </summary>
         internal static bool UsesExactRanks(string key)
         {
-            return key == BrachiosaurusKey;
+            return IsGiantBody(key);
         }
 
         /// <summary>

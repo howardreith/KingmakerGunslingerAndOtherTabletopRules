@@ -178,13 +178,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SetExpandedSummoningBrainActive(owner, false);
                     try
                     {
+                        foreach (int frame in Sprint25NativeAppearance(owner, key)) yield return frame;
                         if (!turnBased)
                         {
                             foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                             Sprint25Profile(fixture, owner, key);
                             foreach (int frame in Sprint25PowerAttack(owner, key, false)) yield return frame;
                             Sprint25Body(owner, key, "idle");
-                            Sprint25SignedStrength(fixture, owner, key);
+                            foreach (int frame in Sprint25SignedStrength(fixture, owner, key)) yield return frame;
                         }
                         else
                         {
@@ -239,29 +240,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             EventBus.Subscribe(observer);
             try
             {
-                Vector3 origin = fixture.Caster.Position + Vector3.right * 4;
+                float reach = (key == "brachiosaurus" ? 20 : 10) * .3048f;
+                float distanceOffset = owner.Corpulence + target.Corpulence;
+                Vector3 far; string lane, direction;
+                Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target,
+                    reach + distanceOffset + .2f, out far, out lane, out direction);
+                Vector3 forward = (far - origin).normalized;
                 PlaceExpandedSummoningUnit(owner, origin);
-                PlaceExpandedSummoningUnit(target, origin + Vector3.forward * 12);
+                PlaceExpandedSummoningUnit(target, far);
                 var range = new UnitAttack(target);
                 range.Init(owner);
-                float reach = (key == "brachiosaurus" ? 20 : 10) * .3048f;
-                float distanceOffset = Vector3.Distance(owner.Position, target.Position) - owner.DistanceTo(target);
-                PlaceExpandedSummoningUnit(target, origin + Vector3.forward *
+                PlaceExpandedSummoningUnit(target, origin + forward *
                     (reach + distanceOffset - .05f));
                 float inside = owner.DistanceTo(target);
-                PlaceExpandedSummoningUnit(target, origin + Vector3.forward *
+                bool insideAccepted = range.IsUnitEnoughClose;
+                PlaceExpandedSummoningUnit(target, origin + forward *
                     (reach + distanceOffset + .05f));
                 float outside = owner.DistanceTo(target);
+                bool outsideAccepted = range.IsUnitEnoughClose;
                 Sprint25Check("reach-boundary-" + key + "-" + turnBased,
-                    Math.Abs(range.ApproachRadius - reach) < .02f &&
-                    inside < range.ApproachRadius && outside > range.ApproachRadius,
+                    Math.Abs(range.ApproachRadius - distanceOffset - reach) < .02f &&
+                    Math.Abs(owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Meters - reach) < .02f &&
+                    inside < range.ApproachRadius && outside > range.ApproachRadius && insideAccepted && !outsideAccepted,
                     new JObject { ["unit"] = owner.UniqueId,
                         ["target"] = target.UniqueId, ["nativeApproachRadius"] = range.ApproachRadius,
                         ["insideNativeDistance"] = inside, ["outsideNativeDistance"] = outside,
-                        ["centreToNativeDistanceOffset"] = distanceOffset,
+                        ["ownerCorpulence"] = owner.Corpulence, ["targetCorpulence"] = target.Corpulence,
+                        ["nativeBodyRadiusAddition"] = distanceOffset,
+                        ["legalLaneSurvey"] = lane,
+                        ["nativeInsideAccepted"] = insideAccepted, ["nativeOutsideAccepted"] = outsideAccepted,
                         ["weaponRange"] = owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Meters },
                     "The actual UnitAttack approach radius and engine distance convention discriminate the printed reach boundary.");
-                PlaceExpandedSummoningUnit(target, origin + Vector3.forward * 2);
+                PlaceExpandedSummoningUnit(target, origin + forward * 2);
                 float standardBefore = owner.CombatState.Cooldown.StandardAction;
                 UnitAttack command = null;
                 foreach (int frame in Sprint24RunAttackCommand(fixture, owner,
@@ -366,7 +376,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             exact &= owner.Stats.Strength.Bonus == (brach ? 13 : 10) &&
                 owner.Stats.HitPoints.ModifiedValue == (brach ? 171 : 93) &&
                 owner.Descriptor.Progression.CharacterLevel == (brach ? 18 : 11) &&
-                owner.Stats.Reach.ModifiedValue == (brach ? 20 : 10) &&
+                limbs.All(value => value.AttackRange.Value == (brach ? 20 : 10)) &&
                 owner.Descriptor.State.Size == (brach ? Size.Gargantuan : Size.Huge) &&
                 trip.Result - ordinary.Result == 4 &&
                 bullRush - ordinaryCmb == 2 &&
@@ -380,6 +390,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["hd"] = owner.Descriptor.Progression.CharacterLevel,
                 ["hp"] = owner.Stats.HitPoints.ModifiedValue,
                 ["reachFeet"] = owner.Stats.Reach.ModifiedValue,
+                ["effectiveWeaponReachFeet"] = new JArray(limbs.Select(value => value.AttackRange.Value)),
+                ["reachConvention"] = "Native Reach stat is an intermediate; ItemEntityWeapon reach is measured separately from UnitAttack's added actor radii.",
                 ["size"] = owner.Descriptor.State.Size.ToString(), ["attacks"] = attacks,
                 ["cmd"] = ordinary.Describe("CMD"), ["tripCmd"] = trip.Describe("trip"),
                 ["cmb"] = ordinaryCmb, ["bullRushCmb"] = bullRush,
@@ -395,7 +407,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "The live frozen adult routine, attack roles, Strength, HD, reach and quadruped defense match the selected profile.");
         }
 
-        private void Sprint25SignedStrength(ExpandedSummoningCorrectionFixture fixture,
+        private IEnumerable<int> Sprint25SignedStrength(ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, string key)
         {
             int before = owner.Stats.Strength.BaseValue;
@@ -409,6 +421,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool exact = true;
             var observer = new Sprint24AttackObserver { Owner = owner, Target = fixture.Hostile,
                 BeforeRoll = value => UnityEngine.Random.InitState(FindNativeD20Seed(18)) };
+            var toggle = owner.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
+                value.Blueprint.AssetGuid == "a7b339e4f6ff93a4697df5d7a87ff619");
             EventBus.Subscribe(observer);
             try
             {
@@ -424,6 +438,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var limbs = new JArray();
                     foreach (ItemEntityWeapon limb in Sprint19Limbs(owner))
                     {
+                        foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
+                        JObject toggleBefore = Sprint22PowerAttackState(owner, toggle);
+                        bool powerAttackAbsentBefore = owner.Descriptor.Buffs.GetBuff(toggle.Blueprint.Buff) == null;
                         var attack = new RuleAttackWithWeapon(owner, fixture.Hostile, limb, 0);
                         RuleCalculateWeaponStats stats = Rulebook.Trigger(
                             new RuleCalculateWeaponStats(owner, limb, attack));
@@ -433,9 +450,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Rulebook.Trigger(attack);
                         RuleDealDamage dealtWeapon = observer.Damage.FirstOrDefault();
                         exact &= modifier == entry[1] && damage.Bonus == expected &&
+                            powerAttackAbsentBefore &&
                             dealtWeapon != null && dealtWeapon.DamageBundle.First.Bonus == expected;
                         limbs.Add(new JObject { ["weapon"] = limb.Blueprint.AssetGuid,
                             ["expectedBonus"] = expected, ["damage"] = Sprint16DamageLine(damage),
+                            ["powerAttackBefore"] = toggleBefore,
+                            ["powerAttackAfterActualAttack"] = Sprint22PowerAttackState(owner, toggle),
                             ["actualDamageRule"] = dealtWeapon == null ? null : Sprint16DamageEvent(dealtWeapon) });
                     }
                     PrepareExpandedSummoningTrampleResponsePair(fixture, owner,
@@ -493,6 +513,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData unit = CastExpandedSummoningQuietUnit(fixture, key);
                 try
                 {
+                    foreach (int frame in Sprint25NativeAppearance(unit, key)) yield return frame;
                     Vector3 destination; string survey, direction;
                     Vector3 origin = Sprint24AiCombatLane(fixture.Caster, unit,
                         fixture.Hostile, 6f, out destination, out survey, out direction);
@@ -794,6 +815,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["privateResources"] = new JArray(owned.Select(value => value.GetInstanceID())),
                 ["bodyCount"] = original.Length },
                 "The original body actually attaches to the exact donor renderer with private mesh ownership, borrowed paint and native selection.");
+        }
+
+        private IEnumerable<int> Sprint25NativeAppearance(UnitEntityData unit, string key)
+        {
+            int frames = 0;
+            for (; frames < 300; frames++)
+            {
+                var body = unit.View == null ? null : unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .SingleOrDefault(value => value.name == GiantBodyVisualPolicy.BodyRendererName);
+                if (body != null && body.enabled && EntityFadedIn(unit)) break;
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            Sprint25Check("native-appearance-ready-" + key, frames < 300,
+                new JObject { ["unit"] = unit.UniqueId, ["frames"] = frames,
+                    ["fadedIn"] = EntityFadedIn(unit), ["dissolve"] = DissolveAmount(unit) },
+                "The real native fader enables the view before visual/command observations; no renderer or material state is forced by setup.");
         }
     }
 }

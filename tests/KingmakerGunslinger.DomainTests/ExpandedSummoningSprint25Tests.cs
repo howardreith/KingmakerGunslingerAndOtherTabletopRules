@@ -582,6 +582,37 @@ namespace KingmakerGunslinger.DomainTests
                 "Signed giant contact uses its exact registered ability, not the predecessor-only name set.");
         }
 
+        internal static void ObservedElephantAndBodyCorrectionsStayExact()
+        {
+            Assertions.True(GiantBodyRulesPolicy.UsesExactRanks("elephant") &&
+                !GiantBodyRulesPolicy.UsesExactRanks("mastodon"),
+                "Elephant's observed creation HP correction cannot reallocate donor ranks.");
+            var entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
+            Assertions.Equal(GiantBodyRulesPolicy.ElephantUnitGuid,
+                (string)entries.Single(value => (string)value["symbol"] == "KMG.Summoning.Unit.Elephant")["guid"],
+                "Runtime guards use the released Elephant identity, not a newly allocated unit.");
+            string root = Path.Combine(Environment.CurrentDirectory, "src", "KingmakerGunslinger");
+            string rules = File.ReadAllText(Path.Combine(root, "Summoning", "ElephantNativeCombat.cs"));
+            foreach (string guard in new[] { "GiantBodyRulesPolicy.ElephantUnitGuid",
+                "context.FeatureModules.Active.ExpandedSummoning", "ElephantNativeCombat.GoreGuid",
+                "ElephantNativeCombat.SlamGuid", "ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon, weapon)",
+                "MultipleNaturalPrimaryExcessStrength" })
+                Assertions.True(rules.Contains(guard), "Elephant-only native correction guard: " + guard);
+            string view = File.ReadAllText(Path.Combine(root, "Summoning", "ExpandedSummoningPteranodonViewPatch.cs"));
+            string naming = view.Substring(view.IndexOf("string visualName =", StringComparison.Ordinal));
+            naming = naming.Substring(0, naming.IndexOf("mesh.name =", StringComparison.Ordinal));
+            Assertions.True(naming.Contains("GiantBodyVisualPolicy.Handles"),
+                "Giant private meshes/materials must use the same original-body family their owner/teardown recognizes.");
+            string release = view.Substring(view.IndexOf("internal static void ReleasePhase2View", StringComparison.Ordinal));
+            Assertions.True(release.Contains("!GiantBodyVisualPolicy.Handles(attachment.VisualKey)"),
+                "Native teardown admits exactly the two giant keys too.");
+            string review = File.ReadAllText(Path.Combine(root, "RuntimeTesting", "RuntimeTestRunner.ExpandedSummoningSprint25Review.cs"));
+            Assertions.True(review.Contains("range.IsUnitEnoughClose") && review.Contains("owner.Corpulence + target.Corpulence") &&
+                review.Contains("powerAttackAbsentBefore"),
+                "Native reach includes actual actor radii, and signed damage separates the native toggle state.");
+        }
+
         private static string Section(string source, string signature)
         {
             int start = source.IndexOf(signature, StringComparison.Ordinal);

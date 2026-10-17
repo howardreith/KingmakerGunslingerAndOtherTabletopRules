@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "NATIVE_TAIL_RANK_AND_OBSERVER_REPAIRS_READY_FOR_CANDIDATE",
+  "status": "NATIVE_ELEPHANT_BODY_AND_OBSERVER_REPAIRS_READY_FOR_CANDIDATE",
   "current": {
     "authority": "Owner Codex takeover mission, 2026-10-17: complete scoped functional native qualification, publication qualification, PR 49 merge, next stable release, downloaded-asset verification and final records; then STOP. No Sprint 26.",
     "historyPolicy": "Older art blockers, prototype vetoes, append counts, seven icon failures and Overrun interpretations below are dated research/development history. This current section, controllingAcceptance, candidate and remainingNativeCampaign govern the campaign.",
@@ -101,7 +101,28 @@
       "phaseReview": "Before freezing, general maneuver immunity now requires native failure (not only absence of prone), and contact setup keeps the maneuver owner's own opportunity exhausted so only the two recorded responders are eligible. These are explicit request-owned prerequisites/assertions, not gameplay performed for the product.",
       "focusedValidation": "PASS after resolving the WeaponFocus namespace against the qualified builder: final production 16.1 s; 48/48 selected regressions 1.4 s; 2659 registered. Python source scope/corruption 19 PASS, whitespace/JSON PASS. New source requires its fresh candidate gate and native qualification."
     },
-    "nextAction": "Commit/push the batched demonstrated tail/rank and observer fixes, run one new Sprint candidate gate unelevated, then resume the scoped standalone/high-risk native batch and targeted persistence with its exact package. Mandatory failures remain; no public promotion, readiness, merge or release yet."
+    "thirdNativeAttempt": {
+      "source": "a243548bf77b017fddbb210a780cd486e7e21cfe",
+      "sourceFingerprint": "07bc7d27255d3b9fad640f89d8ffa2df16972d2b2abac335e03fb48748172255",
+      "zipSha256": "1493465c9efd19a51c2e88cb29b1782e4e8ebfeb4dc440d60c040ae2d6b341b1",
+      "dllSha256": "4bfa87455a9f9a42ba91c0e3a049892b8ae13caad929cb18b26f5c316bc7560c",
+      "dllMvid": "026d8d5f-dc82-4ca1-a28b-dca4945c080c",
+      "gate": "PASS: 2659/2659 unfiltered, exact build and strict package; 309.73 s; artifacts/sprint25-candidate-gate-a243548b.result.json",
+      "archive": "artifacts/checkpoints/source-build-a243548b: exact ZIP and both sidecars preserved and hash-verified before edits.",
+      "transactionRunId": "compat-20261017T170157Z-90c9046dbacc",
+      "runtimeRunId": "20261017T1703290854223Z-d4f77c717b1f449aa2b7112729df1b67",
+      "evidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261017T1703290551132Z-disposable-expanded-summoning-sprint25-native-review",
+      "batchReceipt": "artifacts/native-batch-a243548b-first/result.json",
+      "durationSeconds": 222.25,
+      "rawLogSha256": "93c0057a3e43c0c6d367e661d9970ed0f28fed0bce3834252725880185fca81f",
+      "freshPassingPredicates": "Brachiosaurus composed profile including +23/4d6+19, Perception 28 and defenses; native Power Attack -4/+12; both ordinary attack commands; both real-time Trample commands (Brachiosaurus 2d6+19/DC32, Elephant 2d8+15/DC25); Triceratops signed trample control; native fixture/clock/empty-world cleanup. Trample signed tables and added-HD DC33/DC26 also produced the expected numbers, but their enclosing weapon-table predicate failed and is not relabeled PASS.",
+      "remainingFailures": "Elephant gore takes the primary-hand lone-weapon 1.5 Strength term (+15 instead of +10), native creation HP is 94 instead of 93, and effective weapon reach is 9 ft (native Reach stat 12) instead of 10 ft. The boundary observer incorrectly compared UnitAttack radius directly to weapon reach despite the engine adding both actors' radii. Signed weapon rows after real attacks include a native reactivated Power Attack buff. Giant attachment naming fell through to KMG_PteranodonMembrane and the giant keys were absent from post-swap material rollback and native teardown admission; captures had no visible settled body, so visible original-body acceptance remains unproved.",
+      "repairBatch": "No new identity: exact existing Elephant GUID/weapon/module guards complete primary-gore Strength and 10-ft ItemEntityWeapon range, reusing qualified multi-primary excess arithmetic and the Triceratops exact-owner range pattern. Existing creation-only exact-rank/HP callback supplies Elephant's 49 racial base HP and preserves its observed eleven Perception ranks. Add only the two giant keys to original-body naming, rollback and teardown; private census matches the owned material family and excludes borrowed donor/cache objects. Observer waits for native fader readiness without forcing visibility, uses the qualified legal-lane helper and native IsUnitEnoughClose at the measured body-radius boundary, and neutralizes/records the native Power Attack toggle per real weapon sample.",
+      "nativeContractInspection": "Existing local Assembly-CSharp.il MVID 07fa1e4d-8618-41b3-9b8d-faa17d3b26f7 matches the actual 2.1.7b reference. IsUnitEnoughClose compares squared mechanics distance to ApproachRadius squared, then native line of sight. No new IL framework or native research launch.",
+      "restoration": "Exact actual installation/settings/sound bank verified; all 118 protected save files and private references preserved; game exited and lease cleared before edits.",
+      "focusedValidation": "PASS: production compilation 16.0 s; 53/53 selected native/Sprint23-25/shared-natural regressions 5.0 s; 2660 registered. Python source/corruption 19 PASS. Accepted art/body bytes and the twenty-row identity append remain unchanged. Full/new native qualification is still required."
+    },
+    "nextAction": "Commit/push the coherent demonstrated Elephant/body and observer repair batch, run one new Sprint candidate gate unelevated, then resume standalone/high-risk phases and targeted cold-load persistence on that exact package. Mandatory native failures remain; no public promotion, readiness, merge or release yet."
   },
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",

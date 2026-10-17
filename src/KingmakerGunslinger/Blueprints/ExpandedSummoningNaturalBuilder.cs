@@ -1575,6 +1575,12 @@ namespace KingmakerGunslinger.Blueprints
                     ranks.BaseHitPoints = TheropodRulesPolicy
                         .TyrannosaurusBaseRacialHitPoints;
                 }
+                else if (profile.Key == GiantBodyRulesPolicy.ElephantKey)
+                {
+                    ranks.MobilityRanks = ranks.StealthRanks = 0;
+                    ranks.PerceptionRanks = GiantBodyRulesPolicy.ElephantPerceptionRanks;
+                    ranks.BaseHitPoints = GiantBodyRulesPolicy.ElephantBaseRacialHitPoints;
+                }
                 else if (profile.Key == GirallonRulesPolicy.GirallonKey)
                 {
                     ranks.MobilityRanks = 0;

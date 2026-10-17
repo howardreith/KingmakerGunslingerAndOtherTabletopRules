@@ -549,7 +549,8 @@ namespace KingmakerGunslinger.Summoning
                                     ArmoredDinosaurVisualPolicy.Handles(
                                         attachment.VisualKey) ||
                                     TheropodVisualPolicy.Handles(
-                                        attachment.VisualKey))
+                                        attachment.VisualKey) ||
+                                    GiantBodyVisualPolicy.Handles(attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
                 mesh.name = visualName;
@@ -682,7 +683,8 @@ namespace KingmakerGunslinger.Summoning
                 var rollbackMaterials = new HashSet<Material>();
                 if (material != null) rollbackMaterials.Add(material);
                 if (swapped && (IsCrocodilian(attachment.VisualKey) ||
-                    TheropodVisualPolicy.Handles(attachment.VisualKey)))
+                    TheropodVisualPolicy.Handles(attachment.VisualKey) ||
+                    GiantBodyVisualPolicy.Handles(attachment.VisualKey)))
                 {
                     string ownedName = "KMG_" + attachment.VisualKey + "_Original";
                     foreach (Material candidate in donor.sharedMaterials)
@@ -968,11 +970,11 @@ namespace KingmakerGunslinger.Summoning
             IList<Material> driven = attachment.Donor == null ? null :
                 ControllerMaterials(attachment.Donor.GetComponentInParent<
                     StandardMaterialController>());
-            IEnumerable<Material> privateMaterials =
-                OriginalFlightCleanupPolicy.PrivateMaterials(
-                    attachment.Material,
-                    installed.Concat(driven ?? new Material[0]),
-                    attachment.OriginalMaterials);
+            string ownedName = "KMG_" + attachment.VisualKey + "_Original";
+            IEnumerable<Material> privateMaterials = installed.Concat(driven ?? new Material[0])
+                .Concat(new[] { attachment.Material })
+                .Where(value => value != null && value.name.StartsWith(ownedName, StringComparison.Ordinal))
+                .Distinct();
             return privateMaterials.Cast<UnityEngine.Object>()
                 .Concat(new UnityEngine.Object[] { attachment.Mesh })
                 .Where(value => value != null).Distinct().ToArray();
@@ -1054,7 +1056,8 @@ namespace KingmakerGunslinger.Summoning
                  !ArmoredDinosaurVisualPolicy.Handles(
                     attachment.VisualKey) &&
                  !TheropodVisualPolicy.Handles(
-                    attachment.VisualKey))) return;
+                    attachment.VisualKey) &&
+                 !GiantBodyVisualPolicy.Handles(attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
                     ? GiantWaspVisualName

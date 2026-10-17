@@ -1775,6 +1775,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] awakeBefore = null;
             try
             {
+                if (GiantBodyRulesPolicy.IsGiantBody(creatureKey))
+                    foreach (int frame in Sprint25NativeAppearance(owner, creatureKey)) yield return frame;
                 target.Descriptor.State.Size = Size.Medium;
                 target.Stats.SaveReflex.BaseValue = -100;
                 target.CombatState.OnNewRound();
