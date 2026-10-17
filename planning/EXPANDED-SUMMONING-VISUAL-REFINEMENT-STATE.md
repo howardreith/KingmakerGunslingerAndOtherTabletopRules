@@ -45,7 +45,8 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-037 Ghaele | the same change; glow off (run 15) | the review still fails on the Ghaele's own rising dissolve and a move that did not start | pending |
 | VIS-036 Frost Giant, VIS-038 Thanadaemon | covered by the same policy (native options and adapters; domain test) | not observed: the creature review cannot cast them | pending |
 | VIS-004 Dire Rat icon | pilot only; production icon unchanged | menu-size comparison sheet | pending the owner's approval of the pilot |
-| other 6 items | open or owned elsewhere (see ledger) | owner screenshots only | pending |
+| VIS-029 Salamander | presentation change: travelling tail gait; owned body starts undissolved; focused gate PASS | native after: PASS (runs 16 and 19), white streaks gone; spear and tail slap used in a real full attack, 15/15 | pending |
+| other 5 items | open or owned elsewhere (see ledger) | owner screenshots only | pending |
 
 ## Owner decisions, 2026-10-17
 
@@ -140,6 +141,11 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 13 | same | disposable-expanded-summoning-visual-contracts | 1:19 | PASS |
 | 14 | `dc5b84838cc1` (package `c2140645…f223`, diagnostics) | creature review: Wolf, Salamander | 1:51 | PASS; the SummonedUnitBuff spawns no effect, the glow is the SummonedCreatureVisual buff's; Salamander locomotion and material evidence |
 | 15 | `01eb9e3aad53` (package `bc7ccc75…5d66`, 66 s build) | creature review: Wolf, Ghaele, Ice Mephit | 2:02 | Wolf PASS with the glow gone; Ice Mephit PASS, glow kept; Ghaele FAIL (own dissolve; move did not start) with the glow gone |
+| 16 | `185e379a7418` (package `8db4fd08…9940`, 67 s build) | creature review: Salamander (refinement sequences added) | 2:04 | PASS (10 assertions); tail gait 334 frames, full speed, peak offset 0.12; close views show white streaks |
+| 16 | same | disposable-expanded-summoning-serpentine-bodies | 1:28 | PASS 15/15: full native attack with two native spear clips and the owned tail slap, contact, destruction |
+| 17 | `491e60249f43` (package `ef57b67b…5f47`) | the same two | 2:05, 1:26 | PASS; owned matte masks texture applied, streaks unchanged (reverted) |
+| 18 | `c1b87bce72dc` (package `a26e0331…82e6`) | creature review: Salamander | 2:04 | PASS; cape rim keyword applied, streaks unchanged (reverted) |
+| 19 | `58123c87fa9e` (package `6f778ca1…0812`) | the same two as run 16 | 2:03, 1:26 | PASS (10 and 15/15); body undissolved, streaks gone |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -263,6 +269,16 @@ tracking frames, the review captures and the donor bind captures.
   The first version patched only the SummonedUnitBuff, which spawns no effect
   (run 13 showed no change; run 14's diagnostics found the real buff). The
   creature review records `summonGlow=` and `buffEffects=` per unit.
+- The Salamander (`185e379a74`, `58123c87fa`; details in
+  `sprint17-serpents/SOURCE.md`): `Summoning/SalamanderTailGait.cs` and the
+  human attachment's `LateUpdate` move the ten owned tail bones along a
+  horizontal travelling wave while the slap is not playing (0.04 at idle,
+  0.12 at 2 m/s; waist and heights fixed; `check_tail_gait.py` checks the
+  shipped mesh offline), and the owned body material drops the frozen
+  emissive dissolve edge it inherited before the material controller adopts
+  it. The mesh, paint, spear, slap clip and every mechanic are unchanged. The
+  creature review gives the Salamander close views and tracking frames and
+  records `tailGait=` and the material's roughness and dissolve terms.
 - The Dire Rat icon pilot (`8ff9893b2f`):
   `assets-source/original-icons/expanded-summoning/pilots/dire-rat/` crops the
   original painting closer on the rat and fades the medallion into a dark
@@ -306,6 +322,10 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Native | runs 10-12 above | 3:17, 4:51, 2:48 | as tabled |
 | Focused build tests (glow, `01eb9e3aad`) | `Build-Local.ps1 -DevelopmentPurpose visual-refinement -DevelopmentTestFilter 'summon-glow'` | 66 s | production compilation PASS; 2 PASS |
 | Native | runs 13-15 above | 3:15, 1:51, 2:02 | as tabled |
+| Focused gate (Salamander, `58123c87fa` content) | `scripts/Invoke-KmgGate.ps1 -Filter 'salamander-tail-gait;salamander-undissolved-body;sprint17-salamander;sprint17-human;summon-glow'` | 8-10 s | production compilation PASS; selected tests PASS |
+| Focused build tests (run 19 candidate) | `Build-Local.ps1 -DevelopmentPurpose visual-refinement -DevelopmentTestFilter 'salamander-tail-gait;salamander-undissolved-body;sprint17-salamander;summon-glow'` | 67 s | 42 PASS |
+| Offline tail gait | `blender -b --factory-startup --python-exit-code 1 -P assets-source/original-models/sprint17-serpents/check_tail_gait.py -- assets/sprint17-serpents/salamander-human-mesh.json` | 6 s | PASS |
+| Native | runs 16-19 above | 3:32, 3:31, 2:04, 3:29 | as tabled |
 
 ## Remaining limitations
 
@@ -319,6 +339,12 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
   dissolve colour), which fails the review's intactness assertion; in run 15
   its scripted move also did not start. The dissolve's source is not
   identified and is left unchanged; the glow change does not touch it.
+- Salamander: 19 of 12,924 vertex-normal corners of the shipped human/tail
+  export oppose their triangles (a small pleat in the waist seam, two
+  left-hand fingers); a normal-only repair cannot light the pleat and a
+  geometric one needs the private human capture, which is not on this
+  machine. The gait is a horizontal wave on the authored coil; the coil does
+  not straighten behind the body while travelling.
 - Frost Giant and Thanadaemon: the glow policy covers their KMG native
   options and adapters, but the creature review cannot cast them, so whether
   their base blueprints carry the SummonedCreatureVisual buff is unobserved.
@@ -347,14 +373,8 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. The Salamander (VIS-029, in progress). Run 14: the native move travels
-   12.4 m at up to 2.0 m/s and the body renders intact, but the ten owned
-   tail bones move only during the authored tail slap, so the tail is rigid
-   while the human upper body walks (the owner's "static sliding"). The body
-   material keeps the human donor's emission keyword. The next step is a
-   presentation-only tail undulation while the unit moves and idles, standing
-   aside for the slap, with no change to commands, reach, contact or timing.
-2. The owner's decisions waiting: the Dire Rat icon pilot (VIS-004), and the
-   found inside-out bodies listed above.
-   Optional: Viper/Constrictor locomotion. Roster-owned: Elephant, Lantern
-   Archon, Invisible Stalker.
+1. The owner's decisions waiting: the Dire Rat icon pilot (VIS-004), the
+   found inside-out bodies listed above, and acceptance of the refreshed
+   items (glow, Salamander).
+2. Optional: Viper/Constrictor locomotion (VIS-007, VIS-018). Roster-owned:
+   Elephant, Lantern Archon, Invisible Stalker.

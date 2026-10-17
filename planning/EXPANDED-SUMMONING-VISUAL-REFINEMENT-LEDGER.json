@@ -1000,16 +1000,21 @@
       "batch": "salamander-targeted",
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
-        "mesh": "assets/sprint17-serpents/salamander-mesh.json",
-        "meshSha256": "bd790df1e258fa6190ef48a2e68f0beb5eaeba6d035d51eeb3aaefc5cbb9a60b",
-        "components": 28,
+        "mesh": "assets/sprint17-serpents/salamander-human-mesh.json",
+        "meshSha256": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19",
+        "components": 21,
         "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "6/15216"
+        "normalCornersOpposingWinding": "19/12924"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
+      "technicalStatus": "presentation-changed",
+      "visualEvidence": "owner screenshot; native evidence: 20261017T1639002324262Z (development candidate dc5b84838cc1): the native move travels 12.4 m at up to 2.0 m/s and the body renders intact, but the ten owned tail bones moved only during the authored tail slap, so the coil glided rigidly (the 'static sliding'); 20261017T1706293264089Z/1708331228753Z (development candidate 185e379a7418): with the tail gait (185e379a74) creature review PASS (gait 334 frames, full speed, peak offset 0.12) and bounded human review 15/15 PASS: one real full native attack resolves two spear attacks with their native human spear clips and the owned tail slap, contact within 25 cm (gap 0.031 m); close views show thin white flecks and streaks on the coil and torso; 20261017T1715204397744Z/1717248175959Z (development candidate 491e60249f43) (owned matte masks texture) and 20261017T1722470324042Z (development candidate c1b87bce72dc) (cape rim keyword) left them unchanged and were reverted; an offline render of the exact shipped bytes shows none; the cloned human material carried a frozen emissive dissolve edge (DISSOLVE_ON, width 0.15, colour 1/0.58/0.32, scale 2) that the material controller restored as its default; 20261017T1730033526213Z/1732061256699Z (development candidate 58123c87fa9e): with the clone starting undissolved (58123c87fa) creature review PASS with the streaks gone in the close views and bounded human review 15/15 PASS",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/SalamanderTailGait.cs and SalamanderHumanVisualAttachment.cs: a travelling tail gait on the owned tail bones outside the slap, and the owned body material starts undissolved; the mesh, paint, weapon, slap and mechanics are unchanged",
+        "offlineCheck": "assets-source/original-models/sprint17-serpents/check_tail_gait.py: lowest tail vertex 0.0361 (rest 0.0367); non-adjacent coils at least 6.3 cm apart (12 cm at rest)",
+        "commits": "185e379a74, 58123c87fa (491e60249f and c1b87bce72 reverted)"
+      },
       "ownerAcceptance": "pending"
     },
     {
