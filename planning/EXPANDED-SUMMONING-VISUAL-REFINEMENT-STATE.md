@@ -85,6 +85,24 @@ after download), `release-manifest.json` and `SHA256SUMS.txt`. The full test
 pass was not run. The separate `v0.0.157-brown-fur-alpha.1` prerelease, from
 another lane, is a different build; neither alpha contains the other's changes.
 
+Alpha 2, same day: on the owner's request ("merge master into your current
+work and build a fresh alpha release"), `master` through PR #54 (Brown-Fur
+startup order and CotW controller save-loading repair, `93e34051d1`) was
+merged into this branch at `c035a9ba9f`. Only the development-candidate
+validator, its fixtures and `docs/DEVELOPMENT-CANDIDATES.md` conflicted:
+master had pinned the released v0.0.157 commit `8726ec737a`, which is what
+this branch's tag-based baseline resolves to, so the conflicts keep the
+tag-based form (master's other edits kept). Checks on the merge: validator
+fixtures 23/23, icon catalog validator and 30 fixtures, focused gate and
+build tests 554/554 (expanded-summoning, brown-fur, cotw) with production
+compilation, and guarded creature review `20261017T2308253716815Z` 6/6 on
+the exact package (live mod restored exactly). Prerelease
+`v0.0.157-visual-refinement-alpha.2` (tag at `c035a9ba9f`, not Latest) ships
+`KingmakerGunslinger-0.0.157-visual-refinement-alpha.2.zip` (`81e4f3a9…ed5f`,
+373 members, DLL `ea9b0d07…9777`, verified after download) and replaces
+alpha 1. Not run on the merged build: the full suite, the Brown-Fur native
+probes, controller-mode loading and saved Brown-Fur owner reconstruction.
+
 ## Baseline
 
 - `master` = `origin/master` = `2eed3944f6eab657f9030d33acae6d81eb5f10ae`,
