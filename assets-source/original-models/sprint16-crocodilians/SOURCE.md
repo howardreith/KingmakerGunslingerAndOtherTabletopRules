@@ -44,10 +44,13 @@ contracts and remain live qualification gates.
 
 | Asset | SHA-256 |
 | --- | --- |
-| Crocodile mesh | `770fa7c3c87fb74f3335358069cefde77529868e30184e090bf3c7c840065fd7` |
-| Crocodile albedo | `66864117b75bf34d30cc9c487ff988d8306940694d288a55d74aea3e772e2afd` |
-| Dire mesh | `eb7a9182fbe5f66dc8b819efd9641a62da611230923bf4bd95ca1383d4e7173a` |
-| Dire albedo | `aef6c8fe388635293938f5b0c0c46fa4757256326d6adbec88d351266bce253c` |
+| Crocodile mesh | `6615b76808762e29311fb390889dc8d94c63b942825573cb7266993780d96ef9` |
+| Crocodile albedo | `108668f562d97b84ba8fff5caa6cda92a042100d37831f52fcfbd20d19537c85` |
+| Dire mesh | `d4507796f688e79d9ddddacbcb54d0885ea409b06cd5c58690a3fb56464daf1e` |
+| Dire albedo | `86488f581289d2dfe7f5f6bcb5f3ec9e0ea25403fb6aace460bcd0a82d562d3c` |
+
+These are the refined exports of 2026-10-17; the superseded Sprint 16
+identities are listed under "Visual refinement" below.
 
 Only the four files under `assets/sprint16-crocodilians` enter the mod.
 The strict package adds exactly four files: 309 with the soundbank, 307 without.
@@ -85,3 +88,40 @@ idle/movement/turn/hit/death/fade/despawn, direct/quantity crowding, fallback,
 per-view resource cleanup and native Monitor Lizard negative control.
 
 `HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+## Visual refinement, 2026-10-17 (VIS-012, VIS-034)
+
+The owner reported a glitchy, open-looking patch on the Crocodile's head and,
+on the Dire Crocodile, similar transparency and head defects and blocky
+pigmentation, while finding both otherwise reasonable. The disposition was a
+targeted repair, not a redesign, so the geometry, topology, UVs, weights and
+bone set are unchanged (2,342 vertices, 4,188 triangles, 27 bones each).
+
+- **Inside out.** The shared writer (`pteranodon/generate_pteranodon.py`)
+  emits every triangle reversed, and all 124 parts of each body shipped inward
+  (see `../continuous-bodies/SOURCE.md`). The game drew the far inner walls:
+  the dark hole in the head, the black osteoderm blocks and the see-through
+  body in the owner's screenshots. The Monitor Lizard frame is +X left, +Y up,
+  -Z forward (the left limbs are measured at +X; the old payload said "+X
+  right"), a proper rotation of Unity's, so Blender's outward winding is the
+  runtime's. `generate_crocodilians.py` now restores it after the shared
+  writer, refuses any part that is not then closed, consistent and outward,
+  and labels the frame correctly. Six normal corners (of 12,564) still oppose
+  their faces at the sharpest bend of one foreleg and one hind-leg tube.
+- **Painting.** The tile grid was dark (a back of about 0.16 in stored value) and
+  regular. `paint_crocodilian_albedo.py` now paints irregular scales of varied
+  tone with gently darkened seams, cream ventral shields, broken blotches and
+  soft tail crossbands, on a lighter warm olive (Crocodile) or slate-olive
+  (Dire) ramp. The tail bands stay clear of the region's u edges, where the
+  osteoderm blocks sample their colour, so the blocks read as raised plates.
+- Capture: the Sprint 16 Monitor Lizard capture `d7c91e3e…c4ea` (run
+  `20261005T1904066883829Z-disposable-expanded-summoning-crocodilians`; the
+  other Sprint 16 runs hold a different capture, `8b0c0309…a83f`, which the
+  shipped meshes do not reference). Both generators reproduced the superseded
+  bytes exactly before the change, and the new exports reproduce exactly from
+  clean Blender processes with `PYTHONHASHSEED=0`.
+- Superseded: Crocodile mesh
+  `770fa7c3c87fb74f3335358069cefde77529868e30184e090bf3c7c840065fd7`, albedo
+  `66864117b75bf34d30cc9c487ff988d8306940694d288a55d74aea3e772e2afd`; Dire mesh
+  `eb7a9182fbe5f66dc8b819efd9641a62da611230923bf4bd95ca1383d4e7173a`, albedo
+  `aef6c8fe388635293938f5b0c0c46fa4757256326d6adbec88d351266bce253c`.
