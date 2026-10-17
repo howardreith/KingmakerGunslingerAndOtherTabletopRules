@@ -150,6 +150,18 @@ namespace KingmakerGunslinger.Summoning
             _paint.name = _name + "_Paint";
             _material = new Material(donor) { name = _name + "_Material" };
             ExpandedSummoningPteranodonViewPatch.DressMaterial(_material, _paint);
+            // The cloned human material arrives with the dissolve keyword on
+            // and an orange emissive dissolve edge (colour 1/0.58/0.32, guarded
+            // runs 20261017T1639002324262Z-1722470324042Z), whether the donor
+            // carries it or a summon fade was running when it was cloned. The
+            // material controller adopts the clone's state as its defaults and
+            // puts it back after every dissolve animation, so the edge glowed
+            // over the noise texture as isolated bright flecks and streaks
+            // (VIS-029). The clone starts undissolved, like an ordinary unit
+            // material; the game's dissolve animations still turn the keyword
+            // on while they run.
+            _material.DisableKeyword("DISSOLVE_ON");
+            if (_material.HasProperty("_Dissolve")) _material.SetFloat("_Dissolve", 0f);
 
             Vector3[] rest = Points(payload["originalTailRest"]);
             JObject animation = (JObject)payload["originalTailSlap"];
