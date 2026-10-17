@@ -1,4 +1,23 @@
-# Brown-Fur startup-order repair — tested development candidate
+# Brown-Fur startup-order repair — tested development candidate / public alpha
+
+## Alpha publication outcome (2026-10-17)
+
+[Alpha 1](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-brown-fur-alpha.1)
+published at 21:49:11Z, prerelease / not Latest. The existing tested candidate
+was uploaded unchanged as `KingmakerGunslinger-0.0.157-brown-fur-alpha.1.zip`:
+48,085,693 bytes, SHA-256
+`d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`.
+Public download was independently rehashed; all three asset digests match.
+Annotated tag `cb0474e2210fcbd92241cdd537b16fb3e69a51e3` resolves to product
+`913dfd6e89386ff233849f06f902ca8ea2de239e`. Public manifest records original
+documentation staging commit `a92b5d25e2f8d5cd86dcdd5730790a5bfb36cdd0`;
+publication-tooling checkpoint is `3395c122a92ee81ae1379337a6efb1d7ca624781`.
+No metadata rebuild, full-suite/native rerun, merge or installation occurred.
+UMM still displays 0.0.157; stable v0.0.157 remains Latest. Existing focused
+and native evidence below applies to these exact bytes, with unchanged gaps.
+Handoff folder contains the alpha ZIP, sanitized manifest and checksums.
+Next owner action: test affected save without overwriting it, recording
+Continue versus Load Game and controller versus mouse/keyboard mode.
 
 Remote status amendment: after the local-only handoff and its blocked push,
 the owner explicitly requested a public alpha on 2026-10-17. One prerelease

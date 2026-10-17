@@ -2,6 +2,12 @@
 
 ## 2026-10-17 Brown-Fur startup-order repair
 
+Publication is complete: public prerelease
+[`v0.0.157-brown-fur-alpha.1`](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-brown-fur-alpha.1),
+downloaded ZIP hash verified against the frozen candidate. Stable remains Latest;
+there is no publication blocker or outstanding transaction. The owner-dependent
+next action is the affected-computer save-load test, not another release suite.
+
 The earlier push denial is superseded for one alpha by the owner's subsequent
 explicit publication request on 2026-10-17. Source branch/tag and public
 prerelease `v0.0.157-brown-fur-alpha.1` are authorized. Stable release, merge

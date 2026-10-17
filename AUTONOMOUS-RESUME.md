@@ -1,4 +1,16 @@
-# Brown-Fur startup-order repair — review/human-test checkpoint (2026-10-17)
+# Brown-Fur startup-order repair — alpha published / human-test checkpoint (2026-10-17)
+
+[Alpha 1 is public](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-brown-fur-alpha.1)
+as of 2026-10-17T21:49:11Z (prerelease, not Latest). Product remains frozen
+at `913dfd6e89386ff233849f06f902ca8ea2de239e`; publication tooling checkpoint
+`3395c122a92ee81ae1379337a6efb1d7ca624781`. Downloaded public ZIP matches
+`d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`;
+the alpha ZIP, sanitized manifest and checksums are also in the handoff folder.
+Stable v0.0.157 remains Latest. No rebuild, full-suite rerun, default-branch
+merge, installation or native activity occurred during publication. UMM still
+displays 0.0.157. Next: owner tests the affected save without overwriting it;
+record Continue/Load Game and input mode, and retain a fresh log if it fails.
+Do not republish, move this tag or infer saved-owner/controller-load acceptance.
 
 Work only in `codex/brown-fur-startup-order-20261017`, isolated worktree of that
 review branch at `C:/Dev/KingmakerGunslingerLab/worktrees/brown-fur-startup-order-review-20261017`.
@@ -21,7 +33,7 @@ native campaign, publication/merge/permanent install is selected automatically.
 Historical release authorizations below do not apply to this repair.
 Subsequent owner amendment: "Could you publish a new alpha build for me to test
 please?" One public alpha is authorized, including required source branch/tag.
-Use `Publish-BrownFurAlpha.ps1` for exact existing bytes, tag
+Completed with `Publish-BrownFurAlpha.ps1` for exact existing bytes, tag
 `v0.0.157-brown-fur-alpha.1`, prerelease / never Latest. No rebuild or additional
 runtime campaign. Stable release, merge and installation remain out of scope.
 
