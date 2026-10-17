@@ -455,9 +455,13 @@ namespace KingmakerGunslinger.DomainTests
                 component.Contains("Prone.Active") &&
                 component.Contains("Prone.ShouldBeActive"),
                 "An already-prone target is not knocked down again.");
+            // One CALL SITE, which is what source can show. That it
+            // raises exactly one provocation event per knockdown, and that
+            // each eligible responder answers at most once, is behaviour and
+            // is owed to the native campaign.
             Assertions.Equal(1, CountOccurrences(component,
                 "ProvokeAttackOfOpportunity("),
-                "Exactly one provocation, for the knockdown caused.");
+                "One provocation call site in the corrected component.");
 
             // The ability's action list stays empty, because that list
             // runs on ANY success and cannot tell the two apart.
@@ -466,6 +470,15 @@ namespace KingmakerGunslinger.DomainTests
                 "private static void ConfigureBrachiosaurusOverrun(");
             Assertions.True(command.Contains("overrun.AutoSuccess = false"),
                 "The command rolls a real maneuver.");
+
+            // The printed ordinary maneuver is "you can attempt to overrun
+            // your target, moving through its square" - ONE target. The
+            // delivery's IL keeps enumerating units and overrunning all of
+            // them while FirstTargetOnly is false, and stops after the first
+            // when it is true, continuing the movement either way.
+            Assertions.True(command.Contains("overrun.FirstTargetOnly = true"),
+                "The ordinary Overrun takes one target, not everything in " +
+                "the path.");
             Assertions.False(StripComments(command).Contains(
                 "ContextActionKnockdownTarget"),
                 "The knockdown is not in a list that runs on any success.");
@@ -483,12 +496,21 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(carrier.Contains(
                 "BrachiosaurusOverrunKnockdown"),
                 "The corrected behaviour replaces it.");
+            Assertions.True(carrier.Contains("DeepCloneComponent"),
+                "The carrier owns its components; the native feat every " +
+                "other actor has keeps its own instances.");
+            Assertions.False(StripComments(carrier).Contains("native." +
+                "ComponentsArray ="),
+                "The native blueprint is read, never written.");
 
             // Trample is a different action and keeps its own shape.
             string trample = Section(builder,
                 "private static void ConfigureUngulateTrample(");
             Assertions.True(trample.Contains("overrun.AutoSuccess = true"),
                 "Trample stays an auto-success and never rolls.");
+            // Trample IS the many-target one, and keeps that form.
+            Assertions.True(trample.Contains("overrun.FirstTargetOnly = false"),
+                "Trample still overruns everything in its path.");
             Assertions.False(StripComments(trample).Contains(
                 "ContextActionKnockdownTarget"),
                 "Trample gains no knockdown.");
