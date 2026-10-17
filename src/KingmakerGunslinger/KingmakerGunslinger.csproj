@@ -40,6 +40,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Compatibility\CotwSpontaneousSlotCompatibility.cs" />
     <Compile Include="Acquisition\CampaignWeaponRegistry.cs" />
     <Compile Include="Acquisition\CampaignWeaponNativeReference.cs" />
     <Compile Include="Acquisition\CampaignWeaponSceneObservation.cs" />
