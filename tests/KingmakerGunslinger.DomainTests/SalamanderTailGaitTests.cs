@@ -107,5 +107,18 @@ namespace KingmakerGunslinger.DomainTests
                 body.Contains("AnimationManager") || body.Contains("_player"),
                 "It touches no native bone, unit position, animation manager or slap player.");
         }
+
+        internal static void TheOwnedBodyStartsUndissolved()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Summoning", "SalamanderHumanVisualAttachment.cs"));
+            int clear = source.IndexOf("_material.DisableKeyword(\"DISSOLVE_ON\");", StringComparison.Ordinal);
+            int zero = source.IndexOf("_material.SetFloat(\"_Dissolve\", 0f);", StringComparison.Ordinal);
+            int adopt = source.IndexOf("AdoptByMaterialController(_view, Body, _material)", StringComparison.Ordinal);
+            Assertions.True(clear > 0 && zero > clear && adopt > zero,
+                "The owned clone drops the dissolve state before the material controller adopts its defaults.");
+            Assertions.False(source.Contains("EnableKeyword(\"DISSOLVE_ON\")"),
+                "Only the game's own dissolve animations turn the keyword back on.");
+        }
     }
 }

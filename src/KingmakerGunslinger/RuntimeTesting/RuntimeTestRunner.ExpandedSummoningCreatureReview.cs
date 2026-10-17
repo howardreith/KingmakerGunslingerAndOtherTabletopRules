@@ -1477,7 +1477,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (string name in new[] { "_Emission", "_RimPower", "_RimLighting",
                 "_Metallic", "_Cutout", "_Alpha", "_AlphaScale", "_DissolveEmission",
                 "_Glossiness", "_Smoothness", "_BumpScale", "_OcclusionStrength",
-                "_Roughness", "_Specular", "_SpecularIntensity", "_UseNormalMapAtlas" })
+                "_Roughness", "_Specular", "_SpecularIntensity", "_UseNormalMapAtlas",
+                "_DissolveWidth", "_DissolveColorScale" })
                 if (material.HasProperty(name))
                     floats.Add(name + "=" + material.GetFloat(name).ToString("0.###",
                         CultureInfo.InvariantCulture));
