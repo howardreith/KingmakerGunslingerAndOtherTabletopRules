@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using Harmony12;
+using Kingmaker;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.View;
 using Kingmaker.Visual.Animation;
@@ -42,6 +43,11 @@ namespace KingmakerGunslinger.Summoning
         private AnimationClip _clip;
         private AnimationSet _nativeSet, _ownedSet;
         private AnimationActionBase[] _nativeActions, _expectedActions;
+        private Transform[] _tail;
+        private float[][] _tailRest;
+        private Vector3 _lastPosition;
+        private bool _hasLastPosition;
+        private float _gaitPhase, _gaitSpeed, _gaitWeight;
         private string _name;
         private bool _swapped, _released;
         internal SkinnedMeshRenderer Body { get; private set; }
@@ -144,6 +150,18 @@ namespace KingmakerGunslinger.Summoning
             _paint.name = _name + "_Paint";
             _material = new Material(donor) { name = _name + "_Material" };
             ExpandedSummoningPteranodonViewPatch.DressMaterial(_material, _paint);
+            // The cloned human material arrives with the dissolve keyword on
+            // and an orange emissive dissolve edge (colour 1/0.58/0.32, guarded
+            // runs 20261017T1639002324262Z-1722470324042Z), whether the donor
+            // carries it or a summon fade was running when it was cloned. The
+            // material controller adopts the clone's state as its defaults and
+            // puts it back after every dissolve animation, so the edge glowed
+            // over the noise texture as isolated bright flecks and streaks
+            // (VIS-029). The clone starts undissolved, like an ordinary unit
+            // material; the game's dissolve animations still turn the keyword
+            // on while they run.
+            _material.DisableKeyword("DISSOLVE_ON");
+            if (_material.HasProperty("_Dissolve")) _material.SetFloat("_Dissolve", 0f);
 
             Vector3[] rest = Points(payload["originalTailRest"]);
             JObject animation = (JObject)payload["originalTailSlap"];
@@ -199,8 +217,68 @@ namespace KingmakerGunslinger.Summoning
             if (driven == null || !driven.Contains(Body.sharedMaterial) || !Owned(Body.sharedMaterial))
                 throw new InvalidOperationException("Original human-body material was not adopted.");
             if (PostSwapFaultForTest != null) PostSwapFaultForTest();
+            _tail = tail;
+            _tailRest = rest.Select(point => new[] { point.x, point.y, point.z }).ToArray();
             Outcome = "human-tail:attached;nativeDrivers=26;originalDrivers=10;nativeActions=24;ownedTail=1;" + adopted;
         }
+
+        // Presentation-only tail gait (SalamanderTailGait): while the authored
+        // slap is not playing, the owned tail bones follow a horizontal wave
+        // whose strength follows the view's planar speed. Native bones, the
+        // slap clip and every mechanic are untouched; a failure stops the gait.
+        private void LateUpdate()
+        {
+            if (_tail == null || _tailRest == null || TailAction == null || !Live) return;
+            try
+            {
+                float deltaTime = Time.deltaTime;
+                Vector3 position = _view.transform.position;
+                float speed = 0;
+                if (_hasLastPosition && deltaTime > 0)
+                {
+                    Vector3 travel = position - _lastPosition;
+                    travel.y = 0;
+                    float meters = travel.magnitude;
+                    speed = meters > SalamanderTailGait.PlacementMeters ? 0 : meters / deltaTime;
+                }
+                _lastPosition = position;
+                _hasLastPosition = true;
+                if (TailAction.PlayingOwnedClip) { _gaitWeight = 0; return; }
+                if (Game.Instance == null || Game.Instance.IsPaused) return;
+                _gaitSpeed = SalamanderTailGait.Follow(_gaitSpeed, SalamanderTailGait.SpeedFactor(speed), deltaTime);
+                _gaitPhase = SalamanderTailGait.Advance(_gaitPhase, _gaitSpeed, deltaTime);
+                _gaitWeight = Math.Min(1f, _gaitWeight + deltaTime / SalamanderTailGait.BlendSeconds);
+                float[][] points = SalamanderTailGait.Points(_tailRest,
+                    SalamanderTailGait.Amplitude(_gaitSpeed) * _gaitWeight, _gaitPhase);
+                for (int bone = 0; bone < _tail.Length; bone++)
+                {
+                    Vector3 from = Point(points[bone]), to = Point(points[bone + 1]);
+                    _tail[bone].localPosition = from;
+                    _tail[bone].localRotation = Quaternion.FromToRotation(
+                        Point(_tailRest[bone + 1]) - Point(_tailRest[bone]), to - from);
+                }
+                GaitFrames++;
+                GaitPeakSpeed = Math.Max(GaitPeakSpeed, _gaitSpeed);
+                for (int i = 0; i < points.Length; i++)
+                    GaitPeakOffset = Math.Max(GaitPeakOffset, (Point(points[i]) - Point(_tailRest[i])).magnitude);
+            }
+            catch (Exception) { _tail = null; }
+        }
+
+        internal int GaitFrames { get; private set; }
+        internal float GaitPeakSpeed { get; private set; }
+        internal float GaitPeakOffset { get; private set; }
+
+        /// <summary>Development evidence: "frames=N,peakSpeed=F,peakOffset=M,stopped=B".</summary>
+        internal string DescribeGait()
+        {
+            return "frames=" + GaitFrames + ",peakSpeed=" +
+                GaitPeakSpeed.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) +
+                ",peakOffset=" + GaitPeakOffset.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) +
+                ",stopped=" + (_tail == null && _tailRest != null);
+        }
+
+        private static Vector3 Point(float[] value) { return new Vector3(value[0], value[1], value[2]); }
 
         private AnimationClip BuildClip(JObject animation, Vector3[] rest)
         {

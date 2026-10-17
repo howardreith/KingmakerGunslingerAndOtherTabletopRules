@@ -526,6 +526,9 @@ def parse_args():
 
 def main():
     args = parse_args()
+    if args.kind == "xill":
+        raise SystemExit("xill is built by build_xill.py since the visual "
+                         "refinement (VIS-030); see SOURCE.md")
     rig_data, rig, rig_hash = capture.load(args.capture)
     export(args, rig_data, rig, rig_hash)
 

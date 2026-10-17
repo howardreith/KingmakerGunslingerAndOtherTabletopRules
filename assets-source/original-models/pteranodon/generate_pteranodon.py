@@ -641,6 +641,9 @@ def write_mesh_data(path, obj, mesh, weights, uvs, report, albedo):
 
 def main():
     args = parse_args()
+    raise SystemExit("the Pteranodon is built by build_pteranodon.py since "
+                     "the visual refinement (VIS-020); this module stays as "
+                     "the shared loader, atlas and legacy writer; see SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig, bones = load_rig(args.rig)
     armature = build_armature(rig)

@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-alternate-summoning-sources.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-visual-refinement.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -76,7 +76,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.153.md',
     'docs\RELEASE-NOTES-0.0.155.md',
     'docs\RELEASE-NOTES-0.0.156.md',
-    'docs\RELEASE-NOTES-0.0.157.md')) {
+    'docs\RELEASE-NOTES-0.0.157.md',
+    'docs\RELEASE-NOTES-0.0.158.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -258,9 +259,9 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory. Sprint 24 added four original theropod body files
 # and two original creature icons to the previously qualified 363-file base;
-# v0.0.156 adds its release notes.
+# v0.0.156, v0.0.157 and v0.0.158 each add their release notes.
 # The soundbank and its manifest account for the optional two-file delta.
-$basePackageFileCount = 371
+$basePackageFileCount = 372
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

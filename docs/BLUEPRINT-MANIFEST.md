@@ -1,6 +1,6 @@
 # Blueprint manifest and registration contract
 
-Active v0.0.157 alternate summoning contract: 6895 stable identifiers: 6892 active and 3 reserved. Sprint 24 (v0.0.155) appended 48; v0.0.156 added none; v0.0.157 appends 3746 alternate summoning adapter identities (`KMG.Summoning.Adapter.*`).
+Active v0.0.158 visual refinement contract: 6895 stable identifiers: 6892 active and 3 reserved. Sprint 24 (v0.0.155) appended 48; v0.0.156 added none; v0.0.157 appends 3746 alternate summoning adapter identities (`KMG.Summoning.Adapter.*`). v0.0.158 adds none.
 Sprint 23 preserves every released entry and appends 33 identities: two units,
 twelve logical placements, eight Triceratops Monster template execution children,
 two natural weapons, two unit types, two chassis features, three signature

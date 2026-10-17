@@ -142,7 +142,7 @@ Sprint 16 leaves Sprint 14's engine-issued `UniqueId` plus save-owned `UnitPart`
 
 # Architecture
 
-Active v0.0.157 alternate summoning release: 6895 stable IDs: 6892 active and 3 reserved. Sprint 24 (v0.0.155) appended 48; v0.0.156 added none; v0.0.157 appends 3746 alternate summoning adapter identities (`KMG.Summoning.Adapter.*`).
+Active v0.0.158 visual refinement release: 6895 stable IDs: 6892 active and 3 reserved. Sprint 24 (v0.0.155) appended 48; v0.0.156 added none; v0.0.157 appends 3746 alternate summoning adapter identities (`KMG.Summoning.Adapter.*`). v0.0.158 adds none.
 The released v0.0.151 3068-entry prefix is exact. Sprint 23 appends 33 identities:
 two units, twelve logical placements, eight Triceratops celestial/fiendish
 execution children, two natural weapons, two unit types, two chassis carriers,

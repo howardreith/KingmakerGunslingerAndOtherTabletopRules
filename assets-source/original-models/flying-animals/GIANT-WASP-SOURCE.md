@@ -26,3 +26,24 @@ the PNG SHA-256 is
 The mesh-data manifest pins the PNG hash and dimensions. The project-owned
 scripts and shipped mesh/texture are reviewable; owner visual approval remains
 pending after technical runtime qualification.
+
+## Visual refinement, 2026-10-17 (VIS-022)
+
+The owner found that the first wasp's major pieces and appendages did not
+form a coherent insect, with the abdomen raised high behind it; it also
+shipped inside out (17 of 26 parts inward, 22 with caps opposite their walls).
+`build_giant_wasp.py` (library in `../continuous-bodies/`) now builds it on
+the same Giant Eagle frame as one connected body: a head capsule with large
+compound eyes, antennae and mandibles on a short neck, a deep thorax, a narrow
+waist, and a banded gaster carried behind and a little below the thorax that
+ends in the sting. Everything behind the waist, sting included, rides `Tail`
+alone, so `GiantWaspVisualSting`'s bounded strike pose still curls it under.
+Six legs leave the underside of the thorax on the eagle's single leg chain
+(fore, mid and hind splayed), and two pairs of narrow amber wings ride the arm
+chain, shorter than the eagle's spread. `generate_giant_wasp.py` now refuses
+to build and is kept for its history.
+
+- `giant-wasp-mesh.json`: `a32d454cff58ec4827d91888a3d9803178ad74c731882a22e1bd2ebf83b205c5`
+  (6,502 vertices, 9,404 triangles, 18 closed outward parts, 17 bones).
+- `giant-wasp-albedo.png`: `2d26b8dad8436d26e625c0d16761c9ad35bff0f75fd984eed38198b8825a8943`.
+- Superseded: the mesh and painting identified above.

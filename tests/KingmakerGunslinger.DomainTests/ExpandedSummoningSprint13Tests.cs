@@ -415,9 +415,9 @@ namespace KingmakerGunslinger.DomainTests
             string directory = Path.Combine(root, "assets", "sprint13-creatures");
             string[] kinds = { "wolverine", "shadow-mastiff", "poisonous-frog" };
             string[] meshHashes = {
-                "e1e97db7ab271c3705472a78262fc3306a1515ef174c39e7d6899c28bad54fc6",
-                "61755b4c1853942b73e0f2666ac246bf5d77ef9b7c6800ca30ea2f7e56a13bd3",
-                "2b37e38a4e6fb7613a06ab69f161273221a05c50105691a9dcdfd58899f58ed6"
+                "f2c4385b53a3cead1b8dbd38299dd199bc4c7b5d1c09624ea1a1dbbd7dffb6d6",
+                "fdb05b264035c10dbba7c066957a11c9ebfbff49c069bb276b7a80c84a751862",
+                "17529a2781d680ad8e995eb52cfaef71fb8cccba848f6bd4039ed3f20279d79a"
             };
             // The Wolverine and the Shadow Mastiff ride the Worg, so both must
             // bind exactly the reviewed Worg controls the Goblin Dog already
@@ -475,6 +475,11 @@ namespace KingmakerGunslinger.DomainTests
                     (string)albedo["sha256"],
                     kind + " painting matches its mesh manifest.");
             }
+            // VIS-014, VIS-033, VIS-006: every Sprint 13 body is one
+            // continuous surface exported with outward winding.
+            foreach (string kind in kinds)
+                OriginalMeshOrientation.AssertShippedBody(
+                    Path.Combine(directory, kind + "-mesh.json"), kind);
 
             string source = Path.Combine(root, "assets-source",
                 "original-models", "sprint13-creatures");

@@ -47,8 +47,9 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Repinned by Sprint 24 for the two theropod concepts.
-        self.assertEqual("23838c850fd1d0b9b3d29da462048ed7ddca3823973bbb3ddfa47026b59175b3", actual)
+        # Repinned by Sprint 24 for the two theropod concepts and by the visual
+        # refinement for the owner-approved Dire Rat edit (VIS-004).
+        self.assertEqual("35a64cb65243f7a2967121e2107f81958a7abed3ca14cfe99520f05c56b379ae", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6"
