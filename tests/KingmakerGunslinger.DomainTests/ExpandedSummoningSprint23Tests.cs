@@ -428,12 +428,17 @@ namespace KingmakerGunslinger.DomainTests
             string build = File.ReadAllText("scripts/Build-Local.ps1");
             string packageValidator = File.ReadAllText(
                 "scripts/validate-package.ps1");
-            const string releasedAnkylosaurusMesh =
-                "f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626";
-            Assertions.True(build.Contains("ankylosaurusMeshText.Replace") &&
-                build.Contains(releasedAnkylosaurusMesh) &&
-                packageValidator.Contains(releasedAnkylosaurusMesh),
-                "A fresh checkout must reproduce the exact released Ankylosaurus mesh bytes.");
+            // The refined VIS-028 export replaced the released v0.0.151 body;
+            // the package ships it as committed and pins its exact bytes.
+            const string refinedAnkylosaurusMesh =
+                "3eb7585e6f410711c7bf84bf4e23ff0df2c04fbe06ec226a0552a715c9fa9ca9";
+            Assertions.Equal(refinedAnkylosaurusMesh,
+                Sha256("assets/ankylosaurus/ankylosaurus-mesh.json"),
+                "The repository holds the refined Ankylosaurus export.");
+            Assertions.True(!build.Contains("ankylosaurusMeshText.Replace") &&
+                build.Contains("ankylosaurus-mesh.json") &&
+                packageValidator.Contains(refinedAnkylosaurusMesh),
+                "The package ships and pins the refined Ankylosaurus mesh bytes.");
         }
 
         internal static void NativeReviewScenarioIsExactAndBounded()
