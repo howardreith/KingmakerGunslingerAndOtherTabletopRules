@@ -12,6 +12,7 @@ using Kingmaker.Enums;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -43,8 +44,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             return owned;
         }
 
-        private static void TickSprint25Engagement(ExpandedSummoningCorrectionFixture fixture)
+        private static void TickSprint25Engagement(ExpandedSummoningCorrectionFixture fixture,
+            Sprint25OverrunObserver observer = null)
         {
+            foreach (UnitEntityData unit in fixture.Created.Where(value => value != null &&
+                !value.Destroyed && value.IsInState && value.View != null))
+                UnitProneController.Tick(unit);
+            observer?.ObserveNativeProne();
             // Keep the real queue drain and native responder accounting.
             // TickUnit is filtered to exact fixture owners. The controller's
             // final unconditional ambient prevention-flag clear is restored.
@@ -60,17 +66,38 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private sealed class Sprint25OverrunObserver :
             IGlobalRulebookHandler<RuleCombatManeuver>,
-            IGlobalRulebookHandler<RuleAttackWithWeapon>
+            IGlobalRulebookHandler<RuleAttackWithWeapon>,
+            IGlobalRulebookHandler<RuleDealDamage>
         {
             internal UnitEntityData Owner, Target;
             internal Action PrepareContactResources;
             internal bool ContactResourcesPrepared;
             internal readonly List<RuleCombatManeuver> Maneuvers = new List<RuleCombatManeuver>();
             internal readonly List<RuleAttackWithWeapon> Opportunities = new List<RuleAttackWithWeapon>();
+            internal readonly List<RuleDealDamage> Damage = new List<RuleDealDamage>();
+            internal readonly JArray ManeuverTimeline = new JArray();
+            internal readonly JArray OpportunityTimeline = new JArray();
+            internal bool LastActiveProne;
+            internal void ObserveNativeProne()
+            {
+                bool active = Target.Descriptor.State.Prone.Active;
+                if (active == LastActiveProne) return;
+                ManeuverTimeline.Add(new JObject { ["stage"] = "native-prone-state-transition",
+                    ["precedingManeuverRuleId"] = Maneuvers.Count == 0 ? (JToken)null :
+                        System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(Maneuvers.Last()),
+                    ["target"] = Target.UniqueId, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["proneRequested"] = Target.Descriptor.State.Prone.ShouldBeActive, ["proneActive"] = active });
+                LastActiveProne = active;
+            }
             public void OnEventAboutToTrigger(RuleCombatManeuver evt)
             {
                 if (ReferenceEquals(evt.Initiator, Owner) && evt.Type == CombatManeuver.Overrun)
                 {
+                    ManeuverTimeline.Add(new JObject { ["stage"] = "before-native-rule",
+                        ["ruleId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt),
+                        ["target"] = evt.Target?.UniqueId, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                        ["proneRequested"] = evt.Target?.Descriptor.State.Prone.ShouldBeActive,
+                        ["proneActive"] = evt.Target?.Descriptor.State.Prone.Active });
                     if (ReferenceEquals(evt.Target, Target) && !ContactResourcesPrepared)
                     {
                         PrepareContactResources?.Invoke();
@@ -80,12 +107,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             public void OnEventDidTrigger(RuleCombatManeuver evt)
-            { if (ReferenceEquals(evt.Initiator, Owner)) Maneuvers.Add(evt); }
+            {
+                if (!ReferenceEquals(evt.Initiator, Owner)) return;
+                Maneuvers.Add(evt);
+                ManeuverTimeline.Add(new JObject { ["stage"] = "after-native-rule",
+                    ["ruleId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt),
+                    ["target"] = evt.Target?.UniqueId, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["success"] = evt.Success, ["partial"] = evt.IsPartialSuccess,
+                    ["proneRequested"] = evt.Target?.Descriptor.State.Prone.ShouldBeActive,
+                    ["proneActive"] = evt.Target?.Descriptor.State.Prone.Active });
+            }
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+            public void OnEventAboutToTrigger(RuleDealDamage evt) { }
+            public void OnEventDidTrigger(RuleDealDamage evt)
+            { if (ReferenceEquals(evt.Target, Target)) Damage.Add(evt); }
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
             {
                 if (ReferenceEquals(evt.Target, Target) && evt.IsAttackOfOpportunity)
+                {
                     Opportunities.Add(evt);
+                    OpportunityTimeline.Add(new JObject {
+                        ["attackRuleId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt),
+                        ["precedingManeuverRuleId"] = Maneuvers.Count == 0 ? (JToken)null :
+                            System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(Maneuvers.Last()),
+                        ["initiator"] = evt.Initiator.UniqueId, ["target"] = evt.Target.UniqueId,
+                        ["weapon"] = evt.Weapon.Blueprint.AssetGuid,
+                        ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                        ["proneActive"] = evt.Target.Descriptor.State.Prone.Active });
+                }
             }
         }
 
@@ -215,15 +264,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.Player.UpdateIsInCombat();
                 new UnitCombatJoinController().Tick();
                 new UnitCombatPrepareController().Tick();
+                int initiativeFrames = 0;
+                while (responders.Any(value => !value.CombatState.CanActInCombat) && initiativeFrames++ < 80)
+                    yield return 0;
+                if (responders.Any(value => !value.CombatState.CanActInCombat || !value.Descriptor.State.CanAct))
+                    throw new InvalidOperationException("Native opportunity responders have not completed initiative prerequisites.");
                 TickSprint25Engagement(fixture);
 
+                if (sample == "maneuver-immune") target.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
+                if (sample == "prone-immune") target.Descriptor.State.AddConditionImmunity(UnitCondition.Prone);
+                if (sample == "already-prone") target.Descriptor.State.Prone.ShouldBeActive = true;
+                UnitProneController.Tick(target);
+                if (sample == "already-prone" && !target.Descriptor.State.Prone.Active)
+                    throw new InvalidOperationException("Native already-prone prerequisite did not activate.");
                 int cmb = Rulebook.Trigger(new RuleCalculateCMB(owner, target, CombatManeuver.Overrun)).Result;
                 int beforeCmd = ProbeCombatManeuverDefenceParts(owner, target, CombatManeuver.Overrun).Result;
                 int margin = sample == "failure" ? -1 : sample == "partial" ? 3 : 5;
                 target.Stats.AdditionalCMD.BaseValue += cmb + 10 - margin - beforeCmd;
-                if (sample == "maneuver-immune") target.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
-                if (sample == "prone-immune") target.Descriptor.State.AddConditionImmunity(UnitCondition.Prone);
-                if (sample == "already-prone") target.Descriptor.State.Prone.ShouldBeActive = true;
                 if (turnBased)
                 {
                     var admission = new JObject();
@@ -234,12 +291,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException("Ordinary Overrun owner never reached its native turn: " + admission);
                 }
                 bool beforeProne = target.Descriptor.State.Prone.ShouldBeActive || target.Descriptor.State.Prone.Active;
+                bool beforeProneActive = target.Descriptor.State.Prone.Active;
+                bool beforeProneRequested = target.Descriptor.State.Prone.ShouldBeActive;
                 bool knockEligible = UnitHelper.CanBeKnockedOff(target);
                 int[] beforeOpportunities = responders.Select(value => value.CombatState.AttackOfOpportunityCount).ToArray();
                 int[] minimumOpportunities = (int[])beforeOpportunities.Clone();
                 int[] lastOpportunities = (int[])beforeOpportunities.Clone();
                 var opportunityTrace = new JArray();
-                observer = new Sprint25OverrunObserver { Owner = owner, Target = target };
+                observer = new Sprint25OverrunObserver { Owner = owner, Target = target, LastActiveProne = beforeProneActive };
                 observer.PrepareContactResources = () => {
                     // Setup only the disposable responders' prerequisite at
                     // contact. Native round refill during the movement/animation
@@ -257,6 +316,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     opportunityTrace.Add(new JObject { ["phase"] = "fixture-resource-prerequisite-before-native-maneuver",
                         ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                         ["ownerOpportunityCount"] = owner.CombatState.AttackOfOpportunityCount,
+                        ["responderCanActInCombat"] = new JArray(responders.Select(value => value.CombatState.CanActInCombat)),
+                        ["responderCanAct"] = new JArray(responders.Select(value => value.Descriptor.State.CanAct)),
+                        ["responderEngagedWithTarget"] = new JArray(responders.Select(value => value.CombatState.IsEngage(target))),
                         ["counts"] = new JArray(beforeOpportunities) });
                 };
                 EventBus.Subscribe(observer);
@@ -298,7 +360,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         rider.OnEventDidTrigger(observer.Maneuvers[0]);
                         repeated = true;
                     }
-                    TickSprint25Engagement(fixture);
+                    TickSprint25Engagement(fixture, observer);
                     maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
                     maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
                     yield return 0;
@@ -318,12 +380,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 RuleCombatManeuver result = observer.Maneuvers.FirstOrDefault(value => ReferenceEquals(value.Target, target));
                 bool afterProne = target.Descriptor.State.Prone.ShouldBeActive || target.Descriptor.State.Prone.Active;
+                bool afterProneActive = target.Descriptor.State.Prone.Active;
                 bool knockdown = sample != "failure" && sample != "partial" &&
                     sample != "maneuver-immune" && sample != "prone-immune" && sample != "already-prone";
                 bool expectedOpportunities = knockdown && sample != "exhausted";
                 int[] afterOpportunities = responders.Select(value => value.CombatState.AttackOfOpportunityCount).ToArray();
                 bool legalResponders = observer.Opportunities.All(value => responders.Contains(value.Initiator)) &&
                     responders.All(value => observer.Opportunities.Count(attack => ReferenceEquals(attack.Initiator, value)) <= 1);
+                bool attributedDamage = observer.Damage.All(value => responders.Contains(value.Initiator));
                 bool responses = expectedOpportunities ? responders.All(value => observer.Opportunities.Count(
                     attack => ReferenceEquals(attack.Initiator, value)) == 1) && minimumOpportunities.All(value => value == 0) :
                     observer.Opportunities.Count == 0 && beforeOpportunities.SequenceEqual(minimumOpportunities);
@@ -337,11 +401,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("overrun-" + sample + (turnBased ? "-turn-based" : "-rtwp"), outcome && observer.ContactResourcesPrepared && command.IsStarted && command.IsFinished && nativeBudget &&
                     maxStandard > standardBefore && (!turnBased || maxMove > moveBefore) &&
                     (sample == "failure" || travelled > 2f) && travelled <= owner.Stats.Speed.ModifiedValue * .3048f * 2f + 1f &&
-                    afterProne == (beforeProne || knockdown) && legalResponders && responses &&
+                    afterProne == (beforeProne || knockdown) && afterProneActive == (beforeProneActive || knockdown) && legalResponders && attributedDamage && responses &&
                     observer.Maneuvers.Count == commandCount,
                     new JObject { ["unit"] = owner.UniqueId, ["target"] = target.UniqueId,
                         ["laterTarget"] = later.UniqueId, ["ability"] = blueprint.AssetGuid,
                         ["sample"] = sample, ["route"] = route, ["frames"] = frames,
+                        ["nativeInitiativeWaitFrames"] = initiativeFrames,
                         ["commandCount"] = commandCount, ["mode"] = turnBased ? "turn-based" : "rtwp",
                         ["commandFinished"] = command.IsFinished, ["commandResult"] = command.Result.ToString(),
                         ["effectiveCmd"] = result?.TargetCMD, ["cmb"] = result?.InitiatorCMB,
@@ -349,6 +414,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativePartialSuccess"] = result?.IsPartialSuccess, ["nativeSuccess"] = result?.Success,
                         ["nativeMargin"] = result?.SuccesValue, ["nativeAutoFailure"] = result?.AutoFailure,
                         ["knockEligible"] = knockEligible, ["proneBefore"] = beforeProne, ["proneAfter"] = afterProne,
+                        ["proneRequestedBefore"] = beforeProneRequested,
+                        ["proneActiveBefore"] = beforeProneActive, ["proneActiveAfter"] = afterProneActive,
+                        ["maneuverTimeline"] = observer.ManeuverTimeline,
+                        ["opportunityTimeline"] = observer.OpportunityTimeline,
+                        ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
+                        ["damageAttributedToNativeResponders"] = attributedDamage,
                         ["nativeBudget"] = nativeBudget, ["travelled"] = travelled,
                         ["standardCooldown"] = new JArray(standardBefore, maxStandard),
                         ["moveCooldown"] = new JArray(moveBefore, maxMove),
