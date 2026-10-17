@@ -99,9 +99,17 @@ and refuses `--kind dire-rat`.
   `20261017T0225090480213Z-disposable-expanded-summoning-native-profile` on
   master `2eed3944f6` (SHA-256
   `c651dda7aab132adfe9354d72e4e113613ca04057737b7a30e29bd680ecf4270`).
-- `dire-rat-mesh.json`: `a9dddfbb0d9f09b8d6b784d6dbe7fb182b817dd82f75d2dc74498ea39b07522e`
-  (4,782 vertices, 6,436 triangles, 16 closed outward parts, the reviewed 32
+- `dire-rat-mesh.json`: `cdc262ab43da10301e5f81d01fb94f7c0ee74d621e03fb4c444983341073fbf4`
+  (4,899 vertices, 6,452 triangles, 16 closed outward parts, the reviewed 32
   Dog controls).
-- `dire-rat-albedo.png`: `989011677bfa42f097cef7271220dda1eebcbcec7759f7e1974b9702d56419ff`
+- `dire-rat-albedo.png`: `746cb3c4b0c417430fa22ffa2f568bd0571080fe9e7ce72b090577af7356f422`
   (1024 x 1024 RGB).
 - Superseded: mesh `2ee73bcf…1633a`, albedo `fb618f5d…89030` (listed above).
+
+A read-only visual review of the first rebuild asked for thicker forelegs, a
+jaw that follows the head and opens, a tail that does not curl back over the
+rump, a darker underjaw and pink only on the naked tail. Its frozen-jaw and
+loose-claw findings came from the offline preview, which ignored vertex groups
+of non-deform bones; `continuous_body.heat_weights` now restores every bound
+control as a deform bone, so the saved source poses with the shipped weights.
+The hashes above are the revised build.

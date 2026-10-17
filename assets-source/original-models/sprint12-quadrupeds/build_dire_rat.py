@@ -94,7 +94,7 @@ def build(rig, armature):
                            spine_z - u(19)))
         front = [shoulder, at(prefix + "_Arm_Lower"), at(prefix + "_Palm"),
                  at(prefix + "_Finger0")]
-        volume.sweep(front, [u(11), u(7), u(4.4), u(3.4)])
+        volume.sweep(front, [u(12), u(8), u(5), u(3.7)])
         hand = front[-1] + FORWARD * u(3) + UP * u(-1.5)
         volume.ellipsoid(hand, (SIDE, FORWARD, UP), (u(4.5), u(6.5), u(2.2)))
         hip = Vector((sign * u(12), at(prefix + "_Leg0_Upper").y - u(2),
@@ -141,7 +141,7 @@ def build(rig, armature):
             regions[index] = REGION["body"]
         # Fur covers the rump round the tail root; the tail is bare only
         # where it leaves the body.
-        if region == REGION["tail"] and positions[index].y < pelvis.y + u(37):
+        if region == REGION["tail"] and positions[index].y < pelvis.y + u(42):
             regions[index] = REGION["body"]
     parts = [(body, rows, regions)]
 
@@ -149,13 +149,16 @@ def build(rig, armature):
         parts.append((obj, cb.rigid_rows(obj, bones), REGION[region]))
 
     # Naked, scaly tail: trailing back and drooping to the floor.
+    # The curve starts gently from the last tail joint instead of kinking.
     extension = [tail[-1] - (tail[-1] - tail[-2]).normalized() * u(2),
-                 Vector((0.0, tail[-1].y + u(14), tail[-1].z - u(13))),
-                 Vector((0.0, tail[-1].y + u(31), tail[-1].z - u(37))),
+                 Vector((0.0, tail[-1].y + u(9), tail[-1].z - u(4))),
+                 Vector((0.0, tail[-1].y + u(20), tail[-1].z - u(15))),
+                 Vector((0.0, tail[-1].y + u(33), tail[-1].z - u(33))),
                  Vector((0.0, tail[-1].y + u(47), u(16))),
                  Vector((0.0, tail[-1].y + u(59), u(5)))]
     rigid(cb.strand("DireRatTail", extension,
-                    [u(3.6), u(3.0), u(2.2), u(1.3), u(0.35)], segments=8),
+                    [u(3.6), u(3.2), u(2.7), u(2.0), u(1.2), u(0.35)],
+                    segments=8),
           [("Tail03", 1.0)], "tail")
     # Lower jaw on its own control so the native bite opens the mouth.
     jaw_root = Vector((0.0, jaw.y - u(2), skull.z - u(8)))
@@ -176,13 +179,16 @@ def build(rig, armature):
         rigid(cb.blob("DireRatEye" + prefix, eye, (SIDE, FORWARD, UP),
                       (u(3.1), u(3.3), u(3.0))), [("Head", 1.0)], "eye")
         for rise in (-1.2, 0.0, 1.2):
-            root = snout_tip + SIDE * sign * u(3.6) + FORWARD * u(-5) +                 UP * u(1.6 + rise)
-            whisker_tip = root + SIDE * sign * u(22) + FORWARD * u(-4) +                 UP * u(rise * 2.5 - 1.5)
+            root = snout_tip + SIDE * sign * u(3.6) + FORWARD * u(-5) + \
+                UP * u(1.6 + rise)
+            whisker_tip = root + SIDE * sign * u(22) + FORWARD * u(-4) + \
+                UP * u(rise * 2.5 - 1.5)
             rigid(cb.strand("DireRatWhisker", [root, root.lerp(
                 whisker_tip, 0.5), whisker_tip],
                 [u(0.35), u(0.22), u(0.08)], 5),
                 [("Nose", 1.0)], "whisker")
-        incisor = snout_tip + SIDE * sign * u(0.9) + FORWARD * u(-1.5) -             UP * u(1.5)
+        incisor = snout_tip + SIDE * sign * u(0.9) + FORWARD * u(-1.5) - \
+            UP * u(1.5)
         rigid(cb.strand("DireRatIncisor", [incisor + UP * u(1.5),
                                            incisor - UP * u(3.5)],
                         [u(0.8), u(0.55)], 6),
@@ -232,7 +238,9 @@ def colour_field(landmarks):
                        np.array([0.88, 0.72, 0.36]), rgb)
         rgb = np.where((region == REGION["whisker"])[:, None],
                        np.array([0.20, 0.18, 0.17]), rgb)
-        jaw = belly * (0.86 + 0.18 * fur[:, None])
+        # A light chin, but darker than the belly so the closed mouth does
+        # not read as a pale strip.
+        jaw = (belly * 0.55 + flank * 0.45) * (0.86 + 0.18 * fur[:, None])
         rgb = np.where((region == REGION["jaw"])[:, None], jaw, rgb)
         return rgb
     return colour

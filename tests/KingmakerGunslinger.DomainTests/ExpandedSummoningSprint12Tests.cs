@@ -86,7 +86,7 @@ namespace KingmakerGunslinger.DomainTests
                 "sprint12-quadrupeds");
             string[] kinds = { "dire-rat", "hyena", "goblin-dog" };
             string[] meshHashes = {
-                "a9dddfbb0d9f09b8d6b784d6dbe7fb182b817dd82f75d2dc74498ea39b07522e",
+                "cdc262ab43da10301e5f81d01fb94f7c0ee74d621e03fb4c444983341073fbf4",
                 "0217f8d599480e5aaed6f1b6df9736b64609298664f3732271bb39c08596ac48",
                 "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a"
             };

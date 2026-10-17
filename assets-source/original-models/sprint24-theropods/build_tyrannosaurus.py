@@ -46,7 +46,7 @@ HEAT = ("Torso_Lower", "Torso_Upper", "neck", "neck1", "Head",
         "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0", "R_toe")
 # Shares of each forelimb segment that follow its own control rather than
 # the chest; the rest rides Torso_Upper.
-ARM_SHARE = {"upper": 0.10, "lower": 0.16, "hand": 0.22, "finger": 0.26}
+ARM_SHARE = {"upper": 0.16, "lower": 0.24, "hand": 0.30, "finger": 0.34}
 
 
 def tail_profile():
@@ -84,9 +84,11 @@ def build(rig, armature):
         hip, knee = at(prefix + "_Leg0_Upper"), at(prefix + "_Leg0_Lower")
         ankle, ball = at(prefix + "_Foot0"), at(prefix + "_toe")
         sign = 1.0 if hip.x > 0 else -1.0
-        volume.sweep([Vector((sign * 0.22, -0.05, 0.98)),
+        # The thigh starts inside the hips so it flows out of them rather
+        # than reading as a ball on each side from above.
+        volume.sweep([Vector((sign * 0.15, -0.05, 0.96)),
                       Vector((sign * 0.20, 0.05, 0.72)), knee],
-                     [0.34, 0.27, 0.17])
+                     [0.31, 0.27, 0.17])
         volume.sweep([knee, knee.lerp(ankle, 0.5), ankle], [0.16, 0.12, 0.10])
         volume.sweep([ankle, ankle.lerp(ball, 0.5), ball + UP * 0.06],
                      [0.09, 0.075, 0.075])
@@ -109,11 +111,13 @@ def build(rig, armature):
         "neck", lambda q: 0.55 * math.exp(-((q.z - 1.44) / 0.12) ** 2))
     # The skull moves as one with its rigid teeth and eyes: Head owns it
     # outright ahead of the neck, ramping in over the throat.
+    # A longer ramp keeps a head turn from folding the throat into a ridge.
     def into_skull(q):
-        t = max(0.0, min(1.0, (q.y - 0.56) / 0.16))
+        t = max(0.0, min(1.0, (q.y - 0.50) / 0.28))
         return t * t * (3.0 - 2.0 * t)
+
     heat = cb.blend_toward(heat, positions,
-                           lambda q, row: q.y > 0.56 and q.z > 1.36,
+                           lambda q, row: q.y > 0.50 and q.z > 1.36,
                            "Head", into_skull)
     heat = cb.clean_weights(heat, positions, armature, set(HEAT))
     rows = {}

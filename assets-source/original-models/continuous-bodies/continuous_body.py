@@ -428,6 +428,12 @@ def heat_weights(obj, armature, allowed):
     for modifier in list(obj.modifiers):
         obj.modifiers.remove(modifier)
     obj.vertex_groups.clear()
+    # Unity skins every bound control; Blender's armature modifier ignores a
+    # vertex group whose bone is not a deform bone. Restore the flag so the
+    # saved source poses offline with exactly the weights that ship (a
+    # first review saw rigid claws, jaws and arms left behind otherwise).
+    for bone in armature.data.bones:
+        bone.use_deform = True
     return rows
 
 

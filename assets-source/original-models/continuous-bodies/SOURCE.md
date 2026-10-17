@@ -63,13 +63,21 @@ seen through its head and a leg. `audit_mesh_orientation.py` and
   surface's edges. Species-local rules, each commented in its builder, cover
   what heat cannot know: a skull moves as one with its rigid jaw, eyes, horns
   and teeth; the Rhinoceros barrel follows the spine rather than the Mastodon
-  upper-limb bones it buries; the Tyrannosaurus countertail follows its four
-  tail joints and its neck column shares the `neck` control.
+  upper-limb bones it buries, and its neck and skull fade onto `Neck` and
+  `Head` along and across the head axis with no hard edge; the Tyrannosaurus
+  countertail follows its four tail joints and its neck column shares the
+  `neck` control.
 - **Rigid features.** Horns, teeth, ears, eyes, claws, toes, whiskers and the
   rat's naked tail are closed solids rooted inside the surface and owned by
-  fixed bones. The Tyrannosaurus forearms ride `Torso_Upper` for 74-90 % of
+  fixed bones. The Tyrannosaurus forearms ride `Torso_Upper` for 66-84 % of
   their weight, so the Lizardfolk's broad A-pose arm swings reach them only as a
   restrained fraction.
+- **Offline preview.** Blender's armature modifier ignores a vertex group
+  whose bone is not a deform bone, and the heat solve clears that flag on
+  every bone it was not asked to weight. `heat_weights` restores it on every
+  bone, so the saved source poses with exactly the weights that ship. Before
+  that fix a first visual review saw rigid jaws, claws and arms left behind
+  in offline poses that the game would have moved.
 - **Painting.** UVs come from Smart UV Project; the albedo is rasterised from a
   deterministic procedural colour field over the surface (value and cell noise,
   countershading, skin regions taken from the weights) and written by a fixed

@@ -55,20 +55,27 @@ below the head pivot, a separate two-joint lower jaw with tooth rows, heavy
 thighs over the Lizardfolk's digitigrade shins, three-toed clawed feet and a
 horizontal countertail blended across the four tail joints. The tiny
 two-fingered forearms are rooted in the chest and follow `Torso_Upper` for
-74-90 % of their weight. `generate_theropods.py` keeps the Deinonychus and
+66-84 % of their weight. `generate_theropods.py` keeps the Deinonychus and
 refuses `--kind tyrannosaurus`.
 
 - Capture: `sprint24-theropod-census.json` from guarded run
   `20261017T0224053339821Z-observe-expanded-summoning-sprint24-theropod-census`
   on master `2eed3944f6` (SHA-256
   `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`).
-- `tyrannosaurus-mesh.json`: `9e3ae4c42839d358f5345d47a4da90483329ae2eae4cd8c97575ffce20de1ffb`
-  (6,987 vertices, 8,956 triangles, 50 closed outward parts, the exact 35
+- `tyrannosaurus-mesh.json`: `d9fe3f0ac21d5372bcb309f9b8d4790e379da9c2ee052737aeb1644a239fe320`
+  (7,093 vertices, 8,956 triangles, 50 closed outward parts, the exact 35
   reviewed drivers).
-- `tyrannosaurus-albedo.png`: `b313d8f9fd9396279d0e959f11c6ee26fd62a1b33c9e67c68ca711f08ccc0c6a`
+- `tyrannosaurus-albedo.png`: `ff2b250fd753fd18a94fb7f00d94acaaf7467410a76a0b182de8eed36bd7c7af`
   (1024 x 1024 RGB).
 - Superseded: mesh `308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87`,
   albedo `3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8`.
+- A read-only visual review of the first rebuild found the arms frozen and
+  the claws and jaw left behind in offline poses. Those were preview
+  artifacts: the review armature ignored vertex groups of non-deform bones,
+  which `continuous_body.heat_weights` now restores. The revision also gives
+  the arms a larger share of their own swing (16-34 % from upper arm to
+  finger), tucks the thighs into the hips and softens the neck-to-skull
+  ramp.
 - The released v0.0.155 validator (inherited by the v0.0.157 release and
   development validators) still pins the superseded Tyrannosaurus bytes; see
   the lane state file for the open decision.
