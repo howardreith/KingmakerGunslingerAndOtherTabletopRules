@@ -169,9 +169,14 @@ namespace KingmakerGunslinger.DomainTests
                 .All(value => !appended.Contains(value)),
                 "The Sprint 5 append stays exactly before the Sprint 6 append.");
             SummonIconCatalog.Validate();
-            Assertions.Equal(117, SummonIconCatalog.All.Count(value =>
+            // 118 since 2026-10-17: this counts every icon concept that is
+            // NOT a Sprint 24 exact-rank theropod, so the Brachiosaurus
+            // painting's arrival moved it by one. The identities below are
+            // what this test guards.
+            Assertions.Equal(118, SummonIconCatalog.All.Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks(value.Key)),
-                "All pre-Sprint-25 concepts remain without changing Sprint 6 identities.");
+                "Every non-theropod icon concept remains without changing Sprint 6 " +
+                "identities.");
         }
     }
 }

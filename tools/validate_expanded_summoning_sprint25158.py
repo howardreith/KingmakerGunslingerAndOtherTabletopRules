@@ -143,6 +143,12 @@ ALLOWED_PRODUCTION = {
     # is deliberate rather than incidental.
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
     "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
+    # Admitted 2026-10-17 with the arrival of the Brachiosaurus painting.
+    # The creature was already registered, so the catalog already
+    # EXPECTED its icon; the immutability guard's count is what moves,
+    # 119 -> 120, and it moves only because the source painting and its
+    # 128x128 export now exist and are pinned by the icon manifests.
+    "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
     # Admitted 2026-10-16 with the usable bodies. The owner's delivery
     # instruction requires each creature to have a working, visible
     # in-game 3D body, which is the attachment path these four seams
@@ -177,11 +183,14 @@ ALLOWED_PRODUCTION = {
 # Original project-authored bodies and icons, pinned once authored. A public
 # candidate must declare and carry them; a registered candidate is allowed to
 # say truthfully that they do not exist yet.
-# The sprint's original BODY art, pinned by exact bytes. The painted
-# Brachiosaurus icon is a separate dependency with its own gate - the icon
-# catalog count - and is NOT in this set, so a complete ART here must not be
-# read as "all Sprint 25 art exists". It does not; the icon is still missing.
+# The sprint's original art, pinned by exact bytes: the two bodies and, since
+# 2026-10-17, the painted Brachiosaurus icon that was the last external input.
+# The icon keeps its own separate gate as well - the catalog count, now 120.
 ART: dict[str, str] = {
+    "assets-source/original-icons/expanded-summoning/sources/brachiosaurus.png":
+        "da5a4bee8d86bc50b1bf6915272603b9a937eab9e309a3335c3ba97a4870a39e",
+    "assets/game/icons/expanded-summoning/brachiosaurus.png":
+        "7a573555b5d44eaea4a970da54214213eb00499423338b65109e0b9ac0ee1003",
     "assets/sprint25-giant-bodies/brachiosaurus-mesh.json":
         "ce826df01509d0333e50491077a376a8e985f4bf8d735c7c2814aa16d434e18a",
     "assets/sprint25-giant-bodies/brachiosaurus-albedo.png":

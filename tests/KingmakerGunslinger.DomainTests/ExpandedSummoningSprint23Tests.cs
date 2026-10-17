@@ -371,9 +371,13 @@ namespace KingmakerGunslinger.DomainTests
 
             JObject icons = JObject.Parse(File.ReadAllText(
                 "assets-source/original-icons/expanded-summoning/icon-manifest.json"));
-            Assertions.Equal(117, icons["icons"].Count(value =>
+            // 118 since 2026-10-17: this counts every icon concept that is
+            // NOT a Sprint 24 exact-rank theropod, so the Brachiosaurus
+            // painting's arrival moved it by one. The identities below are
+            // what this test guards.
+            Assertions.Equal(118, icons["icons"].Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks((string)value["key"])),
-                "All pre-Sprint-25 icon concepts remain unchanged.");
+                "Every non-theropod icon concept remains unchanged.");
             JToken[] armored = icons["icons"].Where(value =>
                 ArmoredDinosaurVisualPolicy.Handles((string)value["key"]))
                 .ToArray();
