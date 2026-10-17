@@ -1211,6 +1211,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint25-trample-signed-strength", ExpandedSummoningSprint25Tests.TrampleStrengthArithmeticIsOneRule),
             Case("expanded-summoning.sprint25-donor-rig", ExpandedSummoningSprint25Tests.TheDonorIsTheMeasuredQuadrupedRigAndNotAnIdentity),
             Case("expanded-summoning.sprint25-elephant-profile", ExpandedSummoningSprint25Tests.ElephantProfileIsCorrectedToItsPrintedRoutine),
+            Case("expanded-summoning.sprint25-targeted-persistence", ExpandedSummoningSprint25Tests.TargetedPersistenceCannotExpandItsRoster),
             Case("expanded-summoning.sprint19-four-claw-rend", Sprint19RulesTests.FourClawRendNeedsAllFourClawsOnOneTarget),
             Case("expanded-summoning.sprint19-no-stale-rend", Sprint19RulesTests.NoStaleFourClawRendCrossesACommand),
             Case("expanded-summoning.sprint19-review-agrees", Sprint19RulesTests.ReviewExpectationsAgreeWithTheRulesPolicies),

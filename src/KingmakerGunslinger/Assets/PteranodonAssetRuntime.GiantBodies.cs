@@ -43,6 +43,42 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        // The guarded review uses the same unavailable-payload seam as the
+        // released flight review, scoped to one giant cache and restored by
+        // exact reference. It never edits candidate files or donor resources.
+        internal static IDisposable WithdrawGiantBodyForTest(string key)
+        {
+            lock (Sync)
+            {
+                var visual = GiantBodies[key];
+                var scope = new GiantBodyWithdrawal(visual);
+                visual.Mesh = null; visual.Bones = null; visual.Albedo = null;
+                visual.Status = "donor-visual:withdrawn-for-test:giant-payload";
+                return scope;
+            }
+        }
+
+        private sealed class GiantBodyWithdrawal : IDisposable
+        {
+            private Sprint13CreatureVisual _visual;
+            private readonly Mesh _mesh;
+            private readonly string[] _bones;
+            private readonly Texture2D _paint;
+            private readonly string _status;
+            internal GiantBodyWithdrawal(Sprint13CreatureVisual visual)
+            { _visual = visual; _mesh = visual.Mesh; _bones = visual.Bones; _paint = visual.Albedo; _status = visual.Status; }
+            public void Dispose()
+            {
+                lock (Sync)
+                {
+                    if (_visual == null) return;
+                    _visual.Mesh = _mesh; _visual.Bones = _bones;
+                    _visual.Albedo = _paint; _visual.Status = _status;
+                    _visual = null;
+                }
+            }
+        }
+
         /// <summary>
         /// Loads the two Sprint 25 bodies, each refused unless its payload
         /// declares the measured donor, the single renderer that donor

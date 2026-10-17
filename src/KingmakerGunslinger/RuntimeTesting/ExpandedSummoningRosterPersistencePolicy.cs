@@ -215,6 +215,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string AnkylosaurusScope = "ankylosaurus";
         internal const string ArmoredDinosaursScope = "armored-dinosaurs";
         internal const string TheropodsScope = "theropods";
+        internal const string GiantBodiesScope = "giant-bodies";
+        internal static string[] GiantBodyKeys
+        { get { return new[] { GiantBodyRulesPolicy.BrachiosaurusKey, GiantBodyRulesPolicy.ElephantKey }; } }
         internal const string ReceiptScope = "KMG_Release143_WholeRoster_v1";
         internal static string[] ArmoredDinosaurKeys
         {
@@ -267,6 +270,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] permitted = scope == AnkylosaurusScope ? new[] { "ankylosaurus" } :
                 scope == ArmoredDinosaursScope ? ArmoredDinosaurKeys :
                 scope == TheropodsScope ? TheropodKeys :
+                scope == GiantBodiesScope ? GiantBodyKeys :
                 scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
                 new string[0];
             if (!permitted.Contains(key, StringComparer.Ordinal))
@@ -290,7 +294,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] expected = scope == AnkylosaurusScope ?
                 new[] { "ankylosaurus" } : scope == ArmoredDinosaursScope ?
                 ArmoredDinosaurKeys : scope == TheropodsScope ?
-                TheropodKeys : scope == Scope ? Keys : new string[0];
+                TheropodKeys : scope == GiantBodiesScope ? GiantBodyKeys :
+                scope == Scope ? Keys : new string[0];
             return expected.Length != 0 && observed.OrderBy(value => value,
                     StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
                     value => value, StringComparer.Ordinal),
@@ -308,7 +313,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool ObserveLoad(string scenario, string scope)
         {
             return (scope == Scope || scope == AnkylosaurusScope ||
-                scope == ArmoredDinosaursScope || scope == TheropodsScope) &&
+                scope == ArmoredDinosaursScope || scope == TheropodsScope ||
+                scope == GiantBodiesScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);

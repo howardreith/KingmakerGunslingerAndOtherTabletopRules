@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "NATIVE_QUALIFICATION_REQUIRED_STEAM_AUTHENTICATION_BLOCKED",
+  "status": "NATIVE_REVIEW_SOURCE_CHECKPOINT_READY_FOR_CANDIDATE",
   "current": {
     "authority": "Owner Codex takeover mission, 2026-10-17: complete scoped functional native qualification, publication qualification, PR 49 merge, next stable release, downloaded-asset verification and final records; then STOP. No Sprint 26.",
     "historyPolicy": "Older art blockers, prototype vetoes, append counts, seven icon failures and Overrun interpretations below are dated research/development history. This current section, controllingAcceptance, candidate and remainingNativeCampaign govern the campaign.",
@@ -20,15 +20,37 @@
       "nextStableAvailability": "v0.0.158 has no remote tag; release list ends at stable v0.0.157. Recheck before freezing/publication.",
       "runtime": "No Kingmaker process and no compatibility.lock observed. No native transaction, deployment, game launch or save operation started.",
       "shell": "Default sandbox shell cannot start (setup refresh had errors). Approved worktree access succeeds as HOWARD-LAPTOP/Howard, elevated. Runtime elevation refusal remains intact; use the established de-elevation route with child completion evidence.",
-      "blocker": "Steam ActiveProcess reports ActiveUser=0 and pid=22564, matching the running steam.exe. Authenticated Steam readiness is missing; owner sign-in is required. Credentials and login UI are outside agent authority. This is an environment blocker, not product failure."
+      "historicalBlocker": "Initial intake inferred missing authentication from ActiveUser=0. This was insufficient to establish a login failure and is withdrawn as a controlling blocker.",
+      "steamReadiness": "Owner confirmed a successfully signed-in Offline Mode session. Fresh session/process check is consistent with that confirmation; no account identifiers retained. RuntimeAutomation.Common.ps1 requires the approved Steam executable/App ID, matching Windows owner and unelevated guarded launch, and has no online-connectivity requirement. Offline Mode is accepted; no launcher safety check was disabled."
     },
-    "checkpointValidation": {
+    "priorReportingCheckpointValidation": {
       "scope": "Reporting only: current ledger, active resume and PR summary. No compiled observer or product change.",
       "checks": "ConvertFrom-Json PASS; git diff --check PASS; candidate object compared with HEAD and unchanged; live Steam/process/lease recheck still blocked with no Kingmaker process and no lock.",
       "durationSeconds": 0.42,
       "deferred": "All Sprint 25 native phases, observer implementation, new candidate gate, public inventory/icon/eleven-root qualification, publisher extension/refusals, merge, release/download verification and final records remain outstanding."
     },
-    "nextAction": "After owner signs in to Steam, recheck the live authenticated session, process/lease and worktree ownership, then implement the bounded native review from coverageMap. Preserve the existing source/build checkpoint; do not rebuild it merely for this reporting edit."
+    "observerCheckpoint": {
+      "basedOnReportingHead": "d684cc8ab6820290917ae7bb602d2d11e9a06329",
+      "scope": "Compiled native observer/orchestration, targeted persistence and release tooling; not documentation-only and not native qualification.",
+      "scenario": "disposable-expanded-summoning-sprint25-native-review",
+      "phases": ["rtwp-foundation", "turn-based-commands", "rtwp-ai", "routes", "visual-lifecycle", "overrun", "great-cleave"],
+      "reuse": "Existing correction fixture, Sprint22NativeClock, exact-owner Sprint24 AI, native attack/trample stepping, real spellbook route/slot/duration checks, visual/death/resource teardown and guarded targeted persistence. Optional inputs preserve predecessor defaults and predicate identities.",
+      "coverage": "Giant composed profiles and signed actual damage/live-HD DC; ordinary/Trample and measured reach; Power Attack; legal Cleave/miss termination in both modes; ordinary Overrun outcomes, one-target/movement/action budget, repeats and per-responder exhaustion; original bodies/party-camera captures, finite skinning, payload/attach fallback, quantities, confined movement and resource/donor controls; eleven root icon consumers and published casts including both Elephant templates; exact two-creature cold-load scope; Triceratops shared trample/body control.",
+      "focusedCommand": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint25,expanded-summoning.sprint23,expanded-summoning.sprint24,expanded-summoning.native-profile'",
+      "focusedResult": "PASS on working source at 2026-10-17T16:04:51Z: production compilation 17.3 s; 46/46 selected tests 1.5 s; 2657 registered. Full suite/package/native checks remain for the frozen candidate.",
+      "preflight": "Unelevated child receipt artifacts/sprint25-seven-phase-preflight.result.json: exit 0, 48.61 s. Request preflight 609; integration 27; Steam launch 47; persistence 11 plus 21 scope round trips and 196 refusals. No game, deployment or save operation.",
+      "releaseTooling": "Sprint25GiantBodies selector, PR49/product-root/proof mapping and source-derived public counts added. New decision/refusal suite 43 PASS; existing Sprint24 decision 43 PASS; reporting lineage 18 PASS. Root, sidecar, source, ancestry, remote, proof, restoration and explicit publication confirmation remain guarded. Exact-public-artifact preflight remains at the publication boundary.",
+      "implementationCorrections": "Preserved the predecessor's literal Triceratops ability/predicate after a focused source guard failure; corrected missing combat namespace and a shadowed variable after compiler diagnostics. Records remain in ignored gate timings. Source-reader bytecode is disabled (-B); its generated cache was moved recoverably under artifacts.",
+      "art": "No accepted painting, exported icon, body payload or albedo bytes changed; no driver, retarget, bind-schema or polish experiment.",
+      "native": "NOT RUN. No engine result is claimed from the new observer. Captures/previews support presentation only; assertions require real rule/command/identity and cleanup observations.",
+      "historicalArtifactArchive": "artifacts/checkpoints/source-build-9b55df81: original ZIP and both untouched sidecars copied and hash-verified before replacement of the standard output. The candidate object below retains its original source/build identity."
+    },
+    "campaignBudget": {
+      "nativeBatchPlanningMinutes": [90, 150],
+      "basis": "New candidate gate, same-package smoke, seven phases under standalone/high-risk profiles, separate targeted cold-load/OFF/ON/cleanup/absence processes, then affected public inventory/icon/eleven-root checks. Startup cost or demonstrated repair may extend this estimate; no fixed completion promise and no interruption of restoration.",
+      "reuseContract": "Compatibility profile uses ReuseInstalledArtifact plus PackagePath to skip Build-Local. Each fresh transaction still validates, stages, deploys, logs and restores independently; cold-load isolation remains."
+    },
+    "nextAction": "Commit/push this coherent observer checkpoint, run one new Sprint gate unelevated with child completion evidence, then reuse its exact package for guarded smoke and the scoped native batch in Steam Offline Mode."
   },
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
@@ -652,7 +674,7 @@
     ],
     "sprint26Started": false
   },
-  "nextAction": "Resolve Steam authentication, then continue the authorized bounded native review implementation and release campaign in wt/s25. See current and remainingNativeCampaign. The icon dependency is resolved; no new art handoff or visual R&D is required.",
+  "nextAction": "Freeze the new observer candidate, then execute the scoped native campaign with exact-artifact reuse. See current and remainingNativeCampaign. Steam Offline Mode is accepted; the icon dependency is resolved.",
   "registration": {
     "complete": true,
     "commit": "a7b1481a8bf5caaf290d66d9c3522ecd58d29862",
@@ -1541,7 +1563,7 @@
     "whatItIsNot": "A package passing structural checks is not native qualification. Nothing has been deployed, launched or observed in game."
   },
   "remainingNativeCampaign": {
-    "status": "NOT STARTED - Steam authentication missing at takeover intake; no Sprint 25 native review scenario exists",
+    "status": "OBSERVER SOURCE IMPLEMENTED AND FOCUSED CHECKED; NATIVE EXECUTION NOT STARTED",
     "whyItIsABatchAndNotACheckpoint": "Implement one bounded Sprint 25 review with phases for profiles/commands, ordinary Overrun, functional visuals/resources and routes, plus separate targeted persistence stages. Reuse the existing partial-class fixture, native clock and observers; predecessor file sizes are not an implementation target.",
     "candidateBoundary": "Compiled observers change DLL/MVID as expected and are authorized. Batch the complete minimal observer and focused checks, then build one fresh Sprint candidate. Preserve candidate.commit 9b55df81 and its exact hashes as the historical source/build checkpoint; it is not invalidated or relabelled by later work.",
     "coverageMap": [
@@ -1572,7 +1594,7 @@
       }
     ],
     "batches": [
-      "1. Author the Sprint 25 native review scenario and register it in all three places the harness requires, then rebuild the candidate because the binary identity changes.",
+      "1. Observer source and all registration/dispatch/teardown seams are implemented and focused checked. Commit/push, then run one new Sprint candidate gate because compiled observers change binary identity; preserve the archived 9b55df81 checkpoint.",
       "2. Fresh HOWARD-LAPTOP intake: installation, settings, saves, private reference identity, Steam readiness, lease and process state - before any transaction.",
       "3. A: composed profiles and commands. Brachiosaurus's +23 lone tail with signed-Strength handling, usable Great Cleave, 20-foot reach, trample 2d6+19 at live DC 32, and the ordinary Overrun with its printed +2. Elephant's primary gore and slam at +16, no extra lead-limb Strength, six grants, quadruped defence, 10-foot reach despite 15-foot space, trample 2d8+15 at live DC 25, and its unchanged eight routes.",
       "4. B: the Overrun outcome table on the composed unit - failure; ordinary success below the margin; threshold success with eligible knockdown and its legal responders; maneuver and prone immunity and a pre-existing prone target; repeated commands/notifications and exhausted responders; unaffected Trample and unrelated actors. Attribute the roll, effective defence, native partial-success, target transition and each responder; never spend one responder's opportunity twice for the same event.",
