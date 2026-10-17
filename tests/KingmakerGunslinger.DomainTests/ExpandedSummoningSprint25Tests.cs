@@ -428,6 +428,26 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void OverrunKnocksDownOnlyThroughItsOwnCommand()
         {
+            // Native first-target filtering used to admit several candidates
+            // in one tick. Only this exact carrier may extend the predicate;
+            // preserve native output for other owners, Trample and module OFF.
+            foreach (int[] row in new[] {
+                new[] { 0, 0, 0, 0, 0 }, new[] { 0, 0, 1, 2, 0 },
+                new[] { 0, 1, 1, 0, 1 }, new[] { 1, 1, 1, 0, 1 },
+                new[] { 1, 0, 0, 0, 1 }, new[] { 1, 0, 1, 0, 0 },
+                new[] { 1, 0, 1, 1, 1 }, new[] { 1, 0, 1, 2, 1 } })
+                Assertions.Equal(row[4] != 0,
+                    GiantBodyRulesPolicy.SkipOrdinaryOverrunContact(row[0] != 0,
+                        row[1] != 0, row[2] != 0, row[3]),
+                    "The scoped native filter preserves dead handling and admits at most one enemy.");
+            foreach (int[] row in new[] {
+                new[] { 0, 0, 0, 0 }, new[] { 0, 1, 1, 0 },
+                new[] { 1, 0, 0, 0 }, new[] { 1, 1, 0, 1 },
+                new[] { 1, 0, 1, 1 }, new[] { 1, 1, 1, 1 } })
+                Assertions.Equal(row[3] != 0,
+                    GiantBodyRulesPolicy.BlocksOrdinaryOverrunOutcome(row[0] != 0,
+                        row[1] != 0, row[2] != 0),
+                    "Only the exact carrier corrects a native blocked/immune zero-result success.");
             // The printed rule knocks a target prone only when the
             // overrun result beats its CMD by 5 or more, and Greater
             // Overrun's rider follows THAT knockdown. The engine already
@@ -475,9 +495,8 @@ namespace KingmakerGunslinger.DomainTests
 
             // The printed ordinary maneuver is "you can attempt to overrun
             // your target, moving through its square" - ONE target. The
-            // delivery's IL keeps enumerating units and overrunning all of
-            // them while FirstTargetOnly is false, and stops after the first
-            // when it is true, continuing the movement either way.
+            // flag remains TRUE. The exact-carrier filter above additionally
+            // closes the demonstrated inner-loop gap; the flag alone did not.
             Assertions.True(command.Contains("overrun.FirstTargetOnly = true"),
                 "The ordinary Overrun takes one target, not everything in " +
                 "the path.");

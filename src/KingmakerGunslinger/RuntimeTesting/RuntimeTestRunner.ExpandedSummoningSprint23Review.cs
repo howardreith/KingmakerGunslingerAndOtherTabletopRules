@@ -1867,7 +1867,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (command.ExecutionProcess != null)
                         TickExpandedSummoningDetachedAbility(command, frames);
                     if (observeFrame != null && command.ExecutionProcess != null &&
-                        (frames == 6 || frames == 12 || frames == 24))
+                        (frames == 2 || frames == 6 || frames == 12 || frames == 24))
                         observeFrame(owner, frames);
                     maxStandard = Mathf.Max(maxStandard,
                         owner.CombatState.Cooldown.StandardAction);

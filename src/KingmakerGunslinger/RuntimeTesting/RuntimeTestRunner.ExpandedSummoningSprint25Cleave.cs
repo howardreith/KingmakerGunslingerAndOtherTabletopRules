@@ -50,6 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitUseAbility command = null;
                     FirearmReviewCosts costs = null;
                     var costRows = new JArray();
+                    Vector3 hostileBefore = fixture.Hostile.Position;
                     var observer = new Sprint25CleaveObserver { MissSecond = missSecond };
                     try
                     {
@@ -62,10 +63,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnitEntityData remote = CastExpandedSummoningQuietUnit(fixture, "wolf", fixture.Hostile);
                         created.AddRange(new[] { ally, remote });
                         foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
-                        var ground = AstarPath.active.GetNearest(Sprint25IsolatedAnchor(fixture));
+                        Vector3 far; string lane, laneDirection;
+                        Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, targets[0],
+                            5.5f, out far, out lane, out laneDirection);
+                        var ground = AstarPath.active.GetNearest(origin);
                         if (ground.node == null || !ground.node.Walkable)
                             throw new InvalidOperationException("No native floor for the isolated Cleave fixture.");
-                        Vector3 origin = ground.clampedPosition;
+                        origin = ground.clampedPosition;
                         Vector3 forward = Vector3.zero;
                         Vector3[] legalTargets = null;
                         foreach (Vector3 direction in CompassOffsets)
@@ -76,7 +80,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var nodes = requested.Select(point => AstarPath.active.GetNearest(point)).ToArray();
                             if (nodes.Where((node, index) => node.node != null && node.node.Walkable &&
                                 node.node.Area == ground.node.Area && node.node.GraphIndex == ground.node.GraphIndex &&
-                                Vector3.Distance(node.clampedPosition, requested[index]) < .4f &&
+                                Vector3.Distance(node.clampedPosition, requested[index]) < .6f &&
                                 !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
                                     origin + Vector3.up * 1.2f, node.clampedPosition + Vector3.up * 1.2f, 0)).Count() != 3) continue;
                             legalTargets = nodes.Select(node => node.clampedPosition).ToArray();
@@ -84,12 +88,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                             break;
                         }
                         if (legalTargets == null)
-                            throw new InvalidOperationException("No walkable, clear-sight adjacent three-target Cleave cluster.");
+                            throw new InvalidOperationException("No walkable, clear-sight adjacent three-target Cleave cluster: " + lane);
                         PlaceExpandedSummoningUnit(owner, origin);
                         for (int index = 0; index < targets.Length; index++)
                             PlaceExpandedSummoningUnit(targets[index], legalTargets[index]);
+                        bool adjacentCluster = true;
+                        for (int first = 0; first < targets.Length; first++)
+                            for (int second = first + 1; second < targets.Length; second++)
+                            {
+                                float radii = targets[first].Corpulence + targets[second].Corpulence;
+                                float distance = targets[first].DistanceTo(targets[second]);
+                                adjacentCluster &= distance >= radii - .05f && distance <= radii + 5 * .3048f + .02f;
+                            }
+                        if (!adjacentCluster) throw new InvalidOperationException("Cleave actors are not natively disjoint/adjacent: " + lane);
                         PlaceExpandedSummoningUnit(ally, origin + forward * 4.3f);
                         PlaceExpandedSummoningUnit(remote, origin + forward * 30);
+                        // Only this request-owned extra enemy is parked. The
+                        // native Cleave memory/reach filter must still exclude
+                        // the in-reach ally and the remembered remote enemy.
+                        PlaceExpandedSummoningUnit(fixture.Hostile, origin - forward * 30);
                         foreach (UnitEntityData unit in created)
                         {
                             unit.Stats.HitPoints.BaseValue = 100000;
@@ -145,7 +162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (command.IsFinished) break;
                         }
                         int expectedCount = missSecond ? 2 : 3;
-                        bool exact = greaterPath && command.IsStarted && command.IsFinished &&
+                        bool exact = adjacentCluster && greaterPath && command.IsStarted && command.IsFinished &&
                             !command.Cutscene && !command.IsIgnoreCooldown &&
                             blueprint.ActionType.ToString() == "Standard" &&
                             !ability.RequireFullRoundAction && combatThroughout &&
@@ -160,6 +177,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             new JObject { ["unit"] = owner.UniqueId, ["ability"] = blueprint.AssetGuid,
                                 ["nativeGreaterFeature"] = custom.GreaterFeature.AssetGuid,
                                 ["greaterPath"] = greaterPath,
+                                ["nativeDisjointAdjacentCluster"] = adjacentCluster,
                                 ["mode"] = turnBased ? "turn-based" : "rtwp",
                                 ["commandFinished"] = command.IsFinished,
                                 ["commandResult"] = command.Result.ToString(),
@@ -169,6 +187,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["nativeCostExact"] = costs.Exact(command, turnBased),
                                 ["nativeCostBoundary"] = costRows,
                                 ["nativeClusterSurvey"] = "Same walkable native graph/area, clear native sight geometry, adjacent cluster before turn enrollment.",
+                                ["legalLaneSurvey"] = lane,
                                 ["allyIsEnemy"] = allyIsEnemy, ["remoteOutsideNativeReach"] = remoteOutsideReach,
                                 ["remoteDistance"] = owner.DistanceTo(remote),
                                 ["alliesExcluded"] = ally.UniqueId, ["outOfReachExcluded"] = remote.UniqueId,
@@ -197,6 +216,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             }
                             Game.Instance.Player.UpdateIsInCombat();
                             DisposeExpandedSummoningUnits(fixture.Created, created);
+                            PlaceExpandedSummoningUnit(fixture.Hostile, hostileBefore);
                         }
                     }
                 }

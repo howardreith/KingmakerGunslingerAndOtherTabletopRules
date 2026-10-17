@@ -25,9 +25,25 @@ namespace KingmakerGunslinger.Summoning
     internal static class GiantBodyRulesPolicy
     {
         internal const string BrachiosaurusKey = "brachiosaurus";
+        internal const string BrachiosaurusUnitGuid = "9093aef39ecc416092ef68655a7e56fb";
+        internal const string BrachiosaurusOverrunGuid = "b41f7d2a6c8e40539af1c2d5e7b30486";
         internal const string ElephantKey = "elephant";
         // Existing released identity; no new Elephant blueprint is allocated.
         internal const string ElephantUnitGuid = "9dd8544097234f05bcd35d400d91b510";
+
+        // Preserve every other native delivery/outcome. These are only the
+        // demonstrated exact-carrier defects, not another maneuver formula.
+        internal static bool SkipOrdinaryOverrunContact(bool exactCarrier,
+            bool nativeDead, bool enemy, int completedTargets)
+        {
+            return nativeDead || exactCarrier && (!enemy || completedTargets > 0);
+        }
+
+        internal static bool BlocksOrdinaryOverrunOutcome(bool exactCarrier,
+            bool nativeAutoFailure, bool generalManeuverImmunity)
+        {
+            return exactCarrier && (nativeAutoFailure || generalManeuverImmunity);
+        }
 
         internal const string BrachiosaurusTailSymbol =
             "KMG.Summoning.Natural.Brachiosaurus.Tail4d6";

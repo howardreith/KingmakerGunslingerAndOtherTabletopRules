@@ -75,6 +75,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<RuleCombatManeuver> Maneuvers = new List<RuleCombatManeuver>();
             internal readonly List<RuleAttackWithWeapon> Opportunities = new List<RuleAttackWithWeapon>();
             internal readonly List<RuleDealDamage> Damage = new List<RuleDealDamage>();
+            internal readonly List<RuleAttackWithWeapon> IncomingOpportunities = new List<RuleAttackWithWeapon>();
+            internal readonly List<RuleDealDamage> IncomingDamage = new List<RuleDealDamage>();
             internal readonly JArray ManeuverTimeline = new JArray();
             internal readonly JArray OpportunityTimeline = new JArray();
             internal bool LastActiveProne;
@@ -96,6 +98,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ManeuverTimeline.Add(new JObject { ["stage"] = "before-native-rule",
                         ["ruleId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt),
                         ["target"] = evt.Target?.UniqueId, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                        ["sourceAbility"] = evt.Reason?.Context?.SourceAbility?.AssetGuid,
                         ["proneRequested"] = evt.Target?.Descriptor.State.Prone.ShouldBeActive,
                         ["proneActive"] = evt.Target?.Descriptor.State.Prone.Active });
                     if (ReferenceEquals(evt.Target, Target) && !ContactResourcesPrepared)
@@ -120,9 +123,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
             public void OnEventAboutToTrigger(RuleDealDamage evt) { }
             public void OnEventDidTrigger(RuleDealDamage evt)
-            { if (ReferenceEquals(evt.Target, Target)) Damage.Add(evt); }
+            {
+                if (ReferenceEquals(evt.Target, Target)) Damage.Add(evt);
+                if (ReferenceEquals(evt.Target, Owner)) IncomingDamage.Add(evt);
+            }
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
             {
+                if (ReferenceEquals(evt.Target, Owner) && evt.IsAttackOfOpportunity)
+                    IncomingOpportunities.Add(evt);
                 if (ReferenceEquals(evt.Target, Target) && evt.IsAttackOfOpportunity)
                 {
                     Opportunities.Add(evt);
@@ -232,6 +240,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData[] responders = { CastExpandedSummoningQuietUnit(fixture, "wolf"),
                     CastExpandedSummoningQuietUnit(fixture, "wolf") };
                 created.AddRange(new[] { owner, target, later }.Concat(responders));
+                // The command targets a point, not a selected unit. Establish
+                // the primary opponent in the native pool's own order before
+                // placement, including the two-enemy same-tick limit probe.
+                var nativeOpponents = new List<UnitEntityData>();
+                foreach (UnitEntityData unit in Game.Instance.State.Units)
+                    if (ReferenceEquals(unit, target) || ReferenceEquals(unit, later)) nativeOpponents.Add(unit);
+                if (nativeOpponents.Count != 2) throw new InvalidOperationException("Native two-opponent fixture census differs.");
+                target = nativeOpponents[0]; later = nativeOpponents[1];
                 // Let the real appearance finish beside the visible party;
                 // relocate only ready request-owned actors to the test lane.
                 foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
@@ -249,6 +265,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Ability granted = owner.Descriptor.Abilities.GetAbility(blueprint);
                 if (granted == null) throw new InvalidOperationException("Exact owner lacks ordinary Overrun.");
                 var ability = new AbilityData(granted);
+                float nativePointRange = ability.GetApproachDistance();
+                float pointPadding = owner.View.Corpulence + .5f;
+                float printedTwoMoves = owner.Stats.Speed.ModifiedValue * .3048f * 2f;
+                bool nativeRangeExact = blueprint.Range == AbilityRange.DoubleMove &&
+                    Math.Abs(nativePointRange - pointPadding - owner.CombatSpeedMps * 6f) < .02f &&
+                    Math.Abs(nativePointRange - pointPadding - printedTwoMoves) < .02f;
                 // Hostile-owned summons initially appear by their own caster,
                 // not our visible caster. Seed the reused route survey here,
                 // away from every protected first-area actor.
@@ -376,6 +398,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["responderEngagedWithTarget"] = new JArray(responders.Select(value => value.CombatState.IsEngage(target))),
                         ["counts"] = new JArray(beforeOpportunities) });
                 };
+                Action<string> observeResources = stage => {
+                    if (!observer.ContactResourcesPrepared) return;
+                    int[] counts = responders.Select(value => value.CombatState.AttackOfOpportunityCount).ToArray();
+                    for (int index = 0; index < counts.Length; index++)
+                        minimumOpportunities[index] = Math.Min(minimumOpportunities[index], counts[index]);
+                    if (!counts.SequenceEqual(lastOpportunities))
+                        opportunityTrace.Add(new JObject { ["phase"] = stage,
+                            ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                            ["counts"] = new JArray(counts), ["observedAttacks"] = observer.Opportunities.Count });
+                    lastOpportunities = counts;
+                };
                 EventBus.Subscribe(observer);
                 costs = new FirearmReviewCosts(owner, costRows);
                 float standardBefore = owner.CombatState.Cooldown.StandardAction;
@@ -394,12 +427,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (destination == null) throw new InvalidOperationException("No repeated ordinary Overrun route: " + route);
                 }
                 command = new UnitUseAbility(ability, destination);
+                int availabilityWait = 0;
+                while (!command.CanStart && availabilityWait++ < 80)
+                {
+                    TickSprint25Engagement(fixture, observer);
+                    observeResources("native-action-availability-wait");
+                    yield return 0;
+                }
                 if (!command.CanStart) throw new InvalidOperationException("Native Overrun command cannot start.");
+                bool targetProneAtStart = target.Descriptor.State.Prone.Active || target.Descriptor.State.Prone.ShouldBeActive;
+                if (attempt > 0 && !targetProneAtStart)
+                    throw new InvalidOperationException("The intended immediate repeat no longer has its native already-prone prerequisite.");
                 commands.Add(command);
                 int maneuversBefore = observer.Maneuvers.Count;
+                int opportunitiesBefore = observer.Opportunities.Count;
                 double commandStart = Game.Instance.Player.GameTime.TotalSeconds;
                 Vector3 commandOrigin = owner.Position;
                 bool commandCombat = owner.IsInCombat;
+                int finishedFrame = -1;
+                double finishedSeconds = -1;
+                Vector3 finishedPosition = commandOrigin;
+                float maxOverride = 0f;
                 owner.Commands.Run(command);
                 var controller = new UnitActionController();
                 frames = 0;
@@ -422,30 +470,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                         repeated = true;
                     }
                     TickSprint25Engagement(fixture, observer);
+                    observeResources("after-native-engagement-drain-before-clock");
+                    maxOverride = Math.Max(maxOverride, owner.View.MovementAgent.MaxSpeedOverride.GetValueOrDefault());
                     maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
                     maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
                     commandCombat &= owner.IsInCombat;
+                    if (command.IsFinished && finishedFrame < 0)
+                    {
+                        finishedFrame = frames;
+                        finishedSeconds = Game.Instance.Player.GameTime.TotalSeconds;
+                        finishedPosition = owner.Position;
+                    }
                     yield return 0;
                     commandCombat &= owner.IsInCombat;
-                    if (observer.ContactResourcesPrepared)
-                    {
-                        int[] counts = responders.Select(value => value.CombatState.AttackOfOpportunityCount).ToArray();
-                        for (int index = 0; index < counts.Length; index++)
-                            minimumOpportunities[index] = Math.Min(minimumOpportunities[index], counts[index]);
-                        if (!counts.SequenceEqual(lastOpportunities))
-                            opportunityTrace.Add(new JObject { ["phase"] = "native-spending-or-round-refill",
-                                ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
-                                ["counts"] = new JArray(counts), ["observedAttacks"] = observer.Opportunities.Count });
-                        lastOpportunities = counts;
-                    }
-                    if (command.IsFinished && frames > 100) break;
+                    observeResources("after-native-clock");
+                    RuleCombatManeuver current = observer.Maneuvers.Skip(maneuversBefore)
+                        .FirstOrDefault(value => ReferenceEquals(value.Target, target));
+                    bool needsResponses = current != null && current.Success && !current.IsPartialSuccess &&
+                        !targetProneAtStart && knockEligible && sample != "exhausted";
+                    bool responsesDrained = !needsResponses || observer.Opportunities.Count - opportunitiesBefore >= responders.Length;
+                    if (finishedFrame >= 0 && frames >= finishedFrame + 2 &&
+                        (responsesDrained || frames >= finishedFrame + 32)) break;
                 }
                 commandRows.Add(new JObject { ["attempt"] = attempt + 1,
                     ["commandId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command),
-                    ["startSeconds"] = commandStart, ["endSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
-                    ["origin"] = SurveyVector(commandOrigin), ["end"] = SurveyVector(owner.Position),
-                    ["travelled"] = Vector3.Distance(commandOrigin, owner.Position),
+                    ["startSeconds"] = commandStart, ["endSeconds"] = finishedSeconds,
+                    ["observedThroughSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["origin"] = SurveyVector(commandOrigin), ["end"] = SurveyVector(finishedPosition),
+                    ["travelled"] = Vector3.Distance(commandOrigin, finishedPosition),
                     ["finished"] = command.IsFinished, ["frames"] = frames,
+                    ["finishedFrame"] = finishedFrame, ["nativeAvailabilityWaitFrames"] = availabilityWait,
+                    ["targetProneAtStart"] = targetProneAtStart, ["maxNativeSpeedOverrideMps"] = maxOverride,
                     ["combatThroughout"] = commandCombat,
                     ["nativeManeuverTargets"] = new JArray(observer.Maneuvers.Skip(maneuversBefore).Select(value => value.Target.UniqueId)),
                     ["nativeCostApplications"] = costs.Count(command),
@@ -465,7 +520,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     attack => ReferenceEquals(attack.Initiator, value)) == 1) && minimumOpportunities.All(value => value == 0) :
                     observer.Opportunities.Count == 0 && beforeOpportunities.SequenceEqual(minimumOpportunities);
                 float travelled = Vector3.Distance(start, owner.Position);
-                bool nativeBudget = !command.Cutscene && !command.IsIgnoreCooldown &&
+                bool nativeBudget = nativeRangeExact && !command.Cutscene && !command.IsIgnoreCooldown &&
                     blueprint.IsFullRoundAction && ability.RequireFullRoundAction;
                 bool exactCommands = commands.Count == commandCount &&
                     commands.All(value => value.IsStarted && value.IsFinished && costs.Count(value) == 1 && costs.Exact(value, turnBased)) &&
@@ -505,6 +560,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
                         ["damageAttributedToNativeResponders"] = attributedDamage,
                         ["nativeBudget"] = nativeBudget, ["travelled"] = travelled,
+                        ["nativePointApproachMeters"] = nativePointRange, ["nativePointBodyPaddingMeters"] = pointPadding,
+                        ["printedTwoMoveMeters"] = printedTwoMoves, ["nativeSpeed"] = Sprint16Speed(owner),
+                        ["targetSelection"] = "Native first eligible enemy in point-directed delivery; no unit-target or perfect tabletop charge-equivalence claim.",
+                        ["incomingOpportunityAttacks"] = new JArray(observer.IncomingOpportunities.Select(value => new JObject {
+                            ["initiator"] = value.Initiator.UniqueId, ["target"] = value.Target.UniqueId,
+                            ["weapon"] = value.Weapon.Blueprint.AssetGuid, ["hit"] = value.AttackRoll?.IsHit })),
+                        ["incomingDamage"] = new JArray(observer.IncomingDamage.Select(Sprint16DamageEvent)),
                         ["commands"] = commandRows, ["exactPerCommandTargetsCostsMovement"] = exactCommands,
                         ["nativeCostBoundary"] = costRows,
                         ["standardCooldown"] = new JArray(standardBefore, maxStandard),
