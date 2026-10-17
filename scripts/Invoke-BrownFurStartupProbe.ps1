@@ -9,6 +9,11 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
+$probeWhatIfRequested=[bool]$WhatIfPreference
+# Read-only providers must run normally during preflight (Get-FileHash's
+# provider helpers otherwise inherit WhatIf). Only the mutation boundary
+# below receives the caller's preference, as in Deploy-Local.ps1.
+$WhatIfPreference=$false
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
@@ -30,7 +35,9 @@ $resolution=New-KmgBrownFurProbeResolution -ModsRoot (Join-Path $install 'Mods')
 $scenario='disposable-brown-fur-native-cast'
 $null=Assert-KmgRuntimeScenarioPreflight -Scenario $scenario -ExpectedVersion '0.0.157' `
     -TimeoutSeconds $TimeoutSeconds -Parameters @{saveName=$SaveName}
+$WhatIfPreference=$probeWhatIfRequested
 if (-not $PSCmdlet.ShouldProcess($SaveName,'read-only native Load Game, disposable Brown-Fur cast, exact installed-stack/settings restoration')) { return }
+$WhatIfPreference=$false
 $entered=$false;$lease=$null;$catalog=$null;$failure=$null;$receipt=$null
 $evidence=Join-Path 'C:/Dev/KingmakerGunslingerLab/runtime-evidence' $runId
 [void][IO.Directory]::CreateDirectory($evidence)
