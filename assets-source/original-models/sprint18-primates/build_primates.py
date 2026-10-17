@@ -237,10 +237,11 @@ def build(rig, armature, kind):
 
 
 COATS = {
-    # Lifted from the first coat's near-black (0.085) so the form reads.
-    "ape": dict(fur=(0.33, 0.30, 0.28), tips=(0.44, 0.41, 0.38),
-                skin=(0.23, 0.20, 0.19), saddle=(0.66, 0.66, 0.68),
-                mane=(0.33, 0.30, 0.28), keratin=(0.20, 0.18, 0.17),
+    # Lifted from the first coat's near-black (0.085) so the form reads;
+    # the game's warm light turned 0.33 into cream (run 11), so a charcoal.
+    "ape": dict(fur=(0.17, 0.155, 0.15), tips=(0.24, 0.22, 0.21),
+                skin=(0.11, 0.10, 0.10), saddle=(0.44, 0.44, 0.46),
+                mane=(0.17, 0.155, 0.15), keratin=(0.14, 0.13, 0.12),
                 tooth=(0.80, 0.78, 0.70), iris=(0.21, 0.125, 0.065)),
     # The Dire Ape's approved coat, kept from its first painting.
     "dire-ape": dict(fur=(0.225, 0.120, 0.062), tips=(0.30, 0.17, 0.09),

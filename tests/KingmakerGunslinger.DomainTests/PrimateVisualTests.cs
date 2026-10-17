@@ -344,7 +344,7 @@ namespace KingmakerGunslinger.DomainTests
             var refined = new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { "sprint18-primates/ape-mesh.json",
-                  "5b469ed2670ce94bffd7968b8a14d2d273f80505beb38bb275d23ddadfd27d12" },
+                  "2f0196eca297019770894b66d69cb474e9bba59c449a95590326f888086631ee" },
                 { "sprint18-primates/dire-ape-mesh.json",
                   "d0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a" },
                 { "sprint19-fourarmed/xill-mesh.json",

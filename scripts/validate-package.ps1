@@ -154,8 +154,8 @@ try {
         'assets\sprint21-arthropods\bebelith-albedo.png' = 'afd98003bcc96ae32db4c3da63fdf3377d84f07141148ef7742cf8d3742fd554'
         'assets\ankylosaurus\ankylosaurus-mesh.json' = '3eb7585e6f410711c7bf84bf4e23ff0df2c04fbe06ec226a0552a715c9fa9ca9'
         'assets\ankylosaurus\ankylosaurus-albedo.png' = '2cdd8bc7e9139e748a9a88ec52e8a360245b6ca5ecb7829eec78a57d5a598bac'
-        'assets\sprint18-primates\ape-albedo.png' = '6b591af841a1b8d403cec6b2783565480e747b721466b3e641509048a21f1f89'
-        'assets\sprint18-primates\ape-mesh.json' = '5b469ed2670ce94bffd7968b8a14d2d273f80505beb38bb275d23ddadfd27d12'
+        'assets\sprint18-primates\ape-albedo.png' = '85c7f480eeac7dddb125961061f0e62ba2460505fcee8198e88c208a95c6c7d9'
+        'assets\sprint18-primates\ape-mesh.json' = '2f0196eca297019770894b66d69cb474e9bba59c449a95590326f888086631ee'
         'assets\sprint18-primates\dire-ape-albedo.png' = '37bdc23e705bfa0771105b768d1cd052157dfdc1d2c6bbd2a99236cf8268e219'
         'assets\sprint18-primates\dire-ape-mesh.json' = 'd0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a'
     }
