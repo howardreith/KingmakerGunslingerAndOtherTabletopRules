@@ -645,7 +645,7 @@
   },
   "openBlocker": {
     "id": "sprint25-original-art-not-authored",
-    "status": "OPEN_NEEDS_OWNER",
+    "status": "RESOLVED_2026-10-17",
     "raisedUtc": "2026-10-16T00:05:00Z",
     "what": "Section 13 requires original project-authored geometry and painting. The icon catalog derives from the creature catalog, so registering Brachiosaurus makes it want a hundred-and-twentieth entry, and that entry needs an original 128x128 RGBA creature painting plus its source painting, both hashed, exactly like the 119 that exist.",
     "required": [
@@ -671,7 +671,20 @@
     "packetIntegrity": "Re-verified 2026-10-16: all six reference images match their recorded SHA-256 and the brief matches briefSha256. Nothing in the packet was rewritten.",
     "howItIsRouted": "The packet must be carried to an authorized image-capable session as ACTUAL FILES. A machine-local pathname does not transfer images, and this session has no channel that does, so the transfer is the owner's step. What is explicitly not done instead: rewriting the brief again, creating a placeholder, moving the icon catalog count early, installing a paid backend, or starting a tooling campaign to avoid delivering the one missing image.",
     "notTheSoleReleaseRequirement": "Independent of the icon, the release still needs: an acceptable articulated neck design or an owner decision on the bounded runtime extension; final geometry, UVs and textures inspected on the models; native motion and contact evidence; and the six in-play Greater Overrun proofs. The icon is one missing external asset among several open requirements, and independent source and model work continues meanwhile.",
-    "developmentCandidateRouteUnavailable": "docs/DEVELOPMENT-CANDIDATES.md pins tools/validate_development_candidate .py to the released v0.0.156 baseline 607da683b1 and refuses any version change. This branch is 0.0.158, so a development candidate is refused until that validator is re-pinned with its corruption fixtures. It is not a bypass of the icon dependency, the version checks or the runtime bootstrap, and a development receipt cannot become release proof by relabelling. Private motion investigation therefore stays on the established guarded research route."
+    "developmentCandidateRouteUnavailable": "docs/DEVELOPMENT-CANDIDATES.md pins tools/validate_development_candidate .py to the released v0.0.156 baseline 607da683b1 and refuses any version change. This branch is 0.0.158, so a development candidate is refused until that validator is re-pinned with its corruption fixtures. It is not a bypass of the icon dependency, the version checks or the runtime bootstrap, and a development receipt cannot become release proof by relabelling. Private motion investigation therefore stays on the established guarded research route.",
+    "resolution": {
+      "supplied": "The owner supplied the painted Brachiosaurus source on 2026-10-17 and it was imported byte-identical.",
+      "sourceSha256": "da5a4bee8d86bc50b1bf6915272603b9a937eab9e309a3335c3ba97a4870a39e",
+      "sourceDimensions": "1254x1254 RGB, which is exactly the size the established exporter requires of a source",
+      "exportSha256": "7a573555b5d44eaea4a970da54214213eb00499423338b65109e0b9ac0ee1003",
+      "export": "assets/game/icons/expanded-summoning/brachiosaurus.png, 128x128 RGBA, produced by tools/New-ExpandedSummoningIcons.ps1 - the established exporter, not a hand conversion",
+      "provenance": "Read from the file's own C2PA Content Credentials chunk rather than assumed: ChatGPT, gpt-image, via the OpenAI Media Service API, signed 2026-10-17T12:59:49Z, digitalSourceType trainedAlgorithmicMedia. The prompt recorded in the registry is condensed from the generation prompt already written in the handoff brief; none of it was invented.",
+      "styleCheck": "Opened and compared against the released Tyrannosaurus source the brief names as a reference. Same square-with-medallion composition, ornate ring with cardinal bosses, warm sepia and amber palette, painterly realism. In family.",
+      "readability": "The 128x128 export was opened once: the rising neck, the small head separated from the torso, the heavy body and columnar legs all read at icon scale. One deviation from the brief is recorded rather than hidden - distant pterosaurs appear in the sky where the prompt asked for no second animal. They are background silhouettes and are not resolvable at 128 px.",
+      "countChange": "119 -> 120, derived rather than asserted: Brachiosaurus was already registered, so SummonIconCatalog already EXPECTED its icon and the guard's literal was what lagged. Moved in the guard and in the four tests that pinned the old totals, each with its message corrected to what it actually counts.",
+      "priorIconsUnchanged": "Verified: zero prior PNG files modified, zero prior sources modified. Only the two new files and the two manifests changed.",
+      "suiteAfterIntegration": "2656 tests, 0 failures"
+    }
   },
   "masterIntegration": {
     "mergedMasterAt": "607da683b1f6fd545dab90fd6f4121d155573142",
