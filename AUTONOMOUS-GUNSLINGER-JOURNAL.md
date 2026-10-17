@@ -1,5 +1,18 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — Brown-Fur lifecycle repair intake and source checkpoint
+
+Isolated `codex/brown-fur-startup-order-20261017` at base
+`2eed3944f6eab657f9030d33acae6d81eb5f10ae`; preserved other worktrees and
+Buff Planner. Supplied 0.0.157 ZIP matches published release bytes. Confirmed
+missed library-ready retry; PostLoad causal relationship remains unverified.
+Added pending/readiness gate, synchronous committed-library notification and
+actual 25-identity/type registration validation. Focused gates: 6/6 in 9.672 s,
+83/83 related in 2.111 s, production compilation included. Evidence and exact
+hashes: [repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md). Native NOT_RUN;
+owner now authorizes DATA guarded disposable-fixture test. Next packaging
+baseline repin and guarded preflight, not broad release qualification.
+
 ## 2026-09-30 Expanded Summoning Phase 2A release boundary
 
 The owner shortened the current run to a release checkpoint at the qualified

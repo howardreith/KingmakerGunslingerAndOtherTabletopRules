@@ -1,3 +1,17 @@
+# Brown-Fur startup-order repair — ACTIVE development branch (2026-10-17)
+
+Work only in `codex/brown-fur-startup-order-20261017`, isolated worktree of that
+name. Base `2eed3944f6eab657f9030d33acae6d81eb5f10ae`; version remains 0.0.157.
+See [repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md) for attribution,
+commands, evidence and remaining boundaries. Source readiness repair compiles;
+focused 6/6 and related 83/83 tests PASS. Native save-load is NOT_RUN.
+Next: preserve source checkpoint, repin development packaging to released
+0.0.157 with corruption tests, build one exact development candidate, inspect
+the guarded disposable-fixture route and prerequisites. DATA is now authorized
+for that test; no affected character save was supplied. Do not infer PostLoad
+causation from the missing-GUID log. No publication/merge/permanent install.
+Historical release authorizations below do not apply to this repair.
+
 # Alternate summoning sources — v0.0.157 RELEASED / STOP
 
 The owner accepted PR #52 (alternate summoning sources) on 2026-10-16 and
