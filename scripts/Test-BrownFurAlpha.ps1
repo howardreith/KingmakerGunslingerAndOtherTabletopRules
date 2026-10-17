@@ -34,4 +34,20 @@ $proofDirectory=Join-Path (Split-Path $PSScriptRoot) 'artifacts/alpha-publicatio
 $proof=Join-Path $proofDirectory ([Guid]::NewGuid().ToString('N')+'.json')
 [IO.File]::WriteAllText($proof,($plan|ConvertTo-Json))
 Reject {Assert-KmgNoDevelopmentProof $proof}
+$resume=@{RemoteCommit=$receipt.commit;PackageHash=$receipt.packageSha256
+    ManifestHash='1f53cec66ce1c15e0ea97a943ad7dbe0e41af30f4c028cc51e9395a76dea58c5'
+    ChecksumsHash='c289761347b5d86d772d04f0c8660cb2bf49d5ba10f7a762e0a6da72405c5b98'}
+Assert-KmgBrownFurAlphaTagOnlyResume @resume
+Check $true
+foreach($key in @('RemoteCommit','PackageHash','ManifestHash','ChecksumsHash')) {
+    $bad=$resume.Clone();$bad[$key]='wrong'
+    Reject {Assert-KmgBrownFurAlphaTagOnlyResume @bad}
+}
+$nativeFixture=Join-Path $proofDirectory ([Guid]::NewGuid().ToString('N')+'.ps1')
+[IO.File]::WriteAllText($nativeFixture,"[Console]::Error.WriteLine('native-progress'); [Console]::Out.WriteLine('native-output'); exit 0")
+$nativeOutput=Read-AlphaNative powershell.exe @('-NoProfile','-ExecutionPolicy','Bypass','-File',$nativeFixture)
+Check ($nativeOutput.Contains('native-output') -and $nativeOutput.Contains('native-progress'))
+Check ($ErrorActionPreference -ceq 'Stop')
+[IO.File]::WriteAllText($nativeFixture,'exit 7')
+Reject {Read-AlphaNative powershell.exe @('-NoProfile','-ExecutionPolicy','Bypass','-File',$nativeFixture)}
 Write-Host "Brown-Fur alpha publication safety PASS: $checks assertions; no remote writes or build."
