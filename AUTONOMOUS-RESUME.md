@@ -1,15 +1,23 @@
-# Brown-Fur startup-order repair — ACTIVE development branch (2026-10-17)
+# Brown-Fur startup-order repair — review/human-test checkpoint (2026-10-17)
 
 Work only in `codex/brown-fur-startup-order-20261017`, isolated worktree of that
-name. Base `2eed3944f6eab657f9030d33acae6d81eb5f10ae`; version remains 0.0.157.
+review branch at `C:/Dev/KingmakerGunslingerLab/worktrees/brown-fur-startup-order-review-20261017`.
+The original `brown-fur-startup-order-20261017` checkout is parked on
+`codex/brown-fur-startup-order-product-913dfd6e89`, preserving exact candidate
+identity. Base `2eed3944f6eab657f9030d33acae6d81eb5f10ae`; version remains 0.0.157.
 See [repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md) for attribution,
-commands, evidence and remaining boundaries. Source readiness repair compiles;
-focused 6/6 and related 83/83 tests PASS. Native save-load is NOT_RUN.
-Next: preserve source checkpoint, repin development packaging to released
-0.0.157 with corruption tests, build one exact development candidate, inspect
-the guarded disposable-fixture route and prerequisites. DATA is now authorized
-for that test; no affected character save was supplied. Do not infer PostLoad
-causation from the missing-GUID log. No publication/merge/permanent install.
+commands, evidence and remaining boundaries. Source repair `6912c86503`;
+frozen candidate/product/harness `913dfd6e89386ff233849f06f902ca8ea2de239e`.
+Focused 83/83 PASS; exact development build/package PASS (61.341 s).
+Authorized native load/cast probe PASS 10/10 (99.829 s), mouse mode, actual
+25-type registration at library-ready before load. All 95 saves unchanged;
+Mods/SoundBank/settings restored, game exited, lock released. Candidate ZIP,
+receipt and checksum are in `C:/Dev/KingmakerBuffPlannerLab/handoff/` with suffix
+`913dfd6e8938`; earlier handoff candidate archived as superseded.
+Next: affected-computer test or an authorized Brown-Fur-bearing disposable cold
+fixture. Saved-owner reconstruction/controller-mode load remain NOT_RUN; do
+not infer PostLoad causation from this ordinary-working-save pass. No further
+native campaign, publication/merge/permanent install is selected automatically.
 Historical release authorizations below do not apply to this repair.
 
 # Alternate summoning sources — v0.0.157 RELEASED / STOP
