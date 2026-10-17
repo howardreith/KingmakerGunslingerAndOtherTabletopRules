@@ -77,3 +77,31 @@ Reviewed shipped SHA-256 values:
 - `hyena-albedo.png`: `15927eb690a64bdd22e9f6985ddfe29f72345ad0f177c11084187f0c6745ae50`
 - `goblin-dog-mesh.json`: `0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a`
 - `goblin-dog-albedo.png`: `b7fcc93fd653684dac96268b1626a04590a1e5ccbe74851847c7b9c8d3de626a`
+
+## Dire Rat refinement, 2026-10-16 (VIS-005)
+
+The owner's review found the Dire Rat's head and legs detached-looking, its
+legs passing through the body and its colouring odd. The shipped mesh rendered
+inside out (see `../continuous-bodies/SOURCE.md`): 12 of its 23 parts faced
+inward, 14 had caps wound against their walls, and every normal opposed its
+winding. The torso and head tubes also met at `Neck1` with different weights,
+so a head turn opened a seam, and the separate leg tubes swung through the
+body tube.
+
+The Dire Rat is now built by `build_dire_rat.py` as one continuous skinned
+surface on the same Dog frame: an arched trunk hung below the Dog's tall spine
+so only short lower legs show, a skull carried below and ahead of the high
+head pivot, and a rigid lower jaw, ears, eyes, nose, incisors, whiskers and
+naked tail. `generate_sprint12_quadrupeds.py` keeps the Hyena and Goblin Dog
+and refuses `--kind dire-rat`.
+
+- Capture: `sprint12-dog-bind-rig.json` from guarded run
+  `20261017T0225090480213Z-disposable-expanded-summoning-native-profile` on
+  master `2eed3944f6` (SHA-256
+  `c651dda7aab132adfe9354d72e4e113613ca04057737b7a30e29bd680ecf4270`).
+- `dire-rat-mesh.json`: `a9dddfbb0d9f09b8d6b784d6dbe7fb182b817dd82f75d2dc74498ea39b07522e`
+  (4,782 vertices, 6,436 triangles, 16 closed outward parts, the reviewed 32
+  Dog controls).
+- `dire-rat-albedo.png`: `989011677bfa42f097cef7271220dda1eebcbcec7759f7e1974b9702d56419ff`
+  (1024 x 1024 RGB).
+- Superseded: mesh `2ee73bcf…1633a`, albedo `fb618f5d…89030` (listed above).

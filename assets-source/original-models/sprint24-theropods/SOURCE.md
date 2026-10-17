@@ -35,3 +35,40 @@ counterbalancing tail. Human aesthetic approval remains
 
 Exact census and exported-asset hashes are recorded in each private generation
 report and in the Sprint 24 qualification ledger.
+
+## Tyrannosaurus refinement, 2026-10-16 (VIS-001)
+
+The owner's review found a cup-like head, a body assembled from bulbous pieces,
+poorly integrated arms and feet, and (earlier) detached arms with comical arm
+motion. Every part of the shipped mesh faced inward: the generator made them
+consistently outward and the shared exporter then reversed them all (see
+`../continuous-bodies/SOURCE.md`), so the skull drew its own inside with the
+teeth on the inner wall. The forelimbs were authored at fixed chest
+coordinates but bound to `Arm_Upper`/`Arm_Lower`/`Palm`, whose measured pivots
+sit about 0.45 m away in the Lizardfolk's A-pose, so every native arm rotation
+swung them through a wide arc.
+
+The Tyrannosaurus is now built by `build_tyrannosaurus.py` as one continuous
+skinned surface on the same census frame: massive hips and a deep barrel
+leaning forward, a short thick neck, a deep long skull carried ahead of and
+below the head pivot, a separate two-joint lower jaw with tooth rows, heavy
+thighs over the Lizardfolk's digitigrade shins, three-toed clawed feet and a
+horizontal countertail blended across the four tail joints. The tiny
+two-fingered forearms are rooted in the chest and follow `Torso_Upper` for
+74-90 % of their weight. `generate_theropods.py` keeps the Deinonychus and
+refuses `--kind tyrannosaurus`.
+
+- Capture: `sprint24-theropod-census.json` from guarded run
+  `20261017T0224053339821Z-observe-expanded-summoning-sprint24-theropod-census`
+  on master `2eed3944f6` (SHA-256
+  `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d`).
+- `tyrannosaurus-mesh.json`: `9e3ae4c42839d358f5345d47a4da90483329ae2eae4cd8c97575ffce20de1ffb`
+  (6,987 vertices, 8,956 triangles, 50 closed outward parts, the exact 35
+  reviewed drivers).
+- `tyrannosaurus-albedo.png`: `b313d8f9fd9396279d0e959f11c6ee26fd62a1b33c9e67c68ca711f08ccc0c6a`
+  (1024 x 1024 RGB).
+- Superseded: mesh `308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87`,
+  albedo `3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8`.
+- The released v0.0.155 validator (inherited by the v0.0.157 release and
+  development validators) still pins the superseded Tyrannosaurus bytes; see
+  the lane state file for the open decision.

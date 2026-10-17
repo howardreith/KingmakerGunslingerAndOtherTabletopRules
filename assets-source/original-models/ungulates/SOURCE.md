@@ -48,3 +48,39 @@ linear-blend collapse, stretched bridge faces, open holes, broad cap disks,
 stacked barrels, bead-like joint covers, or one upper-control column. The
 geometry change does not alter collision, mechanical size, donor assets, or
 runtime ownership.
+
+## Rhinoceros refinement, 2026-10-16 (VIS-024)
+
+The owner's review found a large rear opening, separated overlong legs and a
+head with spikes protruding from it. The shipped mesh rendered inside out
+(see `../continuous-bodies/SOURCE.md`): 14 of its 22 parts faced inward, the
+torso, head, horn and tail tubes had caps wound against their walls, and every
+normal opposed its winding, so the rear cap vanished and the background showed
+through the body. The rigid spindle legs read as stacked barrels on the
+Mastodon's long columns, and the horns rose from the top of a straight head
+tube.
+
+The Rhinoceros is now built by `build_rhinoceros.py` as one continuous skinned
+surface on the same Mastodon frame: a deep barrel hung low enough to bury the
+upper legs, a withers hump and thick neck, a long boxy head carried forward and
+down with a square muzzle, a long front and a shorter rear keratin horn rooted
+on the face, tubular ears, three-nailed round feet and a tufted tail. The
+barrel follows the spine rather than the upper-limb bones it buries.
+`generate_ungulates.py` keeps the cattle and the Woolly Rhinoceros and refuses
+`--kind rhinoceros`; its spindle-leg and hoof helpers stay for those creatures
+and the armored dinosaurs that import them.
+
+- Capture: `sprint11-mastodon-bind-rig.json` from guarded run
+  `20261017T0228570223946Z-disposable-expanded-summoning-rules` on master
+  `2eed3944f6` (SHA-256
+  `ce02946c67360d0b2053402e0ada584ddc368b255df66f3c8852272c04f9e414`). That
+  scenario records the attached Woolly Rhinoceros renderer, so it holds the 26
+  controls the bodies bind (the Mastodon's ankle helpers are absent; the
+  review armature bridges them so offline poses move each foot with its knee).
+- `rhinoceros-mesh.json`: `0c704e821055c2c0de430b420eab109f11b6924c11bdbe23c6f6cdc405067fa1`
+  (5,449 vertices, 7,392 triangles, 20 closed outward parts, 26 controls).
+- `rhinoceros-albedo.png`: `95e4382be7e641cbd609f633ff7499aed2c25da9a3e24cdb6cc27616a4107e5b`
+  (1024 x 1024 RGB).
+- Superseded: mesh `aa7e069491034cf8281ea19cfd228ac159e0ad2b778e14f10f1441663014e9ca`,
+  albedo `1568f8678a41a0ce719d307ab68b22c6d7181c24b855ac0d3af92cd2008a6cf1`
+  (the Rhinoceros row of the table above).
