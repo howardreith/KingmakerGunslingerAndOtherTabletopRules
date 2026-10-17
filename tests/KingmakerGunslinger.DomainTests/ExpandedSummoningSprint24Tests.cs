@@ -437,12 +437,15 @@ namespace KingmakerGunslinger.DomainTests
             // 363 is the base the released v0.0.154 animal-companion build
             // qualified; Sprint 24 appends four original theropod body files
             // and two original creature icons on top of it; v0.0.156 and
-            // v0.0.157 each add their release notes.
-            Assertions.True(package.Contains("$basePackageFileCount = 371") &&
+            // v0.0.157 each add their release notes; Sprint 25 adds five
+            // more - two giant-body mesh payloads, their two albedos and
+            // the Brachiosaurus icon - taking the base to 376 and the
+            // sound-bank total to 378.
+            Assertions.True(package.Contains("$basePackageFileCount = 376") &&
                     package.Contains("$basePackageFileCount + 2") &&
                     package.Contains(
                         "--expected-file-count $expectedPackageFileCount") &&
-                    packager.Contains("364, 365, 369, 370, 371, 372, 373))"),
+                    packager.Contains("371, 372, 373, 376, 378))"),
                 "The strict package inventory adds exactly four bodies and two icons.");
         }
 
