@@ -1,5 +1,63 @@
 # CotW spontaneous action-bar load investigation — 2026-10-17
 
+## Frozen local candidate
+
+Repair/product commit `92b442c06dd8d13f246ca006fdda6382b9eb6236`; source branch
+`codex/cotw-controller-actionbar-load-20261017` is pushed and its original
+worktree remains clean/frozen. Subsequent records live on
+`codex/cotw-controller-actionbar-load-review-20261017` in the separate
+`C:/Dev/KingmakerGunslingerLab/worktrees/cotw-controller-actionbar-load-review-20261017`
+checkout; they do not change the candidate identity.
+
+Local UMM ZIP (not a release):
+`C:/Dev/KingmakerBuffPlannerLab/handoff/KingmakerGunslinger-0.0.157-development-cotw-controller-actionbar-load-92b442c06dd8.zip`.
+The same package, development receipt, checksum and build logs are preserved in
+the frozen checkout under
+`artifacts/development-candidates/cotw-controller-actionbar-load/92b442c06dd8/`.
+
+- ZIP SHA-256: `798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`.
+- DLL SHA-256: `e78d79cfb334f6d59c2948b6258128ce73334db59e8f7dba16a01860cc946801`.
+- DLL MVID: `0fa8ccba-349e-47e1-a2ec-8b46d20ed69c`.
+- UMM version remains 0.0.157; development purpose is
+  `cotw-controller-actionbar-load`, releaseQualification=false.
+- Candidate build: 69.245 s; existing development wrapper, 6/6 selected startup
+  tests of 2,652 registered, exact-reference .NET 4.7 / C# 7.3 compilation,
+  37 native-contract companion assertions and strict package validation PASS.
+  Command: `Build-Local.ps1 -DevelopmentPurpose cotw-controller-actionbar-load
+  -DevelopmentTestFilter brown-fur.startup -ReferenceBundleDir
+  C:/Dev/KingmakerGunslingerLab/private/refresh-2026-10-15/extracted/KingmakerGunslinger-private-build-references`.
+  Initial default bundle was incomplete (PhysicsModule missing); used the existing
+  refreshed provenance-checked bundle, without changing references or validators.
+- Exact packaged DLL then passed `Test-CotwSpontaneousSlotCompatibility.ps1`:
+  **39/39**, 0.950 s; log `artifacts/actionbar-inspection/candidate-adapter.log`.
+  Build log `artifacts/actionbar-inspection/candidate-refreshed-build.log`.
+  Full domain suite and native save-load acceptance were NOT run by this build.
+
+## Native boundary at this handoff
+
+DATA availability is authorized, not a permission/hardware blocker. No game
+process, staging transaction or native mode change was started. The source
+inspection found an important qualification gap: the qualified working-save
+loader uses the mouse main-menu button/SaveSlot receiver, while the existing
+Teleportation controller fixture starts AFTER a successful mouse load, disposes
+the old loading-screen context, loads the native controller loading UI, and
+reloads the area. Reusing that casting fixture would test the wrong scenario.
+Simply assigning Game.ControllerMode sets its field/cursor; inspected setter IL
+does not perform those UI lifecycle operations. It is not by itself a verified
+cold-controller startup workflow.
+
+Next bounded work: extend/prove a no-cast, request-bound controller load entry
+and loading-UI lifecycle, with positive/negative protocol tests and unchanged
+working-save identity/read leases, current-stack transaction, settings rollback
+and exit guards. Run a fresh matched mouse/controller pair, observe actual mode,
+all 25 Brown-Fur types, real action-bar VMs and party/page refresh, then restore
+everything exactly. Only after that PASS resume Buff Planner no-cast entry/exit;
+the installed lab KBP is the older 0.1.1-rc3, not the affected computer's
+0.5.4-controller.1. Any newer KBP candidate requires its separate guarded
+artifact transaction. Neither direct helper calls nor this source-tested ZIP
+qualifies that controller path. This checkpoint deliberately preserves the useful
+repair instead of selecting an unreviewed loading/scene workaround.
+
 Scope: isolated `codex/cotw-controller-actionbar-load-20261017`, based on
 `86de8f281c63458b296ca7d406e6f575ef8193f2`. The published Brown-Fur alpha and
 all its lifecycle changes remain intact. No release, merge or permanent install

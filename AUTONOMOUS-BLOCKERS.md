@@ -1,5 +1,21 @@
 # Autonomous Gunslinger blockers
 
+## 2026-10-17 CotW controller action-bar load
+
+Source repair and local package are not blocked: product `92b442c06dd8`,
+39/39 exact-assembly adapter assertions, 6/6 Brown-Fur startup tests, strict
+development package PASS. Brown-Fur alpha preserved. Full affected log/DLL
+no longer available; its installed identity and first null cannot be recovered
+from the tail. Exact local CotW/game identities do match the observed MVIDs.
+DATA is available/authorized, but current guarded loader is mouse receiver-bound
+and the verified controller fixture switches AFTER load. Native comparison,
+action-bar readiness/refresh and later KBP no-cast entry/exit remain NOT_RUN,
+not PASS or a hardware/permission failure. Next is a narrow no-cast guarded
+controller load/scene-lifecycle protocol; do not force a mode field or run the
+older cast campaign to claim this acceptance. No transaction/restoration debt,
+no release/merge/install authority for this repair. See
+[investigation and exact candidate](docs/COTW-CONTROLLER-ACTIONBAR-LOAD-REPAIR.md).
+
 ## 2026-10-17 Brown-Fur startup-order repair
 
 Publication is complete: public prerelease

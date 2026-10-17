@@ -1,5 +1,37 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — CotW spontaneous-slot controller load repair checkpoint
+
+Isolated from Brown-Fur alpha documentation HEAD `86de8f281c`; repaired source
+`92b442c06dd8d13f246ca006fdda6382b9eb6236`, guarded-pushed as the product
+branch. Matching installed IL establishes sibling slot classes and CotW's
+three incorrect memorized getter calls. Executing that getter in the actual
+assembly returns BlueprintAbility, not AbilityData. Narrow MVID/shape-pinned
+transpiler corrects access; native CotW owner/order and full helper retained.
+Full new log/affected KMG DLL unavailable per owner; first null on affected
+character is not claimed observed. Brown-Fur changes and alpha untouched.
+
+Focused gate final compile 7.5 s, tests 0.4 s: 6/6 startup PASS. Candidate build
+69.245 s: development wrapper, same 6/6 of 2,652, exact-reference build, 37
+native-contract companion assertions and strict package PASS. Older default
+private bundle missing PhysicsModule; reused the existing refreshed matched
+bundle, no guard weakened. Exact candidate DLL: 39/39 installed-game/CotW
+behavior assertions in 0.950 s, including production patch order, variants,
+owner/book identity, empty/unbound/rebind and no slot spend. Full suite NOT_RUN.
+Private logs in frozen worktree `artifacts/actionbar-inspection`; exact command,
+ZIP/DLL/MVID and evidence boundaries in
+[repair record](docs/COTW-CONTROLLER-ACTIONBAR-LOAD-REPAIR.md).
+
+Candidate ZIP/receipt/checksum copied collision-safely to owner handoff folder.
+ZIP `798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`;
+DLL `e78d79cfb334f6d59c2948b6258128ce73334db59e8f7dba16a01860cc946801`;
+MVID `0fa8ccba-349e-47e1-a2ec-8b46d20ed69c`. Original worktree remains clean;
+review/documentation branch/worktree is separate. No installed file/save/settings
+mutation, game launch, release, merge or transaction. DATA was reauthorized,
+but verified mouse loader / post-load controller fixture are not a qualified
+cold-controller load route. Next bounded protocol work is recorded rather than
+substituting direct mode assignment, an old native PASS or a cast fixture.
+
 ## 2026-10-17 — Brown-Fur alpha 1 published
 
 Owner reiterated that this test alpha does not require the full release suite.
