@@ -672,6 +672,9 @@ namespace KingmakerGunslinger.Bootstrap
                     "blueprints",
                     "initialize.complete",
                     "Blueprint lifecycle initialization completed exactly once; all active custom blueprints were registered transactionally, the production firearm catalog and item-token state carrier were configured, basic ammunition and the obsolete legacy kit items were published, Firearm Proficiency granted Reload, and Gunsmithing granted the unified full-round Repair action. The legacy Overhaul ability identity remains registered as a hidden repair alias for save compatibility.");
+                // Optional saved identities deferred by CotW creation must
+                // complete here, not on a later UMM frame after deserialization.
+                BrownFur.BrownFurOptionalExtensionCoordinator.OnPackageBlueprintLibraryReady();
                 return true;
             }
             catch (Exception exception)

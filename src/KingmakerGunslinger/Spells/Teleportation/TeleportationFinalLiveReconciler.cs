@@ -61,8 +61,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
             ModContext context;
             lock (Gate)
             {
-                context = _context; _attached = false;
+                context = _context;
             }
+            if (!BlueprintBootstrap.IsInitialized && !context.IsFailed) return;
+            lock (Gate) _attached = false;
             context.ModEntry.OnUpdate -= FirstUpdate;
             try
             {

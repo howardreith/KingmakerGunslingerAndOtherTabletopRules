@@ -1,5 +1,28 @@
 # Development candidates
 
+Third explicit owner exception on 2026-10-17: publish exact installer/readiness
+repair product `39c60fb5e916` as `v0.0.157-controller-load-alpha.3`, through
+the additional fixed `Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3` profile.
+Existing alpha 2 pins/default and stable qualification refusals remain intact;
+candidateKind=development and releaseQualification=false still apply. See
+[authorization](BUILD-AND-RELEASE.md#controller-load-alpha-3-authorization--2026-10-17).
+
+Second explicit owner exception on 2026-10-17: publish exact CotW action-bar
+repair product `92b442c06dd8` as test prerelease
+`v0.0.157-controller-load-alpha.2` through its hash-pinned
+`Publish-CotwActionBarAlpha.ps1`. No rebuild or native qualification is inferred;
+candidateKind=development and releaseQualification=false remain. See
+[authorization](BUILD-AND-RELEASE.md#controller-load-alpha-2-authorization--2026-10-17).
+
+One subsequent owner exception: on 2026-10-17 the owner explicitly authorized
+publishing the exact Brown-Fur product `913dfd6e8938` as a public test alpha.
+Only `Publish-BrownFurAlpha.ps1` accepts that hash-pinned preview, with a
+prerelease tag, unchanged bytes and `releaseQualification=false`. This does not
+make development evidence eligible for stable release/closure or authorize
+publication of any other candidate. See
+[the explicit alpha authorization](BUILD-AND-RELEASE.md#brown-fur-alpha-1-authorization--2026-10-17).
+The general private-candidate rules below remain unchanged.
+
 A development candidate is an exact package of unreleased review-branch work,
 built so that a guarded native observation can run against it. It is never a
 release candidate, a qualification candidate or a public artifact, and nothing
@@ -8,7 +31,7 @@ in this route changes how a release is built or validated.
 ## Why it exists
 
 `Build-Local.ps1` runs the repository wrapper, whose version-aware validator for
-the active release (`validate_firearm_continuation_release156.py` at v0.0.156)
+the active release (`validate_alternate_summoning_release157.py` at v0.0.157)
 pins that release's exact content: no identity change and production scope
 limited to the release's own files. That is correct for a release, and it means
 a review branch that appends identities without bumping the version cannot
@@ -27,7 +50,7 @@ replaces exactly two release steps:
 | complete domain suite | the named `-DevelopmentTestFilter` selection, run once, with the runner's own output kept as evidence |
 
 Everything else is the release pipeline, unchanged: every corruption fixture and
-offline contract in the repository wrapper (including the v0.0.156 release
+offline contract in the repository wrapper (including the active release
 validator's own fixtures), private-reference provenance against the installed
 game, the exact-reference Release build, supply-icon and companion checks,
 deterministic package assembly and strict package validation.

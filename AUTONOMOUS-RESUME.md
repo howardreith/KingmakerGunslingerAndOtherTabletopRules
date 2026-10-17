@@ -1,3 +1,149 @@
+# output_log2 — CotW installer and early-update repair (2026-10-17)
+
+**Owner test / review checkpoint:** after alpha 3, the owner reported "That
+appears to have fixed things" and requested a PR for owner merge.
+[PR #54](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/54)
+is open, ready for review, from `codex/cotw-actionbar-installer-review-20261017`
+to `master`; it includes the complete Brown-Fur/CotW/installer repair chain.
+This is human-reported success, not new instrumented native evidence; no fresh
+log, action-bar-page/party results or physical-input acceptance were supplied.
+Frozen alpha/product identities and automated NOT_RUN records below remain
+unchanged. No rebuild, test campaign, merge, release or installation selected
+for PR creation. Wait for the owner's merge and controller-mode comments;
+do not begin broader controller work from this feedback alone.
+
+**Alpha 3 is public** at
+[the GitHub prerelease](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3),
+published 2026-10-17T22:55:15Z. Tag object
+`8acb146b7b24a8e1c0162c0c156baaa5973c97d0` peels to frozen product
+`39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e`; publication documentation/helper
+commit `a1bbecb059244e34002f04fe9cf5613b654041ae`. Public ZIP downloaded and
+verified identical; alpha ZIP and release notes also copied into owner handoff.
+Stable v0.0.157 remains Latest; existing alphas untouched. No rebuild, full
+suite, game launch, installation or save/settings changes. Native load remains
+NOT_RUN. Next: owner tests this KMG ZIP without overwriting the affected save,
+keeps KBP/CotW unchanged and retains a fresh log if loading fails. Do not
+republish or move this tag; earlier no-publication statements below are history.
+
+Subsequent owner request "Please put it up in github" authorizes one alpha 3
+of frozen product `39c60fb5e916`, prerelease / never Latest. Use the explicit
+`Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3` profile; no rebuild/native
+rerun/full suite, merge or installation. Earlier no-publication statements
+below describe the preceding repair checkpoint. See
+[alpha 3 notes](docs/RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-3.md).
+
+Frozen product/source `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e` is clean in
+`cotw-actionbar-installer-20261017`; review records are on
+`codex/cotw-actionbar-installer-review-20261017` in the separate worktree.
+Local test ZIP/receipt/checksum are in handoff, suffix
+`cotw-actionbar-installer-39c60fb5e916`. ZIP SHA-256
+`6d4ed736a18cfdcac668eb5fad24e6b19001af635fd7e1fc53006834bd507aed`;
+DLL `d9fea590a604b81b5a14046ac88454a7eb8d4510e94e0b4ae5de082cbc2d606b`,
+MVID `c1a4d16b-efae-4ea8-b3ef-5966c3db9c6b`. Exact candidate: 64/64
+installer/callback assertions, 33/33 selected domain tests, strict package PASS.
+Build 65.746 s, exact-DLL regression 0.977 s. No game/install/save/settings
+activity during that build checkpoint. Subsequent alpha 3 publication is above.
+Next: native load test confirms installed marker
+and this DLL identity first; no accompanying KBP/CotW change. Do not reuse
+alpha 2 as though it installed the correction. Full details in the current record.
+
+Current branch/worktree `codex/cotw-actionbar-installer-20261017`, based on
+`e50db0da63d4`. The new crash log confirms alpha 2 never installed the CotW
+correction: optional metadata diagnostics threw in the installed Harmony12
+facade for an unpatched method. Brown-Fur registered all 25 identities normally.
+Preserve that repair and the frozen/public alpha 1/2 identities. Installer
+correction checkpoint `132398b46e4f`; expanded real-installer + five actual
+startup-callback regressions 64/64 PASS; focused affected neighbors 33/33 PASS.
+See [current correction/evidence](docs/COTW-ACTIONBAR-INSTALLER-REPAIR.md).
+Other early library consumers now remain pending without consuming a callback
+or Favored Class host retry. Native loading remains NOT_RUN. No release/merge/
+installation is authorized by the new repair request; older publication entries
+below are history, not a new alpha authorization. Preserve the final candidate
+cleanly before updating evidence/docs; no broad campaign selected.
+
+# CotW controller action-bar load — isolated repair checkpoint (2026-10-17)
+
+[Controller-load alpha 2 is public](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2)
+at 2026-10-17T22:34:31Z, prerelease / not Latest. Exact product `92b442c06dd8`,
+ZIP `798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`;
+public download verified identical, ZIP also in owner handoff. Publication
+tooling/docs checkpoint `b66c1dd44c6caef653e4a33fdd0f96b0c43b161a`; subsequent
+records do not change product/tag identity. KMG alpha 2 replaces Brown-Fur
+alpha 1 and retains both repairs; no companion KBP/CotW update. UMM stays
+0.0.157. No rebuild/full suite/native run, merge or installation. Stable
+v0.0.157 remains Latest. Next: owner tests load without overwriting save,
+records exact action/input mode and retains fresh diagnostics on failure.
+
+Subsequent owner request authorizes one public controller-load alpha 2 of exact
+product `92b442c06dd8`, using `Publish-CotwActionBarAlpha.ps1`, prerelease /
+never Latest. This is the KMG/Tabletop Added Rules update; no companion KBP or
+CotW update. No rebuild/full suite/native rerun, merge or installation selected.
+See [alpha notes](docs/RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-2.md). Earlier
+no-publication statements describe the preceding development checkpoint.
+
+Review branch `codex/cotw-controller-actionbar-load-review-20261017`; frozen
+product/source branch `codex/cotw-controller-actionbar-load-20261017` at
+`92b442c06dd8d13f246ca006fdda6382b9eb6236`. Both have isolated worktrees.
+Local test ZIP, receipt and checksum are in the requested handoff folder,
+suffix `cotw-controller-actionbar-load-92b442c06dd8`. ZIP SHA-256
+`798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`;
+DLL `e78d79cfb334f6d59c2948b6258128ce73334db59e8f7dba16a01860cc946801`,
+MVID `0fa8ccba-349e-47e1-a2ec-8b46d20ed69c`.
+Preserve the Brown-Fur alpha and frozen product. Exact CotW/game IL confirms
+the spontaneous prefix uses an unrelated memorized-slot getter; executable
+probe returns BlueprintAbility instead of AbilityData. Narrow transpiler
+retains the complete original CotW helper and native patch ownership/order.
+See [current investigation](docs/COTW-CONTROLLER-ACTIONBAR-LOAD-REPAIR.md).
+Exact candidate: 39/39 adapter assertions and 6/6 Brown-Fur startup tests,
+69.245 s build/package, strict package PASS. Native load
+NOT_RUN; first null on affected state and affected alpha DLL identity still
+cannot be recovered from the unavailable full log/artifact. Exclusive DATA
+availability is now owner-authorized. The verified mouse receiver and post-load
+Teleportation mode-switch fixture do not establish a cold-controller load route.
+Next: bounded no-cast controller loading-UI/receiver protocol, focused safety
+tests, then matched fresh-process fixture loads; see the current record's native
+boundary. No game launched or transaction begun; do not reuse a casting campaign.
+No automatic publication/merge/install or inherited alpha authorization.
+
+# Brown-Fur startup-order repair — alpha published / human-test checkpoint (2026-10-17)
+
+[Alpha 1 is public](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-brown-fur-alpha.1)
+as of 2026-10-17T21:49:11Z (prerelease, not Latest). Product remains frozen
+at `913dfd6e89386ff233849f06f902ca8ea2de239e`; publication tooling checkpoint
+`3395c122a92ee81ae1379337a6efb1d7ca624781`. Downloaded public ZIP matches
+`d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`;
+the alpha ZIP, sanitized manifest and checksums are also in the handoff folder.
+Stable v0.0.157 remains Latest. No rebuild, full-suite rerun, default-branch
+merge, installation or native activity occurred during publication. UMM still
+displays 0.0.157. Next: owner tests the affected save without overwriting it;
+record Continue/Load Game and input mode, and retain a fresh log if it fails.
+Do not republish, move this tag or infer saved-owner/controller-load acceptance.
+
+Work only in `codex/brown-fur-startup-order-20261017`, isolated worktree of that
+review branch at `C:/Dev/KingmakerGunslingerLab/worktrees/brown-fur-startup-order-review-20261017`.
+The original `brown-fur-startup-order-20261017` checkout is parked on
+`codex/brown-fur-startup-order-product-913dfd6e89`, preserving exact candidate
+identity. Base `2eed3944f6eab657f9030d33acae6d81eb5f10ae`; version remains 0.0.157.
+See [repair record](docs/BROWN-FUR-STARTUP-ORDER-REPAIR.md) for attribution,
+commands, evidence and remaining boundaries. Source repair `6912c86503`;
+frozen candidate/product/harness `913dfd6e89386ff233849f06f902ca8ea2de239e`.
+Focused 83/83 PASS; exact development build/package PASS (61.341 s).
+Authorized native load/cast probe PASS 10/10 (99.829 s), mouse mode, actual
+25-type registration at library-ready before load. All 95 saves unchanged;
+Mods/SoundBank/settings restored, game exited, lock released. Candidate ZIP,
+receipt and checksum are in `C:/Dev/KingmakerBuffPlannerLab/handoff/` with suffix
+`913dfd6e8938`; earlier handoff candidate archived as superseded.
+Next: affected-computer test or an authorized Brown-Fur-bearing disposable cold
+fixture. Saved-owner reconstruction/controller-mode load remain NOT_RUN; do
+not infer PostLoad causation from this ordinary-working-save pass. No further
+native campaign, publication/merge/permanent install is selected automatically.
+Historical release authorizations below do not apply to this repair.
+Subsequent owner amendment: "Could you publish a new alpha build for me to test
+please?" One public alpha is authorized, including required source branch/tag.
+Completed with `Publish-BrownFurAlpha.ps1` for exact existing bytes, tag
+`v0.0.157-brown-fur-alpha.1`, prerelease / never Latest. No rebuild or additional
+runtime campaign. Stable release, merge and installation remain out of scope.
+
 # Alternate summoning sources — v0.0.157 RELEASED / STOP
 
 The owner accepted PR #52 (alternate summoning sources) on 2026-10-16 and
