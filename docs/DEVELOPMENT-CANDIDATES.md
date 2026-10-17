@@ -23,7 +23,7 @@ replaces exactly two release steps:
 
 | Release step | Development replacement |
 | --- | --- |
-| `validate_repository.py` dispatch to the active release validator | `tools/validate_development_candidate.py`: released version metadata unchanged (no bump); the released v0.0.156 ledger as an exact prefix (append-only); schema, format and uniqueness of every identity (collisions); released Sprint 24 public boundary and original assets; released static record unchanged; `expanded_summoning_manifest.py` validation, which re-derives every adapter identity |
+| `validate_repository.py` dispatch to the active release validator | `tools/validate_development_candidate.py`: released version metadata unchanged (no bump); the released ledger as an exact prefix (append-only); schema, format and uniqueness of every identity (collisions); released Sprint 24 routes public with their original assets present and packaged; released static record unchanged; `expanded_summoning_manifest.py` validation, which re-derives every adapter identity |
 | complete domain suite | the named `-DevelopmentTestFilter` selection, run once, with the runner's own output kept as evidence |
 
 Everything else is the release pipeline, unchanged: every corruption fixture and
@@ -75,11 +75,22 @@ carries it. Release publication reads only `artifacts/local-runtime`.
 each refusal, including the executed nested calls of the development build up to
 its exact-reference compiler boundary.
 
-## Baseline after v0.0.157
+## Baseline
 
-`tools/validate_development_candidate.py` accepts candidates only on the
-released v0.0.156 baseline (`607da683b1`), and refuses any version change.
-The active version is now 0.0.157, so a development candidate is refused until
-the validator's baseline is re-pinned to the released v0.0.157 commit (its
-version metadata, ledger prefix and static record). Do that in the next branch
-that needs a development candidate, with its corruption fixtures.
+The baseline is the release of the active version, resolved from the tag the
+release publisher pushes on the released commit: `Info.json` version
+`0.0.157` means tag `v0.0.157` (`8726ec737a`). The tag must exist locally
+(`git fetch --tags origin`), must be an ancestor of the candidate, and its
+`Info.json` must carry that version; otherwise the candidate is refused. The
+version metadata, ledger prefix and static record are compared with that
+commit, so the validator needs no edit when a new version is released. (The
+first version pinned the v0.0.156 commit and refused every candidate once
+v0.0.157 shipped.)
+
+A development candidate does not apply a release's content contracts. In
+particular the exact bytes of released art are not pinned: the v0.0.155
+Sprint 24 contract pinned the Tyrannosaurus art, so a branch refining that
+art could not be observed natively. The released Sprint 24 routes must still
+be public and their original assets present and packaged. The release
+validators keep their own pins unchanged; the next release's validator is
+where changed released art is accepted for release.
