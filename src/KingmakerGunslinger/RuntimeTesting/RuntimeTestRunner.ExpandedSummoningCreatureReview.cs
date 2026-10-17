@@ -1612,6 +1612,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _refinementWritten;
         private float _refinementRadius;
         private float _refinementDistance;
+        private Bounds _refinementBounds;
         private Quaternion _refinementCameraRotation;
         private Vector3 _refinementOrigin;
         private float _refinementTravel;
@@ -1845,6 +1846,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             float[] yaws = { 0f, -40f, -90f, -140f, 180f, 180f, 140f, 90f, 180f };
             float[] pitches = { 22f, 25f, 18f, 25f, 22f, 6f, 25f, 18f, 85f };
             Vector3 centre = RefinementCentre(unit);
+            _refinementBounds = RefinementBounds(unit, centre);
             for (int index = 0; index < names.Length; index++)
             {
                 Vector3 toward = Quaternion.Euler(0f, yaws[index], 0f) *
@@ -1859,16 +1861,35 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Near clip at the creature's bounding sphere. A large creature's
-        /// framing distance puts the orbit camera beyond the room's walls; the
-        /// first native run drew most views as the game's blue occluded-unit
-        /// silhouette. Geometry nearer than this plane is not drawn, and the
-        /// creature lies wholly inside the sphere, so it is never clipped. A
-        /// margin of 1.25 radii still left the Rhinoceros walled in.
+        /// Near clip at the nearest corner of the creature's bounding box. A
+        /// large creature's framing distance puts the orbit camera beyond the
+        /// room's walls; the first native run drew most views as the game's
+        /// blue occluded-unit silhouette. Geometry nearer than this plane is
+        /// not drawn, and the creature lies wholly inside its box, so it is
+        /// never clipped. The bounding sphere still left the long rhinoceroses
+        /// partly walled in.
         /// </summary>
-        private float RefinementNearClip()
+        private float RefinementNearClip(Vector3 position, Quaternion rotation)
         {
-            return Mathf.Max(0.3f, _refinementDistance - _refinementRadius);
+            Vector3 forward = rotation * Vector3.forward;
+            Vector3 min = _refinementBounds.min, max = _refinementBounds.max;
+            float nearest = float.PositiveInfinity;
+            for (int corner = 0; corner < 8; corner++)
+            {
+                Vector3 point = new Vector3(
+                    (corner & 1) == 0 ? min.x : max.x,
+                    (corner & 2) == 0 ? min.y : max.y,
+                    (corner & 4) == 0 ? min.z : max.z);
+                nearest = Mathf.Min(nearest, Vector3.Dot(point - position, forward));
+            }
+            return Mathf.Max(0.3f, nearest - 0.15f);
+        }
+
+        private Bounds RefinementBounds(UnitEntityData unit, Vector3 centre)
+        {
+            SkinnedMeshRenderer renderer = RefinementRenderer(unit);
+            return renderer != null ? renderer.bounds :
+                new Bounds(centre, Vector3.one * _refinementRadius * 2f);
         }
 
         private Vector3 RefinementCentre(UnitEntityData unit)
@@ -1882,7 +1903,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void WriteRefinementFrame(UnitEntityData unit, string key,
             string sequence, int frame)
         {
-            Vector3 eye = RefinementCentre(unit) -
+            Vector3 centre = RefinementCentre(unit);
+            _refinementBounds = RefinementBounds(unit, centre);
+            Vector3 eye = centre -
                 (_refinementCameraRotation * Vector3.forward) * _refinementDistance;
             string result = WriteRefinementImage(eye, _refinementCameraRotation,
                 key + "-refine-" + sequence + "-" +
@@ -1908,11 +1931,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             RenderTexture priorActive = RenderTexture.active;
             RenderTexture renderTexture = null;
             Texture2D output = null;
+            // The party camera's depth of field focuses at its own distance,
+            // so a close view rendered through it is blurred (the second
+            // native run's small creatures). It is switched off for this one
+            // synchronous render only; the profile is shared, so it is always
+            // restored.
+            UnityEngine.PostProcessing.PostProcessingBehaviour post =
+                camera.GetComponent<UnityEngine.PostProcessing.PostProcessingBehaviour>();
+            UnityEngine.PostProcessing.DepthOfFieldModel depthOfField =
+                post != null && post.profile != null ? post.profile.depthOfField : null;
+            bool depthOfFieldBefore = depthOfField != null && depthOfField.enabled;
             try
             {
                 camera.transform.position = position;
                 camera.transform.rotation = rotation;
-                camera.nearClipPlane = Mathf.Max(priorNear, RefinementNearClip());
+                camera.nearClipPlane = Mathf.Max(priorNear,
+                    RefinementNearClip(position, rotation));
+                if (depthOfField != null) depthOfField.enabled = false;
                 renderTexture = new RenderTexture(RefinementFrameWidth,
                     RefinementFrameHeight, 24, RenderTextureFormat.ARGB32);
                 camera.targetTexture = renderTexture;
@@ -1940,6 +1975,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 camera.transform.position = priorPosition;
                 camera.transform.rotation = priorRotation;
                 camera.nearClipPlane = priorNear;
+                if (depthOfField != null) depthOfField.enabled = depthOfFieldBefore;
                 RenderTexture.active = priorActive;
                 if (renderTexture != null)
                 {
