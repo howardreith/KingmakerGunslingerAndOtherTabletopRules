@@ -2,6 +2,10 @@
 
 ## 2026-10-17 — Brown-Fur candidate and guarded native probe
 
+Remote-write note: guarded push dry run passed, but the actual push was blocked
+by the approval guard. No remote ref changed. Source remains local pending
+explicit owner authorization; handoff artifacts are unaffected.
+
 Frozen product `913dfd6e89386ff233849f06f902ca8ea2de239e` on
 `codex/brown-fur-startup-order-20261017`. Final development build 61.341 s,
 83/83 selected tests, exact-reference compilation and strict package PASS.

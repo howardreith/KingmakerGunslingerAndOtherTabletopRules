@@ -2,6 +2,11 @@
 
 ## 2026-10-17 Brown-Fur startup-order repair
 
+Remote review delivery: guarded push WhatIf passed; actual push was denied by
+the approval guard (remote-write authority not established). No remote write
+occurred. The ZIP/local commits are delivered; retry only with explicit owner
+authorization to expose the source branch remotely.
+
 Source/package checkpoint is not blocked (83/83 related tests PASS; frozen
 development candidate `913dfd6e8938`). Authorized native read-only working-load
 and disposable-cast probe PASS 10/10, with all 25 identities resolved and exact

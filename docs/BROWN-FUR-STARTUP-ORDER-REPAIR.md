@@ -1,5 +1,10 @@
 # Brown-Fur startup-order repair — tested development candidate
 
+Remote status: local commits only. The guarded push dry run passed, but the
+actual remote write was denied by the approval guard because this repair lacks
+explicit push authorization. Nothing was pushed or published. Do not retry
+without owner approval; a push would expose the repair source branch remotely.
+
 Current outcome: missed startup retry repaired; focused source checks and one
 guarded native load/cast probe PASS. Reconstruction of previously serialized
 Brown-Fur owners, the affected character's load and controller-mode loading
