@@ -25,7 +25,10 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-014 Wolverine | rebuilt; focused gate PASS | native after: PASS (run 3) | pending (style approved) |
 | VIS-033 Shadow Mastiff | rebuilt; focused gate PASS | native after: PASS (run 3) | pending (style approved) |
 | VIS-006 Poisonous Frog | rebuilt and recoloured green and black; focused gate PASS | native after: PASS (run 3) | pending (style approved; the owner questioned the orange) |
-| other 27 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
+| VIS-027 Deinonychus | rebuilt; focused gate PASS | native after: body in frame, lit and intact; the review assertion fails only on the Tyrannosaurus's observer limitation (same donor) (run 5) | pending (style approved) |
+| VIS-002 Triceratops | rebuilt; focused gate PASS | native after: PASS (run 5) | pending (style approved) |
+| VIS-028 Ankylosaurus | rebuilt, club bone-tan; focused gate PASS | native after: PASS (run 5) | pending (style approved) |
+| other 24 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
 
 ## Owner decisions, 2026-10-17
 
@@ -84,7 +87,7 @@ Giant Spider `60074cc2…a19b`, Pteranodon `7566f6f3…2a84`, Lizardfolk census
 
 ## Native after-evidence
 
-Both runs: development candidate built with `Build-Local.ps1
+Every run: development candidate built with `Build-Local.ps1
 -DevelopmentPurpose <p> -DevelopmentTestFilter '<focused filter>'
 -ReferenceBundleDir <private refresh bundle>`, deployed purpose-bound, the
 named disposable working save `KMG_AUTOMATION_WORKING` read and never written,
@@ -100,12 +103,17 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 3 | same | disposable-expanded-summoning-visual-contracts | 1:20 | PASS |
 | 4 | `c6d53f636527` (package `6788e161…88de`, 66 s build) | observe-expanded-summoning-sprint22-contracts (no save) | 0:58 | PASS; wrote the Hodag survey (`sprint22-ankylosaurus-contracts.json`, `33ce3ad7…a1c1`) for the Ankylosaurus |
 | 4 | same | creature review: Hyena, Goblin Dog, Woolly Rhinoceros | 3:19 | PASS; close views now sharp and clear of walls |
+| 5 | `7defdfb2f295` (package `f4aa1e03…50df`, 72 s build) | creature review: Deinonychus, Triceratops, Ankylosaurus | 3:04 | Triceratops and Ankylosaurus PASS every assertion; Deinonychus as the Tyrannosaurus below |
+| 5 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
 donor is the suppressed `_ammunition04` accessory, and its scripted move stops
 about 4 m short. The body is in frame, lit and intact. Pre-existing observer
-limitation; not caused by the new mesh.
+limitation; not caused by the new mesh. The Deinonychus, on the same donor,
+fails the same way in run 5 (`rendererEnabled=false`, `mesh=_ammunition04` in
+all four captures, the move about 3 m short); its refinement sequences, close
+views and cleanup pass and the body renders intact.
 
 Findings from run 1, fixed before run 2: the Rhinoceros's 0.41 grey hide read
 as tan in the game's warm torchlight (now a darker, slightly cool slate); and
@@ -134,7 +142,10 @@ tracking frames, the review captures and the donor bind captures.
 - Builders: `build_dire_rat.py`, `build_rhinoceros.py` (Rhinoceros and, with
   `--kind woolly-rhinoceros`, the Woolly Rhinoceros), `build_cattle.py` (Aurochs
   and Bison), `build_tyrannosaurus.py`, `build_worg_frame.py` (Hyena, Goblin
-  Dog, Wolverine, Shadow Mastiff) and `build_poisonous_frog.py`. The legacy generators refuse the kinds
+  Dog, Wolverine, Shadow Mastiff), `build_poisonous_frog.py`,
+  `build_deinonychus.py`, `build_triceratops.py` and `build_ankylosaurus.py`.
+  The library's `tube` carries ring frames along a bent path (the
+  Deinonychus's folded arms). The legacy generators refuse the kinds
   they no longer build and name the new builders; their helpers stay for the
   creatures and families that still import them.
 - Current identities (SHA-256; full hashes in each family `SOURCE.md` and the
@@ -153,8 +164,15 @@ tracking frames, the review captures and the donor bind captures.
   | Wolverine | `f2c4385b53a3…ffb6d6` | `131a49db8264…22bd7` | 6,121 / 8,124 / 28 |
   | Shadow Mastiff | `fdb05b264035…51862` | `f335df805a3e…84246` | 6,160 / 8,044 / 27 |
   | Poisonous Frog | `17529a2781d6…9d79a` | `ce040536c0a3…6211e` | 5,071 / 6,976 / 3 |
+  | Deinonychus | `b085f640a33b…ecdf6` | `9e60ec305e08…8780f` | 7,037 / 9,192 / 46 |
+  | Triceratops | `f99f5d350a3a…f49fa` | `eb458f118a7f…7f9d0` | 7,618 / 10,356 / 30 |
+  | Ankylosaurus | `3eb7585e6f41…a9ca9` | `2cdd8bc7e913…98bac` | 11,520 / 14,560 / 75 |
 
-- Domain tests: hash pins in the Sprint 11, 12 and 24 visual tests;
+- Packaging (`7defdfb2f2`): `scripts/Build-Local.ps1` no longer rewrites the
+  Ankylosaurus mesh to the released v0.0.151 CRLF bytes (it refused any other
+  export); the refined body ships as committed and `scripts/validate-package.ps1`
+  pins its mesh and albedo. The Sprint 23 released-controls test follows.
+- Domain tests: hash pins in the Sprint 11, 12, 13, 23 and 24 visual tests;
   `OriginalMeshOrientation` (in `ExpandedSummoningSprint12Tests.cs`) requires
   closed, consistently wound, outward components lit by agreeing normals for
   every refined body (all four ungulates now), with synthetic positive and
@@ -190,12 +208,19 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Determinism | each builder twice from clean Blender processes, `PYTHONHASHSEED=0` | 7-17 s per creature | byte-identical mesh and albedo for all six |
 | Exporter guard and audit | every build | - | all components closed, consistent, outward, normals agreeing |
 | Native | runs 1 and 2 above | 7 min each | as tabled |
+| Focused gate (armored dinosaurs, `7defdfb2f2`) | `scripts/Invoke-KmgGate.ps1 -Filter 'sprint12-hidden-foundation;sprint13-original-visuals;sprint11-original-ungulate-visuals;sprint11-donor;sprint22-original-asset;sprint23-original-art;sprint23-released-controls;sprint24-original-art;pteranodon'` | 11.6 s | production compilation PASS; 12 PASS |
+| Native | run 5 above | 4:46 | as tabled |
 
 ## Remaining limitations
 
-- Tyrannosaurus: the creature-review observer reads the suppressed accessory
-  renderer and its move stops short; a pre-existing observer limitation, to be
-  fixed in the observer, not the mesh.
+- Tyrannosaurus and Deinonychus: the creature-review observer reads the
+  suppressed accessory renderer and its move stops short; a pre-existing
+  observer limitation, to be fixed in the observer, not the mesh.
+- Triceratops: the Huge body fills its close views, and the near clip at its
+  bounding box cuts into the room around it; an observer framing limit.
+- Release lane: the released v0.0.155 validator (inherited by the v0.0.157
+  release validator) still pins the superseded Tyrannosaurus and Deinonychus
+  bytes; the next release's validator must accept the refined art.
 - Rhinoceros: the rump is still a broad, round mass from behind. Lowering the
   head by 30° about the Mastodon's high head pivot swings the skull under the
   chest offline; the native attack did not show it.
@@ -205,11 +230,11 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. Armored dinosaurs and the Deinonychus (in progress): Triceratops
-   (Mastodon frame), Ankylosaurus with the cyan club faces (Hodag survey,
-   captured in run 4) and Deinonychus (Lizardfolk census).
-2. Then, in order: crocodilians (targeted head
-   defect), arthropods (ants, scorpion; Bebelith as control), flying (Dire
+1. Crocodilians (in progress): targeted repair of the Crocodile and Dire
+   Crocodile. Both ship inside out (124 inward parts each), which shows their
+   interiors as the owner's dark head hole and black osteoderms; the painting
+   is a dark, regular tile grid.
+2. Then, in order: arthropods (ants, scorpion; Bebelith as control), flying (Dire
    Bat, Pteranodon, Giant Wasp), primates and four-armed (Ape, Dire Ape,
    Xill), the material and shine investigations (Wolf, Frost Giant, Ghaele,
    Thanadaemon), the Salamander, and the Dire Rat icon (VIS-004, icon rules).

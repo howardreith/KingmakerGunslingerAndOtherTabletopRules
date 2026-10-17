@@ -93,16 +93,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint23-armored-dinosaurs/triceratops-mesh.json",
-        "meshSha256": "ec2e38eae2cb3279a003ec2cf507f4eb30e4e3153905a60a697940833cd8c914",
-        "components": 32,
-        "inwardComponents": 32,
+        "meshSha256": "f99f5d350a3a22e1a92f410687b2339c3a1107b8106c30a00744c834c7bf49fa",
+        "components": 30,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "10932/10932"
+        "normalCornersOpposingWinding": "0/31068"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint23-armored-dinosaurs/build_triceratops.py",
+        "commits": "54f3821a84, 7defdfb2f2",
+        "supersededMeshSha256": "ec2e38eae2cb3279a003ec2cf507f4eb30e4e3153905a60a697940833cd8c914",
+        "supersededAlbedoSha256": "15be7f5c733e770572513dc735cb85fa303ddaa8205de6edc722b558eb5e58e3",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1444078101921Z (development candidate 7defdfb2f295): PASS; the Huge body fills the close views, whose near clip cuts into the room"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-003",
@@ -812,16 +822,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint24-theropods/deinonychus-mesh.json",
-        "meshSha256": "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
-        "components": 35,
-        "inwardComponents": 35,
+        "meshSha256": "b085f640a33b7fa1232dc7c2b2677c0fe53fcb47f87c1bc873d0a358ab6ecdf6",
+        "components": 46,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
-        "openComponents": 1,
-        "normalCornersOpposingWinding": "7833/7914"
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/27576"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint24-theropods/build_deinonychus.py",
+        "commits": "54f3821a84, 7defdfb2f2",
+        "supersededMeshSha256": "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
+        "supersededAlbedoSha256": "4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1444078101921Z (development candidate 7defdfb2f295): FAIL only on the observer limitation recorded for the Tyrannosaurus on unchanged master (same Lizardfolk donor): the capture reads the suppressed _ammunition04 accessory renderer and the scripted move stops short; the refinement sequences, close views and cleanup PASS and the body renders intact"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-028",
@@ -837,16 +857,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/ankylosaurus/ankylosaurus-mesh.json",
-        "meshSha256": "02f995bae67f36b591e67442ac967734c3f29fd3d2eebdb12761100733997c65",
-        "components": 79,
-        "inwardComponents": 79,
+        "meshSha256": "3eb7585e6f410711c7bf84bf4e23ff0df2c04fbe06ec226a0552a715c9fa9ca9",
+        "components": 75,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "18780/18780"
+        "normalCornersOpposingWinding": "0/43680"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ankylosaurus/build_ankylosaurus.py",
+        "commits": "54f3821a84, 7defdfb2f2",
+        "supersededMeshSha256": "02f995bae67f36b591e67442ac967734c3f29fd3d2eebdb12761100733997c65",
+        "supersededAlbedoSha256": "f9255a77008fbcd001350bdeeb408af6f34adb39f55869337c224f8899602050",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1444078101921Z (development candidate 7defdfb2f295): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-029",
