@@ -30,6 +30,13 @@ namespace KingmakerGunslinger.Summoning
         internal const int BodyBoneCount = 61;
         internal const int EquipmentBoneCount = 62;
         internal const string AuthoredWinding = "shared-exporter-sprint18";
+        /// <summary>
+        /// The visual refinement rebuilt the Ape, Dire Ape and Xill as
+        /// continuous bodies exported with Blender's outward winding; the
+        /// Girallon keeps the first exporter's marker. Each body must declare
+        /// the marker of the exporter that wrote it.
+        /// </summary>
+        internal const string OutwardWinding = "outward-visual-refinement";
         internal const string ApeAssetDirectory = "sprint18-primates";
         internal const string FourArmedAssetDirectory = "sprint19-fourarmed";
         internal const string ApeGuid = "c53c3e23097e4f25a411c50ce2868c60";
@@ -164,7 +171,11 @@ namespace KingmakerGunslinger.Summoning
         }
 
         internal static bool PermitsOriginalWinding(string key, string marker)
-        { return Keys.Contains(key, StringComparer.Ordinal) && marker == AuthoredWinding; }
+        {
+            if (!Keys.Contains(key, StringComparer.Ordinal)) return false;
+            return marker == (key == GirallonRulesPolicy.GirallonKey ?
+                AuthoredWinding : OutwardWinding);
+        }
 
         /// <summary>
         /// The anatomy the reviewed mesh declares about itself, checked

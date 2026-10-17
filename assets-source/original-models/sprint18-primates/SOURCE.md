@@ -133,3 +133,43 @@ synthetic contact frame, the one-armed claw rake and the crouch; a head
 close-up with the jaw open; and a hand close-up with the fingers curled.
 
 `HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+## Visual refinement, 2026-10-17 (VIS-019, VIS-025)
+
+The owner found the first Ape very dark, crude and hard to recognise, with
+exaggerated teeth and an earth-elemental impression, and the Dire Ape better
+coloured and detailed but still weak as a species; both shipped inside out
+(51 and 67 inward parts). `build_primates.py` (library in
+`../continuous-bodies/`) now builds each as one continuous body on the same
+Troll guard frame: a massive chest and shoulders with a high back, a pot
+belly, a short thick neck carrying the head forward, a domed skull with a
+brow ridge and a sagittal crest, a projecting muzzle with nostrils and a
+mouth line, a separate jaw on `Jaw_01`, small ears on `Ear_01`, long heavy
+arms with gorilla forearms, palms with a thumb and three fingers rooted in
+them (parallel-transport tubes on the donor's own finger chains), and thick
+bent legs with broad feet. Every one of the 56 reviewed drivers carries
+geometry: the lips, brows, belly, collarbones, forearm twist and toes share
+blended regions of the surface, and nothing weights the tail or tongue.
+
+- **Ape.** The near-black coat (0.085) is lifted to a dark grey-brown (0.33)
+  with lighter tips, a soft bare chest and face and a silver saddle; small
+  canines and dark nails, no claws.
+- **Dire Ape.** The approved russet coat, straw mane and crest, weathered
+  skin, yellowed canines and horn claws are kept exactly; the crest and the
+  ruff over the neck and shoulders are soft, noise-broken fields rather than
+  boxes.
+- **Winding.** Both declare `triangleWinding: outward-visual-refinement`,
+  which `PrimateVisualPolicy.PermitsOriginalWinding` now requires of the Ape,
+  Dire Ape and Xill (the unchanged Girallon keeps `shared-exporter-sprint18`).
+- The census was not on this machine, so the guarded census was taken again (run `20261017T1552043623257Z-observe-expanded-summoning-primate-census` on development candidate `69435567008c`); it is byte-identical to the recorded capture (`328443db6c9b77651ab64212c7a654284c722c9ddeb6277ce66d289d72f6a4a5`), and the old generators reproduced every superseded body exactly from it.
+- `ape-mesh.json`: `5b469ed2670ce94bffd7968b8a14d2d273f80505beb38bb275d23ddadfd27d12`;
+  `ape-albedo.png`: `6b591af841a1b8d403cec6b2783565480e747b721466b3e641509048a21f1f89`.
+  Superseded: `751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0`,
+  `f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc`.
+- `dire-ape-mesh.json`: `d0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a`;
+  `dire-ape-albedo.png`: `37bdc23e705bfa0771105b768d1cd052157dfdc1d2c6bbd2a99236cf8268e219`.
+  Superseded: `e2f0242141a01179cf3c5915f2d11cf1335b9de51aa387150fb69a42bcdd0341`,
+  `e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7`.
+- Each 24 closed outward parts; `scripts/validate-package.ps1` pins the new
+  bytes. `generate_primates.py` now refuses to build and keeps its helpers
+  for the prototype tests and the Girallon.
