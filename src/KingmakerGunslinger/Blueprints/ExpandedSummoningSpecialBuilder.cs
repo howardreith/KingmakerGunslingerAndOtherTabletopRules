@@ -791,7 +791,13 @@ namespace KingmakerGunslinger.Blueprints
                 native.ComponentsArray ?? Array.Empty<BlueprintComponent>())
             {
                 if (component is ManeuverProvokeAttack) continue;
-                kept.Add(component);
+                // Deep-cloned, the way every other reuse of a native
+                // blueprint's components in this project is. Sharing the
+                // instances would put the same objects on two blueprints
+                // at once; the native feat every other actor has must be
+                // left exactly as the game shipped it.
+                kept.Add(ExpandedSummoningAbilityBuilder
+                    .DeepCloneComponent(component));
             }
             kept.Add(ScriptableObject.CreateInstance<
                 BrachiosaurusOverrunKnockdown>());
@@ -845,7 +851,17 @@ namespace KingmakerGunslinger.Blueprints
                 AbilityCustomOverrun>();
             // FALSE is the whole point: this one really rolls.
             overrun.AutoSuccess = false;
-            overrun.FirstTargetOnly = false;
+            // ONE target, which is where this parts company with Trample.
+            // The IL: when FirstTargetOnly is false the delivery keeps
+            // enumerating Game.Instance.State.Units and overruns every
+            // creature on the path; when true, the moment overrunUnits
+            // holds anyone it branches to IL_0428 - the movement
+            // accumulator - so the creature keeps moving but overruns
+            // nobody else. Printed ordinary Overrun is "you can attempt
+            // to overrun your target, moving through its square": one
+            // target. Trample is the one that hits everything in the
+            // path, and it keeps false.
+            overrun.FirstTargetOnly = true;
             overrun.StopOnCorpulence = false;
             overrun.DelayBeforeStart = 0f;
             overrun.DelayAfterFinish = 0f;
