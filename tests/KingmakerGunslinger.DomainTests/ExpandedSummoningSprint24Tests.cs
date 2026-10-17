@@ -439,13 +439,13 @@ namespace KingmakerGunslinger.DomainTests
                 "tools/create_deterministic_package.py");
             // 363 is the base the released v0.0.154 animal-companion build
             // qualified; Sprint 24 appends four original theropod body files
-            // and two original creature icons on top of it; v0.0.156 and
-            // v0.0.157 each add their release notes.
-            Assertions.True(package.Contains("$basePackageFileCount = 371") &&
+            // and two original creature icons on top of it; v0.0.156,
+            // v0.0.157 and v0.0.158 each add their release notes.
+            Assertions.True(package.Contains("$basePackageFileCount = 372") &&
                     package.Contains("$basePackageFileCount + 2") &&
                     package.Contains(
                         "--expected-file-count $expectedPackageFileCount") &&
-                    packager.Contains("364, 365, 369, 370, 371, 372, 373))"),
+                    packager.Contains("364, 365, 369, 370, 371, 372, 373, 374))"),
                 "The strict package inventory adds exactly four bodies and two icons.");
         }
 
