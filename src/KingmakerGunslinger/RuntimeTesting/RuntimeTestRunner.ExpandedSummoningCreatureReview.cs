@@ -965,6 +965,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _creatureReviewPhase = 6;
                         return;
                     }
+                    if (!_creatureReviewQuantity &&
+                        VisualRefinementReviewPolicy.Handles(key))
+                    {
+                        BeginVisualRefinementReview(_creatureReviewUnits[0], key);
+                        _creatureReviewPhase = 7;
+                        return;
+                    }
                     if (_creatureReviewQuantity)
                     {
                         _creatureReviewSettle = 0;
@@ -984,6 +991,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 case 6:
                     if (!StepExpandedSummoningStirgePreyMovement()) return;
+                    // The prey is restored and the Stirge detached; its close
+                    // views and tracking sequences come before cleanup.
+                    if (VisualRefinementReviewPolicy.FollowsStirgePreyReview(key,
+                            _creatureReviewQuantity))
+                    {
+                        BeginVisualRefinementReview(_creatureReviewUnits[0], key);
+                        _creatureReviewPhase = 7;
+                        return;
+                    }
+                    foreach (UnitEntityData unit in _creatureReviewUnits)
+                        CleanupExpandedSummoningUnit(unit);
+                    Game.Instance.EntityDestroyer.Tick();
+                    _creatureReviewSettle = 0;
+                    _creatureReviewPhase = 3;
+                    return;
+                case 7:
+                    if (!StepVisualRefinementReview()) return;
                     foreach (UnitEntityData unit in _creatureReviewUnits)
                         CleanupExpandedSummoningUnit(unit);
                     Game.Instance.EntityDestroyer.Tick();
@@ -1357,7 +1381,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string.Join(",", parts.ToArray()) + ";character=" +
                 DescribeReviewCharacter(unit.View) + ";rimAnimations[" +
                 string.Join("|", rimAnimations.ToArray()) + "];rimPatch=" +
-                ExpandedSummoningRimAnimationPatch.Describe(unit.View);
+                ExpandedSummoningRimAnimationPatch.Describe(unit.View) + ";summonGlow=" +
+                ExpandedSummoningSummonGlowPatch.Describe(unit.View) + ";buffEffects=" +
+                ExpandedSummoningSummonGlowPatch.DescribeBuffEffects(unit) + ";tailGait=" +
+                DescribeReviewTailGait(unit.View);
+        }
+
+        private static string DescribeReviewTailGait(UnitEntityView view)
+        {
+            SalamanderHumanVisualAttachment attachment = view == null ? null :
+                view.GetComponent<SalamanderHumanVisualAttachment>();
+            return attachment == null ? "<not applicable>" : attachment.DescribeGait();
         }
 
         /// <summary>
@@ -1451,7 +1485,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var floats = new List<string>();
             foreach (string name in new[] { "_Emission", "_RimPower", "_RimLighting",
                 "_Metallic", "_Cutout", "_Alpha", "_AlphaScale", "_DissolveEmission",
-                "_Glossiness", "_Smoothness", "_BumpScale", "_OcclusionStrength" })
+                "_Glossiness", "_Smoothness", "_BumpScale", "_OcclusionStrength",
+                "_Roughness", "_Specular", "_SpecularIntensity", "_UseNormalMapAtlas",
+                "_DissolveWidth", "_DissolveColorScale" })
                 if (material.HasProperty(name))
                     floats.Add(name + "=" + material.GetFloat(name).ToString("0.###",
                         CultureInfo.InvariantCulture));
@@ -1523,6 +1559,460 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestStatuses.Fail, assertions, null);
             result.WorkingSaveSmoke = evidence;
             Complete(result);
+        }
+    }
+
+    /// <summary>
+    /// Visual-refinement evidence for a single reviewed creature, taken after
+    /// the ordinary party-camera captures: the donor's pre-swap bind frame,
+    /// close views placed relative to the creature's own facing, and short
+    /// tracking-camera frame sequences of a native move out and back (two
+    /// turns), a native attack and a native hit reaction. Every image is
+    /// supporting art evidence, not mechanical proof; the camera pose, render
+    /// targets and pause state are restored after each use.
+    /// </summary>
+    internal sealed partial class RuntimeTestRunner
+    {
+        private const int RefinementFrameWidth = 640;
+        private const int RefinementFrameHeight = 400;
+        private const int RefinementStride = VisualRefinementReviewPolicy.Stride;
+        private const int RefinementLegFrames = VisualRefinementReviewPolicy.LegFrames;
+        private const int RefinementActionFrames = VisualRefinementReviewPolicy.ActionFrames;
+        private const int RefinementHitFrames = VisualRefinementReviewPolicy.HitFrames;
+
+        private UnitEntityData _refinementUnit;
+        private string _refinementKey;
+        private int _refinementPhase;
+        private int _refinementFrame;
+        private int _refinementWritten;
+        private int _refinementLowWritten;
+        private readonly HashSet<string> _refinementStills =
+            new HashSet<string>(StringComparer.Ordinal);
+        private float _refinementRadius;
+        private float _refinementDistance;
+        private Bounds _refinementBounds;
+        private Quaternion _refinementCameraRotation;
+        private Vector3 _refinementOrigin;
+        private float _refinementTravel;
+        private bool _refinementWasPaused;
+        private bool _refinementChangedPause;
+        private Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle _refinementAction;
+        private readonly List<string> _refinementRecords = new List<string>();
+
+        private void BeginVisualRefinementReview(UnitEntityData unit, string key)
+        {
+            _refinementUnit = unit;
+            _refinementKey = key;
+            _refinementPhase = 0;
+            _refinementFrame = 0;
+            _refinementWritten = 0;
+            _refinementTravel = 0f;
+            _refinementAction = null;
+            _refinementChangedPause = false;
+            _refinementRecords.Clear();
+            _refinementLowWritten = 0;
+            _refinementStills.Clear();
+        }
+
+        /// <summary>One step per update; true once the review is complete.</summary>
+        private bool StepVisualRefinementReview()
+        {
+            UnitEntityData unit = _refinementUnit;
+            string key = _refinementKey;
+            try
+            {
+                if (unit == null || unit.View == null)
+                {
+                    _refinementRecords.Add("no-view");
+                    return FinishVisualRefinementReview();
+                }
+                switch (_refinementPhase)
+                {
+                    case 0:
+                        RecordRefinementDonorRig(unit, key);
+                        try
+                        {
+                            string survey;
+                            Vector3 point = FindExpandedSummoningArtPoint(
+                                _creatureReviewCaster, out survey);
+                            PlaceExpandedSummoningUnit(unit, point);
+                            _refinementRecords.Add("placed:" + survey);
+                        }
+                        catch (Exception error)
+                        {
+                            _refinementRecords.Add("placed:kept-position:" +
+                                error.GetType().Name);
+                        }
+                        CameraRig rig = TeleportationCastingCamera();
+                        Camera camera = rig == null ? Camera.main : rig.Camera;
+                        if (camera == null)
+                        {
+                            _refinementRecords.Add("no-camera");
+                            return FinishVisualRefinementReview();
+                        }
+                        _refinementCameraRotation = camera.transform.rotation;
+                        SkinnedMeshRenderer renderer = RefinementRenderer(unit);
+                        _refinementRadius = renderer == null ? 1.5f :
+                            Mathf.Max(0.4f, renderer.bounds.extents.magnitude);
+                        _refinementDistance = _refinementRadius /
+                            Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5f) *
+                            1.15f;
+                        _refinementWasPaused = Game.Instance.IsPaused;
+                        if (_refinementWasPaused)
+                        {
+                            Game.Instance.IsPaused = false;
+                            _refinementChangedPause = true;
+                        }
+                        _refinementPhase = 1;
+                        _refinementFrame = 0;
+                        return false;
+                    case 1:
+                        // Let the placement settle before the still views.
+                        if (_refinementFrame++ < 3) return false;
+                        WriteRefinementStills(unit, key);
+                        _refinementOrigin = unit.Position;
+                        RunRefinementMove(unit, _refinementOrigin +
+                            RefinementTurn(unit, 135f) * 6f);
+                        _refinementPhase = 2;
+                        _refinementFrame = 0;
+                        return false;
+                    case 2:
+                    case 3:
+                        _refinementTravel = Mathf.Max(_refinementTravel,
+                            Vector3.Distance(_refinementOrigin, unit.Position));
+                        if (_refinementFrame % RefinementStride == 0)
+                            WriteRefinementFrame(unit, key, _refinementPhase == 2 ?
+                                "move-out" : "move-back", _refinementFrame);
+                        if (++_refinementFrame < RefinementLegFrames) return false;
+                        unit.Commands.InterruptMove();
+                        if (_refinementPhase == 2)
+                        {
+                            RunRefinementMove(unit, _refinementOrigin);
+                            _refinementPhase = 3;
+                            _refinementFrame = 0;
+                            return false;
+                        }
+                        _refinementAction = StartRefinementAnimation(unit,
+                            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType.MainHandAttack);
+                        _refinementPhase = 4;
+                        _refinementFrame = 0;
+                        return false;
+                    case 4:
+                        if (_refinementFrame % RefinementStride == 0)
+                            WriteRefinementFrame(unit, key, "attack", _refinementFrame);
+                        if (++_refinementFrame < RefinementActionFrames) return false;
+                        EndRefinementAnimation();
+                        Kingmaker.RuleSystem.Rulebook.Trigger(
+                            new Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage(
+                                _creatureReviewCaster, unit,
+                                new Kingmaker.RuleSystem.Rules.Damage.DamageBundle(
+                                    new Kingmaker.RuleSystem.Rules.Damage.DirectDamage(
+                                        new Kingmaker.RuleSystem.DiceFormula(0,
+                                            Kingmaker.RuleSystem.DiceType.D6), 1)))
+                            {
+                                DisablePrecisionDamage = true,
+                                IgnoreDamageReduction = true
+                            });
+                        _refinementAction = StartRefinementAnimation(unit,
+                            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType.Hit);
+                        _refinementPhase = 5;
+                        _refinementFrame = 0;
+                        return false;
+                    case 5:
+                        if (_refinementFrame % RefinementStride == 0)
+                            WriteRefinementFrame(unit, key, "hit", _refinementFrame);
+                        if (++_refinementFrame < RefinementHitFrames) return false;
+                        EndRefinementAnimation();
+                        return FinishVisualRefinementReview();
+                    default:
+                        return FinishVisualRefinementReview();
+                }
+            }
+            catch (Exception error)
+            {
+                _refinementRecords.Add("error:" + error.GetType().Name + ":" +
+                    error.Message);
+                EndRefinementAnimation();
+                return FinishVisualRefinementReview();
+            }
+        }
+
+        private void RecordRefinementDonorRig(UnitEntityData unit, string key)
+        {
+            string donor, label;
+            if (!VisualRefinementReviewPolicy.TryGetDonor(key, out donor, out label))
+            {
+                _refinementRecords.Add("donorRig:not-applicable");
+                return;
+            }
+            string outcome;
+            try
+            {
+                outcome = CaptureDonorRig(unit, donor, _request.EvidenceDirectory,
+                    label);
+            }
+            catch (Exception error)
+            {
+                outcome = "failed:" + error.GetType().Name + ":" + error.Message;
+            }
+            _refinementRecords.Add("donorRig:" + outcome);
+            _creatureReviewAssertions.Add(Assertion(
+                "expanded-summoning-refinement-donor-rig-" + key,
+                "the donor's pre-swap bind frame recorded for the offline builder",
+                outcome, outcome.StartsWith(donor + ":file=", StringComparison.Ordinal),
+                "request-local evidence only; geometry-free bone names and bind transforms, never packaged"));
+        }
+
+        /// <summary>
+        /// The creature's own body renderer: the enabled skinned renderer
+        /// carrying the attached original mesh (a suppressed donor accessory,
+        /// like the Lizardfolk's, is disabled and skipped).
+        /// </summary>
+        private static SkinnedMeshRenderer RefinementRenderer(UnitEntityData unit)
+        {
+            return unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .FirstOrDefault(value => value != null && value.sharedMesh != null &&
+                    value.enabled);
+        }
+
+        /// <summary>A ground direction rotated from the creature's facing.</summary>
+        private static Vector3 RefinementTurn(UnitEntityData unit, float degrees)
+        {
+            Vector3 forward = unit.View.transform.forward;
+            forward.y = 0f;
+            if (forward.sqrMagnitude < 0.0001f) forward = Vector3.forward;
+            return Quaternion.Euler(0f, degrees, 0f) * forward.normalized;
+        }
+
+        private void RunRefinementMove(UnitEntityData unit, Vector3 destination)
+        {
+            var move = new UnitMoveTo(destination, 0.5f);
+            move.Init(unit);
+            unit.Commands.Run(move);
+            _refinementRecords.Add("move:to=" + destination.ToString("F2") +
+                ";accepted=" + unit.Commands.Contains(move));
+        }
+
+        private Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle
+            StartRefinementAnimation(UnitEntityData unit,
+                Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType type)
+        {
+            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager manager =
+                unit.View == null ? null : unit.View.AnimationManager;
+            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle handle =
+                manager == null ? null : manager.CreateHandle(type, false);
+            if (handle != null) manager.Execute(handle);
+            _refinementRecords.Add("animation:" + type + ";handle=" + (handle != null));
+            return handle;
+        }
+
+        private void EndRefinementAnimation()
+        {
+            if (_refinementAction == null) return;
+            _refinementAction.IsActed = true;
+            FinishExpandedSummoningAnimation(_refinementAction);
+            _refinementAction = null;
+        }
+
+        /// <summary>
+        /// Still views around the creature's own facing: front, both front
+        /// quarters, both sides, both rear quarters, straight behind, a low
+        /// rear view under the tail, and straight down.
+        /// </summary>
+        private void WriteRefinementStills(UnitEntityData unit, string key)
+        {
+            string[] names = VisualRefinementReviewPolicy.StillViews;
+            float[] yaws = { 0f, -40f, -90f, -140f, 180f, 180f, 140f, 90f, 180f };
+            float[] pitches = { 22f, 25f, 18f, 25f, 22f, 6f, 25f, 18f, 85f };
+            Vector3 centre = RefinementCentre(unit);
+            _refinementBounds = RefinementBounds(unit, centre);
+            for (int index = 0; index < names.Length; index++)
+            {
+                Vector3 toward = Quaternion.Euler(0f, yaws[index], 0f) *
+                    RefinementTurn(unit, 0f);
+                float pitch = pitches[index] * Mathf.Deg2Rad;
+                Vector3 eye = centre + (toward * Mathf.Cos(pitch) +
+                    Vector3.up * Mathf.Sin(pitch)) * _refinementDistance;
+                string file = VisualRefinementReviewPolicy.StillFile(key, names[index]);
+                string result = WriteRefinementImage(eye,
+                    Quaternion.LookRotation(centre - eye, Vector3.up), file);
+                _refinementRecords.Add(result);
+                if (result.StartsWith("png=" + file + ";", StringComparison.Ordinal))
+                    _refinementStills.Add(file);
+            }
+        }
+
+        /// <summary>
+        /// Near clip at the nearest corner of the creature's bounding box. A
+        /// large creature's framing distance puts the orbit camera beyond the
+        /// room's walls; the first native run drew most views as the game's
+        /// blue occluded-unit silhouette. Geometry nearer than this plane is
+        /// not drawn, and the creature lies wholly inside its box, so it is
+        /// never clipped. The bounding sphere still left the long rhinoceroses
+        /// partly walled in.
+        /// </summary>
+        private float RefinementNearClip(Vector3 position, Quaternion rotation)
+        {
+            Vector3 forward = rotation * Vector3.forward;
+            Vector3 min = _refinementBounds.min, max = _refinementBounds.max;
+            float nearest = float.PositiveInfinity;
+            for (int corner = 0; corner < 8; corner++)
+            {
+                Vector3 point = new Vector3(
+                    (corner & 1) == 0 ? min.x : max.x,
+                    (corner & 2) == 0 ? min.y : max.y,
+                    (corner & 4) == 0 ? min.z : max.z);
+                nearest = Mathf.Min(nearest, Vector3.Dot(point - position, forward));
+            }
+            return Mathf.Max(0.3f, nearest - 0.15f);
+        }
+
+        private Bounds RefinementBounds(UnitEntityData unit, Vector3 centre)
+        {
+            SkinnedMeshRenderer renderer = RefinementRenderer(unit);
+            return renderer != null ? renderer.bounds :
+                new Bounds(centre, Vector3.one * _refinementRadius * 2f);
+        }
+
+        private Vector3 RefinementCentre(UnitEntityData unit)
+        {
+            SkinnedMeshRenderer renderer = RefinementRenderer(unit);
+            return renderer != null ? renderer.bounds.center :
+                unit.View.transform.position + Vector3.up * _refinementRadius * 0.5f;
+        }
+
+        /// <summary>A tracking frame at the party camera's own angle, closer.</summary>
+        private void WriteRefinementFrame(UnitEntityData unit, string key,
+            string sequence, int frame)
+        {
+            Vector3 centre = RefinementCentre(unit);
+            _refinementBounds = RefinementBounds(unit, centre);
+            Vector3 eye = centre -
+                (_refinementCameraRotation * Vector3.forward) * _refinementDistance;
+            string result = WriteRefinementImage(eye, _refinementCameraRotation,
+                key + "-refine-" + sequence + "-" +
+                frame.ToString("000", CultureInfo.InvariantCulture) + ".png");
+            if (result.StartsWith("png=", StringComparison.Ordinal) &&
+                !result.StartsWith("png=<none>", StringComparison.Ordinal))
+                _refinementWritten++;
+            else
+                _refinementRecords.Add(result);
+            if (!VisualRefinementReviewPolicy.TracksLow(key) ||
+                (sequence != "move-out" && sequence != "move-back"))
+                return;
+            // Level with the body from its left side, a little below it, so
+            // the beating wings show both their upper and lower surfaces.
+            Vector3 side = RefinementTurn(unit, -90f);
+            Vector3 low = centre + side * _refinementDistance +
+                Vector3.down * (_refinementDistance * 0.08f);
+            string lowResult = WriteRefinementImage(low,
+                Quaternion.LookRotation(centre - low, Vector3.up),
+                key + "-refine-" + sequence + "-low-" +
+                frame.ToString("000", CultureInfo.InvariantCulture) + ".png");
+            if (lowResult.StartsWith("png=", StringComparison.Ordinal) &&
+                !lowResult.StartsWith("png=<none>", StringComparison.Ordinal))
+                _refinementLowWritten++;
+            else
+                _refinementRecords.Add(lowResult);
+        }
+
+        private string WriteRefinementImage(Vector3 position, Quaternion rotation,
+            string fileName)
+        {
+            CameraRig rig = TeleportationCastingCamera();
+            Camera camera = rig == null ? null : rig.Camera;
+            if (camera == null) camera = Camera.main;
+            if (camera == null) return "png=<none>;reason=no-camera";
+            Vector3 priorPosition = camera.transform.position;
+            Quaternion priorRotation = camera.transform.rotation;
+            float priorNear = camera.nearClipPlane;
+            RenderTexture priorTarget = camera.targetTexture;
+            RenderTexture priorActive = RenderTexture.active;
+            RenderTexture renderTexture = null;
+            Texture2D output = null;
+            // The party camera's depth of field focuses at its own distance,
+            // so a close view rendered through it is blurred (the second
+            // native run's small creatures). It is switched off for this one
+            // synchronous render only; the profile is shared, so it is always
+            // restored.
+            UnityEngine.PostProcessing.PostProcessingBehaviour post =
+                camera.GetComponent<UnityEngine.PostProcessing.PostProcessingBehaviour>();
+            UnityEngine.PostProcessing.DepthOfFieldModel depthOfField =
+                post != null && post.profile != null ? post.profile.depthOfField : null;
+            bool depthOfFieldBefore = depthOfField != null && depthOfField.enabled;
+            try
+            {
+                camera.transform.position = position;
+                camera.transform.rotation = rotation;
+                camera.nearClipPlane = Mathf.Max(priorNear,
+                    RefinementNearClip(position, rotation));
+                if (depthOfField != null) depthOfField.enabled = false;
+                renderTexture = new RenderTexture(RefinementFrameWidth,
+                    RefinementFrameHeight, 24, RenderTextureFormat.ARGB32);
+                camera.targetTexture = renderTexture;
+                camera.Render();
+                RenderTexture.active = renderTexture;
+                output = new Texture2D(RefinementFrameWidth, RefinementFrameHeight,
+                    TextureFormat.RGBA32, false, false);
+                output.ReadPixels(new Rect(0, 0, RefinementFrameWidth,
+                    RefinementFrameHeight), 0, 0);
+                output.Apply(false, false);
+                byte[] png = EncodeExpandedSummoningPng(output);
+                if (png == null || png.Length < 4096)
+                    return "png=<none>;reason=empty-render;file=" + fileName;
+                System.IO.File.WriteAllBytes(System.IO.Path.Combine(
+                    _request.EvidenceDirectory, fileName), png);
+                return "png=" + fileName + ";bytes=" + png.Length;
+            }
+            catch (Exception error)
+            {
+                return "png=<none>;reason=" + error.GetType().Name + ";file=" + fileName;
+            }
+            finally
+            {
+                camera.targetTexture = priorTarget;
+                camera.transform.position = priorPosition;
+                camera.transform.rotation = priorRotation;
+                camera.nearClipPlane = priorNear;
+                if (depthOfField != null) depthOfField.enabled = depthOfFieldBefore;
+                RenderTexture.active = priorActive;
+                if (renderTexture != null)
+                {
+                    renderTexture.Release();
+                    UnityEngine.Object.Destroy(renderTexture);
+                }
+                if (output != null) UnityEngine.Object.Destroy(output);
+            }
+        }
+
+        private bool FinishVisualRefinementReview()
+        {
+            if (_refinementChangedPause)
+            {
+                Game.Instance.IsPaused = _refinementWasPaused;
+                _refinementChangedPause = false;
+            }
+            string missing;
+            bool complete = VisualRefinementReviewPolicy.EvidenceComplete(_refinementKey,
+                _refinementStills, _refinementWritten, _refinementLowWritten,
+                _refinementTravel, out missing);
+            int low = VisualRefinementReviewPolicy.ExpectedLowFrames(_refinementKey);
+            _creatureReviewAssertions.Add(Assertion(
+                "expanded-summoning-refinement-sequences-" + _refinementKey,
+                VisualRefinementReviewPolicy.StillViews.Length + " close stills, " +
+                    VisualRefinementReviewPolicy.ExpectedTrackingFrames +
+                    " tracking frames across move-out, move-back, attack and hit" +
+                    (low > 0 ? ", " + low + " low side frames through the move legs" : "") +
+                    ", and at least 0.75 m native travel",
+                "stills=" + _refinementStills.Count + ";written=" + _refinementWritten +
+                    ";low=" + _refinementLowWritten + ";travel=" +
+                    _refinementTravel.ToString("0.##", CultureInfo.InvariantCulture) +
+                    ";missing=" + (missing.Length == 0 ? "<none>" : missing) +
+                    ";records=" + string.Join("|", _refinementRecords.ToArray()),
+                complete,
+                "request-local camera pose and pause state restored; image completeness only - images support art review, not mechanical proof"));
+            _refinementUnit = null;
+            return true;
         }
     }
 }

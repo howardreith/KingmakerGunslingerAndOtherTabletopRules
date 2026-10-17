@@ -315,19 +315,27 @@ namespace KingmakerGunslinger.DomainTests
                     (bool)tyr["tinyForearms"],
                 "Tyrannosaurus owns the large skull and tiny forearms.");
             Assertions.Equal(
-                "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
+                "b085f640a33b7fa1232dc7c2b2677c0fe53fcb47f87c1bc873d0a358ab6ecdf6",
                 Sha256("assets/sprint24-theropods/deinonychus-mesh.json"),
                 "Deterministic Deinonychus mesh bytes.");
             Assertions.Equal(
-                "308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87",
+                "d9fe3f0ac21d5372bcb309f9b8d4790e379da9c2ee052737aeb1644a239fe320",
                 Sha256("assets/sprint24-theropods/tyrannosaurus-mesh.json"),
                 "Deterministic Tyrannosaurus mesh bytes.");
+            // VIS-001, VIS-027: both theropods are continuous bodies built
+            // with outward winding.
+            OriginalMeshOrientation.AssertShippedBody(
+                "assets/sprint24-theropods/tyrannosaurus-mesh.json",
+                "tyrannosaurus");
+            OriginalMeshOrientation.AssertShippedBody(
+                "assets/sprint24-theropods/deinonychus-mesh.json",
+                "deinonychus");
             Assertions.Equal(
-                "4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7",
+                "9e60ec305e08add31be809f4d82a82c727741102e3c3c4023494240f0f38780f",
                 Sha256("assets/sprint24-theropods/deinonychus-albedo.png"),
                 "Deterministic Deinonychus original paint bytes.");
             Assertions.Equal(
-                "3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8",
+                "ff2b250fd753fd18a94fb7f00d94acaaf7467410a76a0b182de8eed36bd7c7af",
                 Sha256("assets/sprint24-theropods/tyrannosaurus-albedo.png"),
                 "Deterministic Tyrannosaurus original paint bytes.");
             Assertions.True(TheropodVisualPolicy.IsExactRendererSet(new[] {
@@ -431,13 +439,13 @@ namespace KingmakerGunslinger.DomainTests
                 "tools/create_deterministic_package.py");
             // 363 is the base the released v0.0.154 animal-companion build
             // qualified; Sprint 24 appends four original theropod body files
-            // and two original creature icons on top of it; v0.0.156 and
-            // v0.0.157 each add their release notes.
-            Assertions.True(package.Contains("$basePackageFileCount = 371") &&
+            // and two original creature icons on top of it; v0.0.156,
+            // v0.0.157 and v0.0.158 each add their release notes.
+            Assertions.True(package.Contains("$basePackageFileCount = 372") &&
                     package.Contains("$basePackageFileCount + 2") &&
                     package.Contains(
                         "--expected-file-count $expectedPackageFileCount") &&
-                    packager.Contains("364, 365, 369, 370, 371, 372, 373))"),
+                    packager.Contains("364, 365, 369, 370, 371, 372, 373, 374))"),
                 "The strict package inventory adds exactly four bodies and two icons.");
         }
 

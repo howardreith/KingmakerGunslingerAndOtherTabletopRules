@@ -219,9 +219,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             string directory = Path.Combine(Environment.CurrentDirectory,
                 "assets", "sprint16-crocodilians");
+            // Visual refinement (VIS-012, VIS-034): the same bodies, exported
+            // outward and repainted.
             string[] meshHashes = {
-                "770fa7c3c87fb74f3335358069cefde77529868e30184e090bf3c7c840065fd7",
-                "eb7a9182fbe5f66dc8b819efd9641a62da611230923bf4bd95ca1383d4e7173a" };
+                "6615b76808762e29311fb390889dc8d94c63b942825573cb7266993780d96ef9",
+                "d4507796f688e79d9ddddacbcb54d0885ea409b06cd5c58690a3fb56464daf1e" };
             int keyIndex = 0;
             foreach (string key in CrocodilianVisualPolicy.Keys)
             {
@@ -230,6 +232,7 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.Equal(meshHashes[keyIndex++],
                         BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(path)))
                             .Replace("-", "").ToLowerInvariant(), "Reviewed original mesh.");
+                OriginalMeshOrientation.AssertShippedBody(path, key);
                 JObject mesh = JObject.Parse(File.ReadAllText(path));
                 string[] bones = mesh["bones"].Values<string>().ToArray();
                 Assertions.True(CrocodilianVisualPolicy.IsPermitted(key, bones),

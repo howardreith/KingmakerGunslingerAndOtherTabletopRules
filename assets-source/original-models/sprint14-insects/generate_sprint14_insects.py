@@ -41,6 +41,8 @@ sys.dont_write_bytecode = True
 HERE = Path(__file__).resolve()
 sys.path.insert(0, str(HERE.parents[1] / "pteranodon"))
 sys.path.insert(0, str(HERE.parents[1] / "sprint13-creatures"))
+sys.path.insert(0, str(HERE.parents[1] / "continuous-bodies"))
+import continuous_body as cb  # noqa: E402
 import generate_pteranodon as shared  # noqa: E402
 # The atlas inset and the two primitive builders come from the Sprint 13
 # generator rather than being copied, because the inset encodes the bleed
@@ -62,6 +64,10 @@ DONORS = {kind: "giant-spider" for kind in KINDS}
 CAPTURE_SPRINT = {kind: "Sprint 14" for kind in KINDS}
 SPACES = {kind: "donor renderer local; +X right, +Z up, -Y forward"
           for kind in KINDS}
+# Visual refinement, 2026-10-17 (VIS-011, VIS-015, VIS-021): the ants are
+# exported outward, with their thorax and mandibles rooted in the head. The
+# beetles were not in the owner's review and keep their shipped bytes.
+REFINED = ("giant-ant-soldier", "giant-ant-worker", "giant-ant-drone")
 
 
 def spider_frame():
@@ -256,6 +262,64 @@ def blade(bm, weights, uvs, spine, widths, thicknesses, lateral, normal,
     return rings
 
 
+def carried_tube(bm, weights, uvs, points, radii, bones, region, segments):
+    """`tube`, with each ring's frame carried along the path.
+
+    The shared tube frames every ring on its own with +Y as the up hint, and
+    on this rig +Y is the body axis: wherever an ant's mesosoma, gaster,
+    mandible or antenna turned through that hint the next ring's frame
+    swung a quarter turn and its quads folded inward (VIS-011/015/021). The
+    first ring takes the creature's up as its hint; every later ring turns
+    by the rotation between successive tangents. Weights, texture
+    coordinates and topology follow the shared tube."""
+    tangents = []
+    for index in range(len(points)):
+        if index == 0:
+            direction = points[1] - points[0]
+        elif index == len(points) - 1:
+            direction = points[-1] - points[-2]
+        else:
+            direction = points[index + 1] - points[index - 1]
+        tangents.append(direction.normalized())
+    hint = Vector((0.0, 0.0, 1.0))
+    if abs(tangents[0].dot(hint)) > 0.9:
+        hint = Vector((0.0, -1.0, 0.0))
+    side = tangents[0].cross(hint).normalized()
+    up = side.cross(tangents[0]).normalized()
+    lengths = [0.0]
+    for index in range(1, len(points)):
+        lengths.append(lengths[-1] + (points[index] - points[index - 1]).length)
+    total = lengths[-1] or 1.0
+    rings = []
+    for index, centre in enumerate(points):
+        if index:
+            turn = tangents[index - 1].rotation_difference(tangents[index])
+            side, up = turn @ side, turn @ up
+        ring = []
+        for step in range(segments):
+            angle = 2.0 * math.pi * step / segments
+            vertex = bm.verts.new(centre + side * (math.cos(angle) * radii[index]) +
+                                  up * (math.sin(angle) * radii[index]))
+            blend = min(shared.JOINT_BLEND, 0.5)
+            if index + 1 < len(bones) and bones[index + 1] != bones[index]:
+                weights[vertex] = [(bones[index], 1.0 - blend),
+                                   (bones[index + 1], blend)]
+            else:
+                weights[vertex] = [(bones[index], 1.0)]
+            uvs[vertex] = shared.region_uv(region, lengths[index] / total,
+                                           shared.fold(angle))
+            ring.append(vertex)
+        rings.append(ring)
+    for index in range(len(rings) - 1):
+        for step in range(segments):
+            nxt = (step + 1) % segments
+            bm.faces.new((rings[index][step], rings[index + 1][step],
+                          rings[index + 1][nxt], rings[index][nxt]))
+    bm.faces.new(tuple(reversed(rings[0])))
+    bm.faces.new(tuple(rings[-1]))
+    return rings
+
+
 def insect_leg(bm, weights, uvs, rig, prefix, index, scale):
     """One insect leg: a heavy femur to the knee, then a thin tibia and tarsus.
 
@@ -319,8 +383,11 @@ def giant_ant(bm, weights, uvs, rig, caste):
 
     # The mesosoma, humped at the front the way an ant's pronotum is and
     # narrowing hard into the waist.
-    tube(bm, weights, uvs,
-         [head_centre - forward * 0.26,
+    # It starts well inside the head capsule: the Worker's smaller head put
+    # the old start on the capsule's back pole, so the join barely overlapped
+    # and the thorax looked detached.
+    carried_tube(bm, weights, uvs,
+         [head_centre - forward * min(0.26, shape["head"][2] * 0.70),
           thorax + forward * 0.10 + up * 0.075,
           thorax - forward * 0.08 + up * 0.055,
           thorax - forward * 0.24 - up * 0.010,
@@ -335,7 +402,7 @@ def giant_ant(bm, weights, uvs, rig, caste):
     # revision held it narrow for twice as far and got a thin neck with a cone
     # at each end, which is a spindle rather than an ant. The gaster behind it
     # is carried a little above the thorax line, the way an ant's is.
-    tube(bm, weights, uvs,
+    carried_tube(bm, weights, uvs,
          [petiole + up * 0.005,
           petiole - forward * 0.09 + up * 0.010,
           petiole - forward * 0.19 + up * 0.045,
@@ -364,7 +431,18 @@ def giant_ant(bm, weights, uvs, rig, caste):
         reach = shape["mandibleReach"]
         base = (head_centre + forward * (reach * 0.52) +
                 side * (sign * shape["mandibleSpread"]) - up * 0.070)
-        tube(bm, weights, uvs,
+        # The Soldier's and Drone's roots fell just outside the head capsule
+        # (ellipsoid measure 1.16 and 1.09), so their mandibles floated off
+        # the face. Pull a root in until it sits inside the capsule, keeping
+        # its direction from the head centre.
+        offset = base - head_centre
+        radii = shape["head"]
+        measure = math.sqrt((offset.dot(side) / radii[0]) ** 2 +
+                            (offset.dot(up) / radii[1]) ** 2 +
+                            (offset.dot(forward) / radii[2]) ** 2)
+        if measure > 0.82:
+            base = head_centre + offset * (0.82 / measure)
+        carried_tube(bm, weights, uvs,
              [base,
               base + forward * (reach * 0.38) + side * (sign * 0.100),
               base + forward * (reach * 0.72) + side * (sign * 0.060),
@@ -376,7 +454,7 @@ def giant_ant(bm, weights, uvs, rig, caste):
                  "pedipalp7"]
         lift = (0.120, 0.300, 0.500, 0.600, 0.620)
         reach = (0.000, 0.100, 0.260, 0.480, 0.700)
-        tube(bm, weights, uvs,
+        carried_tube(bm, weights, uvs,
              [at(name + suffix) + up * lift[index] + forward * reach[index]
               for index, name in enumerate(palps)],
              [0.042, 0.034, 0.026, 0.020, 0.010],
@@ -764,6 +842,10 @@ def main():
     weights, uvs = {}, {}
     BUILDERS[args.kind](bm, weights, uvs, rig)
     inset_region_uvs(uvs)
+    if args.kind in REFINED:
+        # Each part consistently wound and outward; the shared writer's
+        # reversal is undone after it runs (continuous_body).
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
     bm.normal_update()
     bm.to_mesh(mesh)
     indexed = {vertex.index: entries for vertex, entries in weights.items()}
@@ -817,6 +899,8 @@ def main():
     shared.write_mesh_data(args.mesh_data, obj, mesh, indexed, uv_indexed,
                            report, args.albedo)
     payload = json.loads(Path(args.mesh_data).read_text(encoding="utf-8"))
+    if args.kind in REFINED:
+        cb.restore_outward_winding(payload)
     payload["space"] = SPACES[args.kind]
     # Shipped, not merely reported: the runtime's allowed-bone list refuses a
     # mesh that binds the donor's fourth foot, and this lets everything

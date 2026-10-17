@@ -600,6 +600,8 @@ def parse_args():
 
 def main():
     args = parse_args()
+    raise SystemExit(args.kind + " is built by build_primates.py since the "
+                     "visual refinement (VIS-019, VIS-025); see SOURCE.md")
     rig_data, rig, rig_hash = capture.load(args.capture)
     export(args, rig_data, rig, rig_hash)
 

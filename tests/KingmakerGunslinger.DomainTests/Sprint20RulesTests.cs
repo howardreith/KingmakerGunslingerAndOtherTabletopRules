@@ -366,6 +366,24 @@ namespace KingmakerGunslinger.DomainTests
             KingmakerGunslinger.RuntimeTesting.ArachnidRigSurveyPolicy.Validate();
         }
 
+        /// <summary>
+        /// Visual refinement (VIS-026): the shipped body is the refined export,
+        /// closed and outward with its telson rooted on the tail, not the
+        /// first export that shipped inside out with the stinger detached.
+        /// </summary>
+        internal static void TheShippedBodyIsTheRefinedOutwardExport()
+        {
+            string path = Path.Combine(RepositoryRoot(), "assets",
+                "sprint20-arachnids", "giant-scorpion-mesh.json");
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+                Assertions.Equal(
+                    "1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f",
+                    string.Concat(sha.ComputeHash(File.ReadAllBytes(path))
+                        .Select(value => value.ToString("x2"))),
+                    "The Giant Scorpion ships its refined export.");
+            OriginalMeshOrientation.AssertShippedBody(path, Sprint14BonePolicy.ScorpionKey);
+        }
+
         private static string[] AppendedSymbols()
         {
             string ledger = File.ReadAllText(Path.Combine(RepositoryRoot(),
