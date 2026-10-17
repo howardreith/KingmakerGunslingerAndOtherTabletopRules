@@ -73,6 +73,76 @@ public static class CotwSpontaneousSlotProbe
         Set(spell, "m_CachedSpellbook", book);
         return spell;
     }
+    private static void CheckPendingStartupCallbacks(Assembly mod, object context)
+    {
+        Type contextType = context.GetType();
+        Type entryType = contextType.GetProperty("ModEntry", Hidden).PropertyType;
+        FieldInfo update = entryType.GetField("OnUpdate", Hidden);
+        FieldInfo current = contextType.GetField("_current", Hidden);
+        object previousCurrent = current.GetValue(null);
+        object previousEntry = contextType.GetProperty("ModEntry", Hidden).GetValue(context,null);
+        Type bootstrap = mod.GetType("KingmakerGunslinger.Bootstrap.BlueprintBootstrap",true);
+        FieldInfo bootstrapState = bootstrap.GetField("_state",Hidden);
+        object previousBootstrapState = bootstrapState.GetValue(null);
+        Check(!(bool)bootstrap.GetProperty("IsInitialized",Hidden).GetValue(null,null), "startup fixture begins before blueprint registration");
+        current.SetValue(null,context);
+        try
+        {
+            foreach(string name in new[] {
+                "Spells.ShieldOther.ShieldOtherFinalLiveReconciler",
+                "Spells.Teleportation.TeleportationFinalLiveReconciler",
+                "Compatibility.ClassCatalogDiagnostics",
+                "EasternWeapons.EasternWeaponLatePublicationCoordinator",
+                "FavoredClass.FavoredClassIntegrationCoordinator"})
+            {
+                Type owner = mod.GetType("KingmakerGunslinger."+name,true);
+                object entry = FormatterServices.GetUninitializedObject(entryType);
+                Set(context,"<ModEntry>k__BackingField",entry);
+                FieldInfo contextField = owner.GetField("_context",Hidden);
+                object previousContext = contextField == null ? null : contextField.GetValue(null);
+                FieldInfo attached = owner.GetField(name.Contains("ClassCatalog") ? "_firstUpdatePending" : "_attached",Hidden);
+                object previousAttached = attached.GetValue(null);
+                if(contextField != null) contextField.SetValue(null,context);
+                attached.SetValue(null,true);
+                // The only stand-in is the external UMM dispatch boundary. Wire
+                // the exact production callback, not unrelated settings/graph setup.
+                Delegate callback = Delegate.CreateDelegate(update.FieldType, owner.GetMethod("FirstUpdate",Hidden));
+                update.SetValue(entry,callback);
+                FieldInfo retries = owner.GetField("_pendingRetries",Hidden);
+                object retryBefore = retries == null ? null : retries.GetValue(null);
+                try
+                {
+                    for(int frame=0;frame<3;frame++) callback.DynamicInvoke(entry,0.016f);
+                    Check((bool)attached.GetValue(null), name+" retains pending state before library ready");
+                    Delegate retained = (Delegate)update.GetValue(entry);
+                    Check(retained != null && retained.GetInvocationList().Length == 1 && retained.Equals(callback),
+                        name+" retains exactly one real UMM callback");
+                    if(retries != null) Check(Equals(retryBefore,retries.GetValue(null)), "Favored Class dependency wait does not consume host retry budget");
+                    // The native graph is deliberately absent here. A committed
+                    // readiness signal must reach existing validation and detach
+                    // on its real failure path, rather than wait forever. This
+                    // does not claim optional publication succeeded headlessly.
+                    bootstrapState.SetValue(null,Enum.Parse(bootstrapState.FieldType,"Initialized"));
+                    callback.DynamicInvoke(entry,0.016f);
+                    Check(!(bool)attached.GetValue(null) && update.GetValue(entry) == null,
+                        name+" advances out of pending at committed readiness");
+                }
+                finally
+                {
+                    update.SetValue(entry,null);
+                    bootstrapState.SetValue(null,previousBootstrapState);
+                    attached.SetValue(null,previousAttached);
+                    if(contextField != null) contextField.SetValue(null,previousContext);
+                }
+            }
+        }
+        finally
+        {
+            current.SetValue(null,previousCurrent);
+            bootstrapState.SetValue(null,previousBootstrapState);
+            Set(context,"<ModEntry>k__BackingField",previousEntry);
+        }
+    }
     public static void Run(Assembly mod)
     {
         HarmonyInstance harmony = HarmonyInstance.Create("KMG.Tests.CotwSpontaneousSlot");
@@ -190,6 +260,7 @@ public static class CotwSpontaneousSlotProbe
             catch (TargetInvocationException) { rejected = true; }
             Check(rejected, "unsupported provider identity refused");
             Check(_neighborCalls > 0, "foreign native postfix actually executes after correction");
+            CheckPendingStartupCallbacks(mod,context);
             Console.WriteLine("Native-contract adapter assertions: PASS=" + _passed + ";FAIL=0;saveLoad=NOT_RUN");
         }
         finally

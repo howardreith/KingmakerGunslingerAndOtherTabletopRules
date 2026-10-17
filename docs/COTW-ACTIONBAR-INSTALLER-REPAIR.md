@@ -62,7 +62,7 @@ transpiler directly and did not cover this installation seam.
   (7.5 s), 6/6 of 2,652 registered startup tests PASS (1.7 s).
 - No new native load result or publication is established by these source tests.
 
-## Other log findings under separate assessment
+## Separate bounded readiness correction
 
 First-update callbacks run before the blueprint library is ready (lines 308–316):
 class-catalog diagnostics access an unavailable root; Shield Other and
@@ -70,8 +70,34 @@ Teleportation consume their final-live callback before their owned identities
 exist; Eastern Weapons initially refuses but later recovers through Aid Another
 (line 5334); Favored Class attempts integration before its 200 leaves register.
 These are distinct readiness issues, not the thrown exception aborting this load.
-ZFavoredClass also logs handled KeyNotFoundException failures; do not silently
-modify that external mod or attribute them to this installer without evidence.
+The five first-update consumers now keep their single callback pending until
+KMG's actual blueprint bootstrap is committed (or the mod context has failed).
+They check readiness only: no discovery, reflection, settings writes or graph
+mutation on early frames. Favored Class's own host retry allowance is not spent
+while waiting for KMG registration. After readiness, the existing validation,
+transactional publication and genuine-failure paths are unchanged. This is a
+separate reviewable change after installer checkpoint `132398b46e4f`.
+
+Expanded actual-assembly probe: **64/64 PASS**. It drives all five production
+FirstUpdate callbacks through an isolated UMM delegate, verifies retained single
+subscription through three early updates, no consumed host retry, and exit from
+pending when the committed-readiness flag is supplied. Native blueprint graphs
+are deliberately absent in that final boundary test, so it reaches existing
+validation/failure, NOT successful optional publication. Log
+`artifacts/installer-inspection/readiness-transitions.log` (1.009 s process).
+Affected-neighbor selector:
+`Invoke-KmgGate.ps1 -Filter 'brown-fur.startup,shield-other,teleportation.oracle,eastern-favored,favored-class.host-readiness'`:
+**33/33 of 2,652 PASS**, production compile 0.4 s / domain phase 1.0 s.
+Log `artifacts/installer-inspection/affected-neighbors.log`. No full suite.
+
+The four ZFavoredClass KeyNotFoundException errors also occur in the previous
+supplied output_log.txt, in the same loadCustomFeature/loadPrestigiousSpellCaster
+methods with matching ZFavoredClass MVID `3efd38e7-8682-4b4d-8d53-e368a3664919`.
+They concern custom/PrestigiousSpellcaster data and loading continues past them
+to controller UI. This classifies a pre-existing installation issue, not a newly
+introduced installer regression or proof of harmlessness. Their exact missing
+asset IDs are not in these stacks. No external mod/data or save was modified;
+further repair needs those actual records/IDs rather than guesses.
 
 Native controller save loading, page/party refresh and KBP no-cast entry/exit
 remain unqualified. No game process, installation/settings/save mutation or

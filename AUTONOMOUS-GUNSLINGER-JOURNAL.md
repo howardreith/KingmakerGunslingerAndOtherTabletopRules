@@ -1,5 +1,27 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — output_log2 diagnosis and corrections
+
+Preserved private log SHA-256
+`18b473dd944a3da1772f3d859f790aad819c3cd3359394d7ed9ab8a70181481a`.
+KMG stack MVID matches alpha 2; metadata inspection threw before patching.
+The earlier 39 tests covered transpilation, not the installer. Exact released
+DLL reproduction fails the new real-Install assertion after 4 PASS; corrected
+installer checkpoint `132398b46e4f` passes 47/47, including foreign owner/postfix
+and diagnostic-failure behavior. No CotW helper/execution exception suppression.
+The log independently confirms 25 Brown-Fur registrations and publication.
+
+Subsequent bounded readiness guards preserve the five early FirstUpdate
+subscriptions until committed KMG registration, with no discovery/frame work
+or host retry consumption. Real-callback probe 64/64 PASS, including terminal
+ready-boundary failure handling with absent native graph (not publication PASS).
+Affected neighbors 33/33 of 2,652 PASS with production compilation; no full suite.
+Old and new logs have the same four handled ZFavoredClass missing-key stacks;
+classified as pre-existing data issue once, not repaired speculatively. Source
+changes stay in KMG; KBP, CotW and external data untouched. No game launch,
+settings/save/install change, merge or publication. Exact commands and remaining
+native gates: [correction record](docs/COTW-ACTIONBAR-INSTALLER-REPAIR.md).
+
 ## 2026-10-17 — controller-load alpha 2 published
 
 [Public prerelease](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2)
