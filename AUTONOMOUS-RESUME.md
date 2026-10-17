@@ -1,5 +1,17 @@
 # output_log2 — CotW installer and early-update repair (2026-10-17)
 
+**Owner test / review checkpoint:** after alpha 3, the owner reported "That
+appears to have fixed things" and requested a PR for owner merge.
+[PR #54](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/54)
+is open, ready for review, from `codex/cotw-actionbar-installer-review-20261017`
+to `master`; it includes the complete Brown-Fur/CotW/installer repair chain.
+This is human-reported success, not new instrumented native evidence; no fresh
+log, action-bar-page/party results or physical-input acceptance were supplied.
+Frozen alpha/product identities and automated NOT_RUN records below remain
+unchanged. No rebuild, test campaign, merge, release or installation selected
+for PR creation. Wait for the owner's merge and controller-mode comments;
+do not begin broader controller work from this feedback alone.
+
 **Alpha 3 is public** at
 [the GitHub prerelease](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3),
 published 2026-10-17T22:55:15Z. Tag object
