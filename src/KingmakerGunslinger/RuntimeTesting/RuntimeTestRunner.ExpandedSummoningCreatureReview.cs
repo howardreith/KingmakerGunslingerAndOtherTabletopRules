@@ -1372,7 +1372,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string.Join(",", parts.ToArray()) + ";character=" +
                 DescribeReviewCharacter(unit.View) + ";rimAnimations[" +
                 string.Join("|", rimAnimations.ToArray()) + "];rimPatch=" +
-                ExpandedSummoningRimAnimationPatch.Describe(unit.View);
+                ExpandedSummoningRimAnimationPatch.Describe(unit.View) + ";summonGlow=" +
+                ExpandedSummoningSummonGlowPatch.Describe(unit.View);
         }
 
         /// <summary>
