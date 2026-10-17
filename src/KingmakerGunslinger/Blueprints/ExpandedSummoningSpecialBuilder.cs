@@ -777,8 +777,26 @@ namespace KingmakerGunslinger.Blueprints
             overrun.StopOnCorpulence = false;
             overrun.DelayBeforeStart = 0f;
             overrun.DelayAfterFinish = 0f;
+            // The printed knockdown, and the reason it belongs HERE.
+            // AbilityCustomOverrun's IL runs this list once per overrun
+            // target, inside that target's data scope, and only when the
+            // maneuver succeeded: V_5 holds !Success and IL_03b1 branches
+            // to the Actions block only when it is false. The native
+            // overrun ability ships this list EMPTY, which is why nothing
+            // in this build has ever knocked an overrun target prone and
+            // why Greater Overrun's printed rider could not fire.
+            //
+            // ContextActionKnockdownTarget carries the controls rather
+            // than this project inventing them: UnitHelper.CanBeKnockedOff
+            // gates eligibility, Descriptor.State.Prone.ShouldBeActive is
+            // the native prone state so an already-prone target stays
+            // prone, and IKnockOffHandler.HandleKnockOff is raised on the
+            // native EventBus. One action, on this creature's own command;
+            // no global rule is touched and Trample gains nothing.
+            var knockdown = ScriptableObject.CreateInstance<
+                ContextActionKnockdownTarget>();
             overrun.Actions = new ActionList {
-                Actions = Array.Empty<GameAction>()
+                Actions = new GameAction[] { knockdown }
             };
             var fullRound = ScriptableObject.CreateInstance<
                 AbilityIsFullRoundInTurnBased>();

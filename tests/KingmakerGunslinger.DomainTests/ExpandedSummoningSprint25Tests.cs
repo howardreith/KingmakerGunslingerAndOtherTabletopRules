@@ -319,6 +319,105 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(-4, tri.TrampleBonusFor(-4),
                 "Triceratops no longer doubles a Strength penalty.");
         }
+        internal static void OverrunKnocksDownOnlyThroughItsOwnCommand()
+        {
+            // The printed Overrun knocks a successful target prone, and the
+            // native overrun ability ships an EMPTY action list, which is why
+            // nothing in this build ever did. AbilityCustomOverrun's IL runs
+            // its Actions once per target, in that target's data scope, and
+            // only when the maneuver succeeded - so the correction is one
+            // action on this creature's own command, not a rule change.
+            string builder = BuilderSource();
+            int start = builder.IndexOf("ConfigureBrachiosaurusOverrun(",
+                StringComparison.Ordinal);
+            start = builder.IndexOf("private static void " +
+                "ConfigureBrachiosaurusOverrun(", StringComparison.Ordinal);
+            Assertions.True(start > 0,
+                "The Brachiosaurus Overrun command is built in one place.");
+            int end = builder.IndexOf("private static void", start + 40,
+                StringComparison.Ordinal);
+            string command = end > start
+                ? builder.Substring(start, end - start)
+                : builder.Substring(start);
+
+            Assertions.True(command.Contains("overrun.AutoSuccess = false"),
+                "The command rolls a real maneuver, which is what makes the " +
+                "printed Greater Overrun bonus reachable at all.");
+            Assertions.True(
+                command.Contains("ContextActionKnockdownTarget"),
+                "A successful overrun knocks its target prone.");
+            Assertions.Equal(1, CountOccurrences(command,
+                "ContextActionKnockdownTarget>()"),
+                "Exactly one knockdown action, applied once per target.");
+
+            // The controls stay the engine's. Inventing an immunity check
+            // or a prone check here would be a second, divergent rule.
+            // Comments are stripped first: this has to examine the code,
+            // and the code's own commentary names these very symbols.
+            string code = StripComments(command);
+            Assertions.False(code.Contains("CanBeKnockedOff"),
+                "Eligibility is the engine's own check, not a copy of it.");
+            Assertions.False(code.Contains("ManeuverProvokeAttack"),
+                "No custom provocation: the native feat's component is the " +
+                "only provocation in play, so there is no duplicate.");
+
+            // Trample is a different action and keeps its own shape.
+            int trampleStart = builder.IndexOf("private static void " +
+                "ConfigureUngulateTrample(", StringComparison.Ordinal);
+            Assertions.True(trampleStart > 0, "Trample is built in one place.");
+            int trampleEnd = builder.IndexOf("private static void",
+                trampleStart + 40, StringComparison.Ordinal);
+            string trample = trampleEnd > trampleStart
+                ? builder.Substring(trampleStart, trampleEnd - trampleStart)
+                : builder.Substring(trampleStart);
+            Assertions.True(trample.Contains("overrun.AutoSuccess = true"),
+                "Trample stays an auto-success, so it never rolls a maneuver.");
+            Assertions.False(trample.Contains("ContextActionKnockdownTarget"),
+                "Trample gains no knockdown from this correction.");
+            Assertions.False(trample.Contains("GreaterOverrun"),
+                "Trample gains no Greater Overrun behaviour.");
+        }
+
+        // Written as a code point rather than an escape: this file is
+        // edited by scripts, and an escape that survives one layer of
+        // quoting and not the next produces a literal newline inside a
+        // character constant, which is exactly what happened here.
+        private const char Newline = (char)10;
+
+        private static string StripComments(string text)
+        {
+            var kept = new List<string>();
+            foreach (string line in text.Split(Newline))
+            {
+                string trimmed = line.TrimStart();
+                if (trimmed.StartsWith("//", StringComparison.Ordinal) ||
+                    trimmed.StartsWith("///", StringComparison.Ordinal))
+                    continue;
+                kept.Add(line);
+            }
+            return string.Join(Newline.ToString(), kept.ToArray());
+        }
+
+        private static int CountOccurrences(string text, string token)
+        {
+            int count = 0;
+            int index = text.IndexOf(token, StringComparison.Ordinal);
+            while (index >= 0)
+            {
+                count++;
+                index = text.IndexOf(token, index + token.Length,
+                    StringComparison.Ordinal);
+            }
+            return count;
+        }
+
+        private static string BuilderSource()
+        {
+            return File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningSpecialBuilder.cs"));
+        }
+
         internal static void IdentityAppendOwnsExactlyFivePrivateCarriers()
         {
             // Seven since 2026-10-16: the five Brachiosaurus carriers, the

@@ -62,12 +62,23 @@ SEAM_RINGS = 2
 
 # The parts that partition the body. Anything else build() records is an
 # overlay: a named subset of one of these, for measurement.
-PRIMARY_PARTS = ("torso", "forward", "skull", "ears", "tusks", "tail", "limbs")
+PRIMARY_PARTS = ("torso", "shoulder", "forward", "skull", "ears", "tusks",
+                 "tail", "limbs")
 
 LEG_BONES = ["L_Arm_Upper", "L_Arm_Lower", "L_Palm",
              "R_Arm_Upper", "R_Arm_Lower", "R_Palm",
              "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0",
              "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0"]
+
+# Each limb as the donor actually articulates it, hip to sole. The two middle
+# joints are the ones the first pass skipped: the donor bends there, and skin
+# that no ring weights cannot follow it.
+LIMB_CHAINS = (
+    ("L_Arm_Upper", "L_Arm_Lower", "frontKnee_L", "frontAnkle_L", "L_Palm"),
+    ("R_Arm_Upper", "R_Arm_Lower", "frontKnee_R", "frontAnkle_R", "R_Palm"),
+    ("L_Leg0_Upper", "L_Leg0_Lower", "backKnee_L", "backAnkle_L", "L_Foot0"),
+    ("R_Leg0_Upper", "R_Leg0_Lower", "backKnee_R", "backAnkle_R", "R_Foot0"),
+)
 
 # The shared five-slot atlas has fixed names, and paint_giant_body.py already
 # assigns each slot a role per creature. The graybox uses the same assignment
@@ -439,6 +450,24 @@ def build(kind, rest, neck_state, seam="mixed"):
                  ["Head", "Head", "Head"], region=slots["tusk"], segments=6)
             mark("tusks", start)
 
+    # The shoulder. The wedge where the neck leaves the body survived every
+    # seam weighting because no weighting can put mass where there is none:
+    # a cylinder meets a sphere with nothing between them. The donor has a
+    # `Neck` joint sitting between UpperTorso and Head, and until now nothing
+    # in this body weighted it at all. It carries the shoulder, so the mass
+    # bridging that join is also the first thing here that deforms with the
+    # joint the gore pose swings.
+    if "Neck" in rest:
+        start = len(bm.verts)
+        shoulder_dir = (head_joint - torso_mid).normalized()
+        shoulder_up = (up - shoulder_dir * up.dot(shoulder_dir)).normalized()
+        shoulder_lat = shoulder_dir.cross(shoulder_up).normalized()
+        ellipsoid(bm, weights, uvs, rest["Neck"],
+                  shoulder_lat, shoulder_up, shoulder_dir,
+                  (neck_base * 1.30, neck_base * 1.34, neck_base * 1.46),
+                  "Neck", region=slots["body"])
+        mark("shoulder", start)
+
     # The real tail keeps the rear chain; the neck never borrows it.
     tail_pts = chain_points(rest, REAR_CHAIN, "LowerTorso")
     tail_base = body_len * 0.15
@@ -461,13 +490,11 @@ def build(kind, rest, neck_state, seam="mixed"):
                      if bone in rest)
 
     # Four columnar limbs from the measured joints.
-    for upper_b, lower_b, foot_b in (
-            ("L_Arm_Upper", "L_Arm_Lower", "L_Palm"),
-            ("R_Arm_Upper", "R_Arm_Lower", "R_Palm"),
-            ("L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0"),
-            ("R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0")):
-        if not all(b in rest for b in (upper_b, lower_b, foot_b)):
+    for chain_bones in LIMB_CHAINS:
+        if not all(bone in rest for bone in chain_bones):
             continue
+        upper_b, lower_b, foot_b = (chain_bones[0], chain_bones[1],
+                                    chain_bones[-1])
         top, knee, foot = rest[upper_b], rest[lower_b], rest[foot_b]
         radius = body_len * (0.115 if kind == "brachiosaurus" else 0.125)
         # The limb top is sunk toward the torso centre so the proximal cap is
@@ -477,11 +504,13 @@ def build(kind, rest, neck_state, seam="mixed"):
         # broke exactly that: it made the elephant trunk float and the
         # brachiosaurus tail tip dip under the foot plane.
         socket = top + (torso_mid - top).normalized() * (radius * 1.5)
-        limb_pts = [socket, top, knee, foot]
-        limb_radii = [radius * 1.25, radius, radius * 0.84, radius * 0.80]
+        # One ring per real joint, so every joint the donor bends owns skin.
+        limb_pts = [socket] + [rest[bone] for bone in chain_bones]
+        limb_radii = [radius * 1.25, radius, radius * 0.84,
+                      radius * 0.82, radius * 0.80, radius * 0.80]
         extra = SEAM_RINGS if seam in ("graded", "chained", "mixed") else 0
         limb_pts, limb_radii = insert_seam(limb_pts, limb_radii, extra)
-        limb_bones = [upper_b] * (extra + 2) + [lower_b, foot_b]
+        limb_bones = [upper_b] * (extra + 1) + list(chain_bones)
         start = len(bm.verts)
         tube(bm, weights, uvs, limb_pts, limb_radii, limb_bones,
              region=slots["limb"], segments=LIMB_SEGMENTS)

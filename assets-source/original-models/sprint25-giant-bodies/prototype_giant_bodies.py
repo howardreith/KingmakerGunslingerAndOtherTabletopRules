@@ -353,7 +353,14 @@ def part_bones(built, part, indexed):
 
 
 def rigid_distortion(built, part, rest_coords, posed_coords):
-    """How far a part departed from a rigid motion, in absolute units.
+    """How far a part departed from a RIGID MOTION, in absolute units.
+
+    Precisely: the largest change in any vertex's distance to its part's
+    own centroid. That is invariant under rotation and translation, so it
+    catches shear, scale and collapse - and it does NOT establish that the
+    part moved by the transform its bone applies. A part rotated about the
+    wrong axis, or driven by the wrong bone, passes this check unchanged.
+    `bone_transform_error` is the one that tests that claim.
 
     A part driven by one bone must move rigidly, so every vertex keeps its
     distance to the part's own centroid. This is the harness checking itself:
@@ -508,6 +515,14 @@ def measure(mesh, rest_coords, posed_coords, indexed, dominant,
             float(len(anchor_values)), 3),
         "anchorToTorsoMinDistance": round(seam_gap, 4)
         if seam_gap is not None else None,
+        # The anchor ring is pinned, so its figure cannot change under pose.
+        # This one can: the first ring OUTSIDE the body, against the body it
+        # leaves, which is where the wedge opens when the neck swings.
+        "neckBaseToBodyMinDistance": round(min_distance(
+            [posed_coords[i] for i in built.parts["forward"][
+                graybox.FORWARD_SEGMENTS:2 * graybox.FORWARD_SEGMENTS]],
+            [posed_coords[i] for i in (built.parts["torso"] +
+                                       built.parts.get("shoulder", []))]), 4),
         "footMinZ": feet,
         "footLiftAboveSolePlane": {
             bone: round(value - landmarks["solePlane"], 4)
@@ -523,6 +538,10 @@ def measure(mesh, rest_coords, posed_coords, indexed, dominant,
         "rigidPartDistortion": {
             part: rigid_distortion(built, part, rest_coords, posed_coords)
             for part in ("skull", "tusks")},
+        "rigidPartDistortionMeans":
+            "largest change in a vertex's distance to its part's centroid; "
+            "invariant under rotation, so NOT a test of which transform moved "
+            "the part",
         "contactMinDistance": round(gap, 4) if gap is not None else None,
         "contactTouching": bool(gap is not None and gap <= 0.0),
         "baseMeshSha256": base_mesh_digest(mesh),
@@ -554,6 +573,35 @@ def chain_turns(built, coords):
                      "segmentLength": round(second.length, 3),
                      "degreesPerUnit": round(angle / second.length, 1)})
     return rows
+
+
+def bone_transform_error(obj, armature, built, part, bone, wrong=None):
+    """Does a single-bone part move by the transform that bone applies?
+
+    The Armature modifier maps a rest vertex to
+    `pose.matrix * bone.matrix_local^-1 * v`, both in armature space, and the
+    object sits at the armature's origin here, so the comparison needs no
+    further change of space. `wrong` names a different bone to apply instead:
+    a control that must produce a large error, which is how this check is
+    shown to detect what its name claims rather than passing by construction.
+    """
+    indices = built.parts.get(part, [])
+    if not indices:
+        return None
+    pose_bone = armature.pose.bones.get(wrong or bone)
+    if pose_bone is None:
+        return None
+    skin = pose_bone.matrix @ pose_bone.bone.matrix_local.inverted()
+    mesh = obj.data
+    graph = bpy.context.evaluated_depsgraph_get()
+    evaluated = obj.evaluated_get(graph)
+    deformed = evaluated.to_mesh()
+    worst = 0.0
+    for index in indices:
+        expected = skin @ mesh.vertices[index].co
+        worst = max(worst, (deformed.vertices[index].co - expected).length)
+    evaluated.to_mesh_clear()
+    return round(worst, 6)
 
 
 def pivot_offsets(indexed, rest_coords, rig_names):
@@ -677,7 +725,34 @@ def weight_material(obj, indexed):
 
 SIDE = ("side", Vector((1.0, 0.0, 0.12)))
 FRONT = ("front", Vector((0.0, 1.0, 0.12)))
+REAR = ("rear", Vector((0.0, -1.0, 0.12)))
 PARTY = ("party", Vector((0.72, 0.72, 0.55)))
+
+
+def render_closeup(scene, camera, camera_data, coords, built, out, stem):
+    """The head and shoulder, close. Judging a skull, an ear or the
+    join where a neck leaves a body from a full-body frame at 1000x720 means
+    judging it at about fifty pixels."""
+    indices = []
+    for part in ("skull", "ears", "tusks", "shoulder"):
+        indices += built.parts.get(part, [])
+    indices += built.parts["forward"][:graybox.FORWARD_SEGMENTS * 3]
+    if not indices:
+        return []
+    points = [coords[index] for index in indices]
+    centre = sum(points, Vector()) / len(points)
+    extent = max(max(p[axis] for p in points) - min(p[axis] for p in points)
+                 for axis in range(3))
+    written = []
+    for view, offset in (SIDE, PARTY):
+        camera.location = centre + offset.normalized() * extent * 4.0
+        graybox.point_camera(camera, centre)
+        camera_data.ortho_scale = extent * 2.1
+        name = stem + "-closeup-" + view + ".png"
+        scene.render.filepath = str(out / name)
+        bpy.ops.render.render(write_still=True)
+        written.append(name)
+    return written
 
 
 def render_views(scene, camera, camera_data, coords, out, stem, views):
@@ -813,14 +888,29 @@ def run_variant(spec, census, rig, rig_names, rig_hash, out, albedo_dir):
         coords = evaluated_coords(obj)
         measured = measure(mesh, rest_coords, coords, indexed, dominant,
                            built, contact)
+        skull_bone = part_bones(built, "skull", indexed)
+        if len(skull_bone) == 1:
+            measured["skullBoneTransformError"] = bone_transform_error(
+                obj, armature, built, "skull", skull_bone[0])
+            measured["skullWrongBoneControlError"] = bone_transform_error(
+                obj, armature, built, "skull", skull_bone[0],
+                wrong="LowerTorso")
+            measured["transformCheckDetectsWrongBone"] = bool(
+                measured["skullWrongBoneControlError"] is not None and
+                measured["skullBoneTransformError"] is not None and
+                measured["skullWrongBoneControlError"] >
+                measured["skullBoneTransformError"] + 0.01)
         measured["posedBones"] = [bone for bone, _, _ in library[pose]]
         measured["totalChainAngleDegrees"] = round(
             sum(abs(degrees) for bone, _, degrees in library[pose]
                 if bone == "Head" or bone in graybox.FORWARD_CHAIN), 1)
         record["poses"][pose] = measured
-        views = [SIDE, PARTY] + ([FRONT] if pose == "bind" else [])
-        record["renders"] += render_views(scene, camera, camera_data, coords,
-                                          out, name + "-" + pose, views)
+        if extras:
+            views = ([SIDE, PARTY] +
+                     ([FRONT, REAR] if pose == "bind" else []))
+            record["renders"] += render_views(scene, camera, camera_data,
+                                              coords, out,
+                                              name + "-" + pose, views)
 
     # How much per-joint curl the authored skin takes before it tears. The
     # graybox swept this geometrically, for silhouette; this sweeps it through
@@ -852,6 +942,10 @@ def run_variant(spec, census, rig, rig_names, rig_hash, out, albedo_dir):
                                     low[0] >= STRETCH_FLOOR),
         })
     record["forwardChainCurlSweep"] = sweep
+
+    if extras:
+        record["renders"] += render_closeup(scene, camera, camera_data,
+                                            rest_coords, built, out, name)
 
     # Two more passes on the bind pose: who owns which surface, and the
     # painted albedo on the real UVs. The comparison variants skip them,
