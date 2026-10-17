@@ -548,10 +548,10 @@
                   {
                       "key":  "dire-rat",
                       "displayName":  "Dire Rat",
-                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/dire-rat.png",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/edits/dire-rat/dire-rat.png",
                       "productionFile":  "assets/game/icons/expanded-summoning/dire-rat.png",
-                      "sourceSha256":  "41a52d00891f42214c84a07f121468aa9feb88eb006ad57b9e7933d860ccc871",
-                      "outputSha256":  "8942e8ad6fa190bb64135247718584c6d7b171c33bf37b7f3d1796fa87e2d00c",
+                      "sourceSha256":  "df593dfad161941cb8846e1f7df1e723480975a3e90d5ffd789c9d170d04168d",
+                      "outputSha256":  "159700710b467fc906795db4b7d583ac5c9316f85c6dc395aaae5169982efb07",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
@@ -594,7 +594,9 @@
                                                "KMG.Summoning.Ability.SNA.Tier8.DireRat.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.DireRat.OneD4PlusOne",
                                                "KMG.Summoning.Unit.DireRat"
-                                           ]
+                                           ],
+                      "originalSourceFile":  "assets-source/original-icons/expanded-summoning/sources/dire-rat.png",
+                      "originalSourceSha256":  "41a52d00891f42214c84a07f121468aa9feb88eb006ad57b9e7933d860ccc871"
                   },
                   {
                       "key":  "dire-tiger",
