@@ -1,5 +1,12 @@
 # output_log2 — CotW installer and early-update repair (2026-10-17)
 
+Subsequent owner request "Please put it up in github" authorizes one alpha 3
+of frozen product `39c60fb5e916`, prerelease / never Latest. Use the explicit
+`Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3` profile; no rebuild/native
+rerun/full suite, merge or installation. Earlier no-publication statements
+below describe the preceding repair checkpoint. See
+[alpha 3 notes](docs/RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-3.md).
+
 Frozen product/source `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e` is clean in
 `cotw-actionbar-installer-20261017`; review records are on
 `codex/cotw-actionbar-installer-review-20261017` in the separate worktree.

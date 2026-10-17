@@ -1,5 +1,18 @@
 # Build, package, and publish
 
+## Controller-load alpha 3 authorization — 2026-10-17
+
+After the output_log2 correction/local ZIP handoff, the owner requested:
+"Please put it up in github." This authorizes one public test prerelease of
+exact product `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e`, including required
+review-branch/tag push. Use `Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3`
+with its exact receipt/hash/MVID/evidence profile. Tag
+`v0.0.157-controller-load-alpha.3`, prerelease / never Latest; reuse the tested
+ZIP without rebuilding, full-suite/native rerun or qualification promotion.
+The alpha 2 profile/pins remain unchanged and cannot select the new product.
+No default-branch merge, stable release, game installation or unrelated alpha
+change is authorized. See [notes](RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-3.md).
+
 ## Controller-load alpha 2 authorization — 2026-10-17
 
 The owner subsequently asked to push another alpha to test and clarify whether
