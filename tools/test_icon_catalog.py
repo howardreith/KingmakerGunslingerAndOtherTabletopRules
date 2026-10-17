@@ -47,8 +47,10 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Repinned by Sprint 24 for the two theropod concepts.
-        self.assertEqual("23838c850fd1d0b9b3d29da462048ed7ddca3823973bbb3ddfa47026b59175b3", actual)
+        # Repinned 2026-10-17 for the Brachiosaurus concept, whose painting
+        # arrived and took the manifest from 119 rows to 120. Before that,
+        # repinned by Sprint 24 for the two theropod concepts.
+        self.assertEqual("641ca5ea2d66e6f5dc32ba8b7577066510eda2783a88267c918739c4b7edc87f", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6"
