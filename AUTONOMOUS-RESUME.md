@@ -1,17 +1,27 @@
 # CotW controller action-bar load — isolated repair checkpoint (2026-10-17)
 
-Current branch `codex/cotw-controller-actionbar-load-20261017`, based on
-`86de8f281c63458b296ca7d406e6f575ef8193f2`; independent worktree of that name.
+Review branch `codex/cotw-controller-actionbar-load-review-20261017`; frozen
+product/source branch `codex/cotw-controller-actionbar-load-20261017` at
+`92b442c06dd8d13f246ca006fdda6382b9eb6236`. Both have isolated worktrees.
+Local test ZIP, receipt and checksum are in the requested handoff folder,
+suffix `cotw-controller-actionbar-load-92b442c06dd8`. ZIP SHA-256
+`798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`;
+DLL `e78d79cfb334f6d59c2948b6258128ce73334db59e8f7dba16a01860cc946801`,
+MVID `0fa8ccba-349e-47e1-a2ec-8b46d20ed69c`.
 Preserve the Brown-Fur alpha and frozen product. Exact CotW/game IL confirms
 the spontaneous prefix uses an unrelated memorized-slot getter; executable
 probe returns BlueprintAbility instead of AbilityData. Narrow transpiler
 retains the complete original CotW helper and native patch ownership/order.
 See [current investigation](docs/COTW-CONTROLLER-ACTIONBAR-LOAD-REPAIR.md).
-Focused 39/39 adapter assertions and 6/6 Brown-Fur startup tests;
-final candidate identity/evidence follows at its own checkpoint. Native load
+Exact candidate: 39/39 adapter assertions and 6/6 Brown-Fur startup tests,
+69.245 s build/package, strict package PASS. Native load
 NOT_RUN; first null on affected state and affected alpha DLL identity still
 cannot be recovered from the unavailable full log/artifact. Exclusive DATA
-availability is now owner-authorized; native no-cast protocol inspection remains.
+availability is now owner-authorized. The verified mouse receiver and post-load
+Teleportation mode-switch fixture do not establish a cold-controller load route.
+Next: bounded no-cast controller loading-UI/receiver protocol, focused safety
+tests, then matched fresh-process fixture loads; see the current record's native
+boundary. No game launched or transaction begun; do not reuse a casting campaign.
 No automatic publication/merge/install or inherited alpha authorization.
 
 # Brown-Fur startup-order repair — alpha published / human-test checkpoint (2026-10-17)
