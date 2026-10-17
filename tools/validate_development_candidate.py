@@ -1,4 +1,4 @@
-"""Source validation for a development candidate built on released v0.0.156.
+"""Source validation for a development candidate built on released v0.0.157.
 
 A development candidate is unreleased work packaged for one named purpose,
 such as a guarded native observation of a review branch. It is never a
@@ -29,12 +29,11 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 import validate_expanded_summoning_sprint21150 as common
 import validate_expanded_summoning_sprint24154 as released155
-import validate_firearm_continuation_release156 as released156
 
-# The released v0.0.156 commit: the accepted baseline every development
+# The released v0.0.157 commit: the accepted baseline every development
 # candidate on this version must extend without changing.
-BASELINE = "607da683b1f6fd545dab90fd6f4121d155573142"
-BASELINE_VERSION = released156.VERSION
+BASELINE = "8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c"
+BASELINE_VERSION = "0.0.157"
 PURPOSE = re.compile(r"^[a-z0-9][a-z0-9-]{1,46}[a-z0-9]$")
 SYMBOL = re.compile(r"^KMG\.[A-Za-z0-9_.]+$")
 GUID = re.compile(r"^[0-9a-f]{32}$")
@@ -93,8 +92,11 @@ def check_append_only(accepted, current):
 def check_version(info_version, props, assembly):
     """The released version metadata, exactly: a development candidate is
     never a new version."""
+    # The release validator reuses check_append_only from this module. Import
+    # lazily so either command can be the entry point without an import cycle.
+    from validate_alternate_summoning_release157 import check_version as released_version
     try:
-        released156.check_version(info_version, props, assembly)
+        released_version(info_version, props, assembly)
     except AssertionError:
         raise AssertionError("Development candidates keep the released " +
                              BASELINE_VERSION + " version metadata unchanged")

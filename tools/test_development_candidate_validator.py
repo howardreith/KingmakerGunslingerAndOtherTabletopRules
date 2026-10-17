@@ -5,7 +5,7 @@ import unittest
 
 sys.dont_write_bytecode = True
 import validate_development_candidate as gate
-import validate_firearm_continuation_release156 as released156
+import validate_alternate_summoning_release157 as released
 
 
 def row(symbol, guid, status="active"):
@@ -18,13 +18,13 @@ class DevelopmentCandidateValidatorTests(unittest.TestCase):
         self.accepted = [row("KMG.Released.A", "a" * 32),
                          row("KMG.Released.B", "b" * 32, "reserved")]
         self.current = copy.deepcopy(self.accepted) + [row("KMG.Added.C", "c" * 32)]
-        self.props = ("<KmgVersion>" + released156.VERSION + "</KmgVersion>"
-                      "<KmgInformationalVersion>" + released156.INFORMATIONAL +
+        self.props = ("<KmgVersion>" + released.VERSION + "</KmgVersion>"
+                      "<KmgInformationalVersion>" + released.INFORMATIONAL +
                       "</KmgInformationalVersion>")
-        self.assembly = ('AssemblyVersion("' + released156.VERSION + '") '
-                         'AssemblyFileVersion("' + released156.VERSION + '") '
+        self.assembly = ('AssemblyVersion("' + released.VERSION + '") '
+                         'AssemblyFileVersion("' + released.VERSION + '") '
                          'AssemblyInformationalVersion("' +
-                         released156.INFORMATIONAL + '")')
+                         released.INFORMATIONAL + '")')
 
     def test_appended_identities_pass(self):
         self.assertEqual(1, gate.check_append_only(self.accepted, self.current))
@@ -81,22 +81,33 @@ class DevelopmentCandidateValidatorTests(unittest.TestCase):
             gate.check_append_only(self.accepted, current)
 
     def test_released_version_metadata_passes(self):
-        gate.check_version(released156.VERSION, self.props, self.assembly)
+        self.assertEqual("8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c", gate.BASELINE)
+        self.assertEqual(released.VERSION, gate.BASELINE_VERSION)
+        gate.check_version(released.VERSION, self.props, self.assembly)
 
     def test_version_bump_fails(self):
         with self.assertRaises(AssertionError):
-            gate.check_version("0.0.157", self.props.replace("0.0.156", "0.0.157"),
-                               self.assembly.replace("0.0.156", "0.0.157"))
+            gate.check_version("0.0.158", self.props.replace("0.0.157", "0.0.158"),
+                               self.assembly.replace("0.0.157", "0.0.158"))
         with self.assertRaises(AssertionError):
-            gate.check_version(released156.VERSION, self.props,
-                               self.assembly.replace("0.0.156\")", "0.0.157\")", 1))
+            gate.check_version(released.VERSION, self.props,
+                               self.assembly.replace("0.0.157\")", "0.0.158\")", 1))
+
+    def test_old_baseline_and_changed_informational_metadata_fail(self):
+        with self.assertRaises(AssertionError):
+            gate.check_version("0.0.156", self.props.replace("0.0.157", "0.0.156"),
+                               self.assembly.replace("0.0.157", "0.0.156"))
+        for props, assembly in ((self.props.replace(released.INFORMATIONAL, "test"), self.assembly),
+                                (self.props, self.assembly.replace(released.INFORMATIONAL, "test"))):
+            with self.assertRaises(AssertionError):
+                gate.check_version(released.VERSION, props, assembly)
 
     def test_static_record_must_be_unchanged(self):
-        released = {"version": "0.0.156", "history": {"value": 1}}
+        released = {"version": "0.0.157", "history": {"value": 1}}
         gate.check_static(released, copy.deepcopy(released))
-        for current in ({"version": "0.0.157", "history": {"value": 1}},
-                        {"version": "0.0.156", "history": {"value": 2}},
-                        {"version": "0.0.156", "history": {"value": 1},
+        for current in ({"version": "0.0.158", "history": {"value": 1}},
+                        {"version": "0.0.157", "history": {"value": 2}},
+                        {"version": "0.0.157", "history": {"value": 1},
                          "developmentQualification": True}):
             with self.assertRaises(AssertionError):
                 gate.check_static(released, current)

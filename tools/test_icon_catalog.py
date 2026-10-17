@@ -240,6 +240,21 @@ class IconCatalogTests(unittest.TestCase):
         self.assertNotEqual(text, mutated)
         self.assertFalse(presentation_delta_matches(mutated, delta))
 
+    def test_brown_fur_ready_notification_is_an_exact_non_art_extension(self):
+        delta = next(d for d in self.catalog["authorizedPresentationDeltas"]
+                     if d["path"].endswith("BlueprintBootstrap.cs"))
+        edit = next(e for e in delta["authorizedFeatureEdits"]
+                    if "OnPackageBlueprintLibraryReady" in e["after"])
+        text = (ROOT/delta["path"]).read_text(encoding="utf-8")
+        self.assertTrue(presentation_delta_matches(text, delta))
+        for replacement in ("", "BrownFur.UnverifiedReady();",
+                            "BrownFur.BrownFurOptionalExtensionCoordinator.OnPackageBlueprintLibraryReady();\n                return false;"):
+            changed = text.replace("BrownFur.BrownFurOptionalExtensionCoordinator.OnPackageBlueprintLibraryReady();", replacement)
+            self.assertFalse(presentation_delta_matches(changed, delta))
+        without_authorization = copy.deepcopy(delta)
+        without_authorization["authorizedFeatureEdits"].remove(edit)
+        self.assertFalse(presentation_delta_matches(text, without_authorization))
+
 if __name__ == "__main__":
     # PowerShell 5 wraps native stderr as NativeCommandError when logs redirect
     # streams. Ordinary passing test progress belongs on stdout; failures still

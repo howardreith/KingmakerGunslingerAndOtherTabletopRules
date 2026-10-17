@@ -38,6 +38,11 @@ import validate_expanded_summoning_sprint24154 as prior
 # "unrelated production source", and this validator sees only Sprint 25's own
 # additions. v0.0.157 remains the published release.
 BASELINE = "8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c"
+# PR54 was accepted on master while Sprint25 qualification was running. Its
+# bootstrap/CotW production changes are inherited by normal merge, not authored
+# by this sprint. Keep the released identity/art baseline above frozen; only
+# the source-ownership diff uses this explicitly integrated upstream commit.
+INTEGRATED_PRODUCTION_BASELINE = "93e34051d11ef1f4b6103b09362773bfdeaa9b2a"
 SPRINT25_KEY = "expandedSummoningSprint25158"
 WITHHELD = {"brachiosaurus"}
 RELEASED_NEVER_SUPPRESSED = {"elephant", "mastodon"}
@@ -280,7 +285,7 @@ def validate_visibility(source: str, identity_stage: str):
 
 def validate_production_scope(root: Path):
     changed = subprocess.check_output(
-        ["git", "diff", "--name-only", BASELINE, "--", "src/KingmakerGunslinger"],
+        ["git", "diff", "--name-only", INTEGRATED_PRODUCTION_BASELINE, "--", "src/KingmakerGunslinger"],
         cwd=root, text=True).splitlines()
     changed += subprocess.check_output(
         ["git", "ls-files", "--others", "--exclude-standard", "--",

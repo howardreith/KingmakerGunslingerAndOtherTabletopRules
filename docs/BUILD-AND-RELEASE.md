@@ -1,5 +1,65 @@
 # Build, package, and publish
 
+## Controller-load alpha 3 authorization — 2026-10-17
+
+After the output_log2 correction/local ZIP handoff, the owner requested:
+"Please put it up in github." This authorizes one public test prerelease of
+exact product `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e`, including required
+review-branch/tag push. Use `Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3`
+with its exact receipt/hash/MVID/evidence profile. Tag
+`v0.0.157-controller-load-alpha.3`, prerelease / never Latest; reuse the tested
+ZIP without rebuilding, full-suite/native rerun or qualification promotion.
+The alpha 2 profile/pins remain unchanged and cannot select the new product.
+No default-branch merge, stable release, game installation or unrelated alpha
+change is authorized. See [notes](RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-3.md).
+
+## Controller-load alpha 2 authorization — 2026-10-17
+
+The owner subsequently asked to push another alpha to test and clarify whether
+Gunslinger needs an accompanying change. This authorizes one public test alpha
+of exact KMG product `92b442c06dd8d13f246ca006fdda6382b9eb6236`, including its
+review-branch/tag push. `Publish-CotwActionBarAlpha.ps1` accepts only its pinned
+development receipt, ZIP/DLL/MVID and 39-assertion evidence log. Publish tag
+`v0.0.157-controller-load-alpha.2` as prerelease / never Latest; retain
+releaseQualification=false. No full suite, rebuild, native run, merge or game
+installation is selected. This is the Gunslinger update itself; no companion
+Buff Planner or CotW update is part of the repair. See
+[alpha notes](RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-2.md). All stable release and
+other development-candidate publication guards remain unchanged.
+
+## Brown-Fur alpha 1 authorization — 2026-10-17
+
+After the local repair handoff, the owner explicitly requested: "Could you
+publish a new alpha build for me to test please?" This supersedes the earlier
+no-publication / remote-write boundary for this one test prerelease only.
+It does not authorize a stable release, default-branch merge or installation.
+
+Publish the exact tested product `913dfd6e89386ff233849f06f902ca8ea2de239e`
+as **v0.0.157-brown-fur-alpha.1**, following the repository's earlier convention
+of a distinct alpha tag over unchanged UMM version metadata. UMM still displays
+0.0.157. Do not rebuild, change GUIDs, relabel the binary's test provenance,
+mark Latest, or replace any existing stable tag/asset.
+
+This is a narrow owner-authorized **public unqualified preview** of a development
+artifact, not a promotion to a qualified release. The stable publisher and its
+development-proof refusals remain unchanged. The selected package keeps its
+development receipt; only a sanitized alpha manifest is public. Other development
+candidates remain private. See [alpha notes](RELEASE-NOTES-BROWN-FUR-ALPHA-1.md).
+
+```powershell
+# First commit and push the clean review branch through the project push guard.
+./scripts/Test-BrownFurAlpha.ps1
+./scripts/Publish-BrownFurAlpha.ps1 -Publish -ConfirmAlphaTestPublication -WhatIf
+./scripts/Publish-BrownFurAlpha.ps1 -Publish -ConfirmAlphaTestPublication -Confirm:$false
+```
+
+The alpha-specific publisher revalidates the frozen source/receipt/package,
+checks exact native evidence identity and remote source ancestry, copies the
+ZIP byte-for-byte, tags the product commit, verifies all uploaded draft asset
+digests, and only then publishes prerelease / not Latest. It verifies the public
+download SHA-256 and unchanged stable Latest. It refuses existing release/tag
+collisions and never clobbers an asset. No full build/runtime campaign is selected.
+
 ## Qualified Sprint 21 artifact promotion
 
 The October 11 owner closure mission authorizes PR #36 merge and stable release
