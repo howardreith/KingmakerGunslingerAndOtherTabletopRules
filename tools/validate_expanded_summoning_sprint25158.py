@@ -1,0 +1,440 @@
+"""Sprint 25 giant-body source and append-only identity boundary.
+
+Three reviewable states, exactly as the Sprint 24 boundary had: the released
+Sprint 24 prefix plus the bounded Sprint 25 census, a registered hidden
+candidate, and the final public candidate. Registration allocates every ID at
+once; publication may remove only the one suppression key.
+
+Two Sprint 25 facts this validator exists to enforce:
+
+* Brachiosaurus is Summon Nature's Ally VII only. It has no Monster row and no
+  celestial or fiendish execution children, so a registered candidate that
+  grew Monster placements or template children is refused here rather than
+  discovered in a native run. The owner settled that placement on 2026-10-15
+  against a recorded source discrepancy.
+* Elephant is an already-released creature. It is completed, never
+  re-registered and never suppressed, so its appearance in the withheld set is
+  refused outright.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+sys.dont_write_bytecode = True
+import validate_expanded_summoning_sprint21150 as common
+import validate_expanded_summoning_sprint24154 as prior
+
+# Re-based twice, because master released twice while Sprint 25 was in
+# registration. First the firearm RTWP continuation took 0.0.156, then the
+# alternate summoning sources took 0.0.157 and tagged it, so Sprint 25 now
+# targets 0.0.158 and the baseline is the v0.0.157 release commit. Everything
+# those two releases changed is therefore baseline here rather than
+# "unrelated production source", and this validator sees only Sprint 25's own
+# additions. v0.0.157 remains the published release.
+BASELINE = "8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c"
+SPRINT25_KEY = "expandedSummoningSprint25158"
+WITHHELD = {"brachiosaurus"}
+RELEASED_NEVER_SUPPRESSED = {"elephant", "mastodon"}
+
+GUIDS = {
+    "KMG.Summoning.Unit.Brachiosaurus":
+        "9093aef39ecc416092ef68655a7e56fb",
+    "KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One":
+        "5ff406f72e834d868276c43786a05133",
+    "KMG.Summoning.Ability.SNA.Tier8.Brachiosaurus.OneD3":
+        "7ab83d22b4284fbe8ab038776d443507",
+    "KMG.Summoning.Ability.SNA.Tier9.Brachiosaurus.OneD4PlusOne":
+        "10a645ecd39f41d88fc5ea0018e5210e",
+    "KMG.Summoning.Natural.Brachiosaurus.Tail4d6":
+        "13b51070d6f84a15bfed98a04c98fa30",
+    "KMG.Summoning.Natural.Brachiosaurus.TailType":
+        "5aaf157b2f5b489390f241bd9ec2decf",
+    "KMG.Summoning.Natural.Brachiosaurus.UnitType":
+        "1decf85e99fd4b6d9a7f68d2b5c9241e",
+    "KMG.Summoning.Natural.Brachiosaurus.Chassis":
+        "63280e8f08c94c3a9b67787ec2d7ab71",
+    "KMG.Summoning.Special.Brachiosaurus.Trample":
+        "309ec3dedcf04c15b3011933f5eafef4",
+    "KMG.Summoning.Special.Elephant.Trample":
+        "a7c34e1d9b5f4a02ae6d8c71f3b02594",
+    # The owner-selected bounded native-command route: one
+    # Brachiosaurus-owned ordinary Overrun, kept separate from
+    # Trample and sharing none of its machinery.
+    "KMG.Summoning.Special.Brachiosaurus.Overrun":
+        "b41f7d2a6c8e40539af1c2d5e7b30486",
+    # The exact-owner Greater Overrun carrier: the native
+    # feat cloned with its success-only provocation removed,
+    # so the printed rider follows a knockdown this overrun
+    # actually caused and nothing stacks on the original.
+    "KMG.Summoning.Special.Brachiosaurus.GreaterOverrun":
+        "c9f41b8d20e7456eae3d6c1f5a8b7204",
+    # Product-native e8b00499 measured Perception 18 at eleven ranks:
+    # the existing native feat supplies only +3. This standard native
+    # modifier completes its high-rank half without changing ranks or GUIDs.
+    "KMG.Summoning.Natural.Elephant.Chassis":
+        "bd380912f7c74843966c363ab281c0c2",
+    # Appended 2026-10-16 when master released the alternate summoning
+    # sources: that release projects a caller-specific adapter identity
+    # for every creature whose family and tier admit it, and it keeps no
+    # per-creature list, so adding Brachiosaurus to the central catalog
+    # requires exactly these eight. Their GUIDs are not chosen: each is
+    # uuid5(ADAPTER_NAMESPACE, symbol), so the allocation is reproducible
+    # and the manifest verifies it rather than trusting it.
+    "KMG.Summoning.Adapter.Naturalist.Tier7.Brachiosaurus.One":
+        "8edc4ca5bab3563ba34e18326926842e",
+    "KMG.Summoning.Adapter.Naturalist.Tier8.Brachiosaurus.OneD3":
+        "78fc5dcf4d5650df9c08e71b4d32682c",
+    "KMG.Summoning.Adapter.Naturalist.Tier9.Brachiosaurus.OneD4PlusOne":
+        "c87b82cb13b5538080ae8d1864266fe0",
+    "KMG.Summoning.Adapter.FeralHunter.Tier7.Brachiosaurus.One":
+        "cf254d4c99a85a95b7876fb2a1d08c9c",
+    "KMG.Summoning.Adapter.FeralHunter.Tier8.Brachiosaurus.OneD3":
+        "90e0a532280e5390a4123c5415d611dd",
+    "KMG.Summoning.Adapter.FeralHunter.Tier9.Brachiosaurus.OneD4PlusOne":
+        "cf5e6a5c24875880b92778eb64992be2",
+    "KMG.Summoning.Adapter.Preservationist.Tier7.Brachiosaurus.One":
+        "10c8c8e7bd7e58169fca4489d1ad1545",
+    "KMG.Summoning.Adapter.Preservationist.Tier9.Brachiosaurus.OneD4PlusOne":
+        "f5306d9802655dca854d9f94e092da2c",
+}
+
+
+def planned_type(symbol: str) -> str:
+    if symbol.startswith("KMG.Summoning.Adapter."):
+        return "BlueprintAbility"
+    if symbol.startswith("KMG.Summoning.Unit."):
+        return "BlueprintUnit"
+    if symbol.startswith("KMG.Summoning.Ability."):
+        return "BlueprintAbility"
+    # Checked before the Overrun rule below, because it also ends in
+    # "Overrun" and is not an ability: it is the cloned feat carrier that
+    # corrects the printed rider for one creature.
+    if symbol.endswith(".GreaterOverrun"):
+        return "BlueprintFeature"
+    if symbol.endswith("Trample") or symbol.endswith("Overrun"):
+        return "BlueprintAbility"
+    if symbol.endswith("Tail4d6"):
+        return "BlueprintItemWeapon"
+    if symbol.endswith("TailType"):
+        return "BlueprintWeaponType"
+    if symbol.endswith("UnitType"):
+        return "BlueprintUnitType"
+    return "BlueprintFeature"
+
+
+ADDED = {symbol: (guid, planned_type(symbol)) for symbol, guid in GUIDS.items()}
+
+# A source-ownership boundary, not a claim that the listed files already
+# qualify. Additions must be exact Sprint 25 seams and stay reviewable here.
+ALLOWED_PRODUCTION = {
+    "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+    # Every sprint stamps its own version here.
+    "src/KingmakerGunslinger/Properties/AssemblyInfo.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningDonorCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
+    "src/KingmakerGunslinger/Summoning/GiantBodyRulesPolicy.cs",
+    # Admitted 2026-10-16: the new creature's frozen adult profile has to live
+    # beside every other creature's, and the released Elephant profile is
+    # corrected in the same file. That correction is a point of the sprint -
+    # its printed slam is a primary attack and had been registered as a
+    # secondary, taking the native -5 to hit and half Strength - so this seam
+    # is deliberate rather than incidental.
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
+    "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
+    # Admitted 2026-10-17 with the arrival of the Brachiosaurus painting.
+    # The creature was already registered, so the catalog already
+    # EXPECTED its icon; the immutability guard's count is what moves,
+    # 119 -> 120, and it moves only because the source painting and its
+    # 128x128 export now exist and are pinned by the icon manifests.
+    "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
+    # Admitted 2026-10-16 with the usable bodies. The owner's delivery
+    # instruction requires each creature to have a working, visible
+    # in-game 3D body, which is the attachment path these four seams
+    # are: the ownership contract, the loader that refuses a payload
+    # failing it, the loader's registration, and the view patch's two
+    # key rows, one source branch and one donor-renderer guard. No other
+    # creature's branch is touched.
+    # Admitted 2026-10-16 with the exact-owner Greater Overrun
+    # correction. The printed rider follows a knockdown the overrun
+    # caused; the native component provokes on success alone. This is
+    # the corrected behaviour, on this creature's cloned carrier only.
+    "src/KingmakerGunslinger/Summoning/BrachiosaurusOverrunKnockdown.cs",
+    "src/KingmakerGunslinger/Summoning/BrachiosaurusTailCombat.cs",
+    "src/KingmakerGunslinger/Summoning/ElephantNativeCombat.cs",
+    "src/KingmakerGunslinger/Summoning/GiantBodyVisualPolicy.cs",
+    "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.GiantBodies.cs",
+    "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs",
+    # Admitted 2026-10-16 with the Brachiosaurus builder. The profile row
+    # names weapon key "BrachiosaurusTail4d6", and a profile whose weapon
+    # cannot resolve makes blueprint initialization throw and roll back
+    # every registration - so the row and the carriers that resolve it are
+    # one change, and these are exactly the seams that change carries.
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.GiantBodies.cs",
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.cs",
+    # Admitted 2026-10-16 with the Brachiosaurus trample. It registers on
+    # the Sprint 23 qualified path/contact/response carrier rather than a
+    # second copy of it, so the seams are the one call site and the one
+    # rules row that call site reads.
+    "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+    "src/KingmakerGunslinger/Summoning/UngulateRulesPolicy.cs",
+    # Admitted 2026-10-17 for the owner-authorized functional qualification.
+    # These are the exact scenario/dispatch, targeted two-creature persistence
+    # and reused predecessor-helper seams, not a RuntimeTesting wildcard.
+    "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningRosterPersistencePolicy.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningCorrection.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningNativeProfile.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint23Review.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint25Review.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint25Overrun.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint25Cleave.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningInventoryObservationPolicy.cs",
+}
+
+# Original project-authored bodies and icons, pinned once authored. A public
+# candidate must declare and carry them; a registered candidate is allowed to
+# say truthfully that they do not exist yet.
+# The sprint's original art, pinned by exact bytes: the two bodies and, since
+# 2026-10-17, the painted Brachiosaurus icon that was the last external input.
+# The icon keeps its own separate gate as well - the catalog count, now 120.
+ART: dict[str, str] = {
+    "assets-source/original-icons/expanded-summoning/sources/brachiosaurus.png":
+        "da5a4bee8d86bc50b1bf6915272603b9a937eab9e309a3335c3ba97a4870a39e",
+    "assets/game/icons/expanded-summoning/brachiosaurus.png":
+        "7a573555b5d44eaea4a970da54214213eb00499423338b65109e0b9ac0ee1003",
+    "assets/sprint25-giant-bodies/brachiosaurus-mesh.json":
+        "ce826df01509d0333e50491077a376a8e985f4bf8d735c7c2814aa16d434e18a",
+    "assets/sprint25-giant-bodies/brachiosaurus-albedo.png":
+        "99b077a7f3453c34bf5b3503111b9535d34a80c19393efb711d67ff69da6e8e7",
+    "assets/sprint25-giant-bodies/elephant-mesh.json":
+        "ed1e0dffc817a7ebda0453c4125b07386e1b03d309ebfc84d1e2b8c027ed8087",
+    "assets/sprint25-giant-bodies/elephant-albedo.png":
+        "b002da80a6ec4a56fb5a9d8b84b6ee751174e2ca53d1a2962f46344e623b7b8b",
+}
+
+
+def validate_append(accepted, current):
+    if current[:len(accepted)] != accepted:
+        raise AssertionError("A released identity or manifest row changed")
+    tail = current[len(accepted):]
+    if not tail:
+        return "census"
+    observed = {row["symbol"]: (row["guid"], row["plannedType"])
+                for row in tail}
+    if observed != ADDED or len(tail) != len(ADDED):
+        raise AssertionError(
+            "Sprint 25 must append exactly its %d pinned identities" % len(ADDED))
+    if any(row.get("status") != "active" for row in tail):
+        raise AssertionError("Every Sprint 25 identity must be active")
+    if len({row["guid"] for row in current}) != len(current):
+        raise AssertionError("Duplicate blueprint GUID")
+    # No Monster row means no template execution children anywhere in the tail.
+    if any(symbol.endswith(".Celestial") or symbol.endswith(".Fiendish")
+           for symbol in observed):
+        raise AssertionError(
+            "Brachiosaurus is untemplated and cannot own execution children")
+    if any(".Ability.SM." in symbol for symbol in observed):
+        raise AssertionError(
+            "Brachiosaurus has no Summon Monster row")
+    return "registered"
+
+
+def suppressed_keys(source: str):
+    match = re.search(
+        r"SuppressedCreatureKeys\s*=\s*\n?\s*new HashSet<string>\((.*?)\);",
+        source, re.S)
+    if match is None:
+        raise AssertionError("Cannot read summon suppression source")
+    return set(re.findall(r'"([a-z0-9-]+)"', match.group(1)))
+
+
+def validate_visibility(source: str, identity_stage: str):
+    keys = suppressed_keys(source)
+    if keys & RELEASED_NEVER_SUPPRESSED:
+        raise AssertionError(
+            "A released Elephant or Mastodon route cannot be suppressed")
+    if identity_stage == "census":
+        if keys & WITHHELD:
+            raise AssertionError("Unregistered Sprint 25 creature is suppressed")
+        return "census"
+    if keys == WITHHELD:
+        return "hidden"
+    if not keys:
+        return "public"
+    raise AssertionError(
+        "Publication may remove only the one Sprint 25 suppression key")
+
+
+def validate_production_scope(root: Path):
+    changed = subprocess.check_output(
+        ["git", "diff", "--name-only", BASELINE, "--", "src/KingmakerGunslinger"],
+        cwd=root, text=True).splitlines()
+    changed += subprocess.check_output(
+        ["git", "ls-files", "--others", "--exclude-standard", "--",
+         "src/KingmakerGunslinger"], cwd=root, text=True).splitlines()
+    unexpected = sorted(set(changed) - ALLOWED_PRODUCTION)
+    if unexpected:
+        raise AssertionError("Unrelated production source changed: " +
+                             ", ".join(unexpected))
+
+
+def validate_static(root: Path, stage: str):
+    static = common.document(root, "validation/static-validation.json")
+    released = json.loads(common.blob(
+        root, BASELINE, "validation/static-validation.json"))
+    for key, value in released.items():
+        if key not in ("version", "milestone") and static.get(key) != value:
+            raise AssertionError("Historical release evidence changed: " + key)
+    record = static.get(SPRINT25_KEY)
+    if stage == "census":
+        if record is not None:
+            raise AssertionError(
+                "Census state cannot claim a registered Sprint 25 candidate")
+        return
+    if not isinstance(record, dict):
+        raise AssertionError(
+            "Registered Sprint 25 candidate lacks static metadata")
+    expected = {
+        "releaseVersion": "0.0.158",
+        "releaseInformationalVersion":
+            "0.0.158-expanded-summoning-sprint25-giant-bodies",
+        "masterBase": BASELINE,
+        "newCreatures": 1,
+        "newLogicalRoots": 3,
+        "newMonsterPlacements": 0,
+        "newTemplateExecutionChildren": 0,
+        "newPrivateIdentities": 5,
+        "completedExistingCreatures": 1,
+        "completedExistingRoots": 8,
+        "registeredLogicalPlacements": 1096,
+        "suppressedLogicalPlacements": 3 if stage == "hidden" else 0,
+        "publishedLogicalPlacements": 1093 if stage == "hidden" else 1096,
+        "retainedNativeWrappers": 29,
+        "visibleChoiceTotal": 1122 if stage == "hidden" else 1125,
+        "candidateOnly": True,
+        "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+        "sprint26Started": False,
+    }
+    for key, value in expected.items():
+        if record.get(key) != value:
+            raise AssertionError("Sprint 25 static metadata mismatch: " + key)
+    authored = record.get("originalBodyAssetsAuthored")
+    if not isinstance(authored, bool):
+        raise AssertionError(
+            "Sprint 25 must state whether its original bodies are authored")
+    files = record.get("originalBodyFiles")
+    if not isinstance(files, int) or files < 0:
+        raise AssertionError("Sprint 25 original body file count is invalid")
+    if authored != (files > 0):
+        raise AssertionError(
+            "Sprint 25 original body claim disagrees with its own file count")
+    if authored != bool(ART):
+        raise AssertionError(
+            "Sprint 25 original body claim disagrees with its pinned art set")
+    if stage == "public" and not authored:
+        raise AssertionError(
+            "Publication requires the original project-authored bodies")
+    return authored
+
+
+def validate_art(root: Path, stage: str, authored: bool):
+    if stage == "census" or not authored:
+        return
+    for relative, expected in ART.items():
+        path = root / relative
+        if not path.is_file():
+            raise AssertionError("Missing Sprint 25 original asset: " + relative)
+        observed = hashlib.sha256(path.read_bytes()).hexdigest()
+        if observed != expected:
+            raise AssertionError(
+                "Sprint 25 original asset hash changed: " + relative)
+    for token in ("sprint25-giant-bodies", "brachiosaurus"):
+        for script in ("scripts/Build-Local.ps1", "scripts/package.ps1",
+                       "scripts/validate-build-output.ps1",
+                       "scripts/validate-package.ps1"):
+            if token not in (root / script).read_text(encoding="utf-8-sig"):
+                raise AssertionError(script +
+                                     " lacks package owner token: " + token)
+
+
+def validate_version(root: Path):
+    info = common.document(root, "Info.json")
+    version = info.get("Version")
+    if version != "0.0.158":
+        raise AssertionError(
+            "Unsupported Sprint 25 lineage version: " + repr(version))
+    informational = "0.0.158-expanded-summoning-sprint25-giant-bodies"
+    props = (root / "Directory.Build.props").read_text(encoding="utf-8-sig")
+    assembly = (root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs").read_text(
+        encoding="utf-8-sig")
+    if "<KmgVersion>" + version + "</KmgVersion>" not in props or \
+            "<KmgInformationalVersion>" + informational + \
+            "</KmgInformationalVersion>" not in props or \
+            'AssemblyVersion("' + version + '")' not in assembly or \
+            'AssemblyFileVersion("' + version + '")' not in assembly or \
+            'AssemblyInformationalVersion("' + informational + '")' not in assembly:
+        raise AssertionError("Active Sprint 25 version metadata mismatch")
+    notes = root / ("docs/RELEASE-NOTES-" + version + ".md")
+    if not notes.is_file():
+        raise AssertionError("Sprint 25 release notes are missing")
+    return version, informational
+
+
+def validate(root: Path):
+    accepted = json.loads(common.blob(
+        root, BASELINE, "blueprints/blueprints.json"))["entries"]
+    current = common.document(root, "blueprints/blueprints.json")["entries"]
+    identity_stage = validate_append(accepted, current)
+    visibility_source = (root / "src/KingmakerGunslinger/Summoning/"
+                         "SummonVisibilityCatalog.cs").read_text(encoding="utf-8-sig")
+    stage = validate_visibility(visibility_source, identity_stage)
+    validate_production_scope(root)
+    authored = validate_static(root, stage)
+    validate_art(root, stage, bool(authored))
+    version, informational = validate_version(root)
+
+    if stage == "census":
+        # Retain every released Sprint 24 check while the manifest is still
+        # exactly that release. Its allowlist admits only the bounded census.
+        prior.validate(root)
+
+    manifest = subprocess.run(
+        [sys.executable, str(root / "tools/expanded_summoning_manifest.py")],
+        cwd=root, text=True, capture_output=True, check=False)
+    if manifest.returncode:
+        raise AssertionError("Expanded Summoning manifest validation failed: " +
+                             (manifest.stdout + manifest.stderr)[-1000:])
+    print("Sprint25 source PASS: stage=" + stage + "; identities=" +
+          str(len(current)) + "; version=" + version + "; milestone=" +
+          informational + "; bodiesAuthored=" + str(bool(authored)) + ".")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root", type=Path,
+                        default=Path(__file__).resolve().parents[1])
+    args = parser.parse_args()
+    try:
+        validate(args.root.resolve())
+    except (AssertionError, ValueError, KeyError,
+            subprocess.CalledProcessError) as error:
+        print("Sprint25 source FAIL: " + str(error), file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

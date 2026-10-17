@@ -1,0 +1,190 @@
+"""Behavioral corruption fixtures for the Sprint 25 source boundary.
+
+These prove the gate refuses, not that it exists. The two Sprint 25 specific
+refusals are the point: a registered candidate that grew a Summon Monster
+placement or a template child, and any suppression of the already-released
+Elephant or Mastodon.
+"""
+import copy
+import sys
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+sys.dont_write_bytecode = True
+import validate_expanded_summoning_sprint25158 as gate
+
+
+def row(symbol, guid, planned):
+    return dict(symbol=symbol, guid=guid, plannedType=planned, status="active")
+
+
+class Sprint25GateTests(unittest.TestCase):
+    def setUp(self):
+        self.old = [row("Released", "a" * 32, "BlueprintUnit")]
+        self.tail = [row(symbol, value[0], value[1])
+                     for symbol, value in gate.ADDED.items()]
+
+    def test_exact_native_review_seams_pass_scope(self):
+        paths = [path for path in gate.ALLOWED_PRODUCTION
+                 if "/RuntimeTesting/" in path]
+        self.assertEqual(14, len(paths))
+        self.assertIn("src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningInventoryObservationPolicy.cs", paths)
+        with patch.object(gate.subprocess, "check_output",
+                          side_effect=["\n".join(paths), ""]):
+            gate.validate_production_scope(Path("."))
+
+    def test_unrelated_runtime_source_still_fails_scope(self):
+        path = ("src/KingmakerGunslinger/RuntimeTesting/"
+                "RuntimeTestRunner.Unrelated.cs")
+        for outputs in ([path, ""], ["", path]):
+            with patch.object(gate.subprocess, "check_output",
+                              side_effect=outputs):
+                with self.assertRaisesRegex(AssertionError, "Unrelated"):
+                    gate.validate_production_scope(Path("."))
+
+    # --- the append boundary -------------------------------------------------
+    def test_census_prefix_passes(self):
+        self.assertEqual("census", gate.validate_append(self.old, self.old))
+
+    def test_exact_append_passes(self):
+        self.assertEqual("registered",
+                         gate.validate_append(self.old, self.old + self.tail))
+
+    def test_released_row_move_fails(self):
+        changed = copy.deepcopy(self.old + self.tail)
+        changed[0]["guid"] = "b" * 32
+        with self.assertRaises(AssertionError):
+            gate.validate_append(self.old, changed)
+
+    def test_missing_identity_fails(self):
+        with self.assertRaises(AssertionError):
+            gate.validate_append(self.old, self.old + self.tail[:-1])
+
+    def test_extra_identity_fails(self):
+        changed = self.old + self.tail + [
+            row("KMG.Summoning.Unit.Elephant", "c" * 32, "BlueprintUnit")]
+        with self.assertRaises(AssertionError):
+            gate.validate_append(self.old, changed)
+
+    def test_the_allowed_set_is_exact_and_names_both_groups(self):
+        # Twenty-one after the product-native Elephant Skill Focus finding.
+        # This pins the exact set, not only the
+        # count: ten Sprint 25 identities, the eight caller adapters the
+        # alternate summoning release projects for any creature added to the
+        # central catalog, the ordinary Overrun command from the
+        # owner-selected bounded native-command route, and the cloned Greater
+        # Overrun carrier that corrects the printed rider for this creature
+        # alone. The adapter GUIDs are uuid5 of their own symbols, so those
+        # pin a reproducible allocation rather than a chosen one.
+        self.assertEqual(21, len(gate.ADDED))
+        self.assertEqual(("bd380912f7c74843966c363ab281c0c2", "BlueprintFeature"),
+                         gate.ADDED["KMG.Summoning.Natural.Elephant.Chassis"])
+        # The carrier is a FEATURE, like the native feat it clones, and it
+        # ends in "Overrun" - so it must not fall through to the ability rule
+        # that the ordinary command below relies on.
+        self.assertEqual(
+            "BlueprintFeature",
+            gate.ADDED["KMG.Summoning.Special.Brachiosaurus.GreaterOverrun"][1])
+        self.assertIn("KMG.Summoning.Special.Elephant.Trample", gate.ADDED)
+        # The Overrun command is a separate action from either trample, and
+        # the gate must type it as an ability rather than defaulting it to a
+        # feature.
+        self.assertEqual(
+            "BlueprintAbility",
+            gate.ADDED["KMG.Summoning.Special.Brachiosaurus.Overrun"][1])
+        adapters = [s for s in gate.ADDED
+                    if s.startswith("KMG.Summoning.Adapter.")]
+        self.assertEqual(8, len(adapters))
+        self.assertTrue(all("Brachiosaurus" in s for s in adapters))
+        self.assertTrue(all(gate.ADDED[s][1] == "BlueprintAbility"
+                            for s in adapters))
+        self.assertEqual(
+            "BlueprintAbility",
+            gate.ADDED["KMG.Summoning.Special.Elephant.Trample"][1])
+        # And the ten-row tail is what the gate actually accepts.
+        self.assertEqual("registered",
+                         gate.validate_append(self.old, self.old + self.tail))
+
+    def test_duplicate_or_unapproved_elephant_carriers_still_fail(self):
+        # Chassis is already pinned in the exact tail: a second allocation
+        # with another GUID is forbidden. UnitType remains unneeded and
+        # forbidden; the measured completion does not authorize its sibling.
+        for symbol in ("KMG.Summoning.Natural.Elephant.Chassis",
+                       "KMG.Summoning.Natural.Elephant.UnitType"):
+            changed = self.old + self.tail + [
+                row(symbol, "d" * 32, "BlueprintFeature")]
+            with self.assertRaises(AssertionError):
+                gate.validate_append(self.old, changed)
+
+    def test_wrong_planned_type_fails(self):
+        changed = copy.deepcopy(self.old + self.tail)
+        changed[-1]["plannedType"] = "BlueprintBuff"
+        with self.assertRaises(AssertionError):
+            gate.validate_append(self.old, changed)
+
+    def test_reserved_status_fails(self):
+        changed = copy.deepcopy(self.old + self.tail)
+        changed[-1]["status"] = "reserved"
+        with self.assertRaises(AssertionError):
+            gate.validate_append(self.old, changed)
+
+    def test_duplicate_guid_fails(self):
+        changed = copy.deepcopy(self.old + self.tail)
+        changed[-1]["guid"] = changed[-2]["guid"]
+        with self.assertRaises(AssertionError):
+            gate.validate_append(self.old, changed)
+
+    # --- Sprint 25's own two refusals ---------------------------------------
+    def test_monster_placement_for_the_new_creature_fails(self):
+        changed = self.old + self.tail + [row(
+            "KMG.Summoning.Ability.SM.Tier7.Brachiosaurus.One",
+            "d" * 32, "BlueprintAbility")]
+        with self.assertRaises(AssertionError):
+            gate.validate_append(self.old, changed)
+
+    def test_template_execution_child_fails(self):
+        for suffix in (".Celestial", ".Fiendish"):
+            changed = self.old + self.tail + [row(
+                "KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One" + suffix,
+                "e" * 32, "BlueprintAbility")]
+            with self.assertRaises(AssertionError):
+                gate.validate_append(self.old, changed)
+
+    # --- visibility ----------------------------------------------------------
+    def _source(self, keys):
+        inner = ", ".join('"%s"' % key for key in keys)
+        return ("private static readonly HashSet<string> SuppressedCreatureKeys =\n"
+                "    new HashSet<string>(new[] { %s }, StringComparer.Ordinal);" % inner)
+
+    def test_hidden_and_public_stages(self):
+        self.assertEqual(
+            "hidden",
+            gate.validate_visibility(self._source(["brachiosaurus"]), "registered"))
+        self.assertEqual(
+            "public", gate.validate_visibility(self._source([]), "registered"))
+
+    def test_census_cannot_suppress_an_unregistered_creature(self):
+        with self.assertRaises(AssertionError):
+            gate.validate_visibility(self._source(["brachiosaurus"]), "census")
+
+    def test_released_elephant_or_mastodon_can_never_be_suppressed(self):
+        for key in ("elephant", "mastodon"):
+            with self.assertRaises(AssertionError):
+                gate.validate_visibility(self._source([key]), "registered")
+            with self.assertRaises(AssertionError):
+                gate.validate_visibility(
+                    self._source(["brachiosaurus", key]), "registered")
+
+    def test_an_unrelated_extra_suppression_fails(self):
+        with self.assertRaises(AssertionError):
+            gate.validate_visibility(
+                self._source(["brachiosaurus", "triceratops"]), "registered")
+
+    def test_unreadable_suppression_source_fails(self):
+        with self.assertRaises(AssertionError):
+            gate.validate_visibility("no suppression set here", "registered")
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=0)

@@ -172,6 +172,7 @@ $expected = @(
     'disposable-expanded-summoning-sprint22-native-review',
     'disposable-expanded-summoning-sprint23-native-review',
     'disposable-expanded-summoning-sprint24-native-review',
+    'disposable-expanded-summoning-sprint25-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
@@ -850,6 +851,16 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint23ReviewArgs `
     -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } `
     'sprint23-review-requires-automatic-exit'
+$sprint25ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint25-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+foreach($phase in @('rtwp-foundation','turn-based-commands','rtwp-ai','routes','visual-lifecycle','overrun','great-cleave')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint25-review-admits-$phase"
+    $sprint25Request = New-KmgRuntimeRequest @sprint25ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint25-review-request-test')
+    Assert-True ($sprint25Request.parameters.reviewPhase -ceq $phase) "sprint25-phase-serialized-$phase"
+}
+foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='unknown-phase'}, @{reviewPhase='rtwp-foundation';saveName='KMG_AUTOMATION_WORKING'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint25-review-rejects-extra-missing-or-unimplemented-phase'
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint25-review-requires-exit'
 $sprint24ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint24-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
 foreach ($phase in @(
     'rtwp-foundation',

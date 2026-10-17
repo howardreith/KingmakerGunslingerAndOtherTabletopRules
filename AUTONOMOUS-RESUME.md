@@ -1,3 +1,158 @@
+# Sprint 25 takeover — grouped native repair, candidate next
+
+Controlling update, 2026-10-17 20:14 UTC: continue the explicitly selected
+qualification/merge/release campaign in `wt/s25`. PR49 remains OPEN/DRAFT;
+no merge/release, public unsuppression or Sprint26. Exact identities and
+remaining assertions are in `current.latestCheckpoint` and
+`remainingNativeCampaign` in the Sprint25 ledger. Earlier checkpoints are dated
+history, not current asset blockers or a reason to restart.
+
+e8b00499 passed 2660/2660, exact production build and strict378-file package
+(298.78s). Its 46.2-minute independent native batch completed overall FAIL:
+routes/icons and functional body/resource lifecycle PASS in both profiles;
+AI, Overrun and Cleave remain incomplete. All ten transactions restored the
+actual installation/settings/sound bank, all118 protected saves and private
+references. No owned game/lease remains. Exact ZIP/sidecars are archived under
+`artifacts/checkpoints/source-build-e8b00499`; original 9b55df81 and every other
+successful old source/build gate keep their own identities.
+
+The coherent repair adds only the native high-rank Skill Focus completion
+Elephant demonstrably lacked (18 instead of21 Perception at11 ranks), without
+moving its unit/type/weapons/eight routes. It reuses the existing read-only
+native cost-boundary sampler, corrects Elephant's AI approach lane and separates
+isolated mechanical action readiness from party-camera visibility. Overrun
+setup isolates its actual route/caster from protected actors and observes native
+Charge/CMB modifiers separately from the frozen baseline. Existing clocks,
+ownership, rules, damage attribution and rollback remain reused. Persistence
+compares the stable receipt before adding module-ON-only observations.
+
+Production compilation and57/57 selected regressions PASS (16.9s +5.1s step);
+actual hidden-state source gate and19 source-boundary/refusal fixtures PASS.
+Publisher tooling now has an honest premerge-only dry run:70 Sprint25 checks,
+43 predecessor decisions and18 reporting-lineage checks PASS. It cannot publish
+or claim a future merge. The actual public-artifact preflight has not run.
+
+Next: commit/push, prepare one fresh Sprint candidate, run repaired foundation,
+turn-based, AI, Overrun and Cleave phases in both profiles on that exact package;
+then targeted ON/OFF cold-load/cleanup/fresh-absence stages. Reuse E8 body/route
+results only with original identities and unchanged-dependency justification.
+Complete the final public artifact/inventory/icon/eleven-root proof, publisher
+preflight, authorized merge/release/download/restoration audit and final-records
+merge; STOP. No mandatory failure is waived. Accepted asset bytes are untouched;
+rough polish is deferred and HumanReview is NOT_PERFORMED_NONBLOCKING. Signed-in
+Steam Offline Mode works with the existing guards; no online requirement was added.
+
+4c96a3cb is the pushed coherent source checkpoint. Its full candidate gate
+refused before build/package/native (15.806s) because the icon catalog still
+pinned the pre-chassis registry hash. The integrity-only correction advances
+that exact hash/hidden-carrier authorization; no icon pixels or assignments
+change. Preserve the refusal receipt and continue with the corrected candidate.
+Catalog protection validation and29/29 refusal tests pass (12.470s); parsed
+comparison confirms exactly those two catalog fields changed. Source gate PASS.
+
+## Dated prior takeover/checkpoint history
+
+Current owner mission: finish scoped Brachiosaurus/Elephant native qualification,
+then publication qualification, merge PR #49, publish/verify the next available
+stable patch and merge final records. Stop after Sprint 25; no Sprint 26.
+
+Takeover intake on HOWARD-LAPTOP, 2026-10-17: clean `wt/s25` on
+`codex/expanded-summoning-sprint25-brachiosaurus-elephant` at `e7d35f17`.
+Fetched only master/product refs with `--no-tags`; master remains `2eed3944`
+with no new integration needed. PR #49 is draft/open/mergeable. Remote tag
+`v0.0.158` is absent; recheck availability before freezing/publication.
+
+The owner confirmed a signed-in Steam Offline Mode session. Offline Mode is
+accepted: the guarded launcher has no online-connectivity requirement. The
+earlier ActiveUser=0 inference was insufficient to establish an authentication
+failure and is withdrawn. No launcher safety check was disabled. No Kingmaker
+process or runtime lease was found at the fresh check.
+
+The supplied icon and both original bodies are integrated. Rough visuals and
+the Head-weighted stiff neck are accepted deferrals; HumanReview remains
+NOT_PERFORMED_NONBLOCKING. The full native mechanics/body/resource/route and
+targeted persistence proof remains required. See `current`, `coverageMap` under
+`remainingNativeCampaign`, and `candidate` in
+`planning/SPRINT25-GIANT-BODIES-LEDGER.json`. Preserve `9b55df81` and its exact
+hashes as the earlier source/build checkpoint; the complete compiled observer
+change will need one new candidate, as already authorized.
+
+The seven-phase review and exact two-creature persistence scope are implemented.
+Production compiles and the named Sprint 23/24/25/native-profile regression
+selection passes 46/46 (18.8 s combined). The unelevated preflight batch passes
+(48.61 s): 609 request checks, 27 integration checks, 47 Steam-launch checks,
+persistence checks and 196 scope refusals. The Sprint 25 publisher extension
+passes 43 decision/refusal checks; the existing Sprint 24 decision and reporting
+lineage tests also pass. These are source/tooling results, not engine proof.
+Accepted art/body bytes were not changed. The original 9b55df81 ZIP and sidecars
+are preserved under `artifacts/checkpoints/source-build-9b55df81`.
+
+The first gate on `a3260559` refused before building (3.12 s): its exact source
+ownership allowlist omitted the authorized native-observer/persistence seams.
+Only those twelve paths were admitted; unrelated runtime siblings remain refused.
+No new package or native result was produced by that attempt.
+
+Candidate `a15a5bfe` passed the full Sprint gate (2657/2657, exact build, strict
+package; 297.41 s). ZIP `0125f1f7…216616e`, MVID
+`22c97761-f02f-4fd6-a08d-cf71ea289a91`; exact ZIP/sidecars archived separately.
+The first gate attempt at that source caught my concurrent ignored supervisor
+creation during its artifact fingerprint; no package was built in that attempt.
+
+The first standalone native run failed before gameplay: GreaterOverrunFeature
+`ee24c02c…9f9f8133` exists in the earlier installed-stack census but is absent
+standalone. Exact transaction `compat-20261017T162750Z-5eee01c59c8b` restored the
+actual installation/settings/sound bank; 118 protected save files and private
+references are unchanged. Game exited and lease cleared. No body/mechanics PASS.
+
+The narrow repair retains donor deep clones when present and uses native
+ManeuverBonus (Overrun +2) on the same private carrier when absent. No new feat,
+identity or general maneuver rule. New review evidence writes its JArray
+directly, bypassing host serializer defaults. Production plus 47/47 focused
+tests pass (20.9 s); the repaired candidate still needs its full/native gates.
+
+Candidate `e0992c30` then passed its full gate (2658/2658, exact build/package;
+297.99 s; ZIP `4be86b3c…d2712f6`, MVID `8b4d79b2-259f-48a6-9121-00953769bb93`).
+Bootstrap succeeded in native standalone. Brachiosaurus exposed +22 rather than
++23 with Power Attack OFF, native -4/+8 instead of lone-primary -4/+12, and
+Perception 31 rather than 28. The exact-rank branch was unreachable; the private
+tail type also needed the qualified private Weapon Focus pattern. These scoped
+repairs are batched with the predecessor contact helper's optional exact giant
+ability selector and baseline toggle setup. Added-HD testing now uses a separate
+unit. Production and 48/48 focused regressions pass (21.6 s).
+
+The failed native run's exact transaction `compat-20261017T164322Z-093499e59861`
+restored actual installation/settings/sound bank, all 118 protected save files
+and private references. No owned game or lease remains. Evidence and exact
+candidate ZIP/sidecars are preserved; no body/Elephant/later-phase PASS claimed.
+
+Candidate `a243548b` passed its full gate (2659/2659, exact build/package;
+309.73 s; ZIP `1493465c…6b341b1`, MVID `026d8d5f-dc82-4ca1-a28b-dca4945c080c`).
+Native Brachiosaurus profile/+23/Perception/Power Attack, both ordinary commands,
+both real-time Trample commands and the Triceratops control pass. The overall
+phase fails: Elephant needs the scoped lead-gore Strength, 93-HP and effective
+10-ft range corrections; giant naming/rollback/teardown lacked the two keys,
+and native fader readiness was not established. Signed weapon samples also
+picked up native Power Attack reactivation, and the range observer omitted
+actor radii. These exact product/observer fixes are batched without new IDs or
+art changes. Source compiles and 53/53 focused/shared-natural regressions pass.
+
+Transaction `compat-20261017T170157Z-90c9046dbacc` restored exact installation,
+settings and sound bank; all 118 protected save files and private references
+are unchanged. No game/lease remains. Raw logs/captures and exact artifact are
+preserved. The unaltered captures do not establish visible-body acceptance.
+HumanReview remains NOT_PERFORMED_NONBLOCKING.
+
+Next: commit/push this coherent repair batch, build one new Sprint candidate in this root,
+then run the standalone/high-risk native phases on its exact package, followed
+by targeted fresh-process persistence and the public boundary. Use the existing
+de-elevation route and capture actual child exit/restoration receipts. Recheck
+source ownership and process/lease state before each native transaction. Plan
+roughly 90–150 minutes for the scoped native batch, subject to startup costs and
+demonstrated repairs; safe restoration always completes. No new art handoff or
+visual R&D is required.
+
+The release records below describe earlier releases and do not control Sprint 25.
+
 # Alternate summoning sources — v0.0.157 RELEASED / STOP
 
 The owner accepted PR #52 (alternate summoning sources) on 2026-10-16 and

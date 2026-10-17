@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.157-alternate-summoning-sources",
+  "milestone": "0.0.158-expanded-summoning-sprint25-giant-bodies",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -2551,5 +2551,29 @@
       "blocked-family-shortcut-load",
       "grapple-swallow-reset-on-reload"
     ]
+  },
+  "expandedSummoningSprint25158": {
+    "releaseVersion": "0.0.158",
+    "releaseInformationalVersion": "0.0.158-expanded-summoning-sprint25-giant-bodies",
+    "masterBase": "8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c",
+    "newCreatures": 1,
+    "newLogicalRoots": 3,
+    "newMonsterPlacements": 0,
+    "newTemplateExecutionChildren": 0,
+    "newPrivateIdentities": 5,
+    "completedExistingCreatures": 1,
+    "completedExistingRoots": 8,
+    "registeredLogicalPlacements": 1096,
+    "suppressedLogicalPlacements": 3,
+    "publishedLogicalPlacements": 1093,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1122,
+    "originalBodyAssetsAuthored": true,
+    "originalBodyFiles": 4,
+    "nativeRuntimeQualified": false,
+    "candidateOnly": true,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "sprint26Started": false,
+    "supersededVersionClaim": "Sprint 25 was prepared as 0.0.156 until master merged the firearm RTWP kill continuation under that version, then as 0.0.157 until master released the alternate summoning sources and tagged v0.0.157. Sprint 25 moved to the next free patch each time rather than contesting a released version."
   }
 }

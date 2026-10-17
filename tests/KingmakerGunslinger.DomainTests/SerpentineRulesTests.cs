@@ -747,7 +747,8 @@ namespace KingmakerGunslinger.DomainTests
                 Sprint22RulesTests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
-                masterTraits.Count + AlternateSummoningTests.AppendedLedgerIdentities,
+                masterTraits.Count + AlternateSummoningTests.AppendedLedgerIdentities +
+                ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
                 entries.Count,
                 "Qualified Phase2B identities, the Sprint 18 appends and all eleven released master trait identities coexist.");
             // The current release preserves master's entire prefix. Project
@@ -877,16 +878,16 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(rows.Select(v => v.Multiplicity).Distinct().Count() == 3,
                     "Direct, 1d3 and 1d4+1 routes retain their allocated identities.");
             }
-            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.HiddenPublishedLogicalPlacements,
                 all.Count(SummonVisibilityCatalog.IsPublished),
                 "Every previously qualified root remains published.");
-            Assertions.Equal(TheropodRulesPolicy.PublicVisibleChoices,
+            Assertions.Equal(GiantBodyRulesPolicy.HiddenVisibleChoices,
                 all.Count(SummonVisibilityCatalog.IsPublished) +
                 SummonNativeExpansionCatalog.All.Count, "Published surface is source-derived.");
             Assertions.True(all.Where(value =>
-                    !TheropodRulesPolicy.IsTheropod(value.Creature.Key))
+                    !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key))
                     .All(SummonVisibilityCatalog.IsPublished),
-                "No old publication remains suppressed by Sprint 24 registration.");
+                "No old publication remains suppressed by Sprint 25 registration.");
         }
 
         internal static void SnakeArtworkHasExactConsumersAndProvenance()

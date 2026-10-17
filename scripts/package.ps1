@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-alternate-summoning-sources.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint25-giant-bodies.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -238,6 +238,13 @@ foreach ($kind in @('deinonychus','tyrannosaurus')) {
     Copy-Item -LiteralPath (Join-Path $theropodSource "$kind-mesh.json") -Destination $theropodDestination
     Copy-Item -LiteralPath (Join-Path $theropodSource "$kind-albedo.png") -Destination $theropodDestination
 }
+$giantBodySource = Join-Path $outputDirectory 'assets\sprint25-giant-bodies'
+$giantBodyDestination = Join-Path $modDirectory 'assets\sprint25-giant-bodies'
+New-Item -ItemType Directory -Path $giantBodyDestination -Force | Out-Null
+foreach ($kind in @('brachiosaurus','elephant')) {
+    Copy-Item -LiteralPath (Join-Path $giantBodySource "$kind-mesh.json") -Destination $giantBodyDestination
+    Copy-Item -LiteralPath (Join-Path $giantBodySource "$kind-albedo.png") -Destination $giantBodyDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -260,7 +267,9 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # and two original creature icons to the previously qualified 363-file base;
 # v0.0.156 adds its release notes.
 # The soundbank and its manifest account for the optional two-file delta.
-$basePackageFileCount = 371
+# 376 since 2026-10-17: Sprint 25 adds five files to the package - the two
+# giant-body mesh payloads, their two albedos, and the Brachiosaurus icon.
+$basePackageFileCount = 376
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
