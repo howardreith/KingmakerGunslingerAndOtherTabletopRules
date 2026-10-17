@@ -338,8 +338,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Sprint24PlayerRoutes(
             ExpandedSummoningCorrectionFixture fixture,
-            SummonVariantSpec[] routes)
+            SummonVariantSpec[] routes,
+            Action<string, bool, JObject, string> record = null,
+            bool includeFiendish = false)
         {
+            if (record == null) record = Sprint24Check;
             object levelController = null;
             MethodInfo castRule = typeof(RuleCastSpell).GetMethod("OnTrigger");
             MethodInfo spawnAction = typeof(ContextActionSpawnMonster)
@@ -378,15 +381,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     null, null);
                 _expandedSummoningPlayerPathCaptureActive = true;
                 foreach (SummonVariantSpec route in routes)
+                foreach (bool fiendish in includeFiendish && route.Family == SummonFamily.Monster && route.Creature.MonsterTemplated
+                    ? new[] { false, true } : new[] { false })
                 {
                     object[] before = SnapshotReferences(fixture.AllUnits);
                     var cases = new List<ExpandedSummoningPlayerPathCase>();
                     AddExpandedSummoningPlayerPathRootCase(cases,
                         fixture.Blueprints, fixture.Caster, book, parents,
-                        route, ExpandedSummoningPlayerPathAlignmentFor(route),
+                        route, fiendish ? Alignment.LawfulEvil : ExpandedSummoningPlayerPathAlignmentFor(route),
                         route.Family == SummonFamily.NaturesAlly
                             ? (SummonAlignmentMode?)SummonAlignmentMode.Caster
-                            : SummonAlignmentMode.Celestial,
+                            : fiendish ? SummonAlignmentMode.Fiendish : SummonAlignmentMode.Celestial,
                         fixture.SceneEntities, fixture.AllUnits,
                         route.StableKey);
                     ExpandedSummoningPlayerPathCase item = cases.Single();
@@ -403,12 +408,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         item.QuantityContract && duration &&
                         before.SequenceEqual(SnapshotReferences(
                             fixture.AllUnits));
-                    Sprint24Check("player-route-" + route.StableKey, exact,
+                    record("player-route-" + route.StableKey + (fiendish ? "-fiendish" : ""), exact,
                         new JObject {
                             ["unit"] = route.Creature.Key,
                             ["event"] =
                                 "native-parent-selected-variant-spellbook",
                             ["owner"] = route.StableKey,
+                            ["alignmentCase"] = fiendish ? "fiendish" : route.Family == SummonFamily.NaturesAlly ? "caster" : "celestial",
                             ["detail"] = item.Describe(),
                             ["baseDurations"] = new JArray(durations.Select(
                                 value => value.BaseDuration.TotalSeconds)),
@@ -860,7 +866,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Sprint24RunAttackCommand(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData target, bool full,
-            Action<UnitAttack> record)
+            Action<UnitAttack> record,
+            Action<UnitEntityData, int> observeFrame = null)
         {
             owner.Memory.Add(target);
             target.Memory.Add(owner);
@@ -890,6 +897,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (attack.Animation != null && frames > 12)
                     attack.Animation.IsActed = true;
                 yield return 0;
+                if (observeFrame != null && (frames == 6 || frames == 12 || frames == 24))
+                    observeFrame(owner, frames);
                 if (attack.IsFinished) break;
             }
         }
@@ -2242,11 +2251,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Sprint24VisualLifecycle(
-            ExpandedSummoningCorrectionFixture fixture)
+            ExpandedSummoningCorrectionFixture fixture,
+            string[] creatureKeys = null, bool giantBodies = false,
+            Action<string, bool, JObject, string> record = null,
+            Func<IEnumerable<int>> beforeCycles = null)
         {
+            if (record == null) record = Sprint24Check;
             BlueprintUnit donorBlueprint = fixture.Blueprints
                 .OfType<BlueprintUnit>().Single(value => value.AssetGuid ==
-                    TheropodVisualPolicy.DonorGuid);
+                    (giantBodies ? GiantBodyVisualPolicy.DonorGuid : TheropodVisualPolicy.DonorGuid));
             UnitEntityData control = Game.Instance.EntityCreator.SpawnUnit(
                 donorBlueprint, fixture.Caster.Position,
                 Quaternion.identity, fixture.Scene);
@@ -2270,7 +2283,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.enabled).ToArray();
             try
             {
-                foreach (string key in TheropodVisualPolicy.Keys)
+                if (beforeCycles != null)
+                    foreach (int frame in beforeCycles()) yield return frame;
+                foreach (string key in creatureKeys ?? TheropodVisualPolicy.Keys)
                 {
                     for (int cycle = 0; cycle < 3; cycle++)
                     {
@@ -2301,7 +2316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string expectedName = "KMG_" + key + "_Original";
                         SkinnedMeshRenderer body = skins.SingleOrDefault(
                             value => value.name ==
-                                TheropodVisualPolicy.BodyRendererName);
+                                (giantBodies ? GiantBodyVisualPolicy.BodyRendererName : TheropodVisualPolicy.BodyRendererName));
                         SkinnedMeshRenderer accessory = skins.SingleOrDefault(
                             value => value.name ==
                                 TheropodVisualPolicy.AccessoryRendererName);
@@ -2309,13 +2324,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             body.sharedMesh != null &&
                             body.sharedMesh.name == expectedName;
                         UnityEngine.Object[] owned =
-                            ExpandedSummoningPteranodonViewPatch
-                                .CaptureTheropodOwnedResources(unit.View);
+                            giantBodies ? ExpandedSummoningPteranodonViewPatch.CaptureGiantBodyOwnedResources(unit.View) :
+                            ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(unit.View);
                         string outcome = ExpandedSummoningPteranodonViewPatch
                             .DescribeView(unit.View);
                         bool donorRestored = body != null && body.enabled &&
                             donorMeshes.Contains(body.sharedMesh) &&
-                            accessory != null && accessory.enabled;
+                            (giantBodies ? accessory == null : accessory != null && accessory.enabled);
                         bool bound = cycle == 0
                             ? faultReached == 1 && !original &&
                                 donorRestored && owned.Length == 0 &&
@@ -2323,7 +2338,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     "donor-visual:attach-failed:",
                                     StringComparison.Ordinal)
                             : faultReached == 0 && original &&
-                                accessory != null && !accessory.enabled &&
+                                (giantBodies ? accessory == null : accessory != null && !accessory.enabled) &&
                                 outcome.StartsWith("visual:attached;",
                                     StringComparison.Ordinal) &&
                                 owned.OfType<Mesh>().Count() == 1 &&
@@ -2333,7 +2348,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? CaptureSprint17OriginalBodyFrame(unit, body,
                                 "sprint24-" + key + "-cycle-" + cycle)
                             : "donor-fallback";
-                        Sprint24Check("view-" + key + "-cycle-" + cycle,
+                        record("view-" + key + "-cycle-" + cycle,
                             bound, new JObject {
                                 ["unit"] = unit.UniqueId,
                                 ["event"] =
@@ -2356,16 +2371,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["name"] = value.name,
                                         ["type"] = value.GetType().FullName
                                     }))
-                            }, "A request-local post-swap fault restores both exact native renderers; two subsequent views bind one private body, disable only the per-instance accessory, and fade in once.");
+                            }, giantBodies ? "A request-local post-swap fault restores the exact native renderer; two subsequent views attach the original body and fade in." : "A request-local post-swap fault restores both exact native renderers; two subsequent views bind one private body, disable only the per-instance accessory, and fade in once.");
 
                         Mesh cachedMesh;
                         Texture2D cachedPaint;
                         string[] cachedBones;
                         string cacheStatus;
-                        bool cacheLoaded = PteranodonAssetRuntime
-                            .TryGetTheropodVisual(key, out cachedMesh,
-                                out cachedBones, out cachedPaint,
-                                out cacheStatus);
+                        bool cacheLoaded = giantBodies ?
+                            PteranodonAssetRuntime.TryGetGiantBodyVisual(key,
+                                out cachedMesh, out cachedBones, out cachedPaint, out cacheStatus) :
+                            PteranodonAssetRuntime.TryGetTheropodVisual(key,
+                                out cachedMesh, out cachedBones, out cachedPaint, out cacheStatus);
                         var view = unit.View;
                         DisposeExpandedSummoningUnits(fixture.Created,
                             new[] { unit });
@@ -2386,7 +2402,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             donorMeshes.All(value => value != null);
                         ExpandedSummoningPteranodonViewPatch.ReleasePhase2View(
                             view);
-                        Sprint24Check("view-" + key + "-teardown-" + cycle,
+                        record("view-" + key + "-teardown-" + cycle,
                             released && borrowedSurvive,
                             new JObject {
                                 ["unit"] = unit.UniqueId,
@@ -2415,7 +2431,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             }, "Native destruction releases only captured private mesh/material objects and preserves donor and immutable cache identities; repeated release is harmless.");
                     }
                     foreach (int frame in Sprint24DeathExpiryLifecycle(
-                        fixture, key)) yield return frame;
+                        fixture, key, giantBodies, record)) yield return frame;
                 }
                 SkinnedMeshRenderer[] after = control.View
                     .GetComponentsInChildren<SkinnedMeshRenderer>(true);
@@ -2430,7 +2446,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     donorEnabled.SequenceEqual(after.Select(value =>
                         value.enabled)) &&
                     donorMeshes.All(value => value != null);
-                Sprint24Check("native-donor-isolation", isolated,
+                record("native-donor-isolation", isolated,
                     new JObject {
                         ["unit"] = control.UniqueId,
                         ["event"] = "donor-negative-control",
@@ -2465,8 +2481,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Sprint24DeathExpiryLifecycle(
-            ExpandedSummoningCorrectionFixture fixture, string key)
+            ExpandedSummoningCorrectionFixture fixture, string key,
+            bool giantBodies = false,
+            Action<string, bool, JObject, string> record = null)
         {
+            if (record == null) record = Sprint24Check;
             ResetExpandedSummoningHostile(fixture);
             UnitEntityData unit = CastExpandedSummoningOwnTier(fixture, key);
             SetExpandedSummoningBrainActive(unit, false);
@@ -2481,7 +2500,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             JObject expiry = null;
             BlueprintUnit expiryDonor = fixture.Blueprints.OfType<BlueprintUnit>()
                 .Single(value => value.AssetGuid ==
-                    TheropodVisualPolicy.ExpiryEffectDonorGuid);
+                    (giantBodies ? GiantBodyVisualPolicy.DonorGuid : TheropodVisualPolicy.ExpiryEffectDonorGuid));
             var expiryLink = unit.Blueprint.Visual == null ? null :
                 unit.Blueprint.Visual.BloodPuddleFx;
             var donorExpiryLink = expiryDonor.Visual == null ? null :
@@ -2503,15 +2522,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     body = unit.View == null ? null : unit.View
                         .GetComponentsInChildren<SkinnedMeshRenderer>(true)
                         .SingleOrDefault(value => value.name ==
-                            TheropodVisualPolicy.BodyRendererName);
+                            (giantBodies ? GiantBodyVisualPolicy.BodyRendererName : TheropodVisualPolicy.BodyRendererName));
                     if (body != null && body.enabled &&
                         body.sharedMesh != null && EntityFadedIn(unit)) break;
                 }
                 if (body == null || body.sharedMesh == null)
                     throw new InvalidOperationException(
                         "Theropod lifecycle body did not settle: " + key);
-                resources.AddRange(ExpandedSummoningPteranodonViewPatch
-                    .CaptureTheropodOwnedResources(unit.View));
+                resources.AddRange(giantBodies ?
+                    ExpandedSummoningPteranodonViewPatch.CaptureGiantBodyOwnedResources(unit.View) :
+                    ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(unit.View));
                 set = unit.View.AnimationManager.AnimationSet;
                 hit = unit.View.AnimationManager.GetAction(
                     UnitAnimationType.Hit);
@@ -2521,7 +2541,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hit.Clips.Any(value => value != null);
                 bool hasDeath = prone != null && prone.Clips != null &&
                     prone.Clips.Any(value => value != null);
-                Sprint24Check("lifecycle-carriers-" + key,
+                record("lifecycle-carriers-" + key,
                     set != null && resources.Count >= 2 &&
                         exactExpiryCarrier,
                     new JObject {
@@ -2588,7 +2608,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         JObject pose;
                         try
                         {
-                            pose = Sprint24OriginalBodySample(unit, body);
+                            pose = Sprint24OriginalBodySample(unit, body,
+                                giantBodies ? key : null);
                         }
                         catch (Exception error)
                         {
@@ -2617,7 +2638,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (deadObserved && (!hasDeath || deathPlayed) &&
                         frame >= 30) break;
                 }
-                Sprint24Check("native-death-" + key,
+                record("native-death-" + key,
                     deadObserved && finite && (!hasDeath || deathPlayed),
                     new JObject {
                         ["unit"] = unit.UniqueId,
@@ -2655,7 +2676,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool borrowedExpiryCarrierSurvives = expiryPrefab != null &&
                     expiryEffect != null && donorExpiryLink != null &&
                     donorExpiryLink.AssetId == expiryLink.AssetId;
-                Sprint24Check("native-fade-despawn-" + key,
+                record("native-fade-despawn-" + key,
                     finite && exactExpiryCarrier &&
                         maximumDissolve > .05f && released &&
                         borrowedExpiryCarrierSurvives,
@@ -2686,7 +2707,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static JObject Sprint24OriginalBodySample(
-            UnitEntityData unit, SkinnedMeshRenderer body)
+            UnitEntityData unit, SkinnedMeshRenderer body, string giantKey = null)
         {
             Vector3[] points = Sprint17OriginalWorldVertices(body);
             bool finite = points.All(point => !float.IsNaN(
@@ -2698,9 +2719,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             Transform[] bones = body.bones;
             bool exactDrivers = bones != null && bind != null &&
                 bones.Length == bind.Length && bones.All(value =>
-                    value != null) && TheropodVisualPolicy.IsPermitted(
-                        TheropodRulesPolicy.DeinonychusKey,
-                        bones.Select(value => value.name));
+                    value != null) && (giantKey == null ?
+                    TheropodVisualPolicy.IsPermitted(TheropodRulesPolicy.DeinonychusKey,
+                        bones.Select(value => value.name)) :
+                    GiantBodyVisualPolicy.IsPermitted(giantKey,
+                        bones.Select(value => value.name)));
             Matrix4x4[] skin = bones.Select((bone, index) =>
                 bone.localToWorldMatrix * bind[index]).ToArray();
             bool poseFinite = exactDrivers && skin.All(matrix =>
@@ -2709,7 +2732,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         matrix[index / 4, index % 4])));
             var transforms = new JArray(bones.Select((bone, index) =>
                 new JObject {
-                    ["name"] = TheropodVisualPolicy.Bones[index],
+                    ["name"] = giantKey == null ? TheropodVisualPolicy.Bones[index] : bone.name,
                     ["nativeTransformName"] = bone.name,
                     ["worldPosition"] = SurveyVector(bone.position),
                     ["skinToWorldRowMajor"] =
@@ -3247,15 +3270,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Sprint24AiFallback(
-            ExpandedSummoningCorrectionFixture fixture)
+            ExpandedSummoningCorrectionFixture fixture,
+            string creatureKey = TheropodRulesPolicy.DeinonychusKey,
+            float approachDistance = 5f,
+            Action<string, bool, JObject, string> record = null)
         {
+            if (record == null) record = Sprint24Check;
             ResetExpandedSummoningHostile(fixture);
             // The quiet-unit helper intentionally clears the runtime brain's
             // action lists and therefore cannot be used as evidence of the
             // ordinary AI fallback. Keep the exact summoned brain intact,
             // just as the already-qualified Sprint 16 AI cells do.
             UnitEntityData owner = CastExpandedSummoningOwnTier(fixture,
-                TheropodRulesPolicy.DeinonychusKey);
+                creatureKey);
             UnitEntityData target = fixture.Hostile;
             owner.Descriptor.Stats.HitPoints.BaseValue = 100000;
             int targetHp = target.Stats.HitPoints.BaseValue;
@@ -3300,7 +3327,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string chosenTargetDirection;
                 Vector3 targetOrigin;
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner,
-                    target, 5f, out targetOrigin, out floorSurvey,
+                    target, approachDistance, out targetOrigin, out floorSurvey,
                     out chosenTargetDirection);
                 string[] ambientOwnerCommands = owner.Commands.Raw.Where(
                     value => value != null).Select(value =>
@@ -3415,7 +3442,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Blueprint.Brain.Actions.Select(value =>
                         value.GetType().FullName + ":" + value.name)
                         .SequenceEqual(actions);
-                Sprint24Check("deinonychus-genuine-ai-fallback", exact,
+                record(creatureKey + "-genuine-ai-fallback", exact,
                     new JObject {
                         ["unit"] = owner.UniqueId,
                         ["target"] = target.UniqueId,
@@ -3484,7 +3511,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["finalDistance"] = Vector3.Distance(owner.Position,
                             target.Position),
                         ["frames"] = frames
-                    }, "Without a fixture-issued attack, the unchanged natural-attack AI approaches and executes a real Deinonychus weapon command; manual command evidence is not presented as AI proof.");
+                    }, "Without a fixture-issued attack, the unchanged natural-attack AI approaches and executes a real " + creatureKey + " weapon command; manual command evidence is not presented as AI proof.");
             }
             finally
             {

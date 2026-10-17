@@ -9,6 +9,7 @@ param(
     [switch]$Sprint22,
     [switch]$Sprint23ChargeRounding,
     [switch]$Sprint24Theropods,
+    [switch]$Sprint25GiantBodies,
     [string]$ProductPrNumber,
     [switch]$ConfirmReleaseReady
 )
@@ -29,16 +30,19 @@ function Resolve-KmgReleaseInput([string]$Path) {
 Push-Location $root
 try {
     $git = Get-KmgGitState -RepositoryRoot $root
-    if(@($Sprint22,$Sprint23ChargeRounding,$Sprint24Theropods | Where-Object {$_}).Count -gt 1) { throw 'Select only one qualified-candidate release contract.' }
+    if(@($Sprint22,$Sprint23ChargeRounding,$Sprint24Theropods,$Sprint25GiantBodies | Where-Object {$_}).Count -gt 1) { throw 'Select only one qualified-candidate release contract.' }
+    if($Sprint25GiantBodies -and $ProductPrNumber -cne '49') {
+        throw 'Sprint 25 publication is authorized only for product PR 49.'
+    }
     if($Sprint23ChargeRounding -and $ProductPrNumber -cnotmatch '^\d+$') {
         throw 'Sprint 23 charge-rounding publication requires its numeric product PR.'
     }
     if($Sprint24Theropods -and $ProductPrNumber -cnotmatch '^\d+$') {
         throw 'Sprint 24 theropod publication requires its numeric product PR.'
     }
-    $selectedBranch=if($Sprint24Theropods){'codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus'}elseif($Sprint23ChargeRounding){'codex/expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'codex/expanded-summoning-sprint22-ankylosaurus'}else{'codex/expanded-summoning-sprint21-bebelith-giant-crab'}
-    $selectedPr=if($Sprint24Theropods -or $Sprint23ChargeRounding){$ProductPrNumber}elseif($Sprint22){'39'}else{'36'}
-    $selectedSuffix=if($Sprint24Theropods){'expanded-summoning-sprint24-theropods'}elseif($Sprint23ChargeRounding){'expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'expanded-summoning-sprint22'}else{'expanded-summoning-sprint21'}
+    $selectedBranch=if($Sprint25GiantBodies){'codex/expanded-summoning-sprint25-brachiosaurus-elephant'}elseif($Sprint24Theropods){'codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus'}elseif($Sprint23ChargeRounding){'codex/expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'codex/expanded-summoning-sprint22-ankylosaurus'}else{'codex/expanded-summoning-sprint21-bebelith-giant-crab'}
+    $selectedPr=if($Sprint25GiantBodies -or $Sprint24Theropods -or $Sprint23ChargeRounding){$ProductPrNumber}elseif($Sprint22){'39'}else{'36'}
+    $selectedSuffix=if($Sprint25GiantBodies){'expanded-summoning-sprint25-giant-bodies'}elseif($Sprint24Theropods){'expanded-summoning-sprint24-theropods'}elseif($Sprint23ChargeRounding){'expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'expanded-summoning-sprint22-ankylosaurus'}else{'expanded-summoning-sprint21'}
     if ($git.Status.Count -ne 0 -or $git.Branch -cne $selectedBranch) {
         throw 'Promotion requires the selected clean reporting branch.'
     }
@@ -74,6 +78,10 @@ try {
         throw 'The merged pull-request head is not one of the product merge parents.'
     }
     $candidateRoot = (Resolve-Path -LiteralPath $CandidateRepositoryRoot).Path
+    if($Sprint25GiantBodies -and [IO.Path]::GetFullPath($candidateRoot).TrimEnd('\') -ine
+        'C:\Dev\KingmakerGunslingerLab\wt\s25') {
+        throw 'Sprint 25 promotion must use the product root selected before building: wt/s25.'
+    }
     $candidate = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $candidateRoot
     $candidateGit = Get-KmgGitState -RepositoryRoot $candidateRoot
     if ($candidateGit.Status.Count -ne 0 -or $candidateGit.Commit -cne $candidate.commit -or
@@ -99,7 +107,14 @@ try {
         # in the candidate package: the archive carries no scripts/ entry.
         'scripts/Test-Sprint24ReportingLineage.ps1',
         'scripts/validate-repository.ps1')
-    if (-not $Sprint24Theropods) {
+    if ($Sprint25GiantBodies) {
+        $allowedReportingPaths=@('AUTONOMOUS-RESUME.md','docs/SPRINT25-COVERAGE.md',
+            'docs/RELEASE-NOTES-0.0.158.md','planning/SPRINT25-GIANT-BODIES-LEDGER.json',
+            'planning/SPRINT25-QUALIFICATION-LEDGER.json','scripts/Publish-QualifiedCandidate.ps1',
+            'scripts/Publish-Release.ps1','scripts/QualifiedRelease.Common.ps1',
+            'scripts/Test-Sprint25Release.ps1','scripts/validate-repository.ps1')
+    }
+    elseif (-not $Sprint24Theropods) {
         $allowedReportingPaths = @()
         $null = Get-KmgReleaseCommandText git @('merge-base','--is-ancestor',$git.Commit,$MergedReleaseCommit)
     }
@@ -115,7 +130,8 @@ try {
         $candidate.version -cnotmatch '^\d+\.\d+\.\d+$') { throw 'Stable version identity differs from the tested artifact.' }
     $ledgerPath = Resolve-KmgReleaseInput $QualificationLedgerPath
     $ledger = Get-Content -LiteralPath $ledgerPath -Raw | ConvertFrom-Json
-    if($Sprint24Theropods) { Assert-KmgSprint24TheropodReleaseDecision -Ledger $ledger -Candidate $candidate }
+    if($Sprint25GiantBodies) { Assert-KmgSprint25GiantBodyReleaseDecision -Ledger $ledger -Candidate $candidate }
+    elseif($Sprint24Theropods) { Assert-KmgSprint24TheropodReleaseDecision -Ledger $ledger -Candidate $candidate }
     elseif($Sprint23ChargeRounding) { Assert-KmgSprint23ChargeRoundingReleaseDecision -Ledger $ledger -Candidate $candidate }
     elseif($Sprint22) { Assert-KmgSprint22ReleaseDecision -Ledger $ledger -Candidate $candidate }
     else { Assert-KmgClosureReleaseDecision -Ledger $ledger -Candidate $candidate }
@@ -125,7 +141,7 @@ try {
         throw 'A runtime transaction is still active; publication is refused.'
     }
     $intake = Get-Content -LiteralPath (Join-Path $ledger.evidenceRoot $ledger.restoration.intakeManifest) -Raw | ConvertFrom-Json
-    if($Sprint22 -or $Sprint23ChargeRounding -or $Sprint24Theropods) { $intake=@($intake.modsManifest) }
+    if($Sprint22 -or $Sprint23ChargeRounding -or $Sprint24Theropods -or $Sprint25GiantBodies) { $intake=@($intake.modsManifest) }
     $currentMods = Get-KmgCompatibilityDirectoryManifest 'C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker/Mods'
     if (-not (Test-KmgCompatibilityManifestEqual $intake $currentMods)) { throw 'Actual human installation has not been restored.' }
     $notesPath = Resolve-KmgReleaseInput $ReleaseNotesPath
@@ -161,7 +177,7 @@ try {
         reportingDeltaPaths=@($reportingLineage.reportingDeltaPaths);
         publisherScriptSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'Publish-QualifiedCandidate.ps1');
         publisherCommonSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'QualifiedRelease.Common.ps1');
-        publisherTestSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'Test-Sprint24Release.ps1');
+        publisherTestSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot $(if($Sprint25GiantBodies){'Test-Sprint25Release.ps1'}else{'Test-Sprint24Release.ps1'}));
         package=$assetName; packageSha256=$candidate.packageSha256; dllSha256=$candidate.dllSha256; dllMvid=$candidate.dllMvid;
         buildLocalManifestSha256=Get-KmgSha256 -Path ($candidate.packagePath+'.build-local.json');
         fullSuite=$ledger.candidate.fullSuite; harness=$ledger.harness; qualificationStatus=$ledger.status;

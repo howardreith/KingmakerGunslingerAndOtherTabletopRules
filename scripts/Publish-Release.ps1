@@ -20,6 +20,7 @@ param(
     [switch]$ReuseQualifiedCandidate,
     [switch]$Sprint22,
     [switch]$Sprint23ChargeRounding,
+    [switch]$Sprint25GiantBodies,
     [string]$ProductPrNumber,
     [string]$PackagePath,
     [string]$CandidateRepositoryRoot,
@@ -38,14 +39,14 @@ if ($ReuseQualifiedCandidate) {
         -QualificationLedgerPath $QualificationLedgerPath `
         -MergedReleaseCommit $MergedReleaseCommit -ReleaseNotesPath $ReleaseNotesPath `
         -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady -Sprint22:$Sprint22 `
-        -Sprint23ChargeRounding:$Sprint23ChargeRounding -ProductPrNumber $ProductPrNumber
+        -Sprint23ChargeRounding:$Sprint23ChargeRounding -Sprint25GiantBodies:$Sprint25GiantBodies -ProductPrNumber $ProductPrNumber
     return
 }
 if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit) {
     throw 'Qualified-candidate arguments require -ReuseQualifiedCandidate.'
 }
-if ($Sprint22 -or $Sprint23ChargeRounding -or
-    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153')) {
+if ($Sprint22 -or $Sprint23ChargeRounding -or $Sprint25GiantBodies -or
+    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153','0.0.158')) {
     throw 'This release requires -ReuseQualifiedCandidate with its exact tested artifact, selected patch contract and qualification ledger; no reporting rebuild.'
 }
 

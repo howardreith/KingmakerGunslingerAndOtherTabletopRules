@@ -1,4 +1,4 @@
-# Sprint 25 takeover — native qualification blocked on Steam authentication
+# Sprint 25 takeover — observer checkpoint, native candidate next
 
 Current owner mission: finish scoped Brachiosaurus/Elephant native qualification,
 then publication qualification, merge PR #49, publish/verify the next available
@@ -10,10 +10,11 @@ Fetched only master/product refs with `--no-tags`; master remains `2eed3944`
 with no new integration needed. PR #49 is draft/open/mergeable. Remote tag
 `v0.0.158` is absent; recheck availability before freezing/publication.
 
-Steam's `ActiveProcess` registry reports `ActiveUser=0`, with `pid=22564`
-matching the running client. The owner must sign in before native testing.
-No Kingmaker process or runtime lease was found; no deployment, native launch,
-save operation, candidate build or release action was started by this takeover.
+The owner confirmed a signed-in Steam Offline Mode session. Offline Mode is
+accepted: the guarded launcher has no online-connectivity requirement. The
+earlier ActiveUser=0 inference was insufficient to establish an authentication
+failure and is withdrawn. No launcher safety check was disabled. No Kingmaker
+process or runtime lease was found at the fresh check.
 
 The supplied icon and both original bodies are integrated. Rough visuals and
 the Head-weighted stiff neck are accepted deferrals; HumanReview remains
@@ -24,10 +25,24 @@ targeted persistence proof remains required. See `current`, `coverageMap` under
 hashes as the earlier source/build checkpoint; the complete compiled observer
 change will need one new candidate, as already authorized.
 
-After Steam sign-in, recheck authentication, source ownership, process/lease
-state and elevation. Implement the bounded review using the existing fixture,
-native clock and exact-owner command/AI paths, plus the narrow Sprint 25
-publisher mapping/refusal tests. No new art handoff or visual R&D is required.
+The seven-phase review and exact two-creature persistence scope are implemented.
+Production compiles and the named Sprint 23/24/25/native-profile regression
+selection passes 46/46 (18.8 s combined). The unelevated preflight batch passes
+(48.61 s): 609 request checks, 27 integration checks, 47 Steam-launch checks,
+persistence checks and 196 scope refusals. The Sprint 25 publisher extension
+passes 43 decision/refusal checks; the existing Sprint 24 decision and reporting
+lineage tests also pass. These are source/tooling results, not engine proof.
+Accepted art/body bytes were not changed. The original 9b55df81 ZIP and sidecars
+are preserved under `artifacts/checkpoints/source-build-9b55df81`.
+
+Next: commit/push this checkpoint, build one new Sprint candidate in this root,
+then run same-package smoke and the standalone/high-risk native phases, followed
+by targeted fresh-process persistence and the public boundary. Use the existing
+de-elevation route and capture actual child exit/restoration receipts. Recheck
+source ownership and process/lease state before each native transaction. Plan
+roughly 90–150 minutes for the scoped native batch, subject to startup costs and
+demonstrated repairs; safe restoration always completes. No new art handoff or
+visual R&D is required.
 
 The release records below describe earlier releases and do not control Sprint 25.
 

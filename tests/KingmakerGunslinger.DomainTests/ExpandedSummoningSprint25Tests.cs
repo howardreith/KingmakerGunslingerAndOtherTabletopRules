@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.RuntimeTesting;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
@@ -793,6 +794,23 @@ namespace KingmakerGunslinger.DomainTests
                 donor.Guid,
                 "It is the same rig the released Elephant already rides.");
             ExpandedSummoningDonorCatalog.Validate();
+        }
+
+        internal static void TargetedPersistenceCannotExpandItsRoster()
+        {
+            const string scope = ExpandedSummoningRosterPersistencePolicy.GiantBodiesScope;
+            foreach (string key in new[] { "brachiosaurus", "elephant" })
+            {
+                SummonVariantSpec variant = ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, key);
+                Assertions.Equal(key, variant.Creature.Key, "Targeted fixture selects the exact registered identity.");
+                Assertions.Equal(SummonMultiplicity.One, variant.Multiplicity, "Targeted fixture creates exactly one creature.");
+            }
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] { "elephant", "brachiosaurus" }), "Load order does not affect exact two-creature membership.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] { "elephant" }), "Missing creature cannot pass persistence.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] { "elephant", "brachiosaurus", "wolf" }), "Unrelated creature cannot broaden the targeted scope.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] { "elephant", "elephant" }), "Duplicate receipt cannot substitute for Brachiosaurus.");
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare, scope), "Exact prepare route uses the existing guarded load observer.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile, scope), "The targeted scope cannot authorize a different scenario.");
         }
 
         private static SummonVariantSpec[] NewRoutes(SummonFamily family)
