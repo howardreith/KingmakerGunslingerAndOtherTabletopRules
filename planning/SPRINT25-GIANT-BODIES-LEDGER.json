@@ -667,7 +667,11 @@
       "expanded-summoning.sprint6-ledger",
       "expanded-summoning.sprint8-ledger-icons"
     ],
-    "whyLeftFailing": "They are the honest signal that the art is outstanding. Moving the 119 pin or inventing a placeholder PNG would turn a real gap into a green gate."
+    "whyLeftFailing": "They are the honest signal that the art is outstanding. Moving the 119 pin or inventing a placeholder PNG would turn a real gap into a green gate.",
+    "packetIntegrity": "Re-verified 2026-10-16: all six reference images match their recorded SHA-256 and the brief matches briefSha256. Nothing in the packet was rewritten.",
+    "howItIsRouted": "The packet must be carried to an authorized image-capable session as ACTUAL FILES. A machine-local pathname does not transfer images, and this session has no channel that does, so the transfer is the owner's step. What is explicitly not done instead: rewriting the brief again, creating a placeholder, moving the icon catalog count early, installing a paid backend, or starting a tooling campaign to avoid delivering the one missing image.",
+    "notTheSoleReleaseRequirement": "Independent of the icon, the release still needs: an acceptable articulated neck design or an owner decision on the bounded runtime extension; final geometry, UVs and textures inspected on the models; native motion and contact evidence; and the six in-play Greater Overrun proofs. The icon is one missing external asset among several open requirements, and independent source and model work continues meanwhile.",
+    "developmentCandidateRouteUnavailable": "docs/DEVELOPMENT-CANDIDATES.md pins tools/validate_development_candidate .py to the released v0.0.156 baseline 607da683b1 and refuses any version change. This branch is 0.0.158, so a development candidate is refused until that validator is re-pinned with its corruption fixtures. It is not a bypass of the icon dependency, the version checks or the runtime bootstrap, and a development receipt cannot become release proof by relabelling. Private motion investigation therefore stays on the established guarded research route."
   },
   "masterIntegration": {
     "mergedMasterAt": "607da683b1f6fd545dab90fd6f4121d155573142",
