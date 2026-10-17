@@ -44,11 +44,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnityEngine.Random.State randomBefore = UnityEngine.Random.state;
             try
             {
-                PlaceExpandedSummoningUnit(fixture.Caster, Sprint25IsolatedAnchor(fixture));
                 foreach (bool missSecond in new[] { false, true })
                 {
                     var created = new List<UnitEntityData>();
                     UnitUseAbility command = null;
+                    FirearmReviewCosts costs = null;
+                    var costRows = new JArray();
                     var observer = new Sprint25CleaveObserver { MissSecond = missSecond };
                     try
                     {
@@ -60,17 +61,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnitEntityData ally = CastExpandedSummoningQuietUnit(fixture, "wolf");
                         UnitEntityData remote = CastExpandedSummoningQuietUnit(fixture, "wolf", fixture.Hostile);
                         created.AddRange(new[] { ally, remote });
-                        foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus", false)) yield return frame;
-                        var ground = AstarPath.active.GetNearest(fixture.Caster.Position);
+                        foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
+                        var ground = AstarPath.active.GetNearest(Sprint25IsolatedAnchor(fixture));
                         if (ground.node == null || !ground.node.Walkable)
                             throw new InvalidOperationException("No native floor for the isolated Cleave fixture.");
                         Vector3 origin = ground.clampedPosition;
+                        Vector3 forward = Vector3.zero;
+                        Vector3[] legalTargets = null;
+                        foreach (Vector3 direction in CompassOffsets)
+                        {
+                            Vector3 side = Vector3.Cross(direction, Vector3.up).normalized;
+                            Vector3[] requested = Enumerable.Range(0, 3).Select(index =>
+                                origin + direction * 5.5f + side * (index - 1) * 1.2f).ToArray();
+                            var nodes = requested.Select(point => AstarPath.active.GetNearest(point)).ToArray();
+                            if (nodes.Where((node, index) => node.node != null && node.node.Walkable &&
+                                node.node.Area == ground.node.Area && node.node.GraphIndex == ground.node.GraphIndex &&
+                                Vector3.Distance(node.clampedPosition, requested[index]) < .4f &&
+                                !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                                    origin + Vector3.up * 1.2f, node.clampedPosition + Vector3.up * 1.2f, 0)).Count() != 3) continue;
+                            legalTargets = nodes.Select(node => node.clampedPosition).ToArray();
+                            forward = direction;
+                            break;
+                        }
+                        if (legalTargets == null)
+                            throw new InvalidOperationException("No walkable, clear-sight adjacent three-target Cleave cluster.");
                         PlaceExpandedSummoningUnit(owner, origin);
                         for (int index = 0; index < targets.Length; index++)
-                            PlaceExpandedSummoningUnit(targets[index], origin + Vector3.forward * 5.5f +
-                                Vector3.right * (index - 1) * 1.2f);
-                        PlaceExpandedSummoningUnit(ally, origin + Vector3.forward * 4.3f);
-                        PlaceExpandedSummoningUnit(remote, origin + Vector3.forward * 30);
+                            PlaceExpandedSummoningUnit(targets[index], legalTargets[index]);
+                        PlaceExpandedSummoningUnit(ally, origin + forward * 4.3f);
+                        PlaceExpandedSummoningUnit(remote, origin + forward * 30);
                         foreach (UnitEntityData unit in created)
                         {
                             unit.Stats.HitPoints.BaseValue = 100000;
@@ -99,8 +118,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var custom = blueprint.GetComponents<Kingmaker.UnitLogic.Abilities.Components.AbilityCustomCleave>().Single();
                         bool greaterPath = owner.Descriptor.Progression.Features.HasFact(custom.GreaterFeature);
                         EventBus.Subscribe(observer);
+                        costs = new FirearmReviewCosts(owner, costRows);
+                        var remoteRange = new UnitAttack(remote);
+                        remoteRange.Init(owner);
+                        bool remoteOutsideReach = !remoteRange.IsUnitEnoughClose;
+                        bool allyIsEnemy = owner.IsEnemy(ally);
                         float standardBefore = owner.CombatState.Cooldown.StandardAction;
                         float maxStandard = standardBefore;
+                        bool combatThroughout = owner.IsInCombat;
                         command = new UnitUseAbility(ability, new TargetWrapper(targets[0]));
                         if (!command.CanStart) throw new InvalidOperationException("Native Cleave command cannot start.");
                         owner.Commands.Run(command);
@@ -114,14 +139,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                             }
                             if (command.ExecutionProcess != null) TickExpandedSummoningDetachedAbility(command, frame);
                             maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
+                            combatThroughout &= owner.IsInCombat;
                             yield return 0;
+                            combatThroughout &= owner.IsInCombat;
                             if (command.IsFinished) break;
                         }
                         int expectedCount = missSecond ? 2 : 3;
                         bool exact = greaterPath && command.IsStarted && command.IsFinished &&
                             !command.Cutscene && !command.IsIgnoreCooldown &&
                             blueprint.ActionType.ToString() == "Standard" &&
-                            !ability.RequireFullRoundAction && maxStandard > standardBefore &&
+                            !ability.RequireFullRoundAction && combatThroughout &&
+                            costs.Count(command) == 1 && costs.Exact(command, turnBased) &&
+                            !allyIsEnemy && remoteOutsideReach &&
                             observer.Attacks.Count == expectedCount &&
                             observer.Attacks.Select(value => value.Target.UniqueId).Distinct().Count() == expectedCount &&
                             observer.Attacks.All(value => targets.Contains(value.Target)) &&
@@ -135,6 +164,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["commandFinished"] = command.IsFinished,
                                 ["commandResult"] = command.Result.ToString(),
                                 ["standardCooldown"] = new JArray(standardBefore, maxStandard),
+                                ["combatThroughout"] = combatThroughout,
+                                ["nativeCostApplications"] = costs.Count(command),
+                                ["nativeCostExact"] = costs.Exact(command, turnBased),
+                                ["nativeCostBoundary"] = costRows,
+                                ["nativeClusterSurvey"] = "Same walkable native graph/area, clear native sight geometry, adjacent cluster before turn enrollment.",
+                                ["allyIsEnemy"] = allyIsEnemy, ["remoteOutsideNativeReach"] = remoteOutsideReach,
+                                ["remoteDistance"] = owner.DistanceTo(remote),
                                 ["alliesExcluded"] = ally.UniqueId, ["outOfReachExcluded"] = remote.UniqueId,
                                 ["nativeTargetSelection"] = "Living remembered enemies within native IsReach, sorted from the first target; no native inter-target adjacency predicate. The positive fixture uses three adjacent foes. No global Cleave repair.",
                                 ["legalTargets"] = new JArray(targets.Select(value => new JObject {
@@ -147,17 +183,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally
                     {
-                        EventBus.Unsubscribe(observer);
-                        EndExpandedSummoningDetachedAbility(command);
-                        SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
-                        Game.Instance.TurnBasedCombatController.Activate();
-                        foreach (UnitEntityData unit in created)
+                        try { costs?.Dispose(); }
+                        finally
                         {
-                            unit.Commands.InterruptAll(true);
-                            if (unit.IsInCombat) unit.LeaveCombat();
+                            EventBus.Unsubscribe(observer);
+                            EndExpandedSummoningDetachedAbility(command);
+                            SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                            Game.Instance.TurnBasedCombatController.Activate();
+                            foreach (UnitEntityData unit in created)
+                            {
+                                unit.Commands.InterruptAll(true);
+                                if (unit.IsInCombat) unit.LeaveCombat();
+                            }
+                            Game.Instance.Player.UpdateIsInCombat();
+                            DisposeExpandedSummoningUnits(fixture.Created, created);
                         }
-                        Game.Instance.Player.UpdateIsInCombat();
-                        DisposeExpandedSummoningUnits(fixture.Created, created);
                     }
                 }
             }

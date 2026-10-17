@@ -175,7 +175,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 patched = true;
                 setter.Invoke(Game.Instance, new object[] { controller }); assigned = true;
                 EventBus.Subscribe(controller); subscribed = true;
-                PlaceExpandedSummoningUnit(fixture.Caster, Sprint25IsolatedAnchor(fixture));
                 string[] cases = { "failure", "partial", "threshold", "maneuver-immune", "prone-immune", "already-prone", "repeated-notification", "repeated-command", "exhausted" };
                 foreach (string sample in cases)
                     foreach (int frame in Sprint25OverrunCase(fixture, sample)) yield return frame;
@@ -220,6 +219,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var created = new List<UnitEntityData>();
             UnitUseAbility command = null;
             Sprint25OverrunObserver observer = null;
+            FirearmReviewCosts costs = null;
+            var costRows = new JArray();
+            var commandRows = new JArray();
+            var commands = new List<UnitUseAbility>();
             Vector3 casterBefore = fixture.Caster.Position;
             try
             {
@@ -229,7 +232,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData[] responders = { CastExpandedSummoningQuietUnit(fixture, "wolf"),
                     CastExpandedSummoningQuietUnit(fixture, "wolf") };
                 created.AddRange(new[] { owner, target, later }.Concat(responders));
-                foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus", false)) yield return frame;
+                // Let the real appearance finish beside the visible party;
+                // relocate only ready request-owned actors to the test lane.
+                foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
                 foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                 foreach (UnitEntityData unit in created)
                 {
@@ -245,9 +250,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (granted == null) throw new InvalidOperationException("Exact owner lacks ordinary Overrun.");
                 var ability = new AbilityData(granted);
                 // Hostile-owned summons initially appear by their own caster,
-                // not our isolated caster. Seed the reused route survey here,
+                // not our visible caster. Seed the reused route survey here,
                 // away from every protected first-area actor.
-                var centre = AstarPath.active.GetNearest(fixture.Caster.Position);
+                var centre = AstarPath.active.GetNearest(Sprint25IsolatedAnchor(fixture));
                 if (centre.node == null || !centre.node.Walkable)
                     throw new InvalidOperationException("No isolated native Overrun floor.");
                 PlaceExpandedSummoningUnit(target, centre.clampedPosition);
@@ -372,6 +377,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["counts"] = new JArray(beforeOpportunities) });
                 };
                 EventBus.Subscribe(observer);
+                costs = new FirearmReviewCosts(owner, costRows);
                 float standardBefore = owner.CombatState.Cooldown.StandardAction;
                 float moveBefore = owner.CombatState.Cooldown.MoveAction;
                 float maxStandard = standardBefore, maxMove = moveBefore;
@@ -389,6 +395,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 command = new UnitUseAbility(ability, destination);
                 if (!command.CanStart) throw new InvalidOperationException("Native Overrun command cannot start.");
+                commands.Add(command);
+                int maneuversBefore = observer.Maneuvers.Count;
+                double commandStart = Game.Instance.Player.GameTime.TotalSeconds;
+                Vector3 commandOrigin = owner.Position;
+                bool commandCombat = owner.IsInCombat;
                 owner.Commands.Run(command);
                 var controller = new UnitActionController();
                 frames = 0;
@@ -413,7 +424,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TickSprint25Engagement(fixture, observer);
                     maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
                     maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
+                    commandCombat &= owner.IsInCombat;
                     yield return 0;
+                    commandCombat &= owner.IsInCombat;
                     if (observer.ContactResourcesPrepared)
                     {
                         int[] counts = responders.Select(value => value.CombatState.AttackOfOpportunityCount).ToArray();
@@ -427,6 +440,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     if (command.IsFinished && frames > 100) break;
                 }
+                commandRows.Add(new JObject { ["attempt"] = attempt + 1,
+                    ["commandId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command),
+                    ["startSeconds"] = commandStart, ["endSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["origin"] = SurveyVector(commandOrigin), ["end"] = SurveyVector(owner.Position),
+                    ["travelled"] = Vector3.Distance(commandOrigin, owner.Position),
+                    ["finished"] = command.IsFinished, ["frames"] = frames,
+                    ["combatThroughout"] = commandCombat,
+                    ["nativeManeuverTargets"] = new JArray(observer.Maneuvers.Skip(maneuversBefore).Select(value => value.Target.UniqueId)),
+                    ["nativeCostApplications"] = costs.Count(command),
+                    ["nativeCostExact"] = costs.Exact(command, turnBased) });
                 }
                 RuleCombatManeuver result = observer.Maneuvers.FirstOrDefault(value => ReferenceEquals(value.Target, target));
                 bool afterProne = target.Descriptor.State.Prone.ShouldBeActive || target.Descriptor.State.Prone.Active;
@@ -444,12 +467,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float travelled = Vector3.Distance(start, owner.Position);
                 bool nativeBudget = !command.Cutscene && !command.IsIgnoreCooldown &&
                     blueprint.IsFullRoundAction && ability.RequireFullRoundAction;
+                bool exactCommands = commands.Count == commandCount &&
+                    commands.All(value => value.IsStarted && value.IsFinished && costs.Count(value) == 1 && costs.Exact(value, turnBased)) &&
+                    commandRows.OfType<JObject>().All(value =>
+                        (bool)value["combatThroughout"] &&
+                        ((JArray)value["nativeManeuverTargets"]).Count == 1 &&
+                        (string)value["nativeManeuverTargets"][0] == target.UniqueId &&
+                        (sample == "failure" || (float)value["travelled"] > 2f) &&
+                        (float)value["travelled"] <= owner.Stats.Speed.ModifiedValue * .3048f * 2f + 1f);
                 bool outcome = result != null && cmb == 32 && contactCmb == cmb + contactStatDelta && (sample == "maneuver-immune" ?
                     !result.Success && !result.IsPartialSuccess && !afterProne :
                     result.InitiatorCMB == contactCmb && result.SuccesValue == margin &&
                     result.Success == (margin >= 0) && result.IsPartialSuccess == (margin >= 0 && margin < 5));
                 Sprint25Check("overrun-" + sample + (turnBased ? "-turn-based" : "-rtwp"), outcome && observer.ContactResourcesPrepared && command.IsStarted && command.IsFinished && nativeBudget &&
-                    maxStandard > standardBefore && (!turnBased || maxMove > moveBefore) &&
+                    exactCommands &&
                     (sample == "failure" || travelled > 2f) && travelled <= owner.Stats.Speed.ModifiedValue * .3048f * 2f + 1f &&
                     afterProne == (beforeProne || knockdown) && afterProneActive == (beforeProneActive || knockdown) && legalResponders && attributedDamage && responses &&
                     observer.Maneuvers.Count == commandCount,
@@ -474,6 +505,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
                         ["damageAttributedToNativeResponders"] = attributedDamage,
                         ["nativeBudget"] = nativeBudget, ["travelled"] = travelled,
+                        ["commands"] = commandRows, ["exactPerCommandTargetsCostsMovement"] = exactCommands,
+                        ["nativeCostBoundary"] = costRows,
                         ["standardCooldown"] = new JArray(standardBefore, maxStandard),
                         ["moveCooldown"] = new JArray(moveBefore, maxMove),
                         ["opportunityTiming"] = opportunityTrace,
@@ -490,18 +523,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (observer != null) EventBus.Unsubscribe(observer);
-                EndExpandedSummoningDetachedAbility(command);
-                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
-                Game.Instance.TurnBasedCombatController.Activate();
-                foreach (UnitEntityData unit in created)
+                try { costs?.Dispose(); }
+                finally
                 {
-                    unit.Commands.InterruptAll(true);
-                    if (unit.IsInCombat) unit.LeaveCombat();
+                    if (observer != null) EventBus.Unsubscribe(observer);
+                    EndExpandedSummoningDetachedAbility(command);
+                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                    Game.Instance.TurnBasedCombatController.Activate();
+                    foreach (UnitEntityData unit in created)
+                    {
+                        unit.Commands.InterruptAll(true);
+                        if (unit.IsInCombat) unit.LeaveCombat();
+                    }
+                    Game.Instance.Player.UpdateIsInCombat();
+                    DisposeExpandedSummoningUnits(fixture.Created, created);
+                    PlaceExpandedSummoningUnit(fixture.Caster, casterBefore);
                 }
-                Game.Instance.Player.UpdateIsInCombat();
-                DisposeExpandedSummoningUnits(fixture.Created, created);
-                PlaceExpandedSummoningUnit(fixture.Caster, casterBefore);
             }
         }
 
