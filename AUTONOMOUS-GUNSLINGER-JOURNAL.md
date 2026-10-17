@@ -1,5 +1,22 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — owner-positive alpha feedback / PR #54
+
+Owner reported alpha 3 "appears to have fixed things" and requested a PR for
+their merge. Opened
+[PR #54](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/54),
+ready for review, `codex/cotw-actionbar-installer-review-20261017` -> `master`.
+Fetched/inspected actual default base `2eed3944f6eab657f9030d33acae6d81eb5f10ae`;
+the cumulative diff includes Brown-Fur, CotW slot access, installer/readiness,
+focused tests, guarded tooling and alpha records. No duplicate repair PR existed.
+Initial PR head `50b6ca7c5004e52cc964e35dafea2873c1b234f1`; this subsequent
+documentation-only checkpoint records the PR/feedback without changing the
+frozen alpha product `39c60fb5e916` or any release/tag/asset. Diff and relevant
+text/link checks only, no build/test-suite/native rerun or machine changes.
+Human-reported success is separate from automated native NOT_RUN; no new raw
+log or detailed physical-input/party/page acceptance was supplied. Owner will
+provide controller-mode comments separately. No automatic merge or expansion.
+
 ## 2026-10-17 — controller-load alpha 3 published
 
 Owner explicitly requested GitHub publication after the local repair handoff.

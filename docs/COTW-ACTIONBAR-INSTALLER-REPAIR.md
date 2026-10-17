@@ -1,5 +1,17 @@
 # CotW action-bar installer correction — output_log2, 2026-10-17
 
+## Owner feedback and review
+
+Following alpha 3, the owner reported "That appears to have fixed things" and
+requested a PR for their merge.
+[PR #54](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/54)
+is ready for review against `master`, including the full repair chain. This is
+human-reported success on the alpha, not a newly captured instrumented load or
+broader controller acceptance PASS. No fresh log or detailed party/page/input
+results accompanied the report; retain the automated NOT_RUN records below.
+No product rebuild, new qualification campaign, merge, release or installation
+was performed for PR creation. Controller-mode feedback will follow separately.
+
 ## Subsequent owner-authorized alpha 3 publication
 
 [Public alpha 3](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3)

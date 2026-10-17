@@ -2,6 +2,14 @@
 
 ## 2026-10-17 output_log2 follow-up
 
+Owner now reports alpha 3 appears to have fixed the problem. At their request,
+[PR #54](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/54)
+is open for owner review/merge, containing the complete repair chain. No new
+instrumented native log/acceptance sequence accompanied this human report;
+retain automated NOT_RUN and detailed gaps rather than inventing coverage.
+Controller-mode feedback is pending separately. No merge or new publication
+performed as part of opening the PR.
+
 Owner's subsequent GitHub request has been completed:
 [controller-load alpha 3](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3)
 is public, prerelease / not Latest, exact product `39c60fb5e916`. Its downloaded
