@@ -95,14 +95,34 @@ Swept across amplitudes (visible stretch, with displacement in brackets):
 | 16 | 3.46 (10.51) | 1.01 (1.24) |
 | 24 | 5.49 (11.48) | 1.01 (1.86) |
 
-The rigid neck stays inside tolerance at **every** amplitude tested, including
-24°/joint. Whatever the native clips do to that chain, this neck answers only
-to the shoulder and head joints.
+The rigid neck stays inside tolerance at **every** amplitude tested,
+including 24°/joint — because the probe moves joints it no longer answers to.
+A neck that ignores a probe is not evidence of articulated motion, and this
+figure must not be read as one.
 
-**What it costs.** 20 vertex groups instead of 27; the seven chain joints
-carry nothing; the neck gains no secondary motion of its own.
+### What these four rows do and do not settle
 
-**The alternative is not available.**
+They are weight distributions over the **donor's existing bind pivots**. Three
+of the four are now closed, and the fourth is not a conclusion:
+
+| state | | |
+| --- | --- | --- |
+| **tested rigid control** | stable under the tested probes | an experimental control |
+| **full and damped old-donor-pivot weightings** | failed at the recorded probes | closed |
+| **acceptable articulated production design** | **not yet established** | open |
+
+The rigid control is **not an approved shipping design** and this record does
+not direct it. It costs 20 vertex groups instead of 27, seven chain joints
+carrying nothing, and a neck with no articulation of its own — a known
+compromise, and "no new waiver was taken" is not authorisation to ship one.
+
+Nor do these rows exhaust what is permitted. They tested weight distribution
+while **keeping the donor's pivots**; they say nothing about approaches that
+move the effective pivots onto the authored neck. Failure of these weightings
+is not a proof that one rigid driver is the only possibility. The bounded
+articulation experiment below is the live line of work.
+
+**What the rows do settle** is that the geometry cannot simply be moved back.
 `brachiosaurus-bind-faithful-bind-side.png` is a Brachiosaurus authored on the
 chain's own bind path: a quadruped with a fifth limb-shaped appendage reaching
 the ground. Correct pivots everywhere, and not a sauropod.
@@ -248,18 +268,149 @@ and 1.37 at 16°. Tusk-to-trunk clearance 0.113 at bind and 0.128–0.137 under
 curl: they never touch. `gore-strike` 1.29, `slam-foreleg` 1.52 with the
 raised forefoot at **+0.741** and the other three at 0.000.
 
-**Brachiosaurus — the neck.** Rigid on `Head`, so its defining motion is the
-shoulder-and-head swing: `gore-strike` moves the skull 3.24 units at 1.20
-visible stretch, and the trunk-chain probe moves it 1.24 at 1.01.
+**Brachiosaurus — the neck.** In the rigid **control**, the only motion is
+the shoulder-and-head swing: `gore-strike` moves the skull 3.24 units at 1.20
+visible stretch. Its 1.01 under the trunk-chain probe is **not** a motion
+result: the neck no longer answers to those joints, so the probe passes
+through it. Articulated defining motion is **not yet demonstrated** for this
+creature.
+
+## The bounded articulation experiment — the pivot, not the metric
+
+`neck_retarget_experiment.py`. Evidence in
+`runtime-evidence/sprint25-weighted-prototype/neck-retarget/`.
+
+The four weightings above all kept the donor's pivots. This one moves them,
+and the mapping was stated before it was run:
+
+- **source frames** — the donor's forward-chain bones, their rotation
+  *relative to their own rest pose* only. That is what a clip animates and
+  what survives a retarget; a raw local quaternion would not, because the two
+  rest orientations differ and the target would snap to the donor's instead of
+  inheriting its delta.
+- **target frames** — seven private drivers `KMG_BrachioNeck_01..07`, heads on
+  the authored neck's own joints, driver 1 parented to the donor `Head`, each
+  subsequent one to the last.
+- **the map** — driver *k* applies donor chain bone *k*'s rest-relative
+  rotation in driver *k*'s own rest frame.
+- **deliberately unchanged** — the donor's body, shoulder, leg and tail
+  motion, because the driver chain hangs off `Head` and everything upstream
+  stays the donor's. No donor mesh, transform, clip or skeleton asset is
+  touched, and no global bind pose is swapped.
+
+Measured on a minimal shoulder-and-neck body, 238 vertices, both variants at
+the same scale and camera:
+
+| | rigid control | retargeted |
+| --- | --- | --- |
+| bones driving the neck | `Head` alone | `Head` + 7 private drivers |
+| lever arm, bone head to the skin it drives | 3.288 units, **3.06×** | **0.000 units, 0.00×** (0.095 at the skull) |
+| neck displacement under the 16°/joint chain probe | 1.19 | **3.73** |
+| per-joint turn of the neck under that probe | `[88.8, 45.1, 0.4, 0.7, 0.1, 0.4, 0.5]` — unchanged from rest after the first joint | `[91.1, 31.4, 16.0, 15.3, 16.1, 14.9, 20.9]` — every joint turns |
+| visible stretch, 8°/joint | 1.005 | 1.269 |
+| visible stretch, 16°/joint | 1.008 | 1.543 |
+| shoulder swing, which both answer to | 3.100 at 1.203 | **3.100 at 1.203 — identical** |
+
+Read the control's column honestly: its 1.005 and 1.008 are not quality, they
+are absence. Its neck keeps the rest shape it had, because the probe moves
+joints it is not weighted to. The retargeted neck bends at every joint by the
+donor's own per-joint amount, and `retargeted-chain-probe-16-side.png` shows a
+continuous curve where `rigid-control-chain-probe-16-side.png` shows a straight
+boom with one kink. Both variants respond identically to the shoulder swing, so
+neither passed by ignoring a probe.
+
+The retargeted stretch figures are the Elephant trunk's figures — the same
+geometry now behaves like a chain whose bones sit on it. What remains above
+tolerance at 16°/joint is the ring-thickness-against-segment-length limit
+already recorded, not the pivot.
+
+**This settles geometry, not the runtime.** Read from the shipping attach path
+rather than assumed:
+
+- *what already fits* — `ExpandedSummoningPteranodonViewPatch` replaces
+  `donor.bones` and `mesh.bindposes` wholesale with arrays it composes, on the
+  donor's own renderer component, and restores `OriginalBones`/`OriginalMesh`
+  on rollback. Extra entries in those two arrays are the same kind of object
+  that patch already writes, and root bone, bounds, material, fader and
+  controller integration are untouched by this mapping.
+- *what does not fit yet* — `TryResolveDonorBinding` refuses any name the donor
+  does not have, so it cannot resolve a private driver; the drivers' bind poses
+  are ours to compute and nothing in the donor supplies them (the mesh ships
+  identity bind poses *on purpose*, expecting the donor to replace them); the
+  map is per-frame, so it needs a small owned component rather than static
+  parenting; teardown must destroy the driver objects on rollback, module OFF
+  and view destruction; and the mesh-data schema carries a flat bone-name list
+  with no way to say which donor bone a driver follows.
+
+That is a bounded extension — two array entries, one component, one teardown
+path, one schema field — and it is **not implemented and not proven in play**.
+It is the specific implementation boundary this experiment was run to find.
+
+## Deformation-critical repairs, and what they measure
+
+Three of the reviewer's findings blocked the motion strategy rather than the
+polish, and are now closed:
+
+**The mid-limb joints drive skin.** The donor bends its forelimb at
+`frontKnee_*`/`frontAnkle_*` and its hind leg at `backKnee_*`/`backAnkle_*`,
+and no ring weighted any of them: the shin kept its shape and only the foot
+block moved. Every limb now carries a ring at each of those joints. Donor bones
+with no influence fall from 11 to **2 of 40** on the Elephant, and the
+`knee-flex` probe now stretches the `L_Arm_Lower`/`frontKnee_L` seam to 1.098
+with a floor of 0.901 — the shin deforms, where before the measurement was
+1.05 with a floor of 1.000 because nothing between the knee and the foot
+changed shape at all.
+
+**The shoulder wedge is closed by mass, not by weights.** It survived all five
+seam weightings because no weighting can put mass where there is none. The
+donor has a `Neck` joint between `UpperTorso` and `Head` that nothing in this
+body had ever weighted; it now carries a shoulder mass. The first ring outside
+the body holds **0.147 at bind and 0.179 under the gore swing** — the join
+does not open when the neck moves, because the shoulder moves with it. The
+close-up renders show the join directly for the first time.
+
+**Clearances are measured through the poses, not at bind.** Tusk to trunk
+0.113 at bind and 0.128–0.137 under curl; trunk to foreleg 0.060 at bind and
+0.067 under the walk swing. They never touch, and the trunk-to-foreleg figure
+is small enough to be a shape finding in its own right.
+
+## What the evidence levels are, kept apart
+
+1. the unchanged base vertex coordinates during a posed experiment — one
+   digest per variant across every pose;
+2. the evaluated Armature modifier's deformation — the numbers in this record;
+3. FBX round-trip bone and weight integrity — 40 bones, 0 unweighted vertices,
+   sums of exactly 1.000;
+4. correct runtime binding — **not established here**;
+5. actual native animation, contacts and appearance — **not established
+   here**.
+
+None of 1–3 establishes 4 or 5.
+
+`rigid_distortion` was previously named as though it proved 2 against the bone
+that drives it. It does not: it is the largest change in a vertex's distance to
+its part's centroid, which is invariant under rotation, so a part driven by the
+wrong bone passes it unchanged. It is now documented as that, and a direct
+check sits beside it: the skull's evaluated position against
+`pose.matrix * bone.matrix_local⁻¹ * v`, in the armature space the modifier
+works in. Measured error **1e-6 to 2e-6 units**; the same check applied with a
+deliberately wrong bone reports **0.146 to 3.236**, so it is shown to detect
+what its name claims rather than passing by construction.
 
 ## Required before final geometry
 
-1. **Weight the Brachiosaurus neck to `Head` alone.** Not a style choice; the
-   alternatives measure 3.46 and 0.14.
-2. **Shoulder and neck-base mass, with a unioned surface.**
+1. **An articulated neck solution that is not the rigid control.** The
+   rigid control is stable and unapproved; the two old-donor-pivot weightings
+   failed at 3.46 and 0.14. Establishing an acceptable articulated design is
+   open work, and the pivot problem — not the distortion metric — is what it
+   has to solve.
+2. **A unioned surface at the shoulder.** The mass is there and holds the
+   join under the gore swing; these are still placed primitives, not one
+   surface.
 3. **More rings where a seam bends**, and a skull and ears that are authored
-   rather than capped primitives.
-4. **Weight the mid-limb joints**, or accept the 1.05 shin seam and say so.
+   rather than capped primitives. The head/shoulder close-up shows both: the
+   neck still creases where the donor's 44.9 degree rest turn is carried
+   through the re-aim, and the head is a terminal cap.
 5. **Separate the trunk from the foreleg** in shape and surface.
 6. **Move the UV pole off the dorsal midline** and normalise texel density.
 7. **Native clip amplitudes.** Every tolerance above is read against authored

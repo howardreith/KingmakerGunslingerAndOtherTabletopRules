@@ -1,141 +1,126 @@
-# Sprint 25 review packet — weighted motion prototype
+# Sprint 25 review packet — weighted prototype, round 3
 
 One packet, one revision, correctly identified views. It replaces the earlier
 graybox packets; `runtime-evidence/sprint25-graybox/` and `…-graybox-r2/` are
-superseded and should not be mixed with these renders.
+superseded.
 
-**Round 2.** Round 1 of this packet was reviewed independently and returned
-CHANGES_REQUIRED with ten defects. Three were corrections to the record and
-three were authoring defects; all six were acted on and re-measured, and
-`WEIGHTED-PROTOTYPE.md` records what changed, what was measured after, and
-what was handed to the final geometry pass instead. These renders are the
-corrected set.
+**What changed since round 2**, which returned CHANGES_REQUIRED with ten
+defects. Six were acted on and re-measured; the rest are listed as open with
+their measurements. This round also carries one new experiment that the owner
+asked for: the Brachiosaurus neck's pivot problem, attacked directly instead
+of by redistributing weights.
+
+The settled seam comparisons (`pin`, `blend`, `graded`, `chained`) are
+**measured but no longer rendered**. Their numbers are in the report and have
+not changed in kind; re-rendering four whole bodies of failed comparisons each
+round is churn, not review.
 
 ## Source revisions
 
 | what | revision |
 | --- | --- |
-| branch / parent commit | `codex/expanded-summoning-sprint25-brachiosaurus-elephant` @ `4171847f` |
-| `prototype_giant_bodies.py` | SHA-256 `d940c34a958c7e50…` |
-| `graybox_giant_bodies.py` (bodies and influences) | SHA-256 `302b5aaab3636d07…` |
-| donor census | `20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census/sprint25-donor-census.json`, SHA-256 `e2ce2a776dc06fdb…` |
+| branch | `codex/expanded-summoning-sprint25-brachiosaurus-elephant` |
+| `prototype_giant_bodies.py` | SHA-256 `62b45cc0e25d9938…` |
+| `graybox_giant_bodies.py` (bodies and influences) | SHA-256 `11f227e3399629f8…` |
+| `neck_retarget_experiment.py` | SHA-256 `dd30e960a4a3179a…` |
+| donor census | `20261016T1351412649785Z-…-donor-census/sprint25-donor-census.json`, SHA-256 `e2ce2a776dc06fdb…` |
 | donor | Mastodon prefab `fe9f25fe62e0f3b49a13910a996470b2`, 40 joints |
-| albedos | `assets/sprint25-giant-bodies/{brachiosaurus,elephant}-albedo.png` |
 | renders | `C:/Dev/KingmakerGunslingerLab/runtime-evidence/sprint25-weighted-prototype/` |
-| measurements | `prototype-report.json` in that directory |
-
-Three guarded census runs exist for this donor and their bind frames are
-identical — same 40 joints, same bind-position hash `0ac4268cd15e52f2`. The
-one named above is the capture of record in the sprint ledger.
+| the experiment | `…/sprint25-weighted-prototype/neck-retarget/` |
+| measurements | `prototype-report.json` and `neck-retarget/neck-retarget-report.json` |
 
 ## How to read these images
 
-- **Camera.** The conversion leaves the creature facing **+Y**. `side` stands
-  at +X (the creature's **left**) and the creature faces **image-right**.
-  `front` stands at +Y looking back along −Y. `party` is the three-quarter
-  view.
-- **Ground.** The plane is drawn at the donor's own sole plane, `z = 0.0352`,
-  which is where every sole ring is flattened to. "Planted" means a measured
-  0.000 above that plane.
-- **Faceting is expected.** 486 (Brachiosaurus) and 670 (Elephant) vertices.
-  Judge joins, deformation and proportion, not polygon count.
-- **Every pose is an authored probe**, named after a donor clip. The census
-  captured clip names and event times, never curves. These are **not** the
-  native clips. `walk-swing` is named for what it does: it rotates joints
-  only, with no root motion and no IK, so stance feet do not stay down.
-- **Weight renders** colour each vertex by its dominant bone; the colour per
-  bone name is stable across every image here.
+- **Camera.** The creature faces **+Y**. `side` stands at +X (its **left**),
+  so it faces image-right. `front` at +Y, `rear` at −Y, `party` is the
+  three-quarter. `closeup` frames the head, shoulder and neck base.
+- **Ground.** Drawn at the donor's own sole plane, `z = 0.0352`, which every
+  sole ring is flattened onto. "Planted" means a measured 0.000 above it.
+- **Faceting is expected.** 624 and 808 vertices. Judge joins, deformation,
+  proportion and ground contact.
+- **Every pose is an authored probe** named after a donor clip. The census
+  captured clip names and event times, never curves. `walk-swing` is named for
+  what it does: joints only, no root motion and no IK, so stance feet do not
+  stay down.
+- The **rigid neck is a control, not a proposed design.** Please do not read
+  its stability under the chain probe as quality: the probe moves joints that
+  variant is not weighted to.
 
-## Assigned images
+## A. The neck pivot experiment — the one new question
 
-### A. Does the skin belong to the right bones
+1. `neck-retarget/rigid-control-chain-probe-16-side.png`
+2. `neck-retarget/retargeted-chain-probe-16-side.png`
+3. `neck-retarget/retargeted-chain-probe-08-side.png`
+4. `neck-retarget/rigid-control-shoulder-swing-side.png`
+5. `neck-retarget/retargeted-shoulder-swing-side.png`
 
-1. `elephant-bind-faithful-weights-side.png`
-2. `brachiosaurus-authored-upright-rigid-weights-side.png`
+Judge: 1 against 2 is the experiment. Does the retargeted neck bend like a
+neck, or merely differently? 3 is the same mapping at the amplitude the skin
+holds within tolerance. 4 and 5 are a motion both variants answer to, included
+so neither can pass by ignoring a probe — they should look the same.
 
-Judge: whether each region is driven by a plausible bone, and whether the
-Brachiosaurus neck being a **single flat colour** (one rigid piece on `Head`)
-is acceptable, or will read as a stiff neck in play.
+## B. Head, shoulder and the join, close
 
-### B. Brachiosaurus — the neck decision
+6. `brachiosaurus-authored-upright-rigid-closeup-side.png`
+7. `elephant-bind-faithful-closeup-side.png`
+8. `elephant-bind-faithful-closeup-party.png`
 
-3. `brachiosaurus-bind-faithful-bind-side.png` — the neck authored on the
-   donor chain's own bind path. Does this read as a sauropod at all?
-4. `brachiosaurus-authored-upright-rigid-bind-side.png` — the shipped
-   silhouette.
-5. `brachiosaurus-authored-upright-chain-curl-probe-side.png` — the same
-   upright body with full donor-chain influence under a 16°/joint curl.
-   Measured 3.46 visible stretch, 10.51 units of displacement.
-6. `brachiosaurus-authored-upright-rigid-chain-curl-probe-side.png` — the same
-   probe with the chain influence removed. Measured 1.01 and 1.24.
+Judge: the shoulder mass that now bridges the neck and the body; whether the
+neck's crease reads as a defect; whether the Brachiosaurus head reads as a
+head at all; whether the Elephant's ears read as ears; tusk placement.
 
-Judge: 5 against 6 is the decision. Also judge the **wedge at the shoulder**
-in 4 and 6 — the protruding anchor cap round 1 found there is gone (the ring
-is now fully inside the hull in every pose), so what is left is the join
-itself.
+## C. Deformation that was previously absent
 
-### C. Brachiosaurus — motion
+9. `brachiosaurus-authored-upright-rigid-knee-flex-side.png`
+10. `elephant-bind-faithful-knee-flex-side.png`
+11. `elephant-bind-faithful-slam-foreleg-side.png`
 
-7. `brachiosaurus-authored-upright-rigid-gore-strike-side.png` — Neck −24°,
-   Head −16°; skull travels 3.24 units.
-8. `brachiosaurus-authored-upright-rigid-walk-swing-side.png` — judge the limb
-   swing, not contact; the feet leave the plane by −0.04 to +0.20 and the
-   record says so.
-9. `brachiosaurus-authored-upright-rigid-knee-flex-side.png` — bends
-   `frontKnee_L` and `frontAnkle_L`, two donor joints that **no vertex
-   weights**. Judge the shin-to-foot seam specifically.
+Judge: the shin and carpus now deform — rings exist on `frontKnee_*` and
+`frontAnkle_*`, where before only the foot block moved. Is the bend plausible
+for a Huge quadruped, and does the slam read as a stomp yet?
 
-### D. Elephant — trunk, tusks, contacts
+## D. Bodies and silhouette
 
-10. `elephant-bind-faithful-bind-side.png`
-11. `elephant-bind-faithful-trunk-curl-8-side.png` — 8°/joint, **within the
-    skin tolerance** (1.18). This is the passing frame of the defining motion.
-12. `elephant-bind-faithful-trunk-curl-side.png` — 16°/joint, 1.37, which the
-    generator scores **out** of tolerance. Judge 11 and 12 together: how much
-    curl does a trunk need, and does the authored skin reach it?
-13. `elephant-bind-faithful-gore-strike-side.png`
-14. `elephant-bind-faithful-slam-foreleg-side.png` — the raised forefoot is
-    0.741 above the sole plane; the other three measure 0.000.
-15. `elephant-bind-faithful-bind-front.png` — lateral symmetry, ear placement,
-    and whether the ears read as ears.
+12. `brachiosaurus-authored-upright-rigid-bind-side.png`
+13. `brachiosaurus-authored-upright-rigid-bind-rear.png`
+14. `brachiosaurus-authored-upright-rigid-bind-party.png`
+15. `elephant-bind-faithful-bind-side.png`
+16. `elephant-bind-faithful-bind-rear.png`
+17. `elephant-bind-faithful-bind-party.png`
 
-### E. Texture on the real UVs
+Judge: species identity, proportion, the tail, and the rear views — which no
+previous packet provided, and which are where the tail/hip join and the dorsal
+UV pole can be seen.
 
-16. `elephant-bind-faithful-textured-side.png`
-17. `brachiosaurus-authored-upright-rigid-textured-side.png`
+## E. Motion and texture
 
-Judge: region placement, stretch, seams, and whether the surface scale suits a
-Huge creature at party-camera distance.
+18. `elephant-bind-faithful-trunk-curl-8-side.png` — in tolerance (1.18)
+19. `elephant-bind-faithful-trunk-curl-side.png` — 16°/joint, 1.37, which the
+    generator scores out of tolerance
+20. `brachiosaurus-authored-upright-rigid-gore-strike-side.png`
+21. `elephant-bind-faithful-textured-side.png`
+22. `brachiosaurus-authored-upright-rigid-textured-side.png`
 
-### F. Party-camera readability
+## Known open, with measurements — do not spend the review re-finding these
 
-18. `brachiosaurus-authored-upright-rigid-bind-party.png`
-19. `elephant-bind-faithful-bind-party.png`
-
-## Known open items — do not spend the review re-finding these
-
-Recorded with measurements in `WEIGHTED-PROTOTYPE.md`, and all of them belong
-to the final geometry pass:
-
-- the trunk still reads as a fifth leg and passes within 0.06 units of the
-  foreleg — tapering by arc length helped and did not settle it;
-- the Brachiosaurus neck is a hinged boom with a capped knob for a head;
-- the shoulder and neck-base wedge, which survived all five seam weightings;
-- the mid-limb joints drive 16 vertices, so there is no carpal bend;
+- the trunk still reads as a fifth leg and passes within 0.060 units of the
+  foreleg; its reaching near the ground is faithful to the donor, so the fix
+  is shape, not length;
+- the Brachiosaurus neck creases where the donor's 44.9° rest turn is carried
+  through the re-aim, and the head is a terminal cap, not authored skull;
+- the shoulder mass holds the join but these are still placed primitives, not
+  one unioned surface;
 - the tail is about a quarter of the neck's length;
 - a UV pole whorl on the dorsal midline and a texel-density step at the
   shoulder;
-- the ears are flat plates and do not yet read as ears;
+- the ears are flat plates;
 - the gore pose tucks the trunk between the forelegs;
-- placed primitives rather than a unioned surface.
-
-New defects, and any of the above that these images show to be **worse or
-different** than described, are what a further review is for.
+- `walk-swing` does not hold stance contact, by construction.
 
 ## Not provided
 
 No native screenshots, no in-game frames, no animation curves, no death or
-interruption phases, no turn, no rear views, no close-ups, no icon-scale
-render, no textured render of a posed state, and no top-down view of the
-contact poses. The product candidate is not valid while the painted icon is
-missing, and native animation qualification has not been performed.
+interruption phases, no turn, no icon-scale render, no textured render of a
+posed state, no top-down view of the contact poses. The product candidate is
+not valid while the painted icon is missing, and native animation
+qualification has not been performed.
