@@ -1,5 +1,20 @@
 # CotW spontaneous action-bar load investigation — 2026-10-17
 
+## Owner-authorized alpha 2 publication
+
+The owner subsequently requested a public alpha, superseding the development
+checkpoint's no-publication boundary for this one artifact only.
+[Controller-load alpha 2](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2)
+published at 2026-10-17T22:34:31Z, prerelease / never Latest, exact unchanged
+candidate ZIP below renamed `KingmakerGunslinger-0.0.157-controller-load-alpha.2.zip`.
+Public download SHA-256 matches; tag peels to product `92b442c06dd8`, manifest
+docs/tooling identity is `b66c1dd44c6caef653e4a33fdd0f96b0c43b161a`.
+This is the KMG/Tabletop Added Rules update itself; no companion Buff Planner
+or CotW update. UMM remains 0.0.157. No rebuild, full suite, native run, merge
+or installation occurred. All native/affected-state gaps below remain NOT_RUN.
+Stable v0.0.157 and the earlier alphas are unchanged. See
+[test/install guidance](RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-2.md).
+
 ## Frozen local candidate
 
 Repair/product commit `92b442c06dd8d13f246ca006fdda6382b9eb6236`; source branch

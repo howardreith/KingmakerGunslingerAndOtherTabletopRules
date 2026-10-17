@@ -1,5 +1,30 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — controller-load alpha 2 published
+
+[Public prerelease](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2)
+published 2026-10-17T22:34:31Z, draft=false/prerelease=true; stable Latest
+still v0.0.157, unrelated visual-refinement alpha untouched. Tag object
+`016c4afcc0b18bd4d7fcfe57deaf7e29146cdb3b` peels to frozen product
+`92b442c06dd8d13f246ca006fdda6382b9eb6236`. Manifest documentation identity
+is publication-tooling commit `b66c1dd44c6caef653e4a33fdd0f96b0c43b161a`.
+`Publish-CotwActionBarAlpha.ps1 -Publish -ConfirmAlphaTestPublication -WhatIf`
+passed without writes; guarded branch push and actual command with
+`-Confirm:$false` passed in 17.637 s. Log:
+`artifacts/controller-alpha-2-publication.log`. No build/test-suite/native
+rerun; existing exact 39/39 + 6/6 evidence retained with saveLoad=NOT_RUN.
+
+GitHub's three asset digests match local staging; public ZIP downloaded and
+rehashed. ZIP (48,088,071 bytes)
+`798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`;
+alpha manifest `e4c1f8cae2a0b172c8b1f8aed7fe58a9ccb479f643382a8210b7eba260ccaec2`;
+checksums `6e554c5e94abc6b191f82ac79ee139f6f61830593ab497222f93588e89362c66`.
+Alpha ZIP copied to owner handoff without replacing any earlier file. No
+installation/settings/saves/game activity, default-branch merge or stable
+publication. UMM remains 0.0.157. Guidance: install this KMG update in place of
+Brown-Fur alpha 1, keep existing KBP and CotW, test loading/party/pages before
+KBP no-cast entry/exit, and retain fresh output_log/action/input-mode evidence.
+
 ## 2026-10-17 — owner authorizes controller-load alpha 2
 
 Owner requested another alpha and companion-mod guidance. Selected exact tested

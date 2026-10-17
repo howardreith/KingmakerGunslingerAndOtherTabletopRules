@@ -1,5 +1,16 @@
 # CotW controller action-bar load — isolated repair checkpoint (2026-10-17)
 
+[Controller-load alpha 2 is public](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2)
+at 2026-10-17T22:34:31Z, prerelease / not Latest. Exact product `92b442c06dd8`,
+ZIP `798ff15e5aca7b8860f1635c35e9f06260150dc2a91598081d673e1527b3f5f3`;
+public download verified identical, ZIP also in owner handoff. Publication
+tooling/docs checkpoint `b66c1dd44c6caef653e4a33fdd0f96b0c43b161a`; subsequent
+records do not change product/tag identity. KMG alpha 2 replaces Brown-Fur
+alpha 1 and retains both repairs; no companion KBP/CotW update. UMM stays
+0.0.157. No rebuild/full suite/native run, merge or installation. Stable
+v0.0.157 remains Latest. Next: owner tests load without overwriting save,
+records exact action/input mode and retains fresh diagnostics on failure.
+
 Subsequent owner request authorizes one public controller-load alpha 2 of exact
 product `92b442c06dd8`, using `Publish-CotwActionBarAlpha.ps1`, prerelease /
 never Latest. This is the KMG/Tabletop Added Rules update; no companion KBP or
