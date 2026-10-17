@@ -1,5 +1,35 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — Brown-Fur alpha 1 published
+
+Owner reiterated that this test alpha does not require the full release suite.
+Published the existing exact build, without rebuilding or rerunning native/full
+qualification, at 2026-10-17T21:49:11Z:
+[alpha release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-brown-fur-alpha.1).
+Draft=false, prerelease=true; stable Latest still v0.0.157. Annotated tag
+`cb0474e2210fcbd92241cdd537b16fb3e69a51e3` peels to frozen product
+`913dfd6e89386ff233849f06f902ca8ea2de239e`, not the publication tooling HEAD
+`3395c122a92ee81ae1379337a6efb1d7ca624781` or later documentation commits.
+Initial attempt stopped after the correct tag push because Windows PowerShell
+treated Git progress stderr as failure. Retained that tag and staging files;
+fixed native exit-code handling, then resumed only their exact hash identities.
+Thirty focused publication-safety assertions passed before this final request;
+none rerun as a release suite. Resume -WhatIf passed, then guarded branch push
+and `Publish-BrownFurAlpha.ps1 -Publish -ConfirmAlphaTestPublication
+-ResumeTagOnly -Confirm:$false` succeeded. Logs:
+`artifacts/alpha-publication-publish.log`, `artifacts/alpha-publication-resume.log`.
+Three GitHub asset digests match local files; independent metadata/tag query and
+public ZIP download agree. ZIP SHA-256
+`d7cf7aa3cbae1a3ff76a73d01ad302448e907be6da92fbe5b0a94569ca91f33e`;
+manifest `1f53cec66ce1c15e0ea97a943ad7dbe0e41af30f4c028cc51e9395a76dea58c5`;
+checksums `c289761347b5d86d772d04f0c8660cb2bf49d5ba10f7a762e0a6da72405c5b98`.
+Copied these public assets to the requested Buff Planner lab handoff folder;
+no existing evidence/artifact replaced. UMM remains 0.0.157, manifest provenance
+remains `a92b5d25e2f8d5cd86dcdd5730790a5bfb36cdd0`, and all qualification gaps
+are unchanged. No default-branch merge, game/install/save changes or live run.
+Next: owner loads affected save without overwriting it and reports action/input
+mode and fresh output_log on failure. No further publication selected.
+
 ## 2026-10-17 — owner requests public Brown-Fur test alpha
 
 Owner explicitly authorized a new alpha after the local repair handoff. Selected
