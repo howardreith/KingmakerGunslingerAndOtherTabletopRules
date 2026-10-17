@@ -42,6 +42,17 @@ namespace KingmakerGunslinger.DomainTests
             "giant-ant-drone", "giant-stag-beetle"
         };
 
+        // Visual refinement (VIS-011, VIS-015, VIS-021): the ants ship
+        // outward, with their thorax and mandibles rooted in the head. The
+        // beetles were outside the owner's review and are unchanged.
+        private static readonly Dictionary<string, string> RefinedAntMeshes =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { "giant-ant-worker", "e6e3df7b477170b1f80bbd7ceefdfe573a6d31a3d70832fb4cb64e22841500fb" },
+                { "giant-ant-soldier", "0eb9a2ea895477581ef18dc0af05f6b3d9b645e071418c4ab121e34f16048d1a" },
+                { "giant-ant-drone", "2aa85130a354e498acb17bb3663d21618eb6f1248cf67cd16f02ce20496f86e8" }
+            };
+
         private static readonly string[] InsectKeys =
             { "fire-beetle", "giant-ant-worker", "giant-ant-soldier" };
 
@@ -484,6 +495,13 @@ namespace KingmakerGunslinger.DomainTests
             {
                 string path = Path.Combine(Environment.CurrentDirectory,
                     "assets", "sprint14-insects", key + "-mesh.json");
+                string refined;
+                if (RefinedAntMeshes.TryGetValue(key, out refined))
+                {
+                    Assertions.Equal(refined, InsectSha256(path),
+                        key + " ships its refined export.");
+                    OriginalMeshOrientation.AssertShippedBody(path, key);
+                }
                 JObject payload = JObject.Parse(File.ReadAllText(path));
                 string[] bones = payload["bones"].Values<string>().ToArray();
                 // Recomputed from the bones the payload actually ships rather
