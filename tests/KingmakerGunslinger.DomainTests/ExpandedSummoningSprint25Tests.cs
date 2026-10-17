@@ -690,10 +690,12 @@ namespace KingmakerGunslinger.DomainTests
             // GreaterOverrunFeature ee24c02c... - so the omission is a
             // recorded owner decision rather than a missing engine
             // capability. Neither may be carried without that decision.
-            // Greater Overrun is carried through the real native feat, and
-            // the creature owns an ordinary Overrun command so the feat is
-            // reachable: a trample sets AutoSuccess true and raises no
-            // maneuver, that command sets it false.
+            // Greater Overrun is carried through a private CLONE of the
+            // real native feat - the native component provokes on success
+            // alone - and the creature owns an ordinary Overrun command so
+            // the feat is reachable: a trample sets AutoSuccess true and
+            // raises no maneuver, that command sets it false. The fact key
+            // is unchanged; what changed is what it resolves to.
             Assertions.True(brachiosaurus.Facts.Contains("GreaterOverrun"),
                 "The printed Greater Overrun is carried natively.");
             // Great Cleave stays uncarried on purpose: the shipped
