@@ -1,4 +1,37 @@
-# Sprint 25 takeover — grouped native repair, candidate next
+# Sprint 25 takeover — native fixture repair, candidate next
+
+Controlling update, 2026-10-17 22:38 UTC: continue the selected release campaign;
+PR49 remains draft/unmerged, Brachiosaurus hidden. No release or Sprint26.
+The ledger's `current.latestCheckpoint` has exact identities and failed evidence.
+
+8f5de4c3 full2660/exact/strict378 PASS (305.45s), archived with untouched
+sidecars. Its27.05-minute six-cell batch: foundation PASS both profiles;
+Overrun/Cleave FAIL. All six transactions restored actual installation/settings/
+bank,118 protected saves/private references; no game/lease remains.
+
+Seven Overrun RTWP cases pass per profile, including threshold/two responders,
+partial/no knockdown and repeat deduplication. Remaining failures: bad immune-
+failure pass-through expectation, Count0 exhaustion refilled before dispatch,
+and TB native queued opportunities not observed executing. Cleave stops at
+invalid wolf cluster geometry before a chain. Trample mechanics pass but fixed
+frame callbacks missed contact; those results contain no Trample capture.
+
+Grouped qualification-only repair uses native refill timing, actual queued AOO
+instances/the existing command driver, observed knockdown transitions, existing
+native humanoid fixture targets/measured geometry, and a mandatory capture at
+real Trample save/damage contact. No gameplay/art/identity/difficulty change.
+Compile16.2s and57/57 focused tests2.1s PASS after a corrected compile-time Target
+type mistake. Fresh full candidate and affected native execution remain required.
+
+Next: commit/push, one Sprint candidate, then exact-package carrier-repair batch
+(foundation/Overrun/Cleave, both profiles; planning30-40min). Then targeted six
+ON/OFF cold-save stages; public boundary/full candidate/fresh public inventory/
+icon/eleven roots; publisher preflight; authorized merge/release/download and
+restoration audit; final-records merge; STOP. Preserve D7 TB, EE5 AI and E8
+body/routes under original identities with actual dependency arguments.
+HumanReview NOT_PERFORMED_NONBLOCKING. Steam Offline Mode works unchanged.
+
+## Dated 21:58 checkpoint (superseded chronology)
 
 Controlling update, 2026-10-17 21:58 UTC: continue the selected Sprint25 release
 campaign; no merge/release/public unsuppression or Sprint26. See the ledger's

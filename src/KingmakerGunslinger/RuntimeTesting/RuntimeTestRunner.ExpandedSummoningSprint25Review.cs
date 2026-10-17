@@ -201,11 +201,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (owner.IsInCombat) owner.LeaveCombat();
                         DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                     }
+                    bool trampleCaptured = false;
+                    int trampleContactFrame = -1;
+                    string trampleUnit = null;
                     foreach (int frame in Sprint23NativeTrampleCommand(fixture,
                         turnBased, key, key == "brachiosaurus" ? 32 : 25, 2,
                         key == "brachiosaurus" ? DiceType.D6 : DiceType.D8,
                         key == "brachiosaurus" ? 19 : 15, Sprint25Check,
-                        (unit, frame) => Sprint25Body(unit, key, "trample-" + turnBased + "-" + frame))) yield return frame;
+                        (unit, frame) => {
+                            Sprint25Body(unit, key, "trample-" + turnBased + "-" + frame);
+                            trampleCaptured = true; trampleContactFrame = frame;
+                            trampleUnit = unit.UniqueId;
+                        })) yield return frame;
+                    Sprint25Check("trample-contact-capture-" + key + "-" + turnBased,
+                        trampleCaptured, new JObject { ["unit"] = trampleUnit,
+                            ["contactFrame"] = trampleContactFrame },
+                        "A normal party-camera original-body capture is required at the actual native Trample save/damage contact.");
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                     Game.Instance.TurnBasedCombatController.Activate();
                 }
