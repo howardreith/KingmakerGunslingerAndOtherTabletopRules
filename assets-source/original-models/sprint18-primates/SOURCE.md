@@ -151,9 +151,10 @@ bent legs with broad feet. Every one of the 56 reviewed drivers carries
 geometry: the lips, brows, belly, collarbones, forearm twist and toes share
 blended regions of the surface, and nothing weights the tail or tongue.
 
-- **Ape.** The near-black coat (0.085) is lifted to a dark grey-brown (0.33)
+- **Ape.** The near-black coat (0.085) is lifted to a charcoal grey (0.17)
   with lighter tips, a soft bare chest and face and a silver saddle; small
-  canines and dark nails, no claws.
+  canines and dark nails, no claws. A first lift to 0.33 read as cream in
+  the game's warm light (run 11).
 - **Dire Ape.** The approved russet coat, straw mane and crest, weathered
   skin, yellowed canines and horn claws are kept exactly; the crest and the
   ruff over the neck and shoulders are soft, noise-broken fields rather than
@@ -162,8 +163,8 @@ blended regions of the surface, and nothing weights the tail or tongue.
   which `PrimateVisualPolicy.PermitsOriginalWinding` now requires of the Ape,
   Dire Ape and Xill (the unchanged Girallon keeps `shared-exporter-sprint18`).
 - The census was not on this machine, so the guarded census was taken again (run `20261017T1552043623257Z-observe-expanded-summoning-primate-census` on development candidate `69435567008c`); it is byte-identical to the recorded capture (`328443db6c9b77651ab64212c7a654284c722c9ddeb6277ce66d289d72f6a4a5`), and the old generators reproduced every superseded body exactly from it.
-- `ape-mesh.json`: `5b469ed2670ce94bffd7968b8a14d2d273f80505beb38bb275d23ddadfd27d12`;
-  `ape-albedo.png`: `6b591af841a1b8d403cec6b2783565480e747b721466b3e641509048a21f1f89`.
+- `ape-mesh.json`: `2f0196eca297019770894b66d69cb474e9bba59c449a95590326f888086631ee`;
+  `ape-albedo.png`: `85c7f480eeac7dddb125961061f0e62ba2460505fcee8198e88c208a95c6c7d9`.
   Superseded: `751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0`,
   `f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc`.
 - `dire-ape-mesh.json`: `d0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a`;
