@@ -1,18 +1,22 @@
 # Installation, updates, removal, and compatibility
 
-Release version: `0.0.157-alternate-summoning-sources` (UMM version
-`0.0.157`), archive `KingmakerGunslinger-0.0.157-alternate-summoning-sources.zip`.
-It is built on released v0.0.156 and gives class summon abilities the
-Expanded Summoning creature menus. Six of its seven caller families need
-Call of the Wild 1.14.4c; without it only Monster Tactician changes, and a
-Call of the Wild version whose summon abilities no longer match leaves that
-family unchanged. Install only the final standalone UMM ZIP, not source
+Release version: `0.0.158-expanded-summoning-visual-refinement` (UMM version
+`0.0.158`), archive
+`KingmakerGunslinger-0.0.158-expanded-summoning-visual-refinement.zip`.
+It is built on released v0.0.157 and changes creature art and summon
+presentation only, with the Brown-Fur startup-order and CotW controller
+save-loading repair. It needs nothing new; Buff Planner and Call of the Wild
+stay as they are. Install only the final standalone UMM ZIP, not source
 archives or private reference bundles. See the
-[release scope and limitations](docs/RELEASE-NOTES-0.0.157.md).
+[release scope and limitations](docs/RELEASE-NOTES-0.0.158.md).
 
 ### Latest public release
 
-Before this release, UMM `0.0.156`, archive
+Before this release, UMM `0.0.157`, archive
+`KingmakerGunslinger-0.0.157-alternate-summoning-sources.zip`, is the stable
+public release; it gives class summon abilities the Expanded Summoning
+creature menus (see [the v0.0.157 release notes](docs/RELEASE-NOTES-0.0.157.md)).
+UMM `0.0.156`, archive
 `KingmakerGunslinger-0.0.156-firearm-rtwp-kill-continuation.zip`, is the stable
 public release; it keeps firearm Gunslingers attacking in real time after an
 ordered target dies (see [the v0.0.156 release notes](docs/RELEASE-NOTES-0.0.156.md)).

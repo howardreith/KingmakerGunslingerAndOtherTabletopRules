@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.157-alternate-summoning-sources",
+  "milestone": "0.0.158-expanded-summoning-visual-refinement",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.157",
+  "version": "0.0.158",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2551,5 +2551,19 @@
       "blocked-family-shortcut-load",
       "grapple-swallow-reset-on-reload"
     ]
+  },
+  "expandedSummoningVisualRefinement158": {
+    "releaseVersion": "0.0.158",
+    "releaseInformationalVersion": "0.0.158-expanded-summoning-visual-refinement",
+    "baseStableVersion": "0.0.157",
+    "change": "Expanded Summoning visual refinement (rebuilt, repaired and outward-repaired creature bodies, the summoned glow removed from KMG summons, the Salamander's tail gait and surface, the Dire Rat icon) with the Brown-Fur startup-order and CotW controller save-loading repair",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "changedAssets": 57,
+    "productionFiles": 20,
+    "addedCompileItems": 6,
+    "visibleChoiceTotal": 1122,
+    "guardedNativeReviewed": true,
+    "ownerVisualReview": "provisional; the owner reviews in the game after release"
   }
 }

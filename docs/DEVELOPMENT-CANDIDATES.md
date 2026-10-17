@@ -1,5 +1,12 @@
 # Development candidates
 
+Release v0.0.158 (2026-10-17): the active version is now 0.0.158. The
+development-candidate baseline resolves from the `v0.0.158` tag once the
+release publisher pushes it. Until then a development candidate on 0.0.158 is
+refused, because its baseline tag does not exist yet. The two
+visual-refinement alphas are recorded in
+[the build document](BUILD-AND-RELEASE.md#visual-refinement-alphas--2026-10-17).
+
 Third explicit owner exception on 2026-10-17: publish exact installer/readiness
 repair product `39c60fb5e916` as `v0.0.157-controller-load-alpha.3`, through
 the additional fixed `Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3` profile.

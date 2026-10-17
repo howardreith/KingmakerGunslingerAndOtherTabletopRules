@@ -1,6 +1,13 @@
 # Kingmaker Gunslinger
 
-The **0.0.157-alternate-summoning-sources** release gives class summon
+The **0.0.158-expanded-summoning-visual-refinement** release redraws and
+repairs the Expanded Summoning creatures, removes the gold summoned sheen from
+KMG summons, gives the Salamander a moving tail, replaces the Dire Rat icon,
+and carries the Brown-Fur startup-order and CotW controller save-loading
+repair. No rule, statistic, menu or saved identity changes. See the
+[v0.0.158 release notes](docs/RELEASE-NOTES-0.0.158.md).
+
+The earlier **0.0.157-alternate-summoning-sources** release gives class summon
 abilities the Expanded Summoning creature menus: Monster Tactician, and with
 Call of the Wild 1.14.4c the Summoner, Master Summoner, Occultist,
 Naturalist, Feral Hunter and Preservationist. See the
@@ -31,12 +38,12 @@ Sprint 22 remains released and unchanged.
 
 ### Current release
 
-Version **0.0.157-alternate-summoning-sources** retains the 1,122 spell
-summon choices v0.0.155 published: 1,093 generated roots and 29 native
-wrappers. It projects them onto the class summon callers above through 3,746
-new stable identities and changes no released identity, spell route, level,
-quantity, template, artwork or serialization state.
-The v0.0.155 Sprint 24 visuals and qualification remain authoritative.
+Version **0.0.158-expanded-summoning-visual-refinement** keeps every identity,
+route and summon choice of v0.0.157: the 1,122 spell summon choices and the
+3,746 class-caller identities are unchanged. It changes creature art (bodies,
+paintings and the Dire Rat icon) and summon presentation only, and adds the
+Brown-Fur and controller loading repair. The v0.0.155 Sprint 24 routes stay
+public; their Tyrannosaurus and Deinonychus bodies are the refined ones.
 
 ### Previous release
 
