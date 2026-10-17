@@ -89,6 +89,20 @@ namespace KingmakerGunslinger.DomainTests
                 "A non-finite amplitude.");
         }
 
+        internal static void TheBodyIsGivenAnOwnedMatteMask()
+        {
+            string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Summoning", "SalamanderHumanVisualAttachment.cs"));
+            Assertions.True(source.Contains("internal const float MaskRoughness = .8f;") &&
+                source.Contains("new Color(MaskRoughness, 0f, 0f, 1f)") &&
+                source.Contains("_material.SetTexture(\"_Parameters\", _masks);") &&
+                source.Contains("name = _name + \"_Masks\""),
+                "The owned material gets an owned flat masks texture: rough, no emission, not metallic.");
+            Assertions.True(source.Contains("_mesh, _paint, _masks, _material, _tailRoot") &&
+                source.Contains("_tailRoot, _mesh, _paint, _masks })"),
+                "The masks texture is captured as an owned resource and destroyed on release.");
+        }
+
         internal static void TheAttachmentDrivesOnlyItsOwnTailOutsideTheSlap()
         {
             string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,

@@ -1223,6 +1223,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.salamander-tail-gait-inputs", SalamanderTailGaitTests.TheGaitInputsFailSafe),
             Case("expanded-summoning.salamander-tail-gait-malformed", SalamanderTailGaitTests.MalformedRestPointsAreRefused),
             Case("expanded-summoning.salamander-tail-gait-scope", SalamanderTailGaitTests.TheAttachmentDrivesOnlyItsOwnTailOutsideTheSlap),
+            Case("expanded-summoning.salamander-matte-mask", SalamanderTailGaitTests.TheBodyIsGivenAnOwnedMatteMask),
             Case("blueprints.ledger-fits-the-loader-bound", BlueprintManifestSizeTests.ShippedLedgerFitsTheLoaderBound),
             Case("blueprints.ledger-bound-still-rejects", BlueprintManifestSizeTests.TheCorruptionBoundStillRejectsBothEnds),
             Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),
