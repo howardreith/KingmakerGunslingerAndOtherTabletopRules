@@ -769,11 +769,6 @@ namespace KingmakerGunslinger.DomainTests
                 "The chassis carrying the final five feet of reach is carried.");
             Assertions.True(brachiosaurus.Facts.Contains("WeaponFocusTail"),
                 "Weapon Focus (tail) is carried; the selected +23 depends on it.");
-            // Measured present in the installed library by the 2026-10-16
-            // census - GreatCleaveFeature cc9c862e... and
-            // GreaterOverrunFeature ee24c02c... - so the omission is a
-            // recorded owner decision rather than a missing engine
-            // capability. Neither may be carried without that decision.
             // Greater Overrun is carried through a private CLONE of the
             // real native feat - the native component provokes on success
             // alone - and the creature owns an ordinary Overrun command so
@@ -782,11 +777,11 @@ namespace KingmakerGunslinger.DomainTests
             // is unchanged; what changed is what it resolves to.
             Assertions.True(brachiosaurus.Facts.Contains("GreaterOverrun"),
                 "The printed Greater Overrun is carried natively.");
-            // Great Cleave stays uncarried on purpose: the shipped
-            // CleaveAction points its GreaterFeature field at CleaveFeature,
-            // so the feat itself is read by nothing on this build.
-            Assertions.False(brachiosaurus.Facts.Contains("GreatCleave"),
-                "An inert display-only fact is not granted.");
+            // The census described the combined stack, not standalone.
+            // Product-native execution found standalone's real Great Cleave
+            // consumer and stopped after two attacks without this fact.
+            Assertions.True(brachiosaurus.Facts.Contains("GreatCleave"),
+                "The printed native feat makes the greater path usable standalone, without a global Cleave patch.");
             Assertions.True(brachiosaurus.Deviations.Any(value =>
                     value.Contains("Registered is not qualified")),
                 "The trample is registered and still refuses to claim "

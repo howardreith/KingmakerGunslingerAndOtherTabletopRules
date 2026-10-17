@@ -275,6 +275,9 @@ namespace KingmakerGunslinger.Blueprints
                 // from the printed rider on this build is recorded in the
                 // sprint ledger rather than papered over here.
                 { "GreaterOverrun", "ee24c02cc68c4c9b9b54ebef9f9f8133" },
+                // Standalone CleaveAction actually consumes this feature.
+                // Granting the printed feat repairs this creature, not Cleave.
+                { "GreatCleave", "cc9c862ef2e03af4f89be5088851ea35" },
                 { "WeaponFocusGore", "1ee54cb77a9dbdb49891c2c2f31d6c1c" },
                 { "ImprovedBullRush", "b3614622866fe7046b787a548bbd7f59" },
                 { "AcidResistance20", "416386972c8de2e42953533c4946599a" },

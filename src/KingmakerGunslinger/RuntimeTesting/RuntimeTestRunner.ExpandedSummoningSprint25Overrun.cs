@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Controllers.Units;
@@ -26,6 +27,37 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private static UnitCombatEngagementController _sprint25EngagementController;
+        private static ExpandedSummoningCorrectionFixture _sprint25EngagementFixture;
+        private static readonly HashSet<string> Sprint25EngagementTicked = new HashSet<string>();
+
+        private static bool Sprint25EngagementOwnedUnitPrefix(
+            UnitCombatEngagementController __instance, UnitEntityData unit)
+        {
+            if (!ReferenceEquals(__instance, _sprint25EngagementController)) return true;
+            var fixture = _sprint25EngagementFixture;
+            bool owned = fixture != null && unit != null &&
+                (ReferenceEquals(unit, fixture.Caster) || ReferenceEquals(unit, fixture.Hostile) ||
+                 fixture.Created.Any(value => ReferenceEquals(value, unit)));
+            if (owned) Sprint25EngagementTicked.Add(unit.UniqueId);
+            return owned;
+        }
+
+        private static void TickSprint25Engagement(ExpandedSummoningCorrectionFixture fixture)
+        {
+            // Keep the real queue drain and native responder accounting.
+            // TickUnit is filtered to exact fixture owners. The controller's
+            // final unconditional ambient prevention-flag clear is restored.
+            var flags = fixture.UnitsBefore.OfType<UnitEntityData>().ToDictionary(
+                value => value, value => value.CombatState.PreventAttacksOfOpporunityNextFrame);
+            try { _sprint25EngagementController.Tick(); }
+            finally
+            {
+                foreach (var pair in flags)
+                    pair.Key.CombatState.PreventAttacksOfOpporunityNextFrame = pair.Value;
+            }
+        }
+
         private sealed class Sprint25OverrunObserver :
             IGlobalRulebookHandler<RuleCombatManeuver>,
             IGlobalRulebookHandler<RuleAttackWithWeapon>
@@ -75,8 +107,25 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Vector3 casterBefore = fixture.Caster.Position;
             UnityEngine.Random.State randomBefore = UnityEngine.Random.state;
+            UnitCombatEngagementController previous = Game.Instance.CombatEngagementController;
+            var controller = new UnitCombatEngagementController();
+            MethodInfo setter = typeof(Game).GetProperty("CombatEngagementController")?.GetSetMethod(true);
+            MethodInfo tick = typeof(UnitCombatEngagementController).GetMethod("TickUnit",
+                BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(UnitEntityData) }, null);
+            MethodInfo prefix = typeof(RuntimeTestRunner).GetMethod(nameof(Sprint25EngagementOwnedUnitPrefix),
+                BindingFlags.Static | BindingFlags.NonPublic);
+            if (setter == null || tick == null || prefix == null || _sprint25EngagementController != null)
+                throw new InvalidOperationException("Native scoped engagement prerequisites unavailable.");
+            bool patched = false, assigned = false, subscribed = false;
             try
             {
+                _sprint25EngagementController = controller;
+                _sprint25EngagementFixture = fixture;
+                Sprint25EngagementTicked.Clear();
+                _context.Harmony.Patch(tick, new HarmonyMethod(prefix), null, null);
+                patched = true;
+                setter.Invoke(Game.Instance, new object[] { controller }); assigned = true;
+                EventBus.Subscribe(controller); subscribed = true;
                 PlaceExpandedSummoningUnit(fixture.Caster, Sprint25IsolatedAnchor(fixture));
                 string[] cases = { "failure", "partial", "threshold", "maneuver-immune", "prone-immune", "already-prone", "repeated-notification", "repeated-command", "exhausted" };
                 foreach (string sample in cases)
@@ -85,8 +134,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                PlaceExpandedSummoningUnit(fixture.Caster, casterBefore);
-                UnityEngine.Random.state = randomBefore;
+                bool unsubscribed = !subscribed, unpatched = !patched;
+                try
+                {
+                    try
+                    {
+                        if (subscribed) { EventBus.Unsubscribe(controller); unsubscribed = true; }
+                    }
+                    finally { if (assigned) setter.Invoke(Game.Instance, new object[] { previous }); }
+                }
+                finally
+                {
+                    try
+                    {
+                        if (patched) { _context.Harmony.Unpatch(tick, HarmonyPatchType.Prefix, _context.ModId); unpatched = true; }
+                    }
+                    finally
+                    {
+                        _sprint25EngagementController = null;
+                        _sprint25EngagementFixture = null;
+                        PlaceExpandedSummoningUnit(fixture.Caster, casterBefore);
+                        UnityEngine.Random.state = randomBefore;
+                        Sprint25Check("engagement-controller-restored", unsubscribed && unpatched && ReferenceEquals(previous, Game.Instance.CombatEngagementController),
+                            new JObject { ["exactOwnedTickIds"] = new JArray(Sprint25EngagementTicked),
+                                ["previousWasNull"] = previous == null, ["referenceRestored"] = ReferenceEquals(previous, Game.Instance.CombatEngagementController),
+                                ["unsubscribed"] = unsubscribed, ["unpatched"] = unpatched },
+                            "The request-scoped native engagement controller, event subscription and exact-owner tick filter are removed, restoring the original reference.");
+                    }
+                }
             }
         }
 
@@ -104,6 +179,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData[] responders = { CastExpandedSummoningQuietUnit(fixture, "wolf"),
                     CastExpandedSummoningQuietUnit(fixture, "wolf") };
                 created.AddRange(new[] { owner, target, later }.Concat(responders));
+                foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
                 foreach (UnitEntityData unit in created)
                 {
                     unit.Stats.HitPoints.BaseValue = 100000;
@@ -139,11 +215,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.Player.UpdateIsInCombat();
                 new UnitCombatJoinController().Tick();
                 new UnitCombatPrepareController().Tick();
-                MethodInfo engage = Game.Instance.CombatEngagementController.GetType()
-                    .GetMethod("TickUnit", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (engage == null) throw new MissingMethodException("Native exact-unit engagement tick.");
-                foreach (UnitEntityData unit in responders.Concat(new[] { target }))
-                    engage.Invoke(Game.Instance.CombatEngagementController, new object[] { unit });
+                TickSprint25Engagement(fixture);
 
                 int cmb = Rulebook.Trigger(new RuleCalculateCMB(owner, target, CombatManeuver.Overrun)).Result;
                 int beforeCmd = ProbeCombatManeuverDefenceParts(owner, target, CombatManeuver.Overrun).Result;
@@ -226,6 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         rider.OnEventDidTrigger(observer.Maneuvers[0]);
                         repeated = true;
                     }
+                    TickSprint25Engagement(fixture);
                     maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
                     maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
                     yield return 0;
@@ -262,7 +335,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.InitiatorCMB == 32 && result.SuccesValue == margin &&
                     result.Success == (margin >= 0) && result.IsPartialSuccess == (margin >= 0 && margin < 5));
                 Sprint25Check("overrun-" + sample + (turnBased ? "-turn-based" : "-rtwp"), outcome && observer.ContactResourcesPrepared && command.IsStarted && command.IsFinished && nativeBudget &&
-                    (!turnBased || maxStandard > standardBefore && maxMove > moveBefore) &&
+                    maxStandard > standardBefore && (!turnBased || maxMove > moveBefore) &&
                     (sample == "failure" || travelled > 2f) && travelled <= owner.Stats.Speed.ModifiedValue * .3048f * 2f + 1f &&
                     afterProne == (beforeProne || knockdown) && legalResponders && responses &&
                     observer.Maneuvers.Count == commandCount,

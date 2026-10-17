@@ -1,4 +1,36 @@
-# Sprint 25 takeover — scoped Elephant/body corrections, candidate next
+# Sprint 25 takeover — native Cleave/fixture repair batch, candidate next
+
+Controlling update, 2026-10-17 18:26 UTC: continue the explicitly selected
+qualification/merge/release campaign. PR49 remains OPEN/DRAFT; no release and
+no Sprint26. See `current.latestCheckpoint` in the Sprint25 ledger for exact
+candidate identities, failed predicates and the next batch.
+
+Frozen c170dc87 passed 2660/2660, exact build and strict378-file package
+(304.59s). Its independent native batch finished FAIL after2668.43s:
+routes/icons pass standalone and high-risk combined; AI lane setup, payload
+fallback timing, Overrun fixture controller and Cleave require correction.
+All ten exact transactions restored installation/settings/sound bank;
+all118 protected saves/private references are preserved; no game/lease remains.
+Its ZIP/sidecars are archived separately under source-build-c170dc87.
+
+The grouped edit grants Brachiosaurus's real native Great Cleave feat
+(standalone actually requires it), preserves global Cleave and its observed
+native target-selection contract, establishes legal combat sight, waits for
+intact native dissolve without burning artificial gameplay time, grounds only
+request-owned fixture actors on the native graph, and scopes/restores the
+native engagement controller rather than fabricating opportunities.
+It also records the five exact new private inventory facts and affected
+persistence fact/command identities. Accepted art/payload bytes are untouched;
+HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Final focused production compilation and57/57 selected tests pass
+(16.3s +1.9s); all19 source-boundary/refusal fixtures pass. Commit/push and
+a new frozen candidate remain next. Then finish mandatory
+native/persistence/public proof, publisher preflight, merge, next free stable
+patch/download/restoration, and final-records merge. Do not ask the owner to
+select these already-authorized next actions again.
+
+## Dated prior takeover/checkpoint history
 
 Current owner mission: finish scoped Brachiosaurus/Elephant native qualification,
 then publication qualification, merge PR #49, publish/verify the next available

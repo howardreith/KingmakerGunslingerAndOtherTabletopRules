@@ -390,6 +390,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var receipt = unit.Get<UnitPartRelease143RosterReceipt>();
                 var profile = RosterPersistenceProfile(unit);
+                bool giantFactsAbilitiesExact = true;
+                if (Sprint25PersistenceScope && moduleOn && GiantBodyRulesPolicy.IsGiantBody(receipt.Key))
+                {
+                    bool brach = receipt.Key == GiantBodyRulesPolicy.BrachiosaurusKey;
+                    string[] expectedFacts = brach
+                        ? new[] { "d809b6c4ff2aaff4fa70d712a70f7d7b", "cc9c862ef2e03af4f89be5088851ea35",
+                            "63280e8f08c94c3a9b67787ec2d7ab71", "c9f41b8d20e7456eae3d6c1f5a8b7204" }
+                        : new[] { "54ee847996c25cd4ba8773d7b8555174", "79042cb55f030614ea29956177977c52",
+                            "b3614622866fe7046b787a548bbd7f59", "175d1577bb6c9a04baf88eec99c66334",
+                            "9972f33f977fc724c838e59641b2fca5", "f74c6bdf5c5f5374fb9302ecdc1f7d64" };
+                    string[] expectedAbilities = brach
+                        ? new[] { "6447d104a2222c14d9c9b8a36e4eb242", "309ec3dedcf04c15b3011933f5eafef4", "b41f7d2a6c8e40539af1c2d5e7b30486" }
+                        : new[] { "a7c34e1d9b5f4a02ae6d8c71f3b02594" };
+                    var facts = new HashSet<string>(unit.Descriptor.Progression.Features.Enumerable.Select(value => value.Blueprint.AssetGuid));
+                    string[] abilities = expectedAbilities.Where(guid => unit.Descriptor.Abilities.GetAbility(
+                        BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                            BlueprintBootstrap.Library, guid, "giant persistence command")) != null).ToArray();
+                    giantFactsAbilitiesExact = expectedFacts.All(facts.Contains) && abilities.Length == expectedAbilities.Length;
+                    profile["giantNativeFacts"] = new JArray(expectedFacts.Where(facts.Contains).OrderBy(value => value, StringComparer.Ordinal));
+                    profile["giantCommandGuids"] = new JArray(abilities.OrderBy(value => value, StringComparer.Ordinal));
+                }
                 if (prepare) receipt.Profile = profile.ToString(Formatting.None);
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
                 var project = unit.View == null ? new UnityEngine.Object[0] : RosterPersistenceResources(unit);
@@ -440,7 +461,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!_context.FeatureModules.Active.ExpandedSummoning)
                     visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
-                RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual,
+                RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
                         ["projectResourceCount"] = project.Length, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning,
                         ["variantRegisteredForSaveCompatibility"] = registeredVariant, ["variantOutcome"] = variantOutcome,
@@ -453,6 +474,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["theropodBodyExact"] = theropodBodyExact,
                         ["giantBodyPrivateResourceCount"] = giantOwned.Length,
                         ["giantBodyExact"] = giantBodyExact,
+                        ["giantFactsAbilitiesExact"] = giantFactsAbilitiesExact,
                         ["rendererMaterials"] = new JArray(unit.View == null ? new string[0] :
                             unit.View.GetComponentsInChildren<Renderer>(true).Where(r => r != null)
                                 .SelectMany(r => r.sharedMaterials).Select(m => m == null ? "<null>" : m.name)) },

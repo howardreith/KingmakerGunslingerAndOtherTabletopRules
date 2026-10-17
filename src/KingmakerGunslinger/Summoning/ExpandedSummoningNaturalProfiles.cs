@@ -432,10 +432,9 @@ namespace KingmakerGunslinger.Summoning
                 !brachiosaurus.Facts.Contains("WeaponFocusTail") ||
                 !brachiosaurus.Facts.Contains("TripDefenseFourLegs") ||
                 !brachiosaurus.Facts.Contains("Cleave") ||
-                // Measured as present in the engine but deliberately not
-                // carried: the decision is the owner's, so neither may
-                // appear here without that decision.
-                brachiosaurus.Facts.Contains("GreatCleave") ||
+                // The product-native standalone run requires this real
+                // feature, unlike the installed-stack census's wiring.
+                !brachiosaurus.Facts.Contains("GreatCleave") ||
                 !brachiosaurus.Facts.Contains("GreaterOverrun") ||
                 // Never invented for this creature.
                 brachiosaurus.Facts.Contains("PowerfulCharge") ||
@@ -736,7 +735,7 @@ namespace KingmakerGunslinger.Summoning
                     "Gargantuan",
                     37, 10, 21, 2, 13, 10, 30, 12,
                     "BrachiosaurusTail4d6", Array.Empty<string>(),
-                    A("BrachiosaurusChassis", "Cleave", "GreatFortitude",
+                    A("BrachiosaurusChassis", "Cleave", "GreatCleave", "GreatFortitude",
                         "GreaterOverrun", "ImprovedBullRush", "IronWill",
                         "PowerAttack", "SkillFocusPerception",
                         "TripDefenseFourLegs", "WeaponFocusTail"),

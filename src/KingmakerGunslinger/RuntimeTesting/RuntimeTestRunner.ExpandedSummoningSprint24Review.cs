@@ -2310,6 +2310,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SetExpandedSummoningBrainActive(unit, false);
                         for (int frame = 0; frame < 30; frame++)
                             yield return 0;
+                        if (giantBodies)
+                            foreach (int frame in Sprint25NativeAppearance(unit, key)) yield return frame;
                         SkinnedMeshRenderer[] skins = unit.View
                             .GetComponentsInChildren<SkinnedMeshRenderer>(
                                 true);
@@ -2529,6 +2531,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (body == null || body.sharedMesh == null)
                     throw new InvalidOperationException(
                         "Theropod lifecycle body did not settle: " + key);
+                if (giantBodies)
+                    foreach (int frame in Sprint25NativeAppearance(unit, key)) yield return frame;
                 resources.AddRange(giantBodies ?
                     ExpandedSummoningPteranodonViewPatch.CaptureGiantBodyOwnedResources(unit.View) :
                     ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(unit.View));
@@ -3273,7 +3277,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture,
             string creatureKey = TheropodRulesPolicy.DeinonychusKey,
             float approachDistance = 5f,
-            Action<string, bool, JObject, string> record = null)
+            Action<string, bool, JObject, string> record = null,
+            bool combatSightBeforeLane = false)
         {
             if (record == null) record = Sprint24Check;
             ResetExpandedSummoningHostile(fixture);
@@ -3315,6 +3320,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal));
                 target.Stats.HitPoints.BaseValue = 100000;
                 owner.Stats.BaseAttackBonus.BaseValue = 100;
+                if (combatSightBeforeLane)
+                {
+                    foreach (int frame in Sprint25NativeAppearance(owner, creatureKey)) yield return frame;
+                    owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
+                    owner.Commands.RemoveFinishedAndUpdateQueue(); target.Commands.RemoveFinishedAndUpdateQueue();
+                    owner.JoinCombat(); target.JoinCombat();
+                }
                 // Use a purpose-built five-metre combat lane. The shared art
                 // survey requires six open three-metre spokes so Gargantuan
                 // presentation can turn safely; that is stricter than this
@@ -3471,6 +3483,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["memoryPeaceful"] = memoryPeaceful,
                         ["ownerHasLos"] = ownerHasLos,
                         ["targetHasLos"] = targetHasLos,
+                        ["combatSightBeforeLane"] = combatSightBeforeLane,
+                        ["nativeVisionRangesMetres"] = new JArray(owner.VisionRangeMeters, target.VisionRangeMeters),
                         ["targetVisibleBeforeJoin"] =
                             targetVisibleBeforeJoin,
                         ["ownerJoined"] = ownerJoined,
