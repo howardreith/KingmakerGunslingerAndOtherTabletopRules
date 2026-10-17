@@ -162,6 +162,7 @@ ALLOWED_PRODUCTION = {
     # the corrected behaviour, on this creature's cloned carrier only.
     "src/KingmakerGunslinger/Summoning/BrachiosaurusOverrunKnockdown.cs",
     "src/KingmakerGunslinger/Summoning/BrachiosaurusTailCombat.cs",
+    "src/KingmakerGunslinger/Summoning/ElephantNativeCombat.cs",
     "src/KingmakerGunslinger/Summoning/GiantBodyVisualPolicy.cs",
     "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.GiantBodies.cs",
     "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs",

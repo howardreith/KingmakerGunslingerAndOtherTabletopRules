@@ -1,4 +1,4 @@
-# Sprint 25 takeover — batched native profile/observer corrections, candidate next
+# Sprint 25 takeover — scoped Elephant/body corrections, candidate next
 
 Current owner mission: finish scoped Brachiosaurus/Elephant native qualification,
 then publication qualification, merge PR #49, publish/verify the next available
@@ -73,7 +73,24 @@ restored actual installation/settings/sound bank, all 118 protected save files
 and private references. No owned game or lease remains. Evidence and exact
 candidate ZIP/sidecars are preserved; no body/Elephant/later-phase PASS claimed.
 
-Next: commit/push these batched corrections, build one repaired Sprint candidate in this root,
+Candidate `a243548b` passed its full gate (2659/2659, exact build/package;
+309.73 s; ZIP `1493465c…6b341b1`, MVID `026d8d5f-dc82-4ca1-a28b-dca4945c080c`).
+Native Brachiosaurus profile/+23/Perception/Power Attack, both ordinary commands,
+both real-time Trample commands and the Triceratops control pass. The overall
+phase fails: Elephant needs the scoped lead-gore Strength, 93-HP and effective
+10-ft range corrections; giant naming/rollback/teardown lacked the two keys,
+and native fader readiness was not established. Signed weapon samples also
+picked up native Power Attack reactivation, and the range observer omitted
+actor radii. These exact product/observer fixes are batched without new IDs or
+art changes. Source compiles and 53/53 focused/shared-natural regressions pass.
+
+Transaction `compat-20261017T170157Z-90c9046dbacc` restored exact installation,
+settings and sound bank; all 118 protected save files and private references
+are unchanged. No game/lease remains. Raw logs/captures and exact artifact are
+preserved. The unaltered captures do not establish visible-body acceptance.
+HumanReview remains NOT_PERFORMED_NONBLOCKING.
+
+Next: commit/push this coherent repair batch, build one new Sprint candidate in this root,
 then run the standalone/high-risk native phases on its exact package, followed
 by targeted fresh-process persistence and the public boundary. Use the existing
 de-elevation route and capture actual child exit/restoration receipts. Recheck
