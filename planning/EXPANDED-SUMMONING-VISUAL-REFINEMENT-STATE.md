@@ -71,6 +71,23 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
   the inside-out bodies found outside the review list were repaired on the
   same word, except the Bebelith, which the owner had accepted as the control.
 
+## v0.0.158 released, 2026-10-17
+
+PR #55 merged as `5d89a9ddd0`, and `Publish-Release.ps1` published
+[stable v0.0.158](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.158)
+from clean `master`: 2,664 / 2,664, the v0.0.158 validator, two identical
+clean builds and strict package validation, in 205 s. It is Latest.
+
+- Tag object: `57361f133f`.
+- ZIP: `KingmakerGunslinger-0.0.158-expanded-summoning-visual-refinement.zip`,
+  `d63f1a8bb9b4392432808422cae140db6a543b40455e3094b12402bdae2d15fb`, with 374
+  files.
+- DLL: `441a03979f9c…03e4`.
+
+The downloaded assets match GitHub's digests and pass strict validation. The
+owner's visual acceptance stays provisional; the next minor revisions go with
+more summon additions.
+
 ## v0.0.158 release candidate, 2026-10-17
 
 The owner asked to merge this into master and cut a new full release ("this
