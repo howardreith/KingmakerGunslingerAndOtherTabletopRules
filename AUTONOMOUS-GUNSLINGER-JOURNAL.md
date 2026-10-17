@@ -1,5 +1,16 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — owner authorizes controller-load alpha 2
+
+Owner requested another alpha and companion-mod guidance. Selected exact tested
+KMG product `92b442c06dd8` / ZIP `798ff15e...b3f5f3`, with both Brown-Fur
+and CotW slot-read repairs, tag `v0.0.157-controller-load-alpha.2`, prerelease /
+not Latest. Publish the unchanged candidate, not a metadata rebuild; no full
+suite/native rerun. KMG ZIP itself is the Gunslinger update; keep existing KBP
+controller alpha and CotW. New hash-pinned publisher preserves stable/dev
+qualification guards; notes disclose all native loading gaps. No merge,
+installation or unrelated alpha changes authorized. Outcome follows separately.
+
 ## 2026-10-17 — CotW spontaneous-slot controller load repair checkpoint
 
 Isolated from Brown-Fur alpha documentation HEAD `86de8f281c`; repaired source
