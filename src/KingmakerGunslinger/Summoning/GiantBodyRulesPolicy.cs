@@ -46,6 +46,11 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal const string BrachiosaurusOverrunSymbol =
             "KMG.Summoning.Special.Brachiosaurus.Overrun";
+
+        /// <summary>The cloned Greater Overrun carrier, this creature
+        /// only.</summary>
+        internal const string BrachiosaurusGreaterOverrunSymbol =
+            "KMG.Summoning.Special.Brachiosaurus.GreaterOverrun";
         internal const string ElephantChassisSymbol =
             "KMG.Summoning.Natural.Elephant.Chassis";
         internal const string ElephantUnitTypeSymbol =
@@ -78,7 +83,7 @@ namespace KingmakerGunslinger.Summoning
         /// is uuid5 of its own symbol, so the manifest reproduces and
         /// verifies them rather than trusting an allocation.
         /// </summary>
-        internal const int AppendedIdentityCount = 19;
+        internal const int AppendedIdentityCount = 20;
 
         /// <summary>
         /// What Sprint 25 adds to the C# identity catalog. The eight caller
@@ -102,11 +107,22 @@ namespace KingmakerGunslinger.Summoning
         /// a real combat maneuver, where a trample never does.
         /// </summary>
         internal const int AppendedOverrunAbilityIdentityCount = 1;
+
+        /// <summary>
+        /// One cloned Greater Overrun carrier, owned by this creature.
+        /// The native feat's provocation fires on success alone; the
+        /// printed rider follows a knockdown the overrun caused, so the
+        /// clone drops that component and carries the corrected one. It
+        /// is a BlueprintFeature, so it is a private carrier and not an
+        /// ability.
+        /// </summary>
+        internal const int AppendedGreaterOverrunIdentityCount = 1;
         internal const int AppendedPrivateIdentityCount =
             AppendedWeaponIdentityCount + AppendedWeaponTypeIdentityCount +
             AppendedUnitTypeIdentityCount + AppendedFeatureIdentityCount +
             AppendedTrampleAbilityIdentityCount +
-            AppendedOverrunAbilityIdentityCount;
+            AppendedOverrunAbilityIdentityCount +
+            AppendedGreaterOverrunIdentityCount;
 
         /// <summary>
         /// Every appended identity in the C# catalog whose planned type is

@@ -386,6 +386,12 @@ namespace KingmakerGunslinger.Blueprints
             "4cd1757a0eea7694ba5c933729a53920";
         private const string NativeOverrunAbilityGuid =
             "1a3b471ecea51f7439a946b23577fd70";
+
+        /// <summary>The real printed Greater Overrun feat. It is cloned,
+        /// never modified: every other actor that has it keeps it exactly
+        /// as the game ships it.</summary>
+        private const string NativeGreaterOverrunFeatureGuid =
+            "ee24c02cc68c4c9b9b54ebef9f9f8133";
         internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
         internal const string MediumClawGuid = "118fdd03e569a66459ab01a20af6811a";
         internal const string Claw2d4Guid = "8afc47748d00b3e4a8aff2787d9ee350";
@@ -718,6 +724,7 @@ namespace KingmakerGunslinger.Blueprints
             // and it reuses the native implementation rather than
             // inventing a maneuver system.
             ConfigureBrachiosaurusOverrun(library, bySymbol);
+            ConfigureBrachiosaurusGreaterOverrun(library, bySymbol);
             ConfigureMephitVariants(library, bySymbol);
         }
 
@@ -740,6 +747,71 @@ namespace KingmakerGunslinger.Blueprints
         /// ManeuverProvokeAttack is the only provocation in play, so there
         /// is no duplicate native-plus-custom effect.</para>
         /// </summary>
+        /// <summary>
+        /// The printed Greater Overrun, carried for this one creature.
+        ///
+        /// <para>The native feat is cloned rather than granted, for one
+        /// reason: its <c>ManeuverProvokeAttack</c> fires on
+        /// <c>evt.Success</c> alone, so an ordinary pass-through - and a
+        /// success against a target that cannot be knocked off at all -
+        /// provokes. The printed rider follows an opponent knocked prone BY
+        /// that overrun. The clone keeps everything else the feat carries,
+        /// including its printed +2, drops that one component, and carries
+        /// <see cref="BrachiosaurusOverrunKnockdown"/> instead.</para>
+        ///
+        /// <para>Nothing global changes: the native feat is untouched and
+        /// still granted to every actor that has it. There is exactly one
+        /// provocation in play for this creature, not a second stacked on
+        /// the original, and no opportunity attack is emitted and undone.</para>
+        /// </summary>
+        private static void ConfigureBrachiosaurusGreaterOverrun(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintFeature carrier = Require<BlueprintFeature>(bySymbol,
+                GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol);
+            BlueprintFeature native = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeGreaterOverrunFeatureGuid,
+                    "native Greater Overrun feat");
+            // A feature is not an ability, so the ability field copier is
+            // not used here. Only what a granted creature feat needs is set,
+            // and the native blueprint is read, never written.
+            carrier.name = InternalName(
+                GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol);
+            carrier.HideInUI = native.HideInUI;
+            carrier.HideInCharacterSheetAndLevelUp =
+                native.HideInCharacterSheetAndLevelUp;
+            carrier.IsClassFeature = native.IsClassFeature;
+            carrier.Ranks = native.Ranks;
+
+            // Everything the native feat carries except the provocation whose
+            // condition is wrong for the printed rider.
+            var kept = new List<BlueprintComponent>();
+            foreach (BlueprintComponent component in
+                native.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+            {
+                if (component is ManeuverProvokeAttack) continue;
+                kept.Add(component);
+            }
+            kept.Add(ScriptableObject.CreateInstance<
+                BrachiosaurusOverrunKnockdown>());
+            carrier.ComponentsArray = kept.ToArray();
+            // This project's own strings rather than the native feat's
+            // text: the carrier is our blueprint, and nothing of the game's
+            // own wording needs to travel into it.
+            BlueprintUnitFactAccess.Resolve().Configure(carrier,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Brachiosaurus.GreaterOverrun.Name",
+                    "Greater Overrun"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Brachiosaurus.GreaterOverrun" +
+                        ".Description",
+                    "+2 on overrun checks. An opponent knocked prone by this "
+                        + "creature's overrun provokes attacks of "
+                        + "opportunity."),
+                native.Icon);
+        }
+
         private static void ConfigureBrachiosaurusOverrun(
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
@@ -777,26 +849,18 @@ namespace KingmakerGunslinger.Blueprints
             overrun.StopOnCorpulence = false;
             overrun.DelayBeforeStart = 0f;
             overrun.DelayAfterFinish = 0f;
-            // The printed knockdown, and the reason it belongs HERE.
-            // AbilityCustomOverrun's IL runs this list once per overrun
-            // target, inside that target's data scope, and only when the
-            // maneuver succeeded: V_5 holds !Success and IL_03b1 branches
-            // to the Actions block only when it is false. The native
-            // overrun ability ships this list EMPTY, which is why nothing
-            // in this build has ever knocked an overrun target prone and
-            // why Greater Overrun's printed rider could not fire.
-            //
-            // ContextActionKnockdownTarget carries the controls rather
-            // than this project inventing them: UnitHelper.CanBeKnockedOff
-            // gates eligibility, Descriptor.State.Prone.ShouldBeActive is
-            // the native prone state so an already-prone target stays
-            // prone, and IKnockOffHandler.HandleKnockOff is raised on the
-            // native EventBus. One action, on this creature's own command;
-            // no global rule is touched and Trample gains nothing.
-            var knockdown = ScriptableObject.CreateInstance<
-                ContextActionKnockdownTarget>();
+            // The action list stays EMPTY, and that is now a decision
+            // rather than an omission. AbilityCustomOverrun's IL runs this
+            // list on ANY success - IL_03b1 branches on !Success alone - so
+            // an action here fires for an ordinary pass-through too. The
+            // printed rule knocks a target prone only when the result beats
+            // its CMD by 5 or more, and the engine already draws that line
+            // in RuleCombatManeuver.IsPartialSuccess. The knockdown and its
+            // provocation therefore live on the creature's cloned Greater
+            // Overrun carrier, which can see the rule; see
+            // BrachiosaurusOverrunKnockdown.
             overrun.Actions = new ActionList {
-                Actions = new GameAction[] { knockdown }
+                Actions = Array.Empty<GameAction>()
             };
             var fullRound = ScriptableObject.CreateInstance<
                 AbilityIsFullRoundInTurnBased>();

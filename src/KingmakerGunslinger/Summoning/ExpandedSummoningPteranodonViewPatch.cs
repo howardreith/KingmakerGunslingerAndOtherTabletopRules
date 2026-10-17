@@ -131,6 +131,10 @@ namespace KingmakerGunslinger.Summoning
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
                 { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" },
                 { AnkylosaurusVisualPolicy.BlueprintName, AnkylosaurusRulesPolicy.Key },
+                { GiantBodyVisualPolicy.BrachiosaurusBlueprintName,
+                    GiantBodyRulesPolicy.BrachiosaurusKey },
+                { GiantBodyVisualPolicy.ElephantBlueprintName,
+                    GiantBodyRulesPolicy.ElephantKey },
                 { ArmoredDinosaurVisualPolicy.TriceratopsBlueprintName,
                     ArmoredDinosaurRulesPolicy.TriceratopsKey },
                 { ArmoredDinosaurVisualPolicy.StegosaurusBlueprintName,
@@ -396,6 +400,14 @@ namespace KingmakerGunslinger.Summoning
                     out albedo, out status))
                     return Fallback(status);
             }
+            else if (GiantBodyVisualPolicy.Handles(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetGiantBodyVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
             else if (UngulateKeys.Contains(attachment.VisualKey))
             {
                 string status;
@@ -464,6 +476,20 @@ namespace KingmakerGunslinger.Summoning
                 attachment.SuppressedRenderers = new[] { accessory };
                 attachment.OriginalSuppressedRendererStates = new[] {
                     accessory.enabled };
+            }
+            else if (GiantBodyVisualPolicy.Handles(attachment.VisualKey))
+            {
+                // The measured donor exposes exactly one skinned renderer. A
+                // view presenting anything else is not that donor, and the
+                // original body stays uninstalled rather than being pushed
+                // onto a creature it was not authored against.
+                if (!GiantBodyVisualPolicy.IsExactRendererSet(
+                        donors.Select(value => value.name)))
+                    return "donor-visual:giant-body-renderer-set=" +
+                        string.Join(",", donors.Select(value => value.name)
+                            .OrderBy(value => value,
+                                StringComparer.Ordinal).ToArray());
+                donor = donors[0];
             }
             else
             {
@@ -910,6 +936,32 @@ namespace KingmakerGunslinger.Summoning
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
                 !ArmoredDinosaurVisualPolicy.Handles(attachment.VisualKey))
+                return new UnityEngine.Object[0];
+            Material[] installed = attachment.Donor == null
+                ? new Material[0] : attachment.Donor.sharedMaterials;
+            IList<Material> driven = attachment.Donor == null ? null :
+                ControllerMaterials(attachment.Donor.GetComponentInParent<
+                    StandardMaterialController>());
+            IEnumerable<Material> privateMaterials =
+                OriginalFlightCleanupPolicy.PrivateMaterials(
+                    attachment.Material,
+                    installed.Concat(driven ?? new Material[0]),
+                    attachment.OriginalMaterials);
+            return privateMaterials.Cast<UnityEngine.Object>()
+                .Concat(new UnityEngine.Object[] { attachment.Mesh })
+                .Where(value => value != null).Distinct().ToArray();
+        }
+
+        /// <summary>Exact per-view owned resources for the two Sprint 25
+        /// bodies. Both bind to one donor renderer, so the receipt is the
+        /// armoured-dinosaur shape: this view's private material instances
+        /// and this view's mesh instance, never a donor asset.</summary>
+        internal static UnityEngine.Object[] CaptureGiantBodyOwnedResources(
+            UnitEntityView view)
+        {
+            Attachment attachment;
+            if (view == null || !Applied.TryGetValue(view, out attachment) ||
+                !GiantBodyVisualPolicy.Handles(attachment.VisualKey))
                 return new UnityEngine.Object[0];
             Material[] installed = attachment.Donor == null
                 ? new Material[0] : attachment.Donor.sharedMaterials;

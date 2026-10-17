@@ -1207,6 +1207,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint25-derived-arithmetic", ExpandedSummoningSprint25Tests.FrozenAdultArithmeticIsDerivedNotStated),
             Case("expanded-summoning.sprint25-identity-append", ExpandedSummoningSprint25Tests.IdentityAppendOwnsExactlyFivePrivateCarriers),
             Case("expanded-summoning.sprint25-overrun-knockdown", ExpandedSummoningSprint25Tests.OverrunKnocksDownOnlyThroughItsOwnCommand),
+            Case("expanded-summoning.sprint25-shipped-bodies", ExpandedSummoningSprint25Tests.ShippedBodiesAreFoundAndAccepted),
             Case("expanded-summoning.sprint25-trample-signed-strength", ExpandedSummoningSprint25Tests.TrampleStrengthArithmeticIsOneRule),
             Case("expanded-summoning.sprint25-donor-rig", ExpandedSummoningSprint25Tests.TheDonorIsTheMeasuredQuadrupedRigAndNotAnIdentity),
             Case("expanded-summoning.sprint25-elephant-profile", ExpandedSummoningSprint25Tests.ElephantProfileIsCorrectedToItsPrintedRoutine),

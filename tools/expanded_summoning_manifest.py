@@ -629,8 +629,12 @@ def planned():
         # selected over a waiver. It is a separate action
         # from Trample and never replays it.
         ("KMG.Summoning.Special.Brachiosaurus.Overrun", "BlueprintAbility"),
+        # The cloned Greater Overrun carrier for this one
+        # creature. A BlueprintFeature, like the native feat
+        # it clones.
+        ("KMG.Summoning.Special.Brachiosaurus.GreaterOverrun", "BlueprintFeature"),
     ))
-    if len(rows) != 2160 or len({symbol for symbol, _ in rows}) != 2160:
+    if len(rows) != 2161 or len({symbol for symbol, _ in rows}) != 2161:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

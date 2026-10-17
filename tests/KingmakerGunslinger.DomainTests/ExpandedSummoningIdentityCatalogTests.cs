@@ -42,8 +42,11 @@ namespace KingmakerGunslinger.DomainTests
                 first.Count(value => value.PlannedType == "BlueprintUnitType"),
                 "Unit-type identity count changed.");
             Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
+            // The Sprint 25 chassis, plus its cloned Greater Overrun
+            // carrier: a feature, because the native feat it clones is.
             Assertions.Equal(39 + TheropodRulesPolicy.AppendedFeatureIdentityCount +
-                    GiantBodyRulesPolicy.AppendedFeatureIdentityCount,
+                    GiantBodyRulesPolicy.AppendedFeatureIdentityCount +
+                    GiantBodyRulesPolicy.AppendedGreaterOverrunIdentityCount,
                 first.Count(value => value.PlannedType == "BlueprintFeature"),
                 "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
