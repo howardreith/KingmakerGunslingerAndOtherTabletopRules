@@ -50,7 +50,14 @@
       "basis": "New candidate gate, same-package smoke, seven phases under standalone/high-risk profiles, separate targeted cold-load/OFF/ON/cleanup/absence processes, then affected public inventory/icon/eleven-root checks. Startup cost or demonstrated repair may extend this estimate; no fixed completion promise and no interruption of restoration.",
       "reuseContract": "Compatibility profile uses ReuseInstalledArtifact plus PackagePath to skip Build-Local. Each fresh transaction still validates, stages, deploys, logs and restores independently; cold-load isolation remains."
     },
-    "nextAction": "Commit/push this coherent observer checkpoint, run one new Sprint gate unelevated with child completion evidence, then reuse its exact package for guarded smoke and the scoped native batch in Steam Offline Mode."
+    "candidateGateAttempt": {
+      "source": "a3260559fdd31c04f5a2cbe2d3ce2613188f8b47",
+      "receipt": "artifacts/sprint25-candidate-gate-a3260559.result.json",
+      "completedUtc": "2026-10-17T16:14:19.5063277Z",
+      "durationSeconds": 3.12,
+      "result": "REFUSED before build/package/native: source ownership whitelist did not yet admit the exact twelve RuntimeTesting files used by the authorized observer and targeted persistence. Added only those paths; unrelated tracked/untracked runtime siblings remain refused. No candidate identity was replaced by this attempt."
+    },
+    "nextAction": "Commit/push the narrow source-scope correction, run the new Sprint gate unelevated with child completion evidence, then reuse its exact package for guarded smoke and the scoped native batch in Steam Offline Mode."
   },
   "charter": {
     "document": "Expanded Summoning Implementation Charter v1.0, page 22, Sprint 25",
