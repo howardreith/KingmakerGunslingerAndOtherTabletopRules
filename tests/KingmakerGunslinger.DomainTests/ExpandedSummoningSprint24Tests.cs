@@ -315,21 +315,23 @@ namespace KingmakerGunslinger.DomainTests
                     (bool)tyr["tinyForearms"],
                 "Tyrannosaurus owns the large skull and tiny forearms.");
             Assertions.Equal(
-                "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
+                "b085f640a33b7fa1232dc7c2b2677c0fe53fcb47f87c1bc873d0a358ab6ecdf6",
                 Sha256("assets/sprint24-theropods/deinonychus-mesh.json"),
                 "Deterministic Deinonychus mesh bytes.");
             Assertions.Equal(
                 "d9fe3f0ac21d5372bcb309f9b8d4790e379da9c2ee052737aeb1644a239fe320",
                 Sha256("assets/sprint24-theropods/tyrannosaurus-mesh.json"),
                 "Deterministic Tyrannosaurus mesh bytes.");
-            // VIS-001: the refined Tyrannosaurus is built with outward
-            // winding; the Deinonychus keeps the first export until its own
-            // refinement batch.
+            // VIS-001, VIS-027: both theropods are continuous bodies built
+            // with outward winding.
             OriginalMeshOrientation.AssertShippedBody(
                 "assets/sprint24-theropods/tyrannosaurus-mesh.json",
                 "tyrannosaurus");
+            OriginalMeshOrientation.AssertShippedBody(
+                "assets/sprint24-theropods/deinonychus-mesh.json",
+                "deinonychus");
             Assertions.Equal(
-                "4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7",
+                "9e60ec305e08add31be809f4d82a82c727741102e3c3c4023494240f0f38780f",
                 Sha256("assets/sprint24-theropods/deinonychus-albedo.png"),
                 "Deterministic Deinonychus original paint bytes.");
             Assertions.Equal(

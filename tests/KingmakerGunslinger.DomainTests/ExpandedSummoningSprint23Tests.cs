@@ -358,9 +358,14 @@ namespace KingmakerGunslinger.DomainTests
                 (int)stego["tailJoints"] == 6,
                 "Stegosaurus owns plates and four spikes, not horns or club.");
             Assertions.Equal(
-                "ec2e38eae2cb3279a003ec2cf507f4eb30e4e3153905a60a697940833cd8c914",
+                "f99f5d350a3a22e1a92f410687b2339c3a1107b8106c30a00744c834c7bf49fa",
                 Sha256("assets/sprint23-armored-dinosaurs/triceratops-mesh.json"),
                 "Deterministic Triceratops mesh bytes.");
+            // VIS-002: the refined Triceratops is one continuous body built
+            // with outward winding.
+            OriginalMeshOrientation.AssertShippedBody(
+                "assets/sprint23-armored-dinosaurs/triceratops-mesh.json",
+                "triceratops");
             Assertions.Equal(
                 "02a37218c41c09ed9962ac39a8e01ad0e9d99d8f07d718e1e27d9b9b7573582f",
                 Sha256("assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json"),

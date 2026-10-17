@@ -76,6 +76,32 @@ refuses `--kind tyrannosaurus`.
   the arms a larger share of their own swing (16-34 % from upper arm to
   finger), tucks the thighs into the hips and softens the neck-to-skull
   ramp.
-- The released v0.0.155 validator (inherited by the v0.0.157 release and
-  development validators) still pins the superseded Tyrannosaurus bytes; see
-  the lane state file for the open decision.
+- The released v0.0.155 validator (inherited by the v0.0.157 release
+  validator) still pins the superseded Tyrannosaurus and Deinonychus bytes.
+  Since the owner's decision of 2026-10-17 the development-candidate
+  validator no longer pins released art bytes; the next release's validator
+  is where the refined art is accepted for release.
+
+## Deinonychus refinement, 2026-10-17 (VIS-027)
+
+The owner reported detached fingers, an incoherent head, a questionable colour
+and comical arm swinging during movement; the first export rendered inside out
+(35 inward parts). `build_deinonychus.py` now builds it on the same census
+frame as one continuous body: slim hips and a narrow, deep chest leaning
+forward, an S-curved neck, a long, low, narrow skull with a lower jaw on its
+two joints and tooth rows, long folded arms with three large clawed fingers,
+slender digitigrade legs with two forward toes and a raised sickle claw on
+each foot, and a long, stiff countertail. Each arm segment follows its own
+control for 30-50 % of its weight and `Torso_Upper` for the rest, so the
+Lizardfolk's wide arm swings arrive restrained. The arms and fingers use the
+library's `tube`, which carries its ring frames along the path; `strand`'s
+per-ring frames folded the sharply bent arm onto itself. The coat is an umber
+back with dark bands, ochre flanks, a pale belly and a dark eye mask.
+`generate_theropods.py` now refuses both kinds and keeps its loader.
+
+- `deinonychus-mesh.json`: `b085f640a33b7fa1232dc7c2b2677c0fe53fcb47f87c1bc873d0a358ab6ecdf6`
+  (7,037 vertices, 9,192 triangles, 46 closed outward parts, the exact 35
+  reviewed drivers; two sickle claws, no massive skull, long forearms).
+- `deinonychus-albedo.png`: `9e60ec305e08add31be809f4d82a82c727741102e3c3c4023494240f0f38780f`.
+- Superseded: mesh `eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab`,
+  albedo `4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7`.

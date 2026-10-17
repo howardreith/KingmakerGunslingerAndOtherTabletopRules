@@ -78,6 +78,10 @@ seen through its head and a leg. `audit_mesh_orientation.py` and
   fixed bones. The Tyrannosaurus forearms ride `Torso_Upper` for 66-84 % of
   their weight, so the Lizardfolk's broad A-pose arm swings reach them only as a
   restrained fraction.
+- **Bent limbs.** `strand` builds each ring from that point's own tangent, so
+  a sharply bent limb (the Deinonychus's folded arm) twists between rings and
+  folds onto itself. `tube` carries one ring frame along the path by the
+  rotation between successive tangents and is used for bent arms and fingers.
 - **Offline preview.** Blender's armature modifier ignores a vertex group
   whose bone is not a deform bone, and the heat solve clears that flag on
   every bone it was not asked to weight. `heat_weights` restores it on every

@@ -44,6 +44,8 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal((string)data["albedo"]["sha256"],actual,"Paint and geometry declare the same original painting.");
             }
             Assertions.True((bool)data["terminalClub"] && (int)data["visibleLegs"]==4 && (int)data["tailJoints"]==6,"Original anatomy contract.");
+            // VIS-028: one continuous body exported with outward winding.
+            OriginalMeshOrientation.AssertShippedBody("assets/ankylosaurus/ankylosaurus-mesh.json","ankylosaurus");
         }
 
         internal static void DiagnosticValuesSurviveSerialization()

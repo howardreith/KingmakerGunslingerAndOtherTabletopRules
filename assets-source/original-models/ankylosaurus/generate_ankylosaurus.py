@@ -124,6 +124,9 @@ def main():
     for name in ("capture","albedo","mesh-data","report","blend-out"):
         parser.add_argument("--"+name,required=True)
     args=parser.parse_args(sys.argv[sys.argv.index("--")+1:])
+    raise SystemExit("the Ankylosaurus is built by build_ankylosaurus.py since "
+                     "the visual refinement (VIS-028); this module keeps its "
+                     "capture loader; see SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig_data,rig,rig_hash=measured_rig(args.capture)
     armature=shared.build_armature(rig_data)
