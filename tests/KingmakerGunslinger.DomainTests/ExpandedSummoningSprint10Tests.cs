@@ -617,6 +617,15 @@ namespace KingmakerGunslinger.DomainTests
             string root = Environment.CurrentDirectory;
             string directory = Path.Combine(root, "assets", "flying-animals");
             string path = Path.Combine(directory, "giant-wasp-mesh.json");
+            // Visual refinement (VIS-022): the refined continuous body, closed
+            // and outward, its gaster and sting on Tail alone.
+            using (var sha = SHA256.Create())
+                Assertions.Equal(
+                    "a32d454cff58ec4827d91888a3d9803178ad74c731882a22e1bd2ebf83b205c5",
+                    string.Concat(sha.ComputeHash(File.ReadAllBytes(path))
+                        .Select(value => value.ToString("x2"))),
+                    "The wasp ships its refined export.");
+            OriginalMeshOrientation.AssertShippedBody(path, "giant-wasp");
             JObject mesh = JObject.Parse(File.ReadAllText(path));
             Assertions.Equal(2, (int)mesh["schemaVersion"],
                 "Wasp must use the shared skinned-mesh schema.");
