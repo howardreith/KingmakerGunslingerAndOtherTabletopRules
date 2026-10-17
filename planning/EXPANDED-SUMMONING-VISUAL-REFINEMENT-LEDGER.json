@@ -401,16 +401,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint16-crocodilians/crocodile-mesh.json",
-        "meshSha256": "770fa7c3c87fb74f3335358069cefde77529868e30184e090bf3c7c840065fd7",
+        "meshSha256": "6615b76808762e29311fb390889dc8d94c63b942825573cb7266993780d96ef9",
         "components": 124,
-        "inwardComponents": 124,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "12558/12564"
+        "normalCornersOpposingWinding": "6/12564"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint16-crocodilians/generate_crocodilians.py --kind crocodile (targeted: outward export and repaint; geometry, UVs and weights unchanged)",
+        "commits": "dd82130f38",
+        "supersededMeshSha256": "770fa7c3c87fb74f3335358069cefde77529868e30184e090bf3c7c840065fd7",
+        "supersededAlbedoSha256": "66864117b75bf34d30cc9c487ff988d8306940694d288a55d74aea3e772e2afd",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1501488413057Z (development candidate dd82130f3890): PASS; solid and lit, no head hole"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-013",
@@ -1011,16 +1021,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint16-crocodilians/dire-crocodile-mesh.json",
-        "meshSha256": "eb7a9182fbe5f66dc8b819efd9641a62da611230923bf4bd95ca1383d4e7173a",
+        "meshSha256": "d4507796f688e79d9ddddacbcb54d0885ea409b06cd5c58690a3fb56464daf1e",
         "components": 124,
-        "inwardComponents": 124,
+        "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "12558/12564"
+        "normalCornersOpposingWinding": "6/12564"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint16-crocodilians/generate_crocodilians.py --kind dire-crocodile (targeted: outward export and repaint; geometry, UVs and weights unchanged)",
+        "commits": "dd82130f38",
+        "supersededMeshSha256": "eb7a9182fbe5f66dc8b819efd9641a62da611230923bf4bd95ca1383d4e7173a",
+        "supersededAlbedoSha256": "aef6c8fe388635293938f5b0c0c46fa4757256326d6adbec88d351266bce253c",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1501488413057Z (development candidate dd82130f3890): PASS; solid and lit; the 2x Gargantuan body is partly walled in some close views"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-035",
