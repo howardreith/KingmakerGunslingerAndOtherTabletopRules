@@ -140,6 +140,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(Maneuvers.Last()),
                         ["initiator"] = evt.Initiator.UniqueId, ["target"] = evt.Target.UniqueId,
                         ["weapon"] = evt.Weapon.Blueprint.AssetGuid,
+                        ["nativeOpportunityCommandIds"] = new JArray(evt.Initiator.Commands.Raw
+                            .OfType<UnitAttackOfOpportunity>().Where(value =>
+                                ReferenceEquals(value.Target, evt.Target) && value.IsStarted)
+                            .Select(value => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value))),
                         ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                         ["proneActive"] = evt.Target.Descriptor.State.Prone.Active });
                 }
@@ -231,6 +235,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var costRows = new JArray();
             var commandRows = new JArray();
             var commands = new List<UnitUseAbility>();
+            CountableFlag getUpIsolation = null;
             Vector3 casterBefore = fixture.Caster.Position;
             try
             {
@@ -248,6 +253,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (ReferenceEquals(unit, target) || ReferenceEquals(unit, later)) nativeOpponents.Add(unit);
                 if (nativeOpponents.Count != 2) throw new InvalidOperationException("Native two-opponent fixture census differs.");
                 target = nativeOpponents[0]; later = nativeOpponents[1];
+                if (turnBased)
+                {
+                    // Isolate the Overrun provocation from the separate native
+                    // get-up provocation while awaiting TB UI/animation gates.
+                    // Explicit maneuver provocation does not consult this flag.
+                    getUpIsolation = target.Descriptor.State.Features.GetUpWithoutAttackOfOpportunity;
+                    getUpIsolation.Retain();
+                }
                 // Let the real appearance finish beside the visible party;
                 // relocate only ready request-owned actors to the test lane.
                 foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
@@ -419,6 +432,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 };
                 EventBus.Subscribe(observer);
                 costs = new FirearmReviewCosts(owner, costRows);
+                var nativeProvocations = (HashSet<UnitEntityData>)typeof(UnitCombatEngagementController)
+                    .GetField("m_UnitsProvokeAttackOfOpportunity", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(_sprint25EngagementController);
+                MethodInfo startGate = typeof(UnitActionController).GetMethod("ShouldStartCommand",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                if (nativeProvocations == null || startGate == null)
+                    throw new InvalidOperationException("Native opportunity observation seams unavailable.");
+                bool nativeProvocationSeen = false;
                 var queuedOpportunities = new Dictionary<UnitAttackOfOpportunity, int>();
                 var opportunityCommands = new JArray();
                 float standardBefore = owner.CombatState.Cooldown.StandardAction;
@@ -426,6 +447,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float maxStandard = standardBefore, maxMove = moveBefore;
                 int frames = 0;
                 int commandCount = sample == "repeated-command" ? 2 : 1;
+                int responseFrames = turnBased ? Sprint18AttackFrames : 32;
                 for (int attempt = 0; attempt < commandCount; attempt++)
                 {
                 if (attempt > 0)
@@ -462,7 +484,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var controller = new UnitActionController();
                 frames = 0;
                 bool repeated = false;
-                for (; frames < 700; frames++)
+                for (; frames < 700 + responseFrames; frames++)
                 {
                     // Match the qualified native command driver: a TB pause
                     // must not silently stop the owned clock/queue drain.
@@ -473,7 +495,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ElementalBreathScenario.TickCommand(controller, command);
                     }
                     if (command.ExecutionProcess != null)
-                        TickExpandedSummoningDetachedAbility(command, frames);
+                        TickExpandedSummoningDetachedAbility(command, frames, true);
                     if (sample == "repeated-notification" && !repeated && observer.Maneuvers.Count > 0)
                     {
                         var rider = owner.Descriptor.Progression.Features.Enumerable
@@ -482,6 +504,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         rider.OnEventDidTrigger(observer.Maneuvers[0]);
                         repeated = true;
                     }
+                    nativeProvocationSeen |= observer.ContactResourcesPrepared && nativeProvocations.Contains(target);
+                    if (turnBased && observer.ContactResourcesPrepared && frames % 30 == 0)
+                        opportunityTrace.Add(new JObject { ["phase"] = "native-response-start-gates",
+                            ["frame"] = frames, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                            ["waitingForUi"] = Game.Instance.TurnBasedCombatController.WaitingForUI.Value,
+                            ["uiGuardCount"] = Game.Instance.TurnBasedCombatController.WaitingForUI.GuardCount,
+                            ["targetProvocationPending"] = nativeProvocations.Contains(target),
+                            ["turn"] = Sprint22TurnState(owner, target),
+                            ["responders"] = new JArray(responders.Select(value => new JObject {
+                                ["unit"] = value.UniqueId, ["canAct"] = value.Descriptor.State.CanAct,
+                                ["engaged"] = value.CombatState.IsEngage(target),
+                                ["handsScheduled"] = Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(value),
+                                ["handsBusy"] = value.AreHandsBusyWithAnimation,
+                                ["count"] = value.CombatState.AttackOfOpportunityCount })) });
+                    // The qualified turn driver settles the native hands
+                    // controller before the native action controller as well.
+                    if (turnBased && responders.Any(value =>
+                        Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(value)))
+                        Game.Instance.HandsEquipmentController.Tick();
                     TickSprint25Engagement(fixture, observer);
                     observeResources("after-native-engagement-drain-before-clock");
                     // Drive only the actual opportunities queued by native
@@ -497,11 +538,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 opportunity.Animation.IsActed = true;
                             if (!opportunity.IsFinished)
                                 ElementalBreathScenario.TickCommand(controller, opportunity);
+                            if (frames == queuedOpportunities[opportunity] || frames % 30 == 0 ||
+                                opportunity.IsStarted || opportunity.IsActed || opportunity.IsFinished)
                             opportunityCommands.Add(new JObject {
                                 ["commandId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(opportunity),
                                 ["responder"] = responder.UniqueId, ["target"] = target.UniqueId,
                                 ["frame"] = frames, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                                 ["paused"] = Game.Instance.IsPaused, ["started"] = opportunity.IsStarted,
+                                ["waitingForUi"] = Game.Instance.TurnBasedCombatController.WaitingForUI.Value,
+                                ["uiGuardCount"] = Game.Instance.TurnBasedCombatController.WaitingForUI.GuardCount,
+                                ["nativeShouldStart"] = (bool)startGate.Invoke(controller, new object[] { opportunity }),
+                                ["handsScheduled"] = Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(responder),
+                                ["handsBusy"] = responder.AreHandsBusyWithAnimation,
                                 ["acted"] = opportunity.IsActed, ["finished"] = opportunity.IsFinished,
                                 ["animationActed"] = opportunity.Animation?.IsActed,
                                 ["refillCooldown"] = responder.CombatState.Cooldown.AttackOfOpportunity });
@@ -525,7 +573,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !targetProneAtStart && knockEligible && sample != "exhausted";
                     bool responsesDrained = !needsResponses || observer.Opportunities.Count - opportunitiesBefore >= responders.Length;
                     if (finishedFrame >= 0 && frames >= finishedFrame + 2 &&
-                        (responsesDrained || frames >= finishedFrame + 32)) break;
+                        command.ExecutionProcess != null && command.ExecutionProcess.IsEnded &&
+                        (responsesDrained || frames >= finishedFrame + responseFrames)) break;
                 }
                 commandRows.Add(new JObject { ["attempt"] = attempt + 1,
                     ["commandId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command),
@@ -534,6 +583,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["origin"] = SurveyVector(commandOrigin), ["end"] = SurveyVector(finishedPosition),
                     ["travelled"] = Vector3.Distance(commandOrigin, finishedPosition),
                     ["finished"] = command.IsFinished, ["frames"] = frames,
+                    ["nativeDeliveryEnded"] = command.ExecutionProcess?.IsEnded,
                     ["finishedFrame"] = finishedFrame, ["nativeAvailabilityWaitFrames"] = availabilityWait,
                     ["targetProneAtStart"] = targetProneAtStart, ["maxNativeSpeedOverrideMps"] = maxOverride,
                     ["combatThroughout"] = commandCombat,
@@ -564,6 +614,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     commands.All(value => value.IsStarted && value.IsFinished && costs.Count(value) == 1 && costs.Exact(value, turnBased)) &&
                     commandRows.OfType<JObject>().All(value =>
                         (bool)value["combatThroughout"] &&
+                        (bool)value["nativeDeliveryEnded"] &&
                         ((JArray)value["nativeManeuverTargets"]).Count == 1 &&
                         (string)value["nativeManeuverTargets"][0] == target.UniqueId &&
                         (!passThroughExpected || (float)value["travelled"] > 2f) &&
@@ -613,6 +664,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["moveCooldown"] = new JArray(moveBefore, maxMove),
                         ["opportunityTiming"] = opportunityTrace,
                         ["nativeQueuedOpportunityCommands"] = opportunityCommands,
+                        ["nativeProvocationQueueObserved"] = nativeProvocationSeen,
+                        ["separateGetUpProvocationExcluded"] = getUpIsolation != null,
+                        ["nativeResponseFrameBudget"] = responseFrames,
                         ["responders"] = new JArray(responders.Select((value, index) => new JObject {
                             ["unit"] = value.UniqueId, ["before"] = beforeOpportunities[index],
                             ["after"] = afterOpportunities[index],
@@ -629,6 +683,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try { costs?.Dispose(); }
                 finally
                 {
+                    getUpIsolation?.Release();
                     if (observer != null) EventBus.Unsubscribe(observer);
                     EndExpandedSummoningDetachedAbility(command);
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;

@@ -1761,7 +1761,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int expectedDc = 25, int expectedRolls = 1,
             DiceType expectedDice = DiceType.D8, int expectedBonus = 12,
             Action<string, bool, JObject, string> record = null,
-            Action<UnitEntityData, int> observeFrame = null)
+            Action<UnitEntityData, int> observeFrame = null,
+            bool requireDeliveryCompletion = false)
         {
             if (record == null) record = Sprint23Check;
             UnitEntityData owner = CastExpandedSummoningQuietUnit(fixture,
@@ -1845,8 +1846,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool contactObserved = false;
                 while (frames++ < 600 &&
                     (observer.Saves.Count == 0 ||
-                     observer.Damage.Count == 0))
+                     observer.Damage.Count == 0 || requireDeliveryCompletion &&
+                     (!command.IsFinished || command.ExecutionProcess == null ||
+                      !command.ExecutionProcess.IsEnded)))
                 {
+                    if (requireDeliveryCompletion && Game.Instance.IsPaused)
+                        Game.Instance.IsPaused = false;
                     if (!command.IsFinished &&
                         (!command.IsStarted || command.ExecutionProcess == null))
                     {
@@ -1866,7 +1871,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         movementTicks++;
                     }
                     if (command.ExecutionProcess != null)
-                        TickExpandedSummoningDetachedAbility(command, frames);
+                        TickExpandedSummoningDetachedAbility(command, frames, requireDeliveryCompletion);
+                    maxStandard = Mathf.Max(maxStandard,
+                        owner.CombatState.Cooldown.StandardAction);
+                    maxMove = Mathf.Max(maxMove,
+                        owner.CombatState.Cooldown.MoveAction);
+                    yield return 0;
                     // The real contact may finish before a fixed animation
                     // frame. Observe the actual rule boundary, not a guessed
                     // frame or the lifetime of its execution-process field.
@@ -1876,11 +1886,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         observeFrame(owner, frames);
                         contactObserved = true;
                     }
-                    maxStandard = Mathf.Max(maxStandard,
-                        owner.CombatState.Cooldown.StandardAction);
-                    maxMove = Mathf.Max(maxMove,
-                        owner.CombatState.Cooldown.MoveAction);
-                    yield return 0;
                 }
                 for (int settle = 0; settle < 24 && command.IsRunning &&
                     !command.IsFinished; settle++)
@@ -1904,7 +1909,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SequenceEqual(awakeBefore);
                 awakeBefore = null;
                 bool exact = queued && nativeEconomy && command.IsStarted &&
-                    executionSeen &&
+                    executionSeen && (!requireDeliveryCompletion || command.IsFinished &&
+                        command.ExecutionProcess != null && command.ExecutionProcess.IsEnded) &&
                     moved > 3f && observer.Opportunities.Count == 0 &&
                     observer.Saves.Count == 1 &&
                     observer.Saves[0].DifficultyClass == expectedDc &&
@@ -1925,6 +1931,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["finished"] = command.IsFinished,
                         ["result"] = command.Result.ToString(),
                         ["executionSeen"] = executionSeen,
+                        ["deliveryCompletionRequired"] = requireDeliveryCompletion,
+                        ["nativeDeliveryEnded"] = command.ExecutionProcess?.IsEnded,
                         ["frames"] = frames, ["movedMeters"] = moved,
                         ["nativeEconomy"] = nativeEconomy,
                         ["movementTicks"] = movementTicks,

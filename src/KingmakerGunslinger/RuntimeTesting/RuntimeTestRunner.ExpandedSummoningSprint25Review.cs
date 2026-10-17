@@ -212,7 +212,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Sprint25Body(unit, key, "trample-" + turnBased + "-" + frame);
                             trampleCaptured = true; trampleContactFrame = frame;
                             trampleUnit = unit.UniqueId;
-                        })) yield return frame;
+                        }, true)) yield return frame;
                     Sprint25Check("trample-contact-capture-" + key + "-" + turnBased,
                         trampleCaptured, new JObject { ["unit"] = trampleUnit,
                             ["contactFrame"] = trampleContactFrame },
