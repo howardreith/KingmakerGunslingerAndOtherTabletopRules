@@ -1,5 +1,18 @@
 # output_log2 — CotW installer and early-update repair (2026-10-17)
 
+**Alpha 3 is public** at
+[the GitHub prerelease](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3),
+published 2026-10-17T22:55:15Z. Tag object
+`8acb146b7b24a8e1c0162c0c156baaa5973c97d0` peels to frozen product
+`39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e`; publication documentation/helper
+commit `a1bbecb059244e34002f04fe9cf5613b654041ae`. Public ZIP downloaded and
+verified identical; alpha ZIP and release notes also copied into owner handoff.
+Stable v0.0.157 remains Latest; existing alphas untouched. No rebuild, full
+suite, game launch, installation or save/settings changes. Native load remains
+NOT_RUN. Next: owner tests this KMG ZIP without overwriting the affected save,
+keeps KBP/CotW unchanged and retains a fresh log if loading fails. Do not
+republish or move this tag; earlier no-publication statements below are history.
+
 Subsequent owner request "Please put it up in github" authorizes one alpha 3
 of frozen product `39c60fb5e916`, prerelease / never Latest. Use the explicit
 `Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3` profile; no rebuild/native
@@ -17,7 +30,8 @@ DLL `d9fea590a604b81b5a14046ac88454a7eb8d4510e94e0b4ae5de082cbc2d606b`,
 MVID `c1a4d16b-efae-4ea8-b3ef-5966c3db9c6b`. Exact candidate: 64/64
 installer/callback assertions, 33/33 selected domain tests, strict package PASS.
 Build 65.746 s, exact-DLL regression 0.977 s. No game/install/save/settings
-activity or public release. Next: native load test confirms installed marker
+activity during that build checkpoint. Subsequent alpha 3 publication is above.
+Next: native load test confirms installed marker
 and this DLL identity first; no accompanying KBP/CotW change. Do not reuse
 alpha 2 as though it installed the correction. Full details in the current record.
 

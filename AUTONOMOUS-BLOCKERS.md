@@ -2,11 +2,21 @@
 
 ## 2026-10-17 output_log2 follow-up
 
+Owner's subsequent GitHub request has been completed:
+[controller-load alpha 3](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3)
+is public, prerelease / not Latest, exact product `39c60fb5e916`. Its downloaded
+ZIP matches the frozen candidate; no rebuild or native run. This supersedes the
+earlier no-publication checkpoint below, not the remaining native/data gaps.
+No publication or restoration blocker remains. Next is the owner's affected-save
+test with the replacement KMG ZIP; keep KBP/CotW unchanged and do not overwrite
+the save. Public alpha 2 is preserved but has the demonstrated installer defect.
+
 Local replacement candidate is ready: product `39c60fb5e916`, 64/64 exact-DLL
 regressions and 33/33 selected domain tests, strict package PASS; ZIP copied
 to owner handoff. Source branch pushed, clean candidate preserved separately.
-Native load remains NOT_RUN and no new public alpha has been authorized or
-published by this task. The unresolved external ZFavoredClass data errors are
+Native load remains NOT_RUN. At that preceding source checkpoint no new public
+alpha was authorized; the later request/publication is recorded above. The
+unresolved external ZFavoredClass data errors are
 not represented as repaired. No companion KBP/CotW update needed for this fix.
 
 Alpha 2's installer was blocked by a diagnostic-only GetPatchInfo(unpatched)

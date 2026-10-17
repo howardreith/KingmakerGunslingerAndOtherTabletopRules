@@ -1,5 +1,35 @@
 # Autonomous Gunslinger journal
 
+## 2026-10-17 — controller-load alpha 3 published
+
+Owner explicitly requested GitHub publication after the local repair handoff.
+[Alpha 3](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3)
+published 2026-10-17T22:55:15Z, draft=false/prerelease=true. Stable Latest
+remains v0.0.157; previous alphas and default branch unchanged. Tag object
+`8acb146b7b24a8e1c0162c0c156baaa5973c97d0` peels to product
+`39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e`; manifest documentation identity
+is `a1bbecb059244e34002f04fe9cf5613b654041ae`, guarded-pushed before publication.
+The helper has two fixed profiles; alpha 2's original pins remain unchanged.
+Parser/diff checks PASS, alpha 3 mutation-free preflight PASS, wrong-profile
+refusal PASS (exit 1); no full test-suite rerun or rebuild. Actual command
+`Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3 -Publish
+-ConfirmAlphaTestPublication -Confirm:$false` completed in **16.896 s**.
+Log: `artifacts/controller-alpha-3-publication.log` in the current review worktree.
+
+All three uploaded asset digests match local staging. Downloaded public ZIP
+(48,088,155 bytes) and collision-safe handoff copy match SHA-256
+`6d4ed736a18cfdcac668eb5fad24e6b19001af635fd7e1fc53006834bd507aed`.
+Public manifest SHA-256
+`0b6cd7c6f81b687c549cb2863a4c2d6e6c197daae409554b1a8bcafc25cec0be`;
+checksums file `bbe4486f7ed448afc768d431a73b56d322e9fb3f70aabc1e984c1e9dd79df56b`.
+Reused exact 64/64 adapter/callback and 33/33 domain evidence; native save load
+and physical input remain NOT_RUN, not upgraded by publication. No private
+log/assembly/receipt published, game/process/install/save/settings changes or
+transaction/restoration debt. Next: owner loads without overwriting the save,
+checks installed marker/party/pages, then KBP no-cast entry/exit. Update KMG only;
+keep KBP 0.5.4-controller.1 and CotW unchanged. Existing ZFavoredClass data
+errors remain unresolved. Alpha ZIP and uniquely named notes are in owner handoff.
+
 ## 2026-10-17 — frozen installer/readiness replacement candidate
 
 Product/source `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e` guarded-pushed,
