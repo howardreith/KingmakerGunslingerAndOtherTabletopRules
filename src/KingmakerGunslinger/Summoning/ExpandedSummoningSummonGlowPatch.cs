@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
@@ -37,38 +38,85 @@ namespace KingmakerGunslinger.Summoning
             BindingFlags.Public);
         private static readonly ConditionalWeakTable<UnitEntityView, Record> Records =
             new ConditionalWeakTable<UnitEntityView, Record>();
+        private static readonly object Sync = new object();
+        private static int s_Calls;
+        private static int s_SummonedBuffCalls;
+        private static string s_LastSkip = "<none>";
 
         /// <summary>"suppressed:rim=N,tint=M" for a view, or "&lt;none&gt;".</summary>
         internal static string Describe(UnitEntityView view)
         {
             Record record;
-            if (view == null || !Records.TryGetValue(view, out record)) return "<none>";
-            return "suppressed:rim=" + record.Rims + ",tint=" + record.Tints;
+            string own = view == null || !Records.TryGetValue(view, out record) ? "<none>" :
+                "suppressed:rim=" + record.Rims + ",tint=" + record.Tints;
+            lock (Sync)
+                return own + ",calls=" + s_Calls + ",summonedBuffCalls=" +
+                    s_SummonedBuffCalls + ",lastSkip=" + s_LastSkip;
+        }
+
+        /// <summary>
+        /// Development evidence: every buff on the unit whose spawned effect
+        /// carries rim-light or colour-tint setups, as
+        /// "name:rims/tints/activeRims" joined by '/'.
+        /// </summary>
+        internal static string DescribeBuffEffects(UnitEntityData unit)
+        {
+            if (unit == null || unit.Descriptor == null || EffectField == null)
+                return "<none>";
+            var rows = new List<string>();
+            foreach (Buff buff in unit.Descriptor.Buffs)
+            {
+                GameObject effect = buff == null ? null :
+                    EffectField.GetValue(buff) as GameObject;
+                if (effect == null) continue;
+                RimLightingAnimationSetup[] rims =
+                    effect.GetComponentsInChildren<RimLightingAnimationSetup>(true);
+                ColorTintAnimationSetup[] tints =
+                    effect.GetComponentsInChildren<ColorTintAnimationSetup>(true);
+                if (rims.Length == 0 && tints.Length == 0) continue;
+                int active = 0;
+                foreach (RimLightingAnimationSetup setup in rims)
+                    if (setup.Settings != null && !setup.Settings.IsFinished) active++;
+                rows.Add((buff.Blueprint == null ? "<null>" : buff.Blueprint.name) +
+                    ":" + rims.Length + "/" + tints.Length + "/" + active);
+            }
+            return rows.Count == 0 ? "<none>" : string.Join("|", rows.ToArray());
+        }
+
+        private static void Skip(string reason)
+        {
+            lock (Sync) s_LastSkip = reason.Replace(';', ',').Replace('|', '/');
         }
 
         private static void Postfix(Buff __instance)
         {
             try
             {
+                lock (Sync) s_Calls++;
                 if (__instance == null || !ExpandedSummoningVisualVariantPatch.IsModuleActive)
                     return;
                 BlueprintRoot root = BlueprintRoot.Instance;
                 BlueprintBuff summoned = root == null || root.SystemMechanics == null ? null :
                     root.SystemMechanics.SummonedUnitBuff;
                 if (summoned == null || __instance.Blueprint != summoned) return;
+                lock (Sync) s_SummonedBuffCalls++;
                 UnitEntityData unit = __instance.Owner == null ? null : __instance.Owner.Unit;
                 UnitEntityView view = unit == null ? null : unit.View;
-                if (view == null) return;
+                if (view == null) { Skip("no-view"); return; }
                 string ability = __instance.Context == null ||
                     __instance.Context.SourceAbility == null ? null :
                     __instance.Context.SourceAbility.name;
+                string unitName = unit.Blueprint == null ? null : unit.Blueprint.name;
                 bool registeredRim = ExpandedSummoningVisualVariantPatch.RimFor(view).HasValue;
-                if (!SummonGlowPolicy.Suppresses(ability,
-                        unit.Blueprint == null ? null : unit.Blueprint.name, registeredRim))
+                if (!SummonGlowPolicy.Suppresses(ability, unitName, registeredRim))
+                {
+                    Skip("policy:" + (ability ?? "<null>") + "/" + (unitName ?? "<null>") +
+                        "/rim=" + registeredRim);
                     return;
+                }
                 GameObject effect = EffectField == null ? null :
                     EffectField.GetValue(__instance) as GameObject;
-                if (effect == null) return;
+                if (effect == null) { Skip("no-effect:" + unitName); return; }
                 var record = new Record();
                 foreach (RimLightingAnimationSetup setup in
                          effect.GetComponentsInChildren<RimLightingAnimationSetup>(true))
@@ -86,10 +134,12 @@ namespace KingmakerGunslinger.Summoning
                 }
                 Records.Remove(view);
                 Records.Add(view, record);
+                Skip("applied:" + unitName + ":rim=" + record.Rims + ",tint=" + record.Tints);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 // A presentation change never interrupts the game's own buff.
+                Skip("exception:" + exception.GetType().Name);
             }
         }
     }
