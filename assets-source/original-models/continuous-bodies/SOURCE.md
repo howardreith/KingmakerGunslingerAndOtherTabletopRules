@@ -101,6 +101,14 @@ seen through its head and a leg. `audit_mesh_orientation.py` and
   invisible), and the exporter refuses any component that is open, wound
   inconsistently or not outward. The domain tests repeat that check on the
   shipped bytes (`OriginalMeshOrientation`).
+- **Membrane wings.** `sheet` closes a span-by-chord grid into a thin solid
+  (two layers either side of the grid's own normal, stitched at the rim), so
+  a wing is oriented and audited like any part. `membrane_grid` builds that
+  grid between a leading chain (arm, then a finger) and the trailing points
+  (ankle, then the feather tips), weighting each point by its leading bone and
+  the two trailing bones it lies between, as the first flying bodies did.
+  `chain_rows` weights a tube by the segment each vertex is nearest, blended
+  at the joints.
 - **Targeted repairs.** Where the owner asked for a repair rather than a
   rebuild (the crocodilians, the ants, the scorpion), the creature's own
   generator keeps its geometry and the legacy shared writer, makes each part

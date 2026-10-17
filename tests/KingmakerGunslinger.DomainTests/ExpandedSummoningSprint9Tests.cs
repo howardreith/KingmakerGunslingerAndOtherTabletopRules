@@ -293,6 +293,15 @@ namespace KingmakerGunslinger.DomainTests
             string meshPath = Path.Combine(directory, "dire-bat-mesh.json");
             Assertions.True(File.Exists(meshPath),
                 "The bat's original skinned mesh must ship beside its albedo.");
+            // Visual refinement (VIS-013): the refined continuous body, closed
+            // and outward with its membranes as closed thin shells.
+            using (var sha = SHA256.Create())
+                Assertions.Equal(
+                    "b04e9dd146b1c9db87de7907f7b6affb4f7910ff8fcfe4cd65288217f17b7cce",
+                    string.Concat(sha.ComputeHash(File.ReadAllBytes(meshPath))
+                        .Select(value => value.ToString("x2"))),
+                    "The bat ships its refined export.");
+            OriginalMeshOrientation.AssertShippedBody(meshPath, "dire-bat");
             JObject document = JObject.Parse(File.ReadAllText(meshPath));
             Assertions.Equal(2, (int)document["schemaVersion"],
                 "The shared skinned-mesh runtime accepts schema 2.");

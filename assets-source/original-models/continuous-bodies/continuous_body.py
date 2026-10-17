@@ -476,6 +476,150 @@ def tube(name, points, radii, segments=8):
     return _rigid_object(name, bm)
 
 
+def sheet(name, grid, half_thickness):
+    """A closed thin shell over `grid`, a list of columns (span) of rows
+    (chord) of points: a wing membrane or a fin. Two layers sit
+    `half_thickness` either side of the grid's own surface normal and their
+    boundary is stitched, so the part is closed and can be oriented and
+    audited like any solid. Returns the object and, for every vertex, the
+    (column, row) grid point it came from, so the caller can weight it."""
+    bm = bmesh.new()
+    columns, rows = len(grid), len(grid[0])
+    grid = [[Vector(point) for point in column] for column in grid]
+
+    def normal(i, j):
+        span = grid[min(i + 1, columns - 1)][j] - grid[max(i - 1, 0)][j]
+        chord = grid[i][min(j + 1, rows - 1)] - grid[i][max(j - 1, 0)]
+        value = span.cross(chord)
+        return value.normalized() if value.length > 1e-9 else Vector((0, 1, 0))
+
+    layers, origin = [], []
+    for sign in (1.0, -1.0):
+        layer = []
+        for i in range(columns):
+            column = []
+            for j in range(rows):
+                column.append(bm.verts.new(grid[i][j] +
+                                           normal(i, j) * half_thickness * sign))
+                origin.append((i, j))
+            layer.append(column)
+        layers.append(layer)
+    top, bottom = layers
+    for i in range(columns - 1):
+        for j in range(rows - 1):
+            bm.faces.new((top[i][j], top[i + 1][j], top[i + 1][j + 1],
+                          top[i][j + 1]))
+            bm.faces.new((bottom[i][j + 1], bottom[i + 1][j + 1],
+                          bottom[i + 1][j], bottom[i][j]))
+    # The rim: the two leading/trailing edges and the two end columns.
+    for i in range(columns - 1):
+        for j, flip in ((0, False), (rows - 1, True)):
+            quad = (top[i][j], bottom[i][j], bottom[i + 1][j], top[i + 1][j])
+            bm.faces.new(tuple(reversed(quad)) if flip else quad)
+    for i, flip in ((0, False), (columns - 1, True)):
+        for j in range(rows - 1):
+            quad = (top[i][j], top[i][j + 1], bottom[i][j + 1], bottom[i][j])
+            bm.faces.new(tuple(reversed(quad)) if flip else quad)
+    obj = _rigid_object(name, bm)
+    return obj, origin
+
+
+def _resample(points, count):
+    lengths = [0.0]
+    for index in range(1, len(points)):
+        lengths.append(lengths[-1] + (points[index] - points[index - 1]).length)
+    total = lengths[-1]
+    out = []
+    for step in range(count):
+        target = total * step / float(count - 1)
+        segment = 0
+        while segment < len(points) - 2 and lengths[segment + 1] < target:
+            segment += 1
+        span = lengths[segment + 1] - lengths[segment] or 1.0
+        t = (target - lengths[segment]) / span
+        out.append((points[segment].lerp(points[segment + 1], t), segment))
+    return out
+
+
+def membrane_grid(leading, trailing, leading_bones, trailing_bones, up,
+                  stations_per_link=6, chord_rows=9, scallop=0.0,
+                  scallop_from=2, sag=0.06):
+    """The grid and weights of a membrane wing for `sheet`.
+
+    `leading` is the leading-edge chain (arm, then the wing finger) and
+    `trailing` the trailing-edge points from the body to the tip; both end
+    at the wing tip. Columns run from the body to the tip, each from the
+    leading edge to the trailing edge. A point shares its leading bone with
+    the two trailing bones it lies between, the weighting the first flying
+    bodies used so the donor's own wing animation folds the membrane.
+    `scallop` draws the trailing edge in between consecutive trailing points
+    from link `scallop_from` outward (a bat's membrane between its fingers);
+    `sag` lets the sheet hang a little between its edges."""
+    links = len(trailing) - 1
+    stations = links * stations_per_link + 1
+    lead_points = _resample([Vector(p) for p in leading], stations)
+    trailing = [Vector(p) for p in trailing]
+    columns, rows = [], {}
+    for i in range(stations):
+        position = i / float(stations_per_link)
+        low = min(int(math.floor(position)), links - 1)
+        factor = position - low
+        trail = trailing[low].lerp(trailing[low + 1], factor)
+        lead, segment = lead_points[i]
+        if low >= scallop_from and scallop:
+            trail = trail + (lead - trail) * (scallop * math.sin(math.pi * factor))
+        if (trail - lead).length < 0.03:
+            # The tip, where both edges meet: keep a short chord so the
+            # closed shell stays a solid rather than collapsing to a point.
+            trail = lead + (columns[-1][-1] - columns[-1][0]).normalized() * 0.03
+        chord = (trail - lead).length
+        span = i / float(stations - 1)
+        column = []
+        for j in range(chord_rows):
+            across = j / float(chord_rows - 1)
+            droop = math.sin(across * math.pi) * chord * sag * (1.0 - span ** 2)
+            column.append(lead.lerp(trail, across) - Vector(up) * droop)
+            entries = [(leading_bones[min(segment, len(leading_bones) - 1)],
+                        1.0 - across),
+                       (trailing_bones[low], across * (1.0 - factor)),
+                       (trailing_bones[min(low + 1, links)], across * factor)]
+            merged = {}
+            for name, value in entries:
+                if value > 1e-4:
+                    merged[name] = merged.get(name, 0.0) + value
+            rows[(i, j)] = sorted(merged.items(), key=lambda e: (-e[1], e[0]))
+        columns.append(column)
+    return columns, rows
+
+
+def chain_rows(obj, points, bones, blend=0.18):
+    """Weights for a tube along `points`: each vertex follows the bone of
+    the segment it is nearest, blending into the neighbouring bone over the
+    last `blend` of a segment so a joint bends rather than creases."""
+    rows = {}
+    for vertex in obj.data.vertices:
+        best = None
+        for segment in range(len(points) - 1):
+            a, b = Vector(points[segment]), Vector(points[segment + 1])
+            axis = b - a
+            t = max(0.0, min(1.0, (vertex.co - a).dot(axis) /
+                             max(axis.length_squared, 1e-9)))
+            distance = (vertex.co - a.lerp(b, t)).length
+            if best is None or distance < best[0] - 1e-9:
+                best = (distance, segment, t)
+        _, segment, t = best
+        own = bones[segment]
+        if segment + 1 < len(bones) and t > 1.0 - blend:
+            share = 0.5 * (t - (1.0 - blend)) / blend
+            rows[vertex.index] = [(own, 1.0 - share), (bones[segment + 1], share)]
+        elif segment > 0 and t < blend:
+            share = 0.5 * (blend - t) / blend
+            rows[vertex.index] = [(own, 1.0 - share), (bones[segment - 1], share)]
+        else:
+            rows[vertex.index] = [(own, 1.0)]
+    return rows
+
+
 def _rigid_object(name, bm):
     bm = fan_triangles(bm)
     orient_outward(bm)

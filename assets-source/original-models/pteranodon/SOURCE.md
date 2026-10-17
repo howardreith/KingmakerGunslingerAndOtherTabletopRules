@@ -154,3 +154,34 @@ Blender's `.blend` container embeds session metadata and is semantically
 reproducible but not byte-identical, which is why the `.blend` is a local build
 artefact rather than the authority. The authority is this script plus the
 recorded `rigSha256` in the build report.
+
+## Visual refinement, 2026-10-17 (VIS-020)
+
+The owner found the Pteranodon hard to recognise, with detached-looking claws
+and toes and blocky body and wing planes; the first export also shipped inside
+out (12 of 19 parts inward, 18 with caps opposite their walls, 7 open).
+`build_pteranodon.py` (library in `../continuous-bodies/`) now builds it on
+the same Giant Eagle bind frame (`convert_bind_rig.py` of the guarded capture;
+rig SHA-256 `38fc5f00831a831f9a3885609a8db0d608776ebc9d66af51ca5a10dab8ec75f2`)
+as one continuous body: a small, deep body on a slender neck, a narrow skull
+with a long straight beak and a lower bill on `Jaw`, a long rust crest swept
+back from the skull, thin legs with short clawed toes (the eagle's toe chains,
+stopped short of the talon length), a short tail stub, and two membrane wings.
+Each membrane is a closed thin shell (`continuous_body.sheet`) over a grid from
+the arm and the long wing finger back to the ankle, narrowing to the tip, with
+the first export's weighting (`membrane_grid`: a point shares its leading bone
+with the two trailing bones it lies between), so the donor's own wing
+animation still folds it. Three small clawed fingers sit at each wrist. Every
+one of the 46 audited bones carries geometry. `generate_pteranodon.py` now
+refuses to build and stays as the shared loader, atlas and legacy writer the
+other flying and Sprint 13-23 generators import.
+
+- `pteranodon-mesh.json`: `42627bc93837ab0979bd4e1e338a9900bdb038cb16c71a4d20d2c50185a24345`
+  (8,905 vertices, 12,080 triangles, 34 closed outward parts, 46 bones; one
+  `body` atlas region).
+- `pteranodon-albedo.png`: `0d9e252094d1e7b02b6ee4286c3588d36d409224281f2269ee4d15bcfa337455`.
+- Superseded: mesh `cc80e28589f5644c86e870c672cd8f188312920f7092cacbd6cb3dff4007de3c`,
+  albedo `7169649b8ec101cf6ff3071420678feab4499a743bba263ecbefe2b04b0325c7`.
+- `pteranodon-build-report.json` and `scripts/Prepare-PteranodonAssets.ps1`
+  describe the first export and its unshipped AssetBundle route; they are
+  kept as history and do not describe the shipped mesh data.
