@@ -2,6 +2,12 @@
 
 ## 2026-10-17 CotW controller action-bar load
 
+Subsequent owner authorization was exercised for one public test alpha:
+[`v0.0.157-controller-load-alpha.2`](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.2).
+Public ZIP matches the frozen candidate; this is the KMG update itself, with
+no accompanying KBP/CotW change. Stable Latest unchanged. Native gaps below
+remain; publication is not native save-load acceptance.
+
 Source repair and local package are not blocked: product `92b442c06dd8`,
 39/39 exact-assembly adapter assertions, 6/6 Brown-Fur startup tests, strict
 development package PASS. Brown-Fur alpha preserved. Full affected log/DLL
@@ -13,7 +19,7 @@ action-bar readiness/refresh and later KBP no-cast entry/exit remain NOT_RUN,
 not PASS or a hardware/permission failure. Next is a narrow no-cast guarded
 controller load/scene-lifecycle protocol; do not force a mode field or run the
 older cast campaign to claim this acceptance. No transaction/restoration debt,
-no release/merge/install authority for this repair. See
+no stable-release/merge/install authority for this repair. See
 [investigation and exact candidate](docs/COTW-CONTROLLER-ACTIONBAR-LOAD-REPAIR.md).
 
 ## 2026-10-17 Brown-Fur startup-order repair
