@@ -1,9 +1,34 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "EE5_FOUNDATION_AI_PASS_BOTH_PROFILES_COMMAND_FIXTURE_REPAIR_FOCUSED_PASS_CANDIDATE_NEXT",
+  "status": "D7_TB_COMMANDS_PASS_BOTH_PROFILES_OVERRUN_DEFECTS_SCOPED_REPAIR_FOCUSED_PASS_CANDIDATE_NEXT",
   "current": {
     "latestCheckpoint": {
+      "asOfUtc": "2026-10-17T21:58:36Z",
+      "sourceBuildCheckpoint": {
+        "source": "d7aa509907e93f67d6f5fde1a0686bfacb597ee4",
+        "sourceFingerprint": "d404be9df06a8677636090d31f5dd723489403d43ba9d2a75b62c8670744fec8",
+        "zipSha256": "322aadd1f4a49719f5e363e0352860180c8f8a2c655c42caf2850bcfdd2473a8",
+        "dllSha256": "c888897a5cd07eea80cd16f7566eadee203a3b4efa7b6ff47ac9a22a6b1ade39",
+        "dllMvid": "f2762299-bb9b-4bd8-b1cb-7528546720b0",
+        "gate": "PASS: 2660/2660, exact build, strict 378-file package, 300.3650463 s; completed 2026-10-17T21:15:31.8594334Z. Exact ZIP and untouched sidecars archived under artifacts/checkpoints/source-build-d7aa5099. Earlier checkpoints retain original identities."
+      },
+      "nativeBatch": {
+        "receipt": "artifacts/native-batch-d7aa5099-commands/result.json",
+        "receiptSha256": "b5ca938a612ef2f0ae3db96d229a4201271fd28a6465be763fe4bee4a45acce2",
+        "completedUtc": "2026-10-17T21:44:00.5801321Z",
+        "seconds": 1688.403867,
+        "result": "FAIL overall: turn-based ordinary attacks and Tramples PASS for both creatures in both profiles (two cells); Overrun fails gameplay predicates and Cleave fails cluster setup (four cells). All six exact transactions restored installation/settings/bank, all 118 protected saves and private references; no game/lease remains.",
+        "overrun": "Each profile's failure case passes with native CMB32/d20=10/margin-1. Success cases demonstrate 3 same-tick contacts including allied responders despite FirstTargetOnly=true; TB threshold can contact four. Native IL checks FirstTargetOnly only outside the inner loop and has no ally filter. Native RuleCombatManeuver itself requests threshold knockdown before OnEventDidTrigger, so the old rider incorrectly treats the new request as pre-existing prone and skips provocation. Standalone general immunity returns zero/unrolled fields but Success=true; combined already reports false. The 25-second post-command window also includes native get-up and a later legal opportunity, not a second knockdown response.",
+        "cleave": "Visible native appearance now passes. The far isolated anchor has no legal three-target walkable/clear-sight cluster; no chain verdict yet. Reuse the qualified nearby combat-lane survey and park only the request-owned extra hostile outside reach.",
+        "visualInspection": "Unaltered EE5 normal party-camera idle and ordinary-attack captures inspected for both original bodies: visible and stable at accepted rough quality, not owner aesthetic approval. Existing Tramples finish in five frames, before the old frame-six camera callback; the minimal early frame-two callback still needs fresh execution."
+      },
+      "coherentRepair": "Exact module/owner/ordinary-ability candidate predicate closes the native inner-loop gap, skips allies and preserves native movement/rolls/set ownership; every other delivery, including Trample, keeps its original predicate. Correct blocked Success only for that carrier. The private rider snapshots eligibility before the real native rule, consumes each exact event once, and provokes only after native threshold knockdown actually occurred; it no longer performs/re-emits knockdown. Transient pending fields are nonserialized and bounded. Observers capture immediate post-drain resources before round refill, actual finish versus response-window timing, native point-range/body-padding/speed/cost readbacks, per-command targets and incoming opportunities. Immediate repeats wait for native action availability, never reset costs. No new identity, feat, movement subsystem, body/icon or player-difficulty change.",
+      "checks": "PASS: final production compilation17.2s and57/57 named regressions2.0s (2660 registered), including exact-carrier/native-output guard truth tables; actual hidden source gate/6916 identities and19 refusal tests. Exact-reference metadata/production IL-splice positive and missing-seam refusal PASS against game MVID07fa1e4d-8618-41b3-9b8d-faa17d3b26f7. Optional CLR wrapper attempt refused Unity ECall emission after its resolver was repaired (prior shell stack overflow retained); no native method/game/save was invoked. This is not native wrapper qualification: guarded Unity execution remains mandatory. Final NonSerialized annotations are additionally covered by the upcoming full build and targeted save stages.",
+      "next": "Commit/push; one fresh Sprint candidate; exact-package carrier-repair batch: RTWP foundation (including new Trample capture/shared Triceratops control), Overrun and Cleave in both profiles. Estimate30-45min, record actual; restoration has no deadline. Then targeted ON/OFF prepare/cold-cleanup/fresh-absence, public boundary/full candidate/fresh public inventory/icon/eleven roots, publisher preflight, authorized merge/release/download/restoration audit, final-records merge, STOP. Reuse D7 TB and EE5 AI/E8 body/routes only with original identities and actual unchanged-dependency arguments. No waiver, no Sprint26.",
+      "acceptance": "PR49 OPEN/DRAFT; Brachiosaurus hidden; no merge/release. HumanReview NOT_PERFORMED_NONBLOCKING; accepted art/body bytes unchanged. Steam Offline Mode remains accepted and works unchanged."
+    },
+    "previousCheckpoint20261017T2109Z": {
       "asOfUtc": "2026-10-17T21:09:00Z",
       "sourceBuildCheckpoint": {
         "source": "ee5d6fd0cd992be97df3d90f4c384fed4e6b45fc",
@@ -1737,14 +1762,14 @@
     "whatItIsNot": "A package passing structural checks is not native qualification. Nothing has been deployed, launched or observed in game."
   },
   "remainingNativeCampaign": {
-    "status": "EE5 FOUNDATION/AI PASS BOTH PROFILES; E8 BODY/ROUTES PASS RETAINED; THREE COMMAND PHASES REQUIRE CORRECTED FIXTURE; TARGETED PERSISTENCE AND PUBLIC QUALIFICATION REMAIN",
+    "status": "D7 TB COMMANDS PASS BOTH PROFILES; OVERRUN EXACT-CARRIER DEFECTS AND CLEAVE SETUP REPAIRED BUT NOT NATIVE-QUALIFIED; SHARED TRAMPLE/CAPTURE RERUN, TARGETED PERSISTENCE AND PUBLIC QUALIFICATION REMAIN",
     "whyItIsABatchAndNotACheckpoint": "Implement one bounded Sprint 25 review with phases for profiles/commands, ordinary Overrun, functional visuals/resources and routes, plus separate targeted persistence stages. Reuse the existing partial-class fixture, native clock and observers; predecessor file sizes are not an implementation target.",
     "candidateBoundary": "Compiled observers change DLL/MVID as expected and are authorized. Batch the complete minimal observer and focused checks, then build one fresh Sprint candidate. Preserve candidate.commit 9b55df81 and its exact hashes as the historical source/build checkpoint; it is not invalidated or relabelled by later work.",
     "coverageMap": [
       {
         "required": "Composed profiles, signed Strength, reach, trample DC/damage, feats, Great Cleave and RTWP/turn-based action costs",
         "existing": "ExpandedSummoningCorrectionFixture / BeginExpandedSummoningCorrectionFixture and Sprint22NativeClock are private members of the same RuntimeTestRunner partial class. Existing weapon-stat/damage observers, Sprint23FindTrampleRoute, ExpandedSummoningTrampleObserver, Sprint22EnrollTurnBasedOwners and detached native command tick/teardown seams can be reused.",
-        "missing": "EE5 foundation/profile/signed damage/reach/live DC/Power Attack/RTWP Tramples and exact ordinary costs PASS both profiles. Fresh corrected turn-based command completion and legal Great Cleave/miss/action sequences remain. Reuse the existing read-only FirearmReviewCosts boundary, not between-frame maxima alone."
+        "missing": "EE5 foundation and D7 turn-based ordinary/Trample commands PASS both profiles. Rerun affected RTWP Trample/shared controls after the scoped native candidate predicate change and capture its real early action frame. Great Cleave legal-chain/miss/action proof remains mandatory on the corrected nearby fixture."
       },
       {
         "required": "Brachiosaurus ordinary Overrun outcome, target limit, movement/action budget and per-responder opportunity ownership",

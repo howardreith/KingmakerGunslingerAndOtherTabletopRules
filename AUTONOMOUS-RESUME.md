@@ -1,6 +1,38 @@
 # Sprint 25 takeover — grouped native repair, candidate next
 
-Controlling update, 2026-10-17 21:09 UTC: continue Sprint25 through qualified
+Controlling update, 2026-10-17 21:58 UTC: continue the selected Sprint25 release
+campaign; no merge/release/public unsuppression or Sprint26. See the ledger's
+`current.latestCheckpoint` for exact source/artifact/evidence identities.
+
+d7aa5099 full2660/exact/strict378 candidate PASS (300.37s) is archived with
+untouched sidecars. Its28.1-minute native batch: TB ordinary attacks/Tramples
+PASS both creatures/both profiles; Overrun gameplay FAIL and Cleave setup FAIL.
+All six exact transactions restored actual installation/settings/bank, all118
+protected saves/private references; no game/lease remains.
+
+The grouped source correction closes the exact ordinary Overrun carrier's
+native same-tick multi-target/ally gap and blocked-result immunity bug; keeps
+native movement/rolls/thresholds; and snapshots pre-rule eligibility so the
+native knockdown correctly provokes once. No extra feat/identity/new serialized
+part. Observer response windows no longer include late get-up attacks, costs
+are never reset, Cleave reuses the nearby qualified lane, and a frame-two
+Trample callback closes the demonstrated missing capture. Art bytes unchanged.
+Compile17.2s,57/57 named tests2.0s, source gate and19 refusals PASS. Metadata/IL
+splice/refusal checks pass; CLR cannot emit Unity ECall wrappers, so actual
+guarded Unity wrapper execution remains required, not waived.
+
+Next: commit/push, one full Sprint candidate, then exact-package carrier-repair
+batch (RTWP foundation/shared Trample controls, Overrun, Cleave; both profiles).
+Estimate30-45min, not a cleanup deadline. Continue targeted ON/OFF cold-save
+stages, final public candidate/inventory/icon/eleven roots, publisher preflight,
+authorized merge/release/download/restoration audit and final-records merge;
+STOP. D7 TB, EE5 AI and E8 body/routes retain their original identities on reuse.
+HumanReview NOT_PERFORMED_NONBLOCKING; rough polish deferred. Steam Offline
+Mode works with existing guards and no online requirement.
+
+## Dated 21:09 checkpoint (superseded chronology)
+
+Recorded update, 2026-10-17 21:09 UTC: continue Sprint25 through qualified
 publication, PR49 merge, release/download verification and final-records merge;
 then STOP. No merge/release yet, Brachiosaurus is hidden, no Sprint26.
 

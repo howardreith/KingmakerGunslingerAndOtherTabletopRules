@@ -870,15 +870,12 @@ namespace KingmakerGunslinger.Blueprints
             // FALSE is the whole point: this one really rolls.
             overrun.AutoSuccess = false;
             // ONE target, which is where this parts company with Trample.
-            // The IL: when FirstTargetOnly is false the delivery keeps
-            // enumerating Game.Instance.State.Units and overruns every
-            // creature on the path; when true, the moment overrunUnits
-            // holds anyone it branches to IL_0428 - the movement
-            // accumulator - so the creature keeps moving but overruns
-            // nobody else. Printed ordinary Overrun is "you can attempt
-            // to overrun your target, moving through its square": one
-            // target. Trample is the one that hits everything in the
-            // path, and it keeps false.
+            // Native checks this flag outside its inner unit loop. The
+            // product-native d7aa5099 table demonstrated multiple contacts
+            // in one tick despite TRUE; BrachiosaurusOverrunContactPatch
+            // closes only this carrier's intra-tick gap and skips allies.
+            // Native movement/rolls remain in use. Trample keeps FALSE and
+            // its original many-target behavior.
             overrun.FirstTargetOnly = true;
             overrun.StopOnCorpulence = false;
             overrun.DelayBeforeStart = 0f;
