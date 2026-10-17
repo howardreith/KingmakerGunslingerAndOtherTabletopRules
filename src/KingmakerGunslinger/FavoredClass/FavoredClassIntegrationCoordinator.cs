@@ -101,6 +101,9 @@ namespace KingmakerGunslinger.FavoredClass
         {
             ModContext context;
             lock (Gate) context = _context;
+            // Waiting for our own registration is not an unsupported host and
+            // must not consume the optional host's bounded retry allowance.
+            if (context != null && !BlueprintBootstrap.IsInitialized && !context.IsFailed) return;
             bool retry = !TryResolveAndPublish("first-update-after-load-dictionary");
             lock (Gate)
             {

@@ -111,6 +111,7 @@ namespace KingmakerGunslinger.Compatibility
         {
             ModContext context;
             if (!ModContext.TryGet(out context)) return;
+            if (!BlueprintBootstrap.IsInitialized && !context.IsFailed) return;
             context.ModEntry.OnUpdate -= FirstUpdate;
             lock (Gate) _firstUpdatePending = false;
             Capture("first-idle-update", null);

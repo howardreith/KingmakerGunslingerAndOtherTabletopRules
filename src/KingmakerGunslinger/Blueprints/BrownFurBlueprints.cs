@@ -409,6 +409,30 @@ namespace KingmakerGunslinger.Blueprints
                     "Brown-Fur blueprints require the complete compatible CotW Arcanist contract.");
         }
 
+        internal static void ValidateRegistered(LibraryScriptableObject library, BrownFurBlueprintSet set)
+        {
+            if (library == null || library.BlueprintsByAssetId == null || set == null)
+                throw new InvalidOperationException("Brown-Fur registered library is unavailable.");
+            BlueprintScriptableObject[] owned = new BlueprintScriptableObject[] {
+                set.Archetype, set.PowerfulChange, set.PowerfulChangeSelection,
+                set.ShareTransmutation, set.ShareTransmutationAbility,
+                set.ShareTransmutationBuff, set.TransmutationSupremacy }
+                .Concat(set.ScoreAbilities).Concat(set.ScoreActivatables).Concat(set.ScoreBuffs).ToArray();
+            var all = library.GetAllBlueprints();
+            if (all == null || owned.Length != BrownFurIdentityCatalog.IdentityCount || owned.Any(value => value == null))
+                throw new InvalidOperationException("Brown-Fur registered identity set is incomplete.");
+            foreach (BrownFurIdentitySpec identity in BrownFurIdentityCatalog.All)
+            {
+                BlueprintScriptableObject expected = owned.Single(value => value.AssetGuid == identity.Guid);
+                BlueprintScriptableObject resolved;
+                if (!library.BlueprintsByAssetId.TryGetValue(identity.Guid, out resolved) ||
+                    !ReferenceEquals(expected, resolved) || resolved.GetType().Name != identity.PlannedType ||
+                    all.Count(value => value != null && value.AssetGuid == identity.Guid) != 1)
+                    throw new InvalidOperationException("Brown-Fur identity does not resolve exactly once as its expected type: " +
+                        identity.Symbol + ";guid=" + identity.Guid + ";type=" + identity.PlannedType);
+            }
+        }
+
         internal static void Validate(BrownFurBlueprintSet set,
             CotwArcanistContract contract)
         {
