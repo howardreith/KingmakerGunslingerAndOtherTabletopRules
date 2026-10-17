@@ -267,7 +267,9 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # and two original creature icons to the previously qualified 363-file base;
 # v0.0.156 adds its release notes.
 # The soundbank and its manifest account for the optional two-file delta.
-$basePackageFileCount = 371
+# 376 since 2026-10-17: Sprint 25 adds five files to the package - the two
+# giant-body mesh payloads, their two albedos, and the Brachiosaurus icon.
+$basePackageFileCount = 376
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
