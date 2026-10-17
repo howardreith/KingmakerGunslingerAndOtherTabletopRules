@@ -68,6 +68,12 @@ GUIDS = {
     # Trample and sharing none of its machinery.
     "KMG.Summoning.Special.Brachiosaurus.Overrun":
         "b41f7d2a6c8e40539af1c2d5e7b30486",
+    # The exact-owner Greater Overrun carrier: the native
+    # feat cloned with its success-only provocation removed,
+    # so the printed rider follows a knockdown this overrun
+    # actually caused and nothing stacks on the original.
+    "KMG.Summoning.Special.Brachiosaurus.GreaterOverrun":
+        "c9f41b8d20e7456eae3d6c1f5a8b7204",
     # Appended 2026-10-16 when master released the alternate summoning
     # sources: that release projects a caller-specific adapter identity
     # for every creature whose family and tier admit it, and it keeps no
@@ -101,6 +107,11 @@ def planned_type(symbol: str) -> str:
         return "BlueprintUnit"
     if symbol.startswith("KMG.Summoning.Ability."):
         return "BlueprintAbility"
+    # Checked before the Overrun rule below, because it also ends in
+    # "Overrun" and is not an ability: it is the cloned feat carrier that
+    # corrects the printed rider for one creature.
+    if symbol.endswith(".GreaterOverrun"):
+        return "BlueprintFeature"
     if symbol.endswith("Trample") or symbol.endswith("Overrun"):
         return "BlueprintAbility"
     if symbol.endswith("Tail4d6"):
@@ -132,6 +143,22 @@ ALLOWED_PRODUCTION = {
     # is deliberate rather than incidental.
     "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
     "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
+    # Admitted 2026-10-16 with the usable bodies. The owner's delivery
+    # instruction requires each creature to have a working, visible
+    # in-game 3D body, which is the attachment path these four seams
+    # are: the ownership contract, the loader that refuses a payload
+    # failing it, the loader's registration, and the view patch's two
+    # key rows, one source branch and one donor-renderer guard. No other
+    # creature's branch is touched.
+    # Admitted 2026-10-16 with the exact-owner Greater Overrun
+    # correction. The printed rider follows a knockdown the overrun
+    # caused; the native component provokes on success alone. This is
+    # the corrected behaviour, on this creature's cloned carrier only.
+    "src/KingmakerGunslinger/Summoning/BrachiosaurusOverrunKnockdown.cs",
+    "src/KingmakerGunslinger/Summoning/GiantBodyVisualPolicy.cs",
+    "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.GiantBodies.cs",
+    "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs",
+    "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs",
     # Admitted 2026-10-16 with the Brachiosaurus builder. The profile row
     # names weapon key "BrachiosaurusTail4d6", and a profile whose weapon
     # cannot resolve makes blueprint initialization throw and roll back
@@ -150,7 +177,20 @@ ALLOWED_PRODUCTION = {
 # Original project-authored bodies and icons, pinned once authored. A public
 # candidate must declare and carry them; a registered candidate is allowed to
 # say truthfully that they do not exist yet.
-ART: dict[str, str] = {}
+# The sprint's original BODY art, pinned by exact bytes. The painted
+# Brachiosaurus icon is a separate dependency with its own gate - the icon
+# catalog count - and is NOT in this set, so a complete ART here must not be
+# read as "all Sprint 25 art exists". It does not; the icon is still missing.
+ART: dict[str, str] = {
+    "assets/sprint25-giant-bodies/brachiosaurus-mesh.json":
+        "ce826df01509d0333e50491077a376a8e985f4bf8d735c7c2814aa16d434e18a",
+    "assets/sprint25-giant-bodies/brachiosaurus-albedo.png":
+        "99b077a7f3453c34bf5b3503111b9535d34a80c19393efb711d67ff69da6e8e7",
+    "assets/sprint25-giant-bodies/elephant-mesh.json":
+        "ed1e0dffc817a7ebda0453c4125b07386e1b03d309ebfc84d1e2b8c027ed8087",
+    "assets/sprint25-giant-bodies/elephant-albedo.png":
+        "b002da80a6ec4a56fb5a9d8b84b6ee751174e2ca53d1a2962f46344e623b7b8b",
+}
 
 
 def validate_append(accepted, current):

@@ -729,14 +729,14 @@
       "inspectionPendingReason": "the models do not exist yet; see geometry below"
     },
     "geometry": {
-      "status": "WEIGHTED_PROTOTYPE_MEASURED_PENDING_FINAL_GEOMETRY",
+      "status": "BODIES_EXPORTED_AND_WIRED_PENDING_NATIVE_QUALIFICATION",
       "previousBlockerResolved": "The blocker was BLOCKED_ON_DONOR_CAPTURE: the Sprint 11 Mastodon bind-frame capture was private machine-local evidence that did not exist on this machine. It exists now. The guarded census captured the donor geometry-free on 2026-10-16: 150 transforms with local and world rest position, rotation and scale, 40 real skinning joints, the renderer bind frame, anatomy chains, animation managers and colliders. No native vertices, indices, UVs, textures or animation curves were read or retained.",
       "capture": "runtime-evidence/20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census",
       "donorPrefab": "fe9f25fe62e0f3b49a13910a996470b2",
       "anatomyCorrection": "See engineering.donorRig. The first reading of this capture classified the rig by bone name and was withdrawn: the twelve Tail* joints are two chains, a seven-joint TRUNK parented to Head and running forward of it, and a five-joint real tail parented to LowerTorso. The forward chain is the carrier for a long sauropod neck, so there is no rigid-neck constraint to design around.",
       "nextStep": "Final geometry, UVs on it, and the textures inspected on the actual models, carrying the five findings above. The motion prototype that this step previously waited on is done and measured.",
       "toolingReady": "Blender 4.5.10 LTS already verified; no capability rediscovery needed.",
-      "originalBodyAssetsAuthored": false,
+      "originalBodyAssetsAuthored": true,
       "whyStillFalse": "A weighted prototype exists, is bound through the real pipeline, moves by skinning and is measured. No final geometry, UVs or textures exist. A prototype is not finished art, and proving motion is not authoring it.",
       "captureEquivalence": "Three guarded census runs exist for this donor. Their bind frames are identical - same 40 joints, same bind-position hash 0ac4268cd15e52f2 - so the choice between them does not affect any geometry. The run named in `capture` above is the one of record and is what the prototype reads; the 1527Z run adds an unrelated released-Elephant observation section and nothing about the bind frame.",
       "weightedPrototype": {
@@ -810,6 +810,24 @@
         },
         "evidenceLevelsKeptApart": "1 unchanged base vertex coordinates during a posed experiment; 2 the evaluated Armature modifier's deformation; 3 FBX round-trip bone and weight integrity; 4 correct runtime binding - NOT established; 5 actual native animation, contacts and appearance - NOT established. None of 1-3 establishes 4 or 5.",
         "rigidDistortionRelabelled": "It was named as though it proved the deformation matched the bone that drives it. It does not: it is the largest change in a vertex's distance to its part's centroid, invariant under rotation, so a part driven by the wrong bone passes unchanged. Now documented as that, with a direct check beside it - the skull against pose.matrix * bone.matrix_local^-1 * v in the armature space the modifier works in. Error 1e-6 to 2e-6; the same check with a deliberately wrong bone reports 0.146 to 3.236, so it is shown to detect what its name claims."
+      },
+      "whyNowTrue": "The actual original body assets exist and ship: brachiosaurus-mesh.json and elephant-mesh.json written through the released write_mesh_data schema with their UVs, normalised influences and albedo manifests, both albedos, the four files pinned by exact bytes in the version validator's ART set, and the Blender sources and export report retained as provenance. It is not true because a control rendered offline, and it is no longer false merely because polish is deferred.",
+      "exportProvenance": {
+        "exporter": "assets-source/original-models/sprint25-giant-bodies/export_giant_bodies.py",
+        "evidence": "runtime-evidence/sprint25-body-export",
+        "authoringSpace": "The released schema ships vertices in the donor's renderer-local frame. The graybox authors in Blender Z-up, so every vertex and normal is converted back by the exact inverse, determinant +1, and the exporter's own winding reversal remains the only handedness correction. Verified by decode: both blobs are fully consumed, all soles land on the donor's own sole plane at y = 0.0352, every influence row sums to 1.000, and no triangle or bone index is out of range.",
+        "brachiosaurus": {
+          "vertices": 624,
+          "triangles": 1212,
+          "bones": 29,
+          "sha256": "ce826df01509d0333e50491077a376a8e985f4bf8d735c7c2814aa16d434e18a"
+        },
+        "elephant": {
+          "vertices": 808,
+          "triangles": 1564,
+          "bones": 38,
+          "sha256": "ed1e0dffc817a7ebda0453c4125b07386e1b03d309ebfc84d1e2b8c027ed8087"
+        }
       }
     },
     "icon": {
@@ -1234,7 +1252,7 @@
         "remainingOpenBehaviour": "Whether this creature can reach an ORDINARY overrun maneuver at all. The components are real and would fire on a RuleCombatManeuver of type Overrun, which only an overrun ability with AutoSuccess false raises. What grants such an ability to a summon, and whether any supported command or AI path reaches it, is not established by the evidence gathered so far.",
         "exactFailedPath": "Brachiosaurus carries no overrun ability. Its trample is AutoSuccess = true, which skips RuleCombatManeuver construction, so ManeuverBonus(Overrun, +2) and ManeuverProvokeAttack(Overrun) are both unreachable for it today.",
         "smallestGameplayChoice": "Either (a) grant the native GreaterOverrunFeature as a faithful but currently unreachable fact, which this order forbids presenting as implemented mechanics; or (b) also give the creature a reachable ordinary overrun command with AutoSuccess false, which is new gameplay surface beyond the printed stat block and would need its own qualification; or (c) record the printed feat as present-but-unreachable with this evidence and take no action. No option is taken unilaterally.",
-        "disposition": "REGISTERED, knockdown corrected within the creature's own command, one engine divergence recorded, NOT QUALIFIED. Native proof in play is still required and is listed: failure; successful passage without qualifying knockdown; knockdown caused by this overrun with eligible provocation; immunity and pre-existing prone controls; opportunity-attack consumption exactly once; unchanged Trample and unrelated actors.",
+        "disposition": "CORRECTED IN SOURCE TO THE PRINTED CONTRACT, NOT QUALIFIED. The six rows above are native proof in play and have not been run. No rules defect is labelled accepted native behaviour.",
         "evidence": [
           "runtime-evidence/20261016T1351412649785Z-observe-expanded-summoning-sprint25-donor-census (GreaterOverrunFeature and ImprovedOverrunFeature graphs)",
           "IL of Kingmaker.Designers.Mechanics.Facts.ManeuverProvokeAttack and Kingmaker.UnitLogic.Abilities.Components.AbilityCustomOverrun",
@@ -1247,14 +1265,25 @@
           "explicitlyNotAuthorised": "a general Overrun system, a new feat for player characters, or adding Improved Overrun as a bonus feat to work around a selection prerequisite"
         },
         "implementation": {
-          "status": "REGISTERED; KNOCKDOWN FIDELITY CORRECTED WITHIN THIS CREATURE'S OWN COMMAND; ONE ENGINE DIVERGENCE REMAINS; NOT QUALIFIED",
+          "status": "REGISTERED AND CORRECTED TO THE PRINTED CONTRACT; NOT QUALIFIED",
           "identity": "KMG.Summoning.Special.Brachiosaurus.Overrun / b41f7d2a6c8e40539af1c2d5e7b30486, BlueprintAbility. One identity, appended with every dependent contract moved together, taking the Sprint 25 append to nineteen.",
           "theOneFieldThatMatters": "AutoSuccess. Every trample in this project sets it TRUE, and the IL of AbilityCustomOverrun branches on it before constructing anything: an AutoSuccess overrun never builds a RuleCombatManeuver and never raises RuleCalculateCMB. This command sets it FALSE, which is what makes it an actual maneuver and what makes the printed +2 reachable at all.",
           "reuseNotReinvention": "It clones the same native OverrunAbility the project already uses, and the feat is the real native GreaterOverrunFeature ee24c02cc68c4c9b9b54ebef9f9f8133 mapped through the builder fact table. No maneuver subsystem was written.",
           "separateFromTrample": "Its own identity, its own action cost, no ContextActionUngulateTrample, no path checker and no trample damage. Neither action replays the other. Trample gained no maneuver check, no +2 to damage or DC, no forced knockdown and no opportunity attacks.",
-          "noDuplicateProvocation": "No custom provocation was added anywhere. The native feat’s own ManeuverProvokeAttack is the only provocation in play, so there is no native-plus-custom double effect.",
+          "noDuplicateProvocation": "The native feat is cloned, not granted: its ManeuverProvokeAttack fires on evt.Success alone, which provokes for an ordinary pass-through and for a target that cannot be knocked off at all. The clone drops that one component and keeps everything else including the printed +2, so exactly one provocation is in play. Nothing is stacked on the original, no opportunity attack is emitted and undone, and no other actor's feat changes - the native blueprint is read, never written.",
           "prerequisiteHandled": "Improved Overrun was NOT added as a bonus feat. It is not on the printed stat block, and it does not need to be: PrerequisiteFeature derives from Prerequisite : BlueprintComponent with zero rulebook handlers, so it gates feat selection only and a direct blueprint grant bypasses it.",
-          "knockdownCorrection": "Read from IL, not assumed: AbilityCustomOverrun stores !Success in V_5 and IL_03b1 branches to the Actions block only when it is false, so that list runs once per overrun target, in that target's data scope, and only on a successful maneuver. The native overrun ability ships the list EMPTY, which is why nothing in this build ever knocked an overrun target prone and why the printed Greater Overrun rider could not fire. This creature's own command now carries one ContextActionKnockdownTarget. That action's own IL supplies the controls rather than this project inventing them: UnitHelper.CanBeKnockedOff gates eligibility, Descriptor.State.Prone.ShouldBeActive is the native prone state so an already-prone target stays prone, and IKnockOffHandler.HandleKnockOff is raised on the native EventBus. One action, one ability, no global rule, and Trample - AutoSuccess true, its own action lists - gains nothing."
+          "knockdownCorrection": "Read from IL, not assumed: AbilityCustomOverrun stores !Success in V_5 and IL_03b1 branches to the Actions block only when it is false, so that list runs once per overrun target, in that target's data scope, and only on a successful maneuver. The native overrun ability ships the list EMPTY, which is why nothing in this build ever knocked an overrun target prone and why the printed Greater Overrun rider could not fire. This creature's own command now carries one ContextActionKnockdownTarget. That action's own IL supplies the controls rather than this project inventing them: UnitHelper.CanBeKnockedOff gates eligibility, Descriptor.State.Prone.ShouldBeActive is the native prone state so an already-prone target stays prone, and IKnockOffHandler.HandleKnockOff is raised on the native EventBus. One action, one ability, no global rule, and Trample - AutoSuccess true, its own action lists - gains nothing.",
+          "thresholdCorrection": "The printed rule knocks a target prone only when the overrun result beats its CMD by 5 or more, and Greater Overrun's rider follows THAT knockdown. The engine already draws the line and this reads its answer rather than computing a second one: RuleCombatManeuver.SuccesValue is InitiatorCMValue - TargetCMD, and IsPartialSuccess is Success && Type == Overrun && SuccesValue < 5, against the engine's own OverrunPartialSuccessThreshold of 5. A qualifying knockdown is exactly Success && !IsPartialSuccess. No second roll and no re-derived margin.",
+          "whereItLives": "Not in the ability's action list: AbilityCustomOverrun runs that list on ANY success - its IL branches on !Success alone - so an action there cannot tell a pass-through from a knockdown. The earlier ContextActionKnockdownTarget was therefore removed from it. The behaviour lives on BrachiosaurusOverrunKnockdown, a RuleInitiatorLogicComponent<RuleCombatManeuver> carried by a cloned Greater Overrun feat for this one creature.",
+          "identityAppended": "KMG.Summoning.Special.Brachiosaurus.GreaterOverrun / c9f41b8d20e7456eae3d6c1f5a8b7204, BlueprintFeature. The Sprint 25 append moves 19 -> 20 with every dependent contract: ledger row, the version validator's pinned set and planned-type rule, the generator plan and its invariant 2160 -> 2161, the policy counts, the identity catalog and its special count 276 -> 277, and the icon catalog's live registry hash.",
+          "behaviourTableOwed": [
+            "failure: no knockdown, no proc",
+            "ordinary success below the margin: no knockdown, no proc",
+            "threshold success with an eligible target: prone, one provocation event, at most one attack per eligible responder",
+            "prone or maneuver immunity, and an already-prone target: no fabricated knockdown and no proc",
+            "duplicate callbacks, repeated commands and depleted responder opportunities",
+            "unchanged Trample and unrelated native actors"
+          ]
         },
         "remainingFidelityGap": {
           "theBonus": "faithful. The +2 is exactly the printed bonus and it is now reachable, because the command raises a real maneuver.",
@@ -1286,7 +1315,7 @@
       ],
       "brachiosaurusOpenCarryDecision": "still open and owner-owned; both feats exist in the engine, so neither omission can be attributed to a missing engine capability",
       "brachiosaurusGreatCleave": "RESOLVED: behaviour already present through the engine wiring; the fact itself is inert on this build and is not granted",
-      "brachiosaurusGreaterOverrun": "CARRIED through the native feat, with a Brachiosaurus-owned ordinary Overrun command that now applies the printed knockdown on a successful maneuver. Registered and corrected; NOT qualified.",
+      "brachiosaurusGreaterOverrun": "CARRIED and CORRECTED: an ordinary Overrun command that rolls a real maneuver, a knockdown at the printed 5-point threshold read from the engine's own IsPartialSuccess, and one provocation that follows that knockdown, on a cloned carrier for this creature alone. Not qualified.",
       "method": "component metadata by reflection, method bodies by IL disassembly of the private reference assembly, and blueprint graphs from the guarded census. No game launch was needed for any of it."
     },
     "remainingDecision": "Only if the bounded native observation shows a concrete feat with no reachable consumer does an omission become a candidate limitation, and that would be an owner decision with the evidence attached rather than an automatic acceptance.",
@@ -1417,5 +1446,29 @@
       "retainedRoute": "the existing single-asset handoff packet at handoffs/sprint25-brachiosaurus-icon-20261016, verified byte-intact this session: all six reference images and the brief match their recorded hashes. The brief was NOT rewritten.",
       "nextExecutableStep": "open the packet in an image-capable session that has a real built-in generator, pass it the actual reference pixels rather than the path, and generate one original Brachiosaurus source painting in the established medallion family."
     }
+  },
+  "controllingAcceptance": {
+    "instructionDate": "2026-10-16",
+    "priority": "implement and release; refine appearance later",
+    "interimNeck": "AUTHORIZED VISUAL DEFERRAL. The Head-weighted Brachiosaurus neck is the interim release design. It is stiff by construction and is recorded as such; it is not described as polished and no owner aesthetic approval is claimed.",
+    "articulatedDriverPrototype": "RETAINED, DEFERRED, NOT A RELEASE REQUIREMENT. The private-driver retarget experiment and its measurements stay as future work. Integrating it into the runtime is not required for this release, and no further articulation experiment, mesh-schema change or per-frame neck driver was started for visual improvement.",
+    "functionalBodyIntegration": "DONE IN SOURCE, PENDING IN GAME. Both creatures now ship original mesh data through the released exporter and load through the proven donor attachment path. Whether the bodies appear and behave in play is native qualification and has not been performed.",
+    "mechanicsAndIconStillRequired": "The scoped mechanics now include the corrected Overrun threshold and its exact-owner Greater Overrun carrier, and they are NOT natively qualified. The painted Brachiosaurus icon is still missing and is still a registration and bootstrap dependency.",
+    "acceptanceSeparation": "Internal technical acceptance and the owner's aesthetic approval are separate. HumanReview stays NOT_PERFORMED_NONBLOCKING.",
+    "supersedes": "The earlier record stated that the rigid Head-only neck was NOT authorized and that an acceptable articulated production design was not established. Both statements were accurate when written on 2026-10-16 and are preserved above as dated history. This owner instruction supersedes their ACCEPTANCE DECISION only: the measurements are unchanged, and what changed is that a stiff interim neck is now sufficient for release."
+  },
+  "visualRefinementBacklog": {
+    "note": "Deferred appearance work. Not part of the release acceptance suite and not required before publishing.",
+    "items": [
+      "Brachiosaurus neck articulation - the private-driver retarget is measured and ready to evaluate as runtime work",
+      "an authored Brachiosaurus skull; the head is a terminal cap",
+      "a longer tapering Brachiosaurus tail; it is about a quarter of the neck's length",
+      "the neck crease where the donor's 44.9 degree rest turn is carried through the re-aim",
+      "a unioned surface at the shoulder; the mass holds the join but these are placed primitives",
+      "Elephant trunk shape, which still reads as a fifth leg and passes within 0.060 units of the foreleg",
+      "Elephant ears, currently flat plates",
+      "the dorsal UV pole whorl and the texel-density step at the shoulder",
+      "faceting, minor clipping and contact choreography"
+    ]
   }
 }

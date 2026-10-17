@@ -135,6 +135,10 @@ try {
         'assets\sprint24-theropods\deinonychus-albedo.png',
         'assets\sprint24-theropods\tyrannosaurus-mesh.json',
         'assets\sprint24-theropods\tyrannosaurus-albedo.png',
+        'assets\sprint25-giant-bodies\brachiosaurus-mesh.json',
+        'assets\sprint25-giant-bodies\brachiosaurus-albedo.png',
+        'assets\sprint25-giant-bodies\elephant-mesh.json',
+        'assets\sprint25-giant-bodies\elephant-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )

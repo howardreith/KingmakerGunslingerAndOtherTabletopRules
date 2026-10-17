@@ -1723,7 +1723,16 @@ namespace KingmakerGunslinger.Blueprints
             }
             foreach (string fact in profile.Facts)
             {
-                BlueprintUnitFact value = fact == "WaspPoison"
+                // This creature's Greater Overrun is the cloned carrier,
+                // not the native feat: the native component provokes on
+                // success alone, where the printed rider follows a
+                // knockdown the overrun caused. Keyed on the creature as
+                // well as the fact, so no other profile can pick it up.
+                BlueprintUnitFact value = fact == "GreaterOverrun" &&
+                        profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol)
+                    : fact == "WaspPoison"
                     ? Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol)
                     : fact == "DireBatBlindsense"
                     ? Require<BlueprintFeature>(bySymbol, DireBatBlindsenseSymbol)

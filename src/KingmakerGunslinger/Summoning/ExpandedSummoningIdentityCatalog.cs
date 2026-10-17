@@ -83,11 +83,13 @@ namespace KingmakerGunslinger.Summoning
         // appended afterwards, with this count moved in the same commit.
         // Nothing templated is appended, because Brachiosaurus has no
         // Monster row.
-        // 276 since 2026-10-16: the released Elephant trample joined these
+        // 277 since 2026-10-16: the released Elephant trample joined these
         // after the bounded observation of its own carriers found it had
-        // none, and the Brachiosaurus ordinary Overrun command joined when
-        // the owner selected the bounded native-command route.
-        internal const int SpecialIdentityCount = 276;
+        // none, the Brachiosaurus ordinary Overrun command joined when
+        // the owner selected the bounded native-command route, and its
+        // cloned Greater Overrun carrier joined when the printed rider
+        // was corrected for that one creature.
+        internal const int SpecialIdentityCount = 277;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -567,6 +569,14 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec(
                 GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol,
                 "BlueprintAbility"));
+            // The cloned Greater Overrun carrier for that creature. The
+            // native feat provokes on success alone; the printed rider
+            // follows a knockdown the overrun caused, so this clone drops
+            // that component and carries the corrected one. A feature,
+            // not an ability.
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol,
+                "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }

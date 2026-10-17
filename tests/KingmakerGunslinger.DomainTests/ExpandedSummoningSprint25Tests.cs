@@ -29,7 +29,8 @@ namespace KingmakerGunslinger.DomainTests
             GiantBodyRulesPolicy.BrachiosaurusChassisSymbol,
             GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
             GiantBodyRulesPolicy.ElephantTrampleSymbol,
-            GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol
+            GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol,
+            GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol
         };
 
         internal static void RoutesAreExactlyThreeNatureAllyRootsAndNoMonsterRow()
@@ -319,69 +320,213 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(-4, tri.TrampleBonusFor(-4),
                 "Triceratops no longer doubles a Strength penalty.");
         }
-        internal static void OverrunKnocksDownOnlyThroughItsOwnCommand()
+        internal static void ShippedBodiesAreFoundAndAccepted()
         {
-            // The printed Overrun knocks a successful target prone, and the
-            // native overrun ability ships an EMPTY action list, which is why
-            // nothing in this build ever did. AbilityCustomOverrun's IL runs
-            // its Actions once per target, in that target's data scope, and
-            // only when the maneuver succeeded - so the correction is one
-            // action on this creature's own command, not a rule change.
-            string builder = BuilderSource();
-            int start = builder.IndexOf("ConfigureBrachiosaurusOverrun(",
-                StringComparison.Ordinal);
-            start = builder.IndexOf("private static void " +
-                "ConfigureBrachiosaurusOverrun(", StringComparison.Ordinal);
-            Assertions.True(start > 0,
-                "The Brachiosaurus Overrun command is built in one place.");
-            int end = builder.IndexOf("private static void", start + 40,
-                StringComparison.Ordinal);
-            string command = end > start
-                ? builder.Substring(start, end - start)
-                : builder.Substring(start);
+            // What this can prove without the game: the asset exists, the
+            // loader's contract matches the payload, policy and asset cannot
+            // drift, the albedo named is the albedo on disk, and the files are
+            // in the build and package lists. Whether the body renders is
+            // native qualification and is not claimed here.
+            string[] keys = {
+                GiantBodyRulesPolicy.BrachiosaurusKey,
+                GiantBodyRulesPolicy.ElephantKey };
+            foreach (string key in keys)
+            {
+                string path = Path.Combine(Environment.CurrentDirectory,
+                    "assets", "sprint25-giant-bodies", key + "-mesh.json");
+                Assertions.True(File.Exists(path),
+                    key + " ships a mesh payload.");
+                JObject payload = JObject.Parse(File.ReadAllText(path));
 
-            Assertions.True(command.Contains("overrun.AutoSuccess = false"),
-                "The command rolls a real maneuver, which is what makes the " +
-                "printed Greater Overrun bonus reachable at all.");
-            Assertions.True(
-                command.Contains("ContextActionKnockdownTarget"),
-                "A successful overrun knocks its target prone.");
-            Assertions.Equal(1, CountOccurrences(command,
-                "ContextActionKnockdownTarget>()"),
-                "Exactly one knockdown action, applied once per target.");
+                Assertions.Equal(key, (string)payload["creature"],
+                    "The payload names its own creature.");
+                Assertions.Equal(GiantBodyVisualPolicy.DonorGuid,
+                    (string)payload["nativeDonor"],
+                    "The payload names the measured donor.");
+                Assertions.Equal(GiantBodyVisualPolicy.DonorPrefabGuid,
+                    (string)payload["nativePrefab"],
+                    "The payload names the measured prefab.");
+                Assertions.Equal(GiantBodyVisualPolicy.BodyRendererName,
+                    (string)payload["bodyRenderer"],
+                    "The payload names the donor's one renderer.");
+                Assertions.Equal(1, (int)payload["nativeRendererCount"],
+                    "That donor exposes exactly one skinned renderer.");
+                Assertions.Equal(4, (int)payload["visibleLegs"],
+                    "Both creatures are quadrupeds.");
+                Assertions.Equal(7, (int)payload["forwardChainJoints"],
+                    "The donor's forward chain is seven joints.");
+                Assertions.Equal(5, (int)payload["rearTailJoints"],
+                    "The donor's rear tail is five joints.");
 
-            // The controls stay the engine's. Inventing an immunity check
-            // or a prone check here would be a second, divergent rule.
-            // Comments are stripped first: this has to examine the code,
-            // and the code's own commentary names these very symbols.
-            string code = StripComments(command);
-            Assertions.False(code.Contains("CanBeKnockedOff"),
-                "Eligibility is the engine's own check, not a copy of it.");
-            Assertions.False(code.Contains("ManeuverProvokeAttack"),
-                "No custom provocation: the native feat's component is the " +
-                "only provocation in play, so there is no duplicate.");
+                // Policy and asset are one contract. If a re-export changed
+                // the weighting, the bone list would move and this would fail
+                // rather than the game silently refusing the body.
+                string[] shipped = payload["bones"].Values<string>().ToArray();
+                Assertions.True(GiantBodyVisualPolicy.IsPermitted(key,
+                    shipped), key + " bones match its ownership policy.");
 
-            // Trample is a different action and keeps its own shape.
-            int trampleStart = builder.IndexOf("private static void " +
-                "ConfigureUngulateTrample(", StringComparison.Ordinal);
-            Assertions.True(trampleStart > 0, "Trample is built in one place.");
-            int trampleEnd = builder.IndexOf("private static void",
-                trampleStart + 40, StringComparison.Ordinal);
-            string trample = trampleEnd > trampleStart
-                ? builder.Substring(trampleStart, trampleEnd - trampleStart)
-                : builder.Substring(trampleStart);
-            Assertions.True(trample.Contains("overrun.AutoSuccess = true"),
-                "Trample stays an auto-success, so it never rolls a maneuver.");
-            Assertions.False(trample.Contains("ContextActionKnockdownTarget"),
-                "Trample gains no knockdown from this correction.");
-            Assertions.False(trample.Contains("GreaterOverrun"),
-                "Trample gains no Greater Overrun behaviour.");
+                // The albedo the payload names is the albedo on disk.
+                string albedoName = (string)payload["albedo"]["file"];
+                string albedoPath = Path.Combine(Environment.CurrentDirectory,
+                    "assets", "sprint25-giant-bodies", albedoName);
+                Assertions.True(File.Exists(albedoPath),
+                    key + " ships the albedo its payload names.");
+                string actual;
+                using (var sha = System.Security.Cryptography.SHA256.Create())
+                    actual = BitConverter.ToString(sha.ComputeHash(
+                        File.ReadAllBytes(albedoPath)))
+                        .Replace("-", string.Empty).ToLowerInvariant();
+                Assertions.Equal((string)payload["albedo"]["sha256"], actual,
+                    key + " albedo bytes are the ones the payload pins.");
+
+                Assertions.True((int)payload["vertexCount"] > 0 &&
+                    (int)payload["triangleCount"] > 0,
+                    key + " carries real geometry.");
+            }
+
+            // The interim design, declared rather than implied: the owner
+            // authorized a stiff Head-weighted Brachiosaurus neck for this
+            // release, and the loader refuses a payload claiming otherwise.
+            JObject brachiosaurus = JObject.Parse(File.ReadAllText(
+                Path.Combine(Environment.CurrentDirectory, "assets",
+                    "sprint25-giant-bodies", "brachiosaurus-mesh.json")));
+            Assertions.Equal("Head", (string)brachiosaurus["neckDriver"],
+                "The interim neck is driven by Head alone.");
+            Assertions.True((bool)brachiosaurus["interimStiffNeck"],
+                "The payload declares the interim stiff neck.");
+            JObject elephant = JObject.Parse(File.ReadAllText(
+                Path.Combine(Environment.CurrentDirectory, "assets",
+                    "sprint25-giant-bodies", "elephant-mesh.json")));
+            Assertions.Equal("chain", (string)elephant["neckDriver"],
+                "The Elephant trunk keeps the measured native chain.");
+            Assertions.Equal(2, (int)elephant["tusks"],
+                "The Elephant ships tusks.");
+
+            // A body nobody can reach is not a body: the view patch must map
+            // both blueprints, and the build and package must carry the files.
+            string view = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningPteranodonViewPatch.cs"));
+            Assertions.True(view.Contains(
+                "GiantBodyVisualPolicy.BrachiosaurusBlueprintName") &&
+                view.Contains("GiantBodyVisualPolicy.ElephantBlueprintName"),
+                "Both blueprints map to their visual key.");
+            Assertions.True(view.Contains(
+                "PteranodonAssetRuntime.TryGetGiantBodyVisual"),
+                "The attach path selects the Sprint 25 source.");
+            foreach (string script in new[] { "Build-Local.ps1", "package.ps1",
+                "validate-package.ps1", "validate-build-output.ps1" })
+            {
+                string text = File.ReadAllText(Path.Combine(
+                    Environment.CurrentDirectory, "scripts", script));
+                Assertions.True(text.Contains("sprint25-giant-bodies"),
+                    script + " carries the Sprint 25 body assets.");
+            }
         }
 
-        // Written as a code point rather than an escape: this file is
-        // edited by scripts, and an escape that survives one layer of
-        // quoting and not the next produces a literal newline inside a
-        // character constant, which is exactly what happened here.
+        internal static void OverrunKnocksDownOnlyThroughItsOwnCommand()
+        {
+            // The printed rule knocks a target prone only when the
+            // overrun result beats its CMD by 5 or more, and Greater
+            // Overrun's rider follows THAT knockdown. The engine already
+            // draws the line: RuleCombatManeuver.SuccesValue is
+            // InitiatorCMValue - TargetCMD and IsPartialSuccess is
+            // Success && Type == Overrun && SuccesValue < 5, against its
+            // own OverrunPartialSuccessThreshold of 5. So the correction
+            // reads that answer; it does not compute a second one.
+            string component = ComponentSource();
+            Assertions.True(
+                component.Contains("evt.Type != CombatManeuver.Overrun"),
+                "Only an overrun maneuver can knock a target prone here.");
+            Assertions.True(
+                component.Contains("!evt.Success || evt.IsPartialSuccess"),
+                "Ordinary success below the margin is a pass-through: " +
+                "the engine's own partial-success test gates this.");
+            // Comments stripped: the code's own commentary names the very
+            // native members it must not recompute.
+            string code = StripComments(component);
+            Assertions.False(code.Contains("TargetCMD") ||
+                code.Contains("SuccesValue") ||
+                code.Contains("RulebookEvent.Dice"),
+                "No second margin calculation and no extra roll.");
+            Assertions.True(component.Contains("CanBeKnockedOff"),
+                "Immunity stays the engine's answer.");
+            Assertions.True(
+                component.Contains("Prone.Active") &&
+                component.Contains("Prone.ShouldBeActive"),
+                "An already-prone target is not knocked down again.");
+            Assertions.Equal(1, CountOccurrences(component,
+                "ProvokeAttackOfOpportunity("),
+                "Exactly one provocation, for the knockdown caused.");
+
+            // The ability's action list stays empty, because that list
+            // runs on ANY success and cannot tell the two apart.
+            string builder = BuilderSource();
+            string command = Section(builder,
+                "private static void ConfigureBrachiosaurusOverrun(");
+            Assertions.True(command.Contains("overrun.AutoSuccess = false"),
+                "The command rolls a real maneuver.");
+            Assertions.False(StripComments(command).Contains(
+                "ContextActionKnockdownTarget"),
+                "The knockdown is not in a list that runs on any success.");
+
+            // The native feat is cloned, not granted: its own provocation
+            // fires on success alone. Exactly one provocation is in play.
+            string carrier = Section(builder,
+                "private static void ConfigureBrachiosaurusGreaterOverrun(");
+            Assertions.True(carrier.Contains(
+                "NativeGreaterOverrunFeatureGuid"),
+                "The carrier clones the real printed feat.");
+            Assertions.True(carrier.Contains(
+                "if (component is ManeuverProvokeAttack) continue"),
+                "The success-only native provocation is dropped.");
+            Assertions.True(carrier.Contains(
+                "BrachiosaurusOverrunKnockdown"),
+                "The corrected behaviour replaces it.");
+
+            // Trample is a different action and keeps its own shape.
+            string trample = Section(builder,
+                "private static void ConfigureUngulateTrample(");
+            Assertions.True(trample.Contains("overrun.AutoSuccess = true"),
+                "Trample stays an auto-success and never rolls.");
+            Assertions.False(StripComments(trample).Contains(
+                "ContextActionKnockdownTarget"),
+                "Trample gains no knockdown.");
+            Assertions.False(StripComments(trample).Contains(
+                "GreaterOverrun"),
+                "Trample gains no Greater Overrun behaviour.");
+
+            // Only this creature resolves the fact to the clone.
+            string natural = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningNaturalBuilder.cs"));
+            Assertions.True(natural.Contains(
+                "profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey"),
+                "The substitution is keyed on the creature as well as " +
+                "the fact, so no other profile can pick it up.");
+        }
+
+        private static string Section(string source, string signature)
+        {
+            int start = source.IndexOf(signature, StringComparison.Ordinal);
+            Assertions.True(start > 0, signature + " exists once.");
+            int end = source.IndexOf("private static ", start +
+                signature.Length, StringComparison.Ordinal);
+            return end > start ? source.Substring(start, end - start)
+                : source.Substring(start);
+        }
+
+        private static string ComponentSource()
+        {
+            return File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src",
+                "KingmakerGunslinger", "Summoning",
+                "BrachiosaurusOverrunKnockdown.cs"));
+        }
+        // A code point, not an escape: this file is edited by scripts,
+        // and an escape that survives one layer of quoting and not the
+        // next lands a real newline inside a character constant.
         private const char Newline = (char)10;
 
         private static string StripComments(string text)
@@ -420,12 +565,14 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void IdentityAppendOwnsExactlyFivePrivateCarriers()
         {
-            // Seven since 2026-10-16: the five Brachiosaurus carriers, the
+            // Eight since 2026-10-16: the five Brachiosaurus carriers, the
             // released Elephant trample that the bounded observation of that
-            // creature justified, and the Brachiosaurus ordinary Overrun
-            // command from the owner-selected bounded native-command route.
-            Assertions.Equal(7, PrivateIdentityTail.Length,
-                "Sprint 25 appends seven private carriers.");
+            // creature justified, the Brachiosaurus ordinary Overrun command
+            // from the owner-selected bounded native-command route, and the
+            // cloned Greater Overrun carrier that corrects the printed rider
+            // for that one creature.
+            Assertions.Equal(8, PrivateIdentityTail.Length,
+                "Sprint 25 appends eight private carriers.");
             Assertions.Equal(GiantBodyRulesPolicy.AppendedPrivateIdentityCount,
                 PrivateIdentityTail.Length,
                 "The policy's private count is the list's length.");
@@ -440,7 +587,7 @@ namespace KingmakerGunslinger.DomainTests
                 .ToArray();
             Assertions.True(tail.SequenceEqual(PrivateIdentityTail,
                     StringComparer.Ordinal),
-                "The seven private carriers append last, in frozen order.");
+                "The eight private carriers append last, in frozen order.");
 
             Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
                 ExpandedSummoningIdentityCatalog.UnitCount,
