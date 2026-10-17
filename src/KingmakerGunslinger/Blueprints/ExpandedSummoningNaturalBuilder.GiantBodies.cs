@@ -16,10 +16,9 @@ namespace KingmakerGunslinger.Blueprints
     internal static partial class ExpandedSummoningNaturalBuilder
     {
         /// <summary>
-        /// The Sprint 25 giant bodies. Only Brachiosaurus builds private
-        /// carriers here: the released Elephant already rides the native
-        /// Mastodon weapons and needs no new blueprint, and this sprint
-        /// corrected its attack lines rather than its identities.
+        /// The Sprint 25 giant bodies. Elephant keeps its released unit,
+        /// type, weapons and routes; native qualification justified only its
+        /// missing high-rank Skill Focus completion on a private feature.
         ///
         /// <para>This runs before the profile loop because the profile row
         /// names weapon key "BrachiosaurusTail4d6", and a profile whose weapon
@@ -60,6 +59,8 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit.Brachiosaurus"),
                 tail, Require<BlueprintFeature>(bySymbol,
                     GiantBodyRulesPolicy.BrachiosaurusChassisSymbol));
+            ConfigureElephantChassis(Require<BlueprintFeature>(bySymbol,
+                GiantBodyRulesPolicy.ElephantChassisSymbol));
 
             // The unit type carries no signature ability. Brachiosaurus is
             // untemplated and owns no execution children, and its trample is
@@ -72,6 +73,26 @@ namespace KingmakerGunslinger.Blueprints
                 "A gargantuan long-necked sauropod that browses high canopy, "
                     + "built on columnar legs and balanced by a heavy tail.",
                 Array.Empty<BlueprintUnitFact>());
+        }
+
+        private static void ConfigureElephantChassis(BlueprintFeature feature)
+        {
+            feature.name = InternalName(GiantBodyRulesPolicy.ElephantChassisSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            // Same qualified native lifetime as the other adult chassis
+            // completions. Do not fake extra ranks, mutate Skill Focus for
+            // other actors, or reallocate a modifier during deserialization.
+            feature.ComponentsArray = new BlueprintComponent[] {
+                UntypedSkill(StatType.SkillPerception,
+                    GiantBodyRulesPolicy.ElephantSkillFocusCompletionBonus)
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create("KMG.ExpandedSummoning.Elephant.Chassis.Name",
+                    "Elephant Chassis"),
+                LocalizationService.Create("KMG.ExpandedSummoning.Elephant.Chassis.Description",
+                    "Completes the high-rank half of Skill Focus (Perception) for the adult elephant."),
+                null);
         }
 
         /// <summary>

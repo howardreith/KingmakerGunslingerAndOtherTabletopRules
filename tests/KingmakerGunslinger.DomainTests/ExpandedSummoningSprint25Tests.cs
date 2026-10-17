@@ -31,7 +31,8 @@ namespace KingmakerGunslinger.DomainTests
             GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
             GiantBodyRulesPolicy.ElephantTrampleSymbol,
             GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol,
-            GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol
+            GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol,
+            GiantBodyRulesPolicy.ElephantChassisSymbol
         };
 
         internal static void RoutesAreExactlyThreeNatureAllyRootsAndNoMonsterRow()
@@ -677,8 +678,8 @@ namespace KingmakerGunslinger.DomainTests
             // from the owner-selected bounded native-command route, and the
             // cloned Greater Overrun carrier that corrects the printed rider
             // for that one creature.
-            Assertions.Equal(8, PrivateIdentityTail.Length,
-                "Sprint 25 appends eight private carriers.");
+            Assertions.Equal(9, PrivateIdentityTail.Length,
+                "Sprint 25 appends nine private carriers after the measured Elephant Skill Focus completion.");
             Assertions.Equal(GiantBodyRulesPolicy.AppendedPrivateIdentityCount,
                 PrivateIdentityTail.Length,
                 "The policy's private count is the list's length.");
@@ -815,6 +816,8 @@ namespace KingmakerGunslinger.DomainTests
                 "The printed quadruped defence against trip is carried.");
             Assertions.True(elephant.Facts.Contains("ImprovedBullRush"),
                 "Improved Bull Rush is carried now that its carrier is proven.");
+            Assertions.True(elephant.Facts.Contains("ElephantChassis"),
+                "The measured missing high-rank Skill Focus completion has a native fact lifetime, without fake ranks.");
             foreach (string absent in new[] { "PowerfulCharge", "Grab",
                 "Pounce" })
                 Assertions.False(elephant.Facts.Contains(absent),

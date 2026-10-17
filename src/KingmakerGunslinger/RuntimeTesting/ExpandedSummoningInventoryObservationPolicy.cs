@@ -93,6 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "9093aef39ecc416092ef68655a7e56fb", "KMG_Summoning_Unit_Brachiosaurus", "b41f7d2a6c8e40539af1c2d5e7b30486", "KMG_Summoning_Special_Brachiosaurus_Overrun", "AddFacts" },
             new[] { "9093aef39ecc416092ef68655a7e56fb", "KMG_Summoning_Unit_Brachiosaurus", "c9f41b8d20e7456eae3d6c1f5a8b7204", "KMG_Summoning_Special_Brachiosaurus_GreaterOverrun", "AddFacts" },
             new[] { "9dd8544097234f05bcd35d400d91b510", "KMG_Summoning_Unit_Elephant", "a7c34e1d9b5f4a02ae6d8c71f3b02594", "KMG_Summoning_Special_Elephant_Trample", "AddFacts" },
+            new[] { "9dd8544097234f05bcd35d400d91b510", "KMG_Summoning_Unit_Elephant", "bd380912f7c74843966c363ab281c0c2", "KMG_Summoning_Natural_Elephant_Chassis", "AddFacts" },
         };
 
         internal static string[][] QualifiedReferenceRows

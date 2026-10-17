@@ -71,21 +71,19 @@ namespace KingmakerGunslinger.Summoning
         // routine at twenty-foot reach, a chassis carrier for the size and
         // reach corrections, and its own trample ability.
         //
-        // The three Elephant symbols above are reserved names, not registered
-        // identities. Elephant is an existing released creature, and the order
-        // is to check its actual production carriers against the frozen entry
-        // before adding anything. Whatever the bounded native census proves
-        // missing is appended then, with this count moved in the same commit.
+        // Elephant's trample and high-rank Skill Focus completion were each
+        // appended only after native evidence proved them missing. Its unit
+        // type remains a reserved name; no released unit/weapon/root moves.
         internal const int AppendedAdapterIdentityCount = 8;
 
         /// <summary>
-        /// Ten Sprint 25 identities plus the eight caller adapters the
+        /// Thirteen Sprint 25 catalog identities plus the eight caller adapters the
         /// alternate summoning release projects for any creature added to
         /// the central catalog. Those eight are not chosen here: each GUID
         /// is uuid5 of its own symbol, so the manifest reproduces and
         /// verifies them rather than trusting an allocation.
         /// </summary>
-        internal const int AppendedIdentityCount = 20;
+        internal const int AppendedIdentityCount = 21;
 
         /// <summary>
         /// What Sprint 25 adds to the C# identity catalog. The eight caller
@@ -100,7 +98,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int AppendedWeaponIdentityCount = 1;
         internal const int AppendedWeaponTypeIdentityCount = 1;
         internal const int AppendedUnitTypeIdentityCount = 1;
-        internal const int AppendedFeatureIdentityCount = 1;
+        internal const int AppendedFeatureIdentityCount = 2;
         internal const int AppendedTrampleAbilityIdentityCount = 2;
 
         /// <summary>
@@ -139,18 +137,14 @@ namespace KingmakerGunslinger.Summoning
             AppendedOverrunAbilityIdentityCount;
 
         /// <summary>
-        /// Elephant carriers still named but not registered. The
-        /// trample left this set on 2026-10-16: the bounded
-        /// observation of the released creature recorded six
-        /// grants, no trample ability and no trample component,
-        /// which is the condition this count was waiting on. The
-        /// chassis and unit type stay reserved - the same
-        /// observation showed the released Elephant still reads
-        /// the Mastodon unit type - because nothing in this
-        /// sprint needs them yet.
-        /// pending the bounded native census of its real production carriers.
+        /// Elephant's unneeded species type remains reserved. Its own trample
+        /// and native Skill Focus completion have separately demonstrated
+        /// missing behavior and now own append-only private identities.
         /// </summary>
-        internal const int ReservedElephantIdentityCount = 2;
+        // The live e8b00499 profile proved that eleven ranks plus the native
+        // Skill Focus still gave only +3. Its private high-rank completion is
+        // now justified; only the unnecessary species type remains reserved.
+        internal const int ReservedElephantIdentityCount = 1;
 
         /// <summary>Brachiosaurus has no Monster row, so nothing is appended
         /// to the Monster surface and no template children are created.</summary>

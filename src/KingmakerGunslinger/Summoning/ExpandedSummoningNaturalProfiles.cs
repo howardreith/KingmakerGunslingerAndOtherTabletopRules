@@ -720,7 +720,7 @@ namespace KingmakerGunslinger.Summoning
                     A("Slam2d6"), Array.Empty<string>(),
                     A("Endurance", "GreatFortitude", "ImprovedBullRush",
                         "IronWill", "PowerAttack", "SkillFocusPerception",
-                        "TripDefenseFourLegs"),
+                        "TripDefenseFourLegs", "ElephantChassis"),
                     "Sprint 25 correction: the printed adult routine is gore +16 (2d8+10) AND slam +16 (2d6+10). Both are primary, so the slam moves out of the secondary list it was registered in. As a secondary it took the native -5 to hit and half Strength, which produced slam +11 (2d6+5) and did not match either printed line.",
                     "Improved Bull Rush is now carried. It was recorded as unproven here, but Sprint 23 qualified the exact concrete carrier for Triceratops, so the earlier omission no longer holds.",
                     "The printed +4 quadruped defence against trip is now carried through the same shared four-legs fact the other quadrupeds use, which is what the printed CMD 30 / 34 versus trip requires.",

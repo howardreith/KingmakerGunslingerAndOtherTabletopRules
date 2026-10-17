@@ -220,6 +220,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var created = new List<UnitEntityData>();
             UnitUseAbility command = null;
             Sprint25OverrunObserver observer = null;
+            Vector3 casterBefore = fixture.Caster.Position;
             try
             {
                 UnitEntityData owner = CastExpandedSummoningQuietUnit(fixture, "brachiosaurus");
@@ -228,7 +229,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData[] responders = { CastExpandedSummoningQuietUnit(fixture, "wolf"),
                     CastExpandedSummoningQuietUnit(fixture, "wolf") };
                 created.AddRange(new[] { owner, target, later }.Concat(responders));
-                foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
+                foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus", false)) yield return frame;
+                foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                 foreach (UnitEntityData unit in created)
                 {
                     unit.Stats.HitPoints.BaseValue = 100000;
@@ -242,6 +244,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Ability granted = owner.Descriptor.Abilities.GetAbility(blueprint);
                 if (granted == null) throw new InvalidOperationException("Exact owner lacks ordinary Overrun.");
                 var ability = new AbilityData(granted);
+                // Hostile-owned summons initially appear by their own caster,
+                // not our isolated caster. Seed the reused route survey here,
+                // away from every protected first-area actor.
+                var centre = AstarPath.active.GetNearest(fixture.Caster.Position);
+                if (centre.node == null || !centre.node.Walkable)
+                    throw new InvalidOperationException("No isolated native Overrun floor.");
+                PlaceExpandedSummoningUnit(target, centre.clampedPosition);
                 Vector3 start; string route;
                 TargetWrapper destination = Sprint23FindTrampleRoute(fixture, owner, target,
                     ability, out start, out route, true);
@@ -249,11 +258,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 end = destination.Point;
                 Vector3 direction = (end - start).normalized;
                 Vector3 side = Vector3.Cross(direction, Vector3.up).normalized;
+                if (fixture.UnitsBefore.OfType<UnitEntityData>().Any(value =>
+                    Sprint25SegmentGap(value.Position, start, end) <= owner.Corpulence + value.Corpulence + .31f))
+                    throw new InvalidOperationException("Overrun lane intersects a protected actor.");
+                bool casterParked = false;
+                foreach (float distance in new[] { 6f, 9f, 12f })
+                {
+                    foreach (Vector3 away in new[] { -direction, side, -side })
+                    {
+                        var park = AstarPath.active.GetNearest(start + away * distance);
+                        if (park.node == null || !park.node.Walkable ||
+                            Sprint25SegmentGap(park.clampedPosition, start, end) <=
+                                owner.Corpulence + fixture.Caster.Corpulence + 1f) continue;
+                        PlaceExpandedSummoningUnit(fixture.Caster, park.clampedPosition);
+                        casterParked = true; break;
+                    }
+                    if (casterParked) break;
+                }
+                if (!casterParked) throw new InvalidOperationException("Cannot park the exact fixture caster outside the Overrun lane.");
                 PlaceExpandedSummoningUnit(later, Vector3.Lerp(start, end, .8f));
                 for (int index = 0; index < responders.Length; index++)
                 {
                     UnitEntityData responder = responders[index];
-                    PlaceExpandedSummoningUnit(responder, target.Position + side * (index == 0 ? 1f : -1f));
+                    float reach = responder.Body.PrimaryHand.MaybeWeapon.AttackRange.Meters +
+                        responder.Corpulence + target.Corpulence - .025f;
+                    PlaceExpandedSummoningUnit(responder, target.Position + side *
+                        (index == 0 ? reach : -reach));
                     responder.CombatState.AttackOfOpportunityCount = sample == "exhausted" ? 0 : 1;
                     responder.CombatState.PreventAttacksOfOpporunityNextFrame = false;
                     responder.Memory.Add(target); target.Memory.Add(responder);
@@ -278,6 +308,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (sample == "already-prone" && !target.Descriptor.State.Prone.Active)
                     throw new InvalidOperationException("Native already-prone prerequisite did not activate.");
                 int cmb = Rulebook.Trigger(new RuleCalculateCMB(owner, target, CombatManeuver.Overrun)).Result;
+                int attackBonusBefore = owner.Stats.AdditionalAttackBonus.ModifiedValue;
+                int maneuverBonusBefore = owner.Stats.AdditionalCMB.ModifiedValue;
+                int contactCmb = cmb, contactStatDelta = 0;
+                bool contactChargeBuff = false;
                 int beforeCmd = ProbeCombatManeuverDefenceParts(owner, target, CombatManeuver.Overrun).Result;
                 int margin = sample == "failure" ? -1 : sample == "partial" ? 3 : 5;
                 target.Stats.AdditionalCMD.BaseValue += cmb + 10 - margin - beforeCmd;
@@ -300,6 +334,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var opportunityTrace = new JArray();
                 observer = new Sprint25OverrunObserver { Owner = owner, Target = target, LastActiveProne = beforeProneActive };
                 observer.PrepareContactResources = () => {
+                    // Native Overrun adds ChargeBuff after the initial setup.
+                    // BaseCMB reads AdditionalAttackBonus/AdditionalCMB. Set
+                    // only the disposable defense prerequisite at contact,
+                    // retaining the frozen +32 baseline and observing every
+                    // native contextual change rather than compensating twice.
+                    contactCmb = Rulebook.Trigger(new RuleCalculateCMB(owner, target,
+                        CombatManeuver.Overrun)).Result;
+                    contactStatDelta = owner.Stats.AdditionalAttackBonus.ModifiedValue - attackBonusBefore +
+                        owner.Stats.AdditionalCMB.ModifiedValue - maneuverBonusBefore;
+                    contactChargeBuff = owner.Descriptor.Buffs.GetBuff(
+                        Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.ChargeBuff) != null;
+                    int contactDefense = ProbeCombatManeuverDefenceParts(owner, target, CombatManeuver.Overrun).Result;
+                    target.Stats.AdditionalCMD.BaseValue += contactCmb + 10 - margin - contactDefense;
                     // Setup only the disposable responders' prerequisite at
                     // contact. Native round refill during the movement/animation
                     // lead-in must not turn the exhausted case into a fresh one.
@@ -316,6 +363,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     opportunityTrace.Add(new JObject { ["phase"] = "fixture-resource-prerequisite-before-native-maneuver",
                         ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                         ["ownerOpportunityCount"] = owner.CombatState.AttackOfOpportunityCount,
+                        ["baselineCmb"] = cmb, ["contactCmb"] = contactCmb,
+                        ["nativeContactStatDelta"] = contactStatDelta,
+                        ["nativeChargeBuffPresent"] = contactChargeBuff,
                         ["responderCanActInCombat"] = new JArray(responders.Select(value => value.CombatState.CanActInCombat)),
                         ["responderCanAct"] = new JArray(responders.Select(value => value.Descriptor.State.CanAct)),
                         ["responderEngagedWithTarget"] = new JArray(responders.Select(value => value.CombatState.IsEngage(target))),
@@ -394,9 +444,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float travelled = Vector3.Distance(start, owner.Position);
                 bool nativeBudget = !command.Cutscene && !command.IsIgnoreCooldown &&
                     blueprint.IsFullRoundAction && ability.RequireFullRoundAction;
-                bool outcome = result != null && (sample == "maneuver-immune" ?
+                bool outcome = result != null && cmb == 32 && contactCmb == cmb + contactStatDelta && (sample == "maneuver-immune" ?
                     !result.Success && !result.IsPartialSuccess && !afterProne :
-                    result.InitiatorCMB == 32 && result.SuccesValue == margin &&
+                    result.InitiatorCMB == contactCmb && result.SuccesValue == margin &&
                     result.Success == (margin >= 0) && result.IsPartialSuccess == (margin >= 0 && margin < 5));
                 Sprint25Check("overrun-" + sample + (turnBased ? "-turn-based" : "-rtwp"), outcome && observer.ContactResourcesPrepared && command.IsStarted && command.IsFinished && nativeBudget &&
                     maxStandard > standardBefore && (!turnBased || maxMove > moveBefore) &&
@@ -410,6 +460,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["commandCount"] = commandCount, ["mode"] = turnBased ? "turn-based" : "rtwp",
                         ["commandFinished"] = command.IsFinished, ["commandResult"] = command.Result.ToString(),
                         ["effectiveCmd"] = result?.TargetCMD, ["cmb"] = result?.InitiatorCMB,
+                        ["baselineCmb"] = cmb, ["contactCmb"] = contactCmb,
+                        ["nativeContactStatDelta"] = contactStatDelta,
+                        ["nativeChargeBuffPresent"] = contactChargeBuff,
                         ["naturalRoll"] = result == null ? (JToken)null : result.InitiatorRoll.Value,
                         ["nativePartialSuccess"] = result?.IsPartialSuccess, ["nativeSuccess"] = result?.Success,
                         ["nativeMargin"] = result?.SuccesValue, ["nativeAutoFailure"] = result?.AutoFailure,
@@ -448,7 +501,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 Game.Instance.Player.UpdateIsInCombat();
                 DisposeExpandedSummoningUnits(fixture.Created, created);
+                PlaceExpandedSummoningUnit(fixture.Caster, casterBefore);
             }
+        }
+
+        private static float Sprint25SegmentGap(Vector3 point, Vector3 start, Vector3 end)
+        {
+            Vector3 span = end - start;
+            return Vector3.Distance(point, start + span * Mathf.Clamp01(
+                Vector3.Dot(point - start, span) / span.sqrMagnitude));
         }
     }
 }
