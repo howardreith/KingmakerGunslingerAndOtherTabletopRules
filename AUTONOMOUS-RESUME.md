@@ -1,6 +1,6 @@
 # Sprint 25 takeover — grouped native repair, candidate next
 
-Controlling update, 2026-10-17 20:06 UTC: continue the explicitly selected
+Controlling update, 2026-10-17 20:14 UTC: continue the explicitly selected
 qualification/merge/release campaign in `wt/s25`. PR49 remains OPEN/DRAFT;
 no merge/release, public unsuppression or Sprint26. Exact identities and
 remaining assertions are in `current.latestCheckpoint` and
@@ -41,6 +41,14 @@ preflight, authorized merge/release/download/restoration audit and final-records
 merge; STOP. No mandatory failure is waived. Accepted asset bytes are untouched;
 rough polish is deferred and HumanReview is NOT_PERFORMED_NONBLOCKING. Signed-in
 Steam Offline Mode works with the existing guards; no online requirement was added.
+
+4c96a3cb is the pushed coherent source checkpoint. Its full candidate gate
+refused before build/package/native (15.806s) because the icon catalog still
+pinned the pre-chassis registry hash. The integrity-only correction advances
+that exact hash/hidden-carrier authorization; no icon pixels or assignments
+change. Preserve the refusal receipt and continue with the corrected candidate.
+Catalog protection validation and29/29 refusal tests pass (12.470s); parsed
+comparison confirms exactly those two catalog fields changed. Source gate PASS.
 
 ## Dated prior takeover/checkpoint history
 
