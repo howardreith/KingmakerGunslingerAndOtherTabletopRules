@@ -1,8 +1,9 @@
-"""Dire Rat icon pilot (VIS-004): the original painting cropped closer on the
-rat, with the bronze medallion ring faded into a dark painted vignette.
+"""Dire Rat icon edit (VIS-004, approved by the owner 2026-10-17): the original
+painting cropped closer on the rat, with the bronze medallion ring faded into a
+dark painted vignette.
 
-blender -b --factory-startup --python crop_dire_rat_pilot.py -- \
-    ../../sources/dire-rat.png dire-rat-pilot.png 170 170 920
+blender -b --factory-startup --python crop_dire_rat.py -- \
+    ../../sources/dire-rat.png dire-rat.png 170 170 920
 
 Arguments: source, output, crop left, crop top (source pixels, origin top
 left) and crop size. The original source is read only; nothing is painted

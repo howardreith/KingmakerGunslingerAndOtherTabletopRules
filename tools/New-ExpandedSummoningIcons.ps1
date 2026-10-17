@@ -101,6 +101,12 @@ if (@($OnlyKeys | Sort-Object -Unique).Count -ne $OnlyKeys.Count -or
 $blueprints = (Get-Content -LiteralPath $blueprintPath -Raw | ConvertFrom-Json).entries
 $catalogKeys = @('redcap','axiomite','soul-eater','bogeyman','movanic-deva','frost-giant','thanadaemon')
 $preservedKeys = @('mite','manticore','nereid','hamadryad')
+# Owner-approved edits of an original painting. The original stays in
+# sources/ byte for byte and is recorded beside the edit; each edit folder's
+# EDIT.md names its input, script and approval.
+$editedSources = @{
+    'dire-rat' = @{ path = 'assets-source/original-icons/expanded-summoning/edits/dire-rat/dire-rat.png'; size = 920 }
+}
 
 if (-not $VerifyOnly -and -not (Test-Path -LiteralPath $outputRoot)) {
     New-Item -ItemType Directory -Path $outputRoot | Out-Null
@@ -116,6 +122,16 @@ foreach ($icon in $icons) {
     $output = Join-Path $root ($outputRelative.Replace('/', '\'))
     if (-not (Test-Path -LiteralPath $source)) { throw "Missing source icon: $key." }
     Assert-MeaningfulImage $source 1254 1254
+    $originalRelative = $null
+    $originalHash = $null
+    if ($editedSources.ContainsKey($key)) {
+        $originalRelative = $sourceRelative
+        $originalHash = Get-Sha256 $source
+        $sourceRelative = [string]$editedSources[$key].path
+        $source = Join-Path $root ($sourceRelative.Replace('/', '\'))
+        if (-not (Test-Path -LiteralPath $source)) { throw "Missing edited source icon: $key." }
+        Assert-MeaningfulImage $source $editedSources[$key].size $editedSources[$key].size
+    }
     if (-not $VerifyOnly -and ($OnlyKeys.Count -eq 0 -or $OnlyKeys -ccontains $key)) {
         $inputImage = [System.Drawing.Image]::FromFile($source)
         try {
@@ -143,12 +159,17 @@ foreach ($icon in $icons) {
     $consumers = @(Get-Consumers $key $blueprints)
     $sourceHash = Get-Sha256 $source
     $outputHash = Get-Sha256 $output
-    $provenanceRows += [ordered]@{
+    $provenanceRow = [ordered]@{
         key = $key; displayName = [string]$icon.displayName; sourceFile = $sourceRelative
         productionFile = $outputRelative; sourceSha256 = $sourceHash
         outputSha256 = $outputHash; width = 128; height = 128; format = 'RGBA PNG'
         scope = $scope; blueprintSymbols = $consumers
     }
+    if ($originalRelative) {
+        $provenanceRow.originalSourceFile = $originalRelative
+        $provenanceRow.originalSourceSha256 = $originalHash
+    }
+    $provenanceRows += $provenanceRow
     $runtimeRows += [ordered]@{
         key = $key; file = "$key.png"; sha256 = $outputHash
         width = 128; height = 128; format = 'RGBA PNG'; scope = $scope
