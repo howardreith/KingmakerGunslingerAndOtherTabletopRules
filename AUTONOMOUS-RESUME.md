@@ -1,3 +1,19 @@
+# CotW controller action-bar load — isolated repair checkpoint (2026-10-17)
+
+Current branch `codex/cotw-controller-actionbar-load-20261017`, based on
+`86de8f281c63458b296ca7d406e6f575ef8193f2`; independent worktree of that name.
+Preserve the Brown-Fur alpha and frozen product. Exact CotW/game IL confirms
+the spontaneous prefix uses an unrelated memorized-slot getter; executable
+probe returns BlueprintAbility instead of AbilityData. Narrow transpiler
+retains the complete original CotW helper and native patch ownership/order.
+See [current investigation](docs/COTW-CONTROLLER-ACTIONBAR-LOAD-REPAIR.md).
+Focused 39/39 adapter assertions and 6/6 Brown-Fur startup tests;
+final candidate identity/evidence follows at its own checkpoint. Native load
+NOT_RUN; first null on affected state and affected alpha DLL identity still
+cannot be recovered from the unavailable full log/artifact. Exclusive DATA
+availability is now owner-authorized; native no-cast protocol inspection remains.
+No automatic publication/merge/install or inherited alpha authorization.
+
 # Brown-Fur startup-order repair — alpha published / human-test checkpoint (2026-10-17)
 
 [Alpha 1 is public](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-brown-fur-alpha.1)
