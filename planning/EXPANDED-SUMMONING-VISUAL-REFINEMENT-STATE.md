@@ -71,6 +71,20 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
   the inside-out bodies found outside the review list were repaired on the
   same word, except the Bebelith, which the owner had accepted as the control.
 
+## Alpha release, 2026-10-17
+
+On the owner's instruction ("Please cut an alpha release. No need to run all
+the tests for a normal release. I will go through the new models and do a
+manual review."), prerelease `v0.0.157-visual-refinement-alpha.1` was
+published, not marked Latest; `master` and the stable `v0.0.157` are
+unchanged. Annotated tag `818846aa83` at `95a5c2e2f0`, the commit whose exact
+package ran in guarded review `20261017T2049460194047Z`. Assets:
+`KingmakerGunslinger-0.0.157-visual-refinement-alpha.1.zip` (the development
+candidate `a2f00e7b…3c5a` renamed, 373 members, Info.json 0.0.157, verified
+after download), `release-manifest.json` and `SHA256SUMS.txt`. The full test
+pass was not run. The separate `v0.0.157-brown-fur-alpha.1` prerelease, from
+another lane, is a different build; neither alpha contains the other's changes.
+
 ## Baseline
 
 - `master` = `origin/master` = `2eed3944f6eab657f9030d33acae6d81eb5f10ae`,
