@@ -477,7 +477,7 @@ namespace KingmakerGunslinger.DomainTests
             string[] meshHashes = {
                 "477354af79aefb21de544517c498a05b2d420fbb5ebbb1cb675613f66f09196e",
                 "bd042f973a2a871283dea51614cbce56736f2d9d7dbc65fe6f3874ab4a193d56",
-                "aa7e069491034cf8281ea19cfd228ac159e0ad2b778e14f10f1441663014e9ca",
+                "0c704e821055c2c0de430b420eab109f11b6924c11bdbe23c6f6cdc405067fa1",
                 "45b3003b0184049921982d828faf71e95b90c2babf5acc0827f0095ec41aac52"
             };
             for (int item = 0; item < kinds.Length; item++)
@@ -523,6 +523,11 @@ namespace KingmakerGunslinger.DomainTests
                         kind + " painting matches its geometry manifest.");
                 }
             }
+            // VIS-024: the refined Rhinoceros is the first ungulate body built
+            // with outward winding; the cattle and the Woolly Rhinoceros keep
+            // the first export until their own refinement batch.
+            OriginalMeshOrientation.AssertShippedBody(
+                Path.Combine(directory, "rhinoceros-mesh.json"), "rhinoceros");
             string source = Path.Combine(root, "assets-source", "original-models",
                 "ungulates");
             Assertions.True(File.Exists(Path.Combine(source, "generate_ungulates.py")) &&
