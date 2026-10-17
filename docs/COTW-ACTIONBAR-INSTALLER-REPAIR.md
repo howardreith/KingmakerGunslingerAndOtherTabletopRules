@@ -1,5 +1,27 @@
 # CotW action-bar installer correction — output_log2, 2026-10-17
 
+## Subsequent owner-authorized alpha 3 publication
+
+[Public alpha 3](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.157-controller-load-alpha.3)
+published 2026-10-17T22:55:15Z following the owner's explicit GitHub request.
+Product remains `39c60fb5e916`; tag object
+`8acb146b7b24a8e1c0162c0c156baaa5973c97d0` peels to that exact full commit.
+Publication/helper/notes commit `a1bbecb059244e34002f04fe9cf5613b654041ae` is
+separate from the frozen product. The exact existing ZIP was renamed, not
+rebuilt; its download and all three GitHub asset digests were verified.
+Prerelease=true, draft=false, stable v0.0.157 remains Latest. Previous alpha
+assets/tags and default branch are untouched. No game launch, installation,
+save/settings mutation or native PASS is implied. Earlier no-publication
+statements below describe the preceding source checkpoint, not current status.
+
+Helper: `Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3 -Publish
+-ConfirmAlphaTestPublication`, with `-WhatIf` first and actual `-Confirm:$false`;
+guarded branch push, positive preflight and wrong-profile negative refusal PASS.
+Actual publication **16.896 s**, log `artifacts/controller-alpha-3-publication.log`
+in the review worktree. No full suite or rebuild. Public ZIP/handoff basename
+`KingmakerGunslinger-0.0.157-controller-load-alpha.3.zip`; hashes/MVID below
+remain unchanged. See [player test notes](RELEASE-NOTES-CONTROLLER-LOAD-ALPHA-3.md).
+
 ## Frozen local candidate / handoff
 
 Final product `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e` includes the installer
