@@ -36,11 +36,8 @@ namespace KingmakerGunslinger.Summoning
         private UnitEntityView _view;
         private Skin[] _skins;
         private Mesh _mesh;
-        private Texture2D _paint, _masks;
+        private Texture2D _paint;
         private Material _material;
-        // Masks texture channels as the game's character atlas bakes them:
-        // roughness, emission, metallic.
-        internal const float MaskRoughness = .8f;
         private GameObject _tailRoot;
         private Animation _player;
         private AnimationClip _clip;
@@ -153,20 +150,6 @@ namespace KingmakerGunslinger.Summoning
             _paint.name = _name + "_Paint";
             _material = new Material(donor) { name = _name + "_Material" };
             ExpandedSummoningPteranodonViewPatch.DressMaterial(_material, _paint);
-            // The human donor is a character-system body whose masks atlas
-            // (_Parameters) is baked later and never reaches this clone, so the
-            // shader's empty default drew the original body mirror-smooth: thin
-            // white highlights along the coil and torso (VIS-029, guarded run
-            // 20261017T1706293264089Z). An owned flat masks texture keeps it
-            // matte, unlit and non-metallic. The paint is unchanged.
-            if (_material.HasProperty("_Parameters"))
-            {
-                _masks = new Texture2D(2, 2, TextureFormat.RGBA32, false, true)
-                    { name = _name + "_Masks", wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Point };
-                _masks.SetPixels(Enumerable.Repeat(new Color(MaskRoughness, 0f, 0f, 1f), 4).ToArray());
-                _masks.Apply(false, false);
-                _material.SetTexture("_Parameters", _masks);
-            }
 
             Vector3[] rest = Points(payload["originalTailRest"]);
             JObject animation = (JObject)payload["originalTailSlap"];
@@ -353,7 +336,7 @@ namespace KingmakerGunslinger.Summoning
         internal UnityEngine.Object[] CaptureOwnedResources()
         {
             var result = new HashSet<UnityEngine.Object>(new UnityEngine.Object[] {
-                _mesh, _paint, _masks, _material, _tailRoot, _player, _clip, TailAction, _ownedSet }.Where(value => value != null));
+                _mesh, _paint, _material, _tailRoot, _player, _clip, TailAction, _ownedSet }.Where(value => value != null));
             if (_tailRoot != null) foreach (Transform t in _tailRoot.GetComponentsInChildren<Transform>(true))
             { result.Add(t); result.Add(t.gameObject); }
             if (_view != null)
@@ -392,7 +375,7 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException("Live manager still references owned action set; cleanup remains retryable.", failure);
             // Never destroy native body/equipment/set/action/clip references.
             foreach (var material in resources.OfType<Material>()) if (material != null) UnityEngine.Object.DestroyImmediate(material);
-            foreach (var value in new UnityEngine.Object[] { _ownedSet, TailAction, _clip, _tailRoot, _mesh, _paint, _masks })
+            foreach (var value in new UnityEngine.Object[] { _ownedSet, TailAction, _clip, _tailRoot, _mesh, _paint })
                 if (value != null) UnityEngine.Object.DestroyImmediate(value);
             _released = true;
             if (failure != null) throw new InvalidOperationException("Human/tail cleanup encountered a native error.", failure);
