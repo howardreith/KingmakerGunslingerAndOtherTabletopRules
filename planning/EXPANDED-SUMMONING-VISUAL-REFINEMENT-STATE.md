@@ -71,6 +71,25 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
   the inside-out bodies found outside the review list were repaired on the
   same word, except the Bebelith, which the owner had accepted as the control.
 
+## v0.0.158 release candidate, 2026-10-17
+
+The owner asked to merge this into master and cut a new full release ("this
+is an EXCELLENT revision. Please merge this into master and cut a new full
+release."). Release preparation `e68e441544` bumps to
+`0.0.158-expanded-summoning-visual-refinement` with the narrow
+`tools/validate_expanded_summoning_visual_refinement_release158.py` (see
+`docs/BUILD-AND-RELEASE.md`). Release candidate gates on `e68e441544`:
+
+| Gate | Command | Time | Result |
+| --- | --- | --- | --- |
+| Sprint-level release candidate | `scripts/Invoke-KmgGate.ps1 -Level Sprint -ReferenceBundleDir <private refresh bundle>` | 1:55 | PASS: complete domain suite 2664/2664, repository wrapper (dispatching to the v0.0.158 validator), exact-reference Release build, build-output, SoundBank and strict package validation; package `KingmakerGunslinger-0.0.158-local-runtime.zip` `15cec3d29b8d895765ce6abaf5fbecce3cb91bd11b8967fecee599d3bb83d6f3`, DLL `a65df0227b07…b25f` |
+| Guarded creature review on that package | Wolf, Salamander, Stirge, Dire Rat, Girallon | 4:38 | PASS 31/31 (`20261017T2341468883817Z`), mod 0.0.158 loaded |
+| Guarded Salamander bounded review | `disposable-expanded-summoning-serpentine-bodies` | 1:39 | PASS 15/15 (`20261017T2346161316804Z`) |
+| Guarded visual contracts | `disposable-expanded-summoning-visual-contracts` | 1:22 | PASS 15/15 (`20261017T2347553042036Z`) |
+
+The live mod was restored exactly (254 files, `5C3E4AD4…BFBB`). The PR then
+merges normally and `Publish-Release.ps1` runs from clean, pushed `master`.
+
 ## Alpha release, 2026-10-17
 
 On the owner's instruction ("Please cut an alpha release. No need to run all
