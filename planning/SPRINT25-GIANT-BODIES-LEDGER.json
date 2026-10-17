@@ -4,7 +4,9 @@
   "status": "E8_NATIVE_PARTIAL_RETAINED_COHERENT_REPAIR_FOCUSED_PASS_CANDIDATE_NEXT",
   "current": {
     "latestCheckpoint": {
-      "asOfUtc": "2026-10-17T20:06:12Z",
+      "asOfUtc": "2026-10-17T20:14:29Z",
+      "registryIntegrityCorrection": "PASS: icon catalog protection/coverage validation and 29/29 refusal tests (12.470 s); actual Sprint25 hidden-state source gate PASS. Parsed catalog comparison proves only registrySha256 and sprint25ExtensionAuthorization changed. All image, consumer and approval metadata is preserved. This is registry integrity metadata, not new art or owner visual approval.",
+      "candidateGatePreflight": "4c96a3cb3e3029c90e3c2f7f3dd84984fe321afd was committed/pushed and the unelevated full gate REFUSED before full build/package/native in15.806 s (2026-10-17T20:10:12Z): icon catalog registrySha256 still pinned the pre-chassis blueprint ledger. Receipt artifacts/sprint25-candidate-gate-4c96a3cb.result.json retained. Correct only the exact registry hash/hidden-carrier authorization; no image/export/consumer bytes change. No new artifact or game launch occurred; e8 remains archived and valid under its own identity.",
       "sourceBuildCheckpoint": {
         "source": "e8b00499142c944dfada6172ac4bd17e64e28e42",
         "sourceFingerprint": "75e66d8a10373fbf437e0a776cae1505d075670838506b82a376c8cc3b0f7d86",
