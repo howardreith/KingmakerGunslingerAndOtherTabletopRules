@@ -1373,7 +1373,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DescribeReviewCharacter(unit.View) + ";rimAnimations[" +
                 string.Join("|", rimAnimations.ToArray()) + "];rimPatch=" +
                 ExpandedSummoningRimAnimationPatch.Describe(unit.View) + ";summonGlow=" +
-                ExpandedSummoningSummonGlowPatch.Describe(unit.View);
+                ExpandedSummoningSummonGlowPatch.Describe(unit.View) + ";buffEffects=" +
+                ExpandedSummoningSummonGlowPatch.DescribeBuffEffects(unit);
         }
 
         /// <summary>
