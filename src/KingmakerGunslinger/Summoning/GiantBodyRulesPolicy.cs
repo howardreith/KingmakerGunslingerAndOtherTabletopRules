@@ -214,6 +214,8 @@ namespace KingmakerGunslinger.Summoning
         internal const int BrachiosaurusSelectedTailAttack =
             BrachiosaurusPrintedTailAttackLegacy;
         internal const int BrachiosaurusWeaponFocusTailBonus = 1;
+        internal const int BrachiosaurusPowerAttackAdditionalDamage =
+            1 + BrachiosaurusBaseAttackBonus / 4;
 
         // A reconstructed Gargantuan body exposes fifteen feet before its
         // creature-owned correction, exactly as Sprint 24's Tyrannosaurus did.

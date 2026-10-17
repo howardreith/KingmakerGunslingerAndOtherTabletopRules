@@ -4,6 +4,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.UnitLogic.FactLogic;
@@ -55,8 +56,10 @@ namespace KingmakerGunslinger.Blueprints
                 GiantBodyRulesPolicy.BrachiosaurusTailTypeSymbol,
                 GiantBodyRulesPolicy.BrachiosaurusTailTypeStoredRangeFeet);
 
-            ConfigureBrachiosaurusChassis(Require<BlueprintFeature>(bySymbol,
-                GiantBodyRulesPolicy.BrachiosaurusChassisSymbol));
+            ConfigureBrachiosaurusChassis(library,
+                Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit.Brachiosaurus"),
+                tail, Require<BlueprintFeature>(bySymbol,
+                    GiantBodyRulesPolicy.BrachiosaurusChassisSymbol));
 
             // The unit type carries no signature ability. Brachiosaurus is
             // untemplated and owns no execution children, and its trample is
@@ -78,18 +81,34 @@ namespace KingmakerGunslinger.Blueprints
         /// (Perception) that ranks alone cannot express.
         /// </summary>
         private static void ConfigureBrachiosaurusChassis(
-            BlueprintFeature feature)
+            LibraryScriptableObject library, BlueprintUnit owner,
+            BlueprintItemWeapon tail, BlueprintFeature feature)
         {
             var reach = ScriptableObject.CreateInstance<AddStatBonus>();
             reach.Stat = StatType.Reach;
             reach.Value = GiantBodyRulesPolicy.BrachiosaurusReachBonusFeet;
             reach.Descriptor = ModifierDescriptor.UntypedStackable;
+            // As with Stegosaurus, the private weapon type cannot match the
+            // native WeaponFocusTail type reference. Carry that same +1 on
+            // this creature's private tail type; do not mutate the native feat.
+            var focus = ScriptableObject.CreateInstance<WeaponFocus>();
+            focus.WeaponType = tail.Type;
+            focus.AttackBonus = GiantBodyRulesPolicy.BrachiosaurusWeaponFocusTailBonus;
+            var powerAttack = BlueprintLibraryLookup.RequireExact<
+                Kingmaker.UnitLogic.ActivatableAbilities.BlueprintActivatableAbility>(
+                    library, "a7b339e4f6ff93a4697df5d7a87ff619", "native Power Attack toggle");
+            if (powerAttack.Buff == null)
+                throw new InvalidOperationException("Native Power Attack toggle has no buff.");
+            var power = ScriptableObject.CreateInstance<BrachiosaurusPowerAttackCorrection>();
+            power.OwningBlueprint = owner;
+            power.Tail = tail;
+            power.PowerAttackBuff = powerAttack.Buff;
             feature.name = InternalName(
                 GiantBodyRulesPolicy.BrachiosaurusChassisSymbol);
             feature.IsClassFeature = false;
             feature.HideInUI = true;
             feature.ComponentsArray = new BlueprintComponent[] {
-                reach,
+                reach, focus, power,
                 UntypedSkill(StatType.SkillPerception,
                     GiantBodyRulesPolicy
                         .BrachiosaurusSkillFocusCompletionBonus)

@@ -180,10 +180,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         if (!turnBased)
                         {
+                            foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                             Sprint25Profile(fixture, owner, key);
                             foreach (int frame in Sprint25PowerAttack(owner, key, false)) yield return frame;
-                            Sprint25SignedStrength(fixture, owner, key);
                             Sprint25Body(owner, key, "idle");
+                            Sprint25SignedStrength(fixture, owner, key);
                         }
                         else
                         {
@@ -385,6 +386,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["fortitude"] = owner.Stats.SaveFortitude.ModifiedValue,
                 ["will"] = owner.Stats.SaveWill.ModifiedValue,
                 ["perception"] = owner.Stats.SkillPerception.ModifiedValue,
+                ["perceptionBreakdown"] = DescribeSprint16Skill(owner.Stats.SkillPerception),
+                ["difficultyAcContribution"] = owner.Stats.AC.Modifiers
+                    .Where(value => value.ModDescriptor == ModifierDescriptor.Difficulty).Sum(value => value.ModValue),
                 ["requiredElephantFeatGuids"] = new JArray(elephantFeats),
                 ["facts"] = new JArray(owner.Descriptor.Progression.Features.Enumerable
                     .Select(value => value.Blueprint.name)) },
@@ -399,6 +403,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int reflexBefore = fixture.Hostile.Stats.SaveReflex.BaseValue;
             UnityEngine.Random.State random = UnityEngine.Random.state;
             ExpandedSummoningCorrectionFixture rules = _rulesFixture;
+            string trampleName = "KMG_Summoning_Special_" +
+                (key == "brachiosaurus" ? "Brachiosaurus" : "Elephant") + "_Trample";
             var rows = new JArray();
             bool exact = true;
             var observer = new Sprint24AttackObserver { Owner = owner, Target = fixture.Hostile,
@@ -437,7 +443,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Hostile.Stats.SaveReflex.BaseValue = -100;
                     Game.Instance.Player.GameTime += TimeSpan.FromSeconds(6);
                     ExpandedSummoningTrampleContactResult trample = RunExpandedSummoningTrampleContact(
-                        owner, fixture.Hostile, "sprint25-signed-" + entry[1], 10);
+                        owner, fixture.Hostile, "sprint25-signed-" + entry[1], 10, trampleName);
                     BaseDamage dealt = trample.Damage.Count == 1 ? trample.Damage[0].DamageBundle.First : null;
                     exact &= dealt != null && dealt.Bonus == entry[2] && trample.Saves.Count == 1 &&
                         trample.Saves[0].DifficultyClass == entry[key == "brachiosaurus" ? 3 : 4];
@@ -448,15 +454,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.Stats.Strength.BaseValue = before;
                 BlueprintCharacterClass animal = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
                     BlueprintBootstrap.Library, "4cd1757a0eea7694ba5c933729a53920", "native animal racial class");
-                owner.Descriptor.Progression.AddClassLevel(animal);
-                owner.Descriptor.Progression.AddClassLevel(animal);
-                PrepareExpandedSummoningTrampleResponsePair(fixture, owner, fixture.Hostile, 0, 1f);
-                Game.Instance.Player.GameTime += TimeSpan.FromSeconds(6);
-                var liveHd = RunExpandedSummoningTrampleContact(owner, fixture.Hostile, "sprint25-live-hd", 10);
-                bool liveExact = liveHd.Saves.Count == 1 && liveHd.Saves[0].DifficultyClass == (key == "brachiosaurus" ? 33 : 26);
-                exact &= liveExact;
-                rows.Add(new JObject { ["case"] = "two-live-racial-HD-added", ["hd"] = owner.Descriptor.Progression.CharacterLevel,
-                    ["trample"] = Sprint23TrampleResult(liveHd), ["exact"] = liveExact });
+                UnitEntityData growth = CastExpandedSummoningQuietUnit(fixture, key);
+                try
+                {
+                    growth.Descriptor.Progression.AddClassLevel(animal);
+                    growth.Descriptor.Progression.AddClassLevel(animal);
+                    PrepareExpandedSummoningTrampleResponsePair(fixture, growth, fixture.Hostile, 0, 1f);
+                    Game.Instance.Player.GameTime += TimeSpan.FromSeconds(6);
+                    var liveHd = RunExpandedSummoningTrampleContact(growth, fixture.Hostile, "sprint25-live-hd", 10, trampleName);
+                    bool liveExact = liveHd.Saves.Count == 1 && liveHd.Saves[0].DifficultyClass == (key == "brachiosaurus" ? 33 : 26);
+                    exact &= liveExact;
+                    rows.Add(new JObject { ["case"] = "two-live-racial-HD-added", ["unit"] = growth.UniqueId,
+                        ["hd"] = growth.Descriptor.Progression.CharacterLevel,
+                        ["trample"] = Sprint23TrampleResult(liveHd), ["exact"] = liveExact });
+                }
+                finally { DisposeExpandedSummoningUnits(fixture.Created, new[] { growth }); }
             }
             finally
             {

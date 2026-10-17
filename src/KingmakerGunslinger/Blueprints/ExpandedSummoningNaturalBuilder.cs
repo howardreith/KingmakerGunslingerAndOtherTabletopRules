@@ -1491,7 +1491,8 @@ namespace KingmakerGunslinger.Blueprints
                 profile.Key == GiantCrabRulesPolicy.GiantCrabKey ||
                 profile.Key == AnkylosaurusRulesPolicy.Key ||
                 ArmoredDinosaurRulesPolicy.UsesExactRanks(profile.Key) ||
-                TheropodRulesPolicy.UsesExactRanks(profile.Key);
+                TheropodRulesPolicy.UsesExactRanks(profile.Key) ||
+                GiantBodyRulesPolicy.UsesExactRanks(profile.Key);
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :

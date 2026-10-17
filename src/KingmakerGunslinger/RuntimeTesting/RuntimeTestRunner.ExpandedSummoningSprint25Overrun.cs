@@ -172,6 +172,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Setup only the disposable responders' prerequisite at
                     // contact. Native round refill during the movement/animation
                     // lead-in must not turn the exhausted case into a fresh one.
+                    // Keep the maneuvering owner's deliberately exhausted
+                    // opportunity out of the two-responder prerequisite too.
+                    owner.CombatState.AttackOfOpportunityCount = 0;
                     for (int index = 0; index < responders.Length; index++)
                     {
                         responders[index].CombatState.AttackOfOpportunityCount = sample == "exhausted" ? 0 : 1;
@@ -180,7 +183,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         lastOpportunities[index] = beforeOpportunities[index];
                     }
                     opportunityTrace.Add(new JObject { ["phase"] = "fixture-resource-prerequisite-before-native-maneuver",
-                        ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds, ["counts"] = new JArray(beforeOpportunities) });
+                        ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                        ["ownerOpportunityCount"] = owner.CombatState.AttackOfOpportunityCount,
+                        ["counts"] = new JArray(beforeOpportunities) });
                 };
                 EventBus.Subscribe(observer);
                 float standardBefore = owner.CombatState.Cooldown.StandardAction;
@@ -253,7 +258,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool nativeBudget = !command.Cutscene && !command.IsIgnoreCooldown &&
                     blueprint.IsFullRoundAction && ability.RequireFullRoundAction;
                 bool outcome = result != null && (sample == "maneuver-immune" ?
-                    !afterProne : result.InitiatorCMB == 32 && result.SuccesValue == margin &&
+                    !result.Success && !result.IsPartialSuccess && !afterProne :
+                    result.InitiatorCMB == 32 && result.SuccesValue == margin &&
                     result.Success == (margin >= 0) && result.IsPartialSuccess == (margin >= 0 && margin < 5));
                 Sprint25Check("overrun-" + sample + (turnBased ? "-turn-based" : "-rtwp"), outcome && observer.ContactResourcesPrepared && command.IsStarted && command.IsFinished && nativeBudget &&
                     (!turnBased || maxStandard > standardBefore && maxMove > moveBefore) &&

@@ -161,6 +161,7 @@ ALLOWED_PRODUCTION = {
     # caused; the native component provokes on success alone. This is
     # the corrected behaviour, on this creature's cloned carrier only.
     "src/KingmakerGunslinger/Summoning/BrachiosaurusOverrunKnockdown.cs",
+    "src/KingmakerGunslinger/Summoning/BrachiosaurusTailCombat.cs",
     "src/KingmakerGunslinger/Summoning/GiantBodyVisualPolicy.cs",
     "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.GiantBodies.cs",
     "src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs",
@@ -183,6 +184,7 @@ ALLOWED_PRODUCTION = {
     # and reused predecessor-helper seams, not a RuntimeTesting wildcard.
     "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs",
     "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningRosterPersistencePolicy.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningCorrection.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
