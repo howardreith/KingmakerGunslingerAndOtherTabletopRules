@@ -1553,7 +1553,7 @@ namespace KingmakerGunslinger.RuntimeTesting
               "woolly-rhinoceros", "aurochs", "bison",
               "hyena", "goblin-dog", "wolverine", "shadow-mastiff",
               "poisonous-frog", "deinonychus", "triceratops",
-              "ankylosaurus" };
+              "ankylosaurus", "crocodile", "dire-crocodile" };
 
         // Single-renderer donors only; the Tyrannosaurus' two-renderer
         // Lizardfolk frame comes from its own Sprint 24 census.
