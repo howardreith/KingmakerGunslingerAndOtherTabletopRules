@@ -1,5 +1,12 @@
 # Development candidates
 
+Third explicit owner exception on 2026-10-17: publish exact installer/readiness
+repair product `39c60fb5e916` as `v0.0.157-controller-load-alpha.3`, through
+the additional fixed `Publish-CotwActionBarAlpha.ps1 -AlphaVersion 3` profile.
+Existing alpha 2 pins/default and stable qualification refusals remain intact;
+candidateKind=development and releaseQualification=false still apply. See
+[authorization](BUILD-AND-RELEASE.md#controller-load-alpha-3-authorization--2026-10-17).
+
 Second explicit owner exception on 2026-10-17: publish exact CotW action-bar
 repair product `92b442c06dd8` as test prerelease
 `v0.0.157-controller-load-alpha.2` through its hash-pinned
