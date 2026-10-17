@@ -283,12 +283,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The actual UnitAttack approach radius and engine distance convention discriminate the printed reach boundary.");
                 PlaceExpandedSummoningUnit(target, origin + forward * 2);
                 float standardBefore = owner.CombatState.Cooldown.StandardAction;
+                float moveBefore = owner.CombatState.Cooldown.MoveAction;
+                float maxStandard = standardBefore, maxMove = moveBefore;
                 UnitAttack command = null;
                 foreach (int frame in Sprint24RunAttackCommand(fixture, owner,
                     target, true, value => command = value,
-                    (unit, step) => Sprint25Body(unit, key, "attack-" + turnBased + "-" + step))) yield return frame;
+                    (unit, step) => Sprint25Body(unit, key, "attack-" + turnBased + "-" + step)))
+                {
+                    maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
+                    maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
+                    yield return frame;
+                }
+                maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
+                maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
                 int count = key == "brachiosaurus" ? 1 : 2;
                 bool exact = command != null && command.IsFinished &&
+                    !command.Cutscene && !command.IsIgnoreCooldown && maxStandard > standardBefore &&
                     command.AllAttacks.Count == count && observer.WeaponAttacks.Count == count &&
                     observer.Rolls.Count == count && observer.Rolls.All(value => value.IsHit) &&
                     observer.WeaponAttacks.All(value => !value.IsCharge && !value.IsAttackOfOpportunity);
@@ -301,7 +311,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["rolls"] = observer.Rolls.Count,
                         ["weapons"] = new JArray(observer.WeaponAttacks.Select(value => value.Weapon.Blueprint.AssetGuid)),
                         ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
-                        ["standardCooldown"] = new JArray(standardBefore, owner.CombatState.Cooldown.StandardAction) },
+                        ["standardCooldown"] = new JArray(standardBefore, maxStandard, owner.CombatState.Cooldown.StandardAction),
+                        ["moveCooldown"] = new JArray(moveBefore, maxMove, owner.CombatState.Cooldown.MoveAction),
+                        ["nativeEconomy"] = !command.Cutscene && !command.IsIgnoreCooldown },
                     "The real ordinary full-attack command executes exactly the frozen natural routine, with no extra attack or special-command rider.");
                 Sprint25Body(owner, key, "ordinary-attack-" + turnBased);
             }

@@ -1,11 +1,11 @@
 # Sprint 25 takeover — native Cleave/fixture repair batch, candidate next
 
-Controlling update, 2026-10-17 18:26 UTC: continue the explicitly selected
+Controlling update, 2026-10-17 18:50 UTC: continue the explicitly selected
 qualification/merge/release campaign. PR49 remains OPEN/DRAFT; no release and
 no Sprint26. See `current.latestCheckpoint` in the Sprint25 ledger for exact
 candidate identities, failed predicates and the next batch.
 
-Frozen c170dc87 passed 2660/2660, exact build and strict378-file package
+Prior c170dc87 passed 2660/2660, exact build and strict378-file package
 (304.59s). Its independent native batch finished FAIL after2668.43s:
 routes/icons pass standalone and high-risk combined; AI lane setup, payload
 fallback timing, Overrun fixture controller and Cleave require correction.
@@ -23,9 +23,14 @@ It also records the five exact new private inventory facts and affected
 persistence fact/command identities. Accepted art/payload bytes are untouched;
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Final focused production compilation and57/57 selected tests pass
-(16.3s +1.9s); all19 source-boundary/refusal fixtures pass. Commit/push and
-a new frozen candidate remain next. Then finish mandatory
+62241247 subsequently passed its full2660-test/exact-build/strict-package
+gate (332.99s), archived under source-build-62241247; it ran no native phase.
+The completed observation-only delta now samples action-spending maxima and
+requires actual native active-prone transitions, with exact-unit prone ticks,
+native rule/timing and existing damage-attribution formatting. Production and
+57/57 selected regressions pass (16.6s +2.0s). All19 source-boundary/refusal
+fixtures passed; the allowed path set is unchanged by this final delta.
+Commit/push and freeze the completed-observer candidate, then finish mandatory
 native/persistence/public proof, publisher preflight, merge, next free stable
 patch/download/restoration, and final-records merge. Do not ask the owner to
 select these already-authorized next actions again.
