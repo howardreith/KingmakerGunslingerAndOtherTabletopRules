@@ -17,36 +17,37 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-005 Dire Rat | rebuilt, revised after one internal review; focused gate PASS | native after: PASS (runs 1 and 2); offline renders of shipped bytes | accepted from the offline review page 2026-10-17 |
 | VIS-024 Rhinoceros | rebuilt, revised after review, recoloured after run 1 | native after: PASS (runs 1 and 2) | accepted from the offline review page 2026-10-17 |
 | VIS-001 Tyrannosaurus | rebuilt, revised after review | native after: body in frame, lit and intact; the review assertion fails only on the pre-existing observer limitation, identical on master | accepted from the offline review page 2026-10-17 |
-| VIS-003 Woolly Rhinoceros | rebuilt; focused gate PASS | native after: PASS (run 2) | pending (style approved) |
-| VIS-017 Aurochs | rebuilt; focused gate PASS | native after: PASS (run 2) | pending (style approved) |
-| VIS-023 Bison | rebuilt; focused gate PASS | native after: PASS (run 2) | pending (style approved) |
-| VIS-010 Hyena | rebuilt; focused gate PASS | native after: PASS (runs 3 and 4) | pending (style approved) |
-| VIS-009 Goblin Dog | rebuilt; focused gate PASS | native after: PASS (runs 3 and 4) | pending (style approved) |
-| VIS-014 Wolverine | rebuilt; focused gate PASS | native after: PASS (run 3) | pending (style approved) |
-| VIS-033 Shadow Mastiff | rebuilt; focused gate PASS | native after: PASS (run 3) | pending (style approved) |
-| VIS-006 Poisonous Frog | rebuilt and recoloured green and black; focused gate PASS | native after: PASS (run 3) | pending (style approved; the owner questioned the orange) |
-| VIS-027 Deinonychus | rebuilt; focused gate PASS | native after: body in frame, lit and intact; the review assertion fails only on the Tyrannosaurus's observer limitation (same donor) (run 5) | pending (style approved) |
-| VIS-002 Triceratops | rebuilt; focused gate PASS | native after: PASS (run 5) | pending (style approved) |
-| VIS-028 Ankylosaurus | rebuilt, club bone-tan; focused gate PASS | native after: PASS (run 5) | pending (style approved) |
-| VIS-012 Crocodile | targeted: exported outward, repainted; focused gate PASS | native after: PASS (run 6) | pending (style approved) |
-| VIS-034 Dire Crocodile | targeted: exported outward, repainted; focused gate PASS | native after: PASS (run 6) | pending (style approved) |
-| VIS-011 Giant Ant (Worker) | minor polish: outward, carried tubes, thorax rooted; focused gate PASS | native after: PASS (run 7) | pending (style approved) |
-| VIS-015 Giant Ant (Soldier) | minor polish: outward, carried tubes, mandibles rooted; focused gate PASS | native after: PASS (run 7) | pending (style approved) |
-| VIS-021 Giant Ant (Drone) | minor polish: outward, carried tubes, mandibles rooted; focused gate PASS | native after: PASS (run 7) | pending (style approved) |
-| VIS-026 Giant Scorpion | targeted: outward, telson rooted; focused gate PASS | native after: PASS (run 8) | pending (style approved) |
+| VIS-003 Woolly Rhinoceros | rebuilt; focused gate PASS | native after: PASS (run 2) | provisional for release |
+| VIS-017 Aurochs | rebuilt; focused gate PASS | native after: PASS (run 2) | provisional for release |
+| VIS-023 Bison | rebuilt; focused gate PASS | native after: PASS (run 2) | provisional for release |
+| VIS-010 Hyena | rebuilt; focused gate PASS | native after: PASS (runs 3 and 4) | provisional for release |
+| VIS-009 Goblin Dog | rebuilt; focused gate PASS | native after: PASS (runs 3 and 4) | provisional for release |
+| VIS-014 Wolverine | rebuilt; focused gate PASS | native after: PASS (run 3) | provisional for release |
+| VIS-033 Shadow Mastiff | rebuilt; focused gate PASS | native after: PASS (run 3) | provisional for release |
+| VIS-006 Poisonous Frog | rebuilt and recoloured green and black; focused gate PASS | native after: PASS (run 3) | provisional for release (the owner questioned the orange) |
+| VIS-027 Deinonychus | rebuilt; focused gate PASS | native after: body in frame, lit and intact; the review assertion fails only on the Tyrannosaurus's observer limitation (same donor) (run 5) | provisional for release |
+| VIS-002 Triceratops | rebuilt; focused gate PASS | native after: PASS (run 5) | provisional for release |
+| VIS-028 Ankylosaurus | rebuilt, club bone-tan; focused gate PASS | native after: PASS (run 5) | provisional for release |
+| VIS-012 Crocodile | targeted: exported outward, repainted; focused gate PASS | native after: PASS (run 6) | provisional for release |
+| VIS-034 Dire Crocodile | targeted: exported outward, repainted; focused gate PASS | native after: PASS (run 6) | provisional for release |
+| VIS-011 Giant Ant (Worker) | minor polish: outward, carried tubes, thorax rooted; focused gate PASS | native after: PASS (run 7) | provisional for release |
+| VIS-015 Giant Ant (Soldier) | minor polish: outward, carried tubes, mandibles rooted; focused gate PASS | native after: PASS (run 7) | provisional for release |
+| VIS-021 Giant Ant (Drone) | minor polish: outward, carried tubes, mandibles rooted; focused gate PASS | native after: PASS (run 7) | provisional for release |
+| VIS-026 Giant Scorpion | targeted: outward, telson rooted; focused gate PASS | native after: PASS (run 8) | provisional for release |
 | VIS-035 Bebelith | control, unchanged | native control review PASS (run 7) | accepted control (owner) |
-| VIS-013 Dire Bat | rebuilt; focused gate PASS | native after: PASS, flight included (run 9) | pending (style approved) |
-| VIS-020 Pteranodon | rebuilt; focused gate PASS | native after: PASS (run 9) | pending (style approved) |
-| VIS-022 Giant Wasp | rebuilt; focused gate PASS | native after: PASS, flight included (run 9) | pending (style approved) |
-| VIS-019 Ape | rebuilt, coat darkened after run 11; focused gate PASS | native after: PASS (runs 11 and 12) | pending (style approved) |
-| VIS-025 Dire Ape | rebuilt, approved palette kept; focused gate PASS | native after: PASS (run 11) | pending (style approved) |
-| VIS-030 Xill | rebuilt; identity confirmed (run 10); focused gate PASS | native after: PASS (run 11) | pending (style approved) |
-| VIS-008 Wolf | presentation change: KMG summons drop the summoned-creature glow; focused build tests PASS | native after: PASS, own dark coat, rim and tint off (run 15; gold in run 14) | pending |
-| VIS-037 Ghaele | the same change; glow off (run 15) | the review still fails on the Ghaele's own rising dissolve and a move that did not start | pending |
-| VIS-036 Frost Giant, VIS-038 Thanadaemon | covered by the same policy (native options and adapters; domain test) | not observed: the creature review cannot cast them | pending |
-| VIS-004 Dire Rat icon | pilot only; production icon unchanged | menu-size comparison sheet | pending the owner's approval of the pilot |
-| VIS-029 Salamander | presentation change: travelling tail gait; owned body starts undissolved; focused gate PASS | native after: PASS (runs 16 and 19), white streaks gone; spear and tail slap used in a real full attack, 15/15 | pending |
+| VIS-013 Dire Bat | rebuilt; focused gate PASS | native after: PASS, flight included (run 9) | provisional for release |
+| VIS-020 Pteranodon | rebuilt; focused gate PASS | native after: PASS (run 9) | provisional for release |
+| VIS-022 Giant Wasp | rebuilt; focused gate PASS | native after: PASS, flight included (run 9) | provisional for release |
+| VIS-019 Ape | rebuilt, coat darkened after run 11; focused gate PASS | native after: PASS (runs 11 and 12) | provisional for release |
+| VIS-025 Dire Ape | rebuilt, approved palette kept; focused gate PASS | native after: PASS (run 11) | provisional for release |
+| VIS-030 Xill | rebuilt; identity confirmed (run 10); focused gate PASS | native after: PASS (run 11) | provisional for release |
+| VIS-008 Wolf | presentation change: KMG summons drop the summoned-creature glow; focused build tests PASS | native after: PASS, own dark coat, rim and tint off (run 15; gold in run 14) | provisional for release |
+| VIS-037 Ghaele | the same change; glow off (run 15) | the review still fails on the Ghaele's own rising dissolve and a move that did not start | provisional for release |
+| VIS-036 Frost Giant, VIS-038 Thanadaemon | covered by the same policy (native options and adapters; domain test) | not observed: the creature review cannot cast them | provisional for release |
+| VIS-004 Dire Rat icon | owner-approved edit adopted as the production source (`b6af1725ff`); icon catalog and summon icon tests PASS | menu-size sheet; native: the Dire Rat summons and renders (run 20) | accepted 2026-10-17 |
+| VIS-029 Salamander | presentation change: travelling tail gait; owned body starts undissolved; focused gate PASS | native after: PASS (runs 16 and 19), white streaks gone; spear and tail slap used in a real full attack, 15/15 | provisional for release |
 | other 5 items | open or owned elsewhere (see ledger) | owner screenshots only | pending |
+| Eagle, Stirge, Fire Beetle, Giant Stag Beetle, Girallon, Giant Crab, Stegosaurus (not inventory items) | inside-out first exports repaired outward in place (`930474b4e9`); focused build tests PASS | native after: PASS, solid and lit (run 20) | provisional for release |
 
 ## Owner decisions, 2026-10-17
 
@@ -61,6 +62,14 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
   look good. I think you can proceed with this art style for all remaining
   updates." The pilot's acceptance is recorded from that; each later batch is
   pending with the style approved.
+- **Dire Rat icon approved.** "The new dire rat icon looks great. Go ahead
+  with it." The pilot was adopted unchanged (`b6af1725ff`).
+- **Repairs accepted provisionally for release.** "Let's assume that your
+  repairs are good. Move forward with them. I will test everything in a big
+  review after we release and refine anything that needs addressing after."
+  Every changed item is recorded as provisional for release, not as accepted;
+  the inside-out bodies found outside the review list were repaired on the
+  same word, except the Bebelith, which the owner had accepted as the control.
 
 ## Baseline
 
@@ -146,6 +155,9 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 17 | `491e60249f43` (package `ef57b67b…5f47`) | the same two | 2:05, 1:26 | PASS; owned matte masks texture applied, streaks unchanged (reverted) |
 | 18 | `c1b87bce72dc` (package `a26e0331…82e6`) | creature review: Salamander | 2:04 | PASS; cape rim keyword applied, streaks unchanged (reverted) |
 | 19 | `58123c87fa9e` (package `6f778ca1…0812`) | the same two as run 16 | 2:03, 1:26 | PASS (10 and 15/15); body undissolved, streaks gone |
+| 20 | `930474b4e924` (package `25f9ed3b…5295`, 113 focused build tests) | creature review: Eagle, Stirge, Fire Beetle, Giant Stag Beetle | 3:39 | PASS (31 assertions); repaired bodies solid and lit, the Fire Beetle's eyes glowing |
+| 20 | same | creature review: Girallon, Giant Crab, Stegosaurus, Dire Rat | 3:40 | PASS (22 assertions) |
+| 20 | same | disposable-expanded-summoning-visual-contracts | 1:17 | PASS (15) |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -279,10 +291,24 @@ tracking frames, the review captures and the donor bind captures.
   it. The mesh, paint, spear, slap clip and every mechanic are unchanged. The
   creature review gives the Salamander close views and tracking frames and
   records `tailGait=` and the material's roughness and dissolve terms.
-- The Dire Rat icon pilot (`8ff9893b2f`):
-  `assets-source/original-icons/expanded-summoning/pilots/dire-rat/` crops the
-  original painting closer on the rat and fades the medallion into a dark
-  vignette; the production icon is unchanged until the owner approves it.
+- The Dire Rat icon (`8ff9893b2f` pilot, adopted in `b6af1725ff` on the
+  owner's approval): `assets-source/original-icons/expanded-summoning/edits/dire-rat/`
+  crops the original painting closer on the rat and fades the medallion into
+  a dark vignette. `tools/New-ExpandedSummoningIcons.ps1` reads approved edits
+  from a per-key map; the original `sources/dire-rat.png` stays byte for byte
+  and the provenance manifest records it as `originalSourceFile`. New 128 px
+  export `15970071…7b07`; the icon catalog and `tools/test_icon_catalog.py`
+  repin the provenance manifest (`35a64cb6…79ae`).
+- Outward repairs (`930474b4e9`): `continuous-bodies/repair_outward_winding.py`
+  repairs the Eagle, Stirge, Fire Beetle, Giant Stag Beetle, Girallon, Giant
+  Crab and Stegosaurus first exports in place (each triangle wound to agree
+  with its authored normals; closed parts left with negative volume turned,
+  normals included). The Girallon and Giant Crab declare the outward marker,
+  which `PrimateVisualPolicy` now requires of the Girallon as well.
+  `RepairedBodyTests` pins the seven; `scripts/validate-package.ps1` and the
+  Sprint 23 test repin the Girallon, Giant Crab and Stegosaurus. The creature
+  review gives the seven close views. Details and before/after hashes in each
+  family `SOURCE.md` and the ledger's `additionalRepairs`.
 
 No identity, GUID, blueprint, statistic, size, reach, collision, attack,
 timing, AI, duration, template, adapter, material path or runtime binding code
@@ -326,6 +352,11 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Focused build tests (run 19 candidate) | `Build-Local.ps1 -DevelopmentPurpose visual-refinement -DevelopmentTestFilter 'salamander-tail-gait;salamander-undissolved-body;sprint17-salamander;summon-glow'` | 67 s | 42 PASS |
 | Offline tail gait | `blender -b --factory-startup --python-exit-code 1 -P assets-source/original-models/sprint17-serpents/check_tail_gait.py -- assets/sprint17-serpents/salamander-human-mesh.json` | 6 s | PASS |
 | Native | runs 16-19 above | 3:32, 3:31, 2:04, 3:29 | as tabled |
+| Icon checks (Dire Rat, `b6af1725ff`) | `python -B tools/validate_icon_catalog.py`; `python -B tools/test_icon_catalog.py`; `tools/New-ExpandedSummoningIcons.ps1 -VerifyOnly` (Windows PowerShell 5.1); gate filter `expanded-summoning.icon-;ledger-icons;sprint12-;sprint16-icon;sprint17-snake-icon;sprint10-wasp-published-icon;sprint23-released;sprint24-` | 6 s, 6 s, 5 s, 10 s | PASS; 29 catalog fixture tests |
+| Focused gate (repairs, `930474b4e9` content) | `scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning.'` | 16 s | production compilation PASS; 467 PASS |
+| Focused build tests (run 20 candidate) | `-DevelopmentTestFilter 'repaired-first-exports;sprint18-;sprint19-;sprint21-;sprint23-;sprint14-;sprint10-;icon-'` | 66 s | 113 PASS |
+| Native | run 20 above | 8:36 | as tabled |
+| Development repository wrapper (`930474b4e9` content) | `scripts/validate-repository.ps1 -DevelopmentPurpose visual-refinement` | 35 s | PASS (63 development-candidate contract checks, icon catalog and fixtures) |
 
 ## Remaining limitations
 
@@ -357,13 +388,20 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 - Dire Crocodile: at its 2x Gargantuan view scale several close views put
   the body behind the room's walls (the game's blue occluded-unit
   silhouette); an observer framing limit.
-- Found, not changed: these original bodies outside the owner's review list
-  also ship inside out (all or most parts inward): Fire Beetle, Giant Stag
-  Beetle, Giant Crab, Girallon, Eagle and Stirge, and the Bebelith control.
-  The same outward-export repair would apply; it waits for the owner's word.
-- Release lane: the released v0.0.155 validator (inherited by the v0.0.157
-  release validator) still pins the superseded Tyrannosaurus and Deinonychus
-  bytes; the next release's validator must accept the refined art.
+- Repaired bodies: where a repaired first export's authored normals
+  disagree with its topology, a few edges stay one-way (the Giant Crab alone
+  is strictly closed and consistent); every repaired body is lit from the
+  front and renders solid. The Bebelith, the owner's accepted control, still
+  ships its unchanged inward first export. The Stegosaurus was missed from the
+  first list of inside-out bodies and found in the final audit.
+- Release lane: historical validators still pin superseded art or markers and
+  must accept the refined assets at the next release:
+  `tools/validate_expanded_summoning_sprint24154.py` (Tyrannosaurus,
+  Deinonychus; inherited by the v0.0.155/v0.0.157 release validators),
+  `validate_expanded_summoning_sprint23152.py` (Triceratops, Stegosaurus),
+  `validate_expanded_summoning_sprint18147.py` and `_sprint19148.py` (the
+  primates' `shared-exporter-sprint18` marker). The development wrapper does
+  not run their tree checks.
 - Rhinoceros: the rump is still a broad, round mass from behind. Lowering the
   head by 30° about the Mastodon's high head pivot swings the skull under the
   chest offline; the native attack did not show it.
@@ -373,8 +411,8 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. The owner's decisions waiting: the Dire Rat icon pilot (VIS-004), the
-   found inside-out bodies listed above, and acceptance of the refreshed
-   items (glow, Salamander).
+1. Release (owner): the lane is a pushed development checkpoint; the release
+   lane updates the validators listed above. The owner reviews everything in
+   the game after the release and the lane refines what that review finds.
 2. Optional: Viper/Constrictor locomotion (VIS-007, VIS-018). Roster-owned:
    Elephant, Lantern Archon, Invisible Stalker.
