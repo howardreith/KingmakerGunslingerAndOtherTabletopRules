@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "lane": "expanded-summoning-visual-refinement",
-  "updated": "2026-10-16",
+  "updated": "2026-10-17",
   "source": {
     "archive": "Expanded_Summoning_Visual_Refinement_Handoff.zip",
     "archiveSha256": "521ced2667504e7693fa4b91b202a5cf8a5feba6bac4c1afed58f930a4b300eb",
@@ -19,7 +19,8 @@
     ],
     "ownerAcceptance": [
       "pending",
-      "accepted",
+      "pending (style approved 2026-10-17)",
+      "accepted ...",
       "rejected"
     ],
     "note": "Technical checks, visual evidence and the owner's aesthetic acceptance are separate; no test result changes ownerAcceptance."
@@ -53,12 +54,16 @@
         "normalCornersOpposingWinding": "0/26868"
       },
       "technicalStatus": "source-and-asset-changed",
-      "pilot": {
+      "refinement": {
         "builder": "assets-source/original-models/sprint24-theropods/build_tyrannosaurus.py",
+        "commits": "4d9294916a, feb879d19e",
         "supersededMeshSha256": "308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87",
         "supersededAlbedoSha256": "3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8",
         "nativeBefore": "captured on unchanged master 2eed3944f6 (creature review run 20261017T0226573833203Z)",
-        "nativeAfter": "not run: no development candidate can be built on 0.0.157 until the development validator is re-pinned (owner decision)",
+        "nativeAfter": [
+          "20261017T1308495407049Z (development candidate 5641fb79d0cf): FAIL only on the pre-existing observer limitation, identical on unchanged master: the capture reads the suppressed _ammunition04 accessory renderer and the scripted move stops short",
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): FAIL only on the pre-existing observer limitation, identical on unchanged master: the capture reads the suppressed _ammunition04 accessory renderer and the scripted move stops short"
+        ],
         "internalReview": {
           "addressed": [
             "arms frozen and claws/jaw left behind in offline poses (preview deform-flag artifact; fixed in the library)",
@@ -71,8 +76,8 @@
           "verdict": "CHANGES_REQUIRED on the first rebuild; addressed in feb879d19e"
         }
       },
-      "visualEvidence": "native-before; offline-after on exact shipped bytes and posed source",
-      "ownerAcceptance": "pending"
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "accepted from the offline review page on 2026-10-17 ('They look good'); the owner approved this style for all remaining updates"
     },
     {
       "id": "VIS-002",
@@ -113,16 +118,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/ungulates/woolly-rhinoceros-mesh.json",
-        "meshSha256": "45b3003b0184049921982d828faf71e95b90c2babf5acc0827f0095ec41aac52",
-        "components": 90,
-        "inwardComponents": 82,
-        "componentsWithReversedCaps": 78,
+        "meshSha256": "a53793a0283f263acf57fb4b56f20d8696ab9df6200bf547ac40f45d84da1265",
+        "components": 20,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "10634/10644"
+        "normalCornersOpposingWinding": "0/24384"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ungulates/build_rhinoceros.py --kind woolly-rhinoceros",
+        "commits": "ae09d7a9d5",
+        "supersededMeshSha256": "45b3003b0184049921982d828faf71e95b90c2babf5acc0827f0095ec41aac52",
+        "supersededAlbedoSha256": "bbd353bc5ecdf135fb2c93e6588d09740caa170835b73b7d4f5b30d09db02f59",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-004",
@@ -163,12 +178,16 @@
         "normalCornersOpposingWinding": "0/19356"
       },
       "technicalStatus": "source-and-asset-changed",
-      "pilot": {
+      "refinement": {
         "builder": "assets-source/original-models/sprint12-quadrupeds/build_dire_rat.py",
+        "commits": "4d9294916a, feb879d19e",
         "supersededMeshSha256": "2ee73bcf0ab4cdf0d275fb64764dea96107669cef07ee3b0c62a6f5228f1633a",
         "supersededAlbedoSha256": "fb618f5d32ee380c90c872df04de47f65652ac2ae7d803bae8aba67f43689030",
         "nativeBefore": "captured on unchanged master 2eed3944f6 (creature review run 20261017T0226573833203Z)",
-        "nativeAfter": "not run: no development candidate can be built on 0.0.157 until the development validator is re-pinned (owner decision)",
+        "nativeAfter": [
+          "20261017T1308495407049Z (development candidate 5641fb79d0cf): PASS",
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS"
+        ],
         "internalReview": {
           "addressed": [
             "jaw left behind in offline poses (preview deform-flag artifact)",
@@ -181,8 +200,8 @@
           "verdict": "CHANGES_REQUIRED on the first rebuild; addressed in feb879d19e"
         }
       },
-      "visualEvidence": "native-before; offline-after on exact shipped bytes and posed source",
-      "ownerAcceptance": "pending"
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "accepted from the offline review page on 2026-10-17 ('They look good'); the owner approved this style for all remaining updates"
     },
     {
       "id": "VIS-006",
@@ -457,16 +476,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/ungulates/aurochs-mesh.json",
-        "meshSha256": "477354af79aefb21de544517c498a05b2d420fbb5ebbb1cb675613f66f09196e",
-        "components": 19,
-        "inwardComponents": 11,
-        "componentsWithReversedCaps": 19,
+        "meshSha256": "e1cd846250eb18d3a9bb5e852814cd38069c19581d32bd8bc60f135c562cc3e9",
+        "components": 17,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "3671/3828"
+        "normalCornersOpposingWinding": "0/27840"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ungulates/build_cattle.py --kind aurochs",
+        "commits": "ae09d7a9d5",
+        "supersededMeshSha256": "477354af79aefb21de544517c498a05b2d420fbb5ebbb1cb675613f66f09196e",
+        "supersededAlbedoSha256": "3aa982572cccc90712dfb0798920f5b6e45827cfbc32568a6d5114bfc1a0269b",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-018",
@@ -607,16 +636,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/ungulates/bison-mesh.json",
-        "meshSha256": "bd042f973a2a871283dea51614cbce56736f2d9d7dbc65fe6f3874ab4a193d56",
-        "components": 46,
-        "inwardComponents": 37,
-        "componentsWithReversedCaps": 46,
+        "meshSha256": "7195063b5a13117adad7edf6d3cf5c2b38ee4008c14345b5c9f51609394f3641",
+        "components": 17,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "5069/5256"
+        "normalCornersOpposingWinding": "0/31440"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ungulates/build_cattle.py --kind bison",
+        "commits": "ae09d7a9d5",
+        "supersededMeshSha256": "bd042f973a2a871283dea51614cbce56736f2d9d7dbc65fe6f3874ab4a193d56",
+        "supersededAlbedoSha256": "1ec9fb91dde8f2ab6617f314efd68161b1bdeb56f00b23e8fee0667e2ba9ba7c",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-024",
@@ -632,7 +671,7 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/ungulates/rhinoceros-mesh.json",
-        "meshSha256": "c6c1c9236236235e089a619560a8138bfdee43c5a8414111b0cb275f0d3ae969",
+        "meshSha256": "3bcd3bcfa0a73ce05a7876bcac988850ab6a62795996f2a9235d53d4222b5224",
         "components": 20,
         "inwardComponents": 0,
         "componentsWithReversedCaps": 0,
@@ -640,12 +679,16 @@
         "normalCornersOpposingWinding": "0/23184"
       },
       "technicalStatus": "source-and-asset-changed",
-      "pilot": {
+      "refinement": {
         "builder": "assets-source/original-models/ungulates/build_rhinoceros.py",
+        "commits": "4d9294916a, feb879d19e, ae09d7a9d5 (recolour)",
         "supersededMeshSha256": "aa7e069491034cf8281ea19cfd228ac159e0ad2b778e14f10f1441663014e9ca",
         "supersededAlbedoSha256": "1568f8678a41a0ce719d307ab68b22c6d7181c24b855ac0d3af92cd2008a6cf1",
         "nativeBefore": "captured on unchanged master 2eed3944f6 (creature review run 20261017T0226573833203Z)",
-        "nativeAfter": "not run: no development candidate can be built on 0.0.157 until the development validator is re-pinned (owner decision)",
+        "nativeAfter": [
+          "20261017T1308495407049Z (development candidate 5641fb79d0cf): PASS; the 0.41 grey hide read tan in torchlight",
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS after the slate recolour"
+        ],
         "internalReview": {
           "addressed": [
             "head hooded when lowered: smooth Neck/Head ramps, shorter chest dome, narrower neck",
@@ -659,8 +702,8 @@
           "verdict": "CHANGES_REQUIRED on the first rebuild; addressed in feb879d19e"
         }
       },
-      "visualEvidence": "native-before; offline-after on exact shipped bytes and posed source",
-      "ownerAcceptance": "pending"
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "accepted from the offline review page on 2026-10-17 ('They look good'); the owner approved this style for all remaining updates"
     },
     {
       "id": "VIS-025",

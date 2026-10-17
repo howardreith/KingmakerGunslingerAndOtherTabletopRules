@@ -1852,15 +1852,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Near clip just in front of the creature. A large creature's framing
-        /// distance puts the orbit camera beyond the room's walls; the first
-        /// native run drew most views as the game's blue occluded-unit
-        /// silhouette. Geometry nearer than this plane is not drawn, so the
-        /// creature is seen unobstructed from every angle.
+        /// Near clip at the creature's bounding sphere. A large creature's
+        /// framing distance puts the orbit camera beyond the room's walls; the
+        /// first native run drew most views as the game's blue occluded-unit
+        /// silhouette. Geometry nearer than this plane is not drawn, and the
+        /// creature lies wholly inside the sphere, so it is never clipped. A
+        /// margin of 1.25 radii still left the Rhinoceros walled in.
         /// </summary>
         private float RefinementNearClip()
         {
-            return Mathf.Max(0.3f, _refinementDistance - _refinementRadius * 1.25f);
+            return Mathf.Max(0.3f, _refinementDistance - _refinementRadius);
         }
 
         private Vector3 RefinementCentre(UnitEntityData unit)
