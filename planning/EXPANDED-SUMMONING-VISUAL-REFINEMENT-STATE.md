@@ -20,7 +20,12 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-003 Woolly Rhinoceros | rebuilt; focused gate PASS | native after: PASS (run 2) | pending (style approved) |
 | VIS-017 Aurochs | rebuilt; focused gate PASS | native after: PASS (run 2) | pending (style approved) |
 | VIS-023 Bison | rebuilt; focused gate PASS | native after: PASS (run 2) | pending (style approved) |
-| other 32 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
+| VIS-010 Hyena | rebuilt; focused gate PASS | native after: PASS (runs 3 and 4) | pending (style approved) |
+| VIS-009 Goblin Dog | rebuilt; focused gate PASS | native after: PASS (runs 3 and 4) | pending (style approved) |
+| VIS-014 Wolverine | rebuilt; focused gate PASS | native after: PASS (run 3) | pending (style approved) |
+| VIS-033 Shadow Mastiff | rebuilt; focused gate PASS | native after: PASS (run 3) | pending (style approved) |
+| VIS-006 Poisonous Frog | rebuilt and recoloured green and black; focused gate PASS | native after: PASS (run 3) | pending (style approved; the owner questioned the orange) |
+| other 27 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
 
 ## Owner decisions, 2026-10-17
 
@@ -75,7 +80,7 @@ Captures (machine-local, `C:\Dev\KingmakerGunslingerLab\private\visual-refinemen
 Dog `c651dda7…4270`, Mastodon `ce02946c…e414`, Horse `83540b02…1ef8`, Wolf
 `76805093…4c7c`, Worg `b6c2d2cf…2fa8`, Giant Poisonous Frog `b54385e7…6379`,
 Giant Spider `60074cc2…a19b`, Pteranodon `7566f6f3…2a84`, Lizardfolk census
-`6443b580…5d`.
+`6443b580…5d`, Hodag survey `33ce3ad7…a1c1` (run 4).
 
 ## Native after-evidence
 
@@ -91,6 +96,10 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 1 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
 | 2 | `ae09d7a9d55a` (package `af13f5df…dbe6`, 66 s build) | creature review: the six refined keys | 5:21 | five PASS every assertion; Tyrannosaurus as below |
 | 2 | same | disposable-expanded-summoning-visual-contracts | 1:15 | PASS |
+| 3 | `655d288eae21` (package `56ff1682…0ba2`, 69 s build) | creature review: five small quadrupeds, Rhinoceros, Woolly Rhinoceros | 6:26 | PASS (54 assertions) |
+| 3 | same | disposable-expanded-summoning-visual-contracts | 1:20 | PASS |
+| 4 | `c6d53f636527` (package `6788e161…88de`, 66 s build) | observe-expanded-summoning-sprint22-contracts (no save) | 0:58 | PASS; wrote the Hodag survey (`sprint22-ankylosaurus-contracts.json`, `33ce3ad7…a1c1`) for the Ankylosaurus |
+| 4 | same | creature review: Hyena, Goblin Dog, Woolly Rhinoceros | 3:19 | PASS; close views now sharp and clear of walls |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -102,9 +111,13 @@ Findings from run 1, fixed before run 2: the Rhinoceros's 0.41 grey hide read
 as tan in the game's warm torchlight (now a darker, slightly cool slate); and
 most close views of the large pilots were drawn as the game's blue occluded-unit
 silhouette behind the room's walls (the review now clips geometry in front of
-the creature). Run 2 cleared the Aurochs and Bison views; the Rhinoceros and
-Woolly Rhinoceros were still partly walled, so the clip now sits exactly at the
-creature's bounding sphere (next run).
+the creature). Run 2 cleared the Aurochs and Bison views; run 3 showed the
+rhinoceroses still partly walled at a bounding-sphere clip and the small
+creatures blurred by the party camera's depth of field. Since `c6d53f6365` the
+clip sits at the nearest corner of the creature's bounding box and depth of
+field is off for each refinement render (restored after); run 4 confirmed
+sharp, unwalled views (a straight-rear view of the Woolly Rhinoceros still
+clips a doorway).
 
 Evidence: the runs' directories under `runtime-evidence` (machine-local);
 `<key>-refine-view-*.png` close views, `-refine-move-out/-back/-attack/-hit-*`
@@ -120,7 +133,8 @@ tracking frames, the review captures and the donor bind captures.
   Tyrannosaurus rebuild byte-identically with the extended library.
 - Builders: `build_dire_rat.py`, `build_rhinoceros.py` (Rhinoceros and, with
   `--kind woolly-rhinoceros`, the Woolly Rhinoceros), `build_cattle.py` (Aurochs
-  and Bison), `build_tyrannosaurus.py`. The legacy generators refuse the kinds
+  and Bison), `build_tyrannosaurus.py`, `build_worg_frame.py` (Hyena, Goblin
+  Dog, Wolverine, Shadow Mastiff) and `build_poisonous_frog.py`. The legacy generators refuse the kinds
   they no longer build and name the new builders; their helpers stay for the
   creatures and families that still import them.
 - Current identities (SHA-256; full hashes in each family `SOURCE.md` and the
@@ -134,6 +148,11 @@ tracking frames, the review captures and the donor bind captures.
   | Aurochs | `e1cd846250eb…cc3e9` | `78d99e63a792…93e01` | 6,365 / 9,280 / 17 |
   | Bison | `7195063b5a13…f3641` | `1d7b9e28ba28…30441` | 7,226 / 10,480 / 17 |
   | Tyrannosaurus | `d9fe3f0ac21d…fe320` | `ff2b250fd753…7c7af` | 7,093 / 8,956 / 50 |
+  | Hyena | `bb02ff0e93fe…b07ef` | `0b92a99aeb02…7d404` | 6,088 / 8,122 / 28 |
+  | Goblin Dog | `fa07b9407427…9710b` | `dc8a53f09f0c…5789c` | 6,052 / 7,644 / 27 |
+  | Wolverine | `f2c4385b53a3…ffb6d6` | `131a49db8264…22bd7` | 6,121 / 8,124 / 28 |
+  | Shadow Mastiff | `fdb05b264035…51862` | `f335df805a3e…84246` | 6,160 / 8,044 / 27 |
+  | Poisonous Frog | `17529a2781d6…9d79a` | `ce040536c0a3…6211e` | 5,071 / 6,976 / 3 |
 
 - Domain tests: hash pins in the Sprint 11, 12 and 24 visual tests;
   `OriginalMeshOrientation` (in `ExpandedSummoningSprint12Tests.cs`) requires
@@ -143,9 +162,9 @@ tracking frames, the review captures and the donor bind captures.
 - `RuntimeTestRunner.ExpandedSummoningCreatureReview.cs`: for refined keys in
   single mode, the creature review also records the donor's pre-swap bind
   frame, nine close still views around the creature's own facing (near clip at
-  its bounding sphere), and tracking frames of a native move out and back, an
-  attack and a hit reaction. Camera, near clip, render targets and pause state
-  are restored. Keys: the three pilots and the four ungulates.
+  its bounding box, depth of field off), and tracking frames of a native move
+  out and back, an attack and a hit reaction. Camera, near clip, depth of field,
+  render targets and pause state are restored. Keys: every refined creature.
 - `tools/validate_development_candidate.py`, its fixtures and
   `docs/DEVELOPMENT-CANDIDATES.md` (owner decision above).
 
@@ -186,12 +205,10 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. Small quadrupeds (in progress): Hyena (Wolf frame), Goblin Dog, Wolverine
-   and Shadow Mastiff (Worg frame) on one shared builder, then the Poisonous
-   Frog (VIS-006, owner questioned the orange) on its own frame. Captures are
-   in place.
-2. Then, in order: armored dinosaurs and the Deinonychus (Triceratops,
-   Ankylosaurus with the cyan club faces), crocodilians (targeted head
+1. Armored dinosaurs and the Deinonychus (in progress): Triceratops
+   (Mastodon frame), Ankylosaurus with the cyan club faces (Hodag survey,
+   captured in run 4) and Deinonychus (Lizardfolk census).
+2. Then, in order: crocodilians (targeted head
    defect), arthropods (ants, scorpion; Bebelith as control), flying (Dire
    Bat, Pteranodon, Giant Wasp), primates and four-armed (Ape, Dire Ape,
    Xill), the material and shine investigations (Wolf, Frost Giant, Ghaele,

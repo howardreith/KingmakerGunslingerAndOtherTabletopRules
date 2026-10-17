@@ -133,7 +133,9 @@
         "supersededAlbedoSha256": "bbd353bc5ecdf135fb2c93e6588d09740caa170835b73b7d4f5b30d09db02f59",
         "nativeBefore": "owner screenshot; first export audited inward",
         "nativeAfter": [
-          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS"
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS",
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS",
+          "20261017T1418482915891Z (development candidate c6d53f636527): PASS; close views sharp and mostly clear of walls"
         ]
       },
       "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
@@ -217,16 +219,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint13-creatures/poisonous-frog-mesh.json",
-        "meshSha256": "2b37e38a4e6fb7613a06ab69f161273221a05c50105691a9dcdfd58899f58ed6",
-        "components": 13,
-        "inwardComponents": 7,
-        "componentsWithReversedCaps": 8,
+        "meshSha256": "17529a2781d680ad8e995eb52cfaef71fb8cccba848f6bd4039ed3f20279d79a",
+        "components": 3,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "3130/3156"
+        "normalCornersOpposingWinding": "1/20928"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint13-creatures/build_poisonous_frog.py",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "2b37e38a4e6fb7613a06ab69f161273221a05c50105691a9dcdfd58899f58ed6",
+        "supersededAlbedoSha256": "89ac9f05d76582d86b7a32f16f9afada165e1f37cd4565290313d001b25f8a21",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-007",
@@ -284,16 +296,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint12-quadrupeds/goblin-dog-mesh.json",
-        "meshSha256": "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a",
-        "components": 28,
-        "inwardComponents": 26,
-        "componentsWithReversedCaps": 19,
+        "meshSha256": "fa07b94074272d45e2d014573e5d2feeb29f89c1bc58777d0421a9a31049710b",
+        "components": 27,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "5441/5556"
+        "normalCornersOpposingWinding": "1/22932"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_worg_frame.py --kind goblin-dog",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a",
+        "supersededAlbedoSha256": "b7fcc93fd653684dac96268b1626a04590a1e5ccbe74851847c7b9c8d3de626a",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-010",
@@ -309,16 +331,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint12-quadrupeds/hyena-mesh.json",
-        "meshSha256": "0217f8d599480e5aaed6f1b6df9736b64609298664f3732271bb39c08596ac48",
-        "components": 18,
-        "inwardComponents": 16,
-        "componentsWithReversedCaps": 9,
+        "meshSha256": "bb02ff0e93fef0de73100d0dac0769cf36f461fdadf166eada09a40059bb07ef",
+        "components": 28,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "4608/4698"
+        "normalCornersOpposingWinding": "0/24366"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_worg_frame.py --kind hyena",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "0217f8d599480e5aaed6f1b6df9736b64609298664f3732271bb39c08596ac48",
+        "supersededAlbedoSha256": "15927eb690a64bdd22e9f6985ddfe29f72345ad0f177c11084187f0c6745ae50",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-011",
@@ -409,16 +441,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint13-creatures/wolverine-mesh.json",
-        "meshSha256": "e1e97db7ab271c3705472a78262fc3306a1515ef174c39e7d6899c28bad54fc6",
-        "components": 17,
-        "inwardComponents": 14,
-        "componentsWithReversedCaps": 8,
+        "meshSha256": "f2c4385b53a3cead1b8dbd38299dd199bc4c7b5d1c09624ea1a1dbbd7dffb6d6",
+        "components": 28,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "4400/4548"
+        "normalCornersOpposingWinding": "0/24372"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_worg_frame.py --kind wolverine",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "e1e97db7ab271c3705472a78262fc3306a1515ef174c39e7d6899c28bad54fc6",
+        "supersededAlbedoSha256": "7a0ef9388bab87c4995dbaf7b8bf6ae83436c91c9652bb0c375da273b6035fe2",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-015",
@@ -687,7 +729,8 @@
         "nativeBefore": "captured on unchanged master 2eed3944f6 (creature review run 20261017T0226573833203Z)",
         "nativeAfter": [
           "20261017T1308495407049Z (development candidate 5641fb79d0cf): PASS; the 0.41 grey hide read tan in torchlight",
-          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS after the slate recolour"
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS after the slate recolour",
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
         ],
         "internalReview": {
           "addressed": [
@@ -903,16 +946,26 @@
       "owner": "cosmetic lane",
       "originalMeshOrientation": {
         "mesh": "assets/sprint13-creatures/shadow-mastiff-mesh.json",
-        "meshSha256": "61755b4c1853942b73e0f2666ac246bf5d77ef9b7c6800ca30ea2f7e56a13bd3",
-        "components": 17,
-        "inwardComponents": 15,
-        "componentsWithReversedCaps": 8,
+        "meshSha256": "fdb05b264035c10dbba7c066957a11c9ebfbff49c069bb276b7a80c84a751862",
+        "components": 27,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
         "openComponents": 0,
-        "normalCornersOpposingWinding": "4521/4608"
+        "normalCornersOpposingWinding": "0/24132"
       },
-      "technicalStatus": "open",
-      "visualEvidence": "owner screenshot only",
-      "ownerAcceptance": "pending"
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_worg_frame.py --kind shadow-mastiff",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "61755b4c1853942b73e0f2666ac246bf5d77ef9b7c6800ca30ea2f7e56a13bd3",
+        "supersededAlbedoSha256": "a29c2bdce8e4c640eef8d04cb2ec45569816c8192a0da29e7674111e5cc785b4",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "pending (style approved 2026-10-17)"
     },
     {
       "id": "VIS-034",
