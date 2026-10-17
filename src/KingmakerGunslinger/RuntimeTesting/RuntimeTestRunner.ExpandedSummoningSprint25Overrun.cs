@@ -380,9 +380,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Keep the maneuvering owner's deliberately exhausted
                     // opportunity out of the two-responder prerequisite too.
                     owner.CombatState.AttackOfOpportunityCount = 0;
+                    // Native first use starts this same 5.4-second refill
+                    // cooldown. Count zero alone is immediately refillable.
+                    owner.CombatState.Cooldown.AttackOfOpportunity = 5.4f;
                     for (int index = 0; index < responders.Length; index++)
                     {
                         responders[index].CombatState.AttackOfOpportunityCount = sample == "exhausted" ? 0 : 1;
+                        if (sample == "exhausted")
+                            responders[index].CombatState.Cooldown.AttackOfOpportunity = 5.4f;
                         beforeOpportunities[index] = responders[index].CombatState.AttackOfOpportunityCount;
                         minimumOpportunities[index] = beforeOpportunities[index];
                         lastOpportunities[index] = beforeOpportunities[index];
@@ -390,6 +395,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     opportunityTrace.Add(new JObject { ["phase"] = "fixture-resource-prerequisite-before-native-maneuver",
                         ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                         ["ownerOpportunityCount"] = owner.CombatState.AttackOfOpportunityCount,
+                        ["refillCooldowns"] = new JArray(responders.Select(value => value.CombatState.Cooldown.AttackOfOpportunity)),
                         ["baselineCmb"] = cmb, ["contactCmb"] = contactCmb,
                         ["nativeContactStatDelta"] = contactStatDelta,
                         ["nativeChargeBuffPresent"] = contactChargeBuff,
@@ -406,11 +412,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!counts.SequenceEqual(lastOpportunities))
                         opportunityTrace.Add(new JObject { ["phase"] = stage,
                             ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
-                            ["counts"] = new JArray(counts), ["observedAttacks"] = observer.Opportunities.Count });
+                            ["counts"] = new JArray(counts),
+                            ["refillCooldowns"] = new JArray(responders.Select(value => value.CombatState.Cooldown.AttackOfOpportunity)),
+                            ["observedAttacks"] = observer.Opportunities.Count });
                     lastOpportunities = counts;
                 };
                 EventBus.Subscribe(observer);
                 costs = new FirearmReviewCosts(owner, costRows);
+                var queuedOpportunities = new Dictionary<UnitAttackOfOpportunity, int>();
+                var opportunityCommands = new JArray();
                 float standardBefore = owner.CombatState.Cooldown.StandardAction;
                 float moveBefore = owner.CombatState.Cooldown.MoveAction;
                 float maxStandard = standardBefore, maxMove = moveBefore;
@@ -454,6 +464,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool repeated = false;
                 for (; frames < 700; frames++)
                 {
+                    // Match the qualified native command driver: a TB pause
+                    // must not silently stop the owned clock/queue drain.
+                    if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
                     if (!command.IsFinished && (!command.IsStarted || command.ExecutionProcess == null))
                     {
                         if (command.Animation != null && frames > 4) command.Animation.IsActed = true;
@@ -471,6 +484,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     TickSprint25Engagement(fixture, observer);
                     observeResources("after-native-engagement-drain-before-clock");
+                    // Drive only the actual opportunities queued by native
+                    // provocation. Never fabricate an attack for this proof.
+                    foreach (UnitEntityData responder in responders)
+                        foreach (UnitAttackOfOpportunity opportunity in responder.Commands.Raw
+                            .OfType<UnitAttackOfOpportunity>().Where(value =>
+                                ReferenceEquals(value.Target, target)).ToArray())
+                        {
+                            if (!queuedOpportunities.ContainsKey(opportunity))
+                                queuedOpportunities.Add(opportunity, frames);
+                            if (opportunity.Animation != null && frames > queuedOpportunities[opportunity] + 12)
+                                opportunity.Animation.IsActed = true;
+                            if (!opportunity.IsFinished)
+                                ElementalBreathScenario.TickCommand(controller, opportunity);
+                            opportunityCommands.Add(new JObject {
+                                ["commandId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(opportunity),
+                                ["responder"] = responder.UniqueId, ["target"] = target.UniqueId,
+                                ["frame"] = frames, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                                ["paused"] = Game.Instance.IsPaused, ["started"] = opportunity.IsStarted,
+                                ["acted"] = opportunity.IsActed, ["finished"] = opportunity.IsFinished,
+                                ["animationActed"] = opportunity.Animation?.IsActed,
+                                ["refillCooldown"] = responder.CombatState.Cooldown.AttackOfOpportunity });
+                        }
                     maxOverride = Math.Max(maxOverride, owner.View.MovementAgent.MaxSpeedOverride.GetValueOrDefault());
                     maxStandard = Math.Max(maxStandard, owner.CombatState.Cooldown.StandardAction);
                     maxMove = Math.Max(maxMove, owner.CombatState.Cooldown.MoveAction);
@@ -512,6 +547,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool knockdown = sample != "failure" && sample != "partial" &&
                     sample != "maneuver-immune" && sample != "prone-immune" && sample != "already-prone";
                 bool expectedOpportunities = knockdown && sample != "exhausted";
+                bool nativeKnockdownObserved = observer.ManeuverTimeline.OfType<JObject>().Any(value =>
+                    (string)value["stage"] == "native-prone-state-transition" && (bool)value["proneActive"]);
+                bool passThroughExpected = sample != "failure" && sample != "maneuver-immune";
                 int[] afterOpportunities = responders.Select(value => value.CombatState.AttackOfOpportunityCount).ToArray();
                 bool legalResponders = observer.Opportunities.All(value => responders.Contains(value.Initiator)) &&
                     responders.All(value => observer.Opportunities.Count(attack => ReferenceEquals(attack.Initiator, value)) <= 1);
@@ -528,7 +566,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)value["combatThroughout"] &&
                         ((JArray)value["nativeManeuverTargets"]).Count == 1 &&
                         (string)value["nativeManeuverTargets"][0] == target.UniqueId &&
-                        (sample == "failure" || (float)value["travelled"] > 2f) &&
+                        (!passThroughExpected || (float)value["travelled"] > 2f) &&
                         (float)value["travelled"] <= owner.Stats.Speed.ModifiedValue * .3048f * 2f + 1f);
                 bool outcome = result != null && cmb == 32 && contactCmb == cmb + contactStatDelta && (sample == "maneuver-immune" ?
                     !result.Success && !result.IsPartialSuccess && !afterProne :
@@ -536,8 +574,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.Success == (margin >= 0) && result.IsPartialSuccess == (margin >= 0 && margin < 5));
                 Sprint25Check("overrun-" + sample + (turnBased ? "-turn-based" : "-rtwp"), outcome && observer.ContactResourcesPrepared && command.IsStarted && command.IsFinished && nativeBudget &&
                     exactCommands &&
-                    (sample == "failure" || travelled > 2f) && travelled <= owner.Stats.Speed.ModifiedValue * .3048f * 2f + 1f &&
-                    afterProne == (beforeProne || knockdown) && afterProneActive == (beforeProneActive || knockdown) && legalResponders && attributedDamage && responses &&
+                    (!passThroughExpected || travelled > 2f) && travelled <= owner.Stats.Speed.ModifiedValue * .3048f * 2f + 1f &&
+                    nativeKnockdownObserved == knockdown && legalResponders && attributedDamage && responses &&
                     observer.Maneuvers.Count == commandCount,
                     new JObject { ["unit"] = owner.UniqueId, ["target"] = target.UniqueId,
                         ["laterTarget"] = later.UniqueId, ["ability"] = blueprint.AssetGuid,
@@ -555,6 +593,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["knockEligible"] = knockEligible, ["proneBefore"] = beforeProne, ["proneAfter"] = afterProne,
                         ["proneRequestedBefore"] = beforeProneRequested,
                         ["proneActiveBefore"] = beforeProneActive, ["proneActiveAfter"] = afterProneActive,
+                        ["nativeKnockdownTransitionObserved"] = nativeKnockdownObserved,
+                        ["passThroughExpected"] = passThroughExpected,
                         ["maneuverTimeline"] = observer.ManeuverTimeline,
                         ["opportunityTimeline"] = observer.OpportunityTimeline,
                         ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
@@ -572,6 +612,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["standardCooldown"] = new JArray(standardBefore, maxStandard),
                         ["moveCooldown"] = new JArray(moveBefore, maxMove),
                         ["opportunityTiming"] = opportunityTrace,
+                        ["nativeQueuedOpportunityCommands"] = opportunityCommands,
                         ["responders"] = new JArray(responders.Select((value, index) => new JObject {
                             ["unit"] = value.UniqueId, ["before"] = beforeOpportunities[index],
                             ["after"] = afterOpportunities[index],

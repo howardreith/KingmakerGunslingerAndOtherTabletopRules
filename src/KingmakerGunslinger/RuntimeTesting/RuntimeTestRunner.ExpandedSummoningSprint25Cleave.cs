@@ -38,6 +38,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             { if (ReferenceEquals(evt.Initiator, Owner)) Attacks.Add(evt); }
         }
 
+        private UnitEntityData Sprint25CleaveTarget(ExpandedSummoningCorrectionFixture fixture,
+            List<UnitEntityData> created, bool hostile)
+        {
+            UnitEntityData unit = Game.Instance.EntityCreator.SpawnUnit(
+                hostile ? fixture.HostileBlueprint : fixture.CasterBlueprint,
+                fixture.Caster.Position, Quaternion.identity, fixture.Scene);
+            if (unit == null) throw new InvalidOperationException("Native Cleave target creation failed.");
+            fixture.Created.Add(unit); created.Add(unit);
+            Game.Instance.EntityCreator.Tick();
+            if (!unit.IsInState || unit.View == null)
+                throw new InvalidOperationException("Native Cleave target has no loaded-area view.");
+            SetExpandedSummoningBrainActive(unit, false);
+            return unit;
+        }
+
         private IEnumerable<int> Sprint25Cleave(ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
             Vector3 casterBefore = fixture.Caster.Position;
@@ -56,12 +71,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         UnitEntityData owner = CastExpandedSummoningQuietUnit(fixture, "brachiosaurus");
                         created.Add(owner); observer.Owner = owner;
+                        // Reuse the fixture's qualified native humanoid
+                        // blueprints, not a wolf footprint assumed to fit a
+                        // humanoid-sized adjacent cluster.
                         UnitEntityData[] targets = Enumerable.Range(0, 3).Select(index =>
-                            CastExpandedSummoningQuietUnit(fixture, "wolf", fixture.Hostile)).ToArray();
-                        created.AddRange(targets);
-                        UnitEntityData ally = CastExpandedSummoningQuietUnit(fixture, "wolf");
-                        UnitEntityData remote = CastExpandedSummoningQuietUnit(fixture, "wolf", fixture.Hostile);
-                        created.AddRange(new[] { ally, remote });
+                            Sprint25CleaveTarget(fixture, created, true)).ToArray();
+                        UnitEntityData ally = Sprint25CleaveTarget(fixture, created, false);
+                        UnitEntityData remote = Sprint25CleaveTarget(fixture, created, true);
                         foreach (int frame in Sprint25NativeAppearance(owner, "brachiosaurus")) yield return frame;
                         Vector3 far; string lane, laneDirection;
                         Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, targets[0],
@@ -93,14 +109,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         for (int index = 0; index < targets.Length; index++)
                             PlaceExpandedSummoningUnit(targets[index], legalTargets[index]);
                         bool adjacentCluster = true;
+                        var geometry = new JArray();
                         for (int first = 0; first < targets.Length; first++)
                             for (int second = first + 1; second < targets.Length; second++)
                             {
                                 float radii = targets[first].Corpulence + targets[second].Corpulence;
                                 float distance = targets[first].DistanceTo(targets[second]);
                                 adjacentCluster &= distance >= radii - .05f && distance <= radii + 5 * .3048f + .02f;
+                                geometry.Add(new JObject { ["first"] = targets[first].UniqueId,
+                                    ["second"] = targets[second].UniqueId, ["radii"] = radii,
+                                    ["nativeCenterDistance"] = distance });
                             }
-                        if (!adjacentCluster) throw new InvalidOperationException("Cleave actors are not natively disjoint/adjacent: " + lane);
+                        Sprint25Check("great-cleave-target-geometry-" + missSecond + "-" + turnBased,
+                            adjacentCluster, new JObject { ["pairs"] = geometry,
+                                ["targets"] = new JArray(targets.Select(value => new JObject {
+                                    ["unit"] = value.UniqueId, ["blueprint"] = value.Blueprint.AssetGuid,
+                                    ["corpulence"] = value.Corpulence, ["position"] = SurveyVector(value.Position) })) },
+                            "Actual native humanoid footprints are disjoint and within five feet edge-to-edge before Cleave.");
+                        if (!adjacentCluster) throw new InvalidOperationException("Cleave actors are not natively disjoint/adjacent: " + geometry);
                         PlaceExpandedSummoningUnit(ally, origin + forward * 4.3f);
                         PlaceExpandedSummoningUnit(remote, origin + forward * 30);
                         // Only this request-owned extra enemy is parked. The
@@ -149,6 +175,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var controller = new Kingmaker.Controllers.Units.UnitActionController();
                         for (int frame = 0; frame < 700; frame++)
                         {
+                            if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
                             if (!command.IsFinished && (!command.IsStarted || command.ExecutionProcess == null))
                             {
                                 if (command.Animation != null && frame > 4) command.Animation.IsActed = true;
@@ -194,6 +221,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["nativeTargetSelection"] = "Living remembered enemies within native IsReach, sorted from the first target; no native inter-target adjacency predicate. The positive fixture uses three adjacent foes. No global Cleave repair.",
                                 ["legalTargets"] = new JArray(targets.Select(value => new JObject {
                                     ["unit"] = value.UniqueId, ["ownerDistance"] = owner.DistanceTo(value),
+                                    ["corpulence"] = value.Corpulence,
                                     ["position"] = SurveyVector(value.Position) })),
                                 ["attacks"] = new JArray(observer.Attacks.Select(value => new JObject {
                                     ["target"] = value.Target.UniqueId, ["weapon"] = value.Weapon.Blueprint.AssetGuid,

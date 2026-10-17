@@ -1842,6 +1842,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var controller = new UnitActionController();
                 int movementTicks = 0;
                 int frames = 0;
+                bool contactObserved = false;
                 while (frames++ < 600 &&
                     (observer.Saves.Count == 0 ||
                      observer.Damage.Count == 0))
@@ -1866,9 +1867,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     if (command.ExecutionProcess != null)
                         TickExpandedSummoningDetachedAbility(command, frames);
-                    if (observeFrame != null && command.ExecutionProcess != null &&
-                        (frames == 2 || frames == 6 || frames == 12 || frames == 24))
+                    // The real contact may finish before a fixed animation
+                    // frame. Observe the actual rule boundary, not a guessed
+                    // frame or the lifetime of its execution-process field.
+                    if (!contactObserved && observeFrame != null &&
+                        (observer.Saves.Count > 0 || observer.Damage.Count > 0))
+                    {
                         observeFrame(owner, frames);
+                        contactObserved = true;
+                    }
                     maxStandard = Mathf.Max(maxStandard,
                         owner.CombatState.Cooldown.StandardAction);
                     maxMove = Mathf.Max(maxMove,
