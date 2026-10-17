@@ -38,7 +38,11 @@ Three statuses are kept apart. No test result changes the owner's acceptance.
 | VIS-013 Dire Bat | rebuilt; focused gate PASS | native after: PASS, flight included (run 9) | pending (style approved) |
 | VIS-020 Pteranodon | rebuilt; focused gate PASS | native after: PASS (run 9) | pending (style approved) |
 | VIS-022 Giant Wasp | rebuilt; focused gate PASS | native after: PASS, flight included (run 9) | pending (style approved) |
-| other 14 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
+| VIS-019 Ape | rebuilt, coat darkened after run 11; focused gate PASS | native after: PASS (runs 11 and 12) | pending (style approved) |
+| VIS-025 Dire Ape | rebuilt, approved palette kept; focused gate PASS | native after: PASS (run 11) | pending (style approved) |
+| VIS-030 Xill | rebuilt; identity confirmed (run 10); focused gate PASS | native after: PASS (run 11) | pending (style approved) |
+| VIS-008 Wolf, VIS-037 Ghaele | investigated: persistent native golden rim (run 12) | material evidence | decision recorded below |
+| other 9 items | open, owned elsewhere or accepted control (see ledger) | owner screenshots only | pending |
 
 ## Owner decisions, 2026-10-17
 
@@ -124,6 +128,11 @@ live mod restored exactly (254 files, `5C3E4AD4…BFBB` before and after).
 | 8 | same | disposable-expanded-summoning-visual-contracts | 1:16 | PASS |
 | 9 | `bde6b6d1bfe4` (package `f1e24baa…bf41`, 65 s build) | creature review: Dire Bat, Pteranodon, Giant Wasp | 3:18 | PASS (27 assertions, flight and doorway travel included) |
 | 9 | same | disposable-expanded-summoning-visual-contracts | 1:15 | PASS |
+| 10 | `69435567008c` (package `a99449ba…3168`, 66 s build) | observe-expanded-summoning-primate-census (no save) | 0:59 | PASS; census byte-identical to the recorded capture |
+| 10 | same | creature review: Ape, Dire Ape, Xill (before) | 1:52 | PASS; the `xill` key attaches the Xill body |
+| 11 | `cad14078e1cc` (package `deafd054…e15f`, 65 s build) | creature review: Ape, Dire Ape, Xill | 3:09 | PASS (13 assertions); the Ape's grey read as cream |
+| 11 | same | disposable-expanded-summoning-visual-contracts | 1:15 | PASS |
+| 12 | `a29f6edd5bff` (package `d36bb2b6…a517`) | creature review: Ape, Wolf, Ghaele | 2:21 | Ape and Wolf PASS; Ghaele FAIL (dissolving during the review); golden-rim evidence |
 
 The Tyrannosaurus assertion fails identically on unchanged master: the capture
 check reads the first skinned renderer, which for the two-renderer Lizardfolk
@@ -175,7 +184,11 @@ tracking frames, the review captures and the donor bind captures.
   (`bde6b6d1bf`) are continuous bodies with membrane wings: the library's
   `sheet` closes a span-by-chord grid into a thin solid and `membrane_grid`
   keeps the first flyers' weighting, so the eagle's wing animation folds it.
-  The legacy generators refuse the kinds
+  The primates (`cad14078e1`, `a29f6edd5b`) are continuous bodies on the
+  Troll guard frame binding exactly the 56 reviewed drivers; the primate
+  attachment's winding marker rule now requires `outward-visual-refinement`
+  of the Ape, Dire Ape and Xill and keeps the old marker for the unchanged
+  Girallon. The legacy generators refuse the kinds
   they no longer build and name the new builders; their helpers stay for the
   creatures and families that still import them.
 - Current identities (SHA-256; full hashes in each family `SOURCE.md` and the
@@ -206,6 +219,9 @@ tracking frames, the review captures and the donor bind captures.
   | Dire Bat | `b04e9dd146b1…b7cce` | `ffb7ed2bcf2a…b9a4b` | 9,115 / 12,596 / 40 |
   | Pteranodon | `42627bc93837…24345` | `0d9e25209…37455` | 8,905 / 12,080 / 34 |
   | Giant Wasp | `a32d454cff58…205c5` | `2d26b8dad843…a8943` | 6,502 / 9,404 / 18 |
+  | Ape | `2f0196eca297…631ee` | `85c7f480eeac…6c7d9` | 24 parts |
+  | Dire Ape | `d0c1d0324cf7…8700a` | `37bdc23e705b…8e219` | 24 parts |
+  | Xill | `d7a0cb0ade14…1a243` | `eca0206533fa…999fa` | 46 parts |
 
 - Packaging (`7defdfb2f2`): `scripts/Build-Local.ps1` no longer rewrites the
   Ankylosaurus mesh to the released v0.0.151 CRLF bytes (it refused any other
@@ -259,6 +275,8 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 | Focused gate (flyers, `bde6b6d1bf`) | adds `sprint10-wasp-original-visual;sprint9-dire-bat-asset;pteranodon` | 10 s | production compilation PASS; 10 PASS |
 | Determinism (flyers) | each builder twice from clean Blender processes; the library refactor rebuilt the Dire Bat byte-identically | 25-40 s per creature | byte-identical |
 | Native | run 9 above | 4:59 | as tabled |
+| Focused gate (primates, `cad14078e1`, `a29f6edd5b`) | `sprint18-;sprint19-` plus the visual filter | 11 s | production compilation PASS; 36 then 29 PASS |
+| Native | runs 10-12 above | 3:17, 4:51, 2:48 | as tabled |
 
 ## Remaining limitations
 
@@ -267,6 +285,10 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
   observer limitation, to be fixed in the observer, not the mesh.
 - Triceratops: the Huge body fills its close views, and the near clip at its
   bounding box cuts into the room around it; an observer framing limit.
+- Ghaele: in run 12 its materials dissolved progressively while it was
+  reviewed (0.05, 0.133, 0.175 across the move and attack captures), which
+  fails the review's intactness assertion; the cause (a native effect of the
+  unit or its summon expiring) is not yet identified.
 - Flyers: the refinement close views frame the whole wingspan, so the camera
   sits far back and the room's walls hide most of them; the party-camera
   frames show the bodies. The idle and attack poses are the Giant Eagle's.
@@ -292,15 +314,19 @@ Rhinoceros hood/muzzle/ears/horns, Tyrannosaurus arm share/thighs/neck.
 
 ## Next
 
-1. Primates and four-armed (in progress): Ape, Dire Ape and Xill on the
-   Troll guard frame (primate census). The bodies must bind exactly the
-   closed 56-bone set, and the primate attachment accepts only the old
-   winding marker, so the refined bodies need an outward marker in
-   `PrimateVisualPolicy` (the Girallon keeps the old one). The Xill
-   screenshot's log names a Redcap, but the body shown is the Xill's own
-   rust-red banded four-armed carapace; the native review confirms it.
-2. Then, in order: the material and shine investigations
-   (Wolf, Frost Giant, Ghaele, Thanadaemon), the Salamander, and the Dire Rat
-   icon (VIS-004, icon rules).
+1. The shine (VIS-008, VIS-036, VIS-037, VIS-038, in progress). Run 12
+   found the golden look on native-body summons is a persistent looping rim
+   animation (colour 0.98/0.68/0.32, intensity 0.5) with rim lighting on, a
+   golden rim colour and a warm tint on the material. The Wolf was cast
+   through Summon Nature's Ally, so it is not the alignment template, and it
+   persists past the summon transition; every KMG rebodied creature shows
+   none, because its attachment replaces the materials. The handoff asks for
+   a summon-scoped presentation change once the source is known: the next
+   step records the unit's buffs and the rim animation's source so the
+   change can be scoped to the buff that applies it.
+2. The Dire Rat icon (VIS-004): a pilot that crops the painted source closer
+   on the rat and fades the bronze medallion into a dark vignette; pilots
+   stay out of production until the owner approves them (icon guide).
+3. Then the Salamander (VIS-029).
    Optional: Viper/Constrictor locomotion. Roster-owned: Elephant, Lantern
    Archon, Invisible Stalker.
