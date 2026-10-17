@@ -62,10 +62,15 @@ tube.
 
 The Rhinoceros is now built by `build_rhinoceros.py` as one continuous skinned
 surface on the same Mastodon frame: a deep barrel hung low enough to bury the
-upper legs, a withers hump and thick neck, a long boxy head carried forward and
-down with a square muzzle, a long front and a shorter rear keratin horn rooted
-on the face, tubular ears, three-nailed round feet and a tufted tail. The
-barrel follows the spine rather than the upper-limb bones it buries.
+upper legs, a withers hump and a thick neck narrower than the chest, a long
+tapering head carried forward and down with a straight jaw line and a broad
+square upper lip, painted nostrils and mouth line, a long front and a shorter
+rear keratin horn rooted on the face and shaded dark at the root to pale at
+the tip, cupped ears standing clear of the skull, three-nailed round feet and
+a tufted tail. The barrel follows the spine rather than the upper-limb bones
+it buries. The Mastodon's Neck and Head pivots sit high in the withers, and
+the heat solve gives Neck no skin, so Neck and Head take the neck and skull
+through smooth ramps along and across the head axis.
 `generate_ungulates.py` keeps the cattle and the Woolly Rhinoceros and refuses
 `--kind rhinoceros`; its spindle-leg and hoof helpers stay for those creatures
 and the armored dinosaurs that import them.
@@ -77,10 +82,19 @@ and the armored dinosaurs that import them.
   scenario records the attached Woolly Rhinoceros renderer, so it holds the 26
   controls the bodies bind (the Mastodon's ankle helpers are absent; the
   review armature bridges them so offline poses move each foot with its knee).
-- `rhinoceros-mesh.json`: `0c704e821055c2c0de430b420eab109f11b6924c11bdbe23c6f6cdc405067fa1`
-  (5,449 vertices, 7,392 triangles, 20 closed outward parts, 26 controls).
-- `rhinoceros-albedo.png`: `95e4382be7e641cbd609f633ff7499aed2c25da9a3e24cdb6cc27616a4107e5b`
+- `rhinoceros-mesh.json`: `c6c1c9236236235e089a619560a8138bfdee43c5a8414111b0cb275f0d3ae969`
+  (5,948 vertices, 7,728 triangles, 20 closed outward parts, 26 controls).
+- `rhinoceros-albedo.png`: `91042f178fb275c9cff8bd5b53cacc0626b8b89f3e8c623028b489dee681c584`
   (1024 x 1024 RGB).
 - Superseded: mesh `aa7e069491034cf8281ea19cfd228ac159e0ad2b778e14f10f1441663014e9ca`,
   albedo `1568f8678a41a0ce719d307ab68b22c6d7181c24b855ac0d3af92cd2008a6cf1`
   (the Rhinoceros row of the table above).
+
+A read-only visual review of the first rebuild found the head sinking under a
+hood of skin when lowered, spike-like ears, a muzzle that looked hollow from
+the front, small feet and nails, and an overall hippo-like read. Close-ups
+traced the hood to a hard cut-off in the Head share on the neck sides and to
+the barrel's front dome wrapping the base of the head, and the hollow look to
+a ball-shaped muzzle and to flat-toned horns seen end-on (culling on and off
+render the same, so not a winding fault). The hashes above are the revised
+build.

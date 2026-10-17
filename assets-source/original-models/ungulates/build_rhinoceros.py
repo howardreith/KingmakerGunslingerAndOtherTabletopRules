@@ -56,48 +56,61 @@ def build(rig, armature, params):
 
     # One heavy barrel hung low beneath the Mastodon's spine, running past
     # both ends of it, so it buries the upper legs and reads long and low.
+    # Its front dome stops short of the nape: reaching further, it wrapped
+    # the base of the head and hooded it whenever the head dropped.
     belly = params["belly"]
     r = params["barrel"]
-    volume.sweep([point(belly + r[0] + 0.04, rump.z + 0.55),
+    volume.sweep([point(belly + r[0] + 0.04, rump.z + 0.32),
                   point(belly + r[1] + 0.02, rump.z - 0.75),
                   point(belly + r[2] + 0.06, shoulder.z + 0.75),
-                  point(belly + r[3] + 0.08, shoulder.z - 0.30)], r)
-    # Withers hump and a short, deep neck falling to the head.
-    mass(point(shoulder.y - ground - 0.05, shoulder.z - 0.10),
-         (0.72, 0.42, 0.95))
-    nape = point(head.y - ground - 0.80, head.z - 0.50)
+                  point(belly + r[3] + 0.08, shoulder.z - 0.02)], r)
+    # Withers hump and a short, deep neck, narrower than the chest, falling
+    # to the head.
+    mass(point(shoulder.y - ground - 0.20, shoulder.z - 0.10),
+         (0.86, 0.40, 1.15))
+    nape = point(head.y - ground - 0.72, head.z - 0.50)
     volume.sweep([point(shoulder.y - ground - 0.55, shoulder.z - 0.55),
-                  nape], [1.06, 0.84])
-    mass(nape + UP * 0.40 - FORWARD * 0.25, (0.56, 0.42, 0.72))
-    # Long, boxy head carried forward and low: cranium, mid-face, deep
-    # cheeks and a blunt, square muzzle - not a tapering trunk.
+                  nape], [0.98, 0.74])
+    mass(nape + UP * 0.30 - FORWARD * 0.30, (0.50, 0.34, 0.60))
+    # Long, boxy head carried forward and low: one tapering skull from the
+    # cranium to the muzzle (separate masses left a waist that read as a
+    # ball on a stalk), a deep, straight jaw line beneath it and a broad,
+    # square upper lip - not a tapering trunk.
     axis = (FORWARD * 0.74 - UP * 0.67).normalized()
+    face_up = axis.cross(SIDE).normalized()
+    if face_up.dot(UP) < 0:
+        face_up = -face_up
     cranium = nape + axis * 0.40
-    mid = cranium + axis * 0.72
-    muzzle = mid + axis * 0.70
-    head_axes = (SIDE, axis.cross(SIDE), axis)
+    mid = cranium + axis * 0.76
+    muzzle = mid + axis * 0.78
+    head_axes = (SIDE, face_up, axis)
+    volume.sweep([cranium, mid, mid.lerp(muzzle, 0.6), muzzle],
+                 [0.58, 0.50, 0.46, 0.42])
     volume.ellipsoid(cranium, head_axes, (0.56, 0.60, 0.72))
-    volume.ellipsoid(mid, head_axes, (0.48, 0.52, 0.64))
-    volume.ellipsoid(muzzle, head_axes, (0.50, 0.44, 0.46))
-    volume.ellipsoid(cranium.lerp(mid, 0.5) - UP * 0.28, head_axes,
-                     (0.54, 0.44, 0.70))
+    volume.ellipsoid(cranium.lerp(muzzle, 0.42) - face_up * 0.22,
+                     head_axes, (0.50, 0.40, 1.10))
+    volume.ellipsoid(muzzle + axis * 0.10 - face_up * 0.10, head_axes,
+                     (0.50, 0.36, 0.38))
     for prefix in ("L", "R"):
         front_top = at(prefix + "_Arm_Upper")
         palm = at(prefix + "_Palm")
-        front = [point(belly + 0.55, front_top.z, front_top.x * 0.92),
+        # Limb tops start buried in the barrel so the thighs and shoulders
+        # flow out of it instead of showing as balls on its sides.
+        front = [point(belly + 0.95, front_top.z, front_top.x * 0.78),
                  at(prefix + "_Arm_Lower"), at("frontKnee_" + prefix),
                  point(0.34, palm.z, palm.x)]
         hip = at(prefix + "_Leg0_Upper")
         foot = at(prefix + "_Foot0")
-        hind = [point(belly + 0.65, hip.z - 0.20, hip.x * 0.92),
+        hind = [point(belly + 1.00, hip.z - 0.20, hip.x * 0.78),
                 at(prefix + "_Leg0_Lower"), at("backKnee_" + prefix),
                 point(0.34, foot.z, foot.x)]
         for chain, radii in ((front, params["front_radii"]),
                              (hind, params["hind_radii"])):
             volume.sweep(chain, radii)
-            pad = point(0.20, chain[-1].z - 0.06, chain[-1].x)
+            # A broad, flat-soled foot.
+            pad = point(0.14, chain[-1].z - 0.06, chain[-1].x)
             volume.ellipsoid(pad, (SIDE, UP, FORWARD),
-                             (radii[-1] * 1.12, 0.20, radii[-1] * 1.18))
+                             (radii[-1] * 1.16, 0.14, radii[-1] * 1.22))
     volume.sweep(tail[:4], [0.17, 0.12, 0.09, 0.07])
 
     body = volume.polygonise("RhinocerosBody")
@@ -125,15 +138,33 @@ def build(rig, armature, params):
                 name in upper_limb for name, _ in row),
             target, damp)
     rows = cb.smooth_weights(body, rows)
-    # The head moves as one with its rigid horns, ears and eyes: Head owns
-    # it outright forward of the nape, ramping in over the neck.
-    def into_head(q):
-        t = max(0.0, min(1.0, (q - nape).dot(axis) / 0.55 + 0.35))
+    # The Mastodon's Neck and Head pivots sit high in the withers, well
+    # behind and above this low-carried head, and the heat solve gives Neck
+    # no skin at all. Neck therefore takes the front of the neck and Head
+    # the skull, each fading in smoothly along the head axis and out across
+    # it, so lowering the head bends the neck over both joints. A first
+    # review saw a hard cut-off on the neck sides shear into hood-like
+    # flaps when the head dropped.
+    def ramp(value, start, width):
+        t = max(0.0, min(1.0, (value - start) / width))
         return t * t * (3.0 - 2.0 * t)
-    def in_head(q, row):
+
+    def reach(q):
         along = (q - nape).dot(axis)
-        return along > -0.20 and             ((q - nape) - axis * along).length < 0.85
-    rows = cb.blend_toward(rows, positions, in_head, "Head", into_head)
+        return along, ((q - nape) - axis * along).length
+
+    def neck_share(q):
+        along, across = reach(q)
+        return 0.65 * ramp(along, -1.70, 0.90) * (1.0 - ramp(across, 0.90, 0.70))
+
+    def head_share(q):
+        along, across = reach(q)
+        return ramp(along, -0.70, 1.00) * (1.0 - ramp(across, 0.75, 0.55))
+    rows = cb.blend_toward(rows, positions, lambda q, row: neck_share(q) > 0,
+                           "Neck", neck_share)
+    rows = cb.blend_toward(rows, positions, lambda q, row: head_share(q) > 0,
+                           "Head", head_share)
+    rows = cb.smooth_weights(body, rows, iterations=3)
     rows = cb.clean_weights(rows, positions, armature, allowed)
     parts = [(body, rows, REGION["body"])]
 
@@ -142,9 +173,6 @@ def build(rig, armature, params):
 
     # Keratin horns rooted on the face: a long front horn on the muzzle that
     # sweeps back, and a shorter rear horn above the eyes. Never tusks.
-    face_up = axis.cross(SIDE).normalized()
-    if face_up.dot(UP) < 0:
-        face_up = -face_up
     front_base = muzzle + face_up * 0.30
     front_tip = front_base + (face_up * 0.95 + axis * 0.12).normalized() * \
         params["front_horn"]
@@ -159,24 +187,30 @@ def build(rig, armature, params):
                   hint=axis),
           [("Head", 1.0)], "horn")
     for sign in (1.0, -1.0):
-        ear_base = cranium + SIDE * sign * 0.36 + face_up * 0.48 - axis * 0.16
-        rigid(cb.horn("RhinoEar", ear_base, ear_base +
-                      (UP * 0.85 + SIDE * sign * 0.40 - axis * 0.25)
-                      .normalized() * 0.62, 0.19, segments=10, flatten=0.55,
-                      hint=axis),
+        # Large, rounded, cupped ears opening forward; spikes would read as
+        # more horns.
+        # A second review found them sunk to nubs; they stand clear of the
+        # skull now.
+        ear_base = cranium + SIDE * sign * 0.34 + face_up * 0.46 - axis * 0.18
+        rise = (UP * 0.85 + SIDE * sign * 0.40 - axis * 0.25).normalized()
+        facing = (axis - rise * axis.dot(rise)).normalized()
+        rigid(cb.blob("RhinoEar", ear_base + rise * 0.30,
+                      (rise.cross(facing), rise, facing), (0.16, 0.38, 0.11),
+                      16, 10),
               [("Head", 1.0)], "ear")
-        eye = mid + SIDE * sign * 0.46 - face_up * 0.02 - axis * 0.16
+        eye = mid + SIDE * sign * 0.52 - face_up * 0.02 - axis * 0.16
         rigid(cb.blob("RhinoEye", eye, (SIDE, axis, face_up),
                       (0.05, 0.08, 0.055), 12, 8), [("Head", 1.0)], "eye")
     for prefix in ("L", "R"):
         for bone, radius in ((prefix + "_Palm", params["front_radii"][-1]),
                              (prefix + "_Foot0", params["hind_radii"][-1])):
             foot = at(bone)
+            # Three flat nail plates half sunk into the front of the foot.
             for lateral in (-0.55, 0.0, 0.55):
-                nail = point(0.13, foot.z - 0.06, foot.x) + \
-                    FORWARD * radius * 1.12 + SIDE * lateral * radius
+                nail = point(0.10, foot.z - 0.06, foot.x) + \
+                    FORWARD * radius * 1.06 + SIDE * lateral * radius
                 rigid(cb.blob("RhinoNail", nail, (SIDE, FORWARD, UP),
-                              (0.22 * radius, 0.15 * radius, 0.12), 10, 6),
+                              (0.24 * radius, 0.11 * radius, 0.09), 10, 6),
                       [(bone, 1.0)], "nail")
     tuft_dir = (tail[4] - tail[3]).normalized()
     rigid(cb.strand("RhinoTailTuft", [tail[3], tail[4],
@@ -187,8 +221,17 @@ def build(rig, armature, params):
     cb.require_single_body(rhino, REGION["body"])
     folds = [(shoulder.z + 0.55, 0.07), (rump.z - 0.35, 0.08),
              (shoulder.z - 0.45, 0.06), (shoulder.z - 0.75, 0.05)]
-    return rhino, weights, {"ground": ground, "girth": 1.2,
-                            "rump": rump, "head": head, "folds": folds}
+    lip = muzzle + axis * 0.10 - face_up * 0.10
+    nostrils = [lip + axis * 0.30 + face_up * 0.12 + SIDE * sign * 0.24
+                for sign in (1.0, -1.0)]
+    mouth = (lip - face_up * 0.08, axis, face_up)
+    horns = [(front_base - face_up * 0.12, front_tip),
+             (rear_base - face_up * 0.10,
+              rear_base + face_up * params["rear_horn"])]
+    return rhino, weights, {"ground": ground, "girth": 1.2, "horns": horns,
+                            "nostrils": nostrils, "mouth": mouth,
+                            "rump": rump, "head": head, "folds": folds,
+                            "barrel_floor": ground + belly + 0.30}
 
 
 def colour_field(landmarks):
@@ -210,9 +253,12 @@ def colour_field(landmarks):
         folds = np.zeros(len(p))
         for centre, width in landmarks["folds"]:
             folds = np.maximum(folds, np.exp(-((p[:, 2] - centre) / width) ** 2))
-        # Folds sit on the flanks and lower sides, not across the back.
-        flank = np.clip(np.abs(n[:, 0]) * 1.6 - 0.5, 0, 1) *             np.clip((landmarks["ground"] + 3.9 - p[:, 1]) / 0.8, 0, 1)
-        base = base * (1.0 - 0.20 * (folds * flank)[:, None])
+        # Folds sit on the flanks of the barrel, not across the back or
+        # down the legs.
+        flank = np.clip(np.abs(n[:, 0]) * 1.6 - 0.5, 0, 1) * \
+            np.clip((ground + 3.9 - p[:, 1]) / 0.8, 0, 1) * \
+            np.clip((p[:, 1] - landmarks["barrel_floor"]) / 0.4, 0, 1)
+        base = base * (1.0 - 0.14 * (folds * flank)[:, None])
         # Dust on the legs and darker, worn feet.
         height = (p[:, 1] - ground) / girth
         dust = np.clip(1.0 - height / 1.6, 0, 1)[:, None]
@@ -221,9 +267,36 @@ def colour_field(landmarks):
         foot = np.clip(1.0 - height / 0.35, 0, 1)[:, None]
         base = base * (1 - 0.5 * foot) + np.array([0.22, 0.21, 0.20]) * \
             0.5 * foot
-        horn = np.array([0.36, 0.31, 0.25]) * \
-            (0.85 + 0.25 * cb.fbm(p * np.array([4.0, 0.6, 4.0]),
-                                  1.0 / (0.1 * girth), 23))[:, None]
+        # Nostrils and the line of the mouth, so the square lip reads as a
+        # face rather than a blank bulb.
+        face = np.zeros(len(p))
+        for nostril in landmarks["nostrils"]:
+            d = np.linalg.norm(p - np.array(nostril), axis=1)
+            face = np.maximum(face, np.clip(1.0 - d / 0.11, 0, 1) ** 0.7)
+        centre, along, rise = (np.array(v) for v in landmarks["mouth"])
+        rel = p - centre
+        depth = rel @ along
+        height = rel @ rise
+        line = np.exp(-(height / 0.035) ** 2) * \
+            np.clip((depth + 0.55) / 0.20, 0, 1) * \
+            (depth < 0.45) * (np.abs(p[:, 0]) < 0.6)
+        face = np.maximum(face, 0.75 * line)
+        base = base * (1.0 - 0.78 * face[:, None])
+        # Horns darken toward the root and pale toward the tip; flat-toned
+        # horns seen nearly end-on from the front read as holes in the face.
+        reach = np.zeros(len(p))
+        nearest = np.full(len(p), np.inf)
+        for root, tip in landmarks["horns"]:
+            root, tip = np.array(root), np.array(tip)
+            span = tip - root
+            t = np.clip((p - root) @ span / (span @ span), 0, 1)
+            gap = np.linalg.norm(p - (root + t[:, None] * span), axis=1)
+            reach = np.where(gap < nearest, t, reach)
+            nearest = np.minimum(gap, nearest)
+        horn = np.array([0.30, 0.26, 0.22]) + \
+            np.array([0.36, 0.33, 0.27]) * (reach ** 0.8)[:, None]
+        horn = horn * (0.88 + 0.20 * cb.fbm(p * np.array([4.0, 0.6, 4.0]),
+                                            1.0 / (0.1 * girth), 23))[:, None]
         rgb = np.where((region == REGION["horn"])[:, None], horn, base)
         rgb = np.where((region == REGION["ear"])[:, None], base * 0.92, rgb)
         rgb = np.where((region == REGION["eye"])[:, None],
