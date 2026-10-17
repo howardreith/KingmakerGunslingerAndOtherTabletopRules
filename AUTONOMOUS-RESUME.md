@@ -1,4 +1,4 @@
-# Sprint 25 takeover — first native failure safely restored, narrow repair next
+# Sprint 25 takeover — batched native profile/observer corrections, candidate next
 
 Current owner mission: finish scoped Brachiosaurus/Elephant native qualification,
 then publication qualification, merge PR #49, publish/verify the next available
@@ -58,7 +58,22 @@ identity or general maneuver rule. New review evidence writes its JArray
 directly, bypassing host serializer defaults. Production plus 47/47 focused
 tests pass (20.9 s); the repaired candidate still needs its full/native gates.
 
-Next: commit/push this repair, build one repaired Sprint candidate in this root,
+Candidate `e0992c30` then passed its full gate (2658/2658, exact build/package;
+297.99 s; ZIP `4be86b3c…d2712f6`, MVID `8b4d79b2-259f-48a6-9121-00953769bb93`).
+Bootstrap succeeded in native standalone. Brachiosaurus exposed +22 rather than
++23 with Power Attack OFF, native -4/+8 instead of lone-primary -4/+12, and
+Perception 31 rather than 28. The exact-rank branch was unreachable; the private
+tail type also needed the qualified private Weapon Focus pattern. These scoped
+repairs are batched with the predecessor contact helper's optional exact giant
+ability selector and baseline toggle setup. Added-HD testing now uses a separate
+unit. Production and 48/48 focused regressions pass (21.6 s).
+
+The failed native run's exact transaction `compat-20261017T164322Z-093499e59861`
+restored actual installation/settings/sound bank, all 118 protected save files
+and private references. No owned game or lease remains. Evidence and exact
+candidate ZIP/sidecars are preserved; no body/Elephant/later-phase PASS claimed.
+
+Next: commit/push these batched corrections, build one repaired Sprint candidate in this root,
 then run the standalone/high-risk native phases on its exact package, followed
 by targeted fresh-process persistence and the public boundary. Use the existing
 de-elevation route and capture actual child exit/restoration receipts. Recheck

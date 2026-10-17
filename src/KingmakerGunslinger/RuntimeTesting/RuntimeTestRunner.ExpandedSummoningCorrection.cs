@@ -4291,11 +4291,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private ExpandedSummoningTrampleContactResult
             RunExpandedSummoningTrampleContact(UnitEntityData trampler,
-                UnitEntityData target, string label, int naturalRoll)
+                UnitEntityData target, string label, int naturalRoll,
+                string exactAbilityName = null)
         {
             BlueprintAbility ability = _rulesFixture.Blueprints
                 .OfType<BlueprintAbility>().Single(value =>
-                    (RulesTrampleAbilityNames.Contains(value.name) ||
+                    (exactAbilityName != null ? value.name == exactAbilityName :
+                     RulesTrampleAbilityNames.Contains(value.name) ||
                      value.name ==
                         "KMG_Summoning_Special_Triceratops_Trample") &&
                     trampler.Descriptor.Abilities.GetAbility(value) != null);

@@ -553,6 +553,35 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False((bool)parsed[0]["passed"], "A failed predicate is not erased.");
         }
 
+        internal static void GiantFeatAndRankWiringReachesItsNativeComponents()
+        {
+            string root = Path.Combine(Environment.CurrentDirectory, "src", "KingmakerGunslinger");
+            string natural = File.ReadAllText(Path.Combine(root, "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
+            string admission = Section(natural, "private static void ConfigureUnit(");
+            int start = admission.IndexOf("bool exactRanks =", StringComparison.Ordinal);
+            int end = admission.IndexOf("levels.Skills =", start, StringComparison.Ordinal);
+            Assertions.True(admission.Substring(start, end - start).Contains(
+                "GiantBodyRulesPolicy.UsesExactRanks(profile.Key)"),
+                "The Brachiosaurus exact-rank branch must actually be admitted, not unreachable text.");
+            string giant = File.ReadAllText(Path.Combine(root, "Blueprints", "ExpandedSummoningNaturalBuilder.GiantBodies.cs"));
+            Assertions.True(giant.Contains("focus.WeaponType = tail.Type") &&
+                giant.Contains("BrachiosaurusPowerAttackCorrection") && giant.Contains("power.Tail = tail"),
+                "Private-tail Weapon Focus and Power Attack completion bind the actual private weapon.");
+            Assertions.Equal(4, GiantBodyRulesPolicy.BrachiosaurusPowerAttackAdditionalDamage,
+                "At BAB +13 native +8 needs only +4 to reach the lone-natural +12.");
+            string correction = File.ReadAllText(Path.Combine(root, "Summoning", "BrachiosaurusTailCombat.cs"));
+            foreach (string guard in new[] { "ReferenceEquals(owner.Blueprint, OwningBlueprint)",
+                "ReferenceEquals(evt.Weapon.Blueprint, Tail)", "evt.SecondaryWeapon", "GetBuff(PowerAttackBuff)",
+                "ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon, evt.Weapon)" })
+                Assertions.True(correction.Contains(guard), "Power Attack completion is exact-owner/weapon/buff scoped: " + guard);
+            string review = File.ReadAllText(Path.Combine(root, "RuntimeTesting", "RuntimeTestRunner.ExpandedSummoningSprint25Review.cs"));
+            Assertions.True(review.IndexOf("Sprint22SetPowerAttack(owner, false)", StringComparison.Ordinal) <
+                review.IndexOf("Sprint25Profile(fixture, owner, key)", StringComparison.Ordinal),
+                "Printed baseline is observed with the native auto-enabled toggle turned off first.");
+            Assertions.True(review.Contains("10, trampleName)"),
+                "Signed giant contact uses its exact registered ability, not the predecessor-only name set.");
+        }
+
         private static string Section(string source, string signature)
         {
             int start = source.IndexOf(signature, StringComparison.Ordinal);

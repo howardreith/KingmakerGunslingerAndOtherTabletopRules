@@ -1253,6 +1253,7 @@
     <Compile Include="Summoning\TheropodVisualPolicy.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Theropods.cs" />
     <Compile Include="Summoning\BrachiosaurusOverrunKnockdown.cs" />
+    <Compile Include="Summoning\BrachiosaurusTailCombat.cs" />
     <Compile Include="Summoning\GiantBodyVisualPolicy.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.GiantBodies.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Ankylosaurus.cs" />

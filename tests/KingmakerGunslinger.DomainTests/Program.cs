@@ -1213,6 +1213,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint25-elephant-profile", ExpandedSummoningSprint25Tests.ElephantProfileIsCorrectedToItsPrintedRoutine),
             Case("expanded-summoning.sprint25-targeted-persistence", ExpandedSummoningSprint25Tests.TargetedPersistenceCannotExpandItsRoster),
             Case("expanded-summoning.sprint25-native-evidence-array", ExpandedSummoningSprint25Tests.NativeEvidenceRetainsArrayAndNestedRuleRows),
+            Case("expanded-summoning.sprint25-native-feat-rank-wiring", ExpandedSummoningSprint25Tests.GiantFeatAndRankWiringReachesItsNativeComponents),
             Case("expanded-summoning.sprint19-four-claw-rend", Sprint19RulesTests.FourClawRendNeedsAllFourClawsOnOneTarget),
             Case("expanded-summoning.sprint19-no-stale-rend", Sprint19RulesTests.NoStaleFourClawRendCrossesACommand),
             Case("expanded-summoning.sprint19-review-agrees", Sprint19RulesTests.ReviewExpectationsAgreeWithTheRulesPolicies),

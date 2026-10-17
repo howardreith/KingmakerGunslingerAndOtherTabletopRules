@@ -28,7 +28,7 @@ class Sprint25GateTests(unittest.TestCase):
     def test_exact_native_review_seams_pass_scope(self):
         paths = [path for path in gate.ALLOWED_PRODUCTION
                  if "/RuntimeTesting/" in path]
-        self.assertEqual(12, len(paths))
+        self.assertEqual(13, len(paths))
         with patch.object(gate.subprocess, "check_output",
                           side_effect=["\n".join(paths), ""]):
             gate.validate_production_scope(Path("."))
