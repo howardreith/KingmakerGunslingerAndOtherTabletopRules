@@ -8,6 +8,8 @@ Elephant or Mastodon.
 import copy
 import sys
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 sys.dont_write_bytecode = True
 import validate_expanded_summoning_sprint25158 as gate
@@ -22,6 +24,23 @@ class Sprint25GateTests(unittest.TestCase):
         self.old = [row("Released", "a" * 32, "BlueprintUnit")]
         self.tail = [row(symbol, value[0], value[1])
                      for symbol, value in gate.ADDED.items()]
+
+    def test_exact_native_review_seams_pass_scope(self):
+        paths = [path for path in gate.ALLOWED_PRODUCTION
+                 if "/RuntimeTesting/" in path]
+        self.assertEqual(12, len(paths))
+        with patch.object(gate.subprocess, "check_output",
+                          side_effect=["\n".join(paths), ""]):
+            gate.validate_production_scope(Path("."))
+
+    def test_unrelated_runtime_source_still_fails_scope(self):
+        path = ("src/KingmakerGunslinger/RuntimeTesting/"
+                "RuntimeTestRunner.Unrelated.cs")
+        for outputs in ([path, ""], ["", path]):
+            with patch.object(gate.subprocess, "check_output",
+                              side_effect=outputs):
+                with self.assertRaisesRegex(AssertionError, "Unrelated"):
+                    gate.validate_production_scope(Path("."))
 
     # --- the append boundary -------------------------------------------------
     def test_census_prefix_passes(self):

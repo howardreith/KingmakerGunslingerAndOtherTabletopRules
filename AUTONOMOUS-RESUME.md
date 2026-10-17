@@ -35,7 +35,12 @@ lineage tests also pass. These are source/tooling results, not engine proof.
 Accepted art/body bytes were not changed. The original 9b55df81 ZIP and sidecars
 are preserved under `artifacts/checkpoints/source-build-9b55df81`.
 
-Next: commit/push this checkpoint, build one new Sprint candidate in this root,
+The first gate on `a3260559` refused before building (3.12 s): its exact source
+ownership allowlist omitted the authorized native-observer/persistence seams.
+Only those twelve paths were admitted; unrelated runtime siblings remain refused.
+No new package or native result was produced by that attempt.
+
+Next: commit/push the narrow gate correction, build one new Sprint candidate in this root,
 then run same-package smoke and the standalone/high-risk native phases, followed
 by targeted fresh-process persistence and the public boundary. Use the existing
 de-elevation route and capture actual child exit/restoration receipts. Recheck

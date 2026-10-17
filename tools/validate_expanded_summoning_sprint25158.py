@@ -178,6 +178,21 @@ ALLOWED_PRODUCTION = {
     # rules row that call site reads.
     "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
     "src/KingmakerGunslinger/Summoning/UngulateRulesPolicy.cs",
+    # Admitted 2026-10-17 for the owner-authorized functional qualification.
+    # These are the exact scenario/dispatch, targeted two-creature persistence
+    # and reused predecessor-helper seams, not a RuntimeTesting wildcard.
+    "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningRosterPersistencePolicy.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningNativeProfile.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint23Review.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint25Review.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint25Overrun.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint25Cleave.cs",
 }
 
 # Original project-authored bodies and icons, pinned once authored. A public
