@@ -113,3 +113,47 @@ loose-claw findings came from the offline preview, which ignored vertex groups
 of non-deform bones; `continuous_body.heat_weights` now restores every bound
 control as a deform bone, so the saved source poses with the shipped weights.
 The hashes above are the revised build.
+
+## Hyena and Goblin Dog refinement, 2026-10-17 (VIS-010, VIS-009)
+
+Both first exports rendered inside out (16 and 26 inward parts). The owner
+reported for the Hyena bulbous proportions and a transparent, open-looking
+body; for the Goblin Dog a detached-looking head and legs, coarse proportions
+and poor recognition. Both are now built by `build_worg_frame.py`, which also
+builds the Sprint 13 Wolverine and Shadow Mastiff: the four ride the Wolf and
+Worg frames, which share the same 36 controls, and each binds the same
+reviewed 34 (every one but the collar helpers). Each is one continuous
+surface: a torso along the animal's own topline, united and relaxed on a
+coarser union, a neck to the skull and muzzle, legs along the measured bones
+(the frames' bind pose holds the hind legs stretched back), and a rigid lower
+jaw, ears, eyes, nose, canines and claws. Rules specific to the frame, each
+commented in the builder: the torso follows the spine rather than the buried
+upper limb bones; `Head` owns the skull, `jaw_woo_up` the nose,
+`jaw_woo_up_add` the upper lip and `withers` the top of the shoulders; the
+rigid lower jaw grades from `jaw` to `jaw_woo_down`; a tail held along the
+frame ends on `tail_04`, and a short tail hangs from the tailhead weighted
+down the chain.
+
+- **Hyena** (Wolf frame): a robust body sloping from high shoulders to low
+  hips, a broad heavy head with a blunt muzzle, round ears, a short hanging
+  tail with a dark tuft, and a sandy coat with dark spots, a dark mane line,
+  a dark muzzle and darker legs.
+- **Goblin Dog** (Worg frame): a thin, hunched, hairless body, an oversized
+  head with a long muzzle and protruding canines, large splayed ears, bulging
+  yellow eyes, a thin rat-like tail and a mottled grey-pink hide with dark
+  patches and raw sores.
+
+- Captures: `sprint12-wolf-bind-rig.json` (SHA-256
+  `7680509355203adc515dcbf7cf2f3eac1344e0434d51ab70b77982e708bb4c7c`) and
+  `sprint12-worg-bind-rig.json` (SHA-256
+  `b6c2d2cf97ff05b5b6f80f6d5a14b9a04de92f29d649440ca9ba03e3a9692fa8`), both
+  from guarded run `20261017T0225090480213Z-disposable-expanded-summoning-native-profile`
+  on master `2eed3944f6`.
+- `hyena-mesh.json`: `bb02ff0e93fef0de73100d0dac0769cf36f461fdadf166eada09a40059bb07ef`
+  (6,088 vertices, 8,122 triangles, 28 closed outward parts, 34 controls);
+  albedo `0b92a99aeb02d3381c923da2a2eff3b093b41706a5f1570b39575face5a7d404`.
+- `goblin-dog-mesh.json`: `fa07b94074272d45e2d014573e5d2feeb29f89c1bc58777d0421a9a31049710b`
+  (6,052 vertices, 7,644 triangles, 27 closed outward parts, 34 controls);
+  albedo `dc8a53f09f0ce21a601bfc8773945050ed4389dfebd51b5109827c38c255789c`.
+- Superseded: the Hyena and Goblin Dog rows listed above.
+  `generate_sprint12_quadrupeds.py` now refuses all three kinds.

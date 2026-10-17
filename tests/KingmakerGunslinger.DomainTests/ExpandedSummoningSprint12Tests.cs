@@ -87,8 +87,8 @@ namespace KingmakerGunslinger.DomainTests
             string[] kinds = { "dire-rat", "hyena", "goblin-dog" };
             string[] meshHashes = {
                 "cdc262ab43da10301e5f81d01fb94f7c0ee74d621e03fb4c444983341073fbf4",
-                "0217f8d599480e5aaed6f1b6df9736b64609298664f3732271bb39c08596ac48",
-                "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a"
+                "bb02ff0e93fef0de73100d0dac0769cf36f461fdadf166eada09a40059bb07ef",
+                "fa07b94074272d45e2d014573e5d2feeb29f89c1bc58777d0421a9a31049710b"
             };
             string[][] allowedBones = {
                 new[] {
@@ -156,12 +156,12 @@ namespace KingmakerGunslinger.DomainTests
                     (string)albedo["sha256"],
                     kind + " painting matches its mesh manifest.");
             }
-            // VIS-005: the refined Dire Rat is the first Sprint 12 body built
-            // with outward winding; the Hyena and Goblin Dog keep the first
-            // export until their own refinement batch.
+            // VIS-005, VIS-010, VIS-009: every Sprint 12 body is now one
+            // continuous surface exported with outward winding.
             OriginalMeshOrientation.AuditDetectsReversedAndMixedWinding();
-            OriginalMeshOrientation.AssertShippedBody(
-                Path.Combine(directory, "dire-rat-mesh.json"), "dire-rat");
+            foreach (string kind in kinds)
+                OriginalMeshOrientation.AssertShippedBody(
+                    Path.Combine(directory, kind + "-mesh.json"), kind);
 
             string source = Path.Combine(root, "assets-source",
                 "original-models", "sprint12-quadrupeds");
