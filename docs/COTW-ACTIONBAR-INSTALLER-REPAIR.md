@@ -1,5 +1,45 @@
 # CotW action-bar installer correction — output_log2, 2026-10-17
 
+## Frozen local candidate / handoff
+
+Final product `39c60fb5e9167f1b2fe35a07b545fa2a2ebaac2e` includes the installer
+checkpoint `132398b46e4f` plus the separately reviewable readiness correction.
+Product/source branch `codex/cotw-actionbar-installer-20261017` is guarded-pushed;
+its original worktree remains clean/frozen. Subsequent records live in
+`codex/cotw-actionbar-installer-review-20261017` / the separate worktree of that
+name. No published alpha or previous receipt was replaced.
+
+Local test package and adjacent development receipt/checksum:
+`C:/Dev/KingmakerBuffPlannerLab/handoff/KingmakerGunslinger-0.0.157-development-cotw-actionbar-installer-39c60fb5e916.zip`.
+UMM remains 0.0.157; candidateKind=development, releaseQualification=false.
+
+- ZIP SHA-256: `6d4ed736a18cfdcac668eb5fad24e6b19001af635fd7e1fc53006834bd507aed`.
+- DLL SHA-256: `d9fea590a604b81b5a14046ac88454a7eb8d4510e94e0b4ae5de082cbc2d606b`.
+- DLL MVID: `c1a4d16b-efae-4ea8-b3ef-5966c3db9c6b`.
+- Build/package **65.746 s**: development wrapper, 33/33 selected domain tests,
+  exact-reference C# 7.3 / .NET 4.7 compilation, 37 native-contract companion
+  assertions, strict package PASS. No complete 2,652-test suite or live run.
+- Exact packaged DLL then passed **64/64** installer/callback assertions in
+  **0.977 s**. This result includes the real Install route missing from the
+  earlier 39-assertion evidence. It is still headless, not a saved-game PASS.
+- Command: `Build-Local.ps1 -DevelopmentPurpose cotw-actionbar-installer
+  -DevelopmentTestFilter 'brown-fur.startup,shield-other,teleportation.oracle,eastern-favored,favored-class.host-readiness'
+  -ReferenceBundleDir C:/Dev/KingmakerGunslingerLab/private/refresh-2026-10-15/extracted/KingmakerGunslinger-private-build-references`;
+  then `Test-CotwSpontaneousSlotCompatibility.ps1` on the produced DLL.
+- Private logs in the frozen worktree: `artifacts/installer-inspection/candidate-build.log`,
+  `candidate-regressions.log`, prior failing/passing regressions and the exact
+  copied input under `input/output_log2.private.txt`. Package receipts remain
+  under `artifacts/development-candidates/cotw-actionbar-installer/39c60fb5e916/`.
+
+The next test must first confirm `cotw-actionbar/installed` and the new assembly
+hash/MVID, then load without saving over the affected save; record Continue/Load
+Game and actual input mode. Check party/page refresh before KBP no-cast entry/exit.
+No companion Buff Planner or CotW change is required for these KMG corrections.
+Native load remains NOT_RUN, including the known guarded controller-entry gap
+in the preceding record. No game launch, install/settings/save mutation or
+transaction occurred; no restoration debt. Public alpha publication requires
+a new explicit owner request, not inherited alpha 2 authority.
+
 Isolated branch/worktree `codex/cotw-actionbar-installer-20261017`, based on
 `e50db0da63d4052c1c3107e9fb38a21a5d2eb9d3`. Preserve published alpha 2,
 the frozen `92b442c06dd8` candidate, and Brown-Fur's lifecycle repair. Current
