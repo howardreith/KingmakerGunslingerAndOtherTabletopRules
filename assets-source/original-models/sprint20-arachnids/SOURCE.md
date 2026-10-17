@@ -110,3 +110,35 @@ chooses between them in one menu: the ants are red-brown and the beetles
 near-black, so the scorpion is pale warm sand. The one saturated thing on the
 creature is the bead of venom at the sting's tip, because the sting is its
 printed attack and it is what a player should see first.
+
+## Visual refinement, 2026-10-17 (VIS-026)
+
+The owner reported a detached stinger and weak tail and appendage joins on an
+otherwise acceptable scorpion. A targeted polish: the painting, the bone set
+and every part except the telson are unchanged.
+
+- **Inside out.** The generator made every part consistently wound, but the
+  shared writer then reversed every triangle, so all 25 parts shipped inward
+  and the game drew their far inner walls, which made every overlapping join
+  look open. `continuous_body.restore_outward_winding` now undoes the
+  reversal after the writer and refuses anything not closed, consistent and
+  outward; `triangleWinding` says `outward-visual-refinement` (no runtime
+  reads it).
+- **The telson** sat at 0.74 forward of the tail's base, so the bulb's back
+  stopped about 5 cm short of the last segment's end: the detached stinger.
+  It now sits at 0.64 and overlaps the segment; the sting follows it.
+- **Chelicerae.** These run along the body axis, where the shared tube's +Y
+  frame hint swung a ring a quarter turn and folded their faces (42 normal
+  corners faced away). They use the ants' `carried_tube` now; every normal
+  corner agrees with its face.
+- Capture: the Sprint 20 census was not on this machine, so the guarded census
+  was taken again: run
+  `20261017T1514597575080Z-observe-expanded-summoning-arachnid-census` on
+  development candidate `04144ec1457a`, `sprint20-arachnid-donor-census.json`
+  SHA-256 `a62bb76826f833ab8a446460a38a4fa56f5e75988647c14c64ef47ddba7f7269`.
+  It is the same frame: the unchanged generator reproduced the shipped mesh
+  data exactly from it, differing only in the recorded capture hash.
+- `giant-scorpion-mesh.json`: `1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f`
+  (1,226 vertices, 2,352 triangles, 25 closed outward parts); the albedo is
+  unchanged (`c4a5a29d…5feb1a`). `scripts/validate-package.ps1` pins the new
+  mesh. Superseded: `813dfed7e48f7bb281fbaa0a6ba2c426febf653a76cc92a4fda201642dba8004`.

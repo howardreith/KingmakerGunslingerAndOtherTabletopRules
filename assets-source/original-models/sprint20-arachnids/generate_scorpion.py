@@ -52,16 +52,18 @@ HERE = Path(__file__).resolve()
 sys.path.insert(0, str(HERE.parents[1] / "pteranodon"))
 sys.path.insert(0, str(HERE.parents[1] / "sprint14-insects"))
 sys.path.insert(0, str(HERE.parent))
+sys.path.insert(0, str(HERE.parents[1] / "continuous-bodies"))
+import continuous_body as cb
 import generate_pteranodon as shared
 import generate_sprint14_insects as insects
 import arachnid_capture as capture
 
 KIND = "giant-scorpion"
 SPACE = capture.SPACE
-# The same exporter, the same bind frame and the same triangle order the
-# Sprint 14 insects on this rig ship with, so the runtime handles this body
-# exactly as it handles its siblings.
-WINDING = "shared-exporter-sprint18"
+# Visual refinement, 2026-10-17 (VIS-026): the shared exporter reversed every
+# triangle, so the body shipped inside out; continuous_body restores the
+# outward order after it. No runtime reads this marker.
+WINDING = "outward-visual-refinement"
 
 inset_region_uvs = insects.inset_region_uvs
 tube = insects.tube
@@ -147,7 +149,9 @@ def metasoma(bm, weights, uvs, rig):
     # The telson: a bulb under the last segment, then the sting curving down
     # and forward out of it. The sting is this creature's printed poison
     # attack, so a player has to be able to see it.
-    telson = base + Vector((0.0, -0.74, 1.10))
+    # Rooted on the last segment: at -0.74 the bulb's back stopped about 5 cm
+    # short of the tail's end, which the owner saw as a detached stinger.
+    telson = base + Vector((0.0, -0.64, 1.11))
     ellipsoid(bm, weights, uvs, telson, LATERAL, UP, FORWARD,
               (0.085, 0.090, 0.105), "Tail3_M", region=TAIL_REGION,
               latitudes=7, segments=10)
@@ -248,8 +252,10 @@ def chelicerae(bm, weights, uvs, rig):
         root = capture.head(rig, name)
         points = [root, root + Vector((0.0, -0.055, -0.010)),
                   root + Vector((0.0, -0.095, -0.020))]
-        tube(bm, weights, uvs, points, [0.030, 0.021, 0.006], [name] * 3,
-             POINT_REGION, segments=7)
+        # Carried frames: these run along the body axis, where the shared
+        # tube's +Y hint swung a ring a quarter turn and folded the faces.
+        insects.carried_tube(bm, weights, uvs, points, [0.030, 0.021, 0.006],
+                             [name] * 3, POINT_REGION, 7)
 
 
 def build_body(bm, weights, uvs, rig):
@@ -363,6 +369,7 @@ def main():
     shared.write_mesh_data(args.mesh_data, obj, mesh, indexed, uv_indexed,
                            report, args.albedo)
     payload = json.loads(Path(args.mesh_data).read_text(encoding="utf-8"))
+    cb.restore_outward_winding(payload)
     payload["space"] = SPACE
     payload["triangleWinding"] = WINDING
     payload["creature"] = KIND

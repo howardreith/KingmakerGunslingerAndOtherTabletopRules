@@ -1144,6 +1144,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint20-grab-and-poison-stay-put", Sprint20RulesTests.GrabAndPoisonStayOnTheirOwnLimbs),
             Case("expanded-summoning.sprint20-census-wired", Sprint20RulesTests.TheCensusScenarioIsWiredAtEveryGate),
             Case("expanded-summoning.sprint20-review-wired", Sprint20RulesTests.TheReviewScenarioIsWiredAtEveryGate),
+            Case("expanded-summoning.sprint20-original-body", Sprint20RulesTests.TheShippedBodyIsTheRefinedOutwardExport),
             Case("expanded-summoning.sprint21-printed-profile", Sprint21RulesTests.ThePrintedProfileDerives),
             Case("expanded-summoning.sprint21-no-skill-ranks", Sprint21RulesTests.ItBuysNoSkillRanks),
             Case("expanded-summoning.sprint21-registered-and-withheld", Sprint21RulesTests.TheCreatureIsRegisteredAndWithheld),
