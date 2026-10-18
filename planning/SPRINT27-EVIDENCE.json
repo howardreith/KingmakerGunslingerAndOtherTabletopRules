@@ -769,6 +769,223 @@
         "allSavesExact": true,
         "leaseAbsent": true
       }
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2232228287686Z-28bf4dc0367d4c1b983fe26cf39f9865",
+      "result": "FAIL",
+      "nativeMilliseconds": 111623,
+      "rawResultSha256": "9458ce9ccb0ab26b895b09e85a636c4d40c958109fcbd3026dbf1d1d4ef4321d",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2232227435977Z-disposable-expanded-summoning-sprint27-native-review",
+      "scope": "standalone expiry-boundary",
+      "transactionRunId": "compat-20261018T223028Z-2381783515b9",
+      "outerSeconds": 253.909629,
+      "assertionCount": 12,
+      "failedPredicates": [
+        "expiry-boundary-charge-expiry"
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "mechanicalObservation": "Real marker callback once; uninterruptible UnitUseAbility before, zero active commands immediately after; native result Interrupt, zero queued/weapon attacks; native despawn. Overall FAIL retained because later UnitMoveTo follow data violates the old terminal predicate. New observer additionally requires view/holding-state detachment and exact native-follow identity."
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2238126118992Z-646d8d2038fe495aad43acee84d258f6",
+      "result": "PASS",
+      "nativeMilliseconds": 127179,
+      "rawResultSha256": "153237f40da620cd607a1a13f5e94235945a1e5a0ba6eb7ef5ba3cc411015d31",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2238125271072Z-disposable-expanded-summoning-sprint27-native-review",
+      "scope": "standalone shared-controls",
+      "transactionRunId": "compat-20261018T223622Z-7c7d4ae24b0a",
+      "outerSeconds": 266.7472568,
+      "assertionCount": 14,
+      "failedPredicates": [],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2245583536045Z-e8b441e74c5641baa440f255cb150af1",
+      "result": "PASS",
+      "nativeMilliseconds": 210961,
+      "rawResultSha256": "531e36da5df03954810760ae489c71a864511f9ab451502432835074df9b0fed",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2245582973683Z-working-save-expanded-summoning-prepare",
+      "scope": "installed current eleven-mod stack Griffon on trio prepare-on",
+      "transactionRunId": "sprint27-stack-20261018T224406Z-6f05e5ada5d5",
+      "outerBatchSeconds": 1104.7052598999999,
+      "assertionCount": 14,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "144909698f3af376efae323e2602040a9256115789f4fcae6121b207ca275511"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2252188068767Z-a8a9ea09124a4fdfb4d9563da5061008",
+      "result": "PASS",
+      "nativeMilliseconds": 203906,
+      "rawResultSha256": "2076fd62caa07837534190f85e9eafa9fe787b7d8dbd98e8e9a16fc85e80c5ce",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2252188068767Z-working-save-expanded-summoning-verify-cleanup",
+      "scope": "installed current eleven-mod stack Griffon on trio cleanup-on",
+      "transactionRunId": "sprint27-stack-20261018T225026Z-76b3c54a3cac",
+      "outerBatchSeconds": 1104.7052598999999,
+      "assertionCount": 13,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "144909698f3af376efae323e2602040a9256115789f4fcae6121b207ca275511"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2258320116083Z-44c9fafdb02047fe8b789eedd1d33bd2",
+      "result": "PASS",
+      "nativeMilliseconds": 176469,
+      "rawResultSha256": "b43050d5f48abad8b1495308e24adbe495e045a316e2f91aaa3042c396984da3",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2258319947583Z-working-save-expanded-summoning-verify-absent",
+      "scope": "installed current eleven-mod stack Griffon on trio absent-on",
+      "transactionRunId": "sprint27-stack-20261018T225640Z-de45d1094d4e",
+      "outerBatchSeconds": 1104.7052598999999,
+      "assertionCount": 6,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "144909698f3af376efae323e2602040a9256115789f4fcae6121b207ca275511"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2306037783523Z-d328296628304eeeb6ff5ca251ad6fb5",
+      "result": "PASS",
+      "nativeMilliseconds": 210115,
+      "rawResultSha256": "51b8191c17b21f50ad932eaf841fa3e8ce6629bfcbc742f0cba67076cc4bb3ac",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2306037561356Z-working-save-expanded-summoning-prepare",
+      "scope": "installed current eleven-mod stack Griffon off trio prepare-on",
+      "transactionRunId": "sprint27-stack-20261018T230412Z-5cf9a871d3ab",
+      "outerBatchSeconds": 1111.6397428999999,
+      "assertionCount": 14,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "b5e9578da13f0ab38f15ccb2c5e448548b1bfc7acd6907d1d81dae4340449a68"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2312234575803Z-9c12792c91af406890ddb6f78f9b132c",
+      "result": "PASS",
+      "nativeMilliseconds": 208709,
+      "rawResultSha256": "8d683ac52bf3ae1f1b3922f8c4740e0b30fdc6ece771ad73d64a2296aea48738",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2312234575803Z-working-save-expanded-summoning-verify-cleanup",
+      "scope": "installed current eleven-mod stack Griffon off trio cleanup-off",
+      "transactionRunId": "sprint27-stack-20261018T231031Z-f37ef0522966",
+      "outerBatchSeconds": 1111.6397428999999,
+      "assertionCount": 14,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "b5e9578da13f0ab38f15ccb2c5e448548b1bfc7acd6907d1d81dae4340449a68"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2318405083220Z-33839363ee124c3189dfc8c6ad889aa2",
+      "result": "PASS",
+      "nativeMilliseconds": 180706,
+      "rawResultSha256": "0b7b5797dab788470bb8caf4d2a51203d961a66bb611d43ebf2bfb5a8f4c394d",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2318405083220Z-working-save-expanded-summoning-verify-absent",
+      "scope": "installed current eleven-mod stack Griffon off trio absent-on",
+      "transactionRunId": "sprint27-stack-20261018T231648Z-1d39484c2fef",
+      "outerBatchSeconds": 1111.6397428999999,
+      "assertionCount": 6,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "b5e9578da13f0ab38f15ccb2c5e448548b1bfc7acd6907d1d81dae4340449a68"
     }
   ],
   "checks": [
@@ -913,6 +1130,31 @@
       "failures": 0,
       "testGateSeconds": 4.3,
       "retainedFailure": "Initial observer compilation lacked Summoning import; corrected before passing compilation."
+    },
+    {
+      "scope": "closed phase/source preflight including expiry-boundary",
+      "result": "PASS",
+      "checks": 661,
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9"
+    },
+    {
+      "scope": "highest-risk combined WhatIf route",
+      "result": "PASS",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "seconds": 16.9155369,
+      "nativeExecution": false,
+      "all118SavesExact": true,
+      "modsExact": true
+    },
+    {
+      "scope": "terminal expiry observer focused successor",
+      "result": "PASS",
+      "sourceScope": "uncommitted successor of51c14014; no native pass inferred",
+      "productionSeconds": 19.9,
+      "selected": 17,
+      "registered": 2693,
+      "failures": 0,
+      "testGateSeconds": 1.8
     }
   ],
   "policyChange": {
@@ -941,7 +1183,8 @@
     "a91232 presentation FAIL: Tiger ordinary and pounce controls incomplete against the original fixture; matched donor expiry, rollback, resources, navigation, all six hidden root effects, Eagle and Bulette ordinary controls passed. No baseline product defect claimed.",
     "5e565f charge-boundaries FAIL: native marker removal observed, but bool InterruptAll skips uninterruptible charge. Installed IL proves the predicate overload forces interruption and clears queue; no failed case relaunched unchanged.",
     "5e565f shared-controls FAIL: recorded targetSize Medium/grabExcludedBySize false proves fixture reset overwrote the intended Huge size before command; no baseline creature defect inferred.",
-    "Read-only interruption IL reader initially failed on mixed Mono/framework System metadata; framework-resolved reader succeeded; no native or source state changed by inspection."
+    "Read-only interruption IL reader initially failed on mixed Mono/framework System metadata; framework-resolved reader succeeded; no native or source state changed by inspection.",
+    "51c140 expiry-boundary overall FAIL retained: actual charge cancellation passes; old observer rejects an inert native UnitMoveTo on a destroyed summon. New observer requires full view/holding-state removal and permits only the exact native PartSummonedMonster.MoveTo reference; no charge/attack/ability action is allowed."
   ],
   "bodyStatus": "Original body functional indoors and outdoors; matched native donor lacks DismemberUnitFX, both follow native delayed despawn and exact private cleanup. No dissolve claimed.",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
@@ -954,7 +1197,8 @@
     "Add an exact-Griffon module-gated summon-marker removal listener to interrupt native commands at expiration while preserving native delayed presentation/destruction; no mutable serialized command state.",
     "Narrow AI to a native-approved straight route, with read-only command/movement timeline; native brain remains sole command chooser. Tiger uses a stated legal Huge opponent to exclude its automatic Grab from the charge-plan control.",
     "Use verified native InterruptAll(Func<UnitCommand,bool>) at exact Grif marker removal. Add expiry-boundary phase and a read-only automatic-callback trace. Do not manually tick an already-finished parent command while waiting for native despawn.",
-    "Apply/assert Huge target after hostile reset and again before Tiger pounce; record actual target size. Native brain/rolls, released creature code and assets remain unchanged."
+    "Apply/assert Huge target after hostile reset and again before Tiger pounce; record actual target size. Native brain/rolls, released creature code and assets remain unchanged.",
+    "Terminal reader correction only: fully detach expired owner, identify native summon-follow by reference, preserve the original failed verdict. No product mechanics/assets or saved schemas change after the six passing native persistence stages."
   ],
   "integratedDevelopmentChecks": {
     "productionCompilation": {
@@ -1033,5 +1277,16 @@
     "weaponEvents": 1,
     "fixtureAttacks": 0,
     "forcedRolls": 0
+  },
+  "targetedPersistence": {
+    "result": "PASS",
+    "candidateKind": "development",
+    "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+    "onSeconds": 1104.7052599,
+    "offSeconds": 1111.6397429,
+    "stages": 6,
+    "restoration": "EXACT_CURRENT_INTAKE_118_SAVES",
+    "workingRestored": true,
+    "baselineImmutable": true
   }
 }
