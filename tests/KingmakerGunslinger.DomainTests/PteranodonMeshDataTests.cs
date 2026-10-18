@@ -51,12 +51,15 @@ namespace KingmakerGunslinger.DomainTests
         };
 
         /// <summary>
-        /// The atlas the generator maps to and the painter paints: five regions
-        /// that tile the unit square exactly. The wings take the top half; the
-        /// body, crest, beak and limbs take the four quarters below it.
+        /// The atlas the builder maps to and paints. The refined continuous
+        /// body (VIS-020, build_pteranodon.py) unwraps the whole surface into
+        /// one region that covers the unit square; the first export's
+        /// five-region atlas is superseded.
         /// </summary>
-        private static readonly string[] AtlasRegions =
-        { "membrane", "body", "crest", "beak", "limbs" };
+        private static readonly string[] AtlasRegions = { "body" };
+
+        private const string RefinedMeshSha256 =
+            "42627bc93837ab0979bd4e1e338a9900bdb038cb16c71a4d20d2c50185a24345";
 
         private static string Resolve(string relative)
         {
@@ -75,6 +78,12 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ShippedMeshDataIsWellFormed()
         {
             JObject document = Document();
+            string meshPath = Resolve(MeshDataPath);
+            using (SHA256 sha = SHA256.Create())
+                Assertions.True(string.Concat(sha.ComputeHash(File.ReadAllBytes(meshPath))
+                        .Select(value => value.ToString("x2"))) == RefinedMeshSha256,
+                    "The shipped Pteranodon is not the refined export.");
+            OriginalMeshOrientation.AssertShippedBody(meshPath, "pteranodon");
             Assertions.True((int?)document["schemaVersion"] == 2,
                 "The mesh data schema version is not 2.");
             Assertions.True(((string)document["space"] ?? string.Empty)

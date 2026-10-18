@@ -158,7 +158,7 @@ namespace KingmakerGunslinger.DomainTests
                     (string)body["donorRenderer"], key + " donor renderer changed.");
                 Assertions.True(PrimateVisualPolicy.PermitsOriginalWinding(key,
                         (string)body["triangleWinding"]),
-                    key + " must declare the shared exporter winding.");
+                    key + " must declare the outward winding of its refined export.");
                 Assertions.True(PrimateVisualPolicy.PermitsAnatomy(key,
                         (bool?)body["tailGeometry"], (bool?)body["tongueGeometry"],
                         (bool?)body["jawSeparated"], (int?)body["visibleLimbs"],
@@ -331,6 +331,48 @@ namespace KingmakerGunslinger.DomainTests
                 "An unparsable instance name is refused.");
             Assertions.False(PrimateVisualPolicy.IsPrimateInstanceResource("owlbear",
                     mine, mine), "Only the two apes own Sprint 18 resources.");
+        }
+
+        /// <summary>
+        /// Visual refinement (VIS-019, VIS-025, VIS-030): the Ape, Dire Ape and
+        /// Xill ship their rebuilt continuous bodies, closed and outward, and
+        /// declare the outward marker the policy now requires of them; the
+        /// Girallon's repaired first export declares it too (RepairedBodyTests).
+        /// </summary>
+        internal static void RefinedBodiesShipOutward()
+        {
+            var refined = new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { "sprint18-primates/ape-mesh.json",
+                  "2f0196eca297019770894b66d69cb474e9bba59c449a95590326f888086631ee" },
+                { "sprint18-primates/dire-ape-mesh.json",
+                  "d0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a" },
+                { "sprint19-fourarmed/xill-mesh.json",
+                  "d7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243" }
+            };
+            string assets = Directory.GetParent(AssetDirectory()).FullName;
+            foreach (KeyValuePair<string, string> entry in refined)
+            {
+                string path = Path.Combine(assets, entry.Key.Replace('/',
+                    Path.DirectorySeparatorChar));
+                using (var sha = System.Security.Cryptography.SHA256.Create())
+                    Assertions.Equal(entry.Value, string.Concat(sha.ComputeHash(
+                            File.ReadAllBytes(path)).Select(value => value.ToString("x2"))),
+                        entry.Key + " is the refined export.");
+                string key = Path.GetFileName(path).Replace("-mesh.json", "");
+                OriginalMeshOrientation.AssertShippedBody(path, key);
+                Assertions.Equal(PrimateVisualPolicy.OutwardWinding,
+                    (string)JObject.Parse(File.ReadAllText(path))["triangleWinding"],
+                    key + " declares the outward winding.");
+                Assertions.False(PrimateVisualPolicy.PermitsOriginalWinding(key,
+                        PrimateVisualPolicy.AuthoredWinding),
+                    key + " must refuse the first exporter's marker.");
+            }
+            Assertions.True(!PrimateVisualPolicy.PermitsOriginalWinding("girallon",
+                    PrimateVisualPolicy.AuthoredWinding) &&
+                PrimateVisualPolicy.PermitsOriginalWinding("girallon",
+                    PrimateVisualPolicy.OutwardWinding),
+                "The repaired Girallon declares the outward marker and refuses the first exporter's.");
         }
     }
 }

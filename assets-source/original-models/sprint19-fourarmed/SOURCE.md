@@ -99,7 +99,7 @@ sampled from the game, from a photograph, or from any other image.
 
 | File | SHA-256 |
 | --- | --- |
-| `assets/sprint19-fourarmed/girallon-mesh.json` | `475a8ca131056251c02680c625c16ab7c3c84cba1546782b95054e8c3334e7e9` |
+| `assets/sprint19-fourarmed/girallon-mesh.json` | `003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb` (repaired outward; below) |
 | `assets/sprint19-fourarmed/girallon-albedo.png` | `21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6` |
 | `assets/sprint19-fourarmed/xill-mesh.json` | `b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d` |
 | `assets/sprint19-fourarmed/xill-albedo.png` | `f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4` |
@@ -139,3 +139,53 @@ from a preference:
    name. It captures the original function first.
 
 `HumanReview: NOT_PERFORMED_NONBLOCKING.`
+
+## Visual refinement, 2026-10-17 (VIS-030)
+
+The owner found the Xill's fingers detached-looking and its anatomy wiry and
+visibly polygonal; it also shipped inside out (64 inward parts). The review
+screenshot's combat log names a Redcap, but the body shown is this Xill's own
+rust-red banded, four-armed carapace (the Redcap is a native summon with a
+different body), and the guarded creature review of the `xill` key attached
+the original Xill body (run `20261017T1553034339677Z`), which settles the
+identity. `build_xill.py` (library in `../continuous-bodies/`, helpers from
+`../sprint18-primates/build_primates.py`) now builds it as one continuous
+chitinous body on the same Troll guard frame: a tall thorax over a ridged,
+narrower abdomen, a short neck, a forward wedge of a head with two large and
+two small green compound eyes, brow plates, inward-curving mandibles on
+`Jaw_01` and ear spines, fuller upper arms grown out of the shoulders, and
+digitigrade legs. The lower arms are smooth closed tubes rooted inside the
+thorax, carried below and outboard of the upper pair on the same drivers
+(FOUR_ARMS_SHARE_TWO_DRIVER_CHAINS, unchanged). All four hands have a thumb
+and three fingers rooted in the palm, with near-black claws. The coat keeps
+the lacquered rust-red carapace, dark segment banding and green eyes. The
+mesh declares `triangleWinding: outward-visual-refinement`.
+
+- `xill-mesh.json`: `d7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243`
+  (46 closed outward parts, the exact 56 drivers);
+  `xill-albedo.png`: `eca0206533fad6c67cb2cbce79c5ff4eac7987b3311229c8d9f6b883522999fa`.
+  Superseded: `b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d`,
+  `f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4`.
+- `generate_fourarmed.py` refuses the Xill and still builds the unchanged
+  Girallon.
+
+## Outward repair, 2026-10-17 (visual refinement)
+
+The owner approved repairing the original bodies that the visual
+refinement found shipping inside out from the legacy shared writer
+("Let's assume that your repairs are good. Move forward with them.").
+The shipped Girallon body was repaired in place with `../continuous-bodies/repair_outward_winding.py`
+(the generator's private donor capture is not needed): each triangle is
+wound to agree with its own authored normals, and a closed part whose
+volume is then negative has its triangles and normals turned. Positions,
+UVs, weights and bones are unchanged.
+It now declares `triangleWinding: outward-visual-refinement`, which
+`PrimateVisualPolicy.PermitsOriginalWinding` requires of every primate.
+
+| File | Before | After |
+| --- | --- | --- |
+| `assets/sprint19-fourarmed/girallon-mesh.json` | `475a8ca13105…` | `003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb` |
+
+To reproduce the shipped bytes, run the generator, then the repair on its
+output with `--marker outward-visual-refinement`. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
+the result and checks it is lit from the front.

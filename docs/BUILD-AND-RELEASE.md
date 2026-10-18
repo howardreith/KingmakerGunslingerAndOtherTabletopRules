@@ -1,5 +1,61 @@
 # Build, package, and publish
 
+## Current 0.0.158 publication authorization
+
+On 2026-10-17, after testing `v0.0.157-visual-refinement-alpha.2`, the owner
+wrote: "Alright, I have some changes to make, but this is an EXCELLENT
+revision. Please merge this into master and cut a new full release. The next
+stage of revisions are minor and can go when we have more summons added to
+revise." The release is 0.0.158, one above the published 0.0.157. Draft
+Sprint 25 (PR #49) renumbers when it releases, as the owner chose for
+v0.0.157.
+
+It ships the Expanded Summoning visual refinement
+(`codex/expanded-summoning-visual-refinement-pilot`), which already carries
+`master` through PR #54, the Brown-Fur startup-order and CotW controller
+save-loading repair. `tools/validate_expanded_summoning_visual_refinement_release158.py`
+admits, relative to released v0.0.157 master `2eed3944f6`:
+
+- no identity change;
+- the seven visual-refinement and thirteen startup-repair production files;
+- the version metadata;
+- six compile items;
+- 57 assets modified in place to their pinned reviewed bytes;
+- its own static record.
+
+The historical sprint and release validators stay as they were. The refined
+Tyrannosaurus and Deinonychus supersede the Sprint 24 art hashes only through
+this validator.
+
+The branch passes one Sprint-level release candidate gate and a guarded
+creature review on that candidate. Its PR then merges normally, and the
+exact-reference publisher runs from clean, pushed `master`:
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir `
+  'C:\Dev\KingmakerGunslingerLab\private\refresh-2026-10-15\extracted\KingmakerGunslinger-private-build-references' `
+  -Publish -ConfirmReleaseReady
+```
+
+The owner's in-game visual review is accepted provisionally for this release
+("Let's assume that your repairs are good. Move forward with them."). Known
+limits are listed in `docs/RELEASE-NOTES-0.0.158.md`.
+
+## Visual refinement alphas — 2026-10-17
+
+- **Alpha 1.** On the owner's instruction ("Please cut an alpha release. No need
+  to run all the tests for a normal release."), prerelease
+  `v0.0.157-visual-refinement-alpha.1` was published by hand. Its tag is at
+  `95a5c2e2f0`, and it carries that commit's exact native-reviewed development
+  package (`a2f00e7b…3c5a`).
+- **Alpha 2.** On the request "merge master into your current work and build a
+  fresh alpha release", `v0.0.157-visual-refinement-alpha.2` followed. Its tag
+  is at merge `c035a9ba9f`, with package `81e4f3a9…ed5f`, and a guarded load
+  check passed 6/6 on it.
+
+Both were prereleases, never Latest, with `releaseQualification=false`. They
+authorize nothing else.
+
 ## Controller-load alpha 3 authorization — 2026-10-17
 
 After the output_log2 correction/local ZIP handoff, the owner requested:
@@ -86,7 +142,7 @@ failed and must meet the owner mission's matched-baseline conditions and appear
 in the notes/manifest. Earlier release procedures below retain their historical
 authorization and original build cadence.
 
-## Current 0.0.157 publication authorization
+## Historical 0.0.157 publication authorization
 
 On 2026-10-16 the owner reviewed the alternate summoning sources checkpoint
 (PR #52, third pass with its evidence matrix) and wrote: "This look close to

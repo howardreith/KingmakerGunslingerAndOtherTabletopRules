@@ -13,7 +13,7 @@ $script:Sprint25TestSurface.generatedRoots=$actual.registeredRoots
 $script:Sprint25TestSurface.choices=$actual.registeredRoots+$actual.nativeWrappers
 $script:Sprint25TestSurface.suppressedLogicalPlacements=0
 function Get-KmgSprint25SourceSurface { return $script:Sprint25TestSurface }
-$candidate=[pscustomobject]@{version='0.0.158';commit=('a'*40);packageSha256=('b'*64);
+$candidate=[pscustomobject]@{version='0.0.159';commit=('a'*40);packageSha256=('b'*64);
     dllSha256=('c'*64);dllMvid='7f1c3a92-5d44-4a0e-9c21-6b8e5f0d7a31';sourceStateSha256=('d'*64)}
 function New-Sprint25Fixture {
     $ids=@('composed-profiles-signed-strength-and-commands','great-cleave-native-sequences',
@@ -36,7 +36,7 @@ function New-Sprint25Fixture {
             pipelineExitCode=0;fullSuite=[pscustomobject]@{exitCode=0;failures=0;executed=7;registered=7;unfiltered=$true}};
         roster=$roster;restoration=[pscustomobject]@{current='EXACT_INTAKE_VERIFIED';workingFixtureClean=$true};
         publication=[pscustomobject]@{productMergeCommit=('9'*40);mergeContainsTestedSource=$true;
-            tag='v0.0.158';prerelease=$false;draft=$false;latest=$true};
+            tag='v0.0.159';prerelease=$false;draft=$false;latest=$true};
         coverage=@($ids | ForEach-Object {[pscustomobject]@{id=$_;result='PASS';reuseJustification=$null;priorSource=$null;
             proofs=@([pscustomobject]@{path='unit-fixture-only-not-native-evidence';sha256=('e'*64)});
             evidenceSources=@([pscustomobject]@{source=$candidate.commit;packageSha256=$candidate.packageSha256;

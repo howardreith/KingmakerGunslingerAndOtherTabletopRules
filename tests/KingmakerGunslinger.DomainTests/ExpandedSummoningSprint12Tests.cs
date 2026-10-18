@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -85,9 +86,9 @@ namespace KingmakerGunslinger.DomainTests
                 "sprint12-quadrupeds");
             string[] kinds = { "dire-rat", "hyena", "goblin-dog" };
             string[] meshHashes = {
-                "2ee73bcf0ab4cdf0d275fb64764dea96107669cef07ee3b0c62a6f5228f1633a",
-                "0217f8d599480e5aaed6f1b6df9736b64609298664f3732271bb39c08596ac48",
-                "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a"
+                "cdc262ab43da10301e5f81d01fb94f7c0ee74d621e03fb4c444983341073fbf4",
+                "bb02ff0e93fef0de73100d0dac0769cf36f461fdadf166eada09a40059bb07ef",
+                "fa07b94074272d45e2d014573e5d2feeb29f89c1bc58777d0421a9a31049710b"
             };
             string[][] allowedBones = {
                 new[] {
@@ -155,6 +156,12 @@ namespace KingmakerGunslinger.DomainTests
                     (string)albedo["sha256"],
                     kind + " painting matches its mesh manifest.");
             }
+            // VIS-005, VIS-010, VIS-009: every Sprint 12 body is now one
+            // continuous surface exported with outward winding.
+            OriginalMeshOrientation.AuditDetectsReversedAndMixedWinding();
+            foreach (string kind in kinds)
+                OriginalMeshOrientation.AssertShippedBody(
+                    Path.Combine(directory, kind + "-mesh.json"), kind);
 
             string source = Path.Combine(root, "assets-source",
                 "original-models", "sprint12-quadrupeds");
@@ -511,6 +518,204 @@ namespace KingmakerGunslinger.DomainTests
                 "sprintLabel.Replace(\" \", \"\")" })
                 Assertions.True(live.Contains(token),
                     "Sprint 12 guarded runtime matrix is missing " + token + ".");
+        }
+    }
+    /// <summary>
+    /// Geometry of a shipped schema-2 creature mesh as the runtime builds it:
+    /// positions, normals and triangle indices are assigned verbatim, and
+    /// every donor frame measured so far is a proper rotation of Unity's, so
+    /// Unity draws the side Cross(b - a, c - a) points to. The first original
+    /// bodies reversed every triangle on export, which turned their outward
+    /// walls inward and left their unreversed normals lighting each visible
+    /// face from behind; this audit is what the refined bodies must pass.
+    /// </summary>
+    internal static class OriginalMeshOrientation
+    {
+        internal sealed class Report
+        {
+            internal int Components;
+            internal int OpenEdges;
+            internal int RepeatedDirectedEdges;
+            internal int InwardComponents;
+            internal double NormalAgreement;
+        }
+
+        internal static Report AuditFile(string path)
+        {
+            JObject mesh = JObject.Parse(File.ReadAllText(path));
+            int vertices = (int)mesh["vertexCount"];
+            int triangles = (int)mesh["triangleCount"];
+            byte[] blob = Convert.FromBase64String((string)mesh["data"]);
+            var positions = new double[vertices][];
+            var normals = new double[vertices][];
+            for (int index = 0; index < vertices; index++)
+            {
+                positions[index] = Vector(blob, index * 12);
+                normals[index] = Vector(blob, vertices * 12 + index * 12);
+            }
+            int offset = vertices * 32;
+            var indices = new int[triangles * 3];
+            for (int index = 0; index < indices.Length; index++)
+                indices[index] = BitConverter.ToInt32(blob, offset + index * 4);
+            return Audit(positions, normals, indices);
+        }
+
+        internal static Report Audit(double[][] positions, double[][] normals,
+            int[] indices)
+        {
+            // Texture seams duplicate a vertex; weld exact copies before
+            // asking whether a surface is closed.
+            var weldKey = new Dictionary<string, int>(StringComparer.Ordinal);
+            var weld = new int[positions.Length];
+            for (int index = 0; index < positions.Length; index++)
+            {
+                string key = string.Join(",", positions[index].Select(
+                    value => BitConverter.DoubleToInt64Bits(value).ToString()).ToArray());
+                int id;
+                if (!weldKey.TryGetValue(key, out id))
+                {
+                    id = weldKey.Count;
+                    weldKey.Add(key, id);
+                }
+                weld[index] = id;
+            }
+            var parent = Enumerable.Range(0, weldKey.Count).ToArray();
+            Func<int, int> find = null;
+            find = value => parent[value] == value ? value :
+                (parent[value] = find(parent[value]));
+            for (int t = 0; t < indices.Length; t += 3)
+            {
+                parent[find(weld[indices[t]])] = find(weld[indices[t + 1]]);
+                parent[find(weld[indices[t + 1]])] = find(weld[indices[t + 2]]);
+            }
+            var directed = new Dictionary<long, int>();
+            var volume = new Dictionary<int, double>();
+            int agree = 0;
+            for (int t = 0; t < indices.Length; t += 3)
+            {
+                int a = indices[t], b = indices[t + 1], c = indices[t + 2];
+                int[] welded = { weld[a], weld[b], weld[c] };
+                for (int edge = 0; edge < 3; edge++)
+                {
+                    long keyed = ((long)welded[edge] << 32) | (uint)welded[(edge + 1) % 3];
+                    int count;
+                    directed.TryGetValue(keyed, out count);
+                    directed[keyed] = count + 1;
+                }
+                double[] pa = positions[a], pb = positions[b], pc = positions[c];
+                double[] face = Cross(Subtract(pb, pa), Subtract(pc, pa));
+                int root = find(welded[0]);
+                double part;
+                volume.TryGetValue(root, out part);
+                volume[root] = part + Dot(pa, Cross(pb, pc)) / 6.0;
+                double[] lit = { normals[a][0] + normals[b][0] + normals[c][0],
+                    normals[a][1] + normals[b][1] + normals[c][1],
+                    normals[a][2] + normals[b][2] + normals[c][2] };
+                if (Dot(face, lit) > 0.0) agree++;
+            }
+            var report = new Report
+            {
+                Components = volume.Count,
+                InwardComponents = volume.Values.Count(value => value <= 0.0),
+                NormalAgreement = indices.Length == 0 ? 0.0 :
+                    agree / (indices.Length / 3.0)
+            };
+            foreach (KeyValuePair<long, int> entry in directed)
+            {
+                long reverse = ((entry.Key & 0xFFFFFFFFL) << 32) | (entry.Key >> 32);
+                if (!directed.ContainsKey(reverse)) report.OpenEdges++;
+                if (entry.Value > 1) report.RepeatedDirectedEdges++;
+            }
+            return report;
+        }
+
+        internal static bool IsOutwardAndLit(Report report)
+        {
+            return report.Components > 0 && report.OpenEdges == 0 &&
+                report.RepeatedDirectedEdges == 0 && report.InwardComponents == 0 &&
+                report.NormalAgreement >= 0.99;
+        }
+
+        /// <summary>
+        /// The audit itself, on a closed tetrahedron: outward with matching
+        /// normals passes; the exact defect class - every triangle reversed,
+        /// normals kept - and a reversed cap on an otherwise outward body
+        /// each fail.
+        /// </summary>
+        internal static void AuditDetectsReversedAndMixedWinding()
+        {
+            double[][] points = {
+                new[] { 0.0, 0.0, 0.0 }, new[] { 1.0, 0.0, 0.0 },
+                new[] { 0.0, 1.0, 0.0 }, new[] { 0.0, 0.0, 1.0 } };
+            int[] outward = { 0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3 };
+            double[] centre = { 0.25, 0.25, 0.25 };
+            double[][] normals = points.Select(p => Subtract(p, centre)).ToArray();
+            Assertions.True(IsOutwardAndLit(Audit(points, normals, outward)),
+                "An outward, consistently lit closed solid passes the audit.");
+            int[] reversed = outward.Select((value, index) =>
+                outward[index - index % 3 + (2 - index % 3)]).ToArray();
+            Report flipped = Audit(points, normals, reversed);
+            Assertions.True(flipped.InwardComponents == 1 &&
+                    flipped.NormalAgreement == 0.0 && !IsOutwardAndLit(flipped),
+                "Reversing every triangle while keeping the normals - the first export's defect - fails.");
+            int[] mixed = (int[])outward.Clone();
+            mixed[1] = outward[2];
+            mixed[2] = outward[1];
+            Report capped = Audit(points, normals, mixed);
+            Assertions.True(capped.RepeatedDirectedEdges > 0 && !IsOutwardAndLit(capped),
+                "One reversed cap on an otherwise outward body fails.");
+        }
+
+        internal static void AssertShippedBody(string path, string creature)
+        {
+            Report report = AuditFile(path);
+            Assertions.True(IsOutwardAndLit(report),
+                creature + " ships closed, consistently wound, outward components lit by agreeing normals: components=" +
+                report.Components + ";openEdges=" + report.OpenEdges +
+                ";repeatedDirectedEdges=" + report.RepeatedDirectedEdges +
+                ";inward=" + report.InwardComponents + ";normalAgreement=" +
+                report.NormalAgreement.ToString("0.###"));
+        }
+
+        /// <summary>
+        /// A first export repaired in place by
+        /// continuous-bodies/repair_outward_winding.py: every triangle faces
+        /// the way its authored normals light it, and (for a body of closed
+        /// parts) no part encloses negative volume. Where the authored normals
+        /// disagree with the topology, a few edges stay traversed one way
+        /// only, so the strict closed-and-consistent check does not apply.
+        /// </summary>
+        internal static void AssertRepairedBody(string path, string creature, bool closedParts)
+        {
+            Report report = AuditFile(path);
+            Assertions.True(report.Components > 0 && report.NormalAgreement >= 0.99 &&
+                    (!closedParts || report.InwardComponents == 0),
+                creature + " ships its repaired first export lit from the front: components=" +
+                report.Components + ";inward=" + report.InwardComponents +
+                ";normalAgreement=" + report.NormalAgreement.ToString("0.###"));
+        }
+
+        private static double[] Vector(byte[] blob, int offset)
+        {
+            return new double[] { BitConverter.ToSingle(blob, offset),
+                BitConverter.ToSingle(blob, offset + 4),
+                BitConverter.ToSingle(blob, offset + 8) };
+        }
+
+        private static double[] Subtract(double[] a, double[] b)
+        {
+            return new[] { a[0] - b[0], a[1] - b[1], a[2] - b[2] };
+        }
+
+        private static double[] Cross(double[] a, double[] b)
+        {
+            return new[] { a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
+                a[0] * b[1] - a[1] * b[0] };
+        }
+
+        private static double Dot(double[] a, double[] b)
+        {
+            return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
         }
     }
 }

@@ -135,20 +135,24 @@ try {
         (@($r156.Selected | Where-Object { $_ -eq $sprint25 }).Count -eq 0) `
         ($r156.Selected -join ', ')
 
-    $r158 = Invoke-Dispatch -Version '0.0.158'
+    $r159 = Invoke-Dispatch -Version '0.0.159'
     # This is the regression: before the repair the Sprint 25 block was nested
     # inside the 0.0.156 block, so at the Sprint 25 version it was never
     # reached and the
     # wrapper still exited 0.
-    Check '0.0.158 selects its Sprint 25 child exactly once' `
-        (@($r158.Selected | Where-Object { $_ -eq $sprint25 }).Count -eq 1) `
-        ($r158.Selected -join ', ')
-    Check '0.0.158 does not select the 0.0.156-only firearm child' `
-        (@($r158.Selected | Where-Object { $_ -eq $firearm }).Count -eq 0) `
-        ($r158.Selected -join ', ')
+    Check '0.0.159 selects its Sprint 25 child exactly once' `
+        (@($r159.Selected | Where-Object { $_ -eq $sprint25 }).Count -eq 1) `
+        ($r159.Selected -join ', ')
+    Check '0.0.159 does not select the 0.0.156-only firearm child' `
+        (@($r159.Selected | Where-Object { $_ -eq $firearm }).Count -eq 0) `
+        ($r159.Selected -join ', ')
+    $r158 = Invoke-Dispatch -Version '0.0.158'
+    Check 'released 0.0.158 keeps its visual refinement child, not Sprint 25' `
+        (($r158.Selected -contains 'test_expanded_summoning_visual_refinement_release158.py') -and
+         ($r158.Selected -notcontains $sprint25)) ($r158.Selected -join ', ')
 
     # Shared checks stay selected for both versions.
-    foreach ($version in @('0.0.156', '0.0.157', '0.0.158')) {
+    foreach ($version in @('0.0.156', '0.0.157', '0.0.158', '0.0.159')) {
         $shared = Invoke-Dispatch -Version $version
         Check "$version keeps the shared Sprint 23 child" `
             ($shared.Selected -contains $sprint23) ($shared.Selected -join ', ')
@@ -165,7 +169,7 @@ try {
 
     # A failing selected child must stop the parent, before anything is built
     # or deployed.
-    $failing = Invoke-Dispatch -Version '0.0.158' -FailOnChild $sprint25
+    $failing = Invoke-Dispatch -Version '0.0.159' -FailOnChild $sprint25
     Check 'a failing Sprint 25 child throws rather than continuing' `
         ($null -ne $failing.Thrown -and $failing.Thrown -match 'Sprint 25 corruption fixtures failed') `
         ([string]$failing.Thrown)

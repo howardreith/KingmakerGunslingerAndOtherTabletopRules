@@ -1,0 +1,1364 @@
+{
+  "schemaVersion": 1,
+  "lane": "expanded-summoning-visual-refinement",
+  "updated": "2026-10-17",
+  "source": {
+    "archive": "Expanded_Summoning_Visual_Refinement_Handoff.zip",
+    "archiveSha256": "521ced2667504e7693fa4b91b202a5cf8a5feba6bac4c1afed58f930a4b300eb",
+    "inventorySha256": "1b6f9736a06da8abaab2e32ae1cdc792257cc6c31342ec2f2af20084f9db920a",
+    "reviewDate": "2026-10-16 America/New_York",
+    "baselineSha": "2eed3944f6eab657f9030d33acae6d81eb5f10ae",
+    "screenshots": "kept in the handoff archive, not committed; each item names its file and SHA-256"
+  },
+  "statusVocabulary": {
+    "technicalStatus": [
+      "open",
+      "investigated",
+      "pilot-pending-approval",
+      "covered-not-observed",
+      "presentation-changed",
+      "source-and-asset-changed",
+      "owned-elsewhere",
+      "accepted-control"
+    ],
+    "ownerAcceptance": [
+      "pending",
+      "provisionally accepted for release ...",
+      "accepted ...",
+      "rejected"
+    ],
+    "note": "Technical checks, visual evidence and the owner's aesthetic acceptance are separate; no test result changes ownerAcceptance."
+  },
+  "orientationAudit": {
+    "tool": "assets-source/original-models/continuous-bodies/audit_mesh_orientation.py",
+    "rule": "The runtime assigns positions, normals and indices verbatim and every measured donor frame is a proper rotation of Unity's, so a triangle's front is Cross(b - a, c - a); an inward component draws its inside under back-face culling, and opposing normals light visible faces from behind.",
+    "caveat": "Whether an inward mesh LOOKS wrong also depends on the donor material's cull mode; owner-accepted creatures with fully inward meshes (Crocodile, Bebelith) may sit on two-sided donor materials. Verify per donor before attributing a defect."
+  },
+  "keySemantics": "Normalized review/icon lookup label. Confirm the runtime catalog, exact CreatureKey and unit identity before editing; retained native entries can use different capitalization.",
+  "items": [
+    {
+      "id": "VIS-001",
+      "level": 7,
+      "creature": "Tyrannosaurus",
+      "key": "tyrannosaurus",
+      "disposition": "Major overhaul",
+      "issue": "Cup-like/incoherent head, body assembled from bulbous pieces, poorly integrated arms and feet; earlier detached arms and comical bouncy gait. Build a deep coherent skull and jaw, balanced torso and tail, credible hindlimbs, attached small forearms, and restrained native movement.",
+      "evidence": "screenshots/image(20261017-011239).png",
+      "lane": "pilot",
+      "evidenceSha256": "88aa54fba7f2115a3a58ad71344f41ceb05cf73dd3b22643aa0eb5bc35cbbea6",
+      "batch": "pilot",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint24-theropods/tyrannosaurus-mesh.json",
+        "meshSha256": "d9fe3f0ac21d5372bcb309f9b8d4790e379da9c2ee052737aeb1644a239fe320",
+        "components": 50,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/26868"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint24-theropods/build_tyrannosaurus.py",
+        "commits": "4d9294916a, feb879d19e",
+        "supersededMeshSha256": "308a9a9950227b538ce9e7c068e090bf9e81a95fb6a573e8e8a0a4ea62a9ae87",
+        "supersededAlbedoSha256": "3a4f09eabf7095c6f79fc4a7f0d230c458bdc2b7838fec6faaac86884b5ef7e8",
+        "nativeBefore": "captured on unchanged master 2eed3944f6 (creature review run 20261017T0226573833203Z)",
+        "nativeAfter": [
+          "20261017T1308495407049Z (development candidate 5641fb79d0cf): FAIL only on the pre-existing observer limitation, identical on unchanged master: the capture reads the suppressed _ammunition04 accessory renderer and the scripted move stops short",
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): FAIL only on the pre-existing observer limitation, identical on unchanged master: the capture reads the suppressed _ammunition04 accessory renderer and the scripted move stops short"
+        ],
+        "internalReview": {
+          "addressed": [
+            "arms frozen and claws/jaw left behind in offline poses (preview deform-flag artifact; fixed in the library)",
+            "arms keep 16-34 % of their own swing",
+            "thighs tucked into the hips; softer neck-to-skull ramp"
+          ],
+          "remaining": [
+            "native attack, hit and death not yet observed"
+          ],
+          "verdict": "CHANGES_REQUIRED on the first rebuild; addressed in feb879d19e"
+        }
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "accepted from the offline review page on 2026-10-17 ('They look good'); the owner approved this style for all remaining updates"
+    },
+    {
+      "id": "VIS-002",
+      "level": 6,
+      "creature": "Triceratops",
+      "key": "triceratops",
+      "disposition": "Major overhaul",
+      "issue": "Long segmented legs, boxy body, awkward olive color, poor proportions and open-looking foot/joint regions. Restore a low, heavy quadruped silhouette, integrated head/frill/horns, connected limbs and feet, and believable surface treatment.",
+      "evidence": "screenshots/image(20261017-010910).png",
+      "lane": "armored-dinosaurs",
+      "evidenceSha256": "ca6f0433220859ab05d8c778b2e18603c29f502e3def3a3d6124b3b511e36ce6",
+      "batch": "theropods-armored",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint23-armored-dinosaurs/triceratops-mesh.json",
+        "meshSha256": "f99f5d350a3a22e1a92f410687b2339c3a1107b8106c30a00744c834c7bf49fa",
+        "components": 30,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/31068"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint23-armored-dinosaurs/build_triceratops.py",
+        "commits": "54f3821a84, 7defdfb2f2",
+        "supersededMeshSha256": "ec2e38eae2cb3279a003ec2cf507f4eb30e4e3153905a60a697940833cd8c914",
+        "supersededAlbedoSha256": "15be7f5c733e770572513dc735cb85fa303ddaa8205de6edc722b558eb5e58e3",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1444078101921Z (development candidate 7defdfb2f295): PASS; the Huge body fills the close views, whose near clip cuts into the room"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-003",
+      "level": 5,
+      "creature": "Woolly Rhinoceros",
+      "key": "woolly-rhinoceros",
+      "disposition": "Major overhaul",
+      "issue": "Same severe construction problems as Rhinoceros: open rear, separated long legs, incoherent head/horns, and poor overall form. Repair the shared anatomy while retaining a believable woolly coat.",
+      "evidence": "screenshots/image(20261017-010530).png",
+      "lane": "ungulates",
+      "evidenceSha256": "0c2473b2717925fdcb08f42ca6fcc4f41d0452a832b9b694c4c41cfb4d151f90",
+      "batch": "ungulates",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/ungulates/woolly-rhinoceros-mesh.json",
+        "meshSha256": "a53793a0283f263acf57fb4b56f20d8696ab9df6200bf547ac40f45d84da1265",
+        "components": 20,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/24384"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ungulates/build_rhinoceros.py --kind woolly-rhinoceros",
+        "commits": "ae09d7a9d5",
+        "supersededMeshSha256": "45b3003b0184049921982d828faf71e95b90c2babf5acc0827f0095ec41aac52",
+        "supersededAlbedoSha256": "bbd353bc5ecdf135fb2c93e6588d09740caa170835b73b7d4f5b30d09db02f59",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS",
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS",
+          "20261017T1418482915891Z (development candidate c6d53f636527): PASS; close views sharp and mostly clear of walls"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-004",
+      "level": 1,
+      "creature": "Dire Rat icon",
+      "key": "dire-rat",
+      "disposition": "Icon revision",
+      "issue": "Unreadable rat inside unwanted circular/medallion framing. Provide a recognizable rat illustration consistent with neighboring icons at actual menu size; preserve identity and unrelated icons.",
+      "evidence": "screenshots/image(20261017-003642).png",
+      "lane": "icon",
+      "evidenceSha256": "25ec7815edb3b9a00639dae1d5aebcacc091c6e08ad3bc7192fb5bd6a41fbbf0",
+      "batch": "dire-rat-icon",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
+      "technicalStatus": "source-and-asset-changed",
+      "visualEvidence": "owner-approved edit at assets-source/original-icons/expanded-summoning/edits/dire-rat (pilot 8ff9893b2f, adopted b6af1725ff): the original painting cropped closer on the rat, the medallion faded into a dark vignette; source df593dfa..., 128 px export 15970071...; the original sources/dire-rat.png is kept byte for byte",
+      "ownerAcceptance": "accepted on 2026-10-17 (\"The new dire rat icon looks great. Go ahead with it.\")"
+    },
+    {
+      "id": "VIS-005",
+      "level": 1,
+      "creature": "Dire Rat model",
+      "key": "dire-rat",
+      "disposition": "Major repair",
+      "issue": "Detached-looking head and legs, odd coloration, and legs intersecting the body. Create continuous anatomy, a clear rat silhouette and plausible movement without body penetration.",
+      "evidence": "screenshots/image(20261017-003727).png",
+      "lane": "pilot",
+      "evidenceSha256": "30ddec7bb7798aa38a7fab06cd2ebb79454eacd60ff109bf7c64432ed14243da",
+      "batch": "pilot",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint12-quadrupeds/dire-rat-mesh.json",
+        "meshSha256": "cdc262ab43da10301e5f81d01fb94f7c0ee74d621e03fb4c444983341073fbf4",
+        "components": 16,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/19356"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_dire_rat.py",
+        "commits": "4d9294916a, feb879d19e",
+        "supersededMeshSha256": "2ee73bcf0ab4cdf0d275fb64764dea96107669cef07ee3b0c62a6f5228f1633a",
+        "supersededAlbedoSha256": "fb618f5d32ee380c90c872df04de47f65652ac2ae7d803bae8aba67f43689030",
+        "nativeBefore": "captured on unchanged master 2eed3944f6 (creature review run 20261017T0226573833203Z)",
+        "nativeAfter": [
+          "20261017T1308495407049Z (development candidate 5641fb79d0cf): PASS",
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS"
+        ],
+        "internalReview": {
+          "addressed": [
+            "jaw left behind in offline poses (preview deform-flag artifact)",
+            "thicker forelegs; tail runs back and down",
+            "darker underjaw; pink only on the naked tail"
+          ],
+          "remaining": [
+            "native attack, hit and death not yet observed"
+          ],
+          "verdict": "CHANGES_REQUIRED on the first rebuild; addressed in feb879d19e"
+        }
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "accepted from the offline review page on 2026-10-17 ('They look good'); the owner approved this style for all remaining updates"
+    },
+    {
+      "id": "VIS-006",
+      "level": 1,
+      "creature": "Poisonous Frog",
+      "key": "poisonous-frog",
+      "disposition": "Required body repair and color review",
+      "issue": "Conspicuous rear/body opening; owner questions the orange coloration. Close unintended surfaces, preserve a clear frog body, and choose a coherent palette. Color is an aesthetic concern rather than a proven material fault.",
+      "evidence": "screenshots/image(20261017-004136).png",
+      "lane": "small-creatures",
+      "evidenceSha256": "2a34334bef0e4325f701c8f8f81862bd6ed4d2bc728d850e4234d9a6493e0e32",
+      "batch": "small-quadrupeds",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint13-creatures/poisonous-frog-mesh.json",
+        "meshSha256": "17529a2781d680ad8e995eb52cfaef71fb8cccba848f6bd4039ed3f20279d79a",
+        "components": 3,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "1/20928"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint13-creatures/build_poisonous_frog.py",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "2b37e38a4e6fb7613a06ab69f161273221a05c50105691a9dcdfd58899f58ed6",
+        "supersededAlbedoSha256": "89ac9f05d76582d86b7a32f16f9afada165e1f37cd4565290313d001b25f8a21",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-007",
+      "level": 1,
+      "creature": "Viper",
+      "key": "viper",
+      "disposition": "Accepted movement compromise",
+      "issue": "Appearance accepted. Owner reports moving in an upright coiled pose. Natural slithering is optional and must remain below required repairs in priority.",
+      "evidence": "screenshots/image(20261017-004300).png",
+      "lane": "optional",
+      "evidenceSha256": "6fea32e7892bb292fc29a81bd91387a43607605582e5c3c9f5883965a24a8ccb",
+      "batch": "optional-locomotion",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint17-serpents/viper-mesh.json",
+        "meshSha256": "754d82bbdd4a030b0bddb150202bc6ec9bf2d149754741e9d2900a1286463d8e",
+        "components": 9,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "47/18588"
+      },
+      "technicalStatus": "open",
+      "visualEvidence": "owner screenshot only",
+      "ownerAcceptance": "pending"
+    },
+    {
+      "id": "VIS-008",
+      "level": 2,
+      "creature": "Wolf",
+      "key": "wolf",
+      "disposition": "Targeted appearance investigation",
+      "issue": "Owner wants a normal wolf without the shiny/golden appearance. Identify whether the effect comes from a persistent material, rim light, summon transition or buff before making a summon-scoped presentation change.",
+      "evidence": "screenshots/image(20261017-004403).png",
+      "lane": "materials",
+      "evidenceSha256": "3139e54ba5f4ff010e0a521242ad9de495c4f77efe3e9d2e0f5fdb5b5c1b8d80",
+      "batch": "materials",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
+      "technicalStatus": "presentation-changed",
+      "visualEvidence": "20261017T1629452235697Z (development candidate 22cbb8a5695e): a patch on the SummonedUnitBuff's effect changed nothing; 20261017T1639002324262Z (development candidate dc5b84838cc1): that buff spawns no effect, and the rim and tints come from the permanent SummonedCreatureVisual buff (706c182e86d9be848b59ddccca73d13e) that the base game's summoned unit blueprints carry and KMG units cloned from them inherit (1 looping rim, 2 tints); the Salamander, built from another donor, carries none; 20261017T1648032811260Z (development candidate 01eb9e3aad53): PASS; the visual buff's rim and both tints finished, the material back to tint 1/1/1/1 with rim lighting off, the Wolf rendered in its own dark coat (gold before, run 14); the Ice Mephit, a registered rim variant, keeps the glow and PASS",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
+        "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
+      },
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-009",
+      "level": 2,
+      "creature": "Goblin Dog",
+      "key": "goblin-dog",
+      "disposition": "Major repair",
+      "issue": "Detached-looking head and legs, coarse proportions and poor species recognition. Repair connected anatomy and create a coherent goblin-dog silhouette.",
+      "evidence": "screenshots/image(20261017-004520).png",
+      "lane": "quadrupeds",
+      "evidenceSha256": "ff64a6b4c63d61c399be8b5d733e41d9d689aa099181bbb020109658584658aa",
+      "batch": "small-quadrupeds",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint12-quadrupeds/goblin-dog-mesh.json",
+        "meshSha256": "fa07b94074272d45e2d014573e5d2feeb29f89c1bc58777d0421a9a31049710b",
+        "components": 27,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "1/22932"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_worg_frame.py --kind goblin-dog",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a",
+        "supersededAlbedoSha256": "b7fcc93fd653684dac96268b1626a04590a1e5ccbe74851847c7b9c8d3de626a",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-010",
+      "level": 2,
+      "creature": "Hyena",
+      "key": "hyena",
+      "disposition": "Major repair",
+      "issue": "Bulbous proportions and transparent/open-looking body. Restore solid-looking continuous anatomy and recognizable hyena proportions; establish whether geometry or rendering causes the apparent transparency.",
+      "evidence": "screenshots/image(20261017-004611).png",
+      "lane": "quadrupeds",
+      "evidenceSha256": "fd500675135ff9447c5e70d00d4806057435fd80db5d258045f9fde2d9e73a38",
+      "batch": "small-quadrupeds",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint12-quadrupeds/hyena-mesh.json",
+        "meshSha256": "bb02ff0e93fef0de73100d0dac0769cf36f461fdadf166eada09a40059bb07ef",
+        "components": 28,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/24366"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_worg_frame.py --kind hyena",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "0217f8d599480e5aaed6f1b6df9736b64609298664f3732271bb39c08596ac48",
+        "supersededAlbedoSha256": "15927eb690a64bdd22e9f6985ddfe29f72345ad0f177c11084187f0c6745ae50",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-011",
+      "level": 2,
+      "creature": "Giant Ant Worker",
+      "key": "giant-ant-worker",
+      "disposition": "Minor polish",
+      "issue": "Slightly detached-looking thorax and overly arachnid-like body/leg arrangement. Refine ant segmentation and joins; owner considers the overall result reasonably good.",
+      "evidence": "screenshots/image(20261017-004710).png",
+      "lane": "arthropods",
+      "evidenceSha256": "775e8dee54c86f20525a19dae685130259e72ccc5e72d38e410986976dcabb90",
+      "batch": "arthropods",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint14-insects/giant-ant-worker-mesh.json",
+        "meshSha256": "e6e3df7b477170b1f80bbd7ceefdfe573a6d31a3d70832fb4cb64e22841500fb",
+        "components": 15,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/5160"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint14-insects/generate_sprint14_insects.py --kind giant-ant-worker (targeted: outward export, carried tubes, joins rooted in the head; painting and leg layout unchanged)",
+        "commits": "04144ec145",
+        "supersededMeshSha256": "f69b3d4bafeb2827ccfbf15bb7db1fb4b7890a026817a27b01cf08dd28fa9b5e",
+        "supersededAlbedoSha256": "unchanged",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1515590534136Z (development candidate 04144ec1457a): PASS; solid and lit; the legs keep the Giant Spider donor's splayed stance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-012",
+      "level": 3,
+      "creature": "Crocodile",
+      "key": "crocodile",
+      "disposition": "Targeted repair",
+      "issue": "Glitchy patch/open-looking area on the head. Repair the localized defect and preserve the otherwise successful body and appearance.",
+      "evidence": "screenshots/image(20261017-004839).png",
+      "lane": "crocodilians",
+      "evidenceSha256": "10f6300e804c78a6582b605290ef3bedea37bb2d7c93e57319b1c6d6b40451a2",
+      "batch": "crocodilians",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint16-crocodilians/crocodile-mesh.json",
+        "meshSha256": "6615b76808762e29311fb390889dc8d94c63b942825573cb7266993780d96ef9",
+        "components": 124,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "6/12564"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint16-crocodilians/generate_crocodilians.py --kind crocodile (targeted: outward export and repaint; geometry, UVs and weights unchanged)",
+        "commits": "dd82130f38",
+        "supersededMeshSha256": "770fa7c3c87fb74f3335358069cefde77529868e30184e090bf3c7c840065fd7",
+        "supersededAlbedoSha256": "66864117b75bf34d30cc9c487ff988d8306940694d288a55d74aea3e772e2afd",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1501488413057Z (development candidate dd82130f3890): PASS; solid and lit, no head hole"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-013",
+      "level": 3,
+      "creature": "Dire Bat",
+      "key": "dire-bat",
+      "disposition": "Major repair",
+      "issue": "Poor bat recognition, detached-looking claws/toes and very blocky overlapping body/wing pieces. Rework coherent body, wings, membrane/appendage connections and motion.",
+      "evidence": "screenshots/image(20261017-004923).png",
+      "lane": "flying-creatures",
+      "evidenceSha256": "494fbf3232b8d632f26a203e6639e75f3f01ed156491e201fc90d4579b46451a",
+      "batch": "flying",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/flying-animals/dire-bat-mesh.json",
+        "meshSha256": "b04e9dd146b1c9db87de7907f7b6affb4f7910ff8fcfe4cd65288217f17b7cce",
+        "components": 40,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/37788"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/flying-animals/build_dire_bat.py",
+        "commits": "bde6b6d1bf",
+        "supersededMeshSha256": "3c488cd4838812c12946410b9bba3283917f9b005904d4b237fedaac508f0819",
+        "supersededAlbedoSha256": "c84011da7d1ca446191632ed1330892ed320edf253f1ab6dcdb17e76df21e335",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1543288716546Z (development candidate bde6b6d1bfe4): PASS, flight and doorway travel included; close views mostly walled at the wingspan's framing distance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-014",
+      "level": 3,
+      "creature": "Wolverine",
+      "key": "wolverine",
+      "disposition": "Major repair",
+      "issue": "Owner reports rear holes; screenshot shows very dark, pug-like form. Repair continuity, improve head/body proportions and make the wolverine readable. Rear hole requires confirmation from a rear view.",
+      "evidence": "screenshots/image(20261017-005021).png",
+      "lane": "quadrupeds",
+      "evidenceSha256": "c7b6789027de906a74f4ed9e7a17d709b18ebdb0586613e5f4386db03e521529",
+      "batch": "small-quadrupeds",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint13-creatures/wolverine-mesh.json",
+        "meshSha256": "f2c4385b53a3cead1b8dbd38299dd199bc4c7b5d1c09624ea1a1dbbd7dffb6d6",
+        "components": 28,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/24372"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_worg_frame.py --kind wolverine",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "e1e97db7ab271c3705472a78262fc3306a1515ef174c39e7d6899c28bad54fc6",
+        "supersededAlbedoSha256": "7a0ef9388bab87c4995dbaf7b8bf6ae83436c91c9652bb0c375da273b6035fe2",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-015",
+      "level": 3,
+      "creature": "Giant Ant Soldier",
+      "key": "giant-ant-soldier",
+      "disposition": "Minor polish",
+      "issue": "Same mild segment-connection and ant-silhouette concerns as Worker. Preserve generally acceptable appearance while refining the family.",
+      "evidence": "screenshots/image(20261017-005058).png",
+      "lane": "arthropods",
+      "evidenceSha256": "59209b4738e360c0494d139f80cf36f780b23eed762edf16e3cadc64143ad509",
+      "batch": "arthropods",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint14-insects/giant-ant-soldier-mesh.json",
+        "meshSha256": "0eb9a2ea895477581ef18dc0af05f6b3d9b645e071418c4ab121e34f16048d1a",
+        "components": 16,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/5244"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint14-insects/generate_sprint14_insects.py --kind giant-ant-soldier (targeted: outward export, carried tubes, joins rooted in the head; painting and leg layout unchanged)",
+        "commits": "04144ec145",
+        "supersededMeshSha256": "421e8f7ccfd3c63818dc4f5d7096a96cbe18c40fd9db6d6d8d927471872cb077",
+        "supersededAlbedoSha256": "unchanged",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1515590534136Z (development candidate 04144ec1457a): PASS; solid and lit; the legs keep the Giant Spider donor's splayed stance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-016",
+      "level": 3,
+      "creature": "Lantern Archon",
+      "key": "lantern-archon",
+      "disposition": "Planned replacement S31",
+      "issue": "Currently a glowing floating skull/Will-o'-Wisp proxy. Deliver faithful Lantern Archon presentation in its assigned celestial sprint; preserve rays, aura and support.",
+      "evidence": "screenshots/image(20261017-005126).png",
+      "lane": "roster-owner",
+      "evidenceSha256": "f15c58490c664bd26dd5da5bf097668a9d177a0e31cd1ddde66ad7c42bb0a3e4",
+      "batch": "roster-owner",
+      "owner": "Sprint 31 roster owner",
+      "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
+      "technicalStatus": "owned-elsewhere",
+      "visualEvidence": "owner screenshot only",
+      "ownerAcceptance": "pending"
+    },
+    {
+      "id": "VIS-017",
+      "level": 3,
+      "creature": "Aurochs",
+      "key": "aurochs",
+      "disposition": "Major repair",
+      "issue": "Detached-looking tail, horn clipping into body, holes/open joins around hooves, very dark and indistinct form. Repair anatomy, appendage roots and surface readability.",
+      "evidence": "screenshots/image(20261017-005155).png",
+      "lane": "ungulates",
+      "evidenceSha256": "23826cbe4bc96896f9242985a8c0e7dfb60dd96c9649a30ab56a087868d5e315",
+      "batch": "ungulates",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/ungulates/aurochs-mesh.json",
+        "meshSha256": "e1cd846250eb18d3a9bb5e852814cd38069c19581d32bd8bc60f135c562cc3e9",
+        "components": 17,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/27840"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ungulates/build_cattle.py --kind aurochs",
+        "commits": "ae09d7a9d5",
+        "supersededMeshSha256": "477354af79aefb21de544517c498a05b2d420fbb5ebbb1cb675613f66f09196e",
+        "supersededAlbedoSha256": "3aa982572cccc90712dfb0798920f5b6e45827cfbc32568a6d5114bfc1a0269b",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-018",
+      "level": 3,
+      "creature": "Constrictor Snake",
+      "key": "constrictor-snake",
+      "disposition": "Accepted movement compromise",
+      "issue": "Appearance accepted. Same reported elevated/coiled traveling pose as Viper. A locomotion improvement is optional and low priority.",
+      "evidence": "screenshots/image(20261017-005248).png",
+      "lane": "optional",
+      "evidenceSha256": "462ce36196a56a13fde2dbc1c575253c1ad94f30d9c3b4a168e12fef3db7976c",
+      "batch": "optional-locomotion",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint17-serpents/constrictor-snake-mesh.json",
+        "meshSha256": "f7811906bbc1e257536371d2d8192e04d412e26bd2864aa55ae56e68c7e0356f",
+        "components": 15,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "113/19272"
+      },
+      "technicalStatus": "open",
+      "visualEvidence": "owner screenshot only",
+      "ownerAcceptance": "pending"
+    },
+    {
+      "id": "VIS-019",
+      "level": 3,
+      "creature": "Ape",
+      "key": "ape",
+      "disposition": "Major repair",
+      "issue": "Very dark, crude and difficult to recognize, with exaggerated teeth and an earth-elemental/Wampa impression. Improve continuous body construction, ape proportions, facial anatomy and material readability.",
+      "evidence": "screenshots/image(20261017-005318).png",
+      "lane": "primates",
+      "evidenceSha256": "75f597028bd5a8b77e17392e79a1c5ba325a60738efeb4f9feb659c7cd145257",
+      "batch": "primates-four-armed",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint18-primates/ape-mesh.json",
+        "meshSha256": "2f0196eca297019770894b66d69cb474e9bba59c449a95590326f888086631ee",
+        "components": 24,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/35268"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint18-primates/build_primates.py --kind ape",
+        "commits": "cad14078e1, a29f6edd5b",
+        "supersededMeshSha256": "751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0",
+        "supersededAlbedoSha256": "f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1608412847094Z (development candidate cad14078e1cc): PASS; the 0.33 grey coat read as cream in the game's light",
+          "20261017T1616452002903Z (development candidate a29f6edd5bff): PASS after the charcoal recolour (a29f6edd5b)"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-020",
+      "level": 4,
+      "creature": "Pteranodon",
+      "key": "pteranodon",
+      "disposition": "Major repair",
+      "issue": "Detached-looking claws/toes, blocky body/wing planes and poor recognition. Refine the flight silhouette, body construction and appendage attachment through native movement.",
+      "evidence": "screenshots/image(20261017-005545).png",
+      "lane": "flying-creatures",
+      "evidenceSha256": "cc81a498dc7ea25db1ca34b95657c64e1a38d18e6e8bbc3a42b20674643f69df",
+      "batch": "flying",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/pteranodon/pteranodon-mesh.json",
+        "meshSha256": "42627bc93837ab0979bd4e1e338a9900bdb038cb16c71a4d20d2c50185a24345",
+        "components": 34,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/36240"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/pteranodon/build_pteranodon.py",
+        "commits": "bde6b6d1bf",
+        "supersededMeshSha256": "cc80e28589f5644c86e870c672cd8f188312920f7092cacbd6cb3dff4007de3c",
+        "supersededAlbedoSha256": "7169649b8ec101cf6ff3071420678feab4499a743bba263ecbefe2b04b0325c7",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1543288716546Z (development candidate bde6b6d1bfe4): PASS; close views mostly walled at the wingspan's framing distance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-021",
+      "level": 4,
+      "creature": "Giant Ant Drone",
+      "key": "giant-ant-drone",
+      "disposition": "Minor polish",
+      "issue": "Slightly detached-looking mandibles; otherwise reasonably successful. Repair mandible roots and make limited refinements with the other ants.",
+      "evidence": "screenshots/image(20261017-005640).png",
+      "lane": "arthropods",
+      "evidenceSha256": "95da3040771186820fd51028e9e4598a54a28e3497d72bafc387bb864bd9fd4a",
+      "batch": "arthropods",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint14-insects/giant-ant-drone-mesh.json",
+        "meshSha256": "2aa85130a354e498acb17bb3663d21618eb6f1248cf67cd16f02ce20496f86e8",
+        "components": 20,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/6156"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint14-insects/generate_sprint14_insects.py --kind giant-ant-drone (targeted: outward export, carried tubes, joins rooted in the head; painting and leg layout unchanged)",
+        "commits": "04144ec145",
+        "supersededMeshSha256": "3d1160f7dbc076f6ab274fd82c45c070459d58e9f8eb16229a16a47a31f55d27",
+        "supersededAlbedoSha256": "unchanged",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1515590534136Z (development candidate 04144ec1457a): PASS; solid and lit; the legs keep the Giant Spider donor's splayed stance"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-022",
+      "level": 4,
+      "creature": "Giant Wasp",
+      "key": "giant-wasp",
+      "disposition": "Major repair",
+      "issue": "Major body pieces and appendages fail to form a coherent wasp. Rework connected head/thorax/abdomen, wings and limbs, including the abdomen's position and sting presentation.",
+      "evidence": "screenshots/image(20261017-005717).png",
+      "lane": "flying-creatures",
+      "evidenceSha256": "e1a83e8c01da94936d397bbe437e94c7f762c1e6eb8e01b4ca70b560cbb3a4e7",
+      "batch": "flying",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/flying-animals/giant-wasp-mesh.json",
+        "meshSha256": "a32d454cff58ec4827d91888a3d9803178ad74c731882a22e1bd2ebf83b205c5",
+        "components": 18,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/28212"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/flying-animals/build_giant_wasp.py",
+        "commits": "bde6b6d1bf",
+        "supersededMeshSha256": "07d84d01695540b6ed295efdf905a0058ec7a0f55bf9726387fea721250a81ac",
+        "supersededAlbedoSha256": "6a40c0e9a08d532cdfc6ff01d508eb4e6d28e4f8eeb75065a4e77678970a40f6",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1543288716546Z (development candidate bde6b6d1bfe4): PASS, flight and doorway travel included"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-023",
+      "level": 4,
+      "creature": "Bison",
+      "key": "bison",
+      "disposition": "Major repair",
+      "issue": "Missing-looking body sections, open limb/hoof joins, clunky/spiky silhouette and weak bison recognition. Rebuild a coherent heavy body, characteristic head/shoulder form, connected legs and believable surface detail.",
+      "evidence": "screenshots/image(20261017-005803).png",
+      "lane": "ungulates",
+      "evidenceSha256": "aca3bdbc38bfd9dfcc289bdfce76bfb77dd1e4b0de70fca80939a81500e6d21a",
+      "batch": "ungulates",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/ungulates/bison-mesh.json",
+        "meshSha256": "7195063b5a13117adad7edf6d3cf5c2b38ee4008c14345b5c9f51609394f3641",
+        "components": 17,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/31440"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ungulates/build_cattle.py --kind bison",
+        "commits": "ae09d7a9d5",
+        "supersededMeshSha256": "bd042f973a2a871283dea51614cbce56736f2d9d7dbc65fe6f3874ab4a193d56",
+        "supersededAlbedoSha256": "1ec9fb91dde8f2ab6617f314efd68161b1bdeb56f00b23e8fee0667e2ba9ba7c",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-024",
+      "level": 4,
+      "creature": "Rhinoceros",
+      "key": "rhinoceros",
+      "disposition": "Major overhaul",
+      "issue": "Large rear opening, separated overlong legs, and incoherent head with spikes/horns protruding from it. Restore continuous hindquarters, integrated head and muzzle, correct horn placement and heavy short-legged proportions.",
+      "evidence": "screenshots/image(20261017-005915).png",
+      "lane": "pilot",
+      "evidenceSha256": "cf79d4d6063f15244f82d3abab36b82b00f3cd6ad36dace93025f8a0a948d8fa",
+      "batch": "pilot",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/ungulates/rhinoceros-mesh.json",
+        "meshSha256": "3bcd3bcfa0a73ce05a7876bcac988850ab6a62795996f2a9235d53d4222b5224",
+        "components": 20,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/23184"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ungulates/build_rhinoceros.py",
+        "commits": "4d9294916a, feb879d19e, ae09d7a9d5 (recolour)",
+        "supersededMeshSha256": "aa7e069491034cf8281ea19cfd228ac159e0ad2b778e14f10f1441663014e9ca",
+        "supersededAlbedoSha256": "1568f8678a41a0ce719d307ab68b22c6d7181c24b855ac0d3af92cd2008a6cf1",
+        "nativeBefore": "captured on unchanged master 2eed3944f6 (creature review run 20261017T0226573833203Z)",
+        "nativeAfter": [
+          "20261017T1308495407049Z (development candidate 5641fb79d0cf): PASS; the 0.41 grey hide read tan in torchlight",
+          "20261017T1341185471970Z (development candidate ae09d7a9d55a): PASS after the slate recolour",
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ],
+        "internalReview": {
+          "addressed": [
+            "head hooded when lowered: smooth Neck/Head ramps, shorter chest dome, narrower neck",
+            "ball-shaped muzzle: one tapering skull with a square lip, nostrils and mouth line",
+            "ears sunk to nubs; horns shaded root to tip so they do not read as holes end-on"
+          ],
+          "remaining": [
+            "rump still broad and round from behind",
+            "a 30 degree offline head drop still swings the skull under the chest; native range unknown"
+          ],
+          "verdict": "CHANGES_REQUIRED on the first rebuild; addressed in feb879d19e"
+        }
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "accepted from the offline review page on 2026-10-17 ('They look good'); the owner approved this style for all remaining updates"
+    },
+    {
+      "id": "VIS-025",
+      "level": 4,
+      "creature": "Dire Ape",
+      "key": "dire-ape",
+      "disposition": "Refinement",
+      "issue": "Owner considers color and detail better than Ape, but species recognition remains weak. Improve coherent anatomy and proportions while preserving the better palette and detail; avoid discarding the accepted improvements.",
+      "evidence": "screenshots/image(20261017-010010).png",
+      "lane": "primates",
+      "evidenceSha256": "4c57baac406bce3c0b2871a4d00b132c3abe69a6260a8f09cc5a2ecd8b3c6e1a",
+      "batch": "primates-four-armed",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint18-primates/dire-ape-mesh.json",
+        "meshSha256": "d0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a",
+        "components": 24,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/35268"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint18-primates/build_primates.py --kind dire-ape",
+        "commits": "cad14078e1",
+        "supersededMeshSha256": "e2f0242141a01179cf3c5915f2d11cf1335b9de51aa387150fb69a42bcdd0341",
+        "supersededAlbedoSha256": "e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1608412847094Z (development candidate cad14078e1cc): PASS; russet coat and straw ruff read as painted"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-026",
+      "level": 4,
+      "creature": "Giant Scorpion",
+      "key": "giant-scorpion",
+      "disposition": "Targeted polish",
+      "issue": "Reported detached stinger and weak tail/appendage joins. Repair the articulated connection while preserving the generally acceptable scorpion appearance.",
+      "evidence": "screenshots/image(20261017-010054).png",
+      "lane": "arthropods",
+      "evidenceSha256": "3950f0065c9f4f23b77dac3178ef5841dd919c0ca6413f8c2fb3e10f8672282b",
+      "batch": "arthropods",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint20-arachnids/giant-scorpion-mesh.json",
+        "meshSha256": "1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f",
+        "components": 25,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/7056"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint20-arachnids/generate_scorpion.py (targeted: outward export, telson rooted on the tail, carried chelicerae; painting unchanged; arachnid census retaken in run 20261017T1514597575080Z)",
+        "commits": "fba63c2500",
+        "supersededMeshSha256": "813dfed7e48f7bb281fbaa0a6ba2c426febf653a76cc92a4fda201642dba8004",
+        "supersededAlbedoSha256": "unchanged",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1525415452761Z (development candidate fba63c250028): PASS; solid and lit, the tail continuous into the stinger"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-027",
+      "level": 4,
+      "creature": "Deinonychus",
+      "key": "deinonychus",
+      "disposition": "Major review and repair",
+      "issue": "Reported detached fingers, incoherent head, questionable color and comical arm swinging during movement. Correct head/hand anatomy, palette and species-specific motion while retaining the recognizable biped/tail plan.",
+      "evidence": "screenshots/image(20261017-010126).png",
+      "lane": "theropods",
+      "evidenceSha256": "6c914a84792f46a83260bf153a9db52d290af924dc68a7e6e20cf3d2bdae7e2d",
+      "batch": "theropods-armored",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint24-theropods/deinonychus-mesh.json",
+        "meshSha256": "b085f640a33b7fa1232dc7c2b2677c0fe53fcb47f87c1bc873d0a358ab6ecdf6",
+        "components": 46,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/27576"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint24-theropods/build_deinonychus.py",
+        "commits": "54f3821a84, 7defdfb2f2",
+        "supersededMeshSha256": "eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab",
+        "supersededAlbedoSha256": "4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1444078101921Z (development candidate 7defdfb2f295): FAIL only on the observer limitation recorded for the Tyrannosaurus on unchanged master (same Lizardfolk donor): the capture reads the suppressed _ammunition04 accessory renderer and the scripted move stops short; the refinement sequences, close views and cleanup PASS and the body renders intact"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-028",
+      "level": 5,
+      "creature": "Ankylosaurus",
+      "key": "ankylosaurus",
+      "disposition": "Substantial refinement",
+      "issue": "Basic armored quadruped shape is a useful starting point. Refine the confused face/head and oversized bulbous tail-club lobes; screenshot also exposes bright cyan club faces that require explanation and correction.",
+      "evidence": "screenshots/image(20261017-010248).png",
+      "lane": "armored-dinosaurs",
+      "evidenceSha256": "fc7f2577c0274255cbc369d19d53cf9a09795b35cd5c06d44c85568ffbaf5925",
+      "batch": "theropods-armored",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/ankylosaurus/ankylosaurus-mesh.json",
+        "meshSha256": "3eb7585e6f410711c7bf84bf4e23ff0df2c04fbe06ec226a0552a715c9fa9ca9",
+        "components": 75,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/43680"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/ankylosaurus/build_ankylosaurus.py",
+        "commits": "54f3821a84, 7defdfb2f2",
+        "supersededMeshSha256": "02f995bae67f36b591e67442ac967734c3f29fd3d2eebdb12761100733997c65",
+        "supersededAlbedoSha256": "f9255a77008fbcd001350bdeeb408af6f34adb39f55869337c224f8899602050",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1444078101921Z (development candidate 7defdfb2f295): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-029",
+      "level": 5,
+      "creature": "Salamander",
+      "key": "salamander",
+      "disposition": "Targeted visual and weapon-use review",
+      "issue": "Owner reports static sliding, questions whether it uses its weapon, and dislikes isolated bright/lit patches; earlier version may have looked better. Verify real locomotion, visible weapon/grip and attack use, then refine presentation while preserving working mechanics.",
+      "evidence": "screenshots/image(20261017-010349).png",
+      "lane": "salamander",
+      "evidenceSha256": "bbf446cac4361a3f759f9ccf4a56151a3040060df3788815bfc0091a808896c8",
+      "batch": "salamander-targeted",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint17-serpents/salamander-human-mesh.json",
+        "meshSha256": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19",
+        "components": 21,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "19/12924"
+      },
+      "technicalStatus": "presentation-changed",
+      "visualEvidence": "owner screenshot; native evidence: 20261017T1639002324262Z (development candidate dc5b84838cc1): the native move travels 12.4 m at up to 2.0 m/s and the body renders intact, but the ten owned tail bones moved only during the authored tail slap, so the coil glided rigidly (the 'static sliding'); 20261017T1706293264089Z/1708331228753Z (development candidate 185e379a7418): with the tail gait (185e379a74) creature review PASS (gait 334 frames, full speed, peak offset 0.12) and bounded human review 15/15 PASS: one real full native attack resolves two spear attacks with their native human spear clips and the owned tail slap, contact within 25 cm (gap 0.031 m); close views show thin white flecks and streaks on the coil and torso; 20261017T1715204397744Z/1717248175959Z (development candidate 491e60249f43) (owned matte masks texture) and 20261017T1722470324042Z (development candidate c1b87bce72dc) (cape rim keyword) left them unchanged and were reverted; an offline render of the exact shipped bytes shows none; the cloned human material carried a frozen emissive dissolve edge (DISSOLVE_ON, width 0.15, colour 1/0.58/0.32, scale 2) that the material controller restored as its default; 20261017T1730033526213Z/1732061256699Z (development candidate 58123c87fa9e): with the clone starting undissolved (58123c87fa) creature review PASS with the streaks gone in the close views and bounded human review 15/15 PASS",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/SalamanderTailGait.cs and SalamanderHumanVisualAttachment.cs: a travelling tail gait on the owned tail bones outside the slap, and the owned body material starts undissolved; the mesh, paint, weapon, slap and mechanics are unchanged",
+        "offlineCheck": "assets-source/original-models/sprint17-serpents/check_tail_gait.py: lowest tail vertex 0.0361 (rest 0.0367); non-adjacent coils at least 6.3 cm apart (12 cm at rest)",
+        "commits": "185e379a74, 58123c87fa (491e60249f and c1b87bce72 reverted)"
+      },
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-030",
+      "level": 5,
+      "creature": "Xill",
+      "key": "xill",
+      "disposition": "Refinement",
+      "issue": "Detached-looking fingers and wiry, visibly polygonal anatomy. Improve hand/limb continuity and body proportions. Identification follows the owner; this screenshot's visible log still names Redcap, so establish actual unit identity before editing.",
+      "evidence": "screenshots/image(20261017-010617).png",
+      "lane": "four-armed",
+      "evidenceSha256": "c164e0d1fa4d9449a2f188f4dfbb211272fbcf6832332ec2791e195dfb7d0c15",
+      "batch": "primates-four-armed",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint19-fourarmed/xill-mesh.json",
+        "meshSha256": "d7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243",
+        "components": 46,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "1/39264"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint19-fourarmed/build_xill.py",
+        "commits": "cad14078e1",
+        "supersededMeshSha256": "b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d",
+        "supersededAlbedoSha256": "f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1553034339677Z (development candidate 69435567008c; before): identity confirmed (the xill review attached the Xill body)",
+          "20261017T1608412847094Z (development candidate cad14078e1cc): PASS; four arms, banded rust-red carapace"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-031",
+      "level": 6,
+      "creature": "Elephant",
+      "key": "elephant",
+      "disposition": "Active replacement S25",
+      "issue": "Visible shaggy Mastodon/mammoth appearance must become an elephant with bare skin rather than fur. Active Sprint 25 PR owns the original body; keep the cosmetic lane from creating a competing replacement.",
+      "evidence": "screenshots/image(20261017-010718).png",
+      "lane": "roster-owner",
+      "evidenceSha256": "8d39e1499d65e824ef75d5a7fb30e5d40cc1d732d1695fde41bd8e0791536a9b",
+      "batch": "roster-owner",
+      "owner": "Sprint 25 roster owner (PR #49)",
+      "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
+      "technicalStatus": "owned-elsewhere",
+      "visualEvidence": "owner screenshot only",
+      "ownerAcceptance": "pending"
+    },
+    {
+      "id": "VIS-032",
+      "level": 6,
+      "creature": "Invisible Stalker",
+      "key": "invisible-stalker",
+      "disposition": "Planned replacement S33",
+      "issue": "Owner wants a presentation distinct from Air Elemental. Preserve intended invisibility while giving it its own appropriate readable presentation in the assigned sprint.",
+      "evidence": "screenshots/image(20261017-010753).png",
+      "lane": "roster-owner",
+      "evidenceSha256": "1cc8ac2df5fd8997ab3c8090c7604861e6000b296228c4b931805dfcf0e1573f",
+      "batch": "roster-owner",
+      "owner": "Sprint 33 roster owner",
+      "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
+      "technicalStatus": "owned-elsewhere",
+      "visualEvidence": "owner screenshot only",
+      "ownerAcceptance": "pending"
+    },
+    {
+      "id": "VIS-033",
+      "level": 6,
+      "creature": "Shadow Mastiff",
+      "key": "shadow-mastiff",
+      "disposition": "Targeted refinement",
+      "issue": "Slightly detached-looking head/neck and blocky body. Repair the join and improve the canine silhouette while retaining intentional shadow character; darkness itself is not automatically a defect.",
+      "evidence": "screenshots/image(20261017-010836).png",
+      "lane": "quadrupeds",
+      "evidenceSha256": "8b760d1659596d22ca7b68cb9740a9227dae022e532c5a75ce9705242b343d86",
+      "batch": "small-quadrupeds",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint13-creatures/shadow-mastiff-mesh.json",
+        "meshSha256": "fdb05b264035c10dbba7c066957a11c9ebfbff49c069bb276b7a80c84a751862",
+        "components": 27,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "0/24132"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint12-quadrupeds/build_worg_frame.py --kind shadow-mastiff",
+        "commits": "655d288eae",
+        "supersededMeshSha256": "61755b4c1853942b73e0f2666ac246bf5d77ef9b7c6800ca30ea2f7e56a13bd3",
+        "supersededAlbedoSha256": "a29c2bdce8e4c640eef8d04cb2ec45569816c8192a0da29e7674111e5cc785b4",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1406042699155Z (development candidate 655d288eae21): PASS"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-034",
+      "level": 7,
+      "creature": "Dire Crocodile",
+      "key": "dire-crocodile",
+      "disposition": "Targeted refinement",
+      "issue": "Owner reports similar transparency/head defects and blocky pigmentation as Crocodile, but considers the overall result reasonable. Repair shared head/limb/surface problems without a wholesale redesign.",
+      "evidence": "screenshots/image(20261017-011122).png",
+      "lane": "crocodilians",
+      "evidenceSha256": "d139f6b5ba0993c2895a5de2810b63bcc6a51bc4a1aab9e48fae9e2bcaf9de22",
+      "batch": "crocodilians",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint16-crocodilians/dire-crocodile-mesh.json",
+        "meshSha256": "d4507796f688e79d9ddddacbcb54d0885ea409b06cd5c58690a3fb56464daf1e",
+        "components": 124,
+        "inwardComponents": 0,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "6/12564"
+      },
+      "technicalStatus": "source-and-asset-changed",
+      "refinement": {
+        "builder": "assets-source/original-models/sprint16-crocodilians/generate_crocodilians.py --kind dire-crocodile (targeted: outward export and repaint; geometry, UVs and weights unchanged)",
+        "commits": "dd82130f38",
+        "supersededMeshSha256": "eb7a9182fbe5f66dc8b819efd9641a62da611230923bf4bd95ca1383d4e7173a",
+        "supersededAlbedoSha256": "aef6c8fe388635293938f5b0c0c46fa4757256326d6adbec88d351266bce253c",
+        "nativeBefore": "owner screenshot; first export audited inward",
+        "nativeAfter": [
+          "20261017T1501488413057Z (development candidate dd82130f3890): PASS; solid and lit; the 2x Gargantuan body is partly walled in some close views"
+        ]
+      },
+      "visualEvidence": "native-after in the guarded creature review (close views, move, attack, hit) and offline renders of the exact shipped bytes",
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-035",
+      "level": 7,
+      "creature": "Bebelith",
+      "key": "bebelith",
+      "disposition": "Accepted with optional inspection",
+      "issue": "Owner considers it pretty good and identifies no specific defect. Inspect briefly as a control; make no speculative redesign. Use the repository/UI key bebelith without renaming identities.",
+      "evidence": "screenshots/image(20261017-011208).png",
+      "lane": "accepted-control",
+      "evidenceSha256": "6de39cffd6f1038ecb42ff15a6c11b92668896fc07a990008442b1be08085a95",
+      "batch": "arthropods-control",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": {
+        "mesh": "assets/sprint21-arthropods/bebelith-mesh.json",
+        "meshSha256": "7ff4e4dd8fc8edf4beb9dd983f245c329f40d94c751111888e8c5c658d1ab68e",
+        "components": 34,
+        "inwardComponents": 34,
+        "componentsWithReversedCaps": 0,
+        "openComponents": 0,
+        "normalCornersOpposingWinding": "6205/6300"
+      },
+      "technicalStatus": "accepted-control",
+      "visualEvidence": "owner screenshot; native control review PASS in run 20261017T1515590534136Z (development candidate 04144ec1457a) on unchanged bytes (the body still ships inside out, like the other bodies outside the review list)",
+      "ownerAcceptance": "accepted in the handoff review (\"pretty good\", no specific defect); kept unchanged as the control"
+    },
+    {
+      "id": "VIS-036",
+      "level": 8,
+      "creature": "Frost Giant",
+      "key": "frost-giant",
+      "disposition": "Targeted appearance investigation",
+      "issue": "Shape is acceptable; owner dislikes the glowing/celestial-looking surface and asks whether it is intentional. Identify settled material/effect state and preserve native giant shape and mechanics while correcting unwanted persistent shine.",
+      "evidence": "screenshots/image(20261017-011352).png",
+      "lane": "materials",
+      "source_catalog": "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
+      "catalog_creature_key": "FrostGiant",
+      "unit_guid": "590cd3d5e76fdc649a5f97bc984cd3c4",
+      "evidenceSha256": "5cfcf93d867c7fdd72942565c37e5abbffb03eb52da0fb85b33e98daab9e71d8",
+      "batch": "materials",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
+      "technicalStatus": "covered-not-observed",
+      "visualEvidence": "owner screenshot only; the Frost Giant is summoned through KMG native options and adapters, which the glow policy covers (domain test), but the creature review cannot cast it, so its buffs were not observed natively",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
+        "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
+      },
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-037",
+      "level": 9,
+      "creature": "Ghaele Azata",
+      "key": "ghaele-azata",
+      "disposition": "Low-priority appearance polish",
+      "issue": "Owner reports shiny texture and would prefer less shine, but it is tolerable. Preserve intentional celestial characteristics. Final screenshot logs this summon but does not independently label the smaller actor; confirm identity in reproduction.",
+      "evidence": "screenshots/image(20261017-011520).png",
+      "lane": "materials",
+      "evidenceSha256": "873418776fc5fac629215d8daba83a1987eaac7edcbefe03043cf9a1d39ce688",
+      "batch": "materials",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
+      "technicalStatus": "presentation-changed",
+      "visualEvidence": "20261017T1629452235697Z (development candidate 22cbb8a5695e): a patch on the SummonedUnitBuff's effect changed nothing; 20261017T1639002324262Z (development candidate dc5b84838cc1): that buff spawns no effect, and the rim and tints come from the permanent SummonedCreatureVisual buff (706c182e86d9be848b59ddccca73d13e) that the base game's summoned unit blueprints carry and KMG units cloned from them inherit (1 looping rim, 2 tints); the Salamander, built from another donor, carries none; 20261017T1648032811260Z (development candidate 01eb9e3aad53): the Ghaele's visual-buff rim and tints finished and its material back to tint 1/1/1/1 with rim lighting off; the review still FAILs: its native dissolve keeps rising (0.009, 0.04, 0.118, 0.156, gold dissolve colour) and the scripted move did not start this run; the dissolve's source is not identified and is left unchanged",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
+        "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
+      },
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    },
+    {
+      "id": "VIS-038",
+      "level": 9,
+      "creature": "Thanadaemon",
+      "key": "thanadaemon",
+      "disposition": "Low-priority appearance polish",
+      "issue": "Owner reports shiny texture and would prefer less shine, but it is tolerable. Final screenshot strongly supports the large robed figure as Thanadaemon; establish the source of golden surface effects before changing presentation.",
+      "evidence": "screenshots/image(20261017-011520).png",
+      "lane": "materials",
+      "source_catalog": "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
+      "catalog_creature_key": "Thanadaemon",
+      "unit_guid": "e287515e761bb1a48a61e1bbcb3527b1",
+      "evidenceSha256": "873418776fc5fac629215d8daba83a1987eaac7edcbefe03043cf9a1d39ce688",
+      "batch": "materials",
+      "owner": "cosmetic lane",
+      "originalMeshOrientation": "no original mesh (native unit, icon, or roster-owned replacement)",
+      "technicalStatus": "covered-not-observed",
+      "visualEvidence": "owner screenshot only; the Thanadaemon is summoned through a KMG native option, which the glow policy covers (domain test), but the creature review cannot cast it, so its buffs were not observed natively",
+      "refinement": {
+        "change": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSummonGlowPatch.cs and SummonGlowPolicy.cs: KMG summons without a registered rim variant finish the SummonedCreatureVisual effect's rim and tint animations",
+        "commits": "22cbb8a569, dc5b84838c (diagnostics), 01eb9e3aad"
+      },
+      "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release"
+    }
+  ],
+  "additionalRepairs": {
+    "scope": "Original bodies outside the owner's review list found shipping inside out from the legacy shared writer, repaired in place on the owner's word (2026-10-17); the Bebelith (VIS-035) stays the accepted control",
+    "tool": "assets-source/original-models/continuous-bodies/repair_outward_winding.py",
+    "commit": "930474b4e9",
+    "native": "20261017T1930246388436Z and 20261017T1934032621760Z (development candidate 930474b4e924): creature review PASS for all seven (31 and 22 assertions); close views and tracking sequences for six, solid and lit, the Fire Beetle's eyes glowing; the single Stirge review skipped its refinement packet (its attached-prey branch went straight to cleanup; see run 21); visual contracts 20261017T1937434175208Z PASS (15)",
+    "stirgeFollowUp": "20261017T2049460194047Z (development candidate 95a5c2e2f013, after the independent review of 17eb252777): the Stirge's attached-prey review PASS, then its full refinement packet (9 stills, 108 tracking, 72 low side frames, 5.43 m); the near wing's outer face, both wings' inner faces and their upper surfaces render as continuous solid panels with nothing seen through them, so the offline wing-gap lead is not substantiated and no asset was changed; limits: the Stirge spans about 60-100 px, several low frames are walled, and the wings stay largely raised through the move legs",
+    "ownerAcceptance": "provisionally accepted for release on 2026-10-17 (\"Let's assume that your repairs are good. Move forward with them.\"); the owner reviews everything after the release",
+    "bodies": [
+      {
+        "creature": "Eagle",
+        "mesh": "assets/flying-animals/eagle-mesh.json",
+        "supersededMeshSha256": "a45d0cd203c9742e6daa64b86bcf642906ae08b41a4b8285b51d33050a760753",
+        "repaired": {
+          "mesh": "assets/flying-animals/eagle-mesh.json",
+          "meshSha256": "4b254a4b17bd1cab51b4856203dc07ff5ad70091d037e9e26eaa50aecaae93c4",
+          "components": 69,
+          "inwardComponents": 27,
+          "componentsWithReversedCaps": 69,
+          "openComponents": 55,
+          "normalCornersOpposingWinding": "29/8604"
+        }
+      },
+      {
+        "creature": "Stirge",
+        "mesh": "assets/flying-animals/stirge-mesh.json",
+        "supersededMeshSha256": "449453e7dc3eb75cf32947b4c3c99cf1accc4b433c7e85c5a591a0ac3a6a800b",
+        "repaired": {
+          "mesh": "assets/flying-animals/stirge-mesh.json",
+          "meshSha256": "f9ea0f0e639faf6f642b41f59a6e3216e2838f5c3dbb608a26c0c7eb073b3b82",
+          "components": 22,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 22,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "6/2808"
+        }
+      },
+      {
+        "creature": "Fire Beetle",
+        "mesh": "assets/sprint14-insects/fire-beetle-mesh.json",
+        "supersededMeshSha256": "3f19d378d4a64c7396dc648b7f95a61d3c921f5ee3b03c596c3034edf385667e",
+        "repaired": {
+          "mesh": "assets/sprint14-insects/fire-beetle-mesh.json",
+          "meshSha256": "71acda0c408a0f925f50591744f9355ecc2f8cc8c126771e33ca4cd74eb8a661",
+          "components": 17,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 15,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "94/5460"
+        }
+      },
+      {
+        "creature": "Giant Stag Beetle",
+        "mesh": "assets/sprint14-insects/giant-stag-beetle-mesh.json",
+        "supersededMeshSha256": "e3b2c221ded30f9ba5e8ec312bf407b7da614dae8ecf80097437a43b801fc40f",
+        "repaired": {
+          "mesh": "assets/sprint14-insects/giant-stag-beetle-mesh.json",
+          "meshSha256": "a7276d63c5e14fb6f45adb055c437bf61980f43344ee329b4c6cd5d048cc3cd6",
+          "components": 17,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 15,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "66/4956"
+        }
+      },
+      {
+        "creature": "Girallon",
+        "mesh": "assets/sprint19-fourarmed/girallon-mesh.json",
+        "supersededMeshSha256": "475a8ca131056251c02680c625c16ab7c3c84cba1546782b95054e8c3334e7e9",
+        "repaired": {
+          "mesh": "assets/sprint19-fourarmed/girallon-mesh.json",
+          "meshSha256": "003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb",
+          "components": 64,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 1,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "14/17004"
+        }
+      },
+      {
+        "creature": "Giant Crab",
+        "mesh": "assets/sprint21-arthropods/giant-crab-mesh.json",
+        "supersededMeshSha256": "c2b84d93f304df674aad4b8f0d80e1c62871574a611885435f1c7ea3827f847a",
+        "repaired": {
+          "mesh": "assets/sprint21-arthropods/giant-crab-mesh.json",
+          "meshSha256": "dd7448eb9fc384350baf734fa8e7430994a5b4c08858f79b53eab1c30d2ed8eb",
+          "components": 22,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 0,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "0/7788"
+        }
+      },
+      {
+        "creature": "Stegosaurus",
+        "mesh": "assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json",
+        "supersededMeshSha256": "02a37218c41c09ed9962ac39a8e01ad0e9d99d8f07d718e1e27d9b9b7573582f",
+        "repaired": {
+          "mesh": "assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json",
+          "meshSha256": "6c5dcb055eafe011e76616c7a137a18d1c8ff1a63e603ddb4dbb8328b87c4117",
+          "components": 27,
+          "inwardComponents": 0,
+          "componentsWithReversedCaps": 2,
+          "openComponents": 0,
+          "normalCornersOpposingWinding": "24/5628"
+        }
+      }
+    ],
+    "note": "The Eagle's feathers are 55 open sheets with no volume, so the audit's inward count for it is not meaningful; its corners agree with their triangles (29 of 8604 oppose). The tests check every repaired body as lit from the front (RepairedBodyTests); only the Giant Crab is also strictly closed and consistent."
+  }
+}
