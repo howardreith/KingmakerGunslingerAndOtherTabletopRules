@@ -138,11 +138,9 @@ namespace KingmakerGunslinger.DomainTests
                 "The published surface retains every pre-Sprint-25 placement, which is "
                 + "this test's real subject: a later sprint must not reach back and "
                 + "suppress a published creature.");
-            Assertions.Equal(
-                TheropodRulesPolicy.FinalPublishedLogicalPlacements +
-                    GiantBodyRulesPolicy.AppendedNatureAllyPlacements,
-                SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "Publication adds only the three allocated Brachiosaurus roots.");
+            // Current totals are checked above; the exact three Brachiosaurus
+            // roots are checked separately. Later qualified additions do not
+            // change this creature's preserved publication contract.
 
             foreach (SummonVariantSpec variant in all.Where(value =>
                 !SummoningCurrentSurface.IsWithheld(value.Creature.Key)))

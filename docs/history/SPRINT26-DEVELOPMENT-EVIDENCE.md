@@ -940,3 +940,22 @@ are unchanged. Invoke-KmgGate -Filter selecting Sprint26/catalog/quantity/
 alignment/baseline/published checks: compilation PASS21.8s,19 tests PASS4.9s
 runner (0.2s executable); public source validator and publisher81 refusal checks
 PASS. Full public-r24 suite/strict package and native roots remain pending.
+
+## Public-r24 gate failure and scoped repair
+
+Source5b8c08bd05cacfb86426e1a2382b80da5e658caf; full Sprint gate
+FAIL338.4943646s, all2,687 tests executed,2,686 passed. Only failure was
+expanded-summoning.sprint25-public-scope: a duplicate historical formula capped
+the complete public roster at1,096. Removed this redundant formula, preserving
+the existing central derived-total assertion, exact three Brachiosaurus roots
+and all released-route preservation checks. No production behavior changed.
+No public-r24 package/DLL was created. Immutable receipt:
+artifacts/sprint26-gate-public-r24/result.json (plus original gate logs).
+
+Focused test-source-only build/run via Invoke-KmgWithTestFilter and
+scripts/test-domain.ps1 -SkipRepositoryValidation:20 selected of2,687 registered,
+zero failures,0.1s executable; log
+artifacts/sprint26-authoring/focused-public-r24b.log. Fresh full public-r24b
+freeze/gate/package and actual public routes remain required. Corrected current
+R23 summary arithmetic to264 assertions across nine phases; exact phase counts
+and original raw verdicts are unchanged. No native session/lease is active.
