@@ -32,8 +32,8 @@ hidden bytes or label them execution on the future public DLL.
 | Bodies/icons/lifecycle/cache/donor | Fresh strict R23 lifecycle; actual R23 pixels inspected; all original assets/pins protected; early19a development38 is historical, not release qualification |
 | Targeted persistence | R20 first4 + R22 final2,77 PASS; original source/ZIP/DLL/MVID retained. Conditions/DC/source loss/cooldown/real recovery, ON/OFF cleanup save/fresh absence |
 | Standalone/current highest-risk combined | R23 standalone mode/AI and combined foundation28/Gorgon41/Leap42; no complete old matrix selected |
-| Six public roots/inventory/icons/slots/quantity/duration/alignment | PENDING exact public-r24b artifact |
-| Complete public gate/exact package/release | PENDING public-r24b full suite/package, ledger, preflight/dry-run, merge/promotion/download/lineage |
+| Six public roots/inventory/icons/slots/quantity/duration/alignment | PENDING corrected observer on exact public-r25 artifact |
+| Complete public gate/exact package/release | PENDING public-r25 full suite/package, ledger, preflight/dry-run, merge/promotion/download/lineage |
 
 Nine strict R23 phases pass 264 assertions; bounded seven-case continuation
 2166.7073137s, each fresh transaction restores actual intake. Detailed RunIds/
@@ -51,7 +51,7 @@ restore uses each transaction's current intake and exact RunId.
 
 ## Final public boundary and scope
 
-One fresh public-r24b full Sprint/strict package in wt/s26, then real six-root
+One fresh public-r25 full Sprint/strict package in wt/s26, then real six-root
 player paths and icon/inventory arithmetic on that artifact, standalone and
 highest-risk publication path. Build the ignored source-bound qualified ledger;
 publisher preflight/dry-run and current upstream/tag checks precede authorized
@@ -79,3 +79,14 @@ redundant formula while preserving the central derived-total assertion, exact
 Brachiosaurus roots and released-route checks. Focused test-source-only repair
 PASS20/20 (0.1s executable); no production change or failed-gate public package.
 Fresh public-r24b gate remains required. Failed receipt/logs remain immutable.
+
+Public-r24b strict gate subsequently PASS381.6639454s,2,687/2,687,386 files;
+ZIPd5f5c9367a339fe6b42858df8b78b0c52c99cc2331592aca94032cfb4cf9cffd,
+DLL803664343edf74ca67f14ce9a96cfd9b14af9fe5e5bb19439d1ee9062d396012,
+MVIDb4020221-aeab-4a06-9b68-95b224edac8e. Native routes failed only the
+two Gorgon template expectations: actual base TrueNeutral/no-template behavior
+was correct, as were spawn, slots, quantities and120s duration; all four Bulette
+routes passed. Observer now explicitly checks base alignment/no template facts
+with a good caster. Production unchanged. Fresh public-r25 gate and routes
+required for changed compiled observer. Exact failure retained in history;
+all118 saves/metadata, installation/settings/references restored, no game/lease.
