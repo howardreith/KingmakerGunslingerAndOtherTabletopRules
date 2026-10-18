@@ -82,6 +82,31 @@
         "leaseAbsent": true,
         "ownedTasksRemoved": true
       }
+    },
+    {
+      "scope": "foundation attempt; blueprint bootstrap completed, native fixture admission refused before world/summon creation",
+      "candidateKind": "development",
+      "source": "4d015eed77686f9e7401fa0b929b4d9e2638c058",
+      "sourceStateSha256": "0bd908891abf1c37303bcf5c94fc6c4de6abb46875d3d1aa98a0e8af34eaf92a",
+      "zipSha256": "874f34cfd6fcaeae06ab595ac0d74edbb393ffce9393b2a7be909fdb8f0619a4",
+      "dllSha256": "571186d2f1e5caa8239686880dc4d8427b697974dcde9d69666f1dfcc2ae6b1f",
+      "mvid": "a58fd98d-f3d8-4c50-a321-23267aeb7f5b",
+      "runId": "20261018T2017333443192Z-75d3a56b7468485284cec0a3636f23b1",
+      "result": "FAIL",
+      "nativeMilliseconds": 69649,
+      "outerSeconds": 211.95743209999998,
+      "buildAndNativeSeconds": 446.0926131,
+      "rawResultSha256": "edd30946925882e25e83c6841cd8f3cd412a74231607e036080b4cc8ca8e8c49",
+      "cause": "Exact Sprint27 scenario missing from save-free native fixture policy; default refusal. Initial admission counters were not captured. Native fixture empty-world assertion also FAIL and remains FAIL. No scene, body or combat proof.",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
     }
   ],
   "checks": [
@@ -192,6 +217,14 @@
       "compileSeconds": 16.8,
       "testSeconds": 1,
       "nativeQualification": false
+    },
+    {
+      "scope": "exact fixture-admission reproduction and all nine shared native-profile safety neighbors; Griffon/rake/wiring; production compile",
+      "result": "PASS",
+      "tests": 15,
+      "compileSeconds": 17.1,
+      "testSeconds": 1.1,
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.native-profile;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate"
     }
   ],
   "policyChange": {
@@ -214,7 +247,8 @@
     "Packaging-only reproduction exposed the deterministic writer missing exact387/389 file-count choices. Added only those Sprint27 hidden-development counts; repeated packaging and strict one-DLL/content/hash validation passed. Diagnostic ZIP is not a qualified candidate.",
     "First native foundation bf53ccd5 failed before fixture on the compiled icon-catalog122 immutability count; exact machine118-save restoration PASS in198.078s. Raw result and registration stack retained. Updated exact approved123 count; guards remain enabled.",
     "A speculative neighboring profile-count edit63 failed the newly selected pure guard test. Reflection measured62 actual profiles including Griffon; preserved the existing62 guard, all pure bootstrap catalog guards now pass.",
-    "Native foundation2b048374 advanced past icon guards but registration requested native ChargeAbility as BlueprintFeature. Actual previously captured graph proves BlueprintAbility. Exact typed Griffon-only grant corrected;65.053s native/211.140s transaction, all118 saves and current intake restored. No unchanged relaunch."
+    "Native foundation2b048374 advanced past icon guards but registration requested native ChargeAbility as BlueprintFeature. Actual previously captured graph proves BlueprintAbility. Exact typed Griffon-only grant corrected;65.053s native/211.140s transaction, all118 saves and current intake restored. No unchanged relaunch.",
+    "4d015eed reached completed blueprint bootstrap but native fixture policy omitted Sprint27 and refused entry. Internal empty-world assertion FAIL retained; external current-intake118-save restoration PASS. Exact admission branch added with legacy world/save/exit protections unchanged and structured inputs recorded."
   ],
   "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
@@ -222,6 +256,7 @@
   "sprint28Started": false,
   "sourceReviewCorrections": [
     "Racial base HP derives floor(5*(10+1)/2) from d10 HD before live Constitution.",
-    "Own Griffon type keeps the actual installed Manticore magical-beast KnowledgeStat; native observer records the resulting type/consumer."
+    "Own Griffon type keeps the actual installed Manticore magical-beast KnowledgeStat; native observer records the resulting type/consumer.",
+    "A later natural-unit type selector still chose Bulette for Griffon after the earlier correct assignment. Both selectors now use the exact creature token; native observer requires Griffon type GUID b31bad4d5053482d85d35d0ae27fac72. No native unit-type PASS existed on the faulty source."
   ]
 }

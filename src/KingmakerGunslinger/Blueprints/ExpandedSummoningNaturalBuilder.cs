@@ -1730,7 +1730,7 @@ namespace KingmakerGunslinger.Blueprints
                     GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol);
             if (profile.Key == "gorgon" || profile.Key == "bulette" || profile.Key == "griffon")
                 unit.Type = Require<BlueprintUnitType>(bySymbol, "KMG.Summoning.Natural." +
-                    (profile.Key == "gorgon" ? "Gorgon" : "Bulette") + ".UnitType");
+                    Token(profile.Key) + ".UnitType");
             // Both theropods borrow only the Lizardfolk rig. Its playable
             // Human race carrier otherwise adds a selected +2 Constitution
             // and keeps Medium combat-size arithmetic on a unit whose native

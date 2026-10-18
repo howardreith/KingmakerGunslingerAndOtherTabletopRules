@@ -1,84 +1,56 @@
 # Sprint 27 coverage
 
-Controlling state: IMPLEMENTATION / HIDDEN / NOT QUALIFIED / NOT RELEASED.
-Draft product PR60 targets master. Fixed production root wt/s27; Sprint26 remains
-closed at stable v0.0.160 with its source/artifacts/history untouched.
-[Contract](../planning/EXPANDED-SUMMONING-SPRINT27-CONTRACT.md) and
-[evidence map](../planning/SPRINT27-EVIDENCE.json) own current scope and exact tuples.
+Current state: IMPLEMENTATION / HIDDEN / NOT QUALIFIED / NOT RELEASED.
+Product draft [PR60](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/60)
+targets master. Fixed build/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s27.
+Sprint26 remains CLOSED at v0.0.160; no historical source/artifact replacement.
+The [contract](../planning/EXPANDED-SUMMONING-SPRINT27-CONTRACT.md) and
+[evidence map](../planning/SPRINT27-EVIDENCE.json) retain scope and exact tuples.
 
-Adult Griffon is registered with six suppressed SNAIV-IX roots and no SM/template
-or Grab. Native magical-beast HD, size/attributes, three feats, quadruped defense,
-armor and exact1/1 land-skill ranks carry attribution. Three printed Fly ranks
-remain omitted; no redistribution. One effective ordinary-map airborne speed80
-represents flight; separate land30 and passive senses remain explicitly unmodeled.
-Bite/two talons are ordinary; last two claws are conditional rake. Native Charge
-is explicitly granted as its command carrier. Griffon charge eligibility checks
-native command/target identity without persisted custom action state. Shared cats
-retain the genuine already-held exception. No new grapple or aerial framework.
+Adult Griffon has six suppressed SNAIV-IX roots, no SM/template or automatic Grab.
+Native magical-beast5 HD, printed scores/feats, primary bite/two talons and two
+conditional rake claws are implemented. Racial skill modifiers and exact1/1
+Mobility/Perception ranks retain attribution; three Fly ranks are omitted.
+Ordinary-map airborne80 is the one effective speed; separate land30 and passive
+senses remain explicitly unmodeled. No new grapple or Z-axis flight framework.
 
-Source-derived registered totals:111 project creatures; Monster96/545 unchanged;
-Nature98/563;1108 generated roots. Six hidden Griffon roots mean current published
-surface remains1102+29 retained wrappers=1131. Final publication would yield1137.
-All6961 released identity rows remain exact;29 new rows append(13 foundation,
-16 deterministic adapters). Foundation2202, adapters3788, total6990;3 reserved.
+Source-derived registration:111 creatures; Monster96/545 unchanged; Nature98/563;
+1108 roots. Six hidden Griffon roots leave1102 published+29 wrappers=1131 choices;
+final unsuppression would yield1137. All6961 released identity rows remain exact;
+29 new rows append(13 foundation,16 caller adapters), total6990,3 reserved.
 
-Fresh research metadata capture PASS on source7b546260 with its original
-ZIP/DLL/MVID in the evidence map: no exact native Griffon, Manticore has one
-57-bone manticoreMesh renderer, jaw/legs/tail/articulated wings and native bite/claw
-action events. In-engine67.376s; full current-intake transaction208.812s. All118
-saves, current Mods/settings/private references restored exactly; no lease/game
-or two owned research tasks remains. This is metadata, not creature qualification.
-
-Original2,930-vertex/5,560-triangle Griffon mesh/albedo now uses that native rig,
-the existing cache, per-instance renderer/material attachment and cleanup path.
-Real generated-mesh renders received read-only functional review: recognizable
-head/beak, wings, foretalons and feline body/paws/tail; no static blocker. Narrow
-angular wings, coarse feathers, joins and simplified hindquarters remain debt.
-Native attachment/selection/animation/navigation/lifecycle still require proof.
+One real built-in generation call used actual Gorgon/Eagle family reference
+pixels. Source/provenance/export are pinned;123 icon concepts validate and all122
+prior records/pixels/assignments are unchanged. One32/48/64px sheet is readable.
+The original2,930-vertex/5,560-triangle hybrid mesh/albedo uses the measured native
+Manticore rig and existing instance/cache/material/fader lifecycle. Static
+read-only review found no functional recognizability blocker. Narrow angular
+wings, coarse feathers/joins and simplified hindquarters are visual debt.
+Native attachment/selection/navigation/animation/lifecycle remain unqualified.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-One actual built-in image generation call used real Gorgon/Eagle reference pixels.
-The original painting, prompt, input/output hashes and128px export are retained.
-Exporter/catalog PASS123 concepts; all122 prior records/pixels/assignments exact.
-One32/48/64px sheet is readable. Native icon consumers remain pending.
+Fresh research metadata PASS7b546260: no exact native Griffon; Manticore57-bone
+renderer and native bite/claw events. In-engine67.376s; transaction208.812s.
+Three foundation attempts have no gameplay PASS: bf53ccd5 failed the stale icon
+count;2b048374 failed native Charge's feature/ability type;4d015eed completed
+blueprint bootstrap but its unregistered fixture-policy branch refused admission.
+The latter internal empty-world assertion also failed and remains FAIL. All
+external transactions restored current Mods/settings/private references and118
+saves exactly; game/lease and owned tasks are absent. Full raw failures remain local.
 
-Focused production/early observer compile PASS17s; six Griffon/shared-rake and
-scenario checks PASS4.2s. External policy26 isolated cases and restoration203
-assertions passed. New strict runtime phase refusals await the unelevated dispatch
-preflight. Early native phases cover profile/ordinary/stat math and real RTWP/TB
-pounce; AI/lifecycle/routes/persistence and all negative cases remain unfinished.
-All source/build/tool failures remain in local logs and the evidence-map history.
-No favorable roll or fixture attack is claimed as command/AI proof.
+Focused corrected production compile17.1s and15 rules/admission/guard tests1.1s
+PASS. Pure bootstrap guards execute in the Griffon selection. Current new phase
+preflight647 PASS preceded the admission correction; the next build reruns it.
+Policy wrapper26 isolated cases, restoration orchestration206, icon corruption30
+and strict icon-authority7 cases passed. Diagnostic package validation is not
+native or release qualification. Native type and attack attribution checks now
+require the exact Griffon type and real unsuppressed pounce weapon rolls.
 
-Next development batch: one clean development-only prototype build, its dispatch
-preflight, then one guarded standalone rtwp-foundation transaction(about9 minutes
-including build). Reuse the unchanged package only if foundation passes; an
-observer/product change creates a new coherent candidate with affected reruns.
-No final Sprint gate or release campaign has run; no publication/merge/tag mutation.
-Publisher161 support, full native requirements, public routes, exact stable-byte
-promotion/download verification and final records remain open. Stop before Sprint28.
-
-Development update: strict dispatch preflight643, restoration orchestration206,
-30 icon-corruption fixtures and the latest six focused rules/compile checks pass.
-Prototypeb51a00 stopped after compilation at stale122-icon packaging checks;
-no native transaction occurred. Both consumers now derive identities/counts from
-the hash-pinned authoring authority. Seven isolated malformed-authority checks and
-a diagnostic packaging-only reproduction pass, including exact new387/389 file
-counts. Diagnostic bytes are not a development receipt or gameplay evidence.
-
-First standalone foundation attempt(bf53ccd5) failed bootstrap before fixture or
-combat: compiled SummonIconCatalog still required122. Exact catalog is123 with
-real Griffon art, so its immutability guard advances without bypass. New focused
-coverage exercises all pure bootstrap guards; six checks PASS, production16.3s,
-tests4.9s. Actual profile count62 was already correct and remains protected.
-Native attempt51.789s, full transaction198.078s; Mods/settings/private references
-and118 saves exact, game/lease absent and owned task removed. No gameplay PASS.
-
-Second bootstrap-only attempt2b048374 failed closed on NativeCharge's type:
-actual BlueprintAbility was sent through the generic BlueprintFeature resolver.
-The exact Griffon-only ability branch now retains native Charge. Native65.053s,
-transaction211.140s; all118 saves and current intake restored, task/game/lease
-absent. Small exact-owner AI, real cancellation/reaction and supplemental repeated
-plan observers compile with the correction(16.8s, six focused tests1s). All remain
-unqualified until native execution; complete negative/lifecycle/route/persistence
-coverage is still open. No new roll override or fixture weapon event was added.
+Next bounded development batch: corrected clean build then standalone foundation,
+about9 minutes using current measured233s build/212s transaction machinery.
+Only after foundation passes may this package proceed to pounce/AI/boundaries.
+Missing negative cases, lifecycle, targeted persistence, six public paths and
+publisher161 support must finish before final readiness review and one Sprint
+gate. The existing publisher refuses development-candidate release proof: the
+final stable artifact needs its own eligible native evidence. No product merge,
+tag or release mutation; no Sprint28 work.

@@ -158,7 +158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if(request==null || request.Scenario!=RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview || request.Parameters==null || request.Parameters.Count!=1 || request.Parameters["reviewPhase"]?.Type!=JTokenType.String)return null;
             string phase=(string)request.Parameters["reviewPhase"];
-            return phase=="rtwp-foundation" || phase=="pounce-rtwp" || phase=="pounce-turn-based" || phase=="rtwp-ai" || phase=="charge-boundaries" ? phase : null;
+            return ExpandedSummoningNativeProfilePolicy.Sprint27Phase(phase) ? phase : null;
         }
         internal static string Sprint26ReviewPhase(RuntimeTestRequest request)
         {
