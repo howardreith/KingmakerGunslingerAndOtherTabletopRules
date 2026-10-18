@@ -1,5 +1,31 @@
 # Sprint 25 takeover — master v0.0.158 integrated, continuing at v0.0.159
 
+Controlling01:18UTC: cb7933ea full2678/exact/strict380 PASS315.33s. Its
+29.69-minute six-cell Overrun/foundation/visual batch PASSes BOTH profiles;
+all exact transactions restore current installation/settings/bank,118 saves
+and private refs. Actual TB fixture controller was null; the unchanged rider
+queues real opportunities once its intended service is re-established.
+Both original bodies, movement/quantities/death/fallback/OFF-ON/private teardown
+and donor control PASS; fresh unaltered captures inspected. No aesthetic approval.
+
+Targeted persistence has NOT launched:900 startup timeout exceeded actual600;
+then600 revealed giant-bodies missing only in the actual outer launcher's
+duplicate scope list. Both prelaunch FAILs remain recorded, installation/settings
+and all118 original save metadata/hashes/private refs audited exact; Working
+unchanged. Repair is native-launcher TOOLING, not docs: add only this scope,
+retain all save/exit/parameter guards and test actual outer routing. Unelevated
+WhatIf33valid/23refusals, request21roundtrips/196refusals,609preflight checks PASS
+in59.85s. No game/deployment from these checks. Ignored supervisor now uses600
+with actual metadata-range preflight; no product C# change.
+
+Next: commit/push and one fresh hidden candidate for the tooling change; six
+targeted ON/OFF prepare/cold-cleanup/fresh-absence stages (plan25-40min, not a
+restoration deadline). Reuse cb mechanics/body,082 TB/Cleave and EE5 AI with
+original artifact identities/unchanged helper arguments. Then ONLY Brach
+unsuppression/controlled roster, one public candidate/fresh public checks,
+preflight, merge49, next-free stable(expected159,recheck), download/audit,
+final-records merge,STOP. No Sprint26. Older updates below are dated history.
+
 Latest qualification,00:26UTC:51d9679b full2678/exact/strict380 PASS311.31s,
 archived. Its standalone Overrun run proves all9 RTWP cases with separate get-up
 provocation excluded, real rider consumption and native queue/responder IDs.
