@@ -815,3 +815,61 @@ exit prerequisites and verifies both hooks unpatched, exact-owner/request-local.
 No native branch/result/command changes. Two observer files only.
 Focused compilation PASS20.9s;10 named Sprint26/records tests PASS1.0s; source
 boundary PASS. Freeze/push strict hidden-r22 then the narrowed experiments.
+
+## R22 native navigation attribution and completed persistence union
+
+R22 source12b83f4a5b2557e4e411156ea99f572b314933d0 strict PASS375.0790448s,
+all2,687 tests/zero failures (102.3s runner),386 files. ZIP
+75482f72c1b46b915b3428350b052e7e1e9b4cc59c7eeb6c83550a5f1b9ce67e; DLL
+23728d073ca85aed05b158385d05cffcfba26ba4ca1deffb212c14bc55f9605c;
+MVIDe9ff5263-8f65-40d9-927a-e3a0ded2b67e; fingerprint
+10eb482451bbb1c12ec0bce4bb590000d60fc910cbf87125b573a7218d373d7f.
+Archive165 files byte-exact after all transactions restored.
+
+Leap FAIL42 (41 PASS),325.8631902s; native RunId
+20261018T1556545641108Z-99718e9a702f482ca54ad04e64618185; result SHA
+f39571fc82f07aa22d6513e617683d67368e3ff6a9ab658f60a6f0bf4ba94b11;
+raw log SHAf3a6692904b5c4104561bcabfa44e79c90948c7f339a1c7743bd54fa4c6de8ad.
+First actual iterator step at5298 has passedDistance0/max24.384 and trace
+exactly target. At5299 it returns false, passedDistance0.602533937/max24.384,
+valid threat hand and approach, still moving. Target remains unchanged; native
+trace instead returns8.52022,2.066,26.71154 near source8.522108,2.065629,26.724154
+(11.5073614m target gap). Actual2.1.7b ObstacleAnalyzer.TraceAlongNavmesh first
+returns clamped start if horizontal squared displacement exceeds1e-4 (1cm).
+This excludes the distance-limit/stale-previous-position explanation and
+precedes the enemy opportunity. It does not prove a production animation stall.
+No completed charge/four-claw PASS; native ordinary fallback is retained.
+
+R22 OFF remainder PASS705.3395856s batch/717.2156163s envelope, actual cleanup
+save4d9f991737aa25e08d983f577112530f318d422f5139c4888c3508ca8677ecf7 and
+fresh absence. Exact selected persistence union (not whole-roster qualification):
+
+| Original source/stage | Assertions | Native RunId | Result SHA256 |
+| --- | --- | --- | --- |
+| R20 prepare-on | 15 PASS | 20261018T1436199737387Z-c306c251c963412d90c1c94094af8ea8 | 0d270c87d0dfa5ebc4466abcba5c9b4dc18629bc2e3e50200a26028c88597fa2 |
+| R20 cleanup-on | 16 PASS | 20261018T1442301099956Z-35e9ce6453594524a5b9bac4c323ab3b | 4518e7fe7c6580a6b31c4ea88f105dfa5914faf73e29474dc00ed98f1ab98102 |
+| R20 absent-on | 7 PASS | 20261018T1448451260815Z-6e245b16c4ef4f4a928956540efe138c | 2e5077ba00bfe02de6ff2775b0ef4de468cc57b67b26f36ba2c3159b95b07a0c |
+| R20 prepare-on | 15 PASS | 20261018T1454222865710Z-e35b83e9812f4fc28c11bb9c59ae680e | 8d243ed93efbf6420f6e48415542381c9ba8e344e350c12d4165a5692182e4e5 |
+| R22 cleanup-off | 17 PASS | 20261018T1605137116302Z-d984716c5286436c8a6e5da8c29c2419 | 5bd62541f67620e8ad40cb1a29e1854df6d3a63204be1ec4e31fa62093678d5d |
+| R22 absent-on | 7 PASS | 20261018T1611188428675Z-d76c03feac384174bc9b664f047706f9 | bb5f1032456d4d7fc22f123cf072936c9b9a2010aefdeba03c1597fe52996f11 |
+
+77 assertions PASS. R20 first4 plus R22 final2 retain their original source/
+package identities; all prior failed OFF attempts remain FAIL with no save.
+Native R22 confirms serialized profile comparison after the precise OFF reach
+delta, zero private view allocations, staged states/DC/source strings with
+first source absent, exact unrefreshed cooldown, real temporary round recovery,
+no permanent recovery save, permanent automatic-recovery guard, fixture actor
+teardown, actual cleanup save and fresh absence. Native cure proof is separate
+R19, not fixture removal. Original Working intake bytes/creation/write/attrs
+and118 saves/metadata restored, installation/settings/private inputs exact;
+no game/lease, baseline never loaded/written, Offline preserved.
+
+R23 changes one request-local fixture file only: sample the actual native
+navigation corridor at centre and body-width sides before cast, require clear
+protected-actor space, use native ForceLookAt before command, recheck the
+corridor after engagement setup, and log candidates. Native movement/attacks
+and the strict four-claw/no-bite/opportunity predicate are untouched. No
+production rule or engine path guard is weakened. Compilation PASS22.3s, ten
+named checks PASS1.0s, exact source boundary PASS; no R23 native PASS yet.
+Current master fetched without tags remains555b16e0; public Latestv159 unchanged
+and v160 remote tag absent. Refresh before publication. Freeze hidden-r23 next.
