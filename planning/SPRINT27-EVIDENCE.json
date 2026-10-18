@@ -98,6 +98,19 @@
       "result": "PASS",
       "assertions": 206,
       "command": "scripts/Test-ExpandedSummoningRuntimeOrchestration.ps1 -ScriptRoot C:/Dev/KingmakerGunslingerLab/wt/s27/scripts"
+    },
+    {
+      "scope": "strict early Griffon runtime phase requests/inventory serialization/refusals",
+      "result": "PASS",
+      "assertions": 643,
+      "source": "ba6dd7d7eafc7c889a9b1648ca7d40cd10b05394"
+    },
+    {
+      "scope": "delegated icon authority positive/stale-authority refusal and29 other corruption fixtures",
+      "result": "PASS",
+      "tests": 30,
+      "seconds": 12.428,
+      "command": "python tools/test_icon_catalog.py"
     }
   ],
   "policyChange": {
@@ -114,7 +127,8 @@
     "New domain test used nonexistent Create factory; corrected to actual Build and6 focused checks passed.",
     "Observer attempted read-only IsFullAttack setter; corrected to verified ForceFullAttack/IsSingleAttack fields; affected compile passed.",
     "Readability-sheet Python Pillow unavailable; no dependency installed, installed System.Drawing used.",
-    "Prototype81433 preflight FAIL47.7809s: exact documented-scenarios inventory omitted the new Griffon review string. No build/deployment/game transaction occurred. Corrected exact inventory; affected preflight rerun required."
+    "Prototype81433 preflight FAIL47.7809s: exact documented-scenarios inventory omitted the new Griffon review string. No build/deployment/game transaction occurred. Corrected exact inventory; affected preflight rerun required.",
+    "Prototypeba6dd7 build wrapper stopped on one of30 icon corruption fixtures: current delegated-authority hash still pinned the Sprint26-only manifest. Updated exact Griffon-inclusive pin and retained the actual old hash as the stale-authority negative case. No package/deployment/native transaction occurred."
   ],
   "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
