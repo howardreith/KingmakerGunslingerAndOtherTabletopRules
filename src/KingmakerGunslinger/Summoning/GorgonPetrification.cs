@@ -113,8 +113,10 @@ namespace KingmakerGunslinger.Summoning
             var owner = context.Caster;
             var activation = new GorgonBreathActivation {
                 SourceId = owner.UniqueId,
-                Dc = Sprint26MagicalBeastRules.BreathDc(
-                    owner.Descriptor.Progression.GetClassLevel(hitDieClass), owner.Stats.Constitution.Bonus)
+                // The exact owner fact participates in the real native rule
+                // before either preview or execution. Preserve its live DC,
+                // including genuine native rule bonuses, in victim recovery.
+                Dc = context.Params.DC
             };
             activation.Context = new WeakReference<AbilityExecutionContext>(context);
             Activations.Add(context, activation);
@@ -185,6 +187,22 @@ namespace KingmakerGunslinger.Summoning
                 activation.Dc, activation.SourceId, activation.Id);
             return "temporary";
         }
+    }
+
+    [Serializable]
+    public sealed class GorgonBreathParameters : RuleInitiatorLogicComponent<Kingmaker.RuleSystem.Rules.Abilities.RuleCalculateAbilityParams>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintAbility Ability;
+        public BlueprintCharacterClass HitDieClass;
+        public override void OnEventAboutToTrigger(Kingmaker.RuleSystem.Rules.Abilities.RuleCalculateAbilityParams evt)
+        {
+            if(evt==null||Owner?.Unit==null||!ReferenceEquals(evt.Initiator,Owner.Unit)||
+                !ReferenceEquals(Owner.Unit.Blueprint,OwningBlueprint)||!ReferenceEquals(evt.Blueprint,Ability)||HitDieClass==null)return;
+            int hd=Owner.Progression.GetClassLevel(HitDieClass);
+            evt.ReplaceCasterLevel=hd;evt.ReplaceSpellLevel=hd/2;evt.ReplaceStat=StatType.Constitution;
+        }
+        public override void OnEventDidTrigger(Kingmaker.RuleSystem.Rules.Abilities.RuleCalculateAbilityParams evt){}
     }
 
     [Serializable]

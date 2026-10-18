@@ -580,8 +580,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var costs = new JArray();
                 bool clockSeen = false, independentSeen = false; double initialSeconds = -1;
                 using (var economy = new FirearmReviewCosts(owner, costs))
+                using (var projectile = new Sprint26BreathProjectileTrace(owner))
                 {
+                    bool fxFrameCaptured=false;
                     foreach (int frame in Sprint26Cast(owner, breath, new TargetWrapper(target), v => first = v, v => {
+                        if(!fxFrameCaptured&&projectile.LaunchFrame>=0&&Time.frameCount>projectile.LaunchFrame){
+                            Sprint26Body(owner,"gorgon","breath-projectile-"+turnBased);fxFrameCaptured=true;
+                        }
                         var activeClock = owner.Buffs.GetBuff(cooldown);
                         if (activeClock != null && !clockSeen) {
                             clockSeen = !data.IsAvailable;
@@ -590,6 +595,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             initialSeconds = (activeClock.EndTime - Game.Instance.TimeController.GameTime).TotalSeconds;
                         }
                     })) yield return frame;
+                    if(projectile.Rows.Count>0&&!fxFrameCaptured){
+                        yield return 0;Sprint26Body(owner,"gorgon","breath-projectile-"+turnBased);fxFrameCaptured=true;
+                    }
+                    Sprint25Check("breath-native-projectile-readback-"+turnBased,projectile.Rows.Count>0&&fxFrameCaptured,
+                        new JObject{["projectiles"]=projectile.Rows,["postLaunchFrameCaptured"]=fxFrameCaptured,["observerMovedProjectile"]=false},
+                        "The exact native breath projectile launch/source-bone coordinates and an actual later FX frame are captured read-only; mouth placement is assessed from these coordinates and real pixels.");
                     var applied = target.Buffs.GetBuff(stone);
                     var state = applied == null ? null : applied.SelectComponents<GorgonPetrificationState>().Single();
                     var activation = GorgonBreathRuntime.Latest(owner);

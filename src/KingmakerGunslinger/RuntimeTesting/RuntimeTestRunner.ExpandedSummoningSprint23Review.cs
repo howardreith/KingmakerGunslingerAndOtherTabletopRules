@@ -1261,7 +1261,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private TargetWrapper Sprint23FindChargeRoute(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData target,
-            AbilityData charge, out Vector3 start, out string detail)
+            AbilityData charge, out Vector3 start, out string detail,
+            Func<UnitEntityData,UnitEntityData,bool> extraAdmission = null)
         {
             if (AstarPath.active == null)
                 throw new InvalidOperationException(
@@ -1320,6 +1321,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Vector3.Distance(traced, target.Position) > 1f ||
                             Vector3.Distance(candidate, target.Position) <=
                                 3.3f) continue;
+                        if (extraAdmission != null && !extraAdmission(owner, target)) continue;
                         start = owner.Position;
                         detail = string.Join("|", attempts.ToArray());
                         return wrapper;
