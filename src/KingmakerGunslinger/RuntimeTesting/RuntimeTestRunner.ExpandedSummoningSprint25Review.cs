@@ -63,7 +63,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _sprint25Fixture = BeginExpandedSummoningCorrectionFixture(
                         _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "KMG_Runtime_Sprint26_Caster" : "KMG_Runtime_Sprint25_Caster");
                     _sprint25Clock = new Sprint22NativeClock(_sprint25Fixture,
-                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? .05f : .25f);
+                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? .05f : .25f,
+                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? (Action<UnitEntityData>)Sprint26TickLife : null);
                     _sprint25Steps = (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
                         ? ReviewSprint26(_sprint25Fixture) : ReviewSprint25(_sprint25Fixture)).GetEnumerator();
                 }

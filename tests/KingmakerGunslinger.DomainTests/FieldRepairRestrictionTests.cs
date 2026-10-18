@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Firearms;
@@ -6,7 +6,7 @@ using KingmakerGunslinger.Firearms;
 namespace KingmakerGunslinger.DomainTests
 {
     /// <summary>
-    /// Regression coverage for the mission Z-FIREARM-MAINTENANCE Â§4.1 field
+    /// Regression coverage for the mission Z-FIREARM-MAINTENANCE §4.1 field
     /// repair restriction: Repair Firearm is an out-of-combat, Broken-only
     /// maintenance action whose concrete target is bound at genuine command
     /// start and rechecked at delivery; Wrecked firearms are rest-only and

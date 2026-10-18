@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Firearms;
 

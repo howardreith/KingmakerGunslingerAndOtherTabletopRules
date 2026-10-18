@@ -65,6 +65,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly ExpandedSummoningCorrectionFixture _fixture;
             private readonly TimeSpan _timeBefore;
             private readonly float _step;
+            private readonly Action<UnitEntityData> _lifeTick;
             private readonly GameMode _tickMode = new GameMode(
                 GameModeType.Default, new IController[0]);
             private readonly UnitActionController _actions =
@@ -84,10 +85,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool Restored { get; private set; }
 
             internal Sprint22NativeClock(
-                ExpandedSummoningCorrectionFixture fixture, float step = .25f)
+                ExpandedSummoningCorrectionFixture fixture, float step = .25f, Action<UnitEntityData> lifeTick = null)
             {
                 if (step <= 0 || step > .25f) throw new ArgumentOutOfRangeException("step");
                 _step = step;
+                _lifeTick = lifeTick;
                 _fixture = fixture ?? throw new ArgumentNullException("fixture");
                 _timeBefore = Game.Instance.Player.GameTime;
                 _tickAction = typeof(UnitActionController).GetMethod(
@@ -155,6 +157,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _buffs.TickExact(unit);
                         if (unit.Destroyed || !unit.IsInState ||
                             unit.Descriptor == null) continue;
+                        _lifeTick?.Invoke(unit);
                         _tickAction.Invoke(_actions, new object[] { unit });
                         // Unity's ordinary Default-mode view update supplies
                         // this native movement step in play.  The guarded

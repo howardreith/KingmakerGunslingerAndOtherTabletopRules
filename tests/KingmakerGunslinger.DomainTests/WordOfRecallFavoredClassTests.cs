@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.DomainTests
     // reconciled spell through its shared class list, but the native pick
     // admits only items present in BlueprintParameterVariants (the
     // m_CachedItems source), so the canonical ability must be published
-    // there too â€” additively, idempotently, and only for the exact
+    // there too — additively, idempotently, and only for the exact
     // structurally validated per-level feature.
     internal static class WordOfRecallFavoredClassTests
     {

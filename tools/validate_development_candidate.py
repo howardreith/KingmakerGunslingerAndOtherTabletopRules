@@ -214,7 +214,8 @@ def validate(root: Path, purpose: str):
             raise AssertionError("The identity ledger header changed: " + key)
     appended = check_append_only(accepted["entries"], current["entries"])
 
-    # The released Sprint 24 public boundary and original assets.
+    # Preserve every released public creature; new withheld cohorts are independent.
+    # The original Sprint24 asset/package ownership guard remains in force.
     visibility_source = (root / "src/KingmakerGunslinger/Summoning/"
                          "SummonVisibilityCatalog.cs").read_text(encoding="utf-8-sig")
     catalog_path = "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"

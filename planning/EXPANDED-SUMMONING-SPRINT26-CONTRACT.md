@@ -130,3 +130,18 @@ imagegen tool after actual family pixels were supplied through conversation
 image input. Provider/model details beyond the observed tool are unspecified.
 HumanReview: NOT_PERFORMED_NONBLOCKING. Geometry is still unimplemented.
 No functional or native qualification is claimed by this document.
+
+### Native temporary-life boundary
+
+Installed 2.1.7b `UnitLifeController.TickOnUnit` treats Petrified as a reason to
+set damage to at least maximum HP plus Constitution and enter Dead. Temporary
+Gorgon stone therefore retains the actual native Petrified condition/descriptor
+but replaces that one life-controller predicate only when the victim has exactly
+one Petrified counter and its initialized own Gorgon stage is temporary. The
+native health, negative-level, ForceKill/MarkedForDeath, regeneration and all
+other petrification branches remain intact. A later permanent transition restores
+the native petrification/death/cure path. Round recovery removes only the own
+buff and preserves health; it does not resurrect or heal the victim. The guard
+also remains available during module-disabled hydration. Native qualification
+must run the real life controller, prove unchanged temporary HP, genuine recovery,
+permanent/cure behavior, unrelated-stone isolation and independent lethal damage.

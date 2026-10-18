@@ -10,7 +10,7 @@ namespace KingmakerGunslinger.DomainTests
     /// <summary>
     /// Regression coverage for the way the Rapid Reload proficiency-gate
     /// runtime scenario scores its own evidence. These tests do not prove the
-    /// registered blueprints or the native selection flow â€” only the guarded
+    /// registered blueprints or the native selection flow — only the guarded
     /// scenario run can do that. They prove that a run which skipped a native
     /// operation, lost a precondition, never really held the feat slot it
     /// claims, silently used a different proficiency fixture, repaired an

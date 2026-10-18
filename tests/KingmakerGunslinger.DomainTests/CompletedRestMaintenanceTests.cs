@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
@@ -7,7 +7,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     /// <summary>
     /// Regression coverage for completed-rest firearm maintenance (mission
-    /// Z-FIREARM-MAINTENANCE Â§4.2): only a genuine successful full rest with
+    /// Z-FIREARM-MAINTENANCE §4.2): only a genuine successful full rest with
     /// a participating capable gunsmith and one reusable kit restores carried
     /// Broken and Wrecked firearms to Normal, once per rest, without
     /// consuming anything; every non-completion route and missing-prereq

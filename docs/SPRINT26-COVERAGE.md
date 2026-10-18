@@ -81,3 +81,15 @@ new registered withheld keys, with six positive/refusal fixtures. Source review
 also found the manual exact-build copy loop omitted the new Gorgon assets; it
 now copies the same required pair as production and package validation. These
 are build/validator corrections, not a native failure or a qualified artifact.
+
+The installed native life-controller contract revealed an essential temporary
+stone boundary before any breath experiment: Petrified otherwise sets lethal
+HP damage. The implementation now replaces only that one predicate for an
+initialized temporary Gorgon buff owning the sole Petrified condition counter.
+All independent death/health branches and unrelated/permanent petrification keep
+the original native method. The prototype observer invokes the real life
+controller on exact disposable actors and checks temporary HP preservation.
+Focused guard/runtime/presentation checks:95/95 PASS,2.0s tests; production
+Release compilation PASS. Unintended Unicode-only edits were restored from exact
+baseline lines, without inferred transcoding; affected presentation checks pass.
+No native gameplay proof is claimed by these source checks.
