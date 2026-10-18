@@ -94,11 +94,23 @@ namespace KingmakerGunslinger.Blueprints
             var parameters = ScriptableObject.CreateInstance<ContextCalculateAbilityParams>();
             parameters.StatType = StatType.Constitution;
             parameters.ReplaceCasterLevel = true;
-            parameters.CasterLevel = Simple(8);
+            var racialHd = ScriptableObject.CreateInstance<ContextRankConfig>();
+            SetField(racialHd, "m_Type", AbilityRankType.Default);
+            SetField(racialHd, "m_BaseValueType", ContextRankBaseValueType.ClassLevel);
+            SetField(racialHd, "m_Class", new[] { activation.HitDieClass });
+            SetField(racialHd, "m_Progression", ContextRankProgression.AsIs);
+            var halfHd = ScriptableObject.CreateInstance<ContextRankConfig>();
+            SetField(halfHd, "m_Type", AbilityRankType.DamageBonus);
+            SetField(halfHd, "m_BaseValueType", ContextRankBaseValueType.ClassLevel);
+            SetField(halfHd, "m_Class", new[] { activation.HitDieClass });
+            SetField(halfHd, "m_Progression", ContextRankProgression.Div2);
+            parameters.CasterLevel = new Kingmaker.UnitLogic.Mechanics.ContextValue {
+                ValueType = Kingmaker.UnitLogic.Mechanics.ContextValueType.Rank, ValueRank = AbilityRankType.Default };
             parameters.ReplaceSpellLevel = true;
-            parameters.SpellLevel = Simple(4);
+            parameters.SpellLevel = new Kingmaker.UnitLogic.Mechanics.ContextValue {
+                ValueType = Kingmaker.UnitLogic.Mechanics.ContextValueType.Rank, ValueRank = AbilityRankType.DamageBonus };
             breath.ComponentsArray = new BlueprintComponent[] { delivery, effect, activation,
-                safe, available, parameters,
+                safe, available, racialHd, halfHd, parameters,
                 ExpandedSummoningAbilityBuilder.DeepCloneComponent(descriptor) };
             DescribeMagicalBeast(breath, prefix + "Breath", "Petrifying Breath",
                 "Breathe a 60-foot cone, Fortitude DC 10 + half racial HD + Constitution modifier. A failed first exposure petrifies temporarily with recovery saves each round; a distinct later breath while petrified makes it permanent. Recharges in 1d4+1 rounds. The cone cannot be aimed through allies.", nativeStone.Icon);

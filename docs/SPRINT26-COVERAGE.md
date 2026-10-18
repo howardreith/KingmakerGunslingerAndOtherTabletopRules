@@ -7,6 +7,56 @@ this checkpoint is not its stopping point. The controlling task state is
 [the contract](../planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md) and the
 [current ledger](../planning/SPRINT26-GORGON-BULETTE-LEDGER.json).
 
+## Current development evidence: 19a2b61a and next observer checkpoint
+
+This section supersedes the earlier pending rows for these exact runs. Source
+`19a2b61a8ad61512658b0cd123f2e73d0a1456f2`, ZIP
+`173269b1b2a5ee4b107dd05930bfe0a6ff9616664362dbaf53151dc11a5af21e`, DLL
+`60bb641628b4fe2c80b2807b29611c14426b61957a3697902bd638be37b452c2`, MVID
+`c7121996-a7b7-4120-bb84-72fc9f650f07`, source fingerprint
+`3fee45e1bf12674f89960a03cbebfc8c843886d0baf5270392461ccf2b48e266`.
+Fixed-root development build239.755s,532 selected tests and632 dispatch checks PASS.
+These are development artifacts, not a strict/final release qualification.
+
+| Phase | Result | Assertions | Native duration | RunId | Exact transaction | runtime-result SHA256 |
+|---|---|---:|---:|---|---|---|
+| Leap RTWP | FAIL | 15 | 112.766s | `20261018T0842217951288Z-f1f6c4a90d914e7c968f32c1ed10e57d` | `compat-20261018T084034Z-223d7fcb29cb` | `9378509fdda21c65bf1f09e0bfa68634707a4e7f2eafc9e2069b13ce75b8fa4b` |
+| Visual/lifecycle | PASS | 38 | 129.910s | `20261018T0847488913606Z-9169b128231b4db4ae6f374e1c158e34` | `compat-20261018T084603Z-873619fa18ff` | `d574b3f12908eef8f745cc53458f1b2cf7e3fc940c2510ac5e0775a549a8664d` |
+| Ordinary/trample TB | PASS | 20 | 118.066s | `20261018T0853333264425Z-ce909c3fe86847059f123297aaf5b946` | `compat-20261018T085148Z-a05ceecd74dc` | `8be90192f404a25c3306e50eefced011798586b5c5cc2612537b9ba2bf82cffe` |
+| Exact-owner AI | PASS | 16 | 116.832s | `20261018T0859580319065Z-37bda5c1fe164dfbb0d80b0ef80bb051` | `compat-20261018T085814Z-c9789f34c912` | `b9f8fd27ae5eca9157179b60008c0c2fcb296b730459ecc700e14dbb7221f7ff` |
+| Breath TB | PASS | 17 | 144.940s | `20261018T0907179199893Z-256ad6e2655848e19afc4ace41b18b88` | `compat-20261018T090533Z-31d26e663eff` | `8f760432e43ef4b67a4e47ffec1e8e9c6eb45461133720870fb5540183278426` |
+
+Each transaction is Restored/restorationVerified=true; actual mods,83 settings,
+private references and all118 intake saves match. No game or lease remained.
+Visual/lifecycle's38 assertions prove the Gorgon post-swap rollback material fix,
+actual icons, original attachment, quantity/movement/death/expiry and exact donor
+isolation. Bulette's native expiry is judged by actual destruction/view/holding
+cleanup. Turn-based ordinary/trample, four exact-owner AI branches, and main
+turn-based staged breath/recovery/escalation/source removal/real cure passed.
+
+Leap's sole aggregate failure is the old compound landing predicate. Actual
+successful/failed travel6.761915m/6.879128m and travel-at-queue6.503062m/6.622925m
+are legal. Checks37/18, four claws/no bite versus one bite, native costs and later
+ordinary routine passed. Raw evidence lacks the failed landing subterm, so this
+failure cannot be reinterpreted as PASS. The next observer reads native
+ObstacleAnalyzer projection/route continuity and actor occupancy, retaining
+all graph/area identifiers. It requires a fresh run.
+
+The next source checkpoint adds compact request-local interruption/target-loss,
+released native Charge, natural disengagement opportunity, cone wall/range,
+initial-save/immunity/status-overlap/independent-death and live-HD/Con/Str
+controls. Normal post-action CMD and additive native damage/reach are observed.
+Gorgon displayed parameters now use installed native racial-class rank carriers,
+matching actual live DC derivation. These additions compile and53 focused tests
+PASS (17s production,3s test step,2.1s runner). Native proof remains pending.
+
+Publisher selector `-Sprint26MagicalBeasts`, PR58 and fixed wt/s26 root are
+integrated with source-derived six-root/roster and staged-condition/persistence
+requirements.81 decision/entrypoint refusal fixtures PASS; Sprint25's70
+fixtures remain PASS. Unit fixtures are not native qualification. Full strict
+candidate, public roots, cold-load ON/OFF, high-risk combined, public download
+and final restoration/release remain required. No Sprint27 work is selected.
+
 ## Source and assets
 
 - Exactly Gorgon (SM VIII/IX) and Bulette (SNA VI?IX), untemplated. Six roots,

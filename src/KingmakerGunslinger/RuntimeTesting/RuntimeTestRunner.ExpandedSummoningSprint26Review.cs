@@ -112,11 +112,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     foreach (bool success in new[] { true, false })
                         foreach (int frame in Sprint26Leap(fixture, turnBased, success)) yield return frame;
+                    if (!turnBased) {
+                        foreach (bool lost in new[] { false, true })
+                            foreach (int frame in Sprint26LeapCancellation(fixture, lost)) yield return frame;
+                        foreach (int frame in Sprint26NativeChargeControl(fixture)) yield return frame;
+                        foreach (int frame in Sprint26LeapOpportunity(fixture)) yield return frame;
+                    }
                     yield break;
                 }
                 if (phase.StartsWith("gorgon-breath-", StringComparison.Ordinal))
                 {
                     foreach (int frame in Sprint26Breath(fixture, turnBased)) yield return frame;
+                    if (!turnBased) {
+                        foreach (int frame in Sprint26GorgonCastBoundaries(fixture)) yield return frame;
+                        foreach (int frame in Sprint26GorgonLifeBoundaries(fixture)) yield return frame;
+                    }
                     yield break;
                 }
                 // A phase cannot silently fall back to a smaller native subset.
@@ -291,6 +301,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         index++;
                     }
                 }
+                owner.Stats.Strength.BaseValue=strength;
+                int additionalDamage=owner.Stats.AdditionalDamage.BaseValue,reachBonus=owner.Stats.Reach.BaseValue;
+                try {
+                    owner.Stats.AdditionalDamage.BaseValue=additionalDamage+3;
+                    owner.Stats.Reach.BaseValue=reachBonus+5;
+                    int index=0;
+                    foreach(var weapon in Sprint19Limbs(owner)) {
+                        observer.Clear();UnityEngine.Random.InitState(FindNativeD20Seed(18));
+                        Rulebook.Trigger(new RuleAttackWithWeapon(owner,fixture.Hostile,weapon,0));
+                        int baseline=key=="gorgon"?(index==0?7:3):(index==0?9:6);
+                        var damage=observer.Damage.FirstOrDefault();
+                        int rangeFeet=weapon.AttackRange.Value;
+                        bool row=damage!=null&&damage.DamageBundle.First.Bonus==baseline+3&&rangeFeet==(key=="gorgon"?10:15);
+                        exact&=row;rows.Add(new JObject{["liveAdditionalDamage"]=3,["liveReachFeet"]=5,["weapon"]=weapon.Blueprint.AssetGuid,
+                            ["rangeFeet"]=rangeFeet,["damage"]=damage==null?null:Sprint16DamageEvent(damage),["exact"]=row});index++;
+                    }
+                }finally{owner.Stats.AdditionalDamage.BaseValue=additionalDamage;owner.Stats.Reach.BaseValue=reachBonus;}
             }
             finally { owner.Stats.Strength.BaseValue = strength; owner.Stats.AdditionalAttackBonus.BaseValue = extra; UnityEngine.Random.state = random; EventBus.Unsubscribe(observer); }
             Sprint25Check("signed-damage-" + key, exact, new JObject { ["rows"] = rows }, "Actual weapon damage carries signed, zero and increased live Strength with correct limb roles.");
@@ -346,6 +373,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["ownerCombat"] = owner.IsInCombat, ["targetCombat"] = target.IsInCombat,
                         ["summonBuffs"] = new JArray(owner.Buffs.Enumerable.Select(v => v.Blueprint.name + ":" + v.TimeLeft.TotalSeconds)),
                         ["forcedAnimationEvents"] = 0 }, "The real full attack completes three ordinary attacks with one native action cost and no fixture animation completion.");
+                    var normalCmd=ProbeCombatManeuverDefenceParts(target,owner,CombatManeuver.Grapple);
+                    var normalTrip=ProbeCombatManeuverDefenceParts(target,owner,CombatManeuver.Trip);
+                    Sprint25Check("post-action-cmd-"+key+"-"+turnBased,normalCmd.Result==(key=="gorgon"?26:28)&&normalTrip.Result-normalCmd.Result==4,
+                        new JObject{["cmd"]=normalCmd.Describe("CMD"),["trip"]=normalTrip.Describe("trip")},
+                        "After its real ordinary action the creature retains normal CMD and quadruped trip defense, including Bulette's Dexterity.");
                     Sprint26Body(owner, key, "attack-" + turnBased);
                 }
             }
@@ -389,6 +421,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (selected == null) throw new InvalidOperationException("No legal Leap charge lane: " + route);
                 // Cost application is deliberately inert outside combat. Join
                 // these exact disposable actors before observing expenditure.
+                if (!turnBased && success) Sprint26LeapGeometryRefusals(fixture, owner, target, data);
                 owner.JoinCombat(); target.JoinCombat();
                 if (turnBased)
                 {
@@ -416,11 +449,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (attack != null && attack.IsFinished && command.IsFinished) break;
                         }
                         var attempt = BuletteLeapRuntime.Observation(attack);
-                        var landing = AstarPath.active.GetNearest(owner.Position);
-                        var startNode = AstarPath.active.GetNearest(start);
+                        var landing = Kingmaker.View.ObstacleAnalyzer.GetNearestNode(owner.Position);
+                        var startNode = Kingmaker.View.ObstacleAnalyzer.GetNearestNode(start);
+                        var traceEnd = Kingmaker.View.ObstacleAnalyzer.TraceAlongNavmesh(start, owner.Position);
+                        float projectionGap = Vector3.Distance(landing.clampedPosition, owner.Position);
+                        float continuityGap = Vector3.Distance(traceEnd, owner.Position);
+                        var overlaps = Game.Instance.State.Units.All.Where(v => v != null && v.View != null &&
+                            !ReferenceEquals(v, owner) && !v.Destroyed && !v.Descriptor.State.IsDead &&
+                            owner.DistanceTo(v) < owner.Corpulence + v.Corpulence - .05f).Select(v => v.UniqueId).ToArray();
+                        // A native connected route may cross graph/area identifiers.
+                        // Use the same native query and ray trace as charge setup;
+                        // retain the identifiers as observations, not a substitute.
                         bool legalLanding = landing.node != null && startNode.node != null && landing.node.Walkable &&
-                            landing.node.Area == startNode.node.Area && landing.node.GraphIndex == startNode.node.GraphIndex &&
-                            Vector3.Distance(landing.clampedPosition, owner.Position) <= .6f;
+                            projectionGap <= .6f && continuityGap <= .6f && overlaps.Length == 0;
                         var childCosts = costs.OfType<JObject>().Where(v => (string)v["nativeCost"] == "UnitAttack").ToArray();
                         bool childUnchanged = attack != null && attack.IsIgnoreCooldown && economy.Count(attack) == 1 && childCosts.Length == 1 &&
                             childCosts[0]["before"].Values<float>().SequenceEqual(childCosts[0]["after"].Values<float>());
@@ -437,6 +478,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["finished"] = command.IsFinished, ["result"] = command.Result.ToString(), ["frames"] = frames,
                             ["start"] = SurveyVector(start), ["landing"] = SurveyVector(owner.Position),
                             ["travel"] = Vector3.Distance(start, owner.Position), ["legalLanding"] = legalLanding,
+                            ["landingWalkable"] = landing.node != null && landing.node.Walkable,
+                            ["landingProjectionGap"] = projectionGap, ["navmeshContinuityGap"] = continuityGap,
+                            ["landingArea"] = landing.node == null ? -1 : (long)landing.node.Area,
+                            ["startArea"] = startNode.node == null ? -1 : (long)startNode.node.Area,
+                            ["landingGraph"] = landing.node == null ? -1 : (long)landing.node.GraphIndex,
+                            ["startGraph"] = startNode.node == null ? -1 : (long)startNode.node.GraphIndex,
+                            ["overlappingUnits"] = new JArray(overlaps),
                             ["maximumNativeVelocity"] = maximumVelocity, ["eligibleRunupAtStart"] = attempt?.EligibleAtStart,
                             ["nativeTravelAtQueue"] = attempt?.TravelAtQueue, ["minimumTravelMeters"] = Sprint26MagicalBeastRules.ChargeMinimumMeters, ["childAddsNoCost"] = childUnchanged,
                             ["ownerInCombat"] = owner.IsInCombat, ["childIsCharge"] = attack?.IsCharge, ["childIgnoresCooldown"] = attack?.IsIgnoreCooldown,
