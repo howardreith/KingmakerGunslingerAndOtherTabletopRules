@@ -27,7 +27,7 @@ rough visual debt is nonblocking and HumanReview remains NOT_PERFORMED_NONBLOCKI
 
 Strict source validation, production compilation, eight focused Sprint26 tests,
 12 source corruption fixtures,21 dispatch checks and81 publisher refusals PASS.
-No passing strict candidate exists. The first complete suite ran all2,686 tests and failed three now-corrected record/package/audit contracts. Sixteen affected tests and production compilation PASS after correction. Latest development aa0138a2
+No passing strict candidate exists. The first complete suite failed three now-corrected record/package/audit contracts;16 focused checks passed. The second suite passed all2,686 tests (99.7s), then packaging refused the stale385-file count. The corrected386-file payload passes review-only strict packaging; its failed partial build is archived exactly. Freeze the count correction and run the fresh strict gate. Latest development aa0138a2
 is never release eligible. Its two failed native attempts restored all118 saves,
 installation/settings/references exactly. No game/lease; no S26 Working save
 load/write. Steam Offline Mode remains supported. Preserve wt/s25 and frozen bytes.
