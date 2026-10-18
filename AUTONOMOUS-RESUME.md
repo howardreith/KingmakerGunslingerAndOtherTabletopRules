@@ -7,6 +7,15 @@ changes and published bytes; Sprint25 follows at the next free patch, currently
 v0.0.159. Conflict resolutions keep the Dire Rat edit and Brachiosaurus icon,
 both record streams, released158 notes, current package inventory and validators.
 
+Normal integration is committed/pushed as a65f469e. The minimal Overrun trace
+now reads real fact/subscriber/pending/eligibility state at native boundaries;
+all cases isolate get-up provocation. Manual duplicate notifications are gated
+on actual native consumption, so the fixture cannot supply missing behavior.
+Compile16.6s and23/23 focused cases PASS;70 publisher refusal checks PASS at159.
+Freeze one candidate, run standalone Overrun attribution first, inspect it,
+then narrowly repair demonstrated defects and qualify affected profiles. The
+next command is the existing candidate supervisor at the new committed SHA.
+
 0825699d full2666/exact/strict378 PASS; its38.33-minute eight-cell batch has
 foundation, TB commands and Great Cleave PASS in both profiles. Overrun TB
 threshold FAILs: native knockdown but no opportunity. Earlier RTWP responses

@@ -79,6 +79,60 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<RuleDealDamage> IncomingDamage = new List<RuleDealDamage>();
             internal readonly JArray ManeuverTimeline = new JArray();
             internal readonly JArray OpportunityTimeline = new JArray();
+            private readonly HashSet<RuleCombatManeuver> _returned = new HashSet<RuleCombatManeuver>();
+            internal readonly HashSet<RuleCombatManeuver> NativeRiderConsumed = new HashSet<RuleCombatManeuver>();
+            private JObject RiderState(RuleCombatManeuver evt)
+            {
+                const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+                FieldInfo pending = typeof(BrachiosaurusOverrunKnockdown).GetField("_pending", flags);
+                FieldInfo eligible = typeof(BrachiosaurusOverrunKnockdown).GetField("_eligibleBefore", flags);
+                if (pending == null || eligible == null) throw new MissingFieldException("Exact Overrun rider observation seam.");
+                var manager = RulebookEventBus.InitiatorRulebookSubscribers.Get(Owner);
+                var listeners = manager == null ? null : manager.GetType().GetField("m_Listeners", flags)
+                    ?.GetValue(manager) as System.Collections.IDictionary;
+                object bucket = listeners != null && listeners.Contains(typeof(RuleCombatManeuver)) ?
+                    listeners[typeof(RuleCombatManeuver)] : null;
+                var subscribers = bucket == null ? null : bucket.GetType().BaseType.GetField("List", flags)
+                    ?.GetValue(bucket) as System.Collections.IEnumerable;
+                object[] actual = subscribers == null ? new object[0] : subscribers.Cast<object>().ToArray();
+                return new JObject { ["exactOwnerAbility"] = BrachiosaurusNativeOverrun.Owns(evt),
+                    ["ownerInGame"] = Owner.IsInGame, ["ownerSleeping"] = Owner.IsSleeping,
+                    ["ownerAwakePool"] = Game.Instance.State.AwakeUnits.Contains(Owner),
+                    ["targetGetUp"] = Target.View.IsGetUp, ["nativeKnockEligible"] = UnitHelper.CanBeKnockedOff(Target),
+                    ["nativeRiderSubscriberIds"] = new JArray(actual.OfType<BrachiosaurusOverrunKnockdown>()
+                        .Select(value => value.GetInstanceID())),
+                    ["riders"] = new JArray(Owner.Descriptor.Progression.Features.Enumerable.SelectMany(fact =>
+                        fact.SelectComponents<BrachiosaurusOverrunKnockdown>().Select(rider => new JObject {
+                            ["componentId"] = rider.GetInstanceID(), ["componentName"] = rider.name,
+                            ["fact"] = fact.Blueprint.AssetGuid, ["factActive"] = fact.Active,
+                            ["factTurnedOn"] = fact.IsTurnedOn, ["owner"] = rider.Owner?.Unit?.UniqueId,
+                            ["subscribed"] = actual.Any(value => ReferenceEquals(value, rider)),
+                            ["pendingMatches"] = ReferenceEquals(pending.GetValue(rider), evt),
+                            ["pendingRuleId"] = pending.GetValue(rider) == null ? (JToken)null :
+                                System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pending.GetValue(rider)),
+                            ["eligibleBefore"] = (bool)eligible.GetValue(rider) }))) };
+            }
+            internal void ObserveReturnedRules()
+            {
+                foreach (RuleCombatManeuver evt in Maneuvers.Where(value => !_returned.Contains(value)).ToArray())
+                {
+                    int id = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt);
+                    JObject before = ManeuverTimeline.OfType<JObject>().Last(value =>
+                        (string)value["stage"] == "after-native-rule" && (int)value["ruleId"] == id);
+                    JObject after = RiderState(evt);
+                    var captured = (JArray)before["riderState"]["riders"];
+                    var consumed = (JArray)after["riders"];
+                    if (captured.Count == 1 && consumed.Count == 1 &&
+                        (int)captured[0]["componentId"] == (int)consumed[0]["componentId"] &&
+                        (bool)captured[0]["pendingMatches"] && !(bool)consumed[0]["pendingMatches"])
+                        NativeRiderConsumed.Add(evt);
+                    ManeuverTimeline.Add(new JObject { ["stage"] = "after-native-initiator-callbacks",
+                        ["ruleId"] = id, ["riderState"] = after,
+                        ["nativeCallbackConsumed"] = NativeRiderConsumed.Contains(evt),
+                        ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds });
+                    _returned.Add(evt);
+                }
+            }
             internal bool LastActiveProne;
             internal void ObserveNativeProne()
             {
@@ -99,6 +153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["ruleId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt),
                         ["target"] = evt.Target?.UniqueId, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                         ["sourceAbility"] = evt.Reason?.Context?.SourceAbility?.AssetGuid,
+                        ["riderState"] = RiderState(evt),
                         ["proneRequested"] = evt.Target?.Descriptor.State.Prone.ShouldBeActive,
                         ["proneActive"] = evt.Target?.Descriptor.State.Prone.Active });
                     if (ReferenceEquals(evt.Target, Target) && !ContactResourcesPrepared)
@@ -117,6 +172,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ruleId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt),
                     ["target"] = evt.Target?.UniqueId, ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                     ["success"] = evt.Success, ["partial"] = evt.IsPartialSuccess,
+                    ["riderState"] = RiderState(evt),
                     ["proneRequested"] = evt.Target?.Descriptor.State.Prone.ShouldBeActive,
                     ["proneActive"] = evt.Target?.Descriptor.State.Prone.Active });
             }
@@ -236,6 +292,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var commandRows = new JArray();
             var commands = new List<UnitUseAbility>();
             CountableFlag getUpIsolation = null;
+            bool repeatedNotificationVerified = false;
             Vector3 casterBefore = fixture.Caster.Position;
             try
             {
@@ -253,10 +310,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (ReferenceEquals(unit, target) || ReferenceEquals(unit, later)) nativeOpponents.Add(unit);
                 if (nativeOpponents.Count != 2) throw new InvalidOperationException("Native two-opponent fixture census differs.");
                 target = nativeOpponents[0]; later = nativeOpponents[1];
-                if (turnBased)
                 {
                     // Isolate the Overrun provocation from the separate native
-                    // get-up provocation while awaiting TB UI/animation gates.
+                    // get-up provocation in every case and both modes.
                     // Explicit maneuver provocation does not consult this flag.
                     getUpIsolation = target.Descriptor.State.Features.GetUpWithoutAttackOfOpportunity;
                     getUpIsolation.Retain();
@@ -496,13 +552,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     if (command.ExecutionProcess != null)
                         TickExpandedSummoningDetachedAbility(command, frames, true);
-                    if (sample == "repeated-notification" && !repeated && observer.Maneuvers.Count > 0)
+                    observer.ObserveReturnedRules();
+                    if (sample == "repeated-notification" && !repeated && observer.Maneuvers.Count > 0 &&
+                        observer.NativeRiderConsumed.Contains(observer.Maneuvers[0]))
                     {
                         var rider = owner.Descriptor.Progression.Features.Enumerable
                             .SelectMany(value => value.SelectComponents<BrachiosaurusOverrunKnockdown>()).Single();
                         rider.OnEventDidTrigger(observer.Maneuvers[0]);
                         rider.OnEventDidTrigger(observer.Maneuvers[0]);
                         repeated = true;
+                        repeatedNotificationVerified = true;
                     }
                     nativeProvocationSeen |= observer.ContactResourcesPrepared && nativeProvocations.Contains(target);
                     if (turnBased && observer.ContactResourcesPrepared && frames % 30 == 0)
@@ -627,6 +686,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     exactCommands &&
                     (!passThroughExpected || travelled > 2f) && travelled <= owner.Stats.Speed.ModifiedValue * .3048f * 2f + 1f &&
                     nativeKnockdownObserved == knockdown && legalResponders && attributedDamage && responses &&
+                    observer.NativeRiderConsumed.Count == commandCount &&
+                    (sample != "repeated-notification" || repeatedNotificationVerified) &&
                     observer.Maneuvers.Count == commandCount,
                     new JObject { ["unit"] = owner.UniqueId, ["target"] = target.UniqueId,
                         ["laterTarget"] = later.UniqueId, ["ability"] = blueprint.AssetGuid,
@@ -647,6 +708,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeKnockdownTransitionObserved"] = nativeKnockdownObserved,
                         ["passThroughExpected"] = passThroughExpected,
                         ["maneuverTimeline"] = observer.ManeuverTimeline,
+                        ["nativeRiderCallbacksConsumed"] = observer.NativeRiderConsumed.Count,
+                        ["duplicateNotificationsAfterNativeConsumption"] = repeatedNotificationVerified,
                         ["opportunityTimeline"] = observer.OpportunityTimeline,
                         ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
                         ["damageAttributedToNativeResponders"] = attributedDamage,
