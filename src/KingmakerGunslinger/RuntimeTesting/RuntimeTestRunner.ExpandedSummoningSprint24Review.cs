@@ -386,15 +386,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     object[] before = SnapshotReferences(fixture.AllUnits);
                     var cases = new List<ExpandedSummoningPlayerPathCase>();
+                    bool untemplatedMonster = route.Family == SummonFamily.Monster &&
+                        !route.Creature.MonsterTemplated;
                     AddExpandedSummoningPlayerPathRootCase(cases,
                         fixture.Blueprints, fixture.Caster, book, parents,
-                        route, fiendish ? Alignment.LawfulEvil : ExpandedSummoningPlayerPathAlignmentFor(route),
+                        route, untemplatedMonster ? Alignment.NeutralGood : fiendish ? Alignment.LawfulEvil : ExpandedSummoningPlayerPathAlignmentFor(route),
                         route.Family == SummonFamily.NaturesAlly
                             ? (SummonAlignmentMode?)SummonAlignmentMode.Caster
-                            : fiendish ? SummonAlignmentMode.Fiendish : SummonAlignmentMode.Celestial,
+                            : untemplatedMonster ? (SummonAlignmentMode?)null : fiendish ? SummonAlignmentMode.Fiendish : SummonAlignmentMode.Celestial,
                         fixture.SceneEntities, fixture.AllUnits,
                         route.StableKey);
                     ExpandedSummoningPlayerPathCase item = cases.Single();
+                    if (untemplatedMonster)
+                    {
+                        // Retain the creature's own alignment even for a good
+                        // caster; no celestial/fiendish fact is authorized.
+                        string expectedAlignment = ExpandedSummoningUnit(
+                            fixture.Blueprints, route).Alignment.ToString();
+                        item.TemplateContract = item.LiveCount > 0 &&
+                            string.IsNullOrEmpty(item.TemplateFacts) &&
+                            item.SummonedAlignment.Split(',').All(value =>
+                                value == expectedAlignment);
+                        item.LiveContract = item.LiveContract && item.TemplateContract;
+                    }
                     var durations = ExpandedSummoningRuleDurationCapture
                         .ToArray();
                     bool duration = durations.Length == item.LiveCount &&
@@ -414,7 +428,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["event"] =
                                 "native-parent-selected-variant-spellbook",
                             ["owner"] = route.StableKey,
-                            ["alignmentCase"] = fiendish ? "fiendish" : route.Family == SummonFamily.NaturesAlly ? "caster" : "celestial",
+                            ["alignmentCase"] = untemplatedMonster ? "base-with-good-caster" : fiendish ? "fiendish" : route.Family == SummonFamily.NaturesAlly ? "caster" : "celestial",
                             ["detail"] = item.Describe(),
                             ["baseDurations"] = new JArray(durations.Select(
                                 value => value.BaseDuration.TotalSeconds)),

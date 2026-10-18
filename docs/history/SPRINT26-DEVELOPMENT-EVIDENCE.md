@@ -959,3 +959,35 @@ artifacts/sprint26-authoring/focused-public-r24b.log. Fresh full public-r24b
 freeze/gate/package and actual public routes remain required. Corrected current
 R23 summary arithmetic to264 assertions across nine phases; exact phase counts
 and original raw verdicts are unchanged. No native session/lease is active.
+
+## Public-r24b strict gate and route-observer correction
+
+Source64394c534bdf14c51f879d2c68290c1ff88b77e4; gate PASS381.6639454s,
+2,687/2,687 zero failures,386 files. ZIP
+d5f5c9367a339fe6b42858df8b78b0c52c99cc2331592aca94032cfb4cf9cffd;
+DLL803664343edf74ca67f14ce9a96cfd9b14af9fe5e5bb19439d1ee9062d396012;
+MVIDb4020221-aeab-4a06-9b68-95b224edac8e; source fingerprint
+8367121e8a20616a6062e4efc3b66d9ca974f134afaf44135f9b8b54dd6f9204.
+
+Standalone route RunId20261018T1746063098091Z-a074a505d3704917b437e545e8194766,
+directory20261018T1746062785539Z-disposable-expanded-summoning-sprint26-native-review,
+outer224.1725714s FAIL: only two Gorgon route template expectations failed.
+Real Gorgon spawns were base TrueNeutral with no template facts; slots5->4,
+one cast/spawn action, legal quantities and120s duration passed. All four
+Bulette routes passed. The reused Sprint24PlayerRoutes observer always asked
+for celestial Monster output, although these charter rows are untemplated.
+Correction supplies no template mode for untemplated Monster and explicitly
+checks actual base alignment and absent template facts using a good caster;
+templated Monster and Nature's Ally expectations are unchanged. Production
+rules/assets/identities unchanged. Compiled observer change requires fresh
+public-r25 strict package and affected standalone/combined route runs.
+
+Original failed evidence/strict package preserved. Actual transaction
+compat-20261018T174421Z-54fcd4d2d887 restored exact mods/settings/private inputs,
+all118 saves including protected metadata; no game/lease remains. Steam
+Offline preserved. No product merge/tag/release, no Sprint27.
+
+Observer correction focused gate: production compilation PASS17.3s and named
+25 Sprint26/alignment/Sprint24/Sprint25-public-scope tests PASS1.5s runner; exact
+selection/count retained in artifacts/sprint26-authoring/focused-public-r25.log.
+No public-r24b native claim is upgraded by this source-only correction.
