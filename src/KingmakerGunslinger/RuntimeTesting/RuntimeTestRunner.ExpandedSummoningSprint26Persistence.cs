@@ -84,7 +84,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RosterPersistenceCheck("sprint26-fresh-state-absence",actors.Length==0,new JObject{["receiptActors"]=actors.Length},"Fresh native load contains no Sprint26 disposable state actors.");yield break;
             }
             var owner=sources.Single(v=>v.Get<UnitPartRelease143RosterReceipt>()?.Key=="gorgon");
-            var all=BlueprintBootstrap.Library.GetAllBlueprints().ToArray();
+            var all=BlueprintBootstrap.Library.GetAllBlueprints().Where(v=>v!=null).ToArray();
             var breath=all.OfType<BlueprintAbility>().Single(v=>v.name=="KMG_Summoning_Special_Gorgon_Breath");
             var stone=all.OfType<BlueprintBuff>().Single(v=>v.AssetGuid==Sprint26MagicalBeastRules.PetrificationGuid);
             var onCast=breath.GetComponent<GorgonBreathOnCast>();var clock=onCast.Cooldown;

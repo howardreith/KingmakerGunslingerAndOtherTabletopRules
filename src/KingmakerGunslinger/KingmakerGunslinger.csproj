@@ -1280,6 +1280,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Lifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Persistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26GorgonBoundaries.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26LeapBoundaries.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoning.cs" />
     <Compile Include="RuntimeTesting\AlternateSummoningFaultDrillControl.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningContracts.cs" />

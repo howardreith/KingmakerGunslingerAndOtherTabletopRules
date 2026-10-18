@@ -24,72 +24,35 @@ native frames show both visible/selectable. Gorgon's rough proportions, plates,
 seams and secondary motion remain cosmetic backlog. HumanReview remains
 NOT_PERFORMED_NONBLOCKING. No product merge, final candidate or release yet.
 
-Latest tested development artifact: source666a2d488f47cde0840e74201e8a13817b92ee65,
-ZIP591aa5f52733b093f419bb83b5cd24a9decb039ab8288252995cb7495eff4d65,
-DLLcde81addb8a71d572a672cbd25f11ffc779fbc30fabe89d1f9d00093cb4ef093,
-MVIDf97fbee4-91b3-4d69-bf82-df1602d04d45. Fixed-root build242.910s,
-530 selected tests and fresh632-check preflight PASS. RTWP foundation previously
-passed on3d06ae18 (profiles, signed damage, native reach/commands, trample,
-Power Attack/critical confirmation and Elephant control). No old proof is
-relabeled as execution on changed bytes.
+Latest development artifact: source19a2b61a8ad61512658b0cd123f2e73d0a1456f2,
+ZIP173269b1b2a5ee4b107dd05930bfe0a6ff9616664362dbaf53151dc11a5af21e,
+DLL60bb641628b4fe2c80b2807b29611c14426b61957a3697902bd638be37b452c2,
+MVIDc7121996-a7b7-4120-bb84-72fc9f650f07. Build239.755s,532 selected tests,
+632 preflight checks PASS. Native lifecycle38, ordinary/trample TB20, AI16 and
+main breath TB17 assertions PASS. Leap RTWP fails the old compound landing
+predicate; legal travel/check/attack/cost observations are retained. Detailed
+identities, durations, raw hashes, exact transactions and earlier failures are
+in the current development section of docs/SPRINT26-COVERAGE.md.
 
-Gorgon RTWP breath PASS132.789s/17 assertions on666a2d48: safe cone, first
-nonlethal temporary condition, duplicate rejection, instance cooldown, real
-round recovery, cross-source permanent transition, source removal and the
-actual native Stone to Flesh command. The count1 mirror/life repair is proven
-for this sequence. Immunity/overlap/independent lethal-health and live-HD/Con
-negative controls, both modes and cold-load ownership remain required.
+All completed transactions restored actual intake exactly:118 saves, installation,
+settings and private references. No game/lease remains. No Sprint26 working-save
+load/write has occurred. Steam Offline Mode remains supported; preserve wt/s25.
 
-Bulette RTWP Leap's old reader returned PASS, but retained raw movement proves
-its successful case traveled only2.40459514m, below PF1's10-foot minimum.
-The corrected qualification verdict is FAIL; the old result is retained with a
-hash-bound reevaluation. Native checks37/18, four claws/no bite versus one
-bite, legal landing, real parent cost/ignored child and later ordinary routine
-were observed. New source rejects insufficient run-up beyond current native
-reach/radii and aborts its exact queued strike if actual travel becomes too
-short. Other native charges remain outside that context. Fresh proof required.
+Current checkpoint adds native landing diagnostics and compact boundary controls,
+including charge interruption/target loss/normal native control/opportunity,
+cone wall/range/save/immunity, life/status overlap, modified HD/Con/Str, damage,
+reach and normal post-action CMD. Native racial rank parameters also keep the
+Gorgon displayed DC live. Production compilation17s and53 focused tests PASS;
+new observer/parameter behavior requires fresh affected native runs.
 
-Lifecycle on666a2d48 FAIL128.816s. Actual icons, original Gorgon attachment,
-quantity casts, movement/confined response, deaths, Gorgon native expiry,
-ordinary private cleanup and exact Horse/Bulette donor isolation passed. A
-post-swap Gorgon fault leaked one controller-driven material; the exact-key
-rollback now captures that owned clone before reverting. Bulette despawned
-logically and physically, but the old reader demanded a dissolve animation;
-that arbitrary original-body expectation now distinguishes native Bulette
-presentation. Actual32px sprite, Gorgon movement and Bulette death pixels were
-read. No aesthetic approval or polish claim is made.
-
-All exact666a transactions restored with restorationVerified=true:
-compat-20261018T080715Z-e6729ae8fa87,
-compat-20261018T081209Z-0765179b64e4,
-compat-20261018T081811Z-71775aab54f5. Actual installation/settings/private
-references and all118 intake saves match. No game/lease remains. Completed
-owned scheduled tasks were removed after exact recorded-action checks; later
-task metadata tracks any new tasks. Every transaction must take its own intake.
-Baseline remains immutable; Steam Offline Mode is supported. Preserve wt/s25.
-
-The new source also implements persistenceScope=magical-beasts consistently in
-the existing guarded working-save trio/installed-stack entry. Its exact sources
-are Gorgon/Bulette plus two receipt-owned disposable condition actors outside
-the human party. It checks source-gone staged buffs/DC/source strings, an exact
-unrefreshed cooldown, native post-load recovery/permanent silence, module OFF,
-cleanup and fresh absence. Production state calls arrange save preconditions;
-separate commands qualify product behavior. No save has been loaded or written
-for Sprint26 persistence. The wrapper still requires a strict release candidate.
-Compilation PASS17.7s and53 focused tests PASS2.2s (6.2s test step); native proof
-for these new bytes remains pending.
-
-Next: push this coherent checkpoint, build one development artifact in this
-fixed root, narrowly reproduce legal Leap and Gorgon fault rollback, then finish
-negative controls, both modes, exact-owner AI, targeted cold-load/condition/
-cooldown persistence, six final-public roots/slots/quantity/duration/alignment,
-standalone/high-risk compatibility and publisher selector/refusal checks. Remove
-only the two suppression keys at the supported publication stage; run one fresh
-complete strict Sprint gate, promote tested bytes, verify actual downloads and
-restoration, merge final RELEASED/STOP records and stop before Sprint27. Ordinary
-remaining work is not a blocker; partial proof is not full qualification.
-
-Push only through the existing required wrapper. Exactly the two authorized
-branch names were appended with byte-preserving backup/hash/round-trip proof
-and23 refusal tests under ignored artifacts/sprint26-intake. The closed prior
-resume remains docs/history/SPRINT25-FINAL-RESUME-2026-10-18.md.
+Sprint26 publisher selector/PR58/fixed-root and exact six-root qualification
+checks are implemented;81 refusal fixtures and inherited Sprint25's70 PASS.
+No qualification ledger falsely claims native completion. Targeted guarded
+persistenceScope=magical-beasts is implemented but unrun and requires a strict
+candidate. Next: push this checkpoint, build development artifact in wt/s26,
+run affected compact boundary phases, inspect any failure before repair, then
+finish hidden/public qualification, strict final candidate, six public roots,
+cold load ON/OFF/cleanup/absence, high-risk combined, publisher preflight/dry-run,
+product merge, tested-byte stable release/download checks, exact restoration and
+final-records merge. Intermediate checkpoints do not end the authorized mission.
+STOP before Sprint27 only after RELEASED records or a concrete essential blocker.
