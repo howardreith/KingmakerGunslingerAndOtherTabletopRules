@@ -61,10 +61,10 @@ were checked unchanged. This is donor/engine metadata, not creature gameplay.
 | Required native coverage | Current state |
 |---|---|
 | Composed profiles, signed damage, reach, ordinary commands and bodies | PASS on3d06ae18; exact affected reruns on final candidate remain required |
-| Breath first effect/recovery/escalation/cross-source/cooldown/duplicate/actual cure | First actual cone FAIL: redundant native status buff killed temporary victim; exact scoped repair awaits fresh proof; further controls pending |
-| Leap successful/failed genuine check, four claws/no bite and native cost | Branches observed; aggregate FAIL due zero out-of-combat cost samples; corrected combat setup and negative controls pending |
+| Breath first effect/recovery/escalation/cross-source/cooldown/duplicate/actual cure | Main RTWP sequence PASS on666a2d48; immunity/overlap/live-stat controls, both modes and cold load pending |
+| Leap successful/failed genuine check, four claws/no bite and native cost | Branch/cost/landing observations obtained on666a2d48; corrected verdict FAIL for short successful run-up, new exact-owner geometry guard awaits fresh proof |
 | Trample, Power Attack/critical confirmation, both modes, affected controls | RTWP baseline native PASS; mode and remaining live/negative controls pending |
-| Exact-owner useful AI, body rollback/lifecycle/module boundaries and icon UI | Compact observers implemented; native evidence pending |
+| Exact-owner useful AI, body rollback/lifecycle/module boundaries and icon UI | Lifecycle partial proof on666a2d48; Gorgon fault-material leak repaired awaiting fresh proof; AI/module checks pending |
 | Six public roots, real slots/quantity/duration/alignment/removal | Registered and withheld; final-public artifact gate pending |
 | Targeted cold-load, victim/cooldown ownership, module-OFF hydration/cleanup | Pending extension of the existing guarded working-save path |
 | Standalone/highest-risk-combined, final strict Sprint candidate and publisher | Pending; no release writes authorized before mandatory evidence passes |
@@ -235,7 +235,7 @@ assuming a fixed number of synthetic frames. Compilation and50 focused checks
 PASS (1.7s tests); fresh native reproduction is required. The safe-cone/AI paths
 on5ebfce1b were not executed and receive no new verdict.
 
-## Current prototype evidence and exact next reproduction
+## Prototype3d06ae18 and its retained failures
 
 Development source3d06ae18c0216ff96dac417b722ca1ed17f5a3ec, fixed s26 root:
 ZIP2981ed641f2d12f930bf1a3ede0b188fe17c216dd5d2d8d253a071a0842a2128;
@@ -288,3 +288,49 @@ resource and actual sprite consumer observers are now implemented, not qualified
 Focused repair gate: production Release compilation PASS17.4s;51/51 selected
 Sprint26/runtime/public-record derivation checks PASS (runner1.7s, test step5.6s).
 The complete suite, package and changed native observers remain unqualified.
+
+## Current evidence on666a2d48 and next narrow repairs
+
+Fixed-root development build242.910s:530 selected tests PASS, fresh632-check
+request preflight PASS. ZIP591aa5f52733b093f419bb83b5cd24a9decb039ab8288252995cb7495eff4d65;
+DLLcde81addb8a71d572a672cbd25f11ffc779fbc30fabe89d1f9d00093cb4ef093;
+MVIDf97fbee4-91b3-4d69-bf82-df1602d04d45;
+fingerprint92b9bbfce166aee0fe40bd7c5dfcffd53360a2e67ca66514ccce24c90b09d2e3.
+Exact source666a2d488f47cde0840e74201e8a13817b92ee65.
+
+| Phase | Exact native result and identity | Interpretation |
+|---|---|---|
+| Gorgon breath RTWP | PASS17 assertions/132.789s native/274.122s outer; RunId20261018T0809041491483Z-b9fedb5f8d6949798945f04bc06ccc34; runtime-result SHA6023bea918014e4f54e3d9aa74d0a87fdf059a3ac1bde2a5da656c9d2905c06c | First temporary stone now owns one count and no lethal HP damage; duplicate, instance cooldown, real recovery, distinct cross-source permanent escalation, source removal and actual Stone to Flesh all pass. Remaining boundary/mode/load controls stay open. |
+| Bulette Leap RTWP | Old reader PASS15 assertions/115.997s native/259.924s outer; RunId20261018T0813599444465Z-be776d05a559474ab09786ea0f16a08a; runtime-result SHAe8a2d5219a4292e3f7fef58a89db3858e3d5bba4e6075f77caa9eb130c854e05 | Corrected qualification FAIL: successful four-claw case traveled2.40459514m, below10 feet; failed-check single bite traveled6.79582453m. Original result and hash-bound charge-legality-reevaluation.json are retained. Both genuine checks, roles, parent/ignored-child cost, landing and later ordinary routine were observed; they do not excuse illegal run-up. |
+| Body/icon lifecycle | FAIL35 assertions/128.816s native/264.772s outer; RunId20261018T0819583553461Z-b53fd373fd614058a8ec98c78deb2cea; runtime-result SHAb939004d1a84d453a4cdb007881b4981ddd41820e585b7001379dbf55b92db34 | All six actual root sprites/Leap/native effects, fallback, quantity bodies, native movement/confined response, deaths, Gorgon expiry, normal private cleanup and donor isolation pass. Gorgon post-swap fault leaves one controller material. Bulette logical/view/holding despawn succeeds with no sampled dissolve; the old reader imposed an unnecessary original-body visual expectation. |
+
+The charge correction uses current native approach radius (installed Init builds
+its attack list and radius without queuing/running it), refuses insufficient
+run-up and checks actual movement at the exact own queued-strike seam. It aborts
+a now-illegal strike while retaining the spent parent action. Native donor and
+other charge contexts are unaffected; fresh native proof and an affected-consumer
+control are still required. The contract cites the PF1 minimum movement rule.
+Gorgon rollback's existing capture branch now also covers exactly its own visual
+key, reclaiming the controller-created material before Revert drops references.
+No other visual family's behavior or approved art is changed. Bulette retains
+its exact native despawn presentation; no dissolve or polish is claimed.
+
+All three exact transactions are Restored/restorationVerified=true:
+compat-20261018T080715Z-e6729ae8fa87,
+compat-20261018T081209Z-0765179b64e4,
+compat-20261018T081811Z-71775aab54f5. Each actual installation/settings/private
+reference comparison and118-save audit passed; no owned game/lease remains.
+Actual native32px project sprites, Gorgon breath/movement and Bulette death frames
+were opened. HumanReview remains NOT_PERFORMED_NONBLOCKING.
+
+The two-creature magical-beasts persistence scope is implemented across the
+existing C#/PowerShell guarded trio and installed-stack selector. Its two extra
+receipt-owned victims are not human-party or quest actors. Primitive saved
+provenance covers original source removal, temporary/permanent state and the
+live source's unrefreshed cooldown; native post-load round behavior, module OFF,
+cleanup and fresh absence are mandatory. Production state calls only arrange
+the saved fixture, not command proof. No save has been loaded/written yet.
+The installed-stack wrapper's strict candidate requirement remains unchanged.
+Focused compilation PASS17.7s;53 selected checks PASS2.2s (test step6.2s).
+An initial compile missed the Blueprint extension namespace; corrected before
+this passing gate. No full/native/persistence/release verdict follows from it.

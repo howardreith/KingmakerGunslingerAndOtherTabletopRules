@@ -77,6 +77,38 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(refused, "An invented out-of-die cooldown cannot be accepted.");
         }
 
+        internal static void ChargeRequiresActualRunupBeyondCurrentReach()
+        {
+            float minimum = Sprint26MagicalBeastRules.ChargeMinimumMeters;
+            Assertions.True(Sprint26MagicalBeastRules.ChargeTravelIsLegal(minimum), "Exactly ten feet is legal actual charge travel.");
+            Assertions.False(Sprint26MagicalBeastRules.ChargeTravelIsLegal(minimum - .001f), "A successful jump roll cannot excuse insufficient charge movement.");
+            Assertions.False(Sprint26MagicalBeastRules.ChargeTravelIsLegal(2.40459514f), "The retained failed native prototype must be refused.");
+            Assertions.True(Sprint26MagicalBeastRules.ChargeHasRunup(12f, 5.548f), "A normal long native lane leaves enough movement outside attack approach.");
+            Assertions.False(Sprint26MagicalBeastRules.ChargeHasRunup(7.53f, 5.548f), "Large reach and collision radii cannot consume the required run-up.");
+            Assertions.False(Sprint26MagicalBeastRules.ChargeHasRunup(12f, 10f), "A live reach increase changes the available run-up.");
+            Assertions.False(Sprint26MagicalBeastRules.ChargeTravelIsLegal(float.NaN), "Unknown travel is never legal.");
+            Assertions.False(Sprint26MagicalBeastRules.ChargeTravelIsLegal(float.PositiveInfinity), "Nonfinite movement is never proof.");
+            Assertions.False(Sprint26MagicalBeastRules.ChargeHasRunup(12f, -1f), "An invalid approach radius cannot grant distance.");
+        }
+
+        internal static void PersistenceOwnsOnlyTheTwoAssignedCreatures()
+        {
+            string scope = KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.MagicalBeastsScope;
+            foreach (string key in new[] { "gorgon", "bulette" }) {
+                var variant = KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, key);
+                Assertions.Equal(key, variant.Creature.Key, "Exact named scope can prepare the registered withheld identity.");
+                Assertions.Equal(SummonMultiplicity.One, variant.Multiplicity, "The fixture creates one of each source.");
+            }
+            Assertions.True(KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] {"bulette","gorgon"}), "Cold-load order does not change exact membership.");
+            Assertions.False(KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] {"gorgon","gorgon"}), "Duplicate source cannot replace the other creature.");
+            Assertions.False(KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] {"gorgon","bulette","wolf"}), "No unrelated actor may enter the selected roster.");
+            bool refused=false;
+            try { KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope,"griffon"); } catch(InvalidOperationException) {refused=true;}
+            Assertions.True(refused,"Sprint27 is outside this scope.");
+            foreach(string scenario in new[] {"working-save-expanded-summoning-prepare","working-save-expanded-summoning-verify-cleanup","working-save-expanded-summoning-verify-absent"})
+                Assertions.True(KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.ObserveLoad(scenario,scope),"All three existing guarded stages recognize the same named scope.");
+        }
+
         internal static void LeapBonusAndSavageBiteAreConditionalAndSigned()
         {
             foreach (int[] row in new[] { new[] { 40, 8 }, new[] { 30, 4 }, new[] { 20, 0 }, new[] { 10, -4 } })

@@ -95,6 +95,14 @@ ordinary attacks distinct; grant neither Overrun nor Cleave.
 ## Bulette legal surface Leap
 
 A legal native charge may attempt one DC20 jump-specific Acrobatics check.
+The [PF1 charge rule](https://legacy.aonprd.com/coreRulebook/combat.html#charge)
+requires at least10 feet of actual movement before the attack, to the closest
+legal attack position. Native target validation alone was insufficient for this
+Huge creature's reach/radii. Leap therefore additionally requires enough run-up
+beyond the current native attack approach radius and rechecks actual travel at
+the native queued-strike seam. If movement becomes insufficient after the action
+starts, the strike is aborted with its parent action still spent. This guard is
+limited to the exact Bulette Leap context; other native charges are unchanged.
 Success substitutes exactly four primary claw attacks, no bite, against legal
 foes within current reach. It never adds attacks to the ordinary routine.
 Failure interpretation: complete the legal ordinary charge's single attack;

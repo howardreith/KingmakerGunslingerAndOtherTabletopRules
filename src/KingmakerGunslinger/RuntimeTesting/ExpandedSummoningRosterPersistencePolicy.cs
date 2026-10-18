@@ -216,6 +216,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ArmoredDinosaursScope = "armored-dinosaurs";
         internal const string TheropodsScope = "theropods";
         internal const string GiantBodiesScope = "giant-bodies";
+        internal const string MagicalBeastsScope = "magical-beasts";
+        internal static string[] MagicalBeastKeys { get { return new[] { "gorgon", "bulette" }; } }
         internal static string[] GiantBodyKeys
         { get { return new[] { GiantBodyRulesPolicy.BrachiosaurusKey, GiantBodyRulesPolicy.ElephantKey }; } }
         internal const string ReceiptScope = "KMG_Release143_WholeRoster_v1";
@@ -271,6 +273,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == ArmoredDinosaursScope ? ArmoredDinosaurKeys :
                 scope == TheropodsScope ? TheropodKeys :
                 scope == GiantBodiesScope ? GiantBodyKeys :
+                scope == MagicalBeastsScope ? MagicalBeastKeys :
                 scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
                 new string[0];
             if (!permitted.Contains(key, StringComparer.Ordinal))
@@ -295,6 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new[] { "ankylosaurus" } : scope == ArmoredDinosaursScope ?
                 ArmoredDinosaurKeys : scope == TheropodsScope ?
                 TheropodKeys : scope == GiantBodiesScope ? GiantBodyKeys :
+                scope == MagicalBeastsScope ? MagicalBeastKeys :
                 scope == Scope ? Keys : new string[0];
             return expected.Length != 0 && observed.OrderBy(value => value,
                     StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
@@ -314,7 +318,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return (scope == Scope || scope == AnkylosaurusScope ||
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
-                scope == GiantBodiesScope) &&
+                scope == GiantBodiesScope || scope == MagicalBeastsScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);
