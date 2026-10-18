@@ -78,4 +78,30 @@ namespace KingmakerGunslinger.Summoning
                 ConditionCount(state), stages[0].Initialized, stages[0].Permanent);
         }
     }
+
+    // UnitState.UpdateStatusEffect normally mirrors a non-native condition
+    // carrier into SystemMechanics.PetrifiedBuff. That adds a second condition
+    // and strands a permanent native buff after the staged carrier recovers.
+    // This exact carrier already clones that native buff's condition, descriptor
+    // and presentation. Let it supply the sole native condition directly, just
+    // as PetrifiedBuff itself does. Independent and overlapping sources keep the
+    // original factory and life behavior, including module-disabled hydration.
+    [HarmonyPatch(typeof(UnitState), "UpdateStatusEffect")]
+    internal static class GorgonPetrificationStatusMirror
+    {
+        private static bool Prefix(UnitState __instance, UnitCondition __0,
+            Kingmaker.UnitLogic.Buffs.Buff __1)
+        {
+            if (__0 != UnitCondition.Petrified || __instance?.Owner?.Unit == null) return true;
+            var own = __1;
+            if (own == null)
+                own = __instance.Owner.Unit.Buffs.Enumerable.FirstOrDefault(v => v != null &&
+                    v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrificationGuid);
+            if (own == null || own.Blueprint.AssetGuid != Sprint26MagicalBeastRules.PetrificationGuid) return true;
+            bool sole = Sprint26MagicalBeastRules.SuppliesOwnPetrifiedStatus(own.Blueprint.AssetGuid,
+                ReferenceEquals(own.Owner, __instance.Owner), GorgonPetrificationLife.ConditionCount(__instance),
+                __instance.HasConditionImmunity(UnitCondition.Petrified));
+            return !sole;
+        }
+    }
 }

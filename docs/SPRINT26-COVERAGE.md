@@ -1,7 +1,7 @@
-# Sprint26 ? implementation checkpoint
+# Sprint26 - implementation checkpoint
 
-Status: IMPLEMENTING / WITHHELD. No new creature gameplay qualification, product
-merge or stable release is claimed. Continue the owner-authorized campaign;
+Status: IMPLEMENTING / WITHHELD. Foundation gameplay proof is partial; no complete
+creature qualification, product merge or stable release is claimed. Continue the owner-authorized campaign;
 this checkpoint is not its stopping point. The controlling task state is
 [AUTONOMOUS-RESUME.md](../AUTONOMOUS-RESUME.md), with the frozen rules in
 [the contract](../planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md) and the
@@ -49,7 +49,7 @@ new total now have distinct assertions, repaired run PASS in the prototype devel
 
 ## Native evidence and remaining coverage
 
-The sole Sprint26 native PASS so far is the bounded, save-free input capture on
+The initial bounded, save-free input capture passed on
 source `3728fd9765616a3c9e5442adf4c6dea02afb2dee`, development-only DLL
 `1799673c82e5d259e628fa52c566fe1dc6dcd50eb1b8fb6a90a797de54a33ba4`,
 MVID `a6c6e4db-7368-4685-a50c-f776a5843c01`. RunId
@@ -60,11 +60,11 @@ were checked unchanged. This is donor/engine metadata, not creature gameplay.
 
 | Required native coverage | Current state |
 |---|---|
-| Composed profiles, signed damage, reach, ordinary commands and bodies | First native prototype FAIL; narrowed repairs below, fresh run pending |
-| Breath first effect/recovery/escalation/cross-source/cooldown/duplicate/actual cure | Prototype observer implemented; not run; further immunity/eligibility controls pending |
-| Leap successful/failed genuine check, four claws/no bite and native cost | Prototype observer implemented; not run; interruption/target-loss/blocked-route controls pending |
-| Trample, Power Attack/critical confirmation, both modes, affected controls | Pending compact extension and native evidence |
-| Exact-owner useful AI, body rollback/lifecycle/module boundaries and icon UI | Pending compact extension and native evidence |
+| Composed profiles, signed damage, reach, ordinary commands and bodies | PASS on3d06ae18; exact affected reruns on final candidate remain required |
+| Breath first effect/recovery/escalation/cross-source/cooldown/duplicate/actual cure | First actual cone FAIL: redundant native status buff killed temporary victim; exact scoped repair awaits fresh proof; further controls pending |
+| Leap successful/failed genuine check, four claws/no bite and native cost | Branches observed; aggregate FAIL due zero out-of-combat cost samples; corrected combat setup and negative controls pending |
+| Trample, Power Attack/critical confirmation, both modes, affected controls | RTWP baseline native PASS; mode and remaining live/negative controls pending |
+| Exact-owner useful AI, body rollback/lifecycle/module boundaries and icon UI | Compact observers implemented; native evidence pending |
 | Six public roots, real slots/quantity/duration/alignment/removal | Registered and withheld; final-public artifact gate pending |
 | Targeted cold-load, victim/cooldown ownership, module-OFF hydration/cleanup | Pending extension of the existing guarded working-save path |
 | Standalone/highest-risk-combined, final strict Sprint candidate and publisher | Pending; no release writes authorized before mandatory evidence passes |
@@ -234,3 +234,57 @@ Recovery/permanent/cooldown waits now use bounded actual game seconds rather tha
 assuming a fixed number of synthetic frames. Compilation and50 focused checks
 PASS (1.7s tests); fresh native reproduction is required. The safe-cone/AI paths
 on5ebfce1b were not executed and receive no new verdict.
+
+## Current prototype evidence and exact next reproduction
+
+Development source3d06ae18c0216ff96dac417b722ca1ed17f5a3ec, fixed s26 root:
+ZIP2981ed641f2d12f930bf1a3ede0b188fe17c216dd5d2d8d253a071a0842a2128;
+DLLb975ae7ac1657d0d6e1cedc3d0462dd33e3221500886ff7b2330d7b7d0515597;
+MVIDae1d59e6-432e-4271-9d5a-739ee81427ce;
+source fingerprint2a543f3ca432bc25adb1dcbc082206f20ce9acac383d4787063b99f313266e51.
+Build239.515s,529 selected tests PASS; fresh request preflight632 PASS. This is
+an explicitly development-only artifact, never a stable release candidate.
+
+- RTWP foundation PASS,26 assertions,126.708s native /270.234s outer.
+  RunId20261018T0743098963535Z-3c48a991a7794ed5b925e2d6d6fdbe20;
+  runtime-result SHA5261811bf93922dff15faf46c7d1e1b078986e1901b104770f50d21ac17f6507.
+  Bulette completed its real bite/claw/claw sequence. The request-local clock
+  measured2,446 allowed /4,227 withheld ambient action ticks, maximum1 per actor
+  per Unity frame. Gorgon ordinary/trample, both composed profiles, real signed
+  damage/Power Attack/critical confirmation/reach and Elephant control pass.
+  Actual native attack pixels for both bodies were read; Gorgon is visibly
+  horned and armored, with rough visual debt and no owner aesthetic approval.
+- Gorgon breath FAIL,100.311s native /238.798s outer.
+  RunId20261018T0747542039005Z-35a7da42d52b48b5923c3dd97bc9e6b5;
+  runtime-result SHAd8e296d3edba25f9e29549a043bfc35794fcaa0a6fe905702060c6d7d6b21034.
+  Safe native60-foot targeting, ally refusal, one failedDC21 save and a five-round
+  source cooldown occurred. Temporary state remained marked temporary, but native
+  Petrified count2 caused lethal damage100010. Installed IL proves that
+  UnitState.UpdateStatusEffect mirrors a non-native carrier into the native
+  PetrifiedBuff; UnitStatusBuff.OnActivate only adds that native buff. The new
+  exact-carrier mirror guard prevents this redundant allocation, including null
+  source hydration/immunity updates of that sole carrier; it preserves native
+  removal/immunity/overlap behavior and the existing life predicate's count1
+  refusal boundary. Recovery/escalation/source removal/real cure remain unproven.
+- Bulette Leap FAIL,101.732s native /236.537s outer.
+  RunId20261018T0752457885234Z-a9bcdc8165464f24be9eeb3e48c1816d;
+  runtime-result SHAa3ba988123bed60b748ec817db4a8023fb6287193ee32ff781fc097452a3d727.
+  Actual native checks37/18, conditional bonus8 and ordinary Mobility9 selected
+  four claws/no bite versus one bite. Both commands finished and armed state
+  cleared. Action cost stayed zero: the fixture omitted combat enrollment.
+  The narrowed repair joins only those disposable actors before the command and
+  adds parent/ignored-child cost, lawful landing/velocity and later ordinary
+  routine evidence. No action-cost PASS is assigned to the old evidence.
+
+All exact transactions are Restored /restorationVerified=true:
+compat-20261018T074117Z-609d0df2ded1,
+compat-20261018T074604Z-a869406f54c3,
+compat-20261018T075059Z-ddb79b57dec9. Actual installation/settings/private-reference
+content comparisons and118-save audits pass; no game or lease remains. Failures,
+old verdicts and raw identities are retained. The next compiled bytes require
+fresh affected runs. Compact original-body fault/quantity/movement/death/expiry/
+resource and actual sprite consumer observers are now implemented, not qualified.
+
+Focused repair gate: production Release compilation PASS17.4s;51/51 selected
+Sprint26/runtime/public-record derivation checks PASS (runner1.7s, test step5.6s).
+The complete suite, package and changed native observers remain unqualified.
