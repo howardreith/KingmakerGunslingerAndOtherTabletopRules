@@ -682,3 +682,76 @@ refresh/fetch again before publication. R20 changes only three runtime observer
 files. Initial compilation failed a nonexistent public PlannedAttackIndex read;
 use the established m_AttackIndex reader. Corrected compilation PASS17.0s and9
 focused tests PASS0.8s runner. No R20 native qualification is inferred.
+
+## R20 native outcomes and R21 observer experiment
+
+Strict R20 source 946fa668fecc3e63d652e572b4f08d32897e17cd passes the selected
+Sprint gate in 378.5016122 seconds: all 2,687 tests, zero failures, exact
+386-file package. ZIP 803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa;
+DLL 1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d;
+MVID 178bb16a-2dae-4849-b34e-53f62ccc4cc4; fingerprint
+8d03fb291981b79c3919fdf4a511c51d8eed70d0b678709ea594fa9318392e92.
+Whole strict root archived byte-exact (165 files) under artifacts/sprint26-strict-hidden-r20
+after all transactions closed; archive receipt is private. Production remains f40de45a.
+
+Foundation passes all 28 assertions, 262.612832 seconds outer, RunId
+20261018T1425241935658Z-e19040511fb24310870803c9f9e378e6; result SHA256
+06023cf35f61ac9c1f005a7c1ef818f4990fe9ba9687e3043e909ab25c5a0c8c.
+Per-strike Power Attack-off now matches the signed matrix; live damage/reach
+and the released Elephant control pass.
+
+Leap RTWP remains FAIL (41/42 pass), 330.0362039 seconds outer, RunId
+20261018T1418014829964Z-e54d45e1ca8241c293884693158b763e; result SHA256
+f664397afd3b4e36856591f3e3904f538264bc3005f49134f16f62976e14f6fe.
+Parent finished Success, owner remained alive/able to act and move, target
+remained alive, and one real native opportunity debited budget 1 to 0. But
+no IsCharge child was observed; the later attacks were ordinary bite/two claws.
+This is not complete Leap qualification. The earlier terminal-budget diagnosis
+was incorrect: that completion predicate never tested terminal opportunity budget.
+Raw output preserved with SHA256
+456e2e63ba1a7e7708d7b3f42dd57264a7911c724bd496e166b4b4693a1b5397.
+
+Working-only ON/OFF envelope (1803.8551823 seconds batch) stopped at stage 5:
+
+| Stage | Native result | RunId | Result SHA256 |
+| --- | --- | --- | --- |
+| 1. prepare-on | PASS, 15/15 | 20261018T1436199737387Z-c306c251c963412d90c1c94094af8ea8 | 0d270c87d0dfa5ebc4466abcba5c9b4dc18629bc2e3e50200a26028c88597fa2 |
+| 2. cleanup-on | PASS, 16/16 | 20261018T1442301099956Z-35e9ce6453594524a5b9bac4c323ab3b | 4518e7fe7c6580a6b31c4ea88f105dfa5914faf73e29474dc00ed98f1ab98102 |
+| 3. absent-on | PASS, 7/7 | 20261018T1448451260815Z-6e245b16c4ef4f4a928956540efe138c | 2e5077ba00bfe02de6ff2775b0ef4de468cc57b67b26f36ba2c3159b95b07a0c |
+| 4. prepare-on | PASS, 15/15 | 20261018T1454222865710Z-e35b83e9812f4fc28c11bb9c59ae680e | 8d243ed93efbf6420f6e48415542381c9ba8e344e350c12d4165a5692182e4e5 |
+| 5. cleanup-off | FAIL, 14/17 | 20261018T1500366922760Z-cbabd9583abe44d4b07b3335f14d25d0 | 2a3188d51bc8e14e865f171ce336354942b71c46fa64ee9a9d05d43eee076cc9 |
+
+The ON prepare/cold recovery-cleanup/fresh absence and second prepare pass.
+OFF cold state and behavior also pass: initialized stages, DC/source strings,
+departed source absent, exact cooldown expiry with no recreated activation,
+real temporary recovery save, no permanent recovery save, permanent automatic
+recovery withheld, and exact condition-actor teardown. However the whole OFF
+stage fails two profile comparisons and consequently arms no cleanup save;
+its save sentinel fails and final absence is unrun. No whole-stage PASS is inferred.
+
+Raw profiles differ only in the three reach fields: Gorgon saved 5/current 2,
+Bulette saved 10/current 5. All other profile fields compare exactly. Production
+reach is intentionally module-gated like released Elephant/Triceratops. R21
+therefore compares the exact known owner/weapon OFF delta and all other fields,
+logging the expected profile, without changing production or dropping reach proof.
+Fresh OFF cleanup/absence is required. Exact prior prepared disposable snapshot:
+f002d9f25d8d94428e465dbfb2ecb7dcc759552242c0e3ca9604bad6b332ea1e.
+A guarded two-stage envelope verifies that snapshot's exact prior PASS/source/RunId,
+backs up today's actual Working, stages only that fixture, then restores actual
+Working bytes/timestamps/attributes in finally. It does not reopen a campaign save.
+
+Every R20 transaction restored actual installation/settings/private references.
+Outer envelope restored original Working bytes/creation/write/attributes and all
+118 saves passed protected audit. No game/lease; baseline never loaded/written;
+Steam Offline preserved. The failure evidence and attempted prepared save remain private.
+
+R21 also gates exact-owned ability execution to one allowed Tick per process
+per Unity frame, with allowed/blocked counts, and records every native owner
+attack queue visit including noncharge fallback. Native plus manual execution
+may double-count charge distance; this remains a hypothesis pending fresh native
+evidence. The opportunity predicate additionally requires a completed four-claw/
+no-bite routine. No production movement change, attack grant or test relaxation.
+Only three observer files and the module-boundary explanation change.
+Focused production compilation PASS 18.1s; nine named tests PASS 0.8s; exact source
+boundary PASS. Freeze/push one strict R21 candidate, then fresh Leap experiment
+and two-stage OFF remainder; no R21 native PASS is claimed here.

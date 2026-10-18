@@ -177,3 +177,14 @@ state while its real Petrified condition prevents acting/moving; it already
 skips automatic recovery. The permanent native-dead stage must exercise the
 scoped automatic-recovery guard. A fixture must distinguish these paths and
 must not require a guard event for a branch the engine already skips.
+
+### Module-disabled reach observation
+
+Like released own-creature reach corrections, the exact Gorgon/Bulette native
+range adjustment is active only while Expanded Summoning is enabled. An ON
+fixture loaded OFF therefore reads the native weapon reach (2 feet Gorgon,
+5 feet Bulette), while all other composed profile, role, weapon, damage and
+serialized condition/cooldown fields remain exact. The persistence comparison
+subtracts only that known owner/weapon adjustment from the saved ON observation;
+it does not rewrite saved statistics, remove other reach bonuses, or change the
+production module boundary. ON reach remains the mandatory printed 5/10 feet.
