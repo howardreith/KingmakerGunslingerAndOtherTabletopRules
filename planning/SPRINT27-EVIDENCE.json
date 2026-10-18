@@ -118,6 +118,14 @@
       "compileSeconds": 17.5,
       "testSeconds": 0.9,
       "tests": 6
+    },
+    {
+      "scope": "strict package icon authority and exact new asset counts",
+      "result": "PASS",
+      "isolatedAuthorityCases": 7,
+      "diagnosticPackage": "artifacts/sprint27-packaging-repro.zip",
+      "qualification": false,
+      "note": "Reproduction uses existing b51a00 compiled bytes with corrected package tooling; not a deployable development candidate or native evidence."
     }
   ],
   "policyChange": {
@@ -135,7 +143,9 @@
     "Observer attempted read-only IsFullAttack setter; corrected to verified ForceFullAttack/IsSingleAttack fields; affected compile passed.",
     "Readability-sheet Python Pillow unavailable; no dependency installed, installed System.Drawing used.",
     "Prototype81433 preflight FAIL47.7809s: exact documented-scenarios inventory omitted the new Griffon review string. No build/deployment/game transaction occurred. Corrected exact inventory; affected preflight rerun required.",
-    "Prototypeba6dd7 build wrapper stopped on one of30 icon corruption fixtures: current delegated-authority hash still pinned the Sprint26-only manifest. Updated exact Griffon-inclusive pin and retained the actual old hash as the stale-authority negative case. No package/deployment/native transaction occurred."
+    "Prototypeba6dd7 build wrapper stopped on one of30 icon corruption fixtures: current delegated-authority hash still pinned the Sprint26-only manifest. Updated exact Griffon-inclusive pin and retained the actual old hash as the stale-authority negative case. No package/deployment/native transaction occurred.",
+    "Prototypeb51a00 development build FAIL213.301s after successful production compile: both output/package validators still pinned122 summon icons. Controlled authority has123. Replaced duplicated counts with hash-pinned authoring/runtime identity validation. No deployed package or gameplay transaction occurred.",
+    "Packaging-only reproduction exposed the deterministic writer missing exact387/389 file-count choices. Added only those Sprint27 hidden-development counts; repeated packaging and strict one-DLL/content/hash validation passed. Diagnostic ZIP is not a qualified candidate."
   ],
   "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
