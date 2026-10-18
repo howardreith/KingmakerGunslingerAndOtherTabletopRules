@@ -986,6 +986,33 @@
         "leaseAbsent": true
       },
       "outerResultSha256": "b5e9578da13f0ab38f15ccb2c5e448548b1bfc7acd6907d1d81dae4340449a68"
+    },
+    {
+      "candidateKind": "development",
+      "source": "ef007e4b96aed085f3c73e39fada18fbc0eaa88b",
+      "sourceStateSha256": "a3a4a5e7dc9750a8981919ac90b08bad0b3651c1860492da6e70420cf7be26ac",
+      "zipSha256": "5c2576bf7a8ac8ad319b9635d5556a010e23be635f48e19fd7f18e50445caca9",
+      "dllSha256": "1cc9c8e111b7fbad972421a97c7255bfc138c33bf8eef7ed5339885873b7bc93",
+      "mvid": "75b83a1a-8706-43a7-aedc-640f9bdd8175",
+      "runId": "20261018T2332123681229Z-20f83101c5964e2ab936b2e2278574f4",
+      "result": "FAIL",
+      "nativeMilliseconds": 117340,
+      "rawResultSha256": "6bcf9a08f47357e71108359835f82051a80b53287a94e4ad6851ff6c6f5552e7",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2332122677432Z-disposable-expanded-summoning-sprint27-native-review",
+      "scope": "expiry-boundary: automatic cancellation and complete detachment pass; assumed summon-follow identity FAIL",
+      "outerSeconds": 298.8760863,
+      "assertionCount": 13,
+      "failedPredicates": [
+        "sprint27-expiry-boundary-charge-expiry"
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      }
     }
   ],
   "checks": [
@@ -1198,7 +1225,8 @@
     "Narrow AI to a native-approved straight route, with read-only command/movement timeline; native brain remains sole command chooser. Tiger uses a stated legal Huge opponent to exclude its automatic Grab from the charge-plan control.",
     "Use verified native InterruptAll(Func<UnitCommand,bool>) at exact Grif marker removal. Add expiry-boundary phase and a read-only automatic-callback trace. Do not manually tick an already-finished parent command while waiting for native despawn.",
     "Apply/assert Huge target after hostile reset and again before Tiger pounce; record actual target size. Native brain/rolls, released creature code and assets remain unchanged.",
-    "Terminal reader correction only: fully detach expired owner, identify native summon-follow by reference, preserve the original failed verdict. No product mechanics/assets or saved schemas change after the six passing native persistence stages."
+    "Terminal reader correction only: fully detach expired owner, identify native summon-follow by reference, preserve the original failed verdict. No product mechanics/assets or saved schemas change after the six passing native persistence stages.",
+    "ef007e expiry run retained FAIL: unit destroyed, view/holding/state detached, callback cancellation correct, but residual UnitMoveTo is not correlated to UnitPartSummonedMonster.MoveTo. New read-only runner hook records actual native movement command origins instead of assuming the source."
   ],
   "integratedDevelopmentChecks": {
     "productionCompilation": {

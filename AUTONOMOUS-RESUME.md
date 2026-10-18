@@ -36,3 +36,10 @@ campaign including current-stack ON/OFF persistence. Keep hidden DEV evidence
 separate. Use publisher refusal/preflight/dry-run, merge PR60 conditionally,
 publish next available stable, verify actual downloaded assets, restore exactly,
 merge RELEASED/STOP records, then stop. No product merge/tag/release has occurred.
+
+The ef007e expiry rerun retained FAIL only on the assumed summon-follow identity.
+Cancellation, zero attacks, complete native detachment/destruction and exact
+118-save/install restoration passed. A scoped read-only UnitCommands.Run hook
+now records the actual native movement origin; it permits only those exact
+movement objects on detached data, never attack/ability or charge/rake state.
+Its focused compilation and one narrow native rerun are required.

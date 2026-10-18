@@ -82,3 +82,12 @@ remains. Combined-profile WhatIf PASS16.916s with no deployment or mutation.
 Fresh closed-phase preflight661 checks PASS. The corrected expiry observer is
 the only pending hidden rerun before publication staging; no failed raw result
 is relabeled, and development proof cannot qualify a stable release.
+
+The ef007e expiry rerun retained FAIL only on the assumed summon-follow identity.
+Cancellation, zero attacks, complete native detachment/destruction and exact
+118-save/install restoration passed. A scoped read-only UnitCommands.Run hook
+now records the actual native movement origin; it permits only those exact
+movement objects on detached data, never attack/ability or charge/rake state.
+Its focused compilation and one narrow native rerun are required.
+
+Native-origin observer correction: production compilation17.8s and7 focused tests PASS (0.9s gate); phase/parser/metadata unchanged, reusing661-check preflight. This is a narrow observer rerun, not another broad campaign.
