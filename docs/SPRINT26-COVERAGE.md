@@ -93,3 +93,9 @@ Focused guard/runtime/presentation checks:95/95 PASS,2.0s tests; production
 Release compilation PASS. Unintended Unicode-only edits were restored from exact
 baseline lines, without inferred transcoding; affected presentation checks pass.
 No native gameplay proof is claimed by these source checks.
+
+Prototype build209ebcea stopped at the build-output icon-count guard after528
+selected tests and production compilation passed (220.86s total). The guard
+still expected120 icons; it now matches the current122-entry manifest and strict
+package validator. No package receipt or new-creature native deployment resulted.
+The development wrapper also ran the repaired30 icon corruption fixtures PASS.
