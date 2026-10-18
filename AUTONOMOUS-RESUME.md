@@ -1,4 +1,29 @@
-# Sprint 25 — hidden native qualification complete; public v0.0.159 candidate
+# Sprint 25 — RELEASED / STOP
+
+Stable Latest [v0.0.159](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.159)
+is published, non-draft/non-prerelease. Product PR49 merged as
+ae624504a0493e4ed3870783d797e726c774bb64; its tree equals the frozen tested
+source d81ac44546997cc6c812ebec51d9fe6cc962a3e4. No publication rebuild.
+Actual public ZIP/checksums/manifest downloads, DLL/MVID, strict380-file content
+and peeled tag/product lineage verified PASS. Full gate2678/2678 and all3 fresh
+public cells PASS; hidden mechanics/body/AI/Cleave and targeted ON/OFF cold-save
+proofs retain original identities and scoped reuse arguments. See
+[coverage and exact identities](docs/SPRINT25-COVERAGE.md).
+
+Current public equation: 1,096 generated placements +29 retained wrappers =
+1,125 visible choices;0suppressed. Brach SNA VII–IX only; Elephant8 released
+roots preserved. Original bodies and supplied icon functional; accepted stiff
+neck/skull/ear/seam/faceting/tail/contact/texture polish stays deferred.
+HumanReview NOT_PERFORMED_NONBLOCKING; no personal owner aesthetic approval.
+
+Final actual installation/settings/bank/private references and all118 save
+metadata/hashes exact; Working native-cleaned/fresh-absence proven, no owned
+game/process/lease/staging or permanent deployment. Steam Offline accepted.
+Final-records branch codex/expanded-summoning-sprint25-release-records carries
+this documentation-only synchronization; merge its PR, then STOP. No Sprint26,
+Mounted Combat, Buff Planner or DATA project work started by this campaign.
+
+## Dated development checkpoints (not remaining work)
 
 Controlling02:52UTC: b299c462 public full2678/exact/strict380 PASS312.50s,
 archived. Its first public inventory FAILED one predicate: Elephant's intended
