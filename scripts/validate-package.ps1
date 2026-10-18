@@ -204,12 +204,7 @@ try {
             throw "Retired player-facing selector exists in package: $retiredPath"
         }
     }
-    $summonManifestPath = Join-Path $repositoryRoot `
-        'assets\game\icons\expanded-summoning\icon-manifest.json'
-    $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 122 -or @($summonManifest.icons).Count -ne 122) {
-        throw 'Expanded Summoning runtime icon manifest is malformed.'
-    }
+    $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'
     foreach ($icon in $summonManifest.icons) {
         $relative = "assets\icons\expanded-summoning\$($icon.file)"

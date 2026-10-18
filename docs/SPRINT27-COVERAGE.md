@@ -57,3 +57,11 @@ observer/product change creates a new coherent candidate with affected reruns.
 No final Sprint gate or release campaign has run; no publication/merge/tag mutation.
 Publisher161 support, full native requirements, public routes, exact stable-byte
 promotion/download verification and final records remain open. Stop before Sprint28.
+
+Development update: strict dispatch preflight643, restoration orchestration206,
+30 icon-corruption fixtures and the latest six focused rules/compile checks pass.
+Prototypeb51a00 stopped after compilation at stale122-icon packaging checks;
+no native transaction occurred. Both consumers now derive identities/counts from
+the hash-pinned authoring authority. Seven isolated malformed-authority checks and
+a diagnostic packaging-only reproduction pass, including exact new387/389 file
+counts. Diagnostic bytes are not a development receipt or gameplay evidence.

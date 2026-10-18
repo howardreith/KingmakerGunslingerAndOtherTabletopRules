@@ -49,3 +49,33 @@ function Assert-KmgIntegratedIconFiles {
         }
     }
 }
+
+# Summon counts come from the hash-pinned authoring authority, rather than a
+# second roster total in each build/package consumer.
+function Get-KmgSummonIconManifest {
+    param([Parameter(Mandatory = $true)][string]$RepositoryRoot)
+    $relative = 'assets-source/original-icons/expanded-summoning/icon-manifest.json'
+    $catalog = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'assets-source/original-icons/icon-catalog.json') -Raw | ConvertFrom-Json
+    $pins = @($catalog.delegatedManifests | Where-Object { $_.path -ceq $relative })
+    $sourcePath = Join-Path $RepositoryRoot $relative
+    if ($pins.Count -ne 1 -or (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash.ToLowerInvariant() -cne $pins[0].sha256) {
+        throw 'Expanded Summoning icon authoring authority is missing or stale.'
+    }
+    $source = Get-Content -LiteralPath $sourcePath -Raw | ConvertFrom-Json
+    $runtime = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'assets/game/icons/expanded-summoning/icon-manifest.json') -Raw | ConvertFrom-Json
+    if ($source.schemaVersion -ne 1 -or $runtime.schemaVersion -ne 1 -or $source.count -le 0 -or
+        @($source.icons).Count -ne $source.count -or $runtime.count -ne $source.count -or
+        @($runtime.icons).Count -ne $source.count -or @($runtime.icons.key | Sort-Object -Unique).Count -ne $source.count) {
+        throw 'Expanded Summoning runtime icon manifest is malformed.'
+    }
+    foreach ($icon in $runtime.icons) {
+        $match = @($source.icons | Where-Object { $_.key -ceq $icon.key })
+        if ($match.Count -ne 1 -or $icon.file -cne ($icon.key + '.png') -or
+            $match[0].productionFile -cne ('assets/game/icons/expanded-summoning/' + $icon.file) -or
+            $icon.sha256 -cnotmatch '^[0-9a-f]{64}$' -or $icon.sha256 -cne $match[0].outputSha256 -or
+            $icon.width -ne 128 -or $icon.height -ne 128) {
+            throw "Expanded Summoning runtime icon authority mismatch: $($icon.key)."
+        }
+    }
+    return $runtime
+}

@@ -92,7 +92,9 @@ $requiredFiles = @(
     'assets\sprint21-arthropods\bebelith-mesh.json',
     'assets\sprint21-arthropods\bebelith-albedo.png',
     'assets\ankylosaurus\ankylosaurus-mesh.json',
-    'assets\ankylosaurus\ankylosaurus-albedo.png'
+    'assets\ankylosaurus\ankylosaurus-albedo.png',
+    'assets\sprint27-griffon\griffon-mesh.json',
+    'assets\sprint27-griffon\griffon-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -115,11 +117,7 @@ foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
         throw "Retired player-facing selector exists in build output: $retiredPath"
     }
 }
-$summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
-    'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
-if ($summonManifest.count -ne 122 -or @($summonManifest.icons).Count -ne 122) {
-    throw 'Expanded Summoning runtime icon manifest is malformed.'
-}
+$summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
 $requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
 foreach ($icon in $summonManifest.icons) {
     $requiredFiles += "assets\icons\expanded-summoning\$($icon.file)"
