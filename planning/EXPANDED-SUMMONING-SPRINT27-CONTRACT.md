@@ -91,3 +91,9 @@ exact qualified bytes, download/verify actual assets and tag lineage, verify exa
 restoration, merge record-only RELEASED/STOP branch. Stop before Sprint28.
 Visual polish is nonblocking debt; invisibility, unselectability, navigation/attack
 stall, missing rules/icon, corrupted save or unbounded leak remains blocking.
+
+Native expiry observation: the installed SummonedUnitBuff starts a delayed
+dismember/despawn path (six seconds when its effect carrier is absent). The
+Griffon's exact-owner marker-removal listener interrupts native commands at
+the rules deadline; native presentation and destruction retain ownership.
+It stores no transient charge/rake state and is inert with the module off.

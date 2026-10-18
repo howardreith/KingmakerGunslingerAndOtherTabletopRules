@@ -594,6 +594,94 @@
         "ownedTasksRemoved": true
       },
       "cause": "Movement, native death, instance isolation, failed-attach rollback, exact private cleanup and donor isolation PASS. Expiry destroyed both units but maxDissolve0; fade assertion FAIL. Add matched untouched native-body/effect control using existing qualified policy; do not infer a missing carrier from original-body failure."
+    },
+    {
+      "scope": "standalone qualification-combat",
+      "candidateKind": "development",
+      "source": "a91232c686c0f19bb442b95d39236b51ae68f3a7",
+      "sourceStateSha256": "312920f6f814c702a24afa6a371d2f4c958b3086d0e0567560acf7d856e11c0e",
+      "zipSha256": "ca9ab111c23facb00a7c21f4dca750e439904e1f1e7678425918d8b2360dfa4a",
+      "dllSha256": "eb53809c023f286893951ef1220300b0ac51203d2745af03d0085e305e1a408a",
+      "mvid": "39d9c637-f7e1-49ca-a889-947803b841fc",
+      "runId": "20261018T2142100565052Z-348bc2eda0544977a1affd142888d165",
+      "transactionRunId": "compat-20261018T214015Z-900d64b39184",
+      "result": "FAIL",
+      "nativeMilliseconds": 307882,
+      "outerSeconds": 452.5913203,
+      "assertionCount": 103,
+      "failedPredicates": [
+        "rtwp-ai-ai-native-approach-attack",
+        "charge-boundaries-charge-expiry"
+      ],
+      "rawResultSha256": "d4352fe41aa26e4895af27208271a358307d3a10593132cb3355a9eeea0e20db",
+      "rawReviewSha256": "eba76b10f43f5ab9bc33ff1902e2c4a0f9bc3c1912c8e3222601c928116c75b1",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2142100226865Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone qualification-presentation",
+      "candidateKind": "development",
+      "source": "a91232c686c0f19bb442b95d39236b51ae68f3a7",
+      "sourceStateSha256": "312920f6f814c702a24afa6a371d2f4c958b3086d0e0567560acf7d856e11c0e",
+      "zipSha256": "ca9ab111c23facb00a7c21f4dca750e439904e1f1e7678425918d8b2360dfa4a",
+      "dllSha256": "eb53809c023f286893951ef1220300b0ac51203d2745af03d0085e305e1a408a",
+      "mvid": "39d9c637-f7e1-49ca-a889-947803b841fc",
+      "runId": "20261018T2150225572199Z-c12007edc3a541a9bfc0c7cba1a05f0c",
+      "transactionRunId": "compat-20261018T214828Z-1afe0317bd9f",
+      "result": "FAIL",
+      "nativeMilliseconds": 186323,
+      "outerSeconds": 330.6534049,
+      "assertionCount": 45,
+      "failedPredicates": [
+        "shared-controls-released-ordinary-tiger",
+        "shared-controls-pounce-False",
+        "shared-controls-native-miss-does-not-retry"
+      ],
+      "rawResultSha256": "931610896a5f22ee55760828910f85416f8663ceb255ad698998c8481f85e580",
+      "rawReviewSha256": "4182e4a696342079eadaabd58f4a605907f12dae881579d6b65ac80a3c8195f7",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2150225259510Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone outdoor-locomotion",
+      "candidateKind": "development",
+      "source": "a91232c686c0f19bb442b95d39236b51ae68f3a7",
+      "sourceStateSha256": "312920f6f814c702a24afa6a371d2f4c958b3086d0e0567560acf7d856e11c0e",
+      "zipSha256": "ca9ab111c23facb00a7c21f4dca750e439904e1f1e7678425918d8b2360dfa4a",
+      "dllSha256": "eb53809c023f286893951ef1220300b0ac51203d2745af03d0085e305e1a408a",
+      "mvid": "39d9c637-f7e1-49ca-a889-947803b841fc",
+      "runId": "20261018T2156395846427Z-d9556313fb51466e8c5c45e209465071",
+      "transactionRunId": "compat-20261018T215447Z-da5cfdb6959d",
+      "result": "PASS",
+      "nativeMilliseconds": 98559,
+      "outerSeconds": 240.2158603,
+      "assertionCount": 12,
+      "failedPredicates": [],
+      "rawResultSha256": "b52055333c888eea2083fc8254aabade71b75c9481025926f7c808227521984a",
+      "rawReviewSha256": "7003c71f41b0c95a9e3113e346a3f616dba82e3cb21dac969128f33a525cc545",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2156395624463Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
     }
   ],
   "checks": [
@@ -717,6 +805,16 @@
       "command": "Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.native-profile;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate",
       "result": "PASS",
       "scope": "de85aefe inputs; production compile16.6s;16 of2692 selected domain cases1.1s; development, no release qualification"
+    },
+    {
+      "scope": "post-native bounded correction focused build",
+      "result": "PASS",
+      "sourceScope": "uncommitted successor of a91232c686c0; no native qualification inferred",
+      "productionCompilationSeconds": 18.2,
+      "selected": 17,
+      "registered": 2693,
+      "failures": 0,
+      "testSeconds": 1.1
     }
   ],
   "policyChange": {
@@ -740,16 +838,20 @@
     "First native foundation bf53ccd5 failed before fixture on the compiled icon-catalog122 immutability count; exact machine118-save restoration PASS in198.078s. Raw result and registration stack retained. Updated exact approved123 count; guards remain enabled.",
     "A speculative neighboring profile-count edit63 failed the newly selected pure guard test. Reflection measured62 actual profiles including Griffon; preserved the existing62 guard, all pure bootstrap catalog guards now pass.",
     "Native foundation2b048374 advanced past icon guards but registration requested native ChargeAbility as BlueprintFeature. Actual previously captured graph proves BlueprintAbility. Exact typed Griffon-only grant corrected;65.053s native/211.140s transaction, all118 saves and current intake restored. No unchanged relaunch.",
-    "4d015eed reached completed blueprint bootstrap but native fixture policy omitted Sprint27 and refused entry. Internal empty-world assertion FAIL retained; external current-intake118-save restoration PASS. Exact admission branch added with legacy world/save/exit protections unchanged and structured inputs recorded."
+    "4d015eed reached completed blueprint bootstrap but native fixture policy omitted Sprint27 and refused entry. Internal empty-world assertion FAIL retained; external current-intake118-save restoration PASS. Exact admission branch added with legacy world/save/exit protections unchanged and structured inputs recorded.",
+    "a91232 combat FAIL: AI chose a native attack but did not reach a weapon event; native expiry during moving charge queued one attack before delayed removal. No unchanged retry.",
+    "a91232 presentation FAIL: Tiger ordinary and pounce controls incomplete against the original fixture; matched donor expiry, rollback, resources, navigation, all six hidden root effects, Eagle and Bulette ordinary controls passed. No baseline product defect claimed."
   ],
-  "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
+  "bodyStatus": "Original body functional indoors and outdoors; matched native donor lacks DismemberUnitFX, both follow native delayed despawn and exact private cleanup. No dissolve claimed.",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
   "sprint28Started": false,
   "sourceReviewCorrections": [
     "Racial base HP derives floor(5*(10+1)/2) from d10 HD before live Constitution.",
     "Own Griffon type keeps the actual installed Manticore magical-beast KnowledgeStat; native observer records the resulting type/consumer.",
-    "A later natural-unit type selector still chose Bulette for Griffon after the earlier correct assignment. Both selectors now use the exact creature token; native observer requires Griffon type GUID b31bad4d5053482d85d35d0ae27fac72. No native unit-type PASS existed on the faulty source."
+    "A later natural-unit type selector still chose Bulette for Griffon after the earlier correct assignment. Both selectors now use the exact creature token; native observer requires Griffon type GUID b31bad4d5053482d85d35d0ae27fac72. No native unit-type PASS existed on the faulty source.",
+    "Add an exact-Griffon module-gated summon-marker removal listener to interrupt native commands at expiration while preserving native delayed presentation/destruction; no mutable serialized command state.",
+    "Narrow AI to a native-approved straight route, with read-only command/movement timeline; native brain remains sole command chooser. Tiger uses a stated legal Huge opponent to exclude its automatic Grab from the charge-plan control."
   ],
   "integratedDevelopmentChecks": {
     "productionCompilation": {
@@ -807,6 +909,16 @@
         "scope": "second integrated preflight",
         "cause": "parallel production compilation changed guarded artifact snapshot; reran preflight alone after compilation; guard unchanged"
       }
+    ]
+  },
+  "outdoorVisualReview": {
+    "result": "NO_NEW_BLOCKING_DEFECT_DEMONSTRATED",
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "scope": "actual a91232 outdoor movement/idle captures",
+    "limitations": "Movement enters dark fog; tree obscures idle torso/selection area. Whole-body outdoor presentation is not independently established by those pixels; structured selection/navigation/attack proof is separate.",
+    "backlog": [
+      "coarse anatomy",
+      "rigid pointed wings"
     ]
   }
 }

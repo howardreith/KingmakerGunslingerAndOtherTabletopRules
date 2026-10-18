@@ -94,7 +94,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Sprint27ReleasedControls(ExpandedSummoningCorrectionFixture fixture)
         {
             foreach(string key in new[]{"tiger","eagle","bulette"}){
-                var control=CastExpandedSummoningOwnTier(fixture,key);SetExpandedSummoningBrainActive(control,false);
+                var control=CastExpandedSummoningOwnTier(fixture,key);SetExpandedSummoningBrainActive(control,false);var targetSize=fixture.Hostile.Descriptor.State.Size;
+                if(key=="tiger")fixture.Hostile.Descriptor.State.Size=Kingmaker.Enums.Size.Huge;
                 try{
                     foreach(int f in Sprint26Appearance(control,"released-"+key,false))yield return f;
                     var target=fixture.Hostile;ResetExpandedSummoningHostile(fixture);control.JoinCombat();target.JoinCombat();
@@ -104,10 +105,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try{
                         control.Commands.Run(command);DateTime deadline=DateTime.UtcNow.AddSeconds(30);int frame=0;
                         while(!command.IsFinished&&frame++<3000&&DateTime.UtcNow<deadline)yield return 0;
-                        Sprint27Check("released-ordinary-"+key,command.IsFinished&&command.AllAttacks.Count==3&&observer.WeaponAttacks.Count==3,new JObject{["key"]=key,["unit"]=control.Blueprint.AssetGuid,["planned"]=command.AllAttacks.Count,["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>v.Weapon.Blueprint.AssetGuid)),["forcedRolls"]=0,["forcedAnimationEvents"]=0},"Released raker, flyer and shared-plan Bulette control retain the ordinary three-weapon command; their source/assets are preserved.");
+                        Sprint27Check("released-ordinary-"+key,command.IsFinished&&command.AllAttacks.Count==3&&observer.WeaponAttacks.Count==3,new JObject{["key"]=key,["targetSize"]=target.Descriptor.State.Size.ToString(),["grabExcludedBySize"]=key=="tiger"&&target.Descriptor.State.Size>control.Descriptor.State.Size,["unit"]=control.Blueprint.AssetGuid,["planned"]=command.AllAttacks.Count,["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>v.Weapon.Blueprint.AssetGuid)),["forcedRolls"]=0,["forcedAnimationEvents"]=0},"Released raker, flyer and shared-plan Bulette control retain the ordinary three-weapon command; their source/assets are preserved.");
                     }finally{EventBus.Unsubscribe(observer);control.Commands.InterruptAll(true);ResetExpandedSummoningHostile(fixture);}
                     if(key=="tiger")foreach(int f in Sprint27Pounce(fixture,control,false,true))yield return f;
-                }finally{control.Commands.InterruptAll(true);DisposeExpandedSummoningUnits(fixture.Created,new[]{control});}
+                }finally{control.Commands.InterruptAll(true);SummonGrappleLinks.ReleaseAll(control);fixture.Hostile.Descriptor.State.Size=targetSize;DisposeExpandedSummoningUnits(fixture.Created,new[]{control});}
             }
         }
     }
