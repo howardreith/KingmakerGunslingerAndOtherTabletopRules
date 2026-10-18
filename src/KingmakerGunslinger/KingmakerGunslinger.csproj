@@ -42,6 +42,9 @@
   <ItemGroup>
     <Compile Include="Assets\PteranodonAssetRuntime.Griffon.cs" />
     <Compile Include="Summoning\GriffonVisualPolicy.cs" />
+    <Compile Include="Summoning\GriffonRules.cs" />
+    <Compile Include="Summoning\GriffonReachPatch.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Lifecycle.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Griffon.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Griffon.cs" />
     <Compile Include="Compatibility\CotwSpontaneousSlotCompatibility.cs" />

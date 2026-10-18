@@ -983,6 +983,19 @@ namespace KingmakerGunslinger.Summoning
                 .Where(v=>v!=null).Distinct().ToArray();
         }
 
+        internal static UnityEngine.Object[] CaptureGriffonOwnedResources(UnitEntityView view)
+        {
+            Attachment attachment;
+            if(view==null || !Applied.TryGetValue(view,out attachment) || attachment.VisualKey!=GriffonVisualPolicy.Key)
+                return new UnityEngine.Object[0];
+            Material[] installed=attachment.Donor==null?new Material[0]:attachment.Donor.sharedMaterials;
+            IList<Material> driven=attachment.Donor==null?null:ControllerMaterials(attachment.Donor.GetComponentInParent<StandardMaterialController>());
+            return installed.Concat(driven??new Material[0]).Concat(new[]{attachment.Material})
+                .Where(v=>v!=null && v.name.StartsWith("KMG_griffon_Original",StringComparison.Ordinal))
+                .Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[]{attachment.Mesh})
+                .Where(v=>v!=null).Distinct().ToArray();
+        }
+
         internal static UnityEngine.Object[] CaptureGiantBodyOwnedResources(
             UnitEntityView view)
         {

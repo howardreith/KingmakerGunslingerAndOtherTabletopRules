@@ -26,19 +26,22 @@ The original2,930-vertex/5,560-triangle hybrid mesh/albedo uses the measured nat
 Manticore rig and existing instance/cache/material/fader lifecycle. Static
 read-only review found no functional recognizability blocker. Narrow angular
 wings, coarse feathers/joins and simplified hindquarters are visual debt.
-Native attachment/selection/navigation/animation/lifecycle remain unqualified.
+Native indoor attachment, selection and ordinary attack animation have development partial proof; navigation and lifecycle remain open.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 Fresh research metadata PASS7b546260: no exact native Griffon; Manticore57-bone
 renderer and native bite/claw events. In-engine67.376s; transaction208.812s.
-Three foundation attempts have no gameplay PASS: bf53ccd5 failed the stale icon
-count;2b048374 failed native Charge's feature/ability type;4d015eed completed
-blueprint bootstrap but its unregistered fixture-policy branch refused admission.
-The latter internal empty-world assertion also failed and remains FAIL. All
-external transactions restored current Mods/settings/private references and118
-saves exactly; game/lease and owned tasks are absent. Full raw failures remain local.
+Four foundation attempts retain overall FAIL: three bootstrap/admission failures,
+then b27dcff8 executed the actual original body, native single1/full3 attacks and
+all signed Strength cases. Its range was2ft and its pre-action CMD was legitimately
+flat-footed19/23. The next candidate supplies only the exact Griffon/private-weapon
+missing3ft and measures normal CMD after the real full action. No CMD bonus is
+invented. The actual idle/full native pixels passed read-only functional review;
+HumanReview remains NOT_PERFORMED_NONBLOCKING. Every outer transaction restored
+current Mods/settings/private references and118 saves exactly; exact owned tasks
+were removed. Failures retain original tuples and raw observations.
 
-Focused corrected production compile17.1s and15 rules/admission/guard tests1.1s
+Focused reach/lifecycle production compile17.2s and16 rules/admission/guard tests1.1s
 PASS. Pure bootstrap guards execute in the Griffon selection. Current new phase
 preflight647 PASS preceded the admission correction; the next build reruns it.
 Policy wrapper26 isolated cases, restoration orchestration206, icon corruption30
@@ -48,7 +51,7 @@ require the exact Griffon type and real unsuppressed pounce weapon rolls.
 
 Next bounded development batch: corrected clean build then standalone foundation,
 about9 minutes using current measured233s build/212s transaction machinery.
-Only after foundation passes may this package proceed to pounce/AI/boundaries.
+Only after foundation passes may this package proceed to pounce/AI/boundaries and the newly registered visual-lifecycle phase.
 Missing negative cases, lifecycle, targeted persistence, six public paths and
 publisher161 support must finish before final readiness review and one Sprint
 gate. The existing publisher refuses development-candidate release proof: the

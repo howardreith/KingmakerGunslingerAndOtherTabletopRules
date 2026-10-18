@@ -866,7 +866,7 @@ foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='unknown-phase'}
 }
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint25-review-requires-exit'
 $sprint27ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint27-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
-foreach($phase in @('rtwp-foundation','pounce-rtwp','pounce-turn-based','rtwp-ai','charge-boundaries')) {
+foreach($phase in @('rtwp-foundation','pounce-rtwp','pounce-turn-based','rtwp-ai','charge-boundaries','visual-lifecycle')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint27ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint27-review-admits-$phase"
     $sprint27Request = New-KmgRuntimeRequest @sprint27ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint27-review-request-test')
     Assert-True ($sprint27Request.parameters.reviewPhase -ceq $phase) "sprint27-phase-serialized-$phase"
