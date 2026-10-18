@@ -22,6 +22,11 @@ namespace KingmakerGunslinger.Summoning
         internal const string ChargeDonor = "c78506dd0e14f7c45a599990e4e65038";
         internal const string ConeDonor = "fa5ee5f4cd5c6394f8b497c773f8e14a";
 
+        internal const string PetrificationGuid = "139703f90a8d4929992b783ad0e30bd7";
+        internal static bool SuppressesNativePetrificationDeath(bool nativePetrified,
+            int conditionCount, bool ownInitialized, bool ownPermanent)
+        { return nativePetrified && conditionCount == 1 && ownInitialized && !ownPermanent; }
+
         internal static int BreathDc(int hitDice, int constitutionModifier)
         {
             if (hitDice < 1) throw new ArgumentOutOfRangeException("hitDice");

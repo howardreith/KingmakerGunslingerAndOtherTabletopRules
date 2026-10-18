@@ -22,8 +22,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Kingmaker has no usable native rule path",
                 "Fey Bane uses the native bane property",
                 "KMG_Internal_Value",
-                "broken Ã¢â‚¬ text",
-                "broken ï¿½ text"
+                "broken â€ text",
+                "broken � text"
             };
             foreach (string leak in leaks)
                 Assertions.False(PlayerFacingTextPolicy.IsClean(leak),

@@ -31,6 +31,25 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         // Reuses Sprint25's request-local iterator/clock/teardown, never its
         // creature-specific expectations or forced animation-event helpers.
+        private readonly Sprint26LifeController _sprint26Life = new Sprint26LifeController();
+        private void Sprint26TickLife(UnitEntityData unit)
+        {
+            if (_sprint25Fixture != null && (_sprint25Fixture.Created.Contains(unit) ||
+                ReferenceEquals(unit, _sprint25Fixture.Caster) || ReferenceEquals(unit, _sprint25Fixture.Hostile)))
+                _sprint26Life.TickOwned(unit);
+        }
+        private sealed class Sprint26LifeController : Kingmaker.Controllers.Units.UnitLifeController
+        {
+            private readonly Dictionary<string, int> _ticks = new Dictionary<string, int>(StringComparer.Ordinal);
+            internal int TicksFor(UnitEntityData unit) { int value; return _ticks.TryGetValue(unit.UniqueId, out value) ? value : 0; }
+            internal void TickOwned(UnitEntityData unit)
+            {
+                if (unit == null || unit.Destroyed || !unit.IsInGame || !base.ShouldTickOnUnit(unit)) return;
+                _ticks[unit.UniqueId] = TicksFor(unit) + 1;
+                base.TickOnUnit(unit);
+            }
+        }
+
         private IEnumerable<int> ReviewSprint26(ExpandedSummoningCorrectionFixture fixture)
         {
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
@@ -444,6 +463,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int i = 0; i < 500 && !Sprint18OwnerIsActing(owner); i++) yield return 0;
                     if (!(bool)admission["admitted"] || !Sprint18OwnerIsActing(owner)) throw new InvalidOperationException("Breath owner native turn missing.");
                 }
+                int damageBeforePetrification = target.Descriptor.Damage;
+                int lifeTicksBefore = _sprint26Life.TicksFor(target);
                 target.Stats.SaveFortitude.BaseValue = -100;
                 saves.DesiredRoll = 2;
                 UnitUseAbility first = null;
@@ -462,13 +483,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var applied = target.Buffs.GetBuff(stone);
                     var state = applied == null ? null : applied.SelectComponents<GorgonPetrificationState>().Single();
                     var activation = GorgonBreathRuntime.Latest(owner);
-                    bool firstExact = applied != null && state != null && state.Initialized && !state.Permanent &&
+                    bool firstExact = !target.Descriptor.State.IsDead && target.Descriptor.Damage == damageBeforePetrification &&
+                        _sprint26Life.TicksFor(target) > lifeTicksBefore && applied != null && state != null && state.Initialized && !state.Permanent &&
                         state.RecoveryDc == 21 && state.FirstSourceId == owner.UniqueId &&
                         target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified) && activation != null &&
                         activation.CooldownRounds >= 2 && activation.CooldownRounds <= 5 && economy.Count(first) == 1;
                     Sprint25Check("breath-first-" + turnBased, firstExact, new JObject { ["unit"] = owner.UniqueId,
                         ["victim"] = target.UniqueId, ["petrified"] = target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified),
-                        ["lifeStateDead"] = target.Descriptor.State.IsDead, ["permanent"] = state?.Permanent,
+                        ["lifeStateDead"] = target.Descriptor.State.IsDead, ["damageBefore"] = damageBeforePetrification,
+                        ["damageAfter"] = target.Descriptor.Damage, ["nativeLifeTicks"] = _sprint26Life.TicksFor(target) - lifeTicksBefore,
+                        ["petrifiedConditionCount"] = GorgonPetrificationLife.ConditionCount(target.Descriptor.State), ["permanent"] = state?.Permanent,
                         ["recoveryDc"] = state?.RecoveryDc, ["rolledCooldownRounds"] = activation?.CooldownRounds,
                         ["source"] = state?.FirstSourceId, ["saves"] = saves.Rows.DeepClone(), ["costs"] = costs },
                         "One native cone activation produces temporary victim-owned petrification, Constitution DC21 and an actual 2?5 round clock.");
@@ -489,7 +513,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int frames = 0;
                     while (target.Buffs.GetBuff(stone) != null && frames++ < 300) { Sprint26ProgressTurn(owner); yield return 0; }
                     Sprint25Check("breath-natural-recovery-" + turnBased, target.Buffs.GetBuff(stone) == null &&
-                        !target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified),
+                        !target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified) &&
+                        !target.Descriptor.State.IsDead && target.Descriptor.Damage == damageBeforePetrification,
                         new JObject { ["frames"] = frames, ["saves"] = saves.Rows.DeepClone(),
                             ["stoneAbsent"] = target.Buffs.GetBuff(stone) == null }, "A genuine subsequent native round save removes the temporary state and condition.");
                 }
@@ -513,7 +538,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var permanentState = permanent == null ? null : permanent.SelectComponents<GorgonPetrificationState>().Single();
                 int beforeRounds = saves.Count;
                 for (int i = 0; i < 60; i++) { Sprint26ProgressTurn(second); yield return 0; }
-                bool permanentExact = ReferenceEquals(temporary, permanent) && permanentState != null && permanentState.Permanent &&
+                bool permanentExact = target.Descriptor.State.IsDead && ReferenceEquals(temporary, permanent) && permanentState != null && permanentState.Permanent &&
                     permanentState.FirstSourceId == owner.UniqueId && permanentState.LastSourceId == second.UniqueId && saves.Count == beforeRounds;
                 Sprint25Check("breath-permanent-" + turnBased, permanentExact, new JObject { ["sameVictimBuff"] = ReferenceEquals(temporary, permanent),
                     ["permanent"] = permanentState?.Permanent, ["firstSource"] = permanentState?.FirstSourceId,

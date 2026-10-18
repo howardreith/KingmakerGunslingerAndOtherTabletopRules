@@ -25,6 +25,16 @@ namespace KingmakerGunslinger.DomainTests
 
     internal static class ExpandedSummoningSprint26Tests
     {
+        internal static void TemporaryStoneDoesNotAcquireNativeDeathDamage()
+        {
+            Assertions.True(Sprint26MagicalBeastRules.SuppressesNativePetrificationDeath(true, 1, true, false), "Only initialized temporary Gorgon stone suppresses the native petrification-only death predicate.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppressesNativePetrificationDeath(true, 2, true, false), "Another petrification source retains native lethal semantics.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppressesNativePetrificationDeath(true, 1, true, true), "Permanent stone retains native death/cure semantics.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppressesNativePetrificationDeath(true, 1, false, false), "Unowned or uninitialized stone is not a temporary Gorgon stage.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppressesNativePetrificationDeath(false, 1, true, false), "No condition is created by the life guard.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppressesNativePetrificationDeath(true, 0, true, false), "A missing condition counter cannot suppress native life processing.");
+        }
+
         internal static void BreathStagesRequireAnotherActivation()
         {
             Assertions.False(Sprint26MagicalBeastRules.CanEscalate(false, false, null, null, "second"), "An unrelated stone effect is not a first Gorgon exposure.");
