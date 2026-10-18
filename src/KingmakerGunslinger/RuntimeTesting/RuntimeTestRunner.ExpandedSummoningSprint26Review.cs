@@ -308,6 +308,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Stats.Reach.BaseValue=reachBonus+5;
                     int index=0;
                     foreach(var weapon in Sprint19Limbs(owner)) {
+                        if(key=="gorgon")foreach(int f in Sprint22SetPowerAttack(owner,false))yield return f;
+                        var toggle=key=="gorgon"?owner.Descriptor.ActivatableAbilities.Enumerable.Single(v=>v.Blueprint.AssetGuid=="a7b339e4f6ff93a4697df5d7a87ff619"):null;
+                        bool toggleOn=toggle!=null&&toggle.IsOn,toggleRunning=toggle!=null&&toggle.IsRunning;
+                        bool powerBuff=toggle!=null&&owner.Buffs.GetBuff(toggle.Blueprint.Buff)!=null;
+                        var calculated=Rulebook.Trigger(new RuleCalculateWeaponStats(owner,weapon,null));
                         observer.Clear();UnityEngine.Random.InitState(FindNativeD20Seed(18));
                         Rulebook.Trigger(new RuleAttackWithWeapon(owner,fixture.Hostile,weapon,0));
                         int baseline=key=="gorgon"?(index==0?7:3):(index==0?9:6);
@@ -315,7 +320,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         int rangeFeet=weapon.AttackRange.Value;
                         bool row=damage!=null&&damage.DamageBundle.First.Bonus==baseline+3&&rangeFeet==(key=="gorgon"?10:15);
                         exact&=row;rows.Add(new JObject{["liveAdditionalDamage"]=3,["liveReachFeet"]=5,["weapon"]=weapon.Blueprint.AssetGuid,
-                            ["rangeFeet"]=rangeFeet,["damage"]=damage==null?null:Sprint16DamageEvent(damage),["exact"]=row});index++;
+                            ["rangeFeet"]=rangeFeet,["strengthScore"]=owner.Stats.Strength.ModifiedValue,["strengthModifier"]=owner.Stats.Strength.Bonus,
+                            ["secondary"]=weapon.IsSecondary,["ruleSecondary"]=calculated.SecondaryWeapon,["strengthMultiplier"]=calculated.DamageBonusStatMultiplier,
+                            ["additionalStrengthMultiplier"]=calculated.AdditionalDamageBonusStatMultiplier,["calculatedBonus"]=calculated.DamageDescription[0].Bonus,
+                            ["nativeAdditionalDamage"]=owner.Stats.AdditionalDamage.ModifiedValue,["powerAttackOn"]=toggleOn,["powerAttackRunning"]=toggleRunning,["powerAttackBuff"]=powerBuff,
+                            ["damage"]=damage==null?null:Sprint16DamageEvent(damage),["exact"]=row});index++;
                     }
                 }finally{owner.Stats.AdditionalDamage.BaseValue=additionalDamage;owner.Stats.Reach.BaseValue=reachBonus;}
             }

@@ -169,3 +169,11 @@ Both stages persist through that automatic path, source loss and cold module
 ON/OFF hydration, retaining the original DC and primitive source strings.
 No natural recovery is added to permanent stone. This is an engine integration
 boundary that preserves the frozen rules, not a new tabletop adaptation.
+
+
+Native health eligibility clarification from the R19 cold trace: IsConscious
+is exactly LifeState==Conscious. Living temporary stone retains that health
+state while its real Petrified condition prevents acting/moving; it already
+skips automatic recovery. The permanent native-dead stage must exercise the
+scoped automatic-recovery guard. A fixture must distinguish these paths and
+must not require a guard event for a branch the engine already skips.

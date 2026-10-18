@@ -25,27 +25,28 @@ prefix intact. Current public equation: 1,096 generated placements plus29 retain
 Original medallions/Leap emblem and recognizable native bodies are present;
 rough visual debt is nonblocking and HumanReview remains NOT_PERFORMED_NONBLOCKING.
 
-Strict hidden R18 gate passed all2,686 tests and packaging on af94b45b.
-ZIPe73dfba95d9ca0eab9fc0f32bb518d3ecfd935b867e363aa287afdadf3f1f42d,
-DLLe07c85c34161f863efbc594067a1f415401ae7fd673aa75827b2320ed366e6f9,
-MVID22436217-6edc-4dc2-a7ee-de7fd75ccf91 are archived byte-exact privately.
-R17 Gorgon RTWP41/TB19 PASS remains retained. R18 Bulette TB16 now PASS on both
-branches/later ordinary; RTWP native reaction readiness is real, but the observer
-used a non-equivalent simulation disengagement query, so opportunity remains unrun.
+Strict hidden R19 passed all2,687 tests and packaging on f40de45a.
+ZIPd027470bab7829ea0de423c34d1a4951af50a902bc7b6fb96248db176071da66,
+DLLb656a47e3a6ca7a19784590eea5a3393473eaa0482f4f4ab05a6d95ea094af10,
+MVIDac4327d5-a2f7-4e63-9d74-befdf5d05882 archived byte-exact privately.
+R19 Gorgon41 PASS includes real permanent-state cure; R18 TB Leap16 PASS retained.
+R19 Leap produces real native opportunity1/debit1-to0, but fails unlogged parent/
+queue/binding completion gates. R19 foundation27/28 assertions pass; live+3 hoof
+bonus9 vs expected6 needs matched PA-off/native-stat observation. Cold load now
+preserves stages/profiles/DC/source strings/exact cooldown and permanent guard,
+but the observer wrongly required that guard on the temporary health-conscious
+stage. It stopped without recovery/cleanup save; remaining4 stages unrun.
 
-R18 cold load FAIL attributed to duplicate empty runtime component names and
-actual native out-of-combat automatic recovery removing both stone carriers and
-healing victims. Saved stage fields and lifetime flags were correct. The exact
-prepared save/trace are retained. Original Working and all118 saves/metadata,
-installation/settings/private references restored exactly; no game/lease.
-Current repairs name only new runtime components, guard only automatic recovery
-for initialized own Gorgon stone, preserve native explicit cure and compare
-actual composed cold profiles. Healthy disposable victim preconditions and the
-actual read-only RTWP query are included. Production compilation and9 focused
-tests PASS; no fresh R19 native claim. Steam Offline remains supported.
+R20 changes only three observer files: exact completion/queue/interrupt/cost
+trace, native health-versus-permanent eligibility correction, and matched live
+modifier setup/diagnostics. Production remains f40de45a. Compilation and9
+focused tests PASS. Old failures are retained; no R20 native claim. Today's
+Working and all118 saves/metadata, installation/settings/private references
+restored exactly. No game/lease. Steam Offline preserved. Latest read13:48Z:
+master555b16e0/Latestv159; fetch/inspect again before publication.
 
-Next: review/push/freeze one strict hidden R19 candidate, qualify affected Gorgon
-cure/out-of-combat ownership/load, RTWP Leap/foundation and the six-stage Working
-ON/OFF envelope; complete bounded combined coverage. Final public roots/strict
-gate, publisher preflight/merge/promotion/downloads/restoration and final records
-remain required. Preserve wt/s25. Continue this campaign; no Sprint27.
+Next push/freeze one strict R20 hidden candidate, then affected Leap/foundation
+and six-stage ON/OFF Working envelope. Complete bounded combined/unaffected
+coverage, final public roots/strict gate, preflight/merge/promotion/downloads,
+exact restoration and final records. Continue this campaign; preserve wt/s25;
+no Sprint27. Do not label ordinary remaining work a blocker.

@@ -127,6 +127,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var flanker=CastExpandedSummoningOwnTier(fixture,"gorgon");SetExpandedSummoningBrainActive(flanker,false);
             var target=fixture.Hostile;var data=new AbilityData(owner.Descriptor.Abilities.Enumerable.Single(v=>v.Blueprint.name=="KMG_Summoning_Special_Bulette_Leap"));
             var observer=new Sprint24AttackObserver{Owner=flanker,Target=owner};var random=UnityEngine.Random.state;
+            var leapAttacks=new Sprint24AttackObserver{Owner=owner,Target=target};
+            var costs=new JArray();var endings=new JArray();
             var controller=new Kingmaker.Controllers.Combat.UnitCombatEngagementController();
             var tick=controller.GetType().GetMethod("TickUnit",BindingFlags.Instance|BindingFlags.NonPublic);
             try{
@@ -204,13 +206,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["engagedIds"]=new JArray(flanker.CombatState.EngagedUnits.Select(v=>v.UniqueId)),["protectedActorsOutsideThreat"]=parked},
                     "Real native engagement, opportunity budget and legal charge are obtained outside every protected actor before the production command.");
                 if(!engaged||!available||!chargeAvailable||!reactionEligible||!disengageEligible||!simulationReadOnly)yield break;
-                EventBus.Subscribe(observer);
-                using(var seed=new Sprint26JumpSeed(owner,20))using(var queued=new Sprint26QueueTrace(owner)){
+                EventBus.Subscribe(observer);EventBus.Subscribe(leapAttacks);
+                using(var seed=new Sprint26JumpSeed(owner,20))using(var queued=new Sprint26QueueTrace(owner))
+                using(var economy=new FirearmReviewCosts(owner,costs))using(var trace=new Sprint26CommandTrace(owner,endings)){
                     var command=new UnitUseAbility(data,selected);owner.Commands.Run(command);
+                    int minimumBudget=flanker.CombatState.AttackOfOpportunityCount;
                     int frames=0;bool movingSample=false,disengagedSample=false;DateTime deadline=DateTime.UtcNow.AddSeconds(30);
                     while(frames++<3500&&DateTime.UtcNow<deadline){
                         if(command.ExecutionProcess!=null&&!command.ExecutionProcess.IsEnded)command.ExecutionProcess.Tick();
-                        tick.Invoke(controller,new object[]{flanker});yield return 0;
+                        tick.Invoke(controller,new object[]{flanker});minimumBudget=Math.Min(minimumBudget,flanker.CombatState.AttackOfOpportunityCount);yield return 0;
+                        minimumBudget=Math.Min(minimumBudget,flanker.CombatState.AttackOfOpportunityCount);
                         if(!movingSample&&Vector3.Distance(start,owner.Position)>.1f){movementStates.Add(state("moving"));movingSample=true;}
                         if(!disengagedSample&&!flanker.CombatState.EngagedUnits.Contains(owner)){movementStates.Add(state("disengaged"));disengagedSample=true;}
                         if(command.IsFinished&&queued.Commands.Count>0&&queued.Commands.All(v=>v.IsFinished)&&observer.WeaponAttacks.Count>0)break;
@@ -221,11 +226,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JObject{["owner"]=owner.UniqueId,["flanker"]=flanker.UniqueId,["route"]=route,["engagedBefore"]=engaged,["opportunityAvailableBefore"]=available,
                             ["start"]=SurveyVector(start),["landing"]=SurveyVector(owner.Position),["flankerPosition"]=SurveyVector(flanker.Position),
                             ["movementStates"]=movementStates,["finalNativeState"]=state("after-charge"),
+                            ["parentFinished"]=command.IsFinished,["parentResult"]=command.Result.ToString(),["executionEnded"]=command.ExecutionProcess?.IsEnded,
+                            ["frames"]=frames,["ownerDamage"]=owner.Descriptor.Damage,["ownerDead"]=owner.Descriptor.State.IsDead,
+                            ["ownerCanAct"]=owner.Descriptor.State.CanAct,["ownerCanMove"]=owner.Descriptor.State.CanMove,
+                            ["targetDead"]=target.Descriptor.State.IsDead,["targetDestroyed"]=target.Destroyed,
+                            ["queuedVisits"]=queued.Commands.Count,["distinctCommands"]=queued.Commands.Distinct().Count(),["minimumOpportunityBudget"]=minimumBudget,
+                            ["queuedCommands"]=new JArray(queued.Commands.Select(q=>{var a=BuletteLeapRuntime.Observation(q);return new JObject{
+                                ["referenceId"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(q),["finished"]=q.IsFinished,["result"]=q.Result.ToString(),
+                                ["target"]=q.Target?.UniqueId,["planned"]=q.AllAttacks.Count,["plannedIndex"]=(int)ReadExpandedSummoningOptionalMember(q,"m_AttackIndex"),["plannedAbsent"]=q.PlannedAttack==null,
+                                ["leapBound"]=a!=null,["checkPassed"]=a?.Check?.IsPassed,["plannedClaws"]=a?.PlannedClaws,["eligible"]=a?.EligibleAtStart,["travelAtQueue"]=a?.TravelAtQueue};})),
+                            ["leapArmed"]=BuletteLeapRuntime.IsArmed(owner),["nativeEnds"]=endings,["costs"]=costs,
+                            ["ownerAttacks"]=new JArray(leapAttacks.OwnerWeaponAttacks.Select(v=>new JObject{["target"]=v.Target?.UniqueId,["weapon"]=v.Weapon?.Blueprint.AssetGuid,["opportunity"]=v.IsAttackOfOpportunity})),
                             ["attacks"]=observer.WeaponAttacks.Count,["nativeOpportunityAttacks"]=attacks.Length,["opportunitiesAfter"]=flanker.CombatState.AttackOfOpportunityCount,
                             ["fixtureAttackCommands"]=0,["onlyExactFlankerEngagementTick"]=true,["protectedActorsOutsideThreat"]=parked},
                         "Legal real Leap movement leaves an actual disposable enemy's native threat, provoking its native opportunity command without teleporting, suppressing opportunity rules or fixture attacks.");
                 }
-            }finally{EventBus.Unsubscribe(observer);UnityEngine.Random.state=random;owner.Commands.InterruptAll(true);flanker.Commands.InterruptAll(true);
+            }finally{EventBus.Unsubscribe(observer);EventBus.Unsubscribe(leapAttacks);UnityEngine.Random.state=random;owner.Commands.InterruptAll(true);flanker.Commands.InterruptAll(true);
                 DisposeExpandedSummoningUnits(fixture.Created,new[]{owner,flanker});ResetExpandedSummoningHostile(fixture);}
         }
 

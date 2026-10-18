@@ -166,7 +166,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new JObject{["unit"]=actor.UniqueId,["buff"]=buff?.Blueprint.AssetGuid,["initialized"]=s?.Initialized,
                 ["permanent"]=s?.Permanent,["dc"]=s?.RecoveryDc,["firstSource"]=s?.FirstSourceId,["lastSource"]=s?.LastSourceId,
                 ["contextCaster"]=buff?.MaybeContext?.MaybeCaster?.UniqueId,["nativeConditionCount"]=GorgonPetrificationLife.ConditionCount(actor.Descriptor.State),
-                ["dead"]=actor.Descriptor.State.IsDead,["damage"]=actor.Descriptor.Damage};
+                ["dead"]=actor.Descriptor.State.IsDead,["nativeHealthConscious"]=actor.Descriptor.State.IsConscious,["damage"]=actor.Descriptor.Damage};
         }
         private IEnumerable<int> Sprint26PersistentStates(UnitEntityData caster,UnitEntityData[] sources,bool prepare,bool verify)
         {
@@ -231,7 +231,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var receipts=actors.Select(v=>v.Get<UnitPartSprint26StateReceipt>()).ToArray();
             var tempBuff=temp.Buffs.GetBuff(stone);var permBuff=perm.Buffs.GetBuff(stone);
             var ts=tempBuff?.SelectComponents<GorgonPetrificationState>().Single();var ps=permBuff?.SelectComponents<GorgonPetrificationState>().Single();
-            bool nativeAutomaticRecovery=_sprint26StateTrace!=null&&actors.All(v=>_sprint26StateTrace.AutomaticRecoveryVictims.Contains(v.UniqueId));
+            // Native IsConscious means health LifeState==Conscious, independently
+            // of the Petrified condition that still prevents acting/moving.
+            // Temporary stone already passes that native skip; permanent stone
+            // must exercise the new guarded branch in the real controller.
+            bool nativeAutomaticRecovery=_sprint26StateTrace!=null&&temp.Descriptor.State.IsConscious&&
+                _sprint26StateTrace.AutomaticRecoveryVictims.Contains(perm.UniqueId);
             bool firstSourceAbsent=!Game.Instance.State.Units.All.Any(v=>v!=null&&v.UniqueId==receipts[0].FirstSourceId)&&
                 !caster.HoldingState.AllEntityData.OfType<UnitEntityData>().Any(v=>v.UniqueId==receipts[0].FirstSourceId);
             var savedClock=owner.Buffs.GetBuff(clock);bool boundary=nativeAutomaticRecovery&&firstSourceAbsent&&ts!=null&&ps!=null&&ts.Initialized&&ps.Initialized&&!ts.Permanent&&ps.Permanent&&
@@ -246,6 +251,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             RosterPersistenceCheck("sprint26-cold-state-boundary",boundary,new JObject{["moduleEnabled"]=_context.FeatureModules.Active.ExpandedSummoning,
                 ["temporary"]=Sprint26SavedStone(temp,stone),["permanent"]=Sprint26SavedStone(perm,stone),["cooldownEndTicks"]=savedClock?.EndTime.Ticks,
                 ["nativeAutomaticRecoveryWithheld"]=nativeAutomaticRecovery,["departedSourceAbsent"]=firstSourceAbsent,
+                ["temporaryNativeHealthConscious"]=temp.Descriptor.State.IsConscious,
+                ["automaticRecoveryVictimIds"]=new JArray(_sprint26StateTrace.AutomaticRecoveryVictims),
                 ["savedCooldownEndTicks"]=receipts[0].CooldownEndTicks,["clockSecondsLeft"]=savedClock?.TimeLeft.TotalSeconds,["freshActivationAbsent"]=GorgonBreathRuntime.Latest(owner)==null},
                 "Native cold load preserves victim stages/DC/source strings with a missing original source, and the exact unrefreshed source cooldown, including module OFF.");
             if(!boundary)throw new InvalidOperationException("Sprint26 saved-state boundary failed; no cleanup save armed.");
