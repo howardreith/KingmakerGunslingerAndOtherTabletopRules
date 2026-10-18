@@ -1208,6 +1208,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint24-native-review", ExpandedSummoningSprint24Tests.NativeReviewIsClosedAndObservesRequiredSeams),
             Case("expanded-summoning.sprint24-persistence", ExpandedSummoningSprint24Tests.PersistenceScopeOwnsOnlyTheropodsAndNativeStates),
             Case("expanded-summoning.sprint24-swallow-reload-scope", ExpandedSummoningSprint24Tests.NoSwallowerOutlivesTheAcceptedReloadReset),
+            Case("expanded-summoning.sprint26.reach", ExpandedSummoningSprint26Tests.ReachCorrectionPreservesOtherOwnersAndBonuses),
             Case("expanded-summoning.sprint26.temporary-life", ExpandedSummoningSprint26Tests.TemporaryStoneDoesNotAcquireNativeDeathDamage),
             Case("expanded-summoning.sprint26.breath-stage", ExpandedSummoningSprint26Tests.BreathStagesRequireAnotherActivation),
             Case("expanded-summoning.sprint26.live-math", ExpandedSummoningSprint26Tests.BreathMathRemainsLive),

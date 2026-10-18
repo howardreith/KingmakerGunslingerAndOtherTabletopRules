@@ -22,6 +22,20 @@ namespace KingmakerGunslinger.Summoning
         internal const string ChargeDonor = "c78506dd0e14f7c45a599990e4e65038";
         internal const string ConeDonor = "fa5ee5f4cd5c6394f8b497c773f8e14a";
 
+        internal const string GorgonUnitGuid = "ce2fc58942b54e558208ea67d595cb7b";
+        internal const string BuletteUnitGuid = "f84a0babcc864630bae225b2019d6bba";
+        internal static int ReachAdjustment(string owner, string weapon)
+        {
+            // Native reduced-reach chassis exposes 2 feet for these Gorgon
+            // types and 5 feet for these Bulette types. Add only the measured
+            // missing term, retaining live native reach bonuses and radii.
+            if (owner == GorgonUnitGuid && (weapon == "6fa1a7d22d31434b85708d7ba7735649" ||
+                weapon == "fab6e52557c5426e8e09fbd714443c2c")) return 3;
+            if (owner == BuletteUnitGuid && (weapon == "f7801f4601554a478920e839ec40d9a4" ||
+                weapon == "d70dfa263eff44f2a547c9f47be0f87e")) return 5;
+            return 0;
+        }
+
         internal const string PetrificationGuid = "139703f90a8d4929992b783ad0e30bd7";
         internal static bool SuppressesNativePetrificationDeath(bool nativePetrified,
             int conditionCount, bool ownInitialized, bool ownPermanent)

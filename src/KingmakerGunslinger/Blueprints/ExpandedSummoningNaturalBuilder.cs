@@ -1506,6 +1506,10 @@ namespace KingmakerGunslinger.Blueprints
             levels.SelectSpells = Array.Empty<BlueprintAbility>();
             levels.MemorizeSpells = Array.Empty<BlueprintAbility>();
             levels.Selections = Array.Empty<SelectionEntry>();
+            // These new donors carry native preallocated skill rows. The own
+            // creation-only rank component must start from an empty row.
+            if (Sprint26MagicalBeastRules.UsesExactRanks(profile.Key))
+                unit.Skills = new BlueprintUnit.UnitSkills();
             unit.ComponentsArray = new BlueprintComponent[] { levels };
             if (crocodilian)
             {
@@ -1715,6 +1719,9 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol);
+            if (profile.Key == "gorgon" || profile.Key == "bulette")
+                unit.Type = Require<BlueprintUnitType>(bySymbol, "KMG.Summoning.Natural." +
+                    (profile.Key == "gorgon" ? "Gorgon" : "Bulette") + ".UnitType");
             // Both theropods borrow only the Lizardfolk rig. Its playable
             // Human race carrier otherwise adds a selected +2 Constitution
             // and keeps Medium combat-size arithmetic on a unit whose native

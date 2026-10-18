@@ -25,6 +25,16 @@ namespace KingmakerGunslinger.DomainTests
 
     internal static class ExpandedSummoningSprint26Tests
     {
+        internal static void ReachCorrectionPreservesOtherOwnersAndBonuses()
+        {
+            string gore = "6fa1a7d22d31434b85708d7ba7735649", bite = "f7801f4601554a478920e839ec40d9a4";
+            Assertions.Equal(5, 2 + Sprint26MagicalBeastRules.ReachAdjustment(Sprint26MagicalBeastRules.GorgonUnitGuid, gore), "Measured adult Gorgon reach.");
+            Assertions.Equal(10, 5 + Sprint26MagicalBeastRules.ReachAdjustment(Sprint26MagicalBeastRules.BuletteUnitGuid, bite), "Measured adult Bulette reach.");
+            Assertions.Equal(10, 7 + Sprint26MagicalBeastRules.ReachAdjustment(Sprint26MagicalBeastRules.GorgonUnitGuid, gore), "An added live five-foot native bonus survives.");
+            Assertions.Equal(0, Sprint26MagicalBeastRules.ReachAdjustment(Sprint26MagicalBeastRules.GorgonUnitGuid, bite), "Other weapons do not inherit the owner's correction.");
+            Assertions.Equal(0, Sprint26MagicalBeastRules.ReachAdjustment("native-horse", gore), "A released donor does not inherit the weapon's correction.");
+        }
+
         internal static void TemporaryStoneDoesNotAcquireNativeDeathDamage()
         {
             Assertions.True(Sprint26MagicalBeastRules.SuppressesNativePetrificationDeath(true, 1, true, false), "Only initialized temporary Gorgon stone suppresses the native petrification-only death predicate.");

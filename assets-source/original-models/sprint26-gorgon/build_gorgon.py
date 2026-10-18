@@ -115,6 +115,11 @@ def main():
     # Reuse project-owned bovine construction, never a native bull mesh.
     cattle.cattle(bm, weights, uvs, rig, "aurochs")
     armour(bm, weights, uvs, rig)
+    # Closed project primitives arrive with mixed winding. Normalize each
+    # connected surface, then use the orientation of the visible native plates
+    # under the shared exporter’s final handedness reversal.
+    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+    bmesh.ops.reverse_faces(bm, faces=list(bm.faces))
     bm.normal_update(); bm.to_mesh(mesh)
     indexed = {v.index: entries for v, entries in weights.items()}
     uv_indexed = {v.index: uv for v, uv in uvs.items()}
