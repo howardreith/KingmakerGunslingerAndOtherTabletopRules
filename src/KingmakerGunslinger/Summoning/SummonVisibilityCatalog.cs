@@ -105,10 +105,10 @@ namespace KingmakerGunslinger.Summoning
         // symbol reference could make the offline and native surfaces disagree.
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "gorgon", "bulette" }, StringComparer.Ordinal);
+            new HashSet<string>(new string[0], StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1102;
-        internal const int SuppressedLogicalPlacementCount = 6;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -131,8 +131,8 @@ namespace KingmakerGunslinger.Summoning
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                SuppressedCreatureKeys.Count != 2 ||
-                !suppressed.Select(value => value.Creature.Key).Distinct().OrderBy(value => value).SequenceEqual(new[] { "bulette", "gorgon" }) ||
+                SuppressedCreatureKeys.Count != 0 ||
+                !suppressed.Select(value => value.Creature.Key).Distinct().OrderBy(value => value).SequenceEqual(new string[0]) ||
                 brachiosaurus.Length != 3 ||
                 // Publication adds no Monster row or template child.
                 brachiosaurus.Any(value =>

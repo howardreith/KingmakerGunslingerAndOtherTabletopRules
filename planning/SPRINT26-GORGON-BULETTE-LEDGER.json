@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "sprint": 26,
-  "state": "IMPLEMENTING_WITHHELD",
+  "state": "PUBLIC_CANDIDATE",
   "surface": {
     "target": {
-      "generatedPlacements": 1096,
+      "generatedPlacements": 1102,
       "retainedNativeWrappers": 29,
-      "visibleChoices": 1125
+      "visibleChoices": 1131
     },
     "registered": {
       "projectCreatures": 110,
@@ -14,10 +14,7 @@
       "retainedNativeWrappers": 29,
       "visibleChoices": 1131
     },
-    "withheldKeys": [
-      "gorgon",
-      "bulette"
-    ]
+    "withheldKeys": []
   },
   "appendedIdentities": [
     {
@@ -381,6 +378,7 @@
       "notes": "Private native cone visual with an exact Gorgon jaw origin; native donor and other consumers remain unchanged."
     }
   ],
-  "nativeQualification": "NOT_PERFORMED",
-  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  "nativeQualification": "SUPPORTED_HIDDEN_COVERAGE_COMPLETE_WITH_SOURCE_BOUND_REUSE; PUBLIC_ARTIFACT_PENDING",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "hiddenCandidateSource": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7"
 }

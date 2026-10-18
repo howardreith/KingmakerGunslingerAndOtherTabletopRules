@@ -1,81 +1,74 @@
 # Sprint26 current coverage
 
-## Controlling state: IMPLEMENTING_WITHHELD / R23 fixture checkpoint
+## Controlling state: PUBLIC CANDIDATE / NOT RELEASED
 
-Continue the authorized full campaign through PR58, exact-byte stable promotion,
-public download/restoration and final records merge. STOP before Sprint27.
-No product merge, qualified public candidate or release. Fixed source/build/
-native/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
+Full authorized campaign continues through public qualification, PR58, stable
+promotion/public downloads/restoration and final records merge. STOP before
+Sprint27. No product merge, qualified public artifact or release yet. Fixed
+source/build/native/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
 
-Released6,916 identities intact;45 appended. Registered110 creatures,
-Monster96/545, Nature97/557,1,102 placements. Public1,096 generated placements
-plus29 wrappers =1,125 choices; only Gorgon/Bulette withheld; final1,131.
+Only two suppression keys removed; 110 creatures, Monster96/545, Nature97/557.
+Public equation: 1,102 generated placements +29 retained wrappers = 1,131
+choices. Six exact untemplated roots; every released GUID/root retained,45
+append-only identities and the released6,916 prefix unchanged.
 
-## Latest retained exact R22 artifact
+## Supported hidden proof and reuse
 
-Source12b83f4a5b2557e4e411156ea99f572b314933d0; strict Sprint PASS375.0790448s,
-all2,687 tests/zero failures, exact386 files. ZIP
-75482f72c1b46b915b3428350b052e7e1e9b4cc59c7eeb6c83550a5f1b9ce67e;
-DLL23728d073ca85aed05b158385d05cffcfba26ba4ca1deffb212c14bc55f9605c;
-MVIDe9ff5263-8f65-40d9-927a-e3a0ded2b67e; fingerprint
-10eb482451bbb1c12ec0bce4bb590000d60fc910cbf87125b573a7218d373d7f.
-Archived byte-exact,165 files, artifacts/sprint26-strict-hidden-r22. Incomplete
-hidden qualification; do not promote these bytes.
+Frozen dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7 strict Sprint PASS377.0213918s,
+all2,687 tests/zero failures,386 files. ZIP
+8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3;
+DLLe42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc;
+MVIDddb76b36-a1ed-4ddc-8cb5-b10a752ed43d; fingerprint
+02fd56b4b812f4545f5625154324a1e896f6298db75e1cca59e4a9fa9fe41a25.
+Whole hidden root is archived byte-exact before public build. Never promote
+hidden bytes or label them execution on the future public DLL.
 
-| Coverage | Exact actual proof / remaining work |
+| Requirement | Exact original proof |
 | --- | --- |
-| Profiles/roles/skills/signed/live damage/reach | R20 PASS28 incl released Elephant; final-source dependency reconciliation pending |
-| Gorgon RTWP/TB | R19 PASS41 incl actual native permanent cure; R17 TB PASS19; affected clock checks/reuse pending |
-| Bulette Leap | R18 TB PASS16. R22 RTWP41/42: measured native navigation exit after first movement step. R23 legal-corridor/facing fixture admission awaits fresh evidence |
-| Targeted persistence | Complete R20 ON first4 + R22 OFF cleanup/fresh absence union:77 PASS across six stages. Exact identities/conditions/cooldown/source loss/native recovery/cleanup save/absence; final-source dependency record pending |
-| Bodies/icons/lifecycle/cache/donor | 19a2b61a lifecycle38 PASS; R19 actual mouth/body pixels inspected; final public presentation/reuse pending |
-| Exact-owner AI / ordinary TB | 19a2b61a AI16/TB20 PASS; affected clock checks pending |
-| Current highest-risk combined | Bounded affected checks pending; no historical full matrix selected |
-| Six public roots/slots/quantity/duration/alignment | Final public source/artifact pending |
-| Publisher / complete public gate | Refusal/dispatch PASS; qualified ledger/preflight/dry-run/merge/promotion/public downloads pending |
+| Profiles/roles/skills/signed/live damage/reach | R20 standalone28; R23 combined28 and ordinary TB22 incl released Elephant control |
+| Gorgon stages/targeting/cooldown/immunity/cure/trample | R19 strict standalone41; R23 strict combined41 and TB19; real native permanent cure, no new waiver |
+| Bulette Leap/ordinary/failure/interruption/economy | R23 standalone42, combined42, TB16; real jump check, legal native travel/landing, four claws/no bite, genuine opportunity, spending and cleanup |
+| Both modes / exact-owner AI | R23 TB16/19/22 and AI16; protected brains never ticked, no fixture attacks counted as AI |
+| Bodies/icons/lifecycle/cache/donor | Fresh strict R23 lifecycle; actual R23 pixels inspected; all original assets/pins protected; early19a development38 is historical, not release qualification |
+| Targeted persistence | R20 first4 + R22 final2,77 PASS; original source/ZIP/DLL/MVID retained. Conditions/DC/source loss/cooldown/real recovery, ON/OFF cleanup save/fresh absence |
+| Standalone/current highest-risk combined | R23 standalone mode/AI and combined foundation28/Gorgon41/Leap42; no complete old matrix selected |
+| Six public roots/inventory/icons/slots/quantity/duration/alignment | PENDING exact public-r24 artifact |
+| Complete public gate/exact package/release | PENDING public-r24 full suite/package, ledger, preflight/dry-run, merge/promotion/download/lineage |
 
-R22 OFF remainder705.3395856s batch/717.2156163s envelope:17+7 assertions PASS,
-real cleanup save and fresh absence of receipts/condition actors. String-null
-comparison repair is confirmed in native use; every profile field remains
-compared after the exact module-OFF reach delta. The R20 prepared fixture is
-explicitly source/RunId/hash bound, distinct from today's actual Working intake.
-All transactions restored actual installation/settings/private inputs; original
-Working bytes/creation/write/attributes and all118 saves/metadata exact. No
-game/lease, baseline never loaded/written, Steam Offline preserved.
+Nine strict R23 phases pass 270 assertions; bounded seven-case continuation
+2166.7073137s, each fresh transaction restores actual intake. Detailed RunIds/
+hashes/failed attempts remain in development history. Development-candidate
+proof is excluded from release eligibility. Retained strict R19/R20/R22 proof
+has unchanged dependency scope: current corrections are request-local review
+clock/navigation/profile observations; production remains f40de45a. New public
+source changes only visibility, derived records and controlled roster outputs.
+No identity, body, weapon, condition, cooldown or movement implementation changes.
 
-R22 Leap325.8631902s outer remains FAIL42 (41 pass). Native iterator records
-passedDistance0.602533937m versus max24.384m, valid threat hand/range, then
-TraceAlongNavmesh returns near the current start rather than target (11.507m
-gap). Installed code returns its clamped start if off-mesh2D distance exceeds
-1cm. It precedes disengagement; no animation/distance-limit/AoO-cancellation
-claim. The old endpoint ray was insufficient for this Huge body's initial
-steering near an edge. R23 admits only a body-width corridor through exact
-native navigation queries, protects existing actors and establishes native
-initial facing. Production and strict completion predicate are unchanged.
-No native movement/attack is performed by setup after the cast starts.
+All118 saves/content/protected metadata, actual Working bytes/creation/write/
+attributes, installation/settings/private references restored exactly. No owned
+game/lease, baseline never loaded/written; Steam Offline preserved. Actual
+restore uses each transaction's current intake and exact RunId.
 
-Compilation PASS22.3s,10 named tests PASS1.0s, exact source boundary PASS.
-Before freeze, an unobtained corridor records native candidate geometry and
-NOT_EVALUATED_NO_LEGAL_CORRIDOR before any command; it cannot become PASS.
-That narrow capture recheck compiles in16.7s and passes10 tests in0.9s.
-Freeze strict hidden-r23 once, then the focused Leap check. Complete affected
-both-mode/AI and bounded combined checks with exact-source reuse. After hidden
-proof remove only two suppression keys, regenerate controlled outputs and
-qualify public source once: complete fresh gate/six real routes/inventory/icons.
-Then final ledger, publisher preflight/dry-run, upstream/version refresh, merge,
-stable tested-byte promotion, actual public downloads/lineage, exact restoration
-and final records merge. No Sprint27. Upstream refreshed today: master555b16e0,
-Latestv159/non-draft/non-prerelease, v160 remote tag absent; not a reservation.
+## Final public boundary and scope
 
-## Art and accepted scope
+One fresh public-r24 full Sprint/strict package in wt/s26, then real six-root
+player paths and icon/inventory arithmetic on that artifact, standalone and
+highest-risk publication path. Build the ignored source-bound qualified ledger;
+publisher preflight/dry-run and current upstream/tag checks precede authorized
+merge/promotion. Promote tested bytes, verify actual public assets/peeled tag/
+lineage and exact machine restoration, merge final records, STOP before27.
 
-Original armored-bull geometry on native Horse animation; exact native adult
-Bulette body; original painted medallions/Leap emblem; semantic native stone/
-trample art. Actual pixels inspected. HumanReview NOT_PERFORMED_NONBLOCKING.
-Rough proportions, pale texture finish, faceting, seams, secondary motion and
-contact choreography remain backlog; released approved art is protected.
-Gorgon SMVIII is a charter extension, absent ordinary core table; Bulette SNAVI
-is ordinary placement. Both untemplated. Explicit surface adaptation leaves
-printed20-foot burrow and unsupported tremorsense unmodeled; no substituted
-blindsight or underground travel. See the frozen contract and development
-history for exact source-bound observations and failures.
+Gorgon SMVIII is a charter extension absent ordinary core table; Bulette SNAVI
+is ordinary placement. Both untemplated. Surface-only adaptation leaves printed
+20-foot burrow and unsupported tremorsense unmodeled; no substituted blindsight
+or underground travel. Original armored-bull geometry on native Horse animation
+and exact native adult Bulette are functional. Painted medallions/Leap emblem
+and semantic native action art integrated; no proprietary mesh/texture/animation
+redistribution. Rough pale texture, proportions, faceting, seams, secondary
+motion and contact choreography remain backlog. HumanReview
+NOT_PERFORMED_NONBLOCKING. Approved released art remains byte-protected.
+
+Public-stage review: only two suppression keys/count contracts, active derived
+records and established roster export change. Blueprints/art/version bytes
+remain exact. Compilation PASS21.8s;19 focused tests PASS4.9s; public source
+boundary and81 publisher refusal checks PASS. This is not the final public gate.
