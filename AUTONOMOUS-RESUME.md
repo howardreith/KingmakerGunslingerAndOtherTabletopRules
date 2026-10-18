@@ -42,7 +42,9 @@ no animation stall or distance-limit diagnosis. Failure/logs retained.
 R23 changes only opportunity fixture admission: body-width native-trace corridor,
 protected-actor clearance and native initial facing. No production movement or
 rule change; strict four-claw/no-bite/opportunity outcome remains. Compilation
-PASS22.3s,10 named tests PASS1.0s, source boundary PASS; native rerun pending.
+PASS22.3s,10 named tests PASS1.0s, source boundary PASS. Unobtained corridor
+candidates now persist as a structured failed precondition before any command;
+recheck compilation PASS16.7s/10 tests PASS0.9s. Native rerun pending.
 
 Next push/freeze hidden-r23, fresh focused Leap. Then affected both-mode/AI and
 bounded combined coverage; final public six-root source/gate; qualified ledger/
