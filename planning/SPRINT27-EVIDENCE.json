@@ -113,7 +113,8 @@
     "First model render used relative texture input; same mesh rendered with absolute paths.",
     "New domain test used nonexistent Create factory; corrected to actual Build and6 focused checks passed.",
     "Observer attempted read-only IsFullAttack setter; corrected to verified ForceFullAttack/IsSingleAttack fields; affected compile passed.",
-    "Readability-sheet Python Pillow unavailable; no dependency installed, installed System.Drawing used."
+    "Readability-sheet Python Pillow unavailable; no dependency installed, installed System.Drawing used.",
+    "Prototype81433 preflight FAIL47.7809s: exact documented-scenarios inventory omitted the new Griffon review string. No build/deployment/game transaction occurred. Corrected exact inventory; affected preflight rerun required."
   ],
   "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
