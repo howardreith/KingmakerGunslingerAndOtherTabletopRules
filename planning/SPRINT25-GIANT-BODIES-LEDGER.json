@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "MASTER_158_INTEGRATED_SPRINT25_159_OVERRUN_ATTRIBUTION_NEXT",
+  "status": "MASTER_158_INTEGRATED_159_OVERRUN_TRACE_CANDIDATE_NEXT",
   "current": {
     "latestCheckpoint": {
+      "requestLocalObservation": "2026-10-18T00:13Z: normal master integration committed/pushed as a65f469e7319bc78240ac3b29bcae57d40c240c7. Added bounded exact rider/component/fact/native subscriber/pending/eligibility snapshots before native About, after native resolution before initiator Did, and after callbacks return. All cases exclude independent get-up provocation; duplicate notification probes run only after the real callback consumed its event, never supplying missing first behavior. No production mechanic change. Initial compile caught a local-scope observer variable and was repaired before packaging. Final compile16.6s and23/23 focused cases PASS;70 publisher refusal checks PASS at159.",
       "asOfUtc": "2026-10-18T00:10:37.9539101Z",
       "sourceBuildCheckpoint": {
         "source": "0825699d9ec8cefb0232c5df8ccc5eaea017be37",
@@ -30,7 +31,7 @@
         "checks": "PASS compile17.5s;73/73 focused cases (2678 registered),domain2.4s; actual hidden source/6916 IDs;19 source refusals;17 real dispatch checks including retained158 visual child and new159 Sprint25;30 icon protection/refusals12.522s. Full new candidate/native not yet run.",
         "impact": "Brachiosaurus/Elephant original payloads/icon and mechanical rules unchanged by master. Fresh functional visuals/resources and Triceratops control cover inherited shared glow/refined control view; native Overrun diagnostic and targeted ON/OFF cold loads remain mandatory. Prior mechanics/AI/Cleave retain original artifact identities with dependency arguments, not relabeled execution."
       },
-      "next": "Commit/push resolved merge, add minimal request-local Overrun rider observation and all-case get-up isolation; focused compile, one full159 candidate and affected native phases. Then targeted six ON/OFF persistence stages, public boundary/full candidate/fresh public inventory/icon/eleven roots, publisher preflight, authorized merge/release/download/restoration audit, final-records merge,STOP. No Sprint26.",
+      "next": "Commit/push coherent observer; one full159 candidate, then one standalone Overrun attribution phase (planning5-8min from observed launch cost; safe restoration has no deadline). Inspect actual rider snapshots before any product repair, then rerun affected Overrun both profiles. Fresh inherited-glow functional visuals/resources and Triceratops control, targeted six ON/OFF persistence stages, public boundary/full candidate/fresh public inventory/icon/eleven roots, publisher preflight, authorized merge/release/download/restoration audit, final-records merge,STOP. No Sprint26.",
       "acceptance": "PR49 draft/unmerged; Brachiosaurus hidden. HumanReview NOT_PERFORMED_NONBLOCKING for new giants. Steam Offline Mode accepted; no runtime safety waiver."
     },
     "previousCheckpoint20261017T2109Z": {
