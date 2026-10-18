@@ -18,7 +18,7 @@ prefix intact with45 exact appended identities. No new creature/variant/feat.
 Hidden strict source dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7 passed all2,687
 tests and386 files. ZIP8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3;
 DLLe42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc;
-MVIDddb76b36-a1ed-4ddc-8cb5-b10a752ed43d. 270 native assertions pass across
+MVIDddb76b36-a1ed-4ddc-8cb5-b10a752ed43d. 264 native assertions pass across
 nine recorded strict phases, including both modes, exact-owner AI, three
 highest-risk combined phases and strict lifecycle. Targeted ON/OFF persistence
 union77 PASS on original R20/R22 bytes. Retained strict R19 standalone Gorgon
@@ -36,7 +36,7 @@ rough visual backlog. Original paintings/Leap emblem integrated. HumanReview
 NOT_PERFORMED_NONBLOCKING. Surface-only Bulette leaves burrow20/tremorsense
 unmodeled; Gorgon SMVIII is the charter extension, absent ordinary core table.
 
-Next freeze one public-r24 candidate in this same root; complete fresh full
+Next freeze one public-r24b candidate in this same root; complete fresh full
 gate and six actual public routes/inventory/icons/slots/quantity/duration/
 alignment/removal, standalone and highest-risk publication path. Then ignored
 qualified ledger/preflight/dry-run, fresh master/releases/tag check, authorized
@@ -48,3 +48,10 @@ absent at last check; this is not a reservation.
 Public transition focused validation: production compilation PASS21.8s;19 named
 catalog/inventory/Sprint26 tests PASS4.9s runner; public source boundary and81
 publisher refusal checks PASS. Full public artifact/native routes still pending.
+
+Public-r24 full gate FAIL338.4943646s: 2,686/2,687 passed; only the historical
+Sprint25 public-scope test incorrectly capped later additions at1,096 roots.
+Removed its redundant old whole-roster formula; retained central derived total,
+three exact Brachiosaurus roots and all released-route preservation checks.
+Test-source-only focused repair:20 selected/zero failures (0.1s executable).
+No production behavior changed and no public-r24 DLL/package was produced.

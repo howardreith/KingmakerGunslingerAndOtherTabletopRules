@@ -32,10 +32,10 @@ hidden bytes or label them execution on the future public DLL.
 | Bodies/icons/lifecycle/cache/donor | Fresh strict R23 lifecycle; actual R23 pixels inspected; all original assets/pins protected; early19a development38 is historical, not release qualification |
 | Targeted persistence | R20 first4 + R22 final2,77 PASS; original source/ZIP/DLL/MVID retained. Conditions/DC/source loss/cooldown/real recovery, ON/OFF cleanup save/fresh absence |
 | Standalone/current highest-risk combined | R23 standalone mode/AI and combined foundation28/Gorgon41/Leap42; no complete old matrix selected |
-| Six public roots/inventory/icons/slots/quantity/duration/alignment | PENDING exact public-r24 artifact |
-| Complete public gate/exact package/release | PENDING public-r24 full suite/package, ledger, preflight/dry-run, merge/promotion/download/lineage |
+| Six public roots/inventory/icons/slots/quantity/duration/alignment | PENDING exact public-r24b artifact |
+| Complete public gate/exact package/release | PENDING public-r24b full suite/package, ledger, preflight/dry-run, merge/promotion/download/lineage |
 
-Nine strict R23 phases pass 270 assertions; bounded seven-case continuation
+Nine strict R23 phases pass 264 assertions; bounded seven-case continuation
 2166.7073137s, each fresh transaction restores actual intake. Detailed RunIds/
 hashes/failed attempts remain in development history. Development-candidate
 proof is excluded from release eligibility. Retained strict R19/R20/R22 proof
@@ -51,7 +51,7 @@ restore uses each transaction's current intake and exact RunId.
 
 ## Final public boundary and scope
 
-One fresh public-r24 full Sprint/strict package in wt/s26, then real six-root
+One fresh public-r24b full Sprint/strict package in wt/s26, then real six-root
 player paths and icon/inventory arithmetic on that artifact, standalone and
 highest-risk publication path. Build the ignored source-bound qualified ledger;
 publisher preflight/dry-run and current upstream/tag checks precede authorized
@@ -72,3 +72,10 @@ Public-stage review: only two suppression keys/count contracts, active derived
 records and established roster export change. Blueprints/art/version bytes
 remain exact. Compilation PASS21.8s;19 focused tests PASS4.9s; public source
 boundary and81 publisher refusal checks PASS. This is not the final public gate.
+
+Public-r24 gate FAIL338.4943646s:2,686/2,687 tests passed; one stale Sprint25
+whole-roster formula expected1,096 rather than current1,102. Removed that
+redundant formula while preserving the central derived-total assertion, exact
+Brachiosaurus roots and released-route checks. Focused test-source-only repair
+PASS20/20 (0.1s executable); no production change or failed-gate public package.
+Fresh public-r24b gate remains required. Failed receipt/logs remain immutable.
