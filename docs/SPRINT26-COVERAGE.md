@@ -148,3 +148,8 @@ Sprint26/runtime tests PASS (1.7s tests). Foundation now also observes actual
 Power Attack, ordinary bite critical confirmation, unforced trample command and
 released Elephant profile control. AI/lifecycle and remaining negative cases
 are still pending; no final candidate has been declared.
+
+Build95c21171 stopped before package/native use after528 of529 selected tests
+passed: the shortened resume omitted the exact current public equation wording
+required by the records check. The wording is repaired; the focused failed
+records reproduction passes. The build/dispatch refusal remains preserved.

@@ -14,7 +14,7 @@ Current coverage and retained failures: [Sprint26 coverage](docs/SPRINT26-COVERA
 - Expected next free version0.0.160 is not reserved; fetch master/releases before promotion.
 
 Exactly110 registered creatures /1,102 placements; only Gorgon and Bulette remain
-withheld. Current public surface remains1,096 generated+29 retained wrappers=1,125.
+withheld. Current public surface remains1,096 generated placements +29 retained native wrappers =1,125 visible choices.
 Final six new untemplated roots will expose1,131 choices. The released6,916-entry
 registry prefix is intact, with44 appended identities and no replacement GUIDs.
 Both paintings and the Leap emblem are integrated. Gorgon has original Horse-frame
