@@ -7,6 +7,51 @@ this checkpoint is not its stopping point. The controlling task state is
 [the contract](../planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md) and the
 [current ledger](../planning/SPRINT26-GORGON-BULETTE-LEDGER.json).
 
+## Current observer repair after 4da4a7ad
+
+Development source `4da4a7ad8281fa640b0c1bd06908112a475db547` built in250.841s,
+532 selected tests/632 dispatch checks PASS. ZIP
+`73dc3bbedcc2fd6b449d03da6bb3f0dfda3ede7828407444067c72782254ed83`, DLL
+`ce88accd01892c82b12e6a4fadc889863dca23151ce0c11182f01dcf87eb090b`, MVID
+`e843c52c-1e37-44da-8c6b-96bb8746f102`, fingerprint
+`9c2ff5332f2afeef3547b9734dea312090f434c54d985a9e4ae89bea610fc57a`.
+
+Run `20261018T0929591723711Z-45a0ee24189149128e9f65440f1a3f9a` is
+FAIL_TIMEOUT_NO_FINAL_RESULT, not qualification. Retained structured progress
+shows both genuine Leap branches PASS, actual travel6.91180229m/6.91657925m,
+projection/continuity gaps0, no actor overlap, minimum-run-up and blocked-route
+refusals, native costs, later ordinary routine and post-action CMD28. Actual
+native leap pixels were inspected. The subsequent new target factory wrongly
+required a Pixie ability; its failed spawn/dispose loop also poisoned native
+EntityCreationController reset. The native teardown did not pass.
+
+The configured timeout left its exact disposable PID19808 running. A guarded
+request-local recovery verified the request, PID/start, Windows owner,
+executable and transaction lease, then CloseMainWindow exited it. No forced
+termination was used. The original failed wrapper result remains unchanged.
+Transaction `compat-20261018T092809Z-66fa69a65f98` was restored by its exact RunId.
+Settings recovery initially failed on JSON-erased registry types; a separate
+retained correction rehydrated those captured types. Final audit at09:43:35Z:
+Restored/true, actual mods/settings/private references exact,118 original save
+hashes/metadata exact, no game/lease. Recovery is machine restoration, not a
+native cleanup PASS.
+
+The repaired helper clones the existing private hostile blueprint and ticks a
+successful creation before use. The opportunity control uses one exact hostile
+Gorgon with every original actor outside its measured threat; no original brain
+or fixture attack is ticked. All boundary observations still need fresh runs.
+Publisher selector/refusal tests are implemented. Strict candidate, targeted
+persistence, public six roots, combined compatibility and release remain pending.
+
+Repair check: `Invoke-KmgGate.ps1 -Level Focused -Filter
+expanded-summoning.sprint26;runtime`: production compilation18.2s,52 tests PASS
+in2.0s (3.3s test step); no complete-suite/native qualification.
+
+Hash-bound retained evidence:
+- `sprint26-review-progress.json`: `271b55758f440a1ba94954483376fba32708c2c3a7832c170298e52278ce1832`.
+- `orchestration.json`: `dc951583d1a23839aaf020aa6889881954942c8a694f1993458ed5a291ab5a32`.
+- `exact-owned-process-recovery.json`: `8f6064d55570fac40d29d1da2c3d02f32610e7b4d8eca372e49ace5d9d25e1c9`.
+
 ## Current development evidence: 19a2b61a and next observer checkpoint
 
 This section supersedes the earlier pending rows for these exact runs. Source
