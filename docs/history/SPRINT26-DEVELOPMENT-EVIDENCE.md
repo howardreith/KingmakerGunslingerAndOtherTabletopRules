@@ -879,3 +879,64 @@ a structured failed precondition with commandOutcome NOT_EVALUATED_NO_LEGAL_CORR
 before any ability command, replacing only the generic exception path. No
 success/outcome predicate changes. Focused recheck compilation PASS16.7s and
 all10 named tests PASS0.9s; no native or product behavior inferred.
+
+## R23 supported hidden qualification and public-candidate transition
+
+Source dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7 strict Sprint377.0213918s,
+all2,687 tests/zero failures,386 files. ZIP
+8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3; DLL
+e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc;
+MVIDddb76b36-a1ed-4ddc-8cb5-b10a752ed43d; fingerprint
+02fd56b4b812f4545f5625154324a1e896f6298db75e1cca59e4a9fa9fe41a25.
+The legal corridor rejects the retained edge route and selects a body-wide
+native-clear lane. Actual native charge queues exactly one bound child after
+6.782526m, completes planned4 claws with no bite, and provokes one native
+opportunity (owner takes13 damage but remains able to act/move). Every native
+step remains navigation-clear; source/command costs and interruption cleanup
+are observed. No production movement/rule fix was needed. Prior FAILs retained.
+
+| Strict original phase | Assertions | Native RunId | Result SHA256 |
+| --- | --- | --- | --- |
+| bulette-leap-rtwp | 42 PASS | 20261018T1632006573806Z-086accd1079a41a390c794814647f704 | 781d1996021b0befacc164b3f4dddee49107f5ed188b855880bce62c5a05e6c9 |
+| bulette-leap-turn-based | 16 PASS | 20261018T1639006260129Z-b61fad2fb3244fa9a4b4e41e0dc19554 | 5eb9ce17b71522fd1bc8d7f88135ace76bf034d9bc19f8e8f29307db6f129a07 |
+| turn-based-commands | 22 PASS | 20261018T1643144123139Z-909f4cf871114f37a5c26c0d6d53681e | f27cb983028317d3bc908e3f7fd71a36969cae73cdde45f91c6349741d614d32 |
+| gorgon-breath-turn-based | 19 PASS | 20261018T1647321713129Z-f0023aa37fe64df280636060a4439773 | 0224e9ac74470fb678b4916fb627fac0c14763b28621f2c171c50ffce0c9aa70 |
+| rtwp-ai | 16 PASS | 20261018T1652516804984Z-86b4b35891c946d69ba7b352ae1fb09d | ece7f220659a4f05bb0c20393ba86a5b676e735fc16cc23632ab599956ed8a8f |
+| combined-rtwp-foundation | 28 PASS | 20261018T1657171625410Z-6fdc1198d9c04d79947c028329254fcd | a777bd9826cf067ed9dc8e71cbbf6413ba200cbfb46640af0ec51e252c989101 |
+| combined-gorgon-breath-rtwp | 41 PASS | 20261018T1702440943972Z-3d5387f1eb0a419a9cfe9ac383ebb187 | 656214311b4668dc0aedc9402761e03b305ab8aa8844ca3a1204efdfe2588cc8 |
+| combined-bulette-leap-rtwp | 42 PASS | 20261018T1709028446434Z-d8204fe8885845b0beaef5b411126923 | 799df7ee561e435d88abacb2bb6714f39ca9e518d0d02015a23f680a805be7c9 |
+| visual-lifecycle | 44 PASS | 20261018T1716052395186Z-d627973cf3fd4d4a9f75793603430005 | db361939544127be9eeec0f8be35bd5189a9c80a70b93bed9141a3f4244d4cc8 |
+
+Total270 assertions across nine strict phases; bounded seven-case continuation
+2166.7073137s with stop-on-first-failure, all PASS and each exact restoration.
+Native R23 Bulette Leap and Gorgon breath pixels were actually inspected. Body
+clipping/occlusion and pale coarse plates are presentation backlog, not aesthetic
+approval. Aesthetic status remains NOT_PERFORMED_NONBLOCKING.
+Early lifecycle19a deployment explicitly declares candidateKind development/
+purpose sprint26-native-prototype, so it is retained only as exploratory history.
+Fresh strict lifecycle above qualifies actual models, quantities, rollback,
+module boundaries, donors and resource/cache cleanup. Old development AI/TB
+packs are likewise superseded; none qualifies this release.
+
+Targeted persistence remains the exact77-assertion R20/R22 union recorded above,
+with unchanged production names/schema/ownership since f40de45a. Every current
+transaction restores actual installation/settings/references/all118 saves and
+metadata; no game/lease, Working original bytes/times/attributes exact, baseline
+never loaded/written, Offline preserved.
+
+After those supported hidden proofs, remove only Gorgon/Bulette suppression
+keys and derived withheld counts; identities/assets/rules stay unchanged.
+Established manifest exporter regenerates controlled public roster, deriving
+1102 generated +29 wrappers =1131 choices/110 creatures. This is only
+a PUBLIC_CANDIDATE, not release eligibility or exact-public-artifact PASS.
+Next public-r24 full gate, six real roots/inventory/icons, ledger, preflight/
+dry-run, current upstream/version checks, product merge/stable tested-byte
+promotion/download verification/exact restoration and final records merge.
+STOP before Sprint27.
+
+Public transition review changes only visibility/count contracts, active records
+and established controlled roster export; blueprint identity/art/version hashes
+are unchanged. Invoke-KmgGate -Filter selecting Sprint26/catalog/quantity/
+alignment/baseline/published checks: compilation PASS21.8s,19 tests PASS4.9s
+runner (0.2s executable); public source validator and publisher81 refusal checks
+PASS. Full public-r24 suite/strict package and native roots remain pending.
