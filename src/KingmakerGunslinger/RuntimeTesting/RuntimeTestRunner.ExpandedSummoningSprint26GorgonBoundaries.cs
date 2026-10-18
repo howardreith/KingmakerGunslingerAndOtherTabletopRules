@@ -95,9 +95,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     if(range&&wall)break;
                 }
-                Sprint25Check("breath-native-range-wall",range&&wall,new JObject{["rangePreconditionAndRefusal"]=range,["wallPreconditionAndRefusal"]=wall,["observations"]=attempts,["commandsIssued"]=0},
+                var nativeGeometry=Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance;
+                var cellsField=nativeGeometry.GetType().GetField("m_Cells",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+                var cells=cellsField?.GetValue(nativeGeometry) as Array;
+                int pairs=0;
+                if(!wall){
+                    var points=new List<Vector3>();
+                    for(int x=-18;x<=18;x+=6)for(int z=-18;z<=18;z+=6){
+                        var requested=origin+new Vector3(x,0,z);var node=Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requested);
+                        if(node.node!=null&&node.node.Walkable&&Vector3.Distance(requested,node.clampedPosition)<.6f)points.Add(node.clampedPosition);
+                    }
+                    var eyeOffset=owner.EyePosition-owner.Position;
+                    foreach(var from in points){
+                        foreach(var to in points){
+                            float gap=Vector3.Distance(from,to);if(gap<3f||gap>16f)continue;pairs++;
+                            var forward=(to-from).normalized;var launch=from+eyeOffset+forward*owner.Corpulence;
+                            if(!nativeGeometry.HasObstacle(launch,to,0))continue;
+                            PlaceExpandedSummoningUnit(owner,from);PlaceExpandedSummoningUnit(target,to);
+                            bool reached=delivery.WouldTargetUnit(data,target.Position,target);
+                            attempts.Add(new JObject{["origin"]=SurveyVector(owner.Position),["point"]=SurveyVector(target.Position),["nativeLaunchProjection"]=SurveyVector(launch),
+                                ["wall"]=true,["nativeDeliveryReaches"]=reached,["rangeCase"]=false,["boundedPairSurvey"]=true});
+                            if(!reached){wall=true;break;}
+                        }
+                        if(wall)break;
+                    }
+                }
+                Sprint25Check("breath-native-range-wall",range&&wall,new JObject{["rangePreconditionAndRefusal"]=range,["wallPreconditionAndRefusal"]=wall,
+                    ["nativeGeometryCellsPresent"]=cells!=null,["nativeGeometryCellCount"]=cells?.Length,["boundedWallPairsInspected"]=pairs,["observations"]=attempts,["commandsIssued"]=0},
                     "The actual native cone delivery refuses a visible beyond-range victim and an in-range victim behind an actual wall; ordinary cone geometry remains authoritative.");
-            }finally{PlaceExpandedSummoningUnit(target,original);}
+            }finally{PlaceExpandedSummoningUnit(owner,origin);PlaceExpandedSummoningUnit(target,original);}
         }
 
         private IEnumerable<int> Sprint26GorgonLifeBoundaries(ExpandedSummoningCorrectionFixture fixture)
@@ -172,5 +198,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
         }
+        // Request-local observation only; the actual native projectile and
+        // launch point are never moved or replaced by this reader.
+        private sealed class Sprint26BreathProjectileTrace:IDisposable
+        {
+            private static Sprint26BreathProjectileTrace active;
+            private readonly UnitEntityData owner;
+            private readonly Harmony12.HarmonyInstance harmony;
+            private readonly string id="KMG.Sprint26.BreathProjectile."+Guid.NewGuid().ToString("N");
+            private readonly System.Reflection.MethodInfo method=typeof(Kingmaker.Controllers.Projectiles.ProjectileController).GetMethod("CreateView",
+                System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance,null,
+                new[]{typeof(Kingmaker.Controllers.Projectiles.Projectile),typeof(Vector3?)},null);
+            internal readonly JArray Rows=new JArray();
+            internal int LaunchFrame=-1;
+            internal Sprint26BreathProjectileTrace(UnitEntityData owner){
+                if(active!=null||method==null)throw new InvalidOperationException("Exact native breath projectile reader unavailable.");
+                this.owner=owner;harmony=Harmony12.HarmonyInstance.Create(id);
+                try{harmony.Patch(method,null,new Harmony12.HarmonyMethod(typeof(Sprint26BreathProjectileTrace).GetMethod("After",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic)));active=this;}
+                catch{Dispose();throw;}
+            }
+            private static void After(Kingmaker.Controllers.Projectiles.Projectile __0){
+                var value=active;
+                if(value==null||__0==null||!ReferenceEquals(__0.Launcher,value.owner)||__0.Blueprint==null||__0.Blueprint.AssetGuid!="f6544caac8fe528489327cd86a84b025")return;
+                var bones=value.owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).SelectMany(v=>v.bones??new Transform[0]).Where(v=>v!=null).Distinct().ToArray();
+                var jaw=bones.SingleOrDefault(v=>v.name=="Jaw");var head=bones.SingleOrDefault(v=>v.name=="Head");
+                value.LaunchFrame=Time.frameCount;
+                value.Rows.Add(new JObject{["frame"]=Time.frameCount,["owner"]=value.owner.UniqueId,["projectile"]=__0.Blueprint.AssetGuid,
+                    ["nativeSourceBone"]=__0.Blueprint.SourceBone,["nativeCorpulenceOffset"]=__0.Blueprint.SourceBoneCorpulenceOffset,
+                    ["sourceBoneOffsetAtTarget"]=__0.Blueprint.SourceBoneOffsetAtTarget,["nativeLaunchPosition"]=SurveyVector(__0.LaunchPosition),
+                    ["viewPresent"]=__0.View!=null,["viewPosition"]=__0.View==null?null:SurveyVector(__0.View.transform.position),
+                    ["unitPosition"]=SurveyVector(value.owner.Position),["jaw"]=jaw==null?null:SurveyVector(jaw.position),["head"]=head==null?null:SurveyVector(head.position),
+                    ["jawGapMeters"]=jaw==null?-1:Vector3.Distance(jaw.position,__0.LaunchPosition),
+                    ["nativeSourceBoneMatchesSkinnedBone"]=bones.Any(v=>v.name==__0.Blueprint.SourceBone)});
+            }
+            public void Dispose(){if(method!=null)harmony.Unpatch(method,Harmony12.HarmonyPatchType.All,id);if(ReferenceEquals(active,this))active=null;}
+        }
+
     }
 }

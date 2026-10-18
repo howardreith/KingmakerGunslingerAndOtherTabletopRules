@@ -7,6 +7,61 @@ this checkpoint is not its stopping point. The controlling task state is
 [the contract](../planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md) and the
 [current ledger](../planning/SPRINT26-GORGON-BULETTE-LEDGER.json).
 
+## Current R13 repair after 8509578d boundary observations
+
+Source `8509578dc3ba6b0711208f1dd8bde2f895e05abb` development ZIP
+`fe553bb4701bdbdad058feceded5d4522221cbdf7d1125c5b03736b8da1325b9`, DLL
+`c047fa025f78a242aae4203113bb4009d99c67d4f47e706478dd188222a71146`, MVID
+`2b9cc2d6-38dd-4019-9db7-d40317f77efd`, fingerprint
+`ea25465bb5bada8456d8c70c20f9b282c71181a33433798f581020f079100d88`.
+An initial preflight correctly failed because concurrent task-receipt cleanup
+changed its artifact-tree snapshot; no package/game ran. The unchanged source
+then passed serialized preflight632 and development build252.722s/532 tests.
+The failed preflight and prelaunch refusal are retained under r12, the passing
+build under r12b. No guard was weakened.
+
+- Gorgon RTWP:39 assertions,178.489s, aggregate FAIL. RunId
+  `20261018T0955187291588Z-4c7e853ad9bb4b07b1a18e3da9f90872`, transaction
+  `compat-20261018T095315Z-e92301600784`, result SHA256
+  `4fb5144f07ab4834b521dc52c0179db6589b77eacdaa9a97c4493b8249ee6087`.
+  Main staged breath/cure, first successful save, native immunity, unrelated
+  stone attribution, immunity cycling, independent lethal health and ForceKill
+  pass. Live HD10/Con28 gives actual/recovery DC24, trample2d8+12/DC23,
+  duplicate contact0 and next-round contact1. The two failures are an unsatisfied
+  wall precondition (range refusal passed) and native pre-cast parameter DC12.
+  Actual saves used24; no actual DC failure is inferred from the preview.
+- Bulette RTWP:39 assertions,158.230s, aggregate FAIL for the opportunity setup
+  only. RunId `20261018T1002149546506Z-5eb950fa43e84e69b926da249dbaf5dd`,
+  transaction `compat-20261018T100030Z-cdb0ea4de78d`, result SHA256
+  `329acc7c799a9584bc7059f266a541a898ee81aaa97d8572f4f71cced6f59968`.
+  Both Leap branches, legal landings, geometry refusals, actual cost,
+  interruption, target loss, later ordinary routines/CMD28 and unchanged native
+  Charge control pass. The initial flanker locations were too near protected
+  actors, so no opportunity attack was attempted and no PASS is claimed.
+
+Both exact transactions restore normally: mods/settings/private references and
+all118 save bytes/metadata exact, no game/lease. The repaired target helper no
+longer poisons creation/reset. Neither run is complete release qualification.
+
+Current repairs: the Gorgon chassis now owns a native parameter-rule component,
+following the released elemental-breath pattern, so preview and execution use
+live racial HD/Con and preserve native rule bonuses. Context-only rank inputs
+were not a prospective AbilityData calculator and have been removed. The
+activation records that native DC for later recovery. A bounded native wall-pair
+survey retains geometry-cache readiness and a request-local read-only projectile
+trace captures real source-bone/launch coordinates and a later presentation
+frame. Mouth placement still needs those native observations/pixels. An optional
+admission callback in the existing charge survey is used only by the new
+opportunity fixture, on the released isolated anchor, protecting every original
+actor; default predecessor calls are unchanged.
+
+`Invoke-KmgGate.ps1 -Level Focused -Filter expanded-summoning.sprint26;runtime`:
+52 PASS/2686 registered,1.8s runner,2.6s test step,16.7s production compilation.
+The final timing/diagnostic-only observer addition also compiles; its duration
+was not separately captured. New compiled observers require fresh affected
+runs. Strict candidate, targeted persistence, combined profile and public roots
+remain pending. Continue the authorized release campaign; no Sprint27.
+
 ## Current observer repair after 4da4a7ad
 
 Development source `4da4a7ad8281fa640b0c1bd06908112a475db547` built in250.841s,

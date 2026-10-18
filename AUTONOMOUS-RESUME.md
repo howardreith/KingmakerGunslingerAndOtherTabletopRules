@@ -24,42 +24,46 @@ native frames show both visible/selectable. Gorgon's rough proportions, plates,
 seams and secondary motion remain cosmetic backlog. HumanReview remains
 NOT_PERFORMED_NONBLOCKING. No product merge, final candidate or release yet.
 
-Latest artifact4da4a7ad8281fa640b0c1bd06908112a475db547 built250.841s,
-532 selected tests/632 dispatch checks PASS. ZIP73dc3bbedcc2fd6b449d03da6bb3f0dfda3ede7828407444067c72782254ed83,
-DLLce88accd01892c82b12e6a4fadc889863dca23151ce0c11182f01dcf87eb090b,
-MVIDe843c52c-1e37-44da-8c6b-96bb8746f102. Main RTWP Leap branches now have
-legal native landings/zero projection and trace gaps/no overlap; both branches,
-geometry refusals, native costs and post-action CMD28 pass individual predicates.
-The aggregate run FAIL_TIMEOUT_NO_FINAL_RESULT is retained: a new observer
-misused the Pixie-specific target factory, and its failed spawn/dispose loop
-poisoned native reset. No native teardown PASS is claimed.
+Latest development artifact8509578dc3ba6b0711208f1dd8bde2f895e05abb:
+ZIPfe553bb4701bdbdad058feceded5d4522221cbdf7d1125c5b03736b8da1325b9,
+DLLc047fa025f78a242aae4203113bb4009d99c67d4f47e706478dd188222a71146,
+MVID2b9cc2d6-38dd-4019-9db7-d40317f77efd. Build252.722s,532 selected tests
+and632 dispatch checks PASS after an initial artifact-snapshot interference
+failure was preserved and the unchanged source rerun without concurrent writes.
+Do not mutate any artifacts during dispatch preflight's tree snapshot.
 
-Exact request-local graceful close (no forced termination) of owned PID19808
-allowed exact RunId restoration of compat-20261018T092809Z-66fa69a65f98.
-Captured JSON registry types were rehydrated after a retained first recovery
-failure. Final audit09:43:35Z confirms original118 saves/content/metadata,
-installation/settings/private references exact, no game or lease. Steam Offline
-Mode remains supported; preserve wt/s25. No Sprint26 working save load/write.
+Gorgon RTWP39 assertions/178.489s: main stages/cure/save/immunity/overlap/life
+controls pass. Actual modified DC24 and trample2d8+12/DC23/contact dedup pass;
+pre-cast native preview12 is wrong, and a wall precondition was not obtained.
+Bulette RTWP39 assertions/158.230s: both Leap branches/landings/geometry/cost,
+interruption, target loss, later normal routine/CMD28 and native Charge control
+pass. Opportunity setup safely refused positions near protected actors. Both
+aggregates remain FAIL; detailed run/transaction/hashes are in the current R13
+repair section of docs/SPRINT26-COVERAGE.md.
 
-The current observer repair clones an already-valid private hostile blueprint,
-finishes native creation before use, and uses a natural-weapon flanker outside
-every original actor's threat range. It needs fresh affected native runs.
+Both transactions restored normally and exactly:118 saves, installation,
+settings and references; no game/lease. Prior R11 failed reset/graceful-close
+and typed-settings recovery remain preserved, not relabeled native PASS.
+Steam Offline Mode supported; preserve wt/s25. No S26 working-save load/write.
 
-Current checkpoint adds native landing diagnostics and compact boundary controls,
-including charge interruption/target loss/normal native control/opportunity,
-cone wall/range/save/immunity, life/status overlap, modified HD/Con/Str, damage,
-reach and normal post-action CMD. Native racial rank parameters also keep the
-Gorgon displayed DC live. Latest repair compilation18.2s and52 focused tests PASS (2.0s runner);
-new observer/parameter behavior requires fresh affected native runs.
+Current repair uses an exact-owner fact parameter rule for prospective/native
+HD/Con DC and retains genuine native bonuses. It adds bounded wall-pair/cache
+readiness diagnostics, real projectile launch/source-bone/FX-frame readback,
+and an isolated opportunity lane admitted only outside all protected actors.
+Compilation and52 focused tests PASS (16.7s compile,2.6s step,1.8s runner), plus
+final observer-only compile PASS. Fresh affected native runs are required.
 
-Sprint26 publisher selector/PR58/fixed-root and exact six-root qualification
-checks are implemented;81 refusal fixtures and inherited Sprint25's70 PASS.
-No qualification ledger falsely claims native completion. Targeted guarded
-persistenceScope=magical-beasts is implemented but unrun and requires a strict
-candidate. Next: push this checkpoint, build development artifact in wt/s26,
-run affected compact boundary phases, inspect any failure before repair, then
-finish hidden/public qualification, strict final candidate, six public roots,
-cold load ON/OFF/cleanup/absence, high-risk combined, publisher preflight/dry-run,
-product merge, tested-byte stable release/download checks, exact restoration and
-final-records merge. Intermediate checkpoints do not end the authorized mission.
-STOP before Sprint27 only after RELEASED records or a concrete essential blocker.
+Publisher -Sprint26MagicalBeasts/PR58/fixed-root and six-root qualifications are
+implemented;81 refusal cases PASS. An inert next-version source-validator draft
+and guarded persistence envelope are in ignored sprint26-authoring artifacts.
+The save envelope backs up/restores today's Working bytes/metadata around the
+released guarded three-stage ON/OFF sequences. It requires a strict candidate;
+none built yet. Mouth-origin native readback, opportunity proof, normal modified
+damage/reach, TB Leap, strict source/package, targeted cold loads ON/OFF/cleanup/
+absence, current high-risk combined, public six roots and publication remain.
+Next: push this repair, build development artifact in wt/s26 without concurrent
+artifact writes during preflight, then run affected boundary phases. Once hidden
+qualification is complete, remove only the two suppression keys and perform the
+fresh strict public gate/publication-affected proof. Use tested-byte publisher
+preflight/dry-run, product merge, stable release/download checks, exact restoration
+and final-records merge. Checkpoints do not end this mission. STOP before Sprint27.

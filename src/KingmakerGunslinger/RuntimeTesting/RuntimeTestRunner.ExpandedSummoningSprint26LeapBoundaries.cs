@@ -126,19 +126,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach(int f in Sprint26Appearance(owner,"bulette"))yield return f;
                 foreach(int f in Sprint26Appearance(flanker,"gorgon"))yield return f;
                 foreach(int f in Sprint22SetPowerAttack(flanker,false))yield return f;
-                Vector3 start;string route;var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out route);
-                if(selected==null||tick==null)throw new InvalidOperationException("No exact native opportunity control prerequisites.");
-                Vector3 forward=(target.Position-start).normalized,side=new Vector3(-forward.z,0,forward.x);
-                bool parked=false;
-                foreach(var sign in new[]{1f,-1f}){
-                    Vector3 requested=start+side*sign*(owner.Corpulence+flanker.Corpulence+.3f);
-                    var node=Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requested);
-                    if(node.node==null||!node.node.Walkable||Vector3.Distance(requested,node.clampedPosition)>.3f)continue;
-                    float reach=flanker.Body.PrimaryHand.MaybeWeapon.AttackRange.Meters+flanker.Corpulence;
-                    if(fixture.UnitsBefore.OfType<UnitEntityData>().Any(v=>v!=null&&Vector3.Distance(v.Position,node.clampedPosition)<reach+v.Corpulence+.5f))continue;
-                    PlaceExpandedSummoningUnit(flanker,node.clampedPosition);parked=true;break;
-                }
-                if(!parked)throw new InvalidOperationException("No native threat position clear of every protected actor.");
+                PlaceExpandedSummoningUnit(target,Sprint25IsolatedAnchor(fixture));
+                bool parked=false;Vector3 start;string route;
+                var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out route,(actor,victim)=>{
+                    Vector3 direction=(victim.Position-actor.Position).normalized,side=new Vector3(-direction.z,0,direction.x);
+                    foreach(var sign in new[]{1f,-1f}){
+                        Vector3 requested=actor.Position+side*sign*(actor.Corpulence+flanker.Corpulence+.3f);
+                        var node=Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requested);
+                        if(node.node==null||!node.node.Walkable||Vector3.Distance(requested,node.clampedPosition)>.3f)continue;
+                        float reach=flanker.Body.PrimaryHand.MaybeWeapon.AttackRange.Meters+flanker.Corpulence;
+                        if(fixture.UnitsBefore.OfType<UnitEntityData>().Any(v=>v!=null&&Vector3.Distance(v.Position,node.clampedPosition)<reach+v.Corpulence+.5f))continue;
+                        PlaceExpandedSummoningUnit(flanker,node.clampedPosition);parked=true;return true;
+                    }
+                    return false;
+                });
+                if(selected==null||tick==null||!parked)throw new InvalidOperationException("No legal isolated charge with protected actors outside native opportunity threat.");
                 flanker.Descriptor.SwitchFactions(fixture.Hostile.Faction,false);
                 owner.JoinCombat();target.JoinCombat();flanker.JoinCombat();
                 owner.Memory.Add(flanker);flanker.Memory.Add(owner);flanker.CombatState.OnNewRound();
@@ -148,7 +150,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for(int i=0;i<25;i++){tick.Invoke(controller,new object[]{flanker});yield return 0;}
                 bool engaged=flanker.CombatState.EngagedUnits.Contains(owner);
                 bool available=flanker.CombatState.CanAttackOfOpportunity;
-                if(!engaged||!available||!data.CanTarget(selected))throw new InvalidOperationException("Legal charge/opportunity setup not obtained; no PASS.");
+                bool chargeAvailable=data.CanTarget(selected);
+                Sprint25Check("leap-opportunity-preconditions",engaged&&available&&chargeAvailable,
+                    new JObject{["owner"]=owner.UniqueId,["flanker"]=flanker.UniqueId,["route"]=route,
+                        ["engaged"]=engaged,["opportunityAvailable"]=available,["chargeAvailable"]=chargeAvailable,
+                        ["count"]=flanker.CombatState.AttackOfOpportunityCount,["canAct"]=flanker.Descriptor.State.CanAct,
+                        ["sleeping"]=flanker.IsSleeping,["awakePool"]=Game.Instance.State.AwakeUnits.Contains(flanker),
+                        ["enemy"]=flanker.IsEnemy(owner),["primaryWeapon"]=flanker.Body.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid,
+                        ["engagedIds"]=new JArray(flanker.CombatState.EngagedUnits.Select(v=>v.UniqueId)),["protectedActorsOutsideThreat"]=parked},
+                    "Real native engagement, opportunity budget and legal charge are obtained outside every protected actor before the production command.");
+                if(!engaged||!available||!chargeAvailable)throw new InvalidOperationException("Legal charge/opportunity setup not obtained; no PASS.");
                 EventBus.Subscribe(observer);
                 using(var seed=new Sprint26JumpSeed(owner,20))using(var queued=new Sprint26QueueTrace(owner)){
                     var command=new UnitUseAbility(data,selected);owner.Commands.Run(command);
