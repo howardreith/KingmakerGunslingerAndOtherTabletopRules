@@ -37,6 +37,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 import validate_expanded_summoning_sprint21150 as common
 import validate_expanded_summoning_sprint24154 as released155
+from expanded_summoning_manifest import ENTRY
 
 PURPOSE = re.compile(r"^[a-z0-9][a-z0-9-]{1,46}[a-z0-9]$")
 SYMBOL = re.compile(r"^KMG\.[A-Za-z0-9_.]+$")
@@ -161,6 +162,19 @@ def check_version(released, current):
                              " version metadata unchanged: " + ", ".join(changed))
 
 
+def check_released_publication(released_keys, current_keys,
+                               released_suppressed, current_suppressed):
+    """A new withheld cohort must never hide any released public creature."""
+    if not released_keys or not current_keys or not released_keys <= current_keys:
+        raise AssertionError("A released creature disappeared from the catalog")
+    if not released_suppressed <= released_keys or not current_suppressed <= current_keys:
+        raise AssertionError("A suppression key has no registered creature")
+    hidden_released = (released_keys - released_suppressed) & current_suppressed
+    if hidden_released:
+        raise AssertionError("Released public creatures became suppressed: " +
+                             ", ".join(sorted(hidden_released)))
+
+
 def check_released_art_owned(root: Path):
     """The released Sprint 24 original assets are still present and still
     packaged. Their bytes may change: refining released art is exactly what
@@ -203,9 +217,16 @@ def validate(root: Path, purpose: str):
     # The released Sprint 24 public boundary and original assets.
     visibility_source = (root / "src/KingmakerGunslinger/Summoning/"
                          "SummonVisibilityCatalog.cs").read_text(encoding="utf-8-sig")
-    stage = released155.validate_visibility(visibility_source, "registered")
-    if stage != "public":
-        raise AssertionError("Released Sprint 24 routes are not public: " + stage)
+    catalog_path = "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
+    released_catalog = common.blob(root, baseline, catalog_path).decode("utf-8-sig")
+    current_catalog = (root / catalog_path).read_text(encoding="utf-8-sig")
+    released_visibility = common.blob(root, baseline,
+        "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs").decode("utf-8-sig")
+    check_released_publication(
+        {row[0] for row in ENTRY.findall(released_catalog)},
+        {row[0] for row in ENTRY.findall(current_catalog)},
+        released155.suppressed_keys(released_visibility),
+        released155.suppressed_keys(visibility_source))
     check_released_art_owned(root)
     check_static(json.loads(common.blob(root, baseline,
                                         "validation/static-validation.json")),

@@ -72,3 +72,12 @@ were checked unchanged. This is donor/engine metadata, not creature gameplay.
 Every subsequent native transaction must restore its own actual intake and exact
 RunId. Preserve failures, use fresh guarded processes where required, preserve
 Steam Offline Mode, and stop before Sprint27 after release and final records.
+
+Prototype build9858ff3e was refused before packaging or native deployment:
+64.33s including fresh632-check dispatch preflight. The generic development
+validator incorrectly treated any nonempty suppression set as Sprint24's hidden
+theropods. Its repair protects all released public catalog keys while permitting
+new registered withheld keys, with six positive/refusal fixtures. Source review
+also found the manual exact-build copy loop omitted the new Gorgon assets; it
+now copies the same required pair as production and package validation. These
+are build/validator corrections, not a native failure or a qualified artifact.

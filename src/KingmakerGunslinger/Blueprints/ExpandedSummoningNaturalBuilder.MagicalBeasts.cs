@@ -47,12 +47,12 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintUnit>(bySymbol, Sprint26MagicalBeastRules.BuletteUnit), bite, claw);
             ConfigureTheropodUnitType(Require<BlueprintUnitType>(bySymbol,
                 natural + "Gorgon.UnitType"), natural + "Gorgon.UnitType", "Gorgon",
-                "A living armored bull with petrifying breath. This charter-selected Summon Monster VIII addition is not a core-table entry.",
+                "A living armored bull with petrifying breath and a crushing trample.",
                 new BlueprintUnitFact[] { Require<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
                     bySymbol, Sprint26MagicalBeastRules.GorgonPrefix + "Breath") });
             ConfigureTheropodUnitType(Require<BlueprintUnitType>(bySymbol,
                 natural + "Bulette.UnitType"), natural + "Bulette.UnitType", "Bulette",
-                "An armored landshark. Its surface-only leap follows legal charge paths; burrowing and tremorsense are unmodeled.",
+                "An armored landshark whose Leap follows legal above-ground charge paths. This summon cannot burrow or locate creatures by tremorsense.",
                 new BlueprintUnitFact[] { Require<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
                     bySymbol, Sprint26MagicalBeastRules.BulettePrefix + "Leap") });
         }
