@@ -1,98 +1,133 @@
-# Sprint26 current coverage
+# Sprint 26 coverage
 
-## Controlling state: PUBLIC CANDIDATE / NOT RELEASED
+## Controlling state: RELEASED / STOP
 
-Full authorized campaign continues through public qualification, PR58, stable
-promotion/public downloads/restoration and final records merge. STOP before
-Sprint27. No product merge, qualified public artifact or release yet. Fixed
-source/build/native/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
+[Stable v0.0.160](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.160) is non-draft, non-prerelease and Latest.
+[Product PR58](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/58) merged at `511aabcc41a9ff780852a60a5db8fa074f22e05f`.
+Tested source `e7876252ddf7dcaba4e7559534c06269d64bb750` remains frozen in
+`C:/Dev/KingmakerGunslingerLab/wt/s26`; final records use a separate worktree.
+Promotion reused actual tested bytes. No reporting/publication build occurred.
+Public downloads and exact HOWARD-LAPTOP restoration passed. STOP before Sprint27.
 
-Only two suppression keys removed; 110 creatures, Monster96/545, Nature97/557.
-Public equation: 1,102 generated placements +29 retained wrappers = 1,131
-choices. Six exact untemplated roots; every released GUID/root retained,45
-append-only identities and the released6,916 prefix unchanged.
-
-## Supported hidden proof and reuse
-
-Frozen dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7 strict Sprint PASS377.0213918s,
-all2,687 tests/zero failures,386 files. ZIP
-8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3;
-DLLe42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc;
-MVIDddb76b36-a1ed-4ddc-8cb5-b10a752ed43d; fingerprint
-02fd56b4b812f4545f5625154324a1e896f6298db75e1cca59e4a9fa9fe41a25.
-Whole hidden root is archived byte-exact before public build. Never promote
-hidden bytes or label them execution on the future public DLL.
-
-| Requirement | Exact original proof |
+| Identity | Exact value |
 | --- | --- |
-| Profiles/roles/skills/signed/live damage/reach | R20 standalone28; R23 combined28 and ordinary TB22 incl released Elephant control |
-| Gorgon stages/targeting/cooldown/immunity/cure/trample | R19 strict standalone41; R23 strict combined41 and TB19; real native permanent cure, no new waiver |
-| Bulette Leap/ordinary/failure/interruption/economy | R23 standalone42, combined42, TB16; real jump check, legal native travel/landing, four claws/no bite, genuine opportunity, spending and cleanup |
-| Both modes / exact-owner AI | R23 TB16/19/22 and AI16; protected brains never ticked, no fixture attacks counted as AI |
-| Bodies/icons/lifecycle/cache/donor | Fresh strict R23 lifecycle; actual R23 pixels inspected; all original assets/pins protected; early19a development38 is historical, not release qualification |
-| Targeted persistence | R20 first4 + R22 final2,77 PASS; original source/ZIP/DLL/MVID retained. Conditions/DC/source loss/cooldown/real recovery, ON/OFF cleanup save/fresh absence |
-| Standalone/current highest-risk combined | R23 standalone mode/AI and combined foundation28/Gorgon41/Leap42; no complete old matrix selected |
-| Six public roots/inventory/icons/slots/quantity/duration/alignment | PENDING corrected observer on exact public-r25b artifact |
-| Complete public gate/exact package/release | PENDING public-r25b full suite/package, ledger, preflight/dry-run, merge/promotion/download/lineage |
+| ZIP SHA-256 | `7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55` |
+| DLL SHA-256 | `cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc` |
+| DLL MVID | `5b0daf8a-7ef8-480b-8c11-a3c9809baed8` |
+| Source fingerprint | `609ec908d347fc80af4068822443affb25f7e9b1718dc8d550f6d678b349cbfc` |
+| Public manifest SHA-256 | `a2edfc633648225d5126afa907a102d9df931f3b3dc46a0c1279b6c3b7292dd0` |
+| Published qualification-ledger SHA-256 | `e305e4622c3cd7aad64a952a466bbaa63e452a2d919640d64d30a9ab4f56e01c` |
 
-Nine strict R23 phases pass 264 assertions; bounded seven-case continuation
-2166.7073137s, each fresh transaction restores actual intake. Detailed RunIds/
-hashes/failed attempts remain in development history. Development-candidate
-proof is excluded from release eligibility. Retained strict R19/R20/R22 proof
-has unchanged dependency scope: current corrections are request-local review
-clock/navigation/profile observations; production remains f40de45a. New public
-source changes only visibility, derived records and controlled roster outputs.
-No identity, body, weapon, condition, cooldown or movement implementation changes.
+Actual public ZIP, manifest and SHA256SUMS matched promoted bytes and public API
+digests. Strict downloaded package contains386 files; DLL/MVID and manifest
+provenance match. Annotated tag peels to the product merge containing tested
+source. v0.0.159 remains intact. Exact asset URLs/digests, original execution
+tuples, RunIds and proof hashes are retained in the public release manifest and
+[compact qualification record](../planning/SPRINT26-QUALIFICATION-LEDGER.json).
 
-All118 saves/content/protected metadata, actual Working bytes/creation/write/
-attributes, installation/settings/private references restored exactly. No owned
-game/lease, baseline never loaded/written; Steam Offline preserved. Actual
-restore uses each transaction's current intake and exact RunId.
+## Scope and derived inventory
 
-## Final public boundary and scope
+Gorgon SMVIII is the charter-selected extension, absent ordinary core Monster
+table. Bulette SNAVI is ordinary placement. These six rows are untemplated;
+family alignment and duration conventions remain intact. No new feat gate,
+variant, celestial/fiendish child or Sprint27 creature was added.
 
-One fresh public-r25b full Sprint/strict package in wt/s26, then real six-root
-player paths and icon/inventory arithmetic on that artifact, standalone and
-highest-risk publication path. Build the ignored source-bound qualified ledger;
-publisher preflight/dry-run and current upstream/tag checks precede authorized
-merge/promotion. Promote tested bytes, verify actual public assets/peeled tag/
-lineage and exact machine restoration, merge final records, STOP before27.
+| Creature | Public placement | Stable root GUID |
+| --- | --- | --- |
+| Gorgon | SM VIII one | `40d3686b2f334a3090595cab7cb6314b` |
+| Gorgon | SM IX 1d3 | `b5e9e129433e48af9a5e4fdd3652dc4f` |
+| Bulette | SNA VI one | `66dc2f30f97f4d00b04aeee18224fb0d` |
+| Bulette | SNA VII 1d3 | `2c975d0b39bc449b802dfba98490b830` |
+| Bulette | SNA VIII 1d4+1 | `0687356eddcd4ca9970d87f79e8192e3` |
+| Bulette | SNA IX 1d4+1 | `3b0d295dbdbc4931b1e6aff7b89b74c8` |
 
-Gorgon SMVIII is a charter extension absent ordinary core table; Bulette SNAVI
-is ordinary placement. Both untemplated. Surface-only adaptation leaves printed
-20-foot burrow and unsupported tremorsense unmodeled; no substituted blindsight
-or underground travel. Original armored-bull geometry on native Horse animation
-and exact native adult Bulette are functional. Painted medallions/Leap emblem
-and semantic native action art integrated; no proprietary mesh/texture/animation
-redistribution. Rough pale texture, proportions, faceting, seams, secondary
-motion and contact choreography remain backlog. HumanReview
-NOT_PERFORMED_NONBLOCKING. Approved released art remains byte-protected.
+| Source-derived surface | Creatures | Generated roots |
+| --- | ---: | ---: |
+| Summon Monster | 96 | 545 |
+| Nature's Ally | 97 | 557 |
+| Distinct project creatures | 110 | 1102 |
 
-Public-stage review: only two suppression keys/count contracts, active derived
-records and established roster export change. Blueprints/art/version bytes
-remain exact. Compilation PASS21.8s;19 focused tests PASS4.9s; public source
-boundary and81 publisher refusal checks PASS. This is not the final public gate.
+1102 generated placements +29 retained native
+wrappers =1131 visible choices. Released6,916 identity prefix is exact;
+45 exact identities appended. Source manifest:6,961 total/6,958 active/3 reserved;
+foundation2,189 and adapters3,772. Every released GUID/root/art pin is preserved.
 
-Public-r24 gate FAIL338.4943646s:2,686/2,687 tests passed; one stale Sprint25
-whole-roster formula expected1,096 rather than current1,102. Removed that
-redundant formula while preserving the central derived-total assertion, exact
-Brachiosaurus roots and released-route checks. Focused test-source-only repair
-PASS20/20 (0.1s executable); no production change or failed-gate public package.
-Fresh public-r24b gate remains required. Failed receipt/logs remain immutable.
+## Fresh and reused qualification
 
-Public-r24b strict gate subsequently PASS381.6639454s,2,687/2,687,386 files;
-ZIPd5f5c9367a339fe6b42858df8b78b0c52c99cc2331592aca94032cfb4cf9cffd,
-DLL803664343edf74ca67f14ce9a96cfd9b14af9fe5e5bb19439d1ee9062d396012,
-MVIDb4020221-aeab-4a06-9b68-95b224edac8e. Native routes failed only the
-two Gorgon template expectations: actual base TrueNeutral/no-template behavior
-was correct, as were spawn, slots, quantities and120s duration; all four Bulette
-routes passed. Observer now explicitly checks base alignment/no template facts
-with a good caster. Production unchanged. Fresh public-r25 gate and routes
-required for changed compiled observer. Exact failure retained in history;
-all118 saves/metadata, installation/settings/references restored, no game/lease.
+Final public Sprint gate PASS375.2334992s, all2,687 registered tests executed,
+zero failures,386 strict files. Final-artifact public routes PASS12 standalone
+(228.4487916s outer) and PASS12 highest-risk combined; both fresh transactions.
+Earlier strict proof remains bound to original source/ZIP/DLL/MVID and is reused
+only where dependencies are unchanged. Later changes were request-local
+observers, visibility and derived records; production mechanics/assets/schema
+have not changed since f40de45a. Changed observers have affected fresh runs.
+No historical execution is claimed on the final DLL. Development packages do
+not qualify release coverage.
 
-Public-r25 gate stopped before full suite/package at the exact source boundary:
-FAIL5.853929s, shared player-route observer file absent from its allowed list.
-The boundary now allows that method while comparing the entire remainder to
-reviewed baseline. Fourteen boundary tests pass, including unrelated-observer
-refusals; compiled observer is unchanged. Fresh public-r25b boundary required.
+| Requirement | Qualification |
+| --- | --- |
+| Composed profiles/roles/skills/signed and modified damage/reach | Strict R20 standalone28; R23 combined28 and TB22; released Elephant control |
+| Gorgon stages/targeting/cooldown/duplicates/immunity/trample/cure | Strict R19 standalone41; R23 combined41 and TB19; actual native Stone to Flesh, separate from fixture cleanup |
+| Bulette ordinary versus Leap/check/four-claw/no-bite/failure/interruption/action/landing/opportunity | Strict R23 standalone42, combined42, TB16; genuine native charge and actual check |
+| Both-mode commands/exact-owner AI | Strict R23 TB22/19/16 and AI16; no protected brain ticks or fixture attacks called AI |
+| Functional bodies/icons/lifecycle/module boundaries/cache/donors | Strict R23 lifecycle44, actual native pixels inspected; final public icon consumers12+12 |
+| Six roots/real slots/quantity/duration/alignment/removal | Fresh final artifact12 standalone +12 combined; base Gorgon retained with good caster |
+| Cold conditions/cooldowns/ON-OFF hydration/cleanup-save/fresh absence | Six-stage77 union: R20 first4 + R22 final2, original bytes/RunIds retained |
+| Standalone/highest-risk shared consumers | Strict R23 foundation28/Gorgon41/Leap42 combined; fresh public combined12 |
+| Unaffected released behavior | v0.0.159 public qualification manifest plus protected identity/art/firearm/startup/static reconciliation and fresh affected controls |
+| Complete source/build/package/publication | Fresh2,687/2,687 gate, strict386, publisher preflight/dry-run, product merge, exact-byte promotion, real public downloads/lineage |
+
+The compact record contains13 passing native phase executions plus6 persistence
+stages:24 fresh public assertions and416 reused strict native assertions. R23's
+nine strict phases contribute270. These counts exclude failed attempts and
+exploratory development packets. Complete original proof hashes are public.
+Whole old-root census, whole-roster persistence and all16 module combinations
+were not selected; unchanged proof is reused with dependency justification.
+
+## Art, functional models and explicit adaptations
+
+| Runtime icon | SHA-256 |
+| --- | --- |
+| Gorgon painted medallion | `73e297daa18abec90aec316eb09d97b658a698b884b94a1d9e428a1564536efd` |
+| Bulette painted medallion | `83c3959b973f7f99bb561ca4a2e1dc03e3f22fc90906dd800b215dba94078b82` |
+| Bulette Leap emblem | `b3deefb33e0ad604a42f3e049b5d5ef6a91077ad3963af7db7aae40081a24b5c` |
+
+Original source paintings/provenance and established exports are retained;
+provider/model fields state only observed tool information. Actual native
+Stone/Overrun semantic art is reused. Loaded32px pixels were inspected.
+
+Gorgon uses original project-owned armored-bull geometry on measured native
+Horse animation; Bulette uses exact native adult CR7_BuletteStandart. Both are
+visible, recognizable and command-usable in actual native evidence. Donor
+isolation, failure rollback, quantities, death/despawn and private/cache cleanup
+passed. No proprietary mesh/texture/animation is redistributed. Rough pale
+texture, proportions, faceting, seams, secondary motion, clipping and contact
+choreography remain visual backlog. HumanReview: NOT_PERFORMED_NONBLOCKING;
+no owner approval or polished-asset claim.
+
+Bulette's authorized ordinary-map adaptation is surface-only: legal charge,
+movement, occupancy and targeting underneath Leap. Printed20-foot burrow is
+unmodeled, never added to land speed. Faithful native tremorsense is unavailable;
+unsupported, with no blindsight/omniscience substitute. No generalized burrowing.
+Gorgon permanent stone is victim-owned, persists beyond source/summon lifetime,
+loads safely with module disabled, and uses native cure/removal.
+
+## Exact restoration and stop
+
+Final unelevated Howard audit PASS;83 settings,118 saves/content/protected
+creation/write timestamps/attributes,14 installed/private reference pairs,
+actual Mods intake and sound bank bytes/length/UTC timestamp are exact. All62
+current-sprint transaction journals are Restored with no original/staged Mods
+directory remaining. Baseline was never loaded/written; Working original bytes
+and metadata restored. No game, lease, sentinel, open transaction or owned task
+remains. All exact owned inactive sprint tasks are removed; the final cleanup
+attempt enumerates 16 removals after safely stopped partial cleanup.
+Steam Offline was preserved. Audit SHA-256 `28440b7f4d04fef92b3cba905d29518910cb81919e9f52f753454cbd2ec4a7e3`.
+Raw machine evidence/configuration/saves remain local and uncommitted.
+
+Failed attempts, unsatisfied preconditions and old verdicts remain in
+[development evidence](history/SPRINT26-DEVELOPMENT-EVIDENCE.md). The final
+surface-observer and UTC-reader corrections did not change product rules;
+no failure was silently relabeled. Final records are prose/JSON only and require
+their relevant checks, without another product build or game campaign.
+No Sprint27 work is authorized or started.

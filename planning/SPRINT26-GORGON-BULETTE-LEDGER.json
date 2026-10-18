@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sprint": 26,
-  "state": "PUBLIC_CANDIDATE",
+  "state": "RELEASED_STOP",
   "surface": {
     "target": {
       "generatedPlacements": 1102,
@@ -378,7 +378,72 @@
       "notes": "Private native cone visual with an exact Gorgon jaw origin; native donor and other consumers remain unchanged."
     }
   ],
-  "nativeQualification": "SUPPORTED_HIDDEN_COVERAGE_COMPLETE_WITH_SOURCE_BOUND_REUSE; PUBLIC_ARTIFACT_PENDING",
+  "nativeQualification": "QUALIFIED_WITH_SOURCE_BOUND_REUSE_AND_FRESH_PUBLIC_ARTIFACT",
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "hiddenCandidateSource": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7"
+  "hiddenCandidateSource": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+  "released": {
+    "tag": "v0.0.160",
+    "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.160",
+    "productPr": 58,
+    "productMerge": "511aabcc41a9ff780852a60a5db8fa074f22e05f",
+    "testedSource": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+    "stable": true,
+    "latest": true,
+    "rebuiltForPublication": false,
+    "publicDownloadsVerified": true,
+    "assets": [
+      {
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.160/KingmakerGunslinger-0.0.160-expanded-summoning-sprint26-gorgon-bulette.zip",
+        "sha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+        "name": "KingmakerGunslinger-0.0.160-expanded-summoning-sprint26-gorgon-bulette.zip",
+        "id": 654151175,
+        "length": 55193711
+      },
+      {
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.160/release-manifest.json",
+        "sha256": "a2edfc633648225d5126afa907a102d9df931f3b3dc46a0c1279b6c3b7292dd0",
+        "name": "release-manifest.json",
+        "id": 654151177,
+        "length": 122049
+      },
+      {
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.160/SHA256SUMS.txt",
+        "sha256": "a660a4094faa0b49b8c40dcc5c371bfa45c0b48560ebdce26ea9a3509e9d5176",
+        "name": "SHA256SUMS.txt",
+        "id": 654151174,
+        "length": 142
+      }
+    ],
+    "manifestSha256": "a2edfc633648225d5126afa907a102d9df931f3b3dc46a0c1279b6c3b7292dd0",
+    "checksumsSha256": "a660a4094faa0b49b8c40dcc5c371bfa45c0b48560ebdce26ea9a3509e9d5176",
+    "qualificationLedgerSha256": "e305e4622c3cd7aad64a952a466bbaa63e452a2d919640d64d30a9ab4f56e01c"
+  },
+  "qualificationRecord": "planning/SPRINT26-QUALIFICATION-LEDGER.json",
+  "restoration": {
+    "status": "EXACT_INTAKE_VERIFIED",
+    "auditSha256": "28440b7f4d04fef92b3cba905d29518910cb81919e9f52f753454cbd2ec4a7e3",
+    "saves": 118,
+    "savedGameBytesAndMetadataExact": true,
+    "settings": 83,
+    "settingsExact": true,
+    "modsExact": true,
+    "referencePairs": 14,
+    "privateReferencesExact": true,
+    "soundBankExact": true,
+    "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "soundBankTimestampUtc": "2026-01-01T05:00:00.0000000Z",
+    "baselineSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+    "workingSha256": "650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850",
+    "gameAbsent": true,
+    "leaseAbsent": true,
+    "sentinelAbsent": true,
+    "closedTransactions": 62,
+    "ownedScheduledTasksRemaining": 0,
+    "removedOwnedTasks": 16,
+    "cleanupReceiptSha256": "13b896816af5144324e0d40f949d131f05276455872f0d88dbc3817441a5b391",
+    "steamOfflinePreserved": true,
+    "removedOwnedTasksCountScope": "FINAL_CLEANUP_ATTEMPT_ONLY",
+    "priorPartialCleanupRecorded": true
+  },
+  "sprint27Started": false
 }
