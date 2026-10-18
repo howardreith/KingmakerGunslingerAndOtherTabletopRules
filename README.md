@@ -1,6 +1,13 @@
 # Kingmaker Gunslinger
 
-The **0.0.158-expanded-summoning-visual-refinement** release redraws and
+The **0.0.159-expanded-summoning-sprint25-giant-bodies** release adds
+Brachiosaurus to Summon Nature's Ally VII–IX and completes the existing
+Elephant, with original bodies and the supplied Brachiosaurus icon. All eight
+Elephant roots and released identities remain intact. It includes the
+v0.0.158 visual overhaul and startup repair; see the
+[v0.0.159 release notes](docs/RELEASE-NOTES-0.0.159.md).
+
+The earlier **0.0.158-expanded-summoning-visual-refinement** release redraws and
 repairs the Expanded Summoning creatures, removes the gold summoned sheen from
 KMG summons, gives the Salamander a moving tail, replaces the Dire Rat icon,
 and carries the Brown-Fur startup-order and CotW controller save-loading

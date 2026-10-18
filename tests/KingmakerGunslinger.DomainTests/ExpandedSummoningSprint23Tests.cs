@@ -69,10 +69,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Later sprints append without moving the twelve Sprint 23 placements.");
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only the Sprint 25 candidate remains withheld.");
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenPublishedLogicalPlacements,
+                "No qualified route remains withheld.");
+            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All twelve Sprint 23 roots remain published without moving an identity.");
         }

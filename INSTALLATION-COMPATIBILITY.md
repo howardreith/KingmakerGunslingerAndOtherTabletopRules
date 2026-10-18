@@ -1,16 +1,21 @@
 # Installation, updates, removal, and compatibility
 
-Release version: `0.0.158-expanded-summoning-visual-refinement` (UMM version
-`0.0.158`), archive
-`KingmakerGunslinger-0.0.158-expanded-summoning-visual-refinement.zip`.
-It is built on released v0.0.157 and changes creature art and summon
-presentation only, with the Brown-Fur startup-order and CotW controller
+Release version: `0.0.159-expanded-summoning-sprint25-giant-bodies` (UMM version
+`0.0.159`), archive
+`KingmakerGunslinger-0.0.159-expanded-summoning-sprint25-giant-bodies.zip`.
+It adds Brachiosaurus and completes Elephant on top of released v0.0.158,
+preserving its visual overhaul, Brown-Fur startup-order and CotW controller
 save-loading repair. It needs nothing new; Buff Planner and Call of the Wild
 stay as they are. Install only the final standalone UMM ZIP, not source
 archives or private reference bundles. See the
-[release scope and limitations](docs/RELEASE-NOTES-0.0.158.md).
+[release scope and limitations](docs/RELEASE-NOTES-0.0.159.md).
 
-### Latest public release
+### Earlier public releases
+
+UMM `0.0.158`, archive
+`KingmakerGunslinger-0.0.158-expanded-summoning-visual-refinement.zip`,
+delivered the visual overhaul and startup repair; its
+[release notes](docs/RELEASE-NOTES-0.0.158.md) remain unchanged.
 
 Before this release, UMM `0.0.157`, archive
 `KingmakerGunslinger-0.0.157-alternate-summoning-sources.zip`, is the stable

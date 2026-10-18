@@ -301,9 +301,10 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// Only the new creature is withheld. Elephant is already released, so
-        /// this sprint must never suppress it, and "a giant body" is not the
-        /// same predicate as "withheld by this sprint".
+        /// Historical registration classifier for the one new creature, not
+        /// current visibility. Public suppression belongs only to
+        /// SummonVisibilityCatalog. Existing identity/ideal-roster comparisons
+        /// retain this predicate after publication; Elephant is not new.
         /// </summary>
         internal static bool IsWithheldThisSprint(string key)
         {

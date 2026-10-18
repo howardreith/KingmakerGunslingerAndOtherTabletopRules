@@ -70,7 +70,7 @@ namespace KingmakerGunslinger.DomainTests
             var salamander = variants.Where(v => v.Creature.Key == "salamander").ToArray();
             Assertions.Equal(5, salamander.Length, "Existing five routes retained.");
             Assertions.True(salamander.All(SummonVisibilityCatalog.IsPublished), "No accidental Salamander suppression.");
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
                 variants.Count(v =>
                     !SummonVisibilityCatalog.IsPublished(v)),
                 "Only the one bounded Sprint 25 giant body remain suppressed.");
