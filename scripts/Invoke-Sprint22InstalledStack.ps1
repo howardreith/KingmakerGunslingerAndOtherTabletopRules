@@ -4,8 +4,9 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('KMG_AUTOMATION_WORKING')][string]$SaveName,
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$ExpectedVersion,
-    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts')]
+    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon')]
     [string]$PersistenceScope='ankylosaurus',
+    [string]$DevelopmentPurpose,
     [switch]$ExpandedSummoningDisabled,
     [ValidateRange(30,900)][int]$TimeoutSeconds=600
 )
@@ -15,14 +16,20 @@ $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 $root=Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 if($ExpandedSummoningDisabled -and $Scenario -cne 'working-save-expanded-summoning-verify-cleanup') { throw 'Module OFF is restricted to the exact cleanup stage.' }
+$development=Test-KmgGriffonDevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
 Assert-KmgNotRunning
-$candidate=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
-Assert-KmgExplicitCandidateIdentity -Manifest $candidate -Git (Get-KmgGitState -RepositoryRoot $root) `
-    -SourceStateSha256 (Get-KmgSourceStateFingerprint -RepositoryRoot $root) -ExpectedVersion $ExpectedVersion
+$candidate=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose $DevelopmentPurpose
+if($development) {
+    Assert-KmgDevelopmentSourceBinding -Receipt $candidate -Git (Get-KmgGitState -RepositoryRoot $root) `
+        -SourceStateSha256 (Get-KmgSourceStateFingerprint -RepositoryRoot $root) -ExpectedVersion $ExpectedVersion
+} else {
+    Assert-KmgExplicitCandidateIdentity -Manifest $candidate -Git (Get-KmgGitState -RepositoryRoot $root) `
+        -SourceStateSha256 (Get-KmgSourceStateFingerprint -RepositoryRoot $root) -ExpectedVersion $ExpectedVersion
+}
 $install='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 $mods=Join-Path $install 'Mods'
 $stateRoot='C:/Dev/KingmakerGunslingerLab/compatibility-state'
-$runPrefix=if($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
+$runPrefix=if($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
 $runId=$runPrefix+'-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N').Substring(0,12)
 $backup=Join-Path $install ("Mods.kmg-compat-$runId.original")
 $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Name -cne 'KingmakerGunslinger'} | ForEach-Object {
@@ -56,14 +63,15 @@ try {
     [void][IO.Directory]::CreateDirectory($evidenceRoot)
     $record=[ordered]@{schemaVersion=1;transactionRunId=$runId;scenario=$Scenario;startedUtc=[DateTime]::UtcNow.ToString('o');
         actualInstalledMods=@($runtimeMods | ForEach-Object { [ordered]@{id=$_.id;version=$_.version;directory=$_.destinationName} });
+        candidateKind=$(if($development){'development'}else{'release-candidate'});releaseQualification=(-not $development);developmentPurpose=$DevelopmentPurpose;
         moduleDisabled=[bool]$ExpandedSummoningDisabled;persistenceScope=$PersistenceScope;candidate=$candidate;originalManifest=$transaction.originalManifest;gameSettings=$settingsSnapshot;restoration=$null}
     Write-KmgCompatibilityJsonAtomic (Join-Path $evidenceRoot 'installed-stack.json') $record
-    $deployment=& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $candidate.packagePath -RuntimeLease $lease -PassThru -Confirm:$false
+    $deployment=& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $candidate.packagePath -DevelopmentPurpose $DevelopmentPurpose -RuntimeLease $lease -PassThru -Confirm:$false
     $output=@(& (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
         -SaveName $SaveName -Parameters @{persistenceScope=$PersistenceScope} -TimeoutSeconds $TimeoutSeconds `
         -ObserverStartupTimeoutSeconds $TimeoutSeconds -CompletionTimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -FingerprintTimeoutSeconds $TimeoutSeconds `
-        -RuntimeLease $lease -ReuseInstalledArtifact -PackagePath $candidate.packagePath -DeploymentManifestPath $deployment -PassThru -Confirm:$false)
+        -RuntimeLease $lease -ReuseInstalledArtifact -DevelopmentPurpose $DevelopmentPurpose -PackagePath $candidate.packagePath -DeploymentManifestPath $deployment -PassThru -Confirm:$false)
     $receipt=Get-KmgExactRuntimeLaunchReceipt -Output $output
     $record.launchReceipt=$receipt
     $result=Read-KmgCompatibilityJson (Join-Path $receipt.evidenceDirectory 'runtime-result.json')

@@ -31,7 +31,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool RosterPersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope ||
             Sprint22PersistenceScope || Sprint23PersistenceScope ||
-            Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope; } }
+            Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope || Sprint27PersistenceScope; } }
+        private bool Sprint27PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.GriffonScope; } }
         private bool Sprint26PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.MagicalBeastsScope; } }
         private bool Sprint25PersistenceScope
@@ -48,6 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint24PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.TheropodKeys :
             Sprint25PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantBodyKeys :
             Sprint26PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.MagicalBeastKeys :
+            Sprint27PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GriffonKeys :
             ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
@@ -224,11 +227,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["limbs"] = new JArray(unit.Body.AdditionalLimbs.Select(l => l.MaybeWeapon?.Blueprint.AssetGuid)),
                 ["secondary"] = new JArray(unit.Body.AdditionalLimbs.Where(l => l.MaybeWeapon != null && l.MaybeWeapon.IsSecondary)
                     .Select(l => l.MaybeWeapon.Blueprint.AssetGuid)) };
-            if(unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.GorgonUnitGuid||unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.BuletteUnitGuid){
+            if(unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.GorgonUnitGuid||unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.BuletteUnitGuid||unit.Blueprint.AssetGuid==GriffonVisualPolicy.BlueprintGuid){
                 var chassis=unit.Descriptor.Progression.Features.Enumerable.Where(v=>v.Blueprint.GetComponent<MagicalBeastPrimaryStrength>()!=null).ToArray();
                 var names=chassis.SelectMany(v=>v.SelectComponents<GameLogicComponent>()).Select(v=>v.name).ToArray();
-                if(chassis.Length!=1||names.Length!=3||names.Any(string.IsNullOrWhiteSpace)||names.Distinct(StringComparer.Ordinal).Count()!=names.Length)
-                    throw new InvalidOperationException("Sprint26 exact runtime chassis/component identities unavailable.");
+                if(chassis.Length!=1||names.Length!=(unit.Blueprint.AssetGuid==GriffonVisualPolicy.BlueprintGuid?5:3)||names.Any(string.IsNullOrWhiteSpace)||names.Distinct(StringComparer.Ordinal).Count()!=names.Length)
+                    throw new InvalidOperationException("Exact magical-beast runtime chassis/component identities unavailable.");
                 profile["chassisComponentNames"]=new JArray(names);
                 profile["composed"]=new JObject{["hp"]=s.HitPoints.ModifiedValue,["ac"]=s.AC.ModifiedValue,["touch"]=s.AC.Touch,["flatFooted"]=s.AC.FlatFooted,
                     ["fort"]=s.SaveFortitude.ModifiedValue,["ref"]=s.SaveReflex.ModifiedValue,["will"]=s.SaveWill.ModifiedValue,
@@ -401,7 +404,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // clean up.
             bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
             bool savedTargetedSubset = (Sprint22PersistenceScope ||
-                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope) && verify;
+                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope || Sprint27PersistenceScope) && verify;
             bool exact = moduleOn || savedTargetedSubset
                 ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
                     (string)_request.Parameters["persistenceScope"], keys) &&
@@ -429,7 +432,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (prepare) receipt.Profile = profile.ToString(Formatting.None);
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
                 JObject moduleExpectedProfile = null;
-                if (Sprint26PersistenceScope && !moduleOn) {
+                if ((Sprint26PersistenceScope || Sprint27PersistenceScope) && !moduleOn) {
                     // The saved fixture was prepared ON. The exact-owner reach
                     // correction is module-gated like released natural reach.
                     // Compare its precise OFF delta while preserving every
@@ -438,7 +441,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var attacks = moduleExpectedProfile["attacks"] as JArray;
                     if (attacks == null) throw new InvalidOperationException("Saved magical-beast attacks are absent.");
                     foreach (JObject attack in attacks) {
-                        int correction = Sprint26MagicalBeastRules.ReachAdjustment(unit.Blueprint.AssetGuid, (string)attack["weapon"]);
+                        int correction = Sprint27PersistenceScope ? (int)GriffonRules.Reach(unit.Blueprint.AssetGuid, (string)attack["weapon"], 0) : Sprint26MagicalBeastRules.ReachAdjustment(unit.Blueprint.AssetGuid, (string)attack["weapon"]);
                         attack["reachFeet"] = (int)attack["reachFeet"] - correction;
                     }
                     // The native JObject's string-null tokens serialize as
@@ -520,6 +523,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ? originalBodyOutcome.StartsWith("visual:attached;", StringComparison.Ordinal) && gorgonOwned.Length >= 2
                     : ExpandedSummoningRosterPersistencePolicy.ModuleOffArmoredBodyIsClean(originalBodyOutcome, gorgonOwned.Length));
                 visual &= magicalBodyExact;
+                var griffonOwned=unit.View==null?new UnityEngine.Object[0]:ExpandedSummoningPteranodonViewPatch.CaptureGriffonOwnedResources(unit.View);
+                bool griffonBodyExact=!Sprint27PersistenceScope || receipt.Key!="griffon" || (moduleOn
+                    ? originalBodyOutcome.StartsWith("visual:attached;",StringComparison.Ordinal) && griffonOwned.Length>=2
+                    : ExpandedSummoningRosterPersistencePolicy.ModuleOffArmoredBodyIsClean(originalBodyOutcome,griffonOwned.Length));
+                visual &= griffonBodyExact;
+                if(Sprint27PersistenceScope) {
+                    bool transientClean=!unit.Commands.Raw.Any(v=>v!=null&&!v.IsFinished) && SummonGrabComponent.Find(unit)==null;
+                    RosterPersistenceCheck("griffon-transient-"+receipt.Key,transientClean,
+                        new JObject{["unit"]=unit.UniqueId,["activeCommands"]=unit.Commands.Raw.Count(v=>v!=null&&!v.IsFinished),["hasGrab"]=SummonGrabComponent.Find(unit)!=null,["customChargeUnitPart"]=false},
+                        "The exact saved Griffon has no orphan action or invented Grab; rake has no serialized command-state field.");
+                }
                 if (!_context.FeatureModules.Active.ExpandedSummoning)
                     visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
@@ -536,7 +550,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             theropodOwned.Length,
                         ["theropodBodyExact"] = theropodBodyExact,
                         ["giantBodyPrivateResourceCount"] = giantOwned.Length,
-                        ["giantBodyExact"] = giantBodyExact, ["magicalBeastBodyExact"] = magicalBodyExact, ["gorgonPrivateObjects"] = gorgonOwned.Length,
+                        ["giantBodyExact"] = giantBodyExact, ["griffonBodyExact"]=griffonBodyExact,["griffonPrivateObjects"]=griffonOwned.Length,["magicalBeastBodyExact"] = magicalBodyExact, ["gorgonPrivateObjects"] = gorgonOwned.Length,
                         ["giantFactsAbilitiesExact"] = giantFactsAbilitiesExact,
                         ["rendererMaterials"] = new JArray(unit.View == null ? new string[0] :
                             unit.View.GetComponentsInChildren<Renderer>(true).Where(r => r != null)

@@ -5,21 +5,21 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class SummoningCurrentSurface
     {
-        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount;
-        internal const int RegisteredCreatureCount = 110;
+        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount;
+        internal const int RegisteredCreatureCount = 111;
         internal const int RegisteredMonsterCreatureCount = 96;
-        internal const int RegisteredNatureAllyCreatureCount = 97;
+        internal const int RegisteredNatureAllyCreatureCount = 98;
         internal const int RegisteredMonsterPlacements = 545;
-        internal const int RegisteredNatureAllyPlacements = 557;
+        internal const int RegisteredNatureAllyPlacements = 563;
         internal const int RegisteredLogicalPlacements = RegisteredMonsterPlacements + RegisteredNatureAllyPlacements;
         internal const int RegisteredTemplatedPlacements = 319;
-        internal const int PublicSuppressedLogicalPlacements = 0;
+        internal const int PublicSuppressedLogicalPlacements = 6;
         internal const int FinalPublishedLogicalPlacements = RegisteredLogicalPlacements - PublicSuppressedLogicalPlacements;
         internal const int PublicVisibleChoices = FinalPublishedLogicalPlacements + 29;
         internal static int PublishedMonsterPlacements { get { return RegisteredMonsterPlacements - (IsWithheld("gorgon") ? 2 : 0); } }
-        internal static int PublishedNatureAllyPlacements { get { return RegisteredNatureAllyPlacements - (IsWithheld("bulette") ? 4 : 0); } }
-        internal const int IconConceptCount = 122;
-        internal static readonly string[] WithheldKeys = new string[0];
+        internal static int PublishedNatureAllyPlacements { get { return RegisteredNatureAllyPlacements - (IsWithheld("bulette") ? 4 : 0) - (IsWithheld("griffon") ? 6 : 0); } }
+        internal const int IconConceptCount = 123;
+        internal static readonly string[] WithheldKeys = new[]{"griffon"};
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

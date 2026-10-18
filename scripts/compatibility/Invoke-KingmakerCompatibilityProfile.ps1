@@ -295,7 +295,7 @@ if ($moduleScenario) {
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'rtwp-ai', 'routes', 'visual-lifecycle', 'overrun', 'great-cleave')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint27-native-review' -and
-            $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','rtwp-ai','charge-boundaries','visual-lifecycle')) -or
+            $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','qualification-combat','qualification-presentation')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'gorgon-breath-rtwp', 'gorgon-breath-turn-based',

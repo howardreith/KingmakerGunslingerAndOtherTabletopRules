@@ -13,7 +13,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Sprint27Phase(string phase)
         {
             return phase == "rtwp-foundation" || phase == "pounce-rtwp" ||
-                phase == "pounce-turn-based" || phase == "rtwp-ai" || phase == "charge-boundaries" || phase == "visual-lifecycle";
+                phase == "pounce-turn-based" || phase == "rtwp-ai" || phase == "charge-boundaries" || phase == "visual-lifecycle" || phase == "routes" ||
+                phase == "outdoor-locomotion" || phase == "shared-controls" || phase == "qualification-combat" || phase == "qualification-presentation";
         }
         internal static bool Sprint26Phase(string phase)
         {

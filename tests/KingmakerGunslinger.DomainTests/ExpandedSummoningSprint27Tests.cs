@@ -5,6 +5,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint27Tests
     {
+        internal const int AppendedCatalogIdentityCount=13; // one unit, six roots, six private carriers; adapters are a separate manifest.
         internal static void AdultProfileAndOrdinaryRoles()
         {
             // Exercise the same pure catalog guards as blueprint bootstrap;
@@ -39,7 +40,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummonMultiplicity.One,routes[0].Multiplicity,"IV one");
             Assertions.Equal(SummonMultiplicity.OneD3,routes[1].Multiplicity,"V1d3");
             Assertions.True(routes.Skip(2).All(v=>v.Multiplicity==SummonMultiplicity.OneD4PlusOne),"VI-IX1d4+1");
-            Assertions.True(routes.All(v=>!SummonVisibilityCatalog.IsPublished(v)),"Unqualified Griffon publication is suppressed");
+            Assertions.True(routes.All(v=>SummonVisibilityCatalog.IsPublished(v)==!SummoningCurrentSurface.IsWithheld("griffon")),"Exactly the current Griffon publication stage");
+            Assertions.Equal(AppendedCatalogIdentityCount,ExpandedSummoningIdentityCatalog.Build().Count(v=>v.Symbol=="KMG.Summoning.Unit.Griffon" || v.Symbol.Contains(".Griffon.")),"Exact scoped foundation allocation, separate from adapters");
         }
         internal static void RakeIsConditionalWithoutGrab()
         {
@@ -60,6 +62,17 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal(2f,GriffonRules.Reach(null,weapon,2),"Unowned weapon untouched");
             }
             Assertions.Equal(2f,GriffonRules.Reach(owner,"released-other-weapon",2),"Unrelated weapon untouched");
+        }
+        internal static void PersistenceScopeIsExact()
+        {
+            const string scope=KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.GriffonScope;
+            var policy=KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope,"griffon");
+            Assertions.True(policy.Family==SummonFamily.NaturesAlly&&policy.ParentTier==4&&policy.Multiplicity==SummonMultiplicity.One,"One named Griffon fixture, never an entire roster");
+            Assertions.True(KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope,new[]{"griffon"}),"Exact one-creature membership");
+            foreach(var keys in new[]{new[]{"griffon","griffon"},new[]{"griffon","tiger"},new[]{"tiger"},new string[0]})
+                Assertions.True(!KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope,keys),"No duplicate or unrelated fixture member");
+            bool refused=false;try{KingmakerGunslinger.RuntimeTesting.ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope,"tiger");}catch(InvalidOperationException){refused=true;}
+            Assertions.True(refused,"The named scope cannot prepare another creature");
         }
         internal static void ExactOriginalBodyBinding()
         {

@@ -141,6 +141,459 @@
       "readOnlyVisualReview": "Actual native idle/full PNGs identifiable eagle head/beak, wings, foretalons and feline body; no visible functional defect. Coarse anatomy, angular rigid wings and occlusion remain visual debt.",
       "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2031000021386Z-disposable-expanded-summoning-sprint27-native-review",
       "rawResultSha256": "21e14c82d4e6c07867f3be0e3e84f74ae12d8a1227af64ec2f0890a5fdd51ac5"
+    },
+    {
+      "scope": "standalone rtwp-foundation",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2047271996692Z-a571313cac144764ba7e7b4e87187d93",
+      "transactionRunId": "compat-20261018T204530Z-72c360afeacd",
+      "result": "PASS",
+      "nativeMilliseconds": 106755,
+      "outerSeconds": 254.0220976,
+      "rawResultSha256": "747d8206f995a73e90773d42c92021dce366a0613426aec11a17d77f60ae55d2",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2047271093818Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-signed-strength-stat-calculation",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-reach-False",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ordinary-single-command",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-single-attack",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-reach-True",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ordinary-full-command",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-composed-profile",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-full-attack",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
+    },
+    {
+      "scope": "standalone pounce-rtwp",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2051424685789Z-5a9b1a77ba534c0f9e417bb67e772d02",
+      "transactionRunId": "compat-20261018T204948Z-6edc448d7aaa",
+      "result": "PASS",
+      "nativeMilliseconds": 109828,
+      "outerSeconds": 253.5376183,
+      "rawResultSha256": "85a090079fcb0435131da80000c036b7d8926a37b463cfa9f378459a32aa8592",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2051423686564Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-pounce-False",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-pounce-False",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-reach-True",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ordinary-full-command",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-full-attack",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "nativeSummary": "9.457869m native legal charge; bite/two talons/two rakes, one natural talon1 miss followed by both rakes; one parent cost and no child cost; following ordinary3. No supplied roll, rule attack or animation event.",
+      "readOnlyVisualReview": "Post-pounce and following ordinary PNGs functionally recognizable/selectable; rigid pointed wings, coarse anatomy and rear-view head occlusion remain debt.",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    {
+      "scope": "standalone pounce-turn-based",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2055589348072Z-3547313780ff4712b9959c3d621ce855",
+      "transactionRunId": "compat-20261018T205402Z-adb69c48b4ea",
+      "result": "FAIL",
+      "nativeMilliseconds": 93408,
+      "outerSeconds": 241.0139671,
+      "rawResultSha256": "a44a2fc5f60ebea53926dd396726ecf8fc3241197844c65e058ea4de1c3ee3d4",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2055589035124Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-execution",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "cause": "Observer checked native order membership but omitted exact active-owner-turn wait; native Charge.CanTarget null-reference before attack. Failed result retained; use qualified active-turn wait and structured admission."
+    },
+    {
+      "scope": "standalone rtwp-ai",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2100558996238Z-d5b97d83f7a94caf95c333fb4c7e693e",
+      "transactionRunId": "compat-20261018T205850Z-3a83ad2d0eed",
+      "result": "FAIL",
+      "nativeMilliseconds": 129254,
+      "outerSeconds": 285.5149011,
+      "rawResultSha256": "22f9a48f37f837c81f1101b3881a50cd7110b4b92ce9929abbb0806be95fd445",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2100557976468Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ai-native-approach-attack",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint27-body-ai",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "cause": "Observer quieting cleared Brain.Actions; RestoreAvailableActions cannot rebuild an empty action list. Zero commands/events. Preserve fresh native actions for AI phase and measure actual readiness; no product brain change."
+    },
+    {
+      "scope": "standalone charge-boundaries",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2105291781140Z-2e6041e1d85f401c8401ff7140e4fddf",
+      "transactionRunId": "compat-20261018T210335Z-bd58f033bd33",
+      "result": "FAIL",
+      "nativeMilliseconds": 92446,
+      "outerSeconds": 235.0774774,
+      "rawResultSha256": "dde3ea1db4626a7276439c81c30e6f322b57ae10b21d2a97ddf1dee5827a3c68",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2105291406020Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-execution",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "cause": "Observer Single over native Charge instances failed before command. Canonical GetAbility already works for pounce; use it consistently rather than require one provider."
+    },
+    {
+      "scope": "standalone visual-lifecycle",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2109249234824Z-c3654486ae5640b2a7ad8b9e1b75ab96",
+      "transactionRunId": "compat-20261018T210731Z-903e8a95648d",
+      "result": "FAIL",
+      "nativeMilliseconds": 108268,
+      "outerSeconds": 250.62050359999998,
+      "rawResultSha256": "141d5b43f8b8c185461ab2c33061034c1ca238ecb279d107cc5d5a4e12aba9e4",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2109248977270Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon-rollback",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-post-suppression-rollback",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-rollback-bounded-resources",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon-quantity",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon-quantity",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-quantity-instance-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ordinary-map-airborne-movement",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-movement",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-native-death",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-native-expiry-fading",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint27-private-cleanup-cache-survives",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-native-manticore-donor-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "cause": "Movement, native death, instance isolation, failed-attach rollback, exact private cleanup and donor isolation PASS. Expiry destroyed both units but maxDissolve0; fade assertion FAIL. Add matched untouched native-body/effect control using existing qualified policy; do not infer a missing carrier from original-body failure."
     }
   ],
   "checks": [
@@ -259,6 +712,11 @@
       "compileSeconds": 17.1,
       "testSeconds": 1.1,
       "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.native-profile;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate"
+    },
+    {
+      "command": "Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.native-profile;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate",
+      "result": "PASS",
+      "scope": "de85aefe inputs; production compile16.6s;16 of2692 selected domain cases1.1s; development, no release qualification"
     }
   ],
   "policyChange": {
@@ -292,5 +750,63 @@
     "Racial base HP derives floor(5*(10+1)/2) from d10 HD before live Constitution.",
     "Own Griffon type keeps the actual installed Manticore magical-beast KnowledgeStat; native observer records the resulting type/consumer.",
     "A later natural-unit type selector still chose Bulette for Griffon after the earlier correct assignment. Both selectors now use the exact creature token; native observer requires Griffon type GUID b31bad4d5053482d85d35d0ae27fac72. No native unit-type PASS existed on the faulty source."
-  ]
+  ],
+  "integratedDevelopmentChecks": {
+    "productionCompilation": {
+      "result": "PASS",
+      "seconds": 17.5,
+      "selectedDomainTests": 17,
+      "registeredDomainTests": 2693,
+      "domainSeconds": 1.1,
+      "scope": "focused development; no full suite or release qualification"
+    },
+    "publisherRefusals": {
+      "result": "PASS",
+      "cases": 86
+    },
+    "developmentPersistenceAuthority": {
+      "result": "PASS",
+      "cases": 9
+    },
+    "sourceBoundaryRefusals": {
+      "result": "PASS",
+      "tests": 9
+    },
+    "targetedPersistenceRequests": {
+      "result": "PASS",
+      "exactJsonRoundTrips": 27,
+      "refusalCases": 252
+    },
+    "actualLauncherWhatIf": {
+      "result": "PASS",
+      "valid": 39,
+      "rejected": 23,
+      "nativeLaunches": 0
+    },
+    "phasePreflight": {
+      "result": "PASS",
+      "checks": 659,
+      "seconds": 49.1365099,
+      "nativeLaunches": 0,
+      "record": "artifacts/sprint27-readiness-integrated-r3/result.json"
+    },
+    "preservedSetupFailures": [
+      {
+        "scope": "first integrated compilation",
+        "cause": "two missing namespace imports in new outdoor observer; corrected; no package/native attempt"
+      },
+      {
+        "scope": "launcher WhatIf invoked elevated",
+        "cause": "existing unelevated guard refused; retained guard and ran limited-owner task successfully"
+      },
+      {
+        "scope": "first integrated preflight",
+        "cause": "obsolete negative fixture still named routes, now an implemented phase; changed the excluded sentinel to hippogriff"
+      },
+      {
+        "scope": "second integrated preflight",
+        "cause": "parallel production compilation changed guarded artifact snapshot; reran preflight alone after compilation; guard unchanged"
+      }
+    ]
+  }
 }
