@@ -65,3 +65,16 @@ Remaining: final Sprint gate; fresh eligible native
 campaign; publisher preflight/dry-run; conditional product merge, stable release,
 actual downloaded-asset verification, exact restoration and final-records merge.
 Sprint 26 remains closed. Sprint 28 has not started; stop after Sprint 27.
+
+The first public gate on 28bce30a retained FAIL: 2,693 tests executed, 39 failures,
+314.247s. Twenty-three lacked the existing local native IL prerequisite, now
+reused with verified installed DLL SHA/MVID and exact copied digest. Sixteen
+were stale historical source/count/version or current weapon-audit contracts.
+The batched repair keeps frozen historical scopes, derives the current union,
+checks immutable private sequences without assuming they remain last, and
+adds exactly three Griffon audit rows with every old row unchanged. The default
+package selector now uses Sprint 27. No creature rules changed. All failed
+reproductions and affected neighbors PASS: 172 tests, 4.7s runner/9.2s wall.
+A new coherent candidate boundary is required; the failed source produced no
+final package or native execution. Readiness repair added about ten minutes;
+the declared bounded native batches and exact-artifact reuse remain unchanged.

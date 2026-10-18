@@ -625,7 +625,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(naming.Contains("GiantBodyVisualPolicy.Handles"),
                 "Giant private meshes/materials must use the same original-body family their owner/teardown recognizes.");
             string release = view.Substring(view.IndexOf("internal static void ReleasePhase2View", StringComparison.Ordinal));
-            Assertions.True(release.Contains("!GiantBodyVisualPolicy.Handles(attachment.VisualKey)"),
+            Assertions.True(release.Contains("!(GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key)"),
                 "Native teardown admits exactly the two giant keys too.");
             string review = File.ReadAllText(Path.Combine(root, "RuntimeTesting", "RuntimeTestRunner.ExpandedSummoningSprint25Review.cs"));
             Assertions.True(review.Contains("range.IsUnitEnoughClose") && review.Contains("owner.Corpulence + target.Corpulence") &&
@@ -708,8 +708,7 @@ namespace KingmakerGunslinger.DomainTests
 
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            string[] tail = identities.Skip(identities.Count - Sprint26MagicalBeastRules.AppendedPrivateIdentityCount -
-                PrivateIdentityTail.Length).Take(PrivateIdentityTail.Length).Select(value => value.Symbol)
+            string[] tail = identities.SkipWhile(value => value.Symbol != PrivateIdentityTail[0]).Take(PrivateIdentityTail.Length).Select(value => value.Symbol)
                 .ToArray();
             Assertions.True(tail.SequenceEqual(PrivateIdentityTail,
                     StringComparer.Ordinal),

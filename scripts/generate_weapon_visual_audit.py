@@ -417,6 +417,18 @@ def make_record(entry: dict) -> dict:
                 "currentManyToOneVisualGroup": "ExpandedSummoning.GorgonOriginal",
                 "clippingOrientationConcerns": "rough armor proportions, contact and secondary motion are deferred visual debt",
             })
+        elif symbol.startswith("KMG.Summoning.Natural.Griffon."):
+            common.update({
+                "effectiveEquippedPrefab": "original project Griffon body: assets/sprint27-griffon/griffon-mesh.json",
+                "sourceFbx": "none; original procedural mesh data",
+                "sourceBlend": "none; procedural geometry",
+                "deterministicGenerator": "assets-source/original-models/sprint27-griffon/build_griffon.py",
+                "animationDonorStyle": "native Manticore da807351572c540478b703957d863e68; runtime rig/animation reference",
+                "currentMaterial": "project griffon-albedo.png on per-view native-compatible material",
+                "sourceLicenseProvenance": "project-authored geometry/albedo; native rig/animation referenced only",
+                "currentManyToOneVisualGroup": "ExpandedSummoning.GriffonOriginal",
+                "clippingOrientationConcerns": "coarse anatomy, rigid pointed wings and simplified transitions are deferred visual debt",
+            })
         elif symbol.startswith("KMG.Summoning.Natural.Bulette."):
             common.update({
                 "effectiveEquippedPrefab": "exact native adult Bulette prefab 46b4f98ae7d8ddf40878914741a42129",

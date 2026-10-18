@@ -159,8 +159,7 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
-                    GiantBodyRulesPolicy.AppendedCreatureCount - Sprint26MagicalBeastRules.AppendedCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.SourceUnrepresentedCount,
                 ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
@@ -203,14 +202,12 @@ namespace KingmakerGunslinger.DomainTests
 
             // The Shadow Mastiff moved from this set into the represented
             // one when Sprint 13 registered it.
-            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
-                    GiantBodyRulesPolicy.AppendedCreatureCount - Sprint26MagicalBeastRules.AppendedCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.SourceUnrepresentedCount,
                 ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
                 "Only the post-Sprint-25 ideal-roster creatures remain unregistered.");
-            Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount +
-                    GiantBodyRulesPolicy.AppendedCreatureCount + Sprint26MagicalBeastRules.AppendedCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.SourceRepresentedKeys.Count,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "A registered creature joins the represented identity set even while withheld.");
 

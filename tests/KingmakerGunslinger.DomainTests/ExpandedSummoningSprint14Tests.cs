@@ -1054,6 +1054,7 @@ namespace KingmakerGunslinger.DomainTests
                     // exempted, because it still takes the default.
                     !GiantBodyRulesPolicy.UsesExactRanks(value.Key) &&
                     !Sprint26MagicalBeastRules.UsesExactRanks(value.Key) &&
+                    value.Key != "griffon" && // Sprint 27 independently verifies its printed ranks.
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

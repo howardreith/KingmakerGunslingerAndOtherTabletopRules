@@ -24,3 +24,12 @@ as development provenance; use original tuples for audited unaffected reuse.
 Then publisher refusal/preflight/dry-run, conditional product PR60 merge, stable
 Latest publication, actual downloaded-asset/lineage verification, exact machine
 and Working restoration, and RELEASED/STOP records merge. No release has occurred.
+
+Source-derived public equation: 1,108 generated placements + 29 retained native
+wrappers = 1,137 visible choices.
+
+The first public gate on 28bce30a failed before package/native work. Its complete
+39-failure result is retained. A batched legacy fixture/current weapon-audit
+repair plus matching private IL prerequisite passes 172 affected tests. Creature
+rules are unchanged. Freeze the corrected source, gate that new candidate once,
+and continue the final campaign; never qualify the failed source.

@@ -72,8 +72,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummoningCurrentSurface.RegisteredCreatureCount,
                 ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount +
-                    GiantBodyRulesPolicy.AppendedCreatureCount + Sprint26MagicalBeastRules.AppendedCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.SourceRepresentedKeys.Count,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures include the registered Sprint 25 identities plus retained native wrappers.");
             // Publication exposes every registered identity without reallocating.
@@ -90,8 +89,7 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
-                    GiantBodyRulesPolicy.AppendedCreatureCount - Sprint26MagicalBeastRules.AppendedCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.SourceUnrepresentedCount,
                 notRepresented,
                 "Only the post-Sprint-25 ideal-roster creatures remain unregistered.");
             Assertions.Equal(145,

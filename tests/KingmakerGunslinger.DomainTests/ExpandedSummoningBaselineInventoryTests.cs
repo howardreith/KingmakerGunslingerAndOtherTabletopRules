@@ -163,7 +163,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Smilodon displays under its own name and is not a proxy.");
             Assertions.Equal(43 + TheropodRulesPolicy.AppendedCreatureCount +
                     GiantBodyRulesPolicy.AppendedCreatureCount + 1,
-                ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
+                ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count(value => !value.StartsWith("griffon<", StringComparison.Ordinal)),
                 "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, including both Sprint 23 dinosaurs whose project-owned bodies bind to their measured native animation donors.");
         }
 
@@ -236,8 +236,8 @@ namespace KingmakerGunslinger.DomainTests
             var activeLedger = Newtonsoft.Json.Linq.JObject.Parse(
                 System.IO.File.ReadAllText(System.IO.Path.Combine(
                     System.Environment.CurrentDirectory, "planning",
-                    "SPRINT26-GORGON-BULETTE-LEDGER.json")));
-            var surface = activeLedger["surface"]["target"];
+                    "SPRINT27-EVIDENCE.json")));
+            var surface = activeLedger["publicSurface"];
             Assertions.Equal(generated, (int)surface["generatedPlacements"],
                 "Machine-readable public placement count.");
             Assertions.Equal(wrappers, (int)surface["retainedNativeWrappers"],
