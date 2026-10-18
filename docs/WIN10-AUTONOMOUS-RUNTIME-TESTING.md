@@ -2,7 +2,7 @@
 
 Sprint 27 also adds `disposable-expanded-summoning-sprint27-native-review`,
 requiring automatic exit and one exact `reviewPhase`: `rtwp-foundation`,
-`pounce-rtwp`, `pounce-turn-based`, `rtwp-ai`, or `charge-boundaries`. It reuses the qualified save-free first-area
+`pounce-rtwp`, `pounce-turn-based`, `rtwp-ai`, `charge-boundaries`, or `visual-lifecycle`. It reuses the qualified save-free first-area
 fixture, exact-owner clock, event collection and restoration. These are development
 observations; AI/lifecycle/routes/persistence release coverage remains open.
 

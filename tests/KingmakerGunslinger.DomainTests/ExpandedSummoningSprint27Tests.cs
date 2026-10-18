@@ -50,6 +50,17 @@ namespace KingmakerGunslinger.DomainTests
             var ids=ExpandedSummoningIdentityCatalog.Build();
             Assertions.True(!ids.Any(v=>v.Symbol.Contains("Griffon") && (v.Symbol.Contains("Grab")||v.Symbol.Contains("Swallow")||v.Symbol.Contains("Leap"))),"No invented special attack graph");
         }
+        internal static void ReachPreservesNativeBonusesAndOtherConsumers()
+        {
+            string owner=GriffonVisualPolicy.BlueprintGuid;
+            foreach(string weapon in new[]{"67549c5f756c495a8592ab27a019fec8","130a92b8f9d64a46908cf05258fbb2b0","4807a234c116416988cd388e5a923776"}) {
+                Assertions.Equal(5f,GriffonRules.Reach(owner,weapon,2),"Printed five-foot reach");
+                Assertions.Equal(10f,GriffonRules.Reach(owner,weapon,7),"Live five-foot bonus preserved");
+                Assertions.Equal(2f,GriffonRules.Reach(GriffonVisualPolicy.DonorGuid,weapon,2),"Native donor untouched");
+                Assertions.Equal(2f,GriffonRules.Reach(null,weapon,2),"Unowned weapon untouched");
+            }
+            Assertions.Equal(2f,GriffonRules.Reach(owner,"released-other-weapon",2),"Unrelated weapon untouched");
+        }
         internal static void ExactOriginalBodyBinding()
         {
             Assertions.True(GriffonVisualPolicy.IsPermitted("griffon",GriffonVisualPolicy.Bones),"Measured original weights bind");

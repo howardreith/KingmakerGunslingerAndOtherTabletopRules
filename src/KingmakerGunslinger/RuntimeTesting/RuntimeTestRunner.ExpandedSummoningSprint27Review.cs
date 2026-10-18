@@ -40,8 +40,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try {
                     foreach(int f in Sprint26Appearance(owner,"griffon",false))yield return f;
                     Sprint27Body(owner,"idle");
+                    var icon=KingmakerGunslinger.Blueprints.ExpandedSummoningProjectIcons.Require("griffon");
+                    var routes=ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Where(v=>v.Creature.Key=="griffon").ToArray();
+                    Sprint25Check("icon-consumers",routes.Length==6 && ReferenceEquals(owner.Blueprint.Type.Image,icon) && routes.All(v=>ReferenceEquals(ExpandedSummoningRoot(fixture.Blueprints,v).Icon,icon)),
+                        new JObject{["unitTypeImage"]=owner.Blueprint.Type.Image?.GetInstanceID(),["expectedSprite"]=icon.GetInstanceID(),["roots"]=new JArray(routes.Select(v=>ExpandedSummoningRoot(fixture.Blueprints,v).AssetGuid)),["fallbacks"]=KingmakerGunslinger.Blueprints.ExpandedSummoningProjectIcons.FallbackCount},"The exact inspected Griffon species and all six roots use the actual loaded Griffon painting.");
                     if(phase=="rtwp-foundation") {
-                        Sprint27Profile(fixture,owner);Sprint27Strength(owner);
+                        Sprint27Strength(owner);
                         foreach(int f in Sprint27Ordinary(fixture,owner,false))yield return f;
                         foreach(int f in Sprint27Ordinary(fixture,owner,true))yield return f;
                     } else if(phase=="pounce-rtwp" || phase=="pounce-turn-based") {
@@ -57,6 +61,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach(int f in Sprint27CancelCharge(fixture,owner,true))yield return f;
                         foreach(int f in Sprint27Opportunity(fixture,owner))yield return f;
                         Sprint27PlanReentry(fixture,owner);
+                    } else if(phase=="visual-lifecycle") {
+                        foreach(int f in Sprint27VisualLifecycle(fixture,owner))yield return f;
                     } else throw new InvalidOperationException("Unimplemented Griffon phase: "+phase);
                 } finally {
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();
@@ -127,6 +133,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 while(!command.IsFinished&&frames++<3000&&DateTime.UtcNow<deadline)yield return 0;
                 int expected=full?3:1;bool exact=command.IsFinished&&(command.Result==UnitCommand.ResultType.Success||trace.Exhausted(command))&&observer.WeaponAttacks.Count==expected&&command.AllAttacks.Count==expected&&economy.Count(command)==1&&economy.Exact(command,false)&&!command.Cutscene&&!command.IsIgnoreCooldown;
                 Sprint25Check(full?"ordinary-full-command":"ordinary-single-command",exact,new JObject{["finished"]=command.IsFinished,["result"]=command.Result.ToString(),["planned"]=command.AllAttacks.Count,["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>new JObject{["weapon"]=v.Weapon.Blueprint.AssetGuid,["charge"]=v.IsCharge,["hit"]=v.AttackRoll!=null&&v.AttackRoll.IsHit,["natural"]=v.AttackRoll?.Roll.Value,["autoMiss"]=v.AttackRoll?.AutoMiss,["suspended"]=v.AttackRoll?.SuspendCombatLog,["damage"]=v.MeleeDamage==null?0:v.MeleeDamage.Damage})),["nativeEnds"]=endings,["costs"]=costs,["forcedAnimationEvents"]=0},"Genuine ordinary native command resolves its printed attack set once, without rake or fixture attacks.");
+                if(full && RuntimeTestRequestParser.Sprint27ReviewPhase(_request)=="rtwp-foundation")Sprint27Profile(fixture,owner);
                 Sprint27Body(owner,full?"full-attack":"single-attack");
             }} finally {EventBus.Unsubscribe(observer);owner.Commands.InterruptAll(true);ResetExpandedSummoningHostile(fixture);}
         }

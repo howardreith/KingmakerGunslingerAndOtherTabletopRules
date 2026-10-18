@@ -10,16 +10,19 @@ Current [coverage](docs/SPRINT27-COVERAGE.md), [contract](planning/EXPANDED-SUMM
 and [evidence map](planning/SPRINT27-EVIDENCE.json) supersede earlier next-action queues.
 Original painting/export, native-Manticore-based original body, adult rules and
 six hidden SNA roots are integrated. All released identities/icons preserved.
-Focused production/early observer compilation and6 targeted checks PASS. No full
-or native product qualification. Two foundation attempts failed bootstrap; exact
-old/current tuples and narrow fixes are retained in the evidence map. One research capture PASS with exact
-current118-save/settings/Mods/private restoration and no game/lease/owned tasks.
-HumanReview NOT_PERFORMED_NONBLOCKING; rough static wings/proportions remain debt.
+Focused production compilation and16 related tests PASS. Four overall failed
+foundation runs retain exact evidence; the latest has real indoor original-body,
+single/full attack and signed-Strength partial proof. The next candidate corrects
+measured2ft weapon reach to printed5ft on only Griffon/private weapons, observes
+normal CMD after a real action, assigns the actual species icon, and adds bounded
+rollback/movement/death/fading/private-cache lifecycle observations. All current
+118 saves/settings/Mods/private references were restored; no game/lease/owned task.
+HumanReview NOT_PERFORMED_NONBLOCKING; coarse wings/proportions remain visual debt.
 
-Next: from this clean checkpoint build one development-only prototype, run strict
-unelevated dispatch preflight, then guarded save-free rtwp-foundation. Inspect
-failure evidence and narrow fixes before any further unchanged batch. Complete
-native observers/negative cases/AI/lifecycle/targeted persistence/routes and161
-publisher support before the final coherent candidate's single Sprint gate.
+Next: freeze a clean development candidate, guarded standalone foundation, then
+reuse its exact ZIP for pounce RTWP/TB, exact-owner AI, charge boundaries and visual
+lifecycle only after foundation passes. Finish remaining native negatives,
+targeted persistence/public routes/controls and161 publisher support before the
+single final Sprint gate. Development proof cannot qualify a release artifact.
 Follow the current validation policy, Steam640820 leases/current intake and exact
 transactional restoration. No old release campaign, unrelated tasks or Sprint28.

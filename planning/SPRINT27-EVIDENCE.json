@@ -107,6 +107,40 @@
         "leaseAbsent": true,
         "ownedTasksRemoved": true
       }
+    },
+    {
+      "scope": "standalone rtwp-foundation; overall FAIL with actual original-body and ordinary-command partial proof",
+      "candidateKind": "development",
+      "source": "b27dcff807d7b66a20afaf1a9d9d5cbd335619e9",
+      "sourceStateSha256": "9a390f42006fc78b55933b9091a971445406838585eb6bcb3179294a12ef3a2f",
+      "zipSha256": "21f3bea0ce16062b6581fdb1c62e230d9d194e29109c7d5bc84577a65d3233ba",
+      "dllSha256": "9f221d208996f88b9f307c0c39da82397fff3c2dc21f579a80e7e718395c7065",
+      "mvid": "095c2efc-cac7-418d-ad20-9a572862118a",
+      "runId": "20261018T2031000626136Z-8f5a6254b02e405e8e0add13af9b162f",
+      "transactionRunId": "compat-20261018T202907Z-777ef8b073e1",
+      "result": "FAIL",
+      "nativeMilliseconds": 110958,
+      "outerSeconds": 253.5111543,
+      "cause": "Native weapon range2ft needs exact Grif+3ft correction; CMD19/23 sampled flat-footed with Dexterity denied, observer must measure after real ordinary action. No product CMD adjustment.",
+      "partialProof": [
+        "real original body and native selection; finite idle/single/full poses in indoor fixture",
+        "native ordinary single1 and full3 actual weapon events and action costs, no forced rolls or animation events",
+        "signed Strength native stat calculations16/17/18/19/9/7 with independent damage0/3",
+        "all other printed composed fields and exact unit/type correct"
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "readOnlyVisualReview": "Actual native idle/full PNGs identifiable eagle head/beak, wings, foretalons and feline body; no visible functional defect. Coarse anatomy, angular rigid wings and occlusion remain visual debt.",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2031000021386Z-disposable-expanded-summoning-sprint27-native-review",
+      "rawResultSha256": "21e14c82d4e6c07867f3be0e3e84f74ae12d8a1227af64ec2f0890a5fdd51ac5"
     }
   ],
   "checks": [
