@@ -19,8 +19,8 @@ HumanReview NOT_PERFORMED_NONBLOCKING; no personal owner aesthetic approval.
 Final actual installation/settings/bank/private references and all118 save
 metadata/hashes exact; Working native-cleaned/fresh-absence proven, no owned
 game/process/lease/staging or permanent deployment. Steam Offline accepted.
-Final-records branch codex/expanded-summoning-sprint25-release-records carries
-this documentation-only synchronization; merge its PR, then STOP. No Sprint26,
+Final-records [PR57](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/57)
+is this documentation-only master synchronization. STOP after its merge. No Sprint26,
 Mounted Combat, Buff Planner or DATA project work started by this campaign.
 
 ## Dated development checkpoints (not remaining work)

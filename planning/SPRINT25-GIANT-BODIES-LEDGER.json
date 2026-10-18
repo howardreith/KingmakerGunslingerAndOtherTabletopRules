@@ -27,9 +27,10 @@
         "restoration": "Final PASS actual current installation/settings/bank/private refs and all118 protected save metadata/hashes; Working cleanSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850. No owned game/lease/runtime staging/backup or permanent candidate deployment. Baseline never loaded/mutated. Steam Offline accepted.",
         "functionalArt": "Both original meshes visible/usable; actual supplied icon integrated,120 icons/no missing consumers. Source/export bytes preserved. HumanReview NOT_PERFORMED_NONBLOCKING; accepted rough visual backlog only, no further visual R&D.",
         "finalRecordsBranch": "codex/expanded-summoning-sprint25-release-records",
+        "finalRecordsPr": 57,
         "finalRecordsKind": "Documentation-only; no tooling/product/package input changes and no rebuild.",
         "sprint26Started": false,
-        "next": "Merge this authorized final-records PR to master, then STOP. No remaining native/release work."
+        "next": "STOP after final-records PR57 master synchronization. No remaining native/release work."
       },
       "publicInventoryRepair": {
         "source": "b299c4625757c25f1a4bd6bebfa136b6fabc5c53",
@@ -151,7 +152,7 @@
         "checks": "PASS compile17.5s;73/73 focused cases (2678 registered),domain2.4s; actual hidden source/6916 IDs;19 source refusals;17 real dispatch checks including retained158 visual child and new159 Sprint25;30 icon protection/refusals12.522s. Full new candidate/native not yet run.",
         "impact": "Brachiosaurus/Elephant original payloads/icon and mechanical rules unchanged by master. Fresh functional visuals/resources and Triceratops control cover inherited shared glow/refined control view; native Overrun diagnostic and targeted ON/OFF cold loads remain mandatory. Prior mechanics/AI/Cleave retain original artifact identities with dependency arguments, not relabeled execution."
       },
-      "next": "RELEASED_STOP. Merge authorized documentation-only final records, then stop; no remaining native/release work or Sprint26.",
+      "next": "RELEASED_STOP. Final-records synchronization is PR57; no remaining native/release work or Sprint26.",
       "acceptance": "PR49 draft/unmerged; Brachiosaurus hidden. HumanReview NOT_PERFORMED_NONBLOCKING for new giants. Steam Offline Mode accepted; no runtime safety waiver."
     },
     "previousCheckpoint20261017T2109Z": {
@@ -999,7 +1000,7 @@
     ],
     "sprint26Started": false
   },
-  "nextAction": "RELEASED_STOP: final-records synchronization only; no further gameplay, runtime, publication or Sprint26 work.",
+  "nextAction": "RELEASED_STOP. Final-records synchronization PR57; no further gameplay, runtime, publication or Sprint26 work.",
   "registration": {
     "complete": true,
     "commit": "a7b1481a8bf5caaf290d66d9c3522ecd58d29862",
