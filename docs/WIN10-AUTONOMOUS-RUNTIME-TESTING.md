@@ -8,7 +8,7 @@ input, never gameplay, body or cure qualification. Parameters are empty.
 
 ## Design status
 
-Sprint 25 adds `disposable-expanded-summoning-sprint25-native-review` / `disposable-expanded-summoning-sprint26-native-review` to the
+Sprint 25 adds `disposable-expanded-summoning-sprint25-native-review` to the
 guarded scenario union. It accepts exactly one `reviewPhase` from
 `rtwp-foundation`, `turn-based-commands`, `rtwp-ai`, `routes`,
 `visual-lifecycle`, `overrun`, and `great-cleave`.
@@ -18,6 +18,13 @@ body attachment/fault/death/teardown. It uses the existing native
 first-area fixture, never loads/writes a save, requires automatic exit, and
 restores its request-owned world/clock/settings. Additional qualification
 phases remain under implementation; this registration is not native PASS.
+
+Sprint26 uses `disposable-expanded-summoning-sprint26-native-review` with exactly
+one `reviewPhase`: `rtwp-foundation`, `turn-based-commands`, `gorgon-breath-rtwp`,
+`gorgon-breath-turn-based`, `bulette-leap-rtwp`, `bulette-leap-turn-based`,
+`rtwp-ai`, `routes` or `visual-lifecycle`. The same disposable first-area fixture,
+exact-owner clock and restoration boundary apply. An incomplete phase fails;
+registration and request dispatch do not establish gameplay qualification.
 
 Steam Offline Mode is supported. The owner must have a usable signed-in
 session; online connectivity is not required. The approved executable, App ID,

@@ -292,7 +292,10 @@ if ($moduleScenario) {
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'rtwp-ai', 'routes', 'visual-lifecycle', 'overrun', 'great-cleave')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
-            -not (Test-KmgSprint26ReviewPhaseScope $Scenario[0] $Parameters))) {
+            $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
+                'gorgon-breath-rtwp', 'gorgon-breath-turn-based',
+                'bulette-leap-rtwp', 'bulette-leap-turn-based',
+                'rtwp-ai', 'routes', 'visual-lifecycle'))) {
         throw 'Sprint 22/23/24/25 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.'
     }
 } elseif ($assetAttributionScenario) {
