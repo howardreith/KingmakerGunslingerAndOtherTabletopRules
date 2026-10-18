@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.159-expanded-summoning-sprint25-giant-bodies
+
+- Adds the SNA-only Brachiosaurus at VII–IX, its original body and supplied
+  icon, lone tail, live trample, separate ordinary Overrun and native Great
+  Cleave. No Summon Monster row or template children are added.
+- Completes Elephant's two primary attacks, scoped feats, ten-foot reach,
+  live trample and original body while preserving all eight released roots.
+- Preserves the v0.0.158 visual overhaul and startup repair. Rough body polish
+  remains deferred; owner aesthetic review is not claimed. See the
+  [v0.0.159 release notes](docs/RELEASE-NOTES-0.0.159.md).
+
 ## 0.0.158-expanded-summoning-visual-refinement
 
 - Redraws the Expanded Summoning creatures: 20 bodies rebuilt as continuous

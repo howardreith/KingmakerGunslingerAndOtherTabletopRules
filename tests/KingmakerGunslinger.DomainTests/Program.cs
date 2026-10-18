@@ -1210,7 +1210,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint24-swallow-reload-scope", ExpandedSummoningSprint24Tests.NoSwallowerOutlivesTheAcceptedReloadReset),
             Case("expanded-summoning.sprint25-routes", ExpandedSummoningSprint25Tests.RoutesAreExactlyThreeNatureAllyRootsAndNoMonsterRow),
             Case("expanded-summoning.sprint25-elephant-completed", ExpandedSummoningSprint25Tests.ElephantIsCompletedAndNeverReRegisteredOrSuppressed),
-            Case("expanded-summoning.sprint25-withheld-scope", ExpandedSummoningSprint25Tests.OnlyTheNewCreatureIsWithheld),
+            Case("expanded-summoning.sprint25-public-scope", ExpandedSummoningSprint25Tests.PublicScopePreservesAllReleasedRoutes),
             Case("expanded-summoning.sprint25-derived-arithmetic", ExpandedSummoningSprint25Tests.FrozenAdultArithmeticIsDerivedNotStated),
             Case("expanded-summoning.sprint25-identity-append", ExpandedSummoningSprint25Tests.IdentityAppendOwnsExactlyFivePrivateCarriers),
             Case("expanded-summoning.sprint25-overrun-knockdown", ExpandedSummoningSprint25Tests.OverrunKnocksDownOnlyThroughItsOwnCommand),

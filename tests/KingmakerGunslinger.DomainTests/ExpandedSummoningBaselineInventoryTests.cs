@@ -62,7 +62,9 @@ namespace KingmakerGunslinger.DomainTests
             // the Nature's Ally side; Triceratops adds four to Monster.
             // Sprint 24 publishes nine Nature's Ally theropod choices:
             // six Deinonychus and three Tyrannosaurus.
-            Assertions.Equal(562, ExpandedSummoningBaselineInventory
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredNatureAllyPlacements +
+                SummonNativeExpansionCatalog.All.Count(value =>
+                    value.Family == SummonFamily.NaturesAlly), ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
@@ -76,14 +78,14 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenPublishedLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
                 generated, "Published generated placements changed.");
             Assertions.Equal(GiantBodyRulesPolicy.RetainedNativeWrappers,
                 wrappers, "Native wrapper count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenVisibleChoices,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicVisibleChoices,
                 generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenVisibleChoices,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicVisibleChoices,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -133,18 +135,15 @@ namespace KingmakerGunslinger.DomainTests
             // than a leftover, which is what this pin is for. Naming the
             // creature is the strongest form of it: an unexpected arrival and
             // a forgotten departure both fail.
-            // Empty again after the v0.0.155 Sprint 24 publication removed
-            // both theropod keys together. Sprint 25 then registered the
-            // Brachiosaurus and withheld it, so exactly that one creature
-            // belongs here; anything else would be registered and forgotten.
+            // Sprint 25 publication removes only Brachiosaurus, so the
+            // registered-but-hidden set is empty again.
             Assertions.True(ExpandedSummoningBaselineInventory
-                    .RegisteredButHiddenCreatures.SequenceEqual(new[] {
-                        GiantBodyRulesPolicy.BrachiosaurusKey },
+                    .RegisteredButHiddenCreatures.SequenceEqual(new string[0],
                     StringComparer.Ordinal),
-                "Exactly the withheld Sprint 25 creature is registered but hidden: "
+                "No qualified Sprint 25 creature remains hidden: "
                 + string.Join(", ", ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures));
-            Assertions.Equal(GiantBodyRulesPolicy.AppendedCreatureCount,
+            Assertions.Equal(0,
                 ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.Count,
                 "No creature is registered but withheld: " + string.Join(", ",
@@ -201,7 +200,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 1122"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": " +
+                GiantBodyRulesPolicy.PublicVisibleChoices),
                 "The emitted census lost the frozen visible-choice total.");
         }
 
@@ -236,8 +236,8 @@ namespace KingmakerGunslinger.DomainTests
             var activeLedger = Newtonsoft.Json.Linq.JObject.Parse(
                 System.IO.File.ReadAllText(System.IO.Path.Combine(
                     System.Environment.CurrentDirectory, "planning",
-                    "SPRINT24-THEROPOD-DINOSAURS-LEDGER.json")));
-            var surface = activeLedger["surface"]["expectedPublic"];
+                    "SPRINT25-GIANT-BODIES-LEDGER.json")));
+            var surface = activeLedger["surface"]["target"];
             Assertions.Equal(generated, (int)surface["generatedPlacements"],
                 "Machine-readable public placement count.");
             Assertions.Equal(wrappers, (int)surface["retainedNativeWrappers"],

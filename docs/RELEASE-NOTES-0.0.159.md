@@ -47,6 +47,15 @@ It has no bite, no stampede, no tail-sweep area attack and no frightening
 roar. It does not borrow the Ankylosaurus daze or stun, the Stegosaurus trip,
 or the Tyrannosaurus bite multiplier, Grab or Swallow Whole.
 
+Great Cleave uses the qualified native multi-target routine, including miss
+termination, legal enemy/reach restrictions and actual Standard-action spending.
+Ordinary Overrun is a separate one-target command with its scoped +2 benefit;
+the native partial-success threshold controls knockdown, with immunity and
+legal opportunity responses respected. Its native charge-route carrier spends
+a full-round action and the observed double-move budget. This is the qualified
+engine adaptation, not a claim of perfect tabletop charge equivalence. Neither
+effect changes Trample or other creatures' maneuver rules.
+
 ## Elephant
 
 Two primary natural attacks: a gore at +16 for 2d8+10 and a slam at +16 for
@@ -87,3 +96,7 @@ scope with no new waiver:
 - `RUN_NATIVE_SUMMON_AI_DISPOSITION`
 
 Owner visual review remains `NOT_PERFORMED_NONBLOCKING`.
+Both original bodies are visible and usable. The accepted interim Brachiosaurus
+neck is stiff; skull/ear proportions, seams, faceting, short tail, minor clipping,
+contacts and texture polish remain refinement work, not a claim of final art.
+The supplied Brachiosaurus icon source and exported pixels are preserved.

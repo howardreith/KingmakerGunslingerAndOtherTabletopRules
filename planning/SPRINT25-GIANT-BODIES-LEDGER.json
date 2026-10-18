@@ -1,9 +1,24 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "NATIVE_MECHANICS_BODY_PASS_PREPARED_WORKING_COLD_CACHE_CENSUS_REPAIR_NEXT",
+  "status": "HIDDEN_NATIVE_AND_TARGETED_PERSISTENCE_PASS_PUBLIC_CANDIDATE_NEXT",
   "current": {
     "latestCheckpoint": {
+      "hiddenQualified9f571da5": {
+        "source": "9f571da5b6fead4e37c149bfb164307bb738f544",
+        "sourceFingerprint": "d90b9eed9908f29d429b68e2f08a1f3e18c14ab987e9ce08f8802823f2d81a80",
+        "zipSha256": "af7073b9753add11145dd3ee50b545b21eefe9beaafd0856372a66d5dc1a0a44",
+        "dllSha256": "c793b20a12492ddcd1e8894e6781abede8ea4f9a49b839502eff2fc04506cc17",
+        "dllMvid": "fe6d6074-ffba-4b1a-b2a4-fcf12f252996",
+        "gate": "PASS2678/2678,exact build/strict380;312.3247285s;2026-10-18T01:56:58.8124723Z; exact ZIP/sidecars archived source-build-9f571da5.",
+        "nativePersistence": "PASS all5 remaining-after-prepare stages:cleanupON,fresh absence,prepareON,cleanupOFF,fresh absence;1745.4602304s;2026-10-18T02:27:06.5182507Z. Initial prepare14/14 keeps6914 identity and reader-only recovery. New cleanup13/13 identifies true caches exactly/count-stable and destroys all4 private resources; OFF has zero variant allocations, usable donor fallback and native cleanup-save once.",
+        "receipt": "artifacts/persistence-batch-9f571da5-giants-continuation/result.json",
+        "receiptSha256": "f657d2c7b0715ea2a05db70a6e02468f1407df431a41412fcbc15196f630587f",
+        "restoration": "All5 exact actual transactions restored installation/settings/bank/private refs and117/118 protected saves. Working native-cleaned and fresh-absence proven, SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850. No owned game/lease; baseline never loaded/mutated.",
+        "publicBoundary": "Fresh master80fe5df6 unchanged;159 remote tag/release absent. Remove ONLY Brach suppression, preserve Elephant8 roots and all identities/art. Source-derived108 creatures,1096 generated+29wrappers=1125visible,0suppressed; no Brach Monster row/template children. New public artifact/actual public checks remain mandatory.",
+        "publicFocused": "PASS compile17.2s,108/108 selected regressions2.6s,70 publisher refusal checks and19 source-boundary refusals. Initial42-case run exposed3 stale hidden-census/current-ledger assertions, corrected against actual public catalogs and Sprint25 surface.target without editing historical Sprint24 evidence. Controlled roster changed2 lines; no blueprint/art bytes change. Only production semantic delta is removal of Brach suppression; GiantBodyRulesPolicy change is a historical-predicate comment.",
+        "reuse": "cb mechanics/Overrun/body both profiles;082 TB/Cleave;EE5 exact-owner AI retain original identities. Giant-only persistence selects registered identities independently of visibility; public delta changes only visibility/current-total tests/controlled roster/release records. No gameplay/body/schema change and no mechanical replay solely for reporting."
+      },
       "targetedPersistence6914": {
         "source": "6914a168d73f3642456e9f8cd071e07cccb016cd",
         "sourceFingerprint": "c8b51986dfece606dc8210ab11c8d61650bc78041e9af17a507b35635c623954",
@@ -65,7 +80,7 @@
         "coherentNextObservation": "Request-local entry/exit hooks now capture exact native Did inputs and actual public controller/queue versus scoped controller. Before command dispatch the fixture records its intended service and re-establishes it only if a native mode transition replaced that prerequisite. This does not synthesize a maneuver, knockdown, provocation or attack, and does not bypass UI/cost rules. Controller absence remains a source hypothesis until actual service/callback records establish it. Hooks/subscriptions/references unwind in finally. Compile17.5s,23/23 focused cases1.3s PASS."
       },
       "requestLocalObservation": "2026-10-18T00:13Z: normal master integration committed/pushed as a65f469e7319bc78240ac3b29bcae57d40c240c7. Added bounded exact rider/component/fact/native subscriber/pending/eligibility snapshots before native About, after native resolution before initiator Did, and after callbacks return. All cases exclude independent get-up provocation; duplicate notification probes run only after the real callback consumed its event, never supplying missing first behavior. No production mechanic change. Initial compile caught a local-scope observer variable and was repaired before packaging. Final compile16.6s and23/23 focused cases PASS;70 publisher refusal checks PASS at159.",
-      "asOfUtc": "2026-10-18T01:18:29.2123672Z",
+      "asOfUtc": "2026-10-18T02:34:00Z",
       "sourceBuildCheckpoint": {
         "source": "0825699d9ec8cefb0232c5df8ccc5eaea017be37",
         "sourceFingerprint": "6677ce4fd40ba29a27410c5d681508455d5d51dabb323c4d8a1a638cbae06c3f",
@@ -91,7 +106,7 @@
         "checks": "PASS compile17.5s;73/73 focused cases (2678 registered),domain2.4s; actual hidden source/6916 IDs;19 source refusals;17 real dispatch checks including retained158 visual child and new159 Sprint25;30 icon protection/refusals12.522s. Full new candidate/native not yet run.",
         "impact": "Brachiosaurus/Elephant original payloads/icon and mechanical rules unchanged by master. Fresh functional visuals/resources and Triceratops control cover inherited shared glow/refined control view; native Overrun diagnostic and targeted ON/OFF cold loads remain mandatory. Prior mechanics/AI/Cleave retain original artifact identities with dependency arguments, not relabeled execution."
       },
-      "next": "Freeze the narrow cache-identity observer candidate, full gate, then remaining-after-prepare5-stage native batch to clean prepared Working and qualify ON/OFF cold loads/absence. Reuse completed mechanics/body/AI/Cleave only under original artifact identities. Then public boundary/full candidate/fresh public inventory/icon/eleven roots, publisher preflight, authorized merge/release/download/restoration audit, final-records merge,STOP. No Sprint26.",
+      "next": "Finish focused public checks, commit/push one public candidate/full gate, fresh3-cell public inventory/icon/eleven-root batch; then publisher preflight while49 draft,ready/merge,exact stable publication/download/lineage/restoration audit,final-records merge,STOP. Preserve original reused evidence identities; no Sprint26.",
       "acceptance": "PR49 draft/unmerged; Brachiosaurus hidden. HumanReview NOT_PERFORMED_NONBLOCKING for new giants. Steam Offline Mode accepted; no runtime safety waiver."
     },
     "previousCheckpoint20261017T2109Z": {
@@ -939,7 +954,7 @@
     ],
     "sprint26Started": false
   },
-  "nextAction": "Freeze the cache-census observer repair candidate; run remaining-after-prepare5 native stages on existing prepared Working, then public boundary/full artifact/fresh public checks, preflight, merge/release/download/restoration audit, final-records merge,STOP. Steam Offline accepted; no Sprint26.",
+  "nextAction": "Freeze public-only candidate/full gate; fresh3-cell public inventory/icon/eleven-root qualification,preflight,merge49,exact stable release/download/lineage/restoration audit,final-records merge,STOP. Hidden mechanics/body/persistence qualified with original identities. Steam Offline accepted; no Sprint26.",
   "registration": {
     "complete": true,
     "commit": "a7b1481a8bf5caaf290d66d9c3522ecd58d29862",
@@ -1828,8 +1843,8 @@
     "whatItIsNot": "A package passing structural checks is not native qualification. Nothing has been deployed, launched or observed in game."
   },
   "remainingNativeCampaign": {
-    "status": "MECHANICS_AND_FUNCTIONAL_BODIES_QUALIFIED_BOTH_PROFILES; PREPARE_PASS_COLD_CACHE_CENSUS_REPAIR; TARGETED_PERSISTENCE_AND_FRESH_PUBLIC_QUALIFICATION_REMAIN",
-    "candidateBoundary": "Commit/push the read-only exact giant-cache census repair; one new hidden Sprint candidate. Preserve all earlier exact artifacts/native records, including original9b55df81 source/build checkpoint. No rebuild per stage/profile.",
+    "status": "HIDDEN_MECHANICS_BODY_AND_TARGETED_ON_OFF_PERSISTENCE_PASS; EXACT_PUBLIC_ARTIFACT_QUALIFICATION_REMAINS",
+    "candidateBoundary": "Commit/push public-only visibility/current-total/controlled-roster/release-record changes; one public Sprint candidate. Preserve all original hidden artifacts, including9b55df81 source/build checkpoint. No rebuild per profile.",
     "coverageMap": [
       {
         "required": "Profiles, signed Strength, reach, trample/live DC, feats and RTWP/TB commands",
@@ -1849,12 +1864,12 @@
       {
         "required": "Original bodies/icon, navigation/fallback/private resources/load",
         "observation": "cb fresh original attachment/motion/quantities/death/fault/OFF-ON/private teardown/donor isolation PASS both profiles; captures inspected. E8 registered icon/route proof remains historical.",
-        "missing": "Affected cold-load original attachment and exact final public icon/consumer/root checks."
+        "missing": "Only exact final public icon/consumer/root checks; affected cold-load original attachment/private teardown/cache accounting now PASS9f."
       },
       {
         "required": "Targeted prepare/cold-cleanup/fresh-absence ON/OFF",
-        "observation": "6914 actual prepare14/14 PASS; cold load profiles/facts/original bodies/private destruction PASS but cleanup refused unresolved true cached albedos and did not save. Exact read-only cache IDs added; private/unknown policies unchanged. Working remains prepared and protected from unrelated writes.",
-        "missing": "Fresh5 remaining-after-prepare stages on new frozen exact artifact, beginning native cleanupON. Original successful prepare retains6914 identity; immutable baseline never loaded/mutated; only named Working mutable."
+        "observation": "6914 initial prepare14/14 retains original identity.9f five-stage continuation PASS all ON/OFF cold-cleanup/native-save/fresh-absence stages,1745.46s; exact current restoration/protected117/118 saves/private refs. Working clean; no game/lease.",
+        "missing": "None; public visibility does not affect giant-only registered identity selection. No whole-roster save campaign is claimed."
       },
       {
         "required": "Exact public artifact, merge/stable release/download/restoration/final records",
@@ -1863,7 +1878,7 @@
       }
     ],
     "batches": [
-      "New source-qualified hidden candidate then five remaining-after-prepare ON/OFF cold-save stages (planning25-40min; actual duration recorded, restoration has no deadline). Reuse exact package through supported600-second timeout; preflight actual launcher metadata before staging.",
+      "Hidden persistence complete29.09min. New public full candidate then three-cell public inventory/routes batch (planning15-25min plus build; actual duration recorded, restoration has no deadline). Reuse exact public package across supported profile transactions.",
       "Public boundary/full candidate/fresh three-cell inventory+routes batch, publisher preflight, authorized merge/release/download/restoration audit, final-records branch/PR/master synchronization. No Sprint26."
     ]
   }

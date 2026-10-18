@@ -1,4 +1,35 @@
-# Sprint 25 takeover — master v0.0.158 integrated, continuing at v0.0.159
+# Sprint 25 — hidden native qualification complete; public v0.0.159 candidate
+
+Controlling02:32UTC: master80fe5df6 remains integrated;159 free at fresh remote
+tag/release check. Public source removes ONLY Brach suppression: 1,096 generated placements
++29 retained wrappers = 1,125 visible choices, derived from actual catalogs.
+No Elephant root, Monster row, template child, identity or accepted asset changes.
+Focused public compilation17.2s and final108/108 selected regressions2.6s PASS;
+70 publisher and19 source-boundary refusals PASS. Initial42-case run exposed
+three stale hidden-stage census/record expectations, corrected against current
+catalogs and Sprint25 surface.target without modifying historical Sprint24 records.
+
+Hidden candidate9f571da5 full2678/exact/strict380 PASS312.32s; archived.
+ZIPaf7073b9753add11145dd3ee50b545b21eefe9beaafd0856372a66d5dc1a0a44;
+DLLc793b20a12492ddcd1e8894e6781abede8ea4f9a49b839502eff2fc04506cc17;
+MVIDfe6d6074-ffba-4b1a-b2a4-fcf12f252996.
+All5 remaining-after-prepare native stages PASS1745.4602304s,02:27:06Z:
+cleanupON/absence/prepareON/cleanupOFF/absence. Exact current installation,
+settings/bank/private refs and117/118 protected saves restored per transaction;
+Working clean, SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850.
+No game/lease. Cache IDs proven exact; private allocations destroyed; OFF zero
+variant allocations and valid donor fallback. Receipt artifacts/persistence-batch-9f571da5-giants-continuation/result.json,
+SHAf657d2c7b0715ea2a05db70a6e02468f1407df431a41412fcbc15196f630587f.
+
+Next: finish focused public checks, commit/push, one public full candidate;
+fresh3-cell public inventory/icon/eleven-root batch (plan15-25min plus build,
+not a restoration deadline). Reuse cb mechanics/body,082 TB/Cleave,EE5 exact-owner
+AI and9f persistence with original identities and dependency comparisons. Then
+publisher preflight while49 draft, ready/merge, exact stable publication,
+actual public download/lineage/restoration audit, final-records merge,STOP.
+HumanReview NOT_PERFORMED_NONBLOCKING. Steam Offline accepted. No Sprint26.
+
+## Dated earlier checkpoints
 
 Controlling01:50UTC: 6914a168 full2678/exact/strict380 PASS344.10s; archived.
 Actual prepare PASS14/14, exact Working saved once. Supervisor reader recovery

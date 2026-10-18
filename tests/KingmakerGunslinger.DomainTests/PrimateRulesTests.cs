@@ -122,10 +122,10 @@ namespace KingmakerGunslinger.DomainTests
             // back and suppress a published creature. Sprint 23 has now
             // published too. Sprint 24's two new creatures are the only
             // current withheld keys; that must not suppress either ape.
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Only the Sprint 25 candidate routes remain withheld.");
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenPublishedLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "The apes and every pre-Sprint-25 route stay published.");
             foreach (SummonVariantSpec variant in all.Where(value =>

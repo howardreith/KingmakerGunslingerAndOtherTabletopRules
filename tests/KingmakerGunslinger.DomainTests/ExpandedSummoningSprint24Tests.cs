@@ -67,11 +67,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "The current global route authority is centralized.");
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "No route is withheld after publication.");
             Assertions.Equal(
-                GiantBodyRulesPolicy.HiddenPublishedLogicalPlacements,
+                GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "Publication moves no released route.");
         }

@@ -112,7 +112,7 @@ namespace KingmakerGunslinger.DomainTests
                 "No Mastodon route is suppressed by this sprint.");
         }
 
-        internal static void OnlyTheNewCreatureIsWithheld()
+        internal static void PublicScopePreservesAllReleasedRoutes()
         {
             SummonVariantSpec[] all = ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.Monster)
@@ -121,26 +121,28 @@ namespace KingmakerGunslinger.DomainTests
             SummonVariantSpec[] withheld = all.Where(value =>
                 !SummonVisibilityCatalog.IsPublished(value)).ToArray();
 
-            Assertions.Equal(GiantBodyRulesPolicy.HiddenLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
                 withheld.Length,
-                "Exactly the three Brachiosaurus roots are withheld.");
-            Assertions.True(withheld.All(value =>
-                GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key)),
-                "Nothing but the new creature is withheld.");
+                "No qualified root remains withheld after publication.");
+            Assertions.Equal(3, all.Count(value =>
+                value.Creature.Key == GiantBodyRulesPolicy.BrachiosaurusKey &&
+                SummonVisibilityCatalog.IsPublished(value)),
+                "The three new SNA roots are public without reallocation.");
             Assertions.Equal(
                 GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registration allocated every placement once.");
             Assertions.Equal(
-                GiantBodyRulesPolicy.HiddenPublishedLogicalPlacements,
+                GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "The published surface retains every pre-Sprint-25 placement, which is "
                 + "this test's real subject: a later sprint must not reach back and "
                 + "suppress a published creature.");
             Assertions.Equal(
-                TheropodRulesPolicy.FinalPublishedLogicalPlacements,
+                TheropodRulesPolicy.FinalPublishedLogicalPlacements +
+                    GiantBodyRulesPolicy.AppendedNatureAllyPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The withheld candidate leaves the released v0.0.155 surface exactly where it was.");
+                "Publication adds only the three allocated Brachiosaurus roots.");
 
             foreach (SummonVariantSpec variant in all.Where(value =>
                 !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key)))

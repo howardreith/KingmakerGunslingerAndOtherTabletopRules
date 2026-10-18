@@ -225,10 +225,10 @@ namespace KingmakerGunslinger.DomainTests
             // followed it under the accepted passive-sense limitation, and 999
             // with Sprint 15's Drone and Giant Stag Beetle; 1005 when Sprint 16
             // publishes Dire Crocodile's six preserved placements.
-            Assertions.Equal(1122,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicVisibleChoices,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
-                "The published roster must expose the complete Sprint 24 surface.");
+                "The published roster must expose the complete current surface.");
         }
 
         /// <summary>
