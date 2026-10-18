@@ -1,0 +1,618 @@
+{
+  "schemaVersion": 1,
+  "kind": "Sprint26ReleasedQualificationRecord",
+  "state": "RELEASED_STOP",
+  "sprint27Started": false,
+  "candidate": {
+    "source": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+    "zipSha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+    "dllSha256": "cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc",
+    "dllMvid": "5b0daf8a-7ef8-480b-8c11-a3c9809baed8",
+    "sourceFingerprint": "609ec908d347fc80af4068822443affb25f7e9b1718dc8d550f6d678b349cbfc",
+    "pipelineExitCode": 0,
+    "fullSuite": {
+      "exitCode": 0,
+      "failures": 0,
+      "executed": 2687,
+      "registered": 2687,
+      "unfiltered": true
+    }
+  },
+  "roster": {
+    "sprint26RosterExact": true,
+    "sprint26Placements": 6,
+    "sprint26SuppressedPlacements": 0,
+    "projectCreatures": 110,
+    "monsterCreatures": 96,
+    "monsterPlacements": 545,
+    "natureAllyCreatures": 97,
+    "natureAllyPlacements": 557,
+    "registeredRoots": 1102,
+    "generatedRoots": 1102,
+    "nativeWrappers": 29,
+    "choices": 1131,
+    "suppressedLogicalPlacements": 0,
+    "identityChanges": 0,
+    "routeOrderingChanges": 0,
+    "protectedIdentitySetsEqual": true
+  },
+  "publication": {
+    "tag": "v0.0.160",
+    "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.160",
+    "productPr": 58,
+    "productMerge": "511aabcc41a9ff780852a60a5db8fa074f22e05f",
+    "testedSource": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+    "stable": true,
+    "latest": true,
+    "rebuiltForPublication": false,
+    "publicDownloadsVerified": true,
+    "assets": [
+      {
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.160/KingmakerGunslinger-0.0.160-expanded-summoning-sprint26-gorgon-bulette.zip",
+        "sha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+        "name": "KingmakerGunslinger-0.0.160-expanded-summoning-sprint26-gorgon-bulette.zip",
+        "id": 654151175,
+        "length": 55193711
+      },
+      {
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.160/release-manifest.json",
+        "sha256": "a2edfc633648225d5126afa907a102d9df931f3b3dc46a0c1279b6c3b7292dd0",
+        "name": "release-manifest.json",
+        "id": 654151177,
+        "length": 122049
+      },
+      {
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.160/SHA256SUMS.txt",
+        "sha256": "a660a4094faa0b49b8c40dcc5c371bfa45c0b48560ebdce26ea9a3509e9d5176",
+        "name": "SHA256SUMS.txt",
+        "id": 654151174,
+        "length": 142
+      }
+    ],
+    "manifestSha256": "a2edfc633648225d5126afa907a102d9df931f3b3dc46a0c1279b6c3b7292dd0",
+    "checksumsSha256": "a660a4094faa0b49b8c40dcc5c371bfa45c0b48560ebdce26ea9a3509e9d5176",
+    "qualificationLedgerSha256": "e305e4622c3cd7aad64a952a466bbaa63e452a2d919640d64d30a9ab4f56e01c"
+  },
+  "coverage": [
+    {
+      "id": "composed-profiles-attacks-skills-reach-live-modifiers",
+      "result": "REUSED_PASS",
+      "evidenceSources": [
+        {
+          "source": "946fa668fecc3e63d652e572b4f08d32897e17cd",
+          "packageSha256": "803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa",
+          "dllSha256": "1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d",
+          "dllMvid": "178bb16a-2dae-4849-b34e-53f62ccc4cc4"
+        },
+        {
+          "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+          "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+          "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+          "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+        }
+      ],
+      "reuseJustification": "Production creature mechanics, assets, weapon identities, buff component names/schema and ownership have not changed since f40de45a. Later compiled changes are request-local observers; public transition only removes two suppression keys and regenerates derived publication records. Retained execution remains bound to its original strict DLL. Affected changed observers have fresh R23 proof; public paths have fresh final-artifact proof.",
+      "proofCount": 23,
+      "completeProofsInPublicManifestCoverageId": "composed-profiles-attacks-skills-reach-live-modifiers"
+    },
+    {
+      "id": "gorgon-staged-breath-trample-targeting-immunity-cure",
+      "result": "REUSED_PASS",
+      "evidenceSources": [
+        {
+          "source": "f40de45a831d8670b6c880004b13acea578936bd",
+          "packageSha256": "d027470bab7829ea0de423c34d1a4951af50a902bc7b6fb96248db176071da66",
+          "dllSha256": "b656a47e3a6ca7a19784590eea5a3393473eaa0482f4f4ab05a6d95ea094af10",
+          "dllMvid": "ac4327d5-a2f7-4e63-9d74-befdf5d05882"
+        },
+        {
+          "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+          "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+          "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+          "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+        }
+      ],
+      "reuseJustification": "Production creature mechanics, assets, weapon identities, buff component names/schema and ownership have not changed since f40de45a. Later compiled changes are request-local observers; public transition only removes two suppression keys and regenerates derived publication records. Retained execution remains bound to its original strict DLL. Affected changed observers have fresh R23 proof; public paths have fresh final-artifact proof. Includes actual native Stone to Flesh removal of permanent state, not fixture cleanup.",
+      "proofCount": 23,
+      "completeProofsInPublicManifestCoverageId": "gorgon-staged-breath-trample-targeting-immunity-cure"
+    },
+    {
+      "id": "bulette-leap-charge-outcomes-interruption-economy",
+      "result": "REUSED_PASS",
+      "evidenceSources": [
+        {
+          "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+          "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+          "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+          "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+        }
+      ],
+      "reuseJustification": "Production creature mechanics, assets, weapon identities, buff component names/schema and ownership have not changed since f40de45a. Later compiled changes are request-local observers; public transition only removes two suppression keys and regenerates derived publication records. Retained execution remains bound to its original strict DLL. Affected changed observers have fresh R23 proof; public paths have fresh final-artifact proof.",
+      "proofCount": 22,
+      "completeProofsInPublicManifestCoverageId": "bulette-leap-charge-outcomes-interruption-economy"
+    },
+    {
+      "id": "both-mode-commands-and-exact-owner-ai",
+      "result": "REUSED_PASS",
+      "evidenceSources": [
+        {
+          "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+          "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+          "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+          "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+        }
+      ],
+      "reuseJustification": "Production creature mechanics, assets, weapon identities, buff component names/schema and ownership have not changed since f40de45a. Later compiled changes are request-local observers; public transition only removes two suppression keys and regenerates derived publication records. Retained execution remains bound to its original strict DLL. Affected changed observers have fresh R23 proof; public paths have fresh final-artifact proof.",
+      "proofCount": 29,
+      "completeProofsInPublicManifestCoverageId": "both-mode-commands-and-exact-owner-ai"
+    },
+    {
+      "id": "functional-bodies-icons-lifecycle-cache-donor-isolation",
+      "result": "REUSED_PASS",
+      "evidenceSources": [
+        {
+          "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+          "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+          "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+          "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+        }
+      ],
+      "reuseJustification": "Production creature mechanics, assets, weapon identities, buff component names/schema and ownership have not changed since f40de45a. Later compiled changes are request-local observers; public transition only removes two suppression keys and regenerates derived publication records. Retained execution remains bound to its original strict DLL. Affected changed observers have fresh R23 proof; public paths have fresh final-artifact proof. Actual native pixels inspected; aesthetic approval not performed.",
+      "proofCount": 8,
+      "completeProofsInPublicManifestCoverageId": "functional-bodies-icons-lifecycle-cache-donor-isolation"
+    },
+    {
+      "id": "six-public-roots-slots-quantity-duration-alignment",
+      "result": "PASS",
+      "evidenceSources": [
+        {
+          "source": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+          "packageSha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+          "dllSha256": "cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc",
+          "dllMvid": "5b0daf8a-7ef8-480b-8c11-a3c9809baed8"
+        }
+      ],
+      "reuseJustification": null,
+      "proofCount": 15,
+      "completeProofsInPublicManifestCoverageId": "six-public-roots-slots-quantity-duration-alignment"
+    },
+    {
+      "id": "targeted-persistence-condition-cooldown-on-off-cleanup-absence",
+      "result": "REUSED_PASS",
+      "evidenceSources": [
+        {
+          "source": "946fa668fecc3e63d652e572b4f08d32897e17cd",
+          "packageSha256": "803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa",
+          "dllSha256": "1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d",
+          "dllMvid": "178bb16a-2dae-4849-b34e-53f62ccc4cc4"
+        },
+        {
+          "source": "12b83f4a5b2557e4e411156ea99f572b314933d0",
+          "packageSha256": "75482f72c1b46b915b3428350b052e7e1e9b4cc59c7eeb6c83550a5f1b9ce67e",
+          "dllSha256": "23728d073ca85aed05b158385d05cffcfba26ba4ca1deffb212c14bc55f9605c",
+          "dllMvid": "e9ff5263-8f65-40d9-927a-e3a0ded2b67e"
+        }
+      ],
+      "reuseJustification": "Production creature mechanics, assets, weapon identities, buff component names/schema and ownership have not changed since f40de45a. Later compiled changes are request-local observers; public transition only removes two suppression keys and regenerates derived publication records. Retained execution remains bound to its original strict DLL. Affected changed observers have fresh R23 proof; public paths have fresh final-artifact proof. Six-stage 77-assertion union selects R20 first four passing stages and R22 corrected OFF remainder; earlier aggregate failures remain retained. Original Working bytes and metadata restored.",
+      "proofCount": 25,
+      "completeProofsInPublicManifestCoverageId": "targeted-persistence-condition-cooldown-on-off-cleanup-absence"
+    },
+    {
+      "id": "standalone-high-risk-shared-controls",
+      "result": "REUSED_PASS",
+      "evidenceSources": [
+        {
+          "source": "946fa668fecc3e63d652e572b4f08d32897e17cd",
+          "packageSha256": "803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa",
+          "dllSha256": "1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d",
+          "dllMvid": "178bb16a-2dae-4849-b34e-53f62ccc4cc4"
+        },
+        {
+          "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+          "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+          "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+          "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+        },
+        {
+          "source": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+          "packageSha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+          "dllSha256": "cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc",
+          "dllMvid": "5b0daf8a-7ef8-480b-8c11-a3c9809baed8"
+        }
+      ],
+      "reuseJustification": "Production creature mechanics, assets, weapon identities, buff component names/schema and ownership have not changed since f40de45a. Later compiled changes are request-local observers; public transition only removes two suppression keys and regenerates derived publication records. Retained execution remains bound to its original strict DLL. Affected changed observers have fresh R23 proof; public paths have fresh final-artifact proof. Released Elephant control and unchanged shared consumer scope included.",
+      "proofCount": 45,
+      "completeProofsInPublicManifestCoverageId": "standalone-high-risk-shared-controls"
+    },
+    {
+      "id": "inherited-unaffected-qualification",
+      "result": "REUSED_PASS",
+      "evidenceSources": [
+        {
+          "source": "d81ac44546997cc6c812ebec51d9fe6cc962a3e4",
+          "packageSha256": "2625a976a16639127b104ceccec5a37e92b591adb9c5756459a33947163ad278",
+          "dllSha256": "49d07e626bcd9613b4b71fffcf8ca567871a53f55ed8b785255d3bacec7c0489",
+          "dllMvid": "bb13331b-6fca-4910-b4cc-62f355f907af"
+        }
+      ],
+      "reuseJustification": "Published v0.0.159 manifest retains its original execution provenance and earlier reused sources. Released 6916-identity prefix, approved icon pins, firearm payload/manifest/sound bank and unaffected startup/module contracts remain protected by current complete suite/static source-bound reconciliation and fresh affected-consumer controls. No historical runtime execution is claimed on Sprint26 bytes.",
+      "proofCount": 1,
+      "completeProofsInPublicManifestCoverageId": "inherited-unaffected-qualification"
+    },
+    {
+      "id": "complete-public-source-build-package-gate",
+      "result": "PASS",
+      "evidenceSources": [
+        {
+          "source": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+          "packageSha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+          "dllSha256": "cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc",
+          "dllMvid": "5b0daf8a-7ef8-480b-8c11-a3c9809baed8"
+        }
+      ],
+      "reuseJustification": null,
+      "proofCount": 3,
+      "completeProofsInPublicManifestCoverageId": "complete-public-source-build-package-gate"
+    },
+    {
+      "id": "public-inventory-icon-six-roots",
+      "result": "PASS",
+      "evidenceSources": [
+        {
+          "source": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+          "packageSha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+          "dllSha256": "cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc",
+          "dllMvid": "5b0daf8a-7ef8-480b-8c11-a3c9809baed8"
+        }
+      ],
+      "reuseJustification": null,
+      "proofCount": 15,
+      "completeProofsInPublicManifestCoverageId": "public-inventory-icon-six-roots"
+    },
+    {
+      "id": "exact-package-release-qualification",
+      "result": "PASS",
+      "evidenceSources": [
+        {
+          "source": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+          "packageSha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+          "dllSha256": "cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc",
+          "dllMvid": "5b0daf8a-7ef8-480b-8c11-a3c9809baed8"
+        }
+      ],
+      "reuseJustification": null,
+      "proofCount": 16,
+      "completeProofsInPublicManifestCoverageId": "exact-package-release-qualification"
+    }
+  ],
+  "nativeRuns": [
+    {
+      "label": "hidden-r20-rtwp-foundation",
+      "runId": "20261018T1425241935658Z-e19040511fb24310870803c9f9e378e6",
+      "assertions": 28,
+      "seconds": 262.61283199999997,
+      "evidenceSource": {
+        "source": "946fa668fecc3e63d652e572b4f08d32897e17cd",
+        "packageSha256": "803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa",
+        "dllSha256": "1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d",
+        "dllMvid": "178bb16a-2dae-4849-b34e-53f62ccc4cc4"
+      },
+      "runtimeResultSha256": "06023cf35f61ac9c1f005a7c1ef818f4990fe9ba9687e3043e909ab25c5a0c8c"
+    },
+    {
+      "label": "hidden-r19-gorgon-breath-rtwp",
+      "runId": "20261018T1326321564497Z-458289fc6d914aaea2b6f59bb0e627d8",
+      "assertions": 41,
+      "seconds": 319.7558335,
+      "evidenceSource": {
+        "source": "f40de45a831d8670b6c880004b13acea578936bd",
+        "packageSha256": "d027470bab7829ea0de423c34d1a4951af50a902bc7b6fb96248db176071da66",
+        "dllSha256": "b656a47e3a6ca7a19784590eea5a3393473eaa0482f4f4ab05a6d95ea094af10",
+        "dllMvid": "ac4327d5-a2f7-4e63-9d74-befdf5d05882"
+      },
+      "runtimeResultSha256": "ad736aa1b6b2e69c266fe78eb92814256a26474f1ac0e0dd1a610450d746c26c"
+    },
+    {
+      "label": "hidden-r23-bulette-leap-rtwp",
+      "runId": "20261018T1632006573806Z-086accd1079a41a390c794814647f704",
+      "assertions": 42,
+      "seconds": 307.5714871,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "781d1996021b0befacc164b3f4dddee49107f5ed188b855880bce62c5a05e6c9"
+    },
+    {
+      "label": "hidden-r23-bulette-leap-turn-based",
+      "runId": "20261018T1639006260129Z-b61fad2fb3244fa9a4b4e41e0dc19554",
+      "assertions": 16,
+      "seconds": 251.3075916,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "5eb9ce17b71522fd1bc8d7f88135ace76bf034d9bc19f8e8f29307db6f129a07"
+    },
+    {
+      "label": "hidden-r23-turn-based-commands",
+      "runId": "20261018T1643144123139Z-909f4cf871114f37a5c26c0d6d53681e",
+      "assertions": 22,
+      "seconds": 254.3155938,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "f27cb983028317d3bc908e3f7fd71a36969cae73cdde45f91c6349741d614d32"
+    },
+    {
+      "label": "hidden-r23-gorgon-breath-turn-based",
+      "runId": "20261018T1647321713129Z-f0023aa37fe64df280636060a4439773",
+      "assertions": 19,
+      "seconds": 307.2754519,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "0224e9ac74470fb678b4916fb627fac0c14763b28621f2c171c50ffce0c9aa70"
+    },
+    {
+      "label": "hidden-r23-rtwp-ai",
+      "runId": "20261018T1652516804984Z-86b4b35891c946d69ba7b352ae1fb09d",
+      "assertions": 16,
+      "seconds": 269.8597431,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "ece7f220659a4f05bb0c20393ba86a5b676e735fc16cc23632ab599956ed8a8f"
+    },
+    {
+      "label": "hidden-r23-combined-rtwp-foundation",
+      "runId": "20261018T1657171625410Z-6fdc1198d9c04d79947c028329254fcd",
+      "assertions": 28,
+      "seconds": 329.2610449,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "a777bd9826cf067ed9dc8e71cbbf6413ba200cbfb46640af0ec51e252c989101"
+    },
+    {
+      "label": "hidden-r23-combined-gorgon-breath-rtwp",
+      "runId": "20261018T1702440943972Z-3d5387f1eb0a419a9cfe9ac383ebb187",
+      "assertions": 41,
+      "seconds": 378.4825562,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "656214311b4668dc0aedc9402761e03b305ab8aa8844ca3a1204efdfe2588cc8"
+    },
+    {
+      "label": "hidden-r23-combined-bulette-leap-rtwp",
+      "runId": "20261018T1709028446434Z-d8204fe8885845b0beaef5b411126923",
+      "assertions": 42,
+      "seconds": 370.693872,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "799df7ee561e435d88abacb2bb6714f39ca9e518d0d02015a23f680a805be7c9"
+    },
+    {
+      "label": "hidden-r23-visual-lifecycle",
+      "runId": "20261018T1716052395186Z-d627973cf3fd4d4a9f75793603430005",
+      "assertions": 44,
+      "seconds": 268.4566974,
+      "evidenceSource": {
+        "source": "dbbb3d3dbf3c69c200e50ca04eb6311dfd1184e7",
+        "packageSha256": "8ff71eac7b6b9166a7fff0ec6711eff1df92ba5a2e2b18bd2c82275a2d92e3b3",
+        "dllSha256": "e42f078c34a9aa95c1ed18df0b3fef0ae5bb44cfee3e121e8fc24188055125cc",
+        "dllMvid": "ddb76b36-a1ed-4ddc-8cb5-b10a752ed43d"
+      },
+      "runtimeResultSha256": "db361939544127be9eeec0f8be35bd5189a9c80a70b93bed9141a3f4244d4cc8"
+    },
+    {
+      "label": "public-r25b-routes",
+      "runId": "20261018T1802356916486Z-427809ba00a74818bd814f110db580eb",
+      "assertions": 12,
+      "seconds": 228.4487916,
+      "evidenceSource": {
+        "source": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+        "packageSha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+        "dllSha256": "cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc",
+        "dllMvid": "5b0daf8a-7ef8-480b-8c11-a3c9809baed8"
+      },
+      "runtimeResultSha256": "482967b943518ee0207967d28d38061b495258f149a034ff0781fdfddd7a6344"
+    },
+    {
+      "label": "public-r25b-combined-routes-r2",
+      "runId": "20261018T1813064679814Z-c7863b36431c4feebbd73c53bec7c8fa",
+      "assertions": 12,
+      "seconds": 290.2335841,
+      "evidenceSource": {
+        "source": "e7876252ddf7dcaba4e7559534c06269d64bb750",
+        "packageSha256": "7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55",
+        "dllSha256": "cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc",
+        "dllMvid": "5b0daf8a-7ef8-480b-8c11-a3c9809baed8"
+      },
+      "runtimeResultSha256": "063735a6f88588193e209bd313f414c59896259b51d42e45a7e21e1c92965d69"
+    }
+  ],
+  "persistenceUnion": [
+    {
+      "stage": "prepare-on",
+      "runId": "20261018T1436199737387Z-c306c251c963412d90c1c94094af8ea8",
+      "assertions": 15,
+      "runtimeResultSha256": "0d270c87d0dfa5ebc4466abcba5c9b4dc18629bc2e3e50200a26028c88597fa2",
+      "source": {
+        "source": "946fa668fecc3e63d652e572b4f08d32897e17cd",
+        "packageSha256": "803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa",
+        "dllSha256": "1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d",
+        "dllMvid": "178bb16a-2dae-4849-b34e-53f62ccc4cc4"
+      }
+    },
+    {
+      "stage": "cleanup-on",
+      "runId": "20261018T1442301099956Z-35e9ce6453594524a5b9bac4c323ab3b",
+      "assertions": 16,
+      "runtimeResultSha256": "4518e7fe7c6580a6b31c4ea88f105dfa5914faf73e29474dc00ed98f1ab98102",
+      "source": {
+        "source": "946fa668fecc3e63d652e572b4f08d32897e17cd",
+        "packageSha256": "803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa",
+        "dllSha256": "1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d",
+        "dllMvid": "178bb16a-2dae-4849-b34e-53f62ccc4cc4"
+      }
+    },
+    {
+      "stage": "absent-on",
+      "runId": "20261018T1448451260815Z-6e245b16c4ef4f4a928956540efe138c",
+      "assertions": 7,
+      "runtimeResultSha256": "2e5077ba00bfe02de6ff2775b0ef4de468cc57b67b26f36ba2c3159b95b07a0c",
+      "source": {
+        "source": "946fa668fecc3e63d652e572b4f08d32897e17cd",
+        "packageSha256": "803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa",
+        "dllSha256": "1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d",
+        "dllMvid": "178bb16a-2dae-4849-b34e-53f62ccc4cc4"
+      }
+    },
+    {
+      "stage": "prepare-on",
+      "runId": "20261018T1454222865710Z-e35b83e9812f4fc28c11bb9c59ae680e",
+      "assertions": 15,
+      "runtimeResultSha256": "8d243ed93efbf6420f6e48415542381c9ba8e344e350c12d4165a5692182e4e5",
+      "source": {
+        "source": "946fa668fecc3e63d652e572b4f08d32897e17cd",
+        "packageSha256": "803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa",
+        "dllSha256": "1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d",
+        "dllMvid": "178bb16a-2dae-4849-b34e-53f62ccc4cc4"
+      }
+    },
+    {
+      "stage": "cleanup-off",
+      "runId": "20261018T1605137116302Z-d984716c5286436c8a6e5da8c29c2419",
+      "assertions": 17,
+      "runtimeResultSha256": "5bd62541f67620e8ad40cb1a29e1854df6d3a63204be1ec4e31fa62093678d5d",
+      "source": {
+        "source": "12b83f4a5b2557e4e411156ea99f572b314933d0",
+        "packageSha256": "75482f72c1b46b915b3428350b052e7e1e9b4cc59c7eeb6c83550a5f1b9ce67e",
+        "dllSha256": "23728d073ca85aed05b158385d05cffcfba26ba4ca1deffb212c14bc55f9605c",
+        "dllMvid": "e9ff5263-8f65-40d9-927a-e3a0ded2b67e"
+      }
+    },
+    {
+      "stage": "absent-on",
+      "runId": "20261018T1611188428675Z-d76c03feac384174bc9b664f047706f9",
+      "assertions": 7,
+      "runtimeResultSha256": "bb5f1032456d4d7fc22f123cf072936c9b9a2010aefdeba03c1597fe52996f11",
+      "source": {
+        "source": "12b83f4a5b2557e4e411156ea99f572b314933d0",
+        "packageSha256": "75482f72c1b46b915b3428350b052e7e1e9b4cc59c7eeb6c83550a5f1b9ce67e",
+        "dllSha256": "23728d073ca85aed05b158385d05cffcfba26ba4ca1deffb212c14bc55f9605c",
+        "dllMvid": "e9ff5263-8f65-40d9-927a-e3a0ded2b67e"
+      }
+    }
+  ],
+  "freshPublicAssertions": 24,
+  "reusedStrictNativeAssertions": 416,
+  "restoration": {
+    "status": "EXACT_INTAKE_VERIFIED",
+    "auditSha256": "28440b7f4d04fef92b3cba905d29518910cb81919e9f52f753454cbd2ec4a7e3",
+    "saves": 118,
+    "savedGameBytesAndMetadataExact": true,
+    "settings": 83,
+    "settingsExact": true,
+    "modsExact": true,
+    "referencePairs": 14,
+    "privateReferencesExact": true,
+    "soundBankExact": true,
+    "soundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "soundBankTimestampUtc": "2026-01-01T05:00:00.0000000Z",
+    "baselineSha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07",
+    "workingSha256": "650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850",
+    "gameAbsent": true,
+    "leaseAbsent": true,
+    "sentinelAbsent": true,
+    "closedTransactions": 62,
+    "ownedScheduledTasksRemaining": 0,
+    "removedOwnedTasks": 16,
+    "cleanupReceiptSha256": "13b896816af5144324e0d40f949d131f05276455872f0d88dbc3817441a5b391",
+    "steamOfflinePreserved": true,
+    "removedOwnedTasksCountScope": "FINAL_CLEANUP_ATTEMPT_ONLY",
+    "priorPartialCleanupRecorded": true
+  },
+  "iconIdentities": {
+    "assets/game/icons/expanded-summoning/gorgon.png": "73e297daa18abec90aec316eb09d97b658a698b884b94a1d9e428a1564536efd",
+    "assets/game/icons/expanded-summoning/bulette.png": "83c3959b973f7f99bb561ca4a2e1dc03e3f22fc90906dd800b215dba94078b82",
+    "assets/game/icons/bulette-leap.png": "b3deefb33e0ad604a42f3e049b5d5ef6a91077ad3963af7db7aae40081a24b5c"
+  },
+  "originalModelIdentities": {
+    "assets/ungulates/gorgon-mesh.json": "0f3c8ce10c4c0d50650ecb5a042985d1b242977716c5b7a0286754d370fdc508",
+    "assets/ungulates/gorgon-albedo.png": "4e374e18cf44af6e90f7bda29fb0124d03a124aa5443bc4334c2d0f8caf13b7c"
+  },
+  "charterChoices": {
+    "gorgonMonsterVIIIExtension": true,
+    "buletteNaturesAllyVI": true,
+    "untemplated": true,
+    "buletteSurfaceOnly": true,
+    "printedBurrowFeet": 20,
+    "burrowImplemented": false,
+    "tremorsenseImplemented": false
+  },
+  "acceptedLimitations": [
+    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+    "PASSIVE_CREATURE_SENSES_UNMODELED",
+    "RUN_NATIVE_SUMMON_AI_DISPOSITION"
+  ],
+  "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
+  "harness": {
+    "files": [
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs",
+        "sha256": "4ef6a1b1dba63de5ff96daa80d274490961d025baf593bd73489c587622dd391"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint26Review.cs",
+        "sha256": "841838165454b4b1322ac3c3665589fdaf9c5a83987e3d536770fdd7981fcedc"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint26LeapBoundaries.cs",
+        "sha256": "7648e117a7629af7731efb589a083283afbb31fac83a47bbc53047af9eb094ae"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint26Persistence.cs",
+        "sha256": "3537e81f668fb2ad34455c0579919bfdaa830089a5319e8796913cbb18ca8834"
+      },
+      {
+        "path": "scripts/ExpandedSummoningOrchestration.Common.ps1",
+        "sha256": "a143f00b8d05a117347ff69ae80f98f195a8ba614ec178e806567c0780bed329"
+      },
+      {
+        "path": "scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1",
+        "sha256": "bf357f2052138494f7101d3e0ef83edf853a16f353a754bff342614fd7f37b33"
+      }
+    ],
+    "referenceIntakeSha256": "a6f458b73b8db71adfa68e159435232dbbb58a5f79d5dae442718f80b78f5c97",
+    "gamePathPropsSha256": "c6cb39123068f3a4f7568f8d7198f3d39b5c00eac3aacfc265d5048f00c4043b",
+    "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+    "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18"
+  }
+}
