@@ -1,6 +1,26 @@
 # Sprint 25 takeover — master v0.0.158 integrated, continuing at v0.0.159
 
-Controlling01:18UTC: cb7933ea full2678/exact/strict380 PASS315.33s. Its
+Controlling01:50UTC: 6914a168 full2678/exact/strict380 PASS344.10s; archived.
+Actual prepare PASS14/14, exact Working saved once. Supervisor reader recovery
+uses request.parameters.saveName; old outer FAIL remains. Working is PREPARED,
+SHAa9769d77a870e1b3b94273a1db542ea13e286ba7757d1f13ff13427d22f1d44f.
+Cold load verified both original bodies/profiles/facts and private destruction,
+but correctly refused cleanup-save: two immutable albedos lacked authoritative
+cache-ID census entries. All4 private meshes/materials were destroyed; only
+the intended process-cache textures remained at stable counts. Installation,
+settings, bank,117 protected saves/private refs restored; no game/lease.
+
+Narrow observer repair reads existing TryGetGiantBodyVisual cache references,
+without allocations, name-based waivers, gameplay/art/schema/destruction changes.
+Compile16.8s,23 regressions and6 fail-closed resource tests PASS. Commit/push,
+one hidden full candidate, then remaining-after-prepare5-stage batch: cleanupON,
+fresh absence, prepareON, cleanupOFF, fresh absence (plan25-40min; restoration
+has no deadline). Never overwrite prepared Working with an older save copy.
+Then public boundary/full artifact/fresh public checks, preflight, merge49,
+next-free stable(expected159,recheck), actual download/restoration audit,
+final-records merge,STOP. Steam Offline accepted. No Sprint26.
+
+Historical01:18UTC: cb7933ea full2678/exact/strict380 PASS315.33s. Its
 29.69-minute six-cell Overrun/foundation/visual batch PASSes BOTH profiles;
 all exact transactions restore current installation/settings/bank,118 saves
 and private refs. Actual TB fixture controller was null; the unchanged rider

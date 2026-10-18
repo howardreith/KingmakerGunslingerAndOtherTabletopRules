@@ -146,7 +146,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // count is stable across cleanup. The per-attachment mesh
                     // and materials stay private-owned and are destroyed on
                     // release, exactly as for every other family here.
-                    PteranodonAssetRuntime.TryGetTheropodVisual(key, out mesh, out bones, out paint, out status))
+                    PteranodonAssetRuntime.TryGetTheropodVisual(key, out mesh, out bones, out paint, out status) ||
+                    // Sprint 25 uses the same per-instance clone/process-cache
+                    // split. Read exact cache references without loading or
+                    // allocating; names or survival alone never grant ownership.
+                    PteranodonAssetRuntime.TryGetGiantBodyVisual(key, out mesh, out bones, out paint, out status))
                 { add(mesh, key + ".Mesh"); add(paint, key + ".Albedo"); }
             }
             return result;
