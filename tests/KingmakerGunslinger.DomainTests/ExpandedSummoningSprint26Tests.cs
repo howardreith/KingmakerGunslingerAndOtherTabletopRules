@@ -13,13 +13,13 @@ namespace KingmakerGunslinger.DomainTests
         internal const int RegisteredNatureAllyPlacements = 563;
         internal const int RegisteredLogicalPlacements = RegisteredMonsterPlacements + RegisteredNatureAllyPlacements;
         internal const int RegisteredTemplatedPlacements = 319;
-        internal const int PublicSuppressedLogicalPlacements = 6;
+        internal const int PublicSuppressedLogicalPlacements = 0;
         internal const int FinalPublishedLogicalPlacements = RegisteredLogicalPlacements - PublicSuppressedLogicalPlacements;
         internal const int PublicVisibleChoices = FinalPublishedLogicalPlacements + 29;
         internal static int PublishedMonsterPlacements { get { return RegisteredMonsterPlacements - (IsWithheld("gorgon") ? 2 : 0); } }
         internal static int PublishedNatureAllyPlacements { get { return RegisteredNatureAllyPlacements - (IsWithheld("bulette") ? 4 : 0) - (IsWithheld("griffon") ? 6 : 0); } }
         internal const int IconConceptCount = 123;
-        internal static readonly string[] WithheldKeys = new[]{"griffon"};
+        internal static readonly string[] WithheldKeys = Array.Empty<string>();
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

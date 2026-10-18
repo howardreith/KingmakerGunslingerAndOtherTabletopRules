@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.161-expanded-summoning-sprint27-griffon
+
+- Adds the untemplated SNA IV Griffon and its six IV-IX quantity roots,
+  with a printed magical-beast chassis, native Pounce and conditional Rake.
+- Includes an original hybrid eagle/lion body and painted medallion. Ordinary
+  attacks remain bite/two talons; no automatic Grab or wing/tail attacks.
+- Keeps flight and passive-sense limits explicit; coarse wings and transitions
+  remain visual debt. Owner aesthetic review is NOT_PERFORMED_NONBLOCKING.
+  See the [v0.0.161 release notes](docs/RELEASE-NOTES-0.0.161.md).
+
 ## 0.0.160-expanded-summoning-sprint26-gorgon-bulette
 
 - Adds the charter-selected SM VIII Gorgon and ordinary SNA VI Bulette,
