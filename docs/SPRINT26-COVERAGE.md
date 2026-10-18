@@ -93,6 +93,10 @@ Production compilation PASS17.2s and all16 affected focused tests PASS4.2s after
 A fresh complete passing suite and strict package remain required; there is no
 passing strict candidate to preserve or deploy from this attempt.
 
+## Second strict gate: complete suite PASS, packaging FAIL retained
+
+Sourceb5ca1611 ran all2,686 tests with zero failures in99.7s and completed exact-reference compilation (DLL SHA25661af6f37a48a07ab2e01a360a6eca0738871963482e85bc5c6cc836451d53323). The346.955s gate then refused386 staged files against the stale385-file package pin: v160 notes add the final file. The corrected384-base-plus2-bank contract and bounded384/386 packager choices passed real review-only package assembly and strict validation. No release-qualified manifest or native launch resulted. The failed exact-build directory is archived byte-exact under artifacts/sprint26-failed-hidden-r16-partial before the next build. A fresh passing strict gate remains required.
+
 ## Exact next boundary
 
 Commit/push the coherent source after focused checks; freeze one hidden strict
