@@ -63,3 +63,22 @@ prepare/cleanup/fresh-absence trios; finish publication inputs/unsuppress only
 Griffon; one coherent Sprint gate and bounded fresh eligible native campaign;
 publisher preflight/dry-run, product merge/stable release/download verification,
 exact restoration and final-records merge. Stop before Sprint28.
+
+On51c14014, all14 released-control checks PASS: Tiger ordinary/pounce/misses
+with the intended Huge target, Eagle and Bulette ordinary routines. The
+expiry-only run retains FAIL, while recording the automatic callback once,
+uninterruptible charge before/zero active commands after, Interrupted result,
+zero queued/weapon attacks and native destruction. Its later raw UnitMoveTo
+follow object is not a surviving charge; the revised observer now requires
+complete view/holding-state detachment and exact native-follow identity.
+This reader correction compiled19.9s;17 focused tests PASS (gate1.8s).
+
+Six fresh native Griffon persistence stages PASS under the actual eleven-mod
+installed stack: ON prepare/cleanup/absence (1104.705s), then independent
+prepare/OFF cleanup/ON fresh absence (1111.640s). Both envelopes restored their
+fresh Working bytes/metadata and all118 saves; baseline immutable; exact current
+Mods/settings/private references restored. No native game, owned task or lease
+remains. Combined-profile WhatIf PASS16.916s with no deployment or mutation.
+Fresh closed-phase preflight661 checks PASS. The corrected expiry observer is
+the only pending hidden rerun before publication staging; no failed raw result
+is relabeled, and development proof cannot qualify a stable release.
