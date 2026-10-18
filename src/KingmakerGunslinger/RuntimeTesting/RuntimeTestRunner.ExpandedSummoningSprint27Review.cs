@@ -80,6 +80,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Sprint27ChargeRefusals(fixture,owner);
                         foreach(int f in Sprint27TwoOwners(fixture,owner))yield return f;
                         foreach(int f in Sprint27RemovalBoundaries(fixture,owner))yield return f;
+                    } else if(phase=="expiry-boundary") {
+                        foreach(int f in Sprint27RemovalBoundaries(fixture,owner,new[]{"expiry"}))yield return f;
                     } else if(phase=="routes") {
                         Sprint27Routes(fixture);
                     } else if(phase=="shared-controls") {
@@ -181,9 +183,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint27Body(owner,full?"full-attack":"single-attack");
             }} finally {EventBus.Unsubscribe(observer);owner.Commands.InterruptAll(true);ResetExpandedSummoningHostile(fixture);}
         }
-        private IEnumerable<int> Sprint27Pounce(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,bool turnBased,bool armored=false)
+        private IEnumerable<int> Sprint27Pounce(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,bool turnBased,bool armored=false,bool excludeGrab=false)
         {
             var target=fixture.Hostile;int armorBefore=target.Stats.AC.BaseValue;
+            if(excludeGrab)target.Descriptor.State.Size=Size.Huge;
             if(armored)target.Stats.AC.BaseValue=35;var nativeCharge=fixture.Blueprints.OfType<BlueprintAbility>().Single(v=>v.AssetGuid=="c78506dd0e14f7c45a599990e4e65038");
             var granted=owner.Descriptor.Abilities.GetAbility(nativeCharge);
             if(granted==null)throw new InvalidOperationException("Product Griffon has no native Charge carrier; no fixture grant allowed.");
@@ -204,7 +207,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var command=new UnitUseAbility(data,selected);owner.Commands.Run(command);int frames=0;DateTime deadline=DateTime.UtcNow.AddSeconds(40);
                 while(frames++<4000&&DateTime.UtcNow<deadline){if(command.ExecutionProcess!=null&&!command.ExecutionProcess.IsEnded)command.ExecutionProcess.Tick();yield return 0;if(command.IsFinished&&queued.Commands.Count>0&&queued.Commands.All(v=>v.IsFinished))break;}
                 bool exact=command.IsFinished&&queued.Commands.Count==1&&queued.Commands[0].IsCharge&&queued.Commands[0].IsFinished&&queued.Commands[0].AllAttacks.Count==5&&observer.WeaponAttacks.Count==5&&observer.WeaponAttacks.All(v=>v.AttackRoll!=null&&!v.AttackRoll.AutoMiss&&!v.AttackRoll.SuspendCombatLog)&&observer.WeaponAttacks.Select(v=>v.Weapon.Blueprint.AssetGuid).SequenceEqual(Sprint19Limbs(owner).Select(v=>v.Blueprint.AssetGuid))&&economy.Count(command)==1&&economy.Exact(command,turnBased)&&!target.Descriptor.State.IsDead;
-                Sprint27Check("pounce-"+turnBased,exact,new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["route"]=route,["finished"]=command.IsFinished,["queued"]=queued.Commands.Count,["planned"]=new JArray(queued.Commands.Select(v=>v.AllAttacks.Count)),["travel"]=Vector3.Distance(start,owner.Position),["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>new JObject{["weapon"]=v.Weapon.Blueprint.AssetGuid,["charge"]=v.IsCharge,["hit"]=v.AttackRoll!=null&&v.AttackRoll.IsHit,["natural"]=v.AttackRoll?.Roll.Value,["attackBonus"]=v.AttackRoll?.AttackBonus,["autoMiss"]=v.AttackRoll?.AutoMiss,["suspended"]=v.AttackRoll?.SuspendCombatLog,["damage"]=v.MeleeDamage==null?0:v.MeleeDamage.Damage})),["costs"]=costs,["forcedAnimationEvents"]=0,["fixtureGrantedCharge"]=false,["fixtureTargetAc"]=target.Stats.AC.ModifiedValue,["armoredMissCase"]=armored},"A legal native charge yields bite/two talons/two rake attacks against the surviving target with one native action cost, no Grab prerequisite, retry or supplied attack.");
+                Sprint27Check("pounce-"+turnBased,exact,new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["route"]=route,["finished"]=command.IsFinished,["queued"]=queued.Commands.Count,["planned"]=new JArray(queued.Commands.Select(v=>v.AllAttacks.Count)),["travel"]=Vector3.Distance(start,owner.Position),["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>new JObject{["weapon"]=v.Weapon.Blueprint.AssetGuid,["charge"]=v.IsCharge,["hit"]=v.AttackRoll!=null&&v.AttackRoll.IsHit,["natural"]=v.AttackRoll?.Roll.Value,["attackBonus"]=v.AttackRoll?.AttackBonus,["autoMiss"]=v.AttackRoll?.AutoMiss,["suspended"]=v.AttackRoll?.SuspendCombatLog,["damage"]=v.MeleeDamage==null?0:v.MeleeDamage.Damage})),["costs"]=costs,["forcedAnimationEvents"]=0,["fixtureGrantedCharge"]=false,["fixtureTargetAc"]=target.Stats.AC.ModifiedValue,["armoredMissCase"]=armored,["targetSize"]=target.Descriptor.State.Size.ToString(),["grabExcludedBySize"]=excludeGrab&&target.Descriptor.State.Size>owner.Descriptor.State.Size},"A legal native charge yields bite/two talons/two rake attacks against the surviving target with one native action cost, no Grab prerequisite, retry or supplied attack.");
                 if(armored)Sprint27Check("native-miss-does-not-retry",exact&&observer.WeaponAttacks.Any(v=>v.AttackRoll!=null&&!v.AttackRoll.IsHit),
                     new JObject{["fixtureBaseAc"]=35,["rolls"]=new JArray(observer.WeaponAttacks.Select(v=>v.AttackRoll?.Roll.Value)),["misses"]=observer.WeaponAttacks.Count(v=>v.AttackRoll!=null&&!v.AttackRoll.IsHit),["attacks"]=observer.WeaponAttacks.Count,["forcedRolls"]=0},
                     "A stated high-AC disposable target produces real native misses without a selected roll, retry, or extra charge; all five attacks still resolve once.");

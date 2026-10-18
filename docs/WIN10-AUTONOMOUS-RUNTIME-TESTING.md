@@ -3,7 +3,7 @@
 Sprint 27 adds `disposable-expanded-summoning-sprint27-native-review`, requiring
 automatic exit and one exact `reviewPhase`: `rtwp-foundation`, `pounce-rtwp`,
 `pounce-turn-based`, `rtwp-ai`, `charge-boundaries`, `visual-lifecycle`, `routes`,
-`outdoor-locomotion`, `shared-controls`, `qualification-combat`, or
+`outdoor-locomotion`, `shared-controls`, `expiry-boundary`, `qualification-combat`, or
 `qualification-presentation`. The combat union groups foundation, both pounce
 modes, AI and boundaries; presentation groups lifecycle, roots and released
 controls. Each stage retains its own assertions and exact actors. Outdoor uses

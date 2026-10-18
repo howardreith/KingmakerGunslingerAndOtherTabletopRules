@@ -22,7 +22,10 @@ namespace KingmakerGunslinger.Summoning
                 !ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) ||
                 !ModContext.TryGet(out context) || context.FeatureModules?.Active == null ||
                 !context.FeatureModules.Active.ExpandedSummoning) return;
-            Owner.Unit.Commands?.InterruptAll(true);
+            // The bool overload skips uninterruptible commands, including a moving
+            // native charge. The native predicate overload interrupts and clears
+            // every exact-owner command and queued child at this lifetime boundary.
+            Owner.Unit.Commands?.InterruptAll(command => true);
         }
     }
 }

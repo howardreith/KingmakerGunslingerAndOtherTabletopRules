@@ -682,6 +682,93 @@
         "allSavesExact": true,
         "leaseAbsent": true
       }
+    },
+    {
+      "scope": "standalone rtwp-ai",
+      "candidateKind": "development",
+      "source": "5e565f9ffc027acd074190873b5bdacd27c73b5b",
+      "sourceStateSha256": "5982be57b464d42c16f289f9e2901758cd1890d1418e258a9369e2790b1d73ff",
+      "zipSha256": "62947818c516f2dce439636968df655a45411ea92283479053025fcb1e19161d",
+      "dllSha256": "89d5bdcd5010834467629baf39ec5baa3f5f9c0d0b8795544ee69c3d60889886",
+      "mvid": "3f019873-31a4-479c-88e8-0e73390ae77a",
+      "runId": "20261018T2206586320171Z-904c8f105279416ba5df4eeee8510e7b",
+      "transactionRunId": "compat-20261018T220504Z-3d27775cb327",
+      "result": "PASS",
+      "nativeMilliseconds": 95674,
+      "outerSeconds": 239.1044617,
+      "assertionCount": 10,
+      "failedPredicates": [],
+      "rawResultSha256": "797fbc7afd089d27710c18e2bac9b84f068158672d0052b9386799f4dc7f6d51",
+      "rawReviewSha256": "d6e42b2de4a24e49f599b02b43f6e9a08548c753107f9e8d07e6eb1aee7b48dc",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2206585786277Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone charge-boundaries",
+      "candidateKind": "development",
+      "source": "5e565f9ffc027acd074190873b5bdacd27c73b5b",
+      "sourceStateSha256": "5982be57b464d42c16f289f9e2901758cd1890d1418e258a9369e2790b1d73ff",
+      "zipSha256": "62947818c516f2dce439636968df655a45411ea92283479053025fcb1e19161d",
+      "dllSha256": "89d5bdcd5010834467629baf39ec5baa3f5f9c0d0b8795544ee69c3d60889886",
+      "mvid": "3f019873-31a4-479c-88e8-0e73390ae77a",
+      "runId": "20261018T2212180403406Z-68ba38de853045ca91cfc2f743cccfda",
+      "transactionRunId": "compat-20261018T221027Z-5cf1fb1f9bb6",
+      "result": "FAIL",
+      "nativeMilliseconds": 176932,
+      "outerSeconds": 316.29739459999996,
+      "assertionCount": 45,
+      "failedPredicates": [
+        "charge-boundaries-charge-expiry"
+      ],
+      "rawResultSha256": "25a50a6aeb92e9ad77ddfc4a35b2c6cb1c238cd485770154b76c2b2e0f23974a",
+      "rawReviewSha256": "71aa09e81f494a031ead984d2c3a03727d7791581ced4ca5f976491d009c40f2",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2212179446499Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone shared-controls",
+      "candidateKind": "development",
+      "source": "5e565f9ffc027acd074190873b5bdacd27c73b5b",
+      "sourceStateSha256": "5982be57b464d42c16f289f9e2901758cd1890d1418e258a9369e2790b1d73ff",
+      "zipSha256": "62947818c516f2dce439636968df655a45411ea92283479053025fcb1e19161d",
+      "dllSha256": "89d5bdcd5010834467629baf39ec5baa3f5f9c0d0b8795544ee69c3d60889886",
+      "mvid": "3f019873-31a4-479c-88e8-0e73390ae77a",
+      "runId": "20261018T2217383915484Z-8d0cc0f45676495489ee630166074519",
+      "transactionRunId": "compat-20261018T221544Z-234e8e5017b4",
+      "result": "FAIL",
+      "nativeMilliseconds": 158223,
+      "outerSeconds": 301.94569839999997,
+      "assertionCount": 14,
+      "failedPredicates": [
+        "shared-controls-released-ordinary-tiger",
+        "shared-controls-pounce-False",
+        "shared-controls-native-miss-does-not-retry"
+      ],
+      "rawResultSha256": "1dc1a733705865b1284f27b957c10575baf8492edb35da6e358de37078554421",
+      "rawReviewSha256": "670fa68727391bb3985f5012ba8f13867800f271a4448f43e2eb922dcd0637ae",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2217383537685Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
     }
   ],
   "checks": [
@@ -815,6 +902,17 @@
       "registered": 2693,
       "failures": 0,
       "testSeconds": 1.1
+    },
+    {
+      "scope": "native-force expiry and precise callback/control correction",
+      "result": "PASS",
+      "sourceScope": "uncommitted successor of5e565f9ffc02; native pending",
+      "productionSeconds": 17.1,
+      "selected": 17,
+      "registered": 2693,
+      "failures": 0,
+      "testGateSeconds": 4.3,
+      "retainedFailure": "Initial observer compilation lacked Summoning import; corrected before passing compilation."
     }
   ],
   "policyChange": {
@@ -840,7 +938,10 @@
     "Native foundation2b048374 advanced past icon guards but registration requested native ChargeAbility as BlueprintFeature. Actual previously captured graph proves BlueprintAbility. Exact typed Griffon-only grant corrected;65.053s native/211.140s transaction, all118 saves and current intake restored. No unchanged relaunch.",
     "4d015eed reached completed blueprint bootstrap but native fixture policy omitted Sprint27 and refused entry. Internal empty-world assertion FAIL retained; external current-intake118-save restoration PASS. Exact admission branch added with legacy world/save/exit protections unchanged and structured inputs recorded.",
     "a91232 combat FAIL: AI chose a native attack but did not reach a weapon event; native expiry during moving charge queued one attack before delayed removal. No unchanged retry.",
-    "a91232 presentation FAIL: Tiger ordinary and pounce controls incomplete against the original fixture; matched donor expiry, rollback, resources, navigation, all six hidden root effects, Eagle and Bulette ordinary controls passed. No baseline product defect claimed."
+    "a91232 presentation FAIL: Tiger ordinary and pounce controls incomplete against the original fixture; matched donor expiry, rollback, resources, navigation, all six hidden root effects, Eagle and Bulette ordinary controls passed. No baseline product defect claimed.",
+    "5e565f charge-boundaries FAIL: native marker removal observed, but bool InterruptAll skips uninterruptible charge. Installed IL proves the predicate overload forces interruption and clears queue; no failed case relaunched unchanged.",
+    "5e565f shared-controls FAIL: recorded targetSize Medium/grabExcludedBySize false proves fixture reset overwrote the intended Huge size before command; no baseline creature defect inferred.",
+    "Read-only interruption IL reader initially failed on mixed Mono/framework System metadata; framework-resolved reader succeeded; no native or source state changed by inspection."
   ],
   "bodyStatus": "Original body functional indoors and outdoors; matched native donor lacks DismemberUnitFX, both follow native delayed despawn and exact private cleanup. No dissolve claimed.",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
@@ -851,7 +952,9 @@
     "Own Griffon type keeps the actual installed Manticore magical-beast KnowledgeStat; native observer records the resulting type/consumer.",
     "A later natural-unit type selector still chose Bulette for Griffon after the earlier correct assignment. Both selectors now use the exact creature token; native observer requires Griffon type GUID b31bad4d5053482d85d35d0ae27fac72. No native unit-type PASS existed on the faulty source.",
     "Add an exact-Griffon module-gated summon-marker removal listener to interrupt native commands at expiration while preserving native delayed presentation/destruction; no mutable serialized command state.",
-    "Narrow AI to a native-approved straight route, with read-only command/movement timeline; native brain remains sole command chooser. Tiger uses a stated legal Huge opponent to exclude its automatic Grab from the charge-plan control."
+    "Narrow AI to a native-approved straight route, with read-only command/movement timeline; native brain remains sole command chooser. Tiger uses a stated legal Huge opponent to exclude its automatic Grab from the charge-plan control.",
+    "Use verified native InterruptAll(Func<UnitCommand,bool>) at exact Grif marker removal. Add expiry-boundary phase and a read-only automatic-callback trace. Do not manually tick an already-finished parent command while waiting for native despawn.",
+    "Apply/assert Huge target after hostile reset and again before Tiger pounce; record actual target size. Native brain/rolls, released creature code and assets remain unchanged."
   ],
   "integratedDevelopmentChecks": {
     "productionCompilation": {
@@ -920,5 +1023,15 @@
       "coarse anatomy",
       "rigid pointed wings"
     ]
+  },
+  "latestNativeAi": {
+    "result": "PASS",
+    "source": "5e565f9ffc027acd074190873b5bdacd27c73b5b",
+    "runId": "20261018T2206586320171Z-904c8f105279416ba5df4eeee8510e7b",
+    "nativeBrainTicks": 1,
+    "travelMetres": 5.01195431,
+    "weaponEvents": 1,
+    "fixtureAttacks": 0,
+    "forcedRolls": 0
   }
 }
