@@ -75,3 +75,12 @@ is ordinary placement. Both untemplated. Explicit surface adaptation leaves
 printed20-foot burrow and unsupported tremorsense unmodeled; no substituted
 blindsight or underground travel. See the frozen contract and development
 history for exact source-bound observations and failures.
+
+### R21 gate records correction
+
+Strict attempt on a6826faf2488cc64148f355cafd458573595d6e8 stopped after
+312.5038091s: all2,687 tests ran, with one existing active-resume equation
+wording assertion failing and2,686 PASS. No exact-reference candidate DLL or
+package was produced. Restore the explicit source-derived generated/visible
+phrases; the one named records test passes. No production/observer change.
+Keep the failed receipt; freeze strict hidden-r21b next.
