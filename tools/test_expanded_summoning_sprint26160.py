@@ -14,6 +14,13 @@ class Sprint26BoundaryTests(unittest.TestCase):
         self.released=[('released',1,True,1)]
         self.selected=[('gorgon',8,False,None),('bulette',None,False,6)]
     def test_exact_append_passes(self):gate.check_tail(self.old,self.old+self.tail)
+    def test_reused_route_observer_body_may_change(self):
+        before="prefix\n        private void Sprint24PlayerRoutes(old)\nbody\n        private void Sprint24ReadProfile(same)\nsuffix"
+        gate.check_route_observer(before,before.replace("Routes(old)\nbody","Routes(new)\nnew body"))
+    def test_other_released_observers_cannot_change(self):
+        before="prefix\n        private void Sprint24PlayerRoutes(old)\nbody\n        private void Sprint24ReadProfile(same)\nsuffix"
+        for current in [before.replace("prefix","changed"),before.replace("suffix","changed"),before.replace("ReadProfile(same)","ReadProfile(changed)")]:
+            with self.assertRaises(AssertionError):gate.check_route_observer(before,current)
     def test_released_identity_fields_cannot_change(self):
         for field,value in [('guid','b'*32),('status','retired'),('plannedType','BlueprintAbility'),('notes','changed')]:
             with self.subTest(field=field):

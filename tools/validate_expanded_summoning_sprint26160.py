@@ -107,6 +107,7 @@ ALLOWED_PRODUCTION=['src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.cs',
  'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17LoadReset.cs',
  'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint22Review.cs',
  'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint23Review.cs',
+ 'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs',
  'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint25Review.cs',
  'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint26GorgonBoundaries.cs',
  'src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint26Inputs.cs',
@@ -148,6 +149,16 @@ def check_tail(released,current):
     actual={x["symbol"]:(x["guid"],x["plannedType"]) for x in tail}
     if actual!=ADDED or len(tail)!=len(ADDED) or any(x["status"]!="active" for x in tail):
         raise AssertionError("Sprint26 must append exactly its allocated identities and no template child")
+
+def check_route_observer(released,current):
+    # The reused player-route observer must understand untemplated Monster
+    # entries. All other Sprint24 observations remain the released bytes.
+    def outside_routes(text):
+        start=text.index("        private void Sprint24PlayerRoutes(")
+        end=text.index("\n        private void Sprint24ReadProfile(",start)
+        return text[:start]+text[end:]
+    if outside_routes(released)!=outside_routes(current):
+        raise AssertionError("Sprint24 observer changes outside the reused player-route method")
 def validate(root):
     read=lambda p:(root/p).read_text(encoding="utf-8-sig")
     blob=lambda p:common.blob(root,BASELINE,p)
@@ -169,6 +180,8 @@ def validate(root):
     changed=identities.git(root,"diff","--name-only",BASELINE,"--","src/KingmakerGunslinger").stdout.splitlines()
     changed+=identities.git(root,"ls-files","--others","--exclude-standard","--","src/KingmakerGunslinger").stdout.splitlines()
     if set(changed)-set(ALLOWED_PRODUCTION):raise AssertionError("Unrelated production edit: "+str(set(changed)-set(ALLOWED_PRODUCTION)))
+    route_observer="src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint24Review.cs"
+    check_route_observer(blob(route_observer).decode("utf-8-sig"),read(route_observer))
     # Every released raster/model and static evidence row is protected. New
     # original art has separate provenance/export validation and exact pins.
     for p in identities.git(root,"ls-tree","-r","--name-only",BASELINE,"--","assets","assets-source").stdout.splitlines():
