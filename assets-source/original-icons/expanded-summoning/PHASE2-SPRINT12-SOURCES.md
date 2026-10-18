@@ -21,3 +21,18 @@ hidden.
 Exact generation prompt (built-in imagegen, stylized-concept):
 
 > Use case: stylized-concept. Asset type: square Pathfinder: Kingmaker summon-choice creature icon source painting. Primary request: create an original painted portrait of a Dire Rat, a very large natural sewer rat, shown as a dangerous low-level fantasy animal. Scene/backdrop: dim mossy stone sewer or ruined cellar, with warm amber backlight and subdued dark surroundings. Subject: one anatomically believable oversized rat on all four feet, compact low body, coarse charcoal-brown fur, pale scarred ears, black eyes, visible incisors, long bare pink-gray tail curling behind it. The rat looks alert and aggressive, with a subtle unhealthy grime suggesting filth fever, but no gore. Style/medium: highly polished realistic fantasy creature painting, detailed fur and textures, matching a classic CRPG bestiary icon. Composition/framing: centered three-quarter full-body pose, strong readable rat silhouette, entire head and most of body inside a circular hammered bronze ornamental frame, square composition, subject large enough to read at 128x128. Lighting/mood: dramatic warm rim light, deep neutral shadows, ominous but grounded. Color palette: bronze, amber, charcoal brown, muted moss green. Constraints: exactly one rat; ordinary rat anatomy enlarged to dog size; four legs; one tail; bronze circular frame; no text; no symbols; no watermark; no collar; no armor; no magic glow; no extra limbs; no horns; no canine muzzle; no bat wings; no graphic wounds.
+
+## Visual refinement edit, 2026-10-17 (VIS-004)
+
+The owner found this icon unreadable at menu size, with the rat lost inside
+the medallion, and on 2026-10-17 approved an edit of this painting: a closer
+crop on the rat with the bronze ring faded into a dark vignette
+(`edits/dire-rat/EDIT.md`, script `edits/dire-rat/crop_dire_rat.py`). The
+original `sources/dire-rat.png` above is kept byte for byte and recorded as
+the edit's `originalSourceFile`. The production source is now
+`edits/dire-rat/dire-rat.png`
+(`df593dfad161941cb8846e1f7df1e723480975a3e90d5ffd789c9d170d04168d`, 920 px),
+and `tools/New-ExpandedSummoningIcons.ps1 -OnlyKeys dire-rat` exports the
+128 px `assets/game/icons/expanded-summoning/dire-rat.png`
+(`159700710b467fc906795db4b7d583ac5c9316f85c6dc395aaae5169982efb07`). The 37
+consumers are unchanged.

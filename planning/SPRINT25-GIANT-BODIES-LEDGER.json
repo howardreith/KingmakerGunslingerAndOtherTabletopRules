@@ -1,33 +1,37 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "7E_NINE_RTWP_OVERRUN_CASES_PASS_BOTH_PROFILES_DELIVERY_OBSERVER_REPAIR_CANDIDATE_NEXT",
+  "status": "MASTER_158_INTEGRATED_SPRINT25_159_OVERRUN_ATTRIBUTION_NEXT",
   "current": {
     "latestCheckpoint": {
-      "asOfUtc": "2026-10-17T23:14:03Z",
+      "asOfUtc": "2026-10-18T00:10:37.9539101Z",
       "sourceBuildCheckpoint": {
-        "source": "7e8f4c36be78eae9f65b31e5388caa5e49caa9be",
-        "sourceFingerprint": "9b258a404e398b0b43c78cf53c0d34069928f51c2599a6d942e1904367522ab1",
-        "zipSha256": "a0c76467cadd328c5fffdd5e60cb668f182bf03a318a33212e7c47a729d4ad16",
-        "dllSha256": "8cf93f4ef498dfafcf9d93f38fec951365f3172f1704cf2b96a737351b14f044",
-        "dllMvid": "466b1774-ecf5-414f-a3c6-f3d155270592",
-        "gate": "PASS: 2660/2660, exact build, strict378-file package,291.4104957s; completed2026-10-17T22:43:00.1687450Z. Exact ZIP and untouched sidecars archived and hash-verified under artifacts/checkpoints/source-build-7e8f4c36. Earlier gates retain original identities."
+        "source": "0825699d9ec8cefb0232c5df8ccc5eaea017be37",
+        "sourceFingerprint": "6677ce4fd40ba29a27410c5d681508455d5d51dabb323c4d8a1a638cbae06c3f",
+        "zipSha256": "557e2c0c405b6279fa2c257a8c41d33067ec202cc01113c1aa6a0e69164607f4",
+        "dllSha256": "dd6179862dfbb1d54383bebb469c81afaafee40883fd81649a50ddac4db0e43b",
+        "dllMvid": "1e4b88f6-b0ca-4e0e-98aa-3ea8aa425457",
+        "gate": "PASS 2666/2666 unfiltered, exact build, strict378 files;306.6325614s,2026-10-17T23:25:30Z. Exact ZIP/untouched sidecars archived at artifacts/checkpoints/source-build-0825699d. Earlier source/build gates remain valid only under their original identities."
       },
       "nativeBatch": {
-        "receipt": "artifacts/native-batch-7e8f4c36-carrier/result.json",
-        "receiptSha256": "511408c925ac88b298923f5d9b6f9b8edc899eb6bd3460450045a283b1743f23",
-        "completedUtc": "2026-10-17T23:11:07.7282412Z",
-        "seconds": 1670.538721,
-        "result": "FAIL overall, six cells. Mechanical foundation assertions PASS both profiles; mandatory Trample capture assertions FAIL. All9 RTWP Overrun cases PASS both profiles; TB response FAIL. Cleave geometry PASS, sequences FAIL. Every exact transaction restored actual installation/settings/bank, all118 protected saves and private references; no game/lease remains.",
-        "overrun": "Failure, partial, threshold/two responders, general immunity, prone immunity, already prone, repeated notifications, repeated commands and genuine exhaustion now PASS in each profile. TB threshold has native margin5/knockdown/exact one-target cost/movement but zero attacks. Standalone records two real queued opportunities, Count1-to0, never started/animation absent through frame65; combined records no queued command in its32-frame response window. Actual native start gates and adequate native completion observation remain required; no gameplay waiver or synthetic attack.",
-        "cleave": "Four cases per profile have real humanoid radii0.5m and pair distances1.2/1.2/2.4m: geometry PASS. Each native Standard command finishes successfully/costs exactly once with greater feature true, but only its first attack is observed. The loop exits on command finish and disposes actors without requiring the separately live ability process to end. Native enemy-memory/reach/LOS candidates were not read back. These observation gaps must be closed before assigning a gameplay verdict.",
-        "visualInspection": "Both foundation cells pass original-body idle/ordinary-attack checks and mechanical Tramples, but fail both mandatory Trample capture assertions: the real contact happens during the yielded native tick, after the callback check. Move that check immediately after the tick. EE5/E8 inspected unaltered captures retain original identities. No owner aesthetic review."
+        "receipt": "artifacts/native-batch-0825699d-delivery/result.json",
+        "receiptSha256": "63a234a58ee13b19dd42c9814923b8aa01f055ae3d58d43fa5a01d209ab5489e",
+        "completedUtc": "2026-10-18T00:05:18.4616592Z",
+        "seconds": 2299.9871735,
+        "result": "FAIL overall: foundation, TB commands and four legal/miss-termination Cleave cases PASS in both standalone/high-risk combined. Overrun TB threshold fails both. All8 exact transactions restore actual installation/settings/bank,118 protected saves/private references; no owned process/lease.",
+        "visuals": "Actual contact-frame Trample party captures for both creatures and modes were inspected unaltered: visible original bodies, no catastrophic deformation. Existing rough visual backlog accepted; no owner aesthetic approval.",
+        "overrun": "TB margin5/native knockdown/exact target/cost/movement PASS but no native provocation queue or opportunity after900 response frames, with separate get-up provocation excluded. Nine RTWP case predicates PASS but their responses may be get-up events; that attribution is not release proof. Next observation snapshots exact rider pending/eligibility/subscriber state; repeated-notification calls must not supply missing first behavior."
       },
-      "coherentRepair": "Qualification-only batch: capture actual Trample contact after the yielded tick. Add opt-in native delivery draining to the existing helper, preserving all prior caller defaults; S25 Tramples, Cleave and Overrun now require command and native process completion. Cleave surveys actual native IsReach/LOS and records living remembered-enemy prerequisites before dispatch, rather than geometry alone. TB Overrun reuses the established native attack frame budget and native hands-settle step, logs actual UI/equipment/start gates and queued command/rule links, and balances a disposable-target flag excluding only the separate native get-up provocation. No UI guard/cost bypass, substitute attack, new clock/framework, gameplay/art/identity/difficulty change.",
-      "checks": "PASS: production compilation17.0s;57/57 named affected regressions2.0s (2660 registered); actual hidden source gate/6916 identities and19 refusal fixtures. Shared helper defaults remain unchanged for prior callers. Fresh full candidate and all affected native modes are still required.",
-      "upstreamIntegration": "Integrated master93e34051d11ef1f4b6103b09362773bfdeaa9b2a (accepted PR54 CotW/controller/Brown-Fur bootstrap repair) normally after pushed observer checkpoint81a6ea9e87bbeb80490ba3dc2f1d03868e70bfca. Sole resume conflict preserves both campaigns' records; both catalog authorizations and all art bytes remain. Released identity/art BASELINE8726ec73 stays frozen; only the production-ownership comparison is pinned to accepted integrated93e34051. Compile16.7s and63/63 affected cases5.3s (2666 registered), existing33/33 coordinator-neighbor cases1.1s with0.8s incremental compile, exact installed-reference adapter64/64 (saveLoad NOT_RUN), catalog protection/30 refusals12.529s, source gate/19 refusals PASS. Upstream owner reports alpha3 fixed the load; broader controller UI remains uninstrumented, not newly claimed. Fresh S25 combined startup/commands/public routes and actual installed-stack cold loads cover dependency impact. No separate Brown-Fur/Buff Planner campaign is selected; stable still0.0.157 at check.",
-      "next": "Commit/push; one full Sprint candidate; exact-package delivery-repair batch foundation,TB commands,Overrun,Cleave in both profiles (8cells, planning35-45min; actual duration recorded, restoration has no deadline). Then six targeted ON/OFF prepare/cold-cleanup/fresh-absence stages (planning25-40min), public boundary/full candidate/fresh public inventory/icon/eleven roots, publisher preflight, authorized merge/release/download/restoration audit, final-records merge,STOP. Reuse EE5 AI/E8 body/routes only with original identities and unchanged-dependency arguments; D7 TB remains historical proof, not execution of the strengthened completion observer. No waiver, no Sprint26.",
-      "acceptance": "PR49 OPEN/DRAFT; Brachiosaurus hidden; no merge/release. HumanReview NOT_PERFORMED_NONBLOCKING; accepted art/body bytes unchanged. Steam Offline Mode remains accepted and works unchanged."
+      "masterIntegration": {
+        "requestedByOwner": true,
+        "master": "80fe5df66c49d337ff4081c59f9c0613b6504624",
+        "changes": "Normal integration of PR55/56 visual overhaul and published v0.0.158, retaining PR54 startup repair. Preserve approved Dire Rat source/export,57 reviewed asset changes and all shared visual/glow/tail fixes. Both release-record streams retained; no global settings/history rewrite.",
+        "version": "Sprint25 advances to next free0.0.159; released0.0.158 notes remain exact upstream bytes. Append-only identity baseline8726ec73 is unchanged. Only production-ownership/static-record comparison advances to accepted master80fe5df6.",
+        "checks": "PASS compile17.5s;73/73 focused cases (2678 registered),domain2.4s; actual hidden source/6916 IDs;19 source refusals;17 real dispatch checks including retained158 visual child and new159 Sprint25;30 icon protection/refusals12.522s. Full new candidate/native not yet run.",
+        "impact": "Brachiosaurus/Elephant original payloads/icon and mechanical rules unchanged by master. Fresh functional visuals/resources and Triceratops control cover inherited shared glow/refined control view; native Overrun diagnostic and targeted ON/OFF cold loads remain mandatory. Prior mechanics/AI/Cleave retain original artifact identities with dependency arguments, not relabeled execution."
+      },
+      "next": "Commit/push resolved merge, add minimal request-local Overrun rider observation and all-case get-up isolation; focused compile, one full159 candidate and affected native phases. Then targeted six ON/OFF persistence stages, public boundary/full candidate/fresh public inventory/icon/eleven roots, publisher preflight, authorized merge/release/download/restoration audit, final-records merge,STOP. No Sprint26.",
+      "acceptance": "PR49 draft/unmerged; Brachiosaurus hidden. HumanReview NOT_PERFORMED_NONBLOCKING for new giants. Steam Offline Mode accepted; no runtime safety waiver."
     },
     "previousCheckpoint20261017T2109Z": {
       "asOfUtc": "2026-10-17T21:09:00Z",

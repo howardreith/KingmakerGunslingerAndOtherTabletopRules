@@ -148,6 +148,8 @@
     <Compile Include="Summoning\ExpandedSummoningPteranodonViewPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVisualVariantPatch.cs" />
     <Compile Include="Summoning\SummonVisualVariantModulePolicy.cs" />
+    <Compile Include="Summoning\SummonGlowPolicy.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSummonGlowPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuRuntime.cs" />
     <Compile Include="Summoning\SummonIconCatalog.cs" />
@@ -176,6 +178,7 @@
     <Compile Include="Summoning\CrocodilianVisualPolicy.cs" />
     <Compile Include="Summoning\SerpentineVisualPolicy.cs" />
     <Compile Include="Summoning\SalamanderTailAnimationPolicy.cs" />
+    <Compile Include="Summoning\SalamanderTailGait.cs" />
     <Compile Include="Summoning\SalamanderTailAction.cs" />
     <Compile Include="Summoning\SalamanderHumanBindingPolicy.cs" />
     <Compile Include="Summoning\SalamanderHumanVisualAttachment.cs" />
@@ -1295,6 +1298,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Routine.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint19Surface.cs" />
     <Compile Include="RuntimeTesting\Sprint20ReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\VisualRefinementReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint20Review.cs" />
     <Compile Include="RuntimeTesting\Sprint21ReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint21Review.cs" />

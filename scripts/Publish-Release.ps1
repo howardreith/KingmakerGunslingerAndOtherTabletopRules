@@ -6,7 +6,7 @@ param(
 
     [string]$ReferenceBundleDir,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.157.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.159.md',
 
     [string]$ReleaseBranch = 'master',
 
@@ -49,7 +49,7 @@ if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit -or $Pref
     throw 'Qualified-candidate arguments require -ReuseQualifiedCandidate.'
 }
 if ($Sprint22 -or $Sprint23ChargeRounding -or $Sprint25GiantBodies -or
-    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153','0.0.158')) {
+    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153','0.0.158','0.0.159')) {
     throw 'This release requires -ReuseQualifiedCandidate with its exact tested artifact, selected patch contract and qualification ledger; no reporting rebuild.'
 }
 

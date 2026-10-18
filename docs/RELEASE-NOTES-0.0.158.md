@@ -1,89 +1,69 @@
-# v0.0.158 — Expanded Summoning Sprint 25: giant bodies
+# v0.0.158 — Expanded Summoning visual refinement
 
-`0.0.158-expanded-summoning-sprint25-giant-bodies`
+`0.0.158-expanded-summoning-visual-refinement`
 
-This release adds the Brachiosaurus to the Expanded Summoning roster and
-completes the Elephant that was already in it. Both are adult Pathfinder First
-Edition stat blocks with original project-authored bodies; no native Owlcat
-mesh, texture or animation is redistributed.
+This release redraws and repairs the Expanded Summoning creatures. It also
+carries the Brown-Fur startup-order and CotW controller save-loading repair
+that was tested as `v0.0.157-controller-load-alpha.3`. No creature's rules,
+statistics, size, reach, attacks, AI, templates or summon menus change, and
+no saved identity changes. Every change is in how the creatures look and how
+their visuals are drawn.
 
-| Creature | Family and tier | Roots |
-| --- | --- | ---: |
-| Brachiosaurus | Summon Nature's Ally VII | 3 |
-| Elephant | Summon Monster VI, Summon Nature's Ally VI | 8 existing, completed |
+## New and repaired creature bodies
 
-Quantities follow the usual progression: one at the base tier, 1d3 at the next,
-then 1d4+1. Brachiosaurus is untemplated under caster alignment and is not on
-the Summon Monster table, so it has no celestial or fiendish execution
-children. Elephant's eight existing roots, their children and their order are
-unchanged — this is a completion of a released creature, not a re-registration,
-and no actual Mastodon unit or asset is touched.
+- **Rebuilt as single, continuous bodies** in one consistent painted style:
+  - Dire Rat
+  - Rhinoceros, Woolly Rhinoceros, Aurochs and Bison
+  - Tyrannosaurus, Deinonychus, Triceratops and Ankylosaurus
+  - Hyena, Goblin Dog, Wolverine and Shadow Mastiff
+  - Poisonous Frog (now green and black)
+  - Dire Bat, Pteranodon and Giant Wasp
+  - Ape, Dire Ape and Xill
+- **Repaired in place**:
+  - Crocodile and Dire Crocodile: turned right side out and repainted.
+  - The three Giant Ant castes: turned right side out, with limbs and mandibles attached to the body.
+  - Giant Scorpion: turned right side out, with its stinger attached to the tail.
+- **Inside-out bodies turned right side out**, so they are lit from the front:
+  Eagle, Stirge, Fire Beetle, Giant Stag Beetle, Girallon, Giant Crab and
+  Stegosaurus. Their shape, paint and rigging are unchanged. The Bebelith is
+  unchanged.
 
-## Brachiosaurus
+## Other visual changes
 
-One natural weapon and exactly one: a tail at +23 for 4d6+19 at the adult stat
-block. Because it is the creature's only natural attack it takes the native
-one-and-a-half Strength multiplier, so Strength 37 contributes +19, and zero or
-a penalty keeps correct behaviour rather than being multiplied.
+- **No more gold sheen on KMG summons.** Creatures summoned through this
+  mod's summon choices no longer carry the base game's golden summoned glow;
+  the Wolf, for example, now shows its own coat. The mephits and the lion
+  keep the glow their look is built on, and the base game's own summon
+  spells are unchanged.
+- **Salamander:** its tail now ripples while it moves and sways gently at
+  rest, instead of gliding rigidly behind it. Its body no longer shows thin
+  white streaks. Its spear, tail slap and every rule are unchanged.
+- **Dire Rat icon:** a closer crop on the rat without the bronze medallion,
+  so it reads clearly at menu size.
 
-The printed tail bonus differs between sources — the current Archives of
-Nethys entry reads +22, the legacy PRD reads +23 — and this release uses +23.
-That is the value the inputs both sources print actually derive: BAB +13,
-Strength 37 for +13, Gargantuan −4 and Weapon Focus (tail) +1. The same inputs
-independently derive the CMB +30 and CMD 40 that both sources also print, so
-the ability score and base attack bonus are not in doubt, and +22 would require
-an unexplained −1 that no printed input supplies. Nothing invents a hidden
-modifier and Weapon Focus is not removed; both readings are recorded in the
-sprint ledger.
+## Brown-Fur and controller loading
 
-Trample is 2d6+19 against a DC derived live as 10 + half its hit dice + its
-Strength modifier, which is the printed 32, and it is a separate effect from
-the ordinary tail attack. Twenty-foot space and twenty-foot reach, 30-foot
-land speed, AC 18, 171 hit points, Fort +18 / Ref +11 / Will +9, CMD 40 with
-the quadruped +4 against trip, and Perception +28 from real carriers rather
-than an adjusted total.
+- Brown-Fur's startup now waits for the mod's blueprints to be registered
+  before it acts.
+- The Call of the Wild controller action-bar correction now installs even
+  when the optional Harmony diagnostics cannot read a method.
+- Shield Other, Teleportation, class-catalog diagnostics, Eastern Weapons and
+  Favored Class also wait for blueprint registration before their first
+  update.
 
-It has no bite, no stampede, no tail-sweep area attack and no frightening
-roar. It does not borrow the Ankylosaurus daze or stun, the Stegosaurus trip,
-or the Tyrannosaurus bite multiplier, Grab or Swallow Whole.
+## Limits
 
-## Elephant
+- **Ghaele:** the Ghaele Azata loses the gold sheen like other KMG summons, but
+  during review its own fade effect kept rising.
+- **Frost Giant and Thanadaemon:** these are covered by the sheen change but
+  were not observed in the game.
+- **Viper and Constrictor Snake:** they still travel in their coiled pose.
+- **Visual review:** the owner reviews the new models in the game after this
+  release; refinements will follow with the next summon additions.
+- **Not yet checked on this exact build:**
+  - controller-mode loading with a physical controller;
+  - reloading a save with a Brown-Fur character in it.
 
-Two primary natural attacks: a gore at +16 for 2d8+10 and a slam at +16 for
-2d6+10. Both are primary, so each adds the live Strength modifier once rather
-than one and a half — the lone-weapon routine the Brachiosaurus uses does not
-apply here. There is no stamp routine and no grab; the adult Pathfinder
-Elephant has a gore and a slam and nothing else.
-
-Space is 15 feet but reach is 10 feet, exactly as printed. A Huge body is not
-evidence of 15-foot reach and this creature is not used to grant one
-generally. Trample is 2d8+15 at DC 25, reusing the existing d8 trample support
-without granting powerful charge and without changing released d6 tramplers.
-40-foot land speed, AC 17, 93 hit points, Fort +13 / Ref +7 / Will +6, CMD 30
-with the quadruped +4 against trip, and Perception +21.
-
-Existing template and caster-alignment behaviour is retained.
-
-## Shared trample behaviour
-
-Both creatures use the already-accepted automatic enemy-aware response: one
-legal native opportunity attack at its configured penalty, or a Reflex save for
-half, and never both. Target-size legality, one contact per target per round,
-exact command ownership, interrupt and death behaviour, action spending and the
-ordinary-attack fallback are all preserved, and both new registrations
-participate in the existing interruption and duplicate-response guards.
-
-## Accepted limitations, unchanged
-
-The four owner-accepted engine limitations carry forward at their existing
-scope with no new waiver:
-
-- `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD` — a save and reload reset
-  active grabs, holds, swallowed and engulfed relationships for every KMG
-  summon. This is a clean reset, not grapple persistence.
-- `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`
-- `PASSIVE_CREATURE_SENSES_UNMODELED` — Scent, Darkvision and Low-light Vision
-  have no faithful native carrier and nothing substitutes for them.
-- `RUN_NATIVE_SUMMON_AI_DISPOSITION`
-
-Owner visual review remains `NOT_PERFORMED_NONBLOCKING`.
+Checked with focused domain tests, the release's repository validation and
+complete domain suite, two deterministic release builds, strict package
+validation, and guarded in-game creature reviews of every changed creature.

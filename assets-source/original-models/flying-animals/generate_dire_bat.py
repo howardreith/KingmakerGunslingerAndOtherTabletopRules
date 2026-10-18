@@ -168,6 +168,8 @@ def add_wing_bones(bm, weights, uvs, bones, side):
 
 def main():
     args = parse_args()
+    raise SystemExit("the Dire Bat is built by build_dire_bat.py since the "
+                     "visual refinement (VIS-013); see SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig, bones = shared.load_rig(args.rig)
     armature = shared.build_armature(rig)

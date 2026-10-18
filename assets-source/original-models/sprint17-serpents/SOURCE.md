@@ -1,5 +1,57 @@
 # Sprint 17 original serpentine and hybrid bodies
 
+## Visual refinement, October 17 UTC (VIS-029)
+
+The owner reported the Salamander sliding statically, asked whether it uses
+its weapon, and disliked isolated bright patches. Guarded creature review
+`20261017T1639002324262Z` (development candidate `dc5b84838cc1`) showed the
+production view is the human/tail body (`salamander-human-mesh.json`, mesh
+`KMG_SalamanderHuman_*`), that the native move travels 12.4 m at up to
+2.0 m/s, and that the ten owned tail bones move only during the authored tail
+slap, so the coil glided rigidly behind the walking upper body. The weapon
+and the slap are native and owned respectively and unchanged; the bounded
+human review (`disposable-expanded-summoning-serpentine-bodies`) still plays
+both native spear attacks and the owned tail slap.
+
+- **Tail gait** (`185e379a74`): `Summoning/SalamanderTailGait.cs` and the
+  attachment's `LateUpdate`. While the slap is not playing, the owned tail
+  bones follow a horizontal wave from the waist to the tip,
+  `amplitude * ramp(arc / length) * sin(2 pi arc / 2.6 - phase)` along each
+  rest point's in-plane normal, with the bone rotations carrying each rest
+  segment onto its gait segment (the slap clip's convention). The amplitude
+  is 0.04 at idle and 0.12 at 2 m/s, following the view's planar speed; the
+  waist and every height stay put, the gait stands aside for the slap and the
+  pause, and any failure stops it. Offline on the shipped mesh
+  (`check_tail_gait.py`, the runtime's skinning of the exact export): lowest tail vertex
+  0.0361 against 0.0367 at rest; non-adjacent coils at least 6.3 cm apart
+  against 12 cm at rest (a 1.8 wavelength brought them within 1 cm).
+  Native run `20261017T1706293264089Z` (`185e379a7418`): creature review PASS
+  (10 assertions, refinement sequences included; gait 334 frames, full speed,
+  peak offset 0.12) and the bounded human review 15/15 PASS (owned tail slap
+  3.59 m of tail movement, contact, finite skin, destruction).
+- **Undissolved body** (`58123c87fa`): the same run's close views showed thin
+  white flecks and streaks along the coil and torso, which an offline render
+  of the exact shipped bytes (`continuous-bodies/render_mesh_data.py`) does
+  not show. The cloned human material arrived with `DISSOLVE_ON`, a noise
+  `_DissolveTex`, an orange edge (`_DissolveColor` 1/0.58/0.32, width 0.15,
+  colour scale 2, emissive), and the material controller adopted that as the
+  clone's default and restored it after every dissolve animation; at dissolve
+  0 the edge band still glowed wherever the noise fell below its width. The
+  clone now drops the keyword and the dissolve amount before adoption, like
+  an ordinary unit material; the game's dissolve animations still enable it
+  while they run. Two earlier attempts changed nothing natively and were
+  reverted: an owned matte masks texture (`491e60249f`, run
+  `20261017T1715204397744Z`) and the cape's rim keyword (`c1b87bce72`, run
+  `20261017T1722470324042Z`). Native run `20261017T1730033526213Z`
+  (`58123c87fa9e`): creature review PASS with the streaks gone in the close
+  views, `DISSOLVE_ON` off at capture; bounded human review 15/15 PASS.
+- Residual, not changed: the shipped export has 19 of 12,924 vertex-normal
+  corners opposing their triangles (seven vertices on a small pleat in the
+  waist seam, six on two left-hand fingers). A normal-only repair cannot light
+  the pleat (no single normal faces all its triangles); a geometric repair
+  needs the private human capture to regenerate the export. The paint, the
+  mesh and its hash pins are unchanged.
+
 ## Current separate Salamander authoring, October 7 UTC
 
 The exact-human anatomical subset/original ten-driver tail prototype is now

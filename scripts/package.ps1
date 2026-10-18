@@ -76,7 +76,9 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.153.md',
     'docs\RELEASE-NOTES-0.0.155.md',
     'docs\RELEASE-NOTES-0.0.156.md',
-    'docs\RELEASE-NOTES-0.0.157.md')) {
+    'docs\RELEASE-NOTES-0.0.157.md',
+    'docs\RELEASE-NOTES-0.0.158.md',
+    'docs\RELEASE-NOTES-0.0.159.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -265,11 +267,11 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory. Sprint 24 added four original theropod body files
 # and two original creature icons to the previously qualified 363-file base;
-# v0.0.156 adds its release notes.
+# v0.0.156, v0.0.157 and v0.0.158 each add their release notes.
 # The soundbank and its manifest account for the optional two-file delta.
-# 376 since 2026-10-17: Sprint 25 adds five files to the package - the two
-# giant-body mesh payloads, their two albedos, and the Brachiosaurus icon.
-$basePackageFileCount = 376
+# Released v0.0.158 has 374 files with the bank. Sprint 25 adds the
+# four original body files, one icon and its own v0.0.159 release notes.
+$basePackageFileCount = 378
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

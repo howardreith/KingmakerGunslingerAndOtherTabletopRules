@@ -361,11 +361,18 @@ namespace KingmakerGunslinger.DomainTests
                 (int)stego["tailJoints"] == 6,
                 "Stegosaurus owns plates and four spikes, not horns or club.");
             Assertions.Equal(
-                "ec2e38eae2cb3279a003ec2cf507f4eb30e4e3153905a60a697940833cd8c914",
+                "f99f5d350a3a22e1a92f410687b2339c3a1107b8106c30a00744c834c7bf49fa",
                 Sha256("assets/sprint23-armored-dinosaurs/triceratops-mesh.json"),
                 "Deterministic Triceratops mesh bytes.");
+            // VIS-002: the refined Triceratops is one continuous body built
+            // with outward winding.
+            OriginalMeshOrientation.AssertShippedBody(
+                "assets/sprint23-armored-dinosaurs/triceratops-mesh.json",
+                "triceratops");
+            // The Stegosaurus first export, repaired outward in place by the
+            // visual refinement (RepairedBodyTests).
             Assertions.Equal(
-                "02a37218c41c09ed9962ac39a8e01ad0e9d99d8f07d718e1e27d9b9b7573582f",
+                "6c5dcb055eafe011e76616c7a137a18d1c8ff1a63e603ddb4dbb8328b87c4117",
                 Sha256("assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json"),
                 "Deterministic Stegosaurus mesh bytes.");
 
@@ -430,12 +437,17 @@ namespace KingmakerGunslinger.DomainTests
             string build = File.ReadAllText("scripts/Build-Local.ps1");
             string packageValidator = File.ReadAllText(
                 "scripts/validate-package.ps1");
-            const string releasedAnkylosaurusMesh =
-                "f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626";
-            Assertions.True(build.Contains("ankylosaurusMeshText.Replace") &&
-                build.Contains(releasedAnkylosaurusMesh) &&
-                packageValidator.Contains(releasedAnkylosaurusMesh),
-                "A fresh checkout must reproduce the exact released Ankylosaurus mesh bytes.");
+            // The refined VIS-028 export replaced the released v0.0.151 body;
+            // the package ships it as committed and pins its exact bytes.
+            const string refinedAnkylosaurusMesh =
+                "3eb7585e6f410711c7bf84bf4e23ff0df2c04fbe06ec226a0552a715c9fa9ca9";
+            Assertions.Equal(refinedAnkylosaurusMesh,
+                Sha256("assets/ankylosaurus/ankylosaurus-mesh.json"),
+                "The repository holds the refined Ankylosaurus export.");
+            Assertions.True(!build.Contains("ankylosaurusMeshText.Replace") &&
+                build.Contains("ankylosaurus-mesh.json") &&
+                packageValidator.Contains(refinedAnkylosaurusMesh),
+                "The package ships and pins the refined Ankylosaurus mesh bytes.");
         }
 
         internal static void NativeReviewScenarioIsExactAndBounded()

@@ -52,6 +52,8 @@ try {
         'docs\RELEASE-NOTES-0.0.155.md',
         'docs\RELEASE-NOTES-0.0.156.md',
         'docs\RELEASE-NOTES-0.0.157.md',
+        'docs\RELEASE-NOTES-0.0.158.md',
+        'docs\RELEASE-NOTES-0.0.159.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -146,22 +148,22 @@ try {
     # the offline review passed. A mesh without its own painting is not
     # the reviewed creature, so both halves are checked.
     $primateBodies = @{
-        'assets\sprint19-fourarmed\girallon-mesh.json' = '475a8ca131056251c02680c625c16ab7c3c84cba1546782b95054e8c3334e7e9'
+        'assets\sprint19-fourarmed\girallon-mesh.json' = '003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb'
         'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
-        'assets\sprint19-fourarmed\xill-mesh.json' = 'b1a3f2c58a3e59de6e29fbc14225148b34e5a5146f00d42793331d219ca6335d'
-        'assets\sprint19-fourarmed\xill-albedo.png' = 'f609b66400ae53c92cae45ea181023900d0a8d9ee5ea7d39408bd5f8bb4d8fb4'
-        'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '813dfed7e48f7bb281fbaa0a6ba2c426febf653a76cc92a4fda201642dba8004'
+        'assets\sprint19-fourarmed\xill-mesh.json' = 'd7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243'
+        'assets\sprint19-fourarmed\xill-albedo.png' = 'eca0206533fad6c67cb2cbce79c5ff4eac7987b3311229c8d9f6b883522999fa'
+        'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f'
         'assets\sprint20-arachnids\giant-scorpion-albedo.png' = 'c4a5a29d54ee52c3c1679de55a6c0f3d7e46e8ad56d02b0c25e51c43f55feb1a'
-        'assets\sprint21-arthropods\giant-crab-mesh.json' = 'c2b84d93f304df674aad4b8f0d80e1c62871574a611885435f1c7ea3827f847a'
+        'assets\sprint21-arthropods\giant-crab-mesh.json' = 'dd7448eb9fc384350baf734fa8e7430994a5b4c08858f79b53eab1c30d2ed8eb'
         'assets\sprint21-arthropods\giant-crab-albedo.png' = '42be10115e53644da45f66f5e1d9beb989a310eeee061756d1fe842d78c07781'
         'assets\sprint21-arthropods\bebelith-mesh.json' = '7ff4e4dd8fc8edf4beb9dd983f245c329f40d94c751111888e8c5c658d1ab68e'
         'assets\sprint21-arthropods\bebelith-albedo.png' = 'afd98003bcc96ae32db4c3da63fdf3377d84f07141148ef7742cf8d3742fd554'
-        'assets\ankylosaurus\ankylosaurus-mesh.json' = 'f8fa71cadd3fdef3a59bc461a6ca0f51ca151fc59e7740596ab50fcb6d247626'
-        'assets\ankylosaurus\ankylosaurus-albedo.png' = 'f9255a77008fbcd001350bdeeb408af6f34adb39f55869337c224f8899602050'
-        'assets\sprint18-primates\ape-albedo.png' = 'f7203014bae6da4df7b5e41abdd1cb48a487f624c52773257f093aa842d986bc'
-        'assets\sprint18-primates\ape-mesh.json' = '751e199b447a3e940e68341ef393f33f51f5c9e4e81bea809963046a7165f3f0'
-        'assets\sprint18-primates\dire-ape-albedo.png' = 'e8a30544e0fb5f4e593051d936469550278eac377557310ea3f9a958fe1c84e7'
-        'assets\sprint18-primates\dire-ape-mesh.json' = 'e2f0242141a01179cf3c5915f2d11cf1335b9de51aa387150fb69a42bcdd0341'
+        'assets\ankylosaurus\ankylosaurus-mesh.json' = '3eb7585e6f410711c7bf84bf4e23ff0df2c04fbe06ec226a0552a715c9fa9ca9'
+        'assets\ankylosaurus\ankylosaurus-albedo.png' = '2cdd8bc7e9139e748a9a88ec52e8a360245b6ca5ecb7829eec78a57d5a598bac'
+        'assets\sprint18-primates\ape-albedo.png' = '85c7f480eeac7dddb125961061f0e62ba2460505fcee8198e88c208a95c6c7d9'
+        'assets\sprint18-primates\ape-mesh.json' = '2f0196eca297019770894b66d69cb474e9bba59c449a95590326f888086631ee'
+        'assets\sprint18-primates\dire-ape-albedo.png' = '37bdc23e705bfa0771105b768d1cd052157dfdc1d2c6bbd2a99236cf8268e219'
+        'assets\sprint18-primates\dire-ape-mesh.json' = 'd0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a'
     }
     foreach ($entry in $primateBodies.GetEnumerator()) {
         $path = Join-Path $modDirectory $entry.Key

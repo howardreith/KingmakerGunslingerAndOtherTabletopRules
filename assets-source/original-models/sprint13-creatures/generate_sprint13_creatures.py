@@ -501,6 +501,13 @@ def main():
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:]
                              if "--" in sys.argv else [])
+    if args.kind in ("wolverine", "shadow-mastiff"):
+        raise SystemExit(args.kind + " is built by ../sprint12-quadrupeds/"
+                         "build_worg_frame.py since the visual refinement "
+                         "(VIS-014, VIS-033); see SOURCE.md")
+    if args.kind == "poisonous-frog":
+        raise SystemExit("poisonous-frog is built by build_poisonous_frog.py "
+                         "since the visual refinement (VIS-006); see SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig_data, rig, rig_hash = measured_rig(args.capture, args.kind)
     armature = shared.build_armature(rig_data)

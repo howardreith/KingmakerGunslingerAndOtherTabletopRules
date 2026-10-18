@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.158-expanded-summoning-visual-refinement
+
+- Redraws the Expanded Summoning creatures: 20 bodies rebuilt as continuous
+  painted bodies, the crocodilians, Giant Ants and Giant Scorpion repaired in
+  place, and seven inside-out bodies (Eagle, Stirge, Fire Beetle, Giant Stag
+  Beetle, Girallon, Giant Crab, Stegosaurus) turned right side out.
+- Removes the base game's gold summoned sheen from KMG summons (the mephits
+  and the lion keep theirs), gives the Salamander a moving tail and a clean
+  surface, and replaces the Dire Rat icon with the approved closer crop.
+- Carries the Brown-Fur startup-order and CotW controller save-loading
+  repair. No rule, statistic, menu or saved identity changes; see
+  [the v0.0.158 release notes](docs/RELEASE-NOTES-0.0.158.md).
+
 ## 0.0.157-alternate-summoning-sources
 
 - Gives class summon abilities the Expanded Summoning creature menus:

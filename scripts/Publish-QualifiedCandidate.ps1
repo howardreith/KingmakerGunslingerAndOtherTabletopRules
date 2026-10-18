@@ -126,7 +126,7 @@ try {
         'scripts/validate-repository.ps1')
     if ($Sprint25GiantBodies) {
         $allowedReportingPaths=@('AUTONOMOUS-RESUME.md','docs/SPRINT25-COVERAGE.md',
-            'docs/RELEASE-NOTES-0.0.158.md','planning/SPRINT25-GIANT-BODIES-LEDGER.json',
+            'docs/RELEASE-NOTES-0.0.159.md','planning/SPRINT25-GIANT-BODIES-LEDGER.json',
             'planning/SPRINT25-QUALIFICATION-LEDGER.json','scripts/Publish-QualifiedCandidate.ps1',
             'scripts/Publish-Release.ps1','scripts/QualifiedRelease.Common.ps1',
             'scripts/Test-Sprint25Release.ps1','scripts/validate-repository.ps1')

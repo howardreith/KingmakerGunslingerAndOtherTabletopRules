@@ -30,20 +30,16 @@ sys.dont_write_bytecode = True
 import validate_expanded_summoning_sprint21150 as common
 import validate_expanded_summoning_sprint24154 as prior
 
-# Re-based twice, because master released twice while Sprint 25 was in
-# registration. First the firearm RTWP continuation took 0.0.156, then the
-# alternate summoning sources took 0.0.157 and tagged it, so Sprint 25 now
-# targets 0.0.158 and the baseline is the v0.0.157 release commit. Everything
-# those two releases changed is therefore baseline here rather than
-# "unrelated production source", and this validator sees only Sprint 25's own
-# additions. v0.0.157 remains the published release.
+# Sprint 25 follows released v0.0.158 at the next available patch, v0.0.159.
+# The legacy filename is retained for existing callers and historical proof.
+# Keep the append-only identity baseline frozen; accepted upstream production
+# and static release records are protected against their integrated master.
 BASELINE = "8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c"
-# PR54 was accepted on master while Sprint25 qualification was running. Its
-# bootstrap/CotW production changes are inherited by normal merge, not authored
-# by this sprint. Keep the released identity/art baseline above frozen; only
-# the source-ownership diff uses this explicitly integrated upstream commit.
-INTEGRATED_PRODUCTION_BASELINE = "93e34051d11ef1f4b6103b09362773bfdeaa9b2a"
-SPRINT25_KEY = "expandedSummoningSprint25158"
+# PR54 startup repair and PR55/56 owner-approved visual overhaul are inherited
+# normally. They are not Sprint 25 edits; neither their assets nor records may
+# be reverted to qualify this sprint.
+INTEGRATED_PRODUCTION_BASELINE = "80fe5df66c49d337ff4081c59f9c0613b6504624"
+SPRINT25_KEY = "expandedSummoningSprint25159"
 WITHHELD = {"brachiosaurus"}
 RELEASED_NEVER_SUPPRESSED = {"elephant", "mastodon"}
 
@@ -299,7 +295,7 @@ def validate_production_scope(root: Path):
 def validate_static(root: Path, stage: str):
     static = common.document(root, "validation/static-validation.json")
     released = json.loads(common.blob(
-        root, BASELINE, "validation/static-validation.json"))
+        root, INTEGRATED_PRODUCTION_BASELINE, "validation/static-validation.json"))
     for key, value in released.items():
         if key not in ("version", "milestone") and static.get(key) != value:
             raise AssertionError("Historical release evidence changed: " + key)
@@ -313,9 +309,9 @@ def validate_static(root: Path, stage: str):
         raise AssertionError(
             "Registered Sprint 25 candidate lacks static metadata")
     expected = {
-        "releaseVersion": "0.0.158",
+        "releaseVersion": "0.0.159",
         "releaseInformationalVersion":
-            "0.0.158-expanded-summoning-sprint25-giant-bodies",
+            "0.0.159-expanded-summoning-sprint25-giant-bodies",
         "masterBase": BASELINE,
         "newCreatures": 1,
         "newLogicalRoots": 3,
@@ -378,10 +374,10 @@ def validate_art(root: Path, stage: str, authored: bool):
 def validate_version(root: Path):
     info = common.document(root, "Info.json")
     version = info.get("Version")
-    if version != "0.0.158":
+    if version != "0.0.159":
         raise AssertionError(
             "Unsupported Sprint 25 lineage version: " + repr(version))
-    informational = "0.0.158-expanded-summoning-sprint25-giant-bodies"
+    informational = "0.0.159-expanded-summoning-sprint25-giant-bodies"
     props = (root / "Directory.Build.props").read_text(encoding="utf-8-sig")
     assembly = (root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs").read_text(
         encoding="utf-8-sig")

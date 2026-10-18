@@ -133,6 +133,8 @@ def main():
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:]
                              if "--" in sys.argv else [])
+    raise SystemExit("the Giant Wasp is built by build_giant_wasp.py since the "
+                     "visual refinement (VIS-022); see GIANT-WASP-SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig_data, rig = shared.load_rig(args.rig)
     armature = shared.build_armature(rig_data)
