@@ -1,52 +1,41 @@
-# Sprint26 - IN PROGRESS / WITHHELD
+# Sprint26 — IN PROGRESS / WITHHELD
 
-Continue the explicitly authorized full Gorgon/Bulette campaign: implement,
-qualify, merge product PR58, publish stable v0.0.160 if still free, verify public
-assets and exact machine restoration, merge final records, then STOP before
-Sprint27. Intermediate checkpoints are milestones, not the stopping point.
+Continue the explicitly authorized full Gorgon/Bulette campaign through product
+PR58, stable release, public download/restoration checks and final-records merge.
+STOP before Sprint27. Intermediate checkpoints are milestones.
 
-- Host HOWARD-LAPTOP; howardreith/KingmakerGunslingerAndOtherTabletopRules.
-- Fixed production/build/native/promotion worktree C:/Dev/KingmakerGunslingerLab/wt/s26.
-- Product branch codex/expanded-summoning-sprint26-gorgon-bulette; draft PR58.
-- Final-records branch codex/expanded-summoning-sprint26-release-records.
-- Latest remote check: master555b16e04613c0800ab0e884beac827184bf46ee,
-  Latestv0.0.159, v0.0.160 absent. Refresh before publication.
+- HOWARD-LAPTOP; howardreith/KingmakerGunslingerAndOtherTabletopRules.
+- Fixed production/build/native/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
+- Product: codex/expanded-summoning-sprint26-gorgon-bulette, draft PR58.
+- Records: codex/expanded-summoning-sprint26-release-records.
+- Latest remote read: master555b16e0 / Latest v0.0.159; refresh before publication.
 
-The controlling coverage and exact next actions are in
-[docs/SPRINT26-COVERAGE.md](docs/SPRINT26-COVERAGE.md). Frozen rules and explicit
-charter/surface-only adaptations are in
-[the contract](planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md).
-Historical development evidence remains in docs/history/SPRINT26-DEVELOPMENT-EVIDENCE.md.
+Current control: [SPRINT26-COVERAGE](docs/SPRINT26-COVERAGE.md). Frozen rules:
+[contract](planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md). Exact failed and
+passing attempts: docs/history/SPRINT26-DEVELOPMENT-EVIDENCE.md.
 
-Current source selects0.0.160 with both keys still withheld, 110 registered
-creatures/1,102 placements, 45 exact appended identities and the released6,916
-prefix intact. Current public equation: 1,096 generated placements plus29 retained wrappers =
-1,125 visible choices; publication will expose1,131 choices through six roots.
-Original medallions/Leap emblem and recognizable native bodies are present;
-rough visual debt is nonblocking and HumanReview remains NOT_PERFORMED_NONBLOCKING.
+Two keys remain withheld. Registered: 110 creatures / 1,102 placements; 45 exact
+appended identities preserve the released 6,916 prefix. Public now: 1,096 roots
+plus 29 wrappers = 1,125 choices; publication exposes 1,131 through six roots.
+Original icons and recognizable bodies are integrated; rough visual backlog,
+HumanReview NOT_PERFORMED_NONBLOCKING.
 
-Strict hidden R19 passed all2,687 tests and packaging on f40de45a.
-ZIPd027470bab7829ea0de423c34d1a4951af50a902bc7b6fb96248db176071da66,
-DLLb656a47e3a6ca7a19784590eea5a3393473eaa0482f4f4ab05a6d95ea094af10,
-MVIDac4327d5-a2f7-4e63-9d74-befdf5d05882 archived byte-exact privately.
-R19 Gorgon41 PASS includes real permanent-state cure; R18 TB Leap16 PASS retained.
-R19 Leap produces real native opportunity1/debit1-to0, but fails unlogged parent/
-queue/binding completion gates. R19 foundation27/28 assertions pass; live+3 hoof
-bonus9 vs expected6 needs matched PA-off/native-stat observation. Cold load now
-preserves stages/profiles/DC/source strings/exact cooldown and permanent guard,
-but the observer wrongly required that guard on the temporary health-conscious
-stage. It stopped without recovery/cleanup save; remaining4 stages unrun.
+R20 strict gate PASS: 2,687 tests; archive byte-exact. Foundation PASS28. Leap
+RTWP FAIL42: real opportunity occurs, parent finishes, but native charge falls
+back to ordinary attacks. R19 Gorgon41 and R18 TB Leap16 remain source-bound proof.
+R20 ON persistence sequence and second preparation pass; OFF stone/cooldown
+behavior passes but profile observer wrongly compares module-ON reach to OFF.
+No cleanup save armed or final absence run. All118 saves and actual Working
+bytes/creation/write/attributes restored; installation/settings/references exact;
+no game/lease, Steam Offline preserved.
 
-R20 changes only three observer files: exact completion/queue/interrupt/cost
-trace, native health-versus-permanent eligibility correction, and matched live
-modifier setup/diagnostics. Production remains f40de45a. Compilation and9
-focused tests PASS. Old failures are retained; no R20 native claim. Today's
-Working and all118 saves/metadata, installation/settings/private references
-restored exactly. No game/lease. Steam Offline preserved. Latest read13:48Z:
-master555b16e0/Latestv159; fetch/inspect again before publication.
+R21 changes only request-local observers: one ability-process Tick per frame
+(measured), full native queue handoff data, stricter completed four-claw/no-bite
+opportunity proof, exact known module-OFF reach comparison. Production unchanged.
+Compilation/nine focused tests/source-boundary PASS; no R21 native claim.
 
-Next push/freeze one strict R20 hidden candidate, then affected Leap/foundation
-and six-stage ON/OFF Working envelope. Complete bounded combined/unaffected
-coverage, final public roots/strict gate, preflight/merge/promotion/downloads,
-exact restoration and final records. Continue this campaign; preserve wt/s25;
-no Sprint27. Do not label ordinary remaining work a blocker.
+Next: push/freeze one strict R21 hidden candidate in this same root; fresh Leap
+and guarded two-stage OFF cleanup/absence from exact preserved disposable fixture.
+Then affected both-mode/AI and bounded combined coverage; public six-root source/
+strict gate; qualified ledger/preflight/merge/promotion/downloads/restoration;
+final RELEASED/STOP records merge. Preserve wt/s25 and do not begin Sprint27.

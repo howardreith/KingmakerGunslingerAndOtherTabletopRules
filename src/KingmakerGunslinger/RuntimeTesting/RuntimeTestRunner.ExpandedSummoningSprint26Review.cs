@@ -136,7 +136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var timing = _sprint25Clock.DescribeTickOwnership();
                 Sprint25Check("single-native-frame-tick", (bool)timing["frameSynchronous"] &&
-                    (int)timing["maximumActionTicksPerUnitPerUnityFrame"] <= 1, timing,
+                    (int)timing["maximumActionTicksPerUnitPerUnityFrame"] <= 1&&
+                    (int)timing["maximumAbilityExecutionTicksPerProcessPerUnityFrame"]<=1, timing,
                     "The exact fixture actor set receives one native action/cooldown tick per Unity frame; ambient duplicates are withheld and no brain is ticked by the clock.");
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = mode;
                 Game.Instance.TurnBasedCombatController.Activate();
@@ -1020,18 +1021,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetMethod("TickOnUnit", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             private readonly System.Reflection.MethodInfo cooldowns = typeof(Kingmaker.Controllers.Combat.UnitCombatCooldownsController)
                 .GetMethod("TickOnUnit", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            private readonly System.Reflection.MethodInfo executions=typeof(Kingmaker.Controllers.AbilityExecutionProcess).GetMethod("Tick");
+            private readonly Dictionary<Kingmaker.Controllers.AbilityExecutionProcess,int> executionFrames=new Dictionary<Kingmaker.Controllers.AbilityExecutionProcess,int>();
             private bool inPulse;
             private int blockedActions, blockedCooldowns, allowedActions, allowedCooldowns, maximumPerFrame;
+            private int allowedExecutions,blockedDuplicateExecutions,maximumExecutionTicks;
             private readonly Dictionary<string, int> perFrame = new Dictionary<string, int>(StringComparer.Ordinal);
             internal bool Restored { get; private set; }
             internal Sprint26ClockGate(Func<UnitEntityData, bool> owns)
             {
-                if (active != null || actions == null || cooldowns == null) throw new InvalidOperationException("Native frame tick ownership is unavailable or nested.");
+                if (active != null || actions == null || cooldowns == null || executions == null) throw new InvalidOperationException("Native frame tick ownership is unavailable or nested.");
                 this.owns = owns; harmony = Harmony12.HarmonyInstance.Create(id);
                 var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
                 try {
                     harmony.Patch(actions, new Harmony12.HarmonyMethod(typeof(Sprint26ClockGate).GetMethod("Actions", flags)));
                     harmony.Patch(cooldowns, new Harmony12.HarmonyMethod(typeof(Sprint26ClockGate).GetMethod("Cooldowns", flags)));
+                    harmony.Patch(executions,new Harmony12.HarmonyMethod(typeof(Sprint26ClockGate).GetMethod("Executions",flags)));
                     active = this;
                 } catch { Dispose(); throw; }
             }
@@ -1055,9 +1060,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!gate.inPulse) { gate.blockedCooldowns++; return false; }
                 gate.allowedCooldowns++; return true;
             }
+            private static bool Executions(Kingmaker.Controllers.AbilityExecutionProcess __instance)
+            {
+                var gate=active;var owner=__instance?.Context?.MaybeCaster;
+                if(gate==null||owner==null||!gate.owns(owner))return true;
+                int last;
+                if(gate.executionFrames.TryGetValue(__instance,out last)&&last==Time.frameCount){gate.blockedDuplicateExecutions++;return false;}
+                gate.executionFrames[__instance]=Time.frameCount;gate.allowedExecutions++;
+                string key="execution:"+System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(__instance)+":"+Time.frameCount;
+                int count;gate.perFrame.TryGetValue(key,out count);gate.perFrame[key]=++count;gate.maximumExecutionTicks=Math.Max(gate.maximumExecutionTicks,count);return true;
+            }
             internal JObject Snapshot()
             {
-                return new JObject { ["allowedActionTicks"] = allowedActions, ["allowedCooldownTicks"] = allowedCooldowns,
+                return new JObject { ["allowedAbilityExecutionTicks"]=allowedExecutions,["blockedDuplicateAbilityExecutionTicks"]=blockedDuplicateExecutions,
+                    ["maximumAbilityExecutionTicksPerProcessPerUnityFrame"]=maximumExecutionTicks,
+                    ["allowedActionTicks"] = allowedActions, ["allowedCooldownTicks"] = allowedCooldowns,
                     ["blockedAmbientActionTicks"] = blockedActions, ["blockedAmbientCooldownTicks"] = blockedCooldowns,
                     ["maximumActionTicksPerUnitPerUnityFrame"] = maximumPerFrame,
                     ["brainTicks"] = 0, ["scope"] = "exact request fixture/turn-clock actor set" };
@@ -1067,9 +1084,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (ReferenceEquals(active, this)) active = null;
                 harmony.Unpatch(actions, Harmony12.HarmonyPatchType.All, id);
                 harmony.Unpatch(cooldowns, Harmony12.HarmonyPatchType.All, id);
-                var a = harmony.GetPatchInfo(actions); var c = harmony.GetPatchInfo(cooldowns);
+                harmony.Unpatch(executions,Harmony12.HarmonyPatchType.All,id);executionFrames.Clear();
+                var a = harmony.GetPatchInfo(actions); var c = harmony.GetPatchInfo(cooldowns);var e=harmony.GetPatchInfo(executions);
                 Restored = (a == null || !a.Prefixes.Any(v => v.owner == id)) &&
-                    (c == null || !c.Prefixes.Any(v => v.owner == id));
+                    (c == null || !c.Prefixes.Any(v => v.owner == id))&&(e==null||!e.Prefixes.Any(v=>v.owner==id));
                 if (!Restored) throw new InvalidOperationException("Native frame tick ownership hooks remain.");
             }
         }

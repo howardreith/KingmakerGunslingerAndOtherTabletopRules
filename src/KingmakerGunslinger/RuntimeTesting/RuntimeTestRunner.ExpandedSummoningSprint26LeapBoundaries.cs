@@ -221,8 +221,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if(command.IsFinished&&queued.Commands.Count>0&&queued.Commands.All(v=>v.IsFinished)&&observer.WeaponAttacks.Count>0)break;
                     }
                     var attacks=observer.WeaponAttacks.Where(v=>v.IsAttackOfOpportunity).ToArray();
+                    var bound=queued.Commands.Count==1?BuletteLeapRuntime.Observation(queued.Commands[0]):null;
+                    var completedLeapAttacks=leapAttacks.OwnerWeaponAttacks.Where(v=>!v.IsAttackOfOpportunity&&ReferenceEquals(v.Target,target)).ToArray();
                     Sprint25Check("leap-native-opportunity",engaged&&available&&attacks.Length==1&&command.IsFinished&&
-                        queued.Commands.Count==1&&BuletteLeapRuntime.Observation(queued.Commands[0])!=null,
+                        bound!=null&&bound.Check!=null&&bound.Check.IsPassed&&queued.Commands[0].IsFinished&&
+                        completedLeapAttacks.Length==4&&completedLeapAttacks.All(v=>ReferenceEquals(v.Weapon?.Blueprint,bound.Claw)),
                         new JObject{["owner"]=owner.UniqueId,["flanker"]=flanker.UniqueId,["route"]=route,["engagedBefore"]=engaged,["opportunityAvailableBefore"]=available,
                             ["start"]=SurveyVector(start),["landing"]=SurveyVector(owner.Position),["flankerPosition"]=SurveyVector(flanker.Position),
                             ["movementStates"]=movementStates,["finalNativeState"]=state("after-charge"),
@@ -230,7 +233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["frames"]=frames,["ownerDamage"]=owner.Descriptor.Damage,["ownerDead"]=owner.Descriptor.State.IsDead,
                             ["ownerCanAct"]=owner.Descriptor.State.CanAct,["ownerCanMove"]=owner.Descriptor.State.CanMove,
                             ["targetDead"]=target.Descriptor.State.IsDead,["targetDestroyed"]=target.Destroyed,
-                            ["queuedVisits"]=queued.Commands.Count,["distinctCommands"]=queued.Commands.Distinct().Count(),["minimumOpportunityBudget"]=minimumBudget,
+                            ["allAttackQueueVisits"]=queued.QueueVisits.DeepClone(),["queuedVisits"]=queued.Commands.Count,["distinctCommands"]=queued.Commands.Distinct().Count(),["minimumOpportunityBudget"]=minimumBudget,
                             ["queuedCommands"]=new JArray(queued.Commands.Select(q=>{var a=BuletteLeapRuntime.Observation(q);return new JObject{
                                 ["referenceId"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(q),["finished"]=q.IsFinished,["result"]=q.Result.ToString(),
                                 ["target"]=q.Target?.UniqueId,["planned"]=q.AllAttacks.Count,["plannedIndex"]=(int)ReadExpandedSummoningOptionalMember(q,"m_AttackIndex"),["plannedAbsent"]=q.PlannedAttack==null,
@@ -251,10 +254,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly Harmony12.HarmonyInstance harmony;private readonly string id="KMG.Sprint26.QueueTrace."+Guid.NewGuid().ToString("N");
             private readonly MethodInfo method=typeof(UnitCommands).GetMethod("AddToQueueFirst");
             internal readonly List<UnitAttack> Commands=new List<UnitAttack>();
+            internal readonly JArray QueueVisits=new JArray();
             internal Sprint26QueueTrace(UnitEntityData owner){if(active!=null)throw new InvalidOperationException("Nested exact queue observation.");this.owner=owner;harmony=Harmony12.HarmonyInstance.Create(id);
                 try{harmony.Patch(method,null,new Harmony12.HarmonyMethod(typeof(Sprint26QueueTrace).GetMethod("After",BindingFlags.Static|BindingFlags.NonPublic)));active=this;}catch{Dispose();throw;}}
-            private static void After(UnitCommand __0){var value=active;var attack=__0 as UnitAttack;if(value!=null&&attack!=null&&ReferenceEquals(attack.Executor,value.owner)&&attack.IsCharge)value.Commands.Add(attack);}
-            public void Dispose(){harmony.Unpatch(method,Harmony12.HarmonyPatchType.All,id);if(ReferenceEquals(active,this))active=null;Commands.Clear();}
+            private static void After(UnitCommand __0){
+                var value=active;var attack=__0 as UnitAttack;
+                if(value==null||attack==null||!ReferenceEquals(attack.Executor,value.owner))return;
+                if(attack.IsCharge)value.Commands.Add(attack);
+                var owner=value.owner;var agent=owner.View.AgentASP;
+                value.QueueVisits.Add(new JObject{["frame"]=Time.frameCount,["isCharge"]=attack.IsCharge,["ignoresCooldown"]=attack.IsIgnoreCooldown,
+                    ["referenceId"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack),["target"]=attack.Target?.UniqueId,
+                    ["shouldApproach"]=attack.ShouldUnitApproach,["enoughClose"]=attack.IsUnitEnoughClose,["approachRadius"]=attack.ApproachRadius,
+                    ["distance"]=attack.Target==null?-1f:owner.DistanceTo(attack.Target),["position"]=SurveyVector(owner.Position),["previousPosition"]=SurveyVector(owner.PreviousPosition),
+                    ["pathPresent"]=agent.Path!=null,["reallyMoving"]=agent.IsReallyMoving,["nextPointIndex"]=ReadExpandedSummoningOptionalMember(agent,"m_NextPointIndex")?.ToString(),
+                    ["canAct"]=owner.Descriptor.State.CanAct,["canMove"]=owner.Descriptor.State.CanMove,["leapArmed"]=BuletteLeapRuntime.IsArmed(owner),
+                    ["bound"]=BuletteLeapRuntime.Observation(attack)!=null,["callers"]=new JArray(new System.Diagnostics.StackTrace().GetFrames().Skip(1).Take(8).Select(f=>f.GetMethod().DeclaringType?.FullName+"."+f.GetMethod().Name))});
+            }
+            public void Dispose(){harmony.Unpatch(method,Harmony12.HarmonyPatchType.All,id);if(ReferenceEquals(active,this))active=null;Commands.Clear();QueueVisits.Clear();}
         }
     }
 }

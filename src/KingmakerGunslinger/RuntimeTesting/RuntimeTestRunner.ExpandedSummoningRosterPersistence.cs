@@ -428,6 +428,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // are evidence, not a second serialized feature schema.
                 if (prepare) receipt.Profile = profile.ToString(Formatting.None);
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
+                JObject moduleExpectedProfile = null;
+                if (Sprint26PersistenceScope && !moduleOn) {
+                    // The saved fixture was prepared ON. The exact-owner reach
+                    // correction is module-gated like released natural reach.
+                    // Compare its precise OFF delta while preserving every
+                    // other saved field and any additional native reach bonus.
+                    moduleExpectedProfile = JObject.Parse(receipt.Profile);
+                    var attacks = moduleExpectedProfile["attacks"] as JArray;
+                    if (attacks == null) throw new InvalidOperationException("Saved magical-beast attacks are absent.");
+                    foreach (JObject attack in attacks) {
+                        int correction = Sprint26MagicalBeastRules.ReachAdjustment(unit.Blueprint.AssetGuid, (string)attack["weapon"]);
+                        attack["reachFeet"] = (int)attack["reachFeet"] - correction;
+                    }
+                    profileSame = JToken.DeepEquals(moduleExpectedProfile, profile);
+                }
                 bool giantFactsAbilitiesExact = true;
                 if (Sprint25PersistenceScope && moduleOn && GiantBodyRulesPolicy.IsGiantBody(receipt.Key))
                 {
@@ -507,6 +522,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
+                        ["expectedProfileForModule"] = moduleExpectedProfile,
                         ["projectResourceCount"] = project.Length, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning,
                         ["variantRegisteredForSaveCompatibility"] = registeredVariant, ["variantOutcome"] = variantOutcome,
                         ["variantOwnership"] = variantOwner, ["rimLookupAbsent"] = rimAbsent, ["rimControllerState"] = rimState,

@@ -1,93 +1,77 @@
 # Sprint26 current coverage
 
-## Controlling state: IMPLEMENTING_WITHHELD / R20 observer checkpoint
+## Controlling state: IMPLEMENTING_WITHHELD / R21 observer checkpoint
 
-Continue the authorized full release campaign through product PR58, exact-byte
-stable promotion, public downloads/restoration and final records merge. STOP
-before Sprint27. No product merge, qualified public candidate or release yet.
-Fixed production/build/native/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
+Continue the full authorized campaign through PR58, exact-byte stable promotion,
+public downloads/restoration and final records merge. STOP before Sprint27.
+No product merge, qualified public candidate or release. Fixed source/build/
+native/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
 
-Released6,916-entry identity prefix intact;45 appended identities:2 units,6 roots,
-19 private carriers and18 adapters. Registered110 creatures, Monster96/545,
-Nature97/557,1,102 placements. Current public:1,096 generated placements plus29
-retained wrappers =1,125 choices. Only Gorgon/Bulette suppressed; final1,131 choices.
+Released 6,916 identities intact; 45 append-only identities. Registered 110
+creatures, Monster96/545, Nature97/557, 1,102 placements. Current public:
+1,096 roots + 29 wrappers = 1,125 choices; only Gorgon/Bulette withheld; final1,131.
 
-## Exact retained R19 artifact
+## Retained exact R20 artifact
 
-Source f40de45a831d8670b6c880004b13acea578936bd; strict Sprint gate
-PASS404.697s, all2,687 tests/zero failures, exact386-file package/source boundary.
-ZIP d027470bab7829ea0de423c34d1a4951af50a902bc7b6fb96248db176071da66;
-DLL b656a47e3a6ca7a19784590eea5a3393473eaa0482f4f4ab05a6d95ea094af10;
-MVIDac4327d5-a2f7-4e63-9d74-befdf5d05882;
-fingerprint65bc8c942e92bf8eddef009b91d65661462c820ebc9c11383bf0ed56ab227c7f.
-Whole strict directory archived byte-exact at artifacts/sprint26-strict-hidden-r19
-with its archive receipt after every native transaction closed. Incomplete
-qualification/hidden stage: never promote these bytes.
+Source946fa668fecc3e63d652e572b4f08d32897e17cd; strict Sprint PASS378.5016122s,
+all2,687 tests, zero failures, exact386 files. ZIP
+803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa; DLL
+1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d;
+MVID178bb16a-2dae-4849-b34e-53f62ccc4cc4; fingerprint
+8d03fb291981b79c3919fdf4a511c51d8eed70d0b678709ea594fa9318392e92.
+Archived byte-exact (165 files) under artifacts/sprint26-strict-hidden-r20.
+Incomplete hidden qualification: never promote these bytes.
 
-| Coverage | Latest actual proof and remaining gap |
+| Coverage | Actual proof / remaining work |
 | --- | --- |
-| Gorgon RTWP stages/targeting/cooldown/immunity/life/cure | R19 PASS41; actual native Stone to Flesh removes permanent own stone; current mouth/body pixels inspected |
-| Gorgon TB commands | R17 PASS19; dependency reconciliation/final-source reuse justification pending |
-| Bulette TB Leap | R18 PASS16; both genuine branches and later ordinary routine; final-source reuse justification pending |
-| Bulette RTWP opportunity/completion | R19 real native opportunity1 and budget1-to0 observed. Predicate FAIL: parent/queue/binding gates unlogged. Fresh completion diagnostics required; no whole-phase reinterpretation |
-| Adult profiles/roles/skills/reach/CMD/live modifiers | R19 27/28 assertions PASS incl released Elephant. Live+3 Gorgon hoof case bonus9 vs expected6 remains FAIL; align per-strike PA-off setup and log native state before fresh run |
-| Targeted persistence | R19 source composed profiles and both stages/DC/source strings/cooldown matched after cold load; permanent guard observed. Observer wrongly required the guard on healthy temporary stage as well, so no recovery/cleanup save or remaining4 stages. Fresh corrected six-stage ON/OFF run required |
-| Bodies/icons/rollback/cache/donor | 19a2b61a lifecycle38 PASS; R19 actual Gorgon mouth/body pixels inspected; unchanged-proof justification/final public presentation pending |
-| Exact-owner AI | 19a2b61a AI16 PASS; final dependency justification or short fresh check pending |
-| Current high-risk combined | Pending bounded affected checks; no historical full matrix selected |
-| Six public roots/inventory/slots/quantity/duration/alignment | Pending final public source/package |
-| Publisher | 81 refusal checks and632 runtime-dispatch preflight PASS on R19; final qualification ledger/preflight/dry-run/promotion/public download/lineage remain pending |
+| Profiles, attack roles, skills, signed/live damage/reach | R20 PASS28 including released Elephant; per-strike PA-off precondition corrected |
+| Gorgon RTWP/TB | R19 PASS41 including actual native permanent cure; R17 TB PASS19; affected observer-clock reconciliation/fresh checks pending |
+| Bulette Leap | R18 TB PASS16. R20 RTWP41/42; parent finishes and real opportunity occurs, but native child is ordinary. Fresh timing/queue experiment required |
+| Targeted persistence | R20 ON prepare/recovery-cleanup/absence and second prepare PASS. OFF stone/cooldown/recovery PASS, whole stage FAIL due only reach profile expectation and no-save consequence. Fresh corrected OFF cleanup/absence required |
+| Bodies/icons/lifecycle/cache/donor | 19a2b61a PASS38; R19 real mouth/body pixels inspected; final public presentation/reuse justification pending |
+| Exact-owner AI / ordinary TB | 19a2b61a AI16/TB20 PASS; affected clock checks pending |
+| Current high-risk combined | Bounded affected phases pending; no historical full matrix selected |
+| Six public roots/slots/quantity/duration/alignment | Final public source/artifact pending |
+| Publisher / full public gate | Refusal/dispatch tests pass; final ledger, preflight/dry-run, merge/promotion/public downloads remain pending |
 
-All R19 transactions restored actual installation/settings/private references
-and all118 saves/content/protected metadata. Failed cold batch716.959s armed no
-cleanup save; envelope restored today's original Working bytes/creation/write/
-attributes exactly. No owned game/lease remains. Baseline never loaded/written.
-Steam Offline supported. Exact RunIds/hashes/failures are in development history.
+R20 persistence batch1803.855s stops after the OFF profile failures. Every other
+profile field matches: only module-gated reach is5->2 Gorgon and10->5 Bulette.
+OFF conditions/DC/source loss/cooldown/recovery and fixture actor teardown pass,
+but no cleanup save or fresh absence is claimed. Exact prepared disposable
+snapshot SHA f002d9f25d8d94428e465dbfb2ecb7dcc759552242c0e3ca9604bad6b332ea1e
+is preserved for the guarded two-stage rerun; today's actual Working is backed
+up/restored separately. Actual installation/settings/private references and
+all118 saves/content/protected metadata restored exactly. No game/lease.
+Baseline never loaded/written; Steam Offline preserved.
 
-## Current R20 change and next executable boundary
+## R21 change and next boundary
 
-Production mechanics/art/identities are unchanged from f40de45a. Only three
-request-local observer files change. The cold observer now uses native health
-IsConscious for the temporary stage and requires actual automatic-recovery guard
-observation for permanent stone; Petrified still prevents acting/moving. Leap
-retains its completion predicate and gains exact parent/queue/reference/binding,
-interruption/cost/owner-attack observations. A real opportunity and budget debit
-alone do not prove the unlogged completion gates. The live modifier fixture
-uses the same per-strike Power Attack-off setup as the signed matrix and logs
-actual toggle/buff/secondary/multiplier/calculated/real damage. Expected results
-and production behavior are unchanged; no old FAIL is overwritten.
+Production remains f40de45a. Three observer files change: one measured allowed
+ability-process Tick per Unity frame; all native owner attack queue visits
+(including fallback); completed four-claw/no-bite opportunity proof; exact
+known owner/weapon OFF reach delta with every other saved field still compared.
+Double native/manual execution is a hypothesis, not a proven cause. No
+production movement fix or relaxed mandatory outcome. Old FAIL records retained.
+Compilation PASS18.1s, nine named tests PASS0.8s, exact source boundary PASS.
 
-Focused Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint26: corrected
-production compilation PASS17.0s, nine named tests PASS0.8s runner. Review/push,
-freeze one strict R20 hidden candidate in this same root, then fresh affected
-foundation, Leap and six-stage Working-only ON/OFF cleanup/absence. If evidence
-reveals a production issue, preserve it and narrow the repair. Complete bounded
-combined coverage and source-bound unaffected-proof reconciliation. The native
-planning estimate grew through retained failures; do not blindly replay old runs.
-
-After mandatory hidden qualification remove only the two suppression keys,
-regenerate controlled artifacts, archive hidden bytes and qualify the changed
-public source once. Require fresh complete public gate/six-root observations,
-qualified evidence/reuse ledger, publisher preflight/dry-run and fresh upstream
-fetch/releases check before authorized merge and stable promotion. Promote tested
-bytes, validate real public downloads/lineage, restore machine exactly, merge
-RELEASED/STOP records and stop before Sprint27. Upstream read2026-10-18T13:48Z:
-master555b16e0, Latestv0.0.159; this is not a version reservation.
+Push/freeze strict R21, then fresh Leap and only the missing OFF cleanup/absence
+from its exact prior fixture. Complete affected both-mode/AI and bounded combined
+checks plus dependency-justified reuse. After mandatory hidden coverage, remove
+only two suppression keys, regenerate controlled artifacts and qualify public
+source once: fresh complete gate and six real roots/inventory/icons required.
+Then final qualified ledger, publisher preflight/dry-run, current upstream/version
+check, authorized product merge/stable promotion of actual tested bytes, real
+public downloads/lineage, exact restoration and final records merge. No Sprint27.
 
 ## Art and accepted scope
 
-Gorgon uses original modest armored-bull geometry on native Horse animation;
-Bulette uses the exact normal adult native body. Actual pixels were inspected.
-Painted summon medallions and original Leap emblem are integrated; native
-stone/trample art is semantically reused. HumanReview: NOT_PERFORMED_NONBLOCKING.
-Rough proportions, pale material/texture finish, faceting, seams, secondary motion
-and contact choreography remain visual backlog. Approved released pixels and
-assignments are protected; Sprint25 visual debt is not reopened.
-
-Gorgon SMVIII is the charter-selected extension, absent the ordinary core table.
-Bulette SNAVI is on the ordinary table. Both are untemplated. Bulette's explicit
-ordinary-map adaptation leaves printed20-foot burrow and unsupported tremorsense
-unmodeled, with no invisible travel or substituted blindsight. Frozen rules and
-native boundaries remain in planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md.
-Earlier source-bound evidence is in
-[development history](history/SPRINT26-DEVELOPMENT-EVIDENCE.md).
+Original armored-bull geometry on native Horse animation; exact native adult
+Bulette body; original painted medallions/Leap emblem; semantic native stone/
+trample art. Actual pixels inspected. HumanReview NOT_PERFORMED_NONBLOCKING.
+Rough proportions, pale texture finish, faceting, seams, secondary motion and
+contact choreography remain backlog; released approved art is protected.
+Gorgon SMVIII is a charter extension, absent ordinary core table; Bulette SNAVI
+is ordinary placement. Both untemplated. Explicit surface adaptation leaves
+printed20-foot burrow and unsupported tremorsense unmodeled; no substituted
+blindsight or underground travel. See the frozen contract and development
+history for exact source-bound observations and failures.
