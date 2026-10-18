@@ -78,7 +78,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.156.md',
     'docs\RELEASE-NOTES-0.0.157.md',
     'docs\RELEASE-NOTES-0.0.158.md',
-    'docs\RELEASE-NOTES-0.0.159.md')) {
+    'docs\RELEASE-NOTES-0.0.159.md',
+    'docs\RELEASE-NOTES-0.0.160.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative

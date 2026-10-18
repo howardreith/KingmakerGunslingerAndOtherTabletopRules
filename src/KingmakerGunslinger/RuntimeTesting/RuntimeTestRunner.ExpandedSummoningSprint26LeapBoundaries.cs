@@ -28,7 +28,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var observer=new Sprint24AttackObserver{Owner=owner,Target=target};
             try{
                 foreach(int f in Sprint26Appearance(owner,"bulette"))yield return f;
-                Vector3 start;string lane;var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out lane);
+                Vector3 start;string lane;var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out lane,startDistances:new[]{20f,16f,12f});
                 if(selected==null)throw new InvalidOperationException("No legal cancellation lane: "+lane);
                 owner.JoinCombat();target.JoinCombat();var command=new UnitUseAbility(data,selected);var costs=new JArray();
                 EventBus.Subscribe(observer);
@@ -38,7 +38,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if(command.ExecutionProcess!=null&&!command.ExecutionProcess.IsEnded)command.ExecutionProcess.Tick();yield return 0;
                     }
                     bool reached=seed.Count==1&&!command.IsFinished&&Vector3.Distance(start,owner.Position)>.05f&&queued.Commands.Count==0&&observer.WeaponAttacks.Count==0;
-                    if(!reached)throw new InvalidOperationException("Cancellation precondition absent; no negative PASS.");
+                    Sprint25Check("leap-"+(loseTarget?"target-loss":"interruption")+"-precondition",reached,
+                        new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["route"]=lane,["frames"]=frames,
+                            ["checkCount"]=seed.Count,["parentFinished"]=command.IsFinished,["parentResult"]=command.Result.ToString(),
+                            ["travel"]=Vector3.Distance(start,owner.Position),["queuedChildren"]=queued.Commands.Count,
+                            ["weaponAttacks"]=observer.WeaponAttacks.Count,["available"]=data.IsAvailable,["canAct"]=owner.Descriptor.State.CanAct,
+                            ["targetDestroyed"]=target.Destroyed,["enemy"]=owner.IsEnemy(target),["costs"]=costs},
+                        "A real checked charge is moving before any attack and remains interruptible; missing setup is a failed observation, never negative PASS.");
+                    if(!reached)yield break;
                     if(loseTarget)DisposeExpandedSummoningUnits(fixture.Created,new[]{target});else command.Interrupt(true);
                     deadline=DateTime.UtcNow.AddSeconds(12);
                     while(frames++<3500&&DateTime.UtcNow<deadline&&(!command.IsFinished||BuletteLeapRuntime.IsArmed(owner))){
@@ -163,7 +170,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["enemy"]=flanker.IsEnemy(owner),["group"]=flanker.GroupId,["ownerGroup"]=owner.GroupId,["primaryWeapon"]=flanker.Body.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid,
                         ["engagedIds"]=new JArray(flanker.CombatState.EngagedUnits.Select(v=>v.UniqueId)),["protectedActorsOutsideThreat"]=parked},
                     "Real native engagement, opportunity budget and legal charge are obtained outside every protected actor before the production command.");
-                if(!engaged||!available||!chargeAvailable)throw new InvalidOperationException("Legal charge/opportunity setup not obtained; no PASS.");
+                if(!engaged||!available||!chargeAvailable)yield break;
                 EventBus.Subscribe(observer);
                 using(var seed=new Sprint26JumpSeed(owner,20))using(var queued=new Sprint26QueueTrace(owner)){
                     var command=new UnitUseAbility(data,selected);owner.Commands.Run(command);

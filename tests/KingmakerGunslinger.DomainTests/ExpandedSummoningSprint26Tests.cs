@@ -67,6 +67,10 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void BreathMathRemainsLive()
         {
+            Assertions.True(Sprint26MagicalBeastRules.UsesMouthOrigin(Sprint26MagicalBeastRules.GorgonUnitGuid,Sprint26MagicalBeastRules.BreathProjectileGuid), "Only the exact own projectile receives its native jaw position.");
+            Assertions.False(Sprint26MagicalBeastRules.UsesMouthOrigin(Sprint26MagicalBeastRules.BuletteUnitGuid,Sprint26MagicalBeastRules.BreathProjectileGuid), "Other owners retain native projectile origins.");
+            Assertions.False(Sprint26MagicalBeastRules.UsesMouthOrigin(Sprint26MagicalBeastRules.GorgonUnitGuid,"f6544caac8fe528489327cd86a84b025"), "The shared native cone and all its other consumers retain their original origin.");
+            Assertions.False(Sprint26MagicalBeastRules.UsesMouthOrigin(null,null), "Missing identity grants no visual override.");
             Assertions.Equal(21, Sprint26MagicalBeastRules.BreathDc(8, 7), "Adult baseline.");
             Assertions.Equal(24, Sprint26MagicalBeastRules.BreathDc(10, 9), "Live HD and Constitution both contribute.");
             Assertions.Equal(11, Sprint26MagicalBeastRules.BreathDc(8, -3), "A Constitution penalty is retained.");

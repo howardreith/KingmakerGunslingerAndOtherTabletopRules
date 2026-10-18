@@ -222,7 +222,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int bonus=(int)bonusField.GetValue(evt);
                 int difficulty=Game.Instance.BlueprintRoot.DifficultyList.GetAdjustmentPreset(Game.Instance.Player.Difficulty.StatsAdjustmentsType).AbilityDCBonus;
                 int expected=Sprint26MagicalBeastRules.BreathDc(hd,con)+bonus+(owner.IsPlayersEnemy?difficulty:0);
-                Row=new JObject{["racialHd"]=hd,["constitutionBonus"]=con,["replaceCasterLevel"]=evt.ReplaceCasterLevel,
+                Row=new JObject{["racialHd"]=hd,["constitutionBonus"]=con,["nativeGetStatConstitutionBonus"]=owner.Stats.GetStat<Kingmaker.EntitySystem.Stats.ModifiableValueAttributeStat>(Kingmaker.EntitySystem.Stats.StatType.Constitution).Bonus,["replaceCasterLevel"]=evt.ReplaceCasterLevel,
                     ["replaceSpellLevel"]=evt.ReplaceSpellLevel,["replaceStat"]=evt.ReplaceStat?.ToString(),["replaceDc"]=evt.ReplaceDC,
                     ["nativeBonusDc"]=bonus,["isPlayersEnemy"]=owner.IsPlayersEnemy,["difficultyDcBonus"]=difficulty,
                     ["group"]=owner.GroupId,["groupAttackFactions"]=new JArray(owner.Group.AttackFactions.Select(v=>v.AssetGuid)),
@@ -256,6 +256,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(value==null||__0==null||!ReferenceEquals(__0.Launcher,value.owner)||__0.Blueprint==null||__0.Blueprint.AssetGuid!=Sprint26MagicalBeastRules.BreathProjectileGuid)return;
                 var bones=value.owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).SelectMany(v=>v.bones??new Transform[0]).Where(v=>v!=null).Distinct().ToArray();
                 var jaw=bones.SingleOrDefault(v=>v.name=="Jaw");var head=bones.SingleOrDefault(v=>v.name=="Head");
+                var resolved=Kingmaker.Utility.ObjectExtensions.FindChildRecursive(value.owner.View.transform,__0.Blueprint.SourceBone);
                 value.LaunchFrame=Time.frameCount;
                 value.Rows.Add(new JObject{["frame"]=Time.frameCount,["owner"]=value.owner.UniqueId,["projectile"]=__0.Blueprint.AssetGuid,
                     ["nativeSourceBone"]=__0.Blueprint.SourceBone,["nativeCorpulenceOffset"]=__0.Blueprint.SourceBoneCorpulenceOffset,
@@ -263,6 +264,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["viewPresent"]=__0.View!=null,["viewPosition"]=__0.View==null?null:SurveyVector(__0.View.transform.position),
                     ["unitPosition"]=SurveyVector(value.owner.Position),["jaw"]=jaw==null?null:SurveyVector(jaw.position),["head"]=head==null?null:SurveyVector(head.position),
                     ["jawGapMeters"]=jaw==null?-1:Vector3.Distance(jaw.position,__0.LaunchPosition),
+                    ["resolvedSourceFound"]=resolved!=null,["resolvedSourcePosition"]=resolved==null?null:SurveyVector(resolved.position),
+                    ["resolvedSourceGapMeters"]=resolved==null?-1:Vector3.Distance(resolved.position,__0.LaunchPosition),
+                    ["resolvedSourceIsSkinnedJaw"]=ReferenceEquals(resolved,jaw),
                     ["nativeSourceBoneMatchesSkinnedBone"]=bones.Any(v=>v.name==__0.Blueprint.SourceBone)});
             }
             public void Dispose(){if(method!=null)harmony.Unpatch(method,Harmony12.HarmonyPatchType.All,id);if(ReferenceEquals(active,this))active=null;}

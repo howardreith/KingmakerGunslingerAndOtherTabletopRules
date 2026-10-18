@@ -244,4 +244,21 @@ namespace KingmakerGunslinger.Summoning
             return true;
         }
     }
+    // The native cone explicitly supplies its eye-based launch position,
+    // overriding the projectile's SourceBone. Correct only this private
+    // projectile's visible origin; native cone eligibility/line of effect,
+    // range, targeting and every other projectile remain untouched.
+    [Harmony12.HarmonyPatch(typeof(Kingmaker.Controllers.Projectiles.ProjectileController), "CreateView",
+        new[] { typeof(Kingmaker.Controllers.Projectiles.Projectile), typeof(UnityEngine.Vector3?) })]
+    internal static class GorgonBreathMouthOrigin
+    {
+        private static void Prefix(Kingmaker.Controllers.Projectiles.Projectile __0, ref UnityEngine.Vector3? __1)
+        {
+            var owner=__0?.Launcher;
+            if(!Sprint26MagicalBeastRules.UsesMouthOrigin(owner?.Blueprint?.AssetGuid,__0?.Blueprint?.AssetGuid)||owner.View==null)return;
+            var jaw=Kingmaker.Utility.ObjectExtensions.FindChildRecursive(owner.View.transform,"Jaw");
+            if(jaw!=null)__1=jaw.position;
+        }
+    }
+
 }

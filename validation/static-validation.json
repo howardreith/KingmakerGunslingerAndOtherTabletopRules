@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.159-expanded-summoning-sprint25-giant-bodies",
+  "milestone": "Expanded Summoning Sprint 26 Gorgon and Bulette candidate",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.159",
+  "version": "0.0.160",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2590,5 +2590,12 @@
     "visibleChoiceTotal": 1122,
     "guardedNativeReviewed": true,
     "ownerVisualReview": "provisional; the owner reviews in the game after release"
+  },
+  "expandedSummoningSprint26160": {
+    "candidateOnly": true,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "qualificationEvidence": "Separate exact-artifact release ledger; no runtime pass inferred by this source record.",
+    "scope": "Two untemplated creatures, six selected roots; Gorgon charter extension, Bulette surface-only leap; no generalized burrowing.",
+    "stage": "hidden"
   }
 }
