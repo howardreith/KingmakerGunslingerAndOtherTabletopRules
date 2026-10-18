@@ -17,6 +17,7 @@ the opportunity flanker obtains its own native group before hostile engagement.
 All original scene victims are explicitly excluded from cone experiment lanes.
 Production compilation PASS (17.6s), eight named Sprint26 domain tests PASS (4.3s).
 Fresh affected native evidence remains required. No release qualification claimed.
+R14 package attempt stopped before compilation/package/native launch: the current icon-catalog registry hash still named the 44-entry append. The current dependency hash and exact authorization count are reconciled; published hash/pixels/assignments remain unchanged. Icon catalog validation and all 30 corruption fixtures PASS (12.304s). Build-Local already owns dispatch preflight, so the resumed build invokes it once.
 
 # Sprint26 - implementation checkpoint
 
