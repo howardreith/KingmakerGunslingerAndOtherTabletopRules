@@ -121,6 +121,41 @@ namespace KingmakerGunslinger.RuntimeTesting
             }finally{PlaceExpandedSummoningUnit(owner,originalOwner);PlaceExpandedSummoningUnit(target,originalTarget);}
         }
 
+        // Fixture placement only. The native charge checks its own navigation
+        // again while moving; an endpoint ray alone does not establish room
+        // for this Huge body's initial steering. Never bypass a blocked ray.
+        private static bool Sprint26ChargeCorridor(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner,UnitEntityData target,out JObject detail)
+        {
+            var probe=new UnitAttack(target);probe.Init(owner);
+            Vector3 origin=owner.Position,destination=target.Position;
+            Vector3 direction=destination-origin;direction.y=0f;float distance=direction.magnitude;
+            float travel=distance-probe.ApproachRadius;
+            detail=new JObject{["origin"]=SurveyVector(origin),["target"]=SurveyVector(destination),
+                ["halfWidth"]=owner.Corpulence,["travelToApproach"]=travel,["sampleSpacing"]=.5f,["clear"]=false};
+            if(!Sprint26MagicalBeastRules.ChargeTravelIsLegal(travel)||distance<=0f)return false;
+            direction/=distance;Vector3 side=new Vector3(-direction.z,0,direction.x);
+            Vector3 landing=origin+direction*travel,line=landing-origin;
+            foreach(var protectedUnit in fixture.UnitsBefore.OfType<UnitEntityData>().Where(v=>v!=null&&!v.Destroyed)){
+                Vector3 offset=protectedUnit.Position-origin;offset.y=0f;
+                float fraction=Mathf.Clamp01(Vector3.Dot(offset,line)/line.sqrMagnitude);
+                Vector3 nearest=origin+line*fraction,delta=protectedUnit.Position-nearest;delta.y=0f;
+                if(delta.magnitude<owner.Corpulence+protectedUnit.Corpulence+.5f){detail["protectedActorInCorridor"]=protectedUnit.UniqueId;return false;}
+            }
+            int count=Mathf.CeilToInt(travel/.5f),checkedPoints=0;
+            for(int i=0;i<=count;i++)foreach(float lateral in new[]{-owner.Corpulence,0f,owner.Corpulence}){
+                Vector3 point=origin+direction*(travel*i/count)+side*lateral;
+                var node=Kingmaker.View.ObstacleAnalyzer.GetNearestNode(point);
+                Vector3 traced=node.node!=null&&node.node.Walkable?Kingmaker.View.ObstacleAnalyzer.TraceAlongNavmesh(point,destination):point;
+                checkedPoints++;
+                if(node.node==null||!node.node.Walkable||traced!=destination){
+                    detail["checkedPoints"]=checkedPoints;detail["failedPoint"]=SurveyVector(point);detail["nativeTracePoint"]=SurveyVector(traced);
+                    detail["nativeTraceGap"]=Vector3.Distance(traced,destination);return false;
+                }
+            }
+            detail["checkedPoints"]=checkedPoints;detail["clear"]=true;return true;
+        }
+
         private IEnumerable<int> Sprint26LeapOpportunity(ExpandedSummoningCorrectionFixture fixture)
         {
             var owner=CastExpandedSummoningOwnTier(fixture,"bulette");SetExpandedSummoningBrainActive(owner,false);
@@ -136,7 +171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach(int f in Sprint26Appearance(flanker,"gorgon"))yield return f;
                 foreach(int f in Sprint22SetPowerAttack(flanker,false))yield return f;
                 PlaceExpandedSummoningUnit(target,Sprint25IsolatedAnchor(fixture));
-                bool parked=false;Vector3 start;string route;
+                bool parked=false;Vector3 start;string route;var corridorAttempts=new JArray();
                 var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out route,(actor,victim)=>{
                     Vector3 direction=(victim.Position-actor.Position).normalized,side=new Vector3(-direction.z,0,direction.x);
                     foreach(var sign in new[]{1f,-1f}){
@@ -145,7 +180,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if(node.node==null||!node.node.Walkable||Vector3.Distance(requested,node.clampedPosition)>.3f)continue;
                         float reach=flanker.Body.PrimaryHand.MaybeWeapon.AttackRange.Meters+flanker.Corpulence;
                         if(fixture.UnitsBefore.OfType<UnitEntityData>().Any(v=>v!=null&&Vector3.Distance(v.Position,node.clampedPosition)<reach+v.Corpulence+.5f))continue;
-                        PlaceExpandedSummoningUnit(flanker,node.clampedPosition);parked=true;return true;
+                        PlaceExpandedSummoningUnit(flanker,node.clampedPosition);
+                        JObject corridor;bool clear=Sprint26ChargeCorridor(fixture,actor,victim,out corridor);
+                        if(corridorAttempts.Count<30||clear)corridorAttempts.Add(corridor);
+                        if(!clear)continue;
+                        parked=true;return true;
                     }
                     return false;
                 });
@@ -169,12 +208,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 // These flags belong to fixture placement, not the subsequent
                 // real movement. Reuse the released disposable-responder setup.
+                owner.ForceLookAt(target.Position);
                 flanker.CombatState.PreventAttacksOfOpporunityNextFrame=false;
                 owner.CombatState.PreventAttacksOfOpporunityNextFrame=false;
                 for(int i=0;i<5;i++){tick.Invoke(controller,new object[]{flanker});yield return 0;}
                 bool engaged=flanker.CombatState.EngagedUnits.Contains(owner);
                 bool available=flanker.CombatState.CanAttackOfOpportunity;
                 bool chargeAvailable=data.CanTarget(selected);
+                JObject finalCorridor;bool corridorReady=Sprint26ChargeCorridor(fixture,owner,target,out finalCorridor);
                 int beforeSimulation=flanker.CombatState.AttackOfOpportunityCount;
                 // Native simulate=true issues no command or budget debit.
                 bool reactionEligible=flanker.CombatState.AttackOfOpportunity(owner,true);
@@ -195,17 +236,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownerForceMoveProvoke"]=owner.Get<Kingmaker.UnitLogic.Parts.UnitPartForceMove>()?.ProvokeAttackOfOpportunity,
                     ["opportunityCount"]=flanker.CombatState.AttackOfOpportunityCount};
                 var movementStates=new JArray{state("before-charge")};
-                Sprint25Check("leap-opportunity-preconditions",engaged&&available&&chargeAvailable&&reactionEligible&&disengageEligible&&simulationReadOnly,
+                Sprint25Check("leap-opportunity-preconditions",engaged&&available&&chargeAvailable&&corridorReady&&reactionEligible&&disengageEligible&&simulationReadOnly,
                     new JObject{["owner"]=owner.UniqueId,["flanker"]=flanker.UniqueId,["route"]=route,
                         ["engaged"]=engaged,["opportunityAvailable"]=available,["chargeAvailable"]=chargeAvailable,
+                        ["bodyWideCorridorReady"]=corridorReady,["finalCorridor"]=finalCorridor,["corridorCandidates"]=corridorAttempts,["initialFacingDegrees"]=owner.Orientation,
                         ["nativeReactionEligible"]=reactionEligible,["nativeDisengageEligible"]=disengageEligible,["nativeSimulatedDisengage"]=simulatedDisengage,["simulationReadOnly"]=simulationReadOnly,
                         ["readinessFrames"]=readyFrames,["nativeState"]=state("ready"),
                         ["count"]=flanker.CombatState.AttackOfOpportunityCount,["canAct"]=flanker.Descriptor.State.CanAct,
                         ["sleeping"]=flanker.IsSleeping,["awakePool"]=Game.Instance.State.AwakeUnits.Contains(flanker),
                         ["enemy"]=flanker.IsEnemy(owner),["group"]=flanker.GroupId,["ownerGroup"]=owner.GroupId,["primaryWeapon"]=flanker.Body.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid,
                         ["engagedIds"]=new JArray(flanker.CombatState.EngagedUnits.Select(v=>v.UniqueId)),["protectedActorsOutsideThreat"]=parked},
-                    "Real native engagement, opportunity budget and legal charge are obtained outside every protected actor before the production command.");
-                if(!engaged||!available||!chargeAvailable||!reactionEligible||!disengageEligible||!simulationReadOnly)yield break;
+                    "A body-wide native navigation corridor, actual native engagement/opportunity budget and legal charge are obtained outside protected actors before the production command.");
+                if(!engaged||!available||!chargeAvailable||!corridorReady||!reactionEligible||!disengageEligible||!simulationReadOnly)yield break;
                 EventBus.Subscribe(observer);EventBus.Subscribe(leapAttacks);
                 using(var seed=new Sprint26JumpSeed(owner,20))using(var queued=new Sprint26QueueTrace(owner))
                 using(var economy=new FirearmReviewCosts(owner,costs))using(var trace=new Sprint26CommandTrace(owner,endings)){

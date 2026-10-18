@@ -21,30 +21,31 @@ appended identities preserve the released 6,916 prefix. Current public equation:
 Original icons and recognizable bodies are integrated; rough visual backlog,
 HumanReview NOT_PERFORMED_NONBLOCKING.
 
-Latest strict hidden R21b: source00b3be846ff2bce63e0c8b1a55fb3df490fb3587,
+Latest strict hidden R22: source12b83f4a5b2557e4e411156ea99f572b314933d0,
 all2,687 tests PASS, exact386-file package archived byte-exact. ZIP
-f74b3ff8a2f304eab2c93c1462cae4762adc002509b3c4d57d5911af21761c1c; DLL
-253b04a7e3bb1b44d12491fb9588ad7d9e3cf3a56e5240999256e776d6a12763;
-MVIDfe771045-42ec-457f-b46b-1e7ee8f0e3c3. Incomplete hidden qualification.
+75482f72c1b46b915b3428350b052e7e1e9b4cc59c7eeb6c83550a5f1b9ce67e; DLL
+23728d073ca85aed05b158385d05cffcfba26ba4ca1deffb212c14bc55f9605c;
+MVIDe9ff5263-8f65-40d9-927a-e3a0ded2b67e. Incomplete hidden qualification.
 
-R21b Leap still FAIL42 (41 pass). Clock blocked60 duplicate ability ticks,
-maximum allowed1/frame, but native routine queues an ordinary child after
-about1.25m, before the enemy opportunity. The timing fix is insufficient.
-R21b OFF stone/cooldown/recovery/actor teardown pass; whole stage FAIL17
-(14 pass) because DeepEquals rejects identical serialized profiles. Actual
-game Newtonsoft8 probe confirms string-null -> JSON null changes token type;
-serialized equality remains true. No cleanup save or fresh absence claimed.
-All118 saves/metadata and actual Working bytes/times/attributes restored;
-installation/settings/references exact, no game/lease, Steam Offline preserved.
+Targeted ON/OFF persistence is complete across the exact R20/R22 union:
+77 assertions PASS in six recorded stages. R22 OFF cleanup17/fresh absence7
+PASS, real cleanup save, no remaining receipts/condition actors. Captured
+stages/DC/source strings/cooldown, temporary real recovery, permanent no-save
+and actual native cure (separate R19) are preserved. Every transaction and
+today's original Working bytes/times/attributes/all118 saves restored exactly;
+no game/lease, installation/settings/references exact, Offline preserved.
 
-R22 changes only two observer files: read actual native charge iterator fields/
-exit prerequisites and verify hook cleanup; compare the exact OFF-adjusted
-serialized profile using the existing receipt contract, with decomposed verdicts.
-No production change, forced movement or relaxed Leap outcome. Compile PASS20.9s,
-10 named tests PASS1.0s, exact source boundary PASS; no R22 native claim.
+R22 Leap remains41/42: native charge exits after0.6025m (limit24.384m) because
+the start shifts just off navigation mesh; navigation trace returns near start.
+It occurs before the opportunity. Threat hand/range/previous position are valid;
+no animation stall or distance-limit diagnosis. Failure/logs retained.
+R23 changes only opportunity fixture admission: body-width native-trace corridor,
+protected-actor clearance and native initial facing. No production movement or
+rule change; strict four-claw/no-bite/opportunity outcome remains. Compilation
+PASS22.3s,10 named tests PASS1.0s, source boundary PASS; native rerun pending.
 
-Next: push/freeze strict hidden-r22 in this same root; fresh focused Leap
-attribution and two-stage OFF cleanup/absence from the exact R20 disposable
-fixture. Then affected both-mode/AI and bounded combined coverage; public six-
-root source/gate; qualified ledger/preflight/merge/promotion/downloads/exact
-restoration; final RELEASED/STOP records merge. Preserve wt/s25; no Sprint27.
+Next push/freeze hidden-r23, fresh focused Leap. Then affected both-mode/AI and
+bounded combined coverage; final public six-root source/gate; qualified ledger/
+preflight/merge/promotion/downloads/exact restoration and final records merge.
+Remote refreshed today: master555b16e0, Latestv159, v160 tag absent; recheck before
+publication. Preserve wt/s25 and STOP before Sprint27.
