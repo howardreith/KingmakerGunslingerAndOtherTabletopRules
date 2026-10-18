@@ -45,6 +45,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(Sprint26MagicalBeastRules.SuppressesNativePetrificationDeath(true, 0, true, false), "A missing condition counter cannot suppress native life processing.");
         }
 
+        internal static void OwnCarrierDoesNotMirrorIntoPermanentNativeStone()
+        {
+            string own = Sprint26MagicalBeastRules.PetrificationGuid;
+            Assertions.True(Sprint26MagicalBeastRules.SuppliesOwnPetrifiedStatus(own, true, 1, false), "The exact sole condition carrier supplies its cloned native stone status directly.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppliesOwnPetrifiedStatus(Sprint26MagicalBeastRules.PetrifiedDonor, true, 1, false), "Native petrification keeps the original status factory.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppliesOwnPetrifiedStatus(own, false, 1, false), "Another victim's carrier cannot alter this state.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppliesOwnPetrifiedStatus(own, true, 2, false), "Overlapping conditions retain native status processing.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppliesOwnPetrifiedStatus(own, true, 0, false), "Condition removal still reaches native deactivation.");
+            Assertions.False(Sprint26MagicalBeastRules.SuppliesOwnPetrifiedStatus(own, true, 1, true), "Native immunity still deactivates status presentation.");
+        }
+
         internal static void BreathStagesRequireAnotherActivation()
         {
             Assertions.False(Sprint26MagicalBeastRules.CanEscalate(false, false, null, null, "second"), "An unrelated stone effect is not a first Gorgon exposure.");

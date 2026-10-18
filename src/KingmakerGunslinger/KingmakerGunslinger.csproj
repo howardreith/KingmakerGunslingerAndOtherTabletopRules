@@ -1278,6 +1278,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Census.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Lifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoning.cs" />
     <Compile Include="RuntimeTesting\AlternateSummoningFaultDrillControl.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningContracts.cs" />

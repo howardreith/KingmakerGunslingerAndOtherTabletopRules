@@ -37,6 +37,10 @@ namespace KingmakerGunslinger.Summoning
         }
 
         internal const string PetrificationGuid = "139703f90a8d4929992b783ad0e30bd7";
+        internal static bool SuppliesOwnPetrifiedStatus(string buffGuid, bool sameOwner,
+            int conditionCount, bool immune)
+        { return buffGuid == PetrificationGuid && sameOwner && conditionCount == 1 && !immune; }
+
         internal static bool SuppressesNativePetrificationDeath(bool nativePetrified,
             int conditionCount, bool ownInitialized, bool ownPermanent)
         { return nativePetrified && conditionCount == 1 && ownInitialized && !ownPermanent; }

@@ -106,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     yield break;
                 }
+                if (phase == "visual-lifecycle") { foreach (int frame in Sprint26VisualLifecycle(fixture)) yield return frame; yield break; }
                 if (phase == "rtwp-ai") { foreach (int frame in Sprint26Ai(fixture)) yield return frame; yield break; }
                 if (phase.StartsWith("bulette-leap-", StringComparison.Ordinal))
                 {
@@ -353,6 +354,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Sprint26Routes(ExpandedSummoningCorrectionFixture fixture)
         {
+            Sprint26IconConsumers(fixture);
             var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Concat(
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)).Where(v => v.Creature.Key == "gorgon" || v.Creature.Key == "bulette").ToArray();
             Sprint25Check("route-census", routes.Length == 6 && routes.Count(v => v.Creature.Key == "gorgon") == 2 &&
@@ -385,6 +387,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 start; string route;
                 TargetWrapper selected = Sprint23FindChargeRoute(fixture, owner, target, data, out start, out route);
                 if (selected == null) throw new InvalidOperationException("No legal Leap charge lane: " + route);
+                // Cost application is deliberately inert outside combat. Join
+                // these exact disposable actors before observing expenditure.
+                owner.JoinCombat(); target.JoinCombat();
                 if (turnBased)
                 {
                     var admission = new JObject();
@@ -400,23 +405,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                     using (var economy = new FirearmReviewCosts(owner, costs))
                     {
                         owner.Commands.Run(command);
+                        float maximumVelocity = 0f;
                         int frames = 0; DateTime deadline = DateTime.UtcNow.AddSeconds(35);
                         while (frames++ < 4000 && DateTime.UtcNow < deadline)
                         {
+                            maximumVelocity = Math.Max(maximumVelocity, owner.View.MovementAgent.Velocity.magnitude);
                             attack = attack ?? owner.Commands.Raw.OfType<UnitAttack>().FirstOrDefault();
                             if (command.ExecutionProcess != null && !command.ExecutionProcess.IsEnded) command.ExecutionProcess.Tick();
                             yield return 0;
                             if (attack != null && attack.IsFinished && command.IsFinished) break;
                         }
                         var attempt = BuletteLeapRuntime.Observation(attack);
+                        var landing = AstarPath.active.GetNearest(owner.Position);
+                        var startNode = AstarPath.active.GetNearest(start);
+                        bool legalLanding = landing.node != null && startNode.node != null && landing.node.Walkable &&
+                            landing.node.Area == startNode.node.Area && landing.node.GraphIndex == startNode.node.GraphIndex &&
+                            Vector3.Distance(landing.clampedPosition, owner.Position) <= .6f;
+                        var childCosts = costs.OfType<JObject>().Where(v => (string)v["nativeCost"] == "UnitAttack").ToArray();
+                        bool childUnchanged = attack != null && attack.IsIgnoreCooldown && economy.Count(attack) == 1 && childCosts.Length == 1 &&
+                            childCosts[0]["before"].Values<float>().SequenceEqual(childCosts[0]["after"].Values<float>());
                         bool exact = attempt != null && attempt.Check.IsPassed == success && seed.Count == 1 &&
                             attempt.Check.BaseRollResult == (success ? 37 : 18) && attempt.JumpBonus == 8 &&
                             owner.Stats.SkillMobility.ModifiedValue == 9 && attack != null && attack.IsFinished &&
                             observer.WeaponAttacks.Count == (success ? 4 : 1) &&
                             (!success || observer.WeaponAttacks.All(v => ReferenceEquals(v.Weapon.Blueprint, attempt.Claw))) &&
-                            economy.Count(command) == 1 && economy.Exact(command, turnBased);
+                            economy.Count(command) == 1 && economy.Exact(command, turnBased) && childUnchanged &&
+                            !BuletteLeapRuntime.IsArmed(owner) && attack.IsCharge && legalLanding &&
+                            Vector3.Distance(start, owner.Position) > .25f && maximumVelocity > 0f;
                         Sprint25Check("leap-" + turnBased + "-" + success, exact, new JObject { ["route"] = route,
                             ["finished"] = command.IsFinished, ["result"] = command.Result.ToString(), ["frames"] = frames,
+                            ["start"] = SurveyVector(start), ["landing"] = SurveyVector(owner.Position),
+                            ["travel"] = Vector3.Distance(start, owner.Position), ["legalLanding"] = legalLanding,
+                            ["maximumNativeVelocity"] = maximumVelocity, ["childAddsNoCost"] = childUnchanged,
+                            ["ownerInCombat"] = owner.IsInCombat, ["childIsCharge"] = attack?.IsCharge, ["childIgnoresCooldown"] = attack?.IsIgnoreCooldown,
                             ["checkCount"] = seed.Count, ["checkTotal"] = attempt?.Check.BaseRollResult,
                             ["checkSuccess"] = attempt?.Check.IsPassed, ["jumpBonus"] = attempt?.JumpBonus,
                             ["mobility"] = owner.Stats.SkillMobility.ModifiedValue, ["plannedClaws"] = attempt?.PlannedClaws,
@@ -426,6 +447,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Sprint26Body(owner, "bulette", "leap-" + success);
                     }
                 }
+                if (success)
+                    foreach (int frame in Sprint26Ordinary(fixture, owner, "bulette", turnBased)) yield return frame;
             }
             finally
             {
@@ -523,13 +546,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool firstExact = !target.Descriptor.State.IsDead && target.Descriptor.Damage == damageBeforePetrification &&
                         _sprint26Life.TicksFor(target) > lifeTicksBefore && applied != null && state != null && state.Initialized && !state.Permanent &&
                         state.RecoveryDc == 21 && state.FirstSourceId == owner.UniqueId &&
+                        GorgonPetrificationLife.ConditionCount(target.Descriptor.State) == 1 &&
+                        !target.Buffs.Enumerable.Any(v => v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrifiedDonor) &&
                         target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified) && activation != null &&
                         activation.CooldownRounds >= 2 && activation.CooldownRounds <= 5 && economy.Count(first) == 1;
                     Sprint25Check("breath-first-" + turnBased, firstExact, new JObject { ["unit"] = owner.UniqueId,
                         ["victim"] = target.UniqueId, ["petrified"] = target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified),
                         ["lifeStateDead"] = target.Descriptor.State.IsDead, ["damageBefore"] = damageBeforePetrification,
                         ["damageAfter"] = target.Descriptor.Damage, ["nativeLifeTicks"] = _sprint26Life.TicksFor(target) - lifeTicksBefore,
-                        ["petrifiedConditionCount"] = GorgonPetrificationLife.ConditionCount(target.Descriptor.State), ["permanent"] = state?.Permanent,
+                        ["petrifiedConditionCount"] = GorgonPetrificationLife.ConditionCount(target.Descriptor.State),
+                        ["petrificationBuffs"] = new JArray(target.Buffs.Enumerable.Where(v => v.Blueprint.AssetGuid == stone.AssetGuid ||
+                            v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrifiedDonor).Select(v => v.Blueprint.AssetGuid)), ["permanent"] = state?.Permanent,
                         ["recoveryDc"] = state?.RecoveryDc, ["rolledCooldownRounds"] = activation?.CooldownRounds,
                         ["source"] = state?.FirstSourceId, ["saves"] = saves.Rows.DeepClone(), ["costs"] = costs },
                         "One native cone activation produces temporary victim-owned petrification, Constitution DC21 and an actual 2?5 round clock.");

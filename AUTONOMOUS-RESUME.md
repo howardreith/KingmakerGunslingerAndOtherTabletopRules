@@ -1,77 +1,73 @@
 # Sprint 26 - IN PROGRESS / WITHHELD
 
 Continue the explicitly authorized Gorgon/Bulette implementation, qualification,
-PR merge, next stable release, public verification, exact restoration and final
-records merge, then STOP before Sprint27. Intermediate checkpoints are milestones.
-Scope and interpretations: [Sprint26 contract](planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md).
-Current coverage and retained failures: [Sprint26 coverage](docs/SPRINT26-COVERAGE.md).
+PR merge, stable release, public verification, exact restoration and final records
+merge, then STOP before Sprint27. Intermediate checkpoints are milestones.
+The frozen rules are in planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md;
+current evidence and retained failures are in docs/SPRINT26-COVERAGE.md.
 
-- Host: HOWARD-LAPTOP. Repository: howardreith/KingmakerGunslingerAndOtherTabletopRules.
-- Fixed production root: C:/Dev/KingmakerGunslingerLab/wt/s26.
-- Product branch: codex/expanded-summoning-sprint26-gorgon-bulette; draft PR58.
-- Records branch: codex/expanded-summoning-sprint26-release-records.
-- Released baseline remains v0.0.159 / reviewed master555b16e04613c0800ab0e884beac827184bf46ee.
-- Expected next free version0.0.160 is not reserved; fetch master/releases before promotion.
+- Host HOWARD-LAPTOP; howardreith/KingmakerGunslingerAndOtherTabletopRules.
+- Fixed production worktree C:/Dev/KingmakerGunslingerLab/wt/s26.
+- Product branch codex/expanded-summoning-sprint26-gorgon-bulette; draft PR58.
+- Final-records branch codex/expanded-summoning-sprint26-release-records.
+- Released baseline v0.0.159 / master555b16e04613c0800ab0e884beac827184bf46ee.
+  Expected next version0.0.160 is not reserved; fetch current master/releases
+  before promotion and preserve newer unrelated work normally.
 
-Exactly110 registered creatures /1,102 placements; only Gorgon and Bulette remain
-withheld. Current public surface remains1,096 generated placements +29 retained native wrappers =1,125 visible choices.
-Final six new untemplated roots will expose1,131 choices. The released6,916-entry
-registry prefix is intact, with44 appended identities and no replacement GUIDs.
-Both paintings and the Leap emblem are integrated. Gorgon has original Horse-frame
-geometry; Bulette uses the exact normal adult native body. HumanReview remains
-NOT_PERFORMED_NONBLOCKING. No product merge, stable release or gameplay PASS yet.
+Exactly110 registered creatures /1,102 placements. Only Gorgon and Bulette are
+withheld. Current public surface:1,096 generated placements +29 retained native
+wrappers =1,125 visible choices. Their six untemplated roots will expose1,131.
+The exact released6,916-entry identity prefix is intact with44 appended entries.
+Both painted medallions and the Leap emblem are integrated. Gorgon uses original
+Horse-frame geometry; Bulette uses the exact normal adult native body. Actual
+native frames show both visible/selectable. Gorgon's rough proportions, plates,
+seams and secondary motion remain cosmetic backlog. HumanReview remains
+NOT_PERFORMED_NONBLOCKING. No product merge, final candidate or release yet.
 
-The input capture3728 passed with exact restoration. First gameplay prototype on
-dae3c08f failed: Gorgon Perception, both attack ranges, contaminated Gorgon damage
-probes, flat-footed Bulette defense sampling and interrupted Bulette ordinary
-routine. Real bodies were visible/selectable and Gorgon ordinary command completed.
-The actual Gorgon pixels were insufficiently recognizable; mixed body/plate
-winding has been corrected in its own exporter, pending fresh native inspection.
-The new correction adds only measured reach terms on exact new owners/weapons,
-clears these donors' preallocated skill rows and assigns their own unit types.
-Observer preconditions/diagnostics are narrowed and actual Power Attack, critical
-confirmation, trample and released Elephant profile controls join foundation.
-Production compilation and49 named Sprint26/runtime tests pass; no new native
-verdict is assigned to these corrected bytes until the fresh development run.
+The latest tested development source3d06ae18c0216ff96dac417b722ca1ed17f5a3ec
+produced ZIP2981ed641f2d12f930bf1a3ede0b188fe17c216dd5d2d8d253a071a0842a2128,
+DLLb975ae7ac1657d0d6e1cedc3d0462dd33e3221500886ff7b2330d7b7d0515597,
+MVIDae1d59e6-432e-4271-9d5a-739ee81427ce from this root.529 selected tests
+and fresh632-check request preflight pass. Its RTWP foundation PASS126.708s:
+composed profiles, signed damage, reach, actual native Power Attack/critical
+confirmation, ordinary commands, Gorgon trample and released Elephant control.
+The Sprint26-only frame-synchronous observer clock measured at most one action
+tick per owned unit/frame; Bulette's real three-attack routine completed.
 
-Prototype transaction compat-20261018T063206Z-aa0faed72f76 is Restored with
-restorationVerified=true. Independent post-failure checks prove installation,
-settings and private references exact, no game/lease; all118 fresh intake saves
-passed content/metadata preservation. Every subsequent transaction must capture
-its own actual intake and restore its exact RunId. Baseline remains immutable.
-Steam Offline Mode is supported. Preserve wt/s25 and frozen artifacts.
+The same artifact's breath experiment FAIL100.311s: safe targeting and one
+DC21 exposure worked, but UnitState mirrored the custom Petrified carrier into
+the native PetrifiedBuff, creating two counts and lethal native handling. The
+new source suppresses only that redundant status factory for the exact own sole
+carrier. The life guard still refuses overlapping/unrelated or permanent stone;
+independent health/death branches stay native. Fresh recovery/permanent/cure
+proof is required. Do not relabel the old failure or merely broaden the guard.
 
-Remaining work: complete breath/Leap native cases and negative controls, qualify AI,
-lifecycle/icons/module boundaries, six public roots, targeted cold-load/condition/
-cooldown persistence, standalone/high-risk compatibility, publisher selector and
-refusal checks, one final strict Sprint candidate from this root, actual tested
-byte promotion, public download verification and merged RELEASED/STOP records.
-Do not substitute old evidence or relabel partial checks as final qualification.
+Its Leap experiment FAIL101.732s: genuine checks37/18 produced four claws/no
+bite versus one bite, but zero cost samples left action expenditure unqualified.
+The fixture had not joined those actors to combat. The corrected observer joins
+them, measures the parent's cost and the ignored child's unchanged cost, legal
+movement/landing and a subsequent ordinary routine. The compact lifecycle/icon
+observer is now implemented; fresh native execution remains pending.
 
-The local push wrapper has exactly the two authorized branch names appended;
-byte-preserving backup/hash/round-trip proof and23 isolated refusal checks are
-retained under ignored artifacts/sprint26-intake. Use that wrapper for pushes.
-The closed preceding resume is preserved in docs/history/SPRINT25-FINAL-RESUME-2026-10-18.md.
+All three exact transactions restored with restorationVerified=true and actual
+installation/settings/private-reference equality; all118 fresh intake saves
+passed. They are compat-20261018T074117Z-609d0df2ded1,
+compat-20261018T074604Z-a869406f54c3, and
+compat-20261018T075059Z-ddb79b57dec9. No game/lease remains after them. Every
+new transaction must capture its own intake and restore its exact RunId.
+Baseline is immutable; Steam Offline Mode is supported. Preserve wt/s25.
 
-Current native update: f192d10c's composed profiles, signed damage, reach, native
-Power Attack, trample and bite critical-confirmation probes passed. Its foundation
-verdict remains FAIL: the ordinary-command reader required Success although the
-engine ends exhausted attack lists with Interrupt; Bulette delivered only two
-attacks and needs the new read-only end/target trace. The Elephant control used
-the quiet helper's intentional100000 base HP; that fixture choice is corrected.
-The separate breath attempt obtained ally refusal but no safe lane and cast no
-breath. Both exact transactions restored; their118-save audits and independent
-installation/private/settings comparisons pass. Full details and prior verdicts
-remain in coverage and ignored raw evidence. The next source includes a bounded
-safe-cone survey, explicit60-foot projectile range, outward Gorgon lighting
-normals and implemented exact-owner AI observer, all still requiring native runs.
+Next: focused checks and coherent push, then build one new development artifact
+from this root and narrowly reproduce breath and Leap. Complete negative
+controls, both modes, exact-owner AI, lifecycle, targeted cold-load/condition/
+cooldown persistence, six final-public roots/slots/quantity/duration/alignment,
+standalone/high-risk compatibility and publisher selector/refusal checks. Then
+remove only the two suppression keys, qualify the actual public artifact via one
+fresh complete strict Sprint gate, promote tested bytes, verify real downloads
+and restoration, merge final RELEASED/STOP records and stop before Sprint27.
+Ordinary remaining work is not a blocker and partial proof is not qualification.
 
-Latest attribution:5ebfce1b still fails only the Bulette ordinary routine. The
-Gorgon complete command and corrected Elephant control pass. Actual Gorgon
-lighting now exposes the horned armored quadruped; rough visual debt remains,
-HumanReview NOT_PERFORMED_NONBLOCKING. The trace proves ambient native action
-controller ticking outside the request clock. The next observer gives Sprint26
-one frame-synchronous action/cooldown tick owner, with measured suppression and
-hook cleanup; older defaults remain unchanged. Its source compiles and50 focused
-checks pass, but the correction still needs fresh native reproduction. Do not
-call the remaining work a blocker or declare a final candidate yet.
+Push only through the existing required wrapper. Exactly the two authorized
+branch names were appended with byte-preserving backup/hash/round-trip proof
+and23 refusal tests under ignored artifacts/sprint26-intake. The closed prior
+resume remains docs/history/SPRINT25-FINAL-RESUME-2026-10-18.md.

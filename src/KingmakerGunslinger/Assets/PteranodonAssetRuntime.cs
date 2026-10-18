@@ -416,6 +416,32 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        internal static IDisposable WithdrawGorgonForTest()
+        {
+            lock (Sync) {
+                var visual = Ungulates["gorgon"];
+                var scope = new GorgonWithdrawal(visual);
+                visual.Mesh = null; visual.Bones = null; visual.Albedo = null;
+                visual.Status = "donor-visual:withdrawn-for-test:gorgon-payload";
+                return scope;
+            }
+        }
+        private sealed class GorgonWithdrawal : IDisposable
+        {
+            private UngulateVisual visual;
+            private readonly Mesh mesh; private readonly string[] bones;
+            private readonly Texture2D paint; private readonly string status;
+            internal GorgonWithdrawal(UngulateVisual value)
+            { visual=value; mesh=value.Mesh; bones=value.Bones; paint=value.Albedo; status=value.Status; }
+            public void Dispose()
+            {
+                lock(Sync) {
+                    if(visual==null)return;
+                    visual.Mesh=mesh; visual.Bones=bones; visual.Albedo=paint; visual.Status=status; visual=null;
+                }
+            }
+        }
+
         internal static bool TryGetUngulateVisual(string key, out Mesh mesh,
             out string[] boneNames, out Texture2D albedo, out string status)
         {
