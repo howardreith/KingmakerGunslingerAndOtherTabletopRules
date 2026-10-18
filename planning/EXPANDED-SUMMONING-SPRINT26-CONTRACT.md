@@ -1,9 +1,9 @@
 # Sprint 26 contract: Gorgon and Bulette
 
-Status: PUBLIC_CANDIDATE. This is a new owner-authorized campaign from master
+Status: RELEASED / STOP at v0.0.160. This is a new owner-authorized campaign from master
 555b16e04613c0800ab0e884beac827184bf46ee on HOWARD-LAPTOP. Sprint 25 is
 closed at v0.0.159. No Sprint 27 work is authorized. Fixed production root:
-C:/Dev/KingmakerGunslingerLab/wt/s26. Both exact product rows and private mechanics are registered. Their six roots are included in this public candidate; exact public-artifact qualification and promotion remain pending.
+C:/Dev/KingmakerGunslingerLab/wt/s26. Both exact product rows and private mechanics are registered. Their six public roots are qualified and released. Exact tested bytes were promoted without rebuilding; public downloads and exact machine restoration passed. See docs/SPRINT26-COVERAGE.md and planning/SPRINT26-QUALIFICATION-LEDGER.json.
 
 ## Authority and sources
 

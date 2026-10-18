@@ -2,7 +2,8 @@
 
 Historical checkpoint prose below is retained for provenance. It is superseded
 by the single current state in ../SPRINT26-COVERAGE.md. Failed and unsatisfied
-attempts remain failures; none of these development packages qualifies a release.
+attempts remain failures. Exploratory development packages do not qualify a
+release; later strict candidates below retain their exact execution identities.
 
 ## Current R14 development checkpoint (2026-10-18)
 
@@ -30,9 +31,9 @@ R14 package attempt stopped before compilation/package/native launch: the curren
 Status: IMPLEMENTING / WITHHELD. Foundation gameplay proof is partial; no complete
 creature qualification, product merge or stable release is claimed. Continue the owner-authorized campaign;
 this checkpoint is not its stopping point. The controlling task state is
-[AUTONOMOUS-RESUME.md](../AUTONOMOUS-RESUME.md), with the frozen rules in
-[the contract](../planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md) and the
-[current ledger](../planning/SPRINT26-GORGON-BULETTE-LEDGER.json).
+[AUTONOMOUS-RESUME.md](../../AUTONOMOUS-RESUME.md), with the frozen rules in
+[the contract](../../planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md) and the
+[current ledger](../../planning/SPRINT26-GORGON-BULETTE-LEDGER.json).
 
 ## Current R13 repair after 8509578d boundary observations
 
@@ -577,7 +578,7 @@ not negative PASS. The current observer records all setup inputs, prefers a
 longer still-native-legal lane, and lets independent opportunity/cancellation
 controls retain separate verdicts. It never supplies missing product movement,
 attacks or AI. Older failures and exact recovery remain in the
-[development history](history/SPRINT26-DEVELOPMENT-EVIDENCE.md).
+[development history](SPRINT26-DEVELOPMENT-EVIDENCE.md).
 
 Both R14b transactions restored actual intake exactly: installation, settings,
 private references and all118 saves/content/protected metadata. No owned game or
@@ -1003,3 +1004,55 @@ to other released observers. No production or further compiled observer change.
 The previously passing compilation25 focused checks remain applicable; fresh
 public-r25b full gate/routes remain required. No native launch or restoration
 change occurred in this attempt. Failed gate receipt/logs preserved.
+
+## Final public qualification, publication and restoration
+
+Frozen source e7876252ddf7dcaba4e7559534c06269d64bb750; public-r25b Sprint gate PASS375.2334992s,
+2,687/2,687 zero failures,386 files. ZIP 7f59321115535ab9064e5bac7e5f48ff6408260f051270d8e9849e61d9bdac55;
+DLL cd7ca622f28de6b145d3eaf7594f07276344d7bdd9a210dec213fc25c2445afc; MVID 5b0daf8a-7ef8-480b-8c11-a3c9809baed8;
+fingerprint 609ec908d347fc80af4068822443affb25f7e9b1718dc8d550f6d678b349cbfc.
+
+Fresh standalone public routes12 PASS, RunId20261018T1802356916486Z-427809ba00a74818bd814f110db580eb,
+outer228.4487916s; result SHA482967b943518ee0207967d28d38061b495258f149a034ff0781fdfddd7a6344.
+First combined preflight FAIL14.83669s, before lease/deployment/launch: a temporary
+extracted protected Ankylosaurus texture was absent. Original ZIP remained exact.
+One matched Limited offline attribution PASS:386 ZIP entries, exact protected
+texture2cdd8bc7e9139e748a9a88ec52e8a360245b6ca5ecb7829eec78a57d5a598bac,
+strict package validation PASS. No product/source change. Narrow combined retry
+12 PASS, RunId20261018T1813064679814Z-c7863b36431c4feebbd73c53bec7c8fa;
+result SHA063735a6f88588193e209bd313f414c59896259b51d42e45a7e21e1c92965d69.
+Both public runs use exact final DLL; each restores all118 saves and actual intake.
+
+Qualified ignored ledger12 coverage rows:24 fresh public assertions,416 reused
+strict native assertions on original identities (including77 persistence).
+Exploratory development evidence excluded. Original proof files/hash sets are
+retained in public manifest. Premerge ledger SHAeecb107ae9c6f2389eb4ea45adde9964820bc80e20e764ca5533344c628a92a1.
+First publisher invocation stopped on PowerShell merged-stream Git stderr;
+no tag/release write. Separate OS stdout/stderr capture allowed unchanged
+publisher preflight PASS, then product PR58 merged at 511aabcc41a9ff780852a60a5db8fa074f22e05f.
+Actual merge parents/source/product-tree equality verified; postmerge dry-run
+PASS. Publish PASS without rebuild; public downloads/strict386/DLL/MVID/digests/
+manifest/peeled tag/product ancestry PASS. Stable Latest v0.0.160; old159 intact.
+Published ledger SHAe305e4622c3cd7aad64a952a466bbaa63e452a2d919640d64d30a9ab4f56e01c; manifest SHAa2edfc633648225d5126afa907a102d9df931f3b3dc46a0c1279b6c3b7292dd0.
+
+Final restoration audit first reported only a timestamp-reader mismatch:
+bank expected string2026-01-01T05:00:00Z parsed to local00:00-05:00, compared
+to UTC05:00. Hash and999390-byte length were already exact; normalization gives
+equal639028404000000000 ticks. Original FAIL retained. Corrected read-only audit
+PASS with full intake checks:83 settings,118 saves/metadata,14 reference pairs,
+62 Restored transaction journals, bank bytes/length/UTC timestamp. Baseline and
+Working exact; no game/lease/sentinel/staging/open transaction; Offline preserved.
+Final cleanup attempt enumerates 16 exact inactive Howard Limited
+task removals using retained action/principal metadata; zero owned tasks remain.
+Older metadata omitted argument strings and used mixed path slash spelling;
+cleanup stopped safely and retained its failed receipt, then preflighted every
+remaining exact action before removal. These are task-record reader corrections,
+not changes to product qualification or machine intake. The final cleanup count
+does not include prior partial removals. Audit SHA28440b7f4d04fef92b3cba905d29518910cb81919e9f52f753454cbd2ec4a7e3.
+Final records are prose/JSON only. No product rebuild/game campaign for records.
+HumanReview NOT_PERFORMED_NONBLOCKING; rough art debt is not called polished.
+Final arithmetic is derived from actual runtime-result assertion arrays:
+R23 strict lifecycle has44 assertions, not the earlier summary's38; nine R23
+phases total270. The intermediate264 summary was an arithmetic correction error;
+original raw assertions/verdicts never changed. Final reused strict union is416.
+RELEASED / STOP before Sprint27.
