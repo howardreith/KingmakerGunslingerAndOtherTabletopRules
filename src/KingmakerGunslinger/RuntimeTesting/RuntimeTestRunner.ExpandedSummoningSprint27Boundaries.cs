@@ -83,7 +83,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint27Check("boundary-turn-admission-"+loseTarget,admitted,admission,"A real exact-owner active turn precedes a native turn-based abort or target-loss command.");
                     if(!admitted)throw new InvalidOperationException("Exact boundary turn absent.");
                 }
-                var command=new UnitUseAbility(data,selected);var costs=new JArray();JObject expiry=null;UnitMoveTo nativeFollow=null;EventBus.Subscribe(observer);
+                var command=new UnitUseAbility(data,selected);var costs=new JArray();JObject expiry=null;EventBus.Subscribe(observer);
                 using(var economy=new FirearmReviewCosts(owner,costs))using(var queued=new Sprint26QueueTrace(owner))using(var expiryTrace=removeOwner=="expiry"?new Sprint27ExpiryTrace(owner):null){
                     owner.Commands.Run(command);int frames=0;DateTime deadline=DateTime.UtcNow.AddSeconds(15);
                     while(frames++<2000&&DateTime.UtcNow<deadline&&Vector3.Distance(start,owner.Position)<.15f&&!command.IsFinished){
@@ -99,14 +99,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }else if(loseTarget)DisposeExpandedSummoningUnits(fixture.Created,new[]{target});else command.Interrupt(true);
                     deadline=DateTime.UtcNow.AddSeconds(12);
                     while(frames++<3500&&DateTime.UtcNow<deadline&&(!command.IsFinished || removeOwner=="expiry"&&(!owner.Destroyed||owner.View!=null||owner.HoldingState!=null))){
-                        nativeFollow=owner.Get<Kingmaker.UnitLogic.Parts.UnitPartSummonedMonster>()?.MoveTo??nativeFollow;
                         if(!command.IsFinished&&command.ExecutionProcess!=null&&!command.ExecutionProcess.IsEnded)command.ExecutionProcess.Tick();yield return 0;
                     }
                     for(int f=0;f<20;f++)yield return 0;
-                    bool terminalCommands=owner.Commands.Raw.Where(v=>v!=null&&!v.IsFinished).All(v=>removeOwner=="expiry"&&v is UnitMoveTo&&ReferenceEquals(v,nativeFollow));
+                    bool terminalCommands=owner.Commands.Raw.Where(v=>v!=null&&!v.IsFinished).All(v=>removeOwner=="expiry"&&v is UnitMoveTo&&ReferenceEquals(v.Executor,owner)&&expiryTrace.NativeMoves.Contains(v));
                     bool detached=owner.Destroyed&&owner.View==null&&owner.HoldingState==null&&!owner.IsInState;
                     bool exact=(removeOwner!="expiry" || expiryTrace.Calls.Count==1&&detached)&&command.IsFinished&&observer.WeaponAttacks.Count==0&&economy.Count(command)==1&&economy.Exact(command,turnBased)&&queued.Commands.All(v=>v.IsFinished)&&(!loseTarget||target.Destroyed)&&(removeOwner==null || (removeOwner=="death"?owner.Descriptor.State.IsDead:owner.Destroyed)&&terminalCommands);
-                    Sprint27Check("charge-"+(removeOwner??(loseTarget?"target-loss":"interruption")),exact,new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["finished"]=command.IsFinished,["result"]=command.Result.ToString(),["queued"]=queued.Commands.Count,["attacks"]=observer.WeaponAttacks.Count,["costs"]=costs,["turnBased"]=turnBased,["ownerRemoval"]=removeOwner,["nativeExpiry"]=expiry,["nativeExpiryCallbacks"]=expiryTrace?.Calls,["ownerDead"]=owner.Descriptor.State.IsDead,["ownerDestroyed"]=owner.Destroyed,["viewAbsent"]=owner.View==null,["holdingStateAbsent"]=owner.HoldingState==null,["isInState"]=owner.IsInState,["terminalCommandsSafe"]=terminalCommands,["nativeFollowRetained"]=nativeFollow!=null,["activeOwnerCommands"]=owner.Commands.Raw.Count(v=>v!=null&&!v.IsFinished),["ownerCommands"]=new JArray(owner.Commands.Raw.Where(v=>v!=null).Select(v=>new JObject{["type"]=v.GetType().Name,["finished"]=v.IsFinished,["result"]=v.Result.ToString(),["sameNativeSummonFollow"]=ReferenceEquals(v,nativeFollow)}))},"Native interruption or target/owner removal aborts attacks and clears combat commands with its native debit preserved. Expiry fully detaches the unit; only the exact observed native summon-follow object may remain as inert data, never a charge/rake action.");
+                    Sprint27Check("charge-"+(removeOwner??(loseTarget?"target-loss":"interruption")),exact,new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["finished"]=command.IsFinished,["result"]=command.Result.ToString(),["queued"]=queued.Commands.Count,["attacks"]=observer.WeaponAttacks.Count,["costs"]=costs,["turnBased"]=turnBased,["ownerRemoval"]=removeOwner,["nativeExpiry"]=expiry,["nativeExpiryCallbacks"]=expiryTrace?.Calls,["ownerDead"]=owner.Descriptor.State.IsDead,["ownerDestroyed"]=owner.Destroyed,["viewAbsent"]=owner.View==null,["holdingStateAbsent"]=owner.HoldingState==null,["isInState"]=owner.IsInState,["terminalCommandsSafe"]=terminalCommands,["nativeMovementOrigins"]=expiryTrace?.MovementOrigins,["activeOwnerCommands"]=owner.Commands.Raw.Count(v=>v!=null&&!v.IsFinished),["ownerCommands"]=new JArray(owner.Commands.Raw.Where(v=>v!=null).Select(v=>new JObject{["type"]=v.GetType().Name,["finished"]=v.IsFinished,["result"]=v.Result.ToString(),["observedNativeMovement"]=expiryTrace!=null&&expiryTrace.NativeMoves.Contains(v)}))},"Native interruption or target/owner removal aborts attacks and clears combat commands with its native debit preserved. Expiry fully detaches the unit; only movement objects observed entering the native exact-owner command runner may remain as detached data, never an attack/ability or charge/rake action.");
                 }
             }finally{EventBus.Unsubscribe(observer);owner.Commands.InterruptAll(true);DisposeExpandedSummoningUnits(fixture.Created,new[]{target});UnityEngine.Object.Destroy(targetBlueprint);}
             if(turnBased){Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();}
@@ -119,13 +118,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly Harmony12.HarmonyInstance harmony;
             private readonly string id="KMG.S27.ExpiryTrace."+Guid.NewGuid().ToString("N");
             private readonly System.Reflection.MethodInfo method=typeof(GriffonLifetimeBoundary).GetMethod("HandleBuffDidRemoved");
+            private readonly System.Reflection.MethodInfo run=typeof(UnitCommands).GetMethod("Run",new[]{typeof(UnitCommand)});
             internal readonly JArray Calls=new JArray();
+            internal readonly HashSet<UnitCommand> NativeMoves=new HashSet<UnitCommand>();
+            internal readonly JArray MovementOrigins=new JArray();
             internal Sprint27ExpiryTrace(UnitEntityData owner)
             {
                 if(active!=null)throw new InvalidOperationException("Nested expiry observation.");
                 this.owner=owner;harmony=Harmony12.HarmonyInstance.Create(id);
-                try{harmony.Patch(method,new Harmony12.HarmonyMethod(typeof(Sprint27ExpiryTrace).GetMethod("Before",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic)),new Harmony12.HarmonyMethod(typeof(Sprint27ExpiryTrace).GetMethod("After",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic)));active=this;}
+                try{harmony.Patch(method,new Harmony12.HarmonyMethod(typeof(Sprint27ExpiryTrace).GetMethod("Before",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic)),new Harmony12.HarmonyMethod(typeof(Sprint27ExpiryTrace).GetMethod("After",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic)));
+                    if(run==null)throw new InvalidOperationException("Native command runner absent.");
+                    harmony.Patch(run,new Harmony12.HarmonyMethod(typeof(Sprint27ExpiryTrace).GetMethod("Running",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic)));active=this;}
                 catch{Dispose();throw;}
+            }
+            private static void Running(UnitCommands __instance,UnitCommand __0)
+            {
+                var trace=active;if(trace==null||!ReferenceEquals(__instance,trace.owner.Commands)||!(__0 is UnitMoveTo))return;
+                var frames=new System.Diagnostics.StackTrace(1,false).GetFrames()??Array.Empty<System.Diagnostics.StackFrame>();
+                var methods=frames.Select(f=>f.GetMethod()).Where(m=>m!=null).ToArray();
+                bool native=methods.Any(m=>m.DeclaringType!=null&&m.DeclaringType!=typeof(UnitCommands)&&m.DeclaringType.Assembly==typeof(UnitCommands).Assembly);
+                if(native)trace.NativeMoves.Add(__0);
+                trace.MovementOrigins.Add(new JObject{["type"]=__0.GetType().Name,["nativeCaller"]=native,["callers"]=new JArray(methods.Take(12).Select(m=>(m.DeclaringType?.FullName??"<dynamic>")+"."+m.Name))});
             }
             private static void Before(GriffonLifetimeBoundary __instance,Kingmaker.UnitLogic.Buffs.Buff buff,out JObject __state)
             {
@@ -141,9 +154,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void Dispose()
             {
                 if(ReferenceEquals(active,this))active=null;
-                harmony.Unpatch(method,Harmony12.HarmonyPatchType.All,id);
-                var info=harmony.GetPatchInfo(method);
-                if(info!=null&&(info.Prefixes.Any(v=>v.owner==id)||info.Postfixes.Any(v=>v.owner==id)))throw new InvalidOperationException("Expiry observer hook remains.");
+                foreach(var hook in new[]{method,run}.Where(v=>v!=null)){
+                    harmony.Unpatch(hook,Harmony12.HarmonyPatchType.All,id);
+                    var info=harmony.GetPatchInfo(hook);
+                    if(info!=null&&(info.Prefixes.Any(v=>v.owner==id)||info.Postfixes.Any(v=>v.owner==id)))throw new InvalidOperationException("Expiry observer hook remains.");
+                }
             }
         }
         private IEnumerable<int> Sprint27Opportunity(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner)
