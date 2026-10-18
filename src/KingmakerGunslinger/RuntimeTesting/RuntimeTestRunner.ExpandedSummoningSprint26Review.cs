@@ -330,7 +330,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             float reach = (key == "gorgon" ? 5 : 10) * .3048f;
             float radii = owner.Corpulence + target.Corpulence;
             Vector3 far; string lane, direction;
-            Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target, reach + radii + .2f, out far, out lane, out direction);
+            Vector3 origin = Sprint24AiCombatLane(owner, owner, target, reach + radii + .2f, out far, out lane, out direction);
             Vector3 forward = (far - origin).normalized;
             PlaceExpandedSummoningUnit(owner, origin);
             var range = new UnitAttack(target); range.Init(owner);
