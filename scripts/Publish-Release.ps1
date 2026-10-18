@@ -6,7 +6,7 @@ param(
 
     [string]$ReferenceBundleDir,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.159.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.160.md',
 
     [string]$ReleaseBranch = 'master',
 
@@ -21,6 +21,7 @@ param(
     [switch]$Sprint22,
     [switch]$Sprint23ChargeRounding,
     [switch]$Sprint25GiantBodies,
+    [switch]$Sprint26MagicalBeasts,
     [switch]$PreflightOnly,
     [string]$ExpectedBaseCommit,
     [string]$ProductPrNumber,
@@ -42,14 +43,14 @@ if ($ReuseQualifiedCandidate) {
         -MergedReleaseCommit $MergedReleaseCommit -ReleaseNotesPath $ReleaseNotesPath `
         -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady -Sprint22:$Sprint22 `
         -PreflightOnly:$PreflightOnly -ExpectedBaseCommit $ExpectedBaseCommit `
-        -Sprint23ChargeRounding:$Sprint23ChargeRounding -Sprint25GiantBodies:$Sprint25GiantBodies -ProductPrNumber $ProductPrNumber
+        -Sprint23ChargeRounding:$Sprint23ChargeRounding -Sprint25GiantBodies:$Sprint25GiantBodies -Sprint26MagicalBeasts:$Sprint26MagicalBeasts -ProductPrNumber $ProductPrNumber
     return
 }
 if ($PackagePath -or $CandidateRepositoryRoot -or $MergedReleaseCommit -or $PreflightOnly -or $ExpectedBaseCommit) {
     throw 'Qualified-candidate arguments require -ReuseQualifiedCandidate.'
 }
-if ($Sprint22 -or $Sprint23ChargeRounding -or $Sprint25GiantBodies -or
-    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153','0.0.158','0.0.159')) {
+if ($Sprint22 -or $Sprint23ChargeRounding -or $Sprint25GiantBodies -or $Sprint26MagicalBeasts -or
+    (Get-KmgModInfo -RepositoryRoot (Split-Path -Parent $PSScriptRoot)).Version -in @('0.0.151','0.0.153','0.0.158','0.0.159','0.0.160')) {
     throw 'This release requires -ReuseQualifiedCandidate with its exact tested artifact, selected patch contract and qualification ledger; no reporting rebuild.'
 }
 

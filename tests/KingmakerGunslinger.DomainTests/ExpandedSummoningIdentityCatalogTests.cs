@@ -17,28 +17,28 @@ namespace KingmakerGunslinger.DomainTests
                 first.Count(value => value.PlannedType == "BlueprintUnit"),
                 "Unit identity count changed.");
             Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
-                    GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount,
+                    GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9,
                 first.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(82 + TheropodRulesPolicy.AppendedBuffIdentityCount,
+            Assertions.Equal(82 + TheropodRulesPolicy.AppendedBuffIdentityCount + 2,
                 first.Count(value => value.PlannedType == "BlueprintBuff"),
                 "Buff identity count changed.");
-            Assertions.Equal(27, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
-            Assertions.Equal(15, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(29, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
+            Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "IsEngagedConsideration"),
                 "Only the bounded crocodilian engagement scorer is registered.");
             Assertions.Equal(29 + TheropodRulesPolicy.AppendedWeaponIdentityCount +
-                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount,
+                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount + 4,
                 first.Count(value => value.PlannedType == "BlueprintItemWeapon"),
                 "Weapon identity count changed.");
-            Assertions.Equal(5 + GiantBodyRulesPolicy.AppendedWeaponTypeIdentityCount,
+            Assertions.Equal(5 + GiantBodyRulesPolicy.AppendedWeaponTypeIdentityCount + 1,
                 first.Count(value => value.PlannedType == "BlueprintWeaponType"),
                 "Weapon-type identity count changed.");
             Assertions.Equal(16 + TheropodRulesPolicy.AppendedUnitTypeIdentityCount +
-                    GiantBodyRulesPolicy.AppendedUnitTypeIdentityCount,
+                    GiantBodyRulesPolicy.AppendedUnitTypeIdentityCount + 2,
                 first.Count(value => value.PlannedType == "BlueprintUnitType"),
                 "Unit-type identity count changed.");
             Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
@@ -46,7 +46,7 @@ namespace KingmakerGunslinger.DomainTests
             // carrier: a feature, because the native feat it clones is.
             Assertions.Equal(39 + TheropodRulesPolicy.AppendedFeatureIdentityCount +
                     GiantBodyRulesPolicy.AppendedFeatureIdentityCount +
-                    GiantBodyRulesPolicy.AppendedGreaterOverrunIdentityCount,
+                    GiantBodyRulesPolicy.AppendedGreaterOverrunIdentityCount + 2,
                 first.Count(value => value.PlannedType == "BlueprintFeature"),
                 "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
@@ -359,7 +359,7 @@ namespace KingmakerGunslinger.DomainTests
             // literal, so a sprint that adds a creature moves its own
             // policy count and this stays true.
             Assertions.Equal(56 + TheropodRulesPolicy.AppendedCreatureCount
-                    + GiantBodyRulesPolicy.AppendedCreatureCount,
+                    + GiantBodyRulesPolicy.AppendedCreatureCount + Sprint26MagicalBeastRules.AppendedCreatureCount,
                 ExpandedSummoningNaturalProfiles.All.Count,
                 "Natural reconstruction count changed.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
@@ -789,14 +789,14 @@ namespace KingmakerGunslinger.DomainTests
                     "Logical placement identity missing or duplicated: " + symbol);
                 found++;
             }
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredLogicalPlacements,
                 found, "Logical placement traversal changed.");
         }
 
         internal static void DonorsCoverEveryFrozenCreature()
         {
             ExpandedSummoningDonorCatalog.Validate();
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredCreatureCount,
                 ExpandedSummoningDonorCatalog.All.Count,
                 "Every unique creature requires exactly one frozen donor decision.");
             Assertions.Equal("676f8b7d0a170674cb6e504e0e30b4f0",

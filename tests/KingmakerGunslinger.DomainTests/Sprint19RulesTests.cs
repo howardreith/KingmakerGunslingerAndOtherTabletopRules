@@ -188,17 +188,17 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Ten new placements are registered.");
-            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Only the Sprint 25 candidate remains withheld.");
-            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All ten Sprint 19 roots stay published; nothing else moved.");
             foreach (SummonVariantSpec variant in all.Where(value =>
-                !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key)))
+                !SummoningCurrentSurface.IsWithheld(value.Creature.Key)))
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
                     "Every pre-Sprint-25 placement is published: " +

@@ -46,11 +46,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["passed"] = passed;
             row["runId"] = _request.RunId;
             _sprint25Rows.Add(row);
-            _sprint25Assertions.Add(Assertion("sprint25-" + predicate,
+            _sprint25Assertions.Add(Assertion((_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-" : "sprint25-") + predicate,
                 expected, row.ToString(Formatting.None), passed,
-                "Exact request-owned giant-body units in the native first-area fixture."));
+                "Exact request-owned summons in the native first-area fixture."));
             RuntimeTestResultWriter.WriteAtomic(Path.Combine(
-                _request.EvidenceDirectory, "sprint25-review-progress.json"),
+                _request.EvidenceDirectory, _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review-progress.json" : "sprint25-review-progress.json"),
                 _sprint25Rows.ToString(Formatting.Indented));
         }
 
@@ -61,9 +61,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_sprint25Steps == null)
                 {
                     _sprint25Fixture = BeginExpandedSummoningCorrectionFixture(
-                        "KMG_Runtime_Sprint25_Caster");
-                    _sprint25Clock = new Sprint22NativeClock(_sprint25Fixture);
-                    _sprint25Steps = ReviewSprint25(_sprint25Fixture).GetEnumerator();
+                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "KMG_Runtime_Sprint26_Caster" : "KMG_Runtime_Sprint25_Caster");
+                    _sprint25Clock = new Sprint22NativeClock(_sprint25Fixture,
+                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? .05f : .25f,
+                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? (Action<UnitEntityData>)Sprint26TickLife : null,
+                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview);
+                    _sprint25Steps = (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
+                        ? ReviewSprint26(_sprint25Fixture) : ReviewSprint25(_sprint25Fixture)).GetEnumerator();
                 }
                 if (!_sprint25WaitingForUnityAppearance) _sprint25Clock.Pulse();
                 if (_sprint25Steps.MoveNext()) return false;
@@ -76,7 +80,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             CleanupSprint25NativeReview();
             string report = Path.Combine(_request.EvidenceDirectory,
-                "sprint25-review.json");
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review.json" : "sprint25-review.json");
             RuntimeTestResultWriter.WriteAtomic(report,
                 _sprint25Rows.ToString(Formatting.Indented));
             _summoningProfileResult = CreateResult(

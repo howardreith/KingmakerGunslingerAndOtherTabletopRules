@@ -748,7 +748,7 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                 masterTraits.Count + AlternateSummoningTests.AppendedLedgerIdentities +
-                ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
+                (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount),
                 entries.Count,
                 "Qualified Phase2B identities, the Sprint 18 appends and all eleven released master trait identities coexist.");
             // The current release preserves master's entire prefix. Project
@@ -878,14 +878,14 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(rows.Select(v => v.Multiplicity).Distinct().Count() == 3,
                     "Direct, 1d3 and 1d4+1 routes retain their allocated identities.");
             }
-            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.FinalPublishedLogicalPlacements,
                 all.Count(SummonVisibilityCatalog.IsPublished),
                 "Every previously qualified root remains published.");
-            Assertions.Equal(GiantBodyRulesPolicy.PublicVisibleChoices,
+            Assertions.Equal(SummoningCurrentSurface.PublicVisibleChoices,
                 all.Count(SummonVisibilityCatalog.IsPublished) +
                 SummonNativeExpansionCatalog.All.Count, "Published surface is source-derived.");
             Assertions.True(all.Where(value =>
-                    !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key))
+                    !SummoningCurrentSurface.IsWithheld(value.Creature.Key))
                     .All(SummonVisibilityCatalog.IsPublished),
                 "No old publication remains suppressed by Sprint 25 registration.");
         }

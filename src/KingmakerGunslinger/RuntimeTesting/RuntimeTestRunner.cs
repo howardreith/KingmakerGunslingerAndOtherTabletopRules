@@ -1362,6 +1362,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunExpandedSummoningSprint24TheropodCensus());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveExpandedSummoningSprint26Inputs)
+                {
+                    Complete(RunExpandedSummoningSprint26Inputs());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableShieldOther)
                 {
@@ -36228,6 +36233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            _sprint26PersistenceRolls?.Dispose(); _sprint26PersistenceRolls = null;
             StopSprint17LoadResetTrace(result);
             StopSprint17Bodies(result);
             StopSprint18Review(result);

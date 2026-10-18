@@ -69,15 +69,15 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredCreatureCount,
                 ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
             Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount +
-                    GiantBodyRulesPolicy.AppendedCreatureCount,
+                    GiantBodyRulesPolicy.AppendedCreatureCount + Sprint26MagicalBeastRules.AppendedCreatureCount,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures include the registered Sprint 25 identities plus retained native wrappers.");
             // Publication exposes every registered identity without reallocating.
-            Assertions.Equal(ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
+            Assertions.Equal(ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count - SummoningCurrentSurface.WithheldKeys.Length,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
                 "Every represented creature is now published somewhere.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
@@ -91,7 +91,7 @@ namespace KingmakerGunslinger.DomainTests
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
             Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
-                    GiantBodyRulesPolicy.AppendedCreatureCount,
+                    GiantBodyRulesPolicy.AppendedCreatureCount - Sprint26MagicalBeastRules.AppendedCreatureCount,
                 notRepresented,
                 "Only the post-Sprint-25 ideal-roster creatures remain unregistered.");
             Assertions.Equal(145,
@@ -222,7 +222,7 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 13 adds Shadow Mastiff's four; Sprints 14-15 publish all
             // insects under the accepted passive-sense limitation. Sprint 16
             // adds six Dire roots after its complete hidden qualification.
-            Assertions.Equal(GiantBodyRulesPolicy.PublicVisibleChoices,
+            Assertions.Equal(SummoningCurrentSurface.PublicVisibleChoices,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");

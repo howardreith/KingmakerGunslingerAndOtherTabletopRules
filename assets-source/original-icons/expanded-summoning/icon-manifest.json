@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  120,
+    "count":  122,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3575,6 +3575,44 @@
                                                "KMG.Summoning.Ability.SNA.Tier9.Stegosaurus.OneD4PlusOne",
                                                "KMG.Summoning.Natural.Stegosaurus.UnitType",
                                                "KMG.Summoning.Unit.Stegosaurus"
+                                           ]
+                  },
+                  {
+                      "key":  "gorgon",
+                      "displayName":  "Gorgon",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/gorgon.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/gorgon.png",
+                      "sourceSha256":  "3ad08001ecf64e3c644a6a113b056fe069f171e7062a36d5d0df1f84ae0e32f3",
+                      "outputSha256":  "73e297daa18abec90aec316eb09d97b658a698b884b94a1d9e428a1564536efd",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier8.Gorgon.One",
+                                               "KMG.Summoning.Ability.SM.Tier9.Gorgon.OneD3",
+                                               "KMG.Summoning.Natural.Gorgon.UnitType",
+                                               "KMG.Summoning.Unit.Gorgon"
+                                           ]
+                  },
+                  {
+                      "key":  "bulette",
+                      "displayName":  "Bulette",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/bulette.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/bulette.png",
+                      "sourceSha256":  "66b537744e14bcc0a470b47f4e2cf536532e33950476aba091da619c5f0afac9",
+                      "outputSha256":  "83c3959b973f7f99bb561ca4a2e1dc03e3f22fc90906dd800b215dba94078b82",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier6.Bulette.One",
+                                               "KMG.Summoning.Ability.SNA.Tier7.Bulette.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Bulette.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Bulette.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.Bulette.UnitType",
+                                               "KMG.Summoning.Unit.Bulette"
                                            ]
                   }
               ]

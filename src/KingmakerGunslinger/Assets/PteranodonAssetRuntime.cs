@@ -201,7 +201,8 @@ namespace KingmakerGunslinger.Assets
                 { "aurochs", new UngulateVisual() },
                 { "bison", new UngulateVisual() },
                 { "rhinoceros", new UngulateVisual() },
-                { "woolly-rhinoceros", new UngulateVisual() }
+                { "woolly-rhinoceros", new UngulateVisual() },
+                { "gorgon", new UngulateVisual() }
             };
 
         private sealed class Sprint12QuadrupedVisual
@@ -412,6 +413,32 @@ namespace KingmakerGunslinger.Assets
                     (string[])_stirgeBoneNames.Clone();
                 albedo = _stirgeAlbedo;
                 return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
+        internal static IDisposable WithdrawGorgonForTest()
+        {
+            lock (Sync) {
+                var visual = Ungulates["gorgon"];
+                var scope = new GorgonWithdrawal(visual);
+                visual.Mesh = null; visual.Bones = null; visual.Albedo = null;
+                visual.Status = "donor-visual:withdrawn-for-test:gorgon-payload";
+                return scope;
+            }
+        }
+        private sealed class GorgonWithdrawal : IDisposable
+        {
+            private UngulateVisual visual;
+            private readonly Mesh mesh; private readonly string[] bones;
+            private readonly Texture2D paint; private readonly string status;
+            internal GorgonWithdrawal(UngulateVisual value)
+            { visual=value; mesh=value.Mesh; bones=value.Bones; paint=value.Albedo; status=value.Status; }
+            public void Dispose()
+            {
+                lock(Sync) {
+                    if(visual==null)return;
+                    visual.Mesh=mesh; visual.Bones=bones; visual.Albedo=paint; visual.Status=status; visual=null;
+                }
             }
         }
 
@@ -922,7 +949,7 @@ namespace KingmakerGunslinger.Assets
                 {
                     string[] names;
                     AlbedoRequirement requirement;
-                    string[] allowed = key == "aurochs" || key == "bison"
+                    string[] allowed = key == "aurochs" || key == "bison" || key == "gorgon"
                         ? AllowedHorseBones : AllowedMastodonBones;
                     mesh = BuildMesh(File.ReadAllText(path), out names,
                         out requirement, allowed);

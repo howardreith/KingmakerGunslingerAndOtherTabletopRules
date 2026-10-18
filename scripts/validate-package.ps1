@@ -54,6 +54,7 @@ try {
         'docs\RELEASE-NOTES-0.0.157.md',
         'docs\RELEASE-NOTES-0.0.158.md',
         'docs\RELEASE-NOTES-0.0.159.md',
+        'docs\RELEASE-NOTES-0.0.160.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -72,6 +73,8 @@ try {
         'assets\flying-animals\giant-wasp-albedo.png',
         'assets\flying-animals\stirge-mesh.json',
         'assets\flying-animals\stirge-albedo.png',
+        'assets\ungulates\gorgon-mesh.json',
+        'assets\ungulates\gorgon-albedo.png',
         'assets\ungulates\aurochs-mesh.json',
         'assets\ungulates\aurochs-albedo.png',
         'assets\ungulates\bison-mesh.json',
@@ -199,7 +202,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 120 -or @($summonManifest.icons).Count -ne 120) {
+    if ($summonManifest.count -ne 122 -or @($summonManifest.icons).Count -ne 122) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'

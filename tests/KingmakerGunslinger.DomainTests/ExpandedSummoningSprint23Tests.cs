@@ -66,13 +66,13 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.True(monster.All(value => value.Creature
                 .MonsterTemplated), "Every Triceratops Monster root owns template children.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Later sprints append without moving the twelve Sprint 23 placements.");
-            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "No qualified route remains withheld.");
-            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All twelve Sprint 23 roots remain published without moving an identity.");
         }
@@ -286,10 +286,10 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningIdentityCatalog.Build();
             Assertions.Equal(2101 +
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
-                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
+                    (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount),
                 planned.Count,
                 "Sprint 24 appends without moving Sprint 23's foundation identities.");
-            Assertions.True(planned.Skip(planned.Count -
+            Assertions.True(planned.Skip(planned.Count - Sprint26MagicalBeastRules.AppendedPrivateIdentityCount -
                     GiantBodyRulesPolicy.AppendedPrivateIdentityCount -
                     TheropodRulesPolicy.AppendedPrivateIdentityCount -
                     PrivateTail.Length).Take(PrivateTail.Length)
@@ -304,7 +304,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(3101 +
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                     AlternateSummoningTests.AppendedLedgerIdentities +
-                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
+                    (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount),
                 entries.Length,
                 "Sprint 24 appends without moving the reserved Sprint 23 gore type.");
             JToken retired = entries.Single(value => (string)value["symbol"] ==
@@ -382,7 +382,7 @@ namespace KingmakerGunslinger.DomainTests
             // NOT a Sprint 24 exact-rank theropod, so the Brachiosaurus
             // painting's arrival moved it by one. The identities below are
             // what this test guards.
-            Assertions.Equal(118, icons["icons"].Count(value =>
+            Assertions.Equal(SummoningCurrentSurface.IconConceptCount - TheropodRulesPolicy.AppendedCreatureCount, icons["icons"].Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks((string)value["key"])),
                 "Every non-theropod icon concept remains unchanged.");
             JToken[] armored = icons["icons"].Where(value =>

@@ -115,6 +115,7 @@ DONOR_NAMES = {
     "56372b0a2749c224392a5ee74105c534": "SummonedWaterElementalSmall",
     "58574e8d1d4dc464c976f396d9115b1a": "AzataBralaniSummoned",
     "5bb9579fdb2b26b48bb10d61c81cfdfb": "HorseSummoned",
+    "18fa241bd1afd77438564ec92614f7f1": "CR7_BuletteStandart",
     "5f968d63d756f994ebff0d774e88e4ab": "CR2_BoarStandard",
     "62a3e860e6e72e6499c38bb8b2fe303e": "SummonedWaterElementalMedium",
     "640fb7efb7c916945837bbcab995267e": "SummonedFireElementalHuge",
@@ -225,8 +226,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 108:
-        raise SystemExit(f"Expected 108 parsed creatures; observed {len(values)}")
+    if len(values) != 110:
+        raise SystemExit(f"Expected 110 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -637,8 +638,28 @@ def planned():
         # A standard private fact owns its native modifier through save/load;
         # the released Elephant unit/type/weapons and eight roots do not move.
         ("KMG.Summoning.Natural.Elephant.Chassis", "BlueprintFeature"),
+        # Sprint 26 exact private surface.
+        ("KMG.Summoning.Natural.Gorgon.Gore2d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Gorgon.Hoof1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Bulette.Bite2d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Bulette.Claw2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Bulette.BiteType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Natural.Gorgon.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Gorgon.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Bulette.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Bulette.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Gorgon.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Gorgon.Petrification", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Gorgon.Cooldown", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Gorgon.Trample", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Gorgon.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.Gorgon.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Bulette.Leap", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Bulette.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.Bulette.LeapAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Gorgon.BreathProjectile", "BlueprintProjectile"),
     ))
-    if len(rows) != 2162 or len({symbol for symbol, _ in rows}) != 2162:
+    if len(rows) != 2189 or len({symbol for symbol, _ in rows}) != 2189:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

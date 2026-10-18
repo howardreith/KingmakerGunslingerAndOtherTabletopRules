@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint25-giant-bodies.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint26-gorgon-bulette.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -78,7 +78,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.156.md',
     'docs\RELEASE-NOTES-0.0.157.md',
     'docs\RELEASE-NOTES-0.0.158.md',
-    'docs\RELEASE-NOTES-0.0.159.md')) {
+    'docs\RELEASE-NOTES-0.0.159.md',
+    'docs\RELEASE-NOTES-0.0.160.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -131,7 +132,7 @@ $ungulateSource = Join-Path $outputDirectory 'assets\ungulates'
 if (Test-Path -LiteralPath $ungulateSource -PathType Container) {
     $ungulateDestination = Join-Path $modDirectory 'assets\ungulates'
     New-Item -ItemType Directory -Path $ungulateDestination -Force | Out-Null
-    foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+    foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros','gorgon')) {
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-mesh.json") -Destination $ungulateDestination
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-albedo.png") -Destination $ungulateDestination
     }
@@ -265,13 +266,10 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Strict package inventory. Sprint 24 added four original theropod body files
-# and two original creature icons to the previously qualified 363-file base;
-# v0.0.156, v0.0.157 and v0.0.158 each add their release notes.
-# The soundbank and its manifest account for the optional two-file delta.
-# Released v0.0.158 has 374 files with the bank. Sprint 25 adds the
-# four original body files, one icon and its own v0.0.159 release notes.
-$basePackageFileCount = 378
+# Released v0.0.159 contains 380 files with the soundbank. Sprint26 adds
+# the original Gorgon mesh/albedo, two summon medallions, Leap emblem and
+# v0.0.160 notes: six files. The optional bank/manifest remain a two-file delta.
+$basePackageFileCount = 384
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

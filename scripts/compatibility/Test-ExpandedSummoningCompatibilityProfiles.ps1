@@ -2,6 +2,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
+. (Join-Path $root 'scripts/ExpandedSummoningOrchestration.Common.ps1')
 $invoke = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot `
     'Invoke-KingmakerCompatibilityProfile.ps1')
 $tokens = $null
@@ -139,3 +140,43 @@ foreach ($assignment in @('$sprint22Boundary', '$exactSprint22')) {
     }
 }
 Write-Host "Expanded Summoning compatibility profile tests passed: $($required.Count) profiles; phase guards and18 exact settings/receipt classifier checks."
+
+# Exercise the actual entry point in its own script scope. A deliberately wrong
+# package version ends valid requests at the candidate boundary, before any
+# ShouldProcess/deployment/lease/launch; this also detects missing helper loads
+# that evaluating an extracted guard in this test's scope could conceal.
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression
+$dispatchRoot = Join-Path $root ('artifacts/fixtures/sprint26-profile-dispatch-' + [Guid]::NewGuid().ToString('N'))
+[void][IO.Directory]::CreateDirectory($dispatchRoot)
+$dispatchPackage = Join-Path $dispatchRoot 'wrong-version.zip'
+$zip = [IO.Compression.ZipFile]::Open($dispatchPackage, [IO.Compression.ZipArchiveMode]::Create)
+try {
+    $entry = $zip.CreateEntry('KingmakerGunslinger/Info.json')
+    $writer = [IO.StreamWriter]::new($entry.Open())
+    try { $writer.Write('{"Id":"KingmakerGunslinger","Version":"0.0.0"}') } finally { $writer.Dispose() }
+} finally { $zip.Dispose() }
+$dispatchScenario = 'disposable-expanded-summoning-sprint26-native-review'
+$dispatchChecks = 0
+foreach ($phase in @('rtwp-foundation', 'turn-based-commands',
+    'gorgon-breath-rtwp', 'gorgon-breath-turn-based',
+    'bulette-leap-rtwp', 'bulette-leap-turn-based', 'rtwp-ai', 'routes', 'visual-lifecycle')) {
+    $caught = $null
+    try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters @{reviewPhase=$phase} -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
+    catch { $caught = $_.Exception.Message }
+    if ($caught -cne 'Compatibility package version does not match the current repository; no profile was entered.') {
+        throw "Actual Sprint26 profile dispatch failed before candidate boundary for ${phase}: $caught"
+    }
+    $dispatchChecks++
+}
+foreach ($parameters in @(@{}, @{reviewPhase='RTWP-FOUNDATION'}, @{reviewPhase='overrun'},
+    @{reviewPhase=@('rtwp-foundation')}, @{reviewPhase='rtwp-foundation';extra='no'})) {
+    $caught = $null
+    try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters $parameters -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
+    catch { $caught = $_.Exception.Message }
+    if ($caught -cne 'Sprint 22/23/24/25 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.') {
+        throw "Actual Sprint26 profile dispatch did not reject invalid parameters: $caught"
+    }
+    $dispatchChecks++
+}
+Write-Host "PASS actual Sprint26 profile dispatch: $dispatchChecks candidate-boundary/refusal checks; no profile entered."

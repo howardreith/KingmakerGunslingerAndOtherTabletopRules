@@ -41,6 +41,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static readonly Binding[] Entries = {
+            new Binding("KMG.Summoning.Special.Bulette.Leap", "bulette-leap", typeof(BlueprintAbility)),
             new Binding("KMG.ElementalRaces.CharacterTraits.FieryGlare.Feature", "fiery-glare", typeof(BlueprintFeature)),
             new Binding("KMG.ElementalRaces.CharacterTraits.FieryGlare.Toggle", "fiery-glare", typeof(BlueprintActivatableAbility)),
             new Binding("KMG.ElementalRaces.CharacterTraits.StoicDignity.Feature", "stoic-dignity", typeof(BlueprintFeature)),

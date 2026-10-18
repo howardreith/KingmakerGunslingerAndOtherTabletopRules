@@ -1261,7 +1261,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private TargetWrapper Sprint23FindChargeRoute(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData target,
-            AbilityData charge, out Vector3 start, out string detail)
+            AbilityData charge, out Vector3 start, out string detail,
+            Func<UnitEntityData,UnitEntityData,bool> extraAdmission = null, float[] startDistances = null)
         {
             if (AstarPath.active == null)
                 throw new InvalidOperationException(
@@ -1285,7 +1286,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // seven-metre centre gap inside attack approach distance.  A
                 // charge must still travel at least ten feet, so search the
                 // measured open fixture at genuinely discriminating gaps.
-                foreach (float distance in new[] { 12f, 11f, 10f, 9f, 8f })
+                foreach (float distance in startDistances ?? new[] { 12f, 11f, 10f, 9f, 8f })
                     for (int index = 0; index < CompassOffsets.Length;
                         index++)
                     {
@@ -1320,6 +1321,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Vector3.Distance(traced, target.Position) > 1f ||
                             Vector3.Distance(candidate, target.Position) <=
                                 3.3f) continue;
+                        if (extraAdmission != null && !extraAdmission(owner, target)) continue;
                         start = owner.Position;
                         detail = string.Join("|", attempts.ToArray());
                         return wrapper;

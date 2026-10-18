@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.160-expanded-summoning-sprint26-gorgon-bulette
+
+- Adds the charter-selected SM VIII Gorgon and ordinary SNA VI Bulette,
+  six untemplated quantity roots, actual staged breath and lawful Leap.
+- Includes an original armored-bull body, the exact native adult Bulette,
+  painted summon medallions and a Leap emblem. Human aesthetic review remains
+  NOT_PERFORMED_NONBLOCKING; surface-only movement and sense limits are explicit.
+- Preserves released identities and approved art. See the
+  [v0.0.160 release notes](docs/RELEASE-NOTES-0.0.160.md).
+
 ## 0.0.159-expanded-summoning-sprint25-giant-bodies
 
 - Adds the SNA-only Brachiosaurus at VII–IX, its original body and supplied

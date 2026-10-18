@@ -114,20 +114,20 @@ namespace KingmakerGunslinger.DomainTests
             // modes and 4 of 4 on the party-camera art review. Publication was
             // the removal of one suppression key, so the registered count is
             // the one registration allocated and nothing moved to make room.
-            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Only the Sprint 25 candidate remains withheld.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placements rose from 1044 to 1056, and Sprint 21 "
                 + "registered seven more; later sprints append without moving them.");
-            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "The published surface retains every pre-Sprint-25 placement, which "
                 + "is this test's real subject: a later sprint must not reach "
                 + "back and suppress a published creature.");
             foreach (SummonVariantSpec variant in all.Where(value =>
-                !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key)))
+                !SummoningCurrentSurface.IsWithheld(value.Creature.Key)))
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
                     "Every pre-Sprint-25 placement is published, this creature's included: "
@@ -406,7 +406,7 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSprint23Tests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                 AlternateSummoningTests.AppendedLedgerIdentities +
-                ExpandedSummoningSprint25Tests.AppendedLedgerIdentities;
+                (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount);
             if (symbols.Count < AppendedLedgerIdentities + later)
                 throw new InvalidOperationException(
                     "The ledger parsed to " + symbols.Count + " symbols.");

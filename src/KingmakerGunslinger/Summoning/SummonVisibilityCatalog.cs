@@ -107,7 +107,7 @@ namespace KingmakerGunslinger.Summoning
         private static readonly HashSet<string> SuppressedCreatureKeys =
             new HashSet<string>(new string[0], StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1096;
+        internal const int RegisteredLogicalPlacementCount = 1102;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
@@ -132,6 +132,7 @@ namespace KingmakerGunslinger.Summoning
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
                 SuppressedCreatureKeys.Count != 0 ||
+                !suppressed.Select(value => value.Creature.Key).Distinct().OrderBy(value => value).SequenceEqual(new string[0]) ||
                 brachiosaurus.Length != 3 ||
                 // Publication adds no Monster row or template child.
                 brachiosaurus.Any(value =>

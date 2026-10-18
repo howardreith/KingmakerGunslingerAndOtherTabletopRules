@@ -133,7 +133,7 @@ namespace KingmakerGunslinger.DomainTests
             // by one when the Brachiosaurus painting arrived and its
             // concept joined the catalog. The Sprint 8 identities below
             // are what this test actually guards.
-            Assertions.Equal(118, SummonIconCatalog.All.Count(value =>
+            Assertions.Equal(SummoningCurrentSurface.IconConceptCount - TheropodRulesPolicy.AppendedCreatureCount, SummonIconCatalog.All.Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks(value.Key)),
                 "Every non-theropod icon concept retains Tiger without " +
                 "changing Sprint 8 identities.");

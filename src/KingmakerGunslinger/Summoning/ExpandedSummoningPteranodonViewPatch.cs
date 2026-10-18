@@ -129,6 +129,7 @@ namespace KingmakerGunslinger.Summoning
                 // wearing a Giant Spider.
                 { BebelithBlueprintName, Sprint14BonePolicy.BebelithKey },
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
+                { "KMG_Summoning_Unit_Gorgon", "gorgon" },
                 { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" },
                 { AnkylosaurusVisualPolicy.BlueprintName, AnkylosaurusRulesPolicy.Key },
                 { GiantBodyVisualPolicy.BrachiosaurusBlueprintName,
@@ -146,7 +147,7 @@ namespace KingmakerGunslinger.Summoning
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
-            { "aurochs", "bison", "rhinoceros", "woolly-rhinoceros" };
+            { "aurochs", "bison", "rhinoceros", "woolly-rhinoceros", "gorgon" };
         private static readonly HashSet<string> Sprint12QuadrupedKeys =
             new HashSet<string>(StringComparer.Ordinal)
             { "dire-rat", "hyena", "goblin-dog" };
@@ -682,7 +683,7 @@ namespace KingmakerGunslinger.Summoning
                 // Revert drops its references. Donor/cache materials survive.
                 var rollbackMaterials = new HashSet<Material>();
                 if (material != null) rollbackMaterials.Add(material);
-                if (swapped && (IsCrocodilian(attachment.VisualKey) ||
+                if (swapped && (attachment.VisualKey == "gorgon" || IsCrocodilian(attachment.VisualKey) ||
                     TheropodVisualPolicy.Handles(attachment.VisualKey) ||
                     GiantBodyVisualPolicy.Handles(attachment.VisualKey)))
                 {
@@ -958,6 +959,19 @@ namespace KingmakerGunslinger.Summoning
         /// bodies. Both bind to one donor renderer, so the receipt is the
         /// armoured-dinosaur shape: this view's private material instances
         /// and this view's mesh instance, never a donor asset.</summary>
+        internal static UnityEngine.Object[] CaptureGorgonOwnedResources(UnitEntityView view)
+        {
+            Attachment attachment;
+            if(view==null || !Applied.TryGetValue(view,out attachment) || attachment.VisualKey!="gorgon")
+                return new UnityEngine.Object[0];
+            Material[] installed=attachment.Donor==null?new Material[0]:attachment.Donor.sharedMaterials;
+            IList<Material> driven=attachment.Donor==null?null:ControllerMaterials(attachment.Donor.GetComponentInParent<StandardMaterialController>());
+            return installed.Concat(driven??new Material[0]).Concat(new[]{attachment.Material})
+                .Where(v=>v!=null && v.name.StartsWith("KMG_gorgon_Original",StringComparison.Ordinal))
+                .Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[]{attachment.Mesh})
+                .Where(v=>v!=null).Distinct().ToArray();
+        }
+
         internal static UnityEngine.Object[] CaptureGiantBodyOwnedResources(
             UnitEntityView view)
         {
