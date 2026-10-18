@@ -104,4 +104,39 @@ namespace KingmakerGunslinger.Summoning
             return !sole;
         }
     }
+    // Native automatic recovery heals unconscious units and removes Petrified
+    // carriers, including permanent stone. Only that controller's eligibility
+    // predicate changes for initialized Gorgon stone. Explicit MakeUnitConscious,
+    // Stone to Flesh, health/life and unrelated stone keep their native paths.
+    [HarmonyPatch(typeof(UnitReturnToConsciousController), "Tick")]
+    internal static class GorgonPetrificationAutoRecovery
+    {
+        private static readonly MethodInfo Conscious=typeof(UnitState).GetProperty("IsConscious").GetGetMethod();
+        private static readonly MethodInfo Scoped=typeof(GorgonPetrificationAutoRecovery).GetMethod("ForController",BindingFlags.Static|BindingFlags.NonPublic);
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions,MethodBase original)
+        {
+            var body=original.GetMethodBody();
+            if(body==null||body.LocalVariables.Count<=1||body.LocalVariables[1].LocalType!=typeof(UnitEntityData)||Conscious==null||Scoped==null)
+                throw new InvalidOperationException("Unsupported native automatic-recovery local/condition contract.");
+            int count=0;
+            foreach(var item in instructions){
+                if(item.opcode==OpCodes.Callvirt&&Equals(item.operand,Conscious)){
+                    var owner=new CodeInstruction(OpCodes.Ldloc_1);owner.labels.AddRange(item.labels);item.labels.Clear();
+                    yield return owner;item.opcode=OpCodes.Call;item.operand=Scoped;count++;
+                }
+                yield return item;
+            }
+            if(count!=1)throw new InvalidOperationException("Expected one native automatic-recovery eligibility predicate, observed "+count+".");
+        }
+        private static bool ForController(UnitState state,UnitEntityData unit)
+        {
+            bool native=state.IsConscious;
+            if(native||unit?.Descriptor==null||!ReferenceEquals(unit.Descriptor.State,state)||!state.HasCondition(UnitCondition.Petrified))return native;
+            var own=unit.Buffs.Enumerable.FirstOrDefault(v=>v?.Blueprint.AssetGuid==Sprint26MagicalBeastRules.PetrificationGuid);
+            var stage=own?.SelectComponents<GorgonPetrificationState>().SingleOrDefault();
+            return Sprint26MagicalBeastRules.KeepsStoneFromAutomaticRecovery(own?.Blueprint.AssetGuid,
+                own!=null&&ReferenceEquals(own.Owner,unit.Descriptor),state.HasCondition(UnitCondition.Petrified),stage!=null&&stage.Initialized);
+        }
+    }
+
 }

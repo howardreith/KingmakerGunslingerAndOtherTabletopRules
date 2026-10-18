@@ -105,6 +105,7 @@ namespace KingmakerGunslinger.Blueprints
             parameters.OwningBlueprint=unit;parameters.Ability=breath;parameters.HitDieClass=activation.HitDieClass;
             var chassis=Require<BlueprintFeature>(bySymbol,"KMG.Summoning.Natural.Gorgon.Chassis");
             chassis.ComponentsArray=chassis.ComponentsArray.Where(v=>!(v is GorgonBreathParameters)).Concat(new BlueprintComponent[]{parameters}).ToArray();
+            ExpandedSummoningNaturalBuilder.NameMagicalBeastRuntimeComponents(chassis);
             breath.ComponentsArray = new BlueprintComponent[] { delivery, effect, activation,
                 safe, available,
                 ExpandedSummoningAbilityBuilder.DeepCloneComponent(descriptor) };
@@ -146,6 +147,7 @@ namespace KingmakerGunslinger.Blueprints
         private static void DescribeMagicalBeast(BlueprintUnitFact fact, string symbol,
             string name, string description, Sprite icon)
         {
+            ExpandedSummoningNaturalBuilder.NameMagicalBeastRuntimeComponents(fact);
             BlueprintUnitFactAccess.Resolve().Configure(fact,
                 LocalizationService.Create(symbol + ".Name", name),
                 LocalizationService.Create(symbol + ".Description", description), icon);

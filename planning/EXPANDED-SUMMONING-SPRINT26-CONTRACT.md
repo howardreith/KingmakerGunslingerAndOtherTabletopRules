@@ -153,3 +153,19 @@ buff and preserves health; it does not resurrect or heal the victim. The guard
 also remains available during module-disabled hydration. Native qualification
 must run the real life controller, prove unchanged temporary HP, genuine recovery,
 permanent/cure behavior, unrelated-stone isolation and independent lethal damage.
+
+
+### Native cold-load and automatic-recovery boundary
+
+Kingmaker 2.1.7b Fact persistence joins GameLogicComponent instances by exact
+Object.name; the new private facts require stable unique runtime component names.
+The native petrified donor already has StayOnDeath=true and RemoveOnResurrect=false.
+Those flags alone do not preserve staged stone: UnitReturnToConsciousController
+can heal unconscious units and remove Petrified buffs outside combat. Its single
+eligibility predicate must defer that automatic recovery only for an initialized,
+condition-bearing, victim-owned Gorgon carrier. Explicit MakeUnitConscious and
+the real Stone to Flesh path remain native; actual cure/removal must still pass.
+Both stages persist through that automatic path, source loss and cold module
+ON/OFF hydration, retaining the original DC and primitive source strings.
+No natural recovery is added to permanent stone. This is an engine integration
+boundary that preserves the frozen rules, not a new tabletop adaptation.
