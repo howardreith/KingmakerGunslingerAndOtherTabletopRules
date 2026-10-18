@@ -873,3 +873,9 @@ production rule or engine path guard is weakened. Compilation PASS22.3s, ten
 named checks PASS1.0s, exact source boundary PASS; no R23 native PASS yet.
 Current master fetched without tags remains555b16e0; public Latestv159 unchanged
 and v160 remote tag absent. Refresh before publication. Freeze hidden-r23 next.
+
+R23 pre-freeze review retains an unobtained corridor's candidate geometry in
+a structured failed precondition with commandOutcome NOT_EVALUATED_NO_LEGAL_CORRIDOR
+before any ability command, replacing only the generic exception path. No
+success/outcome predicate changes. Focused recheck compilation PASS16.7s and
+all10 named tests PASS0.9s; no native or product behavior inferred.

@@ -55,6 +55,9 @@ initial facing. Production and strict completion predicate are unchanged.
 No native movement/attack is performed by setup after the cast starts.
 
 Compilation PASS22.3s,10 named tests PASS1.0s, exact source boundary PASS.
+Before freeze, an unobtained corridor records native candidate geometry and
+NOT_EVALUATED_NO_LEGAL_CORRIDOR before any command; it cannot become PASS.
+That narrow capture recheck compiles in16.7s and passes10 tests in0.9s.
 Freeze strict hidden-r23 once, then the focused Leap check. Complete affected
 both-mode/AI and bounded combined checks with exact-source reuse. After hidden
 proof remove only two suppression keys, regenerate controlled outputs and

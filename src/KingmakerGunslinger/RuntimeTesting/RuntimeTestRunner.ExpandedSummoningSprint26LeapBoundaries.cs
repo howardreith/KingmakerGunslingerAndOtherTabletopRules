@@ -188,7 +188,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     return false;
                 });
-                if(selected==null||tick==null||!parked)throw new InvalidOperationException("No legal isolated charge with protected actors outside native opportunity threat.");
+                if(selected==null||tick==null||!parked){
+                    Sprint25Check("leap-opportunity-route-precondition",false,new JObject{["preconditionObtained"]=false,
+                        ["route"]=route,["corridorCandidates"]=corridorAttempts,["engagementSurfacePresent"]=tick!=null,["flankerParked"]=parked,
+                        ["commandOutcome"]="NOT_EVALUATED_NO_LEGAL_CORRIDOR"},"One body-wide native-clear charge corridor with a protected-actor-safe opportunity responder must exist before any command.");
+                    yield break;
+                }
                 // Summons initially share the player-controlled group. Faction
                 // switching alone does not replace native group membership.
                 flanker.GroupId = "KMG_S26_Opportunity_" + flanker.UniqueId;
