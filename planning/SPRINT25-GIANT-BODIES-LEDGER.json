@@ -1,9 +1,25 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "MASTER_158_INTEGRATED_159_OVERRUN_TRACE_CANDIDATE_NEXT",
+  "status": "159_REAL_RIDER_RTWP_PROVEN_TB_CALLBACK_CONTEXT_QUALIFICATION_NEXT",
   "current": {
     "latestCheckpoint": {
+      "diagnostic51d9679b": {
+        "source": "51d9679b7274298dfbd66d2ec7109b8b166aebc1",
+        "sourceFingerprint": "9a8a5235f4eca5c1417a9055926ce3d056ec933e6a71e1b7592d4023f47ba477",
+        "zipSha256": "d3a78bc499f91bc8545c42328ac0fe0ca92769d04131c1010cf7c8659ea795c1",
+        "dllSha256": "2ad1648f6b0dc8e4fe8a9f1448eb95a452fd7c9b75d0e298133677eceecbd549",
+        "dllMvid": "d1cb6003-e5d2-415c-b2af-875a6ded9a4c",
+        "gate": "PASS2678/2678 unfiltered97.7s, exact build/strict380 files;311.3109466s;2026-10-18T00:18:44.9065814Z. Exact ZIP/sidecars archived source-build-51d9679b.",
+        "native": "Standalone attribution batch FAIL291.5992491s, completed2026-10-18T00:23:41.5562355Z. All9 RTWP cases PASS with get-up provocation excluded and actual native pending consumption/queue/two responders attributed. TB threshold FAIL: active subscribed exact rider captures eligible=true and consumes exact event, native prone requested and applied, no observed queue/response. Product rules are not changed speculatively.",
+        "batchReceipt": "artifacts/native-batch-51d9679b-attribution/result.json",
+        "batchReceiptSha256": "fc868973cf7f5ffddd04f1a7aa4067f833711158a389ea7eb184c1b92a943d60",
+        "nativeRunId": "20261018T0020406251059Z-d055f5d12d0c424699069569d88b92d7",
+        "runtimeResultSha256": "034c5a46163001c48da760655948f955456d6c2096f917e178d64a4fe44fc824",
+        "rawLogSha256": "4256db7361623aced25bbf9d4178213692715c4fc04ee8d7acf1c47f3b8fbe36",
+        "restoration": "Exact transaction compat-20261018T001900Z-db2cfe9bdcd9 restored actual installation/settings/bank,118 protected saves/private references; no owned game/lease. Weather-system teardown warnings are not rider exceptions.",
+        "coherentNextObservation": "Request-local entry/exit hooks now capture exact native Did inputs and actual public controller/queue versus scoped controller. Before command dispatch the fixture records its intended service and re-establishes it only if a native mode transition replaced that prerequisite. This does not synthesize a maneuver, knockdown, provocation or attack, and does not bypass UI/cost rules. Controller absence remains a source hypothesis until actual service/callback records establish it. Hooks/subscriptions/references unwind in finally. Compile17.5s,23/23 focused cases1.3s PASS."
+      },
       "requestLocalObservation": "2026-10-18T00:13Z: normal master integration committed/pushed as a65f469e7319bc78240ac3b29bcae57d40c240c7. Added bounded exact rider/component/fact/native subscriber/pending/eligibility snapshots before native About, after native resolution before initiator Did, and after callbacks return. All cases exclude independent get-up provocation; duplicate notification probes run only after the real callback consumed its event, never supplying missing first behavior. No production mechanic change. Initial compile caught a local-scope observer variable and was repaired before packaging. Final compile16.6s and23/23 focused cases PASS;70 publisher refusal checks PASS at159.",
       "asOfUtc": "2026-10-18T00:10:37.9539101Z",
       "sourceBuildCheckpoint": {
@@ -31,7 +47,7 @@
         "checks": "PASS compile17.5s;73/73 focused cases (2678 registered),domain2.4s; actual hidden source/6916 IDs;19 source refusals;17 real dispatch checks including retained158 visual child and new159 Sprint25;30 icon protection/refusals12.522s. Full new candidate/native not yet run.",
         "impact": "Brachiosaurus/Elephant original payloads/icon and mechanical rules unchanged by master. Fresh functional visuals/resources and Triceratops control cover inherited shared glow/refined control view; native Overrun diagnostic and targeted ON/OFF cold loads remain mandatory. Prior mechanics/AI/Cleave retain original artifact identities with dependency arguments, not relabeled execution."
       },
-      "next": "Commit/push coherent observer; one full159 candidate, then one standalone Overrun attribution phase (planning5-8min from observed launch cost; safe restoration has no deadline). Inspect actual rider snapshots before any product repair, then rerun affected Overrun both profiles. Fresh inherited-glow functional visuals/resources and Triceratops control, targeted six ON/OFF persistence stages, public boundary/full candidate/fresh public inventory/icon/eleven roots, publisher preflight, authorized merge/release/download/restoration audit, final-records merge,STOP. No Sprint26.",
+      "next": "Commit/push coherent callback-context observer; one full159 candidate, then integrated-native batch Overrun/foundation/visual-lifecycle in standalone and high-risk combined (6cells, planning25-35min; stops after a safely restored failure, restoration has no deadline). Preserve earlier unaffected mechanics/AI/Cleave identities. Then six targeted ON/OFF persistence stages, public boundary/full candidate/fresh public inventory/icon/eleven roots, publisher preflight, authorized merge/release/download/restoration audit, final-records merge,STOP. No Sprint26.",
       "acceptance": "PR49 draft/unmerged; Brachiosaurus hidden. HumanReview NOT_PERFORMED_NONBLOCKING for new giants. Steam Offline Mode accepted; no runtime safety waiver."
     },
     "previousCheckpoint20261017T2109Z": {
