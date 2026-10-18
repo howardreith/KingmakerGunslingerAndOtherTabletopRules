@@ -327,12 +327,8 @@ if ($profileCandidate.commit -cne $candidateGit.Commit -or
 $compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
-$sprint22Boundary=@($Scenario | Where-Object { $_ -cin @(
-    'observe-expanded-summoning-inventory',
-    'disposable-expanded-summoning-sprint22-native-review',
-    'disposable-expanded-summoning-sprint23-native-review',
-    'disposable-expanded-summoning-sprint24-native-review',
-    'disposable-expanded-summoning-sprint25-native-review') }).Count -gt 0
+$sprint22Boundary=@($Scenario | Where-Object {
+    Test-KmgExactSummoningRuntimeBoundary $_ }).Count -gt 0
 if($sprint22Boundary) {
     . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
     $sprint22SettingsKey='Software\Owlcat Games\Pathfinder Kingmaker'
@@ -516,12 +512,7 @@ try {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         $arguments.RuntimeLease = $compatRuntimeLease
-        $exactSprint22=$name -cin @(
-            'observe-expanded-summoning-inventory',
-            'disposable-expanded-summoning-sprint22-native-review',
-            'disposable-expanded-summoning-sprint23-native-review',
-            'disposable-expanded-summoning-sprint24-native-review',
-            'disposable-expanded-summoning-sprint25-native-review')
+        $exactSprint22=Test-KmgExactSummoningRuntimeBoundary $name
         if($exactSprint22) {
             . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
             $arguments.PassThru=$true

@@ -24,6 +24,19 @@ Set-StrictMode -Version Latest
 # The two owned boundaries must each get a restoration attempt. Callers first
 # establish that the native process is gone; this helper never bypasses that
 # guard or suppresses either failure.
+# Exact receipt and independent settings/install restoration are one decision.
+# New request-local summoning observations use the same released boundary.
+function Test-KmgExactSummoningRuntimeBoundary {
+    param([AllowNull()][AllowEmptyString()][string]$Scenario)
+    return $Scenario -cin @(
+        'observe-expanded-summoning-inventory',
+        'observe-expanded-summoning-sprint26-native-inputs',
+        'disposable-expanded-summoning-sprint22-native-review',
+        'disposable-expanded-summoning-sprint23-native-review',
+        'disposable-expanded-summoning-sprint24-native-review',
+        'disposable-expanded-summoning-sprint25-native-review')
+}
+
 function Invoke-KmgIndependentBoundaryRestoration {
     param([Parameter(Mandatory=$true)][scriptblock]$RestoreSettings,
         [Parameter(Mandatory=$true)][scriptblock]$RestoreInstallation)
