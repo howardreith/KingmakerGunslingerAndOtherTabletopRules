@@ -23423,6 +23423,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SingleOrDefault(value => value.name == owned[1]);
                 if (granted != null) factGuids[owned[0]] = granted.AssetGuid;
             }
+            foreach (string fact in profile.Facts)
+            {
+                string exact = ExpandedSummoningInventoryObservationPolicy
+                    .GiantProfileFactGuid(unit.AssetGuid, fact);
+                if (exact != null) factGuids[fact] = exact;
+            }
             // A profile fact the map does not know is a mismatch to report,
             // never an exception that ends the whole inventory.
             string[] unknownFacts = profile.Facts.Where(value =>
@@ -36231,6 +36237,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_sprint22Steps != null || _sprint22Fixture != null) CleanupSprint22NativeReview();
             if (_sprint23Steps != null || _sprint23Fixture != null) CleanupSprint23NativeReview();
             if (_sprint24Steps != null || _sprint24Fixture != null) CleanupSprint24NativeReview();
+            if (_sprint25Steps != null || _sprint25Fixture != null) CleanupSprint25NativeReview();
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

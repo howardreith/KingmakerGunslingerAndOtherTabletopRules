@@ -28,7 +28,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool RosterPersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope ||
             Sprint22PersistenceScope || Sprint23PersistenceScope ||
-            Sprint24PersistenceScope; } }
+            Sprint24PersistenceScope || Sprint25PersistenceScope; } }
+        private bool Sprint25PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.GiantBodiesScope; } }
         private bool Sprint22PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.AnkylosaurusScope; } }
         private bool Sprint23PersistenceScope
@@ -39,6 +41,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return Sprint22PersistenceScope ? new[] { "ankylosaurus" } :
             Sprint23PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaurKeys :
             Sprint24PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.TheropodKeys :
+            Sprint25PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantBodyKeys :
             ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
@@ -367,7 +370,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // clean up.
             bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
             bool savedTargetedSubset = (Sprint22PersistenceScope ||
-                Sprint23PersistenceScope || Sprint24PersistenceScope) && verify;
+                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope) && verify;
             bool exact = moduleOn || savedTargetedSubset
                 ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
                     (string)_request.Parameters["persistenceScope"], keys) &&
@@ -382,13 +385,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["keys"] = new JArray(keys), ["moduleEnabled"] = moduleOn },
                 moduleOn
                     ? "every KMG creature and every distinct retained native unit, exact saved receipt/caster/blueprint and finite duration"
-                    : "with the module off not one of this mod's creatures may instantiate at all");
+                    : savedTargetedSubset
+                        ? "the exact saved targeted receipts reconstruct natively while module-OFF publication and private visual allocations remain disabled"
+                        : "with the module off not one of this mod's creatures may instantiate at all");
             foreach (var unit in units)
             {
                 var receipt = unit.Get<UnitPartRelease143RosterReceipt>();
                 var profile = RosterPersistenceProfile(unit);
+                // Keep the stable racial/weapon receipt independent of
+                // module-ON-only observations added below. Those observations
+                // are evidence, not a second serialized feature schema.
                 if (prepare) receipt.Profile = profile.ToString(Formatting.None);
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
+                bool giantFactsAbilitiesExact = true;
+                if (Sprint25PersistenceScope && moduleOn && GiantBodyRulesPolicy.IsGiantBody(receipt.Key))
+                {
+                    bool brach = receipt.Key == GiantBodyRulesPolicy.BrachiosaurusKey;
+                    string[] expectedFacts = brach
+                        ? new[] { "d809b6c4ff2aaff4fa70d712a70f7d7b", "cc9c862ef2e03af4f89be5088851ea35",
+                            "63280e8f08c94c3a9b67787ec2d7ab71", "c9f41b8d20e7456eae3d6c1f5a8b7204" }
+                        : new[] { "54ee847996c25cd4ba8773d7b8555174", "79042cb55f030614ea29956177977c52",
+                            "b3614622866fe7046b787a548bbd7f59", "175d1577bb6c9a04baf88eec99c66334",
+                            "9972f33f977fc724c838e59641b2fca5", "f74c6bdf5c5f5374fb9302ecdc1f7d64",
+                            "bd380912f7c74843966c363ab281c0c2" };
+                    string[] expectedAbilities = brach
+                        ? new[] { "6447d104a2222c14d9c9b8a36e4eb242", "309ec3dedcf04c15b3011933f5eafef4", "b41f7d2a6c8e40539af1c2d5e7b30486" }
+                        : new[] { "a7c34e1d9b5f4a02ae6d8c71f3b02594" };
+                    var facts = new HashSet<string>(unit.Descriptor.Progression.Features.Enumerable.Select(value => value.Blueprint.AssetGuid));
+                    string[] abilities = expectedAbilities.Where(guid => unit.Descriptor.Abilities.GetAbility(
+                        BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                            BlueprintBootstrap.Library, guid, "giant persistence command")) != null).ToArray();
+                    giantFactsAbilitiesExact = expectedFacts.All(facts.Contains) && abilities.Length == expectedAbilities.Length;
+                    giantFactsAbilitiesExact &= unit.Stats.SkillPerception.ModifiedValue == (brach ? 28 : 21);
+                    profile["giantNativeFacts"] = new JArray(expectedFacts.Where(facts.Contains).OrderBy(value => value, StringComparer.Ordinal));
+                    profile["giantCommandGuids"] = new JArray(abilities.OrderBy(value => value, StringComparer.Ordinal));
+                    profile["giantPerception"] = unit.Stats.SkillPerception.ModifiedValue;
+                }
                 var project = unit.View == null ? new UnityEngine.Object[0] : RosterPersistenceResources(unit);
                 bool visual = unit.View != null && (_context.FeatureModules.Active.ExpandedSummoning || project.Length == 0);
                 string variantOwner = ExpandedSummoningVisualVariantPatch.DescribeOwnership(unit.View);
@@ -428,10 +460,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .ModuleOffArmoredBodyIsClean(originalBodyOutcome,
                                 theropodOwned.Length);
                 visual &= theropodBodyExact;
+                UnityEngine.Object[] giantOwned = unit.View == null ?
+                    new UnityEngine.Object[0] : ExpandedSummoningPteranodonViewPatch.CaptureGiantBodyOwnedResources(unit.View);
+                bool giantBodyExact = !Sprint25PersistenceScope || !GiantBodyVisualPolicy.Handles(receipt.Key) ||
+                    (moduleOn ? originalBodyOutcome.StartsWith("visual:attached;", StringComparison.Ordinal) && giantOwned.Length >= 2 :
+                    ExpandedSummoningRosterPersistencePolicy.ModuleOffArmoredBodyIsClean(originalBodyOutcome, giantOwned.Length));
+                visual &= giantBodyExact;
                 if (!_context.FeatureModules.Active.ExpandedSummoning)
                     visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
-                RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual,
+                RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
                         ["projectResourceCount"] = project.Length, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning,
                         ["variantRegisteredForSaveCompatibility"] = registeredVariant, ["variantOutcome"] = variantOutcome,
@@ -442,6 +480,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["theropodBodyPrivateResourceCount"] =
                             theropodOwned.Length,
                         ["theropodBodyExact"] = theropodBodyExact,
+                        ["giantBodyPrivateResourceCount"] = giantOwned.Length,
+                        ["giantBodyExact"] = giantBodyExact,
+                        ["giantFactsAbilitiesExact"] = giantFactsAbilitiesExact,
                         ["rendererMaterials"] = new JArray(unit.View == null ? new string[0] :
                             unit.View.GetComponentsInChildren<Renderer>(true).Where(r => r != null)
                                 .SelectMany(r => r.sharedMaterials).Select(m => m == null ? "<null>" : m.name)) },

@@ -58,7 +58,13 @@ namespace KingmakerGunslinger.Summoning
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
-            if (Values.Length != 119 || expected.Length != 119 ||
+            // 120 since 2026-10-17. The count is an immutability guard,
+            // so it moves only when a creature legitimately joins the
+            // roster WITH its painting: Brachiosaurus is registered, so
+            // IsRegisteredSomewhere already expected it, and its source
+            // painting and 128x128 export now exist and are pinned by
+            // the icon manifests.
+            if (Values.Length != 120 || expected.Length != 120 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||

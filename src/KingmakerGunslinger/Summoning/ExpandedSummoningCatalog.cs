@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 107) throw new InvalidOperationException("Expanded Summoning unique creature count must be 107.");
+            if (Creatures.Length != 108) throw new InvalidOperationException("Expanded Summoning unique creature count must be 108.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             // Sprint 18 adds the two apes: the Ape at Summon Monster and
@@ -42,8 +42,14 @@ namespace KingmakerGunslinger.Summoning
             // Sprint 24 adds Deinonychus to both tier-IV tables (six roots per
             // family) and Tyrannosaurus to both tier-VII tables (three roots
             // per family). All eighteen roots register before publication.
+            // Sprint 25 adds Brachiosaurus to Nature's Ally VII only, so only
+            // that side moves: 95/550 becomes 96/553, three placements for
+            // parents 7 through 9. The Monster surface is deliberately
+            // unchanged at 95/543, and Elephant's eight existing roots are
+            // completed rather than re-registered, so they are already counted
+            // in both families above.
             ValidateFamily(SummonFamily.Monster, 95, 543);
-            ValidateFamily(SummonFamily.NaturesAlly, 95, 550);
+            ValidateFamily(SummonFamily.NaturesAlly, 96, 553);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -110,7 +116,23 @@ namespace KingmakerGunslinger.Summoning
                 // Monster roots use only the existing celestial/fiendish
                 // policy; Nature's Ally roots remain untemplated.
                 C("deinonychus","Deinonychus",4,true,4,"Lizardfolk"),
-                C("tyrannosaurus","Tyrannosaurus",7,true,7,"Lizardfolk")
+                C("tyrannosaurus","Tyrannosaurus",7,true,7,"Lizardfolk"),
+                // Sprint 25. Brachiosaurus is Nature's Ally VII only, so it is
+                // shaped like the Stegosaurus and the Giant Crab: no Monster
+                // tier, untemplated, and therefore no celestial or fiendish
+                // execution children. The owner settled that on 2026-10-15
+                // against a recorded source discrepancy - the printed Summon
+                // Monster VII list and this project's own ideal-roster catalog
+                // both also place it on the Monster table - choosing the
+                // reversible direction, because adding Monster roots later is
+                // additive while withdrawing published ones is not. It rides
+                // the bounded-census quadruped rig under its own original body
+                // while that body is authored, and all three roots are
+                // suppressed until its complete candidate passes. Elephant is
+                // not re-registered here: Sprint 25 completes the existing
+                // released creature and its eight roots stay exactly as they
+                // are.
+                C("brachiosaurus","Brachiosaurus",null,false,7,"Mastodon")
             };
         }
 

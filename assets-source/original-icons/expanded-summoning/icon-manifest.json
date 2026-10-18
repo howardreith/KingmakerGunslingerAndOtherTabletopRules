@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  119,
+    "count":  120,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -242,6 +242,25 @@
                                                "KMG.Summoning.NativeOption.SM.Tier7.Bogeyman.One",
                                                "KMG.Summoning.NativeOption.SM.Tier8.Bogeyman.OneD3",
                                                "KMG.Summoning.NativeOption.SM.Tier9.Bogeyman.OneD4PlusOne"
+                                           ]
+                  },
+                  {
+                      "key":  "brachiosaurus",
+                      "displayName":  "Brachiosaurus",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/brachiosaurus.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/brachiosaurus.png",
+                      "sourceSha256":  "da5a4bee8d86bc50b1bf6915272603b9a937eab9e309a3335c3ba97a4870a39e",
+                      "outputSha256":  "7a573555b5d44eaea4a970da54214213eb00499423338b65109e0b9ac0ee1003",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier7.Brachiosaurus.One",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Brachiosaurus.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Brachiosaurus.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.Brachiosaurus.UnitType",
+                                               "KMG.Summoning.Unit.Brachiosaurus"
                                            ]
                   },
                   {

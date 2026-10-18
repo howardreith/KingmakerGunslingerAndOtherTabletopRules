@@ -31,8 +31,10 @@ namespace KingmakerGunslinger.DomainTests
             // Deinonychus and Tyrannosaurus chassis facts plus the
             // Tyrannosaurus Powerful Bite, Bleeding Critical and combat
             // traits carriers, all granted on their own units.
-            Assertions.Equal(53, rows.Length, "All observed qualified project references through Sprint 24, with no blanket prefix exception.");
-            Assertions.Equal(53, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
+            int giantRows = rows.Count(r => r[1] == "KMG_Summoning_Unit_Brachiosaurus" || r[1] == "KMG_Summoning_Unit_Elephant");
+            Assertions.Equal(6, giantRows, "Only the four Brachiosaurus carriers and Elephant's exact Trample/chassis are admitted.");
+            Assertions.Equal(53, rows.Length - giantRows, "The released interpretation prefix through Sprint 24 is preserved.");
+            Assertions.Equal(rows.Length, rows.Select(r => string.Join("|", r)).Distinct().Count(), "No duplicate ownership rows.");
             var entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
             foreach (var r in rows)
             {
@@ -52,6 +54,22 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningInventoryObservationPolicy.NaturalProfileFactComparable(
                 "KMG_Summoning_Natural_Ankylosaurus_Chassis", false),
                 "Ordinary natural facts remain comparable even when not expected.");
+            const string elephant = "9dd8544097234f05bcd35d400d91b510";
+            Assertions.Equal("54ee847996c25cd4ba8773d7b8555174",
+                ExpandedSummoningInventoryObservationPolicy.GiantProfileFactGuid(elephant, "Endurance"),
+                "The printed Elephant feat resolves to its exact native fact.");
+            Assertions.Equal("bd380912f7c74843966c363ab281c0c2",
+                ExpandedSummoningInventoryObservationPolicy.GiantProfileFactGuid(elephant, "ElephantChassis"),
+                "The completion carrier resolves to its existing manifest identity.");
+            foreach (string wrongOwner in new[] { null, "", "foreign",
+                "9093aef39ecc416092ef68655a7e56fb", elephant.ToUpperInvariant() })
+                Assertions.True(ExpandedSummoningInventoryObservationPolicy
+                    .GiantProfileFactGuid(wrongOwner, "ElephantChassis") == null,
+                    "Other owners cannot acquire this interpretation.");
+            foreach (string wrongFact in new[] { null, "", "endurance", "ForeignChassis" })
+                Assertions.True(ExpandedSummoningInventoryObservationPolicy
+                    .GiantProfileFactGuid(elephant, wrongFact) == null,
+                    "Unknown or case-mismatched profile facts remain failures.");
         }
 
         internal static void QualifiedReferencesRejectSpoofingAndOtherCarriers()

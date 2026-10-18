@@ -386,6 +386,12 @@ namespace KingmakerGunslinger.Blueprints
             "4cd1757a0eea7694ba5c933729a53920";
         private const string NativeOverrunAbilityGuid =
             "1a3b471ecea51f7439a946b23577fd70";
+
+        /// <summary>Greater Overrun observed in the installed-stack census.
+        /// It is absent in standalone 2.1.7b. When present it is cloned,
+        /// never modified; its absence must not disable the package.</summary>
+        private const string InstalledGreaterOverrunFeatureGuid =
+            "ee24c02cc68c4c9b9b54ebef9f9f8133";
         internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
         internal const string MediumClawGuid = "118fdd03e569a66459ab01a20af6811a";
         internal const string Claw2d4Guid = "8afc47748d00b3e4a8aff2787d9ee350";
@@ -690,9 +696,223 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.Summoning.Unit.Triceratops",
                 ArmoredDinosaurRulesPolicy.TriceratopsTrampleSymbol,
                 ArmoredDinosaurRulesPolicy.TriceratopsKey);
+            // Sprint 25. Brachiosaurus registers on the same qualified
+            // carrier, so it inherits the interrupt, duplicate-response,
+            // path and leave-combat guards rather than a second copy of
+            // them. Elephant does NOT register here: its trample symbol is
+            // a reserved name with no allocated blueprint identity, and
+            // the append that would allocate one is gated on a bounded
+            // native census of the released creature’s own production
+            // carriers, which has not been run.
+            ConfigureUngulateTrample(library, bySymbol,
+                "KMG.Summoning.Unit.Brachiosaurus",
+                GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
+                GiantBodyRulesPolicy.BrachiosaurusKey);
+            // The released Elephant now registers too. Its trample symbol
+            // became a real identity once the bounded observation of its
+            // own carriers recorded six grants and no trample ability or
+            // component of any kind. It joins the same qualified carrier,
+            // so it inherits the interrupt, duplicate-response, path and
+            // leave-combat guards rather than a second copy of them, and
+            // no released d6 trampler changes.
+            ConfigureUngulateTrample(library, bySymbol,
+                "KMG.Summoning.Unit.Elephant",
+                GiantBodyRulesPolicy.ElephantTrampleSymbol,
+                GiantBodyRulesPolicy.ElephantKey);
+            // The bounded ordinary Overrun command the owner selected
+            // over a waiver. Brachiosaurus only, separate from Trample,
+            // and it reuses the native implementation rather than
+            // inventing a maneuver system.
+            ConfigureBrachiosaurusOverrun(library, bySymbol);
+            ConfigureBrachiosaurusGreaterOverrun(library, bySymbol);
             ConfigureMephitVariants(library, bySymbol);
         }
 
+        /// <summary>
+        /// One Brachiosaurus-owned ordinary Overrun, reusing the native
+        /// overrun ability as-is rather than building a maneuver system.
+        ///
+        /// <para>The one field that matters is AutoSuccess. Every trample
+        /// in this project sets it TRUE, and the IL of AbilityCustomOverrun
+        /// branches on it before constructing anything: an AutoSuccess
+        /// overrun never builds a RuleCombatManeuver and never raises
+        /// RuleCalculateCMB. This command sets it FALSE, which is what
+        /// makes it an actual maneuver and what makes the printed Greater
+        /// Overrun +2 reachable at all.</para>
+        ///
+        /// <para>It shares nothing with Trample: its own identity, its own
+        /// action cost, no ContextActionUngulateTrample, no path checker,
+        /// and no trample damage. Neither action replays the other, and no
+        /// custom provocation is added anywhere - the native feat's own
+        /// ManeuverProvokeAttack is the only provocation in play, so there
+        /// is no duplicate native-plus-custom effect.</para>
+        /// </summary>
+        /// <summary>
+        /// The printed Greater Overrun, carried for this one creature.
+        ///
+        /// <para>The native feat is cloned rather than granted, for one
+        /// reason: its <c>ManeuverProvokeAttack</c> fires on
+        /// <c>evt.Success</c> alone, so an ordinary pass-through - and a
+        /// success against a target that cannot be knocked off at all -
+        /// provokes. The printed rider follows an opponent knocked prone BY
+        /// that overrun. The clone keeps everything else the feat carries,
+        /// including its printed +2, drops that one component, and carries
+        /// <see cref="BrachiosaurusOverrunKnockdown"/> instead.</para>
+        ///
+        /// <para>Nothing global changes: the native feat is untouched and
+        /// still granted to every actor that has it. There is exactly one
+        /// provocation in play for this creature, not a second stacked on
+        /// the original, and no opportunity attack is emitted and undone.</para>
+        /// <para>The installed-stack donor is optional: standalone 2.1.7b
+        /// does not expose its GUID. There the same private carrier uses the
+        /// native ManeuverBonus component for the printed +2, plus the same
+        /// exact-owner knockdown rider. No optional-mod feat is required.</para>
+        /// </summary>
+        private static void ConfigureBrachiosaurusGreaterOverrun(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintFeature carrier = Require<BlueprintFeature>(bySymbol,
+                GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol);
+            BlueprintScriptableObject installed;
+            BlueprintFeature native = library.BlueprintsByAssetId.TryGetValue(
+                InstalledGreaterOverrunFeatureGuid, out installed) && installed != null
+                ? BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                    InstalledGreaterOverrunFeatureGuid, "installed Greater Overrun feat")
+                : null;
+            // A feature is not an ability, so the ability field copier is
+            // not used here. Only what a granted creature feat needs is set,
+            // and the native blueprint is read, never written.
+            carrier.name = InternalName(
+                GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol);
+            carrier.HideInUI = native != null && native.HideInUI;
+            carrier.HideInCharacterSheetAndLevelUp =
+                native != null && native.HideInCharacterSheetAndLevelUp;
+            carrier.IsClassFeature = native != null && native.IsClassFeature;
+            carrier.Ranks = native != null ? native.Ranks : 1;
+
+            // Everything the native feat carries except the provocation whose
+            // condition is wrong for the printed rider.
+            var kept = new List<BlueprintComponent>();
+            foreach (BlueprintComponent component in
+                native?.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+            {
+                if (component is ManeuverProvokeAttack) continue;
+                // Deep-cloned, the way every other reuse of a native
+                // blueprint's components in this project is. Sharing the
+                // instances would put the same objects on two blueprints
+                // at once; the native feat every other actor has must be
+                // left exactly as the game shipped it.
+                kept.Add(ExpandedSummoningAbilityBuilder
+                    .DeepCloneComponent(component));
+            }
+            if (native == null)
+            {
+                // The exact printed benefit, using the game's own component
+                // already used by our other maneuver carriers. No Improved
+                // Overrun grant, optional-mod dependency or new maneuver rule.
+                var bonus = ScriptableObject.CreateInstance<ManeuverBonus>();
+                bonus.Type = CombatManeuver.Overrun;
+                bonus.Bonus = 2;
+                kept.Add(bonus);
+            }
+            kept.Add(ScriptableObject.CreateInstance<
+                BrachiosaurusOverrunKnockdown>());
+            carrier.ComponentsArray = kept.ToArray();
+            // This project's own strings rather than the native feat's
+            // text: the carrier is our blueprint, and nothing of the game's
+            // own wording needs to travel into it.
+            BlueprintUnitFactAccess.Resolve().Configure(carrier,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Brachiosaurus.GreaterOverrun.Name",
+                    "Greater Overrun"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Brachiosaurus.GreaterOverrun" +
+                        ".Description",
+                    "+2 on overrun checks. An opponent knocked prone by this "
+                        + "creature's overrun provokes attacks of "
+                        + "opportunity."),
+                native != null ? native.Icon :
+                    ExpandedSummoningProjectIcons.Require("brachiosaurus"));
+        }
+
+        private static void ConfigureBrachiosaurusOverrun(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol,
+                "KMG.Summoning.Unit.Brachiosaurus");
+            BlueprintAbility ability = Require<BlueprintAbility>(bySymbol,
+                GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol);
+            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeOverrunAbilityGuid,
+                    "native path-following overrun ability");
+            ExpandedSummoningAbilityBuilder.CopyFields(native, ability);
+            ability.name = InternalName(
+                GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol);
+            ability.Type = AbilityType.Extraordinary;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.DoubleMove;
+            ability.CanTargetPoint = true;
+            ability.CanTargetSelf = false;
+            ability.CanTargetFriends = false;
+            ability.CanTargetEnemies = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.None;
+            ability.SpellResistance = false;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.SetIsFullRoundAction(true);
+
+            var overrun = ScriptableObject.CreateInstance<
+                AbilityCustomOverrun>();
+            // FALSE is the whole point: this one really rolls.
+            overrun.AutoSuccess = false;
+            // ONE target, which is where this parts company with Trample.
+            // Native checks this flag outside its inner unit loop. The
+            // product-native d7aa5099 table demonstrated multiple contacts
+            // in one tick despite TRUE; BrachiosaurusOverrunContactPatch
+            // closes only this carrier's intra-tick gap and skips allies.
+            // Native movement/rolls remain in use. Trample keeps FALSE and
+            // its original many-target behavior.
+            overrun.FirstTargetOnly = true;
+            overrun.StopOnCorpulence = false;
+            overrun.DelayBeforeStart = 0f;
+            overrun.DelayAfterFinish = 0f;
+            // The action list stays EMPTY, and that is now a decision
+            // rather than an omission. AbilityCustomOverrun's IL runs this
+            // list on ANY success - IL_03b1 branches on !Success alone - so
+            // an action here fires for an ordinary pass-through too. The
+            // printed rule knocks a target prone only when the result beats
+            // its CMD by 5 or more, and the engine already draws that line
+            // in RuleCombatManeuver.IsPartialSuccess. The knockdown and its
+            // provocation therefore live on the creature's cloned Greater
+            // Overrun carrier, which can see the rule; see
+            // BrachiosaurusOverrunKnockdown.
+            overrun.Actions = new ActionList {
+                Actions = Array.Empty<GameAction>()
+            };
+            var fullRound = ScriptableObject.CreateInstance<
+                AbilityIsFullRoundInTurnBased>();
+            fullRound.FullRoundIfTurnBased = true;
+            ability.ComponentsArray = new BlueprintComponent[] {
+                overrun, fullRound
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Brachiosaurus.Overrun.Name",
+                    "Overrun"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Brachiosaurus.Overrun.Description",
+                    "Move through an opponent's space, forcing a combat "
+                        + "maneuver check. This is the ordinary overrun "
+                        + "maneuver and is not the creature's trample."),
+                null);
+            unit.AddFacts = (unit.AddFacts ??
+                Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { ability }).ToArray();
+        }
         private static void ConfigureUngulateTrample(
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,

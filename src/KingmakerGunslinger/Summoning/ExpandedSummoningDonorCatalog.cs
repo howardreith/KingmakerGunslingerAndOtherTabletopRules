@@ -88,7 +88,20 @@ namespace KingmakerGunslinger.Summoning
                 // joint balancing tail. It is an animation skeleton only;
                 // both visible bodies and textures are project-owned.
                 "deinonychus|a8cbd4cdb0feaf64eab1452257c3c971|0",
-                "tyrannosaurus|a8cbd4cdb0feaf64eab1452257c3c971|0"
+                "tyrannosaurus|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                // Sprint 25 reuses the quadruped rig Sprint 23's bounded
+                // census already measured and validated for Triceratops,
+                // which is the same rig the released Elephant, Rhinoceros and
+                // Woolly Rhinoceros ride. It is an animation skeleton only:
+                // the visible Brachiosaurus body and textures are
+                // deterministic project-owned geometry, and borrowing the rig
+                // is not permission to inflate its collision footprint to
+                // match a long neck. Reuse rather than a new capture is what
+                // the sprint's bounded-census rule asks for while the rig is
+                // unchanged; the guarded census must still confirm the rest
+                // and capture whatever rest, bind and contact facts are
+                // missing before any geometry is authored.
+                "brachiosaurus|028cc6f46e7998f46855a33ffde89567|0"
             });
         }
 

@@ -269,6 +269,15 @@ namespace KingmakerGunslinger.Blueprints
                 { "ElectricityImmunity", "cd1e5ab641a833c49994aff99db98952" },
                 { "WeaponFocusSlam", "8c046dfa8d1c64247af0e830a5909510" },
                 { "WeaponFocusTail", "77680337beba8df439793669390cd638" },
+                // Sprint 25. The printed Greater Overrun, mapped to the
+                // real native feat rather than reinvented. Its +2 is
+                // exactly the printed bonus; how its provocation differs
+                // from the printed rider on this build is recorded in the
+                // sprint ledger rather than papered over here.
+                { "GreaterOverrun", "ee24c02cc68c4c9b9b54ebef9f9f8133" },
+                // Standalone CleaveAction actually consumes this feature.
+                // Granting the printed feat repairs this creature, not Cleave.
+                { "GreatCleave", "cc9c862ef2e03af4f89be5088851ea35" },
                 { "WeaponFocusGore", "1ee54cb77a9dbdb49891c2c2f31d6c1c" },
                 { "ImprovedBullRush", "b3614622866fe7046b787a548bbd7f59" },
                 { "AcidResistance20", "416386972c8de2e42953533c4946599a" },
@@ -503,6 +512,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureAnkylosaurus(library, bySymbol);
             ConfigureArmoredDinosaurs(library, bySymbol);
             ConfigureTheropods(library, bySymbol);
+            ConfigureGiantBodies(library, bySymbol);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -1484,7 +1494,8 @@ namespace KingmakerGunslinger.Blueprints
                 profile.Key == GiantCrabRulesPolicy.GiantCrabKey ||
                 profile.Key == AnkylosaurusRulesPolicy.Key ||
                 ArmoredDinosaurRulesPolicy.UsesExactRanks(profile.Key) ||
-                TheropodRulesPolicy.UsesExactRanks(profile.Key);
+                TheropodRulesPolicy.UsesExactRanks(profile.Key) ||
+                GiantBodyRulesPolicy.UsesExactRanks(profile.Key);
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
@@ -1543,6 +1554,19 @@ namespace KingmakerGunslinger.Blueprints
                     ranks.BaseHitPoints = TheropodRulesPolicy
                         .DeinonychusBaseRacialHitPoints;
                 }
+                else if (profile.Key ==
+                    GiantBodyRulesPolicy.BrachiosaurusKey)
+                {
+                    // Perception is the only printed skill: 18 ranks + 3
+                    // class + 1 Wisdom + 6 Skill Focus = 28, and no racial
+                    // bonus. Half the Skill Focus is the chassis's.
+                    ranks.MobilityRanks = 0;
+                    ranks.PerceptionRanks = GiantBodyRulesPolicy
+                        .BrachiosaurusPerceptionRanks;
+                    ranks.StealthRanks = 0;
+                    ranks.BaseHitPoints = GiantBodyRulesPolicy
+                        .BrachiosaurusBaseRacialHitPoints;
+                }
                 else if (profile.Key == TheropodRulesPolicy.TyrannosaurusKey)
                 {
                     ranks.MobilityRanks = TheropodRulesPolicy
@@ -1553,6 +1577,12 @@ namespace KingmakerGunslinger.Blueprints
                         .TyrannosaurusStealthRanks;
                     ranks.BaseHitPoints = TheropodRulesPolicy
                         .TyrannosaurusBaseRacialHitPoints;
+                }
+                else if (profile.Key == GiantBodyRulesPolicy.ElephantKey)
+                {
+                    ranks.MobilityRanks = ranks.StealthRanks = 0;
+                    ranks.PerceptionRanks = GiantBodyRulesPolicy.ElephantPerceptionRanks;
+                    ranks.BaseHitPoints = GiantBodyRulesPolicy.ElephantBaseRacialHitPoints;
                 }
                 else if (profile.Key == GirallonRulesPolicy.GirallonKey)
                 {
@@ -1670,6 +1700,9 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == TheropodRulesPolicy.TyrannosaurusKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     TheropodRulesPolicy.TyrannosaurusUnitTypeSymbol);
+            else if (profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey)
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol);
             // Both theropods borrow only the Lizardfolk rig. Its playable
             // Human race carrier otherwise adds a selected +2 Constitution
             // and keeps Medium combat-size arithmetic on a unit whose native
@@ -1700,7 +1733,16 @@ namespace KingmakerGunslinger.Blueprints
             }
             foreach (string fact in profile.Facts)
             {
-                BlueprintUnitFact value = fact == "WaspPoison"
+                // This creature's Greater Overrun is the cloned carrier,
+                // not the native feat: the native component provokes on
+                // success alone, where the printed rider follows a
+                // knockdown the overrun caused. Keyed on the creature as
+                // well as the fact, so no other profile can pick it up.
+                BlueprintUnitFact value = fact == "GreaterOverrun" &&
+                        profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol)
+                    : fact == "WaspPoison"
                     ? Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol)
                     : fact == "DireBatBlindsense"
                     ? Require<BlueprintFeature>(bySymbol, DireBatBlindsenseSymbol)
@@ -1764,6 +1806,12 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "TyrannosaurusChassis"
                     ? Require<BlueprintFeature>(bySymbol,
                         TheropodRulesPolicy.TyrannosaurusChassisSymbol)
+                    : fact == "BrachiosaurusChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantBodyRulesPolicy.BrachiosaurusChassisSymbol)
+                    : fact == "ElephantChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantBodyRulesPolicy.ElephantChassisSymbol)
                     : fact == "TyrannosaurusPowerfulBite"
                     ? Require<BlueprintFeature>(bySymbol,
                         TheropodRulesPolicy.TyrannosaurusPowerfulBiteSymbol)
@@ -1912,6 +1960,8 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, TheropodRulesPolicy.DeinonychusTalonSymbol);
             if (key == "TyrannosaurusBite4d6") return Require<BlueprintItemWeapon>(
                 bySymbol, TheropodRulesPolicy.TyrannosaurusBiteSymbol);
+            if (key == "BrachiosaurusTail4d6") return Require<BlueprintItemWeapon>(
+                bySymbol, GiantBodyRulesPolicy.BrachiosaurusTailSymbol);
             throw new InvalidOperationException("Unknown natural weapon key " +
                 key + ".");
         }

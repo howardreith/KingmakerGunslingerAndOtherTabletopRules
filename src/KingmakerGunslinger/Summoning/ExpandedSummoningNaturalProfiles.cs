@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 58 || Values.Select(value => value.Key)
+            if (Values.Length != 59 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -393,6 +393,63 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException(
                     "Sprint 24 theropod profile changed.");
             TheropodRulesPolicy.Validate();
+            ValidateGiantBodies();
+        }
+
+        /// <summary>
+        /// The Sprint 25 giant bodies, field by field against their frozen
+        /// policy rather than against repeated literals. Brachiosaurus is
+        /// the lone-natural-weapon creature and the one whose reach equals
+        /// its space, so both of those are asserted here as properties of
+        /// this creature and not of its size class.
+        /// </summary>
+        private static void ValidateGiantBodies()
+        {
+            NaturalSummonProfile brachiosaurus = For(
+                GiantBodyRulesPolicy.BrachiosaurusKey);
+            if (brachiosaurus.HitDieClass != "Animal" ||
+                brachiosaurus.HitDice !=
+                    GiantBodyRulesPolicy.BrachiosaurusHitDice ||
+                brachiosaurus.Size != "Gargantuan" ||
+                brachiosaurus.Strength !=
+                    GiantBodyRulesPolicy.BrachiosaurusStrength ||
+                brachiosaurus.Dexterity !=
+                    GiantBodyRulesPolicy.BrachiosaurusDexterity ||
+                brachiosaurus.Constitution !=
+                    GiantBodyRulesPolicy.BrachiosaurusConstitution ||
+                brachiosaurus.Wisdom !=
+                    GiantBodyRulesPolicy.BrachiosaurusWisdom ||
+                brachiosaurus.SpeedFeet !=
+                    GiantBodyRulesPolicy.BrachiosaurusSpeedFeet ||
+                brachiosaurus.NaturalArmor !=
+                    GiantBodyRulesPolicy.BrachiosaurusNaturalArmor ||
+                brachiosaurus.PrimaryWeapon != "BrachiosaurusTail4d6" ||
+                // One natural attack, which is what makes the
+                // one-and-a-half Strength routine correct for it.
+                brachiosaurus.AdditionalWeapons.Count != 0 ||
+                brachiosaurus.AdditionalSecondaryWeapons.Count != 0 ||
+                !brachiosaurus.Facts.Contains("BrachiosaurusChassis") ||
+                !brachiosaurus.Facts.Contains("WeaponFocusTail") ||
+                !brachiosaurus.Facts.Contains("TripDefenseFourLegs") ||
+                !brachiosaurus.Facts.Contains("Cleave") ||
+                // The product-native standalone run requires this real
+                // feature, unlike the installed-stack census's wiring.
+                !brachiosaurus.Facts.Contains("GreatCleave") ||
+                !brachiosaurus.Facts.Contains("GreaterOverrun") ||
+                // Never invented for this creature.
+                brachiosaurus.Facts.Contains("PowerfulCharge") ||
+                brachiosaurus.Facts.Contains("Pounce") ||
+                brachiosaurus.Facts.Contains("Grab") ||
+                !brachiosaurus.Skills.SequenceEqual(
+                    new[] { "Perception" }) ||
+                // The trample is registered now, so the assertion is that
+                // it says so - and that it still refuses to call itself
+                // qualified, which is a different claim.
+                !brachiosaurus.Deviations.Any(value =>
+                    value.Contains("Registered is not qualified")))
+                throw new InvalidOperationException(
+                    "Sprint 25 Brachiosaurus profile changed.");
+            GiantBodyRulesPolicy.Validate();
         }
 
         private static NaturalSummonProfile[] Build()
@@ -655,13 +712,41 @@ namespace KingmakerGunslinger.Summoning
                         "WeaponFocusBite", "WeaponFocusClaw"),
                     "The secondary claw pair is the rake; the rake gate lets it strike only on a charge (Pounce) or against the exact foe the smilodon has held since its round began, the attack sequencing seam drops it from any other full attack, and a rake claw never grabs (Sprint 7; correction order).",
                     "The smilodon grabs with its bite and both foreclaws, against a foe of its size or smaller, on the shared summon grapple lifecycle (Sprint 7; correction order); Run is omitted because no summon-safe exact final-live contract was proven."),
+                // Sprint 25 completes this released creature rather than
+                // re-registering it: the key, tiers, roots, children and
+                // ordering are untouched and only the profile is corrected.
                 PS("elephant", "Elephant", "Animal", 11, "Huge",
                     30, 10, 19, 2, 13, 7, 40, 9, "Gore2d8",
-                    Array.Empty<string>(), A("Slam2d6"),
-                    A("GreatFortitude", "IronWill", "PowerAttack",
-                        "SkillFocusPerception"),
-                    "Trample is omitted pending a player-commandable, path-safe native movement contract; ordinary gore and slam attacks remain exact and the omission is conservative.",
-                    "Endurance and Improved Bull Rush are omitted because exact concrete final-live feature identities were not proven."),
+                    A("Slam2d6"), Array.Empty<string>(),
+                    A("Endurance", "GreatFortitude", "ImprovedBullRush",
+                        "IronWill", "PowerAttack", "SkillFocusPerception",
+                        "TripDefenseFourLegs", "ElephantChassis"),
+                    "Sprint 25 correction: the printed adult routine is gore +16 (2d8+10) AND slam +16 (2d6+10). Both are primary, so the slam moves out of the secondary list it was registered in. As a secondary it took the native -5 to hit and half Strength, which produced slam +11 (2d6+5) and did not match either printed line.",
+                    "Improved Bull Rush is now carried. It was recorded as unproven here, but Sprint 23 qualified the exact concrete carrier for Triceratops, so the earlier omission no longer holds.",
+                    "The printed +4 quadruped defence against trip is now carried through the same shared four-legs fact the other quadrupeds use, which is what the printed CMD 30 / 34 versus trip requires.",
+                    "Space is 15 feet but printed reach is 10 feet. A Huge body is not evidence of 15-foot reach and this creature must not be used to generalize one.",
+                    "Endurance is now carried too, correcting a Sprint 25 error. It was recorded here as having no proven carrier, but the builder has mapped it to native 54ee847996c25cd4ba8773d7b8555174 since Sprint 4, the Sprint 24 bounded native census recorded it as resolved, and the released Tyrannosaurus already ships it. The original omission predates that evidence and no longer holds. All six printed Elephant feats are now carried.",
+                    "Trample is specified at 2d8+15 with a live DC 25, separate from the gore and slam, granting no powerful charge and changing no released d6 trampler. The original omission reason is obsolete - Sprint 23 built the player-commandable, path-safe trample contract this needs - and the command IS registered now, on that same qualified carrier, so it inherits the interrupt, duplicate-response, path and leave-combat guards rather than a second copy of them. The identity it needed was appended only after a bounded observation of this released creature recorded six grants and no trample ability or component of any kind. Registered is not qualified: native proof of the command in play is still required before publication."),
+                // Sprint 25. This row and the carriers that resolve its
+                // weapon key land in one change: a profile naming an
+                // unresolvable weapon makes blueprint initialization throw
+                // and roll back every registration.
+                PK("brachiosaurus", "Brachiosaurus", "Animal", 18,
+                    "Gargantuan",
+                    37, 10, 21, 2, 13, 10, 30, 12,
+                    "BrachiosaurusTail4d6", Array.Empty<string>(),
+                    A("BrachiosaurusChassis", "Cleave", "GreatCleave", "GreatFortitude",
+                        "GreaterOverrun", "ImprovedBullRush", "IronWill",
+                        "PowerAttack", "SkillFocusPerception",
+                        "TripDefenseFourLegs", "WeaponFocusTail"),
+                    A("Perception"),
+                    "The printed tail bonus differs between sources: the current AoN entry reads +22 and the legacy PRD reads +23. The selected contract is +23, because it is what the inputs both sources print derive - base attack +13, Strength 37 for +13, Gargantuan -4 and Weapon Focus (tail) +1 - and those same inputs independently derive the CMB +30 and CMD 40 that both also print. A +22 would require an unexplained -1 that no printed input supplies. The sources are not claimed to agree and no hidden modifier is manufactured.",
+                    "A single natural attack, so the tail takes one-and-a-half Strength rather than the ordinary multiplier. This is the only creature in the roster that uses that routine.",
+                    "Space is 20 feet and printed reach is 20 feet. This is the creature whose reach does equal its space, which is exactly why the released Elephant must not be read as evidence that a large body grants reach equal to space - there it is 15 and 10.",
+                    "Twenty-foot reach is composed, not stated: a Gargantuan body exposes fifteen feet, the chassis adds the final five, and the private tail weapon type stores nine to expose five feet before body reach, the same arithmetic the released Stegosaurus tail uses. Native proof must confirm the uniform twenty feet before publication rather than trusting the composition.",
+                    "Greater Overrun uses this creature's private carrier and ordinary one-target Overrun command, separate from auto-success Trample. The installed-stack feat ee24c02cc68c4c9b9b54ebef9f9f8133 is absent standalone: when present its kept components are deep-cloned without success-only ManeuverProvokeAttack; when absent the carrier uses native ManeuverBonus for the same printed +2. No Improved Overrun feat is added. The exact-owner rider reads native IsPartialSuccess and knockdown eligibility, and provokes only for a knockdown this overrun caused. Other actors' feats and Trample remain unchanged. Great Cleave still uses the recorded native CleaveAction wiring rather than a global repair. Functional native qualification of these commands remains required; registration is not proof.",
+                    "Trample is registered as a player-commandable full-round action on the Sprint 23 qualified path/contact/response carrier, so it inherits that carrier’s interrupt, duplicate-response, path and leave-combat guards rather than a second copy of them. 2d6+19 with a live DC 32, both derived rather than stated: one and a half times the Strength modifier for +19, and 10 + 18 hit dice halved + Strength 37 for DC 32. Separate from the tail, grants no powerful charge, and changes no released trampler. Registered is not qualified: native proof of the command in play is still required before publication.",
+                    "The donor rig is measured, not assumed. The 2026-10-16 census recorded the frozen quadruped donor as 40 real skinning joints with a twelve-joint tail chain, which the tail attack wants, but exactly one neck joint and one head joint. A long raised sauropod neck on this rig is therefore a two-segment rigid structure. That is a measured limitation of the frozen donor and is recorded before any geometry is authored against it."),
                 PS("mastodon", "Mastodon", "Animal", 14, "Huge",
                     34, 12, 21, 2, 13, 7, 40, 12, "Gore2d8",
                     Array.Empty<string>(), A("Slam2d6"),

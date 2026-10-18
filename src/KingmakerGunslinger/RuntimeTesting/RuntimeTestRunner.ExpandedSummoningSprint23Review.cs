@@ -1690,7 +1690,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private TargetWrapper Sprint23FindTrampleRoute(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData target,
-            AbilityData trample, out Vector3 start, out string detail)
+            AbilityData trample, out Vector3 start, out string detail,
+            bool disjointBodies = false)
         {
             if (AstarPath.active == null)
                 throw new InvalidOperationException(
@@ -1724,6 +1725,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             from.clampedPosition);
                         PlaceExpandedSummoningUnit(target,
                             (from.clampedPosition + to.clampedPosition) * .5f);
+                        if (disjointBodies && owner.DistanceTo(target) <= .1f)
+                            continue;
                         var wrapper = new TargetWrapper(to.clampedPosition);
                         Vector3 traced = Kingmaker.View.ObstacleAnalyzer
                             .TraceAlongNavmesh(owner.Position,
@@ -1753,10 +1756,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Sprint23NativeTrampleCommand(
-            ExpandedSummoningCorrectionFixture fixture, bool turnBased)
+            ExpandedSummoningCorrectionFixture fixture, bool turnBased,
+            string creatureKey = ArmoredDinosaurRulesPolicy.TriceratopsKey,
+            int expectedDc = 25, int expectedRolls = 1,
+            DiceType expectedDice = DiceType.D8, int expectedBonus = 12,
+            Action<string, bool, JObject, string> record = null,
+            Action<UnitEntityData, int> observeFrame = null,
+            bool requireDeliveryCompletion = false)
         {
+            if (record == null) record = Sprint23Check;
             UnitEntityData owner = CastExpandedSummoningQuietUnit(fixture,
-                ArmoredDinosaurRulesPolicy.TriceratopsKey);
+                creatureKey);
             UnitEntityData target = fixture.Hostile;
             Size sizeBefore = target.Descriptor.State.Size;
             int reflexBefore = target.Stats.SaveReflex.BaseValue;
@@ -1766,13 +1776,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] awakeBefore = null;
             try
             {
+                if (GiantBodyRulesPolicy.IsGiantBody(creatureKey))
+                    foreach (int frame in Sprint25NativeAppearance(owner, creatureKey)) yield return frame;
                 target.Descriptor.State.Size = Size.Medium;
                 target.Stats.SaveReflex.BaseValue = -100;
                 target.CombatState.OnNewRound();
                 target.CombatState.AttackOfOpportunityCount = 0;
                 BlueprintAbility blueprint = fixture.Blueprints
                     .OfType<BlueprintAbility>().Single(value => value.name ==
-                        "KMG_Summoning_Special_Triceratops_Trample");
+                        (creatureKey == ArmoredDinosaurRulesPolicy.TriceratopsKey
+                        ? "KMG_Summoning_Special_Triceratops_Trample"
+                        : "KMG_Summoning_Special_" +
+                        char.ToUpperInvariant(creatureKey[0]) +
+                        creatureKey.Substring(1) + "_Trample"));
                 Ability granted = owner.Descriptor.Abilities.GetAbility(
                     blueprint);
                 if (granted == null)
@@ -1781,7 +1797,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var trample = new AbilityData(granted);
                 Vector3 start; string route;
                 TargetWrapper selected = Sprint23FindTrampleRoute(fixture,
-                    owner, target, trample, out start, out route);
+                    owner, target, trample, out start, out route,
+                    GiantBodyRulesPolicy.IsGiantBody(creatureKey));
                 if (selected == null)
                     throw new InvalidOperationException(
                         "No live Triceratops trample route: " + route);
@@ -1826,10 +1843,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var controller = new UnitActionController();
                 int movementTicks = 0;
                 int frames = 0;
+                bool contactObserved = false;
                 while (frames++ < 600 &&
                     (observer.Saves.Count == 0 ||
-                     observer.Damage.Count == 0))
+                     observer.Damage.Count == 0 || requireDeliveryCompletion &&
+                     (!command.IsFinished || command.ExecutionProcess == null ||
+                      !command.ExecutionProcess.IsEnded)))
                 {
+                    if (requireDeliveryCompletion && Game.Instance.IsPaused)
+                        Game.Instance.IsPaused = false;
                     if (!command.IsFinished &&
                         (!command.IsStarted || command.ExecutionProcess == null))
                     {
@@ -1849,12 +1871,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         movementTicks++;
                     }
                     if (command.ExecutionProcess != null)
-                        TickExpandedSummoningDetachedAbility(command, frames);
+                        TickExpandedSummoningDetachedAbility(command, frames, requireDeliveryCompletion);
                     maxStandard = Mathf.Max(maxStandard,
                         owner.CombatState.Cooldown.StandardAction);
                     maxMove = Mathf.Max(maxMove,
                         owner.CombatState.Cooldown.MoveAction);
                     yield return 0;
+                    // The real contact may finish before a fixed animation
+                    // frame. Observe the actual rule boundary, not a guessed
+                    // frame or the lifetime of its execution-process field.
+                    if (!contactObserved && observeFrame != null &&
+                        (observer.Saves.Count > 0 || observer.Damage.Count > 0))
+                    {
+                        observeFrame(owner, frames);
+                        contactObserved = true;
+                    }
                 }
                 for (int settle = 0; settle < 24 && command.IsRunning &&
                     !command.IsFinished; settle++)
@@ -1878,14 +1909,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SequenceEqual(awakeBefore);
                 awakeBefore = null;
                 bool exact = queued && nativeEconomy && command.IsStarted &&
-                    executionSeen &&
+                    executionSeen && (!requireDeliveryCompletion || command.IsFinished &&
+                        command.ExecutionProcess != null && command.ExecutionProcess.IsEnded) &&
                     moved > 3f && observer.Opportunities.Count == 0 &&
                     observer.Saves.Count == 1 &&
-                    observer.Saves[0].DifficultyClass == 25 &&
+                    observer.Saves[0].DifficultyClass == expectedDc &&
                     observer.Damage.Count == 1 && dealt != null &&
-                    dealt.Dice.Rolls == 1 && dealt.Dice.Dice == DiceType.D8 &&
-                    dealt.Bonus == 12 && spent && awakeRestored;
-                Sprint23Check("native-trample-command-" +
+                    dealt.Dice.Rolls == expectedRolls &&
+                    dealt.Dice.Dice == expectedDice &&
+                    dealt.Bonus == expectedBonus && spent && awakeRestored;
+                record("native-trample-command-" +
+                    (creatureKey == ArmoredDinosaurRulesPolicy.TriceratopsKey
+                        ? "" : creatureKey + "-") +
                     (turnBased ? "turn-based" : "rtwp"), exact,
                     new JObject { ["unit"] = owner.UniqueId,
                         ["target"] = target.UniqueId,
@@ -1896,6 +1931,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["finished"] = command.IsFinished,
                         ["result"] = command.Result.ToString(),
                         ["executionSeen"] = executionSeen,
+                        ["deliveryCompletionRequired"] = requireDeliveryCompletion,
+                        ["nativeDeliveryEnded"] = command.ExecutionProcess?.IsEnded,
                         ["frames"] = frames, ["movedMeters"] = moved,
                         ["nativeEconomy"] = nativeEconomy,
                         ["movementTicks"] = movementTicks,
@@ -1915,7 +1952,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["moveCooldown"] = new JArray(moveBefore, maxMove,
                             owner.CombatState.Cooldown.MoveAction),
                         ["mode"] = turnBased ? "turn-based" : "rtwp" },
-                    "A queued full-round native Trample follows a real path, contacts only the smaller enemy once, resolves DC 25 Reflex and 1d8+12, and owns native action cost.");
+                    "A queued full-round native Trample follows a real path, contacts only the smaller enemy once, resolves DC " + expectedDc + " Reflex and " + expectedRolls + "d" + (int)expectedDice + "+" + expectedBonus + ", and owns native action cost.");
             }
             finally
             {

@@ -34,7 +34,8 @@ namespace KingmakerGunslinger.DomainTests
             // talon and powerful bite; plus 43 Better Vendors variants.
             Assertions.Equal(89 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount +
-                    TheropodRulesPolicy.AppendedWeaponIdentityCount,
+                    TheropodRulesPolicy.AppendedWeaponIdentityCount +
+                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount,
                 expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -95,9 +96,12 @@ namespace KingmakerGunslinger.DomainTests
             // and the Xill's own 1d4 claw and 1d3 bite, which it owns because
             // its claws carry grab and its bite carries paralysis. Sprint 23
             // adds the Triceratops gore and Stegosaurus spiked tail; Sprint 24
-            // adds the Deinonychus talon and Tyrannosaurus powerful bite.
+            // adds the Deinonychus talon and Tyrannosaurus powerful bite; and
+            // Sprint 25 adds the Brachiosaurus 4d6 tail, which no native
+            // blueprint carries at twenty-foot reach.
             Assertions.Equal(29 +
-                    TheropodRulesPolicy.AppendedWeaponIdentityCount,
+                    TheropodRulesPolicy.AppendedWeaponIdentityCount +
+                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount,
                 audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");

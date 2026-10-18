@@ -167,20 +167,20 @@ namespace KingmakerGunslinger.DomainTests
             // passed 44 of 44 in both combat modes. Publication was the
             // removal of one suppression key: the registered count is the one
             // registration allocated, so nothing moved to make room.
-            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only the Sprint 24 candidate remains withheld.");
-            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
+                "Only the Sprint 25 candidate remains withheld.");
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Later sprints append without moving the seven crab roots.");
-            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "Every pre-Sprint-24 route remains visible.");
+                "Every pre-Sprint-25 route remains visible.");
             foreach (SummonVariantSpec variant in all.Where(value =>
-                !TheropodRulesPolicy.IsTheropod(value.Creature.Key)))
+                !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key)))
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Every pre-Sprint-24 placement is published: " +
+                    "Every pre-Sprint-25 placement is published: " +
                     variant.StableKey);
         }
 

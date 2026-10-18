@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  119,
+    "count":  120,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -73,6 +73,15 @@
                       "height":  128,
                       "format":  "RGBA PNG",
                       "scope":  "split-native"
+                  },
+                  {
+                      "key":  "brachiosaurus",
+                      "file":  "brachiosaurus.png",
+                      "sha256":  "7a573555b5d44eaea4a970da54214213eb00499423338b65109e0b9ac0ee1003",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
                   },
                   {
                       "key":  "bralani-azata",

@@ -44,13 +44,13 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).ToArray();
             SummonVariantSpec[] ally = ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.NaturesAlly).ToArray();
-            Assertions.Equal(TheropodRulesPolicy.RegisteredMonsterPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredMonsterPlacements,
                 monster.Length,
                 "Summon Monster registered placements changed.");
-            Assertions.Equal(TheropodRulesPolicy.RegisteredNatureAllyPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredNatureAllyPlacements,
                 ally.Length,
                 "Summon Nature's Ally registered placements changed.");
-            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 monster.Length + ally.Length,
                 "Registered generated placements must be 1008 plus Sprint 18's "
                 + "26 roots, Sprint 19's 10, Sprint 20's 12 and Sprint 21's "
@@ -97,9 +97,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(26, monster.Concat(ally).Count(value =>
                     PrimateRulesPolicy.IsPrimate(value.Creature.Key)),
                 "Sprint 18 must add exactly twenty-six roots.");
-            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
                 ExpandedSummoningCatalog.All.Count,
-                "Unique creature count must include the Sprint 24 registrations.");
+                "Unique creature count must include the Sprint 25 registrations.");
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace KingmakerGunslinger.DomainTests
                 .GenerateVariants(SummonFamily.Monster).Concat(
                     ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly)).ToArray();
-            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registered placement count changed.");
             // The apes published on 2026-10-09 after their complete
@@ -122,17 +122,17 @@ namespace KingmakerGunslinger.DomainTests
             // back and suppress a published creature. Sprint 23 has now
             // published too. Sprint 24's two new creatures are the only
             // current withheld keys; that must not suppress either ape.
-            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only the Sprint 24 candidate routes remain withheld.");
-            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
+                "Only the Sprint 25 candidate routes remain withheld.");
+            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "The apes and every pre-Sprint-24 route stay published.");
+                "The apes and every pre-Sprint-25 route stay published.");
             foreach (SummonVariantSpec variant in all.Where(value =>
-                !TheropodRulesPolicy.IsTheropod(value.Creature.Key)))
+                !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key)))
                 Assertions.True(
                     SummonVisibilityCatalog.IsPublished(variant),
-                    "Every pre-Sprint-24 placement is published: " +
+                    "Every pre-Sprint-25 placement is published: " +
                     variant.StableKey);
             SummonVisibilityCatalog.Validate();
 
@@ -585,10 +585,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
                 ExpandedSummoningIdentityCatalog.UnitCount,
                 "Unit identity count changed.");
-            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 ExpandedSummoningIdentityCatalog.LogicalAbilityCount,
                 "Logical ability identity count changed.");
             Assertions.Equal(310 +
@@ -605,11 +605,13 @@ namespace KingmakerGunslinger.DomainTests
                     TheropodRulesPolicy.AppendedBuffIdentityCount +
                     TheropodRulesPolicy.AppendedWeaponIdentityCount +
                     TheropodRulesPolicy.AppendedUnitTypeIdentityCount +
-                    TheropodRulesPolicy.AppendedFeatureIdentityCount,
+                    TheropodRulesPolicy.AppendedFeatureIdentityCount +
+                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount,
                 "Creature-owned identity count changed.");
             Assertions.Equal(2101 +
-                    ExpandedSummoningSprint24Tests.AppendedLedgerIdentities,
+                    ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
                 ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 "Foundation identity count changed.");
             Assertions.Equal(ExpandedSummoningIdentityCatalog.FoundationIdentityCount, identities.Count,

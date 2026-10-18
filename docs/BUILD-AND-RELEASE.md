@@ -1,6 +1,22 @@
 # Build, package, and publish
 
-## Current 0.0.158 publication authorization
+## Selected Sprint 25 exact-artifact publication
+
+The owner explicitly authorized native qualification, public promotion, PR #49
+merge and the next available stable patch, then public-download/restoration
+verification and final records. Master v0.0.158 is integrated normally; the
+current expectation is v0.0.159, checked again by the publisher, not reserved.
+Build once in `wt/s25` with `Invoke-KmgGate.ps1 -Level Sprint`; retain the
+original identities of scoped reused native evidence. After fresh public
+inventory/icon/all-eleven-root checks, use `Publish-Release.ps1` with
+`-ReuseQualifiedCandidate -Sprint25GiantBodies -ProductPrNumber 49`, the exact
+package/root/ledger/notes arguments. First run `-PreflightOnly` with the fresh
+`-ExpectedBaseCommit` while PR49 is draft. Actual publication requires the
+verified `-MergedReleaseCommit` and explicit `-Publish -ConfirmReleaseReady`.
+These are separate modes; preflight creates no tag, release or promotion copy.
+No rebuild stamps a later merge or reporting commit. No Sprint 26 is selected.
+
+## Historical 0.0.158 publication authorization
 
 On 2026-10-17, after testing `v0.0.157-visual-refinement-alpha.2`, the owner
 wrote: "Alright, I have some changes to make, but this is an EXCELLENT

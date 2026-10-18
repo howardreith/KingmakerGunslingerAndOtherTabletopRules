@@ -90,10 +90,24 @@ namespace KingmakerGunslinger.Summoning
         // Sprint 24 publication, v0.0.155: both theropod keys were removed
         // together after their hidden qualification completed. No identity,
         // route, template child or ordering changed with them.
+        // Historical hidden stage: Sprint 25 registered Brachiosaurus once and withheld its
+        // three Nature's Ally roots. Like the Sprint 21 Giant Crab and the
+        // Sprint 23 Stegosaurus it is untemplated and has no Monster row, so
+        // three suppressed placements hold back three roots and no execution
+        // children. Nothing published before this branch moves: the visible
+        // surface stays at the 1122 choices v0.0.155 shows until this key
+        // comes out.
+        // Sprint 25 public candidate removes only that key after hidden native
+        // mechanics/body and targeted ON/OFF cold-load qualification. The exact
+        // public inventory/icon/eleven-root gate still qualifies this artifact.
+        // The set is a literal here on purpose. The static validator and the
+        // manifest generator both read this set out of the source text, so a
+        // symbol reference could make the offline and native surfaces disagree.
+        // Validate below retains the exact three SNA-only Brachiosaurus roots.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal);
+            new HashSet<string>(new string[0], StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1093;
+        internal const int RegisteredLogicalPlacementCount = 1096;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
@@ -112,9 +126,20 @@ namespace KingmakerGunslinger.Summoning
                         SummonFamily.NaturesAlly)).ToArray();
             SummonVariantSpec[] suppressed = all.Where(value =>
                 !IsPublished(value)).ToArray();
+            SummonVariantSpec[] brachiosaurus = all.Where(value =>
+                value.Creature.Key == GiantBodyRulesPolicy.BrachiosaurusKey).ToArray();
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
-                all.Count(IsPublished) != PublishedLogicalPlacementCount)
+                all.Count(IsPublished) != PublishedLogicalPlacementCount ||
+                SuppressedCreatureKeys.Count != 0 ||
+                brachiosaurus.Length != 3 ||
+                // Publication adds no Monster row or template child.
+                brachiosaurus.Any(value =>
+                    value.Family != SummonFamily.NaturesAlly) ||
+                brachiosaurus.Any(value => value.Creature.MonsterTemplated) ||
+                brachiosaurus.Select(value => value.ParentTier)
+                    .OrderBy(value => value)
+                    .SequenceEqual(new[] { 7, 8, 9 }) == false)
                 throw new InvalidOperationException(
                     "Frozen summon publication visibility catalog changed.");
         }

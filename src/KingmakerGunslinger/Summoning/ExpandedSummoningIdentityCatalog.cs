@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 107;
-        internal const int LogicalAbilityCount = 1093;
+        internal const int UnitCount = 108;
+        internal const int LogicalAbilityCount = 1096;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -71,7 +71,26 @@ namespace KingmakerGunslinger.Summoning
         // and template execution identities are counted above.
         // Sprint 24 appends ten private identities: two weapons, two species
         // types, two chassis carriers and four Tyrannosaurus-only mechanics.
-        internal const int SpecialIdentityCount = 269;
+        // Sprint 25 appends five, all of them the new Brachiosaurus: its own
+        // unit type so it never reads as its donor, its own 4d6 tail and tail
+        // type because no native blueprint carries that routine at
+        // twenty-foot reach, a chassis carrier for the size and reach
+        // corrections a reconstructed Gargantuan body needs, and its own
+        // trample ability. Elephant appends nothing here yet. It is an
+        // existing released creature, and its real production carriers are
+        // checked against the frozen entry by the bounded native census
+        // before anything is added for it; whatever that proves missing is
+        // appended afterwards, with this count moved in the same commit.
+        // Nothing templated is appended, because Brachiosaurus has no
+        // Monster row.
+        // 278 after product-native qualification: the released Elephant trample joined these
+        // after the bounded observation of its own carriers found it had
+        // none, the Brachiosaurus ordinary Overrun command joined when
+        // the owner selected the bounded native-command route, and its
+        // cloned Greater Overrun carrier joined when the printed rider
+        // was corrected for that one creature. Elephant's missing high-rank
+        // Skill Focus completion appends last without replacing any identity.
+        internal const int SpecialIdentityCount = 278;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -517,6 +536,50 @@ namespace KingmakerGunslinger.Summoning
                 "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec(
                 TheropodRulesPolicy.TyrannosaurusBleedingCriticalSymbol,
+                "BlueprintFeature"));
+            // Sprint 25 append-only giant-body identities. The unit, its three
+            // Nature's Ally roots and nothing templated are generated above;
+            // these five are the whole private blueprint surface of the new
+            // Brachiosaurus. No native donor identity is repurposed, no
+            // released Elephant identity moves, and no actual Mastodon unit,
+            // weapon or asset is touched.
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.BrachiosaurusTailSymbol,
+                "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.BrachiosaurusTailTypeSymbol,
+                "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol,
+                "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.BrachiosaurusChassisSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.BrachiosaurusTrampleSymbol,
+                "BlueprintAbility"));
+            // The released Elephant's trample, appended after the bounded
+            // observation of its own carriers found none. Only this
+            // identity is new; the creature, its eight routes and every
+            // other released identity are untouched.
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.ElephantTrampleSymbol,
+                "BlueprintAbility"));
+            // The Brachiosaurus's ordinary Overrun command. Separate
+            // identity, separate action, separate action cost.
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.BrachiosaurusOverrunSymbol,
+                "BlueprintAbility"));
+            // The cloned Greater Overrun carrier for that creature. The
+            // native feat provokes on success alone; the printed rider
+            // follows a knockdown the overrun caused, so this clone drops
+            // that component and carries the corrected one. A feature,
+            // not an ability.
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol,
+                "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec(
+                GiantBodyRulesPolicy.ElephantChassisSymbol,
                 "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();

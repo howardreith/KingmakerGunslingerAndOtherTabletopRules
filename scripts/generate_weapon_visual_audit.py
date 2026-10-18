@@ -427,9 +427,10 @@ def generate() -> None:
     # 70 pre-existing identities, the Sprint 8 claw, the Sprint 10 Wasp
     # sting and hidden Stirge touch carrier, the Sprint 13 Poison Frog flat-1
     # bite, the Sprint 23 gore and spiked tail, the Sprint 24 talon and
-    # powerful bite, and 43 Better Vendors variants.
-    if len(records) != 134:
-        raise RuntimeError(f"Expected all 134 active custom weapon items, got {len(records)}")
+    # powerful bite, the Sprint 25 Brachiosaurus 4d6 tail, and 43 Better
+    # Vendors variants.
+    if len(records) != 135:
+        raise RuntimeError(f"Expected all 135 active custom weapon items, got {len(records)}")
     symbols = [record["symbolicIdentity"] for record in records]
     guids = [record["assetGuid"] for record in records]
     if len(set(symbols)) != len(symbols) or len(set(guids)) != len(guids):
