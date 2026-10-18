@@ -65,3 +65,11 @@ no native transaction occurred. Both consumers now derive identities/counts from
 the hash-pinned authoring authority. Seven isolated malformed-authority checks and
 a diagnostic packaging-only reproduction pass, including exact new387/389 file
 counts. Diagnostic bytes are not a development receipt or gameplay evidence.
+
+First standalone foundation attempt(bf53ccd5) failed bootstrap before fixture or
+combat: compiled SummonIconCatalog still required122. Exact catalog is123 with
+real Griffon art, so its immutability guard advances without bypass. New focused
+coverage exercises all pure bootstrap guards; six checks PASS, production16.3s,
+tests4.9s. Actual profile count62 was already correct and remains protected.
+Native attempt51.789s, full transaction198.078s; Mods/settings/private references
+and118 saves exact, game/lease absent and owned task removed. No gameplay PASS.

@@ -7,6 +7,16 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void AdultProfileAndOrdinaryRoles()
         {
+            // Exercise the same pure catalog guards as blueprint bootstrap;
+            // the native run must still prove final registration/consumers.
+            ExpandedSummoningCatalog.Validate();
+            ExpandedSummoningNaturalProfiles.Validate();
+            SummonVisibilityCatalog.Validate();
+            SummonIconCatalog.Validate();
+            ExpandedSummoningDonorCatalog.Validate();
+            ExpandedSummoningSpecialProfiles.Validate();
+            SummonNativeOptionCatalog.Validate();
+            SummonNativeExpansionCatalog.Validate();
             var p=ExpandedSummoningNaturalProfiles.For("griffon");
             Assertions.Equal("MagicalBeast",p.HitDieClass,"Printed racial class");
             Assertions.Equal(5,p.HitDice,"Printed racial dice");
