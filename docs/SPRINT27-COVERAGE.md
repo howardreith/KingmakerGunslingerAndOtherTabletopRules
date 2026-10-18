@@ -73,3 +73,12 @@ coverage exercises all pure bootstrap guards; six checks PASS, production16.3s,
 tests4.9s. Actual profile count62 was already correct and remains protected.
 Native attempt51.789s, full transaction198.078s; Mods/settings/private references
 and118 saves exact, game/lease absent and owned task removed. No gameplay PASS.
+
+Second bootstrap-only attempt2b048374 failed closed on NativeCharge's type:
+actual BlueprintAbility was sent through the generic BlueprintFeature resolver.
+The exact Griffon-only ability branch now retains native Charge. Native65.053s,
+transaction211.140s; all118 saves and current intake restored, task/game/lease
+absent. Small exact-owner AI, real cancellation/reaction and supplemental repeated
+plan observers compile with the correction(16.8s, six focused tests1s). All remain
+unqualified until native execution; complete negative/lifecycle/route/persistence
+coverage is still open. No new roll override or fixture weapon event was added.
