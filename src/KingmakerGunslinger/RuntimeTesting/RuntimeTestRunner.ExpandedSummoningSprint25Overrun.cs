@@ -30,7 +30,13 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private static UnitCombatEngagementController _sprint25EngagementController;
         private static ExpandedSummoningCorrectionFixture _sprint25EngagementFixture;
+        private static Sprint25OverrunObserver _sprint25ActiveOverrunObserver;
         private static readonly HashSet<string> Sprint25EngagementTicked = new HashSet<string>();
+
+        private static void Sprint25RiderEntry(BrachiosaurusOverrunKnockdown __instance, RuleCombatManeuver evt)
+        { _sprint25ActiveOverrunObserver?.ObserveRiderCallback("native-rider-entry", __instance, evt); }
+        private static void Sprint25RiderExit(BrachiosaurusOverrunKnockdown __instance, RuleCombatManeuver evt)
+        { _sprint25ActiveOverrunObserver?.ObserveRiderCallback("native-rider-exit", __instance, evt); }
 
         private static bool Sprint25EngagementOwnedUnitPrefix(
             UnitCombatEngagementController __instance, UnitEntityData unit)
@@ -95,7 +101,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var subscribers = bucket == null ? null : bucket.GetType().BaseType.GetField("List", flags)
                     ?.GetValue(bucket) as System.Collections.IEnumerable;
                 object[] actual = subscribers == null ? new object[0] : subscribers.Cast<object>().ToArray();
+                UnitCombatEngagementController controller = Game.Instance.CombatEngagementController;
+                var queue = controller == null ? null : controller.GetType().GetField(
+                    "m_UnitsProvokeAttackOfOpportunity", flags)?.GetValue(controller) as HashSet<UnitEntityData>;
                 return new JObject { ["exactOwnerAbility"] = BrachiosaurusNativeOverrun.Owns(evt),
+                    ["controllerIsExpected"] = ReferenceEquals(controller, _sprint25EngagementController),
+                    ["actualControllerId"] = controller == null ? (JToken)null :
+                        System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(controller),
+                    ["expectedControllerId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(_sprint25EngagementController),
+                    ["actualControllerTargetQueued"] = queue != null && queue.Contains(Target),
                     ["ownerInGame"] = Owner.IsInGame, ["ownerSleeping"] = Owner.IsSleeping,
                     ["ownerAwakePool"] = Game.Instance.State.AwakeUnits.Contains(Owner),
                     ["targetGetUp"] = Target.View.IsGetUp, ["nativeKnockEligible"] = UnitHelper.CanBeKnockedOff(Target),
@@ -111,6 +125,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["pendingRuleId"] = pending.GetValue(rider) == null ? (JToken)null :
                                 System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pending.GetValue(rider)),
                             ["eligibleBefore"] = (bool)eligible.GetValue(rider) }))) };
+            }
+            internal void ObserveRiderCallback(string stage, BrachiosaurusOverrunKnockdown rider, RuleCombatManeuver evt)
+            {
+                if (!ReferenceEquals(evt?.Initiator, Owner)) return;
+                ManeuverTimeline.Add(new JObject { ["stage"] = stage, ["componentId"] = rider.GetInstanceID(),
+                    ["ruleId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt),
+                    ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["success"] = evt.Success, ["partial"] = evt.IsPartialSuccess,
+                    ["proneRequested"] = Target.Descriptor.State.Prone.ShouldBeActive,
+                    ["proneActive"] = Target.Descriptor.State.Prone.Active, ["riderState"] = RiderState(evt) });
             }
             internal void ObserveReturnedRules()
             {
@@ -231,9 +255,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(UnitEntityData) }, null);
             MethodInfo prefix = typeof(RuntimeTestRunner).GetMethod(nameof(Sprint25EngagementOwnedUnitPrefix),
                 BindingFlags.Static | BindingFlags.NonPublic);
-            if (setter == null || tick == null || prefix == null || _sprint25EngagementController != null)
+            MethodInfo riderDid = typeof(BrachiosaurusOverrunKnockdown).GetMethod("OnEventDidTrigger");
+            MethodInfo riderEntry = typeof(RuntimeTestRunner).GetMethod(nameof(Sprint25RiderEntry), BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo riderExit = typeof(RuntimeTestRunner).GetMethod(nameof(Sprint25RiderExit), BindingFlags.Static | BindingFlags.NonPublic);
+            if (setter == null || tick == null || prefix == null || riderDid == null || riderEntry == null || riderExit == null || _sprint25EngagementController != null)
                 throw new InvalidOperationException("Native scoped engagement prerequisites unavailable.");
-            bool patched = false, assigned = false, subscribed = false;
+            bool patched = false, riderPatched = false, assigned = false, subscribed = false;
             try
             {
                 _sprint25EngagementController = controller;
@@ -241,6 +268,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25EngagementTicked.Clear();
                 _context.Harmony.Patch(tick, new HarmonyMethod(prefix), null, null);
                 patched = true;
+                _context.Harmony.Patch(riderDid, new HarmonyMethod(riderEntry), new HarmonyMethod(riderExit), null);
+                riderPatched = true;
                 setter.Invoke(Game.Instance, new object[] { controller }); assigned = true;
                 EventBus.Subscribe(controller); subscribed = true;
                 string[] cases = { "failure", "partial", "threshold", "maneuver-immune", "prone-immune", "already-prone", "repeated-notification", "repeated-command", "exhausted" };
@@ -263,12 +292,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     try
                     {
-                        if (patched) { _context.Harmony.Unpatch(tick, HarmonyPatchType.Prefix, _context.ModId); unpatched = true; }
+                        try
+                        {
+                            if (patched) _context.Harmony.Unpatch(tick, HarmonyPatchType.Prefix, _context.ModId);
+                        }
+                        finally
+                        {
+                            if (riderPatched) _context.Harmony.Unpatch(riderDid, HarmonyPatchType.All, _context.ModId);
+                        }
+                        unpatched = true;
                     }
                     finally
                     {
                         _sprint25EngagementController = null;
                         _sprint25EngagementFixture = null;
+                        _sprint25ActiveOverrunObserver = null;
                         PlaceExpandedSummoningUnit(fixture.Caster, casterBefore);
                         UnityEngine.Random.state = randomBefore;
                         Sprint25Check("engagement-controller-restored", unsubscribed && unpatched && ReferenceEquals(previous, Game.Instance.CombatEngagementController),
@@ -420,6 +458,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!(bool)admission["admitted"] || !Sprint18OwnerIsActing(owner))
                         throw new InvalidOperationException("Ordinary Overrun owner never reached its native turn: " + admission);
                 }
+                // Native mode changes may refresh public controller references.
+                // Re-establish only this fixture's existing scoped service,
+                // before dispatch, and record whether the prerequisite changed.
+                UnitCombatEngagementController serviceBefore = Game.Instance.CombatEngagementController;
+                if (!ReferenceEquals(serviceBefore, _sprint25EngagementController))
+                    typeof(Game).GetProperty("CombatEngagementController").GetSetMethod(true)
+                        .Invoke(Game.Instance, new object[] { _sprint25EngagementController });
+                var serviceSetup = new JObject {
+                    ["beforeWasExpected"] = ReferenceEquals(serviceBefore, _sprint25EngagementController),
+                    ["beforeControllerId"] = serviceBefore == null ? (JToken)null :
+                        System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(serviceBefore),
+                    ["expectedControllerId"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(_sprint25EngagementController),
+                    ["ready"] = ReferenceEquals(Game.Instance.CombatEngagementController, _sprint25EngagementController) };
                 bool beforeProne = target.Descriptor.State.Prone.ShouldBeActive || target.Descriptor.State.Prone.Active;
                 bool beforeProneActive = target.Descriptor.State.Prone.Active;
                 bool beforeProneRequested = target.Descriptor.State.Prone.ShouldBeActive;
@@ -429,6 +480,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int[] lastOpportunities = (int[])beforeOpportunities.Clone();
                 var opportunityTrace = new JArray();
                 observer = new Sprint25OverrunObserver { Owner = owner, Target = target, LastActiveProne = beforeProneActive };
+                _sprint25ActiveOverrunObserver = observer;
                 observer.PrepareContactResources = () => {
                     // Native Overrun adds ChargeBuff after the initial setup.
                     // BaseCMB reads AdditionalAttackBonus/AdditionalCMB. Set
@@ -708,6 +760,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeKnockdownTransitionObserved"] = nativeKnockdownObserved,
                         ["passThroughExpected"] = passThroughExpected,
                         ["maneuverTimeline"] = observer.ManeuverTimeline,
+                        ["fixtureControllerService"] = serviceSetup,
                         ["nativeRiderCallbacksConsumed"] = observer.NativeRiderConsumed.Count,
                         ["duplicateNotificationsAfterNativeConsumption"] = repeatedNotificationVerified,
                         ["opportunityTimeline"] = observer.OpportunityTimeline,
@@ -747,6 +800,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 finally
                 {
                     getUpIsolation?.Release();
+                    _sprint25ActiveOverrunObserver = null;
                     if (observer != null) EventBus.Unsubscribe(observer);
                     EndExpandedSummoningDetachedAbility(command);
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;

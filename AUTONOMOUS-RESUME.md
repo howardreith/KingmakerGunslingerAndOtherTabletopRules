@@ -1,5 +1,19 @@
 # Sprint 25 takeover — master v0.0.158 integrated, continuing at v0.0.159
 
+Latest qualification,00:26UTC:51d9679b full2678/exact/strict380 PASS311.31s,
+archived. Its standalone Overrun run proves all9 RTWP cases with separate get-up
+provocation excluded, real rider consumption and native queue/responder IDs.
+TB still FAILs despite active/subscribed rider, eligible capture, exact event
+consumption and native knockdown. Transaction restored all118 saves/current
+installation/settings/bank/private refs. Ledger has exact candidate/proof hashes.
+Added request-local native Did entry/exit and actual-controller queue context;
+record/re-establish only the fixture's intended service if a mode transition
+replaced it before dispatch. This service hypothesis is not yet a product
+defect verdict. No gameplay change or synthetic response. Hooks unwind on
+exception. Compile17.5s and23/23 focused cases PASS. Freeze one full candidate;
+integrated-native six-cell batch (Overrun/foundation/visuals,both profiles;
+planning25-35min, safely stops on first restored failure), then continue below.
+
 Controlling update, 2026-10-18 00:12 UTC: the owner requested current master
 integration and continuation of this selected release campaign. Master80fe5df6
 includes the approved visual overhaul and stable v0.0.158. Preserve those
