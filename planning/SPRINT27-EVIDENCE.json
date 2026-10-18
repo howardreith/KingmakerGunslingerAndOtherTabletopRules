@@ -111,6 +111,13 @@
       "tests": 30,
       "seconds": 12.428,
       "command": "python tools/test_icon_catalog.py"
+    },
+    {
+      "scope": "explicit racial HP/native lore derivation and early observer compile",
+      "result": "PASS",
+      "compileSeconds": 17.5,
+      "testSeconds": 0.9,
+      "tests": 6
     }
   ],
   "policyChange": {
@@ -133,5 +140,9 @@
   "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
-  "sprint28Started": false
+  "sprint28Started": false,
+  "sourceReviewCorrections": [
+    "Racial base HP derives floor(5*(10+1)/2) from d10 HD before live Constitution.",
+    "Own Griffon type keeps the actual installed Manticore magical-beast KnowledgeStat; native observer records the resulting type/consumer."
+  ]
 }

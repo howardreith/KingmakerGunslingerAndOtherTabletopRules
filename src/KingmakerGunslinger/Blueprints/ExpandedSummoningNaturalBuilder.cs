@@ -1530,7 +1530,9 @@ namespace KingmakerGunslinger.Blueprints
                 if (profile.Key == "griffon")
                 {
                     ranks.MobilityRanks = 1; ranks.PerceptionRanks = 1;
-                    ranks.StealthRanks = 0; ranks.BaseHitPoints = 27;
+                    ranks.StealthRanks = 0;
+                    // Five d10 racial dice: floor(5 * 5.5) before live Constitution.
+                    ranks.BaseHitPoints = profile.HitDice * (10 + 1) / 2;
                 }
                 else if (profile.Key == "gorgon" || profile.Key == "bulette")
                 {

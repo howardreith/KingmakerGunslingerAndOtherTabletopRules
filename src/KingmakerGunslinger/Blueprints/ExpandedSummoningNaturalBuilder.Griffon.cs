@@ -47,6 +47,9 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(prefix+"Chassis.Description","Each primary natural weapon adds live Strength once; racial Acrobatics and Perception bonuses remain racial modifiers."),null);
             ConfigureTheropodUnitType(Require<BlueprintUnitType>(bySymbol,prefix+"UnitType"),prefix+"UnitType","Griffon",
                 "A winged lion-bodied magical beast with eagle forequarters. Pounce and conditional rake; no automatic grab. Ordinary-map flight uses 80 feet; separate land mode, Fly checks and passive senses are unmodeled.",Array.Empty<BlueprintUnitFact>());
+            // Preserve the installed magical-beast lore consumer, rather than
+            // inheriting the animal helper's default or inventing a new mapping.
+            Require<BlueprintUnitType>(bySymbol,prefix+"UnitType").KnowledgeStat=native.Type.KnowledgeStat;
         }
     }
 }
