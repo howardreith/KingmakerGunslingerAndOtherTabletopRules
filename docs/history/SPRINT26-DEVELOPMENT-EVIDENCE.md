@@ -991,3 +991,15 @@ Observer correction focused gate: production compilation PASS17.3s and named
 25 Sprint26/alignment/Sprint24/Sprint25-public-scope tests PASS1.5s runner; exact
 selection/count retained in artifacts/sprint26-authoring/focused-public-r25.log.
 No public-r24b native claim is upgraded by this source-only correction.
+
+## Public-r25 source-boundary correction
+
+Source69497906b45fdbfa9893267193664cb1f8c1abfd gate FAIL5.853929s, before full
+suite or package. Exact scope list rejected the shared Sprint24Review file
+containing the scoped player-route observer repair. Added its exact path while
+requiring source outside Sprint24PlayerRoutes to match reviewed555b16e0 bytes.
+Boundary tests14 PASS0.022s, including permitted method edit and refused changes
+to other released observers. No production or further compiled observer change.
+The previously passing compilation25 focused checks remain applicable; fresh
+public-r25b full gate/routes remain required. No native launch or restoration
+change occurred in this attempt. Failed gate receipt/logs preserved.

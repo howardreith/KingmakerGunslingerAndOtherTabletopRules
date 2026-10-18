@@ -36,7 +36,7 @@ rough visual backlog. Original paintings/Leap emblem integrated. HumanReview
 NOT_PERFORMED_NONBLOCKING. Surface-only Bulette leaves burrow20/tremorsense
 unmodeled; Gorgon SMVIII is the charter extension, absent ordinary core table.
 
-Next freeze one public-r25 candidate in this same root; complete fresh full
+Next freeze one public-r25b candidate in this same root; complete fresh full
 gate and six actual public routes/inventory/icons/slots/quantity/duration/
 alignment/removal, standalone and highest-risk publication path. Then ignored
 qualified ledger/preflight/dry-run, fresh master/releases/tag check, authorized
@@ -67,3 +67,11 @@ with a good caster. Production unchanged; changed observer requires fresh
 public-r25 strict bytes and both public-route profiles. Failed RunId
 20261018T1746063098091Z-a074a505d3704917b437e545e8194766 retained; all118
 saves/metadata, mods/settings/references restored, no game/lease.
+
+Public-r25 gate stopped at source validation (FAIL5.853929s), before full suite
+or package: the legitimate shared player-route observer file was absent from
+the Sprint26 exact scope list. Allow that file's player-route method only and
+require every byte outside it to equal the reviewed baseline. Fourteen boundary
+tests pass, including refusal of changes to other released observations. This
+tooling correction does not change the already compiled observer. Fresh
+public-r25b full gate/routes required; failed receipts remain immutable.

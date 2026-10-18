@@ -32,8 +32,8 @@ hidden bytes or label them execution on the future public DLL.
 | Bodies/icons/lifecycle/cache/donor | Fresh strict R23 lifecycle; actual R23 pixels inspected; all original assets/pins protected; early19a development38 is historical, not release qualification |
 | Targeted persistence | R20 first4 + R22 final2,77 PASS; original source/ZIP/DLL/MVID retained. Conditions/DC/source loss/cooldown/real recovery, ON/OFF cleanup save/fresh absence |
 | Standalone/current highest-risk combined | R23 standalone mode/AI and combined foundation28/Gorgon41/Leap42; no complete old matrix selected |
-| Six public roots/inventory/icons/slots/quantity/duration/alignment | PENDING corrected observer on exact public-r25 artifact |
-| Complete public gate/exact package/release | PENDING public-r25 full suite/package, ledger, preflight/dry-run, merge/promotion/download/lineage |
+| Six public roots/inventory/icons/slots/quantity/duration/alignment | PENDING corrected observer on exact public-r25b artifact |
+| Complete public gate/exact package/release | PENDING public-r25b full suite/package, ledger, preflight/dry-run, merge/promotion/download/lineage |
 
 Nine strict R23 phases pass 264 assertions; bounded seven-case continuation
 2166.7073137s, each fresh transaction restores actual intake. Detailed RunIds/
@@ -51,7 +51,7 @@ restore uses each transaction's current intake and exact RunId.
 
 ## Final public boundary and scope
 
-One fresh public-r25 full Sprint/strict package in wt/s26, then real six-root
+One fresh public-r25b full Sprint/strict package in wt/s26, then real six-root
 player paths and icon/inventory arithmetic on that artifact, standalone and
 highest-risk publication path. Build the ignored source-bound qualified ledger;
 publisher preflight/dry-run and current upstream/tag checks precede authorized
@@ -90,3 +90,9 @@ routes passed. Observer now explicitly checks base alignment/no template facts
 with a good caster. Production unchanged. Fresh public-r25 gate and routes
 required for changed compiled observer. Exact failure retained in history;
 all118 saves/metadata, installation/settings/references restored, no game/lease.
+
+Public-r25 gate stopped before full suite/package at the exact source boundary:
+FAIL5.853929s, shared player-route observer file absent from its allowed list.
+The boundary now allows that method while comparing the entire remainder to
+reviewed baseline. Fourteen boundary tests pass, including unrelated-observer
+refusals; compiled observer is unchanged. Fresh public-r25b boundary required.
