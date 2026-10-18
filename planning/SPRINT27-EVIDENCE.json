@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "sprint": 27,
+  "status": "IMPLEMENTATION_NOT_QUALIFIED",
+  "baseCommit": "2a0873d8a8848b0f1109415f1e4da14641d9456e",
+  "productionRoot": "C:/Dev/KingmakerGunslingerLab/wt/s27",
+  "productBranch": "codex/expanded-summoning-sprint27-griffon",
+  "recordsBranch": "codex/expanded-summoning-sprint27-release-records",
+  "qualifiedArtifact": null,
+  "nativeExecutions": [],
+  "checks": [
+    {
+      "scope": "source compilation and focused scenario wiring",
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.scenario-timeout-wiring",
+      "result": "PASS",
+      "tests": 1,
+      "compileSeconds": 20.6,
+      "testSeconds": 4.7
+    },
+    {
+      "scope": "external push policy isolated behavior; fake Git only",
+      "command": "scripts/Test-PushPolicyWrapper.ps1 -PermittedRoot C:/Dev/KingmakerGunslingerLab/wt/s27",
+      "result": "PASS",
+      "cases": 26
+    },
+    {
+      "scope": "exact receipt and restoration orchestration, isolated",
+      "command": "scripts/Test-ExpandedSummoningRuntimeOrchestration.ps1 -ScriptRoot C:/Dev/KingmakerGunslingerLab/wt/s27/scripts",
+      "result": "PASS",
+      "assertions": 203
+    }
+  ],
+  "policyChange": {
+    "beforeSha256": "85b8a01a60c8e8fac3534a26c4cf54ee108af0939c7bb2af3da545bf99a1e09f",
+    "afterSha256": "db46ee3853aea85d5d622a2eedfd3d9f1c58195e40411a8296a7d028b17aae4a",
+    "exactNamesOnly": true,
+    "verifiedSafetyCopy": true
+  },
+  "failuresRetained": [
+    "Unconfigured new-worktree domain compiler could not resolve Newtonsoft; local private-reference props configured, same focused check passed.",
+    "Orchestration test default ScriptRoot was empty; explicit supported ScriptRoot passed."
+  ],
+  "bodyStatus": "NOT_IMPLEMENTED",
+  "iconStatus": "ORIGINAL_GENERATED_EXPORT_PENDING",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "sprint28Started": false
+}

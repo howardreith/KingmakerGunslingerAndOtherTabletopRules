@@ -1,5 +1,12 @@
 # Windows 10 autonomous runtime testing
 
+Sprint 27 adds `observe-expanded-summoning-sprint27-native-inputs`: one bounded,
+read-only exact Griffon lookup and at most two detached native donor prefabs
+(Manticore/GiantEagle if no exact Griffon exists), plus exact charge/pounce/feat
+carriers. It captures binding metadata, never native geometry or animation
+curves. No actor, save, input or native asset mutation. Parameters are empty.
+This is research only; it cannot qualify product behavior or the shipped body.
+
 Sprint 26 adds `observe-expanded-summoning-sprint26-native-inputs`: a bounded,
 read-only mod-load lookup for Gorgon/Bulette identities, conditional Horse/Hodag
 donor metadata and native petrification/cure/charge/sense graphs and pixels.
