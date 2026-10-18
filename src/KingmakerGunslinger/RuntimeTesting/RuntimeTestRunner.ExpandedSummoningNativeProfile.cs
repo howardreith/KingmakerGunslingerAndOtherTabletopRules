@@ -67,7 +67,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool idleMenu = _summoningProfileMenu != null && entered != null &&
                         !(bool)entered.GetValue(_summoningProfileMenu) &&
                         EventBus.IsGloballySubscribed(_summoningProfileMenu);
-                    string nativeReviewPhase = _request.Scenario ==
+                    string nativeReviewPhase = _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
+                        ? RuntimeTestRequestParser.Sprint26ReviewPhase(_request)
+                        : _request.Scenario ==
                             RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint25NativeReview
                         ? RuntimeTestRequestParser.Sprint25ReviewPhase(_request)
                         : _request.Scenario ==
@@ -184,7 +186,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableExpandedSummoningSprint24NativeReview ||
                         _request.Scenario == RuntimeTestScenarioCatalog
-                            .DisposableExpandedSummoningSprint25NativeReview)
+                            .DisposableExpandedSummoningSprint25NativeReview ||
+                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview)
                     { _summoningProfileStage=4; return; }
                     _summoningProfileResult = _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableAlternateSummoningPlayerPaths
@@ -197,7 +200,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                         throw new TimeoutException("Expanded Summoning native review exceeded its declared scenario deadline.");
-                    bool complete = _request.Scenario == RuntimeTestScenarioCatalog
+                    bool complete = _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
+                        ? PollSprint25NativeReview()
+                        : _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableExpandedSummoningSprint25NativeReview
                         ? PollSprint25NativeReview()
                         : _request.Scenario == RuntimeTestScenarioCatalog
@@ -229,7 +234,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try
                     {
                         if (_request.Scenario == RuntimeTestScenarioCatalog
-                                .DisposableExpandedSummoningSprint25NativeReview)
+                                .DisposableExpandedSummoningSprint25NativeReview ||
+                            _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview)
                             CleanupSprint25NativeReview();
                         else if (_request.Scenario == RuntimeTestScenarioCatalog
                                 .DisposableExpandedSummoningSprint24NativeReview)

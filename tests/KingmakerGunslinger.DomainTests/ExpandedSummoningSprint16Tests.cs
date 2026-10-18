@@ -403,7 +403,7 @@ namespace KingmakerGunslinger.DomainTests
                     GiantScorpionRulesPolicy.GiantScorpionKey &&
                 !ArmoredDinosaurRulesPolicy.UsesExactRanks(
                     value.Creature.Key) &&
-                !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key) &&
+                !SummoningCurrentSurface.IsWithheld(value.Creature.Key) &&
                 !SummonVisibilityCatalog.IsPublished(value)),
                 "No creature qualified through Sprint 16 may become withheld.");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -

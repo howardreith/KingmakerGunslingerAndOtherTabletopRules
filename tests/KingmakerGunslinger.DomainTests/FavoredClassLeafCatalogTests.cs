@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length +
                     AlternateSummoningTests.AppendedLedgerIdentities +
-                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
+                    (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount),
                 entries.Length, "Only accepted Phase 2 identities follow the committed blocks.");
             Assertions.Equal("KMG.Summoning.Natural.DireBat.Blindsense",
                 (string)entries[entries.Length - 1 - (
@@ -71,7 +71,7 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length +
                     AlternateSummoningTests.AppendedLedgerIdentities +
-                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities)]["symbol"],
+                    (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount))]["symbol"],
                 "The Bat sense identity precedes Wasp's append.");
             Assertions.Equal("5dcc039bc9674208a51e4babcd8a30ee",
                 (string)entries[entries.Length - 1 - (
@@ -94,7 +94,7 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length +
                     AlternateSummoningTests.AppendedLedgerIdentities +
-                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities)]["guid"],
+                    (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount))]["guid"],
                 "The Dire Bat sense identity is stable.");
             JToken[] tail = entries.Skip(PrecedingManifestEntries).Take(identities.Count).ToArray();
             Assertions.Equal(identities.Count, tail.Length, "Favored-class manifest block size.");

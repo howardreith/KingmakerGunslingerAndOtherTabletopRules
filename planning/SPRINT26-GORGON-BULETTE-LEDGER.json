@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "sprint": 26,
+  "state": "IMPLEMENTING_WITHHELD",
+  "surface": {
+    "target": {
+      "generatedPlacements": 1096,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1125
+    },
+    "registered": {
+      "projectCreatures": 110,
+      "generatedPlacements": 1102,
+      "retainedNativeWrappers": 29,
+      "visibleChoices": 1131
+    },
+    "withheldKeys": [
+      "gorgon",
+      "bulette"
+    ]
+  },
+  "appendedIdentities": [
+    {
+      "symbol": "KMG.Summoning.Unit.Gorgon",
+      "guid": "ce2fc58942b54e558208ea67d595cb7b",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Bulette",
+      "guid": "f84a0babcc864630bae225b2019d6bba",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Gorgon.One",
+      "guid": "40d3686b2f334a3090595cab7cb6314b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Gorgon.OneD3",
+      "guid": "b5e9e129433e48af9a5e4fdd3652dc4f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Bulette.One",
+      "guid": "66dc2f30f97f4d00b04aeee18224fb0d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Bulette.OneD3",
+      "guid": "2c975d0b39bc449b802dfba98490b830",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Bulette.OneD4PlusOne",
+      "guid": "0687356eddcd4ca9970d87f79e8192e3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Bulette.OneD4PlusOne",
+      "guid": "3b0d295dbdbc4931b1e6aff7b89b74c8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Gorgon.Gore2d8",
+      "guid": "6fa1a7d22d31434b85708d7ba7735649",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Gorgon.Hoof1d6",
+      "guid": "fab6e52557c5426e8e09fbd714443c2c",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Bulette.Bite2d8",
+      "guid": "f7801f4601554a478920e839ec40d9a4",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Bulette.Claw2d6",
+      "guid": "d70dfa263eff44f2a547c9f47be0f87e",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Bulette.BiteType",
+      "guid": "8b42eea07bc7444ca874e76a55571f6d",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Gorgon.UnitType",
+      "guid": "2359801423014dccbcd0b0bd0d92c788",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Gorgon.Chassis",
+      "guid": "3d4461a55b224472ad2853699c596b4f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Bulette.UnitType",
+      "guid": "b1e583d64a0349f9bfdc35de88e9d543",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Bulette.Chassis",
+      "guid": "dee2bf278a5c4f54bb274d616584e5fb",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Gorgon.Breath",
+      "guid": "6e0309f69ef04b13b31147bd402dccd1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Gorgon.Petrification",
+      "guid": "139703f90a8d4929992b783ad0e30bd7",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Gorgon.Cooldown",
+      "guid": "59f6d7b4e2d44e73bf9c78508dbce36c",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Gorgon.Trample",
+      "guid": "c55343b590f54f0ea18fd258c92dfcd5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Gorgon.Brain",
+      "guid": "06b7e98fd6f84c28a228b75382b7c306",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Gorgon.BreathAi",
+      "guid": "86298771c01e4f549a8be4b377ee75ae",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Bulette.Leap",
+      "guid": "3aff604814c3419184037ef39511dbf4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Bulette.Brain",
+      "guid": "48781e4f3e3a41bc945ff88de4bfef14",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Bulette.LeapAi",
+      "guid": "7cb623b639df482196a5a29a18baed27",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.Gorgon.One",
+      "guid": "889cc8b2ef555bcb8088f0d43b388803",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.Gorgon.OneD3",
+      "guid": "ebe575783dd452cb9bd0f1254805ffd1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.Gorgon.One",
+      "guid": "004c25b7f897530fb15b7b2d8f49d19c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.Gorgon.OneD3",
+      "guid": "4eeea627d8385e8d8e5ff0050dcb8967",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.Gorgon.One",
+      "guid": "c737e65356b55fbcad441e8e393c946a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.Gorgon.OneD3",
+      "guid": "f718c328a7e9520eaf57b4bedd918f6e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.Gorgon.One",
+      "guid": "1bf9dcf73e175ee4bfebed32365fb4cc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.Gorgon.OneD3",
+      "guid": "0f054425f03c58209974ca9c2846686e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier6.Bulette.One",
+      "guid": "b5378e6d415d5d1fa65f1444e7f9191a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier7.Bulette.OneD3",
+      "guid": "819c22768c445b958a0318383adc4bce",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier8.Bulette.OneD4PlusOne",
+      "guid": "90271cb31f235aeeaebc691b4e9def53",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier9.Bulette.OneD4PlusOne",
+      "guid": "dca2640fed3d53bbbd93f88a4f2d4de9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier6.Bulette.One",
+      "guid": "7ac17edfb3ab583d9ba22e8a9422975d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier7.Bulette.OneD3",
+      "guid": "f854f35b334b57f59e4ab17b74d1cde3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier8.Bulette.OneD4PlusOne",
+      "guid": "a348b5c386cc544c9b857e1680e3bfdf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier9.Bulette.OneD4PlusOne",
+      "guid": "ad16a133ce675c8d80bca55d209adf2b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Preservationist.Tier7.Bulette.OneD3",
+      "guid": "f2edc9c81e025cf59ded1e15f31fd9c8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Preservationist.Tier9.Bulette.OneD4PlusOne",
+      "guid": "ad5bde31b3e95c5fadae9e6f20bda6ff",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    }
+  ],
+  "nativeQualification": "NOT_PERFORMED",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

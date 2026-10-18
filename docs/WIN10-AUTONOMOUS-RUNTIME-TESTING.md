@@ -8,7 +8,7 @@ input, never gameplay, body or cure qualification. Parameters are empty.
 
 ## Design status
 
-Sprint 25 adds `disposable-expanded-summoning-sprint25-native-review` to the
+Sprint 25 adds `disposable-expanded-summoning-sprint25-native-review` / `disposable-expanded-summoning-sprint26-native-review` to the
 guarded scenario union. It accepts exactly one `reviewPhase` from
 `rtwp-foundation`, `turn-based-commands`, `rtwp-ai`, `routes`,
 `visual-lifecycle`, `overrun`, and `great-cleave`.
@@ -563,3 +563,5 @@ published KMG racial selectors, and the native ordinary Trait roots when the ins
 optional contract enables them. KMG and Helpful reconciliation remain active. Missing
 optional background Traits are NOT-RUN. This control does not claim new trait commits;
 those use the separately qualified ON creator and native Player-respec scenarios.
+
+Sprint26 uses the same save-free first-area fixture, native clock, exact-owner controller and restoration path. Its closed `reviewPhase` union is `rtwp-foundation`, `turn-based-commands`, `gorgon-breath-rtwp`, `gorgon-breath-turn-based`, `bulette-leap-rtwp`, `bulette-leap-turn-based`, `rtwp-ai`, `routes`, `visual-lifecycle`. No fixture animation event or attack routine is awarded on behalf of these new creatures.

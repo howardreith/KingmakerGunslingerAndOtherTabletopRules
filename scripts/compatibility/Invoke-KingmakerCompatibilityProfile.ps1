@@ -105,6 +105,7 @@ param(
         'disposable-expanded-summoning-sprint23-native-review',
         'disposable-expanded-summoning-sprint24-native-review',
         'disposable-expanded-summoning-sprint25-native-review',
+        'disposable-expanded-summoning-sprint26-native-review',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
         'summon-same-turn-multiple',
@@ -234,7 +235,8 @@ $sprint22ReviewScenario = @($Scenario | Where-Object { $_ -cin @(
     'disposable-expanded-summoning-sprint22-native-review',
     'disposable-expanded-summoning-sprint23-native-review',
     'disposable-expanded-summoning-sprint24-native-review',
-    'disposable-expanded-summoning-sprint25-native-review') }).Count -gt 0
+    'disposable-expanded-summoning-sprint25-native-review',
+    'disposable-expanded-summoning-sprint26-native-review') }).Count -gt 0
 if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
 }
@@ -288,7 +290,9 @@ if ($moduleScenario) {
                 'visual-lifecycle', 'shared-controls')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint25-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
-                'rtwp-ai', 'routes', 'visual-lifecycle', 'overrun', 'great-cleave'))) {
+                'rtwp-ai', 'routes', 'visual-lifecycle', 'overrun', 'great-cleave')) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
+            -not (Test-KmgSprint26ReviewPhaseScope $Scenario[0] $Parameters))) {
         throw 'Sprint 22/23/24/25 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.'
     }
 } elseif ($assetAttributionScenario) {
@@ -481,7 +485,8 @@ try {
             'disposable-expanded-summoning-sprint22-native-review',
             'disposable-expanded-summoning-sprint23-native-review',
             'disposable-expanded-summoning-sprint24-native-review',
-            'disposable-expanded-summoning-sprint25-native-review')) {
+            'disposable-expanded-summoning-sprint25-native-review',
+            'disposable-expanded-summoning-sprint26-native-review')) {
             $arguments.Parameters = $Parameters
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -546,7 +551,8 @@ try {
             'disposable-expanded-summoning-sprint22-native-review',
             'disposable-expanded-summoning-sprint23-native-review',
             'disposable-expanded-summoning-sprint24-native-review',
-            'disposable-expanded-summoning-sprint25-native-review')) {
+            'disposable-expanded-summoning-sprint25-native-review',
+            'disposable-expanded-summoning-sprint26-native-review')) {
             $configurationId += '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {

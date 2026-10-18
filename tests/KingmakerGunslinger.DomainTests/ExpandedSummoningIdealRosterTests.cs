@@ -145,7 +145,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredCreatureCount,
                 reused,
                 "Every project-owned creature must be reused.");
 
@@ -160,7 +160,7 @@ namespace KingmakerGunslinger.DomainTests
             }
 
             Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
-                    GiantBodyRulesPolicy.AppendedCreatureCount,
+                    GiantBodyRulesPolicy.AppendedCreatureCount - Sprint26MagicalBeastRules.AppendedCreatureCount,
                 ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
@@ -204,13 +204,13 @@ namespace KingmakerGunslinger.DomainTests
             // The Shadow Mastiff moved from this set into the represented
             // one when Sprint 13 registered it.
             Assertions.Equal(29 - TheropodRulesPolicy.AppendedCreatureCount -
-                    GiantBodyRulesPolicy.AppendedCreatureCount,
+                    GiantBodyRulesPolicy.AppendedCreatureCount - Sprint26MagicalBeastRules.AppendedCreatureCount,
                 ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
                 "Only the post-Sprint-25 ideal-roster creatures remain unregistered.");
             Assertions.Equal(116 + TheropodRulesPolicy.AppendedCreatureCount +
-                    GiantBodyRulesPolicy.AppendedCreatureCount,
+                    GiantBodyRulesPolicy.AppendedCreatureCount + Sprint26MagicalBeastRules.AppendedCreatureCount,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "A registered creature joins the represented identity set even while withheld.");
 
@@ -225,7 +225,7 @@ namespace KingmakerGunslinger.DomainTests
             // followed it under the accepted passive-sense limitation, and 999
             // with Sprint 15's Drone and Giant Stag Beetle; 1005 when Sprint 16
             // publishes Dire Crocodile's six preserved placements.
-            Assertions.Equal(GiantBodyRulesPolicy.PublicVisibleChoices,
+            Assertions.Equal(SummoningCurrentSurface.PublicVisibleChoices,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published roster must expose the complete current surface.");

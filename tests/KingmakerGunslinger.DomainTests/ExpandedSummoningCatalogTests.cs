@@ -11,18 +11,18 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningCatalog.Validate();
             // Sprint 18 adds the two apes at Summon Monster and Nature's Ally
             // III and IV, which is seven and six placements per family.
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredCreatureCount,
                 ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredMonsterCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredMonsterCreatureCount,
                 ExpandedSummoningCatalog.All.Count(v => v.MonsterTier.HasValue),
                 "SM roster count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredNatureAllyCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredNatureAllyCreatureCount,
                 ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue),
                 "SNA roster count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredMonsterPlacements,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredMonsterPlacements,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count,
                 "SM placement count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredNatureAllyPlacements,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredNatureAllyPlacements,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count,
                 "SNA placement count changed.");
         }

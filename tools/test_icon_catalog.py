@@ -48,8 +48,9 @@ class IconCatalogTests(unittest.TestCase):
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
         # Combined authority: delivered Brachiosaurus plus the owner-approved
-        # released Dire Rat edit. Both exact source/export rows are retained.
-        self.assertEqual("7806c76a2b48d969410d835fdb9dceb179d1a06d5b60d2a890b19828465d600f", actual)
+        # released Dire Rat edit and the two authorized Sprint26 medallions.
+        # Every released source/export row remains unchanged.
+        self.assertEqual("00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6"
@@ -75,7 +76,10 @@ class IconCatalogTests(unittest.TestCase):
         mapping = self.catalog["runtimeMapping"]
         self.assertEqual(104, mapping["paintedConceptCount"])
         self.assertEqual(165, mapping["paintedConsumerCount"])
-        self.assertEqual(9, mapping["additionalEmblemConsumerCount"])
+        self.assertEqual(9, sum(c["concept"] in {"crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed"}
+                                for c in self.catalog["consumers"]))
+        self.assertEqual(mapping["additionalEmblemConsumerCount"],
+                         sum(c["concept"] in mapping["additionalEmblemConcepts"] for c in self.catalog["consumers"]))
         catalog = copy.deepcopy(self.catalog)
         catalog["runtimeMapping"]["additionalEmblemConcepts"].remove("dire-crocodile-swallowed")
         self.rejects("Additional emblem coverage counts disagree", catalog=catalog)

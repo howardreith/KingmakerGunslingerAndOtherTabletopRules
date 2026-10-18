@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Firing;
@@ -7,7 +7,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     /// <summary>
     /// Regression coverage for the newly-Broken sequence interruption
-    /// (mission Z-FIREARM-MAINTENANCE §4.3): a verified committed degradation
+    /// (mission Z-FIREARM-MAINTENANCE Â§4.3): a verified committed degradation
     /// of the exact firearm during an attack sequence stops the remainder of
     /// that sequence and its automatic continuations, while a later genuine
     /// player-issued attack with the Broken firearm stays possible and a
@@ -48,8 +48,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ConstructionRepairDoesNotReviveCancelledOrder()
         {
             // Review R3: repairing the firearm restores readiness, not the
-            // cancelled order. The policy takes no condition input at all —
-            // only a genuine new player order releases suppression — so a
+            // cancelled order. The policy takes no condition input at all â€”
+            // only a genuine new player order releases suppression â€” so a
             // brain re-issue after Quick Clear/repair stays cancelled while
             // any later deliberate order works normally.
             Assertions.Equal(
@@ -141,7 +141,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void WiringAllCommitPathsNotifyInterruption()
         {
             // Review R2: every production committed-degradation writer must
-            // route through the shared interruption notification — the
+            // route through the shared interruption notification â€” the
             // ordinary misfire, Dead Shot, and Scatter Shot.
             string shared = Read("src/KingmakerGunslinger/Firing",
                 "BrokenSequenceSuppressionRuntime.cs");

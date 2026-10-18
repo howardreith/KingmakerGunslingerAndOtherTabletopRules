@@ -131,7 +131,7 @@ $ungulateSource = Join-Path $outputDirectory 'assets\ungulates'
 if (Test-Path -LiteralPath $ungulateSource -PathType Container) {
     $ungulateDestination = Join-Path $modDirectory 'assets\ungulates'
     New-Item -ItemType Directory -Path $ungulateDestination -Force | Out-Null
-    foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+    foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros','gorgon')) {
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-mesh.json") -Destination $ungulateDestination
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-albedo.png") -Destination $ungulateDestination
     }
@@ -271,7 +271,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # The soundbank and its manifest account for the optional two-file delta.
 # Released v0.0.158 has 374 files with the bank. Sprint 25 adds the
 # four original body files, one icon and its own v0.0.159 release notes.
-$basePackageFileCount = 378
+$basePackageFileCount = 383
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

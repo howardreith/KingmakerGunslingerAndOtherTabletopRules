@@ -37,14 +37,14 @@ namespace KingmakerGunslinger.DomainTests
         internal static void CompactRowUsesTitleAndDetailLines()
         {
             var row = new WorldMapPointSpellAction(Point(), Origin, Source(uses: 2), false);
-            Assertions.Equal("Cast Teleport\ncaster-a · 2 prepared", TeleportContextPresentation.CompactRow(row, English),
+            Assertions.Equal("Cast Teleport\ncaster-a Â· 2 prepared", TeleportContextPresentation.CompactRow(row, English),
                 "Compact desktop row: full spell name title over caster/cost detail.");
         }
         internal static void CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous()
         {
             var row = new WorldMapPointSpellAction(Point(), Origin,
                 Source(TeleportSpellKind.GreaterTeleport, uses: 2, kind: TeleportCastSourceKind.Spontaneous), true);
-            Assertions.Equal("Cast Greater Teleport\ncaster-a, Wizard · 2 seventh-level slots", TeleportContextPresentation.CompactRow(row, English),
+            Assertions.Equal("Cast Greater Teleport\ncaster-a, Wizard Â· 2 seventh-level slots", TeleportContextPresentation.CompactRow(row, English),
                 "Spontaneous compact row keeps level plural and disambiguating book.");
         }
         internal static void ScrollRowsUseSharedStockWording()

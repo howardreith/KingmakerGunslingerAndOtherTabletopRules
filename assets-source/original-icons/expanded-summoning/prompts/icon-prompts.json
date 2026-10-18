@@ -654,6 +654,20 @@
       "subjectPrompt": "A massive adult stegosaurus in full side three-quarter view, tiny low head, arched back with two readable rows of tall rust-red dorsal plates, raised hindquarters and a long curved tail ending in four unmistakable spikes sweeping toward the viewer; sunlit rocky badlands and warm bronze-gold summon portrait frame, no club tail, horns, saddle, rider or other dinosaur.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/SPRINT23-SOURCES.md"
+    },
+    {
+      "key": "gorgon",
+      "displayName": "Gorgon",
+      "subjectPrompt": "Use case: stylized-concept. Asset type: one square painted fantasy CRPG summon-choice icon, final export 128px. Create an ORIGINAL GORGON creature portrait matching the warm painted medallion family of the first two actual reference images (aurochs and rhinoceros). These are STYLE references only; do not edit or recolor their bodies. The third beetle image is not a style reference. Subject: PF1 gorgon, a powerful living armored BULL with two upward-curving horns, bovine broad muzzle, four stout cloven-hoofed legs, overlapping iron-gray metallic armor plates over flesh, small green breath plumes at mouth. A recognizable bull body, not a human gorgon, medusa, snake, construct robot, rhino or minotaur. Three-quarter front view in the medallion, head and horns dominant, full or near-full body silhouette, large enough to read at 32px. Rich hand-painted fantasy illustration, restrained bronze edge lighting on cool iron armor, smoky dark warm brown backdrop, thin circular aged-gold medallion ring matching aurochs family, square dark corners. No ornate square UI frame, text, letters, counters, numbers, badges, extra creatures, weapons or watermark. Keep horns within canvas. This is the creature identity painting, not a cinematic poster. Preserve no copyrighted pixels from references. Deliver exactly one square image.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint26-generation.json"
+    },
+    {
+      "key": "bulette",
+      "displayName": "Bulette",
+      "subjectPrompt": "Use case: stylized-concept. Asset type: a single square fantasy CRPG summon-choice creature painting for final 128px export. Use the actual attached Gorgon icon ONLY as a STYLE reference: match its warm dark painted circular gold medallion family, readable central creature, material shading, dark corners and thin aged-gold ring. Make an ORIGINAL BULETTE (PF1 landshark), entirely different anatomy from that bull. Subject: a low massive four-legged armored landshark, wedge-shaped blunt shark-like armored head with a wide toothy hinged jaw, small deep-set eyes, thick slate blue-gray overlapping armored back, raised triangular dorsal crest/fin, pale underbelly, four short powerful splayed legs with large ivory digging claws and short heavy tail. Recognizable squat bulette body, no horns, no bull features, not a dragon, ordinary shark, mole, crocodile, dinosaur or construct. Pose: leaping a short distance above rocky ground, three-quarter front/side, foreclaws reaching downward, mouth partly open, clear dorsal fin and quadruped silhouette filling circle. Four legs total; no wings, no limbs on its back. Hand-painted bestiary portrait with broad readable anatomy for 32px display, bronze rim light, smoky earth backdrop. No cinematic landscape, extra creatures, glyph, text, numbers, badges, square UI border or watermark. Keep anatomy within canvas. Exactly one square image.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint26-generation.json"
     }
   ]
 }

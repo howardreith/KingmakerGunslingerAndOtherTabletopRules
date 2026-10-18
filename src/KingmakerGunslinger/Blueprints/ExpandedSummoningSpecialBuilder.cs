@@ -667,6 +667,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
             ConfigureTheropodSpecials(library, bySymbol);
+            ConfigureSprint26Specials(library, bySymbol);
             // After the grapplers, because ConfigureGrabber replaces
             // the traits buff's component array and these append to it.
             ConfigureXillDefences(library, bySymbol);

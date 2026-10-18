@@ -88,7 +88,7 @@ module-disabled hydration must be observed. Permanent effects do not expire
 with summon duration. Fixture teardown removing its own state is not cure proof.
 
 Trample reuses the released path/contact/response policy, full-round action,
-2d8 + floor(1.5 times live Strength modifier), live Strength/HD DC (baseline
+2d8 plus 1.5 times a positive live Strength bonus, rounded down (a Strength penalty applies once), live Strength/HD DC (baseline
 2d8+10/DC21), one contact per victim per round. Keep ally-aware responses and
 ordinary attacks distinct; grant neither Overrun nor Cleave.
 

@@ -10,11 +10,22 @@ Fixed build/qualification/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
 Expected next free version is 0.0.160; it is not reserved.
 Final-records branch: codex/expanded-summoning-sprint26-release-records.
 
-Current checkpoint: intake and inert source/art authoring. No new live creature
-rows, no published roots, no new artifact, no native PASS, no release or merge.
-Two original summon paintings are preserved; native effect/action art and the
-body/command/petrification engine inputs are being inspected before integration.
-Owner visual approval remains NOT_PERFORMED_NONBLOCKING.
+Current checkpoint: registered hidden implementation and prototype-native observers,
+not gameplay-qualified. Gorgon/Bulette own all six roots,18 private carriers and
+18 caller adapters; the exact6,916-entry released registry prefix is preserved.
+The registered surface is110 creatures /1,102 placements. Exactly these two keys
+remain withheld: **1,096 generated placements + 29 retained native wrappers =
+1,125 visible choices**. Publication will expose1,131 choices after qualification.
+Both medallion paintings and the Leap emblem are integrated; Gorgon has original
+Horse-frame geometry, and Bulette uses the exact installed normal adult body.
+HumanReview remains NOT_PERFORMED_NONBLOCKING. No product merge/release yet.
+
+Compact prototype phases currently implement foundation/ordinary attacks, routes,
+successful/failed Leap and staged breath/recovery/real Stone to Flesh. Remaining
+observer work includes AI, lifecycle, negative command cases, trample/feat controls,
+and targeted persistence before the final candidate. Unimplemented phases fail
+explicitly. Native input capture3728 passed with exact restoration; this is
+metadata evidence, not proof that the new creatures function in game.
 
 Today HOWARD-LAPTOP, source ownership, Steam owner, absent game/lease/open
 transaction and all 14 private/installed reference pairs were verified.

@@ -64,6 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BindingFlags.Public | BindingFlags.NonPublic;
             private readonly ExpandedSummoningCorrectionFixture _fixture;
             private readonly TimeSpan _timeBefore;
+            private readonly float _step;
             private readonly GameMode _tickMode = new GameMode(
                 GameModeType.Default, new IController[0]);
             private readonly UnitActionController _actions =
@@ -83,8 +84,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool Restored { get; private set; }
 
             internal Sprint22NativeClock(
-                ExpandedSummoningCorrectionFixture fixture)
+                ExpandedSummoningCorrectionFixture fixture, float step = .25f)
             {
+                if (step <= 0 || step > .25f) throw new ArgumentOutOfRangeException("step");
+                _step = step;
                 _fixture = fixture ?? throw new ArgumentNullException("fixture");
                 _timeBefore = Game.Instance.Player.GameTime;
                 _tickAction = typeof(UnitActionController).GetMethod(
@@ -113,8 +116,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     Game.Instance.IsPaused = false;
-                    time.SetDeltaTime(.25f);
-                    time.SetGameDeltaTime(.25f);
+                    time.SetDeltaTime(_step);
+                    time.SetGameDeltaTime(_step);
                     new SleepingUnitsController().Tick();
                     _join.Tick();
                     _prepare.Tick();
@@ -144,7 +147,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     else
                     {
                         Game.Instance.Player.GameTime +=
-                            TimeSpan.FromSeconds(.25d);
+                            TimeSpan.FromSeconds(_step);
                     }
                     foreach (UnitEntityData unit in tickUnits)
                     {
@@ -164,7 +167,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var agent = view == null ? null : view.MovementAgent;
                         if (!unit.Destroyed && agent != null)
                         {
-                            agent.TickMovement(.25f);
+                            agent.TickMovement(_step);
                             if (!unit.Destroyed && ReferenceEquals(unit.View,
                                 view)) unit.Position = view.transform.position;
                             MovementTicks++;

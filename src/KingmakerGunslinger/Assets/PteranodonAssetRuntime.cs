@@ -201,7 +201,8 @@ namespace KingmakerGunslinger.Assets
                 { "aurochs", new UngulateVisual() },
                 { "bison", new UngulateVisual() },
                 { "rhinoceros", new UngulateVisual() },
-                { "woolly-rhinoceros", new UngulateVisual() }
+                { "woolly-rhinoceros", new UngulateVisual() },
+                { "gorgon", new UngulateVisual() }
             };
 
         private sealed class Sprint12QuadrupedVisual
@@ -922,7 +923,7 @@ namespace KingmakerGunslinger.Assets
                 {
                     string[] names;
                     AlbedoRequirement requirement;
-                    string[] allowed = key == "aurochs" || key == "bison"
+                    string[] allowed = key == "aurochs" || key == "bison" || key == "gorgon"
                         ? AllowedHorseBones : AllowedMastodonBones;
                     mesh = BuildMesh(File.ReadAllText(path), out names,
                         out requirement, allowed);
