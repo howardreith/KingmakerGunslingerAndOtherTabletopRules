@@ -4,6 +4,12 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        internal static bool Sprint25Phase(string phase)
+        {
+            return phase == "rtwp-foundation" || phase == "turn-based-commands" ||
+                phase == "rtwp-ai" || phase == "routes" || phase == "visual-lifecycle" ||
+                phase == "overrun" || phase == "great-cleave";
+        }
         public static bool BiteArmorControl(bool biteWeapon, bool firstHit,
             bool secondHit, bool dismantled, bool exactArmorUnchanged)
         {
@@ -69,6 +75,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "turn-based-tyrannosaurus" || reviewPhase ==
                     "visual-lifecycle" || reviewPhase ==
                     "shared-controls");
+            if (scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint25NativeReview)
+                return parameters == 1 && Sprint25Phase(reviewPhase);
             return false;
         }
         public static bool CanStart(bool automaticExit, string scenario,

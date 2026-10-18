@@ -47,9 +47,9 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Repinned by Sprint 24 for the two theropod concepts and by the visual
-        # refinement for the owner-approved Dire Rat edit (VIS-004).
-        self.assertEqual("35a64cb65243f7a2967121e2107f81958a7abed3ca14cfe99520f05c56b379ae", actual)
+        # Combined authority: delivered Brachiosaurus plus the owner-approved
+        # released Dire Rat edit. Both exact source/export rows are retained.
+        self.assertEqual("7806c76a2b48d969410d835fdb9dceb179d1a06d5b60d2a890b19828465d600f", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6"

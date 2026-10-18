@@ -128,9 +128,15 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LedgerAndIconsCoverTheTiger()
         {
             SummonIconCatalog.Validate();
-            Assertions.Equal(117, SummonIconCatalog.All.Count(value =>
+            // 118 since 2026-10-17: this counts every icon concept that
+            // is NOT one of Sprint 24's exact-rank theropods, so it grew
+            // by one when the Brachiosaurus painting arrived and its
+            // concept joined the catalog. The Sprint 8 identities below
+            // are what this test actually guards.
+            Assertions.Equal(118, SummonIconCatalog.All.Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks(value.Key)),
-                "All pre-Sprint-24 concepts retain Tiger without changing Sprint 8 identities.");
+                "Every non-theropod icon concept retains Tiger without " +
+                "changing Sprint 8 identities.");
             string ledger = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "blueprints", "blueprints.json"));
             var entries = Newtonsoft.Json.Linq.JObject.Parse(ledger)["entries"]

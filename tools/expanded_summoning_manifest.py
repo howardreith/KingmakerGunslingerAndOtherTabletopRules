@@ -225,8 +225,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 107:
-        raise SystemExit(f"Expected 107 parsed creatures; observed {len(values)}")
+    if len(values) != 108:
+        raise SystemExit(f"Expected 108 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -606,8 +606,39 @@ def planned():
         ("KMG.Summoning.Special.Tyrannosaurus.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Tyrannosaurus.Swallowed", "BlueprintBuff"),
         ("KMG.Summoning.Special.Tyrannosaurus.BleedingCritical", "BlueprintFeature"),
+        # Sprint 25: the new Brachiosaurus owns its 4d6 tail and the tail type
+        # that carries twenty-foot reach, a species type so it never reads as
+        # its donor, a chassis carrier for the size and reach corrections a
+        # reconstructed Gargantuan body needs, and its own trample. Elephant
+        # is an existing released creature and appends nothing here until the
+        # bounded native census proves which of its production carriers are
+        # actually missing against the frozen adult entry.
+        ("KMG.Summoning.Natural.Brachiosaurus.Tail4d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Brachiosaurus.TailType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Natural.Brachiosaurus.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Brachiosaurus.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Brachiosaurus.Trample", "BlueprintAbility"),
+        # Sprint 25, appended 2026-10-16 after the bounded observation of
+        # the released Elephant's own carriers: it recorded six grants, no
+        # trample ability and no trample component of any kind, so the
+        # reserved name becomes a real identity. Reusing another
+        # creature's trample was rejected because the shared carrier reads
+        # its damage and DC from the creature key the ability belongs to.
+        ("KMG.Summoning.Special.Elephant.Trample", "BlueprintAbility"),
+        # The bounded ordinary Overrun command the owner
+        # selected over a waiver. It is a separate action
+        # from Trample and never replays it.
+        ("KMG.Summoning.Special.Brachiosaurus.Overrun", "BlueprintAbility"),
+        # The cloned Greater Overrun carrier for this one
+        # creature. A BlueprintFeature, like the native feat
+        # it clones.
+        ("KMG.Summoning.Special.Brachiosaurus.GreaterOverrun", "BlueprintFeature"),
+        # Native qualification proved the missing high-rank Skill Focus +3.
+        # A standard private fact owns its native modifier through save/load;
+        # the released Elephant unit/type/weapons and eight roots do not move.
+        ("KMG.Summoning.Natural.Elephant.Chassis", "BlueprintFeature"),
     ))
-    if len(rows) != 2149 or len({symbol for symbol, _ in rows}) != 2149:
+    if len(rows) != 2162 or len({symbol for symbol, _ in rows}) != 2162:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -735,7 +766,7 @@ def generated_roster(manifest):
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-23 are technically qualified and published. Viper and Constrictor independently published after complete hidden PASS on 47e8c121 and all 32 public roots PASS on 996c5fe7. Salamander's observation-only reach correction db1da016 profile/view 73/73 PASS closed Sprint 17; its five existing public roots remain preserved and PASS. Sprint 18's Ape and Dire Ape published in v0.0.147 after their complete hidden candidate passed. Sprint 19 published the Girallon and the Xill in v0.0.148 after 39/39 mechanics and 12/12 body review. Sprint 20 published the Giant Scorpion in v0.0.149, Sprint 21 published the Giant Crab in v0.0.150, and Sprint 22 published the Ankylosaurus in v0.0.151. Sprint 23 published Triceratops and Stegosaurus in v0.0.152 after their complete hidden gameplay, presentation, ownership, persistence and compatibility qualification; publication removed only their two suppression keys and moved no identity. The v0.0.153 follow-up changes only Triceratops Powerful Charge odd-Strength rounding. Sprint 24 published Deinonychus and Tyrannosaurus in v0.0.155 after their complete hidden gameplay, presentation, ownership, persistence and shared-control qualification; publication removed only their two suppression keys together and moved no identity. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers. Current Sprint 24 authority and evidence are in `docs/SPRINT24-COVERAGE.md`.",
+        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-23 are technically qualified and published. Viper and Constrictor independently published after complete hidden PASS on 47e8c121 and all 32 public roots PASS on 996c5fe7. Salamander's observation-only reach correction db1da016 profile/view 73/73 PASS closed Sprint 17; its five existing public roots remain preserved and PASS. Sprint 18's Ape and Dire Ape published in v0.0.147 after their complete hidden candidate passed. Sprint 19 published the Girallon and the Xill in v0.0.148 after 39/39 mechanics and 12/12 body review. Sprint 20 published the Giant Scorpion in v0.0.149, Sprint 21 published the Giant Crab in v0.0.150, and Sprint 22 published the Ankylosaurus in v0.0.151. Sprint 23 published Triceratops and Stegosaurus in v0.0.152 after their complete hidden gameplay, presentation, ownership, persistence and compatibility qualification; publication removed only their two suppression keys and moved no identity. The v0.0.153 follow-up changes only Triceratops Powerful Charge odd-Strength rounding. Sprint 24 published Deinonychus and Tyrannosaurus in v0.0.155 after their complete hidden gameplay, presentation, ownership, persistence and shared-control qualification; publication removed only their two suppression keys together and moved no identity. Sprint 25 registers the Brachiosaurus and withholds all three of its roots. Like the Sprint 21 Giant Crab and the Sprint 23 Stegosaurus it is untemplated and is not on the Summon Monster table at all, so three suppressed placements hold back three roots and no execution children; the owner settled that placement on 2026-10-15 against a recorded source discrepancy, choosing the reversible direction because identities are append-only. Sprint 25 also completes the existing released Elephant rather than re-registering it: its identity, its eight existing roots, their children and their order do not move, and actual Mastodon units and assets are unchanged. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers. Current Sprint 25 authority and evidence are in `docs/SPRINT25-GIANT-BODIES-MISSION.md`.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",

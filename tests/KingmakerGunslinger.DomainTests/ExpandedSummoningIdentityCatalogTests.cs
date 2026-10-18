@@ -16,7 +16,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(ExpandedSummoningIdentityCatalog.UnitCount,
                 first.Count(value => value.PlannedType == "BlueprintUnit"),
                 "Unit identity count changed.");
-            Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount,
+            Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
+                    GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount,
                 first.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
@@ -29,15 +30,23 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(15, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "IsEngagedConsideration"),
                 "Only the bounded crocodilian engagement scorer is registered.");
-            Assertions.Equal(29 + TheropodRulesPolicy.AppendedWeaponIdentityCount,
+            Assertions.Equal(29 + TheropodRulesPolicy.AppendedWeaponIdentityCount +
+                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount,
                 first.Count(value => value.PlannedType == "BlueprintItemWeapon"),
                 "Weapon identity count changed.");
-            Assertions.Equal(5, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
-            Assertions.Equal(16 + TheropodRulesPolicy.AppendedUnitTypeIdentityCount,
+            Assertions.Equal(5 + GiantBodyRulesPolicy.AppendedWeaponTypeIdentityCount,
+                first.Count(value => value.PlannedType == "BlueprintWeaponType"),
+                "Weapon-type identity count changed.");
+            Assertions.Equal(16 + TheropodRulesPolicy.AppendedUnitTypeIdentityCount +
+                    GiantBodyRulesPolicy.AppendedUnitTypeIdentityCount,
                 first.Count(value => value.PlannedType == "BlueprintUnitType"),
                 "Unit-type identity count changed.");
             Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(39 + TheropodRulesPolicy.AppendedFeatureIdentityCount,
+            // The Sprint 25 chassis, plus its cloned Greater Overrun
+            // carrier: a feature, because the native feat it clones is.
+            Assertions.Equal(39 + TheropodRulesPolicy.AppendedFeatureIdentityCount +
+                    GiantBodyRulesPolicy.AppendedFeatureIdentityCount +
+                    GiantBodyRulesPolicy.AppendedGreaterOverrunIdentityCount,
                 first.Count(value => value.PlannedType == "BlueprintFeature"),
                 "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
@@ -346,7 +355,11 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();
-            Assertions.Equal(56 + TheropodRulesPolicy.AppendedCreatureCount,
+            // Composed from each sprint's own appended delta rather than a
+            // literal, so a sprint that adds a creature moves its own
+            // policy count and this stays true.
+            Assertions.Equal(56 + TheropodRulesPolicy.AppendedCreatureCount
+                    + GiantBodyRulesPolicy.AppendedCreatureCount,
                 ExpandedSummoningNaturalProfiles.All.Count,
                 "Natural reconstruction count changed.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
@@ -586,9 +599,16 @@ namespace KingmakerGunslinger.DomainTests
             NaturalSummonProfile elephant =
                 ExpandedSummoningNaturalProfiles.For("elephant");
             Assertions.Equal(11, elephant.HitDice, "Elephant HD changed.");
-            Assertions.Equal("Slam2d6",
-                elephant.AdditionalSecondaryWeapons.Single(),
-                "Elephant slam profile changed.");
+            // Corrected in Sprint 25. This previously pinned the slam as the
+            // single secondary attack, which is what the released profile
+            // registered and what made the slam take the native -5 to hit and
+            // half Strength. The printed adult block is gore +16 (2d8+10) AND
+            // slam +16 (2d6+10): two primary attacks, each adding Strength
+            // once. The assertion now pins the printed routine.
+            Assertions.Equal("Slam2d6", elephant.AdditionalWeapons.Single(),
+                "The Elephant slam is a primary attack, as printed.");
+            Assertions.Equal(0, elephant.AdditionalSecondaryWeapons.Count,
+                "The Elephant has no secondary natural attack.");
             Assertions.True(elephant.Deviations.Any(value =>
                 value.Contains("Trample")),
                 "Elephant trample deviation is not explicit.");
@@ -769,14 +789,14 @@ namespace KingmakerGunslinger.DomainTests
                     "Logical placement identity missing or duplicated: " + symbol);
                 found++;
             }
-            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 found, "Logical placement traversal changed.");
         }
 
         internal static void DonorsCoverEveryFrozenCreature()
         {
             ExpandedSummoningDonorCatalog.Validate();
-            Assertions.Equal(TheropodRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
                 ExpandedSummoningDonorCatalog.All.Count,
                 "Every unique creature requires exactly one frozen donor decision.");
             Assertions.Equal("676f8b7d0a170674cb6e504e0e30b4f0",

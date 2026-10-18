@@ -66,7 +66,7 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.158') { throw "Build-Local supports only active version 0.0.158, observed $($info.Version)." }
+if ($info.Version -ne '0.0.159') { throw "Build-Local supports only active version 0.0.159, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -138,6 +138,15 @@ if ($development) {
         -Filter $DevelopmentTestFilter
 } else {
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
+# The scenario preflight was reachable only by hand, so the one test that
+# proves the C# catalog, the PowerShell metadata table and the documented
+# scenario union are the same set ran at no gate level - which is how a
+# scenario the guarded harness would refuse as "not allowlisted" passed a
+# full Sprint gate. It is source-only: no elevation, no install, no launch,
+# WhatIf alone, so it belongs beside the repository wrapper rather than in
+# a handoff instruction.
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'Test-RuntimeScenarioPreflight.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'Runtime scenario preflight failed.' }
 # The repository wrapper has just run. test-domain.ps1 would otherwise run it
 # again, which is the duplication the 2026-10-02 amendment called out: a
 # tranche gate for one immutable commit must validate the repository once.
@@ -261,6 +270,11 @@ New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint24-ther
 foreach ($kind in @('deinonychus','tyrannosaurus')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint24-theropods\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint24-theropods') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint24-theropods\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint24-theropods') -Force
+}
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint25-giant-bodies') -Force | Out-Null
+foreach ($kind in @('brachiosaurus','elephant')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint25-giant-bodies\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint25-giant-bodies') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint25-giant-bodies\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint25-giant-bodies') -Force
 }
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'

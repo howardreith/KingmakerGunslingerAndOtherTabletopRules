@@ -103,7 +103,8 @@ namespace KingmakerGunslinger.Summoning
         internal int StrengthModifier { get { return (Strength - 10) / 2; } }
         internal int GoreDiceCount { get; private set; }
         internal int GoreDieSides { get; private set; }
-        internal int GoreBonus { get { return StrengthModifier * 3 / 2; } }
+        internal int GoreBonus
+        { get { return UngulateRulesPolicy.OneAndAHalfStrength(StrengthModifier); } }
         internal bool HasTrample { get { return TrampleDiceCount > 0; } }
         internal int TrampleDiceCount { get; private set; }
         internal int TrampleDieSides { get; private set; }
@@ -135,10 +136,18 @@ namespace KingmakerGunslinger.Summoning
         internal int TrampleSaveDc(int adjacentStampedingCreatures)
         { return TrampleDc + (StampedeActive(adjacentStampedingCreatures) ? 2 : 0); }
 
+        /// <summary>
+        /// The live branch used to multiply unconditionally, which turned
+        /// a Strength penalty into a larger penalty. It now applies the
+        /// one authoritative rule, so a debuffed trampler loses its bonus
+        /// rather than gaining an invented extra penalty.
+        /// </summary>
         internal int TrampleBonusFor(int liveStrengthModifier)
         {
-            return LiveTrampleMath ? liveStrengthModifier * 3 / 2 :
-                TrampleBonus;
+            return LiveTrampleMath
+                ? UngulateRulesPolicy.OneAndAHalfStrength(
+                    liveStrengthModifier)
+                : TrampleBonus;
         }
 
         internal int TrampleSaveDc(int adjacentStampedingCreatures,
@@ -158,6 +167,26 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class UngulateRulesPolicy
     {
+        /// <summary>
+        /// One and a half times a Strength BONUS, which is what the
+        /// printed rule says: a penalty is not a bonus, so zero and
+        /// negatives stay at face value rather than being multiplied.
+        ///
+        /// <para>This exists because two formulas disagreed. The record
+        /// helper in GiantBodyRulesPolicy already applied this rule, but
+        /// the live branch of TrampleBonusFor multiplied unconditionally
+        /// as strengthModifier * 3 / 2, so at a live modifier of -4 the
+        /// record said -4 and the damage path said -6. Agreement at the
+        /// printed positive baselines hid it. The damage path is what
+        /// runs, so the rule now lives here and everything reads it.</para>
+        /// </summary>
+        internal static int OneAndAHalfStrength(int strengthModifier)
+        {
+            return strengthModifier > 0
+                ? checked(strengthModifier + strengthModifier / 2)
+                : strengthModifier;
+        }
+
         private static readonly UngulateRulesProfile[] Values = {
             new UngulateRulesProfile("aurochs", 3, 23, 1, 8, 2, 6,
                 0, 0, 0, true),
@@ -189,7 +218,36 @@ namespace KingmakerGunslinger.Summoning
             // Its Strength and racial-HD contributions are read live; the
             // older five rows retain their frozen released arithmetic.
             new UngulateRulesProfile("triceratops", 14, 26, 2, 10,
-                1, 8, 4, 10, 16, false, true, true)
+                1, 8, 4, 10, 16, false, true, true),
+            // Sprint 25 Brachiosaurus, on the same qualified
+            // path/contact/response carrier. Nothing here is a literal
+            // from the printed trample line and the derivation lands on it
+            // exactly: one and a half times the Strength modifier on 2d6
+            // is 2d6+19 at Strength 37, and ten plus half the hit dice
+            // plus the Strength modifier is DC 32 at eighteen hit dice.
+            //
+            // The gore slots carry the tail dice. This creature has no
+            // gore at all - its single natural attack is a 4d6 tail - and
+            // the slots exist so the charge arithmetic has honest inputs,
+            // exactly as the Giant Stag Beetle carries its bite there.
+            // Trample damage does not read them: TrampleBonus derives from
+            // the Strength modifier alone. No powerful charge and no
+            // Stampede, which belongs to the herd ungulates.
+            new UngulateRulesProfile("brachiosaurus", 18, 37, 4, 6,
+                2, 6, 0, 0, 0, false, true),
+            // Sprint 25 Elephant, on the same qualified carrier. The
+            // bounded observation of the released creature on 2026-10-16
+            // recorded six grants and no trample ability or component, so
+            // this adds a carrier the creature genuinely lacked rather
+            // than duplicating one it had. Nothing here is a literal from
+            // the printed line: one and a half times the Strength
+            // modifier on 2d8 is 2d8+15 at Strength 30, and ten plus half
+            // the hit dice plus the Strength modifier is DC 25 at eleven
+            // hit dice. The gore dice are its real printed gore, so the
+            // charge arithmetic has honest inputs; it has no powerful
+            // charge and no Stampede.
+            new UngulateRulesProfile("elephant", 11, 30, 2, 8,
+                2, 8, 0, 0, 0, false, true)
         };
 
         internal static IReadOnlyList<UngulateRulesProfile> All
@@ -200,8 +258,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 6 || Values.Select(value => value.Key)
-                    .Distinct(StringComparer.Ordinal).Count() != 6 ||
+            if (Values.Length != 8 || Values.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count() != 8 ||
                 Values.Any(value => value.HitDice < 1 || value.Strength < 1 ||
                     value.GoreDiceCount < 1 || value.GoreDieSides < 1 ||
                     !value.HasTrample && !value.HasPowerfulCharge))

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generator": "OpenAI image generation capability for the 77 roster-mission concepts; Blender 4.5 procedural renders (tools/render_creature_icon.py) for the Phase 1 additions",
+  "generator": "OpenAI image generation capability for the 77 roster-mission concepts; Blender 4.5 procedural renders (tools/render_creature_icon.py) for the Phase 1 additions; the Sprint 25 Brachiosaurus source was supplied by the owner and its own C2PA Content Credentials identify ChatGPT gpt-image via the OpenAI Media Service API, signed 2026-10-17T12:59:49Z with digitalSourceType trainedAlgorithmicMedia",
   "sourceImagesSupplied": false,
   "commonPrompt": "Original square CRPG ability-icon source, painterly high-fantasy realism, full-bleed opaque square, dramatic rim light, atmospheric radial background, subtle dark bronze circular frame, centered strong silhouette with 10% safe margin, readable at 64px. No text, letters, labels, numerals, dice, symbols, generic paw, white background, watermark, logo, extra creatures, copied game art, or imitation of any specific existing icon.",
   "icons": [
@@ -47,6 +47,11 @@
       "key": "bogeyman",
       "displayName": "Bogeyman",
       "subjectPrompt": "A bogeyman fey lurking in a crooked doorway, tall thin shadowy humanoid in a tattered dark coat and hat, too-wide pale grin and long fingers, nightmare-blue nursery gloom."
+    },
+    {
+      "key": "brachiosaurus",
+      "displayName": "Brachiosaurus",
+      "subjectPrompt": "One unmistakable long-necked sauropod in a readable three-quarter side view, standing on a ground line and filling most of the roundel: the elevated long neck and small head clearly separated from the torso, tall shoulders higher than the hips, a heavy quadruped body, thick columnar legs and a balancing tapering tail, warm sepia and amber palette with a lit sky behind it."
     },
     {
       "key": "bralani-azata",

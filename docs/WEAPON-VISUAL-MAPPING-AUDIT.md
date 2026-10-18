@@ -6,7 +6,7 @@ Do not hand-edit either generated output.
 
 ## Coverage and policy
 
-The blueprint manifest contains exactly **134** active
+The blueprint manifest contains exactly **135** active
 `BlueprintItemWeapon` identities and every one is represented below.
 The audit includes equipped player/development weapons, mechanics-only
 Pistol-Whip items, and Expanded Summoning creature weapons. Cosmetic
@@ -23,7 +23,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | equipped project weapon | 101 |
 | mechanics-only exclusion | 2 |
-| summoning-only exclusion | 31 |
+| summoning-only exclusion | 32 |
 
 ### Family counts
 
@@ -31,7 +31,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | Blunderbuss | 12 |
 | Elven Branched Spear | 16 |
-| Expanded Summoning creature weapon | 31 |
+| Expanded Summoning creature weapon | 32 |
 | Katana | 14 |
 | Musket | 15 |
 | Nodachi | 14 |
@@ -179,6 +179,7 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Stegosaurus.Tail4d6 | 96b5e8692e3949bcba63b57507a5075f | Tail4d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.Deinonychus.Talon1d8 | 7bb056a081a4444b804e52508d91f6c8 | Talon1d8 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.Tyrannosaurus.Bite4d6 | cfb6ea9c9c3b4405bb001f00159e8370 | Bite4d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
+| KMG.Summoning.Natural.Brachiosaurus.Tail4d6 | 13b51070d6f84a15bfed98a04c98fa30 | Tail4d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 
 ## Exact presentation and provenance contracts
 
@@ -318,6 +319,7 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Stegosaurus.Tail4d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 | KMG.Summoning.Natural.Deinonychus.Talon1d8 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 | KMG.Summoning.Natural.Tyrannosaurus.Bite4d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
+| KMG.Summoning.Natural.Brachiosaurus.Tail4d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 
 ## Audit conclusion before asset authoring
 

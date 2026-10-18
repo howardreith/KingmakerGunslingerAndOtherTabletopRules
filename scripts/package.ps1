@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-visual-refinement.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint25-giant-bodies.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -77,7 +77,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.155.md',
     'docs\RELEASE-NOTES-0.0.156.md',
     'docs\RELEASE-NOTES-0.0.157.md',
-    'docs\RELEASE-NOTES-0.0.158.md')) {
+    'docs\RELEASE-NOTES-0.0.158.md',
+    'docs\RELEASE-NOTES-0.0.159.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -239,6 +240,13 @@ foreach ($kind in @('deinonychus','tyrannosaurus')) {
     Copy-Item -LiteralPath (Join-Path $theropodSource "$kind-mesh.json") -Destination $theropodDestination
     Copy-Item -LiteralPath (Join-Path $theropodSource "$kind-albedo.png") -Destination $theropodDestination
 }
+$giantBodySource = Join-Path $outputDirectory 'assets\sprint25-giant-bodies'
+$giantBodyDestination = Join-Path $modDirectory 'assets\sprint25-giant-bodies'
+New-Item -ItemType Directory -Path $giantBodyDestination -Force | Out-Null
+foreach ($kind in @('brachiosaurus','elephant')) {
+    Copy-Item -LiteralPath (Join-Path $giantBodySource "$kind-mesh.json") -Destination $giantBodyDestination
+    Copy-Item -LiteralPath (Join-Path $giantBodySource "$kind-albedo.png") -Destination $giantBodyDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -261,7 +269,9 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # and two original creature icons to the previously qualified 363-file base;
 # v0.0.156, v0.0.157 and v0.0.158 each add their release notes.
 # The soundbank and its manifest account for the optional two-file delta.
-$basePackageFileCount = 372
+# Released v0.0.158 has 374 files with the bank. Sprint 25 adds the
+# four original body files, one icon and its own v0.0.159 release notes.
+$basePackageFileCount = 378
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

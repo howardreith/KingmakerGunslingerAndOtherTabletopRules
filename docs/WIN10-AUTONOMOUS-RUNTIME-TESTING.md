@@ -2,6 +2,22 @@
 
 ## Design status
 
+Sprint 25 adds `disposable-expanded-summoning-sprint25-native-review` to the
+guarded scenario union. It accepts exactly one `reviewPhase` from
+`rtwp-foundation`, `turn-based-commands`, `rtwp-ai`, `routes`,
+`visual-lifecycle`, `overrun`, and `great-cleave`.
+These cover composed giant profiles, signed-Strength damage,
+ordinary/Trample commands, exact-owner AI, selected spellbook routes, and original
+body attachment/fault/death/teardown. It uses the existing native
+first-area fixture, never loads/writes a save, requires automatic exit, and
+restores its request-owned world/clock/settings. Additional qualification
+phases remain under implementation; this registration is not native PASS.
+
+Steam Offline Mode is supported. The owner must have a usable signed-in
+session; online connectivity is not required. The approved executable, App ID,
+Windows ownership, elevation refusal, transaction and unexpected-UI guards
+remain unchanged. `ActiveUser=0` alone is not an authentication-failure verdict.
+
 This document defines the guarded, source-controlled runtime-test channel
 introduced for Kingmaker Gunslinger 0.0.30 and retained by current candidates.
 It does not qualify any scenario in game. Source qualification and an actual

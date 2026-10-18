@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.158-expanded-summoning-visual-refinement",
+  "milestone": "0.0.159-expanded-summoning-sprint25-giant-bodies",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.158",
+  "version": "0.0.159",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2551,6 +2551,31 @@
       "blocked-family-shortcut-load",
       "grapple-swallow-reset-on-reload"
     ]
+  },
+  "expandedSummoningSprint25159": {
+    "releaseVersion": "0.0.159",
+    "releaseInformationalVersion": "0.0.159-expanded-summoning-sprint25-giant-bodies",
+    "masterBase": "8726ec737a73f9a0956f3ae9cbab2aceeb7ffc7c",
+    "newCreatures": 1,
+    "newLogicalRoots": 3,
+    "newMonsterPlacements": 0,
+    "newTemplateExecutionChildren": 0,
+    "newPrivateIdentities": 5,
+    "completedExistingCreatures": 1,
+    "completedExistingRoots": 8,
+    "registeredLogicalPlacements": 1096,
+    "suppressedLogicalPlacements": 0,
+    "publishedLogicalPlacements": 1096,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 1125,
+    "originalBodyAssetsAuthored": true,
+    "originalBodyFiles": 4,
+    "nativeRuntimeQualified": true,
+    "nativeRuntimeQualificationScope": "Hidden mechanics/body/commands both profiles qualified; targeted giant ON/OFF cold loads and cleanup/absence qualified on9f571da5. This public candidate still requires its exact public inventory/icon/eleven-root gate before release.",
+    "candidateOnly": true,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "sprint26Started": false,
+    "supersededVersionClaim": "Sprint 25 was prepared as 0.0.156 until master merged the firearm RTWP kill continuation under that version, then as 0.0.157 until master released the alternate summoning sources and tagged v0.0.157. Sprint 25 moved to the next free patch each time rather than contesting a released version."
   },
   "expandedSummoningVisualRefinement158": {
     "releaseVersion": "0.0.158",

@@ -32,7 +32,7 @@ foreach ($scenario in @('working-save-expanded-summoning-prepare',
     'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent')) {
     Invoke-SourceOnlyLauncher $scenario @{}
     $valid++
-    foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods')) {
+    foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies')) {
         Invoke-SourceOnlyLauncher $scenario @{ persistenceScope = $scope }
         $valid++
     }
@@ -51,6 +51,12 @@ $snakeFinal = 'disposable-expanded-summoning-snake-final-review'
 Invoke-SourceOnlyLauncher $snakeFinal @{}
 $valid++
 $badCases = @(
+    @{ Scenario=$prepare; Parameters=@{persistenceScope='giant-bodies'}; Save='KMG_AUTOMATION_BASELINE' },
+    @{ Scenario=$prepare; Parameters=@{persistenceScope='Giant-Bodies'} },
+    @{ Scenario=$prepare; Parameters=@{persistenceScope=@('giant-bodies')} },
+    @{ Scenario=$prepare; Parameters=@{persistenceScope='giant-bodies';extra='untrusted'} },
+    @{ Scenario=$prepare; Parameters=@{persistenceScope='giant-bodies'}; ExitAutomatically=$false },
+    @{ Scenario='working-save-smoke'; Parameters=@{persistenceScope='giant-bodies'} },
     @{ Scenario=$snakeFinal; Parameters=@{}; Save='KMG_AUTOMATION_BASELINE' },
     @{ Scenario=$snakeFinal; Parameters=@{creature='salamander'} },
     @{ Scenario=$snakeFinal; Parameters=@{}; ExitAutomatically=$false },

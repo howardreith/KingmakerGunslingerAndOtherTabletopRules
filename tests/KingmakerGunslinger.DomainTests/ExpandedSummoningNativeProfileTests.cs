@@ -84,6 +84,13 @@ namespace KingmakerGunslinger.DomainTests
             string basic = RuntimeTestScenarioCatalog.DisposableExpandedSummoningNativeProfile;
             string sprint22 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint22NativeReview;
             string sprint23 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint23NativeReview;
+            string sprint25 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint25NativeReview;
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint25,1,"rtwp-foundation"), "Sprint 25 admits the implemented bounded phase.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint25,0,null), "Sprint 25 requires its phase.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint25,2,"rtwp-foundation"), "Sprint 25 rejects a save/import parameter.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint25,1,"all"), "Sprint 25 rejects broad implicit campaigns.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false,sprint25,1,"rtwp-foundation",0,0,0,false,false,false,false,true), "Sprint 25 cannot leave its fixture open.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,sprint25,1,"rtwp-foundation",1,0,0,false,false,false,false,true), "Sprint 25 cannot replace an existing native world.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(basic,0,null), "Original profile remains parameter-free.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,1,"rtwp-foundation"), "RTWP phase is one save-free fixture parameter.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint22,1,"turn-based-control"), "Turn-based phase is one save-free fixture parameter.");

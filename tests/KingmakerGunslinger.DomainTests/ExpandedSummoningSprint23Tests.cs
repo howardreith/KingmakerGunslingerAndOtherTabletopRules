@@ -66,13 +66,13 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.True(monster.All(value => value.Creature
                 .MonsterTemplated), "Every Triceratops Monster root owns template children.");
-            Assertions.Equal(TheropodRulesPolicy.RegisteredLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Later sprints append without moving the twelve Sprint 23 placements.");
-            Assertions.Equal(TheropodRulesPolicy.PublicSuppressedLogicalPlacements,
+            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only the Sprint 24 candidate remains withheld.");
-            Assertions.Equal(TheropodRulesPolicy.FinalPublishedLogicalPlacements,
+                "No qualified route remains withheld.");
+            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "All twelve Sprint 23 roots remain published without moving an identity.");
         }
@@ -285,14 +285,16 @@ namespace KingmakerGunslinger.DomainTests
             IReadOnlyList<SummoningIdentitySpec> planned =
                 ExpandedSummoningIdentityCatalog.Build();
             Assertions.Equal(2101 +
-                    ExpandedSummoningSprint24Tests.AppendedLedgerIdentities,
+                    ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
                 planned.Count,
                 "Sprint 24 appends without moving Sprint 23's foundation identities.");
             Assertions.True(planned.Skip(planned.Count -
+                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount -
                     TheropodRulesPolicy.AppendedPrivateIdentityCount -
                     PrivateTail.Length).Take(PrivateTail.Length)
                 .Select(value => value.Symbol).SequenceEqual(PrivateTail),
-                "Ten active Sprint 23 private carriers remain in frozen order.");
+                "Ten active Sprint 23 private carriers remain in frozen order, behind every later sprint's.");
             JObject manifest = JObject.Parse(File.ReadAllText(
                 "blueprints/blueprints.json"));
             JToken[] entries = manifest["entries"].ToArray();
@@ -301,7 +303,8 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparer.Ordinal);
             Assertions.Equal(3101 +
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
-                    AlternateSummoningTests.AppendedLedgerIdentities,
+                    AlternateSummoningTests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint25Tests.AppendedLedgerIdentities,
                 entries.Length,
                 "Sprint 24 appends without moving the reserved Sprint 23 gore type.");
             JToken retired = entries.Single(value => (string)value["symbol"] ==
@@ -375,9 +378,13 @@ namespace KingmakerGunslinger.DomainTests
 
             JObject icons = JObject.Parse(File.ReadAllText(
                 "assets-source/original-icons/expanded-summoning/icon-manifest.json"));
-            Assertions.Equal(117, icons["icons"].Count(value =>
+            // 118 since 2026-10-17: this counts every icon concept that is
+            // NOT a Sprint 24 exact-rank theropod, so the Brachiosaurus
+            // painting's arrival moved it by one. The identities below are
+            // what this test guards.
+            Assertions.Equal(118, icons["icons"].Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks((string)value["key"])),
-                "All pre-Sprint-24 icon concepts remain unchanged.");
+                "Every non-theropod icon concept remains unchanged.");
             JToken[] armored = icons["icons"].Where(value =>
                 ArmoredDinosaurVisualPolicy.Handles((string)value["key"]))
                 .ToArray();

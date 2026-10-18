@@ -579,12 +579,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>
         /// One frame of a detached ability: the game's executor advances the
         /// process on its own; after a long wait the process is ticked here
-        /// as well so an executor that dropped it still ends.
+        /// as well so an executor that dropped it still ends. Opt-in callers
+        /// also drain a finished command's still-live delivery, as the normal
+        /// ability executor does; prior callers retain their wait threshold.
         /// </summary>
-        private static bool TickExpandedSummoningDetachedAbility(UnitUseAbility command, int frame)
+        private static bool TickExpandedSummoningDetachedAbility(UnitUseAbility command, int frame,
+            bool drainFinishedCommand = false)
         {
             if (command == null || command.ExecutionProcess == null) return true;
-            if (!command.ExecutionProcess.IsEnded && frame >= 120) command.ExecutionProcess.Tick();
+            if (!command.ExecutionProcess.IsEnded && (frame >= 120 ||
+                drainFinishedCommand && command.IsFinished)) command.ExecutionProcess.Tick();
             return command.ExecutionProcess.IsEnded;
         }
 
@@ -4291,11 +4295,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private ExpandedSummoningTrampleContactResult
             RunExpandedSummoningTrampleContact(UnitEntityData trampler,
-                UnitEntityData target, string label, int naturalRoll)
+                UnitEntityData target, string label, int naturalRoll,
+                string exactAbilityName = null)
         {
             BlueprintAbility ability = _rulesFixture.Blueprints
                 .OfType<BlueprintAbility>().Single(value =>
-                    (RulesTrampleAbilityNames.Contains(value.name) ||
+                    (exactAbilityName != null ? value.name == exactAbilityName :
+                     RulesTrampleAbilityNames.Contains(value.name) ||
                      value.name ==
                         "KMG_Summoning_Special_Triceratops_Trample") &&
                     trampler.Descriptor.Abilities.GetAbility(value) != null);
