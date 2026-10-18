@@ -77,11 +77,11 @@ if ($activeVersion -eq '0.0.151') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint22151.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 22 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159')) {
+if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint23152.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 23 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159')) {
+if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint24154.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 24 corruption fixtures failed.' }
 }
@@ -101,6 +101,11 @@ if ($activeVersion -eq '0.0.158') {
 if ($activeVersion -eq '0.0.159') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint25158.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 25 corruption fixtures failed.' }
+}
+
+if ($activeVersion -eq '0.0.160') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint26160.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint 26 corruption fixtures failed.' }
 }
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `

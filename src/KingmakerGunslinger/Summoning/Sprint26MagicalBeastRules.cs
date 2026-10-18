@@ -37,6 +37,8 @@ namespace KingmakerGunslinger.Summoning
         }
 
         internal const string BreathProjectileGuid = "fa7ec7798c9e475595e79ae419fe6241";
+        internal static bool UsesMouthOrigin(string ownerGuid,string projectileGuid)
+        { return ownerGuid==GorgonUnitGuid&&projectileGuid==BreathProjectileGuid; }
         internal const string PetrificationGuid = "139703f90a8d4929992b783ad0e30bd7";
         internal static bool SuppliesOwnPetrifiedStatus(string buffGuid, bool sameOwner,
             int conditionCount, bool immune)

@@ -3,7 +3,7 @@
 Status: IN_PROGRESS. This is a new owner-authorized campaign from master
 555b16e04613c0800ab0e884beac827184bf46ee on HOWARD-LAPTOP. Sprint 25 is
 closed at v0.0.159. No Sprint 27 work is authorized. Fixed production root:
-C:/Dev/KingmakerGunslingerLab/wt/s26. No product rows are registered yet.
+C:/Dev/KingmakerGunslingerLab/wt/s26. Both exact product rows and private mechanics are now registered; only their six public roots remain withheld until qualification.
 
 ## Authority and sources
 

@@ -113,10 +113,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (bool success in new[] { true, false })
                         foreach (int frame in Sprint26Leap(fixture, turnBased, success)) yield return frame;
                     if (!turnBased) {
+                        foreach (int frame in Sprint26LeapOpportunity(fixture)) yield return frame;
                         foreach (bool lost in new[] { false, true })
                             foreach (int frame in Sprint26LeapCancellation(fixture, lost)) yield return frame;
                         foreach (int frame in Sprint26NativeChargeControl(fixture)) yield return frame;
-                        foreach (int frame in Sprint26LeapOpportunity(fixture)) yield return frame;
                     }
                     yield break;
                 }
@@ -584,7 +584,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     bool fxFrameCaptured=false;
                     foreach (int frame in Sprint26Cast(owner, breath, new TargetWrapper(target), v => first = v, v => {
-                        if(!fxFrameCaptured&&projectile.LaunchFrame>=0&&Time.frameCount>projectile.LaunchFrame){
+                        if(!fxFrameCaptured&&projectile.LaunchFrame>=0&&Time.frameCount>=projectile.LaunchFrame+8){
                             Sprint26Body(owner,"gorgon","breath-projectile-"+turnBased);fxFrameCaptured=true;
                         }
                         var activeClock = owner.Buffs.GetBuff(cooldown);
@@ -596,11 +596,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                     })) yield return frame;
                     if(projectile.Rows.Count>0&&!fxFrameCaptured){
-                        yield return 0;Sprint26Body(owner,"gorgon","breath-projectile-"+turnBased);fxFrameCaptured=true;
+                        for(int visualFrame=0;visualFrame<8;visualFrame++)yield return 0;Sprint26Body(owner,"gorgon","breath-projectile-"+turnBased);fxFrameCaptured=true;
                     }
                     Sprint25Check("breath-native-projectile-readback-"+turnBased,projectile.Rows.Count>0&&fxFrameCaptured&&
                         projectile.Rows.OfType<JObject>().All(v=>(string)v["nativeSourceBone"]=="Jaw"&&(bool)v["viewPresent"]&&
-                            (bool)v["nativeSourceBoneMatchesSkinnedBone"]&&(float)v["jawGapMeters"]<.001f),
+                            (bool)v["nativeSourceBoneMatchesSkinnedBone"]&&(bool)v["resolvedSourceFound"]&&(float)v["resolvedSourceGapMeters"]<.001f),
                         new JObject{["projectiles"]=projectile.Rows,["postLaunchFrameCaptured"]=fxFrameCaptured,["observerMovedProjectile"]=false},
                         "The exact native breath projectile launch/source-bone coordinates and an actual later FX frame are captured read-only; mouth placement is assessed from these coordinates and real pixels.");
                     var applied = target.Buffs.GetBuff(stone);
@@ -613,7 +613,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !target.Buffs.Enumerable.Any(v => v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrifiedDonor) &&
                         target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified) && activation != null &&
                         activation.CooldownRounds >= 2 && activation.CooldownRounds <= 5 && economy.Count(first) == 1 &&
-                        activation.Targets.All(id=>fixture.Created.Any(v=>v!=null&&v.UniqueId==id));
+                        activation.Targets.All(id=>(id==target.UniqueId||fixture.Created.Any(v=>v!=null&&v.UniqueId==id))&&!fixture.UnitsBefore.OfType<UnitEntityData>().Any(v=>v!=null&&v.UniqueId==id));
                     Sprint25Check("breath-first-" + turnBased, firstExact, new JObject { ["unit"] = owner.UniqueId,
                         ["victim"] = target.UniqueId, ["petrified"] = target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified),
                         ["lifeStateDead"] = target.Descriptor.State.IsDead, ["damageBefore"] = damageBeforePetrification,
@@ -623,7 +623,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrifiedDonor).Select(v => v.Blueprint.AssetGuid)), ["permanent"] = state?.Permanent,
                         ["recoveryDc"] = state?.RecoveryDc, ["rolledCooldownRounds"] = activation?.CooldownRounds,
                         ["actualExposureIds"]=activation==null?null:new JArray(activation.Targets),
-                        ["allExposuresRequestOwned"]=activation!=null&&activation.Targets.All(id=>fixture.Created.Any(v=>v!=null&&v.UniqueId==id)),
+                        ["allExposuresRequestOwned"]=activation!=null&&activation.Targets.All(id=>(id==target.UniqueId||fixture.Created.Any(v=>v!=null&&v.UniqueId==id))&&!fixture.UnitsBefore.OfType<UnitEntityData>().Any(v=>v!=null&&v.UniqueId==id)),
                         ["source"] = state?.FirstSourceId, ["saves"] = saves.Rows.DeepClone(), ["costs"] = costs },
                         "One native cone activation produces temporary victim-owned petrification, Constitution DC21 and an actual 2?5 round clock.");
                     if (!firstExact) throw new InvalidOperationException("Initial petrification did not match its required stage.");
