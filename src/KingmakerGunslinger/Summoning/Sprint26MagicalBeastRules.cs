@@ -6,6 +6,7 @@ namespace KingmakerGunslinger.Summoning
     {
         internal const int AppendedCreatureCount = 2;
         internal const int AppendedRootCount = 6;
+        internal const int AppendedWeaponIdentityCount = 4;
         internal const int AppendedPrivateIdentityCount = 19;
         internal const int AppendedCatalogIdentityCount = AppendedCreatureCount + AppendedRootCount + AppendedPrivateIdentityCount;
         internal static bool UsesExactRanks(string key) { return key == "gorgon" || key == "bulette"; }

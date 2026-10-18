@@ -1,4 +1,4 @@
-# Sprint26 — IN PROGRESS / WITHHELD
+# Sprint26 â€” IN PROGRESS / WITHHELD
 
 Continue the explicitly authorized full Gorgon/Bulette campaign: implement,
 qualify, merge product PR58, publish stable v0.0.160 if still free, verify public
@@ -20,13 +20,14 @@ Historical development evidence remains in docs/history/SPRINT26-DEVELOPMENT-EVI
 
 Current source selects0.0.160 with both keys still withheld, 110 registered
 creatures/1,102 placements, 45 exact appended identities and the released6,916
-prefix intact. Current public1,125 choices will become1,131 through six roots.
+prefix intact. Current public equation: 1,096 generated placements plus29 retained wrappers =
+1,125 visible choices; publication will expose1,131 choices through six roots.
 Original medallions/Leap emblem and recognizable native bodies are present;
 rough visual debt is nonblocking and HumanReview remains NOT_PERFORMED_NONBLOCKING.
 
 Strict source validation, production compilation, eight focused Sprint26 tests,
 12 source corruption fixtures,21 dispatch checks and81 publisher refusals PASS.
-No strict candidate or complete suite built yet. Latest development aa0138a2
+No passing strict candidate exists. The first complete suite ran all2,686 tests and failed three now-corrected record/package/audit contracts. Sixteen affected tests and production compilation PASS after correction. Latest development aa0138a2
 is never release eligible. Its two failed native attempts restored all118 saves,
 installation/settings/references exactly. No game/lease; no S26 Working save
 load/write. Steam Offline Mode remains supported. Preserve wt/s25 and frozen bytes.

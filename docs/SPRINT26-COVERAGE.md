@@ -80,6 +80,19 @@ table. Both are untemplated. Bulette uses the explicit above-ground ordinary-map
 adaptation: printed20-foot burrow and unsupported tremorsense remain unmodeled;
 no invisibility, generalized underground navigation or substituted blindsight.
 
+## First strict gate: retained FAIL, no candidate/package or native launch
+
+Source33b0252f: full2,686-test suite completed108.5s with3 failures; supervised
+Sprint attempt313.224s. Failures were the prior v159 release/package suffix pin,
+the resume's omitted exact public-equation wording, and four new natural weapons
+missing from the generated visual audit. Current repair advances the active
+package suffix, states the derived public equation and adds exactly those four
+summoning-only audit rows with correct original/native body provenance. All
+released visual-audit rows remain exactly equal. Runtime mechanics are unchanged.
+Production compilation PASS17.2s and all16 affected focused tests PASS4.2s after correction.
+A fresh complete passing suite and strict package remain required; there is no
+passing strict candidate to preserve or deploy from this attempt.
+
 ## Exact next boundary
 
 Commit/push the coherent source after focused checks; freeze one hidden strict
