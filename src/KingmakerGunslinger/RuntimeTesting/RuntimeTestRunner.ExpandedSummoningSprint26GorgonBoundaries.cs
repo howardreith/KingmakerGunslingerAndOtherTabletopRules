@@ -22,8 +22,14 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private UnitEntityData Sprint26BoundaryTarget(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,out BlueprintUnit blueprint)
         {
-            var dance=fixture.Blueprints.OfType<BlueprintAbility>().Single(v=>v.name=="KMG_Summoning_Special_Pixie_IrresistibleDance");
-            var target=CreateExpandedSummoningHostileTarget(fixture.Blueprints,owner,dance,owner.Position+Vector3.forward,fixture.Scene,out blueprint);
+            blueprint=UnityEngine.Object.Instantiate(fixture.Hostile.Blueprint);
+            blueprint.name="KMG_Sprint26_PrivateBoundaryTarget";
+            var target=Game.Instance.EntityCreator.SpawnUnit(blueprint,owner.Position+Vector3.forward,Quaternion.identity,fixture.Scene);
+            Game.Instance.EntityCreator.Tick();
+            if(target==null||!owner.IsEnemy(target)){
+                if(target!=null)target.Dispose();UnityEngine.Object.Destroy(blueprint);
+                throw new InvalidOperationException("Exact private hostile boundary clone unavailable.");
+            }
             fixture.Created.Add(target);target.Stats.HitPoints.BaseValue=100000;
             SetExpandedSummoningBrainActive(target,false);PlaceExpandedSummoningUnit(target,target.Position);
             if(!Game.Instance.State.AwakeUnits.Contains(target))Game.Instance.State.AwakeUnits.Add(target);

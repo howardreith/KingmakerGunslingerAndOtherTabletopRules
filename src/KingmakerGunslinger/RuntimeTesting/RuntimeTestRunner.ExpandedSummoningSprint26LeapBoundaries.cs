@@ -117,19 +117,29 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Sprint26LeapOpportunity(ExpandedSummoningCorrectionFixture fixture)
         {
             var owner=CastExpandedSummoningOwnTier(fixture,"bulette");SetExpandedSummoningBrainActive(owner,false);
-            BlueprintUnit flankerBlueprint;var flanker=Sprint26BoundaryTarget(fixture,owner,out flankerBlueprint);
+            var flanker=CastExpandedSummoningOwnTier(fixture,"gorgon");SetExpandedSummoningBrainActive(flanker,false);
             var target=fixture.Hostile;var data=new AbilityData(owner.Descriptor.Abilities.Enumerable.Single(v=>v.Blueprint.name=="KMG_Summoning_Special_Bulette_Leap"));
             var observer=new Sprint24AttackObserver{Owner=flanker,Target=owner};var random=UnityEngine.Random.state;
             var controller=new Kingmaker.Controllers.Combat.UnitCombatEngagementController();
             var tick=controller.GetType().GetMethod("TickUnit",BindingFlags.Instance|BindingFlags.NonPublic);
             try{
                 foreach(int f in Sprint26Appearance(owner,"bulette"))yield return f;
+                foreach(int f in Sprint26Appearance(flanker,"gorgon"))yield return f;
+                foreach(int f in Sprint22SetPowerAttack(flanker,false))yield return f;
                 Vector3 start;string route;var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out route);
                 if(selected==null||tick==null)throw new InvalidOperationException("No exact native opportunity control prerequisites.");
                 Vector3 forward=(target.Position-start).normalized,side=new Vector3(-forward.z,0,forward.x);
-                var node=Kingmaker.View.ObstacleAnalyzer.GetNearestNode(start+side*(owner.Corpulence+flanker.Corpulence+.3f));
-                if(node.node==null||!node.node.Walkable)throw new InvalidOperationException("No flanker node.");
-                PlaceExpandedSummoningUnit(flanker,node.clampedPosition);
+                bool parked=false;
+                foreach(var sign in new[]{1f,-1f}){
+                    Vector3 requested=start+side*sign*(owner.Corpulence+flanker.Corpulence+.3f);
+                    var node=Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requested);
+                    if(node.node==null||!node.node.Walkable||Vector3.Distance(requested,node.clampedPosition)>.3f)continue;
+                    float reach=flanker.Body.PrimaryHand.MaybeWeapon.AttackRange.Meters+flanker.Corpulence;
+                    if(fixture.UnitsBefore.OfType<UnitEntityData>().Any(v=>v!=null&&Vector3.Distance(v.Position,node.clampedPosition)<reach+v.Corpulence+.5f))continue;
+                    PlaceExpandedSummoningUnit(flanker,node.clampedPosition);parked=true;break;
+                }
+                if(!parked)throw new InvalidOperationException("No native threat position clear of every protected actor.");
+                flanker.Descriptor.SwitchFactions(fixture.Hostile.Faction,false);
                 owner.JoinCombat();target.JoinCombat();flanker.JoinCombat();
                 owner.Memory.Add(flanker);flanker.Memory.Add(owner);flanker.CombatState.OnNewRound();
                 flanker.CombatState.AttackOfOpportunityCount=flanker.CombatState.AttackOfOpportunityPerRound;
@@ -154,11 +164,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JObject{["owner"]=owner.UniqueId,["flanker"]=flanker.UniqueId,["route"]=route,["engagedBefore"]=engaged,["opportunityAvailableBefore"]=available,
                             ["start"]=SurveyVector(start),["landing"]=SurveyVector(owner.Position),["flankerPosition"]=SurveyVector(flanker.Position),
                             ["attacks"]=observer.WeaponAttacks.Count,["nativeOpportunityAttacks"]=attacks.Length,["opportunitiesAfter"]=flanker.CombatState.AttackOfOpportunityCount,
-                            ["fixtureAttackCommands"]=0,["onlyExactFlankerEngagementTick"]=true},
+                            ["fixtureAttackCommands"]=0,["onlyExactFlankerEngagementTick"]=true,["protectedActorsOutsideThreat"]=parked},
                         "Legal real Leap movement leaves an actual disposable enemy's native threat, provoking its native opportunity command without teleporting, suppressing opportunity rules or fixture attacks.");
                 }
             }finally{EventBus.Unsubscribe(observer);UnityEngine.Random.state=random;owner.Commands.InterruptAll(true);flanker.Commands.InterruptAll(true);
-                DisposeExpandedSummoningUnits(fixture.Created,new[]{owner,flanker});UnityEngine.Object.Destroy(flankerBlueprint);ResetExpandedSummoningHostile(fixture);}
+                DisposeExpandedSummoningUnits(fixture.Created,new[]{owner,flanker});ResetExpandedSummoningHostile(fixture);}
         }
 
         private sealed class Sprint26QueueTrace:IDisposable

@@ -24,25 +24,32 @@ native frames show both visible/selectable. Gorgon's rough proportions, plates,
 seams and secondary motion remain cosmetic backlog. HumanReview remains
 NOT_PERFORMED_NONBLOCKING. No product merge, final candidate or release yet.
 
-Latest development artifact: source19a2b61a8ad61512658b0cd123f2e73d0a1456f2,
-ZIP173269b1b2a5ee4b107dd05930bfe0a6ff9616664362dbaf53151dc11a5af21e,
-DLL60bb641628b4fe2c80b2807b29611c14426b61957a3697902bd638be37b452c2,
-MVIDc7121996-a7b7-4120-bb84-72fc9f650f07. Build239.755s,532 selected tests,
-632 preflight checks PASS. Native lifecycle38, ordinary/trample TB20, AI16 and
-main breath TB17 assertions PASS. Leap RTWP fails the old compound landing
-predicate; legal travel/check/attack/cost observations are retained. Detailed
-identities, durations, raw hashes, exact transactions and earlier failures are
-in the current development section of docs/SPRINT26-COVERAGE.md.
+Latest artifact4da4a7ad8281fa640b0c1bd06908112a475db547 built250.841s,
+532 selected tests/632 dispatch checks PASS. ZIP73dc3bbedcc2fd6b449d03da6bb3f0dfda3ede7828407444067c72782254ed83,
+DLLce88accd01892c82b12e6a4fadc889863dca23151ce0c11182f01dcf87eb090b,
+MVIDe843c52c-1e37-44da-8c6b-96bb8746f102. Main RTWP Leap branches now have
+legal native landings/zero projection and trace gaps/no overlap; both branches,
+geometry refusals, native costs and post-action CMD28 pass individual predicates.
+The aggregate run FAIL_TIMEOUT_NO_FINAL_RESULT is retained: a new observer
+misused the Pixie-specific target factory, and its failed spawn/dispose loop
+poisoned native reset. No native teardown PASS is claimed.
 
-All completed transactions restored actual intake exactly:118 saves, installation,
-settings and private references. No game/lease remains. No Sprint26 working-save
-load/write has occurred. Steam Offline Mode remains supported; preserve wt/s25.
+Exact request-local graceful close (no forced termination) of owned PID19808
+allowed exact RunId restoration of compat-20261018T092809Z-66fa69a65f98.
+Captured JSON registry types were rehydrated after a retained first recovery
+failure. Final audit09:43:35Z confirms original118 saves/content/metadata,
+installation/settings/private references exact, no game or lease. Steam Offline
+Mode remains supported; preserve wt/s25. No Sprint26 working save load/write.
+
+The current observer repair clones an already-valid private hostile blueprint,
+finishes native creation before use, and uses a natural-weapon flanker outside
+every original actor's threat range. It needs fresh affected native runs.
 
 Current checkpoint adds native landing diagnostics and compact boundary controls,
 including charge interruption/target loss/normal native control/opportunity,
 cone wall/range/save/immunity, life/status overlap, modified HD/Con/Str, damage,
 reach and normal post-action CMD. Native racial rank parameters also keep the
-Gorgon displayed DC live. Production compilation17s and53 focused tests PASS;
+Gorgon displayed DC live. Latest repair compilation18.2s and52 focused tests PASS (2.0s runner);
 new observer/parameter behavior requires fresh affected native runs.
 
 Sprint26 publisher selector/PR58/fixed-root and exact six-root qualification
