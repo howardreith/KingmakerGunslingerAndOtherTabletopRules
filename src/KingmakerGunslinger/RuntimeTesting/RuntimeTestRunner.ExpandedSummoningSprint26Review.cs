@@ -16,6 +16,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Assets;
@@ -77,7 +78,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             foreach (int frame in Sprint26Appearance(owner, key)) yield return frame;
                             if (key == "gorgon") foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                             Sprint26Profile(fixture, owner, key);
-                            if (!turnBased) Sprint26SignedStrength(fixture, owner, key);
+                            if (!turnBased) {
+                                if (key == "gorgon") foreach (int frame in Sprint26PowerAttack(owner)) yield return frame;
+                                foreach (int frame in Sprint26SignedStrength(fixture, owner, key)) yield return frame;
+                                if (key == "bulette") Sprint26Critical(fixture, owner);
+                            }
                             foreach (int frame in Sprint26Ordinary(fixture, owner, key, turnBased)) yield return frame;
                         }
                         finally
@@ -88,6 +93,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (owner.IsInCombat) owner.LeaveCombat();
                             DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                         }
+                        if (key == "gorgon") foreach (int frame in Sprint26Trample(fixture, turnBased)) yield return frame;
+                    }
+                    if (!turnBased) {
+                        var control = CastExpandedSummoningQuietUnit(fixture, "elephant");
+                        try {
+                            foreach (int frame in Sprint26Appearance(control, "released-elephant-control", false)) yield return frame;
+                            foreach (int frame in Sprint22SetPowerAttack(control, false)) yield return frame;
+                            Sprint25Profile(fixture, control, "elephant");
+                        } finally { DisposeExpandedSummoningUnits(fixture.Created, new[] {control}); }
                     }
                     yield break;
                 }
@@ -211,12 +225,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             var ordinary = ProbeCombatManeuverDefenceParts(fixture.Hostile, owner, CombatManeuver.Grapple);
             var trip = ProbeCombatManeuverDefenceParts(fixture.Hostile, owner, CombatManeuver.Trip);
             exact &= owner.Descriptor.Progression.CharacterLevel == 8 && owner.Stats.BaseAttackBonus.ModifiedValue == 8 &&
-                owner.Stats.HitPoints.ModifiedValue == (gorgon ? 100 : 84) && ac == (gorgon ? 20 : 22) && touch == (gorgon ? 9 : 10) &&
+                owner.Stats.HitPoints.ModifiedValue == (gorgon ? 100 : 84) && owner.Stats.AC.ModifiedValue == (gorgon ? 20 : 22) &&
+                owner.Stats.AC.Touch == (gorgon ? 9 : 10) && owner.Stats.AC.FlatFooted == 20 &&
                 owner.Stats.SaveFortitude.ModifiedValue == (gorgon ? 13 : 11) && owner.Stats.SaveReflex.ModifiedValue == (gorgon ? 6 : 8) &&
                 owner.Stats.SaveWill.ModifiedValue == (gorgon ? 7 : 5) && owner.Stats.SkillPerception.ModifiedValue == (gorgon ? 17 : 11) &&
                 (gorgon || owner.Stats.SkillMobility.ModifiedValue == 9) && trip.Result - ordinary.Result == 4;
+            var configuredRanks = owner.Blueprint.GetComponent<SummonExactSkillRanks>();
+            int[] scores = new[] { owner.Stats.Strength.ModifiedValue, owner.Stats.Dexterity.ModifiedValue,
+                owner.Stats.Constitution.ModifiedValue, owner.Stats.Intelligence.ModifiedValue,
+                owner.Stats.Wisdom.ModifiedValue, owner.Stats.Charisma.ModifiedValue };
+            int cmb = Rulebook.Trigger(new RuleCalculateCMB(owner, fixture.Hostile, CombatManeuver.Grapple)).Result;
+            exact &= scores.SequenceEqual(gorgon ? new[] {24,10,24,2,16,9} : new[] {23,15,20,2,13,6}) &&
+                owner.Descriptor.State.Size == (gorgon ? Size.Large : Size.Huge) &&
+                owner.Stats.Speed.ModifiedValue == (gorgon ? 30 : 40) && cmb == 16;
             Sprint25Check("profile-" + key, exact, new JObject { ["unit"] = owner.UniqueId, ["attacks"] = rows,
-                ["hp"] = owner.Stats.HitPoints.ModifiedValue, ["ac"] = ac, ["touch"] = touch,
+                ["hp"] = owner.Stats.HitPoints.ModifiedValue, ["ruleAc"] = ac, ["ruleTouch"] = touch,
+                ["ac"] = owner.Stats.AC.ModifiedValue, ["touch"] = owner.Stats.AC.Touch, ["flatFooted"] = owner.Stats.AC.FlatFooted,
+                ["scores"] = new JArray(scores), ["size"] = owner.Descriptor.State.Size.ToString(),
+                ["speed"] = owner.Stats.Speed.ModifiedValue, ["cmb"] = cmb,
+                ["rankCarrier"] = configuredRanks == null ? null : new JObject { ["perception"] = configuredRanks.PerceptionRanks,
+                    ["mobility"] = configuredRanks.MobilityRanks, ["owner"] = configuredRanks.OwningBlueprint.AssetGuid },
+                ["blueprintComponents"] = new JArray(owner.Blueprint.ComponentsArray.Select(v => v.GetType().FullName)),
                 ["fort"] = owner.Stats.SaveFortitude.ModifiedValue, ["ref"] = owner.Stats.SaveReflex.ModifiedValue,
                 ["will"] = owner.Stats.SaveWill.ModifiedValue, ["perception"] = DescribeSprint16Skill(owner.Stats.SkillPerception),
                 ["mobility"] = DescribeSprint16Skill(owner.Stats.SkillMobility), ["cmd"] = ordinary.Describe("CMD"),
@@ -224,7 +253,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "The composed adult profile, printed attack roles, dice, threat range, skills and defenses match the frozen contract.");
         }
 
-        private void Sprint26SignedStrength(ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner, string key)
+        private IEnumerable<int> Sprint26SignedStrength(ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner, string key)
         {
             int strength = owner.Stats.Strength.BaseValue;
             int extra = owner.Stats.AdditionalAttackBonus.BaseValue;
@@ -243,6 +272,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         int expected = key == "bulette" && index == 0 ? entry[2] :
                             key == "gorgon" && index != 0 && entry[1] > 0 ? entry[1] / 2 : entry[1];
+                        if (key == "gorgon") foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                         observer.Clear();
                         UnityEngine.Random.InitState(FindNativeD20Seed(18));
                         Rulebook.Trigger(new RuleAttackWithWeapon(owner, fixture.Hostile, weapon, 0));
@@ -294,12 +324,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Commands.Run(command);
                     int frames = 0; DateTime deadline = DateTime.UtcNow.AddSeconds(30);
                     while (!command.IsFinished && frames++ < 3000 && DateTime.UtcNow < deadline) yield return 0;
-                    bool exact = command.IsFinished && observer.WeaponAttacks.Count == 3 && command.AllAttacks.Count == 3 &&
+                    bool exact = command.IsFinished && command.Result == UnitCommand.ResultType.Success && observer.WeaponAttacks.Count == 3 && command.AllAttacks.Count == 3 &&
                         economy.Count(command) == 1 && economy.Exact(command, turnBased) && !command.Cutscene && !command.IsIgnoreCooldown;
                     Sprint25Check("ordinary-" + key + "-" + turnBased, exact, new JObject { ["finished"] = command.IsFinished,
                         ["result"] = command.Result.ToString(), ["frames"] = frames, ["planned"] = command.AllAttacks.Count,
                         ["weapons"] = new JArray(observer.WeaponAttacks.Select(v => v.Weapon.Blueprint.AssetGuid)),
-                        ["costs"] = costs, ["forcedAnimationEvents"] = 0 }, "The real full attack completes three ordinary attacks with one native action cost and no fixture animation completion.");
+                        ["costs"] = costs, ["ownerDestroyed"] = owner.Destroyed, ["ownerDead"] = owner.Descriptor.State.IsDead,
+                        ["ownerPosition"] = SurveyVector(owner.Position), ["targetPosition"] = SurveyVector(target.Position),
+                        ["nativeDistance"] = owner.DistanceTo(target), ["targetDead"] = target.Descriptor.State.IsDead,
+                        ["targetDestroyed"] = target.Destroyed, ["ownerCanAct"] = owner.Descriptor.State.CanAct,
+                        ["ownerCombat"] = owner.IsInCombat, ["targetCombat"] = target.IsInCombat,
+                        ["summonBuffs"] = new JArray(owner.Buffs.Enumerable.Select(v => v.Blueprint.name + ":" + v.TimeLeft.TotalSeconds)),
+                        ["forcedAnimationEvents"] = 0 }, "The real full attack completes three ordinary attacks with one native action cost and no fixture animation completion.");
                     Sprint26Body(owner, key, "attack-" + turnBased);
                 }
             }
@@ -580,6 +616,82 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // This is cleanup only; it never supplies the cure predicate.
                 target.Buffs.GetBuff(stone)?.Remove(); ResetExpandedSummoningHostile(fixture);
             }
+        }
+
+        private IEnumerable<int> Sprint26PowerAttack(UnitEntityData owner)
+        {
+            var weapons = Sprint19Limbs(owner);
+            foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
+            int[] attacks = weapons.Select(v => Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(owner, v, 0)).Result).ToArray();
+            int[] damage = weapons.Select(v => Rulebook.Trigger(new RuleCalculateWeaponStats(owner, v, null)).DamageDescription[0].Bonus).ToArray();
+            foreach (int frame in Sprint22SetPowerAttack(owner, true)) yield return frame;
+            int[] activeAttacks = weapons.Select(v => Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(owner, v, 0)).Result).ToArray();
+            int[] activeDamage = weapons.Select(v => Rulebook.Trigger(new RuleCalculateWeaponStats(owner, v, null)).DamageDescription[0].Bonus).ToArray();
+            Sprint25Check("gorgon-power-attack", Enumerable.Range(0,3).All(i => activeAttacks[i] == attacks[i] - 3 && activeDamage[i] == damage[i] + (i==0 ? 6 : 3)),
+                new JObject { ["attacksOff"] = new JArray(attacks), ["attacksOn"] = new JArray(activeAttacks),
+                    ["damageOff"] = new JArray(damage), ["damageOn"] = new JArray(activeDamage) },
+                "The printed native feat applies BAB8 penalty and distinct primary/secondary Power Attack damage.");
+            foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
+        }
+
+        private void Sprint26Critical(ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner)
+        {
+            var target = fixture.Hostile; var bite = owner.Body.PrimaryHand.MaybeWeapon;
+            int before = target.Stats.AC.BaseValue; var random = UnityEngine.Random.state;
+            var rows = new JArray(); bool exact = true;
+            try {
+                int attack = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(owner, bite, 0)).Result;
+                target.Stats.AC.BaseValue += attack + 10 - Rulebook.Trigger(new RuleCalculateAC(owner, target, AttackType.Melee)).TargetAC;
+                foreach (int confirmation in new[] {1,20}) {
+                    UnityEngine.Random.InitState(Sprint24FindD20PairSeed(19, confirmation));
+                    var hit = Rulebook.Trigger(new RuleAttackWithWeapon(owner, target, bite, 0));
+                    var roll = hit.AttackRoll;
+                    bool row = roll != null && roll.Roll.Value == 19 && roll.IsCriticalRoll &&
+                        roll.CriticalConfirmationRoll.Value == confirmation && roll.IsCriticalConfirmed == (confirmation==20) &&
+                        !roll.AutoCriticalConfirmation && !roll.AutoCriticalThreat;
+                    exact &= row;
+                    rows.Add(new JObject { ["roll"] = roll?.Roll.Value, ["confirmation"] = roll?.CriticalConfirmationRoll.Value,
+                        ["confirmed"] = roll?.IsCriticalConfirmed, ["autoConfirmation"] = roll?.AutoCriticalConfirmation, ["exact"] = row });
+                }
+            } finally {target.Stats.AC.BaseValue=before; UnityEngine.Random.state=random; ResetExpandedSummoningHostile(fixture);}
+            Sprint25Check("bulette-native-confirmation", exact, new JObject { ["rows"] = rows },
+                "The printed19-20 bite threatens at19 and retains genuine failed/successful native confirmation.");
+        }
+
+        private IEnumerable<int> Sprint26Trample(ExpandedSummoningCorrectionFixture fixture, bool turnBased)
+        {
+            var owner=CastExpandedSummoningQuietUnit(fixture, "gorgon");
+            var target=fixture.Hostile;
+            var originalSize=target.Descriptor.State.Size; int reflex=target.Stats.SaveReflex.BaseValue;
+            var observer=new ExpandedSummoningTrampleObserver {Caster=owner,Target=target};
+            try {
+                foreach(int frame in Sprint26Appearance(owner,"gorgon")) yield return frame;
+                target.Descriptor.State.Size=Size.Medium; target.Stats.SaveReflex.BaseValue=-100;
+                target.CombatState.OnNewRound(); target.CombatState.AttackOfOpportunityCount=0;
+                var ability=owner.Descriptor.Abilities.Enumerable.Single(v=>v.Blueprint.name=="KMG_Summoning_Special_Gorgon_Trample");
+                var data=new AbilityData(ability); Vector3 start; string route;
+                var selected=Sprint23FindTrampleRoute(fixture,owner,target,data,out start,out route);
+                if(selected==null)throw new InvalidOperationException("No legal Gorgon trample lane: "+route);
+                owner.JoinCombat();target.JoinCombat();
+                if(turnBased){var admission=new JObject();foreach(int frame in Sprint22EnrollTurnBasedOwners(new[]{owner},target,admission))yield return frame;
+                    if(!(bool)admission["admitted"])throw new InvalidOperationException("No Gorgon trample native turn enrollment.");}
+                EventBus.Subscribe(observer);var costs=new JArray();UnitUseAbility command=null;bool bodyCaptured=false;
+                using(var economy=new FirearmReviewCosts(owner,costs)){
+                    foreach(int frame in Sprint26Cast(owner,ability.Blueprint,selected,v=>command=v,v=>{
+                        if(!bodyCaptured && observer.Damage.Count>0){Sprint26Body(owner,"gorgon","trample-contact-"+turnBased);bodyCaptured=true;}
+                    }))yield return frame;
+                    var damage=observer.Damage.FirstOrDefault();
+                    bool exact=observer.Saves.Count==1 && observer.Saves[0].DifficultyClass==21 && observer.Damage.Count==1 &&
+                        damage.DamageBundle.First.Dice.Rolls==2 && damage.DamageBundle.First.Dice.Dice==DiceType.D8 && damage.DamageBundle.First.Bonus==10 &&
+                        Vector3.Distance(start,owner.Position)>1 && economy.Count(command)==1 && economy.Exact(command,turnBased) && bodyCaptured;
+                    Sprint25Check("gorgon-trample-command-"+turnBased,exact,new JObject{["route"]=route,["travel"]=Vector3.Distance(start,owner.Position),
+                        ["saves"]=new JArray(observer.Saves.Select(v=>v.DifficultyClass)),["damage"]=new JArray(observer.Damage.Select(Sprint16DamageEvent)),
+                        ["costs"]=costs,["contactBodyCaptured"]=bodyCaptured,["forcedAnimationEvents"]=0},
+                        "A real lawful trample command completes2d8+10/DC21 contact and one native full-round action without fixture animation events.");
+                }
+            }finally{EventBus.Unsubscribe(observer);SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();
+                owner.Commands.InterruptAll(true);DisposeExpandedSummoningUnits(fixture.Created,new[]{owner});target.Descriptor.State.Size=originalSize;
+                target.Stats.SaveReflex.BaseValue=reflex;ResetExpandedSummoningHostile(fixture);}
         }
 
         private void Sprint26ProgressTurn(UnitEntityData owner)

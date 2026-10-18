@@ -45,7 +45,7 @@ installation orchestration:200 assertions PASS, combined60.89s. A clean
 candidate's wrapper must recheck dispatch before launch. Icon authoring validator
 PASS with122 distinct summon concepts. The30 icon corruption fixtures initially
 retained an obsolete nine-emblem total; the preserved crocodilian subset and the
-new total now have distinct assertions, with the repaired run still pending.
+new total now have distinct assertions, repaired run PASS in the prototype development wrapper.
 
 ## Native evidence and remaining coverage
 
@@ -60,7 +60,7 @@ were checked unchanged. This is donor/engine metadata, not creature gameplay.
 
 | Required native coverage | Current state |
 |---|---|
-| Composed profiles, signed damage, reach, ordinary commands and bodies | Prototype observer implemented; not run |
+| Composed profiles, signed damage, reach, ordinary commands and bodies | First native prototype FAIL; narrowed repairs below, fresh run pending |
 | Breath first effect/recovery/escalation/cross-source/cooldown/duplicate/actual cure | Prototype observer implemented; not run; further immunity/eligibility controls pending |
 | Leap successful/failed genuine check, four claws/no bite and native cost | Prototype observer implemented; not run; interruption/target-loss/blocked-route controls pending |
 | Trample, Power Attack/critical confirmation, both modes, affected controls | Pending compact extension and native evidence |
@@ -109,3 +109,42 @@ The wrapper now uses its existing explicit phase-guard form;14 actual entry-poin
 candidate-boundary/refusal checks PASS in isolation, alongside five profile and
 18 boundary classifier checks. The118-save audit passed. No gameplay verdict
 or new native transaction is attributed to this stopped attempt.
+
+## First foundation prototype and narrowed repair
+
+Source dae3c08f068c7adfa0624ed9aa44bf98b4d7487b; development ZIP
+bf1919aea5718d336a24fd6c59b8806c2ba87bbb36af68e0abef46940edea8dd,
+DLL8098058ba1f5074c4361b11589348c3372db9f59aa3d8440c4e1e5505992e6ac,
+MVID131f69df-3167-4917-b138-f076a349f1c5. Build239.04s,528 selected tests PASS.
+Native RunId20261018T0633554760967Z-d6d20c98b876475e9b3ce8e41dea01b7:
+FAIL,109.59s native /245.44s outer transaction. Raw evidence is retained under
+20261018T0633554486573Z-disposable-expanded-summoning-sprint26-native-review.
+The exact transaction compat-20261018T063206Z-aa0faed72f76 is Restored /
+restorationVerified=true. Independent installation/settings/private-reference
+comparison,118-save audit and no-game/no-lease checks all pass.
+
+Native observations: both visible/selectable finite bodies; Gorgon ordinary
+three-attack command completed. Baseline attack/damage roles, HP and saves read
+correctly. Gorgon Perception was14 with5 ranks instead of17/8. Native reduced
+reach exposed2 feet Gorgon /5 feet Bulette; the exact new owner/weapon correction
+adds3/5 while retaining other native range terms. The new donors' preallocated
+skill rows are cleared before the own exact-rank carrier and their own allocated
+unit types are assigned. The next observation retains configured/actual carriers.
+Bulette's AC20/touch8 was a flat-footed attacker-context result; the observer now
+checks composed normal22/touch10 and flat-footed20 separately. Gorgon Power
+Attack automatically returned between isolated damage events; the observer now
+turns it off per probe and separately checks the real feat's limb-specific terms.
+Bulette's real routine interrupted after two attacks; the next narrow run retains
+actor/target state, positions, remaining lifetime and exact result with corrected
+reach. This remains unresolved until native evidence proves completion.
+
+Actual Gorgon idle/attack pixels were read: armor dominated a poorly legible bull.
+The own export had mixed winding across closed primitives; its source now
+normalizes connected faces to the visible plate orientation. New mesh SHA256
+5a0bdd855f57de994e41a7bdd439920805ce915595d6c60a05c5661ea5af350f;
+albedo unchanged. Fresh native presentation remains mandatory. This is no owner
+visual approval or claim of polish. Production compilation and49 named
+Sprint26/runtime tests PASS (1.7s tests). Foundation now also observes actual
+Power Attack, ordinary bite critical confirmation, unforced trample command and
+released Elephant profile control. AI/lifecycle and remaining negative cases
+are still pending; no final candidate has been declared.

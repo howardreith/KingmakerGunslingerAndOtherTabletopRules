@@ -1,66 +1,54 @@
-# Sprint 26 - IN PROGRESS
+# Sprint 26 - IN PROGRESS / WITHHELD
 
-New owner-authorized Gorgon/Bulette sprint from reviewed master
-555b16e04613c0800ab0e884beac827184bf46ee. The controlling scope, rules,
-interpretations and qualification boundary are in
-[the Sprint 26 contract](planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md).
+Continue the explicitly authorized Gorgon/Bulette implementation, qualification,
+PR merge, next stable release, public verification, exact restoration and final
+records merge, then STOP before Sprint27. Intermediate checkpoints are milestones.
+Scope and interpretations: [Sprint26 contract](planning/EXPANDED-SUMMONING-SPRINT26-CONTRACT.md).
+Current coverage and retained failures: [Sprint26 coverage](docs/SPRINT26-COVERAGE.md).
 
-Production branch: codex/expanded-summoning-sprint26-gorgon-bulette.
-Fixed build/qualification/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
-Expected next free version is 0.0.160; it is not reserved.
-Final-records branch: codex/expanded-summoning-sprint26-release-records.
+- Host: HOWARD-LAPTOP. Repository: howardreith/KingmakerGunslingerAndOtherTabletopRules.
+- Fixed production root: C:/Dev/KingmakerGunslingerLab/wt/s26.
+- Product branch: codex/expanded-summoning-sprint26-gorgon-bulette; draft PR58.
+- Records branch: codex/expanded-summoning-sprint26-release-records.
+- Released baseline remains v0.0.159 / reviewed master555b16e04613c0800ab0e884beac827184bf46ee.
+- Expected next free version0.0.160 is not reserved; fetch master/releases before promotion.
 
-Current checkpoint: registered hidden implementation and prototype-native observers,
-not gameplay-qualified. Gorgon/Bulette own all six roots,18 private carriers and
-18 caller adapters; the exact6,916-entry released registry prefix is preserved.
-The registered surface is110 creatures /1,102 placements. Exactly these two keys
-remain withheld: **1,096 generated placements + 29 retained native wrappers =
-1,125 visible choices**. Publication will expose1,131 choices after qualification.
-Both medallion paintings and the Leap emblem are integrated; Gorgon has original
-Horse-frame geometry, and Bulette uses the exact installed normal adult body.
-HumanReview remains NOT_PERFORMED_NONBLOCKING. No product merge/release yet.
+Exactly110 registered creatures /1,102 placements; only Gorgon and Bulette remain
+withheld. Current public surface remains1,096 generated+29 retained wrappers=1,125.
+Final six new untemplated roots will expose1,131 choices. The released6,916-entry
+registry prefix is intact, with44 appended identities and no replacement GUIDs.
+Both paintings and the Leap emblem are integrated. Gorgon has original Horse-frame
+geometry; Bulette uses the exact normal adult native body. HumanReview remains
+NOT_PERFORMED_NONBLOCKING. No product merge, stable release or gameplay PASS yet.
 
-Compact prototype phases currently implement foundation/ordinary attacks, routes,
-successful/failed Leap and staged breath/recovery/real Stone to Flesh. Remaining
-observer work includes AI, lifecycle, negative command cases, trample/feat controls,
-and targeted persistence before the final candidate. Unimplemented phases fail
-explicitly. Native input capture3728 passed with exact restoration; this is
-metadata evidence, not proof that the new creatures function in game.
+The input capture3728 passed with exact restoration. First gameplay prototype on
+dae3c08f failed: Gorgon Perception, both attack ranges, contaminated Gorgon damage
+probes, flat-footed Bulette defense sampling and interrupted Bulette ordinary
+routine. Real bodies were visible/selectable and Gorgon ordinary command completed.
+The actual Gorgon pixels were insufficiently recognizable; mixed body/plate
+winding has been corrected in its own exporter, pending fresh native inspection.
+The new correction adds only measured reach terms on exact new owners/weapons,
+clears these donors' preallocated skill rows and assigns their own unit types.
+Observer preconditions/diagnostics are narrowed and actual Power Attack, critical
+confirmation, trample and released Elephant profile controls join foundation.
+Production compilation and49 named Sprint26/runtime tests pass; no new native
+verdict is assigned to these corrected bytes until the fresh development run.
 
-Today HOWARD-LAPTOP, source ownership, Steam owner, absent game/lease/open
-transaction and all 14 private/installed reference pairs were verified.
-Installation/settings/bank/private-reference manifests and all 118 saves were
-captured afresh in ignored artifacts/sprint26-intake. Baseline remains immutable.
-The local push policy has exactly the two authorized branch names added with
-byte-preserving backup/hash/round-trip evidence; all 23 existing isolated push
-and refusal tests passed, with fake Git only and no remote contacted.
+Prototype transaction compat-20261018T063206Z-aa0faed72f76 is Restored with
+restorationVerified=true. Independent post-failure checks prove installation,
+settings and private references exact, no game/lease; all118 fresh intake saves
+passed content/metadata preservation. Every subsequent transaction must capture
+its own actual intake and restore its exact RunId. Baseline remains immutable.
+Steam Offline Mode is supported. Preserve wt/s25 and frozen artifacts.
 
-Closed baseline: [Sprint 25 RELEASED / STOP coverage](docs/SPRINT25-COVERAGE.md),
-stable Latest v0.0.159. Its frozen worktree/artifacts and accepted visual debt
-are unchanged. Historical stop wording does not cancel this new assignment.
-Continue this explicitly authorized campaign through qualification, its own PR,
-stable release, verified downloads/restoration and merged final records.
-Stop before Sprint 27. Do not touch other projects.
+Remaining work: complete breath/Leap native cases and negative controls, AI,
+lifecycle/icons/module boundaries, six public roots, targeted cold-load/condition/
+cooldown persistence, standalone/high-risk compatibility, publisher selector and
+refusal checks, one final strict Sprint candidate from this root, actual tested
+byte promotion, public download verification and merged RELEASED/STOP records.
+Do not substitute old evidence or relabel partial checks as final qualification.
 
-The preceding resume is preserved byte-for-byte in
-[the closed Sprint 25 history](docs/history/SPRINT25-FINAL-RESUME-2026-10-18.md).
-Focused production/runtime gate: 44/44 PASS after supplying current references
-and current engine-IL fixture; initial missing-path failures are retained in
-ignored intake logs. This is not native or release qualification.
-
-The bounded input dispatch preflight passed in an actual Limited Howard task.
-The a45d8862 development package completed (44 selected tests, exact-reference
-build, strict package); it was never deployed. Its ZIP is
-d96a87e5977b65d48ae8290096f3257dee4acfed6ba1e84c2928f4069d6b3027;
-DLL 3b0becd302d8fb0ba4162ea9f5c219564472f9eefe80f27433006ac5f3484338,
-MVID 55df60ab-838a-476c-b436-e4dcb4c1d9d8. Its local process monitor remained
-in a process-tree wait after the build receipt was written; do not equate the
-monitor with an active game/transaction or reuse it as native evidence.
-
-Before first native use, the input scenario is being added to the existing
-independent settings/install restoration and exact-RunId receipt boundary.
-The same bounded capture also includes the exact released native earth-mephit
-cone carrier so no second missing-facts launch is needed. New source needs a
-fresh development artifact; the a45 package is source-only history.
-
-Boundary behavior checks:197 assertions PASS; affected production compilation16.5s and44 runtime tests PASS. No native launch has occurred.
+The local push wrapper has exactly the two authorized branch names appended;
+byte-preserving backup/hash/round-trip proof and23 isolated refusal checks are
+retained under ignored artifacts/sprint26-intake. Use that wrapper for pushes.
+The closed preceding resume is preserved in docs/history/SPRINT25-FINAL-RESUME-2026-10-18.md.

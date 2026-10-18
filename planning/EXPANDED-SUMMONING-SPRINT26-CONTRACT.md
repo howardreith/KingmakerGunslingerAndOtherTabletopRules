@@ -128,7 +128,7 @@ necessary failure repair/restoration. No historical whole-roster campaign.
 Both original creature paintings were produced with the available built-in
 imagegen tool after actual family pixels were supplied through conversation
 image input. Provider/model details beyond the observed tool are unspecified.
-HumanReview: NOT_PERFORMED_NONBLOCKING. Geometry is still unimplemented.
+HumanReview: NOT_PERFORMED_NONBLOCKING. Original Gorgon geometry and the matching native Bulette body are integrated; functional native qualification is in progress.
 No functional or native qualification is claimed by this document.
 
 ### Native temporary-life boundary

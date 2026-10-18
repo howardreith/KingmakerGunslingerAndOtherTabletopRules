@@ -158,6 +158,21 @@ namespace KingmakerGunslinger.Summoning
     internal static class BuletteLeapCleanupPatch
     { private static void Postfix(AbilityExecutionContext context) { BuletteLeapRuntime.End(context); } }
 
+    [HarmonyPatch(typeof(Kingmaker.Items.ItemEntityWeapon), "get_AttackRange")]
+    internal static class Sprint26NaturalReachPatch
+    {
+        private static void Postfix(Kingmaker.Items.ItemEntityWeapon __instance, ref Kingmaker.Utility.Feet __result)
+        {
+            KingmakerGunslinger.Bootstrap.ModContext context;
+            if (__instance?.Wielder?.Unit?.Blueprint == null || __instance.Blueprint == null ||
+                !KingmakerGunslinger.Bootstrap.ModContext.TryGet(out context) ||
+                context.FeatureModules?.Active == null || !context.FeatureModules.Active.ExpandedSummoning) return;
+            int added = Sprint26MagicalBeastRules.ReachAdjustment(
+                __instance.Wielder.Unit.Blueprint.AssetGuid, __instance.Blueprint.AssetGuid);
+            if (added != 0) __result = new Kingmaker.Utility.Feet(__result.Value + added);
+        }
+    }
+
     [Serializable]
     public sealed class MagicalBeastPrimaryStrength : RuleInitiatorLogicComponent<RuleCalculateWeaponStats>
     {

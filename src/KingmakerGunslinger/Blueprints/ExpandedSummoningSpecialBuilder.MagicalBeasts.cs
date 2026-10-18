@@ -105,6 +105,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureUngulateTrample(library, bySymbol, Sprint26MagicalBeastRules.GorgonUnit,
                 prefix + "Trample", "gorgon");
             var trample = Require<BlueprintAbility>(bySymbol, prefix + "Trample");
+            trample.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Immediate;
             var contact = trample.GetComponent<AbilityCustomOverrun>().Actions.Actions
                 .OfType<ContextActionUngulateTrample>().Single();
             contact.HitDieClass = activation.HitDieClass;
