@@ -123,6 +123,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                var timing = _sprint25Clock.DescribeTickOwnership();
+                Sprint25Check("single-native-frame-tick", (bool)timing["frameSynchronous"] &&
+                    (int)timing["maximumActionTicksPerUnitPerUnityFrame"] <= 1, timing,
+                    "The exact fixture actor set receives one native action/cooldown tick per Unity frame; ambient duplicates are withheld and no brain is ticked by the clock.");
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = mode;
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = pause;
@@ -544,7 +548,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Recovery is observed through the ordinary native Buffs tick, never direct removal.
                     target.Stats.SaveFortitude.BaseValue = 100; saves.DesiredRoll = 20;
                     int frames = 0;
-                    while (target.Buffs.GetBuff(stone) != null && frames++ < 300) { Sprint26ProgressTurn(owner); yield return 0; }
+                    double recoveryDeadline = Game.Instance.Player.GameTime.TotalSeconds + 12;
+                    DateTime recoveryWall = DateTime.UtcNow.AddSeconds(25);
+                    while (target.Buffs.GetBuff(stone) != null && Game.Instance.Player.GameTime.TotalSeconds < recoveryDeadline &&
+                        DateTime.UtcNow < recoveryWall && frames++ < 3000) { Sprint26ProgressTurn(owner); yield return 0; }
                     Sprint25Check("breath-natural-recovery-" + turnBased, target.Buffs.GetBuff(stone) == null &&
                         !target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified) &&
                         !target.Descriptor.State.IsDead && target.Descriptor.Damage == damageBeforePetrification,
@@ -554,7 +561,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // A new first exposure after recovery, then a different source's
                 // real cone, qualifies the permanent transition and attribution.
                 target.Stats.SaveFortitude.BaseValue = -100; saves.DesiredRoll = 2;
-                for (int i = 0; owner.Buffs.GetBuff(cooldown) != null && i < 300; i++) { Sprint26ProgressTurn(owner); yield return 0; }
+                double clockDeadline = Game.Instance.Player.GameTime.TotalSeconds + 36;
+                DateTime clockWall = DateTime.UtcNow.AddSeconds(45);
+                for (int i = 0; owner.Buffs.GetBuff(cooldown) != null && i < 5000 &&
+                    Game.Instance.Player.GameTime.TotalSeconds < clockDeadline && DateTime.UtcNow < clockWall; i++)
+                    { Sprint26ProgressTurn(owner); yield return 0; }
                 foreach (int frame in Sprint26Cast(owner, breath, new TargetWrapper(target), v => { })) yield return frame;
                 var temporary = target.Buffs.GetBuff(stone);
                 if (temporary == null) throw new InvalidOperationException("Second temporary exposure missing.");
@@ -570,12 +581,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var permanent = target.Buffs.GetBuff(stone);
                 var permanentState = permanent == null ? null : permanent.SelectComponents<GorgonPetrificationState>().Single();
                 int beforeRounds = saves.Count;
-                for (int i = 0; i < 60; i++) { Sprint26ProgressTurn(second); yield return 0; }
+                double permanentStarted = Game.Instance.Player.GameTime.TotalSeconds;
+                DateTime permanentWall = DateTime.UtcNow.AddSeconds(25);
+                for (int i = 0; i < 3000 && Game.Instance.Player.GameTime.TotalSeconds - permanentStarted < 12 &&
+                    DateTime.UtcNow < permanentWall; i++) { Sprint26ProgressTurn(second); yield return 0; }
                 bool permanentExact = target.Descriptor.State.IsDead && ReferenceEquals(temporary, permanent) && permanentState != null && permanentState.Permanent &&
-                    permanentState.FirstSourceId == owner.UniqueId && permanentState.LastSourceId == second.UniqueId && saves.Count == beforeRounds;
+                    permanentState.FirstSourceId == owner.UniqueId && permanentState.LastSourceId == second.UniqueId && saves.Count == beforeRounds &&
+                    Game.Instance.Player.GameTime.TotalSeconds - permanentStarted >= 12;
                 Sprint25Check("breath-permanent-" + turnBased, permanentExact, new JObject { ["sameVictimBuff"] = ReferenceEquals(temporary, permanent),
                     ["permanent"] = permanentState?.Permanent, ["firstSource"] = permanentState?.FirstSourceId,
-                    ["laterSource"] = permanentState?.LastSourceId, ["savesBeforeRounds"] = beforeRounds, ["savesAfterRounds"] = saves.Count },
+                    ["laterSource"] = permanentState?.LastSourceId, ["savesBeforeRounds"] = beforeRounds, ["savesAfterRounds"] = saves.Count, ["nativeGameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds - permanentStarted },
                     "A distinct cross-source breath escalates the same own temporary buff to permanent with no natural recovery saves.");
                 if (!permanentExact) throw new InvalidOperationException("Permanent transition failed.");
                 owner.Commands.InterruptAll(true); second.Commands.InterruptAll(true);
@@ -890,6 +905,70 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Request-local read-only traces distinguish native attack-list exhaustion
         // from early target/range/animation interruption. No command is advanced
         // or completed by this observer.
+        private sealed class Sprint26ClockGate : IDisposable
+        {
+            private static Sprint26ClockGate active;
+            private readonly Func<UnitEntityData, bool> owns;
+            private readonly Harmony12.HarmonyInstance harmony;
+            private readonly string id = "KMG.Sprint26.ClockGate." + Guid.NewGuid().ToString("N");
+            private readonly System.Reflection.MethodInfo actions = typeof(Kingmaker.Controllers.Units.UnitActionController)
+                .GetMethod("TickOnUnit", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            private readonly System.Reflection.MethodInfo cooldowns = typeof(Kingmaker.Controllers.Combat.UnitCombatCooldownsController)
+                .GetMethod("TickOnUnit", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            private bool inPulse;
+            private int blockedActions, blockedCooldowns, allowedActions, allowedCooldowns, maximumPerFrame;
+            private readonly Dictionary<string, int> perFrame = new Dictionary<string, int>(StringComparer.Ordinal);
+            internal bool Restored { get; private set; }
+            internal Sprint26ClockGate(Func<UnitEntityData, bool> owns)
+            {
+                if (active != null || actions == null || cooldowns == null) throw new InvalidOperationException("Native frame tick ownership is unavailable or nested.");
+                this.owns = owns; harmony = Harmony12.HarmonyInstance.Create(id);
+                var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+                try {
+                    harmony.Patch(actions, new Harmony12.HarmonyMethod(typeof(Sprint26ClockGate).GetMethod("Actions", flags)));
+                    harmony.Patch(cooldowns, new Harmony12.HarmonyMethod(typeof(Sprint26ClockGate).GetMethod("Cooldowns", flags)));
+                    active = this;
+                } catch { Dispose(); throw; }
+            }
+            internal void BeginPulse() { if (inPulse) throw new InvalidOperationException("Nested native frame pulse."); inPulse = true; }
+            internal void EndPulse() { inPulse = false; }
+            private static bool Actions(UnitEntityData __0)
+            {
+                var gate = active;
+                if (gate == null || !gate.owns(__0)) return true;
+                if (!gate.inPulse) { gate.blockedActions++; return false; }
+                gate.allowedActions++;
+                string key = __0.UniqueId + ":" + Time.frameCount;
+                int count; gate.perFrame.TryGetValue(key, out count); gate.perFrame[key] = ++count;
+                gate.maximumPerFrame = Math.Max(gate.maximumPerFrame, count);
+                return true;
+            }
+            private static bool Cooldowns(UnitEntityData __0)
+            {
+                var gate = active;
+                if (gate == null || !gate.owns(__0)) return true;
+                if (!gate.inPulse) { gate.blockedCooldowns++; return false; }
+                gate.allowedCooldowns++; return true;
+            }
+            internal JObject Snapshot()
+            {
+                return new JObject { ["allowedActionTicks"] = allowedActions, ["allowedCooldownTicks"] = allowedCooldowns,
+                    ["blockedAmbientActionTicks"] = blockedActions, ["blockedAmbientCooldownTicks"] = blockedCooldowns,
+                    ["maximumActionTicksPerUnitPerUnityFrame"] = maximumPerFrame,
+                    ["brainTicks"] = 0, ["scope"] = "exact request fixture/turn-clock actor set" };
+            }
+            public void Dispose()
+            {
+                if (ReferenceEquals(active, this)) active = null;
+                harmony.Unpatch(actions, Harmony12.HarmonyPatchType.All, id);
+                harmony.Unpatch(cooldowns, Harmony12.HarmonyPatchType.All, id);
+                var a = harmony.GetPatchInfo(actions); var c = harmony.GetPatchInfo(cooldowns);
+                Restored = (a == null || !a.Prefixes.Any(v => v.owner == id)) &&
+                    (c == null || !c.Prefixes.Any(v => v.owner == id));
+                if (!Restored) throw new InvalidOperationException("Native frame tick ownership hooks remain.");
+            }
+        }
+
         private sealed class Sprint26CommandTrace : IDisposable
         {
             private static Sprint26CommandTrace active;
@@ -944,7 +1023,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (attack == null) return new JObject();
                 var planned = ReadExpandedSummoningOptionalMember(attack, "PlannedAttack") as AttackHandInfo;
                 return new JObject {
-                    ["frame"] = Time.frameCount, ["plannedIndex"] = (int)ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex"),
+                    ["frame"] = Time.frameCount, ["timeSinceStart"] = attack.TimeSinceStart, ["targetInState"] = attack.Target?.IsInState, ["plannedIndex"] = (int)ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex"),
                     ["plannedCount"] = attack.AllAttacks.Count, ["plannedAbsent"] = planned == null,
                     ["plannedWeapon"] = planned?.Hand?.MaybeWeapon?.Blueprint?.AssetGuid, ["plannedRange"] = planned?.WeaponRange,
                     ["target"] = attack.Target?.UniqueId, ["targetDestroyed"] = attack.Target?.Destroyed,
