@@ -1,80 +1,65 @@
-# Sprint 27 coverage
+# Sprint 27 ? current Griffon coverage
 
-Current state: IMPLEMENTATION / HIDDEN / NOT QUALIFIED / NOT RELEASED.
-Product draft [PR60](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/60)
-targets master. Fixed source/build/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s27.
-Sprint26 remains CLOSED at v0.0.160. The [contract](../planning/EXPANDED-SUMMONING-SPRINT27-CONTRACT.md)
-and [evidence map](../planning/SPRINT27-EVIDENCE.json) retain exact scope/tuples.
+Status: DEVELOPMENT; six Griffon routes remain hidden; version remains0.0.160.
+No product merge, stable tag/publication, records merge or Sprint28 work.
+Production/build/qualification root: C:/Dev/KingmakerGunslingerLab/wt/s27.
+Product branch: codex/expanded-summoning-sprint27-griffon; draft PR60 to master.
+Exact artifact tuples, raw digests, durations and all failures are in
+[SPRINT27-EVIDENCE.json](../planning/SPRINT27-EVIDENCE.json).
 
-Adult Griffon has six suppressed SNA IV-IX roots, no SM/template or automatic
-Grab. Native magical-beast5 HD, printed scores/feats, primary bite/two talons,
-conditional two-rake claws, signed Strength once, racial skill attribution and
-printed5-foot reach are implemented. Fly ranks3 are omitted. Ordinary-map
-flight80 is the one effective speed; separate land30 and passive senses remain
-explicitly unmodeled. The genuine existing-grapple rake exception is preserved
-without granting Griffon a new grapple path. No Z-axis flight or second species.
+The compact [contract](../planning/EXPANDED-SUMMONING-SPRINT27-CONTRACT.md)
+selects one untemplated adult Griffon, SNA IV?IX only: one/1d3/1d4+1.
+Source-derived surface:111 project creatures; Monster96/545 unchanged;
+Nature's Ally98/563;1,108 registered roots. Six suppressed roots currently leave
+1,102 public generated roots plus29 retained wrappers (1,131 choices).
+All6,961 released identity-prefix entries and all122 old icon records/pixels
+are preserved;29 exact new identities and one painting/body are added.
 
-Source-derived registration:111 creatures; Monster96/545 unchanged; Nature98/563;
-1108 roots. Six hidden roots leave1102 published+29 wrappers=1131 choices;
-unsuppression would yield1137. All6961 released identity rows remain exact;
-29 append(13 foundation,16 adapters), total6990,3 reserved.
+| Exact development source | Fresh native result and scope |
+| --- | --- |
+| b27dcff8 | Original body, selection and ordinary attacks observed; overall FAIL on measured reach and pre-action flat-footed comparison; retained. |
+| de85aefe | Foundation and RTWP five-attack pounce PASS; TB/AI/cancellation setup and unmatched fade checks FAIL; retained. |
+| a91232c6 | RTWP/TB pounce, native misses/costs, ordinary signed damage/extra forms, reach, reactions, two owners, target loss and death pass inside mixed FAIL campaign. Matched native lifecycle/rollback/resources and all six hidden root effects pass; Tiger control failures retained. Outdoor12 checks PASS. |
+|5e565f9f | Exact-owner AI10 checks PASS: one genuine native brain tick,5.012m approach and real bite event, no fixture attack/forced roll. Boundary45 checks retain only expiry failure; released controls retain invalid target-size setup failure. |
 
-Original painting/export provenance is pinned;123 icon concepts validate and
-all122 prior records/pixels/assignments remain unchanged. Actual native species
-and six-root sprite assignments pass. The original2930-vertex/5560-triangle
-body uses the measured Manticore rig, with native material/fader ownership.
-Real indoor idle/ordinary/pounce/movement geometry and selection are usable.
-Read-only review found no blocking functional presentation defect. Rigid pointed
-wings, coarse anatomy/joins and rear-view head occlusion remain visual debt.
-HumanReview: NOT_PERFORMED_NONBLOCKING.
+Every completed transaction restored fresh current Mods/settings/private
+references and all118 saves exactly. No owned game, lease or task remains.
+Build5e565f181.146s; AI transaction239.104s; boundary/control batch619.420s.
+No failed case was relaunched unchanged. The latest correction uses the actual
+native predicate interruption overload: the bool overload skips uninterruptible
+commands. Its narrow expiry-only phase records the automatic marker callback
+before/after command state; it never invokes the lifetime/rule handler directly.
+Tiger target size is now applied after reset and before each command. Latest
+production compilation17.1s and17/2,693 focused tests PASS (test gate4.3s).
+New phase registration needs fresh preflight; affected native reruns pending.
 
-Development source de85aefe: foundation PASS106.755s(native),254.022s(transaction);
-legal RTWP pounce PASS109.828s, five real attacks across a natural talon miss,
-then ordinary3. No supplied roll, rule attack or animation completion. Its exact
-ZIP/DLL/MVID are retained in the evidence map and are not release qualification.
-Four other native runs remain FAIL: missing exact active-turn wait; AI observer
-cleared native Actions before reenabling; cancellation observer assumed a single
-native ability provider; lifecycle did not observe dissolve. The last run passed
-rollback, stable private counts, quantity isolation, real navigation, death,
-native despawn, private cleanup and donor isolation. Missing fade is unresolved
-until a matched native-body/effect control explains it; no waiver is inferred.
-Older bootstrap/admission failures and raw evidence remain preserved.
+Original body: eagle head/beak, foretalons/wings, feline torso/hindquarters on
+the measured Manticore rig, with private per-view mesh/material ownership.
+Native selection, real navigation, ordinary and pounce events, death,
+failed-attach rollback, quantity isolation and bounded cleanup are observed.
+The matched untouched native-body/effect control proves absent DismemberUnitFX:
+no dissolve is claimed; both follow native delayed despawn with exact cleanup.
+Icon: real pinned family painting, readable at32/48/64px; native species image
+and all six root consumers pass. Prior icon assignments remain unchanged.
 
-All completed transactions restored actual current Mods/settings/private refs
-and all118 saves exactly. Every owned task is removed; no game/lease remains.
-Build234.368s; foundation/build489.390s; two-mode combat attempt495.796s;
-independent AI/boundary/lifecycle batch772.980s. No failed case was relaunched
-unchanged. Current corrections use qualified active-turn admission, preserve the
-fresh AI action list, canonical native ability lookup, and matched native fade
-policy. Compact stage unions, six-root/outdoor/released controls, exact Griffon
-persistence, energy-form preservation and publisher support are integrated.
+HumanReview: NOT_PERFORMED_NONBLOCKING. Read-only reviewer found no new
+blocking body defect. Coarse anatomy, rigid pointed wings and simplified
+transitions remain visual debt. Outdoor fog/tree occlusion limits whole-body
+pixel evidence; structured outdoor placement/selection/navigation proof is
+separate. These observations are not owner aesthetic approval.
 
-Offline publisher86, exact development-persistence authority9, source-boundary9,
-and targeted persistence request27 round trips/252 refusal cases PASS. Focused production compilation17.5s and17/2693 related tests1.1s PASS. Actual
-unelevated launcher WhatIf39 valid/23 refusal routes and phase preflight659 checks
-PASS; the preflight ran alone49.137s to preserve its artifact-mutation guard. Version stays160 and Griffon stays hidden. Complete
-hidden functional/safety observations before unsuppression/version161, then one
-coherent Sprint gate and fresh eligible artifact campaign. No product merge,
-tag/release mutation, final-records merge, or Sprint28 work has occurred.
+Rules reconciliation: no automatic Grab, carry, Rend or wing/tail attacks.
+Shared lawful held-target rake restrictions remain; Griffon has no grapple
+initiation product path. Flight is one effective80-foot ordinary-map aerial
+route; separate30-foot land mode, Fly3 ranks/checks/maneuverability and Z-axis
+flight are unmodeled. Passive darkvision/low-light/scent retain the existing
+PASSIVE_CREATURE_SENSES_UNMODELED policy without replacement detection.
 
-On a91232c686c0, the compact combat batch recorded103 checks/2 failures
-(307.882s native,452.591s transaction): real RTWP/TB pounce, misses, signed
-Strength plus extra damage forms, action costs, reactions, two owners, target
-loss and death passed; AI approach and moving-charge expiry remain FAIL.
-The independent presentation batch retained Tiger control failures while all
-Griffon lifecycle/hidden routes and Eagle/Bulette ordinary controls passed
-(330.653s transaction). Matched native control proves absent DismemberUnitFX:
-no dissolve is claimed; native delayed despawn/private cleanup pass.
-Outdoor12 checks PASS (240.216s transaction): actual Oleg outdoor classification,
-selection, native movement and ordinary full routine. All three transactions
-restored current Mods/settings/private references and all118 saves exactly.
-Actual source/ZIP/DLL/MVID and all raw verdicts are preserved in the map.
-
-The reviewed correction adds only exact-Griffon summon-marker expiry command
-interruption, leaving native delayed presentation/destruction intact. AI now
-surveys a straight native-approved lane and records command/movement state;
-the Tiger control uses a legal Huge foe to exclude automatic Grab. These
-changes compiled18.2s and17 related tests passed1.1s; native reruns pending.
-Outdoor reviewer found no new blocker, but fog/tree occlusion limits those
-pixels; structured mechanical proof is separate. HumanReview remains
-NOT_PERFORMED_NONBLOCKING. Version160 and six-route suppression remain.
+Offline support: publisher86 refusal/decision checks, exact development-save
+authority9, source boundary9, persistence27 request round trips/252 refusals,
+launcher39 valid/23 refused routes and prior scenario preflight659 PASS.
+Required next work: narrow expiry/control reruns; exact Working ON/OFF
+prepare/cleanup/fresh-absence trios; finish publication inputs/unsuppress only
+Griffon; one coherent Sprint gate and bounded fresh eligible native campaign;
+publisher preflight/dry-run, product merge/stable release/download verification,
+exact restoration and final-records merge. Stop before Sprint28.

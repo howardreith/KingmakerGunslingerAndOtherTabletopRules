@@ -94,6 +94,7 @@ stall, missing rules/icon, corrupted save or unbounded leak remains blocking.
 
 Native expiry observation: the installed SummonedUnitBuff starts a delayed
 dismember/despawn path (six seconds when its effect carrier is absent). The
-Griffon's exact-owner marker-removal listener interrupts native commands at
+Griffon's exact-owner marker-removal listener uses native predicate-based
+forced interruption at
 the rules deadline; native presentation and destruction retain ownership.
 It stores no transient charge/rake state and is inert with the module off.

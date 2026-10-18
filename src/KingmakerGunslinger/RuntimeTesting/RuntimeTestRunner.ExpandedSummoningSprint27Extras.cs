@@ -70,9 +70,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach(int f in Sprint27Ordinary(fixture,owner,true))yield return f;
             }finally{second.Commands.InterruptAll(true);DisposeExpandedSummoningUnits(fixture.Created,new[]{second});}
         }
-        private IEnumerable<int> Sprint27RemovalBoundaries(ExpandedSummoningCorrectionFixture fixture,UnitEntityData survivingOwner)
+        private IEnumerable<int> Sprint27RemovalBoundaries(ExpandedSummoningCorrectionFixture fixture,UnitEntityData survivingOwner,string[] modes=null)
         {
-            foreach(string mode in new[]{"death","expiry"}){
+            foreach(string mode in modes??new[]{"death","expiry"}){
                 var removed=CastExpandedSummoningOwnTier(fixture,"griffon");SetExpandedSummoningBrainActive(removed,false);
                 try{
                     foreach(int f in Sprint26Appearance(removed,"griffon-charge-"+mode,false))yield return f;
@@ -95,10 +95,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             foreach(string key in new[]{"tiger","eagle","bulette"}){
                 var control=CastExpandedSummoningOwnTier(fixture,key);SetExpandedSummoningBrainActive(control,false);var targetSize=fixture.Hostile.Descriptor.State.Size;
-                if(key=="tiger")fixture.Hostile.Descriptor.State.Size=Kingmaker.Enums.Size.Huge;
                 try{
                     foreach(int f in Sprint26Appearance(control,"released-"+key,false))yield return f;
-                    var target=fixture.Hostile;ResetExpandedSummoningHostile(fixture);control.JoinCombat();target.JoinCombat();
+                    var target=fixture.Hostile;ResetExpandedSummoningHostile(fixture);
+                    if(key=="tiger")target.Descriptor.State.Size=Kingmaker.Enums.Size.Huge;
+                    if(key=="tiger"&&target.Descriptor.State.Size!=Kingmaker.Enums.Size.Huge)throw new InvalidOperationException("Tiger grapple-exclusion fixture was reset.");
+                    control.JoinCombat();target.JoinCombat();
                     Vector3 far;string lane,direction;Vector3 origin=Sprint24AiCombatLane(fixture.Caster,control,target,control.Corpulence+target.Corpulence+.2f,out far,out lane,out direction);
                     PlaceExpandedSummoningUnit(control,origin);PlaceExpandedSummoningUnit(target,far);control.Memory.Add(target);target.Memory.Add(control);
                     var observer=new Sprint24AttackObserver{Owner=control,Target=target};var command=new UnitAttack(target){ForceFullAttack=true};EventBus.Subscribe(observer);
@@ -107,7 +109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         while(!command.IsFinished&&frame++<3000&&DateTime.UtcNow<deadline)yield return 0;
                         Sprint27Check("released-ordinary-"+key,command.IsFinished&&command.AllAttacks.Count==3&&observer.WeaponAttacks.Count==3,new JObject{["key"]=key,["targetSize"]=target.Descriptor.State.Size.ToString(),["grabExcludedBySize"]=key=="tiger"&&target.Descriptor.State.Size>control.Descriptor.State.Size,["unit"]=control.Blueprint.AssetGuid,["planned"]=command.AllAttacks.Count,["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>v.Weapon.Blueprint.AssetGuid)),["forcedRolls"]=0,["forcedAnimationEvents"]=0},"Released raker, flyer and shared-plan Bulette control retain the ordinary three-weapon command; their source/assets are preserved.");
                     }finally{EventBus.Unsubscribe(observer);control.Commands.InterruptAll(true);ResetExpandedSummoningHostile(fixture);}
-                    if(key=="tiger")foreach(int f in Sprint27Pounce(fixture,control,false,true))yield return f;
+                    if(key=="tiger")foreach(int f in Sprint27Pounce(fixture,control,false,true,true))yield return f;
                 }finally{control.Commands.InterruptAll(true);SummonGrappleLinks.ReleaseAll(control);fixture.Hostile.Descriptor.State.Size=targetSize;DisposeExpandedSummoningUnits(fixture.Created,new[]{control});}
             }
         }
