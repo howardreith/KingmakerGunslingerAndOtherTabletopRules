@@ -15,8 +15,9 @@ Current control: [SPRINT26-COVERAGE](docs/SPRINT26-COVERAGE.md). Frozen rules:
 passing attempts: docs/history/SPRINT26-DEVELOPMENT-EVIDENCE.md.
 
 Two keys remain withheld. Registered: 110 creatures / 1,102 placements; 45 exact
-appended identities preserve the released 6,916 prefix. Public now: 1,096 roots
-plus 29 wrappers = 1,125 choices; publication exposes 1,131 through six roots.
+appended identities preserve the released 6,916 prefix. Current public equation:
+1,096 generated placements plus 29 retained wrappers =
+1,125 visible choices; publication exposes 1,131 through six roots.
 Original icons and recognizable bodies are integrated; rough visual backlog,
 HumanReview NOT_PERFORMED_NONBLOCKING.
 
@@ -39,3 +40,8 @@ and guarded two-stage OFF cleanup/absence from exact preserved disposable fixtur
 Then affected both-mode/AI and bounded combined coverage; public six-root source/
 strict gate; qualified ledger/preflight/merge/promotion/downloads/restoration;
 final RELEASED/STOP records merge. Preserve wt/s25 and do not begin Sprint27.
+
+The first strict R21 attempt on a6826faf ran all2,687 tests and failed only the
+active-resume equation wording (2,686 PASS). No candidate DLL/package was built.
+The exact equation is restored; its one named records check passes. Production
+and observers are unchanged. Freeze the records fix as strict hidden-r21b.

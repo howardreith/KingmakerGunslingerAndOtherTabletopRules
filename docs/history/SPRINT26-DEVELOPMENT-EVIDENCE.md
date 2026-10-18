@@ -755,3 +755,12 @@ Only three observer files and the module-boundary explanation change.
 Focused production compilation PASS 18.1s; nine named tests PASS 0.8s; exact source
 boundary PASS. Freeze/push one strict R21 candidate, then fresh Leap experiment
 and two-stage OFF remainder; no R21 native PASS is claimed here.
+
+R21 strict attempt a6826faf2488cc64148f355cafd458573595d6e8 fails in312.5038091s
+after all2,687 tests (101.3s runner): only the existing active-resume public
+equation wording assertion fails;2,686 PASS. The concise rewrite used roots/
+choices instead of the contract phrases generated placements/visible choices.
+Restore those truthful derived phrases. The one named records check passes;
+no production/observer edits, no candidate DLL/package existed to archive.
+The failed gate receipt/logs remain at artifacts/sprint26-gate-hidden-r21.
+Next strict freeze is hidden-r21b.
