@@ -36,7 +36,8 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'disposable-expanded-summoning-sprint23-native-review',
         'disposable-expanded-summoning-sprint24-native-review',
         'disposable-expanded-summoning-sprint25-native-review',
-        'disposable-expanded-summoning-sprint26-native-review')
+        'disposable-expanded-summoning-sprint26-native-review',
+        'disposable-expanded-summoning-sprint27-native-review')
 }
 
 function Invoke-KmgIndependentBoundaryRestoration {

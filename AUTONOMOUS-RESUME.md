@@ -1,29 +1,24 @@
-# Sprint 27 - Griffon implementation
+# Sprint 27 - Griffon hidden implementation
 
-Owner assignment dated 2026-10-18 authorizes this sprint through stable release,
-exact restoration and final-records merge. Sprint 26 remains CLOSED at v0.0.160;
-its frozen wt/s26, artifacts and historical evidence are untouched.
+Owner2026-10-18 assignment authorizes Sprint27 through stable release, exact
+restoration and final-records merge. Sprint26 remains CLOSED atv0.0.160.
+Product branch codex/expanded-summoning-sprint27-griffon; draft PR60 directly
+against master. Fixed source/build/promotion root C:/Dev/KingmakerGunslingerLab/wt/s27.
+Base2a0873d8 verified; expected nextv0.0.161 was available, never reserved.
 
-Current product branch: codex/expanded-summoning-sprint27-griffon.
-Fixed candidate/production root: C:/Dev/KingmakerGunslingerLab/wt/s27.
-Base/current remote master verified:2a0873d8a8848b0f1109415f1e4da14641d9456e.
-Latest stable v0.0.160; expected v0.0.161 was available at intake, not reserved.
+Current [coverage](docs/SPRINT27-COVERAGE.md), [contract](planning/EXPANDED-SUMMONING-SPRINT27-CONTRACT.md)
+and [evidence map](planning/SPRINT27-EVIDENCE.json) supersede earlier next-action queues.
+Original painting/export, native-Manticore-based original body, adult rules and
+six hidden SNA roots are integrated. All released identities/icons preserved.
+Focused production/early observer compilation and6 targeted checks PASS. No full
+or native product qualification. One bounded research capture PASS with exact
+current118-save/settings/Mods/private restoration and no game/lease/owned tasks.
+HumanReview NOT_PERFORMED_NONBLOCKING; rough static wings/proportions remain debt.
 
-Read the current [contract](planning/EXPANDED-SUMMONING-SPRINT27-CONTRACT.md),
-[coverage](docs/SPRINT27-COVERAGE.md) and [evidence map](planning/SPRINT27-EVIDENCE.json).
-The October11 validation policy controls check frequency; this owner mission
-explicitly selects Sprint27 release qualification, never a Sprint26 replay.
-
-Current checkpoint: scoped contract, original Griffon painting with actual
-built-in-tool provenance, bounded read-only donor/engine-input observer registered.
-No Griffon product registration/public routes/body or native qualification yet.
-Production observer compilation and focused scenario-timeout wiring PASS;
-policy wrapper26 isolated cases and restoration orchestration203 assertions PASS.
-No game/save/installation mutation has occurred in this sprint.
-
-Next: build one development-only research package from the clean checkpoint,
-run its dispatch preflight as unelevated Howard, then one guarded save-free
-native donor capture with current intake and exact restoration. Use those facts
-to select the hybrid body attachment; implement mechanics and native observers
-alongside it. Missing model facts must not be invented. No release candidate yet.
-HumanReview: NOT_PERFORMED_NONBLOCKING. Stop after Sprint27, before Sprint28.
+Next: from this clean checkpoint build one development-only prototype, run strict
+unelevated dispatch preflight, then guarded save-free rtwp-foundation. Inspect
+failure evidence and narrow fixes before any further unchanged batch. Complete
+native observers/negative cases/AI/lifecycle/targeted persistence/routes and161
+publisher support before the final coherent candidate's single Sprint gate.
+Follow the current validation policy, Steam640820 leases/current intake and exact
+transactional restoration. No old release campaign, unrelated tasks or Sprint28.

@@ -25,7 +25,11 @@
       ],
       "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a1505a-8976-7583-b38b-5dc986aca4c8/exec-4b988112-c1c3-4adb-b5b3-c542e4e2d09e.png",
       "humanReview": "NOT_PERFORMED_NONBLOCKING",
-      "integration": "original preserved; export/consumer integration pending"
+      "integration": "Preserved original; established128px RGBA export and eight exact unit/type/root consumers integrated; native UI pending.",
+      "width": 1254,
+      "height": 1254,
+      "export": "assets/game/icons/expanded-summoning/griffon.png",
+      "exportSha256": "eef3de6182d7db3c6d25033e83c8eb5792c7c9aa094c54b997d2c86459ca16e3"
     }
   ]
 }

@@ -1,5 +1,11 @@
 # Windows 10 autonomous runtime testing
 
+Sprint 27 also adds `disposable-expanded-summoning-sprint27-native-review`,
+requiring automatic exit and one exact `reviewPhase`: `rtwp-foundation`,
+`pounce-rtwp`, or `pounce-turn-based`. It reuses the qualified save-free first-area
+fixture, exact-owner clock, event collection and restoration. These are development
+observations; AI/lifecycle/routes/persistence release coverage remains open.
+
 Sprint 27 adds `observe-expanded-summoning-sprint27-native-inputs`: one bounded,
 read-only exact Griffon lookup and at most two detached native donor prefabs
 (Manticore/GiantEagle if no exact Griffon exists), plus exact charge/pounce/feat

@@ -75,6 +75,7 @@ def suppressed_keys():
     return set(re.findall(r'"([a-z0-9-]+)"', match.group(1)))
 
 DONOR_NAMES = {
+    "da807351572c540478b703957d863e68": "CR5_ManticoreStandard",
     "028cc6f46e7998f46855a33ffde89567": "MastodonSummon",
     "03dd28e92faf2e44eb9564a6ba01fdd0": "DireWolfSummon",
     "04944455200bc224d955a8e9bbd64f3f": "SummonedAirElementalSmall",
@@ -226,8 +227,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 110:
-        raise SystemExit(f"Expected 110 parsed creatures; observed {len(values)}")
+    if len(values) != 111:
+        raise SystemExit(f"Expected 111 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -658,8 +659,16 @@ def planned():
         ("KMG.Summoning.Special.Bulette.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.Bulette.LeapAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.Gorgon.BreathProjectile", "BlueprintProjectile"),
+        # Sprint 27: adult Griffon, no automatic Grab.
+        ("KMG.Summoning.Natural.Griffon.Bite1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Griffon.Talon1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Griffon.Rake1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Griffon.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Griffon.Chassis", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Griffon.CombatTraits", "BlueprintBuff"),
+
     ))
-    if len(rows) != 2189 or len({symbol for symbol, _ in rows}) != 2189:
+    if len(rows) != 2202 or len({symbol for symbol, _ in rows}) != 2202:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

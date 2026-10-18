@@ -144,6 +144,8 @@ try {
         'assets\sprint25-giant-bodies\brachiosaurus-albedo.png',
         'assets\sprint25-giant-bodies\elephant-mesh.json',
         'assets\sprint25-giant-bodies\elephant-albedo.png',
+        'assets\sprint27-griffon\griffon-mesh.json',
+        'assets\sprint27-griffon\griffon-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -151,6 +153,9 @@ try {
     # the offline review passed. A mesh without its own painting is not
     # the reviewed creature, so both halves are checked.
     $primateBodies = @{
+        'assets\sprint27-griffon\griffon-mesh.json' = '4694292d3cc275590fddade1e68169968884185573cc172455daf8b875e048ac'
+        'assets\sprint27-griffon\griffon-albedo.png' = '997a14e3fc55a642136c2bf33612c650c36dd3f4153f5abfb7d8642f0912ec78'
+
         'assets\sprint19-fourarmed\girallon-mesh.json' = '003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb'
         'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
         'assets\sprint19-fourarmed\xill-mesh.json' = 'd7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243'
