@@ -115,4 +115,27 @@ foreach ($case in $invalidPhaseCases) {
     }
 }
 
-Write-Host "Expanded Summoning compatibility profile tests passed: $($required.Count) profiles; Sprint 22/23/24 phase boundary passed."
+# Execute the actual two route assignments: inventory must take both the
+# independent settings rollback and exact launcher-receipt path, not recency.
+foreach ($assignment in @('$sprint22Boundary', '$exactSprint22')) {
+    $matches=@($invokeAst.FindAll({param($node)
+        $node -is [Management.Automation.Language.AssignmentStatementAst] -and
+        $node.Left.Extent.Text -ceq $assignment
+    },$true))
+    if($matches.Count -ne 1){throw 'Exact settings/receipt assignment is ambiguous.'}
+    $classify=[scriptblock]::Create($matches[0].Extent.Text+"`nreturn "+$assignment)
+    foreach($scenarioName in @('observe-expanded-summoning-inventory',
+        'disposable-expanded-summoning-sprint22-native-review',
+        'disposable-expanded-summoning-sprint23-native-review',
+        'disposable-expanded-summoning-sprint24-native-review',
+        'disposable-expanded-summoning-sprint25-native-review')) {
+        $Scenario=@($scenarioName);$name=$scenarioName
+        if(-not (& $classify)){throw 'Inventory/review escaped exact settings/receipt protection.'}
+    }
+    foreach($scenarioName in @('', 'mod-load-smoke',
+        'OBSERVE-EXPANDED-SUMMONING-INVENTORY', 'observe-expanded-summoning-inventory-extra')) {
+        $Scenario=@($scenarioName);$name=$scenarioName
+        if(& $classify){throw 'Unrelated or malformed scenario entered this exact boundary.'}
+    }
+}
+Write-Host "Expanded Summoning compatibility profile tests passed: $($required.Count) profiles; phase guards and18 exact settings/receipt classifier checks."

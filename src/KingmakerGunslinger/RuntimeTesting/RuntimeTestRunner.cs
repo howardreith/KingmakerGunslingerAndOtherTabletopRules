@@ -23423,6 +23423,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SingleOrDefault(value => value.name == owned[1]);
                 if (granted != null) factGuids[owned[0]] = granted.AssetGuid;
             }
+            foreach (string fact in profile.Facts)
+            {
+                string exact = ExpandedSummoningInventoryObservationPolicy
+                    .GiantProfileFactGuid(unit.AssetGuid, fact);
+                if (exact != null) factGuids[fact] = exact;
+            }
             // A profile fact the map does not know is a mismatch to report,
             // never an exception that ends the whole inventory.
             string[] unknownFacts = profile.Facts.Where(value =>

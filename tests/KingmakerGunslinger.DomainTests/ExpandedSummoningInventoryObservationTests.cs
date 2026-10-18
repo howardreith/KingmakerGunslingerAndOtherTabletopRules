@@ -54,6 +54,22 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningInventoryObservationPolicy.NaturalProfileFactComparable(
                 "KMG_Summoning_Natural_Ankylosaurus_Chassis", false),
                 "Ordinary natural facts remain comparable even when not expected.");
+            const string elephant = "9dd8544097234f05bcd35d400d91b510";
+            Assertions.Equal("54ee847996c25cd4ba8773d7b8555174",
+                ExpandedSummoningInventoryObservationPolicy.GiantProfileFactGuid(elephant, "Endurance"),
+                "The printed Elephant feat resolves to its exact native fact.");
+            Assertions.Equal("bd380912f7c74843966c363ab281c0c2",
+                ExpandedSummoningInventoryObservationPolicy.GiantProfileFactGuid(elephant, "ElephantChassis"),
+                "The completion carrier resolves to its existing manifest identity.");
+            foreach (string wrongOwner in new[] { null, "", "foreign",
+                "9093aef39ecc416092ef68655a7e56fb", elephant.ToUpperInvariant() })
+                Assertions.True(ExpandedSummoningInventoryObservationPolicy
+                    .GiantProfileFactGuid(wrongOwner, "ElephantChassis") == null,
+                    "Other owners cannot acquire this interpretation.");
+            foreach (string wrongFact in new[] { null, "", "endurance", "ForeignChassis" })
+                Assertions.True(ExpandedSummoningInventoryObservationPolicy
+                    .GiantProfileFactGuid(elephant, wrongFact) == null,
+                    "Unknown or case-mismatched profile facts remain failures.");
         }
 
         internal static void QualifiedReferencesRejectSpoofingAndOtherCarriers()

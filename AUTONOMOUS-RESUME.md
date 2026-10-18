@@ -1,6 +1,25 @@
 # Sprint 25 — hidden native qualification complete; public v0.0.159 candidate
 
-Controlling02:32UTC: master80fe5df6 remains integrated;159 free at fresh remote
+Controlling02:52UTC: b299c462 public full2678/exact/strict380 PASS312.50s,
+archived. Its first public inventory FAILED one predicate: Elephant's intended
+Endurance/chassis were unknown to the inventory reader; both cast phases unrun.
+Generic inventory also omitted fresh settings intake/exact receipt; installation,
+bank,all118 saves/private refs audited exact, game/lease absent. Only Unity's
+two automatic session values differed from the immediately preceding actual
+restored intake. One intervening owned launch and counter+1 established a
+session-only reconstructed rollback; no gameplay settings changed. Old native
+FAIL and missing-fresh-intake fact remain recorded, never relabeled PASS.
+
+Repair: exact-owner two-fact GUID translation only; add inventory to existing
+independent settings restoration and exact launcher receipt paths. This is
+compiled observation plus runtime TOOLING, not documentation-only. Compile17.3s,
+19/19 focused cases0.8s,19 source refusals,18 actual settings/receipt classifier
+checks and30 existing independent-boundary safety predicates PASS. No gameplay,
+asset or schema change. Commit/push, one new public candidate/full gate, then
+fresh inventory+both route cells on its exact ZIP; continue preflight/merge49/
+release/download/restoration/final records,STOP. No Sprint26.
+
+Historical02:32UTC: master80fe5df6 remains integrated;159 free at fresh remote
 tag/release check. Public source removes ONLY Brach suppression: 1,096 generated placements
 +29 retained wrappers = 1,125 visible choices, derived from actual catalogs.
 No Elephant root, Monster row, template child, identity or accepted asset changes.
