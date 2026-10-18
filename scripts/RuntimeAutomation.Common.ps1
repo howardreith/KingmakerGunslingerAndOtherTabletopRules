@@ -2204,7 +2204,7 @@ function Test-KmgSprint25ReviewPhaseScope {
 
 function Test-KmgSprint27ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
-    return $Scenario -ceq 'disposable-expanded-summoning-sprint27-native-review' -and $null -ne $Parameters -and $Parameters.Count -eq 1 -and $Parameters.ContainsKey('reviewPhase') -and $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','rtwp-ai','charge-boundaries','visual-lifecycle')
+    return $Scenario -ceq 'disposable-expanded-summoning-sprint27-native-review' -and $null -ne $Parameters -and $Parameters.Count -eq 1 -and $Parameters.ContainsKey('reviewPhase') -and $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','qualification-combat','qualification-presentation')
 }
 
 function Test-KmgSprint26ReviewPhaseScope {
@@ -2421,8 +2421,8 @@ function Assert-KmgRuntimeScenarioPreflight {
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
         if ($targetedSummonPersistence -and ($Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts') -or -not $ExitAfterCompletion)) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies or magical-beasts and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon') -or -not $ExitAfterCompletion)) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts or griffon and automatic exit.'
         }
         $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or

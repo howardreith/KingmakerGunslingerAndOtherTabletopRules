@@ -30,20 +30,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             owner.JoinCombat();target.JoinCombat();Game.Instance.Player.UpdateIsInCombat();
             new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
             new Kingmaker.Controllers.Combat.UnitCombatPrepareController().Tick();
+            int runtimeActions=owner.Brain.Actions==null?0:owner.Brain.Actions.Count,availableActions=owner.Brain.AvailableActions==null?0:owner.Brain.AvailableActions.Count;
+            bool ready=runtimeActions>0&&availableActions>0&&owner.IsAIEnabled&&owner.IsInCombat&&owner.Descriptor.State.CanAct&&owner.IsEnemy(target)&&owner.Memory.ContainsVisible(target);
+            Sprint27Check("ai-native-readiness",ready,new JObject{["owner"]=owner.UniqueId,["brain"]=owner.Blueprint.Brain.name,["runtimeActions"]=runtimeActions,["availableActions"]=availableActions,["brainActive"]=owner.IsBrainActive,["aiEnabled"]=owner.IsAIEnabled,["combat"]=owner.IsInCombat,["canAct"]=owner.Descriptor.State.CanAct,["enemy"]=owner.IsEnemy(target),["visible"]=owner.Memory.ContainsVisible(target),["los"]=owner.HasLOS(target),["nextCommandTime"]=owner.CombatState.AIData.NextCommandTime,["unityTime"]=Time.time},"The fresh native action list is preserved; the fixture does not clear then pretend to restore it. Exact actor, visibility, combat and actual native actions are prerequisites.");
+            if(!ready)throw new InvalidOperationException("Native Griffon AI prerequisites missing.");
             var observer=new Sprint24AttackObserver{Owner=owner,Target=target};var commands=new HashSet<UnitCommand>();var ambient=new HashSet<string>();
             int ticks=0;float travel=0;EventBus.Subscribe(observer);
             try{
                 DateTime deadline=DateTime.UtcNow.AddSeconds(35);
                 for(int frame=0;frame<3000&&DateTime.UtcNow<deadline;frame++){
                     if(frame==0||frame%60==0&&!owner.Commands.Raw.Any(v=>v!=null&&!v.IsFinished)){
-                        foreach(string id in Sprint24TickExactAi(owner))ambient.Add(id);ticks++;
+                        foreach(string id in Sprint24TickExactAi(owner))if(id!=owner.UniqueId)ambient.Add(id);ticks++;
                     }
                     foreach(var command in owner.Commands.Raw.Where(v=>v!=null))commands.Add(command);
                     travel=Math.Max(travel,Vector3.Distance(origin,owner.Position));
                     if(observer.WeaponAttacks.Count>0)break;Game.Instance.IsPaused=false;yield return 0;
                 }
                 bool selected=commands.OfType<UnitAttack>().Any(v=>v.AiAction!=null&&ReferenceEquals(v.TargetUnit,target));
-                Sprint25Check("ai-native-approach-attack",selected&&ticks>0&&travel>.1f&&observer.WeaponAttacks.Count>0,
+                Sprint27Check("ai-native-approach-attack",selected&&ticks>0&&travel>.1f&&observer.WeaponAttacks.Count>0,
                     new JObject{["owner"]=owner.UniqueId,["brain"]=owner.Blueprint.Brain.name,["target"]=target.UniqueId,["lane"]=lane,["ticks"]=ticks,["travel"]=travel,
                     ["ambientCandidatesNeverTicked"]=new JArray(ambient),["commands"]=new JArray(commands.Select(v=>new JObject{["type"]=v.GetType().Name,["aiAction"]=v.AiAction?.name})),
                     ["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>v.Weapon.Blueprint.AssetGuid)),["fixtureAttackCommands"]=0,["forcedRolls"]=0},
@@ -51,32 +55,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint27Body(owner,"ai");
             }finally{EventBus.Unsubscribe(observer);SetExpandedSummoningBrainActive(owner,false);owner.Commands.InterruptAll(true);ResetExpandedSummoningHostile(fixture);}
         }
-        private IEnumerable<int> Sprint27CancelCharge(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,bool loseTarget)
+        private IEnumerable<int> Sprint27CancelCharge(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner,bool loseTarget,string removeOwner=null,bool turnBased=false)
         {
+            if(turnBased){Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();}
             BlueprintUnit targetBlueprint;var target=Sprint26BoundaryTarget(fixture,owner,out targetBlueprint);
-            var charge=owner.Descriptor.Abilities.Enumerable.Single(v=>v.Blueprint.AssetGuid=="c78506dd0e14f7c45a599990e4e65038");
+            var charge=owner.Descriptor.Abilities.GetAbility(fixture.Blueprints.OfType<BlueprintAbility>().Single(v=>v.AssetGuid=="c78506dd0e14f7c45a599990e4e65038"));
+            if(charge==null)throw new InvalidOperationException("Canonical native Charge ability absent.");
             var data=new AbilityData(charge);var observer=new Sprint24AttackObserver{Owner=owner,Target=target};
             try{
                 Vector3 start;string lane;var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out lane,startDistances:new[]{20f,16f,12f});
                 if(selected==null)throw new InvalidOperationException("No legal Griffon cancellation lane: "+lane);
-                owner.JoinCombat();target.JoinCombat();var command=new UnitUseAbility(data,selected);var costs=new JArray();EventBus.Subscribe(observer);
+                owner.JoinCombat();target.JoinCombat();
+                if(turnBased){
+                    var admission=new JObject();foreach(int f in Sprint22EnrollTurnBasedOwners(new[]{owner},target,admission))yield return f;
+                    int waited=0;while(!Sprint18OwnerIsActing(owner)&&waited++<500)yield return 0;
+                    admission["acting"]=Sprint18OwnerIsActing(owner);admission["nativeTurnWaitFrames"]=waited;
+                    bool admitted=(bool)admission["admitted"]&&Sprint18OwnerIsActing(owner);
+                    Sprint27Check("boundary-turn-admission-"+loseTarget,admitted,admission,"A real exact-owner active turn precedes a native turn-based abort or target-loss command.");
+                    if(!admitted)throw new InvalidOperationException("Exact boundary turn absent.");
+                }
+                var command=new UnitUseAbility(data,selected);var costs=new JArray();EventBus.Subscribe(observer);
                 using(var economy=new FirearmReviewCosts(owner,costs))using(var queued=new Sprint26QueueTrace(owner)){
                     owner.Commands.Run(command);int frames=0;DateTime deadline=DateTime.UtcNow.AddSeconds(15);
                     while(frames++<2000&&DateTime.UtcNow<deadline&&Vector3.Distance(start,owner.Position)<.15f&&!command.IsFinished){
                         if(command.ExecutionProcess!=null&&!command.ExecutionProcess.IsEnded)command.ExecutionProcess.Tick();yield return 0;
                     }
                     bool ready=!command.IsFinished&&Vector3.Distance(start,owner.Position)>.05f&&queued.Commands.Count==0&&observer.WeaponAttacks.Count==0;
-                    Sprint25Check("charge-cancel-precondition-"+loseTarget,ready,new JObject{["route"]=lane,["travel"]=Vector3.Distance(start,owner.Position),["queued"]=queued.Commands.Count,["attacks"]=observer.WeaponAttacks.Count},"Real legal charge is moving before any attack; unmet setup is failure, never a negative PASS.");
+                    Sprint27Check("charge-cancel-precondition-"+loseTarget,ready,new JObject{["route"]=lane,["travel"]=Vector3.Distance(start,owner.Position),["queued"]=queued.Commands.Count,["attacks"]=observer.WeaponAttacks.Count},"Real legal charge is moving before any attack; unmet setup is failure, never a negative PASS.");
                     if(!ready)yield break;
-                    if(loseTarget)DisposeExpandedSummoningUnits(fixture.Created,new[]{target});else command.Interrupt(true);
+                    if(removeOwner=="death")Kingmaker.Designers.GameHelper.KillUnit(owner,target);
+                    else if(removeOwner=="expiry"){
+                        var marker=owner.Buffs.Enumerable.Single(v=>ReferenceEquals(v.Blueprint,Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
+                        ExpireSprint16OwnedBuff(owner,marker);
+                    }else if(loseTarget)DisposeExpandedSummoningUnits(fixture.Created,new[]{target});else command.Interrupt(true);
                     deadline=DateTime.UtcNow.AddSeconds(12);
                     while(frames++<3500&&DateTime.UtcNow<deadline&&!command.IsFinished){if(command.ExecutionProcess!=null&&!command.ExecutionProcess.IsEnded)command.ExecutionProcess.Tick();yield return 0;}
                     for(int f=0;f<20;f++)yield return 0;
-                    bool exact=command.IsFinished&&observer.WeaponAttacks.Count==0&&economy.Count(command)==1&&economy.Exact(command,false)&&queued.Commands.All(v=>v.IsFinished)&&(!loseTarget||target.Destroyed);
-                    Sprint25Check("charge-"+(loseTarget?"target-loss":"interruption"),exact,new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["finished"]=command.IsFinished,["result"]=command.Result.ToString(),["queued"]=queued.Commands.Count,["attacks"]=observer.WeaponAttacks.Count,["costs"]=costs},"Native interruption or target removal aborts attacks while preserving the native action debit; no custom persistent charge state exists.");
+                    bool exact=command.IsFinished&&observer.WeaponAttacks.Count==0&&economy.Count(command)==1&&economy.Exact(command,turnBased)&&queued.Commands.All(v=>v.IsFinished)&&(!loseTarget||target.Destroyed)&&(removeOwner==null || (removeOwner=="death"?owner.Descriptor.State.IsDead:owner.Destroyed)&&!owner.Commands.Raw.Any(v=>v!=null&&!v.IsFinished));
+                    Sprint27Check("charge-"+(removeOwner??(loseTarget?"target-loss":"interruption")),exact,new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["finished"]=command.IsFinished,["result"]=command.Result.ToString(),["queued"]=queued.Commands.Count,["attacks"]=observer.WeaponAttacks.Count,["costs"]=costs,["turnBased"]=turnBased,["ownerRemoval"]=removeOwner,["ownerDead"]=owner.Descriptor.State.IsDead,["ownerDestroyed"]=owner.Destroyed,["activeOwnerCommands"]=owner.Commands.Raw.Count(v=>v!=null&&!v.IsFinished)},"Native interruption or target/owner removal aborts attacks while preserving the native action debit; no custom persistent charge state exists.");
                 }
             }finally{EventBus.Unsubscribe(observer);owner.Commands.InterruptAll(true);DisposeExpandedSummoningUnits(fixture.Created,new[]{target});UnityEngine.Object.Destroy(targetBlueprint);}
-            foreach(int f in Sprint27Ordinary(fixture,owner,true))yield return f;
+            if(turnBased){Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();}
+            if(removeOwner==null)foreach(int f in Sprint27Ordinary(fixture,owner,true))yield return f;
         }
         private IEnumerable<int> Sprint27Opportunity(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner)
         {
@@ -95,7 +115,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 while(frames++<2000&&DateTime.UtcNow<deadline&&commands.Any(v=>!v.IsFinished))yield return 0;
                 for(int f=0;f<12;f++)yield return 0;
                 bool exact=eligible&&queued&&commands.Length==1&&commands[0].IsFinished&&observer.WeaponAttacks.Count==1&&observer.WeaponAttacks[0].IsAttackOfOpportunity&&!observer.WeaponAttacks[0].IsCharge&&ReferenceEquals(observer.WeaponAttacks[0].Weapon,owner.Body.PrimaryHand.MaybeWeapon);
-                Sprint25Check("native-opportunity-command",exact,new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["eligible"]=eligible,["queued"]=queued,["commands"]=commands.Length,["attacks"]=observer.WeaponAttacks.Count,["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>v.Weapon.Blueprint.AssetGuid)),["nativeReactionApi"]=true,["fixtureRuleAttacks"]=0,["forcedRolls"]=0},"The native reaction API queues and executes one legal bite opportunity command without pounce, rake, supplied weapon rules or a substituted roll.");
+                Sprint27Check("native-opportunity-command",exact,new JObject{["owner"]=owner.UniqueId,["target"]=target.UniqueId,["eligible"]=eligible,["queued"]=queued,["commands"]=commands.Length,["attacks"]=observer.WeaponAttacks.Count,["weapons"]=new JArray(observer.WeaponAttacks.Select(v=>v.Weapon.Blueprint.AssetGuid)),["nativeReactionApi"]=true,["fixtureRuleAttacks"]=0,["forcedRolls"]=0},"The native reaction API queues and executes one legal bite opportunity command without pounce, rake, supplied weapon rules or a substituted roll.");
             }finally{EventBus.Unsubscribe(observer);owner.Commands.InterruptAll(true);ResetExpandedSummoningHostile(fixture);}
         }
         private void Sprint27PlanReentry(ExpandedSummoningCorrectionFixture fixture,UnitEntityData owner)
@@ -110,6 +130,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 exact&=attacks.Length==(command.IsCharge?5:3)&&attacks.Select(v=>v.Hand).Distinct().Count()==attacks.Length;
                 rows.Add(new JObject{["attempt"]=attempt,["charge"]=command.IsCharge,["count"]=attacks.Length,["weapons"]=new JArray(attacks.Select(v=>v.Weapon.Blueprint.AssetGuid))});
             }
-            Sprint25Check("native-plan-reentry",exact,new JObject{["rows"]=rows,["scope"]="bookkeeping only; commands initialized but never queued; charge flag supplied for plan probing",["attacksIssued"]=0},"Repeated native plan construction cannot accumulate extra rake limbs or mutate another command. This is supplemental bookkeeping, separate from genuine native charge-command proof.");
+            Sprint27Check("native-plan-reentry",exact,new JObject{["rows"]=rows,["scope"]="bookkeeping only; commands initialized but never queued; charge flag supplied for plan probing",["attacksIssued"]=0},"Repeated native plan construction cannot accumulate extra rake limbs or mutate another command. This is supplemental bookkeeping, separate from genuine native charge-command proof.");
         }    }
 }

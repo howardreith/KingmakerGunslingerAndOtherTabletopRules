@@ -1211,6 +1211,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint27.profile", ExpandedSummoningSprint27Tests.AdultProfileAndOrdinaryRoles),
             Case("expanded-summoning.sprint27.routes", ExpandedSummoningSprint27Tests.SixNatureRootsRemainHidden),
             Case("expanded-summoning.sprint27.rake", ExpandedSummoningSprint27Tests.RakeIsConditionalWithoutGrab),
+            Case("expanded-summoning.sprint27.persistence", ExpandedSummoningSprint27Tests.PersistenceScopeIsExact),
             Case("expanded-summoning.sprint27.reach", ExpandedSummoningSprint27Tests.ReachPreservesNativeBonusesAndOtherConsumers),
             Case("expanded-summoning.sprint27.visual", ExpandedSummoningSprint27Tests.ExactOriginalBodyBinding),
             Case("expanded-summoning.sprint26.reach", ExpandedSummoningSprint26Tests.ReachCorrectionPreservesOtherOwnersAndBonuses),

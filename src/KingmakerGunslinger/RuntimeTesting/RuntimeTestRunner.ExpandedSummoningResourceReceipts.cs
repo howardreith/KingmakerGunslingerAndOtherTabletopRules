@@ -150,7 +150,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Sprint 25 uses the same per-instance clone/process-cache
                     // split. Read exact cache references without loading or
                     // allocating; names or survival alone never grant ownership.
-                    PteranodonAssetRuntime.TryGetGiantBodyVisual(key, out mesh, out bones, out paint, out status))
+                    PteranodonAssetRuntime.TryGetGiantBodyVisual(key, out mesh, out bones, out paint, out status) ||
+                    key==GriffonVisualPolicy.Key && PteranodonAssetRuntime.TryGetGriffonVisual(out mesh,out bones,out paint,out status))
                 { add(mesh, key + ".Mesh"); add(paint, key + ".Albedo"); }
             }
             return result;
@@ -179,7 +180,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 const string owner = "ExpandedSummoningPteranodonViewPatch.Applied.Attachment";
                 UObject[] armoredOwned = ExpandedSummoningPteranodonViewPatch
-                    .CaptureArmoredDinosaurOwnedResources(view);
+                    .CaptureArmoredDinosaurOwnedResources(view)
+                    .Concat(ExpandedSummoningPteranodonViewPatch.CaptureGriffonOwnedResources(view)).ToArray();
                 foreach (string field in new[] { "Mesh", "Material" })
                 {
                     var value = ResourceField(attachment, field) as UObject;

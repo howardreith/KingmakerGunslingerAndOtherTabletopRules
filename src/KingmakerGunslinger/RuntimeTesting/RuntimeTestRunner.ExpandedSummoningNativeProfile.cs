@@ -9,6 +9,9 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Globalmap.Blueprints;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Persistence;
 using Kingmaker.EntitySystem.Persistence.Scenes;
@@ -105,6 +108,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfilePreset = UnityEngine.Object.Instantiate(_summoningProfileOriginal);
                     _summoningProfilePreset.name = "KMG_Runtime_Summoning_Native_Profile";
                     _summoningProfilePreset.MakeAutosave = false;
+                    if(IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request)=="outdoor-locomotion") {
+                        var entry=BlueprintLibraryLookup.RequireExact<BlueprintLocation>(BlueprintBootstrap.Library,
+                            "758559f44d15fc844bf30a10a83154d5","established native Oleg outdoor fixture").AreaEntrance;
+                        if(entry?.Area==null || entry.Area.AssetGuid!="ead426a6c23d39548a670ee515d77df4")
+                            throw new InvalidOperationException("Exact non-DLC outdoor fixture identity unavailable.");
+                        _summoningProfilePreset.Area=entry.Area;_summoningProfilePreset.EnterPoint=entry;
+                    }
                     // Request-owned fixture setup omits narrative start actions;
                     // production content and all summon commands remain intact.
                     _summoningProfilePreset.StartGameActions = new ActionList();
@@ -169,12 +179,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     var baseScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(SceneName.BaseMechanics);
                     bool baseLoaded = baseScene.IsValid() && baseScene.isLoaded;
-                    bool exactArea = game.CurrentlyLoadedArea == _summoningProfileOriginal.Area;
+                    bool exactArea = game.CurrentlyLoadedArea == _summoningProfilePreset.Area;
                     bool loadedState = game.State.LoadedAreaState != null;
                     bool mainPresent = game.Player.MainCharacter.Value != null;
                     bool partyState = game.Player.Party.Any(unit => unit != null && unit.HoldingState != null);
                     _summoningProfileEvidence["baseMechanicsLoaded"] = baseLoaded;
-                    _summoningProfileEvidence["expectedArea"] = _summoningProfileOriginal.Area.AssetGuid;
+                    _summoningProfileEvidence["expectedArea"] = _summoningProfilePreset.Area.AssetGuid;
                     _summoningProfileEvidence["actualArea"] = game.CurrentlyLoadedArea?.AssetGuid;
                     _summoningProfileEvidence["loadedAreaState"] = loadedState;
                     _summoningProfileEvidence["mainCharacterUid"] = game.Player.MainCharacter.Value?.UniqueId;

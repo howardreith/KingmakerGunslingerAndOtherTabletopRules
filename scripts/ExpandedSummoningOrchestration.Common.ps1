@@ -562,3 +562,15 @@ function Test-KmgCompatibilityLockOwned {
     return $stamp -ge $BatchStartedUtc.ToUniversalTime().AddSeconds(-5) -and
         $stamp -le $NowUtc.ToUniversalTime().AddSeconds(5)
 }
+
+# Only this owner-selected named development purpose may use the existing
+# mutable Working-save trio before Griffon publication. Existing release
+# manifest/deployment/refusal guards and the exact save boundary remain intact.
+function Test-KmgGriffonDevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'griffon' -or $Purpose -cne 'sprint27-native-prototype') {
+        throw 'Development installed-stack persistence permits only exact Griffon scope and sprint27-native-prototype purpose.'
+    }
+    return $true
+}

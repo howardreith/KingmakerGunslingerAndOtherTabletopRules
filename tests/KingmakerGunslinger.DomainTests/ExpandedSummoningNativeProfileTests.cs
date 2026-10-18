@@ -86,7 +86,7 @@ namespace KingmakerGunslinger.DomainTests
             string sprint23 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint23NativeReview;
             string sprint25 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint25NativeReview;
             string sprint27 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview;
-            foreach(string phase in new[]{"rtwp-foundation","pounce-rtwp","pounce-turn-based","rtwp-ai","charge-boundaries","visual-lifecycle"})
+            foreach(string phase in new[]{"rtwp-foundation","pounce-rtwp","pounce-turn-based","rtwp-ai","charge-boundaries","visual-lifecycle","routes","outdoor-locomotion","shared-controls","qualification-combat","qualification-presentation"})
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true,sprint27,1,phase,0,0,0,false,false,false,false,true), "Exact Sprint27 bounded phase enters only a fresh empty owned menu: "+phase);
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false,sprint27,1,"rtwp-foundation",0,0,0,false,false,false,false,true), "Sprint27 requires automatic exit.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,sprint27,1,"rtwp-foundation",1,0,0,false,false,false,false,true), "Sprint27 cannot replace an existing world.");
