@@ -1211,6 +1211,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint26.reach", ExpandedSummoningSprint26Tests.ReachCorrectionPreservesOtherOwnersAndBonuses),
             Case("expanded-summoning.sprint26.temporary-life", ExpandedSummoningSprint26Tests.TemporaryStoneDoesNotAcquireNativeDeathDamage),
             Case("expanded-summoning.sprint26.native-status-mirror", ExpandedSummoningSprint26Tests.OwnCarrierDoesNotMirrorIntoPermanentNativeStone),
+            Case("expanded-summoning.sprint26.automatic-recovery", ExpandedSummoningSprint26Tests.AutomaticRecoveryPreservesOnlyOwnedInitializedStone),
             Case("expanded-summoning.sprint26.breath-stage", ExpandedSummoningSprint26Tests.BreathStagesRequireAnotherActivation),
             Case("expanded-summoning.sprint26.live-math", ExpandedSummoningSprint26Tests.BreathMathRemainsLive),
             Case("expanded-summoning.sprint26.charge-runup", ExpandedSummoningSprint26Tests.ChargeRequiresActualRunupBeyondCurrentReach),

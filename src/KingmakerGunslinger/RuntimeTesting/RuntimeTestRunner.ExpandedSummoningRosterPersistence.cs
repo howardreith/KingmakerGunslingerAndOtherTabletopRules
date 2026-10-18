@@ -7,6 +7,9 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Blueprints;
@@ -210,7 +213,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static JObject RosterPersistenceProfile(UnitEntityData unit)
         {
             var s = unit.Stats;
-            return new JObject { ["blueprint"] = unit.Blueprint.AssetGuid, ["size"] = unit.Descriptor.State.Size.ToString(),
+            var profile=new JObject { ["blueprint"] = unit.Blueprint.AssetGuid, ["size"] = unit.Descriptor.State.Size.ToString(),
                 ["str"] = s.Strength.BaseValue, ["dex"] = s.Dexterity.BaseValue, ["con"] = s.Constitution.BaseValue,
                 ["int"] = s.Intelligence.BaseValue, ["wis"] = s.Wisdom.BaseValue, ["cha"] = s.Charisma.BaseValue,
                 ["hpBase"] = s.HitPoints.BaseValue, ["bab"] = s.BaseAttackBonus.BaseValue,
@@ -221,6 +224,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["limbs"] = new JArray(unit.Body.AdditionalLimbs.Select(l => l.MaybeWeapon?.Blueprint.AssetGuid)),
                 ["secondary"] = new JArray(unit.Body.AdditionalLimbs.Where(l => l.MaybeWeapon != null && l.MaybeWeapon.IsSecondary)
                     .Select(l => l.MaybeWeapon.Blueprint.AssetGuid)) };
+            if(unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.GorgonUnitGuid||unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.BuletteUnitGuid){
+                var chassis=unit.Descriptor.Progression.Features.Enumerable.Where(v=>v.Blueprint.GetComponent<MagicalBeastPrimaryStrength>()!=null).ToArray();
+                var names=chassis.SelectMany(v=>v.SelectComponents<GameLogicComponent>()).Select(v=>v.name).ToArray();
+                if(chassis.Length!=1||names.Length!=3||names.Any(string.IsNullOrWhiteSpace)||names.Distinct(StringComparer.Ordinal).Count()!=names.Length)
+                    throw new InvalidOperationException("Sprint26 exact runtime chassis/component identities unavailable.");
+                profile["chassisComponentNames"]=new JArray(names);
+                profile["composed"]=new JObject{["hp"]=s.HitPoints.ModifiedValue,["ac"]=s.AC.ModifiedValue,["touch"]=s.AC.Touch,["flatFooted"]=s.AC.FlatFooted,
+                    ["fort"]=s.SaveFortitude.ModifiedValue,["ref"]=s.SaveReflex.ModifiedValue,["will"]=s.SaveWill.ModifiedValue,
+                    ["perception"]=s.SkillPerception.ModifiedValue,["mobility"]=s.SkillMobility.ModifiedValue};
+                profile["attacks"]=new JArray(Sprint19Limbs(unit).Select(w=>{
+                    var calc=Rulebook.Trigger(new RuleCalculateWeaponStats(unit,w,null));
+                    return new JObject{["weapon"]=w.Blueprint.AssetGuid,["secondary"]=w.IsSecondary,
+                        ["bonus"]=Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit,w,0)).Result,
+                        ["damage"]=Sprint16DamageLine(calc.DamageDescription[0].CreateDamage()),["reachFeet"]=w.AttackRange.Value,["threat"]=w.Blueprint.CriticalRollEdge};
+                }));
+                if(unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.GorgonUnitGuid){
+                    var breath=unit.Descriptor.Abilities.Enumerable.Single(v=>v.Blueprint.name=="KMG_Summoning_Special_Gorgon_Breath");
+                    profile["breathDc"]=new AbilityData(breath).CalculateParams().DC;
+                }
+            }
+            return profile;
         }
 
         private static UnityEngine.Object[] RosterPersistenceResources(UnitEntityData unit)

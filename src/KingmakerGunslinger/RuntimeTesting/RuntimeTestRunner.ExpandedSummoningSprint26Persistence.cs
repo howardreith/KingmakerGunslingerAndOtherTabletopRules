@@ -62,12 +62,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<KeyValuePair<MethodInfo,MethodInfo>> _patches=new List<KeyValuePair<MethodInfo,MethodInfo>>();
             internal readonly JArray Rows=new JArray();
             internal int Errors;
+            internal readonly HashSet<string> AutomaticRecoveryVictims=new HashSet<string>(StringComparer.Ordinal);
             internal Sprint26StateLoadTrace(HarmonyInstance harmony)
             {
                 if(_active!=null)throw new InvalidOperationException("Sprint26 state observer already active.");
                 _active=this;_harmony=harmony;
                 try{
                     Patch(typeof(Buff).GetMethod("PostLoad"),"BeforeBuffLoad","AfterBuffLoad");
+                    Patch(typeof(GorgonPetrificationAutoRecovery).GetMethod("ForController",BindingFlags.Static|BindingFlags.NonPublic),null,"AfterRecoveryEligibility");
                     Patch(typeof(Buff).GetMethod("PreSave"),null,"AfterBuffSave");
                     Patch(typeof(FactCollection).GetMethod("RemoveFact",new[]{typeof(Fact)}),"BeforeRemoval",null);
                     Patch(typeof(UnitDescriptor).GetMethod("PostLoad"),"BeforeUnitLoad","AfterUnitLoad");
@@ -82,6 +84,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _harmony.Patch(original,name==prefix?new HarmonyMethod(method):null,name==postfix?new HarmonyMethod(method):null,null);
                     _patches.Add(new KeyValuePair<MethodInfo,MethodInfo>(original,method));
                 }
+            }
+            private static void AfterRecoveryEligibility(UnitState __0,UnitEntityData __1,bool __result)
+            {
+                if(_active!=null&&__result&&!__0.IsConscious&&Sprint26OwnsStateActor(__1)&&_active.AutomaticRecoveryVictims.Add(__1.UniqueId))
+                    _active.Capture("automatic-recovery-withheld",__1.Descriptor,Stone(__1.Descriptor),false);
             }
             private static bool Own(Buff buff){return buff?.Blueprint.AssetGuid==Sprint26MagicalBeastRules.PetrificationGuid;}
             private static Buff Stone(UnitDescriptor unit){return unit?.Buffs?.Enumerable.FirstOrDefault(Own);}
@@ -102,7 +109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["conditionCount"]=owner==null?(int?)null:GorgonPetrificationLife.ConditionCount(owner.State),
                         ["stayOnDeath"]=buff?.Blueprint.StayOnDeath,["removeOnResurrect"]=buff?.Blueprint.RemoveOnResurrect,
                         ["contextCaster"]=buff?.MaybeContext?.MaybeCaster?.UniqueId,
-                        ["stone"]=buff!=null&&(stage=="buff-load-after"||stage=="buff-save-after")?Sprint26SavedStone(owner.Unit,buff.Blueprint):null,
+                        ["stone"]=buff!=null&&(stage=="buff-load-after"||stage=="buff-save-after"||stage=="automatic-recovery-withheld")?Sprint26SavedStone(owner.Unit,buff.Blueprint):null,
                         ["stack"]=Environment.StackTrace};
                     if(raw&&buff!=null){
                         var field=typeof(Fact).GetField("m_ComponentsData",BindingFlags.Instance|BindingFlags.NonPublic);
@@ -138,6 +145,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             Game.Instance.EntityCreator.Tick();
             if(actor==null||actor.View==null||!ReferenceEquals(actor.HoldingState,caster.HoldingState)||Game.Instance.Player.Party.Contains(actor))
                 throw new InvalidOperationException("Exact disposable Sprint26 state actor unavailable.");
+            // DefaultPlayerCharacter is an unbuilt disposable shell. Give this
+            // receipt-owned nonparty victim ordinary living ability scores.
+            foreach(var stat in new[]{actor.Stats.Strength,actor.Stats.Dexterity,actor.Stats.Constitution,actor.Stats.Intelligence,actor.Stats.Wisdom,actor.Stats.Charisma})stat.BaseValue=10;
             actor.Stats.HitPoints.BaseValue=100000;actor.Stats.SaveFortitude.BaseValue=-100;
             SetExpandedSummoningBrainActive(actor,false);PlaceExpandedSummoningUnit(actor,actor.Position);
             if(!Game.Instance.State.AwakeUnits.Contains(actor))Game.Instance.State.AwakeUnits.Add(actor);
@@ -221,7 +231,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var receipts=actors.Select(v=>v.Get<UnitPartSprint26StateReceipt>()).ToArray();
             var tempBuff=temp.Buffs.GetBuff(stone);var permBuff=perm.Buffs.GetBuff(stone);
             var ts=tempBuff?.SelectComponents<GorgonPetrificationState>().Single();var ps=permBuff?.SelectComponents<GorgonPetrificationState>().Single();
-            var savedClock=owner.Buffs.GetBuff(clock);bool boundary=ts!=null&&ps!=null&&ts.Initialized&&ps.Initialized&&!ts.Permanent&&ps.Permanent&&
+            bool nativeAutomaticRecovery=_sprint26StateTrace!=null&&actors.All(v=>_sprint26StateTrace.AutomaticRecoveryVictims.Contains(v.UniqueId));
+            bool firstSourceAbsent=!Game.Instance.State.Units.All.Any(v=>v!=null&&v.UniqueId==receipts[0].FirstSourceId)&&
+                !caster.HoldingState.AllEntityData.OfType<UnitEntityData>().Any(v=>v.UniqueId==receipts[0].FirstSourceId);
+            var savedClock=owner.Buffs.GetBuff(clock);bool boundary=nativeAutomaticRecovery&&firstSourceAbsent&&ts!=null&&ps!=null&&ts.Initialized&&ps.Initialized&&!ts.Permanent&&ps.Permanent&&
                 !temp.Descriptor.State.IsDead&&perm.Descriptor.State.IsDead&&receipts.All(r=>r.CooldownSourceId==owner.UniqueId)&&
                 receipts.All(r=>r.FirstSourceId==ts.FirstSourceId)&&ps.FirstSourceId==ts.FirstSourceId&&ps.LastSourceId==owner.UniqueId&&
                 ts.LastSourceId==ts.FirstSourceId&&ts.RecoveryDc==21&&ps.RecoveryDc==21&&
@@ -232,6 +245,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 actors.All(v=>GorgonPetrificationLife.ConditionCount(v.Descriptor.State)==1);
             RosterPersistenceCheck("sprint26-cold-state-boundary",boundary,new JObject{["moduleEnabled"]=_context.FeatureModules.Active.ExpandedSummoning,
                 ["temporary"]=Sprint26SavedStone(temp,stone),["permanent"]=Sprint26SavedStone(perm,stone),["cooldownEndTicks"]=savedClock?.EndTime.Ticks,
+                ["nativeAutomaticRecoveryWithheld"]=nativeAutomaticRecovery,["departedSourceAbsent"]=firstSourceAbsent,
                 ["savedCooldownEndTicks"]=receipts[0].CooldownEndTicks,["clockSecondsLeft"]=savedClock?.TimeLeft.TotalSeconds,["freshActivationAbsent"]=GorgonBreathRuntime.Latest(owner)==null},
                 "Native cold load preserves victim stages/DC/source strings with a missing original source, and the exact unrefreshed source cooldown, including module OFF.");
             if(!boundary)throw new InvalidOperationException("Sprint26 saved-state boundary failed; no cleanup save armed.");

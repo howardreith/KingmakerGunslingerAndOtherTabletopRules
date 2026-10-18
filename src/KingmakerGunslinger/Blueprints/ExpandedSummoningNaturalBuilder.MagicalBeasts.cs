@@ -57,6 +57,17 @@ namespace KingmakerGunslinger.Blueprints
                     bySymbol, Sprint26MagicalBeastRules.BulettePrefix + "Leap") });
         }
 
+        // Native Fact persistence joins runtime components by exact Object.name.
+        // Only these unpublished private facts receive the new stable names.
+        internal static void NameMagicalBeastRuntimeComponents(BlueprintUnitFact fact)
+        {
+            for(int i=0;i<fact.ComponentsArray.Length;i++){
+                var component=fact.ComponentsArray[i];
+                if(component is GameLogicComponent)
+                    component.name="$"+fact.name+"_"+i+"_"+component.GetType().Name;
+            }
+        }
+
         private static void ConfigureMagicalBeastChassis(BlueprintFeature feature,
             string symbol, BlueprintUnit owner, BlueprintItemWeapon primary,
             BlueprintItemWeapon claw)
@@ -91,6 +102,7 @@ namespace KingmakerGunslinger.Blueprints
             feature.IsClassFeature = false;
             feature.HideInUI = true;
             feature.ComponentsArray = components.ToArray();
+            NameMagicalBeastRuntimeComponents(feature);
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create(symbol + ".Name", "Natural Attack Chassis"),
                 LocalizationService.Create(symbol + ".Description",

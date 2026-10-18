@@ -176,8 +176,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int beforeSimulation=flanker.CombatState.AttackOfOpportunityCount;
                 // Native simulate=true issues no command or budget debit.
                 bool reactionEligible=flanker.CombatState.AttackOfOpportunity(owner,true);
-                bool disengageEligible=flanker.CombatState.ShouldAttackOnDisengage(owner,true);
-                bool simulationReadOnly=beforeSimulation==flanker.CombatState.AttackOfOpportunityCount;
+                var lastTarget=flanker.CombatState.LastTarget;
+                int previousTargets=flanker.CombatState.DisengageAttackTargets.Count;
+                // simulate=true skips the native single-engaged-enemy branch.
+                // The actual RTWP query only reads state; scoped LastTarget is
+                // restored by native finally. Observe that exact production policy.
+                bool disengageEligible=flanker.CombatState.ShouldAttackOnDisengage(owner,false);
+                bool simulatedDisengage=flanker.CombatState.ShouldAttackOnDisengage(owner,true);
+                bool simulationReadOnly=beforeSimulation==flanker.CombatState.AttackOfOpportunityCount&&ReferenceEquals(lastTarget,flanker.CombatState.LastTarget)&&previousTargets==flanker.CombatState.DisengageAttackTargets.Count;
                 Func<string,JObject> state=stage=>new JObject{["stage"]=stage,["frame"]=Time.frameCount,
                     ["ownerPosition"]=SurveyVector(owner.Position),["flankerPosition"]=SurveyVector(flanker.Position),
                     ["engaged"]=flanker.CombatState.EngagedUnits.Contains(owner),["canActInCombat"]=flanker.CombatState.CanActInCombat,
@@ -190,7 +196,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("leap-opportunity-preconditions",engaged&&available&&chargeAvailable&&reactionEligible&&disengageEligible&&simulationReadOnly,
                     new JObject{["owner"]=owner.UniqueId,["flanker"]=flanker.UniqueId,["route"]=route,
                         ["engaged"]=engaged,["opportunityAvailable"]=available,["chargeAvailable"]=chargeAvailable,
-                        ["nativeReactionEligible"]=reactionEligible,["nativeDisengageEligible"]=disengageEligible,["simulationReadOnly"]=simulationReadOnly,
+                        ["nativeReactionEligible"]=reactionEligible,["nativeDisengageEligible"]=disengageEligible,["nativeSimulatedDisengage"]=simulatedDisengage,["simulationReadOnly"]=simulationReadOnly,
                         ["readinessFrames"]=readyFrames,["nativeState"]=state("ready"),
                         ["count"]=flanker.CombatState.AttackOfOpportunityCount,["canAct"]=flanker.Descriptor.State.CanAct,
                         ["sleeping"]=flanker.IsSleeping,["awakePool"]=Game.Instance.State.AwakeUnits.Contains(flanker),

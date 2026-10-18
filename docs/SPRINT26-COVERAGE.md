@@ -1,6 +1,6 @@
 # Sprint26 current coverage
 
-## Controlling state: IMPLEMENTING_WITHHELD / persistence attribution
+## Controlling state: IMPLEMENTING_WITHHELD / bounded native persistence repair
 
 Continue the authorized full release campaign through product PR58, exact-byte
 stable promotion, public downloads/restoration and final records merge. STOP
@@ -30,9 +30,9 @@ incompletely qualified artifact. No rebuild in another root.
 | --- | --- |
 | Gorgon RTWP breath/trample boundaries | R17 PASS41,182.397s, run20261018T1140098991383Z-3644ee25d3fe4451b981171319c3ce90; staged state, recovery/escalation/duplicates/cross-source/immunity/cure/life, native wall/range, live DC/trample and mouth FX |
 | Gorgon TB commands | R17 PASS19,144.272s, run20261018T1200476464527Z-f281d949108848d9a40ebf89b1afa0c2; stages/cure/cooldown/mouth |
-| Bulette RTWP Leap | R17 FAIL: actual branches/landings/native Charge control/interruption/target-loss passed; native opportunity attack not obtained. Run20261018T1146116257242Z-fb4b6bfe4f1a483a8d28779e30f8e654 |
-| Bulette TB Leap | R17 FAIL after successful four-claw branch; later ordinary setup used the parked caster as navmesh anchor. Run20261018T1152471108493Z-b59ed4510c4d42799a74720190bf8689. Failed branch not reached |
-| Targeted cold load | R17 prepare PASS; cleanup-on FAIL: both own victim buffs absent, damage99999/one HP; exact cooldown end470592490000 retained. Prepare run20261018T1210127656795Z-61aca75ab6bb478eb18080b26e8efffd; cold run20261018T1216229862277Z-e85d1cdaf5eb4e8da07a619bf1236575. No cleanup save armed; remaining4 stages unrun |
+| Bulette RTWP Leap | R18 actual branches/landings/native Charge/interruption/target-loss PASS; reaction readiness obtained, disengagement reader refused before movement. Fresh corrected opportunity check required |
+| Bulette TB Leap | R18 PASS16, both successful/failed branches and later ordinary routine. Run20261018T1305141622860Z-e0f87b3c652b4663a7fd4a856b8461fa; final-source reuse justification required |
+| Targeted cold load | R18 prepare PASS/cold cleanup FAIL, source fields saved and exact cooldown retained; actual automatic-heal/removal trace and duplicate component names captured. Current repair requires fresh ON/OFF cleanup/absence; prior failure retained |
 | Composed profiles/modifiers/reach | Prior foundation3d06ae18 PASS26; added live modifier/CMD checks need fresh execution |
 | Bodies/icons/rollback/cache/donor | 19a2b61a lifecycle38 PASS; R17 actual Gorgon jaw/green-cone pixels inspected, launch/view/jaw gap0; targeted dependency reconciliation/final public presentation pending |
 | Exact-owner AI/both modes | 19a2b61a AI16 and TB ordinary/trample20 PASS; affected Leap reruns and final reuse justification pending |
@@ -53,25 +53,49 @@ times and attributes; all118 saves audited equal. Baseline never loaded/written.
 No owned game or lease remains. Steam Offline Mode is preserved. Failed raw
 results, RunIds, logs and old verdicts remain private and immutable.
 
-## Current correction and next executable boundary
+## Latest R18 evidence and R19 correction
 
-Two observer repairs reuse released methods: obtain full native reaction
-readiness and read-only simulation eligibility before the opportunity experiment;
-use the Bulette's valid landing as the later ordinary-route anchor in TB.
-A request-local read-only state trace observes native buff save/load/removal and
-resurrection, including primitive serialized fields and actual lifetime flags.
-It neither supplies a condition nor changes native life behavior. The private
-persistence supervisor now retains exact post-stage Working snapshots before
-the envelope restores intake. Production petrification is unchanged pending
-attribution; missing stages remain mandatory failures.
+R18 af94b45b strict gate PASS379.015s/all2,686 tests and strict package.
+ZIP e73dfba95d9ca0eab9fc0f32bb518d3ecfd935b867e363aa287afdadf3f1f42d;
+DLL e07c85c34161f863efbc594067a1f415401ae7fd673aa75827b2320ed366e6f9;
+MVID22436217-6edc-4dc2-a7ee-de7fd75ccf91. Archived byte-exact privately after
+all transactions restored. TB Leap now PASS16 on both branches and the later
+ordinary routine (run20261018T1305141622860Z-e0f87b3c652b4663a7fd4a856b8461fa).
+RTWP reaction readiness obtained, but the observer's simulate=true disengagement
+query skipped native's normal single-enemy branch, so opportunity was not run.
+Current query uses actual RTWP policy and verifies unchanged budget/LastTarget/
+disengagement list. All failures remain retained with their original verdicts.
 
-Focused command: Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint26.
-Production compilation PASS16.6s; eight named tests PASS, zero failures (0.9s
-runner). Review/push the coherent observer checkpoint, build one strict hidden
-candidate in this root, then run narrow cold-load and affected Bulette phases.
-Native work exceeded the initial planning estimate through preserved failures;
-the next invocations target these exact gaps, not an unchanged broad replay.
-After repairs, complete modifier/combined and ON/OFF cleanup/absence coverage.
+Cold load repeated FAIL. The exact prepared save and trace now establish correct
+saved fields/lifetime flags, duplicate empty runtime component names, missing
+Buff.PostLoad return observations and actual automatic native MakeUnitConscious
+removal/healing stacks. Current implementation gives only the new facts stable
+unique names and changes only automatic recovery's eligibility predicate for
+initialized victim-owned Gorgon stone. Explicit native MakeUnitConscious/Stone
+to Flesh and unrelated stone retain their native path. This requires fresh
+native stage/load/out-of-combat persistence/cure proof; compilation is not proof.
+
+The existing cold profile receipt now compares actual composed defenses, skills,
+attack roles/bonuses/damage/reach/threat and breath DC for these two exact units.
+The read-only observer also records actual production guard calls, while cold
+checks require the original source absent and both victims observed in that
+native automatic-recovery path. The unbuilt disposable victim shell receives
+ordinary living ability scores before production effects; no human party or
+quest actor is a petrification victim. No source object is added to receipts.
+
+R18's718.290s persistence batch stopped at the cold failure with no cleanup save.
+Its envelope restored actual Working bytes/timestamps/attributes; all118 saves
+and installation/settings/private references audited equal. No owned game or
+lease remains. Baseline untouched; Steam Offline preserved. Exact RunIds,
+artifact hashes and prepared snapshot identity are in the development history.
+
+Focused command Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint26:
+corrected production compilation PASS17.8s, nine named tests PASS4.3s runner.
+Next review/push/freeze one strict hidden R19 candidate in this root, then fresh
+Gorgon/cure, RTWP Leap, composed foundation and six-stage ON/OFF Working-only
+persistence. Complete bounded high-risk-combined and justified unaffected
+coverage. Native work exceeded the initial estimate through preserved failures;
+target identified gaps rather than launching an unchanged historical matrix.
 
 Only after mandatory hidden qualification remove the two suppression keys,
 regenerate controlled artifacts, archive hidden bytes and qualify the changed

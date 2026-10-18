@@ -626,3 +626,32 @@ regenerate controlled artifacts, archive the hidden artifact before rebuilding
 the changed public source, and qualify the final public bytes. Run publisher
 preflight/dry-run before authorized merge/publication; promote tested bytes and
 merge final records. Recheck remote master/releases before publication.
+
+
+## R18 strict observer candidate and cold-load attribution
+
+Source af94b45b5aed055a415f9bb1c7390707e224ab05; Sprint gate PASS379.015s,
+all2,686 tests/zero failures; exact strict package and source boundary PASS.
+ZIP e73dfba95d9ca0eab9fc0f32bb518d3ecfd935b867e363aa287afdadf3f1f42d;
+DLL e07c85c34161f863efbc594067a1f415401ae7fd673aa75827b2320ed366e6f9;
+MVID22436217-6edc-4dc2-a7ee-de7fd75ccf91;
+fingerprint eeebcbd8ab44e8d07089bff97bec8a35e9b9e72700f7bb6a60bc69476a11e493.
+Archived byte-exact under artifacts/sprint26-strict-hidden-r18 after all native
+transactions closed; archive receipt retained. Hidden/incomplete, never promoted.
+
+- Prepare PASS15: run20261018T1245175748744Z-28ddbc9ea49a477fb4e27af66fbdd9f5; result SHA256 d4b90bde385a0f848ed0ff8482a084ff5cdfac89d110b1af667910e8ccdd36fd.
+- Cold cleanup-on FAIL12: run20261018T1251313180074Z-15e44b6e3eb84999b4842d287b51aefd; result SHA2567648e4e37cb1a1f5454f04d6eed7c1068ae5a8e2e424bdc91a0e586acd2bcab5; read-only trace SHA256a668f3b05aefb2cd4ae88d425f30a3a9cc9e5142b1565df5a39bb1849777c4f8.
+- Actual prepared Working snapshot SHA256fc499ec9ff7938e01ba95cd20427d072a013dd352686d0c9cc5c7b52d41f0639 retained privately. It contains correct stage/DC/source fields, two empty component names per stone fact, permanent lifetime and StayOnDeath=true/RemoveOnResurrect=false. These flags were not the defect.
+- Native Buff.PostLoad entry had no matching return observation for either victim. Both saved component names are empty, violating the inspected Fact.PostLoad SingleOrDefault join contract. Source fields were saved; stage restoration was not demonstrated.
+- The actual native removal stack identifies UnitReturnToConsciousController.MakeUnitConscious, invoked by its normal Tick. It healed both victims to damage99999/one HP and removed both own stone carriers. This automatic cure is not an authorized permanent-state lifetime.
+- The718.290s batch stopped on cold failure, armed no cleanup save and left four stages unrun. Envelope restored today's original Working bytes/creation/write/attributes; all118 saves audited equal, no game/lease, exact installation/settings/private references.
+- RTWP Leap FAIL41: run20261018T1258545950118Z-40cb9722f759471db339f75dec97d635; result SHA25688242c0f954fe05ba14df6cd29ca316fd08045247ec75e27303793d2c6ec53ef,334.438s outer. Genuine native reaction readiness obtained after208 frames, nativeReactionEligible=true. The observer required ShouldAttackOnDisengage(simulate=true), which bypasses native's normal single-engaged-enemy branch; it returnedfalse and no opportunity charge was attempted. Success/failure/landings/cancellation/native Charge controls remain PASS; this is not opportunity PASS.
+- TB Leap PASS16: run20261018T1305141622860Z-e0f87b3c652b4663a7fd4a856b8461fa; result SHA256b6235123c95efbdf2657f86a80f594c99f65351f94dd3b5fbc037d1e1e109fd9,264.950s outer. Both genuine success/failure branches and later ordinary routine passed. Exact restoration/all118 saves PASS.
+
+R19 batches stable names on only the new runtime facts, a narrowly scoped
+native automatic-recovery eligibility guard (explicit MakeUnitConscious/cure
+unchanged), composed cold-profile observations and the actual read-only RTWP
+disengagement query. DefaultPlayerCharacter fixture victims also receive ordinary
+living ability scores; human party/quest units are never those victims. Initial
+focused compilation failed missing observer imports; corrected compilation
+PASS17.8s, all9 named Sprint26 tests PASS4.3s runner. No R19 native PASS yet.

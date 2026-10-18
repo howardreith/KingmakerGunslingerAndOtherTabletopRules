@@ -56,6 +56,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(Sprint26MagicalBeastRules.SuppliesOwnPetrifiedStatus(own, true, 1, true), "Native immunity still deactivates status presentation.");
         }
 
+        internal static void AutomaticRecoveryPreservesOnlyOwnedInitializedStone()
+        {
+            string own=Sprint26MagicalBeastRules.PetrificationGuid;
+            Assertions.True(Sprint26MagicalBeastRules.KeepsStoneFromAutomaticRecovery(own,true,true,true),"Both initialized stages survive native automatic out-of-combat recovery.");
+            Assertions.False(Sprint26MagicalBeastRules.KeepsStoneFromAutomaticRecovery(Sprint26MagicalBeastRules.PetrifiedDonor,true,true,true),"An unrelated native carrier keeps native automatic behavior.");
+            Assertions.False(Sprint26MagicalBeastRules.KeepsStoneFromAutomaticRecovery(own,false,true,true),"Another owner's carrier grants no exception.");
+            Assertions.False(Sprint26MagicalBeastRules.KeepsStoneFromAutomaticRecovery(own,true,false,true),"Actual condition removal or immunity permits native recovery.");
+            Assertions.False(Sprint26MagicalBeastRules.KeepsStoneFromAutomaticRecovery(own,true,true,false),"Uninitialized state is never proof of an owned effect.");
+            Assertions.False(Sprint26MagicalBeastRules.KeepsStoneFromAutomaticRecovery(null,false,true,true),"A removed cure carrier cannot block recovery.");
+        }
+
         internal static void BreathStagesRequireAnotherActivation()
         {
             Assertions.False(Sprint26MagicalBeastRules.CanEscalate(false, false, null, null, "second"), "An unrelated stone effect is not a first Gorgon exposure.");

@@ -49,6 +49,10 @@ namespace KingmakerGunslinger.Summoning
             int conditionCount, bool ownInitialized, bool ownPermanent)
         { return nativePetrified && conditionCount == 1 && ownInitialized && !ownPermanent; }
 
+        internal static bool KeepsStoneFromAutomaticRecovery(string buffGuid,
+            bool sameOwner,bool nativePetrified,bool initialized)
+        { return buffGuid==PetrificationGuid && sameOwner && nativePetrified && initialized; }
+
         internal static int BreathDc(int hitDice, int constitutionModifier)
         {
             if (hitDice < 1) throw new ArgumentOutOfRangeException("hitDice");

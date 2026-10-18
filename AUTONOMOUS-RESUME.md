@@ -25,22 +25,27 @@ prefix intact. Current public equation: 1,096 generated placements plus29 retain
 Original medallions/Leap emblem and recognizable native bodies are present;
 rough visual debt is nonblocking and HumanReview remains NOT_PERFORMED_NONBLOCKING.
 
-Strict hidden R17 gate passed all2,686 tests and exact packaging on41be549c.
-Its ZIP6492df25a621e4beb6e234a39875529127c4ca19879937694a552840bf33b1fc,
-DLLfdda7d621bc38d9daaa41be3ed17159c4b61dd9c90cd77d72b0f5cc1703e7b01,
-MVIDadfaa002-849b-48ad-94db-dc5e83eeaece are archived byte-exact privately.
-R17 Gorgon RTWP41/TB19 PASS, including native wall/DC and actual mouth FX.
-Bulette RTWP native opportunity remained unobserved; TB later-route setup failed.
-Persistence prepare wrote only the authorized Working; cold load lost both
-victim buffs despite retaining the exact cooldown. No cleanup save was armed.
-The envelope restored today's Working exactly; all118 saves, installation,
-settings/private references audited equal. No game/lease; Steam Offline preserved.
+Strict hidden R18 gate passed all2,686 tests and packaging on af94b45b.
+ZIPe73dfba95d9ca0eab9fc0f32bb518d3ecfd935b867e363aa287afdadf3f1f42d,
+DLLe07c85c34161f863efbc594067a1f415401ae7fd673aa75827b2320ed366e6f9,
+MVID22436217-6edc-4dc2-a7ee-de7fd75ccf91 are archived byte-exact privately.
+R17 Gorgon RTWP41/TB19 PASS remains retained. R18 Bulette TB16 now PASS on both
+branches/later ordinary; RTWP native reaction readiness is real, but the observer
+used a non-equivalent simulation disengagement query, so opportunity remains unrun.
 
-Current observer corrections obtain native reaction readiness, use the valid
-Bulette landing as TB route anchor, and trace native cold-load removal with
-primitive save fields. No production persistence fix or waiver is assumed.
-Eight focused tests and production compilation PASS. Next push/freeze one hidden
-strict candidate, run narrow persistence attribution and affected Leap phases,
-then repair demonstrated causes and complete remaining mandatory qualification.
-Final public roots/strict gate, merge/promotion/download checks and final records
-remain required. Preserve wt/s25; do not begin Sprint27.
+R18 cold load FAIL attributed to duplicate empty runtime component names and
+actual native out-of-combat automatic recovery removing both stone carriers and
+healing victims. Saved stage fields and lifetime flags were correct. The exact
+prepared save/trace are retained. Original Working and all118 saves/metadata,
+installation/settings/private references restored exactly; no game/lease.
+Current repairs name only new runtime components, guard only automatic recovery
+for initialized own Gorgon stone, preserve native explicit cure and compare
+actual composed cold profiles. Healthy disposable victim preconditions and the
+actual read-only RTWP query are included. Production compilation and9 focused
+tests PASS; no fresh R19 native claim. Steam Offline remains supported.
+
+Next: review/push/freeze one strict hidden R19 candidate, qualify affected Gorgon
+cure/out-of-combat ownership/load, RTWP Leap/foundation and the six-stage Working
+ON/OFF envelope; complete bounded combined coverage. Final public roots/strict
+gate, publisher preflight/merge/promotion/downloads/restoration and final records
+remain required. Preserve wt/s25. Continue this campaign; no Sprint27.
