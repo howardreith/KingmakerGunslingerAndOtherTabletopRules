@@ -75,6 +75,13 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintAbility")
                     blueprint = registry.Register<BlueprintAbility>(identity.Symbol,
                         () => CreateAbilityShell(identity.Symbol));
+                else if (identity.PlannedType == "BlueprintProjectile")
+                    blueprint = registry.Register<BlueprintProjectile>(identity.Symbol, () =>
+                    {
+                        var value = ScriptableObject.CreateInstance<BlueprintProjectile>();
+                        value.name = InternalName(identity.Symbol);
+                        return value;
+                    });
                 else if (identity.PlannedType == "BlueprintBuff")
                     blueprint = registry.Register<BlueprintBuff>(identity.Symbol,
                         () => CreateBuffShell(identity.Symbol));

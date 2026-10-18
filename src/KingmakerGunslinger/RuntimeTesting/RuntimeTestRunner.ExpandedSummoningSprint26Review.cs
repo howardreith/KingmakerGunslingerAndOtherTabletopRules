@@ -598,7 +598,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if(projectile.Rows.Count>0&&!fxFrameCaptured){
                         yield return 0;Sprint26Body(owner,"gorgon","breath-projectile-"+turnBased);fxFrameCaptured=true;
                     }
-                    Sprint25Check("breath-native-projectile-readback-"+turnBased,projectile.Rows.Count>0&&fxFrameCaptured,
+                    Sprint25Check("breath-native-projectile-readback-"+turnBased,projectile.Rows.Count>0&&fxFrameCaptured&&
+                        projectile.Rows.OfType<JObject>().All(v=>(string)v["nativeSourceBone"]=="Jaw"&&(bool)v["viewPresent"]&&
+                            (bool)v["nativeSourceBoneMatchesSkinnedBone"]&&(float)v["jawGapMeters"]<.001f),
                         new JObject{["projectiles"]=projectile.Rows,["postLaunchFrameCaptured"]=fxFrameCaptured,["observerMovedProjectile"]=false},
                         "The exact native breath projectile launch/source-bone coordinates and an actual later FX frame are captured read-only; mouth placement is assessed from these coordinates and real pixels.");
                     var applied = target.Buffs.GetBuff(stone);
@@ -610,7 +612,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         GorgonPetrificationLife.ConditionCount(target.Descriptor.State) == 1 &&
                         !target.Buffs.Enumerable.Any(v => v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrifiedDonor) &&
                         target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified) && activation != null &&
-                        activation.CooldownRounds >= 2 && activation.CooldownRounds <= 5 && economy.Count(first) == 1;
+                        activation.CooldownRounds >= 2 && activation.CooldownRounds <= 5 && economy.Count(first) == 1 &&
+                        activation.Targets.All(id=>fixture.Created.Any(v=>v!=null&&v.UniqueId==id));
                     Sprint25Check("breath-first-" + turnBased, firstExact, new JObject { ["unit"] = owner.UniqueId,
                         ["victim"] = target.UniqueId, ["petrified"] = target.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Petrified),
                         ["lifeStateDead"] = target.Descriptor.State.IsDead, ["damageBefore"] = damageBeforePetrification,
@@ -619,6 +622,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["petrificationBuffs"] = new JArray(target.Buffs.Enumerable.Where(v => v.Blueprint.AssetGuid == stone.AssetGuid ||
                             v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrifiedDonor).Select(v => v.Blueprint.AssetGuid)), ["permanent"] = state?.Permanent,
                         ["recoveryDc"] = state?.RecoveryDc, ["rolledCooldownRounds"] = activation?.CooldownRounds,
+                        ["actualExposureIds"]=activation==null?null:new JArray(activation.Targets),
+                        ["allExposuresRequestOwned"]=activation!=null&&activation.Targets.All(id=>fixture.Created.Any(v=>v!=null&&v.UniqueId==id)),
                         ["source"] = state?.FirstSourceId, ["saves"] = saves.Rows.DeepClone(), ["costs"] = costs },
                         "One native cone activation produces temporary victim-owned petrification, Constitution DC21 and an actual 2?5 round clock.");
                     if (!firstExact) throw new InvalidOperationException("Initial petrification did not match its required stage.");
@@ -761,6 +766,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (second != null) PlaceExpandedSummoningUnit(second, other); PlaceExpandedSummoningUnit(fixture.Caster, behind);
                             if (!delivery.WouldTargetUnit(data, target.Position, target)) continue;
                             reached++;
+                            // Experiments may expose only request-owned victims,
+                            // even if an original scene actor has a hostile faction.
+                            if(fixture.UnitsBefore.OfType<UnitEntityData>().Any(v=>v!=null&&!v.Destroyed&&delivery.WouldTargetUnit(data,target.Position,v)))continue;
                             if (!data.CanTarget(new TargetWrapper(target))) {
                                 lastBlockers = new JArray(Game.Instance.State.Units.All.Where(v => v != null && !v.Destroyed &&
                                     !ReferenceEquals(v, owner) && !owner.IsEnemy(v) && delivery.WouldTargetUnit(data, target.Position, v))

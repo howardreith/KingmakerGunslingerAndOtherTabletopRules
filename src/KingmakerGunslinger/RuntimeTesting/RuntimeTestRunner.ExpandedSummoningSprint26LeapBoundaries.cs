@@ -141,7 +141,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return false;
                 });
                 if(selected==null||tick==null||!parked)throw new InvalidOperationException("No legal isolated charge with protected actors outside native opportunity threat.");
-                flanker.Descriptor.SwitchFactions(fixture.Hostile.Faction,false);
+                // Summons initially share the player-controlled group. Faction
+                // switching alone does not replace native group membership.
+                flanker.GroupId = "KMG_S26_Opportunity_" + flanker.UniqueId;
+                flanker.Descriptor.SwitchFactions(fixture.Hostile.Faction,true);
+                flanker.UpdateGroup();
                 owner.JoinCombat();target.JoinCombat();flanker.JoinCombat();
                 owner.Memory.Add(flanker);flanker.Memory.Add(owner);flanker.CombatState.OnNewRound();
                 flanker.CombatState.AttackOfOpportunityCount=flanker.CombatState.AttackOfOpportunityPerRound;
@@ -156,7 +160,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["engaged"]=engaged,["opportunityAvailable"]=available,["chargeAvailable"]=chargeAvailable,
                         ["count"]=flanker.CombatState.AttackOfOpportunityCount,["canAct"]=flanker.Descriptor.State.CanAct,
                         ["sleeping"]=flanker.IsSleeping,["awakePool"]=Game.Instance.State.AwakeUnits.Contains(flanker),
-                        ["enemy"]=flanker.IsEnemy(owner),["primaryWeapon"]=flanker.Body.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid,
+                        ["enemy"]=flanker.IsEnemy(owner),["group"]=flanker.GroupId,["ownerGroup"]=owner.GroupId,["primaryWeapon"]=flanker.Body.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid,
                         ["engagedIds"]=new JArray(flanker.CombatState.EngagedUnits.Select(v=>v.UniqueId)),["protectedActorsOutsideThreat"]=parked},
                     "Real native engagement, opportunity budget and legal charge are obtained outside every protected actor before the production command.");
                 if(!engaged||!available||!chargeAvailable)throw new InvalidOperationException("Legal charge/opportunity setup not obtained; no PASS.");

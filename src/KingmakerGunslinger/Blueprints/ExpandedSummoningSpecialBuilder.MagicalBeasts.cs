@@ -79,6 +79,14 @@ namespace KingmakerGunslinger.Blueprints
             if (delivery == null || delivery.Type != AbilityProjectileType.Cone)
                 throw new InvalidOperationException("Gorgon requires the inspected native cone.");
             delivery.Length = new Feet(60);
+            if (delivery.Projectiles == null || delivery.Projectiles.Length != 1)
+                throw new InvalidOperationException("Expected one native cone visual.");
+            var projectile = Require<BlueprintProjectile>(bySymbol, prefix + "BreathProjectile");
+            CopyFields(delivery.Projectiles[0], projectile);
+            projectile.name = InternalName(prefix + "BreathProjectile");
+            projectile.SourceBone = "Jaw";
+            projectile.SourceBoneCorpulenceOffset = 0;
+            delivery.Projectiles = new[] { projectile };
             var effect = ScriptableObject.CreateInstance<GorgonBreathEffect>();
             effect.Stone = stone;
             var activation = ScriptableObject.CreateInstance<GorgonBreathOnCast>();

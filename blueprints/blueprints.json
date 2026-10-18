@@ -22774,7 +22774,7 @@
       "plannedType": "BlueprintBuff",
       "status": "active",
       "milestone": "Expanded Summoning",
-      "notes": "Registered in every feature-module state; the creature-owned swallowed state so a victim is not placed in the Purple Worm’s stomach with the worm’s crush."
+      "notes": "Registered in every feature-module state; the creature-owned swallowed state so a victim is not placed in the Purple Worm\u2019s stomach with the worm\u2019s crush."
     },
     {
       "symbol": "KMG.Summoning.Special.Crocodilian.SprintNotEngaged",
@@ -55687,6 +55687,14 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Gorgon.BreathProjectile",
+      "guid": "fa7ec7798c9e475595e79ae419fe6241",
+      "plannedType": "BlueprintProjectile",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Private native cone visual with an exact Gorgon jaw origin; native donor and other consumers remain unchanged."
     }
   ]
 }

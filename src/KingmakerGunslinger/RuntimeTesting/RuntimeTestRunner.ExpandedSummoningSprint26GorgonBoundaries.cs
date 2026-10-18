@@ -98,30 +98,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var nativeGeometry=Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance;
                 var cellsField=nativeGeometry.GetType().GetField("m_Cells",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
                 var cells=cellsField?.GetValue(nativeGeometry) as Array;
-                int pairs=0;
-                if(!wall){
-                    var points=new List<Vector3>();
-                    for(int x=-18;x<=18;x+=6)for(int z=-18;z<=18;z+=6){
-                        var requested=origin+new Vector3(x,0,z);var node=Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requested);
-                        if(node.node!=null&&node.node.Walkable&&Vector3.Distance(requested,node.clampedPosition)<.6f)points.Add(node.clampedPosition);
-                    }
-                    var eyeOffset=owner.EyePosition-owner.Position;
-                    foreach(var from in points){
-                        foreach(var to in points){
-                            float gap=Vector3.Distance(from,to);if(gap<3f||gap>16f)continue;pairs++;
-                            var forward=(to-from).normalized;var launch=from+eyeOffset+forward*owner.Corpulence;
-                            if(!nativeGeometry.HasObstacle(launch,to,0))continue;
-                            PlaceExpandedSummoningUnit(owner,from);PlaceExpandedSummoningUnit(target,to);
-                            bool reached=delivery.WouldTargetUnit(data,target.Position,target);
-                            attempts.Add(new JObject{["origin"]=SurveyVector(owner.Position),["point"]=SurveyVector(target.Position),["nativeLaunchProjection"]=SurveyVector(launch),
-                                ["wall"]=true,["nativeDeliveryReaches"]=reached,["rangeCase"]=false,["boundedPairSurvey"]=true});
-                            if(!reached){wall=true;break;}
-                        }
-                        if(wall)break;
-                    }
-                }
+                // Arrange a real, request-owned native obstacle on the known
+                // clear lane, rather than assuming this open map has a wall.
+                PlaceExpandedSummoningUnit(owner,origin);PlaceExpandedSummoningUnit(target,original);
+                var launch=owner.EyePosition+(target.Position-owner.Position).normalized*owner.Corpulence;
+                bool clearBefore=!nativeGeometry.HasObstacle(launch,target.Position,0)&&delivery.WouldTargetUnit(data,target.Position,target);
+                int blockersBefore=Kingmaker.Visual.FogOfWar.FogOfWarBlocker.All.Count;
+                GameObject ownedWall=null;JObject wallRow=null;
+                try{
+                    if(!clearBefore)throw new InvalidOperationException("Native wall fixture requires the measured clear cone lane.");
+                    ownedWall=GameObject.CreatePrimitive(PrimitiveType.Cube);ownedWall.SetActive(false);
+                    ownedWall.name="KMG_S26_PrivateConeWall";
+                    ownedWall.transform.position=(owner.Position+target.Position)*.5f+Vector3.up*2;
+                    ownedWall.transform.rotation=Quaternion.LookRotation(target.Position-owner.Position);
+                    ownedWall.transform.localScale=new Vector3(6,8,.5f);
+                    var blocker=ownedWall.AddComponent<Kingmaker.Visual.FogOfWar.FogOfWarBlocker>();
+                    ownedWall.SetActive(true);
+                    bool blocked=nativeGeometry.HasObstacle(launch,target.Position,0);
+                    bool reached=delivery.WouldTargetUnit(data,target.Position,target);
+                    wall=blocked&&!reached&&Kingmaker.Visual.FogOfWar.FogOfWarBlocker.All.Contains(blocker);
+                    wallRow=new JObject{["clearBefore"]=clearBefore,["wallObject"]=ownedWall.name,["nativeBlockerPoints"]=blocker.Points.Length,
+                        ["nativeWallRegistered"]=Kingmaker.Visual.FogOfWar.FogOfWarBlocker.All.Contains(blocker),["wall"]=blocked,["nativeDeliveryReaches"]=reached};
+                }finally{if(ownedWall!=null)UnityEngine.Object.DestroyImmediate(ownedWall);}
+                bool wallRemoved=Kingmaker.Visual.FogOfWar.FogOfWarBlocker.All.Count==blockersBefore&&
+                    !nativeGeometry.HasObstacle(launch,target.Position,0)&&delivery.WouldTargetUnit(data,target.Position,target);
+                wall&=wallRemoved;wallRow["nativeWallRemovedAndClearRestored"]=wallRemoved;attempts.Add(wallRow);
                 Sprint25Check("breath-native-range-wall",range&&wall,new JObject{["rangePreconditionAndRefusal"]=range,["wallPreconditionAndRefusal"]=wall,
-                    ["nativeGeometryCellsPresent"]=cells!=null,["nativeGeometryCellCount"]=cells?.Length,["boundedWallPairsInspected"]=pairs,["observations"]=attempts,["commandsIssued"]=0},
+                    ["nativeGeometryCellsPresent"]=cells!=null,["nativeGeometryCellCount"]=cells?.Length,["ownedWallRemovedAndClearRestored"]=wallRemoved,["observations"]=attempts,["commandsIssued"]=0},
                     "The actual native cone delivery refuses a visible beyond-range victim and an in-range victim behind an actual wall; ordinary cone geometry remains authoritative.");
             }finally{PlaceExpandedSummoningUnit(owner,origin);PlaceExpandedSummoningUnit(target,original);}
         }
@@ -143,9 +146,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if(sample=="live-hd-con-trample"){
                         owner.Descriptor.Progression.AddClassLevel(activation.HitDieClass);owner.Descriptor.Progression.AddClassLevel(activation.HitDieClass);
                         owner.Stats.Constitution.BaseValue=28;owner.Stats.Strength.BaseValue=26;
+                        yield return 0;
                     }
                     if(sample=="unrelated-native-stone")target.Descriptor.AddBuff(nativeStone,owner,null);
-                    var data=new AbilityData(owner.Descriptor.Abilities.GetAbility(breath));var calculated=data.CalculateParams();int beforeCastDc=calculated.DC;
+                    var data=new AbilityData(owner.Descriptor.Abilities.GetAbility(breath));AbilityParams calculated;JObject parameters;
+                    using(var trace=new Sprint26BreathParameterTrace(owner,breath)){
+                        calculated=data.CalculateParams();parameters=trace.Row;
+                    }
+                    int beforeCastDc=calculated.DC;
                     var context=new AbilityExecutionContext(data,calculated,new Kingmaker.Utility.TargetWrapper(target),Rulebook.CurrentContext);
                     activation.OnCast(context);
                     using(var saves=new Sprint26Saves(target)){
@@ -172,9 +180,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 _sprint26Life.TickOwned(target);exact&=target.Descriptor.State.IsDead;
                             }else{
                                 var live=GorgonBreathRuntime.Latest(owner);
-                                exact&=owner.Descriptor.Progression.GetClassLevel(activation.HitDieClass)==10&&owner.Stats.Constitution.Bonus==9&&beforeCastDc==24&&live.Dc==24&&state.RecoveryDc==24;
+                                exact&=owner.Descriptor.Progression.GetClassLevel(activation.HitDieClass)==10&&owner.Stats.Constitution.Bonus==9&&parameters!=null&&(bool)parameters["formulaMatches"]&&(int)parameters["racialHd"]==10&&(int)parameters["constitutionBonus"]==9&&
+                                    calculated.CasterLevel==10&&calculated.SpellLevel==5&&live.Dc==beforeCastDc&&state.RecoveryDc==beforeCastDc;
                                 details["actualHd"]=owner.Descriptor.Progression.GetClassLevel(activation.HitDieClass);details["constitutionBonus"]=owner.Stats.Constitution.Bonus;
-                                details["beforeCastCalculatedDc"]=beforeCastDc;details["actualDc"]=live.Dc;
+                                details["nativeParameters"]=parameters;details["beforeCastCalculatedDc"]=beforeCastDc;details["actualDc"]=live.Dc;
                                 // Reset only this direct-control fixture state before testing contact eligibility; this is not cure proof.
                                 buff.Remove();_sprint26Life.TickOwned(target);target.Descriptor.State.Size=Size.Medium;
                                 _rulesFixture=fixture;target.Stats.SaveReflex.BaseValue=-100;
@@ -198,6 +207,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
         }
+        private sealed class Sprint26BreathParameterTrace:IGlobalRulebookHandler<Kingmaker.RuleSystem.Rules.Abilities.RuleCalculateAbilityParams>,IDisposable
+        {
+            private readonly UnitEntityData owner;private readonly BlueprintAbility ability;
+            internal JObject Row;
+            internal Sprint26BreathParameterTrace(UnitEntityData owner,BlueprintAbility ability){this.owner=owner;this.ability=ability;EventBus.Subscribe(this);}
+            public void OnEventAboutToTrigger(Kingmaker.RuleSystem.Rules.Abilities.RuleCalculateAbilityParams evt){}
+            public void OnEventDidTrigger(Kingmaker.RuleSystem.Rules.Abilities.RuleCalculateAbilityParams evt){
+                if(!ReferenceEquals(evt.Initiator,owner)||!ReferenceEquals(evt.Blueprint,ability))return;
+                var fact=ability.GetComponent<GorgonBreathOnCast>();
+                int hd=owner.Descriptor.Progression.GetClassLevel(fact.HitDieClass),con=owner.Stats.Constitution.Bonus;
+                var bonusField=evt.GetType().GetField("m_BonusDC",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+                if(bonusField==null)throw new InvalidOperationException("Native DC bonus field unavailable.");
+                int bonus=(int)bonusField.GetValue(evt);
+                int difficulty=Game.Instance.BlueprintRoot.DifficultyList.GetAdjustmentPreset(Game.Instance.Player.Difficulty.StatsAdjustmentsType).AbilityDCBonus;
+                int expected=Sprint26MagicalBeastRules.BreathDc(hd,con)+bonus+(owner.IsPlayersEnemy?difficulty:0);
+                Row=new JObject{["racialHd"]=hd,["constitutionBonus"]=con,["replaceCasterLevel"]=evt.ReplaceCasterLevel,
+                    ["replaceSpellLevel"]=evt.ReplaceSpellLevel,["replaceStat"]=evt.ReplaceStat?.ToString(),["replaceDc"]=evt.ReplaceDC,
+                    ["nativeBonusDc"]=bonus,["isPlayersEnemy"]=owner.IsPlayersEnemy,["difficultyDcBonus"]=difficulty,
+                    ["group"]=owner.GroupId,["groupAttackFactions"]=new JArray(owner.Group.AttackFactions.Select(v=>v.AssetGuid)),
+                    ["actualDc"]=evt.Result.DC,["expectedDc"]=expected,
+                    ["formulaMatches"]=evt.ReplaceCasterLevel==hd&&evt.ReplaceSpellLevel==hd/2&&evt.ReplaceStat==Kingmaker.EntitySystem.Stats.StatType.Constitution&&evt.Result.DC==expected};
+            }
+            public void Dispose(){EventBus.Unsubscribe(this);}
+        }
+
         // Request-local observation only; the actual native projectile and
         // launch point are never moved or replaced by this reader.
         private sealed class Sprint26BreathProjectileTrace:IDisposable
@@ -219,7 +253,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             private static void After(Kingmaker.Controllers.Projectiles.Projectile __0){
                 var value=active;
-                if(value==null||__0==null||!ReferenceEquals(__0.Launcher,value.owner)||__0.Blueprint==null||__0.Blueprint.AssetGuid!="f6544caac8fe528489327cd86a84b025")return;
+                if(value==null||__0==null||!ReferenceEquals(__0.Launcher,value.owner)||__0.Blueprint==null||__0.Blueprint.AssetGuid!=Sprint26MagicalBeastRules.BreathProjectileGuid)return;
                 var bones=value.owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).SelectMany(v=>v.bones??new Transform[0]).Where(v=>v!=null).Distinct().ToArray();
                 var jaw=bones.SingleOrDefault(v=>v.name=="Jaw");var head=bones.SingleOrDefault(v=>v.name=="Head");
                 value.LaunchFrame=Time.frameCount;
